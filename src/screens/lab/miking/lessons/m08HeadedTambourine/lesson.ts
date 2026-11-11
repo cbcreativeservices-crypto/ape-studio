@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['tb.prac.order', 'tb.prac.gain', 'tb.prac.setup1', 'tb.prac.setup2', 'tb.prac.3', 'tb.mix.1', 'tb.mix.2', 'tb.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'Naming head and jingles, one mic that covers the real motion, two tonal perspectives explained, no transient overload, and studio and live checks in mono pass — and more than one setup can pass.',
+    takeaway: 'You pass by naming the head and jingles, placing one mic that covers the real motion, explaining two tonal perspectives, avoiding transient overload and checking studio and live in mono — more than one setup can pass.',
   },
 };
 
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second, close tambourine mic?',
     options: ['The best single mic misses something the music needs', 'Two close mics are the usual standard for a tambourine', 'The tambourine needs more level than one mic gives it'],
     correct: 'The best single mic misses something the music needs',
-    explain: 'If the best integrated mic already conveys the part, a second close mic is generally unnecessary — and it adds spill, timing and feedback risk.',
+    explain: 'If the best single mic already conveys the part, a second close mic is generally unnecessary — and it adds spill, timing and feedback risk.',
     why: {
       'Two close mics are the usual standard for a tambourine': 'One well-placed mic is the usual start; a second has to earn its place.',
       'The tambourine needs more level than one mic gives it': 'Level comes from gain and the fader, not from another mic.',
@@ -344,7 +344,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic aimed at the rim and metal, too close — or is the head not actually played in this passage?',
     options: ['The aim and the distance — or whether the head is played', 'Ask the player to hit the head harder for the mic', 'Cut the highs with EQ until the jingles sit back in the mix'],
     correct: 'The aim and the distance — or whether the head is played',
-    explain: 'Re-aim toward an integrated head-and-rim view or back off, and check the whole passage.',
+    explain: 'Re-aim so the mic takes in both the head and the rim, or back off, and check the whole passage.',
     why: {
       'Ask the player to hit the head harder for the mic': 'The music sets the strokes; aim the mic first.',
       'Cut the highs with EQ until the jingles sit back in the mix': 'EQ cannot add a head the mic does not hear; aim and distance first.',

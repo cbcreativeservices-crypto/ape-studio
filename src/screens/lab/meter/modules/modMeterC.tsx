@@ -1078,7 +1078,7 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 1,
       reveal:
-        'Find the cause and undo it: a polarity flip (Ø) on the inverted side, a cable with hot and cold swapped, a plugin inverting one channel, or misaligned mics that need time alignment. Watch this meter swing from −1 toward +1 as the fix lands.',
+        'Find the cause and undo it: a polarity flip (Ø) on the inverted side, a cable with hot and cold (its two signal wires) swapped, a plugin inverting one channel, or misaligned mics that need time alignment. Watch this meter swing from −1 toward +1 as the fix lands.',
       wrongHint: 'One channel is upside-down. Which one-button fix turns it right-side up?',
     },
   },

@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one horn mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['hn.prac.order', 'hn.prac.gain', 'hn.prac.setup1', 'hn.prac.setup2', 'hn.prac.3', 'hn.mix.1', 'hn.mix.2', 'hn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real horn.' },
-    takeaway: 'Safe clearance from the bell and the hand, correct power and headroom, pattern reasoning, the room’s part in the sound, and an accurate account of polarity versus delay pass. A brand or the brightest on-axis spot do not — and more than one setup can pass.',
+    takeaway: 'What passes: safe clearance from the bell and the hand, correct power and headroom, pattern reasoning, the room’s part in the sound, and an accurate account of polarity versus delay. A brand or the brightest on-axis spot does not — and more than one setup can pass.',
   },
 };
 
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A horn-and-piano session puts a figure-8 above the horn. What makes that pattern useful there?',
     options: ['Its sides reject, so a side can face the piano', 'Its back is silent, so the room stays out of it', 'It hears only straight down, so nothing else gets in'],
     correct: 'Its sides reject, so a side can face the piano',
-    explain: 'A figure-8 hears its front and its back equally and rejects its sides. Aimed at the horn with a side toward the piano, it favors the horn without a deep cut of the room.',
+    explain: 'A figure-8 hears its front and its back equally and rejects its sides. Aimed at the horn with a side toward the piano, it favors the horn without cutting much of the room.',
     why: {
       'Its back is silent, so the room stays out of it': 'A figure-8’s back hears as strongly as its front. Its nulls are at the sides.',
       'It hears only straight down, so nothing else gets in': 'It hears front and back; only the sides are rejected — and real nulls are shallower than the picture.',
@@ -222,7 +222,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Yes — then move off axis or farther if it sounds hard',
     explain: 'That is the bell-side starting point: behind and beside the bell, low, aimed toward it a little off axis. From there, listen and move one thing at a time.',
     why: {
-      'No — a horn is only ever miked from in front of the player': 'Both schools are in use: the front view for the horn with its room, the bell side for control. Neither is the only way.',
+      'No — a horn is only ever miked from in front of the player': 'Both approaches are in use: the front view for the horn with its room, the bell side for control. Neither is the only way.',
       'No — the mic belongs right on the bell’s axis': 'Right on the axis is the brightest, hardest view. Off axis is where we suggest you begin.',
     },
   },
@@ -602,6 +602,6 @@ export const A03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Two schools are in use for the horn: a front view that hears it with the room, and a mic beside the bell for control; both are places to begin. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell and the hands’ space shown as keep-outs, mic patterns and the two-mic comb as textbook shapes, and sound paths as straight lines. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Two approaches are in use for the horn: a front view that hears it with the room, and a mic beside the bell for control; both are places to begin. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical posture, the bell and the hands’ space shown as keep-outs, mic patterns and the two-mic comb as textbook shapes, and sound paths as straight lines. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: HORN_COPY,
 };

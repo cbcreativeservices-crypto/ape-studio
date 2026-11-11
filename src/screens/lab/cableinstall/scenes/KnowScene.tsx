@@ -463,7 +463,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
 
               {g.risk != null ? (
                 <Appear delay={QSTEP} style={styles.docBlock}>
-                  <Text style={styles.docHead}>THEN THE PAPERWORK — {perScenarioScore(s, g)}/4 ON THIS ONE</Text>
+                  <Text style={styles.docHead}>THEN THE PAPERWORK — {perScenarioScore(s, g)}/4 CALLS RIGHT</Text>
                   <RuleFeedback ruleId="label-both-ends" verdict="info" short={s.doc} openSources={openSources} />
                 </Appear>
               ) : null}

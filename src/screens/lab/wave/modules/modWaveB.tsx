@@ -399,9 +399,9 @@ const COVERAGE_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Coverage is frequency-dependent: lows spill nearly omnidirectionally while highs beam. Sweep ' +
-    'the FREQUENCY slider and watch the heat pattern widen at LF and tighten at HF — you aim the ' +
+    'the FREQ fader and watch the heat pattern widen at LF and tighten at HF — you aim the ' +
     'HF pattern at the audience, not the cabinet at the room.',
-  wrongHint: 'Sweep the FREQUENCY slider and watch the drawn pattern width change.',
+  wrongHint: 'Sweep the FREQ fader and watch the drawn pattern width change.',
 };
 
 export function CoverageModule(p: WaveModuleProps) {
@@ -518,7 +518,7 @@ export function CoverageModule(p: WaveModuleProps) {
             Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
           </Text>
           <Text style={dstyles.caption}>
-            {`Dashed lines = the −6 dB coverage edges at ${fmtHz(freq)}. Level at the listener: ${lvl.toFixed(1)} dB (re 1 m on-axis) · ${vsOn > -0.05 ? '0.0' : vsOn.toFixed(1)} dB vs on-axis at the same distance.`}
+            {`Dashed lines = the −6 dB coverage edges at ${fmtHz(freq)}. Level at the listener: ${lvl.toFixed(1)} dB (relative to 1 m on-axis) · ${vsOn > -0.05 ? '0.0' : vsOn.toFixed(1)} dB vs on-axis at the same distance.`}
           </Text>
         </PanelCard>
       }
@@ -878,7 +878,7 @@ export function DelayAlignModule(p: WaveModuleProps) {
               { k: 'CURRENT DELAY', v: `${delayMs.toFixed(2)} ms` },
               { k: 'MISMATCH', v: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms` },
               { k: 'SUM vs PERFECT ADDITION', v: sumText },
-              { k: 'LEVEL @ LISTENER (re 1 m)', v: `${lvl.toFixed(1)} dB` },
+              { k: 'LEVEL @ LISTENER (vs 1 m)', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
           <Text style={dstyles.caption}>
@@ -1042,7 +1042,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
                   <LabChip label="CARDIOID" selected={isCardioid} onPress={() => setPreset(true)} onLongPress={() => p.help('cardioid_sub')} />
                   <LabChip label="WRONG WAY" selected={isWrongWay} onPress={() => setPreset(false)} onLongPress={() => p.help('cardioid_sub')} />
                 </View>
-                <Badge text="CARDIOID = REAR DELAYED BY SPACING/c AND POLARITY-INVERTED → BROADBAND REAR CANCEL · WRONG WAY = SAME DELAY, POLARITY NORMAL → THE NULL FLIPS TOWARD THE AUDIENCE (DEEPEST NEAR c/4d ≈ 71 Hz)" />
+                <Badge text="CARDIOID = REAR DELAYED BY SPACING ÷ SOUND SPEED (c) AND POLARITY-INVERTED → BROADBAND REAR CANCEL · WRONG WAY = SAME DELAY, POLARITY NORMAL → THE NULL FLIPS TOWARD THE AUDIENCE (DEEPEST NEAR c/4d ≈ 71 Hz, d = SPACING)" />
                 <View style={dstyles.chipRow}>
                   <LabChip
                     label="REAR POLARITY Ø INVERT"
@@ -1279,13 +1279,13 @@ export function BeamSteerModule(p: WaveModuleProps) {
               { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
               { k: 'GRATING LOBE', v: grating ? 'IN THE FIELD' : 'NONE' },
               { k: 'LEVEL vs UNSTEERED', v: vsStraightText },
-              { k: 'LEVEL @ LISTENER (re 1 m)', v: `${lvl.toFixed(1)} dB` },
+              { k: 'LEVEL @ LISTENER (vs 1 m)', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
-          <Badge text="Δt = d·sin θ / c PER BOX — A LINEAR DELAY GRADIENT TILTS THE WAVEFRONT; THE CABINETS NEVER MOVE" />
+          <Badge text="Δt = d·sin θ / c PER BOX (d = BOX SPACING, θ = STEER ANGLE, c = SPEED OF SOUND) — A LINEAR DELAY GRADIENT TILTS THE WAVEFRONT; THE CABINETS NEVER MOVE" />
           {Math.abs(steer) > 40 ? (
             <Text style={dstyles.caption}>
-              OVER-STEERED (|θ| &gt; ~40°): the delay gradient outruns the array’s geometry — at higher frequencies grating lobes appear in the HEAT map, spraying energy off-beam.
+              OVER-STEERED (past ~40° either way): the delay gradient outruns the array’s geometry — at higher frequencies grating lobes appear in the HEAT map, spraying energy off-beam.
             </Text>
           ) : null}
         </PanelCard>
@@ -1546,11 +1546,11 @@ export function EchoModule(p: WaveModuleProps) {
               { k: '1ST REFLECTION', v: firstRefl ? `${(firstRefl.t * 1000).toFixed(1)} ms` : '—' },
               { k: 'GAP TO 1ST', v: `${gapMs.toFixed(1)} ms` },
               { k: '1ST REFL VERDICT', v: gapMs >= ECHO_FUSE_MS ? 'DISCRETE ECHO' : 'FUSES (HAAS)' },
-              { k: '1ST REFL LEVEL', v: firstRefl && direct ? `${(firstRefl.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
+              { k: '1ST REFL LEVEL', v: firstRefl && direct ? `${(firstRefl.levelDb - direct.levelDb).toFixed(1)} dB vs direct` : '—' },
               { k: 'FAR-WALL ECHO GAP', v: far ? `${farGapMs.toFixed(1)} ms` : '—' },
-              { k: 'FAR-WALL ECHO LEVEL', v: far && direct ? `${(far.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
+              { k: 'FAR-WALL ECHO LEVEL', v: far && direct ? `${(far.levelDb - direct.levelDb).toFixed(1)} dB vs direct` : '—' },
               { k: 'LOUDEST LATE ARRIVAL', v: echo ? `${echoGapMs.toFixed(1)} ms · ${describe(echo)}` : 'none past 50 ms' },
-              { k: 'ITS LEVEL', v: echo && direct ? `${(echo.levelDb - direct.levelDb).toFixed(1)} dB re direct` : '—' },
+              { k: 'ITS LEVEL', v: echo && direct ? `${(echo.levelDb - direct.levelDb).toFixed(1)} dB vs direct` : '—' },
               { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
@@ -1767,7 +1767,7 @@ const BUILDER_MAX_SOURCES = 4;
  *  Diagnosis — symptom → mechanism — is the skill the whole lab builds. */
 const BUILDER_CAPSTONE: CheckSpec[] = [
   {
-    question: 'Capstone 1 of 3 — the front rows sound fine, but one seat halfway back booms at 63 Hz only. Which mechanism?',
+    question: 'Capstone 1 — the front rows sound fine, but one seat halfway back booms at 63 Hz only. Which mechanism?',
     options: [
       'Comb filtering — a reflection is interfering',
       'A room mode — that seat sits on an antinode of a standing wave',
@@ -1780,7 +1780,7 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
     wrongHint: 'Turn on the HEAT layer at 63 Hz and drag the listener down the room — watch the bright and dark bands march past.',
   },
   {
-    question: 'Capstone 2 of 3 — a vocal sounds hollow and phasey at ONE mic position near a wall, and fine a step away. Which mechanism?',
+    question: 'Capstone 2 — a vocal sounds hollow and phasey at ONE mic position near a wall, and fine a step away. Which mechanism?',
     options: [
       'Comb filtering — the wall reflection interferes with the direct sound',
       'A room mode',
@@ -1793,7 +1793,7 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
     wrongHint: 'In Module 7 the notch spacing followed 1/delay. What happens to the delay when you step away from the wall?',
   },
   {
-    question: 'Capstone 3 of 3 — the speaker is aimed at the front rows. The back half of the audience hears the highs fall off, but the lows carry fine. Which mechanism?',
+    question: 'Capstone 3 — the speaker is aimed at the front rows. The back half of the audience hears the highs fall off, but the lows carry fine. Which mechanism?',
     options: [
       'Standing waves eating the highs',
       'Comb filtering from the ceiling',
@@ -2125,7 +2125,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             material is treated as the whole partition: heavy concrete stops almost everything, glass and drywall let
             the bass out, curtains and foam barely stop anything. Sweep the frequency down and watch more escape.
           </Text>
-          <Badge text="WHAT GETS THROUGH USES A TEACHING MASS-LAW MODEL (TL ≈ 20·log10(m·f) − 47 dB) WITH EXAGGERATED FADING. REAL ISOLATION DEPENDS ON CONSTRUCTION, GAPS AND FLANKING — MEASURE IT WITH A CALIBRATED METER." />
+          <Badge text="WHAT GETS THROUGH USES A TEACHING MASS-LAW MODEL (TRANSMISSION LOSS TL ≈ 20·log10(m·f) − 47 dB, m = WALL MASS PER m²) WITH EXAGGERATED FADING. REAL ISOLATION DEPENDS ON CONSTRUCTION, GAPS AND FLANKING — MEASURE IT WITH A CALIBRATED METER." />
           <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
           <Text style={dstyles.body}>
             • Build a cardioid: two SUBs 1.2 m apart (SRC key), rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
@@ -2134,7 +2134,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the level readout ripple.
           </Text>
           <Text style={dstyles.body}>
-            • Meet your room modes: shrink the room to ~4 × 3 m (ROOM key), view 40–120 Hz on the lane, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
+            • Meet your room modes: shrink the room to ~4 × 3 m (ROOM key), view 40–120 Hz with the FREQ fader, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
           </Text>
         </PanelCard>
       }

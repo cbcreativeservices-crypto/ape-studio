@@ -677,7 +677,7 @@ export function CalcWorkflowRunScreen() {
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{workflow.name.toUpperCase()}</Text>
           <Text style={styles.subtitle}>
-            {idx < n ? `Step ${idx + 1} of ${n} · ${cur?.resolved?.fn.name ?? ''}` : 'Results'}
+            {idx < n ? `Step ${idx + 1} · ${cur?.resolved?.fn.name ?? ''}` : 'Results'}
           </Text>
         </View>
         <AccuracyNote compact variant="calc" />

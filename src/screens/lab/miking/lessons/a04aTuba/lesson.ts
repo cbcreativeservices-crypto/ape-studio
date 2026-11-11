@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one tuba mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['tu.prac.order', 'tu.prac.gain', 'tu.prac.setup1', 'tu.prac.setup2', 'tu.prac.3', 'tu.mix.1', 'tu.mix.2', 'tu.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real tuba.' },
-    takeaway: 'The bell found first, safe clearance from the sway, the hands and the slides, the lowest note kept, headroom, pattern reasoning and an accurate account of polarity versus delay pass. A brand or the brightest spot do not — and more than one setup can pass.',
+    takeaway: 'What passes: the bell found first, safe clearance from the sway, the hands and the slides, the lowest note kept, headroom, pattern reasoning and an accurate account of polarity versus delay. A brand or the brightest spot does not — and more than one setup can pass.',
   },
 };
 
@@ -357,7 +357,7 @@ const symptoms: Symptom[] = [
   {
     id: 'tu.sym.hit',
     observation: 'The bell hits the mic or the boom',
-    firstChecks: 'The normal tilt, the player standing up, or a mute path was missed: stop, and let the player steady the horn while the stand is moved.',
+    firstChecks: 'The normal tilt, the player standing up, or the room to put a mute in the bell was missed: stop, and let the player steady the horn while the stand is moved.',
     options: ['Stop, and move the stand while the player steadies the horn', 'Ask the player to keep the tuba still for the show', 'Tape the boom to the bell so the two move together'],
     correct: 'Stop, and move the stand while the player steadies the horn',
     explain: 'The bell sways and tilts with playing. Stop, let the player hold the tuba safely, move the stand, and recheck the whole movement.',
@@ -575,7 +575,7 @@ export const A04A_LESSON: Lesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges; a good room carries the tuba’s size — and its low notes can be uneven where the room’s modes sit.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: monitors feed the players, the PA (with its subwoofers) faces the audience, and the band reaches every open mic. A loud stage pushes toward a close, aimed mic — and a check of the lowest octaves with the player silent.',
-    studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A farther mic can carry the tuba’s size; in a group, a main pair may carry it already.',
+    studio: 'STUDIO: no wedges, a room that may sound good, and time to try again whenever the player stops. A farther mic can carry the tuba’s size; in a group, a main pair may carry it already.',
   },
   diagnostic,
   practice: {
@@ -585,7 +585,7 @@ export const A04A_LESSON: Lesson = {
       { id: 'bell', label: 'Where the bell points', kind: 'choice', choices: ['up', 'front', 'back', 'sousaphone'] },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['small dynamic, cardioid', 'small condenser', 'ribbon', 'large condenser', 'other'] },
       { id: 'zone', label: 'Starting position you tried', kind: 'text' },
-      { id: 'distance', label: 'Distance, from the bell (or which part)', kind: 'text' },
+      { id: 'distance', label: 'Distance, from the bell (or name the part)', kind: 'text' },
       { id: 'notes', label: 'What you heard, the lowest note included (tendencies, in words)', kind: 'text' },
     ],
   },

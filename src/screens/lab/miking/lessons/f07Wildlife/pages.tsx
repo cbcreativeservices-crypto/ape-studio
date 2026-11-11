@@ -64,7 +64,7 @@ function F07Sound({ lesson, answers, onAnswered }: PageProps) {
     main: () => BIRD_P,
     others: [BROOK],
     Background: EdgeBg,
-    a11y: (x) => `Plan of the woodland edge. The observation point ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the bird from where it started, outside the setback ring.`,
+    a11y: (x) => `Plan of the woodland edge. The observation point has moved ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the bird from where it started, outside the setback ring.`,
     prediction: lesson.predictions.sound,
   });
   const steps: MikingStep[] = [
@@ -100,7 +100,7 @@ function F07Microphone({ lesson, answers, onAnswered, onInteractive, interactive
   const dish = useDishStep({
     words: {
       title: 'The dish and the wavelength',
-      badge: 'A dish cut through its axis, drawn to its own equation · wavefronts at the true wavelength · a simplified picture',
+      badge: 'A dish cut through its axis, drawn to its true shape · wavefronts at the true wavelength · a simplified picture',
       looking: 'A parabolic dish, its capsule at the focus',
       prompt: 'Move PITCH below and above the dish’s line, and change DISH.',
       after: 'Where the wavelength is shorter than the dish, the bowl gathers the sound to the focus; where it is longer, the dish gives little help and the capsule hears the sound directly. A bigger dish lowers that line — it belongs to each dish.',
@@ -111,7 +111,7 @@ function F07Microphone({ lesson, answers, onAnswered, onInteractive, interactive
   const aim = useDishAimStep({
     words: {
       title: 'Aiming the dish',
-      badge: 'The beam per pitch band, drawn narrower as the pitch rises · not to scale · an illustrative picture, never a number',
+      badge: 'The beam per pitch band, drawn narrower as the pitch rises · not to scale · an illustration, not a measured width',
       looking: 'A 57 cm dish aimed at one bird',
       prompt: 'Bring AIM onto the bird, then swing it off. Which band goes first?',
       after: 'The high band is narrowest: a small aim error loses it first. The low band gets little help whatever the aim. Sweep slowly on headphones to find the best aim, and hold it through a phrase.',
@@ -123,7 +123,7 @@ function F07Microphone({ lesson, answers, onAnswered, onInteractive, interactive
     aim,
     readStep('systems', 'What each one can and cannot do', [
       { title: 'A SHOTGUN', text: 'Its axis on the target, in a windscreen and suspension: compact and easier to follow a moving bird or group. It reduces some off-axis sound, especially in the upper pitches — it does not amplify the target or remove what lies on its axis, and off its axis the tone changes.' },
-      { title: 'A PARABOLIC DISH', text: 'The capsule at the focus, facing the dish, as its maker specifies — never moved to another product’s focus. It concentrates the mid and high pitches of a localized call at a fixed direction; it is harder to follow fast movement or several callers. That gain is acoustic concentration at the focus, not electrical gain.' },
+      { title: 'A PARABOLIC DISH', text: 'The capsule at the focus, facing the dish, as its maker specifies — never set at a different dish’s focus. It concentrates the mid and high pitches of a localized call at a fixed direction; it is harder to follow fast movement or several callers. That gain is acoustic concentration at the focus, not electrical gain.' },
       { title: 'AN OMNI OR A CARDIOID', text: 'When the target and its surroundings both matter, or a group spans more than a narrow beam: less isolation, a broader context, steadier coverage of moving animals.' },
       { title: 'A FIXED AUTONOMOUS RECORDER', text: 'Left in place — with permission, site approval and a plan — it documents activity over time rather than chasing one target. What it detects depends on its mic, the weather and the background, not only on its hours.' },
     ]),
@@ -144,7 +144,7 @@ function F07Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       badge: 'The layers drawn as real objects · the curls at the capsule are a cue, not a level',
       looking: 'A shotgun and its wind protection',
       prompt: 'Add the layers with COVER at the forest, then on open grassland.',
-      after: 'Foam can be enough in a sheltered forest; open grassland needs fur, a basket and its suspension. A dish is a large surface in the wind too — and a low-cut filter can take a real low call with the rumble: note its state.',
+      after: 'Foam can be enough in a sheltered forest; open grassland needs fur, a basket and its suspension. A dish is a large surface in the wind too — and a low-cut filter can cut a real low call along with the rumble: note its state.',
     },
     onTried: done,
     prediction: lesson.predictions.context,
@@ -176,7 +176,7 @@ function F07TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
   const flock = usePathStep({
     words: {
       title: 'A moving flock',
-      badge: `Straight flight line, free field, a flock in flight about ${FLOCK_SPEED_MS} m/s · the shotgun drawn as its supercardioid base · a simplified picture`,
+      badge: `Straight flight line, free field, a flock in flight about ${FLOCK_SPEED_MS} m/s · the shotgun’s pattern drawn as a supercardioid · a simplified picture`,
       looking: 'Open grassland, the flock crossing',
       prompt: 'Drag SOURCE to move the flock across the field. Compare the FIXED shotgun with the FOLLOWED one and the OMNI.',
       after: 'Held on one spot, the shotgun loses the flock as it leaves the axis; followed smoothly, it keeps it; the omni gives the whole flight with the field around it. Mark where the flock crosses the edge of the useful angle.',

@@ -76,7 +76,7 @@ const B11Setting = makeBroadcastSetting({
       chain: true,
       words: {
         looking: 'A signal-flow drawing · the coach’s mic, the official’s announcement mic · the officials’ private circuit, closed, below',
-        prompt: 'TRACE each source. Switch the OFFICIAL MIC off, to the PA, to the PA and the program — and ask the tool to put the PRIVATE circuit on air.',
+        prompt: 'TRACE each source. Switch the OFFICIAL MIC off, to the PA, to the PA and the program — then set PRIVATE to Put on air.',
         done: 'The coach’s mic only to its approved destination; the official’s mic opened on purpose to the PA and muted again; the officials’ private circuit on its own route, never on air: a clean plan.',
       },
       points: [

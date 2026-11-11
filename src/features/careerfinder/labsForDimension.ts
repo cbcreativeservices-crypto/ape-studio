@@ -26,6 +26,6 @@ export const LAB_FOR_DIMENSION: Record<DimensionCode, LabLink> = {
   HC: { route: 'EarTrainingLab', title: 'Ear Training Lab', why: 'train the listening that hearing work depends on' },
   TE: { route: 'FoundationsCourse', title: 'Foundations of Sound', why: 'the course you would teach from' },
   BO: { route: 'CalcLab', title: 'Audio Calculators Lab', why: 'the numbers behind a quote or a spec' },
-  PC: { route: 'TubeReference', title: 'Vacuum Tube Reference', why: 'a curated collection, the way an archive is' },
+  PC: { route: 'TubeReference', title: 'Vacuum Tube Reference', why: 'a curated collection, organized the way an archive is' },
   GS: { route: 'GainLabHome', title: 'Gain Staging Lab', why: 'keep a signal inside the rules at every stage' },
 };

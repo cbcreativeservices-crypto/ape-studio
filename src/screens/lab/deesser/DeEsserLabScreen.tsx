@@ -271,7 +271,7 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it does nothing (in this hard-knee model).</Lead>
-      <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the band where only orange labels sit above the line.</Prompt>
+      <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the settings in between where only orange labels sit above the line.</Prompt>
       {thr}
       <ExpandableFigure
         aspect={ASPECT.detector}

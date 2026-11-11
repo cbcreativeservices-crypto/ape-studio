@@ -44,7 +44,7 @@ export const SS_HUB_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'A live sound system makes sense in five layers: what each part does, how the parts connect, how the console routes signal, how the system is run on show day, and how faults are traced.',
-    'All five modes follow the same signal path, from source to listener, so what you learn in one carries straight into the next.',
+    'All five layers follow the same signal path, from source to listener, so what you learn in one carries straight into the next.',
   ],
   tryThis: [
     'Start with LEARN: its first page is the whole system on one map, and every later mode refers back to it.',
@@ -74,8 +74,8 @@ export const SS_END_GUIDE: ScreenGuide = {
     'In LEARN, the check counts only when you’ve answered every question correctly.',
   ],
   teaches: [
-    'A live system works only when every link from source to listener is in place. Each page still listed is a link you haven’t explored yet.',
-    'Each mode looks at that same path from a different side, so a page you revisit often makes more sense once you’ve seen the others.',
+    'A live system works only when every link from source to listener is in place: no link can work until the ones before it pass the signal on.',
+    'The same signal path looks different from each side — parts, assembly, routing, operation, faults — and each view makes the others clearer.',
   ],
   tryThis: [
     'Jump to the first page still listed and read its LAB NOTES before you touch a control.',
@@ -307,7 +307,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'On each arrangement, compare the glow in front of the subs with the glow behind them, and across the middle of the floor.',
     ],
     changes: [
-      'Two subs a room-width apart add down the middle and cancel at some frequencies off to the sides. Low notes are meters long, so the gap between subs matters.',
+      'Two subs a room-width apart add down the middle and cancel at some frequencies off to the sides. Low notes have wavelengths meters long, so the gap between subs matters.',
       'Cardioid and end-fire arrays use delay. Cardioid also turns one box backward and flips its polarity. Either way, the glow stays in front of the subs and stops behind them.',
     ],
     teaches: [
@@ -357,7 +357,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'Three sources feed two consoles: front of house (FOH), where the audience mix is made, and the monitor console at side stage, which makes the performers’ mixes.',
       'SPLIT shows how the signal is shared. MON PREAMP is the monitor engineer’s gain. FOH HEARS tells you what that gain change does at front of house.',
-      'CHECKS follows the two questions in the notes.',
+      'CHECKS tracks your answers to the notes’ two questions.',
     ],
     control: [
       'MON GAIN: you are the monitor engineer, raising a preamp from +0 to +12 dB.',
@@ -449,8 +449,8 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'LISTENER: stand 2 m, 10 m or 30 m from the cabinet.',
     ],
     changes: [
-      'Below the band, MATCH reads UNDER: pushed to the cabinet’s level, the amplifier clips, and clipping can burn out tweeters.',
-      'Well above the band, OVER is safe only with the limiter set.',
+      'Below the band, MATCH reads UNDER: pushed to drive the cabinet to its rating, the amplifier clips, and clipping can burn out tweeters.',
+      'Well above the band, MATCH reads OVER: safe only with a limiter guarding the cabinet.',
       'Every doubling of power adds 3 dB; every doubling of distance costs 6 dB. That is why coverage is solved with placement before watts.',
     ],
     teaches: [
@@ -465,11 +465,11 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'The deployment sequence': {
     intro: {
       learning: 'Why a professional setup follows a fixed order, and why checking the routing before the loudspeakers get power is the step that protects them.',
-      start: 'Open step 9, verify routing before powering loudspeakers, and read why it sits there. Then open step 10 and see what it waits for.',
+      start: 'Open step 9, “Verify routing before powering loudspeakers”, and read why it sits there. Then open step 10 and see what it waits for.',
     },
     seeing: [
       'Sixteen setup steps in order, from assessing the venue to shutting down: the whole job of putting in a system.',
-      'Step 9, verify routing before powering loudspeakers, is marked. It is the step that protects the loudspeakers.',
+      'Step 9, “Verify routing before powering loudspeakers”, is marked. It is the step that protects the loudspeakers.',
     ],
     control: [
       'Tap a step to open it and read why it comes where it does.',
@@ -505,7 +505,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'At the start the preamp is starved, so every later stage adds gain to make up, and lifts its own noise floor with the signal: VERDICT NOISY.',
       'Gain placed early lifts the signal above every later floor. A stage pushed past its clip line clips, and every stage after it inherits the distortion.',
-      'Clean but under 12 dB of headroom anywhere reads TIGHT, HEADROOM orange. At 12 dB it turns green: VERDICT OK.',
+      'Clean, but any stage under 12 dB of headroom: VERDICT TIGHT, HEADROOM orange. At 12 dB it turns green: VERDICT OK.',
     ],
     teaches: [
       'The preamp does the work: gain added first lifts the signal clear of every later stage’s noise.',
@@ -513,7 +513,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Distortion made early can’t be undone later: every stage after a clip carries it.',
     ],
     tryThis: [
-      'At the start VERDICT reads NOISY. Raise PREAMP to +40 dB: with the later stages still at +10, it reads CLIPPING.',
+      'At the start VERDICT reads NOISY. Raise PREAMP to +40 dB: with the later stages still at +10 dB, it reads CLIPPING.',
       'Now return FADER, MAIN and PROC IN to 0: VERDICT TIGHT, HEADROOM 10 dB.',
       'Lower PREAMP to +38 dB: VERDICT OK, HEADROOM 12 dB, AT SPEAKER −10 dBu, ABOVE NOISE 78 dB.',
     ],
@@ -534,7 +534,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'FLOWN: lift the main speakers overhead. FILLS: add front fills, small loudspeakers on the stage lip for the front rows.',
     ],
     changes: [
-      'Narrow coverage puts more level on its axis, so it reaches farther and overlaps less. Wide coverage fills a wide room and paints the side walls.',
+      'Narrow coverage puts more level on its axis, so it reaches farther and overlaps less. Wide coverage fills a wide room and also hits the side walls.',
       'Toeing in tightens the overlap into the middle. Flown main speakers fire over the front rows, so they go dark; front fills bring them back.',
     ],
     teaches: [
@@ -673,7 +673,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'Tap NEXT to open the understanding check.',
-      'Tap Lab home — what is left to return to the lab home and see which parts you haven’t done yet.',
+      'Tap “Lab home — what is left” to return to the lab home and see which parts you haven’t done yet.',
     ],
     changes: [
       'Nothing on this page moves; opening it is enough to mark it read.',
@@ -706,12 +706,12 @@ export const SS_CHECK_GUIDE: ScreenGuide = {
     'A wrong answer costs you nothing, and there is no score. Every explanation says why, so a wrong pick still teaches you something. Once every question is correct, the check is passed.',
   ],
   teaches: [
-    'This check covers every LEARN chapter: system types and outputs, routing, subs and monitors, wiring, amplifier loads and gain.',
-    'It also covers coverage, alignment, feedback control and the source-forward walk for finding faults.',
+    'System types, outputs, routing, subs, monitors, wiring, amplifier loads and gain are all links in one chain, from source to listener.',
+    'Coverage, alignment and feedback control shape how that chain sounds; the source-forward walk finds where it breaks.',
   ],
   tryThis: [
     'After a wrong answer, read the explanation before you choose again.',
-    'If a question stalls you, go back to its chapter with ‹ PREV, then return.',
+    'If a question stalls you, tap the page readout ▾ in the strip, pick its chapter from the list, then return.',
   ],
 };
 
@@ -827,7 +827,7 @@ export const SS_BUILD_GUIDES: Record<string, ScreenGuide> = {
       start: 'Place the playback, the console, the powered tops and the powered sub. Cable the sub from the console on its own link, then give it AUX 6 or MTX 1 · SUBS with OUTPUT.',
     },
     venue: 'a DJ night in a bar, playback only. A 2.1 system means two tops plus one sub.',
-    build: 'THE PARTS BIN holds playback, a wireless receiver, a console, powered tops and a powered sub. For THIS build the sub takes its own console output and the tops are fed direct.',
+    build: 'THE PARTS BIN holds playback, a wireless receiver, a console, powered tops and a powered sub. For this build the sub takes its own console output and the tops are fed straight from the console.',
     open: 'The sub requirement wants the sub on its own console output.',
     teaches: [
       'With the sub on its own console output, the bass level becomes a fader move at the console, separate from the tops.',
@@ -1038,7 +1038,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'An aux builds a new mix from channels, such as a wedge mix or an effect send. A subgroup sums channels into one audio path.',
-      'A matrix builds a further output from finished buses. A DCA carries no audio; it moves its members’ faders by remote.',
+      'A matrix builds a further output from finished buses. A DCA carries no audio; it moves its assigned channels’ faders by remote.',
       'Two questions sort them: does audio pass through the tool, and should it follow the house mix?',
     ],
     tryThis: [
@@ -1088,7 +1088,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'Ride BAND DCA from −60 to +10 dB. A DCA (digitally controlled amplifier) is a remote control for the faders assigned to it.',
-      'Open CONSOLE to see three drum channels and the bass. Tap GROUP to cycle a channel into DRUMS, which also takes it off L/R. Tap DCA to hang that channel on BAND.',
+      'Open CONSOLE to see three drum channels and the bass. Tap GROUP to cycle a channel into DRUMS, which also takes it off L/R. Tap DCA to assign that channel to BAND.',
     ],
     changes: [
       'A subgroup carries audio. The channels sum in it, and its fader turns that sum up or down on its way to the main mix.',
@@ -1101,12 +1101,12 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In CONSOLE route kick, snare and overheads into DRUMS, then check DRUMS GRP reads → L/R.',
-      'Hang the kick on BAND and ride BAND DCA to −10 dB: KICK → MAIN drops, KICK → WEDGE does not. The wedge copy leaves before the fader.',
+      'Assign the kick to BAND and ride BAND DCA to −10 dB: KICK → MAIN drops, KICK → WEDGE does not. The wedge copy leaves before the fader.',
     ],
   },
   'Mute groups, solo and direct outs': {
     intro: {
-      learning: 'How a mute group silences a whole set of channels in one press, and how PFL and AFL solo let you hear one channel privately.',
+      learning: 'How a mute group silences a whole set of channels in one press, and how PFL and AFL solo (pre-fade and after-fade listen) let you hear one channel privately.',
       start: 'Press BAND MUTE and watch MAIN HEARS and STILL LIVE change. Then press ALL MICS as well and see which channel is still live.',
     },
     seeing: [
@@ -1215,7 +1215,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
       'Routing is checked with the amplifiers still off, so a wrong patch can’t reach the room.',
     ],
     tryThis: [
-      'Tap Verify routing — amps OFF, then Amps and powered boxes — LAST: ORDER reads WRONG. Read why, RESET, and go again.',
+      'Tap “Verify routing — amps OFF”, then “Amps and powered boxes — LAST”: ORDER reads WRONG. Read why, RESET, and go again.',
       'Before each tap, ask which device would be listening if this one thumped.',
     ],
   },
@@ -1261,11 +1261,11 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'The lane starts on PREAMP. Tap its key (WHICH STAGE) to pick FADER, MAIN, PROC IN, PROC OUT or AMP.',
-      'Double-tap the lane to set that stage to its unity mark. AMP’s mark is −18.',
+      'Double-tap the lane to set that stage to its unity mark. AMP’s mark is −18 dB.',
     ],
     changes: [
       'Turning a later stage down only makes the clipped signal quieter. The distortion happened at the preamp, and only the preamp can prevent it.',
-      'In this lab the amplifier’s input attenuator at −18 makes it the last stage to clip; real systems set it from the amplifier and processor specs.',
+      'In this lab the amplifier’s input attenuator at −18 dB makes it the last stage to clip; real systems set it from the amplifier and processor specs.',
     ],
     teaches: [
       'Clipping is fixed where it starts: every stage after it inherits the distortion.',
@@ -1274,7 +1274,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Bring PREAMP to +40 dB and FADER and MAIN to 0, leaving AMP at 0: VERDICT still reads CLIPPING — now at the amplifier.',
-      'Set PREAMP to +35 dB and AMP to −18: VERDICT OK, HEADROOM 15 dB, AT SPEAKER −13 dBu.',
+      'Set PREAMP to +35 dB and AMP to −18 dB: VERDICT OK, HEADROOM 15 dB, AT SPEAKER −13 dBu.',
     ],
   },
   'Ring-out and soundcheck': {
@@ -1329,7 +1329,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
       'Writing down the scene, preset, patch lists, loudspeaker positions and delay times lets you, or the next engineer, rebuild the same system and the same sound.',
     ],
     tryThis: [
-      'Start with Console — save first: ORDER reads WRONG. Read why, RESET and begin with Mute the outputs.',
+      'Start with “Console — save first”: ORDER reads WRONG. Read why, RESET and begin with “Mute the outputs”.',
       'Open DOCUMENT and check all five before you leave.',
     ],
   },

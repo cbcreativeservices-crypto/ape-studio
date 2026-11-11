@@ -47,7 +47,7 @@ export type AmplitudeScreenId = 'lab' | 'primer';
 const CHANGES: string[] = [
   'Each display colors its own scale: warmer near its top.',
   'LEVEL METER: PEAK (−3) tops RMS (−14). PEAK catches the biggest swings; RMS averages over time, so a short burst lifts it less.',
-  'SPL METER reads sound in air (78 dB SPL); LEVEL METER reads dB below digital full scale: 0 or less.',
+  'SPL METER: sound in air (78 dB SPL). LEVEL METER: dB below digital full scale (the max), 0 or less.',
   'SPECTRUM (RTA): the low tone is the tallest, warmest bar; its harmonic, a weaker tone at 3× its frequency, is shorter, cooler.',
 ];
 

@@ -121,7 +121,7 @@ describe('r2_soundsystems', () => {
     }
   });
   it('SS-R2-09: brief and LEARN agree on the sub’s cabling', () => {
-    assert.match(cap('two-one').brief, /two cables \(L and R\) into the sub where it has two inputs, or one cable, a mono feed/);
+    assert.match(cap('two-one').brief, /A sub with two inputs takes two cables \(L and R\); one with a single input, like this lab’s, takes one cable, a mono feed\./);
   });
   it('SS-R2-10/11: the strip splits DCA level (fader) from DCA mute + mute group (mute); labels', () => {
     const d = src('screens/lab/soundsystems/art/diagrams.tsx');

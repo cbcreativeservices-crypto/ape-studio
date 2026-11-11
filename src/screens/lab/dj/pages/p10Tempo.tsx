@@ -35,7 +35,7 @@ const TERMS = [
   { term: 'BPM', def: 'Beats per minute: the tempo. 122 BPM is about two beats a second.' },
   { term: 'Phrase', def: 'A run of bars that belongs together — here 8 bars of 4 beats (32 beats). The first beat of a bar is the “one”; new parts tend to arrive at the start of a phrase, so blends usually start there too.' },
   { term: 'Drift', def: 'When two tempos differ even slightly, the beats slide apart steadily. Fix drift with the TEMPO fader (here up to ±8 %; without key lock, faster also means higher in pitch).' },
-  { term: 'Offset', def: 'When the tempos match but the beats land at different moments — a steady flam. Fix it with a jog nudge (or a quick push of the tempo fader and straight back — leave it moved and you create drift).' },
+  { term: 'Offset', def: 'When the tempos match but the beats land at different moments — a steady flam (a doubled kick). Fix it with a jog nudge (or a quick push of the tempo fader and straight back — leave it moved and you create drift).' },
 ] as const;
 
 export const GOALS_TEMPO = ['Match the tempo (±0.1 BPM)', 'Line the beats up (≤ 1/16 beat)', 'Start B on a phrase', 'Fix the clash', 'Pass the check'] as const;

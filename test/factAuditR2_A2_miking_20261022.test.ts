@@ -37,7 +37,7 @@ const PINS: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F048289', file: L + 'f09LocationSpeech/lesson.ts', now: 'keep at least 3 m (10 ft) from power lines (more for higher voltages, or if unsure)', gone: 'keep at least 3 m (10 ft) from power lines, and stop' },
   { id: 'F050722', file: L + 'f13RoomAcoustics/lesson.ts', now: 'Keep the source level the same both times: only the panels may change.', gone: 'Never drive the source louder to force a result.' },
   { id: 'F074053', file: L + 'shared/speakers/LeslieDisplay.tsx', now: 'INSIDE VIEW · ONLY A TECHNICIAN OPENS IT', gone: 'NEVER OPEN THE CABINET' },
-  { id: 'F060486', file: L + 'i11aRhodes/lesson.ts', now: 'A speaker output goes only to a speaker, or to a load box made for it.', gone: 'A speaker output goes only to a speaker. ' },
+  { id: 'F060486', file: L + 'i11aRhodes/lesson.ts', now: 'A speaker output goes only to a speaker, or to a load box (a device made to take the amp’s full power safely).', gone: 'A speaker output goes only to a speaker. ' },
   { id: 'F062330', file: L + 'm02Snare/geometry.ts', now: 'The cylinder between the heads, wood or metal.', gone: 'The wooden cylinder between the heads.' },
   { id: 'F070380', file: L + 'shared/cymbals/cymbalItems.ts', now: 'a condenser needs power, usually phantom; a dynamic needs none', gone: 'a condenser needs phantom; a dynamic needs none' },
 ];

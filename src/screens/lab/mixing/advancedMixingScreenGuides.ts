@@ -76,12 +76,12 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'NEXT always lets you move on. Until the goal is met, this page simply stays on the what’s-left list.',
     ],
     teaches: [
-      'Beginning Mixing covered how a clear, balanced stereo mix is built. Here you see how a complex mix is managed, refined, fixed and delivered.',
+      'A clear, balanced stereo mix is the base. A complex mix also has to be managed, refined, fixed and delivered.',
       'The five dimensions stay the same — balance, frequency, pan and width, depth, movement — but a big session needs planning and routing to keep them in hand.',
       'A professional mix job runs in order: plan, route, process, check how it translates, then deliver.',
     ],
     tryThis: [
-      'Haven’t finished Beginning Mixing? Take the three checks. Each explanation is a one-line refresher of a basic this lab leans on.',
+      'Haven’t finished Beginning Mixing? Take the three checks. Each explanation is a one-line refresher of a basic idea this lab leans on.',
       'Unsure about the channel path or the six routing terms? Tap OPEN BEGINNING MIXING and revisit those pages first.',
     ],
   },
@@ -139,7 +139,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'This map is the same session you repair on the final page, so learning its routing now pays off later.',
     ],
     teaches: [
-      'A big session is organized, mapped and kept light enough to run before anyone mixes it.',
+      'A big session is organized, mapped and kept light enough for the computer to run before anyone mixes it.',
       'A routing map catches mistakes that tired ears miss late at night, such as a double route: one track reaching the mix bus by two paths.',
       'Insert order is a decision you can hear: the same processors in a different order give a different result.',
     ],
@@ -167,7 +167,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'ONE BUS COMP lights COMP on the DRUMS strip. PER-TRACK COMP puts a separate one on each drum.',
-      'PULL VCA −6 drops each channel 6 dB, and ghost caps show where each fader moved to. PULL SUBGROUP −6 drops the DRUMS fader instead.',
+      'PULL VCA −6 drops each channel 6 dB, and yellow ghost caps (dashed fader knobs) show where each fader moved to. PULL SUBGROUP −6 drops the DRUMS fader instead.',
       'The readout line tells you where the 6 dB acts, and what that does to the sends and to the compressor you picked.',
     ],
     teaches: [
@@ -229,8 +229,8 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'INSERT COMP crushes each drum (−30 dB threshold, 8:1, 1 ms attack, 90 ms release) and replaces the original signal.',
-      'PARALLEL (NY) blends the same crush −6 dB under the untouched kit.',
-      'Until the versions are measured (your first ▶, or on their own once ready), the line reads “Play a version to measure its peak, RMS and crest factor.” Then CREST (peak above RMS) shows how much punch is left.',
+      'PARALLEL (NY) blends the same crushed copy, at −6 dB, under the untouched kit.',
+      'Each version is measured on your first ▶, or on its own once ready. Until then, the line reads “Play a version to measure its peak, RMS and crest factor.” Then CREST (peak above RMS) shows how much punch is left.',
     ],
     teaches: [
       'Parallel processing keeps the untouched signal in charge, with a processed copy underneath.',
@@ -261,7 +261,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Answer the check below.',
     ],
     changes: [
-      'CROWDED shows one flat line, KEYS · GTR · LEAD — NO EQ, with keys and guitar 2 dB hot.',
+      'CROWDED shows one flat line, KEYS · GTR · LEAD — NO EQ, with the keys and guitar faders pushed up 2 dB.',
       'COMPLEMENTARY cuts KEYS −5 dB and GTR −4 dB at 2.6 kHz, and lifts LEAD +2 dB in the same pocket.',
       'At matched level, the lead comes forward without a fader move, because the space around it changed.',
     ],
@@ -300,8 +300,8 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The dip is what you’re listening for, which is why this pair isn’t matched.',
     ],
     teaches: [
-      'Dynamics can be keyed (triggered) from another signal: movement designed, not just controlled.',
-      'Compression can be split across more than one stage; Serial compression explains how that changes what you hear.',
+      'Dynamics can be keyed (triggered) from another signal, so you can design movement, not just control level.',
+      'Compression can be split across more than one stage: two gentle compressors in a row instead of one working hard.',
       'Multiband, expansion, transient shaping and de-essing each target one part of the sound: a band, the quiet parts, the attack, the S sounds.',
     ],
     tryThis: [
@@ -508,7 +508,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'MEASURE — BS.1770-STYLE ESTIMATES gives you a master trim, a MEASURE button and two delivery meters.',
-      'After you measure, the LOUDNESS tile shows LUFS (loudness units relative to full scale) at that trim. The TRUE PEAK tile shows dBTP (peak level, counting peaks between samples): clear of −1 or above −1.',
+      'After you measure, the LOUDNESS tile shows LUFS (loudness units relative to full scale) at that trim. The TRUE PEAK tile shows dBTP (peak level, counting peaks between samples) and whether it is clear of −1 or above −1.',
       'THE TRANSLATION CHECKS let you hear THE MIX against MONO.',
     ],
     control: [
@@ -520,7 +520,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'Loudness follows the trim one for one: a trim 3 dB lower reads 3 LU lower (1 LU = 1 dB), and true peak drops 3 dB too.',
       'TRUE PEAK turns green at −1 dBTP or lower, and red above it.',
-      'These readings are estimates measured on your device, following the BS.1770 method. Treat them as teaching numbers, not a certified meter reading.',
+      'These readings are estimates measured on your device, following the BS.1770 method (the international loudness standard). Treat them as teaching numbers, not a certified meter reading.',
     ],
     teaches: [
       'Translation asks whether a mix survives other systems, volumes and formats.',
@@ -580,7 +580,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'With a clean mix bus, the stems rebuild the mix: the residue falls far below −60 dB and reads NULLS ✓.',
-      'Add one nonlinear stage (its output isn’t a scaled copy of its input), a bus compressor (−18 dB, 4:1) on the full mix only, and the stems can’t rebuild it: BROKEN ✗.',
+      'Put a bus compressor (−18 dB, 4:1) on the full mix only, and the stems can’t rebuild it: BROKEN ✗. A compressor is nonlinear: its output isn’t a scaled copy of its input.',
       'The compressor reacted to the whole mix, something no separate stem ever heard.',
     ],
     teaches: [
@@ -674,7 +674,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Tap ▶ THE HANDOFF to hear the flawed mix, then answer THE HANDOFF — YOUR DIAGNOSIS.',
       'Each console channel has Ø (polarity flip), PAN, MUTE and a fader. Tap a channel’s name tape at its foot to solo it. HIGH-PASS THE KEYS (220 Hz) switches a filter on the keys.',
       'BACK TO THE FLAWED HANDOFF resets the console so you can start again.',
-      '▶ THE HANDOFF, ▶ YOUR REPAIR and ▶ REPAIR, MONO compare your work, matched in level. Tap 7 · Deliver yourself, on your honor, when you’re satisfied.',
+      '▶ THE HANDOFF, ▶ YOUR REPAIR and ▶ REPAIR, MONO compare your work, matched in level. When you’re satisfied, tap 7 · Deliver: you mark that step yourself, on your honor.',
     ],
     changes: [
       '1 · Diagnose is ✓ by the check. 2 · Rebuild the balance is ✓ with LEAD at −2 dB or higher, GTR at +1 dB or lower, and four channels changed.',

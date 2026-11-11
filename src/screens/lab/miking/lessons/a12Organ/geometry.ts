@@ -129,7 +129,7 @@ export const A12_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: MICS },
     start: pose(v3(4300, -3000, 300), GREAT),
     drawn: { side: { u0: 3000, u1: 6000, v0: -4200, v1: -1800 }, top: { u0: 3000, u1: 6000, v0: -1600, v1: 1600 } },
-    tendency: 'More of one division and less of the room, choir and PA — but a narrower view: it can omit a remote or antiphonal division, and hear the blower, the action or the shutters. Bring it up only under the main pair.',
+    tendency: 'More of one division and less of the room, choir and PA — but a narrower view: it can omit a remote or antiphonal division, and hear the blower, the action (the key mechanism) or the shutters. Bring it up only under the main pair.',
     checks: ['It alone, with the relevant stops', 'Blower, action and shutter noise', 'Under the main pair, in mono'],
   },
 ];
@@ -162,7 +162,7 @@ export const A12_MODEL: InstrumentModel = {
     side: { u0: -2800, u1: 16800, v0: -11000, v1: 400 },
     top: { u0: -2800, u1: 16800, v0: -7800, v1: 7800 },
   },
-  viewTags: { side: 'FROM THE SIDE · THE NAVE CUT ALONG', top: 'FROM ABOVE · THE NAVE' },
+  viewTags: { side: 'FROM THE SIDE · THE NAVE CUT LENGTHWISE', top: 'FROM ABOVE · THE NAVE' },
   aimAzLimit: 180,
   yFloor: { mm: 0, prov: ill('frame O: the nave’s floor is y = 0') },
   interior: { x0: 0, x1: 0, rIn: 0, c: v3(0, 0, 0) },

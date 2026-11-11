@@ -80,7 +80,7 @@ function PageAutomation({ ctx }: { ctx: PageCtx }) {
             { name: 'PERC', verseDb: -4, chorusDb: 0 },
           ]}
         />
-        <AbPlayer pb={pb} variants={variants} note="Level-matched overall — what you hear is CONTRAST, not loudness. Notice how +1 is barely a lift and +6 is an event; taste lives between. The lanes above are the AUTOMATED render’s rides, on top of each fader." />
+        <AbPlayer pb={pb} variants={variants} note="Level-matched overall — what you hear is CONTRAST, not loudness. Notice how +1 is barely a lift and +6 is an event; taste lives between. The lanes above are the AUTOMATED version’s rides, on top of each fader." />
       </Card>
       <UnderstandingCheck
         question="The chorus needs to feel bigger, but the whole mix is already as loud as it can be. The automation answer:"

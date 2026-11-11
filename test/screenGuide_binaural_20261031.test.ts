@@ -312,7 +312,7 @@ describe('2026-10-31 verified fix: the low-tone caption matches what the model p
     assert.ok(Math.abs(20 * Math.log10(10 ** (-8 / 20)) + 8) < 1e-9);
     assert.ok(shadowDb > -0.25 && shadowDb < -0.1, `shadow at 250 Hz ${shadowDb.toFixed(3)} dB`);
     // Screen caption and lesson COMMON MISTAKES say so honestly.
-    assert.match(S, /In real hearing, below ~1\.5 kHz the head casts almost no shadow, so timing \(ITD\) does most of the work, and it does it well\. This simplified model still applies its level drop \(to −8 dB at the side\) at every frequency, so here a low tone carries a level cue too\./);
+    assert.match(S, /In real hearing, below ~1\.5 kHz the head casts almost no shadow, so timing \(ITD\) does most of the work, and it does it well\. This lab’s simplified model still applies its level drop \(to −8 dB at the side\) at every frequency, so here a low tone carries a level cue too\./);
     assert.doesNotMatch(S, /so ITD does the work/);
     const lesson = read('src/features/lab/guidedLessons/content.ts');
     // 2026-11-08 Comp B rewrite: real hearing (COMMON MISTAKES) and this model's frequency-free level drop (FORMULA) are stated apart.

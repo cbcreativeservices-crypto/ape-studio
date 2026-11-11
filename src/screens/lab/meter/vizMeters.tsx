@@ -451,7 +451,7 @@ export function WaveformView(p: {
   }, [p.phase, w, h, ts, gut, p.plain]);
 
   const st = S.stats;
-  const statLine = `PK ${st.pkDb.toFixed(1)}  RMS ${st.rmsDb.toFixed(1)}  CF ${st.crest.toFixed(1)} dB`;
+  const statLine = `PK ${st.pkDb.toFixed(1)}  RMS ${st.rmsDb.toFixed(1)}  CREST ${st.crest.toFixed(1)} dB`;
   // Overlay labels grow in FULL SCREEN (StageTextScale); the corner offsets
   // that hold them grow with them so the stat and DC lines never overlap.
   return (

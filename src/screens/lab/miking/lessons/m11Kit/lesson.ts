@@ -17,7 +17,7 @@ const pages: LessonPages = {
     title: 'Meet the whole kit',
     goal: 'Get to know the kit as a set of sources — every drum and cymbal, and the player’s space — before planning any channel.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A complete setup is a coordinated view of kick, snare, toms and cymbals, with any room sound chosen deliberately. The number of mics follows the music, the room and the system.',
+    takeaway: 'A complete setup is a planned set of mics for the kick, snare, toms and cymbals, with any room sound chosen on purpose. The number of mics follows the music, the room and the system.',
   },
   sound: {
     title: 'How the kit reaches every mic',
@@ -40,13 +40,13 @@ const pages: LessonPages = {
   placement: {
     title: 'Channel plans',
     goal: 'Build a plan in stages — from one whole-kit mic to an extensive setup — and see what each channel costs.',
-    credit: { scenarios: ['kt.place.1', 'kt.place.2', 'kt.place.3', 'kt.rec.2'], interactive: 'twoPlans', note: 'Build a plan of four mics or fewer and one of eight or more, and answer the four checks. The worked plan earns nothing on its own.' },
+    credit: { scenarios: ['kt.place.1', 'kt.place.2', 'kt.place.3', 'kt.rec.2'], interactive: 'twoPlans', note: 'Build a plan of four mics or fewer and one of eight or more, and answer the four checks. The worked plan alone earns no credit.' },
     takeaway: 'Establish the picture first, then add each close mic for a purpose. Count channels, stands, inputs and bleed — an optional channel is not automatically an improvement, and the counts never grade a plan.',
   },
   context: {
     title: 'Studio or live',
     goal: 'Route each channel to the PA, the monitors, the recording and the broadcast — and know why many live plans use fewer open mics.',
-    credit: { scenarios: ['kt.ctx.1', 'kt.ctx.2', 'kt.ctx.studio', 'kt.rec.3'], interactive: 'routing', note: 'LIVE: route the room pair to the recording only, with kick and snare in the PA. STUDIO: answer the decision card. Then the three checks.' },
+    credit: { scenarios: ['kt.ctx.1', 'kt.ctx.2', 'kt.ctx.studio', 'kt.rec.3'], interactive: 'routing', note: 'LIVE: route the room pair to the recording and broadcast only, with kick and snare in the PA. STUDIO: answer the decision card. Then the three checks.' },
     takeaway: 'A studio may keep every channel on its own track; live, open mics hear the PA and the monitors, so use the channels the audience needs and usually keep room feeds out of the PA and wedges.',
   },
   twoMic: {
@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Build a kit setup in the right order, choose and justify a plan for two briefs, and say when a channel earns its place.',
     credit: { scenarios: ['kt.prac.order', 'kt.prac.gain', 'kt.prac.setup1', 'kt.prac.setup2', 'kt.prac.3', 'kt.mix.1', 'kt.mix.2', 'kt.mix.3'], note: 'Put the build in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'A coherent picture, each mic added for a stated need, safe clearance and gain, a mono check and a clear studio or live plan pass — a two-mic jazz plan and a fully spotted rock plan can both be right.',
+    takeaway: 'A plan passes with a coherent picture, each mic added for a stated need, safe clearance and gain, a mono check and a clear studio or live plan — a two-mic jazz plan and a fully spotted rock plan can both be right.',
   },
 };
 
@@ -478,7 +478,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Stop; secure and reposition; reroute; repeat the full-movement check.',
     options: ['Stop the drummer; move it and reroute; check the movement again', 'Leave it — the drummer will work around the stand during the set', 'Tape the cable to the pedal so that it cannot shift about'],
     correct: 'Stop the drummer; move it and reroute; check the movement again',
-    explain: 'Clearance comes first: a safe resting position is not the whole movement. Stop, fix it, and have the drummer show their full movement.',
+    explain: 'Clearance comes first: a stand that clears the player at rest may not clear their whole movement. Stop, fix it, and have the drummer show their full movement.',
     why: {
       'Leave it — the drummer will work around the stand during the set': 'A player should not have to work around hardware.',
       'Tape the cable to the pedal so that it cannot shift about': 'The pedal moves all the time; keep cables away from it.',
@@ -555,7 +555,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What is a complete drum-kit setup?',
     options: ['A coordinated set of channels for the kit, room chosen deliberately', 'One mic on each drum and each cymbal, whatever the music', 'Whatever channels a stage box has unused on the night of the show'],
     correct: 'A coordinated set of channels for the kit, room chosen deliberately',
-    explain: 'A coordinated view of kick, snare, toms and cymbals, with any room sound chosen on purpose — the count follows the music, the room and the system.',
+    explain: 'A planned set of mics for the kick, snare, toms and cymbals, with any room sound chosen on purpose — the count follows the music, the room and the system.',
     why: {
       'One mic on each drum and each cymbal, whatever the music': 'A complete setup can be one mic or many: the music decides.',
       'Whatever channels a stage box has unused on the night of the show': 'Unused inputs are not a plan; the music and the system are.',
@@ -640,7 +640,7 @@ export const M11_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A complete setup is a coordinated view of the kit — kick, snare, toms and cymbals — with any room sound chosen deliberately. It can be one mic or many.', src: 'M11-LESSON' },
+    { title: 'WHAT IT IS', text: 'A complete setup is a planned set of mics for the kit — kick, snare, toms and cymbals — with any room sound chosen on purpose. It can be one mic or many.', src: 'M11-LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Every drum recording and every reinforced kit has one, written down or not: from a single mic in a jazz club to a fully spotted rock kit with a room pair for the recording.', src: 'DPA-KIT' },
     { title: 'ITS JOB', text: 'To give the music the control it needs — and no more. A whole-kit picture first; then each close mic for a stated purpose; room channels as options. Studio and live plans can differ for the same kit.', src: 'S-REC1' },
     { title: 'THE KIT HERE', text: 'A typical 5-piece: a 22 in kick, a 14 in snare, 10 and 12 in rack toms, a 16 in floor tom, 14 in hi-hats, 16 and 18 in crashes and a 20 in ride — in a right-handed layout. A plan here can run from 1 to 12 channels.', src: 'ZIL-K' },
@@ -661,7 +661,7 @@ export const M11_LESSON: Lesson = {
       { id: 'cymbals', label: 'the crashes and the ride', short: 'CYMBALS', planIds: ['crash1', 'crash2', 'ride'], tag: 'OVERHEADS FIRST', note: 'Hear the overheads first. A dedicated cymbal mic only for a clear balance or staging need — they swing, and their peaks are fast.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
       { id: 'throne', label: 'the player’s space', short: 'PLAYER', tag: 'KEEP OUT', note: 'More channels mean more stands, cables and clamps near a moving player: clear the sticks, the cymbals’ swing, the pedals and the player’s reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'drawing defaults for the drummer’s envelope' } },
       { id: 'fill', label: 'the drummer’s fill monitor', short: 'DRUM FILL', tag: 'IN EVERY MIC', note: 'Beside the throne. Every open drum mic hears it, which is one reason a live plan uses fewer channels.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage position' } },
-      { id: 'downstage', label: 'another player’s wedge', short: 'DOWNSTAGE', tag: 'SPILL', note: 'Downstage of the kit: loud, and heard by the kick mic and the overheads.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage position' } },
+      { id: 'downstage', label: 'another player’s wedge', short: 'DOWNSTAGE', tag: 'SPILL', note: 'Downstage of the kit (toward the audience): loud, and heard by the kick mic and the overheads.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage position' } },
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', tag: 'WHAT IS NEEDED', note: 'Start from what the audience cannot already hear — often the kick and the snare. Recording and broadcast feeds can carry more.', scene: 'stage', prov: { kind: 'illustrative', reason: 'a typical stage' } },
       { id: 'room', label: 'the studio room', short: 'ROOM', tag: 'OPTIONAL', note: 'A good room can add to the kit as its own channels; a poor one argues for closer pickup. A shared room adds other players’ bleed.', scene: 'studio', prov: { kind: 'illustrative', reason: 'a typical room' } },
     ],

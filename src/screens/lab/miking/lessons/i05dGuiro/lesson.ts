@@ -62,13 +62,13 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
-    takeaway: 'The stroke and the scraper first — then the aim, the support, the stage that overloads, spill and the monitors.',
+    takeaway: 'The stroke and the scraper first — then the aim, the support, the mic or preamp stage that overloads, spill and the monitors.',
   },
   practice: {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.',
     credit: { scenarios: ['gui.prac.order', 'gui.prac.gain', 'gui.prac.setup1', 'gui.prac.setup2', 'gui.prac.3', 'gui.mix.1', 'gui.mix.2', 'gui.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'The whole scraped surface covered safely, the stroke told apart from the mic position, shared mic or spot chosen by spill, and a credible answer to feedback. More than one setup can pass.',
+    takeaway: 'The whole scraped surface covered safely, the stroke’s effect told apart from the mic position’s, shared mic or spot chosen by spill, and a credible answer to feedback. More than one setup can pass.',
   },
 };
 
@@ -102,10 +102,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gui.snd.3',
     page: 'sound',
-    prompt: 'Does a fiberglass güiro have its own fixed mic curve?',
+    prompt: 'Does fiberglass give a güiro one fixed frequency curve?',
     options: ['No — the material names an example, not a curve', 'Yes — fiberglass comes out the brighter of the two', 'Yes — gourds sound darker, so they need a boost'],
     correct: 'No — the material names an example, not a curve',
-    explain: 'Material names describe examples, not fixed microphone frequency curves. Listen to the one in the room.',
+    explain: 'Material names describe examples, not fixed frequency curves. Listen to the one in the room.',
     why: {
       'Yes — fiberglass comes out the brighter of the two': 'No such rule; compare the actual instruments.',
       'Yes — gourds sound darker, so they need a boost': 'There is no such rule; listen to this güiro before you reach for EQ.',
@@ -189,7 +189,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gui.place.2',
     page: 'placement',
-    prompt: 'Aiming into the güiro’s open end: fuller by rule?',
+    prompt: 'Does aiming into the güiro’s open end always sound fuller?',
     options: ['No rule — compare safe viewpoints by ear', 'Yes — the open end is where the body sounds', 'Yes — and it also reduces the harshness'],
     correct: 'No rule — compare safe viewpoints by ear',
     explain: 'There is no established rule that aiming into an open end sounds fuller, or that one side reduces harshness.',
@@ -519,7 +519,7 @@ export const I05D_LESSON: SpLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Cover the whole scraped surface safely, tell the stroke apart from the mic position, choose a shared mic or a spot by spill, and give a credible answer to feedback. With a real güiro and the player’s agreement, you can record what you tried below.',
+    task: 'Cover the whole scraped surface safely, tell what the stroke changes from what the mic position changes, choose a shared mic or a spot by spill, and give a credible answer to feedback. With a real güiro and the player’s agreement, you can record what you tried below.',
     fields: [
       { id: 'inst', label: 'Güiro, scraper and grip', kind: 'text' },
       { id: 'build', label: 'Build', kind: 'choice', choices: ['gourd', 'wood', 'fiberglass', 'other'] },

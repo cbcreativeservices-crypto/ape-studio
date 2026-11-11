@@ -56,7 +56,7 @@ type PageFn = (p: PageProps) => ReactNode;
 
 function B13Meet(p: PageProps) {
   const { lesson, journey } = p;
-  const tour = usePlanTourStep({ sports: FIELD_SPORTS, title: 'The sports', prompt: 'Step through LAYER on each SPORT: where the play is, what stays clear, the routes people need, the places a mic may be approved, and what nothing is attached to.', a11yLead: 'A plan of' });
+  const tour = usePlanTourStep({ sports: FIELD_SPORTS, title: 'The sports', prompt: 'Step through LAYER on each SPORT: where the play is, what stays clear, the routes people need, the places a mic may be approved, and what nothing may be attached to.', a11yLead: 'A plan of' });
   const range = useRangeStep({ scene: PRACTICE_FIELD, from: PF.M, fromH: PF.hHigh, fromLabel: 'M', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: the same approved mark, three targets — each a different range and angle.' });
   const box = PRACTICE_FIELD.frame;
   const steps: MikingStep[] = [
@@ -93,7 +93,7 @@ function B13Setups(p: PageProps) {
 
 const BASE = sportPlan('baseball');
 const METHODS: Method[] = [
-  { id: 'shotgun', label: 'A perimeter shotgun', short: 'SHOTGUN', gives: 'Aimed detail from a closer permitted zone — fixed on a stand, or safely operated.', limit: 'Its rejection depends on frequency: through the lows and mids it hears like its capsule, narrower only higher up. Aim and distance change the tone. It has no acoustic zoom.', mics: [SG_A], note: 'Read the model’s pattern drawings: a shotgun can have side and rear pickup.' },
+  { id: 'shotgun', label: 'A perimeter shotgun', short: 'SHOTGUN', gives: 'Aimed detail from a closer permitted zone — fixed on a stand, or safely operated.', limit: 'Its rejection depends on frequency: through the lows and mids it hears like its capsule, narrower only higher up. Aim and distance change the tone. It has no acoustic zoom.', mics: [SG_A], note: 'Read your mic model’s own pattern drawings: a shotgun can have side and rear pickup.' },
   { id: 'dish', label: 'A parabolic dish', short: 'DISH', gives: 'Selected distant transients or calls, from a permitted viewing position, turned within an approved arc.', limit: 'Focus and aim are critical; a portable dish helps the high frequencies most. A crowd or PA on its axis is favored along with the play.', mics: [DISH_A], note: 'Assembled with the maker’s capsule, focal reference and mount — never a shotgun at the focus by assumption.' },
   { id: 'ambience', label: 'Fixed ambience', short: 'AMBIENCE', gives: 'A stable mono or stereo sense of the venue and its audience, through every play.', limit: 'Less action isolation; a nearby spectator or the PA can dominate it.', mics: [AMB_E], note: 'An XY pair of cardioids is a useful starting comparison; a single broad mic a simpler mono fallback.' },
   { id: 'structure', label: 'An approved structure or boundary mic', short: 'STRUCTURE', gives: 'A repeatable local effect where a specific mount is allowed — the backstop side of the plate, an approved surface.', limit: 'Impact, vibration, the ball and the structure’s own rules can rule it out. Nothing goes on goals, nets or flagposts without the competition’s approval.', mics: [{ ...B13_SETUPS[2].mics[0], id: 'st' }], scene: BASE, box: { x0: -30, y0: -26, x1: 30, y1: 34 }, note: 'Mounting approval first; never through screening into live-ball space.' },

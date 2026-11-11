@@ -472,7 +472,7 @@ export function GalleryScreen() {
                         onPress={() => (selecting ? toggleSelect(p.id) : open(p.id))}
                         onLongPress={() => toggleFav(p)}
                         accessibilityRole="button"
-                        accessibilityLabel={`${p.name} — ${STUDIO_TAG[p.state.studio]}, ${formatHz(p.state.hz)}${p.favourite ? ', favourite' : ''}${selecting ? (sel ? ', selected' : ', tap to select') : ''}`}
+                        accessibilityLabel={`${p.name} — ${STUDIO_TAG[p.state.studio]}, ${formatHz(p.state.hz)}${p.favourite ? ', favorite' : ''}${selecting ? (sel ? ', selected' : ', tap to select') : ''}`}
                         // The ★ key is nested in this card, so on iOS it was
                         // unreachable to a screen reader; it rides here as a
                         // custom action (APE-STUDIO-W/R/S nested-element sweep).

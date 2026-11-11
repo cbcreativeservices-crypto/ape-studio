@@ -259,7 +259,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     tryThis: [
       'At 220 Hz, leave PROBE where it starts. The PROBE lane reads 1.56 m · 4.5 ms: one spot, named in meters and in milliseconds.',
       'Switch FREQ to 110 Hz. The lane now reads 3.12 m · 9.1 ms for the same PROBE spot. Both numbers double.',
-      'Tap FREEZE, then slide PROBE to the end of its lane. At 220 Hz it reads 2.26 m · 6.6 ms. Check it: 2.26 ÷ 343 ≈ 6.6 ms.',
+      'Tap FREEZE, then slide PROBE to the end of its lane. At 220 Hz it reads 2.26 m · 6.6 ms. Check it: 2.26 m ÷ 343 m/s ≈ 0.0066 s = 6.6 ms.',
     ],
   },
 
@@ -338,13 +338,13 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     },
     seeing: [
       'INPUTS (top): two identical waves, purple and blue, offset by the PHASE you set. Both travel.',
-      'SUM = A + B (bottom): their exact sum, colored by level. When they cancel, it lies flat and glows red.',
+      'SUM = A + B (bottom): their exact sum, colored by level. When they cancel, it lies flat and glows red as a warning.',
       'PHASE shows the offset in degrees. SUM reads ALIGNED, PARTIAL or CANCELED. OUT shows the tones playing, if any.',
     ],
     control: [
       'Move the PHASE fader (0–360°) to shift wave B within its cycle. It starts at 270°.',
       'The PRESET key jumps to 0°, 90°, 180°, 270° or 360°.',
-      'If your dock shows the HEAR key, pick HEAR ALIGNED — 220 / 220 Hz, HEAR DRIFTING — 220 / 222 Hz, or STOP. These are two real tones, one in each channel (left and right).',
+      'On the HEAR key, pick HEAR ALIGNED — 220 / 220 Hz, HEAR DRIFTING — 220 / 222 Hz, or STOP. These are two real tones, one in each channel (left and right).',
       'PHASE and PRESET change only the drawing. The HEAR tones don’t follow them.',
     ],
     changes: [
@@ -361,7 +361,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     tryThis: [
       'Tap PRESET 0°. SUM reads ALIGNED, and the bottom wave is twice as tall as either input.',
       'Tap PRESET 180°. SUM reads CANCELED and the bottom line goes flat and red, while both inputs keep moving.',
-      'With HEAR in your dock, pick HEAR DRIFTING — 220 / 222 Hz. OUT reads 220/222 and the phone speaker swells and fades twice a second. On headphones the tones never mix in the air, so it’s much fainter.',
+      'On the HEAR key, pick HEAR DRIFTING — 220 / 222 Hz. OUT reads 220/222 and the phone speaker swells and fades twice a second. On headphones the tones never mix in the air, so it’s much fainter.',
     ],
   },
 
@@ -369,7 +369,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   m11: {
     intro: {
       learning: 'Timbre is a recipe: a fundamental plus harmonics at whole-number multiples, each with its own level. Harmonics change a tone’s color, not its pitch.',
-      start: 'Select H2 and pull H2 LEVEL to 0 %. Watch the SUM change shape but keep its rate. Then press PLAY if your dock shows it.',
+      start: 'Select H2 and pull H2 LEVEL to 0 %. Watch the SUM change shape but keep its rate. Then press PLAY.',
     },
     seeing: [
       'Six sine layers, from H1 (the fundamental, the lowest) at the bottom up to H6, with their SUM below. Each row’s color shows its level.',
@@ -379,7 +379,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     control: [
       'Tap H1–H6 on the HARMONICS key to select one (amber = selected, lit = on). Long-press one for its guided-lesson entry.',
       'The level lane takes the selection’s name (H1 LEVEL, H2 LEVEL…) and runs 0–100 %. You start with H1 100 %, H2 50 %, H3 33 % and the rest off.',
-      'If your dock shows PLAY, tap it to hear the stack as additive synthesis (a tone built by adding sines). You hear every change live.',
+      'Tap PLAY to hear the stack as additive synthesis (a tone built by adding sines). You hear every change live.',
     ],
     changes: [
       'Adding a harmonic changes the shape of each cycle, the timbre (tone color), not the pitch.',
@@ -393,7 +393,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     tryThis: [
       'Select H2 and pull its level to 0 %. The SUM changes shape and loses its lopsided lean, but it still repeats at the same rate.',
-      'Select H4 and raise it to about 50 %. Then press PLAY if your dock shows it. The tone thickens, but the pitch stays put.',
+      'Select H4 and raise it to about 50 %. Then press PLAY. The tone thickens, but the pitch stays put.',
       'With PLAY on, take every layer but H1 to 0 % (H2, H3, and H4 if you raised it). You hear the bare 220 Hz fundamental: a pure sine.',
     ],
   },
@@ -412,7 +412,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     control: [
       'Move the UNMIX fader (0–100 % separated) to go from the mixed wave to its separate ingredients. It starts at 67 %.',
       'The RECIPE key picks PURE (fundamental only), HOLLOW (odd) (H1, H3, H5) or BRIGHT (all) (H1–H6). It starts on BRIGHT (all).',
-      'If your dock shows PLAY, tap it to hear the recipe as additive synthesis (a tone built by adding sines). You hear a RECIPE change live.',
+      'Tap PLAY to hear the recipe as additive synthesis (a tone built by adding sines). You hear a RECIPE change live.',
     ],
     changes: [
       'Raise UNMIX and the mixed wave fades, its ingredients separate onto their own lines, and the bars grow brighter.',
@@ -523,7 +523,7 @@ export const FOUNDATIONS_M7_COVER_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Say your answer out loud, and why, before you tap it.',
-    'If your dock shows PLAY, press it first and listen while you decide.',
+    'Press PLAY first and listen while you decide.',
   ],
 };
 
@@ -570,7 +570,7 @@ export const PLAYGROUND_SCREEN_GUIDE: ScreenGuide = {
   control: [
     'FREQ fader: 55 Hz–3.5 kHz, starting at 290 Hz. LEVEL fader: −48 to −16 dBFS, starting at −38.',
     'SOURCE tray: SINE, SQUARE, SAW or TRIANGLE; WHITE, PINK or BROWN NOISE; SLOW SWEEP or FAST SWEEP. For a wave you also get HARMONIC RICHNESS (ALL HARMONICS, FIRST 3, FUNDAMENTAL) and PHASE · POLARITY.',
-    'FX tray: STEREO BALANCE, DELAY (DELAY OFF, 30 ms, 120 ms, 400 ms) and EQ LOW-PASS (EQ OFF, LPF 2 kHz, LPF 500 Hz). Q 0.7 or Q 4 work once a low-pass is on.',
+    'FX tray: STEREO BALANCE, DELAY (DELAY OFF, 30 ms, 120 ms, 400 ms) and EQ LOW-PASS (EQ OFF, LPF 2 kHz, LPF 500 Hz). Q 0.7 (smooth) or Q 4 (peaked) work once a low-pass is on.',
     'PLAY / STOP: you hear every change live, after a hearing reminder. Long-press any control for its guided-lesson entry.',
   ],
   changes: [

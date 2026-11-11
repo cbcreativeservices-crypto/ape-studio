@@ -91,7 +91,7 @@ export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | '
 
 function sizeLine(m: MicType): string {
   // A size no maker sheet confirmed (a drawing default) is never printed as a spec.
-  if (m.body.length.placeholder || m.body.radius.placeholder) return 'Drawn size: an approximate drawing size for this type';
+  if (m.body.length.placeholder || m.body.radius.placeholder) return 'Drawn size: only approximate for this type of mic';
   // A typical product size for the type, in both units (not rounded to the
   // readouts' 5 mm; the products it comes from are the internal record).
   const cm = (mm: number) => `${(mm / 10).toFixed(1)}`;
@@ -190,7 +190,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
           {deep || nearNullNow ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'supercardioid' ? (
-              <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small inverted lobe directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid ${lesson.noun.one} mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>
+              <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small rear lobe, opposite in polarity, directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid ${lesson.noun.one} mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>
             ) : pat === 'cardioid' ? (
               <Note>What you just saw: a cardioid rejects most directly behind (180°).</Note>
             ) : !isModelled(pat) ? null : (
@@ -210,7 +210,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
       layout: 'read',
       body: (
         <>
-          <Body>No brand is required. Choose by what the job needs: the pattern, the power it needs, its size and how it mounts, and the level it is specified for. Try not to assume every dynamic is less detailed, every condenser flat, or that a larger diaphragm means better bass — test ideas like these with your ears.</Body>
+          <Body>No brand is required. Choose by what the job needs: the pattern, the power it needs, its size and how it mounts, and the loudest level it is rated for (its max SPL). Try not to assume every dynamic is less detailed, every condenser flat, or that a larger diaphragm means better bass — test ideas like these with your ears.</Body>
           {lesson.micTypeIds.map((id) => {
             const m = MIC_TYPES[id];
             const pl = plainLines(m, copyOf(lesson).words);
@@ -241,7 +241,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
               </Card>
             );
           })}
-          <Note tone="warn">Max SPL figures are distortion limits for the MIC, each measured under its maker’s own test conditions, so they do not compare one-to-one. None of them is a safe listening level: for people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more, and the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where they listen.</Note>
+          <Note tone="warn">Max SPL figures are distortion limits for the MIC, each measured under its maker’s own test conditions, so they do not compare one-to-one. None of them is a safe listening level: for people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more, and the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where people listen.</Note>
           <Note>Before connecting, disconnecting or switching phantom power: mute the outputs, lower the monitoring and turn the channel gain down, and follow the manual for your own equipment. Check that the mute really covers every output in your setup, and avoid plugging or unplugging a mic cable while phantom power is on.</Note>
         </>
       ),

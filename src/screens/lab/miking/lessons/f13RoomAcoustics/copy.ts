@@ -27,11 +27,11 @@ export const F13_COPY: Partial<LessonCopy> = {
   placement: {
     workedZone: { room: 'ra.A', pa: 'ra.paA' },
     workedLine: 'This starting point also sets the mic’s height above the floor: a seated ear.',
-    workedAim: 'Set the mic up as its data and the method say; this drawing points it at the source.',
+    workedAim: 'Set the mic up as its calibration data and the method say; this drawing points it at the source.',
     workedClear: 'Clear of the seats’ frames, the source and its stand; nobody in the direct path; the stand out of the routes.',
     blocked: { room: 'The mic or its stand would touch the source, a wall or the ceiling — move it clear.', pa: 'The mic or its stand would touch the PA, a wall or the ceiling — move it clear.' },
     reveal: 'Each seat hears its own impulse response: the direct sound, the early reflections and the decay differ with the distance and the nearest walls.',
-    typeNotes: { measRI: 'Random incidence: made for sound from many directions.', measFF: 'Free field: point it as its data says; check the correction for a reverberant field.' },
+    typeNotes: { measRI: 'Random incidence: made for sound from many directions.', measFF: 'Free field: point it as its calibration data says; check the correction for a reverberant field.' },
     note: 'Mark every position so a second pass after a change can find it again.',
     availableLead: 'Starting points for the receiver here',
     learn: {

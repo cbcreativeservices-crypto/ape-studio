@@ -31,7 +31,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Lead vocal:",
-      "text": "the star instrument, singing in makam-flavored melodies (Hicaz, Kürdi, Nihavend, Uşşak) with turns, slides and microtonal inflections.",
+      "text": "the star instrument, singing melodies in makam (Turkish melodic modes such as Hicaz, Kürdi, Nihavend, Uşşak) with turns, slides and microtonal inflections.",
       "bullet": true
     },
     {
@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Bağlama / saz:",
-      "text": "long-necked lute with three double or triple courses and about 17 frets per octave, giving pitches between Western semitones. Played with a pick (tezene) or finger-tapping (şelpe). Electric bağlamas with magnetic pickups are common on stage.",
+      "text": "long-necked lute with three courses (sets of two or three strings played as one) and about 17 frets per octave, giving pitches between Western semitones. Played with a pick (tezene) or finger-tapping (şelpe). Electric bağlamas with magnetic pickups are common on stage.",
       "bullet": true
     },
     {
@@ -50,7 +50,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "label": "Kanun (plucked zither), ud (fretless lute), clarinet, ney (end-blown reed flute), zurna (loud folk shawm):",
+      "label": "Kanun (plucked zither), ud (fretless lute), clarinet, ney (end-blown reed flute), zurna (loud double-reed folk pipe):",
       "text": "melodic color and solo fills; clarinet especially in 9/8 and fantezi (lighter arabesk-pop) numbers.",
       "bullet": true
     },
@@ -61,7 +61,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "common at large shows for synths, layered percussion, extra strings and BGVs.",
+      "text": "common at large shows for synths, layered percussion, extra strings and BGVs (backing vocals).",
       "bullet": true
     }
   ],
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits clearly above the band, about 3–5 dB above the instrumental hook by perceived level, every syllable intelligible because the audience sings along. Tone should be warm and present; many stars have a husky low register that needs 150–250 Hz kept. Ornaments (gırtlak turns, slides, glottal breaks) are the emotional core, so avoid compression that flattens them and de-essing so heavy it makes the singer lisp."
+      "text": "The lead vocal sits clearly above the band, about 3–5 dB above the instrumental hook by perceived level, every syllable intelligible because the audience sings along. Tone should be warm and present; many stars have a husky low register that needs 150–250 Hz kept. Ornaments (gırtlak, or throat, turns; slides; glottal breaks) are the emotional core, so avoid compression that flattens them and de-essing so heavy it makes the singer lisp."
     },
     {
       "text": "Pitch correction is the trickiest point. Makam (Turkish melodic mode) intervals fall between Western semitones, so 12-tone automatic pitch correction “corrects” intentional notes into wrong ones. Tune graphically, fixing only obvious misses, and never hard-tune an arabesk (melancholic Arab-influenced style) melody unless the artist wants that effect. Chorus doubles sit 6–10 dB under the lead; BGVs are usually unison or octaves rather than dense harmonies, panned moderately wide. Live, a good handheld dynamic or condenser suits most singers, with a 2–4 kHz dynamic band and a tap delay in reach."

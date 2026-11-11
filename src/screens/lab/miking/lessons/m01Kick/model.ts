@@ -158,7 +158,7 @@ export const KICK_ZONES: DocumentedZone[] = [
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: L + 60, y: -220, z: 0 }, az: 0, el: 0 },
     tendency: 'Sometimes more impact. A natural choice when the front head has no port. It tends to hear more of the kit around the drum, too.',
-    checks: ['The head’s contribution', 'The surrounding kit sound', 'Any acoustic gain needed live'],
+    checks: ['The head’s contribution', 'The surrounding kit sound', 'The gain available before feedback, if used live'],
   },
   {
     id: 'in.offset',

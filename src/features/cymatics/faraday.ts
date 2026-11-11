@@ -424,7 +424,7 @@ export function readLiquid(spec: LiquidSpec, driveHz: number, accelG: number): L
   if (ratio < 5) {
     return { stage: 'unstable', ratio, family: 'traveling', family2: baseFamily, blend: 0.4, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'The standing lattice breaks into slowly travelling fronts and defects. Order comes and goes.' };
   }
-  return { stage: 'chaotic', ratio, family: 'chaotic', family2: 'chaotic', blend: 0.5, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'Spatiotemporal chaos: many wavevectors excited at once, no lasting structure. One more step and the surface starts to throw droplets.' };
+  return { stage: 'chaotic', ratio, family: 'chaotic', family2: 'chaotic', blend: 0.5, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'Spatiotemporal chaos: many wavevectors (wave sizes and directions) excited at once, no lasting structure. One more step and the surface starts to throw droplets.' };
 }
 
 // ── surface height basis ────────────────────────────────────────────────────

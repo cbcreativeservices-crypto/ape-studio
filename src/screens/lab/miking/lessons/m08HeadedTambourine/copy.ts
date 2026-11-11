@@ -31,8 +31,8 @@ export const TAMB_COPY: LessonCopy = {
   sound: {
     strikes: [
       { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head.' },
-      { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the center to the frame — explore what it drives.' },
-      { id: 'edge', label: 'NEAR THE FRAME', mm: R * 0.85, blurb: 'Close to the frame — explore what it drives.' },
+      { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the center to the frame — see which head shapes it sets moving.' },
+      { id: 'edge', label: 'NEAR THE FRAME', mm: R * 0.85, blurb: 'Close to the frame — see which head shapes it sets moving.' },
     ],
     strikeDefault: 'half',
     striker: 'HAND',
@@ -48,7 +48,7 @@ export const TAMB_COPY: LessonCopy = {
     after: 'Then the head rings briefly and the jingles keep shimmering for a moment. Head material, jingle metal, the rows and the player’s technique all change the balance between them.',
     shapesNotes: [
       'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them.',
-      'This is a simplified head on a closed rim. A real tambourine’s back is open and its frame is held in a hand, so these numbers shift — the next step shows the head and the jingles together.',
+      'Here the head is drawn on a closed rim to keep it simple. A real tambourine’s back is open and its frame is held in a hand, so these numbers shift — the next step shows the head and the jingles together.',
     ],
     coupledSubject: 'The tambourine edge-on',
     coupledNote: 'One instrument, two sources: the head (a drum) and the jingles (metal). Striking favors the head; shaking favors the jingles — a mic hears more of whichever it is closer to and faces.',
@@ -160,7 +160,7 @@ export const TAMB_COPY: LessonCopy = {
       points: [
         { title: 'HOW MANY MICS', text: 'Solo or overdub: one mic in the 15–30 cm range, outside every motion. In an ensemble: listen to the existing mics first. Live: one directional mic can serve a whole percussion station — shakers and tambourine together — with wider mics over the section.' },
         { title: 'A MOVING PLAYER', text: 'A fixed mic covers a fixed station. If the player walks or dances, work with them and the operator on where they play — never require them to stop moving for one spot.' },
-        { title: 'BRIGHTNESS', text: 'Studio: angle and distance first, then the mic’s own balance. Live: no universal filter, limiter or EQ notch — the head carries useful low and mid, the jingles sharp highs.' },
+        { title: 'BRIGHTNESS', text: 'Studio: angle and distance first, then the mic’s own balance. Live: no one filter, limiter or EQ notch suits every tambourine — the head carries useful low and mid, the jingles sharp highs.' },
         { title: 'PEAKS', text: 'Set gain from the loudest shake or accent AND the quietest roll, with a peak meter. A slow average meter hides the peaks that overload an input.' },
       ],
       body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so that a null faces a loud unwanted source. A wider pattern covers movement but hears more of the stage.',

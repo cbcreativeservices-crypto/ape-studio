@@ -220,7 +220,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
           <G>
             <Line x1={x0} y1={legendY - 3.5} x2={x0 + 16} y2={legendY - 3.5} stroke={PEAK_RED} strokeWidth={0.9} strokeDasharray="3,2" />
             <SvgText x={x0 + 20} y={legendY} fontSize={FONT_S} fill={PEAK_RED} fontFamily={fonts.mono}>
-              {drawnDb <= -0.05 ? `ceiling ${fmt(ceilingDb ?? 0)} dBFS · drawn ${Math.abs(drawnDb).toFixed(1)} dB down, matched` : `limiter ceiling ${fmt(ceilingDb ?? 0)} dBFS`}
+              {drawnDb <= -0.05 ? `ceiling ${fmt(ceilingDb ?? 0)} dBFS · shown ${Math.abs(drawnDb).toFixed(1)} dB lower to match level` : `limiter ceiling ${fmt(ceilingDb ?? 0)} dBFS`}
             </SvgText>
           </G>
         ) : null}

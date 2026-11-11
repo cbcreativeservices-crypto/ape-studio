@@ -33,7 +33,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how an air jet becomes a flute note — the jet, the edge, the air column, the first open hole — and where the sound and the air leave.',
     credit: { scenarios: ['fl.snd.1', 'fl.snd.2', 'fl.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'Sound leaves from the embouchure hole for every note and from the first open hole, which moves as the fingering changes; the air jet blows straight out past the lips. A mic in the jet hears wind — tendencies, and flutes vary.',
+    takeaway: 'Sound leaves from the embouchure hole for every note and from the first open hole, which moves as the fingering changes; the air jet blows straight out past the lips. A mic in the jet hears wind. These are tendencies, and flutes vary.',
   },
   setting: {
     title: 'Where it sits',
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one flute mic in the right order, choose and justify a setup for a studio solo and a moving player on a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['fl.prac.order', 'fl.prac.gain', 'fl.prac.setup1', 'fl.prac.setup2', 'fl.prac.3', 'fl.mix.1', 'fl.mix.2', 'fl.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real flute.' },
-    takeaway: 'The design identified, the capsule off the air jet, clearance from the head, hands and flute, the right power and level, and an accurate account of polarity versus delay pass. A material stereotype or a brand does not — and more than one setup can pass.',
+    takeaway: 'To pass: identify the design, keep the capsule off the air jet, stay clear of the head, hands and flute, use the right power and level, and explain polarity versus delay accurately. A material stereotype or a brand does not pass — and more than one setup can.',
   },
 };
 
@@ -130,7 +130,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Identify the design (keyed metal, keyed wood or simple-system), then mark the embouchure, the air jet, both hands, the foot, the head’s turn and the music stand — and hear the whole part, quiet and strong.',
     why: {
       'Only the color of the flute, to choose the right EQ': 'A silver color says nothing reliable about the metal — or the sound. Listen to the player.',
-      'Nothing yet: the starting point already says where it goes': 'A starting point says where to begin — only where the jet, the hands and the head cannot reach it.',
+      'Nothing yet: the starting point already says where it goes': 'A starting point only says where to begin — and only where the jet, the hands and the head cannot reach the mic.',
     },
   },
   {
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close flute mic and a farther one sound hollow together. Why?',
     options: ['The farther mic inverts the flute’s sound on its way there', 'The sound reaches them at different times, so frequencies cancel', 'Two mics on one flute cancel its low end between them'],
     correct: 'The sound reaches them at different times, so frequencies cancel',
-    explain: 'The farther mic hears each note a little later; summed, some frequencies arrive out of step and dip — a comb. Move or rebalance first, then check polarity at matched levels.',
+    explain: 'The farther mic hears each note a little later; summed, some frequencies arrive out of step and dip — comb filtering. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic inverts the flute’s sound on its way there': 'Distance delays a sound; it does not flip its sign.',
       'Two mics on one flute cancel its low end between them': 'Cancellation depends on the delay and the levels: some frequencies dip, others add.',
@@ -384,7 +384,7 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'A darker mic because the flute is silver-colored', ok: false, power: 'phantom', feedback: 'The color is not a recipe — choose by what you hear.' },
     ],
     reasons: [docReason('the flute between the lip plate and the left hand, or the head'), clearReason('the air jet, the head’s turn, the hands and the flute'), POWER_REASON, { id: 'r.jet', label: 'The capsule stays out of the air jet', role: 'optional', feedback: 'A fair reason: in the jet the mic hears wind.' }, BRAND_REASON('flute'), LOUD_REASON],
-    explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point from its named part, out of the jet, clear of what moves, and the power the mic needs.',
+    explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point measured from the part it names, out of the jet, clear of what moves, and the power the mic needs.',
   },
   {
     id: 'fl.prac.setup2',
@@ -547,7 +547,7 @@ const copy: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Close above the flute and aimed down at it, its rear points up and away — the wedge down on the floor in front is off that line, so turning and tilting the mic both matter.',
-    shieldNote: 'The player and the flute can reflect stage sound into a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'The player and the flute can reflect stage sound into a mic aimed at them — the free-field (open-space) pattern drawn here cannot show that. Listen with the monitors on.',
     studioId: 'fl.ctx.studio',
     studioPrompt: 'A studio session, a solo flute, a good room: what is the mic’s job?',
     studioNote: 'In the studio, close, behind the head and a meter in front are all fair trials — repeated takes are practical when the player stops. Switch back to LIVE for the monitor exercise.',
@@ -633,7 +633,7 @@ export const A06_LESSON: WindLesson = {
       { id: 'jet', label: 'the air jet', short: 'AIR JET', note: 'The breath blows out across the embouchure hole and on past the lips. A capsule in it hears wind and pops.', prov: { kind: 'illustrative', reason: 'env.fl.jet: 150 mm, 15° (drawing default)' }, tag: 'KEEP THE MIC OUT', scene: 'kit', planIds: ['self'] },
       { id: 'reach', label: 'the flute’s reach, the hands and the head', short: 'REACH · HANDS', note: 'The flute reaches out to the right and moves with the head; the hands work the keys. No stand, boom or cable where they can strike it.', prov: { kind: 'illustrative', reason: 'the proposal’s envelopes' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['self'] },
       { id: 'stand', label: 'the music stand', short: 'MUSIC STAND', note: 'In front, shared with the second flute. The player must see the music and the conductor.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGHT LINE', scene: 'kit', planIds: ['stand.fl'] },
-      { id: 'fl2', label: 'the second flute and the piccolo', short: 'FLUTE 2 · PICCOLO', note: 'Beside the flute in the front row; their feet point the same way. A flute mic hears them too.', prov: { kind: 'illustrative', reason: 'a typical seating' }, tag: 'SPILL · SECTION', scene: 'kit', planIds: ['fl2', 'picc'] },
+      { id: 'fl2', label: 'the second flute and the piccolo', short: 'FLUTE 2 · PICCOLO', note: 'Beside the flute in the front row; their foot ends point the same way. A flute mic hears them too.', prov: { kind: 'illustrative', reason: 'a typical seating' }, tag: 'SPILL · SECTION', scene: 'kit', planIds: ['fl2', 'picc'] },
       { id: 'behind', label: 'the clarinets behind', short: 'CLARINETS', note: 'Right behind the flutes — close to a mic behind the flutist’s head.', prov: { kind: 'illustrative', reason: 'a typical seating' }, tag: 'SPILL', scene: 'kit', planIds: ['cl1', 'cl2', 'bcl'] },
       { id: 'wedge', label: 'the player’s wedge (monitor)', short: 'WEDGE', note: 'On a stage, a floor monitor in front, facing back at the player — loud, and close to a flute mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'another player’s wedge', short: 'SIDE WEDGE', note: 'Off to one side, facing another player.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

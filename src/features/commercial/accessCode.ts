@@ -46,8 +46,8 @@ const MESSAGES: Record<RedeemStatus, string> = {
   granted: 'Code applied — your Academy access is active.',
   already_active: 'You already have this access — nothing to redeem.',
   invalid: 'That code isn’t recognized. Check it, including the dashes (-), and try again.',
-  expired: 'That code has expired.',
-  used_up: 'That code has reached its redemption limit.',
+  expired: 'That code has expired. Ask whoever gave it to you for a new one.',
+  used_up: 'That code has been used as many times as it allows. Ask whoever gave it to you for a new one.',
   not_authenticated: 'Sign in or create an account first, then redeem your code.',
   // `unavailable` is returned for ANY RPC error and any thrown exception,
   // including a plain network drop — and it is shown from Settings → Redeem

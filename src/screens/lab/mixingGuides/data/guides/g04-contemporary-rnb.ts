@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
   "glance": {
     "origin": "United States (urban Black music scenes), late 1970s–early 1980s; reshaped by hip-hop, new jack swing, neo-soul and today’s alternative R&B",
     "tempo": "Most songs 80–120 BPM; slow jams 60–80 BPM, often felt half-time",
-    "ensemble": "Solo singer + tracks and 2–3 BGVs; or 5–8 piece band (drums, bass/keys bass, 2 keys, guitar, MD/playback) + 3 BGVs",
+    "ensemble": "Solo singer + tracks and 2–3 BGVs (backing vocalists); or 5–8 piece band (drums, bass/keys bass, 2 keys, guitar, MD — musical director — on playback) + 3 BGVs",
     "priority": "The lead vocal: intimate, upfront, every breath and run audible, sitting on a deep but controlled low end",
     "liveSpl": "94–100 dBA LAeq,15min (keep the average under 100); 110–118 dBC with heavy 808/sub",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I (ballads −12 to −9), −2 dBTP; most streaming services normalize to about −14 LUFS, some to −16"
@@ -267,7 +267,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Mix 94–100 dBA LAeq,15min (the WHO safe-listening limit caps the average at 100 dBA); ballads 90–95 dBA. C-weighted levels run high in this genre because of 808s: plan 110–118 dBC LCeq and watch front-row LCpeak, which can exceed 140 dBC with ground-stacked subs. Venues range from clubs and theaters to arenas. Use cardioid sub arrays, offer earplugs and monitor levels continuously."
+      "text": "Mix 94–100 dBA LAeq,15min (the WHO safe-listening limit caps the average at 100 dBA); ballads 90–95 dBA. C-weighted levels run high in this genre because of 808s: plan 110–118 dBC LCeq and watch front-row LCpeak, which can exceed 140 dBC with ground-stacked subs. Venues range from clubs and theaters to arenas. Use cardioid sub arrays, offer earplugs and measure SPL continuously."
     },
     {
       "label": "Studio / streaming:",

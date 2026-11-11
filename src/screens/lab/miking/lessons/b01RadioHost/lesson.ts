@@ -78,7 +78,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a host’s mic in the right order, choose and justify a setup for a two-host podcast and a live talk show, and say what would justify a second mic.',
     credit: { scenarios: ['b1.prac.order', 'b1.prac.gain', 'b1.prac.setup1', 'b1.prac.setup2', 'b1.prac.3', 'b1.mix.1', 'b1.mix.2', 'b1.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real host.' },
-    takeaway: 'The address side, a repeatable distance from the lips, plosive control, proximity effect where it applies, a channel per host, and an honest line between bleed and feedback pass. A brand or a “hotter” signal does not — and more than one setup can pass.',
+    takeaway: 'What passes: the address side, a repeatable distance from the lips, plosive control, proximity effect where it applies, a channel per host, and an honest line between bleed and feedback. A brand or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -364,7 +364,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second mic for one host?',
     options: ['A need the first mic cannot meet, on its own channel', 'More mics make the voice sound fuller, so add a second', 'The voice needs more level than one mic gives'],
     correct: 'A need the first mic cannot meet, on its own channel',
-    explain: 'A backup for a live show, or a headset when the host leaves the desk — each earns its place for a reason, on its own channel, checked in mono. Two open mics on one voice comb.',
+    explain: 'A backup for a live show, or a headset when the host leaves the desk — each earns its place for a reason, on its own channel, checked in mono. Two open mics on one voice make a comb: it sounds hollow.',
     why: {
       'More mics make the voice sound fuller, so add a second': 'Two mics on one voice usually sound hollower, not fuller.',
       'The voice needs more level than one mic gives': 'Level comes from gain and distance, not from another mic.',
@@ -515,7 +515,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: which mic needs phantom power?', options: ['The broadcast dynamic', 'The studio condenser', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you bring the broadcast dynamic from 15 cm to 6 cm. What changes?', options: ['More bass and breath', 'More room', 'It depends on this host'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is in front of the desk, facing the audience. Where will a supercardioid aimed at the host reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the second host’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the second host’s mic polarity, what happens to the arrival-time delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -662,6 +662,6 @@ export const B01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Live: avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are measured from the lips to the mic’s front, rounded to about 5 mm below 1 m and more coarsely above it, with feet added from 3 m. Live: avoid uncontrolled feedback.',
   copy: B01_COPY,
 };

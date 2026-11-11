@@ -487,7 +487,7 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     // Blocked vents only fail the thermal check at 4 Ω (review round 2026-10-31).
     const at4 = M.evaluateRig({ sourceLevel: 0.6, mixerLevel: 0.5, ampInput: 0.5, railLimit: 1, loadZ: 4, minLoadZ: 4, bridged: false, bridgeSupported: true, ventBlocked: 1, instrumentCable: false, shorted: false });
     assert.equal(at4.primary, 'thermal-limiting');
-    assert.match(guideOf('apply', 'challenge').changes.join(' '), /blocked vents\. The vents add heat, enough to trip thermal limiting at 4 Ω/);
+    assert.match(guideOf('apply', 'challenge').changes.join(' '), /blocked vents\. They trap heat, enough to trip thermal limiting at 4 Ω/);
     assert.match(src, /'load-below-min': 'LOAD'/);
     assert.match(src, /'upstream-clipping': 'UP-CLIP'/);
     const t = guideOf('apply', 'challenge').tryThis.join(' ');
@@ -529,7 +529,7 @@ describe('5. wiring and the accuracy-chip decision', () => {
       for (const s of steps) {
         const ctl = s.guide.control.join(' ');
         assert.doesNotMatch(ctl, /‹ leaves the lab/, `${mod}.${s.key}`);
-        if (/The strip under the title/.test(ctl)) assert.match(ctl, /‹ goes back one screen, to the lab menu/, `${mod}.${s.key}`);
+        if (/the strip under the title/.test(ctl)) assert.match(ctl, /‹ goes back one screen, to the lab menu/, `${mod}.${s.key}`);
       }
     }
     for (const [id, gd] of ALL) assert.doesNotMatch(textOf(gd), /\bpractis/i, `${id}: British spelling`);

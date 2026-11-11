@@ -209,7 +209,7 @@ export function MixingGuideScreen() {
                   {isRead ? (
                     <Text style={styles.readTag}>✓ READ</Text>
                   ) : inPreview ? (
-                    <Text style={styles.previewNote}>Members-only preview — reading here is not recorded.</Text>
+                    <Text style={styles.previewNote}>Members-only preview — your reading progress here isn’t saved.</Text>
                   ) : (
                     <Pressable onPress={markRead} style={styles.markBtn} accessibilityRole="button" accessibilityLabel={`Mark ${entry.title} as read`}>
                       <Text style={styles.markText}>MARK AS READ</Text>

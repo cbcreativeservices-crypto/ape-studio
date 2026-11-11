@@ -63,7 +63,7 @@ export const WAVEFORM_LEARN: ToolLearnContent = {
     {
       claim: 'If the waveform touches the top of the display, it is clipped.',
       truth:
-        'A single sample reaching 0 dBFS is a full-scale peak — the loudest legal value, not necessarily distortion. Clipping is when the signal tried to go beyond full scale and got sliced flat, which shows up as runs of consecutive full-scale samples with squared-off tops. That is why the tool marks clipped-sample runs rather than flagging every peak.',
+        'A single sample reaching 0 dBFS is a full-scale peak — the loudest value digital audio can hold, not necessarily distortion. Clipping is when the signal tried to go beyond full scale and got sliced flat, which shows up as runs of consecutive full-scale samples with squared-off tops. That is why the tool marks clipped-sample runs rather than flagging every peak.',
     },
     {
       claim: 'The zero line is just a cosmetic center line.',

@@ -13,7 +13,7 @@ export const MARIMBA_FAM: MalletFamily = {
   p: 'mr',
   name: 'marimba, 5 octaves (C2–C7)',
   variants: [
-    { row: ROWS.marimba50, label: '5 OCTAVES', blurb: 'C2 to C7: 61 bars across about 2.5 m. On this model the lowest notes have boxes, not tubes, under them.', phrase: 'five octaves' },
+    { row: ROWS.marimba50, label: '5 OCTAVES', blurb: 'C2 to C7: 61 bars across about 2.5 m. On this model the lowest notes have boxes, not pipes, under them.', phrase: 'five octaves' },
     { row: ROWS.marimba43, label: '4.3 OCTAVES', blurb: 'A2 to C7: 52 bars across about 2.1 m — a common size for schools and ensembles.', phrase: 'four and a third octaves' },
   ],
   roles: {

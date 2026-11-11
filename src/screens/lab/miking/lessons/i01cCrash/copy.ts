@@ -91,7 +91,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'c1.under' },
     opposite: {
       surface: 'c1Top',
-      note: 'One mic over the crash and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; no setting is required.',
+      note: 'One mic over the crash and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; neither one is required.',
     },
     learn: [
       'A crash reaches every mic on the kit at a different time — the overheads, a close mic, the tom mic below, a vocal mic nearby. Each pair is a two-mic problem: compare in mono, at matched levels.',
@@ -103,7 +103,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     gain: 'cr.prac.gain',
     second: 'cr.prac.3',
     mixed: ['cr.mix.1', 'cr.mix.2', 'cr.mix.3'],
-    mixedIntro: 'Three cards from earlier pages, mixed: a starting point with no number, the tom below, and polarity versus delay.',
+    mixedIntro: 'Three cards from earlier pages, mixed: a starting point with no standard number, the tom below, and polarity versus delay.',
   },
   where: CYM_WHERE,
   viewWords: CYM_VIEW_WORDS,

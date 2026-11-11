@@ -103,7 +103,7 @@ describe('Lab 4 review fixes', () => {
       const earth = s.options.find((o: string) => /ground pin/.test(o));
       assert.ok(earth && /^Never\./.test(s.why[earth]), `${id}: the ground-pin option is answered "Never."`);
     }
-    assert.match(read('src/screens/lab/miking/lessons/shared/electric/ampPages.tsx'), /ground-lift switch, which lifts only the audio ground at its XLR, is a different, normal control/);
+    assert.match(read('src/screens/lab/miking/lessons/shared/electric/ampPages.tsx'), /ground-lift switch is different: it lifts only the audio ground at its XLR, a normal control/);
   });
   it('M5: the sitar shimmer matches the drawn taraf bridge; overtones count', () => {
     const t = read('src/screens/lab/miking/lessons/c14Sitar/lesson.ts') + read('src/screens/lab/miking/lessons/c14Sitar/model.ts');

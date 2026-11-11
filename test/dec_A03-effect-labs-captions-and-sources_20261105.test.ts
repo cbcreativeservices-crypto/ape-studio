@@ -153,8 +153,8 @@ describe('decision 4: OVERSAMPLING has a source that reveals it', () => {
     const g = guide('distortionScreenGuides.ts');
     // 2026-11-08 (Comp B rewrite): same facts, the guide's new words ("it isn’t drawn" = sound only).
     assert.match(g, /SOURCE picks SINE 220 Hz, 5 kHz or PINK NOISE\./);
-    assert.match(g, /OS picks ON \(CLEAN\) or OFF \(ALIASING\); you hear it on SINE 5 kHz;/);
-    assert.match(g, /OS picks [^.]*; it isn’t drawn\./);
+    assert.match(g, /OS \(oversampling\) picks ON \(CLEAN\) or OFF \(ALIASING\): heard on SINE 5 kHz,/);
+    assert.match(g, /OS \(oversampling\) picks [^.]*, not drawn\./);
     assert.match(g, /takes it\), so no TRY THIS asks the learner to SEE it/);
   });
 });
@@ -215,7 +215,7 @@ describe('decision 20: RATIO and THRESH show on the compressor’s CLICK', () =>
     assert.match(flow, /if \(!ping\) return p;/);
     assert.match(flow, /\{\.\.\.fitValue\(10 \* ts\)\}/);
     assert.match(flow, /`GR PEAK \$\{grPeakDb\.toFixed\(1\)\} dB`/);
-    assert.match(guide('compressionScreenGuides.ts'), /the amber strip under OUT is the model’s GR: THRESH and RATIO change how deep it hangs/);
+    assert.match(guide('compressionScreenGuides.ts'), /the amber strip under OUT is the drawing’s GR: THRESH and RATIO change how deep it hangs/);
     assert.match(configOf('compConfig'), /RATIO and THRESH change how deep it hangs/);
   });
 });

@@ -39,7 +39,7 @@ export const WB_COPY: LessonCopy = spCopy({
     shapesNotes: ['The pictures show the order of events and where the sound starts — never its level; the wall’s flex is a drawn shape, much larger than real.'],
     coupledSubject: 'The woodblock from its end',
     coupledNote: 'Give the block space before you move a mic: space underneath (foam), the opening clear — then audition the mic positions.',
-    silentNote: 'This lab never plays a sound and draws no frequency curve: a maker’s “natural wooden sound” is a description, not a measured response. The pictures show where the sound comes from and where it leaves.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: how a real woodblock sounds depends on the block, the mallet and the support. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'Foam or towel',
       badge: 'A simplified picture: how freely the wall moves, not how loud · motion drawn larger',
@@ -88,13 +88,13 @@ export const WB_COPY: LessonCopy = spCopy({
   },
   placement: {
     workedZone: { table: 'wb.opening.table', held: 'wb.opening.held' },
-    workedAim: 'Face the block — the starting point counts while the mic faces its opening or its playing surface within {tol}°. Distance, height and angle are separate things to try.',
+    workedAim: 'Face the block — your mic counts as the starting point while it faces its opening or its playing surface within {tol}°. Distance, height and angle are separate things to try.',
     reveal: 'From above, more strike and playing surface; toward the opening, a different balance of attack, hollow body, room and neighbors — not a rule that the opening sounds fuller. Blocks vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A cardioid dynamic or condenser can both work; a closer live spot only where clearance and isolation are confirmed.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never into the slot, never where a mallet can reach. Watch PEAK meters for the loudest real hit.',
     learn: {
       intro: 'What you just did, in words. After our research, a mic about 25–50 cm (10–20 in) from the block, outside the mallet’s path, is where we suggest you begin — from above toward the playing surface, or in front toward the opening. One general tip for percussion is a gap of about 30 cm or more. Starting points, not rules.',
-      separate: 'Distance, height and angle are separate variables: change one at a time with the whole pattern. Compare the two viewpoints at matched level.',
+      separate: 'Distance, height and angle are separate variables: change one at a time while the whole part is played. Compare the two viewpoints at matched level.',
       clearance: 'Clearance comes first: the mallet’s whole path, its rebound and a missed stroke. Never put the mic into the slot. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
       tendencies: 'A farther mic may bring in a pleasing room; a closer one stronger direct sound — with more impact and mount noise. Start with the support and the mallet before EQ. All tendencies to check by ear.',
     },

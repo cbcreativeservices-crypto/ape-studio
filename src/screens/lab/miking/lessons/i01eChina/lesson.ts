@@ -345,13 +345,13 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session. The China cuts through the overheads clearly. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No China mic: the overheads already carry it', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic above the China on the far side, aimed at the shoulder', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic above the China on the far side, aimed at the shoulder', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power — fine on this input.' },
       { id: 'c', label: 'A small condenser under the China, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'd', label: 'A side-address condenser under the China', ok: false, power: 'phantom', feedback: 'A fair idea — but it needs phantom power, and this input has none.' },
       { id: 'e', label: 'Turn the China upright so it is quieter in the overheads', ok: false, power: 'none', feedback: 'How it is mounted is the player’s choice. Mic it as it is.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the China’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
-    explain: 'Two plans pass: no China mic, or a dynamic above it. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
+    explain: 'Two plans pass: no China mic, or a dynamic above it. What passes is the reasoning: start from the overheads, keep clear, and use a mic this input can power.',
   },
 ];
 
@@ -469,7 +469,7 @@ export const I01E_LESSON: CymbalLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Decide whether a China needs its own mic for a given kit and performance — none, above, or under its lowest point — place it safely, and explain the choice. With a real kit and the drummer’s agreement, you can record what you tried below.',
+    task: 'Decide whether a China needs its own mic for a given kit and performance — none, above, or under its lowest point — place it safely, and explain the choice. With a real kit and the drummer’s agreement, you can write down what you tried below.',
     fields: practiceSheet('China', ['no China mic', 'above the China', 'underneath'], 'Aim (cup, shoulder or lip), and how it is mounted'),
   },
   unknowns: [

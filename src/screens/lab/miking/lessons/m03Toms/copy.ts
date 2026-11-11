@@ -79,7 +79,7 @@ export const TOMS_COPY: LessonCopy = {
     typeNotes: {
       tomDynSuper: 'Ideas to try: keep the distance and swing the aim from the rim toward the center; then, separately, change the height. On a crowded rack, notice where its rear points — toward a crash, or not.',
       clipDynCard: 'Ideas to try with a clip-on: keep the clamp clear of the rim the sticks hit and of the tuning rods, then change only the angle.',
-      rimCondenser: 'Ideas to try: keep the head angled at the drumhead, usually not flat to it, and within the gooseneck’s bend limit; listen for how much cymbal it hears.',
+      rimCondenser: 'Ideas to try: keep the mic’s head angled at the drumhead, usually not flat to it, and within the gooseneck’s bend limit; listen for how much cymbal it hears.',
     },
     note: 'Clearance comes first: stop the drummer before moving a real mic. Tom fills sweep across all the drums — and the cymbals swing — so check the whole motion, not one stroke.',
     availableLead: 'Starting points for this mic on this drum',
@@ -114,12 +114,12 @@ export const TOMS_COPY: LessonCopy = {
     activityDone: 'done — the crash sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence — and some cymbal in a tom mic belongs to the kit sound.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Pointing down at the tom, its rear faces up — toward the cymbals above.',
-    shieldNote: 'A mic inside a tom (bottom head off) is shielded by the shell, which a free-field pattern ignores. Real patterns change with pitch, and cymbals are loud: this is the reasoning, not a prediction.',
+    shieldNote: 'A mic inside a tom (bottom head off) is shielded by the shell, which a free-field pattern (measured in open air) ignores. Real patterns change with pitch, and cymbals are loud: this is the reasoning, not a prediction.',
     studioId: 'tm.ctx.studio',
     studioPrompt: 'A studio session: do the toms need their own mics at all?',
     studioNote: 'In the studio, a good overhead or room perspective can be the main kit sound; tom mics add focus when they help. Repeated trials are practical when the drummer stops. Switch back to LIVE for the cymbal exercise.',
     learn: {
-      intro: 'These are conditional design choices, not genre rules: a wide or omni mic between toms can suit a controlled room, and a tight pattern can serve a quiet studio session.',
+      intro: 'These choices depend on the situation, not on genre rules: a wide or omni mic between toms can suit a controlled room, and a tight pattern can serve a quiet studio session.',
       points: [
         { title: 'ROLE OF THE OVERHEADS', text: 'Studio: a useful overhead or room perspective can be the main kit sound; tom mics add focus. Live: check what the acoustic kit already gives the room before adding tom channels.' },
         { title: 'HOW MUCH ISOLATION', text: 'Studio: more distant or shared perspectives may be wanted when the room and the spill are part of the sound. Live: close, directional pickup may improve the drum against loud cymbals and stage spill — test the pattern and the position.' },
@@ -136,13 +136,13 @@ export const TOMS_COPY: LessonCopy = {
     B: { typeId: 'rimCondenser', pattern: 'cardioid', zone: 'floor.bottom' },
     opposite: {
       surface: 'floor',
-      note: 'Top and bottom face the two heads, which move the same way: as the batter head moves down, away from the top mic, the bottom head moves down, toward the bottom mic — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the drum’s lowest motion; no setting is required for a tom pair: check both states.',
+      note: 'Top and bottom face the two heads, which move the same way: as the batter head moves down, away from the top mic, the bottom head moves down, toward the bottom mic — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the drum’s lowest motion; no one setting is right for every tom pair: check both states.',
     },
     learn: [
       'A bottom mic on a tom hears the resonant head — its ring and low end — not wires: a different choice from a snare’s bottom mic. Keep it only if it helps the tom in the whole kit.',
       'The same check applies whenever two mics hear one drum — a top and a bottom mic, or a tom mic and the overheads: bring in one channel at a time, compare both polarity states in mono at matched levels, and move or leave out a mic if the tom loses body. The polarity switch flips the sign; it does not remove a delay.',
     ],
-    warn: 'The top and bottom mics hear DIFFERENT heads, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference and the polarity setting; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.',
+    warn: 'The top and bottom mics hear DIFFERENT heads, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference and the polarity setting; their DEPTH depends on the two levels, which this graph estimates from distance alone — read the depths as rough. Judge the pair by ear, in mono, at matched levels.',
   },
   practice: {
     gain: 'tm.prac.gain',

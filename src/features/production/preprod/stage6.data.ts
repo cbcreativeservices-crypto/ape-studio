@@ -640,7 +640,7 @@ export const STAGE6_READINESS: StageDef = {
           fieldId: "decision_authority",
           label: "Who decides to continue, pause, simplify, relocate, reschedule or cancel?",
           kind: "text",
-          help: "One name, on the day, reachable. For safety decisions this is the person with stop-work authority from stage 3; say so if it is the same person.",
+          help: "One name, on the day, reachable. For safety decisions this is the person responsible for safety from stage 3, who can stop the show; say so if it is the same person.",
           required: true
         },
         {

@@ -154,7 +154,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               <DrumStatus playing={sn.playing} pending={sn.pending} failed={sn.failed} rendering={sn.status === 'rendering'} idle="stopped · ride STRAINER or BOTTOM, then ▶ STRIKE; try a soft STROKE" label="the snare" />
               <Card>
                 <Point title="Sensitivity">The wires only rattle while the snare-side head moves them past the strainer's threshold. A tight strainer loses the ghost notes and, wound hard, chokes the whole drum; a loose one buzzes at everything, including the toms.</Point>
-                <Point title="The snare-side head">It is usually 2–3 mil — a sixteenth of a turn moves it. Even it like any head, tight, commonly well above the batter, and let the snare beds do their job. Move BOTTOM (the snare-side head) and hear the wire response and the body change.</Point>
+                <Point title="The snare-side head">It is usually 2–3 mil (thousandths of an inch) — a sixteenth of a turn moves it. Even its tension like any head, keep it tight, often well above the batter, and let the snare beds (edge dips for the wires) do their job. Move BOTTOM (the snare-side head) and hear the wire response and the body change.</Point>
               </Card>
               <WhyCard title="MORE · batter, and separating the sounds">
                 <Body>The batter sets stick feel, the pitch and how much the drum rings: higher is crisper and more articulate, lower is fatter with more body. Head overtones ring at pitch; wire buzz is noise, shaped by the snare-side head; hardware noise (a loose strainer, a rattling butt plate) is a repair, not a tuning. Throw the strainer off (STRAINER to 0) to hear the heads alone.</Body>
@@ -204,7 +204,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               <Landing looking="the bass drum side on, pedal on the right; the beater swings in when you strike." prompt="Set FRONT and PILLOW, ▶ STRIKE." />
               <DrumStatus playing={kick.playing} pending={kick.pending} failed={kick.failed} rendering={kick.status === 'rendering'} idle="stopped · set FRONT and PILLOW, then ▶ STRIKE" label="the bass drum" />
               <Card>
-                <Point title="Front head and pillow">FRONT decides how much the two heads couple: closed is the longest note, a port lets some of the air out (and a microphone in), no front head is the shortest note — the batter alone. PILLOW shortens the decay and takes the overtones first; SUSTAIN is estimated from each render.</Point>
+                <Point title="Front head and pillow">FRONT decides how much the two heads couple: closed is the longest note, a port lets some of the air out (and a microphone in), no front head is the shortest note — the batter alone. PILLOW shortens the decay and takes the overtones first; SUSTAIN is estimated from the current settings.</Point>
                 <Point title="Beater, low end, pitch">A harder stroke is louder, with more click and a deeper bend. A felt beater gives a thump, plastic or wood a click — this model plays the click. A lower batter gives more low end but a slower, flappier response under fast playing.</Point>
               </Card>
               <WhyCard title="MORE · muffling and internal contact">
@@ -248,7 +248,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               <Feedback tone="info">{`${goalInfo.label}. ${goalInfo.start} ${goalInfo.hint}`}</Feedback>
               {verdict ? <Feedback tone={verdict.met ? 'ok' : 'warn'}>{`${verdict.met ? 'Goal met. ' : 'Not yet. '}${verdict.lines.join(' ')}`}</Feedback> : null}
               <Card>
-                <Point title="Credit">Meet two of the four goals (MET in the readouts; pick the next with GOAL below). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
+                <Point title="Credit">Meet two of the four goals (MET in the readouts; pick the next with GOAL below). Every goal starts from a drum that fails it; CHECK judges the drum as you have set it — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
                 <Point title="Practice drum">{`${gSpec.name}. Pick another below (the drum resets for it):`}</Point>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {DRUM_LIST.map((d) => (

@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal (clearly on top — more than in rock), kick and bass, snare/clap, piano or main harmonic instrument, nylon guitar and percussion, backing vocals, pads and strings, effects returns. The vocal sits roughly 2–4 dB above the densest instrument. Low end is clean and round: in dance-pop the kick owns 50–70 Hz and the bass fills around it; in ballads, carve bass and piano left hand so 150–300 Hz stays clear. Center vocal, kick, snare and bass; pan congas opposite timbales (two metal-shelled drums with cymbal and cowbells) or shaker (30–60 percent), guitars opposite each other, strings and BGVs wide. Percussion is sparkle and motion, not volume."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal (clearly on top — more than in rock), kick and bass, snare/clap, piano or main harmonic instrument, nylon guitar and percussion, backing vocals, pads and strings, effects returns. The vocal sits roughly 2–4 dB above the densest instrument. Low end is clean and round: in dance-pop the kick owns 50–70 Hz and the bass fills around it; in ballads, carve bass and piano left hand so 150–300 Hz stays clear. Center vocal, kick, snare and bass; pan congas opposite timbales (two metal-shelled drums with cymbal and cowbells) or shaker (each 30–60 percent off center), guitars opposite each other, strings and BGVs wide. Percussion is sparkle and motion, not volume."
     }
   ],
   "eq": {
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal is the product: warm low mids, clean presence, smooth air. Spanish has five pure vowels and syllable-timed delivery, so consonants (d, t, tapped r, final s) carry intelligibility; presence at 2–4 kHz matters more than extra top. Belted ballad climaxes are the danger zone; a dynamic EQ dip of 2–4 dB around 3–5 kHz that responds only when the singer pushes is the usual fix. Pitch correction is normal and expected in contemporary releases but should stay transparent on ballads; overtly tuned effects belong only in urban-pop crossovers. Doubles and harmonies are common in choruses, panned wide and tucked 6–10 dB under the lead. Live, some artists use handheld condensers and others dynamic mics; with dancing singers on thrust stages, ring out every vocal position. When the singer works near the PA, ride the vocal down between lines at the desk. Keep a spare mic on a mirrored channel."
+      "text": "The lead vocal is the product: warm low mids, clean presence, smooth air. Spanish has five pure vowels and syllable-timed delivery, so consonants (d, t, tapped r, final s) carry intelligibility; presence at 2–4 kHz matters more than extra top. Belted ballad climaxes are the danger zone; a dynamic EQ dip of 2–4 dB around 3–5 kHz that responds only when the singer pushes is the usual fix. Pitch correction is normal and expected in contemporary releases but should stay transparent on ballads; overtly tuned effects belong only in urban-pop crossovers. Doubles and harmonies are common in choruses, panned wide and tucked 6–10 dB under the lead. Live, some artists use handheld condensers and others dynamic mics; with dancing singers on thrust stages, ring out every vocal position. When the singer works near the PA, ride the vocal down between lines at the desk. Keep a spare mic on a mirrored channel (a second channel set up exactly like the lead’s)."
     }
   ],
   "loudness": [
@@ -329,7 +329,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Study the album; fans know the recordings intimately. Build on the producer’s printed sounds rather than rebuilding them.",
+      "text": "Study the album; fans know the recordings intimately. Build on the sounds the producer put on the album rather than rebuilding them.",
       "bullet": true
     },
     {
@@ -337,7 +337,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Keep processing simple and onboard so console swaps and guest duets are painless.",
+      "text": "Keep processing simple and inside the console (onboard) so console swaps and guest duets are painless.",
       "bullet": true
     },
     {

@@ -44,7 +44,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 1 · The Speech System ─────────────────────────────────────────────────
   p1: {
     intro: {
-      learning: 'The parts that make speech, in the order the air meets them: the lungs power it, the vocal folds buzz, the cavities shape the buzz, and the movers form words.',
+      learning: 'The parts that make speech, in the order air meets them: lungs power it, vocal folds buzz, cavities shape the buzz, and the movers (tongue, teeth, lips, jaw) form words.',
       start: 'Tap 1 · LUNGS, then work up to 10 · LIPS and read each card. Then tap 5 · SOFT PALATE and 6 · NASAL CAVITY to see how air reaches the nose.',
     },
     seeing: [
@@ -136,7 +136,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Put a finger on your throat. Say “sss”, then “zzz”, tapping UNVOICED · S and VOICED · Z as you go: you feel the buzz only on Z.',
-      'Tap VOICED: the trace reads pulses → pitch + harmonics. With motion on, the note says SLOW MOTION · ABOUT 100× SLOWER.',
+      'Tap VOICED: the trace reads pulses → pitch + harmonics. Unless reduced motion is on, the note says SLOW MOTION · ABOUT 100× SLOWER.',
       'Tap the F / V pair, then UNVOICED · F: the card puts the hiss at the lower lip against the upper teeth.',
     ],
   },
@@ -255,7 +255,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'On "S" there’s very little low down; the energy peaks between 4 and 10 kHz, far above the vowel.',
-      'On VOWEL · AH you see the voice’s harmonics, mostly below 1.5 kHz, gone off the bottom of the scale well before 4 kHz.',
+      'On VOWEL · AH you see the voice’s harmonics, mostly below 1.5 kHz, too quiet to show well before 4 kHz.',
       'The two barely overlap. That gap is what a de-esser uses, and what a presence boost (an EQ lift in the upper frequencies) hits by accident.',
     ],
     teaches: [
@@ -287,7 +287,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'In the UNDERSTANDING CHECK at the foot, tap an answer. A wrong pick explains why, and you try again.',
     ],
     changes: [
-      'Direct voice and Room read against direct voice at 12", Plosive air against the 12" puff. Proximity bass is the lift; Voice over noise, the gap to the noise.',
+      'Direct voice and Room compare to direct voice at 12", Plosive air to the puff at 12". Proximity bass is the lift; Voice over noise, how far voice tops noise.',
       'Direct voice spreads as it travels, so moving in adds about 6 dB per halving of distance. Room sound comes from all sides and holds steady: closer is drier.',
       'Plosive air climbs far faster; Proximity bass, a directional mic’s close-up lift, grows too.',
     ],
@@ -342,7 +342,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'Eight problem keys: SIBILANCE, PLOSIVES, MOUTH CLICKS, NASALITY, MUFFLED, OFF-AXIS, EXCESSIVE DISTANCE, POPPING BREATH.',
-      'One drawing: a spectrum against a clean voice in gray (… · VS A CLEAN VOICE (GRAY)), or, for plosives, clicks and breath, a 250 ms waveform (… · WAVEFORM).',
+      'One drawing: a spectrum against a clean voice in gray (its title ends · VS A CLEAN VOICE (GRAY)), or, for plosives, clicks and breath, a 250 ms waveform (its title ends · WAVEFORM).',
       'Below: a cue line, then CAUSE, WHAT YOU HEAR and FIX.',
     ],
     control: [
@@ -383,7 +383,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'A right pick turns green with its explanation, and the card locks.',
-      'Each question targets a common mix-up, such as loudness versus voicing, pitch versus vowel, mesh versus EQ, the epiglottis versus the soft palate, or a pitch number versus a person.',
+      'Each question targets a common mix-up, such as loudness versus voicing, pitch versus vowel, mesh versus EQ, the epiglottis versus the soft palate, or a typical pitch number versus a real person’s voice.',
     ],
     teaches: [
       'Voicing, formants, pop filters, the soft palate, sibilance, voice ranges and close-up boom each explain one step in how speech reaches a microphone.',
@@ -462,7 +462,7 @@ export const SPEECH_END_GUIDE: ScreenGuide = {
     'START OVER (PRACTICE), in the strip’s list, clears the page marks; a passed check stays done.',
   ],
   teaches: [
-    'The lab’s ideas in order: the parts of the voice, how a voice is made, voicing, vowels, consonants, plosives, sibilance, distance, how voices differ, and common problems.',
+    'How speech works, in order: the parts of the voice, how a voice is made, voicing, vowels, consonants, plosives, sibilance, distance, how voices differ, and common problems.',
     'Together they follow speech from the lungs to the microphone, so any voice problem can be traced back to where it starts.',
   ],
   tryThis: [

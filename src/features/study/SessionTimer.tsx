@@ -159,7 +159,7 @@ export function SessionTimerModal({ timer }: { timer: SessionTimerApi }) {
             <Text style={styles.toggleText}>Show the timer on screen</Text>
           </Pressable>
           <Text style={styles.toggleHint}>
-            {show ? 'A small countdown shows in the meter row.' : 'Hidden — you’ll get a banner when time is up.'}
+            {show ? 'A small countdown shows next to the progress bar.' : 'Hidden — you’ll get a banner when time is up.'}
           </Text>
 
           <Pressable style={styles.startBtn} onPress={() => timer.start(minutes, show)} accessibilityRole="button">

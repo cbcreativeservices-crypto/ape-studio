@@ -219,7 +219,7 @@ export const CELEBRATIONS: Record<CelebrationId, CelebrationDef> = {
     title: 'REQUIREMENT COMPLETE',
     subject: '{requirement_name}',
     body: [
-      'Excellent work. This standing requirement is now complete and has been applied to every certificate and professional program that requires it.',
+      'Excellent work. This requirement is now complete and has been applied to every certificate and professional program that requires it.',
     ],
     actions: [
       { label: 'VIEW WHERE IT APPLIES', kind: 'view-requirement', primary: true },

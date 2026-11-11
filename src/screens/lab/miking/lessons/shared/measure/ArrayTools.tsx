@@ -224,7 +224,7 @@ export function useLineArrayStep({ words, onDone }: { words: LineArrayWords; onD
               ? `At ${d} mm the line keeps clear of ambiguous lobes up to about ${fmtHz(fmax)} — above your top frequency of ${fmtHz(top)}.`
               : `At ${d} mm ambiguous lobes appear above about ${fmtHz(fmax)} — below your top frequency of ${fmtHz(top)}: a direction there could be read in more than one place.`}
           </Point>
-          <Point title="A DESIGN PRINCIPLE, NOT ONE SPACING">For a simple uniform line, spacing at or below half a wavelength of the highest frequency of interest; a wider aperture sharpens the angle at a given wavelength. Practical arrays use irregular spacing and processing with limits of their own — their maker states the usable band.</Point>
+          <Point title="A DESIGN PRINCIPLE, NOT ONE SPACING">For a simple uniform line, keep the spacing at or below half a wavelength of the highest frequency you need; a wider aperture (the array’s overall width) sharpens the angle at a given wavelength. Practical arrays use irregular spacing and processing with limits of their own — their maker states the usable band.</Point>
         </Card>
         <Note>{`Looked at: a spacing that keeps clear ${seen.ok ? '✓' : '○'} · one that aliases below the top ${seen.bad ? '✓' : '○'}.`}</Note>
       </>
@@ -323,7 +323,7 @@ export function useProbeStep({ words, onDone }: { words: ProbeWords; onDone: () 
           </Point>
           <Point title="THE SPACER AND THE CHECKS">The spacer and the calibration set the probe’s usable band — a wider spacer toward the lows, a narrower one toward the highs; its data gives each one’s range. Check the pressure and phase calibration and the residual intensity as its procedure says.</Point>
         </Card>
-        <Note>{`On paper only, without a qualified operator: looked at ${seen.along ? '✓' : '○'} along the normal · ${seen.across ? '✓' : '○'} across it · ${seen.back ? '✓' : '○'} against it.`}</Note>
+        <Note>{`On paper only; real use needs a qualified operator — looked at ${seen.along ? '✓' : '○'} along the normal · ${seen.across ? '✓' : '○'} across it · ${seen.back ? '✓' : '○'} against it.`}</Note>
       </>
     ),
   };
@@ -409,7 +409,7 @@ export function UnitsCard() {
   return (
     <Card>
       <Point title="AIR · dB re 20 µPa">Airborne sound pressure levels are usually given against 20 micropascals.</Point>
-      <Point title="WATER · dB re 1 µPa">Underwater levels are usually given against 1 micropascal. The references alone are {WATER_AIR.refGapDb.toFixed(0)} dB apart — and the same sound intensity in water and in air differs by about {WATER_AIR.equalIntensityDb} dB in all, because water and air carry sound differently.</Point>
+      <Point title="WATER · dB re 1 µPa">Underwater levels are usually given against 1 micropascal. The references alone are {WATER_AIR.refGapDb.toFixed(0)} dB apart — and the same sound intensity in water and in air gives levels about {WATER_AIR.equalIntensityDb} dB apart in all, because water and air carry sound differently.</Point>
       <Point title="NOT COMPARABLE BY SUBTRACTING">So an underwater number and an airborne number are not directly comparable, and no fixed amount subtracted makes them so. Report each with its medium and its reference.</Point>
     </Card>
   );
@@ -498,7 +498,7 @@ export function useKitStep({ words, onDone }: { words: KitWords; onDone: () => v
             <UnitsCard />
           </>
         )}
-        <Note>{`Drawn as objects, for a qualified operator — looked at: camera ${seen.has('camera') ? '✓' : '○'} · ultrasonic ${seen.has('ultra') ? '✓' : '○'} · hydrophone ${seen.has('hydro') ? '✓' : '○'}.`}</Note>
+        <Note>{`Shown as drawings; the real devices are for a qualified operator — looked at: camera ${seen.has('camera') ? '✓' : '○'} · ultrasonic ${seen.has('ultra') ? '✓' : '○'} · hydrophone ${seen.has('hydro') ? '✓' : '○'}.`}</Note>
       </>
     ),
   };
@@ -626,7 +626,7 @@ function HydroView({ w, h, label, k }: { w: number; h: number; label: string; k:
         </Group>
       </Canvas>
       <Text style={[styles.cap, { top: 3, left: 8, right: 8, fontSize: 9.5 * k }]} {...fitValue(9.5 * k)}>
-        HYDROPHONE ON A MOORING · SIZES A DRAWING
+        HYDROPHONE ON A MOORING · NOT TO SCALE
       </Text>
       <Text style={[styles.tag, { left: xf.ox + (-300 + 120) * xf.s, top: xf.oy + 1950 * xf.s, fontSize: 10 * k, color: '#9cc4e8' }]} {...fitValue(10 * k)}>
         dB re 1 µPa

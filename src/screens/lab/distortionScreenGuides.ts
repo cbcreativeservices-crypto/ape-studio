@@ -74,21 +74,21 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     },
     seeing: [
       'A sine enters at IN ▸ (IN = −20 dBFS sine), passes the green DRIVE stage and leaves at ▸ OUT as the bright wave you hear.',
-      'Color shows level: blue near the middle, red at the 0 dBFS lines. With PINK NOISE: NOISE · SINE DRAWN, a sine drawn in its place.',
-      'Dashed red lines: 0 dBFS, where HARD and SOFT stop. Faint dashed wave: DRIVEN (before clip), the wave unclipped.',
+      'Color shows level: blue near the middle, red at the 0 dBFS lines. On PINK NOISE a sine is drawn instead, labeled NOISE · SINE DRAWN.',
+      'Dashed red lines: 0 dBFS, which HARD and SOFT never pass. Faint dashed wave: DRIVEN (before clip), unclipped.',
       'TYPE, DRIVE and MIX show your settings.',
     ],
     control: [
       'Tap ▶ in the header, or the display, to play; ■ stops. It plays at −20 dBFS, a digital level; DRIVE raises it.',
       'Drag the DRIVE fader (+6 to +36 dB) to set how hard the sine is pushed into the DRIVE stage.',
-      'TYPE picks HARD CLIP, SOFT (TANH) or TUBE (ASYM). OS picks ON (CLEAN) or OFF (ALIASING); you hear it on SINE 5 kHz; it isn’t drawn. MIX picks 100% or 50% PARALLEL.',
+      'TYPE picks HARD CLIP, SOFT (TANH) or TUBE (ASYM). OS (oversampling) picks ON (CLEAN) or OFF (ALIASING): heard on SINE 5 kHz, not drawn. MIX picks 100% or 50% PARALLEL.',
       'SOURCE picks SINE 220 Hz, 5 kHz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ after the readouts explains this display. DESIGNED RESPONSE in LAB NOTES draws one still, captioned cycle.',
       'LAB NOTES also holds two CHECK YOURSELF questions; ▴ HIDE DISPLAY gives them room. ⤢ FULL SCREEN enlarges the display.',
     ],
     changes: [
       'On HARD CLIP, DRIVE +12 dB lifts the sine to −8 dBFS, still round; past +20 dB it is cut flat at 0 dBFS. SOFT and TUBE bend gently long before.',
       'HARD and SOFT bend both halves alike: odd harmonics (660, 1100 Hz… from 220 Hz). TUBE bends them unevenly, adding even ones (440, 880 Hz…).',
-      'At MIX 50%, +24 dB, the clean wave is 20 dB under the driven one, so grit stays; real parallel turns the driven copy down.',
+      'At MIX 50%, +24 dB, the clean wave is 20 dB under the driven one, so grit stays; in practice you turn the driven copy down.',
     ],
     teaches: [
       'Distortion creates new frequencies; turning up or EQ can’t. The wave’s shape decides which ones.',
@@ -127,7 +127,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     ],
     teaches: [
       'What harmonics, odd and even, clipping, saturation, aliasing, oversampling, parallel distortion and DC offset mean.',
-      'Why an uneven bend leaves a DC offset (the wave shifted off center), and why a high-pass after the shaper removes it.',
+      'Why an uneven bend leaves a DC offset (the wave shifted off center), and why a high-pass after the DRIVE stage (the shaper) removes it.',
       'Why a bent sine becomes a harmonic series: whole-number multiples of the note you put in.',
     ],
     tryThis: [
@@ -150,7 +150,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     control: [
       'Tap an answer. If it’s right, you see CORRECT and a short explanation, and the card locks. If not, you see NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
       'There is no score and no limit on tries.',
-      'Use the tabs under the title to look something up on LEARN or EXPLORE, such as a clip shape; answers already right stay right. If you leave the lab before the last one, the check starts over.',
+      'Use the tabs under the title to look something up on LEARN or EXPLORE, such as a clip shape; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],
     changes: [
       'Each right answer stays right while you are in this lab.',

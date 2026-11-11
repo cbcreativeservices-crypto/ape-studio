@@ -64,7 +64,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     changes: [
       'The flanger mixes in a copy of your sound 1–2 ms late. Where it lands half a cycle late, it cancels the dry sound: a notch. Notches repeat every 1 ÷ delay: every 500 Hz at 2.0 ms.',
-      'The scale is spaced by octaves, so even Hz steps crowd to the right and fill a band up high.',
+      'The Hz scale runs in octaves, so evenly spaced notches crowd right and fill a band up high.',
       'The LFO (a slow wobble) moves the delay, so every notch slides at once: the jet. Positive FDBK lifts tall, narrow peaks between them.',
     ],
     teaches: [
@@ -75,7 +75,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     tryThis: [
       'Open LAB NOTES and drag CENTER from 2.0 ms to 0.50 ms: the caption under DESIGNED RESPONSE goes from notches every 500 Hz to every 2000 Hz, and the notches on OUT spread apart.',
       'Step FDBK from 0% to 70% METALLIC: on OUT the peaks between the notches rise well above the dotted input line and narrow. Listen for the comb starting to ring.',
-      'Set MIX to 100%: the deep notches vanish, with no dry sound left to cancel. Add FDBK −70% HOLLOW: hollow only at 100%. At 50% EVEN the same setting draws a nearly flat trace.',
+      'Set MIX to 100%: the deep notches vanish, with no dry sound left to cancel. Add FDBK −70% HOLLOW: it sounds hollow only at MIX 100%. At 50% EVEN the same setting draws a nearly flat trace.',
     ],
   },
 
@@ -87,7 +87,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the Flanger guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
-      'It starts with what a flanger is, then CONTROLS: the display, RATE, DEPTH, CENTER, FDBK, MIX, LFO Waveform, Stereo width / LFO phase offset, and Through-Zero (TZF, marked ADV).',
+      'It starts with what a flanger is, then CONTROLS: the display, RATE, DEPTH, CENTER, FDBK, MIX, LFO Waveform, Stereo width / LFO phase offset, and Through-Zero (TZF, marked ADV for advanced).',
       'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -97,7 +97,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     changes: [
       'Read this beside EXPLORE: most entries are something you can hear or see there.',
       'On EXPLORE, CENTER is the CENTER fader, RATE and DEPTH share the SWEEP key, and FDBK and MIX are keys of their own.',
-      'LFO Waveform and Stereo width are common on flangers; Through-Zero is a specialty. None has a key on this rack, and their entries say so (its left and right sweeps always sit a quarter cycle apart).',
+      'LFO Waveform and Stereo width are common on flangers; Through-Zero is a specialty. None has a key on this rack, and their entries say so (this rack’s left and right sweeps always sit a quarter cycle apart).',
     ],
     teaches: [
       'The words for a flanger: comb filter (a row of evenly spaced notches), notch spacing, LFO (the slow wobble that moves the delay), feedback (regeneration), through-zero.',

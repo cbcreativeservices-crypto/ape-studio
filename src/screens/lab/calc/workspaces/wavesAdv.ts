@@ -16,7 +16,7 @@ const ALIGN: Workspace = {
   reportPrefix: 'ALIGN',
   intro:
     'When two sources — a sub and a top, a woofer and a tweeter, a mic and a DI — reach the listener ' +
-    'at different times, they comb. This workspace turns a physical path offset into the delay that ' +
+    'at different times, they comb-filter (cancel at some frequencies, add at others). This workspace turns a physical path offset into the delay that ' +
     'realigns them, and shows the phase relationship any offset creates at a given frequency.',
   whyItMatters:
     'Time alignment is the difference between a punchy, coherent system and a hollow, phasey one. A ' +
@@ -40,7 +40,7 @@ const ALIGN: Workspace = {
     { key: 'offset', name: 'PATH OFFSET', quantity: 'length', meaning: 'length:pathdiff', placeholder: '1.2', help: 'How much farther one source is than the other.', warn: { test: (x) => x < 0, msg: 'Offset cannot be negative.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'For the delay expressed in samples.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Your session’s sample rate, used to give the delay in samples.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'delay', name: 'DELAY', quantity: 'time', meaning: 'time:delay', defaultUnit: 'ms', placeholder: '3.5', help: 'A delay time to convert back into a path distance.', warn: { test: (x) => x < 0, msg: 'Delay cannot be negative.' } },
   ],
   functions: [
@@ -51,7 +51,7 @@ const ALIGN: Workspace = {
       formula: 'delay = offset / c',
       plainFormula: 'The delay equals the path offset divided by the speed of sound.',
       explain:
-        'When two sources reach the listener at different times they comb. This turns the extra distance one source travels into the delay you add to the CLOSER (earlier) source so both arrive together, and also gives that delay in samples. The speed of sound comes from the air temperature.',
+        'When two sources reach the listener at different times they comb-filter (cancel at some frequencies, add at others). This turns the extra distance one source travels into the delay you add to the CLOSER (earlier) source so both arrive together, and also gives that delay in samples. The speed of sound comes from the air temperature.',
       keySymbols: ['/', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -152,7 +152,7 @@ const IMD: Workspace = {
     'into NEW tones at their sums and differences. Enter two frequencies and see the ' +
     'intermodulation products, including the third-order tones that land close to the originals.',
   whyItMatters:
-    'Unlike harmonic distortion, IMD products are usually NOT musically related to the source, so ' +
+    'Unlike harmonic distortion, intermodulation (IMD) products are usually NOT musically related to the source, so ' +
     'they sound harsh and "wrong." The third-order products (2f₁−f₂ and 2f₂−f₁) are often the worst: with close tones they ' +
     'fall right next to the originals, where you can’t filter them away.',
   example:
@@ -165,7 +165,7 @@ const IMD: Workspace = {
     'Trying to filter third-order products — with close tones, 2f₁−f₂ and 2f₂−f₁ sit so close to the two tones you fed in that no practical filter can split them off.',
   ],
   warnings:
-    'Frequency-only model: products at |m·f₁ ± n·f₂|; order = |m|+|n|. Whether each product is ' +
+    'Frequency-only model: products at |m·f₁ ± n·f₂| for whole numbers m and n; order = |m|+|n|. Whether each product is ' +
     'audible depends on the nonlinearity and levels, which this does not model — it locates the ' +
     'frequencies, not their amplitudes.',
   glossary: ['Intermodulation', 'Distortion', 'Harmonics', 'nonlinear distortion', 'Frequency'],

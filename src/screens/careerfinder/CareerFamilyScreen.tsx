@@ -88,7 +88,7 @@ export function CareerFamilyScreen() {
       notify(
         'This topic stays',
         coreLocked
-          ? 'Required co-requisites stay in your list until you complete them.'
+          ? 'This is a required topic, so it stays in your list until you complete it.'
           : 'This topic is always part of your list.',
       );
       return;
@@ -278,7 +278,7 @@ export function CareerFamilyScreen() {
       {entries.length ? (
         <View style={{ gap: 8 }}>
           <SectionLabel>COMMON ENTRY POINTS</SectionLabel>
-          <Body muted>Titles in this family that usually ask the least formal preparation to get started.</Body>
+          <Body muted>Titles in this family that usually need the least formal preparation to get started.</Body>
           {entries.map((c) => <CareerRow key={c.id} c={c} open={openId === c.id} onToggle={() => setOpenId(openId === c.id ? null : c.id)} />)}
         </View>
       ) : null}
@@ -337,8 +337,8 @@ function CareerRow({ c, open, onToggle }: { c: Career; open: boolean; onToggle: 
           <Text style={styles.detail}><Text style={styles.detailLabel}>HOW PEOPLE WORK  </Text>{c.workModel}</Text>
           <Text style={styles.detail}><Text style={styles.detailLabel}>TYPICAL PREPARATION  </Text>{c.preparation}</Text>
           <Text style={styles.detail}><Text style={styles.detailLabel}>AUDIO IN THIS ROLE  </Text>{CENTRALITY[c.centrality].explain}</Text>
-          {c.regulated ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ Licensed, credentialed or restricted-entry occupation in many jurisdictions. Academy study does not lead to that license or credential — verify requirements with the licensing body or employer where you live.</Text> : null}
-          {c.professionalEngineer ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ In many jurisdictions, offering engineering services to the public or sealing reports requires a Professional Engineer license.</Text> : null}
+          {c.regulated ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ Licensed, credentialed or restricted-entry occupation in many places. Academy study does not lead to that license or credential — verify requirements with the licensing body or employer where you live.</Text> : null}
+          {c.professionalEngineer ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ In many places, offering engineering services to the public or stamping reports with an engineer’s seal requires a Professional Engineer license.</Text> : null}
           <Text style={[styles.detail, { color: colors.textMuted }]}>{c.status}. Common pathways are described, not mandatory requirements.</Text>
         </View>
       ) : null}

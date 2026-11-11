@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one snare mic in the right order, choose and justify a setup for two different briefs, and say what would justify a bottom mic.',
     credit: { scenarios: ['sn.prac.order', 'sn.prac.gain', 'sn.prac.setup1', 'sn.prac.setup2', 'sn.prac.3', 'sn.mix.1', 'sn.mix.2', 'sn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real drum.' },
-    takeaway: 'Safe clearance from the sticks, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+    takeaway: 'To pass, show safe clearance from the sticks, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay. A brand or a “loudest” position does not pass — and more than one setup can.',
   },
 };
 
@@ -100,7 +100,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The stick strikes the exact center of the batter head. Which of its vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center — so a center strike drives only the ring-shaped ones, the lowest shape among them; off center, more join in.',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center — so a center strike drives only the ring-shaped ones, including the lowest shape; off center, more join in.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',
       'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there, so a center strike cannot push that shape.',
@@ -209,7 +209,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says 2.5–7.5 cm above the RIM. On this drum the rim stands about 1 cm above the head, and your readout says 5 cm above the batter HEAD. Are you in it?',
     options: ['Yes — measured from the rim, that is about 4 cm: inside the band', 'Yes — 5 cm is inside the band, whichever surface it is read from', 'No — a reading from the head cannot be checked against a rim band'],
     correct: 'Yes — measured from the rim, that is about 4 cm: inside the band',
-    explain: 'A distance means something only with its reference surface. The rim stands about 1 cm above the head here, so 5 cm above the head is about 4 cm above the rim — inside 2.5–7.5 cm. Had the readout said 2 cm above the head, the mic would be only 1 cm above the rim: under the start, and close to the sticks.',
+    explain: 'A distance means something only with its reference surface. The rim stands about 1 cm above the head here, so 5 cm above the head is about 4 cm above the rim — inside 2.5–7.5 cm. Had the readout said 2 cm above the head, the mic would be only 1 cm above the rim: below the starting band, and close to the sticks.',
     why: {
       'Yes — 5 cm is inside the band, whichever surface it is read from': 'Right verdict, wrong reason. The surface matters: 2 cm above the head would be only 1 cm above the rim — outside the band.',
       'No — a reading from the head cannot be checked against a rim band': 'It can: add or take away the step between the two surfaces. Here the rim is about 1 cm above the head.',
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the bottom mic’s polarity. What happens to the arrival-time difference?',
     options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
+    explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; the delay (Δt) does not.',
     why: {
       'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -367,7 +367,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The top mic works alone, the pair adds wire detail, it holds in mono',
     explain: 'A bottom mic blends a different perspective. If the pair loses body or turns uneven, adjust position, level and polarity — or leave the bottom mic out.',
     why: {
-      'Two channels give the mix engineer more options to work with later on': 'More channels also add spill, a cable and a combining check. A second mic should earn its place.',
+      'Two channels give the mix engineer more options to work with later on': 'More channels also add spill, a cable and a check of how the mics combine. A second mic should earn its place.',
       'The snare needs more level in the mix than one mic can give': 'Level comes from gain and the fader, not from another mic.',
     },
   },
@@ -401,7 +401,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Top and bottom snare mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on the bottom mic', 'Turning the bottom mic up until it matches the top'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks (and answers the heads’ opposite start); level changes their depth; neither removes the delay.',
+    explain: 'Only the path lengths set the delay. Polarity swaps the notches and peaks (and corrects the heads’ opposite start); level changes their depth; neither removes the delay.',
     why: {
       'Flipping the polarity switch on the bottom mic': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the bottom mic up until it matches the top': 'Level changes the depth of the notches, not where they are or the delay behind them.',
@@ -437,7 +437,7 @@ const symptoms: Symptom[] = [
   {
     id: 'sn.sym.body',
     observation: 'The close snare lacks body when added to the overheads',
-    firstChecks: 'Compare levels and both polarity states in mono; evaluate placement and arrival-time interaction.',
+    firstChecks: 'Compare levels and both polarity states in mono; check placement and how the arrival times combine.',
     options: ['Levels and both polarity states in mono, then position and timing', 'Boost the low end on the snare channel first, before anything else', 'Mute the overheads, since they are causing the problem'],
     correct: 'Levels and both polarity states in mono, then position and timing',
     explain: 'Two mics hearing the same stroke at different times can cancel. Compare in mono at matched levels before reaching for EQ — no switch cures every case.',
@@ -449,7 +449,7 @@ const symptoms: Symptom[] = [
   {
     id: 'sn.sym.bottom',
     observation: 'Adding the bottom mic makes the snare thin or inconsistent',
-    firstChecks: 'Recheck channel identity, relative level, both polarity states, locations, and the complete kit; omit it if it does not help.',
+    firstChecks: 'Recheck which channel is which, relative level, both polarity states, locations, and the complete kit; leave it out if it does not help.',
     options: ['Channel identity, level, both polarity states, positions — or omit it', 'Invert the bottom mic and leave it, since that one is wrong', 'Turn the bottom mic up until the snare sounds full again'],
     correct: 'Channel identity, level, both polarity states, positions — or omit it',
     explain: 'Check which channel is which, then the pair at matched levels in both polarity states, with the kit. If it still does not help, leave it out.',
@@ -507,7 +507,7 @@ const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives th
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right surface', role: 'required', feedback: 'Say why it is a good place to begin, and whether it is measured from the rim or a head.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay out of the sticks’ path, rimshots and the hi-hat', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a snare', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
-const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest snare of any position on the drum', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and no position is “the loudest” on every drum.' };
+const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest snare of any position on the drum', role: 'wrong', feedback: 'Loudness doesn’t count as a reason — level comes from gain — and no position is “the loudest” on every drum.' };
 
 /** The final task (L84): several setups pass; the reasons are graded. */
 const setupTasks: SetupTask[] = [
@@ -649,7 +649,7 @@ const wedges: Wedge[] = [
     p: toLesson(KIT_FILL.x, KIT_FLOOR_Y, KIT_FILL.z),
     lift: 150,
     faces: KIT_FILL.faces,
-    note: 'It sits on the drummer’s side of the kit. Aimed down at the snare, the mic’s front half faces that way: little of a null reaches it — the drum and the player block part of its path.',
+    note: 'It sits on the drummer’s side of the kit. Aimed down at the snare, the mic’s front half faces that way, so its null does little here — the drum and the player block part of its path.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout (the kick lesson’s same monitor); no source gives the position' },
   },
   {
@@ -719,7 +719,7 @@ export const M02_LESSON: Lesson = {
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience already hears the acoustic snare; the PA adds what the room needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges on the floor; the room and the overheads may already carry much of the snare.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the stage is loud. Stage spill, the hi-hat and the gain available before feedback push toward close, aimed pickup.',
+    stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the stage is loud. Stage spill, the hi-hat and the gain available before feedback all push toward a close, aimed mic.',
     studio: 'STUDIO: no wedges on the floor, repeated trials are practical when the drummer stops, and the overheads or the room may already carry the snare — a close mic adds control when it helps.',
   },
   diagnostic,

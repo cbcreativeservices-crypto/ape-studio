@@ -34,8 +34,8 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How pitch correction works: error is counted in cents, 100 to a semitone. AMOUNT sets how far a note is pulled toward pitch, SPEED how fast.',
-      start: 'Tap PLAY and listen to the out-of-tune melody. Slide AMOUNT to OFF and back to 100%. Then switch SPEED between FAST — SNAP and SLOW — GLIDE and watch ENDS.',
+      learning: 'How pitch correction works: error is counted in cents, 100 to a semitone. AMOUNT sets how far a note is pulled toward the correct pitch, SPEED how fast.',
+      start: 'Tap PLAY and listen to the out-of-tune melody. Slide AMOUNT to OFF and back to 100%. Then switch SPEED between FAST — SNAP and SLOW — GLIDE and watch ENDS, where the most out-of-tune note finishes.',
     },
     seeing: [
       'The cents grid has one vertical line per semitone, note names along the top. A cent is 1/100 of a semitone. Each row is one note of a six-note demo melody, sung out of tune on purpose.',
@@ -45,12 +45,12 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
     control: [
       'Slide the AMOUNT fader to set how far each note is pulled toward its line, from OFF to 100%. Every curve re-bends as you slide.',
       'Tap SPEED to choose FAST — SNAP (about 25 ms), MEDIUM (about 120 ms) or SLOW — GLIDE (about 400 ms). The tray stays open so you can compare.',
-      'Tap PLAY, the header ▶ or the grid to play the melody once (1.1 s a note). PLAY stays lit: change AMOUNT or SPEED and the pass plays again with the new setting.',
+      'Tap PLAY, the header ▶ or the grid to play the melody once (1.1 s a note). PLAY stays lit: change AMOUNT or SPEED and the melody plays again with the new setting.',
       'Long-press AMOUNT, SPEED or a readout to read about it. LAB NOTES below hold the numbers, the demo singer and two quick questions.',
     ],
     changes: [
       'Raise AMOUNT and the note ends closer to its line: 50% removes half the error; 100% lands on it, given time.',
-      'Pick a faster SPEED and the curve bends sooner. In each time constant (25, 120 or 400 ms) the pitch closes about two-thirds of the gap still left.',
+      'Pick a faster SPEED and the curve bends sooner. In each time constant (the SPEED time: 25, 120 or 400 ms) the pitch closes about two-thirds of the gap still left.',
       'On SLOW the 1.1 s note ends before the glide finishes, so ENDS stays above 0¢. What you hear follows the curve you see.',
     ],
     teaches: [
@@ -91,7 +91,7 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
       'Why a cent is a ratio, not a fixed number of hertz: the same cent error is a different hertz gap at every pitch.',
     ],
     tryThis: [
-      'Read the PRO TIP about OFF → 50% → 100%. Then on EXPLORE, light PLAY and move AMOUNT: each change plays the pass again.',
+      'Read the PRO TIP about OFF → 50% → 100%. Then on EXPLORE, light PLAY and move AMOUNT: each change plays the melody again.',
       'Read the mistake about short notes. Then on EXPLORE set 100% and SLOW — GLIDE: ENDS reads 3¢, because the glide hasn’t finished.',
     ],
   },

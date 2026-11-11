@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up overheads in the right order, choose and justify a method for two different briefs, and say what would justify close spot mics.',
     credit: { scenarios: ['oh.prac.order', 'oh.prac.gain', 'oh.prac.setup1', 'oh.prac.setup2', 'oh.prac.3', 'oh.mix.1', 'oh.mix.2', 'oh.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe mounting, power and gain set in order, a method chosen for the role and the outputs, distances measured to the snare and a mono check pass. A brand or the widest pair does not — and more than one method can pass.',
+    takeaway: 'What passes: safe mounting, power and gain set in order, a method chosen for the role and the outputs, distances measured to the snare and a mono check. A brand or the widest pair does not — and more than one method can pass.',
   },
 };
 
@@ -423,7 +423,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.hat',
     observation: 'The hi-hat or a crash swamps one side of the pair',
-    firstChecks: 'Move or re-aim the array and inspect capsule distance to that cymbal; review the stereo center and the drummer’s balance.',
+    firstChecks: 'Move or re-aim the pair and check each capsule’s distance to that cymbal; review the stereo center and the drummer’s balance.',
     options: ['Move or re-aim the pair; check each mic’s distance to that cymbal', 'Turn that whole side of the pair down until that cymbal sits back', 'Ask the drummer to take that cymbal off the kit'],
     correct: 'Move or re-aim the pair; check each mic’s distance to that cymbal',
     explain: 'One mic is much closer to that cymbal. Move or re-aim the pair, check the stereo center — and the player’s own balance.',
@@ -435,7 +435,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.snareSide',
     observation: 'The snare pulls to one side when the close snare mic comes up',
-    firstChecks: 'Inspect the overhead audio center, level and aim; compare left/right capsule distance to the snare and the intended panning.',
+    firstChecks: 'Check the overheads’ stereo center, level and aim; compare the two capsules’ distances to the snare, then the panning you intended.',
     options: ['The pair’s center and its two snare distances, then panning', 'Pan the close snare mic hard to the other side to balance it', 'Invert the polarity of both overheads at the same time'],
     correct: 'The pair’s center and its two snare distances, then panning',
     explain: 'If one overhead is nearer the snare, the snare leans that way. Center the pair on the line through the kick and the snare, and match the snare distances.',
@@ -483,7 +483,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.boom',
     observation: 'A boom or a cable is in the player’s path',
-    firstChecks: 'Stop; secure and reposition the assembly, route cable safely, and repeat the player’s full-motion clearance check.',
+    firstChecks: 'Stop; secure and reposition the mic and boom, route cable safely, and repeat the player’s full-motion clearance check.',
     options: ['Stop the drummer; secure, move and reroute; check clearance again', 'Keep going carefully and fix it at the end of the song', 'Tape the cable along the cymbal’s boom so it stays out of the player’s reach'],
     correct: 'Stop the drummer; secure, move and reroute; check clearance again',
     explain: 'Clearance comes first: stop, fix the mount and the cable route, and have the drummer show their full movement again.',
@@ -610,7 +610,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.5',
     covers: 'setting',
-    prompt: 'Where does an overhead’s boom stand stand?',
+    prompt: 'Where does an overhead’s boom stand go?',
     options: ['Outside the kit, its boom clear of the player', 'Inside the kit, as close to the mic as it fits', 'Behind the throne, its boom over the player'],
     correct: 'Outside the kit, its boom clear of the player',
     explain: 'The base stands outside the kit; the boom reaches in, counterweighted, out of the sticks’ reach — nothing balanced over the player.',

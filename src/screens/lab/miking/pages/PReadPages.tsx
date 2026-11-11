@@ -38,7 +38,7 @@ export function PTroubleshoot({ lesson, answers, onAnswered, onInteractive, inte
       body: (
         <>
           <Body>Each card is a symptom you may meet. Choose the FIRST things to check; a retry is explained, never penalized.</Body>
-          <Body>{`${lesson.symptoms.filter((s) => s.id in answers).length} of ${lesson.symptoms.length} answered.`}</Body>
+          <Body>{`${lesson.symptoms.filter((s) => s.id in answers).length} answered so far.`}</Body>
           {lesson.symptoms.map((s) => (
             <SymptomCard key={s.id} s={s} answered={s.id in answers} onAnswered={(ok) => onAnswered(s.id, ok)} />
           ))}
@@ -128,7 +128,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
             {canSave ? (
               <KeyButton label="SAVE THIS SHEET" onPress={save} disabled={Object.values(fields).every((v) => !v.trim())} />
             ) : (
-              <Note>{preview ? 'The preview does not keep sheets.' : 'Sheets are kept only when you are signed in to your account.'}</Note>
+              <Note>{preview ? 'Previews don’t keep sheets; members can save them.' : 'Sheets are kept only when you are signed in to your account.'}</Note>
             )}
             {result === 'saved' ? <Note tone="ok">Saved on this device.</Note> : null}
             {sheets.length ? <Body>{`${sheets.length} sheet${sheets.length === 1 ? '' : 's'} on this device for this lesson (the newest 24 are kept).`}</Body> : null}

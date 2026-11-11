@@ -72,7 +72,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one bass mic in the right order, choose and justify a setup for a studio and a stage, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real bass.' },
-    takeaway: 'Safe clearance from the hands, the endpin and a tipping stand, correct power and level checks, pattern and pickup reasoning, and an accurate account of polarity versus delay pass — and more than one setup can pass.',
+    takeaway: 'What passes: safe clearance from the hands, the endpin and a tipping stand, correct power and level checks, pattern and pickup reasoning, and an accurate account of polarity versus delay — and more than one setup can pass.',
   },
 };
 
@@ -115,7 +115,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Near an f-hole there is more output and low-mid body; one spot can also overstate a local resonance. A bridge-oriented view includes more pluck definition.',
     why: {
       'Only the finger attack, with the low end filtered out': 'The f-hole tends to add body, not remove it.',
-      'The whole bass evenly, just as a room mic farther back would hear it': 'Close to one spot, the mic hears that spot. Distance integrates the instrument.',
+      'The whole bass evenly, just as a room mic farther back would hear it': 'Close to one spot, the mic hears that spot. Farther back, it hears the whole instrument blended.',
     },
   },
   hearingCheck(`${P}.set.1`, W),
@@ -231,11 +231,11 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'A stand mic 20 cm in front and a capsule under the strings at 20 cm from the bridge’s foot: the same position?',
-    options: ['Yes: 20 cm is 20 cm, whichever mount holds the mic or part it is measured from', 'No: different geometries — their distances are not interchangeable', 'Yes, as long as both are aimed at the bridge'],
+    options: ['Yes: 20 cm is 20 cm, whatever holds the mic and whatever it is measured from', 'No: different geometries — their distances are not interchangeable', 'Yes, as long as both are aimed at the bridge'],
     correct: 'No: different geometries — their distances are not interchangeable',
     explain: 'A stand mic in front of the strings and a capsule mounted under them are different places measured from different parts. Choose one, then audition the other.',
     why: {
-      'Yes: 20 cm is 20 cm, whichever mount holds the mic or part it is measured from': 'Same number, different reference and place.',
+      'Yes: 20 cm is 20 cm, whatever holds the mic and whatever it is measured from': 'Same number, different reference and place.',
       'Yes, as long as both are aimed at the bridge': 'Aim is a separate check; the positions still differ.',
     },
   },
@@ -483,7 +483,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which part should never have a mic or clip clamped to it?',
     options: ['The bridge', 'The two outer strings below the bridge', 'A stable stand in front of the bass'],
     correct: 'The bridge',
-    explain: 'Clipping the bridge can inhibit its vibration. A clip made for the bass grips the strings below it instead; pickups made to fit the bridge wings are a different case.',
+    explain: 'Clipping the bridge can inhibit its vibration. A clip made for the bass grips the strings below it instead; pickups made to fit the bridge’s wings (its side cut-outs) are a different case.',
     why: {
       'The two outer strings below the bridge': 'That is where a bass clip is made to attach — with the owner’s agreement.',
       'A stable stand in front of the bass': 'A stand in front is fine, placed so it cannot tip onto the bass.',
@@ -589,7 +589,7 @@ export const C06A_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The finger pulls the string', text: 'The plucking finger pulls the string sideways and stretches it — a few millimeters, many times larger here than it really moves.' },
+      { title: 'The finger pulls the string', text: 'The plucking finger pulls the string sideways and stretches it — only a few millimeters, drawn here many times larger than it really moves.' },
       { title: 'Released, it swings back', text: 'Let go, the string swings back past its resting place and rings. Nothing keeps it going, so the note slowly dies away — unlike a bowed note.' },
       { title: 'The string rocks the bridge', text: 'The vibrating string pulls the top of the tall bridge from side to side, and the bridge rocks on its two feet.' },
       { title: 'The bridge drives the top', text: 'Under one foot the top moves in and out; under the other, the soundpost holds the top nearly still and passes the motion to the back. The large top, the back and the air inside all vibrate.' },

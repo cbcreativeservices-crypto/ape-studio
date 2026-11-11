@@ -36,7 +36,7 @@ const SPEC = ensembleHandSpec({
     prompt: 'The wedge stays on the floor in front of the two singers, facing back at them. Aim the handheld (AIM) or change its PATTERN until the wedge sits in its rejection — keep its front on the mouth.',
     label: 'the duet with a handheld within 10 cm of the higher singer’s lips and a floor wedge in front,',
     learn: [
-      { title: 'LIVE', text: 'The fewest open mics that give the clarity needed: directional handhelds or stand mics, the wedges out of each mic’s most sensitive direction, no ensemble mic in a monitor that can excite it. A repeatable distance — close for the words, a little away for a loud phrase.' },
+      { title: 'LIVE', text: 'The fewest open mics that give the clarity needed: directional handhelds or stand mics, the wedges out of each mic’s most sensitive direction, no shared mic where a monitor can feed back into it. A repeatable distance — close for the words, a little away for a loud phrase.' },
       { title: 'THE STUDIO', text: 'Place the singers, then one mic, a figure-8 or a pair in a controlled room; a mic each with screens and matched distances when each voice needs its own control. Spot mics are support, never a replacement for a balanced performance.' },
       { title: 'THE MONITOR CHECK', text: 'Bring the monitors up in small steps only to the agreed level while the singers perform the loudest passage. At any ring, lower that send at once and fix the placement or the monitor’s angle — never push past the agreed level to find the feedback point.' },
     ],
@@ -55,7 +55,7 @@ const SPEC = ensembleHandSpec({
     ],
   },
   practice: {
-    orderNote: 'A live duet as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.',
+    orderNote: 'Put the steps of a live duet in order. If you tap a step too early, you see why it can’t come yet.',
     gainId: 'du.prac.gain',
     secondId: 'du.prac.3',
     mixIds: ['du.nom', 'du.31why', 'du.ring'],

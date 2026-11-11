@@ -239,7 +239,7 @@ const WS_DISTDELAY: Workspace = {
         return {
           title: 'Whole-sample choices',
           cols: ['ROUNDING', 'SAMPLES', 'ACTUAL TIME', 'ERROR'],
-          rows: [row('Nearest', Math.round(N)), row('Floor', Math.floor(N)), row('Ceiling', Math.ceil(N))],
+          rows: [row('Nearest', Math.round(N)), row('Down', Math.floor(N)), row('Up', Math.ceil(N))],
         };
       },
     },
@@ -263,7 +263,7 @@ const WS_PHASE: Workspace = {
   whyItMatters:
     'Every polarity check, mic-pair placement, and system-alignment decision is a phase decision. ' +
     'The trap is that "phase" on a plugin knob is a per-frequency quantity: a fixed 0.5 ms offset ' +
-    'is a harmless 18° at 100 Hz and a full cancellation at 1 kHz. Thinking in Δt first and ' +
+    'is a harmless 18° at 100 Hz and a full cancellation at 1 kHz. Thinking in time offset (Δt) first and ' +
     'degrees second keeps you out of that trap.',
   example:
     'Snare top and bottom mics, after the usual polarity flip on the bottom, still differ by 0.3 ms. At 200 Hz (shell fundamental) that is ' +
@@ -273,7 +273,7 @@ const WS_PHASE: Workspace = {
   mistakes: [
     'Treating "360°" as perfectly aligned: 360° at one frequency is a whole cycle late — the waveform looks the same there (and at its whole multiples), but most other frequencies sit at other angles, so the combined sound is still comb-filtered.',
     'Ignoring wrapping: an analyzer showing 30° could be 30°, 390°, or 750° of true offset — the display wraps every 360° and hides whole cycles.',
-    'Assuming one phase value pins down one delay: at a single frequency, φ and φ + k·360° are indistinguishable, so a phase reading alone cannot tell you the absolute time offset.',
+    'Assuming one phase value pins down one delay: at a single frequency, a phase φ and φ plus any whole number of 360° turns are indistinguishable, so a phase reading alone cannot tell you the absolute time offset.',
     'Confusing polarity inversion (180° at ALL frequencies, zero time) with a delay that happens to hit 180° at one frequency — the fix for one is a switch, for the other a mic move.',
   ],
   warnings:
@@ -325,7 +325,7 @@ const WS_PHASE: Workspace = {
       signed: true,
       ...AIR_TEMP_FIELD,
       placeholder: '20',
-      help: 'Sets the speed of sound for converting path difference to time.',
+      help: 'The air temperature where you are; it sets the speed of sound for converting path difference to time.',
     },
   ],
   functions: [
@@ -520,7 +520,7 @@ const WS_COMB: Workspace = {
       signed: true,
       ...AIR_TEMP_FIELD,
       placeholder: '20',
-      help: 'Sets the speed of sound for converting the path difference to a delay.',
+      help: 'The air temperature where you are; it sets the speed of sound for converting the path difference to a delay.',
     },
   ],
   functions: [
@@ -636,7 +636,7 @@ const WS_LATENCY: Workspace = {
   section: 'digital',
   intro:
     'Every audio interface trades stability for delay: audio is processed in buffers, and each ' +
-    'buffer of N samples costs N/sr of time. Work out single-buffer latency, then stack the ' +
+    'buffer of N samples costs N/sr of time (sr = sample rate). Work out single-buffer latency, then stack the ' +
     'input buffer, output buffer, and any processing to see the real round trip.',
   whyItMatters:
     'A vocalist monitoring through the DAW hears themselves late by the whole round trip — in ' +
@@ -859,7 +859,7 @@ const WS_FFT: Workspace = {
   ],
   warnings:
     'Bin spacing sr/N is the raw transform grid. The effective resolution is worse: window ' +
-    'functions widen each bin\'s bandwidth (Hann ≈ 1.5 bins ENBW), and real analyzers overlap, ' +
+    'functions widen each bin\'s bandwidth (Hann ≈ 1.5 bins ENBW, equivalent noise bandwidth), and real analyzers overlap, ' +
     'average, and interpolate on top of it. Treat these numbers as the grid an analyzer is ' +
     'built on, not the precision of what it displays.',
   glossary: ['FFT', 'Sample Rate', 'Frequency', 'Nyquist Frequency', 'Spectrum', 'Window function'],

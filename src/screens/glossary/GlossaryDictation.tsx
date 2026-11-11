@@ -116,7 +116,7 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
         startingRef.current = false;
         notify(
           'Microphone access is off',
-          'Dictation needs microphone and speech recognition access. If you are not asked again, turn them on for this app in your device Settings. You can still type your search.',
+          'Dictation needs microphone and speech recognition access. If your phone doesn’t ask you, turn them on for this app in your device Settings. You can still type your search.',
         );
         return;
       }

@@ -376,7 +376,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Maybe Doppler, maybe the engine',
     explain: 'An uncontrolled pass never proves a Doppler number: the engine’s own speed changes pitch too. Describe it, do not measure it.',
     why: {
-      'A measured Doppler of 98 cents': 'A model number is not a measurement of an uncontrolled pass.',
+      'A measured Doppler of 98 cents': 'A number from the ideal model is not a measurement of an uncontrolled pass.',
       'Proof of the car’s exact speed': 'The pitch cannot prove the speed: the engine changes pitch on its own.',
     },
   },
@@ -395,7 +395,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'pb.mix.3',
     page: 'practice',
-    prompt: 'A high-pass filter cleans the wind from a truck pass. What else can it take?',
+    prompt: 'A high-pass filter cleans the wind from a truck pass. What else can it remove?',
     options: ['The truck’s real low-end body', 'Only the wind and nothing else', 'The Doppler shift of the pass'],
     correct: 'The truck’s real low-end body',
     explain: 'A filter can clean wind but remove the vehicle’s real low frequencies. Record a clean, protected raw channel and log any filter.',
@@ -592,7 +592,7 @@ export const F08_LESSON: Lesson = {
   id: 'F08',
   labId: 'field',
   title: 'Moving Sounds and Pass-bys',
-  subtitle: 'The path drawn first: a mic 2–4 m back and outside the envelope, fixed or tracked, the whole pass with headroom — a vehicle only on paper',
+  subtitle: 'The path drawn first: a mic 2–4 m back and outside the envelope, fixed or tracked, the whole pass with headroom — a vehicle pass planned on paper only',
   noun: { one: 'pass-by', many: 'pass-bys', subject: 'pass-by' },
   model: F08_MODEL,
   micTypeIds: ['arrOmni', 'arrCard', 'arrFig8', 'shotgunShort', 'shotgunPole'],

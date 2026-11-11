@@ -67,7 +67,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one guitar mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['ag.prac.order', 'ag.prac.gain', 'ag.prac.setup1', 'ag.prac.setup2', 'ag.prac.3', 'ag.mix.1', 'ag.mix.2', 'ag.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real guitar.' },
-    takeaway: 'Safe clearance from the player, correct power and level checks, pattern reasoning and an honest account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+    takeaway: 'These pass: safe clearance from the player, correct power and level checks, pattern reasoning and an honest account of polarity versus delay. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -254,7 +254,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The floor wedge in front of the player is loud in the guitar mic. What is a good first move to try?',
     options: ['Turn the guitar channel up so it covers the wedge', 'Turn the mic so the wedge falls in its rejection', 'Move the mic farther away from the guitar'],
     correct: 'Turn the mic so the wedge falls in its rejection',
-    explain: 'Aim the pattern’s rejection at the wedge, by its actual pattern, while the mic still faces the guitar and stays clear of the hands. Then judge what is left.',
+    explain: 'Aim the rejection at the wedge, where this mic’s pattern really rejects most, while the mic still faces the guitar and stays clear of the hands. Then judge what is left.',
     why: {
       'Turn the guitar channel up so it covers the wedge': 'More gain raises the wedge in that channel too — and brings feedback closer.',
       'Move the mic farther away from the guitar': 'Farther away, the wedge gets relatively louder. Come closer or turn it instead.',
@@ -314,7 +314,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference?',
     options: ['It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it', 'Nothing: polarity flips the sign; the delay stays the same'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+    explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; the arrival-time difference (Δt) does not.',
     why: {
       'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -398,7 +398,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two guitar mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the quieter mic up until both match'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the sound’s paths to each mic set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
     why: {
       'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
       'Turning the quieter mic up until both match': 'Level changes the depth of the notches, not where they are or the delay behind them.',
@@ -458,12 +458,12 @@ const symptoms: Symptom[] = [
   {
     id: 'ag.sym.fb',
     observation: 'Live feedback',
-    firstChecks: 'Is the mic too far away, or aimed toward a wedge or the PA? Lower the level, revise the geometry, or blend in the pickup.',
-    options: ['Lower the level, then revise the geometry or lean on the pickup', 'Boost the channel, then cut the ringing pitch hard with EQ', 'Move the mic farther away so the guitar is cleaner'],
-    correct: 'Lower the level, then revise the geometry or lean on the pickup',
+    firstChecks: 'Is the mic too far away, or aimed toward a wedge or the PA? Lower the level, move or re-aim the mic, or blend in the pickup.',
+    options: ['Lower the level, then move or re-aim the mic, or lean on the pickup', 'Boost the channel, then cut the ringing pitch hard with EQ', 'Move the mic farther away so the guitar is cleaner'],
+    correct: 'Lower the level, then move or re-aim the mic, or lean on the pickup',
     explain: 'Bring the level down first. Then bring a directional mic closer, aim its rejection at the wedge, close unused mics — or carry more of the guitar on its pickup.',
     why: {
-      'Boost the channel, then cut the ringing pitch hard with EQ': 'More gain is the wrong way. Lower it, then fix the geometry.',
+      'Boost the channel, then cut the ringing pitch hard with EQ': 'More gain is the wrong way. Lower it, then move or re-aim the mic.',
       'Move the mic farther away so the guitar is cleaner': 'Farther away, the guitar is weaker against the stage: feedback comes sooner.',
     },
   },
@@ -501,10 +501,10 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, measured from the right point', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the arm, the hands and the player’s view', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on acoustic guitar', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
-const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest guitar of any position', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and the loudest spot is often the boomiest.' };
+const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest guitar of any position', role: 'wrong', feedback: 'Loudness doesn’t make a setup pass — level comes from gain — and the loudest spot is often the boomiest.' };
 
 /** The final task (L72): several setups pass; the reasons are graded. */
 const setupTasks: SetupTask[] = [
@@ -617,9 +617,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your guitar mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic is nearer the guitar than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule (halving the time every 5 dB) — measured where the person listens.',
     why: {
-      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule (halving the time every 5 dB).',
       'It is safe as long as the mic is nearer the guitar than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -669,8 +669,8 @@ export const C01_LESSON: Lesson = {
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge. Live, the PA carries the guitar to them; the stage level decides how close a mic must be.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet studio there are no wedges on the floor; the room itself becomes part of the sound, and a farther mic hears more of it.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a wedge in front of the player, the band behind, the PA facing the audience. Stage spill, the voice above the guitar and the gain available before feedback push toward close, aimed pickup — or the guitar’s pickup.',
-    studio: 'STUDIO: no wedges on the floor, repeated trials are practical when the player stops, and a good room can be part of the sound — a farther or omni mic becomes an option.',
+    stage: 'LIVE: a wedge in front of the player, the band behind, the PA facing the audience. Stage spill, the voice above the guitar and the gain available before feedback push toward a close, aimed mic — or the guitar’s pickup.',
+    studio: 'STUDIO: no wedges on the floor, the player can stop so you can try again, and a good room can be part of the sound — a farther or omni mic becomes an option.',
   },
   diagnostic,
   practice: {

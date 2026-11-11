@@ -307,7 +307,7 @@ function diamond(id: 'baseball' | 'softball', path: number): VenueScene {
   return {
     id,
     label: id === 'baseball' ? 'Baseball' : 'Softball',
-    blurb: id === 'baseball' ? 'Bat contact, glove transients and selected footfalls; the plate, the bases and the outfield are separate pickup zones.' : 'Name the code first — fast pitch, slow pitch, age group — then test the plate, the bases and the outfield separately.',
+    blurb: id === 'baseball' ? 'Bat contact, glove transients and selected footfalls; the plate, the bases and the outfield are separate pickup zones.' : 'Name the version of the game first — fast pitch, slow pitch, age group — then test the plate, the bases and the outfield separately.',
     play: [home, ...fence],
     surface: 'diamond',
     markings: [

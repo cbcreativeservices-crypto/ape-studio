@@ -319,7 +319,7 @@ describe('7. −70% HOLLOW is hollow only at full wet (screen + lesson copy, 202
     assert.ok(L.includes('Negative feedback + short delay at full wet (100% mix) = the hollow, resonant "jet"') || L.includes('For the hollow tone, set MIX to 100% and FDBK to −70% HOLLOW.'));
   });
   it('the guide’s TRY THIS names the full-wet condition too (D42, 2026-11-01)', () => {
-    assert.ok(GUIDES.explore.tryThis.join(' ').includes('Add FDBK −70% HOLLOW: hollow only at 100%. At 50% EVEN the same setting draws a nearly flat trace.'));
+    assert.ok(GUIDES.explore.tryThis.join(' ').includes('Add FDBK −70% HOLLOW: it sounds hollow only at MIX 100%. At 50% EVEN the same setting draws a nearly flat trace.'));
   });
 });
 

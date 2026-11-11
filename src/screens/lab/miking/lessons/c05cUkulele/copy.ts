@@ -43,7 +43,7 @@ export const C05C_COPY = stringsCopy({
     ],
   },
   workedZone: { soprano: 'upper.soprano' },
-  workedAim: 'Aim it at the upper body and the neck joint — the lab counts it while the mic’s axis, followed in, meets the ukulele within about 9 cm of {head} — a little off the sound hole’s axis.',
+  workedAim: 'Aim it at the upper body and the neck joint — the lab counts it as aimed while the line the mic points along meets the ukulele within about 9 cm of {head} — a little off the sound hole’s axis.',
   clearWhat: 'the strumming arc, the fretting hand, the vocal mic and the player’s view',
   placementReveal: 'Toward the hole tends to bring more body and low-mid — and a single resonance close in; toward the neck, more string definition. Ukuleles differ, so “it depends on this one” is fair too.',
   typeNotes: {

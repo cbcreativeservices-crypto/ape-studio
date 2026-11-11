@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 60–120 cm in front of the face, or 30–60 cm off to a clear outer part — measured from the face at rest, outside the swing and the mallet; then compare.',
-    credit: { scenarios: ['gg.place.1', 'gg.place.2', 'gg.place.3', 'gg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing, the mallet and the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['gg.place.1', 'gg.place.2', 'gg.place.3', 'gg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing, the mallet and the player, in two different suggested starting points, and answer the four checks. Viewing the worked example alone gives no credit.' },
     takeaway: 'Begin about 60–120 cm in front, facing the broad face; or 30–60 cm off to a clear outer part. Back away for bloom and room, come closer for presence. Distances are from the face at rest — the swing comes first.',
   },
   context: {

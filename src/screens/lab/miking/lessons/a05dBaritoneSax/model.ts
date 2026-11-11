@@ -49,7 +49,7 @@ export const BARITONE_ZONES: DocumentedZone[] = [
     label: 'About 30–60 cm from the bell, aimed a third of the way up the horn',
     band: 'Try about 30–60 cm (12–24 in) from the bell, in front and to the player’s right, aimed at the body a third of the way up from the bottom — lower on a baritone than on an alto.',
     tendency: 'More of the horn in one mic: the lower holes, the bell and some of the room blend; more spill and level change than a close spot.',
-    checks: ['The player’s turn — the stand clear of the horn', 'The lowest line with any filter in and out', 'How much of the band it hears'],
+    checks: ['The player’s turn — the stand clear of the horn', 'The lowest notes, with any filter on and off', 'How much of the band it hears'],
   }),
   saxZone(F, 'triangle', 'bs.triangle', {
     label: 'The triangle: as far away as the horn is long',

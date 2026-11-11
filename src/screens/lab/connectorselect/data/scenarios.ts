@@ -83,7 +83,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Mixer', port: 'Channel 1 mic input (XLR female)' },
     choices: [
       { id: 'a', name: 'XLR microphone cable — balanced shielded pair', a: 'xlr3', b: 'xlr3', verdict: 'correct', explain: 'The classic connection: balanced mic level on shielded twisted pair, latched at both ends. 15 m is easy for a balanced run.' },
-      { id: 'b', name: '1/4-inch TS instrument cable', a: 'ts_quarter', b: 'ts_quarter', verdict: 'no_fit', explain: 'A TS plug does not mate with the mic’s XLR output or the XLR input. The system stopped you at question 1 — fit.' },
+      { id: 'b', name: '1/4-inch TS instrument cable', a: 'ts_quarter', b: 'ts_quarter', verdict: 'no_fit', explain: 'A TS plug does not mate with the mic’s XLR output or the XLR input. It fails question 1 — fit.' },
       { id: 'c', name: 'RCA stereo interconnect pair', a: 'rca', b: 'rca', verdict: 'no_fit', explain: 'RCA plugs fit neither end. Consumer interconnects live in a different part of the system.' },
       { id: 'd', name: 'XLR-shell lighting/data cable from the utility bin', a: 'xlr3', b: 'xlr3', verdict: 'fits_but_verify', explain: 'It fits perfectly — and that proves nothing. XLR shells also serve digital and control runs built on different cable. An unknown cable must be verified before it carries your show.' },
     ],
@@ -219,7 +219,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'The interface’s own USB-C data cable', a: 'usb_c', b: 'usb_c', verdict: 'correct', explain: 'A cable KNOWN to carry data at the needed rate — audio is data here, and the manufacturer shipped a cable that carries it.' },
       { id: 'b', name: 'A charge-only USB-C cable from a phone charger', a: 'usb_c', b: 'usb_c', verdict: 'fits_but_verify', explain: 'Identical plugs — but some USB-C cables are wired for power only, with no data wires. The interface may not even appear. NOT all USB-C cables are the same; verify the cable’s capability.' },
-      { id: 'c', name: 'USB-A to USB-B printer-style cable', a: 'usb_a', b: 'usb_b', verdict: 'no_fit', explain: 'The USB-B end does not fit this interface’s USB-C port. USB’s shapes exist to stop wrong topologies.' },
+      { id: 'c', name: 'USB-A to USB-B printer-style cable', a: 'usb_a', b: 'usb_b', verdict: 'no_fit', explain: 'The USB-B end does not fit this interface’s USB-C port. USB’s shapes exist to stop wrong hookups.' },
       { id: 'd', name: 'HDMI cable', a: 'hdmi', b: 'hdmi', verdict: 'no_fit', explain: 'HDMI and USB do not mate — different connectors for different protocols.' },
     ],
   },

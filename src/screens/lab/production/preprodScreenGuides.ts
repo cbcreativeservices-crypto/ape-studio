@@ -84,9 +84,9 @@ export const PREPROD_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'The score counts decisions made, not screens opened.',
-    'Each flagged finding costs up to 2 points, 20 at most. An open blocker keeps the score under 100 and Not Ready for Production.',
+    'Flagged findings cost up to 2 points each, 20 max. An open blocker keeps the score under 100 and Not Ready for Production.',
     'A fixed or accepted blocker clears; accepted ones go to PROCEEDING WITH ACCEPTED CONDITIONS and print in the packet.',
-    'Ready With Approved Conditions: all required decisions made, no blocker, but a condition accepted or a flag.',
+    'Ready With Approved Conditions: all required decisions made, no blocker, but a condition accepted or a flag raised.',
   ],
   teaches: [
     'A plan is ready when its decisions are made and its blockers dealt with. A high score can’t outrank a safety, legal or recording blocker.',
@@ -235,7 +235,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     control: CONTROL,
     changes: [
       'Blockers: a life-threatening hazard with no preventive action or owner, a missing rights item, and unsigned rigging or temporary power.',
-      'Each backup is checked for the switch, the time and the person. One that can’t be reached in time is flagged.',
+      'Each backup is checked for how you switch to it, how long that takes and who does it. One that can’t be reached in time is flagged.',
       'If nobody is named to decide whether the production continues, that is flagged.',
     ],
     teaches: [
@@ -350,7 +350,7 @@ export const PREPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     control: ACTIVITY_CONTROL,
     changes: ACTIVITY_CHANGES,
     teaches: [
-      'A backup is the switch, the time and the person — not just spare equipment.',
+      'A backup is how you switch to it, how long that takes and who does it — not just spare equipment.',
       'An unresolved risk becomes an approved condition only when a named person accepts it in writing.',
       'A contingency plan names the simplest version that still keeps the promise, such as the live recording.',
     ],

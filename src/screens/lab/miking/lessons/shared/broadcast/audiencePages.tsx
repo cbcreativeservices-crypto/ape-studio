@@ -85,7 +85,7 @@ const LAYERS: Readonly<Record<Layer, { label: string; short: string; words: Reco
     label: 'The PA and where it points',
     short: 'PA',
     words: {
-      studio: 'A loudspeaker at each front corner of the stage, aimed out over the seats. A crowd mic in that wedge hears the PA as loudly as the people.',
+      studio: 'A loudspeaker at each front corner of the stage, aimed out over the seats. A crowd mic in the area it covers hears the PA as loudly as the people.',
       event: 'Clusters high at the stage’s corners and a fill at its edge, each aimed at the seats: the PA covers the very places the audience sits.',
     },
   },
@@ -271,7 +271,7 @@ export function useImmersiveStep(spec: { words: { looking: string; prompt: strin
     kind: 'COMPARE',
     layout: 'rack',
     rack: {
-      render: (w, h) => <ImmersiveScene w={w} h={h} kind={kind} accessibilityLabel={S ? 'A five-capsule surround mic from above: three capsules across the front labeled L, C and R, two toward the rear labeled Ls and Rs, and an arrow marking its front.' : 'A four-capsule Ambisonic mic from above: four capsules on a small tetrahedron labeled FLU, FRD, BLD and BRU, and its front mark with an arrow.'} />,
+      render: (w, h) => <ImmersiveScene w={w} h={h} kind={kind} accessibilityLabel={S ? 'A five-capsule surround mic from above: three capsules across the front labeled L, C and R, two toward the rear labeled Ls and Rs, and an arrow marking its front.' : 'A four-capsule Ambisonic mic from above: four capsules on a small tetrahedron labeled FLU, FRD, BLD and BRU (front-left-up, front-right-down, back-left-down, back-right-up), and its front mark with an arrow.'} />,
       badge: 'From above · each mic drawn with its front · channel labels only: no decode is drawn · silent',
       bezel: [
         { k: 'MIC', v: S ? '5 CAPSULES' : '4 CAPSULES', flex: 1.2 },
@@ -446,7 +446,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
           <Point title="THE FACES">{faces.deg <= 35 ? 'The section’s faces are in front of the mic: it hears the people first.' : `The section is ${Math.round(faces.deg)}° off the mic’s axis: it hears less of the people it is there for.`}</Point>
         </Card>
         {good ? <Note tone="ok">{spec.words.done}</Note> : <Body>Aim at the faces with the PA toward the mic’s rejection — try TILT and PLACE as well as TURN.</Body>}
-        <Note tone="warn">A pattern’s rejection depends on frequency, and the room reflects the PA from every side: a label never removes a loudspeaker. Listen with the PA at full level — at the agreed level, never provoking feedback.</Note>
+        <Note tone="warn">A pattern’s rejection depends on frequency, and the room reflects the PA from every side: no pattern name removes a loudspeaker. Listen with the PA at full level — at the agreed level, never provoking feedback.</Note>
       </>
     ),
   };

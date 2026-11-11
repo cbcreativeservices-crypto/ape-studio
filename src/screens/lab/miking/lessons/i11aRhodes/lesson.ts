@@ -37,7 +37,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the path from the tines to the desk — which feeds hear the air and which are wires — what sits around the keyboard and its amp, and what to do before any mic.',
     credit: { scenarios: ['rh.set.1', 'rh.set.2', 'rh.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'A mic on the amp hears air; a DI is a separate electrical source. A speaker output goes only to a speaker, or to a load box made for it. Keep the pedal foot and the amp’s vents clear, and protect your hearing.',
+    takeaway: 'A mic on the amp hears air; a DI is a separate electrical source. A speaker output goes only to a speaker, or to a load box (a device made to take the amp’s full power safely). Keep the pedal foot and the amp’s vents clear, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -281,7 +281,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The player uses two amps for stereo panning, and the PA is mono. What do you do?',
     options: ['Mic each amp alike, then check the mono sum', 'Pan the two mics hard left and right anyway', 'Mic only the amp nearest the player'],
     correct: 'Mic each amp alike, then check the mono sum',
-    explain: 'If the two amps really carry different signals, a comparable mic on each at a matched distance keeps their difference. In a mono PA, hear the sum: the movement heard at the keyboard may not reach the audience — a production decision after listening.',
+    explain: 'If the two amps really carry different signals, a comparable mic on each at a matched distance keeps their difference. In a mono PA, hear the sum: the movement heard at the keyboard may not reach the audience — whether to keep it is a production decision, made after listening.',
     why: {
       'Pan the two mics hard left and right anyway': 'A mono PA cannot pan. Check what the sum sounds like first.',
       'Mic only the amp nearest the player': 'That may lose half of the effect. Hear both, and the sum, before deciding.',
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You blend the amp mic with the direct signal and the attack smears. What do you try first?',
     options: ['Each alone, then mono; move or rebalance, then polarity', 'Delay the direct signal by the amount shown on a diagram', 'Invert the direct signal and leave it'],
     correct: 'Each alone, then mono; move or rebalance, then polarity',
-    explain: 'The direct signal arrives first; the mic, after the sound crosses the air, and the amp shapes it on the way. Hear each alone and the blend in mono; change the geometry or the balance before trying polarity or delay — and only by ear.',
+    explain: 'The direct signal arrives first; the mic’s signal arrives after the sound crosses the air, and the amp shapes it on the way. Hear each alone and the blend in mono; change the geometry or the balance before trying polarity or delay — and only by ear.',
     why: {
       'Delay the direct signal by the amount shown on a diagram': 'Delay or polarity is not set from a diagram: listen to the real blend first.',
       'Invert the direct signal and leave it': 'Try polarity both ways by ear, in mono — a switch cannot fix every frequency.',
@@ -473,7 +473,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.spill',
     observation: 'Feedback or heavy spill',
-    firstChecks: 'Is the amp or a wedge inside the mic’s pickup? Reposition the amp or the mic, aim the rejection, and close unused channels.',
+    firstChecks: 'Is the amp or a wedge inside the mic’s pickup pattern? Reposition the amp or the mic, aim the rejection, and close unused channels.',
     options: ['Lower the level, then revise amp, wedge and mic aim', 'Turn the keyboard channel up so it covers the spill and feedback', 'Hang a cloth over the amp’s back'],
     correct: 'Lower the level, then revise amp, wedge and mic aim',
     explain: 'Make it safe first by lowering the level. Then close unused mics and aim the mic’s rejection at the loudest monitor — never cover an amp’s vents.',
@@ -530,7 +530,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic close to the grille, aimed at the dust cap’s edge', ok: true, power: 'none', feedback: 'A suggested start, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the speaker itself', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has phantom — check its level rating.' },
       { id: 'c', label: 'Instrument dynamic over the outer cone, the same distance', ok: true, power: 'none', feedback: 'Another good first listen — warmer comping — if it suits the player’s sound.' },
-      { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and wedges, and lowers the margin before feedback.' },
+      { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a loud stage, that mic hears the drums and wedges, and lowers the margin before feedback.' },
       { id: 'e', label: 'A dynamic over the keys, for the tines', ok: false, power: 'none', feedback: 'The tines are quiet in the air; the sound is at the speaker — and the keys are the player’s space.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against stage spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, DI_REASON],
@@ -544,11 +544,11 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A dynamic close at the cap’s edge, plus a dynamic 60–90 cm back for the room', ok: true, power: 'none', feedback: 'Close plus room in a good room — bring the room mic up under the close one, and check in mono.' },
       { id: 'b', label: 'A dynamic at the cap’s edge, plus a dynamic 15–30 cm behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair from outside, checked in mono — dynamics need no phantom.' },
       { id: 'c', label: 'A small condenser 60–90 cm back, and a dynamic close in', ok: false, power: 'phantom', feedback: 'These inputs have no phantom power for the condenser.' },
-      { id: 'd', label: 'A dynamic inside the open back, by the tubes', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the chassis and tubes are hot and live.' },
+      { id: 'd', label: 'A dynamic inside the open back, by the tubes', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the chassis and tubes are hot and electrically live.' },
       { id: 'e', label: 'The direct signal alone, labeled as the amp mic', ok: false, power: 'none', feedback: 'The direct signal has no amp, speaker or room — it cannot stand in for the mic the brief asks for.' },
     ],
-    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-source pickup.' }, BRAND_REASON, DI_REASON],
-    explain: 'Two pickups pass. What passes is the reasoning: two views of the amp, from outside, powered by what these inputs supply, checked in mono.',
+    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-source setup.' }, BRAND_REASON, DI_REASON],
+    explain: 'Two setups pass. What passes is the reasoning: two views of the amp, from outside, powered by what these inputs supply, checked in mono.',
   },
 ];
 
@@ -658,7 +658,7 @@ export const I11A_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'An electric piano with a steel TINE for every note. A hammer strikes the tine; a heavier tonebar above it rings at the same pitch, like a tuning fork; a pickup facing the tine’s tip turns the motion into a small electrical signal. The amp and its speaker make the sound you mic.', src: 'RH-SM79, RH-MK8-UG' },
     { title: 'WHERE YOU MEET IT', text: 'Soul, jazz, funk, pop, gospel and rock, on stage and in the studio — a passive model through a combo amp or a DI, an active model with its own preamp, effects and stereo outputs, or a suitcase model standing on its own amplifier and speakers.', src: 'RH-S61, RH-MK8' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Warm, bell-like comping and chords; a bright, barking edge when it is played hard. The player’s touch, the instrument’s controls, the effects, the amp and the speaker are all part of the sound — mic the rig they bring, as they set it.', src: 'LESSON L7' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Warm, bell-like comping (chords played behind a singer or soloist); a bright, barking edge when it is played hard. The player’s touch, the instrument’s controls, the effects, the amp and the speaker are all part of the sound — mic the rig they bring, as they set it.', src: 'LESSON L7' },
     { title: 'ITS SIZE', text: 'A 73-key active model is about 115 cm wide, 56 cm deep and 22.5 cm high, and weighs about 34 kg; this lesson draws a 61-key passive model a little narrower. The combo amp it plays through here is about 62 cm wide and 44.5 cm tall.', src: 'RH-MK8-UG, FEN-65DR-MAN' },
   ],
   sound: {
@@ -681,7 +681,7 @@ export const I11A_LESSON: Lesson = {
       { id: 'dibox', label: 'a DI box before the amp', short: 'DI BOX', note: 'Splits the keyboard’s signal: one side on to the amp, a balanced output to the desk. It hears no amp, speaker or room — a separate source to compare or blend, not a mic.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'all' },
       { id: 'amp', label: 'the combo amp', short: 'COMBO', note: 'The amplifier and its speaker in one box. Its settings and level are part of the player’s sound. Keep its vents clear, and never change its speaker wiring.', prov: { kind: 'illustrative', reason: 'a generic signal path and stage position' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'cab', label: 'the speaker in the combo', short: 'SPEAKER', note: 'The cone moves the air: this is what the mic hears. On many amps a speaker must always be connected while the amp is on.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'WHAT A MIC HEARS', scene: 'all' },
-      { id: 'mic', label: 'the microphone', short: 'MIC', note: 'An airborne pickup of the speaker, the box and the room. Close in, mostly the speaker; farther back, more of the room and the stage.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
+      { id: 'mic', label: 'the microphone', short: 'MIC', note: 'It picks up the speaker, the box and the room through the air. Close in, mostly the speaker; farther back, more of the room and the stage.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
       { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Where every source arrives and the input gain is set — the mic and the direct signal each on its own, labeled channel.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
       { id: 'wedge', label: 'the keyboard player’s wedge', short: 'WEDGE', note: 'A floor monitor downstage of the player, facing back toward them.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'drums', label: 'the drum kit', short: 'DRUMS', note: 'A loud neighbor. A close, directional amp mic hears more of the keyboard and less of the kit.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
@@ -739,5 +739,5 @@ export const I11A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo amp with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), a 61-key tine piano drawn at a typical size, one note of its mechanism as an inside view, textbook mic patterns, and motion drawn larger. The close distances are general amplifier starting points, measured here from the grille cloth to the mic’s front and rounded to about 5 mm. Place mics with the amp muted, never open the instrument or the amp, and send a speaker output only to a speaker or a load box made for it.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo amp with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are one example layout), a 61-key tine piano drawn at a typical size, one note of its mechanism as an inside view, textbook mic patterns, and motion drawn larger. The close distances are general amplifier starting points, measured here from the grille cloth to the mic’s front and rounded to about 5 mm. Place mics with the amp muted, never open the instrument or the amp, and send a speaker output only to a speaker or a load box made for it.',
 };

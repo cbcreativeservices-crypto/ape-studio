@@ -735,7 +735,7 @@ export function LabShell({
                       accessibilityRole="button"
                       accessibilityLabel="Open the guided lesson"
                     >
-                      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+                      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — long-press any control for its own entry</Text>
                     </Pressable>
                   </CollapsibleSection>
                 </View>
@@ -772,7 +772,7 @@ export function LabShell({
               accessibilityRole="button"
               accessibilityLabel="Open the guided lesson"
             >
-              <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+              <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — long-press any control for its own entry</Text>
             </Pressable>
           </ScrollView>
         </ScrollLockCtx.Provider>

@@ -173,7 +173,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
                     ? 'QC happens on the files you send, not on the session that made them.'
                     : openDecisions === 0
                       ? 'Every file reopened, measured, named and documented. That is a mastering job finished.'
-                      : `Every file checked. ${openDecisions} of the ${PROJECT_TRACKS.length} track decisions on step 2 ${openDecisions === 1 ? 'is' : 'are'} still open — answer ${openDecisions === 1 ? 'it' : 'them'} to finish the module.`}
+                      : `Every file checked. ${openDecisions} track ${openDecisions === 1 ? 'decision' : 'decisions'} on step 2 ${openDecisions === 1 ? 'is' : 'are'} still open — answer ${openDecisions === 1 ? 'it' : 'them'} to finish the module.`}
                 </Point>
               </Card>
               <KeyTerms terms={KEY_TERMS.project} />

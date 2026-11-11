@@ -186,7 +186,7 @@ export function ProductionActivityScreen() {
             <Text style={styles.sectionTitle}>
               {done
                 ? 'SOLVED'
-                : `${result.met.length} OF ${result.met.length + result.unmet.length} DONE`}
+                : `${result.unmet.length} STILL TO DO`}
             </Text>
 
             {result.met.map((c) => (

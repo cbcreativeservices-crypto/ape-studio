@@ -738,7 +738,7 @@ registerActivityChecks({
     },
     {
       id: 'correction-settled',
-      label: 'The tuning is agreed or abandoned, with a scale, a guard and a comparison',
+      label: 'The tuning is agreed or abandoned, with a scale, a choice of what to protect, and a comparison',
       met: (c) => {
         const scope = many(c.get('build', 'correction_scope'));
         if (scope.length === 0) return true; // abandoned is a valid answer
@@ -836,7 +836,7 @@ registerActivityChecks({
     },
     {
       id: 'not-squeezed-flat',
-      label: 'The correction is no longer compression or limiting on an already flat program',
+      label: 'The correction is no longer compression or limiting on a program with little loudness range left',
       met: (c) => {
         const lra = num(c.get('finish', 'measured_lra'));
         const action = str(c.get('finish', 'loudness_action'));

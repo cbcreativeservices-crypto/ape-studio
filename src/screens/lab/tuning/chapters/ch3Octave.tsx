@@ -149,7 +149,7 @@ export function Ch3Octave({ ctx }: ChapterProps) {
           </Card>
           <Body>
             {demo === 'A'
-              ? 'Dividing by 2 moves the pitch down one octave while preserving its pitch-class relationship.'
+              ? 'Dividing by 2 moves the pitch down one octave while keeping its pitch class (the same note name).'
               : 'Multiplying by 2 moves the pitch up one octave — the same pitch class, one octave higher.'}
           </Body>
         </>

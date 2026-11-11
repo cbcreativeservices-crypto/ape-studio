@@ -106,7 +106,7 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>WHERE EACH PART SITS — AND WHAT MONO COSTS IT</Eyebrow>
-        <Prompt>This session’s pans, through the same pan law and M/S width the audio uses. The right column is the level each part loses when the mix folds to mono.</Prompt>
+        <Prompt>This session’s pans, through the same pan law and M/S width as the audio you hear. The right column is the level each part loses when the mix folds to mono.</Prompt>
         <WidthArt view={view} />
       </Card>
       <Card tone="note">
@@ -267,7 +267,7 @@ function PageMixBus({ ctx }: { ctx: PageCtx }) {
       <Lead>The mix bus touches EVERYTHING — which is exactly why its processing is conservative: a dB or two of linked compression, a whisper of color, headroom preserved. The boundary with mastering is a real border, not a suggestion.</Lead>
       <Card>
         <Eyebrow>THE BUS CHAIN, THREE WAYS</Eyebrow>
-        <Prompt>Level-matched: no chain · a conservative chain (2:1, slow attack, gentle drive — the mix “holds hands”) · an overcooked one (fast, deep, driven — the mix breathes like it ran here).</Prompt>
+        <Prompt>Level-matched: no chain · a conservative chain (2:1, slow attack, gentle drive — the mix “holds hands”) · an overcooked one (fast, deep, driven — the mix pants as if it just ran a race).</Prompt>
         <AbPlayer pb={pb} variants={variants} onPick={(id) => setBusView(id as 'clean' | 'gentle' | 'crushed')} note="Conservative bus processing should be MISSED when bypassed, not noticed when active. If you can hear it working, it is working too hard." />
         <BusChainArt chain={chain} />
       </Card>

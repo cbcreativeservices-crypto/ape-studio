@@ -74,7 +74,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one trumpet mic in the right order, choose and justify a setup for a studio overdub and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['tp.prac.order', 'tp.prac.gain', 'tp.prac.setup1', 'tp.prac.setup2', 'tp.prac.3', 'tp.mix.1', 'tp.mix.2', 'tp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real horn.' },
-    takeaway: 'Safe clearance from the bell, the mutes and the hands, headroom for the loudest accent, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+    takeaway: 'What passes: safe clearance from the bell, the mutes and the hands, headroom for the loudest accent, pattern reasoning and an accurate account of polarity versus delay. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -582,7 +582,7 @@ export const A01_LESSON: Lesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'No wedges on the floor; a good room can be part of the sound — in a large one, a farther mic about 3 m away is an idea to try.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and a band is loud. The player moves and turns: a closer, aimed mic — or a clip that rides on the bell — helps against the stage and feedback. Keep the bell away from a singer’s ear and mic.',
-    studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A balanced main mic first; in a large, good room a farther mic about 3 m away can add depth — check the pair in mono.',
+    studio: 'STUDIO: no wedges, a room that may sound good, and time to try again whenever the player stops. A balanced main mic first; in a large, good room a farther mic about 3 m away can add depth — check the pair in mono.',
   },
   diagnostic,
   practice: {

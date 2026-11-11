@@ -111,7 +111,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The room’s low resonances make the pedal swing strongly in some places and stay still in others; a short move can change it a lot. Compare nearby safe positions.',
     why: {
       'The mic itself is faulty in the lowest notes': 'It worked two steps away: the room changed, not the mic.',
-      'The organist changed the registration': 'Keep the same registration while you compare positions.',
+      'The organist changed the registration': 'Keep the same registration — the stops in use — while you compare positions.',
     },
   },
   {
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Choir and organ together: where does the organ’s balance start?',
     options: ['The ensemble’s main pickup, then a modest spot', 'A spot on each division first, then the choir', 'The organ alone, set before the choir arrives'],
     correct: 'The ensemble’s main pickup, then a modest spot',
-    explain: 'Start with the ensemble’s main pickup; add a modest organ spot only if the accompaniment needs it, and check the spatial match and the mono sum. (The full setup belongs to the Ensembles Lab.)',
+    explain: 'Start with the ensemble’s main pickup; add a modest organ spot only if the accompaniment needs it, and check the spatial match and the mono sum. (The full setup is in Miking Lab 5: Ensembles & Voice.)',
     why: {
       'A spot on each division first, then the choir': 'Spots first loses the shared perspective; the main pickup comes first.',
       'The organ alone, set before the choir arrives': 'The balance is the ensemble’s; set it with everyone playing.',
@@ -456,7 +456,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from the fourth pew to the back. What changes most?', options: ['More room, a blended organ', 'More attack', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA sits high on the arch, behind the spot mic. Can a pattern’s null reach it?', options: ['Yes — aim the rejection toward it', 'No — only an omni can', 'It is directly in front'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a Great spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another division.' },
+  twoMic: { prompt: 'A main pair and a Great spot. If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another division.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -544,12 +544,12 @@ export const A12_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Many sets of pipes — ranks — grouped into divisions, played from the console’s keyboards and pedals and blown by a wind supply. A distributed source: it sounds from several places at once.', src: 'OHS-RANK' },
     { title: 'WHERE YOU MEET IT', text: 'In churches, concert halls and other large rooms — for services, concerts, recordings and streams. It is usually recorded or broadcast rather than amplified in the same room.', src: 'S-HOW' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Everything from the softest single stop to full organ, with pedal notes far below the voices; it plays alone, or accompanies choirs, congregations and instruments.', src: 'LESSON-ORG' },
-    { title: 'ITS SIZE', text: 'Room-sized. This lab draws a stylized case 8 m wide and 10 m high in a 30 m nave. Stop labels such as 16′ and 32′ name a pitch, not always a pipe’s length.', src: 'OHS-PIPES' },
+    { title: 'ITS SIZE', text: 'Room-sized. This lab draws a stylized case 8 m wide and 10 m high in a 30 m nave (the church’s main hall). Stop labels such as 16′ and 32′ name a pitch, not always a pipe’s length.', src: 'OHS-PIPES' },
   ],
   sound: {
     stages: [
-      { title: 'Wind', text: 'A blower fills the wind chests; pressing a key with a stop drawn lets the wind into one pipe of each chosen rank.' },
-      { title: 'The pipe speaks', text: 'At a flue pipe’s mouth, the wind sets the air column inside the pipe swinging: its length sets the pitch — open about c ÷ 2L, stopped about c ÷ 4L.' },
+      { title: 'Wind', text: 'A blower fills the wind chests; each stop drawn (pulled out) turns on its rank, and a key lets the wind into one pipe of each chosen rank.' },
+      { title: 'The pipe speaks', text: 'At a flue pipe’s mouth, the wind sets the air column inside the pipe swinging: its length L sets the pitch — open about c ÷ 2L, stopped about c ÷ 4L (c = the speed of sound).' },
       { title: 'Many places', text: 'The divisions stand in different places — towers, a shuttered box, a division in front, sometimes one far away — so their sounds arrive at a listener at different times.' },
       { title: 'The room answers', text: 'The direct sound, the early reflections and the long reverberation together are what a listener hears — and the room’s low resonances shape the pedal.' },
     ],
@@ -560,7 +560,7 @@ export const A12_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'case', label: 'the organ case and its divisions', short: 'ORGAN', note: 'The main case with its divisions. Never touch the pipes, the shutters, the panels, the wiring or the blower; never hang anything from it. Access to the loft and the chambers is the venue’s to give.', prov: { kind: 'illustrative', reason: 'a stylized layout' }, tag: 'NEVER TOUCH', scene: 'all' },
-      { id: 'console', label: 'the console and the organist', short: 'CONSOLE', note: 'The organist’s keyboards and stops, in the chancel. Keep stands and cables clear of the console, the organist and their way in and out.', prov: { kind: 'illustrative', reason: 'a detached console: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'console', label: 'the console and the organist', short: 'CONSOLE', note: 'The organist’s keyboards and stops, in the chancel (the front of the church). Keep stands and cables clear of the console, the organist and their way in and out.', prov: { kind: 'illustrative', reason: 'a detached console: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pews', label: 'the pews', short: 'PEWS', note: 'Where the congregation sits — and where a main pair usually listens from, on a stand in a clear row. In a service, only where the venue agrees.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'LISTENING POSITIONS', scene: 'all' },
       { id: 'aisles', label: 'the aisles', short: 'AISLES', note: 'The ways in and out: never a stand or a cable across them.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'exits', label: 'the side passages, exits and wheelchair route', short: 'EXITS', note: 'Kept clear at all times, and especially during a service.', prov: { kind: 'illustrative', reason: 'a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },

@@ -1724,7 +1724,7 @@ const PRINCIPLES: { text: string; ruleId?: string }[] = [
   { text: 'Power and signal routes follow the project’s plan' },
   { text: 'Airflow beats aesthetics — intakes and exhausts stay clear', ruleId: 'rack-airflow' },
   { text: 'Labels are readable where the technician actually stands' },
-  { text: 'Excess is intentional slack in managers — never a stuffed drum', ruleId: 'rack-excess' },
+  { text: 'Excess is intentional slack in managers — never a coil stuffed in a bay', ruleId: 'rack-excess' },
   { text: 'Dressing is not maximum tightness — real cable needs natural bends', ruleId: 'rack-not-max-tight' },
 ];
 
@@ -2130,7 +2130,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
         ))}
       </View>
       <Text style={styles.tintNote}>
-        {`Training visualization — the cable-class colors are a teaching language only; field cable colors vary (${CI_CLASS_KEY}). The switch is reverse-racked and the patch panel is mounted jacks-to-rear, so every port faces the rear with the rest of the cabling: the horizontals land on the panel’s punch-downs, and short patch cords join the panel to the switch. The 3U amp sits lowest, on the PDU, with rear supports.`}
+        {`Training visualization — the cable-class colors are a teaching language only; field cable colors vary (${CI_CLASS_KEY}). The switch is reverse-racked and the patch panel is mounted jacks-to-rear, so every port faces the rear with the rest of the cabling: the building’s horizontal cable runs land on the panel’s punch-downs (the terminals the wires press into), and short patch cords join the panel to the switch. The 3U amp sits lowest, on the PDU (power distribution unit), with rear supports.`}
       </Text>
 
       {/* ═══════════ PHASE A — inspect the bad rack ═══════════ */}

@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Classic layout: singer front center, piano stage left or right (often angled so singer and pianist see each other), accordion and double bass close by, drums small and upstage. In variété tours expect the full pop lineup: drums, bass, two guitars, keys/MD, two or three backing vocalists, sometimes strings and brass (a big variété tour can carry a four-piece string section and three-piece brass). The arrangement frames the words: sparse verses (often voice and one instrument), the band entering progressively, and choruses lifted by strings and harmonies, with instruments filling the breath gaps rather than the lines. Many chansons build to a final emotional climax (Brel’s “Amsterdam” is a long crescendo), so leave headroom."
+      "text": "Classic layout: singer front center, piano stage left or right (often angled so singer and pianist see each other), accordion and double bass close by, drums small and upstage. In variété tours expect the full pop lineup: drums, bass, two guitars, keys/MD (musical director), two or three backing vocalists, sometimes strings and brass (a big variété tour can carry a four-piece string section and three-piece brass). The arrangement frames the words: sparse verses (often voice and one instrument), the band entering progressively, and choruses lifted by strings and harmonies, with instruments filling the breath gaps rather than the lines. Many chansons build to a final emotional climax (Brel’s “Amsterdam” is a long crescendo), so leave headroom."
     }
   ],
   "dynamics": [

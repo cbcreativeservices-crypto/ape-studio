@@ -89,8 +89,8 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Damage you can’t see still counts: a crushed cable or a blocked vent fails later, after the job already looks finished.',
     ],
     tryThis: [
-      'Make your call, then read A’s verdict: restraints cinched so tight they deform every cable in the loom. The neatest close-up is not the one to sign off.',
-      'After your first pick, every close-up shows its verdict. Read D’s: tidy in the wrong place, over cooling and service access, is still wrong.',
+      'Make your call, then read A’s verdict: restraints cinched so tight they deform every cable in the loom (the tied bundle). The neatest close-up is not the one to sign off.',
+      'After your first pick, every close-up shows its verdict. Read D’s: tidy cable that blocks cooling and service access is still wrong.',
       'Under B’s verdict, tap the colored tag to see which kind of authority stands behind that rule.',
     ],
   },
@@ -107,7 +107,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'SCENARIO DRILL — WHAT ARE YOU INSTALLING?: three real runs, four calls each. The colors are training tints; real cable colors vary.',
     ],
     control: [
-      'Tap a cable’s name to open or close its card; a ✓ marks it read. Browsing is free and not scored, but the drill below draws on it.',
+      'Tap a cable’s name to open or close its card; a ✓ marks it read. Browse as much as you like; it isn’t scored, but the drill below draws on it.',
       'For each run in the drill, answer 1 · WHAT CABLE IS THIS?, 2 · TEMPORARY OR PERMANENT?, 3 · THE LIKELY PATHWAY? and 4 · THE KEY RISK?',
       'Each answer locks when you make it; the next question opens under its verdict.',
       'Answer all three runs to finish the stage. Its score comes from your own calls.',
@@ -136,18 +136,18 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       start: 'Switch to X-RAY to see the runs hidden in walls and above the ceiling. Then read the three route cards and tap the one you would pull.',
     },
     seeing: [
-      'You’re planning two installations, each a building section drawn to scale (FULL SCREEN adds the badge Scale: 20 units = 1 m · person 1.75 m). CABLE: names what is pulled.',
+      'You’re planning two installations, each drawn to scale as a building section (FULL SCREEN adds the badge Scale: 20 units = 1 m · person 1.75 m). CABLE: names what is pulled.',
       'Three candidate routes, A, B and C, each in its own color. Each route card gives its path and relative length (×1.0 = shortest).',
       'After a pick: THE VERDICT — ALL THREE ROUTES, SCORED — six score bars and an overall /100 for each route.',
     ],
     control: [
       'FINISHED shows the space as people see it, hidden runs dashed. X-RAY strips the surfaces: in-wall and above-ceiling runs draw solid.',
       'WHICH ROUTE DO YOU PULL?: tap a route card (or PULL A, B or C in full screen). The pick locks for that installation.',
-      'Under the verdict: each flag on your route, with ▸ WHY? and its source tag.',
+      'Under the verdict, each flag on your route has ▸ WHY? for the reason and a source tag for where the rule comes from.',
       'Decide both installations to finish the stage; its score averages the two routes you chose.',
     ],
     changes: [
-      'Each route starts at 100 in every area and loses points for its flags: a public walkway, another trade’s space, sharp edges, motor loads.',
+      'Each route starts at 100 in every area and loses points for its flags: a public walkway, space that belongs to another trade (other building work), sharp edges, motor loads.',
       'Length barely counts — only past 1.5× the shortest does it cost a little workmanship.',
       'A serious safety flag earns ✕ REJECTED — SAFETY, whatever the overall number. Your pick installs itself; the others fade back.',
     ],
@@ -240,7 +240,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       start: 'In PHASE A — INSPECT, tap the amber rings or open ▸ SUSPECT LIST and find what’s wrong. Ten finds unlock PHASE B — DRESS.',
     },
     seeing: [
-      'RACK is a rear view: patch panel between horizontal managers, switch, DSP (digital signal processor), interface, amplifier, power distribution, vertical managers.',
+      'RACK is a rear view: patch panel between horizontal cable managers, switch, DSP (digital signal processor), interface, amplifier, power distribution, vertical cable managers.',
       'You work through four phases: PHASE A — INSPECT, PHASE B — DRESS, PHASE C — SERVICE, PHASE D — MAINTAIN.',
       'In Phase A amber rings mark places to inspect. A find shows ⚑, its rule and a FIX line, and a counter tracks finds.',
     ],
@@ -252,7 +252,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     ],
     changes: [
       'In B each loom draws itself down the manager you choose. With all six placed, each shows ✓ or ✕ against THIS PROJECT\'S PLAN.',
-      'Here signal dresses left, AC power and speaker outputs right. The side is a project choice; what matters is a plan that keeps classes apart for noise and tracing.',
+      'Here signal dresses left, AC power and speaker outputs right. The side is a project choice; what matters is a plan that keeps the cable groups apart for less noise and easier tracing.',
       'In C the one cable lights from its A-007 label at the rack entry to the DSP; every other loom dims.',
     ],
     teaches: [
@@ -274,7 +274,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       start: 'Start with 1 · SURFACE RACEWAY and pick a route to the wall device. At 2 · WALL PENETRATION, turn X-RAY WALL VIEW on before you choose.',
     },
     seeing: [
-      'ROOM is one wall elevation: a rack, a wall device, baseboard raceway, a doorway and an unfinished opening.',
+      'ROOM is one wall seen straight on (an elevation): a rack, a wall device, baseboard raceway, a doorway and an unfinished opening.',
       'X-RAY WALL VIEW reveals studs and in-wall runs, and reminds you that no view shows a fire rating.',
       'You work through four short scenarios: 1 · SURFACE RACEWAY, 2 · WALL PENETRATION, 3 · THE DOORWAY, 4 · SHARP EDGE.',
     ],
@@ -292,7 +292,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Verify a wall before penetrating it — unknown means unknown, never “probably ordinary”.',
-      'A rated wall needs its listed penetration system; an ordinary one still gets a sleeve or bushing.',
+      'A fire-rated wall needs its listed (tested as one system) penetration system; an ordinary one still gets a sleeve or bushing.',
       'At a doorway, temporary changes the solution, not the standard of care: a two-day run still needs protecting from the door.',
     ],
     tryThis: [
@@ -326,7 +326,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     ],
     teaches: [
       'Above the tiles is other people’s infrastructure: a cable gets its own supports from structure.',
-      'Spacing comes from the supplied system spec, every tile must still lift, and service loops stay reachable.',
+      'Spacing comes from the supplied system spec, every tile must still lift out for access, and service loops stay reachable.',
       'The space above a ceiling is hidden and shared, so a bad run there stays unseen until something fails or someone needs access.',
     ],
     tryThis: [
@@ -384,7 +384,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Pick a source: AC FEEDER (the start), TRANSFORMER, MOTOR, DIMMER RACK, NETWORK CABLE.',
       'Move the DISTANCE fader, or tap ◂ CLOSER / FARTHER ▸ — a quarter of the range per tap. It starts at MID.',
       'Switch BALANCED PAIR / UNBALANCED; it starts UNBALANCED.',
-      'THE CROSSING: tap a card for its verdict. Move the cable, switch the balancing and make a sound crossing choice to finish the stage.',
+      'THE CROSSING: tap a card for its verdict. Move the cable, switch the balancing and make a good crossing choice to finish the stage.',
     ],
     changes: [
       'Exposure rises with the source’s strength and falls fast with distance.',
@@ -489,7 +489,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Work through about four in five findings to reach SIGN OFF THE INSPECTION ✓, then solve every KNOWLEDGE CHECK question.',
     ],
     changes: [
-      'A wrong class is logged under the real one for part of the score; the right class and fix earn the full score.',
+      'A wrong class still earns part of the score (the finding is logged under its real class); the right class and fix earn the full score.',
       'Critical findings weigh more than minor ones. Safety and fire findings both feed Safety, the heaviest area in OVERALL.',
       'Each new attempt draws a different set, so a repeat tests judgment, not memory.',
     ],

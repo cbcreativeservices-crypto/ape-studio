@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "Reggaeton 88–100 BPM (classic perreo (close, hip-led dance) 90–96; “romántico” (slow romantic style) 80–90; Dominican dembow (a separate, faster style from the Dominican Republic) 110–130); Latin trap 60–80 BPM, often felt in double time (120–160)",
     "ensemble": "Solo artist or duo + DJ and full playback; arena tours add a drummer/percussionist, keys, guitar, 2–4 backing vocalists and dancers",
     "priority": "The dembow (reggaeton's core drum pattern) pulse of kick, sub and snare/timbal, locked and huge, with a clear, upfront Spanish lead vocal riding on it",
-    "liveSpl": "98–103 dBA LAeq,15min in clubs and arenas; 118–128 dBC; C-minus-A gap often 18–22 dB",
+    "liveSpl": "98–103 dBA LAeq,15min in clubs and arenas; 118–128 dBC; dBC often 18–22 dB above dBA",
     "studioLoudness": "Masters commonly −8 to −5 LUFS-I (Latin trap −9 to −6); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [
@@ -259,7 +259,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq,15min at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure and is worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. NIOSH advises no more than about 15 minutes a day at 100 dBA; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq,15min at festivals) and protect your own ears across long sets."
+      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq,15min at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A dBC reading more than 20 dB above dBA at 100+ dBA signals sub-heavy exposure and is worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. NIOSH advises no more than about 15 minutes a day at 100 dBA; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq,15min at festivals) and protect your own ears across long sets."
     },
     {
       "label": "Studio / streaming:",
@@ -324,7 +324,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Live, phase-align kick mics and triggers, and confirm stem levels and vocal-guide content with the playback operator before doors.",
+      "text": "Live, phase-align kick mics and triggers, and confirm stem levels and vocal-guide content with the playback operator before doors open.",
       "bullet": true
     },
     {

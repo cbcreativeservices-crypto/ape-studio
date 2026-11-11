@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mallet strikes the very middle of a plain bar. Which of its first three shapes stays quiet?',
     options: ['The second — it is still in the middle', 'The first — the middle stays put in it', 'None — all of the shapes move at the middle'],
     correct: 'The second — it is still in the middle',
-    explain: 'The second shape has a still point at the middle, so a stroke there does not drive it. The first shape moves most at the middle.',
+    explain: 'The second shape has a still point at the middle, so a stroke there does not set it moving. The first shape moves most at the middle.',
     why: {
       'The first — the middle stays put in it': 'The first shape moves MOST at the middle; it is still near the cords.',
       'None — all of the shapes move at the middle': 'The second shape has a still point exactly there.',
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before placing anything over a five-octave marimba, what do you watch?',
     options: ['The whole passage: both hands’ reach, travel along the keyboard', 'One loud note in the middle, to set the input gain', 'Nothing yet: the stands can all go in while the player is still warming up'],
     correct: 'The whole passage: both hands’ reach, travel along the keyboard',
-    explain: 'The player moves along the keyboard and reaches both rows; the mallets rise. Boom, capsule and cable go outside the entire stroke arc, the score and the sightline clear.',
+    explain: 'The player moves along the keyboard and reaches both rows; the mallets rise. Boom, capsule and cable go outside the entire stroke arc, keeping the score and the sightline clear.',
     why: {
       'One loud note in the middle, to set the input gain': 'Gain comes later; first the reach and the travel.',
       'Nothing yet: the stands can all go in while the player is still warming up': 'A stand set before you know the reach may sit in the mallets’ way.',
@@ -218,7 +218,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One mic close above the low bars. What do you expect?',
     options: ['The low bars can dominate and the far end can fade', 'The keyboard evenly, because low bars are the loudest', 'More of the room, because the low bars are wide'],
     correct: 'The low bars can dominate and the far end can fade',
-    explain: 'A point close to one end over-represents it. Higher or farther tends to integrate the keyboard — and adds room and spill. Verify with the real phrase.',
+    explain: 'A point close to one end over-represents it. Higher or farther tends to blend the keyboard — and adds room and spill. Verify with the real phrase.',
     why: {
       'The keyboard evenly, because low bars are the loudest': 'Nearness wins: the far end is farther and quieter in that mic.',
       'More of the room, because the low bars are wide': 'Closer means less room, not more.',
@@ -242,7 +242,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A bar is struck at a still point of one of its shapes. What happens to that shape?',
     options: ['It is barely set moving', 'It rings louder than the others', 'It changes pitch'],
     correct: 'It is barely set moving',
-    explain: 'A shape is driven only as much as the bar moves at the strike point in that shape. The player’s stroke location is part of the tone.',
+    explain: 'How strongly a shape rings depends on how much the bar moves, in that shape, where the mallet strikes. Where the player strikes is part of the tone.',
     why: {
       'It rings louder than the others': 'A still point does not move, so it cannot push that shape.',
       'It changes pitch': 'The strike point changes which shapes ring, not their pitches.',
@@ -328,12 +328,12 @@ const scenarios: MikingScenario[] = [
     id: 'mr.mix.1',
     page: 'practice',
     prompt: 'A starting point says “about 60–100 cm above the middle of the played span”. What do you still need?',
-    options: ['The bars as the reference, and the mallets’ highest stroke', 'The marimba’s brand, so the numbers match its size', 'Nothing more: the band already tells you exactly where it goes'],
+    options: ['The bars as the reference, and the mallets’ highest stroke', 'The marimba’s brand, so the numbers match its size', 'Nothing more: the range already tells you exactly where it goes'],
     correct: 'The bars as the reference, and the mallets’ highest stroke',
     explain: 'A distance belongs to its reference (the bars), and the mallets set the minimum clearance. The played span sets where along the keyboard.',
     why: {
       'The marimba’s brand, so the numbers match its size': 'The brand does not change the reference; the bars do.',
-      'Nothing more: the band already tells you exactly where it goes': 'A band is a place to begin; clearance and the part decide the rest.',
+      'Nothing more: the range already tells you exactly where it goes': 'A range is a place to begin; clearance and the part decide the rest.',
     },
   },
   cardioidNull(W),
@@ -477,11 +477,11 @@ const words: MalletWords = {
     ],
     looking: 'One bar and its pipe · seen from the low end · the player at the left',
     reveal: 'The middle goes down while the ends come up: a bar bends about two still points.',
-    after: 'Then the bar keeps ringing briefly, the pipe with it: a marimba note is short, which is why players roll long notes. The mallet and the stroke place shape it — the player’s choices.',
+    after: 'Then the bar keeps ringing briefly, the pipe with it: a marimba note is short, which is why players roll long notes. The mallet and where it strikes shape it — the player’s choices.',
     shapes: {
       intro: 'This is the lowest shape — the note. The middle and the ends move opposite ways about two still points, a little in from each end, where the cord passes.',
       tuned: 'A plain bar’s upper shapes ring at uneven ratios (about 2.76 and 5.40 times the lowest). Marimba bars are carved underneath to tune them, most often with the first upper shape two octaves above the note, so a real bar’s ratios differ from this plain one. The still points and the strike-point idea stay.',
-      notes: ['A shape is set moving only as much as the bar moves at the strike point in that shape: the stroke place is part of the tone.'],
+      notes: ['How strongly a shape rings depends on how much the bar moves, in that shape, where the mallet strikes: where you strike is part of the tone.'],
     },
     tube: {
       intro: 'Open under the bar, closed at the bottom: the pipe rings at the note whose quarter wavelength fits it — about {len} here. Step BAR toward the low end and watch it grow.',
@@ -669,7 +669,7 @@ export const I08_LESSON: MalletLesson = {
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'If the PA is mono, listen to the marimba in mono at several audience positions before a wide pan.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A good room can carry the keyboard’s width and space in a moderately distant pair; moving back adds reflections and outside noise.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a louder stage generally needs the instrument and a directional spot or pair placed for useful direct sound — tested with the full band, with the farthest notes, the center and rolls.',
+    stage: 'LIVE: a louder stage generally needs both the instrument and a directional spot or pair placed for useful direct sound — tested with the full band, with the farthest notes, the center and rolls.',
     studio: 'RECORDING: the whole phrase and its decay; one mic for a limited span, the pairs or a room view for a wide solo — checked in mono.',
   },
   diagnostic,

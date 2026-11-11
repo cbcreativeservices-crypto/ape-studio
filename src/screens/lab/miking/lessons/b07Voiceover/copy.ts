@@ -24,7 +24,7 @@ const BASE = standingVoiceCopy({
   before: [
     { title: 'CHOOSE THE PERSPECTIVE FIRST', text: 'Before any mic: a dry, close announcer sound, a natural narration with some room, or a guest who must match the host? Ask whether the reader sits or stands, reads from paper or a screen, turns to someone, whispers or projects, and has to stay on camera.' },
     { title: 'LISTEN TO THE ROOM', text: 'Scout the real position: fans, vents, traffic, furniture and the booth’s own ring. Listen to speech and to the pauses. Soft panels tame some reflections; a blanket around a mic does not make outside noise disappear.' },
-    { title: 'A REMOTE GUEST’S MIC', text: 'Agree on a quiet room and an external mic or a headset before the event, with headphones or earbuds so the program does not spill from loudspeakers into the mic — and check the app really chose that mic, not the laptop’s own. Test with the guest’s normal posture, level and connection.' },
+    { title: 'A REMOTE GUEST’S MIC', text: 'Agree on a quiet room and an external mic or a headset before the event, with headphones or earbuds so the program does not spill from loudspeakers into the mic — and check the call app really chose that mic, not the laptop’s own. Test with the guest’s normal posture, level and connection.' },
     { title: 'NEVER TEST WITH FEEDBACK', text: 'Keep loudspeakers out of an open mic’s path; headphones at a comfortable level. Never test by provoking feedback or by blowing into a capsule — use the real voice. Secure heavy arms and stands; keep cables out of walking paths.' },
   ],
   studio: {
@@ -90,7 +90,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: nothing touches the reader, the line to the script stays open, the mount holds within its rating, and cables stay out of walking paths.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a reader or a guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, script and room is different.',
-      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the reader reading the same passage each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
+      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the reader reading the same passage each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches.',
       clearance: 'Clearance comes first: off the face, out of the line to the script, clear of the hands and the page turns.',
       tendencies: 'Closer tends to sound more intimate, with more breath, pops and bass from a directional mic (the proximity effect); farther, more room and a steadier level; off the mouth’s line or above the script, softer pops. These are tendencies, and voices vary.',
     },
@@ -118,7 +118,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     prompt: 'If the monitor had to stay on, where would its sound be rejected most? Turn or tilt the MIC (AIM), or change its PATTERN, until the monitor sits in the rejection — while the mic still points at the mouth.',
     activityDone: 'done — the monitor sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: a cardioid rejects most straight behind (180°); a supercardioid rejects most toward the rear, off to each side (about 125°). The monitor is off to the side on the desk, so turning the mic helps only so far — which is why the talent hears the program on headphones and the monitor stays off while the mics are open.',
-    shieldNote: 'The desk and the people reflect the monitor’s sound too, and the free-field pattern cannot show that. Leave a loudspeaker on near an open mic only in a system designed for it, such as echo control.',
+    shieldNote: 'The desk and the people reflect the monitor’s sound too, and the drawn pattern (measured in open space, the free field) cannot show that. Leave a loudspeaker on near an open mic only in a system designed for it, such as echo control.',
     learn: {
       ...BASE.context!.learn,
       body: 'A pattern’s rejection is a tool to aim; a loudspeaker switched off, and headphones, do more. Mute or lower the mics nobody is using.',

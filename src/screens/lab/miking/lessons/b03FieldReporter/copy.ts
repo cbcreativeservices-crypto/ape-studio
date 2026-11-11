@@ -43,7 +43,7 @@ const BASE = standingVoiceCopy({
   contextPoints: [
     { title: 'ONE MIC OR TWO', text: 'One rugged handheld is quick to set up and makes the speaking turns plain on camera. A mic each — a handheld and a lav — avoids the rushed handoff, but adds a channel, open-mic spill and routing work.' },
     { title: 'THE PATTERN', text: 'An omni forgives aim and handoffs, and hears the street from every side. A directional handheld can favor the voice when its front is on the mouth — and loses it when the aim slips or the head turns.' },
-    { title: 'A LOCAL PA', text: 'At a live event, what goes to the loudspeaker and where a directional mic’s rejection points decide how close it gets to feedback. Bring it up only to its working level; at any ring, pull it down.' },
+    { title: 'A LOCAL PA', text: 'At a live event, two things decide how close the mic gets to feedback: what goes to the loudspeaker, and where a directional mic’s rejection is aimed. Bring it up only to its working level; at any ring, pull it down.' },
     { title: 'THE LOUDEST WORDS', text: 'A close guest can suddenly shout: set gain on the loudest likely speech and leave headroom at the transmitter, the receiver, the preamp and the recorder. A later compressor or an automatic level cannot repair an overloaded input.' },
   ],
 });
@@ -125,10 +125,10 @@ export const B03_COPY: Partial<LessonCopy> = {
     prompt: 'The loudspeaker stays where the event needs it. Turn or tilt the handheld (AIM), or change its PATTERN, until the loudspeaker sits in the rejection — while the mic still points at the guest’s mouth.',
     activityDone: 'done — the loudspeaker sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Held below the guest’s mouth and aimed up at it, its rear points down and out toward the reporter — where the loudspeaker is decides how much it hears. An omni rejects nothing: held close it may suit the broadcast, and still need another plan for a loud local PA.',
-    shieldNote: 'The two people, the camera and the buildings reflect the loudspeaker’s sound too, and the free-field pattern cannot show that. Listen at the actual program, with the event live.',
+    shieldNote: 'The two people, the camera and the buildings reflect the loudspeaker’s sound too, and the drawn free-field pattern (open air, no reflections) cannot show that. Listen at the actual program, with the event live.',
     learn: {
       ...BASE.context!.learn,
-      body: 'At a live event every open mic hears the loudspeaker. A directional pattern helps only when it is aimed so its rejection suits the loudspeaker; closeness to the speaking mouth does more.',
+      body: 'At a live event every open mic hears the loudspeaker. A directional pattern helps only when it is aimed so its rejection faces the loudspeaker; closeness to the speaking mouth does more.',
       warn: 'No mic position alone prevents feedback. Ringing out is the PA operator’s job: bring an interview mic that feeds a local PA up only to its working level, and pull it down at any ring.',
     },
   },

@@ -63,7 +63,7 @@ const SOUND = makeStringSoundPage({
     ends: { left: 'AGRAFFE', right: 'BRIDGE', tone: 'piano' },
     subject: 'One of the piano’s strings',
     notes: [
-      'A shape is set moving only as much as the string moves at the struck point in that shape. Struck in the middle, every even shape (2, 4, 6 …) has a still point there and is not driven at all. Near one end — where a piano’s hammers strike — almost every shape joins in.',
+      'Striking a point drives each shape only as much as that shape moves at that point. Struck in the middle, every even shape (2, 4, 6 …) has a still point there and is not driven at all. Near one end — where a piano’s hammers strike — almost every shape joins in.',
       'This is an ideal, flexible string. A real piano string is stiff, so its upper shapes run a little sharp of the whole numbers — part of a piano’s character, and one reason no two pianos sound alike.',
     ],
   },
@@ -156,7 +156,7 @@ const SETTING = makeStagePage({
   nearBadge: 'From above · a typical layout · the pianist at the left, the treble side toward the bottom',
   audience: pianoAudience,
   nearLooking: 'Plan · the piano and the pianist from above',
-  hearing: 'Protect your hearing during soundcheck and repeated loud passages: close to the hammers a piano can pass 130 dB. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
+  hearing: 'Protect your hearing during soundcheck and repeated loud passages: close to the hammers a piano can pass 130 dB. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB. These are limits for PEOPLE, measured where a person listens — they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });
 
 export const PIANO_ART: LessonArt = {

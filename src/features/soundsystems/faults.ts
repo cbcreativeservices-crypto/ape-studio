@@ -201,7 +201,7 @@ export const FAULTS: readonly FaultCase[] = [
       { signal: 'none', note: 'Dark.' },
       {
         consoleOut: { signal: 'ok', note: 'Main meters healthy; main outputs patched to the processor inputs.' },
-        processor: { signal: 'none', note: 'INPUT meters lit. Every OUTPUT shows MUTE — a preset was recalled with its outputs muted, as many processors do (and as this one was saved).' },
+        processor: { signal: 'none', note: 'INPUT meters lit. Every OUTPUT shows MUTE — a preset was recalled with its outputs muted; many processors do this, and this preset was saved that way.' },
         amp: { signal: 'none', note: 'No signal LEDs.' },
         speaker: { signal: 'none', note: 'Silent.' },
         listener: { signal: 'none', note: 'Silence.' },
@@ -234,7 +234,7 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['An intermittent cable or connector at the DI', 'The amplifier goes into protect', 'The limiter is closing', 'The channel is patched from the wrong input'],
     correct: 0,
-    explain: 'An intermittent hides from a resting test. The tell is that it follows movement — and the first station that moves with the player is the cable at the DI.',
+    explain: 'An intermittent fault hides from a test while nothing moves. The tell is that it follows movement — and the first station that moves with the player is the cable at the DI.',
     fix: 'Replace the cable now; repair the strain relief later. Never put an intermittent cable back in service on a promise.',
     forward: 'Wiggle while you watch, from the source forward. The station that flickers under your hand is the fault.',
   },
@@ -470,7 +470,7 @@ export const FAULTS: readonly FaultCase[] = [
     correct: 0,
     explain: 'Monitors must come from a bus the house fader does not control. A wedge fed from the main output can never be a monitor mix; it is the audience mix on the floor.',
     fix: 'Patch the monitor amplifier from Aux 1, build the wedge mix on pre-fader sends, and leave the main outputs to the house.',
-    forward: 'The symptom names the control; the walk found the station where that control should have stopped mattering and did not.',
+    forward: 'The symptom names the control, the main fader; the walk found the station where that fader should no longer have mattered, but still did.',
   },
   {
     id: 'vocals-in-subs',
@@ -619,7 +619,7 @@ export const FAULTS: readonly FaultCase[] = [
     options: ['The network link between the stagebox and the console is failing (cable or switch)', 'One microphone cable is intermittent', 'The amplifier is going into protect', 'The limiter is closing'],
     correct: 0,
     explain: 'All inputs dropping as one is a transport fault, not a channel fault. On a networked system the transport is a single cable and whatever it passes through — and a door hinge is where cables die.',
-    fix: 'Re-route the cable clear of the door with strain relief, use a switch with Energy-Efficient Ethernet disabled and QoS set for audio, and run the redundant second link if the system supports it.',
+    fix: 'Re-route the cable clear of the door with strain relief, use a switch with Energy-Efficient Ethernet disabled and QoS (quality of service) set for audio, and run the redundant second link if the system supports it.',
     forward: 'The stagebox is the first station where all channels share one path. Its LINK light told the story before a single cable was swapped.',
   },
   {

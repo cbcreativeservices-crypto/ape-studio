@@ -147,7 +147,7 @@ export const DJ_ZONES: DocumentedZone[] = [
       top: { u0: -400, u1: 400, v0: -400, v1: 400, round: true },
     },
     start: { p: { x: 260, y: SUPPORT - 65, z: 0 }, az: 0, el: 20 },
-    tendency: 'A selectable bass perspective — often a narrower view with less hand detail. First judge the top mic alone; then blend this one in mono.',
+    tendency: 'An optional bass view you can blend in — often narrower, with less hand detail. First judge the top mic alone; then blend this one in mono.',
     checks: ['The opening stays clear in the player’s posture', 'Stand and cable away from feet', 'The blend with the top mic, in mono'],
   },
   {

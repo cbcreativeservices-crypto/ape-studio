@@ -61,7 +61,7 @@ export const BASSOON_ART: LessonArt = windLessonArt({
     fig: { L: SOUND_FIG, box: SOUND_BOX, side: 1, subject: 'A bassoon on its side, keys toward you, its folded air column drawn open' },
     other: 'closed',
     notesNote: 'A simplified fingering: real bassoon fingerings use half-holes, flick keys and many thumb keys — but the place most of the note leaves still moves farther along the folded tube as the pitch rises: down from the bell, around the boot, up the wing joint.',
-    pipeNote: 'The bassoon’s bore is close to a long cone with its tip near the reed, folded in two: it sounds every multiple and overblows an octave — compare the clarinet’s closed cylinder with PIPE.',
+    pipeNote: 'The bassoon’s bore is close to a long cone with its tip near the reed, folded in two: it sounds every harmonic and overblows an octave — compare the clarinet’s closed cylinder with PIPE.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the bassoon: how a real bassoon sounds depends on the instrument, the reed, the player and the room. The pictures show where the sound is made and where it leaves.',
     reveal: 'The very lowest note leaves from the bell. Each note above it leaves from a hole closer to the reed.',
   },

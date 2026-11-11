@@ -48,7 +48,7 @@ const SPEC = ensembleHandSpec({
     label: 'the stations with a dynamic over the congas and a floor wedge in front,',
     learn: [
       { title: 'LIVE SOUND', text: 'Find what already reaches the audience; reinforce missing detail or balance. On a quiet stage main or area mics may do; with loud monitors or a band, closer directional pickup. Lower the gain at once if ringing starts.' },
-      { title: 'A RECORDING', text: 'In a quiet room the main array may give the whole sound; spots from silence until a line is intelligible; room mics only when their decay helps. A dry, separately processed sound is a production goal to state first.' },
+      { title: 'A RECORDING', text: 'In a quiet room the main array may give the whole sound; add spot mics (supports) from silence until a line is intelligible; room mics only when their decay helps. A dry, separately processed sound is a production goal to state first.' },
       { title: 'BOTH AT ONCE', text: 'Label each mic by the station or area it serves, with its routing; clear mute or scene instructions that keep the piece’s tails and overlaps.' },
     ],
   },

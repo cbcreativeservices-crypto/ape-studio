@@ -46,7 +46,7 @@ const base = stringsCopy({
   },
   workedZone: { sitar: 'low' },
   workedLine: 'This starting point sits near {line}, out in front of the board.',
-  workedAim: 'Angle it in at the bridge and the body — the lab counts it while the mic’s axis, followed in, meets the board within about 11 cm of {head} — not into one strike point.',
+  workedAim: 'Angle it in at the bridge and the body, not into one strike point — the lab counts it while the mic’s axis, the line it points along, meets the board within about 11 cm of {head}.',
   clearWhat: 'the mizrab hand, the left hand’s travel along the neck, the gourd and the player’s view',
   placementReveal: 'Toward the bridge tends to bring more attack and buzz; toward the neck, more string character and shimmer — and fret noise; farther back, more of the whole instrument and the room. Every sitar and room differs, so “it depends on this sitar” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {

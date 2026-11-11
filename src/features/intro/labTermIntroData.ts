@@ -508,7 +508,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Vacuum Tube Fundamentals",
     term: "Vacuum tube",
     plainEnglish:
-      "A vacuum tube (valve) is a sealed, air-free envelope. A heated cathode sends electrons to a plate, and grids control that flow. It is the amplifying heart of tube amps, preamps, and mics.",
+      "A vacuum tube (valve) is a sealed, air-free bulb (called the envelope). A heated cathode sends electrons to a plate, and grids control that flow. It is the amplifying heart of tube amps, preamps, and mics.",
     glossaryId: "687b7510-a5fb-4bef-b058-ce3a3e651c12",
   },
   AmpLab: {

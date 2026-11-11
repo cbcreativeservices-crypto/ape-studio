@@ -249,8 +249,8 @@ export const FieldRow = memo(
           // truth and a confident wrong answer is the worst thing they can do —
           // but refusing in silence just looks broken. Name the problem.
           <Text style={styles.warnText}>
-            ⚠ Check this value — enter digits only (a thousands separator like 10,000 is fine; units go in the
-            selector).
+            ⚠ Check this value — enter digits only (a thousands separator like 10,000 is fine; set the unit with the
+            button beside the box).
           </Text>
         ) : null}
         {listUnreadable ? <Text style={styles.warnText}>⚠ {listUnreadable}</Text> : null}

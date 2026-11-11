@@ -132,7 +132,7 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   );
 }
 
-const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach around to wire it, so it is mirrored. At the top, the room at 1:5: the PA speakers on their stands at the corners (PA L on your left: house left, the crowd’s left, as on screen 20), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
+const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach around to wire it, so it is mirrored. At the top, the room drawn at 1:5 scale: the PA speakers on their stands at the corners (PA L on your left: house left, the crowd’s left, as on screen 20), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
 
 function unbuilt(b: Booth): Booth {
   const plugs = { ...b.plugs };
@@ -298,7 +298,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>Each player’s AUDIO OUT goes to a mixer LINE input on an RCA pair (white left, red right); the mixer’s MASTER OUT feeds the PA (the crowd) and its BOOTH OUT the booth monitors (you) — on this lab’s mixer both on balanced lines: the input rejects hum picked up equally on both wires, which matters on long runs.</P>
+        <P>Each player’s AUDIO OUT goes to a mixer LINE input on an RCA pair (white left, red right); the mixer’s MASTER OUT feeds the PA (the crowd) and its BOOTH OUT the booth monitors (you) — on this lab’s mixer both are balanced lines, whose inputs reject hum picked up equally on both wires, which matters on long runs.</P>
         <P>The headphones plug into the mixer’s front, and every powered device needs its own power cord.</P>
         <Terms items={TERMS} />
       </Step>

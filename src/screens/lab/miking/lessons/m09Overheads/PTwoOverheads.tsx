@@ -148,7 +148,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
     { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, flex: 0.8 },
   ];
   const [wellW, setWellW] = useState(0);
-  const combLabel = `Simplified two-mic sum for the ${srcRegion.label}: ${equal ? (sEff === 1 ? 'no path difference, no comb' : eqCell === 'CANCELS' ? 'no path difference, and the sum is inverted, so this source cancels' : `no path difference, and the sum is inverted, so this source partly cancels, about ${partDb} dB down`) : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}.`;
+  const combLabel = `Simplified two-mic sum for the ${srcRegion.label}: ${equal ? (sEff === 1 ? 'no path difference, no comb' : eqCell === 'CANCELS' ? 'no path difference, but one arrival is inverted, so this source cancels' : `no path difference, but one arrival is inverted, so this source partly cancels, about ${partDb} dB down`) : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}.`;
   const tick = (on: boolean) => (on ? '✓' : '○');
 
   /* ── step 2: the pairs ── */
@@ -221,7 +221,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A', 'B']} showZones={false} pathsFrom={src} interactive={!hidden} labelFor={(v) => sceneLabel(rig, v, ['A', 'B'], `Paths from the ${srcRegion.label} are drawn as an overlay.`)} />,
-        badge: `A simplified picture · dashed = straight paths · white lobe = pattern shape, not range · one point source, no room · c = ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
+        badge: `A simplified picture · dashed = straight paths · white lobe = pattern shape, not range · one point source, no room · sound at ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
         bezel,
         params,
         initialParam: 'pos',
@@ -238,7 +238,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
           </Card>
           <NowLine text={nowText(rig, ['A', 'B'])} />
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
-          <Body>{equal ? (sEff === -1 ? `No path difference for the ${srcRegion.label}, but the sum acts as inverted: it reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so this source cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference for the ${srcRegion.label}: it reaches both mics at the same instant — no comb for this source.`) : `Mic B hears the ${srcRegion.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'Summed, notches fall at odd multiples of 1 ÷ (2 Δt).' : 'Summed as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+          <Body>{equal ? (sEff === -1 ? `No path difference for the ${srcRegion.label}, but one arrival is inverted: it reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so this source cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference for the ${srcRegion.label}: it reaches both mics at the same instant — no comb for this source.`) : `Mic B hears the ${srcRegion.label} ${fmtMs(dt)} (Δt) ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'Summed, notches fall at odd multiples of 1 ÷ (2 Δt).' : 'Summed with one arrival inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
           {predicted != null && kickSeen ? <Note tone="ok">{`You predicted “${predicted}”. ${TWO_WORDS.reveal}`}</Note> : null}
           <Note tone="warn">{T.warn}</Note>
         </>

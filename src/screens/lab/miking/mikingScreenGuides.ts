@@ -295,7 +295,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
       'Flip MIC B POLARITY to − and back: DELAY Δt B−A does not change.',
       // POLARITY's lower line reads 'switch', or 'heads: −' / 'rear lobe: −' when the
       // mic's own lobe flips the sum (PTwoMic bezel), so the words are quoted.
-      'Make the paths differ more: Δt grows and 1ST NOTCH drops; nearly equal, it reads OVER 20 kHz. If POLARITY’s lower line reads heads: − or rear lobe: −, the sum has flipped and the notch jumps.',
+      'Make the paths differ more: Δt grows and 1ST NOTCH drops; nearly equal, it reads OVER 20 kHz. If POLARITY’s lower line reads heads: − or rear lobe: −, the sum has flipped: notches and peaks swap.',
     ],
   },
   'READ|Symptoms': {
@@ -369,7 +369,7 @@ const STAGE_WORDS: Record<PageId, StageWords> = {
       'Sound leaves a source from particular places — a struck head, a bell, open holes, a soundboard, a speaker, a mouth. A mic hears most directly where the sound leaves.',
       'The lab is silent: nothing is played, and anything that moves is drawn so you can watch it.',
     ],
-    teaches: 'Where the sound leaves is where most close setups start; every distance in this lesson names the surface it is measured from.',
+    teaches: 'Where the sound leaves is where most close setups start, and a distance means something only when you know the surface it is measured from.',
     tryThis: 'Before NEXT ›, say where the sound leaves — then check which surface each setup in the next module is measured from.',
   },
   setups: {
@@ -690,7 +690,7 @@ export const MIKING_END_GUIDE: ScreenGuide = {
   teaches: [
     'Miking follows the same order of decisions every time: find where the sound leaves, compare starting setups, choose the mic by its properties, then place it and keep it clear.',
     // "such as": a family's own pages can replace an advanced module (M11's routing matrix).
-    'The advanced modules test those foundations in real situations, such as a stage, a second pickup or a fault to trace. The practice briefs show that more than one setup can work, for reasons you can name.',
+    'The same foundations apply in real situations, such as a stage, a second pickup or a fault to trace, and more than one setup can work, for reasons you can name.',
   ],
   tryThis: [
     'Jump to a module whose row has a first-try note and reread its checks: each right answer stays shown with its reason. A fresh practice run lets you answer them again.',

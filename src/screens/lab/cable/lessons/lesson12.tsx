@@ -44,7 +44,7 @@ export function outstandingRows(cleared: ReadonlySet<string>): LeftRow[] {
     const missing = LESSON_UNITS[l.id].filter((u) => !cleared.has(u));
     if (missing.length === 0) return;
     let detail = 'Knowledge check not yet solved';
-    if (l.id === 'l10_tester') detail = 'Bench not yet cleared — every cable named and dispatched';
+    if (l.id === 'l10_tester') detail = 'Bench not yet cleared — name each fault, decide each cable';
     else if (l.id === 'l11_challenge') {
       const left = [
         missing.includes(CHALLENGE_A_UNIT) ? 'Show A (live show)' : null,

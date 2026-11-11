@@ -66,7 +66,7 @@ const PARTS: { key: TubePart; label: string; note: string; pentodeOnly?: boolean
   { key: 'vacuum', label: 'VACUUM', note: 'The nothing that makes it work: with no air molecules in the way, electrons fly freely from cathode to plate. No vacuum, no tube.' },
   { key: 'heater', label: 'HEATER', note: 'Step 2 — the heat. A resistance wire that glows to warm the cathode. It is the reason tubes need warm-up time (and why they glow).' },
   { key: 'cathode', label: 'CATHODE', note: 'Step 3 — the electron source: in most tubes, a coated sleeve around the heater that BOILS OFF electrons when hot (thermionic emission).' },
-  { key: 'plate', label: 'PLATE', note: 'Step 4 — the collector. The anode box, held at high positive voltage, attracts the electron stream — with just these parts you have a working DIODE.' },
+  { key: 'plate', label: 'PLATE', note: 'Step 4 — the collector. The plate (anode), held at high positive voltage, attracts the electron stream — with just these parts you have a working DIODE.' },
   { key: 'grid', label: 'CONTROL GRID', note: 'Step 5 — the valve (TRIODE). A sparse spiral of wire whose small negative voltage gates the whole electron stream — the heart of amplification.' },
   { key: 'screen', label: 'SCREEN GRID', note: 'Step 6 — the accelerator (TETRODE). A second, positive grid that pulls electrons along and shields the control grid from the plate — faster, more stable gain.', pentodeOnly: true },
   { key: 'suppressor', label: 'SUPPRESSOR', note: 'Step 7 — the cleanup (PENTODE). A third grid near the plate that pushes secondary electrons (knocked off the plate) back where they belong.', pentodeOnly: true },
@@ -81,8 +81,8 @@ const PHYSICS: Partial<Record<TubePart, string>> = {
   vacuum: 'NO VACUUM — the bottle is sealed but still full of air (gray dots). Air blocks the path: any emitted electron scatters on contact. Pump the air out.',
   heater: 'NO HEATER — no heat, and nothing can boil electrons out of the cathode. No emission, no current.',
   cathode: 'NO CATHODE — the heater glows, but there is no coated emitter surface to boil electrons from. No emission.',
-  plate: 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.',
-  grid: 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can meter it into a signal.',
+  plate: 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a cloud around the cathode (the space charge).',
+  grid: 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can shape it to follow a signal.',
   screen: 'NO SCREEN GRID — the electrons crawl the whole way across. The screen grid’s + charge is the accelerator.',
   suppressor: 'NO SUPPRESSOR — electrons strike the plate hard enough to knock SECONDARY ELECTRONS loose (shown in red in ⚡ E-VIEW). They escape backward toward the screen grid, robbing plate current.',
 };
@@ -387,7 +387,7 @@ const GRID_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'The grid is a sparse spiral — most electrons could fly right through the gaps. What stops them is its FIELD: a small negative voltage repels the (negative) electrons back toward the cathode. Nudge that voltage slightly and the entire stream swells or starves — a tiny voltage controlling a large current IS amplification.',
-  wrongHint: 'Ride the GRID V lane and watch — do the grid wires move, or does something invisible change?',
+  wrongHint: 'Slide the GRID V fader and watch — do the grid wires move, or does something invisible change?',
 };
 
 function GridSection(p: SectionProps) {
@@ -437,7 +437,7 @@ function GridSection(p: SectionProps) {
         <Text style={styles.caption}>
           A very small voltage change at the grid controls a much larger current through the tube.
           That sentence is the entire reason vacuum tubes changed the world — read it again while
-          riding the lane.
+          you slide the GRID V fader.
         </Text>
         <CheckQuestion spec={GRID_CHECK} />
       </SectionWell>
@@ -641,7 +641,7 @@ function TypesSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the TYPE tray and E-VIEW inside
-        badge: "ILLUSTRATIVE — the newest grid GLOWS in its ink · in ⚡ E-VIEW, red dots = secondary emission (the tetrode's problem, the pentode's fix)",
+        badge: "ILLUSTRATIVE — the newest grid GLOWS in its own color · in ⚡ E-VIEW, red dots = secondary emission (the tetrode's problem, the pentode's fix)",
         onGuide: () => p.help('tube_types'),
         bezel: [
           { k: 'TYPE', v: t.label, helpKey: 'tube_types' },
@@ -674,7 +674,7 @@ const BIAS_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Bias sets WHERE on the transfer curve the tube idles. Too negative and the stream is shut off for much of the swing — the input wiggles a closed valve, so part of the wave (or all of it) is lost. Correct bias parks the idle point mid-curve so the whole swing stays on the straight part. Too positive and it slams into saturation instead.',
-  wrongHint: 'Ride the BIAS lane to the far left and watch the output wave on the right of the display.',
+  wrongHint: 'Slide the BIAS fader to the far left and watch the output wave on the right of the display.',
 };
 
 function BiasSection(p: SectionProps) {
@@ -764,7 +764,7 @@ function SaturationSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the DRIVE lane docked inside
-        badge: 'ILLUSTRATIVE — normalized tanh curve (left, vs the straight dashed ideal) · input & output waves (right)',
+        badge: 'ILLUSTRATIVE — normalized tanh (soft-clipping) curve (left, vs the straight dashed ideal) · input & output waves (right)',
         onGuide: () => p.help('saturation'),
         bezel: [
           { k: 'DRIVE', v: pct(drive), helpKey: 'saturation' },
@@ -844,12 +844,12 @@ function VersusViz({ viz, width, height, running }: { viz: TubeVizModule; width:
 
 const SECTIONS: { key: TubeSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
   { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: 'Glass, metal, wire, and nothing at all — open PARTS and tap each piece to learn its job.', Comp: InsideSection },
-  { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Ride the warm-up lane and watch heat become electrons, and electrons become current.', Comp: FlowSection },
+  { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Slide the WARM-UP fader and watch heat become electrons, and electrons become current.', Comp: FlowSection },
   { key: 'grid', label: 'GRID', title: 'THE CONTROL GRID', blurb: 'The heart of amplification: a whisper of voltage gating a river of current.', Comp: GridSection },
   { key: 'amplify', label: 'AMPLIFY', title: 'SIGNAL AMPLIFICATION', blurb: 'Your signal never touches the big current — it drives the GRID (blue). The grid is a valve: its tiny wiggle opens and chokes the tube’s much larger cathode→plate stream, and that gated stream leaves the PLATE (amber) as a big, flipped copy of the input.', Comp: AmplifySection },
   { key: 'highv', label: 'HIGH V', title: 'WHY TUBES NEED HIGH VOLTAGE', blurb: 'Weak attraction, weak current — why tube circuits live at hundreds of volts.', Comp: HighVoltSection },
   { key: 'types', label: 'TYPES', title: 'TRIODE · TETRODE · PENTODE', blurb: 'Three tubes, one story: each type adds ONE more grid to fix the previous type’s weakness. Switch between them — the newest grid glows in its own color, and the drawing shows what it fixes (and what it costs).', Comp: TypesSection },
-  { key: 'bias', label: 'BIAS', title: 'TUBE BIAS', blurb: 'Cutoff · linear · saturation — one lane on the transfer curve.', Comp: BiasSection },
+  { key: 'bias', label: 'BIAS', title: 'TUBE BIAS', blurb: 'Cutoff · linear · saturation — the BIAS fader sets where the tube sits on the transfer curve.', Comp: BiasSection },
   { key: 'sat', label: 'SATURATE', title: 'TUBE SATURATION', blurb: 'Every amplifier has a limit. Drive a tube toward its limit and it doesn’t slam into a wall — its transfer curve bends, ROUNDING the loudest peaks instead of chopping them off. That gentle bend is soft clipping, and it is most of what “tube sound” means.', Comp: SaturationSection },
   { key: 'versus', label: 'VS', title: 'TUBE vs TRANSISTOR', blurb: 'Two completely different physics doing the same job.', Comp: VersusSection },
 ];

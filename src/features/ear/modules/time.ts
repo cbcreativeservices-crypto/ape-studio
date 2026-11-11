@@ -195,7 +195,7 @@ export const M13_COMB: EarModule = {
           kind: 'spectrum',
           clips: [0, 1],
           difference: { of: aIsDry ? 1 : 0, ref: aIsDry ? 0 : 1, maxHz: 5000 },
-          caption: `Top: both clips. Below: combed ÷ dry, measured, on a linear axis — a dip every ${(1000 / delayMs).toFixed(0)} Hz. The Wave lab’s interference module shows why.`,
+          caption: `Top: both clips. Below: the combed clip divided by the dry one, measured on a linear axis — a dip every ${(1000 / delayMs).toFixed(0)} Hz. The Wave lab’s interference module shows why.`,
         },
       };
     }
@@ -213,7 +213,7 @@ export const M13_COMB: EarModule = {
         kind: 'spectrum',
         clips: [0, 1],
         difference: { of: combFirst ? 0 : 1, ref: combFirst ? 1 : 0, maxHz: 5000 },
-        caption: `Top: both clips (a log axis crowds the notches). Below: combed ÷ dry, measured, on a linear axis — a dip every ${(1000 / delayMs).toFixed(0)} Hz.`,
+        caption: `Top: both clips (a log axis crowds the notches). Below: the combed clip divided by the dry one, measured on a linear axis — a dip every ${(1000 / delayMs).toFixed(0)} Hz.`,
       },
     };
   },
@@ -227,7 +227,7 @@ export const M12_POLARITY: EarModule = {
   title: 'Polarity & Phase',
   blurb: 'Two mics on one source, summed — the snare-top/snare-bottom survival skill.',
   phones: 'recommended',
-  playbackNote: 'The low-end loss needs real LF; speaker-room phase is Wave lab turf.',
+  playbackNote: 'Hearing the low-end loss needs real LF (bass) playback; speaker-room phase is covered in the Wave lab.',
   // NEW COPY
   listenFor: 'Both clips are the same two mics summed — in one, a copy is flipped. Listen for the low end thinning out or vanishing.',
   levels: 3,

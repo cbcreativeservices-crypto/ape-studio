@@ -18,7 +18,7 @@ const SECTION_CARDS = (
     <Card>
       <Point title="A CLOSE DYNAMIC">High level handled well and a predictable rejection: a rugged stage choice. Aimed straight into a bell it can sound narrow or aggressive — angle it a little off.</Point>
       <Point title="A CONDENSER AT A DISTANCE">Detail and a natural section image where the stage level and the feedback margin allow. Needs phantom power; check its peak handling on the loudest passage.</Point>
-      <Point title="A CLIP-ON MIC">The distance stays steady as the player moves, with strong separation — and a close, smaller view, handling noise and a cable to secure.</Point>
+      <Point title="A CLIP-ON MIC">The distance stays steady as the player moves, with strong separation — but a close, smaller view, handling noise and a cable to secure.</Point>
       <Point title="A SUPERCARDIOID">Tighter at the front than a cardioid; its least-sensitive directions sit off its rear, with a small lobe straight behind — place wedges there, not dead behind.</Point>
     </Card>
     <Body>For the section view, a pair: matched cardioids together (X/Y), two cardioids 17 cm apart at 110°, or spaced omnis.</Body>
@@ -70,7 +70,7 @@ const SPEC = ensembleHandSpec({
     gainId: 'hs.prac.gain',
     secondId: 'hs.prac.3',
     mixIds: ['hs.mix.1', 'hs.mix.2', 'hs.mix.3'],
-    mixIntro: 'Three cards mixed from the section pair and the close mics: the near-coincident pair’s geometry, M/S in mono, and the expanded plan as one system.',
+    mixIntro: 'Three review cards on the section pair and the close mics: the near-coincident pair’s geometry, M/S in mono, and the expanded plan as one system.',
     sheetNote: 'For a real section, with the players’ and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {

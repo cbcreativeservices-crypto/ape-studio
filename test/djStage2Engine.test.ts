@@ -201,7 +201,7 @@ describe('Stage 2 — speed, pitch and key (model/djKey + engine/djStretch)', ()
     assert.equal(keyWords(B), 'D minor −0.56 st');
     assert.equal(keyRelation(A, B), 'OUT OF TUNE');
     assert.equal(keyWords({ ...B, keyLock: true }), 'D minor');
-    assert.equal(keyRelation(A, { ...B, keyLock: true }), 'NEIGHBOURS');
+    assert.equal(keyRelation(A, { ...B, keyLock: true }), 'NEIGHBORS');
   });
   it('the WSOLA stretch keeps a sine’s frequency at a new tempo, and the beeps arrive at the new tempo', () => {
     const src = sineBuf(440, 12, 0.5);

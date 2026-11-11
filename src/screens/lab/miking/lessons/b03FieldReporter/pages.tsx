@@ -39,7 +39,7 @@ function useTools(): MikingStep[] {
     omni: OMNI,
     dir: CARD,
     words: {
-      looking: 'From above · a reporter and a guest, one handheld between them · the side in the corner',
+      looking: 'From above · a reporter and a guest, one handheld between them · a side view in the corner',
       prompt: 'Slide MIC AT from the reporter, through the shared place at chest height, to the guest. Change WHO SPEAKS, the MIC, its AIM, and where the LOUD SOURCE is.',
       done: 'The shared omni is an easy start in a quiet place — it favors neither voice and needs no rushed aiming. When the street is loud, move it to whoever is speaking, just before they start. A directional handheld needs to point at the speaking mouth, close: pointed between two people, it serves neither.',
     },
@@ -116,8 +116,8 @@ const B03Setting = makeBroadcastSetting({
       },
       points: [
         { title: 'CHECK THE PROGRAM, NOT A METER', text: 'Monitor the actual program channel in comfortable headphones: clipping, a low level, an unexpected mute, a switching fault. A clean meter at setup is not proof through a moving crowd.' },
-        { title: 'A LOCAL PA', text: 'At a live event the handheld may also feed a loudspeaker: what goes to it, and where a directional mic’s rejection points, decide how close it gets to feedback. An omni held close may suit the broadcast and need a different plan for loud local speakers.' },
-        { title: 'THE FALLBACK', text: 'A cabled mic, a coordinated spare wireless channel, or a sheltered position nearby — tested before a live hit. The radio channels and the range are checked with the responsible technician.' },
+        { title: 'A LOCAL PA', text: 'At a live event the handheld may also feed a loudspeaker. Two things decide how close the mic gets to feedback: what goes to it, and where a directional mic’s rejection is aimed. An omni held close may suit the broadcast and need a different plan for loud local speakers.' },
+        { title: 'THE FALLBACK', text: 'A cabled mic, a coordinated spare wireless channel, or a sheltered position nearby — tested before going live. The radio channels and the range are checked with the responsible technician.' },
       ],
     }),
 });

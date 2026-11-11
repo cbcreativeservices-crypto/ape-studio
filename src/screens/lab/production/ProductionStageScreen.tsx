@@ -187,7 +187,7 @@ export function ProductionStageScreen() {
   useEffect(() => {
     if (!saveFailed || Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(
-      'This device could not save your last answer. What you see has not been written down.',
+      'This device could not save your last answer. What you see has not been written down — free up some space and re-enter it.',
     );
   }, [saveFailed]);
 
@@ -389,7 +389,7 @@ export function ProductionStageScreen() {
               accessibilityRole="button"
               accessibilityLabel={
                 blockerCount > 0
-                  ? `${blockerCount} blocker${blockerCount === 1 ? '' : 's'} and ${report.findings.length - blockerCount} other findings. Jump to the list.`
+                  ? `${blockerCount} blocker${blockerCount === 1 ? '' : 's'} and ${report.findings.length - blockerCount} other finding${report.findings.length - blockerCount === 1 ? '' : 's'}. Jump to the list.`
                   : `${report.findings.length} finding${report.findings.length === 1 ? '' : 's'}. Jump to the list.`
               }
             >

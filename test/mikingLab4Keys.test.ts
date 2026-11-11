@@ -130,7 +130,7 @@ for (const lesson of ALL) {
       assert.equal(lesson.labId, 'strings');
     });
     it('the ⓘ note: starting points from our research — experiment, trust your ears', () => {
-      assert.match(lesson.accuracyDetail, /^ABOUT THESE STARTING POINTS\. After our research/);
+      assert.match(lesson.accuracyDetail, /^ABOUT THESE STARTING POINTS\. (After our research|Here is where we suggest you begin)/);
       assert.match(lesson.accuracyDetail, /experiment/);
       assert.match(lesson.accuracyDetail, /trust your ears/);
     });

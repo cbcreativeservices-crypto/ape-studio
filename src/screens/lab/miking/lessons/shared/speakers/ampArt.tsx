@@ -437,7 +437,7 @@ export function ampExtras(rig: AmpRig, highlight: string | null): CabExtras {
         view === 'front'
           ? [{ id: 'panel', text: 'CONTROL PANEL', short: 'CONTROLS', u: (c.box.z0 + c.box.z1) / 2, v: c.box.y0 - 30, align: 'center', tone: 'muted' }]
           : view === 'side'
-            ? [{ id: 'chassis', text: 'CHASSIS · VALVES', short: 'CHASSIS', u: chassis.x0 - 10, v: c.box.y0 - 30, align: 'left', tone: 'muted' } as StaticLabel]
+            ? [{ id: 'chassis', text: 'CHASSIS · TUBES', short: 'CHASSIS', u: chassis.x0 - 10, v: c.box.y0 - 30, align: 'left', tone: 'muted' } as StaticLabel]
             : [],
     };
   }

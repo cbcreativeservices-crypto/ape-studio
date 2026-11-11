@@ -372,7 +372,7 @@ function useSystemScene(sys: System, booth: Booth, swOut: SoftwareOut): ItemScen
           frame: { x: -14, y: -20, w: CTRL_W + 28, h: CTRL_D + 46 },
           body: <ControllerTop x={0} y={0} standalone />,
           callouts: [lab('s', 'NO LAPTOP: MUSIC FROM USB / SD', CTRL_W / 2, 0, 0, -14)],
-          a11y: 'A standalone system.',
+          a11y: 'A standalone system: decks and a mixer in one unit, music from USB or SD, no laptop.',
           obstacles: [],
         };
       case 'modular': {

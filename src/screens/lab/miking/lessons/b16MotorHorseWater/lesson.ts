@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a practice session in order, choose and justify setups for two briefs, and say what would justify another detail channel.',
     credit: { scenarios: ['mo.prac.order', 'mo.prac.gain', 'mo.prac.setup1', 'mo.prac.setup2', 'mo.prac.3', 'mo.mix.1', 'mo.mix.2', 'mo.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real, approved practice.' },
-    takeaway: 'Approved places, a fixed sector and a stable ambience, headroom for the nearest pass, dry connectors and calm around animals pass. A closer position or a louder test does not.',
+    takeaway: 'These pass: approved places, a fixed sector and a stable ambience, headroom for the nearest pass, dry connectors and calm around animals. A closer position or a louder test does not.',
   },
 };
 
@@ -201,7 +201,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You turn mic 1 from across the walk to along it, toward the approach. What do you gain?',
     options: ['A longer sector on the approach', 'A louder sound at the closest point', 'Less of whatever lies beyond'],
     correct: 'A longer sector on the approach',
-    explain: 'Aimed along the segment, the approach stays on the axis longer — and so does whatever lies beyond it, a crowd or a loudspeaker. Aimed across, a short contact region is the detail.',
+    explain: 'Aimed along the segment, the approach stays on the axis longer — and so does whatever lies beyond it, a crowd or a loudspeaker. Aimed across, you get a short, strong sector where the source passes in front.',
     why: {
       'A louder sound at the closest point': 'At the closest point the source is now about 45° off the axis — quieter and duller.',
       'Less of whatever lies beyond': 'Aiming along the path puts more of what lies beyond on the axis, not less.',
@@ -225,7 +225,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Mic 1 moves from 2 m to 4 m from the walk. What happens to the change in level along it?',
     options: ['It gets gentler', 'It gets steeper', 'It stays the same'],
     correct: 'It gets gentler',
-    explain: 'From farther back, the ends of the walk are not much farther away than its closest point, so the level changes less along the walk — with about 6 dB less source against the room.',
+    explain: 'From farther back, the ends of the walk are not much farther away than its closest point, so the level changes less along the walk — and the source is about 6 dB quieter compared with the room.',
     why: {
       'It gets steeper': 'Moving back evens the distances out; the change gets smaller.',
       'It stays the same': 'The ratio of the far and near distances changes when the mic moves back.',
@@ -237,7 +237,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What are the practice room’s distances for?',
     options: ['A quiet, dry practice — not a clearance', 'The safe distance from a passing car', 'The minimum distance between a horse and a mic'],
     correct: 'A quiet, dry practice — not a clearance',
-    explain: 'They are mock coordinates for a quiet room with a walking person. A live course, arena or pool sets its own places in its approved plan.',
+    explain: 'They are practice distances for a quiet room with a walking person. A live course, arena or pool sets its own places in its approved plan.',
     why: {
       'The safe distance from a passing car': 'No practice distance is a motorsport clearance.',
       'The minimum distance between a horse and a mic': 'No practice distance says anything about horses.',

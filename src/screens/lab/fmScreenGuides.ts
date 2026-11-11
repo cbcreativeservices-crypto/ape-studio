@@ -58,7 +58,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to strike the voice; ■ stops it. STRIKE in the dock strikes it again.',
-      'Slide INDEX (0 to 8) to set how hard the modulator pushes the carrier. It’s on the lane from the start.',
+      'Slide INDEX (0 to 8) to set how hard the modulator pushes the carrier. Its slider is in the dock from the start.',
       'FC picks the carrier: 110, 220 or 440 Hz. RATIO sets the modulator as carrier × 0.5, 1, 1.41 ✳, 2, 3.5 or 7; ✳ marks the bell-like ratio.',
       'ENV: SUSTAIN holds the index; PLUCK and BELL let it fall after each strike. The graph keeps the strike’s bright start while the sound dulls toward the carrier. While it plays, a change strikes again.',
       'Long-press INDEX, FC, RATIO, ENV or a readout to read about it. LAB NOTES below hold two quick questions; ▴ HIDE DISPLAY gives them room.',
@@ -98,7 +98,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'On EXPLORE, long-press INDEX, FC, RATIO, ENV or a readout to read just its entry. The ⓘ on the readout strip explains the display.',
     ],
     changes: [
-      'Nothing on this page moves. Use it to explain what the SIDEBAND SPECTRUM shows you on EXPLORE.',
+      'Nothing on this page moves. It explains what the SIDEBAND SPECTRUM shows you on EXPLORE.',
       'Each CONTROLS entry takes one part of the rack, such as FC or ENV, and says what it does to the sound.',
       'Each COMMON MISTAKES line pairs a wrong idea with the reason: for example, that more index always makes every sideband louder.',
     ],
@@ -127,7 +127,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. If it’s wrong, pick again straight away. Nothing is lost and there is no score.',
       'A right answer locks in, and its explanation stays open to read.',
-      'Use the tabs under the title to look something up on LEARN or EXPLORE; answers already right stay right when you return. Leave the lab before the last one and the check starts over.',
+      'Use the tabs under the title to look something up on LEARN or EXPLORE; answers already right stay right when you return. Leave the lab before every answer is right and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     changes: [

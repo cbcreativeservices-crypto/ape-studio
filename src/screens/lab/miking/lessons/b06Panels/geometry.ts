@@ -83,7 +83,7 @@ const goose = (t: Talker, id: string, variants: string[]): Rim => ({ id, label: 
 const focusSeated = talkerParts(FOCUS, VOICE_IDS, { who: 'the panelist' }, ['panel']).map((p) => (p.id === 'v.mouth' || p.id === 'v.nose' || p.id === 'v.head' ? { ...p, variants: undefined } : p));
 const parts: Part[] = [
   ...focusSeated.filter((p) => p.id !== 'v.chest' && p.id !== 'player.neck'),
-  { id: 'v.chest', label: 'chest and shoulders', short: 'chest', role: 'The voice is read from the mouth, not the chest; a body mic would clip here — with the talker’s agreement.', solid: S.torso, prov: FIGURE },
+  { id: 'v.chest', label: 'chest and shoulders', short: 'chest', role: 'The voice is read from the mouth, not the chest; a body mic would clip on here — with the talker’s agreement.', solid: S.torso, prov: FIGURE },
   { id: 'player.neck', label: 'neck', short: 'neck', role: 'The neck, chin to collar.', solid: S.neck, listIn: [], prov: FIGURE },
   { id: 'player.standLegs', label: 'the presenter’s legs and feet', short: 'legs', role: 'Standing behind the lectern: cables and stands clear of the feet.', solid: S.legs, listIn: [], variants: ['lectern'], prov: FIGURE },
   ...talkerParts(P1, IDS_P1, { who: 'the panelist on the left' }, ['panel']),

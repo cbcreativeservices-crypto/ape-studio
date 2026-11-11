@@ -29,7 +29,7 @@ export const EUPH_ART: LessonArt = {
       wall: false,
       subject: 'A euphonium player seen from the right side, the euphonium on the lap',
       shapesNote: 'This is a simplified pipe. The real euphonium is a widening (conical) tube with a large bell, folded up — which gives it its round, full tone. The valves add lengths of tube, which lowers every shape’s pitch together.',
-      spreadNote: 'Only the overall brass trend is drawn: the low notes spread nearly all around, the higher overtones go mostly where the bell points — up from an upright bell, forward from a bell-front one. No euphonium-only measurement is drawn.',
+      spreadNote: 'Only the overall brass trend is drawn: the low notes spread nearly all around, the higher overtones go mostly where the bell points — up from an upright bell, forward from a bell-front one.',
       silentNote: 'This lab never plays a sound and draws no frequency curve for the euphonium: how a real euphonium sounds depends on the instrument, the player and the room. The pictures show where the sound comes from and where it goes.',
       reveal: 'Nearly all of the sound leaves from the bell — and a mic “in front of the player” sits in a very different place relative to an upward bell than to a front one. Find the bell first.',
       registers: {
@@ -48,7 +48,7 @@ export const EUPH_ART: LessonArt = {
       studioIdle: 'No monitors on the floor: each player hears the band on headphones, from a personal mixer beside them. The room — and a main pair, when the euphonium plays in a group — are part of the picture now.',
       before: [
         { title: 'IDENTIFY THIS HORN', text: 'Ask for the actual model and see where its bell points: euphoniums and baritones share a pitch, names vary by country, and some bell-front models are informally called baritones. Three valves or four, compensating or not — the mic cannot tell you which it is, so ask.' },
-        { title: 'HEAR THE LINE', text: 'Is it a lyrical melody, an inner part or a low foundation? Ask for quiet and loud phrases, the lowest note the part needs, tongued attacks, legato, the high notes, any mute — and whether the player stands.' },
+        { title: 'HEAR THE LINE', text: 'Is it a lyrical melody, an inner part or a low foundation? Ask for quiet and loud phrases, the lowest note the part needs, tongued attacks, legato (smooth, connected), the high notes, any mute — and whether the player stands.' },
         { title: 'WORK WITH THE EUPHONIUM AS IT IS', text: 'The euphonium and its finish are the player’s. A clip only if its maker confirms it fits this bell — a trumpet or trombone clip may not — and never tape on the finish.' },
       ],
       hearing: 'Protect your hearing in loud rehearsals and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep levels and time sensible, and use hearing protection.',

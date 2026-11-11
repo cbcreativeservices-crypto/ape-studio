@@ -44,7 +44,7 @@ export const C05A_COPY = stringsCopy({
     ],
   },
   workedZone: { reso: 'joint.reso', open: 'joint.open' },
-  workedAim: 'Aim it at the junction of the neck and the pot — the lab counts it while the mic’s axis, followed in, meets the banjo within about 12 cm of {head}. Distance, position and angle are separate things to try.',
+  workedAim: 'Aim it at the junction of the neck and the pot — the lab counts it while the line the mic points along meets the banjo within about 12 cm of {head}. Distance, position and angle are separate things to try.',
   clearWhat: 'the picking hand and forearm, the fretting hand, the swinging neck and the player’s view',
   placementReveal: 'Close in front of the head tends to bring attack and the head’s punch; at the neck junction, more of a blend with the strings and fingers. Banjos differ, so “it depends on this banjo” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {
@@ -65,7 +65,7 @@ export const C05A_COPY = stringsCopy({
     points: [
       { title: 'CLOSE OR SHARED', text: 'A close mic gives more gain before feedback; a bluegrass band sharing one or two mics needs choreography, restrained monitors and a kind room.' },
       { title: 'A FIGURE-8 RIBBON', text: 'One idea to try: smooth a banjo’s attack with a figure-8 ribbon — and check where the floor monitors are first, because a figure-8 hears its back as loudly as its front.' },
-      { title: 'LOUD UP CLOSE', text: 'A banjo can be very loud close in: one reading was about 105 dB near one. One reading, not a rule — measure, and protect hearing.' },
+      { title: 'LOUD UP CLOSE', text: 'A banjo can be very loud close in: one reading near a banjo was about 105 dB. One reading, not a rule — measure, and protect hearing.' },
       { title: 'THE PICKUP', text: 'A pickup is a separate electrical path. If blending it with a mic, compare each alone and together in mono.' },
     ],
     body: 'With a wedge in front, a pattern’s rejection is a tool to aim. A tight pattern is not automatically natural: very close miking magnifies a small region and the playing noises.',
@@ -79,7 +79,7 @@ export const C05A_COPY = stringsCopy({
     B: 'centre.reso',
     learn: [
       'Establish the one-mic result first. Two mics on distinct regions can offer tonal control — but summed they may thin or color the sound. Stereo (two omnis about 30–40 cm out, an XY pair, or a spaced pair) is a deliberate choice, not an automatic improvement.',
-      'When it goes in: hear the pair in MONO at matched levels, with the player moving naturally. Move and rebalance rather than relying on a polarity switch.',
+      'When a second mic goes in: hear the pair in MONO at matched levels, with the player moving naturally. Move and rebalance rather than relying on a polarity switch.',
     ],
   },
   practice: { prefix: 'bj', mixedIntro: 'Three cards from earlier pages, mixed: a reference point, a pattern’s null, and polarity versus delay.' },

@@ -57,7 +57,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
       'The far ear hears the sound later (ITD): up to 656 µs at ±90°, for a head 17.5 cm across.',
       'It also hears it quieter (the same at all frequencies, to −8 dB at the side) and darker: the head blocks highs. THE TWO CUES shows both.',
       'A round head is the same front and back: 30° and 150° read alike; behind only darkens a little.',
-      'DIST sets level: half the distance, 6 dB louder, unless the cap turns the mix down.',
+      'DIST sets level: half the distance, 6 dB louder, unless the mix’s limit turns it down.',
     ],
     teaches: [
       'How two ears place a sound: a time difference (ITD) and a level-and-tone difference (ILD, the head shadow).',
@@ -118,7 +118,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
     control: [
       'Tap a choice. A wrong one shows its explanation in amber; pick another straight away. Nothing is lost and there is no score.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
-      'Answers already right stay right if you switch to LEARN or EXPLORE and come back. If you leave the lab before the last one, the check starts over.',
+      'Answers already right stay right if you switch to LEARN or EXPLORE and come back. If you leave the lab before every answer is right, the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what’s left in this lab, and the way back to labs.',
     ],
     changes: [

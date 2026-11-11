@@ -43,9 +43,9 @@ const SITE = ill('a drawing default: the route is illustrated (field_moving_pass
 
 const PARTS: Part[] = [
   { id: 'path', label: 'the walking route', short: 'route', role: 'A path closed to traffic, agreed with the walker: approach, closest point, departure. The walker watches the route, never the mic.', prov: SITE, variants: ['walk'] },
-  { id: 'walker', label: 'the walker', short: 'walker', role: 'A consenting performer at a normal pace: the moving source. Their possible deviation and stopping room are part of the keep-out.', moving: true, prov: SITE, variants: ['walk'] },
+  { id: 'walker', label: 'the walker', short: 'walker', role: 'A consenting performer at a normal pace: the moving source. Their possible deviation and stopping room are part of the area kept clear.', moving: true, prov: SITE, variants: ['walk'] },
   { id: 'cones', label: 'the marker cones', short: 'cones', role: 'They mark where the walker enters, passes closest and leaves the picture — not traffic control.', prov: SITE, variants: ['walk'] },
-  { id: 'route', label: 'the closed route', short: 'route', role: 'A permitted, closed route on paper: a driver, a safety lead and a communicated plan. No mic, stand or person inside its envelope.', prov: SITE, variants: ['vehicle'] },
+  { id: 'route', label: 'the closed route', short: 'route', role: 'A permitted, closed route on paper: a driver, a safety lead and a communicated plan. No mic, stand or person inside its envelope (the space it may use).', prov: SITE, variants: ['vehicle'] },
   { id: 'vehicle', label: 'the vehicle', short: 'vehicle', role: 'In this lesson only a paper plan: the pass is planned and supervised by professionals, never staged by you.', moving: true, prov: SITE, variants: ['vehicle'] },
   { id: 'barrier', label: 'the crew’s setback line', short: 'setback', role: 'The crew and the mics stay behind it, outside the route’s envelope and its stopping room.', prov: SITE, variants: ['vehicle'] },
 ];

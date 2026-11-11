@@ -83,7 +83,7 @@ export const E11_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'q.main',
     label: 'In front of the quartet, above it',
-    band: 'Try the pair about 1–2 m (3–6.5 ft) in front of the quartet and 1.8–2.5 m (6–8 ft) above the floor, with a view across all four — a trial to start from, then change height and distance separately.',
+    band: 'Try the pair about 1–2 m (3–6.5 ft) in front of the quartet and 1.8–2.5 m (6–8 ft) above the floor, with a view across all four — a place to start, then change height and distance separately.',
     kind: 'trial',
     src: 'LESSON-QUARTET',
     quote: 'approximately 1–2 m in front and 1.8–2.5 m above the floor (the lesson’s trial, L9); AKG-C414 solo violin "from a height of 6 to 8 feet (1.8 to 2.5 m)"',
@@ -111,7 +111,7 @@ export const E11_ZONES: DocumentedZone[] = [
     start: toward(S_C, v3(0, -1050, -1800)),
     variants: ['sections'],
     micTypeIds: PAIR_TYPES,
-    tendency: 'The whole string section and the room as one picture; the support mics add sections, not desks.',
+    tendency: 'The whole string section and the room as one picture; the support mics add sections, not single desks (music stands).',
     checks: ['Every section, quiet and loud', 'Front-to-back balance', 'The mono sum'],
   }),
   targetZone({
@@ -181,12 +181,12 @@ export const E11_SETUPS: EnsembleSetup[] = [
   { id: 'sortf', role: 'MAIN PAIR · NEAR-COINCIDENT', title: 'A 17 cm, 110° pair over the podium', variants: ['sections'], rig: sRig('ortf'), mics: 'Two cardioid small condensers: 17 cm (6.7 in) apart, 110° between them.', start: 'The same place; its 95° recording angle taking in the sections’ width.', line: 'A tighter image of the sections with less of the room than omnis.', core: true, view: 'plan' },
   { id: 'sva', role: 'MAIN PAIR + SECTION SUPPORT', title: 'The pair and a support over the violas', variants: ['sections'], rig: sRig('ab', { spacing: 500 }), singles: [one('va', S_VA.pose, S_VA.target, 'VIOLA SUPPORT')], mics: 'The spaced pair, plus a cardioid on a boom stand at the front right.', start: 'About 1–1.5 m (3–5 ft) from the front violas, aimed across three or four players; raised from silence.', line: 'An inner voice brought forward; reassess after any seating or stand change.', core: true, view: 'plan' },
   { id: 'scb', role: 'MAIN PAIR + SECTION SUPPORT', title: 'The pair and a support for the basses', variants: ['sections'], rig: sRig('ab', { spacing: 500 }), singles: [one('cb', S_CB.pose, S_CB.target, 'BASS SUPPORT')], mics: 'The spaced pair, plus a cardioid on a boom stand outside the basses.', start: 'About 1–1.5 m (3–5 ft) from the basses, aimed across them — first check whether the pair already carries their weight.', line: 'Articulation for the basses where the pair lacks it; their low weight may already be there.', core: true, view: 'plan' },
-  { id: 'stree', role: 'MAIN ARRAY · TREE + OUTRIGGERS', title: 'A tree and outriggers over the sections', variants: ['sections'], rig: { id: 'tree', params: { turn: 0, ...OUT }, place: { c: S_TREE, face: 0, tilt: 25 }, mount: { kind: 'boom', reach: 1600 } }, mics: 'Three omnis on a T-bar over the podium, plus an omni on its own stand at each side.', start: 'An advanced extension for a large scoring stage: more channels and carefully tested coverage — not a quartet pair enlarged.', line: 'A broad picture with the outer desks; check the center, the low end and mono as each mic comes up.', core: false, view: 'plan' },
+  { id: 'stree', role: 'MAIN ARRAY · TREE + OUTRIGGERS', title: 'A tree and outriggers over the sections', variants: ['sections'], rig: { id: 'tree', params: { turn: 0, ...OUT }, place: { c: S_TREE, face: 0, tilt: 25 }, mount: { kind: 'boom', reach: 1600 } }, mics: 'Three omnis on a T-bar over the podium, plus an omni on its own stand at each side.', start: 'An advanced extension for a large film-scoring stage: more channels and carefully tested coverage — not a quartet pair enlarged.', line: 'A broad picture with the outer desks; check the center, the low end and mono as each mic comes up.', core: false, view: 'plan' },
 ];
 
 export const E11_PLACE: PlaceZone[] = [
   { id: 'pz.qnear', label: 'Nearer: 1–1.5 m in front', band: 'About 1–1.5 m (3–5 ft) in front of the quartet, 1.8–2.5 m (6–8 ft) up.', box: { min: v3(-700, -2500, 1000), max: v3(700, -1800, 1500) }, variants: QS, tendency: 'More direct sound and definition; the front players are favored.' },
-  { id: 'pz.qfar', label: 'Farther: 1.5–2 m in front', band: 'About 1.5–2 m (5–6.5 ft) in front, 1.8–2.5 m (6–8 ft) up.', box: { min: v3(-700, -2500, 1500), max: v3(700, -1800, 2000) }, variants: QS, tendency: 'More of the room and the blend; less clarity if the room is live.' },
-  { id: 'pz.over', label: 'Over the podium, 3–4 m up', band: 'Above the conductor’s podium, about 3–4 m (10–13 ft) up.', box: { min: v3(-900, -4000, P.c.z - P.d / 2), max: v3(900, -3000, P.c.z + P.d / 2) }, variants: ['sections'], tendency: 'Closer to the front desks: more direct sound.' },
-  { id: 'pz.behind', label: 'Just behind the podium, 3–4 m up', band: 'Right behind the conductor, about 3–4 m (10–13 ft) up.', box: { min: v3(-900, -4000, P.c.z + P.d / 2), max: v3(900, -3000, P.c.z + P.d / 2 + 1200) }, variants: ['sections'], tendency: 'More blend between the desks and more of the room.' },
+  { id: 'pz.qfar', label: 'Farther: 1.5–2 m in front', band: 'About 1.5–2 m (5–6.5 ft) in front, 1.8–2.5 m (6–8 ft) up.', box: { min: v3(-700, -2500, 1500), max: v3(700, -1800, 2000) }, variants: QS, tendency: 'More of the room and the blend; less clarity if the room is live (reverberant).' },
+  { id: 'pz.over', label: 'Over the podium, 3–4 m up', band: 'Above the conductor’s podium, about 3–4 m (10–13 ft) up.', box: { min: v3(-900, -4000, P.c.z - P.d / 2), max: v3(900, -3000, P.c.z + P.d / 2) }, variants: ['sections'], tendency: 'Closer to the front desks (the front music stands): more direct sound.' },
+  { id: 'pz.behind', label: 'Just behind the podium, 3–4 m up', band: 'Right behind the conductor, about 3–4 m (10–13 ft) up.', box: { min: v3(-900, -4000, P.c.z + P.d / 2), max: v3(900, -3000, P.c.z + P.d / 2 + 1200) }, variants: ['sections'], tendency: 'More blend between the desks (music stands) and more of the room.' },
 ];

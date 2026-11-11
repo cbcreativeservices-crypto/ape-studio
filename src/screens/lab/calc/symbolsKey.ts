@@ -71,7 +71,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
     title: 'GREEK LETTERS',
     entries: [
       { symbol: 'π', name: 'pi', meaning: 'The constant 3.14159… the circle ratio; appears wherever rotation or waves do.', example: 'XL = 2·π·f·L', glossaryTerm: 'Pi' },
-      { symbol: 'Σ', name: 'sigma (capital)', meaning: 'Sum — add up every term in a series. Also the Calc Lab’s emblem.', example: 'Total absorption = Σ (S·α)' },
+      { symbol: 'Σ', name: 'sigma (capital)', meaning: 'Sum — add up every term in a series. Also this lab’s emblem.', example: 'Total absorption = Σ (S·α)' },
       { symbol: 'Δ', name: 'delta (capital)', meaning: 'A change, or the difference between two values.', example: 'Δt = arrival-time difference' },
       { symbol: 'λ', name: 'lambda', meaning: 'Wavelength — the length of one cycle in space, in meters.', example: 'λ = c / f', glossaryTerm: 'Wavelength' },
       { symbol: 'ω', name: 'omega (small)', meaning: 'Angular frequency in radians per second: ω = 2πf.', example: 'XL = ω·L', glossaryTerm: 'Angular Frequency' },
@@ -98,7 +98,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
       { symbol: '√', name: 'square root', meaning: 'The number that, multiplied by itself, gives the value under the sign.', example: '|Z| = √(R² + X²)' },
       { symbol: '≈', name: 'approximately equal', meaning: 'About equal to — a rounded or estimated result.' },
       { symbol: '±', name: 'plus-or-minus', meaning: 'Both a positive and a negative amount — a tolerance or ± range.' },
-      { symbol: '∓', name: 'minus-or-plus', meaning: 'The opposite pairing to ± when two signs are linked.' },
+      { symbol: '∓', name: 'minus-or-plus', meaning: 'Takes the opposite sign of a linked ±: where ± is +, ∓ is −.' },
       { symbol: '≥  ≤', name: 'at least / at most', meaning: 'Greater-than-or-equal and less-than-or-equal comparisons.' },
       { symbol: '>  <', name: 'greater / less than', meaning: 'More than, or less than.' },
       { symbol: '≠', name: 'not equal', meaning: 'The two sides are different.' },

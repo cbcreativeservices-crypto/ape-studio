@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one cello mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['vc.prac.order', 'vc.prac.gain', 'vc.prac.setup1', 'vc.prac.setup2', 'vc.prac.3', 'vc.mix.1', 'vc.mix.2', 'vc.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real cello.' },
-    takeaway: 'Safe clearance from the bow, the bow arm and the endpin, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+    takeaway: 'You pass with safe clearance from the bow, the bow arm and the endpin, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay. A brand or a “loudest” position does not pass — and more than one setup can.',
   },
 };
 
@@ -110,7 +110,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One of the string’s shapes has a still point right under the bow. What happens to that shape?',
     options: ['It becomes the loudest shape, because the bow presses right there', 'The bow cannot drive it there, so it is weak in the sound', 'Nothing changes: the bow drives all of the shapes the same'],
     correct: 'The bow cannot drive it there, so it is weak in the sound',
-    explain: 'A point can only drive a shape as much as the string moves there in that shape. On a still point it cannot — so moving the bow along the string changes which shapes, and so which overtones, are strong.',
+    explain: 'The bow can only drive a shape as much as the string moves at the bow’s spot in that shape. At a still point it cannot — so moving the bow along the string changes which shapes, and so which overtones, are strong.',
     why: {
       'It becomes the loudest shape, because the bow presses right there': 'The string does not move at a still point, so the bow cannot push that shape.',
       'Nothing changes: the bow drives all of the shapes the same': 'A shape is driven only where the string moves in it. On a still point, not at all.',

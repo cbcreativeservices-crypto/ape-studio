@@ -66,7 +66,7 @@ export function checkChain(spec: ChainSpec, brief: ChainBrief, picks: ChainPicks
     const ok = brief.ok[s.id];
     // A refused part is answered by its refusal; it is not listed twice.
     if (refused.some((r) => r.all.some(([rs, rp]) => rs === s.id && rp === p))) continue;
-    if (ok && !ok.includes(p)) misfits.push({ slot: s.id, part: p, why: brief.why[p] ?? 'It does not suit this question.' });
+    if (ok && !ok.includes(p)) misfits.push({ slot: s.id, part: p, why: brief.why[p] ?? 'This part does not fit this question; try another.' });
   }
   return { complete, refused, misfits, pass: complete && refused.length === 0 && misfits.length === 0 };
 }

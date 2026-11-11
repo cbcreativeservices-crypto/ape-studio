@@ -53,12 +53,12 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Electronics:",
-      "text": "analog and soft synths (pads, pulsing bass, arps), “braams” and risers, processed sound-design hits, distorted cellos and guitars.",
+      "text": "analog and soft synths (pads, pulsing bass, arps), “braams” (huge brassy blasts) and risers, processed sound-design hits, distorted cellos and guitars.",
       "bullet": true
     },
     {
       "label": "Playback (live shows):",
-      "text": "timecode-locked dialogue and effects stems from the film, click and streamers for the conductor, synth and pre-recorded layers that the orchestra cannot reproduce.",
+      "text": "timecode-locked dialogue and effects stems from the film, click and streamers (on-screen cue lines) for the conductor, synth and pre-recorded layers that the orchestra cannot reproduce.",
       "bullet": true
     }
   ],
@@ -99,13 +99,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "French horns",
-        "cut": "HPF 60–80 Hz; −2 dB around 3 kHz if blatty",
+        "cut": "HPF 60–80 Hz; −2 dB around 3 kHz if blatty (blaring)",
         "boost": "+1–2 dB at 300–500 Hz (warmth); gentle shelf at 10 kHz",
         "notes": "Horns radiate backward — most tone is in the room mics"
       },
       {
         "source": "Trumpets / trombones",
-        "cut": "HPF 80 Hz (tpt), 50 Hz (tbn); −2–3 dB at 2–4 kHz if harsh",
+        "cut": "HPF 80 Hz (trumpets), 50 Hz (trombones); −2–3 dB at 2–4 kHz if harsh",
         "boost": "+1–2 dB at 1–1.5 kHz (bite)",
         "notes": "Keep brass out of the dialogue band in quiet scenes"
       },
@@ -305,7 +305,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Monitoring",
-        "live": "Click and streamers to conductor; IEM or personal mixes for players",
+        "live": "Click and streamers to conductor; IEM (in-ear) or personal mixes for players",
         "studio": "Calibrated surround/immersive room (79–85 dB SPL reference)"
       },
       {

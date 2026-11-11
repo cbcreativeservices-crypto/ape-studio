@@ -406,7 +406,7 @@ function MetalSound(spec: SoundSpec) {
             <Landing looking={SH.looking(variant)} prompt={SH.prompt} />
             <Card>
               <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
-                {`A struck ${lesson.noun.one} rings in many shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest one this simplified model gives.' : `In this simplified model its pitch is ${shape.ratio.toFixed(2)} times the lowest one’s — not a whole number, which is part of why struck metal shimmers rather than sounding one plain note.`} A stroke ${pick.words} moves ${sharePct} % of this shape’s peak there, so it ${drive}.`}
+                {`A struck ${lesson.noun.one} rings in many shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest one this simplified picture shows.' : `In this simplified picture its pitch is ${shape.ratio.toFixed(2)} times the lowest one’s — not a whole number, which is part of why struck metal shimmers rather than sounding one plain note.`} A stroke ${pick.words} moves ${sharePct} % of this shape’s peak there, so it ${drive}.`}
               </Point>
               {lengths && Lsel ? <Body>{`${lengths.words} This bar is ${Math.round(Lsel / 10)} cm long: about ${pitch.toFixed(2)} times the pitch of the longest (${octaves(pitch).toFixed(1)} octaves up) — every one of its shapes moves up together.`}</Body> : null}
             </Card>

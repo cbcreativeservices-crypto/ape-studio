@@ -101,7 +101,7 @@ export const TUBE_REFS: TubeRef[] = [
   // ── Directly-heated triodes (20–23) ───────────────────────────────────────
   t(20, '300B', '300B', ['WE300B'], 'dht', 'UX4 (4-pin)', 'Directly-heated triode — single-ended power', '20-300B'),
   t(21, '2A3', '2A3', [], 'dht', 'UX4 (4-pin)', 'Directly-heated triode — single-ended power', '21-2A3'),
-  t(22, '845', '845', [], 'dht', '4-pin jumbo · top-cap anode', 'Directly-heated transmitting triode — SE power', '22-845'),
+  t(22, '845', '845', [], 'dht', '4-pin jumbo · top-cap anode', 'Directly-heated transmitting triode — single-ended power', '22-845'),
   t(23, '211', '211', ['VT-4C'], 'dht', '4-pin jumbo · top-cap anode', 'Directly-heated transmitting triode — SE power', '23-211'),
   // ── Rectifiers (24–30) ────────────────────────────────────────────────────
   t(24, '5AR4', '5AR4 / GZ34', ['GZ34', 'CV1377'], 'rectifier', 'Octal (8-pin)', 'Full-wave rectifier — B+ power supply', '24-5AR4'),
@@ -121,8 +121,8 @@ export const TUBE_REFS: TubeRef[] = [
   t(34, '7581A', '7581A', ['7581', '6L6GC'], 'power', 'Octal (8-pin)', 'Beam power tetrode — heavy-duty 6L6GC (audio output)', '34-7581A'),
   t(35, '7408', '7408', ['6V6GT', '6V6'], 'power', 'Octal (8-pin)', 'Beam power tetrode — industrial 6V6 (audio output)', '35-7408'),
   // Directly-heated triodes
-  t(36, '2A3-40', '2A3-40', ['2A3'], 'dht', 'UX4 (4-pin)', 'Directly-heated triode — high-power 2A3 variant (SE power)', '36-2A3-40'),
-  t(37, '845W', '845W', ['845'], 'dht', '4-pin jumbo · top-cap anode', 'Directly-heated transmitting triode — rugged 845 (SE power)', '37-845W'),
+  t(36, '2A3-40', '2A3-40', ['2A3'], 'dht', 'UX4 (4-pin)', 'Directly-heated triode — high-power 2A3 variant (single-ended power)', '36-2A3-40'),
+  t(37, '845W', '845W', ['845'], 'dht', '4-pin jumbo · top-cap anode', 'Directly-heated transmitting triode — rugged 845 (single-ended power)', '37-845W'),
   // Preamp / small-signal triodes
   t(38, '6FQ7', '6FQ7 / 6CG7', ['6CG7'], 'preamp', 'Noval (9-pin)', 'Dual triode — driver (6CG7 equivalent)', '38-6FQ7'),
   t(39, '7044', '7044', ['5687 family'], 'preamp', 'Noval (9-pin)', 'Dual triode — high-current / long-life driver', '39-7044'),

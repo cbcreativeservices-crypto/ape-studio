@@ -87,7 +87,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     locking: {
       method: 'friction',
       howToConfirm:
-        'Fully seated: no blade metal visible at the receptacle face. Friction is the only retention, so dress cables away from feet and traffic.',
+        'Fully seated: no blade metal visible at the receptacle face. Friction is the only retention, so route (dress) cables away from feet and traffic.',
     },
     directionality:
       'Energized contacts always live on the recessed (female) side — receptacles and cord sockets. Exposed pins belong to the load side — but during insertion and removal there is a moment when a partially seated plug has energized blade metal exposed at the receptacle face, because NEMA blades carry no insulating sleeves. Insert and remove in one full motion, grip only the plug body, and keep fingers and anything metallic away from the receptacle face. This is also exactly why a male-to-male power cable is never acceptable: it puts live AC voltage on fully exposed pins.',
@@ -182,7 +182,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     carried: ['ac_mains'],
     typicalSources: [
       'Detachable power cords fed from wall or distribution',
-      'Power strips and PDUs with C13 outlets',
+      'Power strips and PDUs (rack power distribution units) with C13 outlets',
       'UPS outputs (C13 outlets)',
     ],
     typicalDestinations: [
@@ -216,7 +216,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     locking: {
       method: 'friction',
       howToConfirm:
-        'Pushed fully home with the coupler shroud flush against the inlet. Friction is the only retention on the standard coupler — dress the cable so nothing pulls on it. Locking retention accessories exist on some equipment (equipment-dependent).',
+        'Pushed fully home with the coupler shroud flush against the inlet. Friction is the only retention on the standard coupler — route (dress) the cable so nothing pulls on it. Locking retention accessories exist on some equipment (equipment-dependent).',
     },
     directionality:
       'C14 (the side with pins) is the equipment inlet — the load. C13 (recessed sockets) is the cord end that brings power to it. Energized contacts always live on the recessed side; that is why the cord end is the female connector.',
@@ -873,7 +873,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     limitations: [
       'Physical fit proves nothing — voltage, AC-vs-DC output, polarity, current capacity and BOTH barrel dimensions (outer and inner diameter, plus depth) must all match',
       'Many near-identical sizes exist that partially or fully mate',
-      'Friction fit dislodges easily; a browning-out device may just have a half-seated barrel',
+      'Friction fit dislodges easily; a device that dims, resets or cuts out may just have a half-seated barrel',
     ],
     commonMistakes: [
       'Assuming center-positive — common but never guaranteed; 9 V guitar-pedal supplies are commonly center-NEGATIVE, the reverse of much other equipment',
@@ -944,7 +944,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     pinouts: [
       {
         id: 'usb_pd_power_path',
-        application: 'USB Power Delivery — simplified power-path view (full contact map lives in the USB-C data record)',
+        application: 'USB Power Delivery — power path only (the USB-C data card shows every contact)',
         carried: ['dc_power'],
         contacts: [
           {
@@ -959,7 +959,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
           },
           {
             label: 'CC1 / CC2',
-            role: 'Configuration channel — orientation, source/sink roles, current advertisement and PD voltage negotiation',
+            role: 'Configuration channel — plug orientation, which end gives power (source) and which takes it (sink), the current on offer, and PD voltage negotiation',
             ink: 'dataA',
             note: 'The negotiation happens here before any elevated voltage is applied.',
           },
@@ -1000,7 +1000,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       {
         otherId: 'usb_c',
         otherName: 'USB-C as a data connector',
-        why: 'Identical connector, different job — this record covers the power role; the data record covers data classes and alternate modes.',
+        why: 'Identical connector, different job — this card covers the power role; the USB-C data card covers data classes and alternate modes.',
         consequence:
           'A cable chosen for charging may not do a data job, and vice versa. Select cables by rated capability, never by shape.',
       },
@@ -1067,7 +1067,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
             label: 'Pair 1-2',
             role: 'Data pair; carries one side of the PoE supply in Mode A and in four-pair (802.3bt) operation',
             ink: 'dataA',
-            note: 'Power rides the pairs common-mode through the magnetics — data and power coexist on the same conductors.',
+            note: 'Power rides both wires of each pair together (common-mode), through the port’s transformers — so data and power share the same conductors.',
           },
           {
             label: 'Pair 3-6',
@@ -1124,7 +1124,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
         otherName: 'Ordinary (data-only) Ethernet',
         why: 'Identical connector and cable; nothing visible marks a powered port.',
         consequence:
-          'Data-only gear on a compliant PoE port is safe — detection withholds power without a valid signature. The real risk concentrates in non-compliant passive injectors, which skip detection entirely.',
+          'Data-only gear on a compliant PoE port is safe — detection withholds power unless the device shows a valid PoE signature (a set resistance that says it accepts power). The real risk concentrates in non-compliant passive injectors, which skip detection entirely.',
       },
       {
         otherId: 'ethercon_style',

@@ -252,7 +252,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(ANIM, /if \(n % 2 === 1\) odd \+= a;\s*else even \+= a;/);
     assert.match(ANIM, /const lc = top \+ \(bot - top\) \/ 4;\s*const rc = bot - \(bot - top\) \/ 4;/);
     assert.match(ANIM, /text="L"[\s\S]*?text="R"/);
-    assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[2], /an L lane over an R lane, odd repeats left, even right\. In LAB NOTES, DESIGNED RESPONSE letters one click’s repeats L, R, L/);
+    assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[2], /an L lane over an R lane, odd repeats left, even right\. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L/);
     // the letters are drawn by the DESIGNED RESPONSE stems (LAB NOTES), not the glass
     assert.match(VIZ, /pingpong \? \(\s*<SvgText key=\{`s\$\{i\}`\}[\s\S]*?\{t\.side\}/);
     // why the order is read on the stems: at CLICK 90 (667 ms) and TIME 375 ms,
@@ -269,7 +269,7 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(ENGINE, /lpL_ \+= dampC \* \(dl - lpL_\);/);
     assert.match(ENGINE, /bufL_\[w_\] = static_cast<float>\(inL \+ lpL_ \* fb\);/);
     const ch = DELAY_SCREEN_GUIDES.explore.changes.join(' ');
-    assert.match(ch, /at 100% WET the gray dry click leaves OUT/);
+    assert.match(ch, /at 100% WET the gray dry click drops out of OUT/);
     assert.match(ch, /REPEAT DAMPING darkens each pass after the first/);
     assert.match(ch, /at 50% each is half the one before \(6 dB down\)/);
     // steady sources: the glass note
@@ -307,6 +307,6 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.doesNotMatch(SCREEN, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     assert.doesNotMatch(DELAY, /pollGr/); // no measured readout on this lab
     assert.match(SCREEN, /const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';/);
-    assert.match(DELAY, /heroBadge: 'ECHO PATTERN — ANALYTIC/);
+    assert.match(DELAY, /heroBadge: 'ECHO PATTERN — CALCULATED/);
   });
 });

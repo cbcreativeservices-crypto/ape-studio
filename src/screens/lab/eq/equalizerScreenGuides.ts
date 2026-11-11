@@ -51,7 +51,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'Tap TYPE to pick the shape: PEAK (BELL), LOW SHELF, HIGH SHELF, HIGH-PASS or LOW-PASS. Each comes with a one-line description.',
       'Tap GAIN for −12, −6, 0, +6 or +12 dB, and Q for 0.7 WIDE, 1.4, 4 or 8 NARROW.',
       'Tap SOURCE for PINK NOISE, SINE 440 Hz or WHITE NOISE, then ▶ at the top right (or tap the display) to hear it through the EQ. Change any control while it plays.',
-      'Long-press a control for its GUIDED LESSON entry. Below the dock, LAB NOTES holds DESIGNED RESPONSE, THE AUDIO PATH and two CHECK YOURSELF cards.',
+      'Long-press a control for its GUIDED LESSON entry. Below the dock, read DESIGNED RESPONSE and THE AUDIO PATH in LAB NOTES, then try the two CHECK YOURSELF cards.',
     ],
     changes: [
       'FREQ moves the filter; the dots show which tones it lifts or lowers.',
@@ -94,11 +94,11 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     teaches: [
       'The words for EQ: filter type, frequency, gain, Q, bandwidth, slope.',
-      'Why a narrow-boost sweep finds a problem but the fix is usually a cut, and why a flat analyzer is not the goal.',
+      'Why a narrow-boost sweep finds a problem but the fix is usually a cut, and why a flat analyzer reading is not the goal.',
       'Q = center frequency ÷ bandwidth. Slopes of 6, 12, 18 or 24 dB per octave come from 1 to 4 poles (filter stages).',
     ],
     tryThis: [
-      'Read the Q entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: tone against ring.',
+      'Read the Q entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: wide shapes the tone, narrow rings.',
       'Read the COMMON MISTAKES line on boosting, then on EXPLORE compare GAIN at +6 dB and −6 dB at the same FREQ.',
     ],
   },

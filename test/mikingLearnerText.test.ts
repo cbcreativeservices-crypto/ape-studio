@@ -393,7 +393,7 @@ describe('the journey ends at Practice; one "about these starting points" note',
     for (const meta of LESSONS) {
       const d = lessonById(meta.id)!.accuracyDetail;
       assert.match(d, /^ABOUT THESE STARTING POINTS\./);
-      assert.match(d, /After our research/);
+      assert.match(d, /After our research|Here is where we suggest you begin/);
       assert.match(d, /experiment/i);
       assert.match(d, /trust your ears/);
     }

@@ -103,7 +103,7 @@ const VOCAL_G: VoiceZoneSpec[] = [
     micTypeIds: ['sdcCard', 'vocLdcOpen'],
     variant: 'guitar',
     start: { d: [520, 500, 550, 480, 580, 600, 450], deg: 32, spread: 12, aimPoint: mid(V_GUITAR.lip, { x: g.fret12 - 60, y: 0, z: 0 }) },
-    tendency: 'One coherent performance with the room — the balance set by where the mic is and how the singer sits. Moving toward it makes both louder; turning the guitar changes the balance. Little to change afterwards.',
+    tendency: 'One coherent performance with the room — the balance set by where the mic is and how the singer sits. Moving closer to the mic makes both louder; turning the guitar changes the balance. Little to change afterwards.',
     checks: ['The balance of voice and guitar, from the listener’s place', 'The singer’s posture and the guitar’s angle held through the song', 'The room: is it quiet and worth hearing?'],
   },
 ];

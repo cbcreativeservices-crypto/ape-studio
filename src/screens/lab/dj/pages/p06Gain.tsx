@@ -33,7 +33,7 @@ import { anyClip, peakCell, peakDb, useBoothKit } from './shared';
 
 const TERMS = [
   { term: 'Trim (gain)', def: 'How much of the incoming signal the channel takes in. Set it once for each track — in your headphones, with that channel’s fader down — so the fader is left for the mix.' },
-  { term: 'Average level', def: 'Where a meter sits most of the time: what your ears judge as loudness. Peaks are not loudness — a loud master reaches the same peak as a quiet one but sounds several dB louder.' },
+  { term: 'Average level', def: 'Where a meter sits most of the time: what your ears judge as loudness. Peaks are not loudness — a track mastered loud reaches the same peak as a quiet one but sounds several dB louder.' },
   { term: 'Headroom', def: 'The space between your normal level and the top of the scale, where a stage clips (flattens the tops of the waveform: harsh, and turning a later stage down only makes the damage quieter). The loudest peaks must fit inside it.' },
   { term: 'dBFS', def: 'Decibels relative to digital full scale. 0 dBFS is the top of a digital stage; everything below is a negative number. This lab’s meters read dBFS.' },
 ] as const;
@@ -207,8 +207,8 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         <P>Now play deck B too. CH2 reads “—”: something BEFORE its trim decides what channel 2 listens to. Find it (it is at the top of the strip; its switch is in DECKS).</P>
       </Step>
       <Step n={3}>
-        <P>Deck B is cued in your headphones with its fader down, so the crowd never hears you set it — LISTEN as PHONES to hear it against the mix. Glass Harbor was mastered LOUD: at the same trim it sits about 11 dB higher on average, though its peaks are only about 6 dB higher.</P>
-        <Note>Peaks are not loudness. A loud master reaches the same peak as a quiet one but sounds several dB louder. Match where each meter sits most of the time, and check by ear in your headphones; use the peak only to stay out of the red.</Note>
+        <P>Deck B is cued in your headphones with its fader down, so the crowd never hears you set it — LISTEN as PHONES to hear it against the mix. Deck B’s track, Glass Harbor, was mastered LOUD: at the same trim it sits about 11 dB higher on average, though its peaks are only about 6 dB higher.</P>
+        <Note>Peaks are not loudness. A track mastered loud reaches the same peak as a quiet one but sounds several dB louder. Match where each meter sits most of the time, and check by ear in your headphones; use the peak only to stay out of the red.</Note>
         <P>Push both trims and both faders up and watch BUS OVER: the channels can be clean while their SUM is too big. On this mixer the mix bus (where the channels add up after their faders) has its own limit — many analog mixers do; many digital ones have more room inside. Wherever a stage clips, a later control cannot undo it.</P>
         <Note>Every meter in this lab reads dBFS of this mixer’s own scale: 0 dBFS is where a stage clips. A real analog mixer’s meter often puts 0 at a reference level with room above it, so check how your own mixer is marked.</Note>
       </Step>

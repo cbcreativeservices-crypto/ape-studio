@@ -151,7 +151,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal (vari-mu/opto stage)",
         "use": "Yes",
         "ratio": "2:1–3:1",
-        "attackRelease": "Slow / program",
+        "attackRelease": "Slow / program-dependent",
         "gainReduction": "2–4 dB",
         "notes": "Smooths and thickens; live, a single compressor is usually enough"
       },

@@ -77,7 +77,7 @@ const GATE: readonly Q[] = [
       'Compresses it by a ratio',
     ],
     correct: 'Turns it down toward the RANGE (floor) setting',
-    explanation: 'A gate is the opposite side of the line from a compressor: loud sound above the threshold passes untouched, quiet sound below it (bleed, hum, spill) is turned down toward the floor.',
+    explanation: 'A gate works on the other side of the threshold from a compressor: loud sound above the threshold passes untouched, quiet sound below it (bleed, hum, spill) is turned down toward the floor.',
   },
   {
     id: 'range-partial',
@@ -496,7 +496,7 @@ const DISTORTION: readonly Q[] = [
       'Doubling the number of harmonics',
     ],
     correct: 'Blending a distorted copy with the clean signal, so grit can be added while the clean signal keeps its body',
-    explanation: 'That works once the distorted copy is turned down to sit under the clean one. On EXPLORE the clean copy is the undriven −20 dBFS input, about 20 dB under the clipped one at DRIVE +24 dB, so 50% PARALLEL sounds about 5 dB quieter and nearly as gritty.',
+    explanation: 'Parallel works best when the distorted copy is turned down to sit under the clean one. On EXPLORE it is the other way round: the clean copy is the undriven −20 dBFS input, about 20 dB under the clipped one at DRIVE +24 dB, so 50% PARALLEL sounds about 5 dB quieter and nearly as gritty.',
   },
 ];
 
@@ -587,7 +587,7 @@ const OSCILLATOR: readonly Q[] = [
   },
   {
     id: 'band-limit',
-    prompt: 'This lab would leave out any harmonic at or above the Nyquist frequency (half the sample rate). Why?',
+    prompt: 'This lab leaves out any harmonic at or above the Nyquist frequency (half the sample rate). Why?',
     options: [
       'Those harmonics would fold back as aliasing — unrelated, out-of-tune tones',
       'They are too quiet to matter',
@@ -726,7 +726,7 @@ const ENVELOPE: readonly Q[] = [
       'Only if the snare is miked closely',
     ],
     correct: 'No — release is the source stopping; the tail is the room still returning energy',
-    explanation: 'ADSR describes the sound at its source. What the room adds is propagation — reverberation. The snare’s own envelope is the same at one meter or twenty.',
+    explanation: 'ADSR describes the sound at its source. What the room adds as the sound travels (propagation) is reverberation. The snare’s own envelope is the same at one meter or twenty.',
   },
 ];
 
@@ -966,7 +966,7 @@ const HARMONOGRAPH: readonly Q[] = [
       'It doubles in size',
     ],
     correct: 'It slowly rotates (precesses) — that drift is beating made visible',
-    explanation: 'A near-miss ratio slides in and out of alignment. You see it as a slowly turning figure; played as two tones, the same drift is beating. On EXPLORE, ▶ sounds the detune in LATERAL only — in ROTARY it moves the silent platform.',
+    explanation: 'A near-miss ratio slides in and out of alignment. You see it as a slowly turning figure; played as two tones, the same drift is beating. On EXPLORE, ▶ lets you hear the detune in LATERAL only; in ROTARY the detune moves the platform, which makes no sound.',
   },
   {
     id: 'damping',
@@ -1025,7 +1025,7 @@ const BASS: readonly Q[] = [
       'The note one octave below the open string',
     ],
     correct: 'The 3rd harmonic — three times the open-string frequency, an octave plus a fifth above',
-    explanation: 'Touching a node damps every mode that is not still there, leaving harmonics 3, 6, 9… Fretting at the 7th fret only gives a fifth above; the harmonic is an octave higher than that.',
+    explanation: 'Touching a node damps every mode that moves at that point, leaving harmonics 3, 6, 9… Fretting at the 7th fret only gives a fifth above; the harmonic is an octave higher than that.',
   },
 ];
 

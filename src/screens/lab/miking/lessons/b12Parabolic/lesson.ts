@@ -102,7 +102,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does the dish’s element go?',
     options: ['At the focus the maker specifies', 'Right in the middle of the bowl', 'Wherever it sounds loudest today'],
     correct: 'At the focus the maker specifies',
-    explain: 'Place the element at the collector’s focal position, measured from the surface the maker names — and recheck it after travel.',
+    explain: 'Place the element at the dish’s focal position, measured from the surface the maker names — and recheck it after travel.',
     why: {
       'Right in the middle of the bowl': 'An estimated center is not the focus.',
       'Wherever it sounds loudest today': 'Louder is not focused; the maker’s reference is.',
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A shotgun would fit the dish’s mount. Why not use it?',
     options: ['The dish is made for its own capsule', 'A shotgun is far too quiet inside a dish', 'A shotgun would make the pickup too narrow'],
     correct: 'The dish is made for its own capsule',
-    explain: 'Follow the collector’s design: its capsule type, orientation and focal reference. A narrow shotgun fitted by assumption is not that design.',
+    explain: 'Follow the dish’s design: its capsule type, orientation and focal reference. A narrow shotgun fitted by assumption is not that design.',
     why: {
       'A shotgun is far too quiet inside a dish': 'Level is not the reason; the design is.',
       'A shotgun would make the pickup too narrow': 'The point is the dish’s design, not a guess about width.',
@@ -222,7 +222,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An idea to try with some dishes: where do you aim at a distant player?',
     options: ['A little low, toward the feet', 'Well above the head, at the crowd', 'At the head, whatever the dish'],
     correct: 'A little low, toward the feet',
-    explain: 'One maker suggests aiming a little below a distant player so the pickup takes in less of the crowd beyond — to test with your own dish and geometry, raising the aim as the player approaches.',
+    explain: 'With some dishes, try aiming a little below a distant player so the pickup takes in less of the crowd beyond — test it with your own dish and geometry, raising the aim as the player approaches.',
     why: {
       'Well above the head, at the crowd': 'That puts the crowd on the axis.',
       'At the head, whatever the dish': 'Aim at the sound you want — and test it for your dish.',
@@ -504,7 +504,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What goes at the dish’s focus?',
     options: ['The maker’s specified capsule', 'A short shotgun for more reach', 'A cardioid that happens to fit'],
     correct: 'The maker’s specified capsule',
-    explain: 'The collector’s own capsule, focal reference and mount.',
+    explain: 'The dish’s own capsule, focal reference and mount.',
     why: { 'A short shotgun for more reach': 'A shotgun is not the dish’s design.', 'A cardioid that happens to fit': 'Fitting is not the test.' },
   },
   {
@@ -524,7 +524,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Stay in and hand off', 'Step out to follow it', 'Lean out to keep it'],
     correct: 'Stay in and hand off',
     explain: 'The operator stays in the approved place and hands off at the cue.',
-    why: { 'Step out to follow it': 'Never chase play out of the approved place.', 'Lean out to keep it': 'The dish then reaches into the space.' },
+    why: { 'Step out to follow it': 'Never chase play out of the approved place.', 'Lean out to keep it': 'The dish then reaches into the playing area.' },
   },
   {
     id: 'q.5',
@@ -551,7 +551,7 @@ export const B12_LESSON: Lesson = {
   id: 'B12',
   labId: 'broadcast',
   title: 'Parabolic and Tracked Action Pickup',
-  subtitle: 'The bowl helps the highs on its axis: the maker’s focus, small turns inside an approved arc, and a planned handoff',
+  subtitle: 'The bowl helps the highs on its axis: the focus the maker specifies, small turns inside an approved arc, and a planned handoff',
   noun: { one: 'dish', many: 'dishes', subject: 'the dish' },
   model: B12_MODEL,
   micTypeIds: ['spDish', 'shotgunShort', 'arrCard'],
@@ -571,7 +571,7 @@ export const B12_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'Along the axis', text: 'Sound from the target arrives along the axis and reflects off the bowl toward the focus — where the element is.' },
-      { title: 'The wavelength', text: 'Only sound whose wavelength is shorter than the dish is wide is gathered well: the bigger the dish, the lower that reaches.' },
+      { title: 'The wavelength', text: 'Only sound whose wavelength is shorter than the dish is wide is gathered well: the bigger the dish, the lower the frequencies it gathers.' },
       { title: 'Off the axis', text: 'A target off the axis is no longer gathered at the element: its high-frequency detail fades first.' },
     ],
     attack: 'Transients — a kick, a contact, a call — are what a dish brings forward best.',
@@ -609,6 +609,6 @@ export const B12_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every dish, venue and sport is different: follow your dish’s own manual, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: an ideal bowl drawn from derived sizes, straight rays, the lowest helped frequency as the speed of sound ÷ the dish’s width; ranges and delays are calculated from the drawing; the headroom chain is an example. No drawing turns a distance into a working range. Safety is exact: stay in the approved place, start the headphones low, and never chase play.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every dish, venue and sport is different: follow your dish’s own manual, listen, experiment, and trust your ears and the venue. The lab is silent and draws a simplified picture: an ideal bowl drawn at example sizes, straight rays, the lowest helped frequency as the speed of sound ÷ the dish’s width; ranges and delays are calculated from the drawing; the headroom chain is an example. No drawing turns a distance into a working range. Safety is exact: stay in the approved place, start the headphones low, and never chase play.',
   copy: B12_COPY,
 };

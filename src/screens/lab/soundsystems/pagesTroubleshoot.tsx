@@ -48,7 +48,7 @@ function mapReadout(r: Reading): string {
   return flag ? flag.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase() : readoutOf(r);
 }
 
-const BENCH_BADGE = 'THE BENCH — ILLUSTRATIVE · readings from the fault library';
+const BENCH_BADGE = 'THE BENCH — ILLUSTRATIVE · readings from sample faults';
 
 function shuffled(n: number): number[] {
   const idx = Array.from({ length: n }, (_, i) => i);
@@ -182,7 +182,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
           </Pressable>
         );
       })}
-      <Body>{solvedHere} of {cases.length} solved · {forwardHere} with a forward walk (✓✓).</Body>
+      <Body>{solvedHere} solved · {forwardHere} with a forward walk (✓✓).</Body>
     </>
   );
   const caseView = c ? (
@@ -227,7 +227,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
         // under it (owner 2026-09-29, TitledStage). The bezel
         // keeps the case number / the solved count.
         bezel: [
-          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1} OF ${cases.length}` : `${solvedHere}/${cases.length} SOLVED`, flex: 1.2 },
+          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1} OF ${cases.length}` : `${solvedHere} SOLVED`, flex: 1.2 },
           { k: 'PROBED', v: c ? `${probes.length}` : '—', flex: 0.8 },
           { k: 'READS', v: c && last ? readoutOf(c.reads[last]) : '—', tint: c && last ? (stateOf(c.reads[last]) === 'ok' ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
           { k: 'GRADE', v: grade ? (grade.correct ? (grade.forward ? '✓✓' : '✓') : '✗') : '—', tint: grade ? (grade.correct ? colors.green : colors.red) : undefined, flex: 0.7 },
@@ -290,7 +290,7 @@ function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
       <KeyFact>Start where the symptom leaves doubt. Read each station. Stop at the first reading that is not healthy. That station is the fault, or where the fault became visible — and the reading tells you which.</KeyFact>
       <Card>
         <Eyebrow>YOUR BENCH SO FAR</Eyebrow>
-        <Body>{progress.faults.length} of 22 solved · {progress.forward.length} with a forward walk.</Body>
+        <Body>{progress.faults.length} solved · {progress.forward.length} with a forward walk.</Body>
       </Card>
       <DeeperRow>
         <LabLink route="MeterModule" label="Signal Detective — read the meters" params={{ id: 'detective' }} />

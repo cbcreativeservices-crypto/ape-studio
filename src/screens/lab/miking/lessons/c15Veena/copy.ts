@@ -49,7 +49,7 @@ const base = stringsCopy({
   },
   workedZone: { veena: 'plate' },
   workedLine: 'This starting point sits near {line}, above the plate and in front of it.',
-  workedAim: 'Aim at a broad area around the middle of the plate, on the far side of the bridge from the neck — the lab counts it while the mic’s axis, followed in, meets the plate within about 7 cm of {head} — not straight at one bridge point.',
+  workedAim: 'Aim at a broad area around the middle of the plate, on the far side of the bridge from the neck, not straight at one bridge point — the lab counts it while the mic’s axis, the line it points along, meets the plate within about 7 cm of {head}.',
   clearWhat: 'the plucking hand and arm, the left hand along the neck, the gourd on the thigh, the yali and the player’s view',
   placementReveal: 'Toward the bridge tends to bring more of each note’s start, and maybe more click or buzz; a broad view of the plate, more body; farther back, more of the room and the ensemble. Every veena and room differs, so “it depends on this veena” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {

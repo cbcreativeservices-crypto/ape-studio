@@ -24,7 +24,7 @@ const BASE = standingVoiceCopy({
   before: [
     { title: 'SURVEY THE POSITION FIRST', text: 'Before any mic: draw who sits where, the sight lines, the desk, the notes and the screen, the windows, the venue’s loudspeakers, the crowd’s direction — and where each voice must go: the program, the recorder, the PA, talkback and the commentator’s own headphones.' },
     { title: 'HEAR A REAL CALL', text: 'Ask for a quiet passage and an excited peak while the commentator follows imaginary play: watch how far the mouth moves, whether the head turns to the partner, and what glasses, a scarf or the notes knock against.' },
-    { title: 'A RIBBON NEEDS CARE', text: 'Never blow into a mic to test it. A lip ribbon is passive: check its interface and its phantom-power setting with the audio lead before connecting, and follow the venue’s hygiene rule for a shared lip mic.' },
+    { title: 'A RIBBON NEEDS CARE', text: 'Never blow into a mic to test it. A lip ribbon is passive: check its interface and its phantom-power setting with the head of audio before connecting, and follow the venue’s hygiene rule for a shared lip mic.' },
     { title: 'CABLES AND STRUCTURE', text: 'Secure headset and desk cables away from walkways, doors and windows. Nothing over the playing area without approval and a qualified rigger, and nothing fixed to the venue’s structure without approval. Have a tested fallback mic before the event starts.' },
   ],
   studio: {
@@ -114,7 +114,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     prompt: 'The PA stays where the venue needs it. Turn or tilt the lip mic (AIM) until the PA sits in the figure-8’s side null — while its front still meets the mouth.',
     activityDone: 'done — the PA sat in the side null by your aim',
     cardioidReveal: 'What you just saw: a figure-8 hears its front and its back equally and least at its sides, 90° off. Held to the mouth, its back faces out over the crowd — so the crowd is NOT rejected; the PA can be put in a side null by turning the mic a little.',
-    shieldNote: 'The stadium’s reflections, the desk and the commentator reflect the PA’s sound too, and the free-field pattern cannot show that. Listen with the venue live, at the agreed level.',
+    shieldNote: 'The stadium, the desk and the commentator reflect the PA’s sound too, and the free-field pattern (how the mic hears in open air, nothing nearby) cannot show that. Listen with the venue live, at the agreed level.',
     learn: {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the commentator is the same — the position, the crowd and the PA change.',

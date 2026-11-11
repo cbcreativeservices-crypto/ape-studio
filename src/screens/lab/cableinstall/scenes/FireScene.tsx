@@ -61,7 +61,7 @@ import type { CiModuleProps } from '../registry';
 type FlowQ = { id: string; q: string; options: string[]; correctIdx: number; reveal: string; ruleId: string };
 
 const FLOW_SPEC =
-  'SIMULATED PROJECT DOCUMENTS — Drawing A-401 marks the equipment-room wall as a fire-resistance-rated assembly, slab to slab. The cable schedule lists this run\'s cable as rated for every space on the route. On the truck: a tube of generic "fire-rated" sealant. In the submittals: a listed firestop system matched to this wall type and this cable bundle.';
+  'SIMULATED PROJECT DOCUMENTS — Drawing A-401 marks the equipment-room wall as a fire-resistance-rated assembly, slab to slab. The cable schedule lists this run\'s cable as rated for every space on the route. On the truck: a tube of generic "fire-rated" sealant. In the submittals (product documents sent in for approval): a listed firestop system matched to this wall type and this cable bundle.';
 
 const FLOW: FlowQ[] = [
   {
@@ -109,7 +109,7 @@ const FLOW: FlowQ[] = [
       'Yes, if applied extra thick',
     ],
     correctIdx: 0,
-    reveal: 'A tube is a component. The listing covers the assembly, the penetrating items, the annular space and the materials together — outside its tested system, "fire rated" on a label means nothing.',
+    reveal: 'A tube is a component. The listing covers the assembly, the penetrating items, the annular space (the gap around them) and the materials together — outside its tested system, "fire rated" on a label means nothing.',
     ruleId: 'fire-system-not-sealant',
   },
   {
@@ -915,7 +915,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
           <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · gray duct = return air kept in a duct</Text>
           <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color) · dashed red outline = a listed system is required there · solid outline = the matched system, not yet installed</Text>
           <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · green CMR = a cable already in the riser, riser-rated (riser-rated is not plenum-rated) · numbers = the three spaces</Text>
-          <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>
+          <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ (the official or office that approves the work).</Text>
         </View>
       </CollapsibleSection>
       {head ? <Text style={styles.scopeNote}>{head.intro}</Text> : null}

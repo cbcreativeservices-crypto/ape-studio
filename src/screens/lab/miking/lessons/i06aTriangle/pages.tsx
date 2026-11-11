@@ -50,7 +50,7 @@ const HAND: HandSpec = {
   axes: {
     x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the audience side (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'in front of' : 'behind'} the triangle` },
     y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - P0.y))} ${v <= P0.y ? 'above' : 'below'} the triangle’s center` },
-    z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Toward the player’s left (the open corner’s side) or right (the beater’s side) (z).', fmt: (v) => `${fmtLen(Math.abs(v))} to the player’s ${v >= 0 ? 'right' : 'left'}` },
+    z: { label: 'ACROSS', short: 'ACROSS', blurb: 'Toward the player’s left (the open corner’s side) or right (the beater’s side).', fmt: (v) => `${fmtLen(Math.abs(v))} to the player’s ${v >= 0 ? 'right' : 'left'}` },
   },
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
   outside: 'outside the triangle',
@@ -126,7 +126,7 @@ const SPEC: MetalSpec = {
   meet: {
     intro: HAND.intro,
     front: TRI_FRONT,
-    figure: { title: 'TRIANGLE', badge: 'An 8 in steel triangle, face-on from the audience · the hold is a drawing choice', label: (v) => (v === 'mounted' ? 'An 8 inch triangle seen face-on, hung on a stand by two clips at its closed corners, the closed side on top and the open corner at the bottom, with two beaters.' : 'An 8 inch steel triangle seen face-on from the audience, hanging from a clip and a thin line held by the player’s left hand, the open corner at the bottom on the player’s left, and a steel beater from the player’s right hand at the base.') },
+    figure: { title: 'TRIANGLE', badge: 'An 8 in steel triangle, face-on from the audience · drawn held; it can also be mounted', label: (v) => (v === 'mounted' ? 'An 8 inch triangle seen face-on, hung on a stand by two clips at its closed corners, the closed side on top and the open corner at the bottom, with two beaters.' : 'An 8 inch steel triangle seen face-on from the audience, hanging from a clip and a thin line held by the player’s left hand, the open corner at the bottom on the player’s left, and a steel beater from the player’s right hand at the base.') },
     partsBadge: 'An 8 in steel triangle, face-on · tap a part to name it',
     partsLooking: (v) => (v === 'mounted' ? 'From the audience · the triangle on its stand' : 'From the audience · the triangle face-on, the player behind'),
     partsNote: 'One steel rod, bent around two closed corners, with one corner left open. It hangs freely so the whole bar can ring. Switch PLAYED to see it mounted.',

@@ -22,7 +22,7 @@ export const C04_SPEC: AmpPagesSpec = {
   ],
   instParts: [
     { id: 'ps.neck', title: 'NECK AND STRINGS', text: 'Most necks have ten strings over a flat fretboard with painted fret markers — no frets to press; some have twelve. Some pedal steels have two necks with different tunings.', shows: [...TOP, ...SIDE] },
-    { id: 'ps.bar', title: 'THE BAR', text: 'A heavy steel bar the left hand rests on the strings: a movable fret. Only the string between the bar and the changer sounds; sliding the bar glides the pitch.', shows: TOP },
+    { id: 'ps.bar', title: 'THE BAR', text: 'A heavy steel bar, held by the left hand and resting on the strings: a movable fret. Only the string between the bar and the changer sounds; sliding the bar glides the pitch.', shows: TOP },
     { id: 'ps.pickup', title: 'PICKUP', text: 'A magnetic pickup near the changer, under the strings: it turns their motion into a small signal for the volume pedal and the amp.', shows: TOP },
     { id: 'ps.changer', title: 'CHANGER', text: 'At the bridge end: fingers that tighten or slacken chosen strings when a pedal or knee lever moves — raising or lowering their pitch.', shows: [...TOP, ...SIDE] },
     { id: 'ps.keyhead', title: 'KEYHEAD', text: 'The tuning keys at the far end, one per string.', shows: [...TOP, ...SIDE] },
@@ -51,7 +51,7 @@ export const C04_SPEC: AmpPagesSpec = {
     gainId: 'ps.prac.gain',
     secondId: 'ps.prac.3',
     mixIds: ['ps.mix.1', 'ps.mix.2', 'ps.mix.3'],
-    mixIntro: 'Three cards from earlier pages, mixed: a reference surface, an electrical stop, and timing versus polarity.',
+    mixIntro: 'Three cards from earlier pages, mixed: measuring from the grille, stopping for an electrical fault, and timing versus polarity.',
     sheetNote: 'For a real rig, with the player’s agreement and the amp off or muted while anything moves — and the pedal zone clear throughout. Write tendencies in words.',
   },
   notes: {

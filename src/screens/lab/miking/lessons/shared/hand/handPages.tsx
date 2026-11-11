@@ -547,7 +547,7 @@ function HandPlacement(spec: HandSpec) {
             <NowLine text={nowLine(rig, ['A'], spec.outside)} />
             {shown.blocked ? <Note tone="warn">{`It would touch ${shown.blocked.label} — the mic stops there. The player’s space comes first.`}</Note> : null}
             {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
-            <Body>{`Activity: zones rested in, clear of the player — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+            <Body>{`Activity: rest the mic in 2 zones, clear of the player — done: ${visited.size}${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
             {tried && predicted ? <Note tone="ok">{spec.place.tried(predicted)}</Note> : null}
             {spec.place.notes ? spec.place.notes(rig) : null}
           </>
@@ -856,7 +856,7 @@ function HandTwoMic(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={rig} art={spec.art} view={view} setView={setView} w={w} h={h} slots={['A', 'B']} showZones={false} showLive={false} pathsFrom={src} interactive={!hidden} labelFor={(v) => `${T.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. Paths from ${region.label} drawn as an overlay. ${pairNow}`} />,
-          badge: `A simplified picture · dashed = straight paths from one point · no reflections · c = ${C20.toFixed(1)} m/s, 20 °C`,
+          badge: `A simplified picture · dashed = straight paths from one point · no reflections · speed of sound ${C20.toFixed(1)} m/s, 20 °C`,
           bezel,
           params,
           initialParam: 'pos',
@@ -865,14 +865,14 @@ function HandTwoMic(spec: HandSpec) {
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
             <Landing looking={T.looking} prompt={T.prompt} />
-            <Body>{`Editing mic ${slot}: the ${(slot === 'A' ? T.names.A : T.names.B).toLowerCase()}. EDIT MIC switches.`}</Body>
+            <Body>{`Editing mic ${slot}: the ${(slot === 'A' ? T.names.A : T.names.B).toLowerCase()}. Tap EDIT MIC to switch mics.`}</Body>
             <Text style={styles.activity} accessibilityLabel={`Activity: polarity to minus ${flips.toInv ? 'done' : 'not yet'}, back to plus ${flips.toNorm ? 'done' : 'not yet'}, mic moved ${moved ? 'done' : 'not yet'}.`}>
               {`Activity: polarity → − ${tick(flips.toInv)} · back to + ${tick(flips.toNorm)} · mic moved ${tick(moved)}`}
             </Text>
             <NowLine text={pairNow} />
             <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
             <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: ${region.label} reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference, no comb: ${region.label} reaches both mics at the same instant.`) : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
-            {rearFlip ? <Note>{`${region.label} is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
+            {rearFlip ? <Note>{`${region.label} is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches fall where the ${sEff === 1 ? 'same-polarity' : 'inverted'} sum puts them, even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
             {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             <Note tone="warn">{T.warn}</Note>
           </>

@@ -21,7 +21,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     partsBadge: 'Claves · tap a part to name it',
     partsLooking: { side: 'Side view · the supported clave end-on', top: 'From above · the two claves crossing' },
     partsIdle: 'Two sticks of hard wood: one rests over the curled fingers so it can ring, the other strikes its middle. The grip is part of the sound. The next page shows why.',
-    variantNotes: { hollow: 'HOLLOWED: a hollowed-out body gives a different pitch character — a model description, not a promise of a sound at the mic.' },
+    variantNotes: { hollow: 'HOLLOWED: a hollowed-out body gives a different pitch character — how it sounds at the mic still depends on the pair.' },
   },
   sound: {
     subject: 'The supported clave along the page, drawn large, on its supports',
@@ -33,7 +33,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     ],
     reveal: 'The strike in the middle drives the clave’s lowest bending shape — its middle and ends swing; two still points about a fifth of the way in from each end stay put. Supported near them, it rings; the hollow beneath rings with it.',
     after: 'The fast click is the strike; the short woody ring is the clave and the hollow. Squeeze the supported clave into the palm and the ring is choked — a mic close to a choked pair only hears a louder choked pair.',
-    shapesNotes: ['The bend is the lowest shape of an ideal unclamped bar, drawn much larger than it moves; the next shape a middle strike drives sits about 5.4 times higher — not a whole-number overtone, part of why a clave sounds like a click with a note.'],
+    shapesNotes: ['The bend is the lowest shape of an ideal unclamped bar, drawn much larger than it moves; the next shape a middle strike drives rings about 5.4 times higher in frequency — not a whole-number overtone, part of why a clave sounds like a click with a note.'],
     coupledSubject: 'The supported clave, drawn large',
     coupledNote: 'The grip is part of the instrument. A dead tick usually means the supported clave is pressed into the palm — a microphone cannot restore the missing resonance.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how real claves sound depends on the wood, the pair, the grip and the player. The pictures show where the sound comes from and where it leaves.',
@@ -85,8 +85,8 @@ export const CLV_COPY: LessonCopy = spCopy({
   },
   placement: {
     workedZone: { solid: 'clv.front.solid', hollow: 'clv.front.hollow' },
-    workedAim: 'Face the striking area — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
-    reveal: 'Closer tends to favor the click and the direct sound over the room; farther lets the click and the body cohere — with more room and competing sound. Pairs and players vary, so “it depends” is fair too.',
+    workedAim: 'Face the striking area — your mic counts as the starting point while it points within {tol}° of it. Distance, height and angle are separate things to try.',
+    reveal: 'Closer tends to favor the click and the direct sound over the room; farther lets the click and the body blend — with more room and competing sound. Pairs and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A dynamic may also suit if its response and the available gain serve the part; a small condenser can show the short decay. Compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never between the two claves. Watch PEAK meters for the strongest accent.',
     learn: {
@@ -102,7 +102,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     shield: ['clv.rest.solid'],
     facing: 'the striking area',
     studioPrompt: 'A studio session has no wedge to reject. The decision changes: does the main or percussion mic already carry the pulse?',
-    studioNote: 'Begin with the main or percussion-area mic; a spot only if the clave needs its own level — and checked with it in mono. Switch back to LIVE for the monitor exercise.',
+    studioNote: 'Begin with the main or percussion-area mic; a spot only if the clave needs its own level — and checked with the main mic in mono. Switch back to LIVE for the monitor exercise.',
     points: [
       { title: 'A PREDICTABLE STATION', text: 'A playing spot where the player can hold the supported clave naturally and strike it safely — and a directional stand mic near it, checked against the full band.' },
       { title: 'SHARED OR DEDICATED', text: 'One mic can serve claves and other hand percussion when positions and levels suit; a spot is justified when the pulse matters and other mics miss it.' },

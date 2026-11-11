@@ -61,9 +61,9 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
     ],
     changes: [
-      'Each all-pass stage keeps every frequency’s level but shifts its phase, more at higher frequencies. Where the copy lands half a cycle from the dry sound, they cancel: a dip.',
+      'Each all-pass stage keeps every frequency’s level but shifts its phase, more for higher ones. Where the shifted and dry sounds are half a cycle apart, they cancel: a dip.',
       'Every two stages add one dip, placed by phase, so the dips sit unevenly, unlike a flanger’s comb.',
-      'The LFO (a slow wobble) slides the stages’ corner two octaves each way at 100%, and the dips move with it. RES lifts the peaks in between.',
+      'At DEPTH (SWEEP) 100% the LFO (a slow wobble) slides the corner frequency two octaves each way; the dips follow. RES lifts the peaks between.',
     ],
     teaches: [
       'A phaser shifts phase, not time: no delay, no echo, and only a few unevenly spaced dips.',

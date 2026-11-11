@@ -247,7 +247,7 @@ describe('4. TRY THIS is what the screen prints', () => {
 describe('5. the chip ruling and the wiring', () => {
   it('a concept lab: the glass is a teaching model, the curve a designed response, the audio uncalibrated, nothing measured', () => {
     assert.match(FX, /const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';/);
-    assert.match(CFG_ALL, /const ANALYTIC = 'DESIGNED RESPONSE — ANALYTIC, NOT A MEASUREMENT';/);
+    assert.match(CFG_ALL, /const ANALYTIC = 'DESIGNED RESPONSE — CALCULATED, NOT A MEASUREMENT';/);
     assert.match(EQ_CFG, /heroBadge: ANALYTIC,/);
     assert.match(FX, /dBFS · uncalibrated/);
     assert.doesNotMatch(EQ_CFG, /pollGr/, 'a measured readout appeared — re-rule the chip');

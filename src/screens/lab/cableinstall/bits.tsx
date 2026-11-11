@@ -88,7 +88,7 @@ export function RuleFeedback({
           <Text style={styles.whyText}>{rule.whyText}</Text>
           {rule.correctionText ? <Text style={styles.correctionText}>FIX  {rule.correctionText}</Text> : null}
           {rule.numericValueIsScenarioSpecific ? (
-            <Text style={styles.scenarioNote}>Any number in this exercise is a scenario-supplied specification — real values come from the governing documents.</Text>
+            <Text style={styles.scenarioNote}>Any number in this exercise is a spec set by this scenario — on a real job, the values come from the documents that govern it.</Text>
           ) : null}
           <Pressable onPress={() => openSources(rule.sourceRefs)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Show sources">
             <Text style={styles.srcBtn}>SOURCES ›</Text>
@@ -145,7 +145,7 @@ export function SourceSheet({ sourceIds, onClose }: { sourceIds: string[] | null
             </View>
           ))}
           <Text style={styles.srcFoot}>
-            References only — this lab summarizes principles in its own words and never reproduces standards text. Local
+            References only — each rule here is summarized in plain words; read the document itself for the exact text. Local
             electrical, fire, building and workplace regulations always govern.
           </Text>
         </ScrollView>
@@ -240,7 +240,7 @@ export function FindProgress({ found, required, total }: { found: number; requir
   return (
     <Text style={[styles.findLine, done && { color: colors.green }]} accessibilityLiveRegion="polite">
       {done ? '✓ ' : ''}
-      {found} found · {required} needed to continue · {total} to process in total
+      {found} found · {required} needed to continue · {total} in all
     </Text>
   );
 }

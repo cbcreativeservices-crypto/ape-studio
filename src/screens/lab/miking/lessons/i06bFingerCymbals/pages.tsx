@@ -147,7 +147,7 @@ const SPEC: MetalSpec = {
   meet: {
     intro: HELD.intro,
     front: FC_FRONT,
-    figure: { title: 'FINGER CYMBALS', badge: 'A pair of 5.5 and 4.8 cm brass finger cymbals, from the audience · the hold is a drawing choice', label: (v) => (v === 'dance' ? 'A dancer seen from the audience, arms raised, a pair of finger cymbals on the thumb and a finger of each hand, with arrows showing the route across the stage.' : 'A pair of small brass finger cymbals seen from the audience: one held flat by its strap, the other above it, tipped edge-first, about to drop into it.') },
+    figure: { title: 'FINGER CYMBALS', badge: 'A pair of 5.5 and 4.8 cm brass finger cymbals, from the audience · the hold shown is one example', label: (v) => (v === 'dance' ? 'A dancer seen from the audience, arms raised, a pair of finger cymbals on the thumb and a finger of each hand, with arrows showing the route across the stage.' : 'A pair of small brass finger cymbals seen from the audience: one held flat by its strap, the other above it, tipped edge-first, about to drop into it.') },
     partsBadge: 'A pair of brass finger cymbals · tap a part to name it',
     partsLooking: (v) => (v === 'dance' ? 'From the audience · a dancer, a pair on each hand' : 'From the audience · the pair close up'),
     partsNote: 'Two small brass plates, each with a strap through its center. Switch PLAYED to see them worn by a dancer.',
@@ -186,7 +186,7 @@ const SPEC: MetalSpec = {
       subject: 'A 5.5 centimeter finger cymbal seen face-on',
       notes: () => [
         'A shape is set moving only as much as the plate moves where the edge lands. Near the edge, most shapes move a lot — the bright, piercing ring. The strap sits at the center, so this picture leaves out the shapes that would move the center: the strap damps them.',
-        'This is a flat disc of even thickness. A real finger cymbal is domed and small, so its pitches are high and its numbers differ; thin and thick pairs differ too — compare real pairs by ear.',
+        'This picture is a flat disc of even thickness. A real finger cymbal is domed and small, so its pitches are high and its ratios differ from the RATIO shown; thin and thick pairs differ too — compare real pairs by ear.',
       ],
       tried: 'Near the edge nearly every shape moves under the stroke; nearer the dome, fewer do. The contact point is part of the source’s color.',
     },

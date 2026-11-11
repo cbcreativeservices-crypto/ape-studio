@@ -71,7 +71,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one piano mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['pn.prac.order', 'pn.prac.gain', 'pn.prac.setup1', 'pn.prac.setup2', 'pn.prac.3', 'pn.mix.1', 'pn.mix.2', 'pn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real piano.' },
-    takeaway: 'A safely set lid, clearance from everything that moves, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “widest” stereo picture does not — and more than one setup can pass.',
+    takeaway: 'What passes: a safely set lid, clearance from everything that moves, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay. A brand or a “widest” stereo picture does not — and more than one setup can pass.',
   },
 };
 
@@ -270,7 +270,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The piano mic is inside the case, under the lid. A floor wedge sits well below the rim. What does the case do?',
     options: ['Nothing: the mic hears the wedge exactly as it would in open air', 'It shields the mic from much of the wedge’s direct sound', 'It makes the wedge louder in the mic, like a horn'],
     correct: 'It shields the mic from much of the wedge’s direct sound',
-    explain: 'The rim and the lid stand in the straight path from a floor wedge to a mic inside the case. The free-field pattern ignores that, so the lab says “shielded” instead of printing a number — real reflections still reach the mic.',
+    explain: 'The rim and the lid stand in the straight path from a floor wedge to a mic inside the case. The free-field (open-air) pattern ignores that, so the lab says “shielded” instead of printing a number — real reflections still reach the mic.',
     why: {
       'Nothing: the mic hears the wedge exactly as it would in open air': 'The case is in the way of the direct path. The pattern picture ignores it, which is why no number is shown.',
       'It makes the wedge louder in the mic, like a horn': 'The rim blocks the direct path rather than focusing it. Reflections still arrive, more weakly.',
@@ -474,7 +474,7 @@ const symptoms: Symptom[] = [
   {
     id: 'pn.sym.rattle',
     observation: 'Feedback, or a lid rattle at show level',
-    firstChecks: 'Monitor, lid/mount or hardware contact: reduce the level, secure or relocate safely, and retest.',
+    firstChecks: 'Check the monitor, and anything touching the lid, a mount or hardware: reduce the level, secure or relocate safely, and retest.',
     options: ['Reduce the level, then secure or move the mount and retest', 'Keep playing and fix it with EQ during the next song', 'Wedge something between the lid and the rim to stop it buzzing'],
     correct: 'Reduce the level, then secure or move the mount and retest',
     explain: 'Bring the level down first. Then find what touches what — a mount, a cable, the lid — and secure or relocate it safely, with the owner’s agreement. Only the owner or a piano technician adjusts the lid’s hardware.',
@@ -486,7 +486,7 @@ const symptoms: Symptom[] = [
   {
     id: 'pn.sym.pedal',
     observation: 'Pedal thumps in the mics',
-    firstChecks: 'A lower-front upright position or floor coupling: reposition, isolate the stand, and have the mechanism inspected.',
+    firstChecks: 'A mic low on an upright’s front, or thumps reaching the stand through the floor: reposition, isolate the stand, and have the mechanism inspected.',
     options: ['The mic position and the stand’s contact with the floor', 'Cut the low frequencies until the thumps are gone', 'Ask the pianist not to use the pedals during the show'],
     correct: 'The mic position and the stand’s contact with the floor',
     explain: 'Pedal thumps reach a mic near the lower front, or through the floor into a stand. Reposition, isolate the stand, and let a technician inspect a noisy pedal.',
@@ -547,7 +547,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A dynamic about 20 cm behind the soundboard, moved to find the sweet spot', ok: true, power: 'none', feedback: 'A suggested rear starting point — with time to listen for the sweet spot; no phantom needed.' },
       { id: 'c', label: 'A small condenser inside the open top, aimed toward the hammers', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A dynamic squeezed between the piano’s back and the wall', ok: false, power: 'none', feedback: 'Pressed against the wall there is no usable space: pull the piano out (its owner moves it) or choose the top.' },
-      { id: 'e', label: 'The upper front panel taken off by you, a dynamic at the hammers', ok: false, power: 'none', feedback: 'Panel removal is the owner’s or a technician’s job, never an operator default.' },
+      { id: 'e', label: 'The upper front panel taken off by you, a dynamic at the hammers', ok: false, power: 'none', feedback: 'Panel removal is the owner’s or a technician’s job, never something you do by default.' },
     ],
     reasons: [DOC_REASON, { ...CLEAR_REASON, label: 'The mic, stand and cable stay clear of the action, the pianist’s hands, feet and the pedals' }, POWER_REASON, { id: 'r.mono', label: 'One mic keeps a mono PA simple — no comb between two mics', role: 'optional', feedback: 'A fair reason when one balanced position works across the keyboard.' }, BRAND_REASON, { id: 'r.wall', label: 'Push the piano back to the wall so it sounds bigger', role: 'wrong', feedback: 'Pressed against the wall there is no room for a rear mic, and the wall changes the sound unpredictably.' }],
     explain: 'Two positions pass. What passes is the reasoning: a sensible starting point, clear of the action and the pianist, powered by what this input can supply.',
@@ -633,7 +633,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your piano mic is rated to a very high maximum SPL. What does that tell you about standing by the open piano through a long, loud soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the piano stays below the mic’s rated level', 'It is safe as long as the mic is nearer the hammers than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts; close to the hammers a piano can pass 130 dB. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts; close to the hammers a piano can pass 130 dB. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — measured where the person listens.',
     why: {
       'It is safe for as long as the piano stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the hammers than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
@@ -653,7 +653,7 @@ const wedges: Wedge[] = [
     p: { x: 3600, y: FLOOR_Y, z: 1000 },
     lift: 1500,
     faces: { x: -1, y: 0, z: 0 },
-    note: 'A side-fill on a stand in the stage wing, at about head height, facing across the stage: it can reach a mic under the lid through the gap between the rim and the lid — the case a pattern’s rejection can help with.',
+    note: 'A side-fill on a stand in the stage wing, at about head height, facing across the stage: it can reach a mic under the lid through the gap between the rim and the lid — the situation a pattern’s rejection can help with.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
     glyph: 'none',
   },

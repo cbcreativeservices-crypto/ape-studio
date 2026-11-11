@@ -335,7 +335,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     },
     seeing: [
       'You build meantone in five short parts; the display follows PART: the C·D·E rail (A), four fifths on the rail (B), harmonic ladders with a meter (C), the scale (D), the twelve-note chain with the wolf’s two ends in red (E).',
-      'The readouts change with the part: FIFTH, g⁴/4 and FROM 5/4 in C (g is the meantone fifth); WOLF, NORMAL and WIDER BY in E.',
+      'The readouts change with the part: FIFTH, g⁴/4 and FROM 5/4 in Part C (g is the meantone fifth); WOLF, NORMAL and WIDER BY in Part E.',
     ],
     control: [
       'Ride PART from A to E, or tap it for the list.',
@@ -400,7 +400,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     },
     seeing: [
       'The deviation chart: each bar shows how far a note sits from equal temperament (0 ¢ = EQUAL TEMPERAMENT, + HIGHER, − LOWER). Green is exact, gold within 10 ¢, orange beyond.',
-      'NOTE (with its ratio), Hz, VS EQUAL and SOUND describe the note you pick. Below the display, a fixed keyboard: C FIXED AT the root.',
+      'NOTE (with its ratio), Hz, VS EQUAL and SOUND describe the note you pick. Below the display is a keyboard; C FIXED AT gives the root’s pitch.',
     ],
     control: [
       'Flip SYSTEM through Pythagorean, Just, meantone and Equal: every bar moves.',
@@ -432,7 +432,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     },
     seeing: [
       'This chapter is a reading page, with no display. Four cards, one per system, each with its rule and four points.',
-      'Then MISCONCEPTIONS: nine claims to judge, WHERE THIS MEETS PROFESSIONAL AUDIO, and UNDERSTOOD ›. The footer shows the sound line and ■ STOP.',
+      'Then MISCONCEPTIONS: nine claims to judge, WHERE THIS MEETS PROFESSIONAL AUDIO, and UNDERSTOOD ›. The footer shows whether sound is playing, and ■ STOP.',
     ],
     control: [
       'Scroll down the page. Tap a claim to read its correction, and tap again to close it. Claims you’ve opened read “seen · tap to reread ▸”.',
@@ -470,7 +470,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'This is the lab’s last chapter; the Drum Tuning Lab comes next in Pitch & Tuning.',
     ],
     changes: [
-      'Each challenge gets a check mark once you get it right. A wrong try costs nothing: just try again. All six checked completes the chapter.',
+      'Each challenge gets a check mark once you get it right. A wrong try costs nothing: try again. All six checked completes the chapter.',
       'Then WHAT YOU KEEP lists the six ideas, and RETRY THE CHALLENGES runs them again.',
     ],
     teaches: [

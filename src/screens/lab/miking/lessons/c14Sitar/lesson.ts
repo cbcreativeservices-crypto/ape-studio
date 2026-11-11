@@ -43,7 +43,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — low, toward the bridge and the body, about 18–20 cm out — measured from the point the starting point names, clear of the player, then move the mic and see what changes.',
+    goal: 'Start where we suggest you begin — low, toward the bridge and the body, about 18–20 cm out from the board, clear of the player — then move the mic and see what changes.',
     credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named point. Low toward the bridge first; high toward the neck only if it adds something; farther back where the room is good.',
   },
@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one sitar mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real sitar.' },
-    takeaway: 'Safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a capsule size does not.',
+    takeaway: 'What passes: safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning, and polarity versus delay. A brand or a capsule size does not.',
   },
 };
 
@@ -94,7 +94,7 @@ const scenarios: MikingScenario[] = [
     correct: 'When a played note lines up with one of its own shapes',
     explain: 'The bridge passes it the played string’s motion. It builds up only where one of its shapes sits at the same pitch as one of the played note’s — so it rings after some notes and stays quiet after others.',
     why: {
-      'Whenever a string is played, whatever note it happens to be': 'Pushed out of step with itself, it barely moves. The note has to line up with its tuning.',
+      'Whenever a string is played, whatever note it happens to be': 'Pushed out of step with its own natural swing, it barely moves. The note has to line up with its tuning.',
       'Only when the player strikes it with the back of the mizrab': 'Sympathetic strings ring by sympathy — that is the name — not by being struck.',
     },
   },
@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.3`,
     page: 'placement',
-    prompt: 'One account has a close omni about 20 cm from the board, below the bridge, in a noisy hall. What does that tell you?',
+    prompt: 'One recording session used a close omni about 20 cm from the board, below the bridge, in a noisy hall. What does that tell you?',
     options: ['The best sitar position, to be copied in whatever room you use', 'That omnis are the only mics that work on a sitar', 'A choice for that room: getting close; not a rule for every room'],
     correct: 'A choice for that room: getting close; not a rule for every room',
     explain: 'Close placement raised the sitar above the hall’s noise in that session. In a quiet, good room a farther view may represent the instrument better. Compare in your own room.',
@@ -435,7 +435,7 @@ export const C14_LESSON: Lesson = {
       { title: 'The string swings — grazing the bridge', text: 'Released, the string swings between its still ends — the broad main bridge and the nut, or the fret it is pressed to. As it swings it grazes the bridge’s gently curved top: the bright, buzzing edge the player intends. Motion drawn many times larger.' },
       { title: 'The bridge drives the board', text: 'Each swing works the broad bridge, and the bridge drives the thin board over the gourd. The board moves the air — the air inside the gourd too.' },
       { title: 'Sound leaves', text: 'Sound leaves mostly from the board around the bridge, toward a listener in front. The strings and the left hand are heard most directly toward the neck.' },
-      { title: 'The sympathetic strings answer', text: 'Under the frets, sympathetic strings tuned for the music run over their own small bridge. The board sets them going when the played note lines up with their tuning — and ring on after it. On a sitar that has them; the next steps show why only some notes do it.' },
+      { title: 'The sympathetic strings answer', text: 'Under the frets, sympathetic strings tuned for the music run over their own small bridge. On a sitar that has them, the board sets them going when the played note lines up with their tuning, and they ring on after it. The next steps show why only some notes do it.' },
     ],
     attack: 'The start of the note: the mizrab’s strike and the string grazing the broad bridge — a bright, buzzing onset. It is heard most directly close to the bridge; a close mic there makes it dominate.',
     body: 'The note’s ring: the strings, the board and the gourd’s air together, plus — after matching notes — the sympathetic shimmer. A wider view and the room carry the decay; toward the neck, the strings and the shimmer can stand out more. Tendencies; sitars vary.',

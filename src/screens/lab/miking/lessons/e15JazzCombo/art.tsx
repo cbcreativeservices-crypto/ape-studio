@@ -40,7 +40,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'THE CLUB', text: 'The kit and the horns may already fill the room: reinforce only what the audience lacks. Close pickup gives the gain before feedback a distant view cannot; aim each mic with the loudspeakers and monitors in mind.' },
       { title: 'THE STREAM', text: 'Remote listeners hear none of the room: build them their own balance from the close mics and a pair, and keep that pair out of the wedges.' },
-      { title: 'THE STUDIO', text: 'Ensemble-first when the players and the room set the balance; a more separated session with each neighbor audible enough to keep the cueing. Keep a room pair on its own tracks.' },
+      { title: 'THE STUDIO', text: 'Ensemble-first when the players and the room set the balance; or a more separated session, each neighbor audible enough for the players to keep cueing. Keep a room pair on its own tracks.' },
     ],
   },
   two: {

@@ -260,7 +260,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop-punk and modern punk masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (−2 dBTP when mastering louder than −14 to avoid codec distortion). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness gains nothing and costs punch. For more punch, aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above) and a loudness range of 3–6 LU; fast drums need transient headroom to stay distinct."
+      "text": "Pop-punk and modern punk masters commonly land at −9 to −6 LUFS-I with true peak at −1 dBTP (−2 dBTP when mastering louder than −14 to avoid codec distortion). Most streaming services normalize to about −14 LUFS, some to −16, so extreme loudness gains nothing and costs punch. For more punch, aim for a PLR (peak-to-loudness ratio) of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, quieter than the range above) and a loudness range of 3–6 LU; fast drums need transient headroom to stay distinct."
     }
   ],
   "liveStudio": {

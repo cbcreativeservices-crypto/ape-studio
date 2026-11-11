@@ -28,7 +28,7 @@ export const C07_COPY = stringsCopy({
   strikerPhrase: 'finger',
   soundReveal: 'Even a heavy bass string moves little air on its own: the bridge rocking the TOP makes most of the sound — and on the lowest notes, the body and its air struggle to keep up.',
   soundAfter: 'Then the strings, the top and the air in the body keep ringing together — the BODY of the note. On a bass the lowest notes are long and deep; a small body radiates them less strongly than the upper ones.',
-  shapesNote2: 'This is an ideal string between rigid ends. A heavy bass string is stiff, so its upper shapes run a little sharp of whole numbers — one reason a real bass never sounds like this picture alone.',
+  shapesNote2: 'This picture is an ideal string between rigid ends. A heavy bass string is stiff, so its upper shapes ring a little sharp of whole-number multiples of the lowest one — one reason a real bass never sounds like this picture alone.',
   coupledNote: 'The top bows in and out around the bridge and pumps the air through the sound hole — a simplified picture of the lowest motion. A close mic hears the part of the top, the hole or the strings it faces most.',
   setting: {
     kitA11y: 'The bassist from above, seated with the instrument: the chair behind, a vocal mic in front of the mouth, a DI box on the floor by the tail.',
@@ -44,7 +44,7 @@ export const C07_COPY = stringsCopy({
     ],
   },
   workedZone: { bass: 'neck.bass' },
-  workedAim: 'Angle it to take in the top and the strings — the lab counts it while the mic’s axis, followed in, meets the top within about 13 cm of {head} — and not straight into the sound hole.',
+  workedAim: 'Angle it to take in the top and the strings, not straight into the sound hole: the lab counts it while the line the mic points along meets the top within about 13 cm of {head}.',
   clearWhat: 'the plucking hand and arm, the fretting hand along the long neck, and the player’s view of it',
   placementReveal: 'Toward the hole tends to bring more low-mid body — and boom close in; toward the neck, more string and finger. Every bass and room differs, so “it depends on this bass” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {
@@ -70,7 +70,7 @@ export const C07_COPY = stringsCopy({
     body: 'With a wedge in front, a pattern’s rejection is a tool to aim. Low frequencies are where many patterns reject least — so expect more wedge low end than the picture suggests.',
     studioId: 'ab.ctx.studio',
     studioPrompt: 'A studio session in a good room: what is the room worth to this bass?',
-    studioNote: 'In a quiet studio a farther mic blends the bass with the room — and with the room’s low-end build-up. Repeated trials are practical when the player stops. Switch back to LIVE for the wedge exercise.',
+    studioNote: 'In a quiet studio a farther mic blends the bass with the room — and with the room’s low-end build-up. You can try several positions, moving the mic each time the player stops. Switch back to LIVE for the wedge exercise.',
   },
   twoMic: {
     A: 'neck.bass',

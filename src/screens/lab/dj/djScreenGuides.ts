@@ -115,7 +115,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Patch deck A into CH1 LINE on both sides and play it, then pull the red plug: CH1 R GETS changes from DECK A R to —.',
-      'Switch SOURCE to TURNTABLE (switch on PHONO), then compare CH1 LINE with CH1 PHONO. Listen for the level and the bass.',
+      'Switch SOURCE to TURNTABLE (the turntable’s own switch on PHONO), then compare CH1 LINE with CH1 PHONO. Listen for the level and the bass.',
     ],
   },
   // ── 4 ──────────────────────────────────────────────────────────────────
@@ -191,7 +191,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'TRIM 1 and TRIM 2 set how much of each track comes into its channel, in ±1 dB steps.',
-      'LEVELS gives you one lane for CH1 FADER, CH2 FADER or MASTER; its key chooses which.',
+      'LEVELS gives you one lane for CH1 FADER, CH2 FADER or MASTER; tap the LEVELS key to choose which.',
       'DECKS plays the decks. It also holds each channel’s INPUT SELECTOR (LINE, PHONO, USB) and CUE 2.',
       STOP,
     ],
@@ -206,7 +206,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Play deck A and ride TRIM 1 until CH1 AVG sits in −21…−15 dBFS with PK under −3.',
-      'Play deck B: CH2 reads “—”. Look at its input selector in DECKS to find why, then set TRIM 2 within 2 dB of CH1 AVG.',
+      'Play deck B: CH2 reads “—”. Look at its input selector in DECKS to find why, then set TRIM 2 so CH2 AVG is within 2 dB of CH1 AVG.',
     ],
   },
   // ── 7 ──────────────────────────────────────────────────────────────────
@@ -248,7 +248,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'You see the mixer’s channel faders, the crossfader and its assign and curve switches, under a plot of the crossfader curve you chose.',
-      'CH1 → MIX and CH2 → MIX show, in dB, how much of each channel reaches the mix. The fourth cell, TWO COPIES, is for the summing test.',
+      'CH1 → MIX and CH2 → MIX show, in dB, how much of each channel reaches the mix. The fourth cell, TWO COPIES, shows how much two identical copies add when they sum.',
     ],
     control: [
       'FADERS gives you one lane for CH1 (DECK A) or CH2 (DECK B).',
@@ -407,7 +407,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     control: [
       'In FX, tap FX ON and pick a TYPE: ECHO, REVERB, FILTER or FLANGER.',
       'Use WHERE IT SITS (CH SELECT) to put it on CH1, CH2, MASTER or SEND. On a send, set the SEND knobs and RETURN TO.',
-      'The second key names the knob it turns: FX TIME (in beats), FEEDBACK, or LEVEL (DRY/WET). On a send it becomes RETURN.',
+      'The key next to FX names the knob it turns: FX TIME (in beats), FEEDBACK, or LEVEL (DRY/WET). On a send it becomes RETURN.',
       'FADER 1 is channel 1’s fader. DECKS plays the decks and holds fader 2.',
       STOP,
     ],
@@ -563,7 +563,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'The ring is the control signal as the software sees it. A clean, round ring means the software can read the record.',
       'The map shows where each signal goes. Below it are the turntable with its control record and the rear cables.',
-      'Check ROUND TRIP, SIGNAL (quality and lock), DECK 1 and CROWD.',
+      'Check ROUND TRIP (the delay from record to sound), SIGNAL (quality and lock), DECK 1 and CROWD.',
     ],
     control: [
       'PLATTER: start or stop it, NEEDLE DROP, and the PLATTER PITCH.',
@@ -579,7 +579,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'A control record carries no music, only a tone that tells the software how the platter is moving.',
-      'ABSOLUTE copies every needle move, skips included; RELATIVE ignores where the needle sits; INTERNAL ignores the record. Changing mode keeps the music going when tracking fails.',
+      'ABSOLUTE copies every needle move, skips included; RELATIVE ignores where the needle sits; INTERNAL ignores the record. Switching to RELATIVE or INTERNAL keeps the music going when tracking fails.',
       'The control tone must stay clean: hum and clipping corrupt it.',
     ],
     tryThis: [
@@ -616,7 +616,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Plug the DYNAMIC mic into MIC 1, switch it ON, press TALK NOW and set GAIN so speech peaks sit at −18 to −8 dBFS. Then try SHOUT.',
-      'In MIC → ROOM point the mic AT A MONITOR and watch FEEDBACK. Then move the mic or lower the monitors to win back 6 dB.',
+      'In MIC → ROOM point the mic AT A MONITOR and watch FEEDBACK. Then move the mic or lower the monitors until FEEDBACK shows 6 dB to spare.',
     ],
   },
   // ── 20 ─────────────────────────────────────────────────────────────────
@@ -688,11 +688,11 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Hybrid DJ systems': {
     intro: {
       learning: 'How a drum machine joins a DJ rig: one cable carries its sound, another carries clock for tempo, and starting it on the bar keeps it in step.',
-      start: 'In CLOCK, set CH 1, 5-PIN MIDI and EXTERNAL, then play deck A and watch MACHINE take deck A’s tempo. Then use START ON THE NEXT BAR.',
+      start: 'In CLOCK, set the CLOCK switch to CH 1, then 5-PIN MIDI and EXTERNAL, then play deck A and watch MACHINE take deck A’s tempo. Then use START ON THE NEXT BAR.',
     },
     seeing: [
       'On the back of the mixer are MIDI OUT and its CLOCK switch. Next to it are the drum machine’s back panel and its top, where the step lights show the pattern playing.',
-      'DECK A shows its BPM. MACHINE shows the drum machine’s BPM and whether it follows outside clock (EXT) or itself (INT). Also watch ITS BAR 1 and IN THE ROOM.',
+      'DECK A shows its BPM. MACHINE shows the drum machine’s BPM and EXT (outside clock) or INT (itself). ITS BAR 1 shows if the machine’s bar 1 lands on deck A’s; IN THE ROOM, if the crowd hears it.',
     ],
     control: [
       'TEMPO A sets deck A’s tempo.',
@@ -726,7 +726,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'ON AIR shows which source the room hears. CH 1 AVG and CH 2 AVG are each channel’s average level. HUM shows when a ground loop buzzes.',
     ],
     control: [
-      'TRIM 2 sets channel 2’s trim.',
+      'TRIM 2 sets how much signal enters channel 2, so CH 2 AVG can match CH 1 AVG.',
       'In PLUG: connect DJ 2’s laptop, set the input selectors and plug in the charger.',
       'In PREDICT: mark which disconnection would stop the music, then check.',
       'In MIX: play, use the faders and headphone cue, and try the frozen-laptop recovery.',
@@ -811,7 +811,7 @@ export const DJ_END_GUIDE: ScreenGuide = {
     'Optional Screens 16–18 never hold back LAB COMPLETE. Reopening a finished screen to practice never clears its ✓ DONE.',
   ],
   teaches: [
-    'The lab follows a real booth in order: safe level and time first, then the path from player through cable and mixer to the PA.',
+    'A real booth works in order: safe level and time first, then the path from player through cable and mixer to the PA.',
     'On top of that path sits the DJ’s work: setting gain, cueing in headphones, blending with faders and EQ, and keeping two tracks in time.',
     'Laptop, vinyl and digital vinyl rigs use the same signal flow as the core booth.',
   ],

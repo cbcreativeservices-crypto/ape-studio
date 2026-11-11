@@ -62,7 +62,7 @@ type PageFn = (p: PageProps) => ReactNode;
 
 function B15Meet(p: PageProps) {
   const { lesson, journey } = p;
-  const tour = usePlanTourStep({ sports: TRACK_GYM_COMBAT, title: 'The venues', prompt: 'Step through LAYER on each SPORT: where the action is, what stays clear, the routes people need, the places a mic may be approved, and what nothing is attached to.', a11yLead: 'A plan of' });
+  const tour = usePlanTourStep({ sports: TRACK_GYM_COMBAT, title: 'The venues', prompt: 'Step through LAYER on each SPORT: where the action is, what stays clear, the routes people need, the places a mic may be approved, and what nothing may be attached to.', a11yLead: 'A plan of' });
   const range = useRangeStep({ scene: PRACTICE_SMALL, from: PS.M1, fromH: PS.h, fromLabel: 'M1', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: one equipment area, three source points on the walk — each a different range and angle.' });
   const box = PRACTICE_SMALL.frame;
   const steps: MikingStep[] = [
@@ -217,7 +217,7 @@ function B15Context(p: PageProps) {
     },
     points: [
       { title: 'A SUPPLIED CUE IS ITS OWN INPUT', text: 'An authorized production feed of the start cue or the routine’s music is separate from the action mic: check its level, its delay against the room and its rights with the timing or presentation team. It is never an official timing record — and the start and timing systems are never split, patched or loaded for audio.' },
-      { title: 'ACTION AND CROWD STAY OFF THE PA', text: 'Action and crowd mics generally need no reinforcement in the venue. Route to the PA only what is asked for, reviewed by the venue engineer — never a test of feedback.' },
+      { title: 'ACTION AND CROWD STAY OFF THE PA', text: 'Action and crowd mics generally need no reinforcement in the venue. Route to the PA only what is asked for, reviewed by the venue engineer — never just to see whether it feeds back.' },
     ],
   });
   return <PageSteps steps={[coverage, plant, headroom, routing, checkStep(p, 'context')]} />;

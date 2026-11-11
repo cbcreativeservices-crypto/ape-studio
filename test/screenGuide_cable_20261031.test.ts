@@ -508,7 +508,7 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     assert.match(CS, /markLabUnit\(CONNECTOR_SELECT_LAB_KEY, `p\$\{index \+ 1\}`\)/);
     assert.match(PL, /\(!!creditLabKey && bankedPages\.has\(`p\$\{i \+ 1\}`\)\)/);
     assert.match(PL, /if \(banked \|\| progress\?\.completed\.includes\(i\)\) endCleared\.add\(String\(i\)\);/);
-    assert.ok(T.includes('START OVER (PRACTICE) in the contents resets goal chips only'));
+    assert.ok(T.includes('START OVER (PRACTICE) in the page list resets goal chips only'));
     // A guest's units are HELD and replayed into the first account signed into this
     // session (when the carry is open — the lead line says which); only a preview earns nothing.
     const LC = code('src/features/lab/labCompletion.ts');

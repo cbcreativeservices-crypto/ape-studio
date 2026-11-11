@@ -299,7 +299,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When does a mic each beat one shared mic?',
     options: ['When parts need their own level or effects', 'When there are spare stands left over in the van', 'When the singers want to move less'],
     correct: 'When parts need their own level or effects',
-    explain: 'Separate mics earn their stands, channels and phase paths when entries, singers or effects need different levels; a shared mic wins when the blend matters most.',
+    explain: 'Separate mics earn their stands, channels and the comb between them when entries, singers or effects need different levels; a shared mic wins when the blend matters most.',
     why: {
       'When there are spare stands left over in the van': 'Spare stands are not a musical reason.',
       'When the singers want to move less': 'Movement is a choreography question; the musical goal decides.',
@@ -437,7 +437,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which approach gives each part its own level later?',
     options: ['A mic per singer', 'One shared mic', 'One area mic above'],
     correct: 'A mic per singer',
-    explain: 'Separate mics give level, pan and effects per part — at the cost of stands, channels and phase paths.',
+    explain: 'Separate mics give level, pan and effects per part — at the cost of stands, channels and the comb between them.',
     why: { 'One shared mic': 'One mic is one channel: the balance is set by the singers.', 'One area mic above': 'An area mic captures the group as one texture.' },
   },
   {

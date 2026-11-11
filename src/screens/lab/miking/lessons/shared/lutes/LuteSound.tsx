@@ -753,7 +753,7 @@ export function makeLuteSoundPage(built: BuiltLute) {
               },
               well: (
                 <>
-                  <Landing looking={`Played string and one sympathetic string · ${tune.label.toLowerCase()}`} prompt="Change TUNED TO, then step through PAIR. Where the rungs line up, the sympathetic string is pushed in step with itself." />
+                  <Landing looking={`Played string and one sympathetic string · ${tune.label.toLowerCase()}`} prompt="Change TUNED TO, then step through PAIR. Where an amber mark lines up with a blue one, the played string pushes the sympathetic string in step." />
                   <Card>
                     <Point title={pair ? `IN STEP · PLAYED ${pair.n} ↔ SYMPATHETIC ${pair.m}` : 'NOTHING IN STEP'}>
                       {pair

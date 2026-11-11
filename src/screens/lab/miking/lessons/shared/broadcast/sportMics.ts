@@ -112,7 +112,7 @@ export const SPORT_SPEECH_MIC_TYPES = {
     address: 'end',
     patterns: [{ id: 'figure8', label: 'figure-8', prov: src('COLES-4104', 'bi-directional') }],
     body: { length: LIP_RIBBON.length, radius: LIP_RIBBON.radius },
-    power: 'none — a passive ribbon: check the interface and the phantom-power setting with the audio lead before connecting',
+    power: 'none — a passive ribbon: check the interface and the phantom-power setting with the lead audio engineer before connecting',
     mount: 'clip',
     clip: HELD,
     examples: [{ model: 'Coles 4104 class (lip-guarded noise-canceling ribbon)', fact: 'COLES-4104: "bi-directional"; usable in wind "up to 20 mph (32 km)" without notable difference, "up to 40 mph (64 km) or more" with its windshield. COLES-SPEC is image-only: the guard depth is UNKNOWN (D7-7).', src: 'COLES-4104' }],

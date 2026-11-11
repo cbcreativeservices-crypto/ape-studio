@@ -101,7 +101,7 @@ export function Lesson09Body() {
         ))}
       </DetailCard>
 
-      <Eyebrow text={`THE INSPECTION SCENE · ${Math.min(itemIdx + 1, SCENE_ITEMS.length)} OF ${SCENE_ITEMS.length}`} />
+      <Eyebrow text={`THE INSPECTION SCENE · ITEM ${Math.min(itemIdx + 1, SCENE_ITEMS.length)}`} />
       {/* ART SLOT: owner-supplied illustrated inspection scene mounts here —
           a workbench of the 12 cables/connectors below, each tappable. Until
           the artwork lands, the scene runs as judged text vignettes. */}

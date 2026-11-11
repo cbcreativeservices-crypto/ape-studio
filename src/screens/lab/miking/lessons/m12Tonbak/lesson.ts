@@ -145,7 +145,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The bright edge strokes and the finger work',
     explain: 'The edge strokes and much of the finger work land near the rim, and they drive the brighter shapes — a mic close to the edge tends to hear more of them. A tendency: drums and players vary.',
     why: {
-      'The deep middle strokes, since the edge moves the most': 'The deep strokes are near the middle; near the edge the head is held, and the bright shapes dominate.',
+      'The deep middle strokes, since the edge moves the most': 'The deep strokes are near the middle; near the edge the head is held fast by the rim, and the bright shapes dominate.',
       'The open lower end, through the wood of the bowl': 'The opening is at the far end of the drum; a mic near the edge hears the head.',
     },
   },
@@ -395,7 +395,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The head and opening mics sound hollow together. Which change removes the arrival-time difference?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on the opening mic', 'Turning the opening mic up until it matches the head'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth.',
+    explain: 'Only the lengths of the two paths set the delay. Polarity swaps the notches and peaks; level changes their depth.',
     why: {
       'Flipping the polarity switch on the opening mic': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the opening mic up until it matches the head': 'Level changes the depth of the notches, not the delay.',
@@ -422,7 +422,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Compare target and distance; hear the unamplified drum again.',
     options: ['Compare target and distance; hear the drum unamplified again', 'Boost the lows on the channel until the deep stroke returns', 'Move the mic straight into the open lower end of the drum'],
     correct: 'Compare target and distance; hear the drum unamplified again',
-    explain: 'Tell the source’s own balance from the mic’s or the room’s color before changing anything.',
+    explain: 'Before changing anything, tell apart the drum’s own balance and the color the mic or the room adds.',
     why: {
       'Boost the lows on the channel until the deep stroke returns': 'First find out whether the drum itself is weak there; EQ can thicken everything else.',
       'Move the mic straight into the open lower end of the drum': 'Nothing goes inside the drum; the opening is an optional support from outside.',
@@ -500,7 +500,7 @@ const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the head', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the hands, legs and movement', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers use on hand drums', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
-const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position', role: 'wrong', feedback: 'Bass emphasis is not a passing reason — the player’s balance is.' };
+const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position', role: 'wrong', feedback: 'Bass emphasis is not a good reason — the player’s balance is.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -597,7 +597,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Placing a mic close to the tonbak, what comes before every distance?',
     options: ['The hands’ full paths and the player’s movement', 'The exact distance that the starting point names', 'The shortest cable run from the stand to the desk'],
     correct: 'The hands’ full paths and the player’s movement',
-    explain: 'Hand clearance takes priority over every number: keep the capsule and stand outside the whole playing envelope, vigorous passages included.',
+    explain: 'Hand clearance takes priority over every number: keep the capsule and stand outside the whole playing space, vigorous passages included.',
     why: {
       'The exact distance that the starting point names': 'The numbers are starting points; the hands’ clearance comes first.',
       'The shortest cable run from the stand to the desk': 'A tidy cable matters, but never before the player’s space.',
@@ -610,7 +610,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting by the drum through a long soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the drum stays below the mic’s rated level', 'It is safe as long as the mic sits closer than you do'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule (halving the time every 5 dB).',
     why: {
       'It is safe for as long as the drum stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic sits closer than you do': 'Where the mic sits says nothing about your ears.',

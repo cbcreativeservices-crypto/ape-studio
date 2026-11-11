@@ -239,7 +239,7 @@ const feedsReq = (text: string, extra: (v: FeedView) => boolean = () => true): R
   why: (s) => {
     const over = ampsOverChannels(s)[0];
     if (over?.topAndSub.length) return topAndSubWhy(over.topAndSub);
-    if (over) return `This lab’s amplifier has two channels: one mix each. This one is asked to pass ${over.outs.length} (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.`;
+    if (over) return `This lab’s amplifier has two channels: one mix each. This one is asked to carry ${over.outs.length} mixes (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.`;
     return misfitWhy(s);
   },
 });
@@ -399,7 +399,7 @@ export const CAPSTONES: readonly Capstone[] = [
     n: 3,
     title: '2.1 with a dedicated subwoofer output',
     venue: 'A DJ night in a bar. Playback only.',
-    brief: 'Two common ways to wire a 2.1: (a) the tops fed from the powered sub’s HIGH-PASSED outputs — two cables (L and R) into the sub where it has two inputs, or one cable, a mono feed, where it has one, like this lab’s — and the sub’s own crossover does the split; (b) the sub on its OWN console output and the tops fed direct, each with its own high-pass. Build (b) here, because it makes the sub level a fader move at the console. Stereo or MONO into both tops both pass: many small systems run mono, so every seat hears the whole mix rather than one side of it.',
+    brief: 'Two common ways to wire a 2.1: (a) the tops fed from the powered sub’s HIGH-PASSED outputs, and the sub’s own crossover does the split. A sub with two inputs takes two cables (L and R); one with a single input, like this lab’s, takes one cable, a mono feed. (b) The sub on its OWN console output and the tops fed direct, each with its own high-pass. Build (b) here, because it makes the sub level a fader move at the console. Stereo or MONO into both tops both pass: many small systems run mono, so every seat hears the whole mix rather than one side of it.',
     bin: ['playback', 'wirelessRx', 'console', 'poweredSpeaker', 'poweredSub', 'powerDistro'],
     routing: false,
     requirements: [

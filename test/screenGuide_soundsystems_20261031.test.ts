@@ -158,7 +158,7 @@ describe('2. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, { exact: string[]; upper?: string[] }> = {
     hub: { exact: ['LEARN', 'BUILD', 'ROUTE', 'OPERATE', 'TROUBLESHOOT', 'WHAT IS LEFT', 'UNDERSTANDING CHECK', 'START OVER (PRACTICE)', 'SOUND SYSTEMS LAB — COMPLETE'] },
     end: { exact: ["WHAT'S LEFT", 'LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
-    check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER', '‹ PREV'] },
+    check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER'] },
     'The complete system': { exact: ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS', 'STAGE IN', 'HOUSE', 'STATION', 'Analog snake', 'Digital stagebox', 'Passive + amps', 'Powered boxes', 'LAB NOTES', 'MULTICORE', 'NETWORK', 'Powered tops', 'Powered sub', 'SUB OUT', 'MAIN L/R', 'Snake', 'Stagebox', 'Processor', 'Amps'] },
     'Trace the signal': { exact: ['NEXT', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },
     'Ten kinds of system': { exact: ['TYPE', 'BOXES', 'TEN KINDS OF SYSTEM', 'CHOSEN BY THE VENUE', 'A WAY TO BUILD ANY OF THEM', 'WHEN', 'NOT WHEN', 'Large-format line-array system', 'Distributed loudspeaker system', 'Small powered-loudspeaker PA', 'Outdoor performance system'] },
@@ -375,7 +375,7 @@ describe('3. every TRY THIS number is what the page prints', () => {
     assert.ok(t.includes('At the start VERDICT reads NOISY.'));
     const hot = chain({ ...start, preamp: 40 });
     assert.equal(hot.verdict, 'CLIPPING');
-    assert.ok(t.includes('Raise PREAMP to +40 dB: with the later stages still at +10, it reads CLIPPING.'));
+    assert.ok(t.includes('Raise PREAMP to +40 dB: with the later stages still at +10 dB, it reads CLIPPING.'));
     // D41 #24 (2026-11-01): LEARN's OK needs 12 dB headroom (gainReading in
     // gainDock); below it a clean chain reads TIGHT. The shared verdict still
     // says OK there, so the guide's numbers are checked against both.
@@ -400,7 +400,7 @@ describe('3. every TRY THIS number is what the page prints', () => {
     const ok = chain({ preamp: 35, fader: 0, main: 0, procIn: 0, procOut: 0, amp: -18 });
     assert.equal(ok.verdict, 'OK');
     assert.ok(typeof ok.headroom === 'number' && ok.headroom >= 12, 'meets the page’s 12 dB goal');
-    assert.ok(t.includes(`Set PREAMP to +35 dB and AMP to −18: VERDICT OK, HEADROOM ${ok.headroom} dB, AT SPEAKER ${dbu(ok.atSpeaker)}.`));
+    assert.ok(t.includes(`Set PREAMP to +35 dB and AMP to −18 dB: VERDICT OK, HEADROOM ${ok.headroom} dB, AT SPEAKER ${dbu(ok.atSpeaker)}.`));
     const amp = (O.GAIN_STAGES as readonly { id: string; unity: number }[]).find((s) => s.id === 'amp')!;
     assert.equal(amp.unity, -18, 'AMP’s unity mark');
   });

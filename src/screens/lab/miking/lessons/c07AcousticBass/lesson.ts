@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one bass mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real bass.' },
-    takeaway: 'Safe clearance from the player, correct power and level checks, honest labels for every path, pattern reasoning and polarity versus delay pass. A brand or a “bigger diaphragm” reason does not.',
+    takeaway: 'These reasons pass: safe clearance from the player, correct power and level checks, honest labels for every path, pattern reasoning, and polarity versus delay. A brand or a “bigger diaphragm” reason does not.',
   },
 };
 
@@ -87,7 +87,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An open string is plucked exactly at its middle. Which of its shapes can that pluck set moving?',
     options: ['All of them equally, because the whole string moves', 'Only the even ones; the odd shapes stay silent', 'Only the odd ones; the even shapes stay silent'],
     correct: 'Only the odd ones; the even shapes stay silent',
-    explain: 'A pluck drives a shape only as much as the string moves at the finger in that shape. Every even shape has a still point at the exact middle.',
+    explain: 'A pluck drives each shape only as much as that shape moves the string at the plucking spot. Every even-numbered shape has a still point at the exact middle.',
     why: {
       'All of them equally, because the whole string moves': 'The finger touches one spot. A shape is driven only as much as the string moves there.',
       'Only the even ones; the odd shapes stay silent': 'The reverse: the even shapes have a still point at the middle.',
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why does this lesson call its starting distances “borrowed”?',
     options: ['The bass is too quiet to be miked from a distance at all', 'Little agreed guidance exists for this instrument', 'Its distances must match a guitar’s exactly to work'],
     correct: 'Little agreed guidance exists for this instrument',
-    explain: 'The acoustic bass has little instrument-specific guidance, so these starting points borrow guitar positions as experiments — and say so. Verify them on the actual bass.',
+    explain: 'The acoustic bass has little instrument-specific guidance, so these starting points borrow guitar positions as experiments to try. Verify them on the actual bass.',
     why: {
       'The bass is too quiet to be miked from a distance at all': 'It can be miked; the point is that the starting distances are borrowed and need checking.',
       'Its distances must match a guitar’s exactly to work': 'They are a place to begin, not a rule. The bass may want something else.',
@@ -424,7 +424,7 @@ export const C07_LESSON: Lesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio the room builds up some low notes and thins others at particular spots: move the player or the mic before reaching for EQ.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM MODES', scene: 'studio' },
     ],
     stage: 'LIVE: a wedge in front, drums and amps behind, the PA facing out. On a loud stage the pickup often carries the level; a close mic adds what feedback allows.',
-    studio: 'STUDIO: no wedges, repeated trials when the player stops, and a room whose low end is part of the sound — for better or worse.',
+    studio: 'STUDIO: no wedges, time to retry mic positions while the player pauses, and a room whose low end is part of the sound — for better or worse.',
   },
   diagnostic,
   practice: {

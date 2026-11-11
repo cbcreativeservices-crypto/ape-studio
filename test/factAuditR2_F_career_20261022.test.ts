@@ -70,7 +70,7 @@ describe('degree, licence and clinical facts', () => {
   });
   it('clinical speech/hearing rehab roles: graduate clinical training, never certificate/associate (F092647–F092655)', () => {
     for (const t of ['Auditory-Verbal Therapist', 'Cochlear-Implant Rehabilitation Specialist', 'Hearing Rehabilitation Specialist', 'Clinical Vocal-Fold Imaging Specialist']) {
-      assert.match(prep(t), /^Graduate clinical training and jurisdictional licensure/, t);
+      assert.match(prep(t), /^Graduate clinical training and a license or credential where you practice/, t);
     }
     assert.equal(byTitle('Hearing Rehabilitation Specialist').reg, 1);
   });

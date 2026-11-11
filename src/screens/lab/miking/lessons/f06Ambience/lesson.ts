@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Where the ambience comes from',
     goal: 'See how a few steps toward or away from the main bed — a stream, a road — change its balance with the events around it.',
     credit: { scenarios: ['amb.snd.1', 'amb.snd.2', 'amb.snd.3'], note: 'Answer the three checks.' },
-    takeaway: 'The listening point chooses the balance: near moving water or traffic a small move changes it a lot. Move the array to choose the balance, not to make the meters louder.',
+    takeaway: 'The listening point chooses the balance: near moving water or traffic a small move changes it a lot. Move where you listen to choose the balance, not to make the meters louder.',
   },
   setting: {
     title: 'Before any mic',
@@ -43,7 +43,7 @@ const pages: LessonPages = {
   microphone: {
     title: 'Choose the microphones',
     goal: 'Choose by properties — an omni for the whole place, a cardioid to lean toward a region, a figure-8 for the Side of an M/S pair — and see what a pattern can and cannot reject.',
-    credit: { scenarios: ['amb.mic.1', 'amb.mic.2', 'amb.mic.3', 'amb.rec.1'], note: 'Answer the four checks (one reaches back to where you listen).' },
+    credit: { scenarios: ['amb.mic.1', 'amb.mic.2', 'amb.mic.3', 'amb.rec.1'], note: 'Answer the four checks (one, marked FROM EARLIER, goes back to where you listen).' },
     takeaway: 'An omni hears the whole place; a directional mic leans toward a region but no pattern erases the city or the wind. Choose by the job, not the name.',
   },
   placement: {
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'amb.ctx.2',
     page: 'context',
-    prompt: 'One sound-monitoring protocol leaves out wind above about 5 m/s. For a creative bed, that means…',
+    prompt: 'One sound-monitoring protocol discards readings taken in wind above about 5 m/s. For a creative bed, that means…',
     options: ['Its own rule — listen to your take', 'Throw out the windy creative takes', 'The protocol applies to all recording'],
     correct: 'Its own rule — listen to your take',
     explain: 'That limit belongs to a measurement protocol. A windy creative take is judged by ear — protected well, logged, and kept if it serves the scene.',
@@ -534,8 +534,8 @@ const setupTasks: SetupTask[] = [
     reasons: [
       { id: 'r.pa', label: 'Little of the PA reaches it', role: 'required', feedback: 'Say where the PA is against the mic.' },
       { id: 'r.clear', label: 'The stand is off every path and route', role: 'required', feedback: 'Clearance is part of every passing setup.' },
-      { id: 'r.mono', label: 'The stream’s mono path is checked', role: 'optional', feedback: 'A fair live reason.' },
-      { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not until it rings: on a live feed the ring goes out to the stream and the crowd. Set the level the scene needs, with a margin.' },
+      { id: 'r.mono', label: 'The live stream’s mono path is checked', role: 'optional', feedback: 'A fair live reason.' },
+      { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not until it rings: on a live feed the ring goes out to the live stream’s listeners and the crowd. Set the level the scene needs, with a margin.' },
     ],
     explain: 'Two setups pass. What passes is the reasoning: one open channel with little PA in it, the stand clear of every route, and the gain checked with the operator — never by making it ring.',
   },
@@ -628,7 +628,7 @@ export const F06_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'An ambience is the sound of a place at a time: a woodland’s birds, water and leaves; a city’s traffic, voices and footsteps — a steady bed with events on top.', src: 'LESSON-F06' },
     { title: 'WHAT IT IS FOR', text: 'An honest record of a site, a background under a picture, a live feed for remote listeners — or a measurement, which is a different job with its own method.', src: 'LESSON-F06' },
     { title: 'WHERE YOU LISTEN', text: 'The listening point decides the balance. Site, time, weather, wind and people all change what is there — so you listen first, then choose.', src: 'NPS-RM47' },
-    { title: 'WHAT THIS LAB DRAWS', text: 'Two illustrated places — a woodland stream and a city plaza — with a listening point, paths and lanes kept clear, and birds — and the mics on the site plan — drawn larger than life so you can find them.', src: 'LESSON-F06' },
+    { title: 'WHAT THIS LAB DRAWS', text: 'Two illustrated places — a woodland stream and a city plaza — with a listening point and the paths and lanes kept clear. The birds and the mics on the site plan are drawn larger than life so you can find them.', src: 'LESSON-F06' },
   ],
   sound: {
     stages: [

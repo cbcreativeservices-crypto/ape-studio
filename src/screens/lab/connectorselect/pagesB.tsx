@@ -234,7 +234,7 @@ function DeclareCard({ d, onSolved }: { d: Declare; onSolved: () => void }) {
           return (
             <Btn key={s} label={s} tone={sig === i ? (i === d.correctSignal ? 'primary' : 'danger') : 'plain'} selected={sig === i} onPress={() => {
               setSig(i);
-              if (i !== d.correctSignal) AccessibilityInfo.announceForAccessibility?.('Not the declared signal — the panel label is the answer. Read it again.');
+              if (i !== d.correctSignal) AccessibilityInfo.announceForAccessibility?.('Not the signal the label names — the panel label is the answer. Read it again.');
             }} a11y={s} />
           );
         })}

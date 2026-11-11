@@ -170,7 +170,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic very close to a moving shaker. What becomes more noticeable?',
     options: ['Level jumps and tone changes as the shaker moves', 'The room around the player, because the mic is closer', 'Nothing: very close pickup is the steadiest of all'],
     correct: 'Level jumps and tone changes as the shaker moves',
-    explain: 'Very close, every stroke changes the distance and the angle by a large share: level jumps and off-axis changes become more conspicuous.',
+    explain: 'Very close, every stroke changes the distance and the angle by a large share: level jumps and off-axis changes become more noticeable.',
     why: {
       'The room around the player, because the mic is closer': 'Closer means less room, not more — the shaker dominates.',
       'Nothing: very close pickup is the steadiest of all': 'Close to a moving source, small movements are a big share of the distance: it gets less steady.',
@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Too many sharp clicks: what do you try before reaching for EQ?',
     options: ['A slightly farther spot, or a different shaker or fill', 'Closer still, so the clicks are cleaner and more defined', 'A brighter mic, so the clicks blend into the wash'],
     correct: 'A slightly farther spot, or a different shaker or fill',
-    explain: 'Is it the instrument or very close pickup? Audition a different output or a slightly more distant position; EQ will not change the playing texture.',
+    explain: 'Is it the instrument or very close pickup? Try a different shaker or fill, or a slightly more distant position; EQ will not change the playing texture.',
     why: {
       'Closer still, so the clicks are cleaner and more defined': 'Closer usually makes single clicks dominate more.',
       'A brighter mic, so the clicks blend into the wash': 'A brighter mic tends to make the clicks stand out more, not blend.',
@@ -335,7 +335,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is it the chosen instrument, or very close pickup?',
     options: ['The instrument itself, or a mic placed very close', 'Turn the treble down until the clicks are gone', 'Ask the player to shake harder so the wash covers them'],
     correct: 'The instrument itself, or a mic placed very close',
-    explain: 'Audition a different fill or output, or a slightly more distant position — EQ will not change the playing texture.',
+    explain: 'Try a different fill or shaker, or a slightly more distant position — EQ will not change the playing texture.',
     why: {
       'Turn the treble down until the clicks are gone': 'EQ dulls everything; the instrument or the distance is the cause.',
       'Ask the player to shake harder so the wash covers them': 'Harder strokes usually make the clicks stronger, not covered.',

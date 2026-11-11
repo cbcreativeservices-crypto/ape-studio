@@ -37,7 +37,7 @@ export const M7_LOUDNESS: EarModule = {
   // NEW COPY
   listenFor: 'Trust the first impression — A or B jumps out. Then judge the size: 6 dB is "obviously", 1 dB is "I think".',
   levels: 4,
-  levelNames: ['6 dB steps', '3 dB steps', '2 dB steps', '1 dB steps — size trials use 1–6 dB'],
+  levelNames: ['6 dB steps', '3 dB steps', '2 dB steps', '1 dB steps — “how much?” trials use 1–6 dB'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     // The magnitude question draws from every step unlocked so far (L2: 6 or
@@ -88,7 +88,7 @@ export const M7_LOUDNESS: EarModule = {
       seeIt: {
         kind: 'levels',
         bars,
-        caption: `Two identical clips, ${delta} dB apart. Broadband level JND is roughly 0.5–1 dB.`,
+        caption: `Two identical clips, ${delta} dB apart. The just-noticeable difference (JND) for broadband level is roughly 0.5–1 dB.`,
       },
     };
   },

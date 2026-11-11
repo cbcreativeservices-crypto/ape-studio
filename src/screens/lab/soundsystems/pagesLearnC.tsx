@@ -177,7 +177,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
       <ChapterTag n={11}>LOUDSPEAKER PLACEMENT, COVERAGE AND ALIGNMENT</ChapterTag>
       <Body>Two mains at the deck corners, each drawn with its nominal (−6 dB) coverage sector; the floor is the two summed. Hatched floor is where both arrive and comb-filter.</Body>
       <FieldKey />
-      <Prompt>Change the box, the aim and the rig, and read the floor.</Prompt>
+      <Prompt>Change the coverage angle, the aim and the rig, and read the floor.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>READ THE PLOT</Eyebrow>
@@ -316,7 +316,7 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         <>
           <ArrivalTimeline needMs={need} setMs={setMs} />
           <VerdictLine ok={aligned && setMs > 0} warn={!aligned && setMs > 0}>
-            {setMs === 0 ? 'Undelayed: the delay towers lead the mains and the ear hears two events — the fault on the bench.' : aligned ? 'Aligned. The two arrivals fuse; the back rows hear one system.' : err < 0 ? `Still ${(-err).toFixed(1)} ms early — the delays lead the mains.` : `${err.toFixed(1)} ms late — now the mains lead the delays.`}
+            {setMs === 0 ? 'Undelayed: the delay towers lead the mains and the ear hears two events — one of the TROUBLESHOOT faults.' : aligned ? 'Aligned. The two arrivals fuse; the back rows hear one system.' : err < 0 ? `Still ${(-err).toFixed(1)} ms early — the delays lead the mains.` : `${err.toFixed(1)} ms late — now the mains lead the delays.`}
           </VerdictLine>
         </>
       }
@@ -555,7 +555,7 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'THE WALK — ILLUSTRATIVE · readings from the fault library',
+        badge: 'THE WALK — ILLUSTRATIVE · readings from a sample fault',
         initialParam: 'walk',
         hideDragTag: true,
         bezel: [
@@ -585,7 +585,7 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
       <ReadingKey />
       <Prompt>Run the walk and watch where the reading changes.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>The amateur swaps the amplifier. The professional starts where the symptom leaves doubt, walks forward reading each station, and stops at the first reading that changes. That station is the fault — or the place it became visible. On this bench, probe forward, never backward: re-probe a station if you must, but never jump toward the loudspeaker on a hunch. The bench grades the walk as well as the answer.</KeyFact>
+      <KeyFact>The amateur swaps the amplifier. The professional starts where the symptom leaves doubt, walks forward reading each station, and stops at the first reading that changes. That station is the fault — or the place it became visible. On the TROUBLESHOOT bench, probe forward, never backward: re-probe a station if you must, but never jump toward the loudspeaker on a hunch. The bench grades the walk as well as the answer.</KeyFact>
       <Card>
         <Eyebrow>WHAT A PROBE IS</Eyebrow>
         <Body>A meter, an LED, a pair of headphones, a cable tester, a swap to a known-good part — whatever answers “is the signal healthy HERE?” for that station. Reading it is the skill; owning it is the kit.</Body>

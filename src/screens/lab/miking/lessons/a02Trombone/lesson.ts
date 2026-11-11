@@ -77,7 +77,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one trombone mic in the right order, choose and justify a setup for a studio overdub and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['tb.prac.order', 'tb.prac.gain', 'tb.prac.setup1', 'tb.prac.setup2', 'tb.prac.3', 'tb.mix.1', 'tb.mix.2', 'tb.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real horn.' },
-    takeaway: 'The slide’s whole path kept clear, headroom for the loudest accent, the lowest notes kept, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+    takeaway: 'What passes: the slide’s whole path kept clear, headroom for the loudest accent, the lowest notes kept, pattern reasoning and an accurate account of polarity versus delay. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -419,7 +419,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Dynamic 30–60 cm from the bell, out to its side, clear of the slide', ok: true, power: 'none', feedback: 'A suggested starting point, outside the slide’s path — then small changes by ear.' },
       { id: 'b', label: 'Condenser 60–120 cm in front, high and off axis, aimed at the bell', ok: true, power: 'phantom', feedback: 'A suggested starting point for a more open view — check its stand clears the slide at 7th.' },
-      { id: 'c', label: 'A stand mic straight in front of the bell, 40 cm out', ok: false, power: 'none', feedback: 'Its stand drops through the slide’s path: the slide would hit it in the lower positions.' },
+      { id: 'c', label: 'A stand mic straight in front of the bell, 40 cm out', ok: false, power: 'none', feedback: 'Its stand drops through the slide’s path: the slide would hit it in the farther-out positions.' },
       { id: 'd', label: 'A clip on the outer slide, near the crook', ok: false, power: 'phantom', feedback: 'Nothing is mounted on the slide: it moves, and it is precision tubing.' },
       { id: 'e', label: 'A mic tucked under the slide, aimed up at the bell', ok: false, power: 'none', feedback: 'Under the slide is its path at every position — and the sound leaves the bell above.' },
     ],

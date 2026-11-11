@@ -177,7 +177,7 @@ const SPEC: MetalSpec = {
       notes: (v) => [
         'A shape is set moving only as much as the face moves where the mallet lands. At the exact center, every shape with a still line across the face stands still — so a center stroke drives only the ring-shaped ones: fewer shapes, a more centered pitch. Off center, many more move.',
         kindOf(v) === 'bossed'
-          ? 'This is a flat disc of even thickness. A real bossed gong’s boss and shoulder shape and concentrate its main tone, so its numbers differ — the picture shows which shapes a stroke can reach.'
+          ? 'The picture is a flat disc of even thickness. On a real bossed gong, the boss and shoulder shape and concentrate the main tone, so its RATIO numbers differ — the picture shows which shapes a stroke can reach.'
           : 'This is a flat disc of even thickness, unsupported at its edge. A real tam-tam hangs on cords through its rim; it is slightly domed with a turned rim, and hit hard its energy spreads into finer shapes after the stroke — the build-up you stepped through.',
       ],
       tried: 'At the exact center only the ring-shaped shapes move; off center, nearly all of them do. Where the mallet lands is part of the gong’s color.',

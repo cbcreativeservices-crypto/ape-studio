@@ -79,7 +79,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
     },
     seeing: [
       'You’re on the LEARN tab: this lab’s guided lesson as one page to read. Nothing here plays.',
-      'First, what the lab is. Then CONTROLS: the display, the five colors from WHITE to VIOLET, Gray, and real-world noises such as HVAC, hum and buzz.',
+      'First, what the lab is. Then CONTROLS: the display, the five colors from WHITE to VIOLET, Gray, and real-world noises such as HVAC (heating, ventilation, air conditioning), hum and buzz.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT — slope, SNR (signal-to-noise ratio) and masking.',
     ],
     control: [

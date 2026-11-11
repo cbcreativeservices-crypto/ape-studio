@@ -14,7 +14,7 @@ function parts(s: ClvState): Part[] {
     { id: `clv.rest.${v}`, label: 'the supported clave', short: 'supported', role: 'Cradled over the curled fingers of one hand, able to ring, the hand’s hollow beneath it. It is struck in the middle — the resonating half of the pair.', prov: CLV_DIMS.len.prov, solid: { kind: 'cyl', a: v3(s.rest.x, s.rest.y, s.rest.z - CL / 2), b: v3(s.rest.x, s.rest.y, s.rest.z + CL / 2), r: CR } },
     { id: `clv.striker.${v}`, label: 'the striking clave', short: 'striker', role: 'Held like a drumstick, in the fingers, not pressed into the palm; its edge strikes the supported clave’s middle.', moving: true, prov: CLV_DIMS.len.prov, solid: { kind: 'cyl', a: s.striker.a, b: s.striker.b, r: CR } },
     { id: `clv.hollow.${v}`, label: 'the hand’s hollow', short: 'hollow', role: 'The curled fingers make a resonating chamber under the supported clave. Squeezed into the palm instead, the clave is choked.', prov: ill('the cradle drawn as the grip describes; its size is the hand’s') },
-    ...(hollow ? [{ id: `clv.slot.${v}`, label: 'the hollowed body', short: 'hollowed', role: 'A hollowed-out body: a different pitch character from a solid pair — a model description, not a promise of a sound at the mic.', prov: { kind: 'sourced' as const, src: 'MEINL-CL3', quote: 'Hollowed out body' } }] : []),
+    ...(hollow ? [{ id: `clv.slot.${v}`, label: 'the hollowed body', short: 'hollowed', role: 'A hollowed-out body: a different pitch character from a solid pair — how it sounds at the mic still depends on the pair.', prov: { kind: 'sourced' as const, src: 'MEINL-CL3', quote: 'Hollowed out body' } }] : []),
   ];
 }
 

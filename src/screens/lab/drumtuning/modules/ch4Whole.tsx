@@ -175,7 +175,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
                 </Card>
               )}
               <WhyCard title="WHY · what you are hearing">
-                <Body>SUSTAIN is the T60 estimated from this render — the time the note takes to fall 60 dB, worked out from its first 40 dB. LATE SOUND is where the main note sits at 0.9 s against the batter's own pitch (clamped at ±{PITCH_CLAMP} ¢): above it with the resonant head high, at it when equal, below it with the resonant head low — in this model. The drum sounds TWO main notes, not one: a lower one where the heads move together through the air (a weak radiator — it sings) and a higher one where they squeeze it (a strong radiator — it dies fast); the glass label shows both. The strike's own glide (Chapter 1) rides on top. Switch VIEW to PITCH to watch it.</Body>
+                <Body>SUSTAIN is the T60 estimated from this hit — the time the note takes to fall 60 dB, worked out from its first 40 dB. LATE SOUND is where the main note sits at 0.9 s against the batter's own pitch (shown up to ±{PITCH_CLAMP} ¢): above it with the resonant head high, at it when equal, below it with the resonant head low — in this model. The drum sounds TWO main notes, not one: a lower one where the heads move together through the air (a weak radiator — it sings) and a higher one where they squeeze it (a strong radiator — it dies fast); the glass label shows both. The strike's own glide (Chapter 1) rides on top. Switch VIEW to PITCH to watch it.</Body>
               </WhyCard>
             </>
           ),

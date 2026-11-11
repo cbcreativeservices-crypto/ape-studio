@@ -64,7 +64,7 @@ type View3 = 'ROOM' | 'HANDOFF' | 'SYSTEM';
 const LOOK: Record<View3, string> = {
   ROOM: 'You are looking down on the venue: the stage at the top, the floor colored by level, the tops with their −6 dB edges, the subs and the booth. PA L stands at house left — on your left here, the DJ’s right.',
   HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box at the side of the stage, about 20 m of cable away: MASTER L and R into the inputs this venue has labeled DJ L and DJ R (13 and 14 here; every venue numbers its own — ask the engineer).',
-  SYSTEM: 'You are looking at the venue’s system: the crossover’s response (TOPS, SUB and their SUM), and below, a top and a sub at true size.',
+  SYSTEM: 'You are looking at the venue’s system: the crossover’s response (TOPS, SUB and their SUM), and below, a top and a sub drawn to scale.',
 };
 
 /* ── the HANDOFF view (mm) ────────────────────────────────────────────── */
@@ -529,7 +529,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={2}>
         <Do>Open VENUE and play deck A. Put MASTER L into DJ L and MASTER R into DJ R on XLR — read DJ L · DJ R on the strip.</Do>
-        <P>The room is quiet: ask the engineer for more (“UP 3 dB”) until the FLOOR reads about 88 dBA (a suggested level for a busy floor in this model: the loudest a 4-hour night stays within the NIOSH allowance from Screen 1; a real venue’s limit and its engineer decide), with your MASTER at its unity mark. Pushing your MASTER into the red instead just sends them distortion.</P>
+        <P>The room is quiet: ask the engineer for more (“UP 3 dB”) until the FLOOR reads about 88 dBA (a suggested level for a busy floor in this lab’s simulation: the loudest a 4-hour night stays within the NIOSH allowance from Screen 1; a real venue’s limit and its engineer decide), with your MASTER at its unity mark. Pushing your MASTER into the red instead just sends them distortion.</P>
         {engineer ? <Note tone="try">{engineer}</Note> : null}
         {swapped ? <Note>L and R are swapped against the venue’s labels: swap the two inputs.</Note> : null}
       </Step>

@@ -33,7 +33,7 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
     placement: {
       workedZone: { standing: ids.worked },
       workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line the strings follow.',
-      workedAim: 'Aim it back at the bridge area — the lab counts it while the mic points within about 25° of the strings just above the bridge. Distance, height and angle are separate things to try.',
+      workedAim: 'Aim it back at the bridge area — the lab counts it as aimed while the mic points within about 25° of the strings just above the bridge. Distance, height and angle are separate things to try.',
       workedClear: bowed
         ? 'Clear of every part — the bow’s full sweep on both sides, the bow hand and arm, the left hand, the endpin and the feet. Clearance comes first, and the bassist stops before a real mic moves.'
         : 'Clear of every part — the plucking hand, the left hand on the neck, the bassist, the endpin and the feet. Clearance comes first, and the bassist stops before a real mic moves.',
@@ -77,7 +77,7 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
       activityDone: 'done — the kit sat in a null by your aim or pattern',
       deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there — and least at low frequencies, which is where a bass and a kick drum live. Use the null to aim, not to promise silence.',
       cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The kit is off to the side, not behind — turning the mic to put it there may also turn the mic off the bass.',
-      shieldNote: 'The bass’s large body also REFLECTS the drums and the PA back into the front of a mic aimed away from them — the free-field pattern cannot show that. If the pattern alone fails, move the bassist, the drummer, the amp or the mic.',
+      shieldNote: 'The bass’s large body also REFLECTS the drums and the PA back into the front of a mic aimed away from them — the free-field pattern (measured with nothing nearby) cannot show that. If the pattern alone fails, move the bassist, the drummer, the amp or the mic.',
       studioId: ids.studioId,
       studioPrompt: 'A studio, a good isolated room: what could a broad omni give the bass?',
       studioNote: 'In a good isolated room, an omni can capture the whole instrument and the room without directional proximity lift; a directional mic helps when the drums are close. Switch back to LIVE for the kit exercise.',
@@ -87,10 +87,10 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
           { title: 'PERSPECTIVE', text: 'Studio: one mic in front of the bridge at a moderate distance, then a little higher and lower. Live: what does the acoustic bass already give the room, and what must the PA add?' },
           { title: 'SPILL', text: 'Closer, with the rejection aimed at the drums, gives more bass and less kit — but the bass’s body reflects the kit into the mic too.' },
           { title: 'PICKUP AND MIC', text: 'On a loud stage a properly installed pickup often carries the low end, and the mic adds acoustic detail as far as feedback allows — each on its own channel.' },
-          { title: 'FEEDBACK', text: 'A resonant bass can feed back. Lower the offending level, change the speaker, bass and mic geometry, and check the pickup channel separately.' },
+          { title: 'FEEDBACK', text: 'A resonant bass can feed back. Lower the offending level, move the speaker, the bass and the mic relative to each other, and check the pickup channel separately.' },
         ],
         body: 'With a drum kit beside the bassist, a pattern’s rejection is a tool to aim — but low frequencies are hard to reject, and the body reflects. Moving people and amps is a fair answer too.',
-        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the bass amp, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
+        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the bass amp, the system level and the room all matter. Feedback is made on purpose only to ring out a system (to find and cut its feedback notes) — by its operator, at a controlled level.',
       },
     },
     twoMic: {

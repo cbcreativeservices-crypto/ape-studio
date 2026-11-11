@@ -2019,7 +2019,7 @@ function SgGridSized({ history, anchor }: { history: SgColumnData[]; anchor: num
   return (
     <View style={{ height: SG_H }} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
       <SgGrid history={history} anchor={anchor} width={w} />
-      {history.length === 0 && <Text style={styles.sgWaiting}>waiting for frames…</Text>}
+      {history.length === 0 && <Text style={styles.sgWaiting}>waiting for the mic…</Text>}
     </View>
   );
 }

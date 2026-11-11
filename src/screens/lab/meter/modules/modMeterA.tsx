@@ -285,7 +285,7 @@ const WAVEFORM_HELP: Partial<Record<SignalKey, string>> = {
 
 const WAVEFORM_MISTAKES = [
   'Reading a tall waveform as a LOUD one — height is peak amplitude; loudness lives in the average (Modules 2–3).',
-  'Missing DC offset because "the take plays fine" — the off-center ride line steals headroom and thumps on every edit.',
+  'Missing DC offset because "the take plays fine" — the off-center line the wave rides on steals headroom and thumps on every edit.',
   'Trying to fix a clipped peak with a fader — the shape above full scale was never stored; gain scales what is left.',
   'Judging dynamic range from one zoom level — zoom out for the loud/quiet architecture, zoom in for transient truth.',
 ];
@@ -302,7 +302,7 @@ const WAVEFORM_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 1,
     reveal:
-      'True digital silence is zeros, drawn AT the center line. A flat line OFF center means a constant (DC) voltage was added to every sample: it steals headroom from one side and clicks or thumps at every edit point. Ride the DC lane above and watch the whole picture ride up without getting any "louder".',
+      'True digital silence is zeros, drawn AT the center line. A flat line OFF center means a constant (DC) voltage was added to every sample: it steals headroom from one side and clicks or thumps at every edit point. Ride the DC lane in the dock and watch the whole picture ride up without getting any "louder".',
     wrongHint: 'Where must true digital silence sit on the vertical axis?',
   },
   {
@@ -558,7 +558,7 @@ export function PeakModule(p: MeterModuleProps) {
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
           Ride the GAIN lane and drive the columns into the OVER lamp; tap RESET HOLD to clear
-          the PK HOLD latch, and A/B the SIGNAL tray while the meter reacts.
+          the PK HOLD reading, and switch signals in the SIGNAL tray to compare while the meter reacts.
         </Text>
 
         <CollapsibleSection title="SAMPLE-BY-SAMPLE, THEN A MEMORY">
@@ -567,7 +567,7 @@ export function PeakModule(p: MeterModuleProps) {
             so your eye can follow. The floating segment above it is PEAK HOLD, the highest recent
             peak kept on screen so you can mix without staring. Push GAIN until the top segment
             lights: that is the OVER lamp. One trip means full scale was already hit, however
-            briefly, so it stays lit until this short clip starts over, then lights again on the
+            briefly, so it stays lit until this short teaching signal starts over, then lights again on the
             next hit. The OVERS readout tallies each separate excursion.
           </Text>
           <Text style={dstyles.eyebrow}>WHAT PEAK CANNOT TELL YOU — PREVIEW OF MODULE 3</Text>
@@ -688,7 +688,7 @@ export function VuModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and A/B the SIGNAL tray while the needle answers — NDL MAX in the
+          Ride the GAIN lane and switch signals in the SIGNAL tray while the needle answers — NDL MAX in the
           readouts shows how far the ~300 ms ballistics ever get.
         </Text>
 
@@ -757,7 +757,7 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 1,
     reveal:
-      'Platforms measure ONE gated, K-weighted average across the entire program — integrated LUFS — and turn the whole track up or down to their target (commonly around −14 LUFS). Peaks matter as a true-peak safety ceiling (−1 dBTP is commonly quoted; lossy delivery often uses −2; check the destination’s current spec). Master louder than the target and the platform simply turns it down — minus the dynamics you crushed.',
+      'Platforms measure ONE gated, K-weighted (weighted roughly like human hearing) average across the entire program — integrated LUFS — and turn the whole track up or down to their target (commonly around −14 LUFS). Peaks matter as a true-peak safety ceiling (−1 dBTP is commonly quoted; lossy delivery often uses −2; check the destination’s current spec). Master louder than the target and the platform simply turns it down — minus the dynamics you crushed.',
     wrongHint: 'Which of these numbers describes the WHOLE program with one value?',
   },
   {

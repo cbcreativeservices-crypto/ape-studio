@@ -129,7 +129,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Horns (section)",
-        "cut": "HPF 100–150 Hz (trumpets/sax), 70–80 Hz (bone/bari); −2 dB at 2.5–3.5 kHz if piercing",
+        "cut": "HPF 100–150 Hz (trumpets/sax), 70–80 Hz (trombone/baritone sax); −2 dB at 2.5–3.5 kHz if piercing",
         "boost": "+1–2 dB shelf at 10–12 kHz",
         "notes": "Cut low-mids on brass so sax body stays clear"
       },
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
     "rows": [
       {
         "area": "Channel count",
-        "live": "Large bands need 40–100+ inputs (pop-funk tours 100+, classic funk bands 64+); use VCAs/DCAs for drums, horns, BGVs",
+        "live": "Large bands need 40–100+ inputs (pop-funk tours 100+, classic funk bands 64+); use VCAs/DCAs for drums, horns, backing vocals",
         "studio": "Fewer tracks; some revival records use one mic on drums and one on the horn section"
       },
       {

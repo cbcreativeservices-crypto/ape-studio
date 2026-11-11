@@ -290,7 +290,7 @@ export function AutotuneLabScreen() {
         stage: {
           size: 'L', // the cents grid IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
-          badge: 'CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS',
+          badge: 'CENTS GRID — THE CURVE SHOWS THE EXACT RETUNING YOU HEAR',
           onGuide: () => openLesson('cents_grid'),
           bezel: [
             { k: 'AMOUNT', v: fmtAmount(amount), helpKey: 'correction' },
@@ -377,7 +377,7 @@ export function AutotuneLabScreen() {
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>THE CORRECTION, IN NUMBERS</Text>
         <Text style={styles.readMain}>
-          {fmtAmount(amount)} correction · {speed.label.toLowerCase()} (τ = {tau}s)
+          {fmtAmount(amount)} correction · {speed.label.toLowerCase()} (time constant τ = {tau} s)
         </Text>
         <Text style={styles.caption}>
           At {Math.round(amount * 100)}% correction a {Math.abs(MELODY[3].offCents)}¢ error ends{' '}
@@ -385,7 +385,7 @@ export function AutotuneLabScreen() {
           {remaining(MELODY[3].offCents) === 0
             ? ' — exactly on pitch'
             : amount === 1
-              ? ' — the SLOW glide has not finished by the note’s end (mistake #2 in the lesson, live)'
+              ? ' — the SLOW glide has not finished by the note’s end (one of the COMMON MISTAKES in LEARN, happening live)'
               : ''}.
         </Text>
       </View>
@@ -429,7 +429,7 @@ export function AutotuneLabScreen() {
           ],
           correctIdx: 0,
           reveal:
-            'Retune speed is a time constant: SLOW drifts toward the grid over ~400 ms per τ. A 1.1 s note ends mid-glide — read the ENDS cell, it does the τ math live. Transparent tuning trades precision for motion.',
+            'Retune speed is a time constant (τ): on SLOW, τ is ~400 ms, and each τ closes most of the remaining gap to the grid. A 1.1 s note ends mid-glide — read the ENDS cell, it does the τ math live. Transparent tuning trades precision for motion.',
           wrongHint: 'Set 100% + SLOW and read ENDS — then switch to FAST.',
         }}
       />

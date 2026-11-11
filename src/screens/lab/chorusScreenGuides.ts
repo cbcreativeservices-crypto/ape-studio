@@ -118,7 +118,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
-      'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
+      'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one is right, the check starts over.',
     ],
     changes: [
       'Each question is about something you heard or saw on EXPLORE: what makes the shimmer, what is left at 100% wet, how chorus’s delay compares with a flanger’s, and what a fast RATE sounds like.',
@@ -130,7 +130,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'For the 100% wet question, reread the MIX entry on LEARN, then come back.',
-      'For the flanger question, on LEARN reread the CONTROLS entry on the copy’s delay, then come back.',
+      'For the flanger question, on LEARN reread the COMMON MISTAKES line on flanger, then come back.',
     ],
   },
 };

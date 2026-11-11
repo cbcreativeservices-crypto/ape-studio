@@ -39,7 +39,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what else reaches a vocal mic — the headphone mix, the room, the wedge and the band — what the mic and its stand keep clear of, and what to settle before any mic goes up.',
     credit: { scenarios: ['lv.set.1', 'lv.set.2', 'lv.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Hear the real song first. In the studio: closed-back headphones, the loudspeakers off. On stage: the wedge goes where the pattern rejects most. Nothing touches the singer, and hearing comes first.',
+    takeaway: 'Hear the real song first. In the studio: closed-back headphones, the loudspeakers off. On stage: the wedge goes where the pattern rejects most. Nothing touches the singer, and the singer’s hearing comes first.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a lead vocal mic in the right order, choose and justify a setup for a studio take and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['lv.prac.order', 'lv.prac.gain', 'lv.prac.setup1', 'lv.prac.setup2', 'lv.prac.3', 'lv.mix.1', 'lv.mix.2', 'lv.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real singer.' },
-    takeaway: 'Distance from the lips, clearance from the face, headroom for the loudest note, pattern reasoning and an accurate account of polarity versus delay pass. A brand, a “hotter” signal or a male-versus-female rule does not — and more than one setup can pass.',
+    takeaway: 'What passes: distance from the lips, clearance from the face, headroom for the loudest note, pattern reasoning and an accurate account of polarity versus delay. A brand, a “hotter” signal or a male-versus-female rule does not — and more than one setup can pass.',
   },
 };
 
@@ -191,7 +191,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A dynamic is often a good choice for aggressive rock, metal or rap, or a voice whose highs turn hard. Audition it with the real performance, at matched level.',
     why: {
       'Turn the condenser to face away from the singer': 'A mic facing away hears the room, not a better voice.',
-      'Add a second condenser to smooth the sound': 'A second mic adds spill and a combining check; it does not smooth the first.',
+      'Add a second condenser to smooth the sound': 'A second mic adds spill and a combined sound to check; it does not smooth the first.',
     },
   },
   {
@@ -323,7 +323,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The verses sit well below the overload light, but the singer’s loudest chorus lights it. What do you do?',
     options: ['Lower the input gain, then re-check the chorus', 'Pull the channel fader down until it sounds clean', 'Ask the singer to sing the chorus more softly'],
     correct: 'Lower the input gain, then re-check the chorus',
-    explain: 'Set input gain on the loudest real passage, with about 10 dB of headroom (peaks near −10 dBFS) in a digital recording. The fader comes after the overload; the first full take is often louder than the soundcheck.',
+    explain: 'Set input gain on the loudest real passage, with about 10 dB of headroom (peaks near −10 dBFS) in a digital recording. The fader comes after the input, so it can’t undo the overload; the first full take is often louder than the soundcheck.',
     why: {
       'Pull the channel fader down until it sounds clean': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
       'Ask the singer to sing the chorus more softly': 'The singer’s healthy technique is the performance. Set the gain for it — do not ask the singer to hold back.',
@@ -337,7 +337,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The first works alone, the pair adds, mono holds',
     explain: 'A second mic — a different perspective, or a different mic to blend — adds a delay and the room. If the pair loses body, move or rebalance, check polarity — or leave it out.',
     why: {
-      'Two channels give the mixer more to choose from': 'More channels add spill and a combining check. A second mic should earn its place.',
+      'Two channels give the mixer more to choose from': 'More channels add spill and a combined sound to check. A second mic should earn its place.',
       'The voice needs more level than one mic gives': 'Level comes from gain and the fader, not from another mic.',
     },
   },
@@ -409,10 +409,10 @@ const symptoms: Symptom[] = [
   {
     id: 'lv.sym.feedback',
     observation: 'Feedback on stage, or the wedge rings',
-    firstChecks: 'Is the wedge in a sensitive direction of the pattern? Lower the level at once, then use the mic’s actual null and change the geometry.',
+    firstChecks: 'Is the wedge in a sensitive direction of the pattern? Lower the level at once, then use the mic’s actual null and move the wedge or the mic.',
     options: ['Lower the level, then put the wedge in the null', 'Turn the vocal up so it covers the ringing', 'Cup the grille so the sound stays inside it'],
     correct: 'Lower the level, then put the wedge in the null',
-    explain: 'Feedback is a sound-system condition: lower that send first, then aim the pattern’s rejection at the wedge and reduce open mics. Avoid uncontrolled feedback.',
+    explain: 'Feedback is a sound-system condition: lower the wedge’s send first, then aim the pattern’s rejection at the wedge and reduce the open mics. Avoid uncontrolled feedback.',
     why: {
       'Turn the vocal up so it covers the ringing': 'More gain feeds the loop. Lower the level first.',
       'Cup the grille so the sound stays inside it': 'Cupping changes the pattern and usually makes feedback more likely.',
@@ -591,7 +591,7 @@ export const E01_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'singer', label: 'the singer', short: 'SINGER', note: 'Standing, the mouth at the lip point every distance is read from. The head moves as they sing.', prov: { kind: 'illustrative', reason: 'the shared figure (drawing default)' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'singer', label: 'the singer', short: 'SINGER', note: 'Standing. Every distance is read from the lip point at the mouth. The head moves as they sing.', prov: { kind: 'illustrative', reason: 'the shared figure (drawing default)' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'space', label: 'the singer’s face, hands and feet', short: 'THE SINGER’S SPACE', note: 'Nothing touches the face as the head moves; the hands have room; the stand’s base and the cable stay clear of the feet.', prov: { kind: 'illustrative', reason: 'the shared figure (drawing default)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'phones', label: 'the headphone mix', short: 'HEADPHONES', note: 'Open-back phones, or a loud mix, leak the track into a close vocal mic. Closed-back, at a comfortable level — and never set down on or beside a live mic.', prov: { kind: 'illustrative', reason: 'the lesson L7, L78–L82' }, tag: 'SPILL', scene: 'studio' },
       { id: 'room', label: 'the room and the music stand', short: 'THE ROOM', note: 'Hard walls, and a music stand just below the mouth, reflect the voice back into the mic. Tame the strongest reflections; check the stand’s reflection.', prov: { kind: 'illustrative', reason: 'the lesson L7, L10' }, tag: 'ROOM SOUND', scene: 'studio' },

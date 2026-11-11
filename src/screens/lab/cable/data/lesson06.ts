@@ -100,8 +100,8 @@ export const L06_STRIPS: L06Strip[] = [
     title: 'USB — THE PLUG DOES NOT DEFINE THE CABLE',
     paras: [
       'The plug shape does not identify the USB generation, speed, or cable capability — a charge-only cable fits exactly like a data cable, and the generation a link actually runs at is negotiated by the ports, the cable, and the devices together.',
-      'Roles are physical on the A and B shapes: Type-A marks the HOST end of a link (computer or hub); B and Micro-B mark the PERIPHERAL end. On USB-C, host/device and power source/sink roles are negotiated electronically instead of being fixed by connector gender.',
-      'USB-C is where this matters most: behind identical oval plugs, one cable may hold only the USB 2.0 pair and power conductors while another carries a full set of high-speed pairs and an electronic marker for higher current. Two identical-looking USB-C cables can differ in data speed, power rating, and alternate-mode support. The cable is a component with its own specification — check it, don’t assume it.',
+      'Roles are physical on the A and B shapes: Type-A marks the HOST end of a link (computer or hub); B and Micro-B mark the PERIPHERAL end. On USB-C, host/device and power source/sink (supplying/receiving) roles are negotiated electronically instead of being fixed by connector gender.',
+      'USB-C is where this matters most: behind identical oval plugs, one cable may hold only the USB 2.0 pair and power conductors while another carries a full set of high-speed pairs and an electronic marker for higher current. Two identical-looking USB-C cables can differ in data speed, power rating, and alternate-mode support (carrying other signals, such as video). The cable is a component with its own specification — check it, don’t assume it.',
     ],
   },
   {
@@ -110,7 +110,7 @@ export const L06_STRIPS: L06Strip[] = [
     id: 'ethernet_concept',
     title: 'ETHERNET — ONE PLUG, MANY SYSTEMS',
     paras: [
-      'T568A and T568B are BOTH valid termination schemes. What matters is that both ends of a cable follow the same one: mixing ends builds a crossover cable. Modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
+      'T568A and T568B are BOTH valid termination schemes. What matters is that both ends of a cable follow the same one: mixing ends swaps the send and receive pairs, which builds a crossover cable. Modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
       'The connector proves NOTHING about the protocol: networked-audio systems (such as Dante or AVB), digital snake protocols (such as AES50), and plain office networking all use the same plug. Matching ports do not mean compatible equipment — the system behind the port decides, so identify ports from labels and documentation, not shape.',
       'Power over Ethernet can place tens of watts of DC power on the same cable as the data (up to roughly 90 W under IEEE 802.3bt). Standards-based PoE energizes only after detecting a compatible device — but that detection step belongs only to standards-based (IEEE 802.3af/at/bt) equipment. “Passive” PoE injectors — still widely sold — put their full voltage on the pairs permanently with no detection and can damage non-PoE devices (or a cable tester) connected to an energized run. Identify what feeds a run before patching it.',
     ],
@@ -130,7 +130,7 @@ export const L06_STRIPS: L06Strip[] = [
     id: 'bnc_concept',
     title: 'BNC — TWO CONTACTS, MANY SYSTEMS',
     paras: [
-      '50-ohm and 75-ohm cable and connector families look nearly identical and mate physically — the impedance difference is invisible from outside, and a continuity tester cannot measure it. A mismatch causes reflections: on long runs or marginal equipment that means clocking instability or signal-integrity problems, not equipment damage. Match the impedance the system specifies, identified from the jacket printing and the datasheet.',
+      '50-ohm and 75-ohm cable and connector families look nearly identical and mate physically — the impedance difference is invisible from outside, and a continuity tester cannot measure it. A mismatch bounces part of the signal back along the cable (reflections): on long runs or marginal equipment that means unstable clocking or an unreliable signal, not equipment damage. Match the impedance the system specifies, identified from the jacket printing and the datasheet.',
       'Word clock is electrically safe to re-patch live — but MUTE MONITORING FIRST: every device slaved to the clock will unlock and re-lock, producing clicks, dropouts, or brief mutes. Re-patch clock lines between takes, never mid-take. And read the panel label before patching: a BNC port may be word clock, video, sync, or something else entirely.',
     ],
   },
@@ -208,7 +208,7 @@ export const L06_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 2,
     reveal:
-      'T568A and T568B are equally valid. Mixing them on one cable builds a crossover — modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
+      'T568A and T568B are equally valid. Mixing them on one cable swaps the send and receive pairs and builds a crossover — modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
     wrongHint: 'Neither scheme is “the wrong one.” The problem is consistency between the two ends.',
   },
   {

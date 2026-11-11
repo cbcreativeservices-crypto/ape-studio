@@ -275,7 +275,7 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
               accessibilityLabel={`${cfg.fig.subject}. Note ${st.name}, ${Math.round(st.hz)} hertz, ${st.register.toLowerCase()}. ${st.hole > 0 ? `The first open hole is hole ${st.hole}; most of the sound leaves there` : `Every hole is closed; the sound leaves from the ${endWord.toLowerCase()}`}. The sounding air column is ${Math.round(st.L / 10)} centimeters long.`}
             />
           ),
-          badge: 'A simplified fingering · holes where the semitone rule puts them · the pressure drawn beside the tube · silent',
+          badge: 'A simplified fingering · holes spaced so each one opened plays a semitone higher · the pressure drawn beside the tube · silent',
           bezel: noteBezel,
           params: noteParams,
           initialParam: 'note',
@@ -288,9 +288,9 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
                 {st.hole > 0
                   ? `The air column behaves as if the tube ended just past the first open hole: here it sounds about ${Math.round(st.L / 10)} cm long, and most of this note leaves from that hole${edge ? ' — and from the embouchure hole, always' : ''}. One note higher opens the next hole along, nearer the end the player blows into.`
                   : `With every hole closed the whole tube sounds — its lowest note — and the sound leaves from the ${endWord.toLowerCase()}${edge ? ' and the embouchure hole' : ''}.`}
-                {st.n > 1 ? ` This note is in the upper register: the same holes as ${spec.bore === 'closed' ? 'a twelfth' : 'an octave'} below, the tube ringing in its resonance ${st.n}.` : ''}
+                {st.n > 1 ? ` This note is in the upper register: the same holes as the note ${spec.bore === 'closed' ? 'a twelfth' : 'an octave'} below, the tube ringing in its resonance ${st.n}.` : ''}
               </Point>
-              <Point title="ABOVE THE CUTOFF">{spec.cutoff.hz == null ? `How far up the open holes stop letting the sound out has not been measured for this ${lesson.noun.one} — the upper partials of every note still travel on toward the ${endWord.toLowerCase()}.` : `Partials below about ${spec.cutoff.words} leave mostly by the first open holes; higher partials travel on past them and leave by holes farther down and the ${endWord.toLowerCase()} — so even a low note’s upper partials reach the ${endWord.toLowerCase()}.`}</Point>
+              <Point title="ABOVE THE CUTOFF">{spec.cutoff.hz == null ? `The frequency above which the open holes stop letting the sound out has not been measured for this ${lesson.noun.one} — the upper partials of every note still travel on toward the ${endWord.toLowerCase()}.` : `Partials below about ${spec.cutoff.words} leave mostly by the first open holes; higher partials travel on past them and leave by holes farther down and the ${endWord.toLowerCase()} — so even a low note’s upper partials reach the ${endWord.toLowerCase()}.`}</Point>
             </Card>
             <Note>{cfg.notesNote}</Note>
           </>

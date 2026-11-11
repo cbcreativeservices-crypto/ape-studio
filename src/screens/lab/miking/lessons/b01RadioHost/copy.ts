@@ -82,7 +82,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     reveal: 'Closer tends to bring more bass (on a directional mic), breath and pops and less of the room; farther, more room and more of the other host; a little above the mouth’s line, softer pops. Hosts and rooms vary, so “it depends on this host” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       bcDynArm: 'Ideas to try with the broadcast dynamic: speak into its END; start about 10–15 cm away, then move a little closer and farther with the host sitting naturally, comparing at matched loudness.',
-      bcDynSuper: 'Ideas to try with a supercardioid: its rear lobe means a loudspeaker behind it goes well to one side of its rear — check the actual pattern.',
+      bcDynSuper: 'Ideas to try with a supercardioid: its rear lobe hears straight behind it, so put a loudspeaker behind it well off to one side — check the actual pattern.',
       bcLdcArm: 'Ideas to try with the studio condenser: front mark toward the mouth, a pop screen at least 10 cm in front of it, about 15–20 cm from the lips; listen for the room and the desk.',
     },
     note: 'Clearance comes first: nothing touches the host, the arm stays out of the sight line and the page turns, and the clamp holds within its rating.',
@@ -116,7 +116,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     prompt: 'The PA stays where the show needs it. Turn or tilt the MIC (AIM), or change its PATTERN, until the PA sits in the rejection — while the mic still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Aimed back at the host’s mouth, its rear points out toward the stage’s front — near where the PA is. Turning and tilting decide how close the PA comes to that rejection; the pattern decides where it is.',
-    shieldNote: 'The desk, the host and the room reflect the PA’s sound too, and the free-field pattern cannot show that. Listen with the PA on, at the agreed level.',
+    shieldNote: 'The desk, the host and the room reflect the PA’s sound too, and the free-field (open-air) pattern drawn here cannot show that. Listen with the PA on, at the agreed level.',
     learn: {
       ...BASE.context!.learn,
       body: 'On a live show the PA is a loudspeaker every open mic hears. A pattern’s rejection is a tool to aim; a closer mic and fewer open mics do more.',

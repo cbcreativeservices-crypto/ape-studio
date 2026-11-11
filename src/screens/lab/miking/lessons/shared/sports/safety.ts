@@ -26,7 +26,7 @@ export const SPORTS_SAFETY: Readonly<Record<'approval' | 'play' | 'protective' |
   electrics: { id: 'electrics', title: 'WET-AREA ELECTRICS', text: 'Temporary power and connections near water, ice or rain are set up and approved by a qualified person — never improvised.' },
   hearing: { id: 'hearing', title: 'HEARING', text: 'Start the headphone level low and keep aware of what is around you — a dish or a shotgun can make a distant peak loud in the headphones.' },
   feedback: { id: 'feedback', title: 'FEEDBACK', text: 'Keep effects mics out of the venue PA unless a feed is truly needed; avoid uncontrolled feedback.' },
-  withdraw: { id: 'withdraw', title: 'WITHDRAW', text: 'Name who can order a mic withdrawn. If it is struck or moved, mute it; inspect it only in authorized safe access.' },
+  withdraw: { id: 'withdraw', title: 'WITHDRAW', text: 'Name who can order a mic withdrawn. If it is struck or moved, mute it; inspect it only when safe access is authorized.' },
 };
 
 /** The rows a field or court lesson shows on its "before any mic" step. */

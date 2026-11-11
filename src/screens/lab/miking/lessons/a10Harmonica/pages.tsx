@@ -215,7 +215,7 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
 };
 
 const workedAcoustic = (z: DocumentedZone) => [
-  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with an acoustic harmonica — a practical starting experiment, not a published standard, and not a promise of a sound.`, cell: 3 },
+  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with an acoustic harmonica — a practical starting experiment, not a rule, and not a promise of a sound.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the harmonica — its hole face at the lips — to the mic’s FRONT, rounded to ≈ 5 mm. The readout also says how far the mic is off the line straight out of the harmonica (the breath line).', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
   { title: 'THE HEIGHT', text: 'At about mouth and hand height, facing the playing zone. If breath bursts dominate, move a little off the breath line — the next zone.', cell: 1 },
@@ -223,7 +223,7 @@ const workedAcoustic = (z: DocumentedZone) => [
   { title: 'CLEARANCE', text: 'Just beyond the hands’ whole movement, never able to swing into the mouth, the instrument or a neck holder; the stand stable, its cable away from the player’s feet.', cell: 3 },
 ];
 const workedAmp = (z: DocumentedZone) => [
-  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin on a harp amp — amplifier-speaker practice, a dependable first listen, not a rule.`, cell: 3 },
+  { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin on a harp amp — common practice for miking an amp’s speaker, a dependable first listen, not a rule.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm — on the REAL speaker behind the cloth, found first. The cabinet’s middle is not always the speaker’s.', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
   { title: 'ACROSS THE CONE', text: 'At the edge of the dust cap — the ring where the dome meets the cone. From here: toward the center for more bite, outward for a softer top end.', cell: 1 },
@@ -286,7 +286,7 @@ const SPEC: FreeReedSpec = {
     ],
     seqLooking: 'One reed cut open · the comb’s channel above, the plate and its slot',
     useWhere: useHandChamber,
-    shapesNote: 'A real harmonica reed is shaped by the maker — often tapered, and low reeds are sometimes weighted at the tip — so its numbers differ. The picture shows which parts move. Each reed is tuned to one note.',
+    shapesNote: 'A real harmonica reed is shaped by the maker — often tapered, and low reeds are sometimes weighted at the tip — so the × numbers for its shapes differ from the ones shown here. The picture shows which parts move. Each reed is tuned to one note.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real harmonica sounds depends on the player, the reeds, the hands and the room. The pictures show where the sound comes from and where it leaves.',
   },
   hand: HAND_ACOUSTIC,

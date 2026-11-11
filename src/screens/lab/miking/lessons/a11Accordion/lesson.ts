@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
-    takeaway: 'Placement and movement first: the side the mic favors, the bellows’ travel, the mechanism noise, the filter, the geometry near monitors — before EQ. A cable that catches the bellows is a stop.',
+    takeaway: 'Placement and movement first: the side the mic favors, the bellows’ travel, the mechanism noise, the filter, the geometry near monitors — before EQ. A cable that catches the bellows means stop at once.',
   },
   practice: {
     title: 'Practice',
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why might an omni suit a solo accordion in a quiet room?',
     options: ['It takes in both sides and the room evenly', 'It rejects the room better than a cardioid', 'It needs no power, unlike a cardioid'],
     correct: 'It takes in both sides and the room evenly',
-    explain: 'An accordion radiates from both sides; an omni can integrate a multi-directional source in a quiet room. It does not give stage isolation.',
+    explain: 'An accordion radiates from both sides; in a quiet room an omni can combine them both. It does not give stage isolation.',
     why: {
       'It rejects the room better than a cardioid': 'An omni hears the room all around — more of it, not less.',
       'It needs no power, unlike a cardioid': 'Power depends on the transducer, not the pattern.',
@@ -278,7 +278,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'STUDIO · A solo accordion in a good room. Where do you start?',
     options: ['One mic 30–60 cm in front, then compare', 'Two mics on the two sides, hard left and right', 'A mic pointed into the bellows’ gap'],
     correct: 'One mic 30–60 cm in front, then compare',
-    explain: 'Find a place in the room where the parts combine, then compare nearer the treble and farther integrated positions. Add a side mic only if its contribution matters.',
+    explain: 'Find a place in the room where the parts combine, then compare a spot nearer the treble with a farther one that blends both sides. Add a side mic only if its contribution matters.',
     why: {
       'Two mics on the two sides, hard left and right': 'Two channels are a balance decision, not an automatic hard stereo pair.',
       'A mic pointed into the bellows’ gap': 'The bellows are the air source, not a default view of the instrument.',
@@ -455,7 +455,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the bellows open fully. What happens to a fixed mic’s distance to the bass side?', options: ['It changes', 'It stays the same', 'Only the treble side moves'], after: 'Rest the mic in two zones, then switch BELLOWS and watch the bass side move.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A treble mic and a bass mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic — and switch BELLOWS to see the bass side’s delay move.' },
+  twoMic: { prompt: 'A treble mic and a bass mic. If you flip mic B’s polarity, what happens to the delay, Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic — and switch BELLOWS to see the bass side’s delay move.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -566,7 +566,7 @@ export const A11_LESSON: Lesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet room that sounds good, one mic farther out can combine the two sides and the room.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: the fewest open channels that give the balance; loudspeakers out of each mic’s strongest pickup across the player’s whole movement; a mount or the built-in mics for a walking player; levels raised gradually.',
-    studio: 'STUDIO: walk the room while the player plays, find where the two sides combine, start one mic there, then compare nearer the treble and farther integrated positions. Add a bass-side mic only if it matters.',
+    studio: 'STUDIO: walk the room while the player plays, find where the two sides combine, start one mic there, then compare a spot nearer the treble with a farther one that blends both sides. Add a bass-side mic only if it matters.',
   },
   diagnostic,
   practice: {

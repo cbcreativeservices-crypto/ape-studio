@@ -2442,7 +2442,7 @@ export function CourseSelectionScreen() {
         onClose={() => setGuestGateOpen(false)}
         title="This topic is part of Academy membership"
         lines={[
-          'Membership starts with a free account. Pro Audio Safety and DAW Fundamentals & Session Management are open to explore right now.',
+          'Start with a free account, then add membership. Pro Audio Safety and DAW Fundamentals & Session Management are open to explore right now.',
         ]}
         primaryLabel="CREATE FREE ACCOUNT"
         onPrimary={() => {

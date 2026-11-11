@@ -49,13 +49,13 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces the floor wedge — and know what a pattern cannot do.',
     credit: { scenarios: ['dj.ctx.1', 'dj.ctx.2', 'dj.ctx.studio', 'dj.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: tilt the mic (or change its pattern) until the floor wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Point pickup and rejection by the actual pattern: a cardioid rejects most straight behind, where supercardioids and hypercardioids have a small rear lobe. A bottom mic near a floor wedge hears the monitor too. No mic position alone prevents feedback.',
+    takeaway: 'Aim each mic’s pickup and rejection by its actual pattern: a cardioid rejects most straight behind, where supercardioids and hypercardioids have a small rear lobe. A bottom mic near a floor wedge hears the monitor too. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
     goal: 'With a top mic and a low or under mic, see how the arrival-time difference places comb-filter notches — and what polarity does and does not change.',
     credit: { scenarios: ['dj.two.1', 'dj.two.2', 'dj.two.3', 'dj.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'The top and low mics hear different parts of the sound at different times — and start opposite, so flipping one is a common first thing to try, never a rule. Polarity flips the sign; it does not remove a delay: compare both states in mono.',
+    takeaway: 'The top and low mics hear different parts of the sound at different times — and their signals start in opposite directions, so flipping one’s polarity is a common first thing to try, never a rule. Polarity flips the sign; it does not remove a delay: compare both states in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -81,7 +81,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The player sits with the djembe between their knees and tilts it as they play. What must a mic stand stay clear of?',
     options: ['Hands, wrists, knees, feet — and the tilting drum itself', 'The front of the drum, so the audience can see the head', 'The rope tuning, so the drum stays in tune while playing'],
     correct: 'Hands, wrists, knees, feet — and the tilting drum itself',
-    explain: 'Map the complete hand, wrist, knee, leg and drum-motion envelope; leave clearance for slaps and a tilted shell, and make sure no hardware can fall or pivot toward the player.',
+    explain: 'Map the full space the hands, wrists, knees, legs and the drum move through; leave clearance for slaps and a tilted shell, and make sure no hardware can fall or pivot toward the player.',
     why: {
       'The front of the drum, so the audience can see the head': 'How it looks is not the safety question. The player’s body and the moving drum are.',
       'The rope tuning, so the drum stays in tune while playing': 'Clamp nothing to the ropes, but the space that moves is the player’s and the drum’s.',
@@ -142,7 +142,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A low mic aimed at the open foot tends to hear more of what?',
     options: ['The bass resonating out of the bottom of the drum', 'The slaps, struck near the edge of the head', 'Only the floor, since it sits so close to it'],
     correct: 'The bass resonating out of the bottom of the drum',
-    explain: 'A lot of bass resonates out of the bottom of the drum. A low mic is a selectable bass perspective — often with less hand articulation.',
+    explain: 'A lot of bass resonates out of the bottom of the drum. A low mic adds an optional bass view you can blend in — often with less hand articulation.',
     why: {
       'The slaps, struck near the edge of the head': 'Slaps start at the head, on top. The foot carries the bass.',
       'Only the floor, since it sits so close to it': 'It hears the drum’s bottom opening — and floor reflections and foot noise too, which is why you check it.',
@@ -175,12 +175,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'dj.mic.3',
     page: 'microphone',
-    prompt: 'One account found a top mic “slap-heavy”; another found plenty of bass from a top mic. What do you conclude?',
-    options: ['Different setups — test the one top mic before adding a second', 'One account is wrong, so trust the more recent one', 'Top mics carry too little bass, so a low mic is needed as well'],
+    prompt: 'One report found a top mic “slap-heavy”; another found plenty of bass from a top mic. What do you conclude?',
+    options: ['Different setups — test the one top mic before adding a second', 'One report is wrong, so trust the more recent one', 'Top mics carry too little bass, so a low mic is needed as well'],
     correct: 'Different setups — test the one top mic before adding a second',
-    explain: 'Mic model, location, drum, player, support and setting differ, so the evidence is not a contradiction under identical conditions. Test the single upper mic first.',
+    explain: 'Mic model, location, drum, player, support and setting differ, so the two reports do not contradict each other. Test the single upper mic first.',
     why: {
-      'One account is wrong, so trust the more recent one': 'They describe different setups, not one experiment. Test it on the drum in front of you.',
+      'One report is wrong, so trust the more recent one': 'They describe different setups, not one experiment. Test it on the drum in front of you.',
       'Top mics carry too little bass, so a low mic is needed as well': 'One comparison found a full bass from a top mic. Test before adding a channel.',
     },
   },
@@ -202,7 +202,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two starting points: a top mic 5–10 cm above the head, or one about 41 cm from it. Which is right?',
     options: ['Both are case examples — try one, then the other, and listen', 'The closer one: the nearer mic is the more accurate of the two', 'The farther one: close mics sound thin'],
     correct: 'Both are case examples — try one, then the other, and listen',
-    explain: 'These distances are examples conditioned on the drum, its height and safe clearance — not rules. Nearer raises direct sound but can exaggerate contact; farther integrates the strokes with more room.',
+    explain: 'These distances are examples that depend on the drum, its height and safe clearance — not rules. Nearer raises direct sound but can exaggerate contact; farther blends the strokes together with more room.',
     why: {
       'The closer one: the nearer mic is the more accurate of the two': 'Nearer can exaggerate contact and narrow the balance of strokes. Test it.',
       'The farther one: close mics sound thin': 'Not every close mic sounds thin. Try both, one change at a time.',
@@ -262,7 +262,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A bottom mic sits near a floor wedge. What else does it hear?',
     options: ['The monitor, as well as the drum’s opening', 'Only the drum — the shell shields it', 'Nothing more, if it is a supercardioid'],
     correct: 'The monitor, as well as the drum’s opening',
-    explain: 'A bottom mic near a floor wedge can hear the monitor as well as the drum. Point pickup and rejection with the actual pattern in mind.',
+    explain: 'A bottom mic near a floor wedge can hear the monitor as well as the drum. Aim its pickup and rejection with its actual pattern in mind.',
     why: {
       'Only the drum — the shell shields it': 'A low mic beside the drum is open to the stage; the shell does not shield it from a wedge.',
       'Nothing more, if it is a supercardioid': 'A supercardioid has a rear lobe; its rejection depends on where the wedge sits.',
@@ -307,7 +307,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'dj.two.2',
     page: 'twoMic',
-    prompt: 'The low mic hears a stroke 1 ms after the top mic. The two copies reach the mixer with the same polarity and at equal level. Where is the first notch (simplified model)?',
+    prompt: 'The low mic hears a stroke 1 ms after the top mic. The two copies reach the mixer with the same polarity and at equal level. Where is the first notch (ideal case)?',
     options: ['500 Hz, then 1.5 kHz, 2.5 kHz …', '1 kHz, then 2 kHz, 3 kHz, 4 kHz …', '250 Hz, then 750 Hz, 1.25 kHz …'],
     correct: '500 Hz, then 1.5 kHz, 2.5 kHz …',
     explain: 'The first cancellation is where the delay is half a period: f = 1 ÷ (2 × 0.001 s) = 500 Hz, then odd multiples. Inverted, the notches sit at 0, 1 kHz, 2 kHz … instead.',
@@ -324,7 +324,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Yes — the two start opposite; then compare both states by ear',
     explain: `As the head moves down, the air above it thins while air is pushed out of the foot. ${OPPOSITE_SIDES_POLARITY} Compare across bass, tones and slaps.`,
     why: {
-      'No — a mic below a drum stays at normal polarity': 'The head and the foot push the air opposite ways at the same instant, so the pair usually starts opposite. Nothing fixes the setting — check both states.',
+      'No — a mic below a drum stays at normal polarity': 'The head and the foot push the air opposite ways at the same instant, so the pair usually starts opposite. No rule decides the setting — check both states.',
       'Yes — and once flipped, it needs no further checking': 'Flipping is where to start, not a rule: the delay between the mics can make either state the better one. Compare both by ear.',
     },
   },
@@ -514,7 +514,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A mic pushed into the open foot for the bass', ok: false, power: 'none', feedback: 'Never obstruct the opening.' },
       { id: 'e', label: 'A mic over the player’s side of the head, where the slaps land', ok: false, power: 'none', feedback: 'That is inside the hand path: it would be struck.' },
     ],
-    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, a farther top mic can integrate the strokes', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, BASS_REASON],
+    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, a farther top mic can blend the strokes together', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, BASS_REASON],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point, clearance, and power that matches the mic.',
   },
   {
@@ -536,7 +536,7 @@ const setupTasks: SetupTask[] = [
 const predictions: HandLesson['predictions'] = {
   sound: { prompt: 'Before you step through: the hand pushes the head down. Where does the air in the bowl go?', options: ['Down through the waist and out of the foot', 'Up, back out through the head', 'Nowhere — the air stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the top mic from 5 cm above the head to about 40 cm away. What changes?', options: ['More of the whole drum and the room', 'More slap', 'It depends on this drum and room'], after: 'Farther tends to integrate the strokes with more room — and drums and rooms vary, so “it depends” is fair too.' },
+  placement: { prompt: 'Predict: you move the top mic from 5 cm above the head to about 40 cm away. What changes?', options: ['More of the whole drum and the room', 'More slap', 'It depends on this drum and room'], after: 'Farther tends to blend the strokes together with more room — and drums and rooms vary, so “it depends” is fair too.' },
   context: { prompt: 'Where can this mic, aimed at the head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -655,7 +655,7 @@ export const M05_LESSON: HandLesson = {
   },
   setting: {
     items: [
-      { id: 'drums', label: 'the djembe (the same drawing as every other page)', short: 'DJEMBE', note: 'Upright on the floor here — or raised on foam blocks so its opening is clear.', prov: { kind: 'sourced', src: 'MEINL-HDJ500', quote: 'Head Diameter: 12.5"' }, tag: 'THE DRUM', scene: 'all' },
+      { id: 'drums', label: 'the djembe (the same drum shown on every page)', short: 'DJEMBE', note: 'Upright on the floor here — or raised on foam blocks so its opening is clear.', prov: { kind: 'sourced', src: 'MEINL-HDJ500', quote: 'Head Diameter: 12.5"' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'player', label: 'the player', short: 'PLAYER', note: 'Hands, wrists, knees, legs, feet — and the drum itself if they tilt it. Nothing of yours goes there, and nothing that could fall or pivot toward them.', prov: { kind: 'illustrative', reason: 'a player behind the drum; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor that reaches a distant or low djembe mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill — especially into a low mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
@@ -671,7 +671,7 @@ export const M05_LESSON: HandLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a setup for a given drum and performance, describe an alternative, and explain what would justify a lower second channel. With a real drum and the player’s agreement, you can record what you tried below.',
+    task: 'Choose a setup for a given drum and performance, describe an alternative, and explain what would justify a lower second channel. With a real drum and the player’s agreement, you can note down what you tried below.',
     fields: [
       { id: 'drum', label: 'Drum (head size, height, support)', kind: 'text' },
       { id: 'posture', label: 'Posture', kind: 'choice', choices: ['standing', 'seated, between the knees', 'tilted', 'on a support', 'on a stand'] },
@@ -697,7 +697,7 @@ export const M05_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. The examples here are different cases — very close and quite far, top and bottom — not rules: test one mic before adding another. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. The examples here are different cases — very close and quite far, top and bottom — not rules: test one mic before adding another. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb filter as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: DJEMBE,
     shellLook: 'goblet',
@@ -720,7 +720,7 @@ export const M05_LESSON: HandLesson = {
     openEnd: { default: false, raised: true },
     strokes: {
       title: 'Bass, tone and slap',
-      intro: 'Switch STROKE and watch which of the head’s shapes the spot drives. The bars are physics; the strokes are the player’s.',
+      intro: 'Switch STROKE and watch which of the head’s vibration shapes the struck spot drives. The bars show physics; the strokes are the player’s.',
       badge: 'A simplified head · where the hand lands, drawn at a typical spot · bars = how strongly that spot drives each shape',
       items: [
         { id: 'bass', label: 'BASS', short: 'BASS', frac: 0.12, tool: 'palm', text: 'The palm and flat fingers near the center. The deep note itself is the air in the bowl, set mostly by the shell’s size and shape, much less by the skin’s tension.' },
@@ -754,7 +754,7 @@ export const M05_LESSON: HandLesson = {
         ],
       },
       badge: 'The band from above · a typical layout · the player at the left, the audience to the right',
-      looking: 'Plan · the band from above · the player behind the djembe',
+      looking: 'Plan view · the band from above · the player behind the djembe',
       prompt: 'Tap anything around the djembe — or step through ITEM — to see what it means for a djembe mic. There is nothing to answer yet.',
       intro: 'The djembe stands in front of the player, with louder neighbors around it. Everything near it is either the player’s space or a source of spill.',
       label: 'The band from above: the djembe in the middle with the player behind it, a drum kit and a bass amp behind the player, other percussion to the player’s right and a vocal mic in front.',
@@ -772,8 +772,8 @@ export const M05_LESSON: HandLesson = {
     },
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
-      'Change one variable at a time while the player plays the same full passage. Nearer raises direct sound but can exaggerate contact; backing off in a good room integrates the strokes with more room and more of the band. A fixed angle does not mean a fixed tone across drums and patterns.',
-      'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
+      'Change one variable at a time while the player plays the same full passage. Nearer raises direct sound but can exaggerate contact; backing off in a good room blends the strokes together with more room and more of the band. A fixed angle does not mean a fixed tone across drums and patterns.',
+      'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the space the hands, wrists, knees, legs and drum move through; keep the low mic and cable out of foot traffic and from under an unstable instrument. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
       'A low mic is a focused supplement, often narrower and with less hand articulation — not a one-mic solution. If there is no safe, repeatable low position, keep one well-placed top or front mic.',
     ],
     context: {
@@ -809,7 +809,7 @@ export const M05_LESSON: HandLesson = {
       },
     ],
     pairLearn: [
-      'The upper and lower mics receive different parts of the sound field, at different times and with possibly different pressure directions. Bring up the upper mic alone, then the lower at a musically useful level; test bass, tones and slaps in mono — not just one stroke.',
+      'The upper and lower mics hear different parts of the sound field, at different times, and the air may push them in opposite directions. Bring up the upper mic alone, then the lower at a musically useful level; test bass, tones and slaps in mono — not just one stroke.',
       'If the blend loses body or changes attack, move or aim one mic, compare the polarity switch, and evaluate again with any other open mics. Never reverse a channel just because it sits below the drum.',
       'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late. A 180° polarity flip swaps the notches and peaks; it does not remove the travel-time difference or align every frequency.',
     ],

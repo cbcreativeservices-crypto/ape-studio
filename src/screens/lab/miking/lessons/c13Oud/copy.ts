@@ -21,7 +21,7 @@ const base = stringsCopy({
   radiator: 'face',
   strikes: [
     { id: 'near', label: 'CLOSE TO THE BRIDGE', mm: 45, blurb: 'About 4.5 cm from the bridge — the brightest, most percussive place.' },
-    { id: 'roses', label: 'OVER THE SMALL ROSES', mm: OUD.roseSmallX.mm, blurb: 'Over the small rosettes — the risha’s usual place, drawn as a typical one.' },
+    { id: 'roses', label: 'OVER THE SMALL ROSES', mm: OUD.roseSmallX.mm, blurb: 'Over the small rosettes — where the risha usually plucks, shown at a typical spot.' },
     { id: 'main', label: 'OVER THE MAIN ROSE', mm: OUD.roseMainX.mm, blurb: 'Over the main rosette — a rounder, softer place.' },
     { id: 'middle', label: 'THE MIDDLE', mm: g.nut / 2, blurb: 'The exact middle of the open string.' },
   ],
@@ -47,7 +47,7 @@ const base = stringsCopy({
   },
   workedZone: { oud: 'upper' },
   workedLine: 'This starting point sits near {line}, out in front of the oud.',
-  workedAim: 'Aim at the space between the main rose and the neck — the lab counts it while the mic’s axis, followed in, meets the face within about 11 cm of {head} — not straight into the rose.',
+  workedAim: 'Aim at the space between the main rose and the neck, not straight into the rose — the lab counts it while the line the mic points along meets the face within about 11 cm of {head}.',
   clearWhat: 'the risha’s arc, the left hand along the neck, the pegbox and the player’s view',
   placementReveal: 'Toward the rose tends to bring more body and bloom; toward the neck, more string and finger detail; closer, more risha click and more proximity bass. Every oud and room differs, so “it depends on this oud” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {

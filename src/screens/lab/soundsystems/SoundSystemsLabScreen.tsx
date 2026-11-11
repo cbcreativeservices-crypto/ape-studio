@@ -169,7 +169,7 @@ export function SoundSystemsLabScreen() {
         {SS_MODES.map((m) => {
           const row = rows.find((r) => r.id === m.id)!;
           return (
-            <Pressable key={m.id} onPress={() => go(m.route)} style={styles.card} accessibilityRole="button" accessibilityLabel={`${m.name} mode. ${m.blurb}${known ? ` ${row.done} of ${row.total} complete.` : ''}`}>
+            <Pressable key={m.id} onPress={() => go(m.route)} style={styles.card} accessibilityRole="button" accessibilityLabel={`${m.name} mode. ${m.blurb}${known ? ` ${row.done} complete.` : ''}`}>
               <View style={styles.cardGlyph}>
                 <GearGlyph kind={MODE_GLYPH[m.id]} size={54} />
               </View>
@@ -220,7 +220,7 @@ export function SoundSystemsLabScreen() {
                     : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
               </Text>
               {outstanding.map((r) => (
-                <Pressable key={r.id} onPress={() => go(SS_MODES.find((m) => m.id === r.id)!.route)} style={styles.leftRow} accessibilityRole="button" accessibilityLabel={`${r.label}: ${r.done} of ${r.total}. ${r.hint}`}>
+                <Pressable key={r.id} onPress={() => go(SS_MODES.find((m) => m.id === r.id)!.route)} style={styles.leftRow} accessibilityRole="button" accessibilityLabel={`${r.label}: ${r.done} done. ${r.hint}`}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.leftLabel}>{r.label}</Text>
                     <Text style={styles.leftHint}>{r.hint}</Text>

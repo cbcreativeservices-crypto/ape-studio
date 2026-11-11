@@ -717,7 +717,7 @@ export function SignalGenScreen({ navigation }: Props) {
               <Chip key={hz} label={chipHz(hz)} selected={freq === hz} onPress={() => applyFrequency(hz)} />
             ))}
           </View>
-          <Text style={styles.caption}>Fader 63 Hz–6 kHz · fine steps ±1 semitone (×2^1/12) · presets to 16 kHz</Text>
+          <Text style={styles.caption}>Fader 63 Hz–6 kHz · fine steps ±1 semitone (×2^(1/12)) · presets to 16 kHz</Text>
         </View>
       ),
     });
@@ -961,7 +961,7 @@ export function SignalGenScreen({ navigation }: Props) {
           </Pressable>
 
           <Text style={styles.caption}>
-            LEVEL moves in 3 dB steps from −60 to 0 dBFS · default −20 (its own stop) · above {capDb} dBFS requires the safety confirm
+            LEVEL moves in 3 dB steps from −60 to 0 dBFS · default −20 (an extra stop of its own) · above {capDb} dBFS you must confirm the safety warning
           </Text>
 
           {/* Required warnings (spec Tool 6) — fixed, at the BOTTOM of the

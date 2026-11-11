@@ -436,7 +436,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The method’s limit; report the limitation',
     options: ['Report it as not separable by the method', 'Subtract 2 dB and report what is left', 'Use L90 as the background level and carry on'],
     correct: 'Report it as not separable by the method',
-    explain: 'Inside the method’s limit the subtraction is refused: report that the source could not be separated, and use the approved method if one exists.',
+    explain: 'With total and background this close — inside the method’s limit — the subtraction is refused: report that the source could not be separated, and use the approved method if one exists.',
     why: {
       'Subtract 2 dB and report what is left': 'dB do not subtract — and this close, even the energy subtraction is refused.',
       'Use L90 as the background level and carry on': 'L90 does not remove a source that never stops.',
@@ -514,7 +514,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Partial<Record<SourcePageId, Prediction>> = {
   microphone: { prompt: 'The brief asks for the loudest truck pass-by. Which reading answers it?', options: ['The hour’s LAeq', 'LAFmax in the window', 'The peak'], after: 'Set the meter for each question and see what passes.' },
   placement: { prompt: 'You move the meter from the open lawn to 2 m from the facade. Will it read the same traffic?', options: ['Same traffic, plus the reflection', 'Exactly the same', 'Less — the house shields it'], after: 'Move it and read what each zone stands for.' },
-  context: { prompt: 'Total 62 dB, background 56 dB. The source alone is…', options: ['6 dB', 'about 60.7 dB', '59 dB'], after: 'Try it with the meters — and then bring the two closer.' },
+  context: { prompt: 'Total 62 dB, background 56 dB. The source alone is…', options: ['6 dB', 'about 60.7 dB', '59 dB'], after: 'Try it with the meters — then move BACKGROUND toward TOTAL.' },
   twoMic: { prompt: 'Is the plain mean of the dB readings the same as LAeq?', options: ['Yes', 'No — LAeq is higher', 'No — LAeq is lower'], after: 'Look at the two lines on the history.' },
 };
 
@@ -635,6 +635,6 @@ export const F12_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: your question and the method you are handed name the receivers, the height, the descriptor and the limits. Experiment, and trust your ears and the room as well as the meter. The lab is silent and draws a simplified picture: a site that is a drawing, straight sound paths, level histories that are made-up examples, and this lab’s default background limit. Formal exposure, environmental or legal decisions need a qualified practitioner and the applicable method.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: your question and the method you are handed name the receivers, the height, the descriptor and the limits. Experiment, and trust your ears and the room as well as the meter. The lab is silent and draws a simplified picture: a site that is a drawing, straight sound paths, level histories that are made-up examples, and an example background limit. Formal exposure, environmental or legal decisions need a qualified practitioner and the applicable method.',
   copy: F12_COPY,
 };

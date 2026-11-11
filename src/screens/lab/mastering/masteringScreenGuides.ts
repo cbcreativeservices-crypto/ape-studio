@@ -64,7 +64,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         changes: [
           'At REC, EDIT and MIX, WORKS ON reads TRACKS: every part — vocal, drums, bass — is still separate and can be moved on its own.',
-          'At MASTERING it reads STEREO: one finished file with every element inside it.',
+          'At MASTER it reads STEREO: one finished file with every element inside it.',
           'At RELEASE it reads FILES: the masters delivered for release.',
         ],
         teaches: [
@@ -112,10 +112,10 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'Why a louder version tends to sound “better” at first, and what a limiter really trades away once both versions play at the same loudness.',
-          start: 'Leave MATCH LEVEL on. Tap ▶ MIX, then ▶ LOUDER, and listen to the kick and snare hits. Then compare the PLR cell for each version.',
+          start: 'Leave MATCH LEVEL on. Tap ▶ MIX, then ▶ LOUDER, and listen to the kick and snare hits. Then compare the PLR cell (peak above loudness) for each version.',
         },
         seeing: [
-          'The display shows the waveform of the version playing (THE MIX or LOUDER), a gain-reduction strip and the limiter faceplate: INPUT, CEILING, RELEASE, GR, or BYP when nothing is processed.',
+          'The display shows the waveform of the version playing (THE MIX or LOUDER), a gain-reduction strip and the limiter faceplate: INPUT, CEILING, RELEASE, GR (gain reduction), or BYP (bypass) when nothing is processed.',
           'The readouts: PEAK, TRUE PK, LUFS (loudness), PLR (peak above loudness) and MATCH dB.',
           'The badge: the meters are estimates and your phone’s output isn’t calibrated, so judge by comparison.',
         ],
@@ -822,7 +822,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         teaches: [
           'What a louder master costs, heard at matched level: transients and movement.',
-          'The right loudness depends on the content and the destination; this lab sets no target.',
+          'The right loudness depends on the content and the destination; there is no single target.',
         ],
         tryThis: [
           'Ride DRIVE to 0: LOUDER becomes the same as QUIETER. Then push it to +14 and compare them at matched level.',
@@ -1169,7 +1169,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         changes: [
           'MAX STEP turns amber above 6 LU. TOTAL grows with each gap and shrinks with a crossfade.',
           'In the zoomed strip, the gap, the fade wedge and a crossfade overlap all move with the fader.',
-          'The quiet song makes a step the client asked for, so the gap around it is your decision.',
+          'The quiet song’s loudness step is one the client asked for, so the gap around it is your decision.',
         ],
         teaches: [
           'Sequencing shapes a release: order, gaps, fades and the loudness steps between tracks.',
@@ -1195,7 +1195,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: [
           'Tap a line to check it (☑); tap it again to clear it. Your check marks are kept.',
-          'On this step the strip’s NEXT › reads FINISH ›. It opens the what’s-left screen for the whole lab.',
+          'On this step NEXT › reads FINISH ›. It opens the what’s-left screen for the whole lab.',
         ],
         changes: [
           'With every line checked, the status card reads QC complete — or Delivered, once the four track decisions are answered too.',

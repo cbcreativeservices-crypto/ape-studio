@@ -158,7 +158,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>ONE MAP, MANY SYSTEMS</Eyebrow>
-        <Body>Switch the stage input and the house build and the map redraws — but the ORDER never changes: source → stage input → console → processing → amplification → loudspeaker → listener. A powered loudspeaker is the amplifier and the cabinet in one box. A digital stagebox turns the snake into a network cable, carries the returns to the stage on the same link, and moves the preamps to the stage. The fault bench walks every case against this order.</Body>
+        <Body>Switch the stage input and the house build and the map redraws — but the ORDER never changes: source → stage input → console → processing → amplification → loudspeaker → listener. A powered loudspeaker is the amplifier and the cabinet in one box. A digital stagebox turns the snake into a network cable, carries the returns to the stage on the same link, and moves the preamps to the stage. The fault bench you’ll use later walks every case against this order.</Body>
       </Card>
       <Card>
         <Eyebrow>THE SECTIONS OF EVERY SYSTEM</Eyebrow>
@@ -242,7 +242,7 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={1}>BASIC SIGNAL-FLOW TRACING</ChapterTag>
-      <Body>The nine stations of the house path, drawn as the bench draws them. Light them in the order the signal travels.</Body>
+      <Body>The nine stations of the house path, the same ones you’ll check on the fault bench later. Light them in the order the signal travels.</Body>
       <Prompt>Tap the next station the signal reaches.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <KeyFact>Signal flows forward: source, cable, stage input, console in, console out, processor, amplifier, loudspeaker, listener. A fault is found by walking that order from wherever the symptom leaves doubt — never by guessing at the far end.</KeyFact>
@@ -353,7 +353,7 @@ function PageVenueMatch({ ctx }: { ctx: PageCtx }) {
           />
         );
       })}
-      <Body>{count} of {VENUE_CASES.length} matched.</Body>
+      <Body>{count} matched.</Body>
     </View>
   );
 }
@@ -482,7 +482,7 @@ function PageChooseConfig({ ctx }: { ctx: PageCtx }) {
           onCorrect={() => setSolved((s) => ({ ...s, [c.id]: true }))}
         />
       ))}
-      <Body>{count} of {CONFIG_CASES.length} chosen.</Body>
+      <Body>{count} chosen.</Body>
     </View>
   );
 }

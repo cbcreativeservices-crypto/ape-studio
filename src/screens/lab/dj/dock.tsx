@@ -223,7 +223,7 @@ export function BoothTray({ booth, tr, decks = ['A', 'B'], extra, listen = true 
         ))}
         {tr.soundDeclined ? <LabChip label="TURN SOUND ON" selected={false} onPress={tr.soundOn} /> : null}
       </View>
-      {tr.soundDeclined ? <Text style={styles.trayFine}>Sound is off: the booth still runs and its meters still read the model — you just do not hear it.</Text> : null}
+      {tr.soundDeclined ? <Text style={styles.trayFine}>Sound is off: the booth still runs and its meters still move — you just do not hear it.</Text> : null}
       {extra}
       {listen ? <ListenTray booth={booth} /> : null}
     </View>

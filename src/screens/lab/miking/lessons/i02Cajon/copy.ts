@@ -105,7 +105,7 @@ export const CAJ_COPY: LessonCopy = spCopy({
     shield: ['caj.box.rear'],
     facing: 'the plate',
     studioPrompt: 'A studio session has no wedge to reject. The decision changes: does one mic in front — or a wider one — carry the whole cajón?',
-    studioNote: 'Bring up the front mic first; a second at the port only for a defined bass control need, checked with the first in mono. Switch back to LIVE for the monitor exercise.',
+    studioNote: 'Bring up the front mic first; add a second at the port only if you need separate control of the bass, checked with the first in mono. Switch back to LIVE for the monitor exercise.',
     points: [
       { title: 'ONE MIC FIRST', text: 'A practical front or port mic may be enough. Each open channel adds spill and a chance of feedback — keep only those that help.' },
       { title: 'LOW-END FEEDBACK', text: 'Check low-frequency feedback and the singer’s and guitar’s spill with the whole PA and the monitors on.' },

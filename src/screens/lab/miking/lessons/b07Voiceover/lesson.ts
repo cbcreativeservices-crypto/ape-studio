@@ -45,7 +45,7 @@ const pages: LessonPages = {
   microphone: {
     title: 'Choose the microphone',
     goal: 'Choose a reader’s or a guest’s mic by its properties and its distance — a broadcast dynamic, a studio condenser, a headset — not by its name or by “dynamic means no room”.',
-    credit: { scenarios: ['b7.mic.1', 'b7.mic.2', 'b7.mic.3', 'b7.mic.4', 'b7.rec.1'], note: 'Answer the five checks (one reaches back to the reader and the script).' },
+    credit: { scenarios: ['b7.mic.1', 'b7.mic.2', 'b7.mic.3', 'b7.mic.4', 'b7.rec.1'], note: 'Answer the five checks (one reviews the reader and the script from earlier).' },
     takeaway: 'Compare mics at usable positions and levels. Distance and pattern decide the voice against the room; a headset keeps a turning guest steady; an omni has no proximity bass but hears all around.',
   },
   placement: {
@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a reader’s mic in the right order, choose and justify a setup for a dry announcer read and for a guest joining from home, and say what would justify a second mic.',
     credit: { scenarios: ['b7.prac.order', 'b7.prac.gain', 'b7.prac.setup1', 'b7.prac.setup2', 'b7.prac.3', 'b7.mix.1', 'b7.mix.2', 'b7.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real reader.' },
-    takeaway: 'A repeatable place measured from the lips, plosive and proximity control, close or moderate justified by the room, the guest’s real mic checked and a clean return pass. A brand or a louder take does not — and more than one setup can pass.',
+    takeaway: 'What passes: a repeatable place measured from the lips, plosive and proximity control, close or moderate justified by the room, the guest’s real mic checked and a clean return. A brand or a louder take does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -141,8 +141,8 @@ const scenarios: MikingScenario[] = [
     id: 'b7.set.3',
     page: 'setting',
     prompt: 'A remote guest has a good external mic, but they sound distant and roomy. A first thing to check?',
-    options: ['Which mic the app has chosen as the input', 'Whether their room lights are bright enough', 'How loudly their headphones are playing'],
-    correct: 'Which mic the app has chosen as the input',
+    options: ['Which mic the call app has chosen as the input', 'Whether their room lights are bright enough', 'How loudly their headphones are playing'],
+    correct: 'Which mic the call app has chosen as the input',
     explain: 'A good external mic is no use if the laptop’s own mic is the active input. Confirm the chosen input and monitor device with the guest before the show.',
     why: {
       'Whether their room lights are bright enough': 'Lighting is a picture matter. The sound points to the wrong input or a distant mic.',
@@ -361,7 +361,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second mic on one reader?',
     options: ['A need the first cannot meet, on its own channel', 'Two mics sound richer than one, so add a second', 'More mics give the voice more level in the program'],
     correct: 'A need the first cannot meet, on its own channel',
-    explain: 'A deliberate perspective change, or a backup for a live read — each on its own channel, checked in mono. Two open mics on one voice comb.',
+    explain: 'A deliberate perspective change, or a backup for a live read — each on its own channel, checked in mono. Two open mics on one voice make a comb.',
     why: {
       'Two mics sound richer than one, so add a second': 'Two mics on one voice usually sound hollower, not richer.',
       'More mics give the voice more level in the program': 'Level comes from gain and distance, not another mic.',
@@ -472,7 +472,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Check pops, a page turn and a head turn', early: 'Check the details once the level is set.' },
       { text: 'For a guest: their real input, headphones and the return', early: 'Add the guest after the reader is set.' },
     ],
-    explain: 'A sensible order. Phantom power: mute the outputs first and follow your own equipment’s manual. Never test by blowing into a capsule or provoking feedback.',
+    explain: 'A sensible order. Before switching phantom power on or off, mute the outputs and follow your own equipment’s manual. Never test by blowing into a capsule or provoking feedback.',
   },
 ];
 
@@ -496,7 +496,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A guest joins a live program from home, on a laptop, in a quiet room.',
     setups: [
-      { id: 'a', label: 'An external mic near the mouth, chosen as the input, on headphones', ok: true, power: 'none', feedback: 'A suggested start: check the app chose it, and give them a return without their own voice.' },
+      { id: 'a', label: 'An external mic near the mouth, chosen as the input, on headphones', ok: true, power: 'none', feedback: 'A suggested start: check the call app chose it, and give them a return without their own voice.' },
       { id: 'b', label: 'A wired earbud mic held steady, on its own earbuds', ok: true, power: 'none', feedback: 'A fair fallback: check speech and cable rub.' },
       { id: 'c', label: 'The laptop’s own mic, the guest a meter back, on speakers', ok: false, power: 'none', feedback: 'A distant mic and loudspeakers: room, echo and spill.' },
       { id: 'd', label: 'Heavy noise reduction on the laptop mic', ok: false, power: 'none', feedback: 'Software cannot restore missing consonants. Placement first.' },
@@ -557,8 +557,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'setting',
     prompt: 'A remote guest with a good mic sounds distant. A first check?',
-    options: ['Which mic the app is really using', 'Their camera’s angle on their face', 'The speed of their internet line'],
-    correct: 'Which mic the app is really using',
+    options: ['Which mic the call app is really using', 'Their camera’s angle on their face', 'The speed of their internet line'],
+    correct: 'Which mic the call app is really using',
     explain: 'The laptop’s own mic may be the active input. Confirm the input with the guest.',
     why: {
       'Their camera’s angle on their face': 'The camera angle does not change the sound input.',
@@ -659,7 +659,7 @@ export const B07_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, script and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reader in a typical standing pose, a host and a guest seated, the script stand’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Never test a mic by blowing into it or by provoking feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, script and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reader in a typical standing pose, a host and a guest seated, the script stand’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are measured from the lips to the mic’s front and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches. Never test a mic by blowing into it or by provoking feedback.',
   copy: B07_COPY,
 };
 

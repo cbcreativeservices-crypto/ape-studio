@@ -44,7 +44,7 @@ export const TIMP_COPY: LessonCopy = {
     reveal: 'Struck off-center, the head goes down where the mallet lands and up on the far side — a see-saw. The air under it is shoved across the bowl rather than squeezed.',
     after: 'Then the head keeps ringing in its pitched shapes — the note. How long, and how bright, depends on the mallet, the strike point, the tuning and any damping: all the timpanist’s choices.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. A center strike drives only the ring-shaped ones, the lowest shape among them — on a timpani that means more thud and less of the note; a third of the way in from the hoop drives the pitched shapes well.',
+      'A strike sets each shape moving only as much as the head moves at that spot in that shape. A center strike drives only the ring-shaped ones, including the lowest shape, (0,1) — on a timpani that means more thud and less of the note; a third of the way in from the hoop drives the pitched shapes well.',
       'This picture uses the head’s ideal shapes; the ratios are a timpani’s, with the bowl’s air included. A real drum, its head and its tuning move them a little.',
     ],
     coupledSubject: 'Side view of one timpano, cut open',
@@ -83,7 +83,7 @@ export const TIMP_COPY: LessonCopy = {
     },
     shapeWords: {
       lowest: 'This is the (1,1) shape — the timpani’s NOTE. The other shapes are measured against it: with the air the head moves, the main ones fall near 1.5, 2 and 2.5 times it. Counting the note, 1 : 1.5 : 2 : 2.5 is 2 : 3 : 4 : 5 — steps of a harmonic series, which is why a timpani sounds pitched.',
-      other: 'On a timpani this shape sits at {ratio} times the note’s (1,1) shape. The air the head moves, in the bowl and above it, pulls the main shapes toward near-whole-number steps from the note; the ring-shaped (0,1) sits just below the note and dies away fast.',
+      other: 'On a timpani this shape vibrates at {ratio} times the frequency of the note’s (1,1) shape. The air the head moves, in the bowl and above it, pulls the main shapes toward near-whole-number steps from the note; the ring-shaped (0,1) sits just below the note and dies away fast.',
       ratioSub: 'vs (1,1)',
       badge: 'A simplified picture: ideal shapes, with a timpani’s ratios (the air’s effect included) · blue + toward you, amber − away',
     },
@@ -115,8 +115,8 @@ export const TIMP_COPY: LessonCopy = {
   },
   placement: {
     workedZone: { two: 'tp.pair', four: 'tp.pairLow' },
-    workedLine: 'This starting point is also read against {line}: the readout says how far the mic is from it.',
-    workedAim: 'Look down at the heads — the starting point counts while the mic looks down within {tol}° of straight down. Height and angle are separate things to try.',
+    workedLine: 'This starting point is also measured from {line}: the readout shows how far the mic is from it.',
+    workedAim: 'Aim the mic down at the heads — the starting point counts while the mic points within {tol}° of straight down. Height and angle are separate things to try.',
     workedClear: 'Clear of the mallets’ whole reach, the player’s arms and the pedals — and out of the player’s sightline to the conductor. Clearance comes first, and the player stops before a real stand moves.',
     blocked: {},
     reveal: 'Farther tends to bring more of both drums and the room; closer, more attack from one drum and less of the room — and drums, halls and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
@@ -174,7 +174,7 @@ export const TIMP_COPY: LessonCopy = {
     A: { typeId: 'orchSdc', pattern: 'cardioid', zone: 'tp.pair' },
     B: { typeId: 'orchSdc', pattern: 'cardioid', zone: 'tp.near' },
     learn: [
-      'A common idea: a shared spot high between the drums for the set, and a closer spot for one drum’s attack. Each mic hears every drum at a different time, so the pair — and each mic against the main array — combs. Start with one spot useful on its own.',
+      'A common idea: a shared spot high between the drums for the set, and a closer spot for one drum’s attack. Each mic hears every drum at a different time, so the pair — and each mic against the main array — causes comb filtering. Start with one spot useful on its own.',
       'When a second channel goes in: hear it with the main array, at the intended levels, in MONO; compare both polarity states at a matched level — a louder state almost always sounds “better” at first. A delay set on a spot may help one relationship and harm another; judge it in the whole orchestra.',
     ],
     warn: 'This simplified graph shows one point source and straight paths: a real timpani head is large and the hall reflects, so read the notch depths as illustrative only. The notch POSITIONS follow from the arrival-time difference.',

@@ -85,7 +85,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
         params: [
           { kind: 'options', id: 'compare', label: 'COMPARE', valueLabel: compare === 'samePitch' ? 'SAME PITCH' : 'SAME LENGTH', selectedId: compare, onSelect: (id) => setCompare(id as PipeCompare), sticky: true, options: [{ id: 'samePitch', label: 'SAME PITCH', blurb: 'A stopped pipe half the open pipe’s length sounds the same note.' }, { id: 'sameLength', label: 'SAME LENGTH', blurb: 'At the same length, the stopped pipe sounds an octave lower.' }] },
           // Three harmonics: tap choices, not a fader (owner 2026-10-14, slider audit #5).
-          { kind: 'options', id: 'mode', label: 'HARMONIC', valueLabel: `#${k}`, valueA11y: `the ${k === 1 ? 'lowest' : k === 2 ? 'second' : 'third'} the pipe can sound — open ×${hOpen}, stopped ×${hStop}`, selectedId: String(k), onSelect: (id) => setK(Number(id)), sticky: true, options: [{ id: '1', label: '#1 LOWEST' }, { id: '2', label: '#2 SECOND' }, { id: '3', label: '#3 THIRD' }] },
+          { kind: 'options', id: 'mode', label: 'HARMONIC', valueLabel: `#${k}`, valueA11y: `the ${k === 1 ? 'lowest' : k === 2 ? 'second' : 'third'} note the pipe can sound — open ×${hOpen}, stopped ×${hStop}`, selectedId: String(k), onSelect: (id) => setK(Number(id)), sticky: true, options: [{ id: '1', label: '#1 LOWEST' }, { id: '2', label: '#2 SECOND' }, { id: '3', label: '#3 THIRD' }] },
         ],
         initialParam: 'compare',
       },
@@ -94,7 +94,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
           {lesson.predictions.sound ? <PredictCard p={lesson.predictions.sound} value={predicted} onPick={setPredicted} /> : null}
           <Landing looking="Two flue pipes, cut open · the mouth at the bottom" prompt="Choose COMPARE and tap through HARMONIC. Where is the pressure still, and which harmonics can each pipe sound?" />
           <Card>
-            <Point title="WHY 16′ AND 32′ NAME A PITCH">{`An open pipe sounds about c ÷ 2L; a stopped pipe — capped at the top — about c ÷ 4L, an octave lower for the same length, and only the odd harmonics. So a stop labeled 8′ made of stopped pipes is only about 4′ long. The low C of an 8′ open stop is about ${Math.round(f8)} Hz, about ${fmtLen(Lopen * 1000)} long here.`}</Point>
+            <Point title="WHY 16′ AND 32′ NAME A PITCH">{`An open pipe sounds about c ÷ 2L (c = the speed of sound, L = the pipe’s length); a stopped pipe — capped at the top — about c ÷ 4L, an octave lower for the same length, and only the odd harmonics. So a stop labeled 8′ made of stopped pipes is only about 4′ long. The low C of an 8′ open stop is about ${Math.round(f8)} Hz, about ${fmtLen(Lopen * 1000)} long here.`}</Point>
           </Card>
           <Note>Read the label as the pitch, not the pipe: verify the real lowest notes by ear, through the real monitoring, rather than inferring them from a label.</Note>
         </>
@@ -137,7 +137,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
           <Card>
             <Point title="ONE ORGAN, MANY PLACES">{`A large organ sounds from many ranks in several places — towers, a box behind shutters, a division in front, sometimes one at the far end of the room. At ${at.short.toLowerCase()}, the first and last divisions arrive about ${spread.toFixed(1)} ms apart. A mic a few centimeters from one pipe hears that pipe, not the organ.`}</Point>
           </Card>
-          <Body>{`Activity: ${seen.size >= 3 ? 'done — you listened from all three positions' : `${seen.size} of 3 positions`}.`}</Body>
+          <Body>{`Activity: ${seen.size >= 3 ? 'done — you listened from all three positions' : `positions heard: ${seen.size}`}.`}</Body>
           {seen.size >= 3 && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. Close to one division, the others arrive much later and quieter; farther back, the paths even out — the room blends them.`}</Note> : null}
         </>
       ),
@@ -152,7 +152,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
         badge: 'Illustrative: one lengthwise resonance of an ideal hard-walled room — a real room mixes many · silent',
         bezel: [
           { k: 'NOTE', v: `${fNote.toFixed(1)} Hz`, flex: 1 },
-          { k: 'ROOM', v: `${mode.hz.toFixed(1)} Hz`, sub: `n = ${mode.n}`, flex: 1 },
+          { k: 'ROOM', v: `${mode.hz.toFixed(1)} Hz`, sub: `mode ${mode.n}`, flex: 1 },
           { k: 'STILL LINES', v: `every ${mode.spacingM.toFixed(1)} m`, flex: 1.3 },
         ],
         params: [
@@ -418,7 +418,7 @@ const HAND: HandSpec = {
     gainId: 'org.prac.gain',
     secondId: 'org.prac.3',
     mixIds: ['org.mix.1', 'org.mix.2', 'org.mix.3'],
-    mixIntro: 'Three cards from earlier pages, mixed: the stage of a stereo method, what a null can promise, and what removes a delay.',
+    mixIntro: 'Three cards from earlier pages, mixed: where the organ’s balance starts with a choir, what a null can promise, and what removes a delay.',
     sheetNote: 'For a real organ, with the organist’s and the venue’s agreement. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {

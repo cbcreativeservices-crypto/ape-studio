@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Run a room-mic comparison in the right order, choose and justify a room setup for two briefs, and say when a room feed earns its channel.',
     credit: { scenarios: ['rm.prac.order', 'rm.prac.gain', 'rm.prac.setup1', 'rm.prac.setup2', 'rm.prac.3', 'rm.mix.1', 'rm.mix.2', 'rm.mix.3'], note: 'Put the comparison in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real room.' },
-    takeaway: 'A safe, repeatable position, one change at a time at the same level, a mono check with the other mics and a clear routing decision pass — and leaving the room mic out can pass too.',
+    takeaway: 'What passes: a safe, repeatable position, one change at a time at the same level, a mono check with the other mics and a clear routing decision — and leaving the room mic out can pass too.',
   },
 };
 
@@ -416,7 +416,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.dry',
     observation: 'A clear kit with very little room',
-    firstChecks: 'Position fairly near, directional aim favors the kit, or the room is absorptive: move to a safe farther site or change pattern.',
+    firstChecks: 'The mic is fairly near, its directional aim favors the kit, or the room absorbs sound: move to a safe spot farther out or change pattern.',
     options: ['A farther safe spot or a wider pattern, then listen to the reflections', 'Raise the room channel’s fader until the room finally appears in the mix', 'Add artificial reverb before trying the room at all'],
     correct: 'A farther safe spot or a wider pattern, then listen to the reflections',
     explain: 'Near and directional, the mic hears mostly kit. Try farther out, or an omni — and listen to whether the new reflections help.',
@@ -452,7 +452,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.boom',
     observation: 'A boomy kick or uneven tom notes',
-    firstChecks: 'The position may coincide with a strong room response or a nearby boundary: move the mic or the kit within the permitted room, check several notes and compare positions before EQ.',
+    firstChecks: 'The mic may sit where the room answers some notes more strongly, or near a boundary such as a wall: move the mic or the kit within the permitted room, check several notes and compare positions before EQ.',
     options: ['Move the mic (or the kit) and compare positions before any EQ', 'Cut the lows on the room mic and leave it exactly where it is now', 'Add a second room mic nearby to even the notes out'],
     correct: 'Move the mic (or the kit) and compare positions before any EQ',
     explain: 'The room answers some notes more strongly at some spots, or near a boundary: move and compare first.',
@@ -464,7 +464,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.wash',
     observation: 'A wash of other instruments, or the PA',
-    firstChecks: 'Reflections, open mics and leakage exceed the desired drum perspective: try a closer position or omit the room feed; check routing in live sound.',
+    firstChecks: 'Too much reflection, open-mic sound and leakage for the drum sound you want: try a closer position or leave out the room feed; check routing in live sound.',
     options: ['A closer position, or leave the room feed out; check its routing', 'Raise the drums in the room mic until they cover the rest of the band', 'Point the room mic at the PA to check how much it hears'],
     correct: 'A closer position, or leave the room feed out; check its routing',
     explain: 'If the room mic hears more of the band or the PA than the drums, move closer, leave it out, or keep it out of the PA and monitors.',
@@ -661,7 +661,7 @@ export const M10_LESSON: Lesson = {
       { id: 'corners', label: 'the front corners', short: 'CORNERS', tag: 'FAR', note: 'The farthest spots from the kit here — about 4.6 m (15 ft). Mostly room: width and decay, and the room’s faults too.', scene: 'studio', prov: { kind: 'illustrative', reason: 'room sized so 15 ft reaches the corners' } },
       { id: 'door', label: 'the door and the walkway', short: 'DOOR', tag: 'KEEP CLEAR', note: 'Behind the drummer’s right, with the route to the kit. No stand or cable goes in it.', scene: 'all', prov: { kind: 'illustrative', reason: 'room drawing default' } },
       { id: 'pa', label: 'the PA', short: 'PA', tag: 'HEARD TOO', note: 'At the stage’s front, facing the audience. A distant room mic hears it — directly, and from the room — and costs gain before feedback.', scene: 'stage', prov: { kind: 'illustrative', reason: 'a typical small stage' } },
-      { id: 'monitors', label: 'the stage monitors', short: 'MONITORS', tag: 'SPILL', note: 'The drummer’s fill and another player’s wedge, by the kit: a room mic facing the kit hears them in front of it, where no null reaches.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage positions' } },
+      { id: 'monitors', label: 'the stage monitors', short: 'MONITORS', tag: 'SPILL', note: 'The drummer’s fill monitor and another player’s wedge, by the kit: a room mic facing the kit hears them in front of it, where no null reaches.', scene: 'stage', prov: { kind: 'illustrative', reason: 'M01’s stage positions' } },
       { id: 'audience', label: 'the audience side', short: 'AUDIENCE', tag: 'THE HALL', note: 'The hall is a room too: on a show, the audience already hears the kit and the hall. A room mic usually feeds a recording, not the PA.', scene: 'stage', prov: { kind: 'illustrative', reason: 'a typical small stage' } },
     ],
     stage: 'On a stage the same space holds a PA at the front and monitors by the kit. A distant mic hears them as well as the kit.',

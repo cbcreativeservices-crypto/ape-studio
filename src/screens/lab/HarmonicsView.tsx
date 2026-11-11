@@ -1920,7 +1920,7 @@ export function HarmonicsView({
               {slopeInfo.slope != null
                 ? `Harmonic energy ${slopeInfo.slope <= 0 ? 'decreases' : 'increases'} ≈ ${Math.abs(
                     slopeInfo.slope,
-                  ).toFixed(1)} dB per octave (least-squares fit over the contributing stems).`
+                  ).toFixed(1)} dB per octave (a best-fit line through the stems above the floor).`
                 : `Envelope slope — (needs at least ${MIN_SLOPE_HARMONICS} contributing harmonics above the floor).`}
             </Text>
           ) : null}
@@ -1962,8 +1962,8 @@ export function HarmonicsView({
           </Text>
 
           <Text style={styles.caption}>
-            The PRESET key (dock) loads simplified instructional models — canonical harmonic
-            recipes, not reproductions of any real device. A pick resets all 12 stems; drag the
+            The PRESET key loads textbook teaching recipes — standard harmonic patterns, not
+            copies of any real device. A pick resets all 12 stems; drag the
             stems to edit from there.
           </Text>
 
@@ -2009,7 +2009,7 @@ export function HarmonicsView({
             // band-limited additive synthesis of these 12 stems, live edits
             // included; above-Nyquist harmonics are omitted, never aliased.
             <Text style={styles.honestyNote}>
-              Audio = this 12-harmonic band-limited model — amps and phases sound as drawn;
+              Audio = this 12-harmonic band-limited model — amplitudes and phases sound as drawn;
               harmonics above the device Nyquist are omitted, never aliased.
             </Text>
           ) : modelHasOvertones && !additiveReady ? (

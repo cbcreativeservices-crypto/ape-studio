@@ -99,7 +99,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     seeing: [
       'You’re watching one sound three ways, slowed down. A SPEAKER pushes the air (PRESSURE →), a MIC diaphragm rides it, and its CONTINUOUS VOLTAGE → is drawn at right.',
       'The trace runs from +1.0 to −1.0. Its color shows loudness: blue is quiet, red is full scale.',
-      'FREQ and PERIOD (one cycle’s time) show the pitch. PEAK and RMS (average strength) show level in FS: fractions of the converter’s maximum (1.0).',
+      'FREQ and PERIOD (one cycle’s time) show pitch. PEAK and RMS (average strength) show level in FS (full scale): fractions of the converter’s max (1.0).',
     ],
     control: [
       'FREQ fader (60–2000 Hz) sets the pitch of the source. It locks on WHITE NOISE, because noise has no single frequency.',
@@ -136,7 +136,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     seeing: [
       'The amber sine is the INPUT — CONTINUOUS. Each white dot is one sample, a single measurement. The green line is the sample clock.',
       'Push the input above Nyquist and it dims (TRUE INPUT (DIM) — ABOVE NYQUIST). A red ALIAS curve shows the lower tone the same dots fit.',
-      'Readouts: FS (sample rate), INPUT, NYQUIST (half of FS) and READS AS, the frequency the samples really describe.',
+      'Readouts: FS (here the sample rate, not full scale), INPUT, NYQUIST (half of FS) and READS AS, the frequency the samples really describe.',
     ],
     control: [
       'FREQ fader sets the input, from 100 Hz up to 30 kHz at 48k. From 8k to 48k it can cross NYQUIST; at 96k and 192k it stops below it. ZOOM fader goes from single samples to many cycles.',
@@ -146,7 +146,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     changes: [
       'Below NYQUIST the dots follow the input, so READS AS equals INPUT.',
-      'Above it, the same dots fit a lower sine exactly. READS AS turns red and shows where the input folds: |INPUT − nearest multiple of FS|.',
+      'Above it, the same dots fit a lower sine exactly. READS AS turns red and shows where the input folds: the gap from INPUT to the nearest FS multiple.',
       'A higher FS raises NYQUIST. That buys more bandwidth, not a smoother wave.',
       'The filter turns content above CUTOFF down BEFORE sampling, so less can fold. Once sampled, an alias can’t be removed.',
     ],
@@ -218,7 +218,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     changes: [
       'Every readout comes from one signed 16-bit whole number, just written in different ways.',
       'Negatives use two’s complement: the MSB is worth −32,768, so values run from −32,768 to +32,767.',
-      'LEVEL = 20 × log10(|value| ÷ 32,768). Halve the value and LEVEL drops about 6 dB.',
+      'LEVEL = 20 × log10(|value| ÷ 32,768); |value| ignores the sign. Halve the value and LEVEL drops about 6 dB.',
       'A high bit moves the value a lot. The LSB (bottom bit) moves it by 1: one quantization step.',
     ],
     teaches: [
@@ -278,7 +278,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     seeing: [
       'One mix bus (where tracks are summed), two fates. At left, the FLOAT INTERNAL PATH; at right, the FIXED-POINT RENDER (24-BIT) with its 0 dBFS line.',
       'Readouts: FLOAT BUS (the bus peak, dBFS), FIXED (0.0 CLIP once it’s over zero) and TRIM.',
-      'Move VALUE and the display swaps to HOW A FLOAT NUMBER WORKS: SIGN, EXPONENT (decade) and MANTISSA (slides 1→10).',
+      'Move VALUE and the display swaps to HOW A FLOAT NUMBER WORKS: SIGN, EXPONENT (decade), the power of ten, and MANTISSA (slides 1→10), the value within it.',
     ],
     control: [
       'GAIN fader sets the bus peak, −6.0 to +6.0 dBFS. It starts at the top.',

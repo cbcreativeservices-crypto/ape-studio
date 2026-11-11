@@ -558,7 +558,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       {
         name: 'Ear Training Lab',
-        blurb: 'Frequencies, EQ moves, bands, noise colors and more — rendered signals, honest scoring, and the analyzer view of every answer.',
+        blurb: 'Frequencies, EQ moves, bands, noise colors and more — generated test signals, fair scoring, and the analyzer view of every answer.',
         route: 'EarTrainingLab',
       },
     ],

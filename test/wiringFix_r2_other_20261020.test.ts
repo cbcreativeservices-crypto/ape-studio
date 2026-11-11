@@ -102,7 +102,7 @@ describe('PR-R2-01..03 — Production: stereo channels count; passive split phan
     assert.doesNotMatch(s, /two rows or two channels, never one/);
     assert.doesNotMatch(s, /needs two console channels and two recorder tracks/);
     assert.match(s, /two mono console channels or one stereo channel/);
-    assert.match(s, /On a passive splitter only one console supplies phantom power, normally the one on the direct side/);
+    assert.match(s, /On a passive splitter only one console supplies phantom power, normally the one on the direct \(hard-wired\) side/);
     assert.doesNotMatch(s, /a line output into a microphone preamp at full gain/);
     assert.match(s, /a speaker-level output wired into a console or recorder input/);
   });

@@ -263,7 +263,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
     const what = changed.length ? ` ${changed.join(', ')}.` : ' Nothing in the readouts moved.';
     if (!present) return `${fixInfo.label}: ${fixInfo.why}${what} Strike it — the symptom has cleared.`;
     const side = lastFix === 'tighten' ? ' The drum is now a quarter turn higher than you left it — ↺ RESET CASE puts it back.' : lastFix === 'damp' ? ' The gel is still on the drum — ↺ RESET CASE takes it off.' : lastFix === 'reso' ? ' The resonant head is now 4 st above the batter — ↺ RESET CASE puts it back.' : '';
-    return `${fixInfo.label}: ${fixInfo.why}${what} FAULT still reads STILL.${side}`;
+    return `${fixInfo.label}: ${fixInfo.why}${what} FAULT reads STILL — not fixed yet.${side}`;
   };
   const firstRight = SYMPTOMS.filter((s) => sims[s.id].hypothesisRight === true).length;
   const hypothesised_n = SYMPTOMS.filter((s) => sims[s.id].hypothesis != null).length;

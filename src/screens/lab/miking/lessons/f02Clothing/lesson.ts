@@ -61,7 +61,7 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'See why a garment mic and a room mic can sound hollow together, how the arrival-time difference places comb notches, and why a moving garment makes any one alignment only locally true.',
+    goal: 'See why a garment mic and a room mic can sound hollow together, how the arrival-time difference places comb notches, and why a moving garment makes any one alignment true for only one moment.',
     credit: { scenarios: ['f02.two.1', 'f02.two.2', 'f02.two.3', 'f02.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Two mics hear the cloth at different times. Add the room mic for an interior only if it helps, check the pair in mono over the whole action, move or rebalance first. Two separate passes, one after the other, are not the same as two mics open at once.',
   },
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a cloth mic in the right order, choose and justify a setup for a quiet stage and a live station, and say what would justify a second mic.',
     credit: { scenarios: ['f02.prac.order', 'f02.prac.gain', 'f02.prac.setup1', 'f02.prac.setup2', 'f02.prac.3', 'f02.mix.1', 'f02.mix.2', 'f02.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
-    takeaway: 'A defined action, the whole gesture clear, a starting point read to the capsule, a quiet room and gain chain, and a mono check for a second mic pass. A brand or a louder signal does not — and more than one setup can pass.',
+    takeaway: 'What passes: a defined action, the whole gesture clear, a starting point read to the capsule, a quiet room and gain chain, and a mono check for a second mic. A brand or a louder signal does not — and more than one setup can pass.',
   },
 };
 
@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     explain: 'This shotgun’s tube reaches about 20 cm ahead of its capsule, toward the fabric. Close up, a small supercardioid keeps its body behind its capsule — and is smoother off its axis. Both are fair choices farther back.',
     why: {
       'It is more sensitive than a shotgun is': 'Sensitivity varies by model; the reason here is the tube’s reach.',
-      'A shotgun cannot be used for cloth at all': 'Many cloth passes use a shotgun — the garment start is drawn with one.',
+      'A shotgun cannot be used for cloth at all': 'Many cloth passes use a shotgun — the farther start, about 1–1.5 m out, is drawn with one.',
     },
   },
   {
@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A rain cover’s texture sounds thin at 1.25 m. Another idea to try?',
     options: ['Farther back, up to about 3 m', 'A closer mic, right on the fabric', 'A filter to add body later'],
     correct: 'Farther back, up to about 3 m',
-    explain: 'For some textures — a rain cover — one team moves the mic farther, up to about 3 m: the texture blends with the space. Check the room’s noise first.',
+    explain: 'For some textures — a rain cover — one idea is to move the mic farther, up to about 3 m: the texture blends with the space. Check the room’s noise first.',
     why: {
       'A closer mic, right on the fabric': 'Closer narrows to a friction point; a broad texture often wants more distance.',
       'A filter to add body later': 'A filter cannot add the space a farther mic hears.',
@@ -289,7 +289,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two characters each need a jacket pass. What does that call for?',
     options: ['Two passes, one after the other, each on one mic', 'Two mics open at once, one aimed at each garment', 'One mic between both artists, summed with a room mic'],
     correct: 'Two passes, one after the other, each on one mic',
-    explain: 'Separate performances or layers are not simultaneous multi-mic capture. Record each character’s pass on its own when it helps, and keep notes of which tracks belong together.',
+    explain: 'Separate performances or layers are not the same as several mics open at once. Record each character’s pass on its own when it helps, and keep notes of which tracks belong together.',
     why: {
       'Two mics open at once, one aimed at each garment': 'Each open mic also hears the other garment, a little later: two passes one after the other keep them apart.',
       'One mic between both artists, summed with a room mic': 'That blurs both garments together and adds a delay and a comb. Record each pass on its own.',
@@ -300,8 +300,8 @@ const scenarios: MikingScenario[] = [
     id: 'f02.prac.3',
     page: 'practice',
     prompt: 'What would justify a second mic for a cloth pass?',
-    options: ['An interior whose space it adds, mono holding', 'More channels give the mix more of a choice', 'The garment needs more level than one mic gives'],
-    correct: 'An interior whose space it adds, mono holding',
+    options: ['An interior whose space it adds, if mono holds up', 'More channels give the mix more of a choice', 'The garment needs more level than one mic gives'],
+    correct: 'An interior whose space it adds, if mono holds up',
     explain: 'For a spacious interior, a farther mic can add the room — if it helps the scene and the pair holds up in mono over the whole action. An exterior often wants one mic.',
     why: {
       'More channels give the mix more of a choice': 'More channels also mean more room and noise. Add a mic for a reason.',
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A quiet Foley stage, a medium shot: a character in a leather jacket. The artist holds the jacket. Phantom power available.',
     setups: [
       { id: 'a', label: 'Short shotgun about 1.25 m out, a little above, aimed at the fold', ok: true, power: 'phantom', feedback: 'A suggested starting point: the whole garment with some room — check the room noise.' },
-      { id: 'b', label: 'Small supercardioid about 60 cm out, just outside the gesture', ok: true, power: 'phantom', feedback: 'A suggested trial: more detail — check finger rub and the largest gesture.' },
+      { id: 'b', label: 'Small supercardioid about 60 cm out, just outside the gesture', ok: true, power: 'phantom', feedback: 'A suggested starting point: more detail — check finger rub and the largest gesture.' },
       { id: 'c', label: 'A lav clipped inside the jacket', ok: false, power: 'phantom', feedback: 'That records rustle at the capsule, not the performance.' },
       { id: 'd', label: 'A mic 20 cm from the fold, inside the swing', ok: false, power: 'phantom', feedback: 'Inside the gesture: the jacket will hit it. Keep the whole gesture clear.' },
       { id: 'e', label: 'The jacket crumpled close to the mic for more level', ok: false, power: 'phantom', feedback: 'A crumple is noise without shape. Perform the move precisely.' },
@@ -541,7 +541,7 @@ export const F02_LESSON: Lesson & { sp: SpExtra } = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a cloth setup for a quiet Foley stage and for a live station, compare a close detail with the whole garment, and explain what would justify a second mic. With a real performer and their agreement, you can record what you tried below.',
+    task: 'Choose a cloth setup for a quiet Foley stage and for a live station, compare a close detail with the whole garment, and explain what would justify a second mic. With a real performer and their agreement, you can write down what you tried below.',
     fields: [
       { id: 'cue', label: 'Scene or cue, and the wanted fabric texture', kind: 'text' },
       { id: 'garment', label: 'Garment: held or worn; the active area', kind: 'text' },
@@ -560,7 +560,7 @@ export const F02_LESSON: Lesson & { sp: SpExtra } = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. Every garment, performer and room is different: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged. The lab is silent and draws a simplified picture: one artist in a typical pose, the gesture’s reach as a keep-out, a shotgun’s narrowing as a simplified shape, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the active fabric to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. Every garment, performer and room is different: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged. The lab is silent and draws a simplified picture: one artist in a typical pose, the gesture’s reach as a keep-out, a shotgun’s narrowing as a simplified shape, mic patterns and the two-mic comb as textbook shapes. Distances are measured from the active fabric to the mic’s capsule and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches. Place real mics with the performer stopped, and only with their agreement.',
   copy: F02_COPY,
   sp: SP,
 };

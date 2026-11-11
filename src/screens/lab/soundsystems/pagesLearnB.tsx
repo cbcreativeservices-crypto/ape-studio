@@ -113,7 +113,7 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
       }}
       caption="Switch FEED and watch which channels reach the sub. On the aux feed, send the vocal by mistake."
       wellTop={
-        feed === 'aux' && vocalSend ? <VerdictLine ok={false} warn>The vocal is in the subwoofers — the fault on the bench. The crossover is blameless; the send is the fault.</VerdictLine> : null
+        feed === 'aux' && vocalSend ? <VerdictLine ok={false} warn>The vocal is in the subwoofers — one of the TROUBLESHOOT faults. The crossover is blameless; the send is the fault.</VerdictLine> : null
       }
     >
       <ChapterTag n={5}>SUBWOOFER DEPLOYMENT AND ROUTING</ChapterTag>

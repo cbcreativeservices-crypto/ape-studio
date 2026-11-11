@@ -52,7 +52,7 @@ const CLOSE_Z: Omit<DocumentedZone, 'start'> = {
 const BEHIND_Z: Omit<DocumentedZone, 'start'> = {
   id: 'fl.behind',
   label: 'Behind and slightly above the head',
-  band: 'Try a mic a few inches behind and a little above the player’s head (about 8–22 cm from it), aimed past the head at the finger holes.',
+  band: 'Try a mic about 8–22 cm behind and a little above the player’s head, aimed past the head at the finger holes.',
   kind: 'sourced',
   src: 'DPA-FLUTE',
   quote: 'spot-miked behind and slightly above the head of the player, pointing at the finger holes … a myriad of places around the head yield very good balance (S-REC: "A few inches behind player’s head, aiming at finger holes — Natural — Reduces breath noise.")',
@@ -104,7 +104,7 @@ const CLIP_Z: Omit<DocumentedZone, 'start'> = {
   requires: { micTypeIds: ['wwMini'], variants: [...KEYED] },
   draw: draws(A.foot, N_KEYS, 75, 30, 110),
   tendency: 'A steady close sound that moves with the flute — useful for a moving player. It can favor the holes and the keys over the embouchure: test the whole register.',
-  checks: ['A clip made for this flute, with the player’s agreement', 'Nothing over a hole, a key, a rod, a pad or a joint', 'The cable relieved, clear of the right hand'],
+  checks: ['A clip made for this flute, with the player’s agreement', 'Nothing over a hole, a key, a rod, a pad or a joint', 'The cable’s strain relief in place, clear of the right hand'],
 };
 
 const HEADSET_Z: Omit<DocumentedZone, 'start'> = {

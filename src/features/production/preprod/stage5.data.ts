@@ -662,7 +662,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "split_method",
           label: "How are inputs shared between destinations?",
           kind: "choice",
-          help: "When the same source must reach the house console, a recorder and a stream, something has to split it. Decide what, and who owns the split. On a passive splitter only one console supplies phantom power, normally the one on the direct side; the isolated side leaves it off.",
+          help: "When the same source must reach the house console, a recorder and a stream, something has to split it. Decide what, and who owns the split. On a passive splitter only one console supplies phantom power, normally the one on the direct (hard-wired) side; the transformer-isolated side leaves it off.",
           required: false,
           options: [
             {
@@ -959,7 +959,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "storage_estimate",
           label: "Estimated recording size",
           kind: "number",
-          help: "Worked out from the channel count, the session format and the hours you will record, for one copy. Compare it with the drives recorded in stage 4, remembering the backup needs the same again.",
+          help: "Worked out from the channel count, the session format and the hours you will record, for one copy. Compare it with the free drive space you entered in stage 4, remembering the backup needs the same again.",
           required: false,
           unit: "GB"
         },
@@ -1002,7 +1002,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "blocker",
       kind: "unrealistic",
       title: "The input list needs more channels than the equipment has",
-      detail: "The input list is the real count, and it is larger than the recorder or console recorded in stage 4 can take. Some of these sources will not be captured, and which ones will be decided at the patch bay by whoever runs out of sockets first.",
+      detail: "The input list is the real count, and it is larger than the recorder or console you listed in stage 4 can take. Some of these sources will not be captured, and which ones will be decided at the patch bay by whoever runs out of sockets first.",
       fixHint: "Add channels or inputs by hire, combine sources with the artist's agreement, or remove rows, and update stage 4 to match what you actually have.",
       needsLogic: true,
       logicIntent: "Sum in_channels across input_list rows, treating a row with the channels column empty as one. Fire when the sum exceeds schedule.available_channels or, where set, schedule.available_inputs. Do not fire when input_list is empty or the stage 4 fields are empty. When this rule fires, suppress schedule-channels-insufficient, which makes the same comparison from the stage 1 source count; do not raise both."

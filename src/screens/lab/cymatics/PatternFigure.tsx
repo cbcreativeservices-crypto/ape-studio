@@ -24,7 +24,7 @@ export const PAPERS: { id: string; label: string; blurb?: string }[] = [
   { id: '#ffffff', label: 'White' },
   { id: '#f4ecd8', label: 'Warm paper' },
   { id: '#0b1020', label: 'Navy' },
-  { id: 'transparent', label: 'Transparent', blurb: 'For the transparent PNG — the object face is not drawn, so the figure composites onto anything.' },
+  { id: 'transparent', label: 'Transparent', blurb: 'For the transparent PNG — the object face is not drawn, so the figure sits on any background.' },
 ];
 
 let seq = 0;

@@ -61,7 +61,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
     ],
     changes: [
       'Each unit works on what the one before hands it, so one switch changes all later units.',
-      'COMP (−30 dB · 4:1): each 4 dB over −30 dB leaves 1 dB over, so a boost before it means more GR.',
+      'COMP (−30 dB · 4:1): each 4 dB over threshold leaves 1 dB over, so a boost before it means more GR.',
       'LIMIT turns down any peak over −25 dB (low to teach; real ones sit just under full scale). Alone, the −20 dB SINE 220 gives it work; a COMP before it can leave it none.',
       'GATE (opens −35 dB) turns down what falls below that.',
     ],
@@ -73,7 +73,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
     tryThis: [
       'Tap ⟲ CLEAR CHAIN in SCENARIO, pick SINE 220, tap ▶ and put in LIMIT alone. Its GR holds between −4 and −5 dB: the −20 dB tone sits about 5 dB over the −25 dB ceiling.',
       'Now put DIST in too. LIMIT’s GR jumps to about −16 dB: DIST’s drive +12 dB hands the limiter a signal about 12 dB hotter. The unit before changes the unit after.',
-      'Pick EQ BOOST → COMP, set SOURCE to SINE 220 and play: COMP reads about −8 dB. Bypass EQ: about −7 (−6 on the phone speaker). The 150 Hz shelf lifts a 220 Hz tone under 2 dB.',
+      'Pick EQ BOOST → COMP, set SOURCE to SINE 220 and play: COMP reads about −8 dB. Bypass EQ: about −7 (−6 on the phone speaker; the app cuts its lows). The 150 Hz shelf lifts a 220 Hz tone under 2 dB.',
     ],
   },
 

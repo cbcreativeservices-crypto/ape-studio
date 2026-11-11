@@ -22,7 +22,7 @@ const STAGE_BLURB: Record<GainStageId, string> = {
   main: 'The main bus level. Unity: it passes what the channels sum to.',
   procIn: 'The processor’s input trim. Nominal +4 dBu in; anything else usually makes up for a mistake upstream.',
   procOut: 'The processor’s output trim, feeding the amplifier. Unity — the limiter is set here, from the cabinet’s ratings.',
-  amp: 'The amplifier’s input attenuator. Set so the amplifier is the LAST stage to clip — around −18 here, a little below the −16 at which it would clip together with a console that clips at +20.',
+  amp: 'The amplifier’s input attenuator. Set it so the amplifier is the LAST stage to clip: around −18 dB here, a little below −16 dB, where it would clip at the same moment as a console that clips at +20 dBu.',
   speaker: '',
 };
 

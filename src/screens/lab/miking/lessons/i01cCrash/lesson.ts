@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a crash mic in the right order, choose and justify a plan for two briefs (from no crash mic to one underneath), and say what would justify one at all.',
     credit: { scenarios: ['cr.prac.order', 'cr.prac.gain', 'cr.prac.setup1', 'cr.prac.setup2', 'cr.prac.3', 'cr.mix.1', 'cr.mix.2', 'cr.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe clearance, correct power and level checks, a reason for the mic at all, and an accurate account of polarity versus delay pass. A brand or a habit does not decide it — and more than one plan can pass.',
+    takeaway: 'To pass, you need safe clearance, correct power and level checks, a reason for the mic at all, and an accurate account of polarity versus delay. A brand or a habit does not decide it — and more than one plan can pass.',
   },
 };
 
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'MIXED · You flip the under mic’s polarity. What changes?',
     options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns around to face down at the floor'],
     correct: 'The sign of its signal; the delay stays the same',
-    explain: 'Polarity flips the sign; only distance changes when a sound arrives. Compare both states in mono.',
+    explain: 'Polarity flips the sign; only distance (or a delay setting) changes when a sound arrives. Compare both states in mono.',
     why: {
       'The delay between the two mics drops all the way to zero': 'Only distance (or a delay setting) changes the arrival time.',
       'The mic’s pattern turns around to face down at the floor': 'The pattern stays where the mic points. Only the sign flips.',
@@ -344,7 +344,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session in a good room. The overheads carry the crashes well. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No crash mic: the overheads already carry the crashes', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic above the crash on the far side, aimed at the plate', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power — fine on this input.' },
       { id: 'c', label: 'A small condenser under the crash, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'd', label: 'A small condenser above the crash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'e', label: 'Tighten the crash’s wing nut so it cannot swing into a close mic', ok: false, power: 'none', feedback: 'A cymbal must move freely — over-tightening chokes it and can crack it. Move the mic.' },
@@ -470,7 +470,7 @@ export const I01C_LESSON: CymbalLesson = {
   diagnostic,
   practice: {
     task: 'Decide whether a crash needs its own mic for a given kit and performance — none, above, or underneath — place it safely, and explain the choice. With a real kit and the drummer’s agreement, you can record what you tried below.',
-    fields: practiceSheet('crash', ['no crash mic', 'above the plate', 'underneath'], 'Aim (edge, bow or bell), and where the tom sits off it'),
+    fields: practiceSheet('crash', ['no crash mic', 'above the plate', 'underneath'], 'Aim (edge, bow or bell), and where the tom sits off the mic’s front'),
   },
   unknowns: [
     ...COMMON_UNKNOWNS,

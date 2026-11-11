@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'How do you mount the close mic?',
     options: ['On a stable stand of its own, off the instrument', 'On a small clamp fixed firmly to the edge of the lid', 'Resting on the lid, facing the grille'],
     correct: 'On a stable stand of its own, off the instrument',
-    explain: 'A stand independent of the case: a clamp or a stand touching the old lid can rattle it, scratch it, or bridge metal to a fault. Never clamp to the lid or the grille.',
+    explain: 'A stand independent of the case: a clamp or a stand touching the old lid can rattle it, scratch it, or bridge metal to an electrical fault. Never clamp to the lid or the grille.',
     why: {
       'On a small clamp fixed firmly to the edge of the lid': 'Nothing is clamped to the lid or the grille: it can rattle or damage them.',
       'Resting on the lid, facing the grille': 'It would pick up the lid’s vibration and can fall into the player’s hands.',
@@ -198,7 +198,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Which grille sounds best, and that the mic is clear',
     explain: 'The number is a start, measured from a grille. Choose the grille by ear, and check clearance: the lid, the keys’ travel, the hands, the forearms and the pedal foot.',
     why: {
-      'Only the distance — the rest is detail': 'Without the right grille and clearance the number places nothing well.',
+      'Only the distance — the rest is detail': 'Without the right grille and clearance, the distance alone places the mic badly.',
       'The instrument’s brand and model, for its exact spot': 'Grille positions differ between models and versions; find them on the real instrument.',
     },
   },
@@ -460,10 +460,10 @@ const symptoms: Symptom[] = [
   {
     id: 's.hum',
     observation: 'Hum, or any electrical concern',
-    firstChecks: 'Is it there at the source and the auxiliary output with every mic muted? Stop if unsafe and call a qualified technician — no ground defeat.',
+    firstChecks: 'Is it there at the source and the auxiliary output with every mic muted? Stop if unsafe and call a qualified technician — never lift the safety ground.',
     options: ['Mute the mics, check the source; stop and call a technician', 'Lift the safety ground with an adapter so the hum stops at once', 'Open the case carefully to find the loose wire'],
     correct: 'Mute the mics, check the source; stop and call a technician',
-    explain: 'Hum on an old instrument with a high-voltage pickup is a technician’s problem. Never lift the ground or open the case; stop using it if it shocks, smells hot or arcs.',
+    explain: 'Hum on an old instrument with a high-voltage pickup is a technician’s problem. Never lift the safety ground or open the case; stop using it if it shocks, smells hot or arcs.',
     why: {
       'Lift the safety ground with an adapter so the hum stops at once': 'That removes a safety path and can make a fault dangerous.',
       'Open the case carefully to find the loose wire': 'The case stays closed: AC power and high voltage inside.',

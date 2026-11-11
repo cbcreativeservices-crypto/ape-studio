@@ -174,7 +174,7 @@ export const phaseySymptom = (id: string, what = 'The group sounds hollow or pha
   },
 });
 
-export const GROUP_BRAND: SetupReason = { id: 'r.brand', label: 'It is the brand most groups use', role: 'wrong', feedback: 'A brand is not part of passing: choose by the pattern, the distance and the group.' };
+export const GROUP_BRAND: SetupReason = { id: 'r.brand', label: 'It is the brand most groups use', role: 'wrong', feedback: 'A brand is not a fair reason: choose by the pattern, the distance and the group.' };
 export const NO_PROVOKE_REASON: SetupReason = { id: 'r.ring', label: 'Raise the monitors until it rings, then back off', role: 'wrong', feedback: 'Not until it rings: monitors up only to the agreed level, and down at once at any ring.' };
 export const FEWEST_REASON: SetupReason = { id: 'r.fewest', label: 'The fewest open mics that cover the group', role: 'optional', feedback: 'A fair reason: every doubling of open mics costs about 3 dB of margin.' };
 export const SAFE_REASON: SetupReason = { id: 'r.safe', label: 'Stands and cables clear of the singers, their feet and the way out', role: 'required', feedback: 'Safe placement is part of every passing setup.' };

@@ -469,8 +469,8 @@ export function Mod7RealWorld() {
               ) : null}
               <LearnMore title="READING THE REST OF THE SHEET">
                 <Body>
-                  THD+N compares unwanted harmonic and noise energy with the wanted signal under stated conditions — one number
-                  does not predict perceived quality, and this lab does not compute a fake one.
+                  THD+N compares unwanted harmonic and noise energy with the wanted signal under stated conditions — on its own, one
+                  number does not predict perceived quality.
                 </Body>
                 <Body>
                   Signal-to-noise ratio means something only with its reference level, bandwidth, weighting, and conditions

@@ -20,7 +20,7 @@ export const F12_COPY: Partial<LessonCopy> = {
     figureBadge: 'The meter on its tripod',
     figureLabel: 'A sound level meter on a tripod, its windscreen on.',
     partsBadge: 'Tap a part of the site to name it',
-    partsLooking: { side: 'Section · the road on the right', top: 'Site plan · the road on the right' },
+    partsLooking: { side: 'Cut-away side view · the road on the right', top: 'Site plan · the road on the right' },
     partsIdle: 'Tap the house, its facade, the air unit, the road or the power line to see what each one means for the meter.',
     variantNotes: {},
   },

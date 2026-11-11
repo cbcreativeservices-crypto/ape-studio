@@ -167,7 +167,7 @@ export const TABLA_ZONES: DocumentedZone[] = [
     a: [30, 85],
     aim: 35,
     start: [1050, 65],
-    tendency: 'The room around the pair. If it blurs the rhythm or turns the sound hollow, lower it, move it or leave it out. On stage it is most often a capture-only channel, not a PA feed.',
+    tendency: 'The room around the pair. If it blurs the rhythm or turns the sound hollow, lower it, move it or leave it out. On stage it is most often a recording-only channel, not a PA feed.',
     checks: ['Rhythmic detail kept', 'The blend in mono', 'Kept out of the PA live'],
   }),
 ];

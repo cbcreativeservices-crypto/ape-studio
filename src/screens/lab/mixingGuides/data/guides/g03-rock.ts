@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater rock typically runs 96–102 dBA LAeq,15min at FOH, arenas and festivals 100–105 dBA, with C-weighted LCeq around 112–120 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq,15min at FOH, and some also cap C-weighted peaks (such as 135 dBC). Rock needs moderate sub, not EDM-level sub. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs and protect your own ears."
+      "text": "Club and theater rock typically runs 96–102 dBA LAeq,15min at FOH, arenas and festivals 100–105 dBA, with C-weighted LCeq around 112–120 dBC; a dBC reading 20 dB or more above the dBA reading signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq,15min at FOH, and some also cap C-weighted peaks (such as 135 dBC). Rock needs moderate sub, not EDM-level sub. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",

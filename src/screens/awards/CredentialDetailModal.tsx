@@ -221,7 +221,7 @@ export function CredentialDetailModal({
             </Text>
           ) : (
             // The watermark describes the PICTURE, so it goes with the picture.
-            <Text style={styles.artWatermark}>Simulated possible work environment</Text>
+            <Text style={styles.artWatermark}>Simulated workplace environment</Text>
           )}
         </View>
 

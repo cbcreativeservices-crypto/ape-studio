@@ -80,7 +80,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Say the mantra aloud from memory, then check it against THE PATCHBAY MANTRA card.',
-      'Pick one item from each card. Say which is the source, which is the destination, and which way signal moves between them.',
+      'Pick one item from the TOP ROW card and one from the BOTTOM ROW card. Say which is the source, which is the destination, and which way signal moves.',
     ],
   },
 
@@ -163,7 +163,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'The same pair, now NORMALLED: signal already flows from CONSOLE OUT 1 to INTERFACE IN 1, with no patch cord anywhere.',
       'Its caption reads NO PATCH CORD REQUIRED: the connection is inside the bay.',
-      'A highlighted line defines the word “normal”. An UNDERSTANDING CHECK follows.',
+      'Read the highlighted line that defines the word “normal”, then answer the UNDERSTANDING CHECK.',
     ],
     control: [
       'The figure is a picture: there’s nothing to plug in on this page.',
@@ -194,7 +194,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'INSIDE THE JACK — CUTAWAY: the FRONT PANEL, the plug waiting outside (PLUG OUT), the TIP SPRING fed FROM SOURCE · REAR, and the NORMAL CONTACT wired TO DESTINATION · REAR.',
-      'Readouts: INSERTION, CONTACTS (TOUCHING or OPEN), NORMAL (INTACT or BROKEN).',
+      'As the plug moves, watch INSERTION, CONTACTS (TOUCHING or OPEN) and NORMAL (INTACT or BROKEN).',
       'The CONCEPTUAL MODEL badge: this jack opens at 85%. It’s drawn ENLARGED with only the tip spring; a real jack has a ring spring too.',
     ],
     control: [
@@ -229,7 +229,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The pair is now FULL-NORMAL: a green NORMAL joins CONSOLE OUT 1 to INTERFACE IN 1.',
       'A top cord goes to an ANALYZER; a bottom cord brings in a DRUM MACHINE.',
       'A ✕ with NORMAL BROKEN marks a normal held open by a plug. Red means the destination has been left silent.',
-      'Readouts: TOP, BOTTOM, NORMAL, DEST HEARS. A caption names the state: A, B, C or D.',
+      'Watch TOP, BOTTOM, NORMAL and DEST HEARS as you patch. A caption names the state: A, B, C or D.',
     ],
     control: [
       'Use TOP JACK and BOTTOM JACK in the dock, or tap the jacks on the drawing.',
@@ -261,7 +261,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'The same pair and labels, now HALF-NORMALLED. It starts exactly like full-normal: NORMAL INTACT, DEST HEARS SOURCE.',
-      'Below the status line: PREDICT BEFORE PATCHING and two goal chips.',
+      'Below the status line, answer PREDICT BEFORE PATCHING, then light the two goal chips.',
       'The dock stays empty and the jacks do nothing until your prediction is in.',
     ],
     control: [
@@ -294,7 +294,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'A scoreboard card. FULL-NORMAL: top insert breaks, bottom insert breaks. HALF-NORMAL (COMMON BAY): top does not break, bottom breaks.',
-      'Under it, a short explanation, then an UNDERSTANDING CHECK.',
+      'Read the short explanation under it, then answer the UNDERSTANDING CHECK.',
     ],
     control: [
       'Tap an answer: the top front jack, the bottom front jack, both, or neither. The order is shuffled.',
@@ -337,7 +337,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     teaches: [
       'Tap, split, monitor feed: three names for one move, a copy taken without interrupting.',
       'A MULT is a separate group of jacks wired together, used to copy one signal to several places.',
-      'A PARALLEL pair has no switch, so a cord in either jack takes a copy; patching a second source into it would clash.',
+      'A PARALLEL pair has no switch, so a cord in either jack takes a copy; patching a second source into it would clash (two outputs wired together).',
       'Half-normal still breaks on the bottom, the jack you use to replace a source.',
     ],
     tryThis: [
@@ -355,7 +355,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'One table of everything so far: ACTION down the side; FULL, HALF (COMMON) and THRU across the top.',
       'Its rows: no front cables, plug into TOP, plug into BOTTOM, tap without interrupting, default connection.',
-      'Below it: a note on rarer bays, an UNDERSTANDING CHECK and THE PATCHBAY MANTRA.',
+      'Below it, read the note on rarer bays, answer the UNDERSTANDING CHECK and read THE PATCHBAY MANTRA.',
     ],
     control: [
       'Read the table, then answer the check about feeding a tuner. Wrong answers explain themselves; the right one completes the page.',
@@ -468,8 +468,8 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'You’re looking at the first eight pairs of a 24-pair studio bay. The pair you select gets a cyan outline and is drawn again below as a signal path.',
-      'Readouts: PAIR (its number, with HALF or THRU), NORMAL and DEST HEARS.',
-      'Below them: the row legend, the status line and three goal chips.',
+      'As you change pairs, watch PAIR (its number, with HALF or THRU), NORMAL and DEST HEARS.',
+      'Below them, read the row legend and the status line, and light the three goal chips.',
     ],
     control: [
       'Ride the PAIR fader through 01–08, or tap it to pick a pair by name. Tapping a column on the bay selects it too.',
@@ -501,8 +501,8 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'This is the 8-pair studio bay with no cords in it at all.',
-      'Readouts: PAIRS 8, FRONT CORDS 0, and NORMALS (HIDDEN or SHOWN).',
-      'Below: the row legend, a statement card and an UNDERSTANDING CHECK.',
+      'Keep an eye on PAIRS 8, FRONT CORDS 0 and NORMALS (HIDDEN or SHOWN).',
+      'Below, read the row legend and the statement card, then answer the UNDERSTANDING CHECK.',
     ],
     control: [
       'Flip the SHOW THE INVISIBLE NORMALS switch in the dock to draw the connections inside the bay, or to hide them again.',
@@ -533,7 +533,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'You’re back on the half-normal pair: CONSOLE OUT 1 over INTERFACE IN 1. A bottom cord brings in SYNTH (SOURCE C).',
       'Read the card that defines NORMAL PATH and OVERPATCH, then watch TOP, BOTTOM, NORMAL and DEST HEARS.',
-      'Under the status line: a caption and one goal chip.',
+      'Under the status line, read the caption and light the one goal chip.',
     ],
     control: [
       'Use TOP JACK and BOTTOM JACK in the dock, or tap the jacks on the drawing.',
@@ -564,7 +564,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'Two pairs, one on the display at a time. VOCAL PAIR: VOCAL OUT over CONSOLE IN 2, half-normal. PROCESSOR PAIR: COMPRESSOR OUT over COMPRESSOR IN, thru.',
       'The two cords are numbered ① SEND and ② RETURN.',
-      'Readouts: COMPRESSOR (IN or BYPASSED), then NORMAL and DEST HEARS for the pair in view.',
+      'Watch COMPRESSOR (IN or BYPASSED), then NORMAL and DEST HEARS for the pair in view.',
     ],
     control: [
       'The INSERT COMPRESSOR switch patches both cords at once, or pulls both out to bypass.',
@@ -657,8 +657,8 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'The jack cutaway from The switching contact page, with the plug starting 90% in. Past 30%, its metal bands are labeled T, R and S.',
-      'Readouts: INSERTION, CONTACTS, NORMAL. The CONCEPTUAL MODEL badge sits under the drawing.',
-      'Below: a T · R · S card and an UNDERSTANDING CHECK.',
+      'As the plug moves, watch INSERTION, CONTACTS and NORMAL. The CONCEPTUAL MODEL badge sits under the drawing.',
+      'Below, read the T · R · S card, then answer the UNDERSTANDING CHECK.',
     ],
     control: [
       'Slide the PLUG INSERTION fader, 0–100%, to move the plug in and out.',
@@ -689,7 +689,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'This page is about phantom power: +48 V sent down a mic cable to power condenser mics.',
       'A warning card, ⚠ PHANTOM POWER + PATCHBAYS: five points about mic-level circuits carrying +48 V.',
-      'A note on what the warning does NOT say, then an UNDERSTANDING CHECK.',
+      'Read the note on what the warning does NOT say, then answer the UNDERSTANDING CHECK.',
     ],
     control: [
       'Read, then answer the check about re-patching a mic line with phantom on. The right answer completes the page.',
@@ -726,7 +726,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     changes: [
       'Each pick shows the tradeoff for that job: a default route, a free tap, or a surprise waiting.',
-      'The processor and spare pairs accept only THRU: a normal there would loop a processor or connect unknown gear.',
+      'The processor and spare pairs accept only THRU: a normal there would feed a processor’s output back into its input, or connect unknown gear.',
     ],
     teaches: [
       'A pair’s wiring follows from its job, not from definitions.',
@@ -752,7 +752,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'Tap an answer on each scenario. Wrong answers explain and you try again.',
-      'Solve all ten to complete the page. The last NEXT is FINISH: it opens a list of anything not yet done. Gain Staging follows this lab in the Signal list.',
+      'Solve all ten to complete the page. On this last page, NEXT reads FINISH: it opens a list of anything not yet done. Gain Staging follows this lab in the Signal list.',
     ],
     changes: [
       'Each question mixes the lab’s ideas: identify a wiring, predict both jacks, find a broken normal, route without interrupting, replace a source, spot a hazard.',

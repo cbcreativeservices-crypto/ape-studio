@@ -64,7 +64,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     },
     seeing: [
       'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',
-      'On OUT: the gray dry click, then the amber wash (reverb) falling as a straight slope. Dashed guides sit 30 dB apart; the dimmer line is the last sweep.',
+      'On OUT: the gray dry click, then the amber wash (reverb) falling as a straight slope. Dashed guides sit 30 dB apart; the dim line is the previous sweep.',
       'RT60, PRE, MIX: your settings. TEACHING MODEL: a drawing of the idea, not a measurement.',
     ],
     control: [
@@ -105,7 +105,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     control: [
       'Scroll to read. The tabs under the title switch between LEARN, EXPLORE and CHECK; on EXPLORE you see and hear each idea on the live rack.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
-      'On EXPLORE, long-press a dock key or a readout to open just its entry. Long-press a SOURCE choice for that test signal’s own note.',
+      'On EXPLORE, long-press a key or a readout to open just its entry. Long-press a SOURCE choice for that test signal’s own note.',
     ],
     changes: [
       'This page is your reference for what EXPLORE shows.',

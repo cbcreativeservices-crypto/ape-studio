@@ -45,7 +45,7 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
     key: 'balanceWoods',
     words: {
       title: 'Where you listen',
-      badge: 'Each source as a point, free field · the change since the start, from the drawn distances · a simplified picture',
+      badge: 'Each source as a point in open air (free field) · SINCE THE START comes from the distances on the plan · a simplified picture',
       looking: 'A woodland stream, from above',
       prompt: 'Move LISTEN AT toward the water and back, and watch SINCE THE START.',
       mainKey: 'WATER',
@@ -61,14 +61,14 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
     main: (p) => nearestOnPolyline(STREAM_PTS, p, 0),
     others: BIRD_PTS,
     Background: Woods,
-    a11y: (x) => `Plan of the woodland stream from above. The listening point ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the water from where it started.`,
+    a11y: (x) => `Plan of the woodland stream from above. The listening point is ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the water from where it started.`,
     prediction: lesson.predictions.sound,
   });
   const plaza = useBalanceStep({
     key: 'balancePlaza',
     words: {
       title: 'Where you listen',
-      badge: 'Each source as a point, free field · the change since the start, from the drawn distances · a simplified picture',
+      badge: 'Each source as a point in open air (free field) · SINCE THE START comes from the distances on the plan · a simplified picture',
       looking: 'A city plaza, from above',
       prompt: 'Move LISTEN AT toward the road and back, and watch SINCE THE START.',
       mainKey: 'TRAFFIC',
@@ -84,7 +84,7 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
     main: (p) => ({ x: 10750, y: -600, z: p.z }),
     others: CAFE_PTS,
     Background: Plaza,
-    a11y: (x) => `Plan of the city plaza from above. The listening point ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the road from where it started.`,
+    a11y: (x) => `Plan of the city plaza from above. The listening point is ${Math.abs(x / 1000).toFixed(1)} meters ${x >= 0 ? 'toward' : 'back from'} the road from where it started.`,
     prediction: lesson.predictions.sound,
   });
   const steps: MikingStep[] = [
@@ -121,7 +121,7 @@ function F06Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
     start: urban(variant) ? 'plaza' : 'forest',
     words: {
       title: 'Wind before a filter',
-      badge: 'The layers drawn as real objects · the curls at the capsule are a cue, not a level',
+      badge: 'The wind layers drawn as real objects · the curls at the capsule show wind reaching it, not a level',
       looking: 'A short shotgun and its wind protection',
       prompt: 'Add the layers with COVER, then try each SITE. What does each place need?',
       after: 'Foam is often enough inside a sheltered forest; open ground and a gusty plaza need fur, a basket and its suspension — and the most protection costs a little top end. Fit it to the mic and the day, and keep monitoring.',

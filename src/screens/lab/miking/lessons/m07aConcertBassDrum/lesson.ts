@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the playing head, looking diagonally down at it, outside the mallet’s and the hands’ path — then move the mic and see what changes.',
-    credit: { scenarios: ['cbd.place.1', 'cbd.place.2', 'cbd.place.3', 'cbd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cbd.place.1', 'cbd.place.2', 'cbd.place.3', 'cbd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count.' },
     takeaway: 'A suggested zone is a place to begin, measured from the playing head — not a rule and not a safety distance. The drum and its stand never move; the mic does.',
   },
   context: {
@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Add one spot in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['cbd.prac.order', 'cbd.prac.gain', 'cbd.prac.setup1', 'cbd.prac.setup2', 'cbd.prac.3', 'cbd.mix.1', 'cbd.mix.2', 'cbd.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'An unobstructed one-spot or main-only choice, headroom for the loudest hit, an honest mono check and the stand left as the crew set it pass — and more than one setup can pass.',
+    takeaway: 'These pass: an unobstructed one-spot or main-only choice, headroom for the loudest hit, an honest mono check and the stand left as the crew set it — and more than one setup can pass.',
   },
 };
 
@@ -301,7 +301,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No fixed rule: compare both states in mono, at matched level',
     explain: 'A fixed automatic reversal for the far head is unjustified. Check both spots together, then against the main pickup; remove the far-head mic if it adds little.',
     why: {
-      'Yes — a far-head mic is wired the wrong way around by nature': 'It is not wired wrong: facing the far head it often hears the thump opposite, but positions and arrival times also decide the sum. Compare both states.',
+      'Yes — a far-head mic is wired the wrong way around by nature': 'It is not wired wrong: facing the far head it often hears the thump in opposite polarity, but positions and arrival times also decide the sum. Compare both states.',
       'Yes, and delay it too, so both mics line up exactly in time again': 'One source in a hall cannot line up at every frequency and every reflection; judge by ear.',
     },
   },
@@ -580,6 +580,6 @@ export const M07A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the bass drum’s low end already; when a spot helps, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. You never move the drum or its stand for a mic; only the player and crew may change them. The lab is silent and draws a simplified picture: a 36 × 16 in drum, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. Here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the bass drum’s low end already; when a spot helps, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. You never move the drum or its stand for a mic; only the player and crew may change them. The lab is silent and draws a simplified picture: a 36 × 16 in drum, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: CBD_COPY,
 };

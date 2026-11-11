@@ -82,8 +82,8 @@ const WS_BPM: Workspace = {
   tagline: 'Tempo → delay times · LFO rates · pre-delay',
   section: 'music',
   intro:
-    'Everything on the time axis of a mix can lock to the tempo. Enter the BPM (or tap an ' +
-    'interval and get the BPM back) and the lab converts musical note values into the ' +
+    'Everything on the time axis of a mix can lock to the tempo. Enter the BPM (or a measured ' +
+    'beat interval to get the BPM back) and the lab converts musical note values into the ' +
     'milliseconds your delay, LFO, and reverb pre-delay actually want.',
   whyItMatters:
     'A delay set to a musical division sits IN the groove; one set to a round number sits on ' +
@@ -476,7 +476,7 @@ const WS_PITCH: Workspace = {
         const st = 12 * Math.log2(f2 / f1);
         return [
           `Ratio = ${fmt(f2)} ÷ ${fmt(f1)} = ${fmt(f2 / f1)} — pitch intervals live in ratios, not differences.`,
-          `Semitones = 12·log₂(${fmt(f2 / f1)}) = ${fmt(st)}; cents = ×100 = ${fmt(st * 100)}.`,
+          `Semitones = 12·log₂(${fmt(f2 / f1)}) = ${fmt(st)}; cents = semitones × 100 = ${fmt(st * 100)}.`,
           `The nearest equal-tempered interval is ${intervalPhrase(st)}.`,
         ];
       },
@@ -527,7 +527,7 @@ const WS_PITCH: Workspace = {
 /** Small step-text helper for freqToNote (keeps the template literal readable). */
 function cents(m: number, r: number): string {
   const c = (m - r) * 100;
-  if (Math.abs(c) < 0.5) return 'in tune the tone already is';
+  if (Math.abs(c) < 0.5) return 'off pitch the tone is — it is already in tune';
   return `${c > 0 ? 'sharp' : 'flat'} the tone is`;
 }
 
@@ -703,7 +703,7 @@ const WS_FILESIZE: Workspace = {
         const rate = per * n(v.tracks);
         return [
           `One track at this format writes ${fmt(per)} bytes/s.`,
-          `${fmtCount(n(v.tracks))} tracks write ${fmt(rate)} bytes/s = ${fmt((rate * 60) / 1e6)} MB per minute of rolling tape.`,
+          `${fmtCount(n(v.tracks))} tracks write ${fmt(rate)} bytes/s = ${fmt((rate * 60) / 1e6)} MB per minute of recording.`,
         ];
       },
       table: (v) => {
@@ -1122,7 +1122,7 @@ const WS_TREATMENT: Workspace = {
   example:
     'A 150 m³ office at RT60 = 1.2 s, target 0.5 s: A now = 0.161×150/1.2 ≈ 20.1 m², A needed ' +
     '= 0.161×150/0.5 ≈ 48.3 m², so ΔA ≈ 28.2 m². With 2.88 m² panels at α 0.9 (2.59 m² each), ' +
-    'that is ceil(28.2/2.59) = 11 panels — predicted RT ≈ 0.50 s.',
+    'that is 28.2/2.59 rounded up = 11 panels — predicted RT ≈ 0.50 s.',
   mistakes: [
     'Buying thin foam for low frequencies — a 25 mm panel absorbing 0.9 at 4 kHz can be nearly transparent at 125 Hz; bass needs thick porous material, air gaps, or tuned traps.',
     'Treating RT60 as the only metric — first reflections, flutter echo, and modal ringing all need attention the average decay number cannot see.',
@@ -1130,7 +1130,7 @@ const WS_TREATMENT: Workspace = {
   ],
   warnings:
     'Same Sabine limits as the Reverberation Time workspace: diffuse field, average absorption ' +
-    'below ~0.3, single-band teaching α. Lab-measured α above 1.0 happens (edge diffraction) — ' +
+    'below ~0.3, single-band α values. Lab-measured α above 1.0 happens (edge diffraction) — ' +
     'treat it as ≈1. Placement matters as much as quantity: first-reflection points and corners ' +
     '(for bass) do the most work — pair this plan with the Room Modes workspace to see WHAT ' +
     'needs absorbing down low.',
@@ -1231,7 +1231,7 @@ const WS_TREATMENT: Workspace = {
           `Absorption the target needs: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtT)} = ${fmt(aTgt)} m².`,
           `Shortfall ΔA = ${fmt(aTgt)} − ${fmt(aCur)} = ${fmt(dA)} m².`,
           `Each panel supplies ${fmt(n(v.panelArea))} m² × α ${fmt(n(v.alpha))} = ${fmt(perPanel)} m² of absorption.`,
-          `Panels = ceil(${fmt(dA)} ÷ ${fmt(perPanel)}) = ${fmtInt(panels)} — rounding UP, because a fraction of a panel does not exist.`,
+          `Panels = ${fmt(dA)} ÷ ${fmt(perPanel)}, rounded UP = ${fmtInt(panels)}, because a fraction of a panel does not exist.`,
           `With ${fmtInt(panels)} whole panel${panels === 1 ? '' : 's'} the room lands at RT60 = 0.161 × ${fmt(V)} ÷ ${fmt(aCur + panels * perPanel)} = ${fmt((SABINE_K * V) / (aCur + panels * perPanel))} s.`,
         ];
       },

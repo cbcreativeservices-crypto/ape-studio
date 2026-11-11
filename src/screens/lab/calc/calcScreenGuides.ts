@@ -308,7 +308,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     tryThis: [
       'Open WAVES & TIME › Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows). PERIOD reads 10 ms: one cycle of a 100 Hz tone.',
       'Open LEVELS & DECIBELS › Audio Level Converter and type 4 in LEVEL (dBu) (then CALCULATE, if it shows). VOLTAGE (RMS) reads 1.228 V: +4 dBu pro line level.',
-      'Tap π KEY and find λ (lambda): wavelength, the length of one cycle. λ = c / f, so the higher the frequency, the shorter the wave.',
+      'Tap π KEY and find λ (lambda): wavelength, the length of one cycle. λ = c / f (c is the speed of sound), so the higher the frequency, the shorter the wave.',
     ],
   },
 

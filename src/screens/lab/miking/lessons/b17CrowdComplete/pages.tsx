@@ -77,7 +77,7 @@ function B17Meet(p: PageProps) {
 const ROWS = [SPORTS_SAFETY.approval, SPORTS_SAFETY.play, SPORTS_SAFETY.lightning, SPORTS_SAFETY.weather, SPORTS_SAFETY.electrics, SPORTS_SAFETY.hearing, SPORTS_SAFETY.feedback, SPORTS_SAFETY.withdraw];
 
 function B17Setups(p: PageProps) {
-  const setups = useSetupsStep({ p, scene: PRACTICE_CROWD, setups: B17_SETUPS, prompt: 'Step through SETUP. Each mic or pair is drawn at its approved place with its aim; the corner box shows it at its height.' });
+  const setups = useSetupsStep({ p, scene: PRACTICE_CROWD, setups: B17_SETUPS, prompt: 'Step through SETUP: find each mic or pair at its approved place with its aim, and check the corner box for it at its height.' });
   const steps: MikingStep[] = [setups, hearsStep(p.lesson, 'An audience mic hears the whole venue — and some things far more than others:'), beforeStep(p, ROWS)];
   return <PageSteps steps={steps} />;
 }
@@ -88,7 +88,7 @@ const METHODS: Method[] = [
   { id: 'mono', label: 'One mono audience mic', short: 'MONO', gives: 'A simple, stable audience bed — the fallback that survives the loss of everything else.', limit: 'No spatial information; a nearby voice or the PA can dominate one mic.', mics: [MONO_S] },
   { id: 'xy', label: 'A coincident XY pair', short: 'XY', gives: 'Width from level differences only: a solid mono sum.', limit: 'Its off-axis tone at the sides; the width depends on the angle between the capsules.', mics: [XY_S], note: 'A starting comparison: cardioids about 90° apart.' },
   { id: 'ortf', label: 'A near-coincident pair', short: 'NEAR-COINC.', gives: 'Level and arrival differences together: a wider, more open image.', limit: 'Some color in the mono sum from the small spacing.', mics: [ORTF_S], note: 'Two cardioids 17 cm apart, 110° between their axes — a fixed geometry.' },
-  { id: 'ab', label: 'Spaced omnis', short: 'SPACED', gives: 'A spacious picture with the venue’s low end.', limit: 'Larger arrival differences: a shared announcement or action transient can color in mono; more nearby movement.', mics: [AB_S], note: 'A starting trial: about 0.5 m apart, the separation logged.' },
+  { id: 'ab', label: 'Spaced omnis', short: 'SPACED', gives: 'A spacious picture with the venue’s low end.', limit: 'Larger arrival differences: a shared announcement or action transient can color in mono; more nearby movement.', mics: [AB_S], note: 'A suggested start: about 0.5 m apart, the separation logged.' },
   { id: 'ms', label: 'Mid-Side', short: 'M/S', gives: 'A forward Mid and a side-facing figure-8, decoded to left and right — the width chosen after the capture.', limit: 'The Side’s lobes need to be aimed and decoded correctly. A polarity flip on one path swaps left and right; a delay between the paths blurs the image.', mics: [MS_S], note: 'Decode once; check that a source at the positive lobe appears on the intended side.' },
 ];
 
@@ -214,7 +214,7 @@ function B17TwoMic(p: PageProps) {
     onInteractive: p.onInteractive,
     done: p.interactiveDone.has('polarityVsDelay'),
     prediction: p.lesson.predictions.twoMic,
-    intro: 'The action mic D and the audience pair at S hear the same gentle clap. WALK it 1 m either way along the action area, and flip B’s POLARITY both ways: watch which readouts change.',
+    intro: 'The action mic D and the audience pair at S hear the same gentle clap. WALK it 1 m either way along the action area, and flip MIC B POLARITY (the pair) both ways: watch which readouts change.',
   });
   const lead = (
     <Card>

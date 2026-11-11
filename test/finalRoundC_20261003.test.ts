@@ -172,7 +172,7 @@ describe('6. Study full screen — the shake line is honest', () => {
     const s = read('components/StudyFsOverlay.tsx');
     assert.match(s, /useShake\(onShakePrev, visible, \{ yieldToMute: true \}\);/);
     assert.doesNotMatch(s, />Shake to go back a question</);
-    assert.match(s, />Shake to go back a question \(off while sound is on — shake mutes it first\)</);
+    assert.match(s, />Shake to go back a question \(while sound is on, a shake mutes it instead\)</);
   });
 });
 

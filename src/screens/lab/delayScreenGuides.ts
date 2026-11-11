@@ -53,7 +53,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       start: 'Set SOURCE to CLICK 90 and tap ▶. Watch the repeats leave on ▸ OUT. Then step FDBK from 25% to 75% and see the trail grow while the spacing stays the same.',
     },
     seeing: [
-      'Your source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. The ruler under OUT counts seconds since the stage.',
+      'Your source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. OUT’s ruler: seconds since a sound passed the stage.',
       'TIME, FDBK and MIX show your settings. The strip under them says TEACHING MODEL: the picture comes from the same math as the sound you hear.',
       'A steady SINE or PINK source draws a band and says TRY CLICK: repeats of a steady sound blur into it.',
     ],
@@ -66,7 +66,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     changes: [
       'TIME is the gap from a sound to its first repeat, and between repeats: more TIME, wider spacing.',
       'FDBK feeds each repeat back in; at 50% each is half the one before (6 dB down). It sets how long the trail lasts, never the spacing.',
-      'MIX blends dry sound and repeats: at 100% WET the gray dry click leaves OUT.',
+      'MIX blends dry sound and repeats: at 100% WET the gray dry click drops out of OUT.',
       'REPEAT DAMPING darkens each pass after the first. PING-PONG sends repeats left, right, left.',
     ],
     teaches: [
@@ -77,7 +77,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     tryThis: [
       'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: 500 ms. In LAB NOTES, the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
       'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the gray dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
-      'Open COLOR and turn PING-PONG on with SOURCE on CLICK 90: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE letters one click’s repeats L, R, L.',
+      'Open COLOR and turn PING-PONG on with SOURCE on CLICK 90: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L.',
     ],
   },
 
@@ -95,7 +95,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     control: [
       'Scroll to read. Use the tabs under the title to switch between LEARN, EXPLORE (the live rack) and CHECK.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
-      'On EXPLORE, long-press a dock key or a readout to open just its entry. A SOURCE choice opens that test signal’s own note.',
+      'On EXPLORE, long-press a key or a readout to open just its entry. A SOURCE choice opens that test signal’s own note.',
     ],
     changes: [
       'Read this page beside EXPLORE: each CONTROLS entry names a part of the rack and says what it does to the repeats.',
@@ -141,7 +141,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'Why an engineer might darken the repeats with REPEAT DAMPING.',
     ],
     tryThis: [
-      'Test the tempo law on a different note: on EXPLORE, with FDBK under 75%, set TIME to 375 ms. The caption under DESIGNED RESPONSE names 160 BPM. FORMULA / CONCEPT on LEARN shows why.',
+      'Test the tempo formula at another tempo: on EXPLORE, with FDBK under 75%, set TIME to 375 ms. The caption under DESIGNED RESPONSE names 160 BPM. FORMULA / CONCEPT on LEARN shows why.',
       'Stuck on FEEDBACK or REPEAT DAMPING? On LEARN, each CONTROLS entry says what that control does to the repeats. Read it, then try it on EXPLORE.',
     ],
   },

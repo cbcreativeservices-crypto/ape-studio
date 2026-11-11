@@ -308,7 +308,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
               <RatioTile key={i} note={n.spelling} value={n.value} hz={hz(n.value.numericRatio)} fresh={i === revealed - 1} compact showDecimal={ctx.mathView} />
             ))}
           </Row>
-          <Body>Each pitch is generated from the same tempered fifth and then folded into one octave. {ctx.mathView ? `${MT.notes[revealed - 1].spelling} = ${MT.notes[revealed - 1].value.exactLabel} (${MT.notes[revealed - 1].value.constructionSource}).` : 'Switch to MATH (top right) for the exact radical forms.'}</Body>
+          <Body>Each pitch is generated from the same tempered fifth and then folded into one octave. {ctx.mathView ? `${MT.notes[revealed - 1].spelling} = ${MT.notes[revealed - 1].value.exactLabel} (${MT.notes[revealed - 1].value.constructionSource}).` : 'Switch to MATH (top right) for the exact root (√) forms.'}</Body>
         </>
       ) : null}
 

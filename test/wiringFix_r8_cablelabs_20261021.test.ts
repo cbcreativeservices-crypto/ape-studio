@@ -262,9 +262,9 @@ describe('R7-CB-04..06 cable lab wording', () => {
   it('CB-04: the insert exception is named (C5)', () => {
     const trs = getConnector('trs_quarter' as never)!;
     const ins = trs.pinouts.find((p) => p.id === 'insert')!;
-    assert.match(ins.contacts.find((c) => c.label === 'Ring')!.note ?? '', /older large-format desks/);
+    assert.match(ins.contacts.find((c) => c.label === 'Ring')!.note ?? '', /older large-format consoles/);
     assert.match(ins.verifyAgainst ?? '', /most consoles/);
-    assert.match(ins.verifyAgainst ?? '', /older large-format desks/);
+    assert.match(ins.verifyAgainst ?? '', /older large-format consoles/);
   });
   it('CB-05: "in this lab" mains never shares a connector with signal', () => {
     const ac = CARRIED_CATEGORIES.find((t) => t.id === 'ac_mains')!;

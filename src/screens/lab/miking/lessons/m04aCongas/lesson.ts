@@ -72,7 +72,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second channel.',
     credit: { scenarios: ['k.prac.order', 'k.prac.gain', 'k.prac.setup1', 'k.prac.setup2', 'k.prac.3', 'k.mix.1', 'k.mix.2', 'k.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs real drums.' },
-    takeaway: 'Safe placement, correct power and level checks, musical reasoning and a mono check pass. A brand or a bass setting does not — and more than one setup can pass.',
+    takeaway: 'Safe placement, correct power and level checks, musical reasoning and a mono check pass. Choosing by brand, or a spot for the most bass, does not — and more than one setup can pass.',
   },
 };
 
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.two.2',
     page: 'twoMic',
-    prompt: 'The tumba mic hears a conga stroke 1 ms after the conga’s own mic. Summed at equal level, same polarity: the first notch (simplified model)?',
+    prompt: 'The tumba mic hears a conga stroke 1 ms after the conga’s own mic. Summed at equal level, same polarity: at what frequency is the first notch, ideally?',
     options: ['500 Hz, then 1.5 kHz, 2.5 kHz …', '1 kHz, then 2 kHz, 3 kHz, 4 kHz …', '250 Hz, then 750 Hz, 1.25 kHz …'],
     correct: '500 Hz, then 1.5 kHz, 2.5 kHz …',
     explain: 'The first cancellation is where the delay is half a period: f = 1 ÷ (2 × 0.001 s) = 500 Hz, then odd multiples. Inverted, the notches sit at 0, 1 kHz, 2 kHz … instead.',
@@ -729,7 +729,7 @@ export const M04A_LESSON: HandLesson = {
     openEnd: { default: false, raised: true },
     strokes: {
       title: 'Where the hand lands',
-      intro: 'Switch STROKE and watch which of the head’s shapes the spot drives. The bars are physics; the stroke names are the player’s.',
+      intro: 'Switch STROKE and watch which of the head’s shapes the spot drives. The bars show the physics; the stroke names are the player’s words.',
       badge: 'A simplified head · where the hand lands, drawn at a typical spot · bars = how strongly that spot drives each shape',
       items: [
         { id: 'open', label: 'OPEN TONE', short: 'OPEN', frac: 0.85, tool: 'fingers', text: 'Four fingers near the rim, bouncing off: a clear, ringing tone.' },
@@ -820,9 +820,9 @@ export const M04A_LESSON: HandLesson = {
     pairLearn: [
       'Two mics on the same drums capture overlapping sound at different times. Bring up one mic as a reference, then add the second at a useful level, and listen to the blend in mono across every stroke.',
       'If the lows or the attack thin out, move or re-aim a mic first, then compare its polarity switch — a diagnostic step, not a cure. Keep whichever arrangement best represents the whole part; live, use the fewest open mics that give the control you need.',
-      'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places; it does not remove the delay. No fixed spacing ratio makes a pair on one set of drums coherent.',
+      'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places; it does not remove the delay. No fixed spacing ratio stops a pair on one set of drums from combing.',
     ],
-    pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
+    pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which the lab works out from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as a rough guide only. Judge the pair by ear, in mono, at matched levels.',
   },
 };
 

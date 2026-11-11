@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two views of a small instrument can thin out together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: [`${P}.two.1`, `${P}.two.2`, `${P}.two.3`, `${P}.two.4`], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two views hear the ukulele at different times, so their sum combs. Polarity flips the sign; it does not remove a delay. A small instrument does not need to be made wide.',
+    takeaway: 'Two views hear the ukulele at different times, so their sum shows comb notches. Polarity flips the sign; it does not remove a delay. A small instrument does not need to be made wide.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one ukulele mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real ukulele.' },
-    takeaway: 'A balanced position off the strumming arc, power and level checks, a plan for the voice, and nothing pressed on or into the ukulele pass. A brand does not.',
+    takeaway: 'What passes: a balanced position off the strumming arc, power and level checks, a plan for the voice, and nothing pressed on or into the ukulele. A brand does not.',
   },
 };
 
@@ -220,8 +220,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · Where does the singer-player’s voice reach the ukulele mic from?',
-    options: ['From directly behind the mic, where it rejects most', 'From above and in front of its rear: no null reaches it', 'It does not reach the ukulele mic at all, from up there'],
-    correct: 'From above and in front of its rear: no null reaches it',
+    options: ['From directly behind the mic, where it rejects most', 'From above, in the mic’s front half: no null reaches it', 'It does not reach the ukulele mic at all, from up there'],
+    correct: 'From above, in the mic’s front half: no null reaches it',
     explain: 'The mouth is just above the instrument, in the front half of any pattern aimed at the ukulele. Plan the balance instead of relying on rejection.',
     why: {
       'From directly behind the mic, where it rejects most': 'The voice is above the ukulele, toward the mic’s front, not behind it.',

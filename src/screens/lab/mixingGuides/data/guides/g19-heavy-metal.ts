@@ -278,7 +278,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Guitars",
-        "live": "Loud amps or modelers via DI/IR; little extra level needed; high-pass firmly to control low-end wash",
+        "live": "Loud amps or modelers via DI/IR (cabinet impulse response); little extra level needed; high-pass firmly to control low-end wash",
         "studio": "Double- or quad-tracked, reamped, panned wide with detailed EQ"
       },
       {

@@ -199,7 +199,7 @@ export function ProductionLabScreen() {
     const hadConditions = project.acceptedConditions.length > 0;
     const copy = await projectStore().duplicate(lab, project.id);
     if (!copy) {
-      notify('Not duplicated', 'A copy of this project could not be saved on this device. The original is unchanged.');
+      notify('Not duplicated', 'A copy of this project could not be saved on this device. The original is unchanged — try again.');
       return;
     }
     setNameDraft(null);

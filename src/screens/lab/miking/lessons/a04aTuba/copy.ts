@@ -11,7 +11,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
   sceneSubject: { up: 'a tuba, the player seated, the bell pointing up', front: 'a tuba, the player seated, the bell facing the front' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the back', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the back (x), from under the player’s seat.' },
+    x: { plus: 'toward the audience', minus: 'toward the back', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the back (x), measured from under the player’s seat.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). Above an upward bell, a mic hangs from a boom.' },
     z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z).' },
   },
@@ -72,7 +72,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
     shieldNote: 'Real patterns change with pitch and often become nearly omni in the lowest octaves — exactly where the PA’s subwoofers are. Check the open tuba mic with the player silent and the band playing.',
     studioId: 'tu.ctx.studio',
     studioPrompt: 'A studio session, a featured tuba, a good room: is a close mic needed at all?',
-    studioNote: 'In a good room, a farther mic may carry the whole tuba and the room; a closer one adds definition when the arrangement is dense. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
+    studioNote: 'In a good room, a farther mic may carry the whole tuba and the room; a closer one adds definition when the arrangement is dense. In a studio the player can stop, so you can try several positions. Switch back to LIVE for the monitor exercise.',
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: a farther mic can suit a quiet hall, and a close mic can suit a dense studio arrangement.',
       points: [

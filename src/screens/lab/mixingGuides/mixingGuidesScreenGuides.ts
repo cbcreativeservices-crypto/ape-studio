@@ -79,11 +79,11 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
   control: [
     'Tap a section’s header to open or close it. OPEN ALL ▾ opens every section; CLOSE ALL ▴ closes them.',
     'MARK AS READ at the foot records the guide as read.',
-    'The strip: ‹ PREV and NEXT › walk the styles in index order, and NEXT › also marks this guide read. The readout opens the list of styles (✓ when read); FINISH › opens the what’s-left screen.',
+    'Use ‹ PREV and NEXT › to walk the styles in number order; NEXT › also marks this guide read. Tap the readout for the list of styles (✓ when read); FINISH › opens the what’s-left screen.',
     'Of the two ⓘ keys in the header, the first explains the level figures; the far-right one opens this guide. The ‹ at the top goes back to the menu.',
   ],
   changes: [
-    'In the tables — EQ starting points, Compression & dynamics processing, Effects & amounts, Live vs studio — each row is a card: the first column is its heading, the rest are labeled lines.',
+    'In the tables — EQ starting points, Compression & dynamics processing, Effects & amounts, Live vs studio — each row shows as a card: its heading on top, then labeled lines.',
     'Sections you open stay open on the next style.',
     '✓ READ shows only once the reading is recorded; a members-only preview records nothing and says so.',
   ],
@@ -115,7 +115,7 @@ export const MIXING_GUIDES_END_GUIDE: ScreenGuide = {
     'REVIEW ▾ on the ✓ DONE line unfolds the guides you have read; tap any one to open it again.',
     'PRACTICE AGAIN FROM THE START opens guide 01 and clears nothing.',
     'DONE · BACK TO THE GUIDES returns to the MIXING GUIDES menu; so does the ‹ at the top.',
-    'In the strip, ‹ PREV goes back to the guide you came from, and the WHAT’S LEFT ▾ readout opens the list of styles (✓ when read).',
+    'Under the header, ‹ PREV goes back to the guide you came from, and the WHAT’S LEFT ▾ readout opens the list of styles (✓ when read).',
   ],
   changes: [
     'A guide counts as read when you leave it with NEXT › or FINISH ›, or tap MARK AS READ. Just opening it, or jumping away with ‹ PREV or the list, doesn’t count.',

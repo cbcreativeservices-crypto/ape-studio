@@ -21,9 +21,9 @@ export const HAT_COPY: Partial<LessonCopy> = {
   sceneSubject: { closed: 'the 14 in hi-hats, closed, beside the snare', open: 'the 14 in hi-hats, open, beside the snare' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the hats’ center.' },
-    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y), from the top cymbal. Distances are read from the cymbal the zone names, square to it.' },
-    z: { plus: 'to player’s right (toward the snare)', minus: 'to player’s left (away from the snare)', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the hats’ center — right is toward the snare.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player, from the hats’ center.' },
+    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down, from the top cymbal. Distances are read from the cymbal the zone names, square to it.' },
+    z: { plus: 'to player’s right (toward the snare)', minus: 'to player’s left (away from the snare)', label: 'ACROSS', blurb: 'Toward the player’s left or right, from the hats’ center — right is toward the snare.' },
     origin: { closed: HAT.c, open: HAT.c },
   },
   instrument: {
@@ -97,7 +97,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     B: { typeId: 'standClip', pattern: 'supercardioid', zone: 'hh.under' },
     opposite: {
       surface: 'hatTop',
-      note: 'One mic above the pair and one below it face opposite sides of the plates: as the cymbals move up, toward the top mic, they move away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plates’ lowest motion: check both polarity states; no setting is required.',
+      note: 'One mic above the pair and one below it face opposite sides of the plates: as the cymbals move up, toward the top mic, they move away from the bottom one — so the two mics start in opposite polarity, before any arrival-time difference. A simplified picture of the plates’ lowest motion: check both polarity states; no setting is required.',
     },
     learn: [
       'A mic under the hats tends to hear less stick and less of the top cymbal’s warmer tones: a different perspective, kept only if it helps the hats in the whole kit.',

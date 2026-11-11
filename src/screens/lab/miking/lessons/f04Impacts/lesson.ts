@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up an effects mic in the right order, choose and justify a setup for a small pour and a live impact, and say what would justify a second mic.',
     credit: { scenarios: ['f04.prac.order', 'f04.prac.gain', 'f04.prac.setup1', 'f04.prac.setup2', 'f04.prac.3', 'f04.mix.1', 'f04.mix.2', 'f04.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
-    takeaway: 'Attack and tail named, the splash marked and kept clear, headroom from the strongest planned hit, the sensing path named, and a mono check for a second mic pass. More than one setup can pass.',
+    takeaway: 'What passes: attack and tail named, the splash marked and kept clear, headroom from the strongest planned hit, the sensing path named, and a mono check for a second mic. More than one setup can pass.',
   },
 };
 
@@ -573,7 +573,7 @@ export const F04_LESSON: Lesson & { sp: SpExtra } = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. No one distance suits every impact, basin and texture: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged — with water and electricity, always inside the safety rules. The lab is silent and draws a simplified picture: the splash envelope as an illustrative mark, the travel as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the action to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. No one distance suits every impact, basin and texture: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged — with water and electricity, always inside the safety rules. The lab is silent and draws a simplified picture: the splash envelope as an illustrative mark, the travel as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are measured from the action to the mic’s capsule and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches. Place real mics with the performer stopped, and only with their agreement.',
   copy: F04_COPY,
   sp: SP,
 };

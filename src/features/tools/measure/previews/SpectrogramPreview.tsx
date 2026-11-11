@@ -96,7 +96,7 @@ export function SpectrogramPreview({
   const caption =
     `${seconds.toFixed(1)} s × ${payload.bandsHz[0] ?? 50}–` +
     `${payload.bandsHz[payload.bandsHz.length - 1] ?? 16000} Hz · ` +
-    `${payload.dynamicRangeDb} dB range below 0 dBFS · ${payload.fftPreset}`;
+    `${payload.dynamicRangeDb} dB range below 0 dBFS · ${/^hann-\d+$/.test(payload.fftPreset) ? `Hann window · ${payload.fftPreset.slice(5)}-point FFT` : payload.fftPreset}`;
   const a11y =
     `Saved spectrogram: ${seconds.toFixed(1)} seconds of audio across ` +
     `${payload.bandsHz.length} frequency rows, colored over a ${payload.dynamicRangeDb} decibel ` +

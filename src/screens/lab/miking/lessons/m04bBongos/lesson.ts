@@ -407,10 +407,10 @@ const symptoms: Symptom[] = [
   {
     id: 's.mask',
     observation: 'The macho masks the hembra',
-    firstChecks: 'Player dynamics, central aim, the drums’ different on-axis positions.',
+    firstChecks: 'Player dynamics, a central aim, and which drum sits more on-axis.',
     options: ['The player’s dynamics and the mic’s aim between the drums', 'Boost the lows until the hembra comes forward', 'Swap the drums over so the hembra sits nearer the shared mic'],
     correct: 'The player’s dynamics and the mic’s aim between the drums',
-    explain: 'Re-aim toward the hembra, or use separate control.',
+    explain: 'Re-aim toward the hembra, or give each drum its own mic.',
     why: {
       'Boost the lows until the hembra comes forward': 'No EQ setting follows from head size. Re-aim first.',
       'Swap the drums over so the hembra sits nearer the shared mic': 'The setup is the player’s. Move the mic, not the drums.',
@@ -431,7 +431,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.thin',
     observation: 'The hembra sounds thin only with the second mic',
-    firstChecks: 'Does it happen in the combined mono channels?',
+    firstChecks: 'Does it happen when the two mics are summed to mono?',
     options: ['The mono sum: move or aim one mic, then compare polarity', 'Turn the second mic up until the hembra fills out', 'Invert the second mic, since that one is usually the wrong one'],
     correct: 'The mono sum: move or aim one mic, then compare polarity',
     explain: 'Move or aim one mic and compare polarity at real levels; check the other open mics too.',
@@ -723,7 +723,7 @@ export const M04B_LESSON: HandLesson = {
     strokes: {
       title: 'Two heads, two sizes',
       key: 'HEAD',
-      intro: 'Switch HEAD to compare the macho and the hembra drawn to the same scale, and where the fingers land. The bars are physics; the size difference is the drums’.',
+      intro: 'Switch HEAD to compare the macho and the hembra drawn to the same scale, and where the fingers land. The bars show the head’s physics; the size difference is the real drums’.',
       badge: 'A simplified head · both drawn to one scale · bars = how strongly that spot drives each shape',
       items: [
         { id: 'machoEdge', label: 'MACHO · NEAR THE EDGE', short: 'MACHO EDGE', frac: 0.8, tool: 'tips', drum: 'macho', text: 'The fingertips near the edge of the smaller head. On heads at the same tension, every shape of the macho sits about 1.19 times higher than the hembra’s (8⅝ ÷ 7¼).' },

@@ -299,7 +299,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>{`You are looking at ${view === 'ARM' ? 'the tonearm from the side (counterweight and dial on the right, the cartridge over the record on the left)' : view === 'PHONO' ? 'the phono chain, cartridge to channel, with the rear panels and the RIAA playback curve' : 'the booth from the side, to scale: table, turntable, booth monitor'} above the turntable seen from the top. ARM, PHONO and ROOM each bring up their own view.`}</Look>
         <P>A turntable’s stylus traces a groove with a few grams of force; the cartridge turns that into a few thousandths of a volt, which needs one phono stage to become line level.</P>
-        <P>Set the force by the method, keep the signal’s ground connected, and keep the turntable away from its own sound.</P>
+        <P>Set the force in three moves (balance, zero, set), keep the signal’s ground connected, and keep the turntable away from its own sound.</P>
         <Terms items={TERMS} />
         <SkipOptional ctx={ctx} here={17} />
       </Step>

@@ -183,7 +183,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
               <TrayButton key={k} label={`${layers[k] ? '● ' : '○ '}${label}`} tint={layers[k] ? 'amber' : 'dim'} onPress={() => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
             ))}
           </View>
-          <Caption>Mode pressure is the one selected mode, at ear height, on the amplitude color standard: red = a pressure maximum, blue = a null. The map shows the mode's SHAPE, not how strongly the speakers excite it. In multichannel the plan draws the L and R paths; tap a surround to see its own.</Caption>
+          <Caption>Mode pressure is the one selected mode, at ear height, in color: red = a pressure maximum, blue = a null. The map shows the mode's SHAPE, not how strongly the speakers excite it. In multichannel the plan draws the L and R paths; tap a surround to see its own.</Caption>
         </View>
       ),
     },
@@ -243,7 +243,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
       }
     >
       <Body>
-        Below a few hundred hertz the room is the biggest equalizer in the chain. Every pair of parallel surfaces holds standing waves — room modes — at f = n·c/2L, with pressure maxima at the walls and corners and nulls at the quarter and half points, depending on the order. The map shows one mode at a time; the real bass response at your seat is all of them at once, driven by where the speakers are.
+        Below a few hundred hertz the room is the biggest equalizer in the chain. Every pair of parallel surfaces holds standing waves — room modes — at f = n·c/2L (n = 1, 2, 3…, c = speed of sound, L = the distance between them), with pressure maxima at the walls and corners and nulls at the quarter and half points, depending on the order. The map shows one mode at a time; the real bass response at your seat is all of them at once, driven by where the speakers are.
       </Body>
       <Body>
         Early reflections are drawn by the image-source method: mirror the speaker in each wall, the floor, the ceiling and the desk top, and the straight line from the image to your ear crosses the surface at the reflection point. The path-length difference is the arrival delay — 1 ms for every 34 cm. Reflections inside about 15 ms blur the stereo image and comb the tone; those are the ones treatment goes after. In a plan with an alcove, a path that would pass through another wall is dropped.

@@ -116,7 +116,7 @@ function zonesFor(s: WbState): DocumentedZone[] {
     targetZone({
       id: `wb.surface.${v}`,
       label: `Above, looking at the playing surface${tag}`,
-      band: `${BAND}, above and a little in front of it, looking down at the playing surface — outside the mallet’s whole path (the near end only where clearance allows).`,
+      band: `${BAND}, above and a little in front of it, looking down at the playing surface — outside the mallet’s whole path (the closer end of the range only where clearance allows).`,
       kind: 'trial',
       src: 'LESSON-WOODBLOCK',
       quote: 'audition a cardioid condenser or dynamic mic around 25–50 cm (10–20 in.) from the block, positioned to hear its body and playing surface while remaining outside the full beater path',

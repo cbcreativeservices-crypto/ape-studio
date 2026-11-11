@@ -381,7 +381,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     recordingAngle: null,
     what: 'Four capsules on the faces of a small tetrahedron — front-left-up, front-right-down, back-left-down, back-right-up — recorded as four separate tracks (A-format), converted afterwards into a sound field that can be turned and rendered.',
     tends: 'An enveloping, turnable viewpoint for headphones, a speaker layout or an interactive scene; not sharp, separable point sources.',
-    check: 'The capsule order and the front mark from the mic’s manual, identical preamps with matched, linked gain, and the output convention chosen on purpose.',
+    check: 'The capsule order and the front mark from the mic’s manual, identical preamps with matched, linked gain, and the output convention (channel order and scaling) chosen on purpose.',
     prov: src('AMBEO-REC', 'four capsules … recorded separately on four tracks using identical microphone preamplifiers; Set the same gain for each of the four channels'),
   },
 };

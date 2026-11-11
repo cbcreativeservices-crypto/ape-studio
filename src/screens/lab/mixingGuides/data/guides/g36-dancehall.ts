@@ -28,7 +28,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Programmed drums:",
-      "text": "drum machine or DAW kicks, rimshots, claps and snares in syncopated patterns rather than reggae’s one drop; hand claps, a signature since the Diwali riddim (instrumental backing track), with shakers and congas layered on top.",
+      "text": "drum machine or DAW kicks, rimshots, claps and snares in syncopated patterns rather than reggae’s one drop (kick and rim click on beat three); hand claps, a signature since the Diwali riddim (instrumental backing track), with shakers and congas layered on top.",
       "bullet": true
     },
     {
@@ -267,7 +267,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing and softens the kick. For more punch, aim for a PLR around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the style can be dense, but the kick needs its transients."
+      "text": "Modern dancehall and crossover masters typically land at −8 to −6 LUFS-I, true peak −1 dBTP (or −2 dBTP when mastering hot, to avoid codec overs). Most streaming services normalize to about −14 LUFS, some to −16, so over-limiting gains nothing and softens the kick. For more punch, aim for a PLR (peak-to-loudness ratio) around 7–10 dB (about −9 to −12 LUFS-I at −2 dBTP, quieter than the range above); the style can be dense, but the kick needs its transients."
     }
   ],
   "liveStudio": {

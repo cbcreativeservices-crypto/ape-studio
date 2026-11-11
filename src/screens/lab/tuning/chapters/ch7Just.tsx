@@ -235,12 +235,12 @@ export function Ch7Just({ ctx }: ChapterProps) {
             reduceMotion={ctx.reduceMotion}
             steps={[
               { text: 'C, E, G = 1, 5/4, 3/2' },
-              { text: 'multiply all three by 4', note: 'the smallest number that clears every denominator' },
+              { text: 'multiply all three by 4', note: 'the smallest number that removes every fraction' },
               { text: '4 × 1, 4 × 5/4, 4 × 3/2', emphasis: true },
               { text: '= 4 : 5 : 6', note: 'the C-major triad as a simple whole-number relationship' },
             ]}
           />
-          <Body>The C-major triad can be expressed as the simple whole-number relationship 4:5:6 — a ratio between the three notes, not harmonic numbers of one displayed fundamental (that reading only holds if all three are built on a shared reference two octaves below C). Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
+          <Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes. They are not harmonics 4, 5 and 6 of the C shown here; that reading only works for a shared note two octaves below C. Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
         </>
       ) : null}
 

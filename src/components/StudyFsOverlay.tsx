@@ -127,9 +127,9 @@ export function StudyFsOverlay({
             <View style={styles.guideCard}>
               <Text style={styles.guideTitle}>FULL SCREEN</Text>
               <Text style={styles.guideLine}>Answer as usual — tap your choice</Text>
-              <Text style={styles.guideLine}>Swipe or Next to advance</Text>
+              <Text style={styles.guideLine}>Swipe left to advance</Text>
               {/* yieldToMute: while sound is on, shake is the mute — said, not hidden (final round C) */}
-              <Text style={styles.guideLine}>Shake to go back a question (off while sound is on — shake mutes it first)</Text>
+              <Text style={styles.guideLine}>Shake to go back a question (while sound is on, a shake mutes it instead)</Text>
               <Text style={styles.guideLine}>Tap ✕ (top-right) to exit</Text>
               <Pressable accessibilityRole="button" style={styles.guideBtn} onPress={() => setShowGuide(false)}>
                 <Text style={styles.guideBtnText}>GOT IT</Text>

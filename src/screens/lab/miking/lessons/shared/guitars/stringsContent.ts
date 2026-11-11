@@ -153,7 +153,7 @@ export function twoMicChecks(p: string, n: Noun): MikingScenario[] {
       correct: 'When it adds a defined tone or width and holds up in mono',
       explain: 'A good mono mic is often enough. A second earns its place with a stated purpose — and only if the pair still works in mono, with the player moving naturally.',
       why: {
-        'Whenever the arrangement leaves a spare input on the desk': 'A spare input is not a reason. A second mic adds spill and a combining check.',
+        'Whenever the arrangement leaves a spare input on the desk': 'A spare input is not a reason. A second mic adds spill and one more mono check.',
         'When the first mic cannot give enough level on its own': 'Level comes from gain and the fader, not from another mic.',
       },
     },
@@ -244,7 +244,7 @@ export function sharedSymptoms(p: string, n: Noun): Symptom[] {
     {
       id: `${p}.sym.fb`,
       observation: 'Live feedback',
-      firstChecks: 'Is a loudspeaker reaching the mic or the instrument? Lower the level, revise the geometry and open mics, or lean on the pickup.',
+      firstChecks: 'Is a loudspeaker reaching the mic or the instrument? Lower the level, change position and aim, close unused mics, or carry more on the pickup.',
       options: ['Lower the level, then revise the geometry or lean on the pickup', 'Boost the channel, then cut the ringing pitch hard with EQ', `Move the mic much farther away so the ${n.one} sounds cleaner and more open`],
       correct: 'Lower the level, then revise the geometry or lean on the pickup',
       explain: 'Bring the level down first. Then bring a directional mic closer, aim its rejection at the wedge, close unused mics — or carry more on the pickup.',

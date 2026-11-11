@@ -125,7 +125,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['IN ▸', ANIM], ['▸ OUT', ANIM], ['IN = −20 dBFS sine', ANIM], ['DRIVEN (before clip)', ANIM], ['0 dBFS', ANIM],
       // the stage name, the readouts, the dock keys and their choices
       ["case 'distortion': return 'DRIVE';", ANIM, 'green DRIVE stage'], ["k: 'TYPE'", DIST, 'TYPE'], ["k: 'DRIVE'", DIST, 'DRIVE'], ["k: 'MIX'", DIST, 'MIX'],
-      ['HARD CLIP', DIST], ['SOFT (TANH)', DIST], ['TUBE (ASYM)', DIST], ["short: 'OS'", DIST, 'OS picks'], ['ON (CLEAN)', DIST], ['OFF (ALIASING)', DIST],
+      ['HARD CLIP', DIST], ['SOFT (TANH)', DIST], ['TUBE (ASYM)', DIST], ["short: 'OS'", DIST, 'OS (oversampling) picks'], ['ON (CLEAN)', DIST], ['OFF (ALIASING)', DIST],
       ["label: '100%'", DIST, '100%'], ['50% PARALLEL', DIST], ["label: 'SOURCE'", FXSCREEN, 'SOURCE picks'], ['PINK NOISE', CONFIGS], ['SINE ${hz} Hz', CONFIGS, 'SINE 220 Hz'],
       // the fader range and the caption's −8 dBFS
       ['min: 6, max: 36', DIST, '+6 to +36 dB'], ['lifts the −20 dBFS sine to', DIST, '−8 dBFS'],
@@ -200,10 +200,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     // the noise note must clear the legend: no longer than the sine note
     assert.ok('NOISE · SINE DRAWN'.length <= 'IN = −20 dBFS sine'.length);
     assert.match(ANIM, /srcIsNoise=\{model\.srcIsNoise\} \/>;/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /With PINK NOISE: NOISE · SINE DRAWN, a sine drawn in its place\./);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /On PINK NOISE a sine is drawn instead, labeled NOISE · SINE DRAWN\./);
     // OVERSAMPLING reaches neither drawing — the guide says it changes the sound only
     assert.doesNotMatch(DIST.slice(DIST.indexOf('Hero:'), DIST.indexOf('heroBadge')), /oversample/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /OS picks ON \(CLEAN\) or OFF \(ALIASING\); you hear it on SINE 5 kHz; it isn’t drawn/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /OS \(oversampling\) picks ON \(CLEAN\) or OFF \(ALIASING\): heard on SINE 5 kHz, not drawn/);
   });
   it('the OS copy promises only what a 220 Hz sine can show (verified 2026-10-31: aliasing is faint, HARD CLIP only; no FFT, no high sine)', () => {
     // 24000 / 220 = 109.1 and 22050 / 220 = 100.2: the first folded harmonic is past the 100th
@@ -284,7 +284,7 @@ describe('4. the numbers follow from the lab’s own math', () => {
       assert.ok(Math.max(...cycle('soft', d).map(Math.abs)) <= 1 + 1e-12);
     }
     assert.match(DISTORTION_SCREEN_GUIDES.explore.tryThis[1], /bottom, which edges just past 0 dBFS/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing[2], /0 dBFS, where HARD and SOFT stop/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing[2], /0 dBFS, which HARD and SOFT never pass/);
     assert.doesNotMatch(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /the ceiling/);
   });
   it('EXPLORE TRY THIS 3: HARD CLIP +24 dB at 50% PARALLEL peaks near 0.55 — about half the 0 dBFS height', () => {
@@ -308,7 +308,7 @@ describe('4. the numbers follow from the lab’s own math', () => {
     // the dry is the UN-driven −20 dBFS input (Effects.hpp: inL * (1 - mix)): under 8 % of the output fundamental
     assert.ok(0.05 / harm(half, 1) < 0.08);
     assert.match(DISTORTION_SCREEN_GUIDES.explore.tryThis[2], /About 5 dB quieter, yet nearly as gritty/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /At MIX 50%, \+24 dB, the clean wave is 20 dB under the driven one, so grit stays; real parallel turns the driven copy down/);
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes.join(' '), /At MIX 50%, \+24 dB, the clean wave is 20 dB under the driven one, so grit stays; in practice you turn the driven copy down/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /clean tone|half clean/i, `${id}: promises a clean tone the lab cannot play`);
     // 2026-10-31 (two verifiers): the lab's own copy no longer promises the clean body at 50% —
     // the check, the lesson's Mix entry and the CHECK guide all state the ~20 dB gap at +24 dB.

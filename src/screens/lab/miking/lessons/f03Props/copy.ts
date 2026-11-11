@@ -108,7 +108,7 @@ export const F03_COPY: Partial<LessonCopy> = foleyCopy({
       { title: 'THE WEDGE IN THE REJECTION', text: 'Line the wedge up with the mic’s angle of rejection and check it at show level with the system operator.' },
       { title: 'ON LOCATION', text: 'A stand or boom out of frame may follow the action, but wind, traffic and access can prevent a studio-like place. Keep stands out of travel paths and document the environment.' },
     ],
-    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed at the keys, its rear points away from the artist — the wedge, on the floor ahead and to one side, sits off that line, nearer a supercardioid’s deeper rejection.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed at the keys, its rear points away from the artist. The wedge, on the floor ahead and to one side, sits off that line — closer to the angle where a supercardioid rejects most.',
     shieldNote: 'The artist and the station reflect the wedge’s sound, which a free-field pattern cannot show. Check at show level with the system operator.',
   },
   studio: {

@@ -227,7 +227,7 @@ export const BROADCAST_MIC_TYPES = {
     short: 'CAMERA MIC',
     transducer: 'condenser',
     address: 'end',
-    patterns: [{ id: 'supercardioid', label: 'short shotgun (drawn as a supercardioid, narrower higher up)', prov: ill('a camera-top short shotgun drawn as its base supercardioid with the narrower high-frequency lobe — a simplified picture (O-SG: no first-order equation fits an interference tube)') }],
+    patterns: [{ id: 'supercardioid', label: 'short shotgun (drawn as a supercardioid, narrower at high frequencies)', prov: ill('a camera-top short shotgun drawn as its base supercardioid with the narrower high-frequency lobe — a simplified picture (O-SG: no first-order equation fits an interference tube)') }],
     // Owner 2026-10-08 (L6A): read to its CAPSULE, its tube 130 mm ahead (180 mm overall).
     body: { length: dd(50, 'a camera-top short shotgun’s body behind its capsule (180 mm overall, drawing default)'), radius: dd(10, 'a camera-top short shotgun’s radius'), fore: dd(130, 'the camera-top shotgun’s tube ahead of its capsule (drawing default 130 mm)') },
     lobe: 'shotgun',

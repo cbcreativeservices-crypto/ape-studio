@@ -203,7 +203,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Parallel drum compression, if used, blends at 15–25%. De-ess breathy vocals at 5–8 kHz for 2–4 dB. Soft kits rarely need gates. Light tape saturation (15 ips emulation) often does the “compression” work; Clairo’s guitars ran through tape emulation. Keep master limiting to 2–4 dB."
+        "text": "Parallel drum compression, if used, blends at 15–25%. De-ess breathy vocals at 5–8 kHz for 2–4 dB. Soft kits rarely need gates. Light tape saturation (an emulation of tape at 15 ips, inches per second) often does the “compression” work; Clairo’s guitars ran through tape emulation. Keep master limiting to 2–4 dB."
       }
     ]
   },
@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so loud masters gain nothing. At −2 dBTP these levels give a PLR of about 7–11 dB, and quieter masters keep more punch; a loudness range of 5–9 LU suits the style."
+      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, some to −16, so loud masters gain nothing. At −2 dBTP these levels give a PLR (peak-to-loudness ratio) of about 7–11 dB, and quieter masters keep more punch; a loudness range of 5–9 LU suits the style."
     }
   ],
   "liveStudio": {

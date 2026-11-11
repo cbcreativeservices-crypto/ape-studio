@@ -35,7 +35,7 @@ const BASE = standingVoiceCopy({
   contextPoints: [
     { title: 'INDIVIDUAL OR SHARED', text: 'A gooseneck each gives the most control for soft or overlapping talkers; a shared boundary is simpler and smaller to see, but farther from each mouth — fine for a quiet room, poor with a PA.' },
     { title: 'OPEN MICS', text: 'Live, every open mic hears the PA and the room: each doubling costs about 3 dB of gain before feedback. Mute the mics no one is using, by hand or with a configured automatic mixer.' },
-    { title: 'THE LECTERN HANDOFF', text: 'When a presenter leaves the lectern for a headset or a lavalier, plan who mutes which: both open on one voice comb and cost margin.' },
+    { title: 'THE LECTERN HANDOFF', text: 'When a presenter leaves the lectern for a headset or a lavalier, plan who mutes which: with both open on one voice, they comb and cost margin.' },
     { title: 'THE FEED', text: 'A stream and a press feed carry only what is routed into them: route the audience question and any remote voice on purpose, and check them at the destination.' },
   ],
 });
@@ -89,7 +89,7 @@ export const B06_COPY: Partial<LessonCopy> = {
     note: 'Clearance comes first: nothing touches the talker, the necks stay out of the sight lines and the camera’s view, the bases away from papers, the aisle stand out of the walking path.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every panel, room and PA is different.',
-      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
+      separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches.',
       clearance: 'Clearance comes first: off the face, out of the sight line and the paper’s path, clear of the hands and the aisle.',
       tendencies: 'Closer tends to bring more voice against the room and the neighbors; farther, more room, more bleed and more of each head turn. These are tendencies, and rooms vary.',
     },
@@ -117,7 +117,7 @@ export const B06_COPY: Partial<LessonCopy> = {
     prompt: 'The PA stays where the event needs it. Turn or tilt the gooseneck (AIM), or change its PATTERN, until the PA sits in the rejection — while the capsule still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: a cardioid rejects most straight behind. Aimed up at the presenter’s mouth, its rear points down and out toward the audience — the PA, up on its stand to one side, is never quite there. Tilt and pattern together decide how much of the PA the lectern mic hears.',
-    shieldNote: 'The lectern, the presenter and the room reflect the PA’s sound too, and the free-field pattern cannot show that. Listen with the PA on, at the agreed level.',
+    shieldNote: 'The lectern, the presenter and the room reflect the PA’s sound too, and the free-field (open-air) pattern cannot show that. Listen with the PA on, at the agreed level.',
     learn: {
       ...BASE.context!.learn,
       body: 'Live, every open mic hears the PA. A pattern’s rejection is a tool to aim; a closer mic and fewer open mics do more.',
@@ -133,7 +133,7 @@ export const B06_COPY: Partial<LessonCopy> = {
       'The presenter at the lectern with a headset on: one voice, two mics, at two distances. The headset hears each word first, the lectern a little later — with both open, the sum combs and the open-mic count goes up.',
       'Choose one: mute the lectern while the headset is live, or the other way around, and rehearse the handoff with whoever does the muting. A second lectern mic can be a separately routed backup; two parallel open capsules rarely improve anything.',
     ],
-    warn: 'This simplified graph treats the mouth as one point and both mics as hearing the same sound. Real mics hear different mixes of voice and room — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative.',
+    warn: 'This graph keeps it simple: it treats the mouth as one point and both mics as hearing the same sound. Real mics hear different mixes of voice and room — trust the notch POSITIONS (they follow from the arrival-time difference), not how deep the notches look.',
   },
   terms: {
     ...BASE.terms!,

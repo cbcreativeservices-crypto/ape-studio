@@ -367,7 +367,7 @@ export function useCoveragePlanStep({ onInteractive, done, prediction }: { onInt
           <Point title={`${LAYOUTS[layout].label.toUpperCase()} · ${parts.join(' + ')} = ${n}`}>{LAYOUTS[layout].blurb}</Point>
           {carry ? <Point title={carry.by ? `CARRIED BY ${carry.by.short}` : 'A KNOWN GAP'}>{carry.words}</Point> : <Point title="THE DRILL">Lose one input at a time and decide, before the event, which feed replaces it and how to avoid a jump in level.</Point>}
         </Card>
-        <Body>An extensive layout earns its extra channels only by covering what the smaller one demonstrably lacks — more mics also bring more spill, peaks, cable routes and timing differences to manage.</Body>
+        <Body>A bigger layout is worth its extra channels only if it covers a tested gap in the smaller one — more mics also bring more spill, peaks, cable routes and timing differences to manage.</Body>
         {complete ? <Note tone="ok">{`Both layouts compared and the drill run. Start minimal, add an input only for a tested gap — and know what survives each loss. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Layouts looked at: ${seenLayouts.size} of ${LAYOUT_IDS.length}; roles lost: ${lostRoles.size} (lose at least two different roles).`}</Body>}
       </>
     ),
@@ -513,7 +513,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
           <Point title="THE WIDTH">{k === 0 ? 'No Side at all: left and right are the same — mono in two channels.' : k > 1 ? 'Wide: the opposite-polarity rear lobe of each side’s pickup (dashed) grows large, and the image can pull to the edges. Start modest.' : 'A modest width: the left channel favors the left, the right the right, and the center stays in the center. Each side already has a small opposite-polarity rear lobe (dashed); it grows with the width.'}</Point>
           <Point title="CHECK">Decode once, with the Side’s positive lobe facing the side you call left; then compare stereo and mono. A source at the positive lobe should appear on the intended side.</Point>
         </Card>
-        {complete ? <Note tone="ok">Width is a decision made after the capture: the mono sum keeps the Mid whatever k is. Start with a modest width, check left and right with a gentle source, and listen in mono.</Note> : <Body>Take the width to none and to wide, and look from two sources.</Body>}
+        {complete ? <Note tone="ok">Width is a decision made after the capture: the mono sum keeps the Mid whatever k is. Start with a modest width, check left and right with a gentle source, and listen in mono.</Note> : <Body>Take the width to none and to wide, and try two different sources.</Body>}
       </>
     ),
   };

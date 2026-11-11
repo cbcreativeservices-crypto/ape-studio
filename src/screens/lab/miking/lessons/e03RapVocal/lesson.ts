@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a rap vocal mic in the right order, choose and justify a setup for a studio verse and a live show, and say what would justify a second mic.',
     credit: { scenarios: ['rp.prac.order', 'rp.prac.gain', 'rp.prac.setup1', 'rp.prac.setup2', 'rp.prac.3', 'rp.mix.1', 'rp.mix.2', 'rp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real performer.' },
-    takeaway: 'Distance from the lips, a rehearsed working zone, clearance from the face, headroom for the loudest ad-lib, pattern reasoning and polarity versus delay pass. A genre rule or a brand does not — and more than one setup can pass.',
+    takeaway: 'What passes: distance from the lips, a rehearsed working zone, clearance from the face, headroom for the loudest ad-lib, pattern reasoning and polarity versus delay. A genre rule or a brand does not — and more than one setup can pass.',
   },
 };
 
@@ -325,7 +325,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The verse sits well below the overload light, but the loudest ad-lib lights it. What do you do?',
     options: ['Lower the input gain, then re-check the ad-lib', 'Pull the channel fader down until it is clean', 'Ask the performer to drop the loudest ad-lib'],
     correct: 'Lower the input gain, then re-check the ad-lib',
-    explain: 'Set the input from the loudest real performance — ad-libs and doubled phrases included — with about 10 dB of headroom (peaks near −10 dBFS) in a digital recording. The fader comes after the overload.',
+    explain: 'Set the input from the loudest real performance — ad-libs and doubled phrases included — with about 10 dB of headroom (peaks near −10 dBFS) in a digital recording. The fader comes after the input, so it can’t undo the overload.',
     why: {
       'Pull the channel fader down until it is clean': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
       'Ask the performer to drop the loudest ad-lib': 'The ad-lib is the performance. Set the gain for it, and leave headroom.',
@@ -425,7 +425,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the wedge in a sensitive direction, or the grille covered? Lower the level at once, uncover the grille, then use the mic’s actual null.',
     options: ['Lower the level, then put the wedge in the null', 'Turn the vocal up so it covers the ringing', 'Cup the grille so the sound stays inside it'],
     correct: 'Lower the level, then put the wedge in the null',
-    explain: 'Lower that send first, then aim the pattern’s rejection at the wedge and keep the grille open. Avoid uncontrolled feedback.',
+    explain: 'Lower the wedge’s send first, then aim the pattern’s rejection at the wedge and keep the grille open. Avoid uncontrolled feedback.',
     why: {
       'Turn the vocal up so it covers the ringing': 'More gain feeds the loop. Lower the level first.',
       'Cup the grille so the sound stays inside it': 'Cupping changes the pattern and usually makes feedback more likely.',
@@ -604,7 +604,7 @@ export const E03_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'rapper', label: 'the performer', short: 'PERFORMER', note: 'Standing, the mouth at the lip point every distance is read from; the head moves in an agreed working zone.', prov: { kind: 'illustrative', reason: 'the shared figure (drawing default)' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'rapper', label: 'the performer', short: 'PERFORMER', note: 'Standing. Every distance is read from the lip point at the mouth; the head moves in an agreed working zone.', prov: { kind: 'illustrative', reason: 'the shared figure (drawing default)' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'zone', label: 'the working zone', short: 'WORKING ZONE', note: 'Where the head moves as the performer raps (dashed in the studio). The mic stays still in front of it; the distance changes as the head moves inside it — rehearse the loudest and quietest lines there.', prov: { kind: 'illustrative', reason: 'rap_vocal/GEOMETRY_PROPOSAL.md env.v.workingZone (drawing default)' }, tag: 'KEEP CLEAR', scene: 'studio' },
       { id: 'space', label: 'the performer’s face, hands and feet', short: 'THE PERFORMER’S SPACE', note: 'Nothing touches the face; the hands have room; the stand’s base and the cable stay clear of the feet.', prov: { kind: 'illustrative', reason: 'the shared figure (drawing default)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'phones', label: 'the headphone mix', short: 'HEADPHONES', note: 'Open-back phones, or a loud mix, leak the beat into a close mic. Closed-back, clear enough to hear the consonants and the beat placement without turning it up dangerously.', prov: { kind: 'illustrative', reason: 'the lesson L35, L76' }, tag: 'SPILL', scene: 'studio' },

@@ -145,7 +145,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       },
       seeing: [
         'One hit, left to right in real time. The white line in the strip below is how loud it is; a green mark shows where it has died away.',
-        'PITCH is the note. SUSTAIN is the estimated T60, the time to fall 60 dB. BEND is how far the pitch glides, in cents. OVERTONES is the share of the hit above three times the pitch.',
+        'PITCH is the note. SUSTAIN is the estimated T60, the time to fall 60 dB. BEND is how far the pitch glides, in cents. OVERTONES is the share of the hit’s sound above three times the pitch frequency.',
       ],
       control: [
         'STRIKE fader: 20–100 %, from a light tap to a hard hit. A harder hit is louder, with a deeper bend.',
@@ -238,7 +238,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'Do the TRY NEXT: on Turn one rod, turn two opposite rods the same amount in opposite directions. The average lug pitch, and so the drum’s pitch, stays put.',
-        'Answer each recall card aloud before you tap it, and back it up with a number you saw in this chapter, like BEND +35 ¢ or SPREAD 21 ¢.',
+        'Answer each SAY IT BEFORE YOU READ IT card aloud before you tap it, and back it up with a number you saw in this chapter, like BEND +35 ¢ or SPREAD 21 ¢.',
       ],
     },
   ],
@@ -387,7 +387,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         start: 'Read YOUR RUN to see the drums you checked. Then answer each SAY IT BEFORE YOU READ IT card in your head before you tap it.',
       },
       seeing: [
-        'This is your Chapter 2 summary. YOUR RUN shows the drums you checked for faults and where you left the head on Start from a known condition.',
+        'This is your Chapter 2 summary. YOUR RUN shows the drums you checked for faults and where you left the head on the Start from a known condition step.',
         'Below: SAY IT BEFORE YOU READ IT cards, KEY IDEAS, KEY TERMS and a TRY NEXT. At the end: the TAKEAWAY, and what completes this chapter.',
       ],
       control: REVIEW_CONTROL,
@@ -472,7 +472,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       control: [
         'Pick the rod with LUG, then ride TURN to move it in sixteenths of a turn; 0 is where you found it. Switch heads with BATTER / RESO.',
         '▶ TAP plays one lug so you can hear just that spot; ▶ STRIKE plays the whole drum.',
-        'In the notes, ▶ SHOW ME A MOVE makes a move for you, for your first two moves on the batter. ↺ NEW HEADS gives you a fresh pair to practice on.',
+        'Below the display, ▶ SHOW ME A MOVE makes a move for you, for your first two moves on the batter. ↺ NEW HEADS gives you a fresh pair to practice on.',
       ],
       changes: [
         'Tighten a low rod and its pitch rises; loosen a high one and it falls. As the lugs agree, SPREAD shrinks and the wedges turn yellow.',
@@ -499,7 +499,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       control: REVIEW_CONTROL,
       changes: [
-        'YOUR RUN updates from Tap near each lug and Tune the head. Nothing on this page changes the drum.',
+        'YOUR RUN updates from the Tap near each lug and Tune the head steps. Nothing on this page changes the drum.',
         'Compare each head’s SPREAD before and after: the drop shows how much more even your moves made it.',
       ],
       teaches: [
@@ -553,7 +553,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       control: [
         'Ride BATTER and RESO to set each head’s own pitch.',
-        'Tap SET for a quick start: RESO ↑ puts the resonant head 3 semitones above the batter, EQUAL matches them, and BATTER ↑ puts it 3 semitones below.',
+        'Tap SET for a quick start: RESO ↑ puts the resonant head 3 semitones above the batter, EQUAL matches them, and BATTER ↑ puts the resonant head 3 semitones below.',
         'Switch VIEW between WAVE, PITCH and VIBRATE. Tap ▶ STRIKE, or tap the display, to play the drum.',
       ],
       changes: [
@@ -637,7 +637,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'How you choose between the three relationships, and whether any one of them is correct.',
       ],
       tryThis: [
-        'Do the TRY NEXT: on Compare head relationships, ride RESO slowly from 3 st below the batter to 3 st above, striking as you go. Listen for where it rings longest.',
+        'Do the TRY NEXT: on Compare head relationships, ride RESO slowly from 3 st (semitones) below the batter to 3 st above, striking as you go. Listen for where it rings longest.',
         'Answer “Is one relationship the correct one?” aloud, then tap the card to check.',
       ],
     },
@@ -740,9 +740,9 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       control: [
         'BATTER, RESO and DAMPING faders tune and damp the drum.',
-        'GOAL: SHORT, OPEN, LOW or BEND — each starts the drum where it fails.',
+        'GOAL: SHORT, OPEN, LOW or BEND — each starts the drum missing its goal.',
         'Tap ▶ STRIKE to hear the drum, then ✓ CHECK to have your current setting judged.',
-        'In the notes, SNARE / RACK / FLOOR / KICK picks the drum you practice on.',
+        'Below the display, SNARE / RACK / FLOOR / KICK picks the drum you practice on.',
       ],
       changes: [
         'Every goal starts from a drum that fails it, so you always have to move something to get there.',
@@ -825,7 +825,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'Toms tuned too close together crowd each other; spread too far apart, the kit sounds like unrelated drums instead of one set.',
       ],
       teaches: [
-        'A kit is tuned as a set: each drum where it responds, clear steps between the toms, checked with the band.',
+        'A kit is tuned as a set: each drum where it responds, clear steps between the toms, checked while the music plays.',
       ],
       tryThis: [
         'Read the separation card, then hum two notes a third apart and two a fifth apart.',
@@ -886,7 +886,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'Name a setup after the room you play in and save it; then move the faders and LOAD it back.',
-        'Go ‹ PREV, set a CLOSE pair and save it too. LOAD each note in turn, go ‹ PREV and play ▶ BOTH to hear the two spacings.',
+        'Go ‹ PREV, set a CLOSE pair, come back with NEXT › and save it too. LOAD each note in turn, go ‹ PREV and play ▶ BOTH to hear the two spacings.',
       ],
     },
     // REVIEW

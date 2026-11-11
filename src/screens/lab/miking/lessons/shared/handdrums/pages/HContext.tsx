@@ -176,7 +176,7 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
             {(sceneW) => <PlacementScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={box} wedge={live ? { at, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
           </PatternInset>
         ),
-        badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · the monitor where a stage often puts it` : patternInsetBadge(false),
+        badge: live ? `${patternInsetBadge(true)} · within ±${NULL_TOL}° counts as in the null · the monitor where a stage often puts it` : patternInsetBadge(false),
         bezel,
         params,
         initialParam: 'aim',

@@ -49,7 +49,7 @@ export const F03_ZONES: DocumentedZone[] = [
   foleyZone({
     id: 'f03.detail',
     label: 'Aimed at the part that sounds',
-    band: 'A suggested trial: about 35–55 cm (14–22 in) from the part that sounds — the latch, the jingle, the bend, the leg on the floor — outside the hand’s arc and the swing.',
+    band: 'A suggested start: about 35–55 cm (14–22 in) from the part that sounds — the latch, the jingle, the bend, the leg on the floor — outside the hand’s arc and the swing.',
     kind: 'trial',
     src: 'LESSON-F03',
     quote: 'Then compare an aimed view of the handle/latch and one of the moving panel or frame.',

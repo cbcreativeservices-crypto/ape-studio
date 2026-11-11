@@ -209,11 +209,11 @@ const scenarios: MikingScenario[] = [
     id: 'hp.place.1',
     page: 'placement',
     prompt: 'A starting point says “about 60 cm from the soundboard”. Your readout says 60 cm from the PILLAR. Do you need to measure again, from the soundboard?',
-    options: ['Yes: the band is read from the soundboard it names', 'No: 60 cm is 60 cm, whichever part you start from', 'No, as long as the mic is at the harpist’s head height'],
-    correct: 'Yes: the band is read from the soundboard it names',
+    options: ['Yes: the starting point is read from the soundboard', 'No: 60 cm is 60 cm, whichever part you start from', 'No, as long as the mic is at the harpist’s head height'],
+    correct: 'Yes: the starting point is read from the soundboard',
     explain: 'A distance means something only with its surface. The soundboard leans back, far from the pillar — which is why every readout names what it measures from.',
     why: {
-      'No: 60 cm is 60 cm, whichever part you start from': 'Same number, different surface. The band is measured from the soundboard.',
+      'No: 60 cm is 60 cm, whichever part you start from': 'Same number, different surface. The starting point is measured from the soundboard.',
       'No, as long as the mic is at the harpist’s head height': 'Height is a separate check. The distance is read from the soundboard.',
     },
   },
@@ -319,7 +319,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the lower mic’s polarity. What happens to the arrival-time difference?',
     options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity reverses the signal’s sign; it does not remove a delay. The notches move; Δt does not.',
+    explain: 'Polarity reverses the signal’s sign; it does not remove a delay. The notches move; the time difference does not.',
     why: {
       'It drops to zero, so the two arrivals line up again in time': 'Flipping polarity changes the sign, not when the sound arrives.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -415,7 +415,7 @@ const symptoms: Symptom[] = [
   {
     id: 'hp.sym.boom',
     observation: 'Bass or low mids boom',
-    firstChecks: 'Mic too close to the board, directional proximity or the room: move outward or upward, change the harp’s room position.',
+    firstChecks: 'Mic too close to the board, a directional mic’s proximity effect, or the room: move outward or upward, change the harp’s room position.',
     options: ['Distance from the board and the pattern; move out or up', 'Boost the treble until the boom is balanced out', 'Push foam into the sound holes yourself to stop the boom quickly'],
     correct: 'Distance from the board and the pattern; move out or up',
     explain: 'Close to the board, a directional mic adds low end to the board’s resonance. Move out or up, try an omni, or move the harp in the room.',

@@ -289,7 +289,7 @@ export function buildPacketModel(input: PacketInput): PacketModel {
     }),
     foot:
       `${project.name} — revision ${d.revision}, ${d.revisionDate}. ` +
-      'Prepared with the Pro Audio Training Academy production lab. This document records planning decisions; ' +
+      'Prepared with the Pro Audio Training Academy production lab. This document records production decisions; ' +
       'it is not legal advice, and rigging, electrical distribution and similar work must be approved by ' +
       'qualified personnel.',
   };

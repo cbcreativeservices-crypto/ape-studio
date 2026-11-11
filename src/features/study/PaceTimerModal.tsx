@@ -139,7 +139,7 @@ export function PaceTimerModal({
                 {recordRead === 'ok'
                   ? encouragingRecord(record)
                   : recordRead === 'failed'
-                    ? 'Your times could not be loaded right now.'
+                    ? 'Your times could not be loaded right now. Close this and open it again to retry.'
                     : 'Loading your times…'}
               </Text>
               {recordRead === 'ok' && record?.sessions ? (

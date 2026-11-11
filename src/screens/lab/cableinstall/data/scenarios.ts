@@ -63,7 +63,7 @@ export const CI_ID_SCENARIOS: CiIdScenario[] = [
       'EMI from the moving lights only',
       'Bend radius — snakes cannot turn corners',
     ],
-    doc: 'Ends tagged (stage / FOH) so strike and troubleshooting are fast.',
+    doc: 'Ends tagged (stage / FOH) so strike (the teardown) and troubleshooting are fast.',
   },
   {
     id: 'dante-perm',
@@ -255,7 +255,7 @@ export const CI_SUPPORT_ITEMS: CiSupportItem[] = [
   { id: 'raceway', name: 'Surface raceway', ok: true, roles: ['pathway', 'protection', 'management'], why: 'Finished-space pathway with fittings for every transition.', ruleId: 'wall-raceway-fill-transitions' },
   { id: 'underfloor', name: 'Underfloor pathway', ok: true, roles: ['pathway', 'protection'], why: 'Defined floor route — capacity and access planned in.', ruleId: 'plan-defined-pathways' },
   { id: 'vmgr', name: 'Vertical manager', ok: true, roles: ['management'], why: 'Organizes rack cable for service — it manages; supports carry.', ruleId: 'sup-roles' },
-  { id: 'hmgr', name: 'Horizontal manager', ok: true, roles: ['management'], why: 'Per-RU organization at the patch field.', ruleId: 'sup-roles' },
+  { id: 'hmgr', name: 'Horizontal manager', ok: true, roles: ['management'], why: 'Per-rack-unit (RU) organization at the patch field.', ruleId: 'sup-roles' },
   { id: 'strap', name: 'Approved strap / saddle', ok: true, roles: ['support'], why: 'Listed support hardware — wide bearing, no crush.', ruleId: 'mech-restraint-tension' },
   { id: 'protector', name: 'Floor cable protector', ok: true, roles: ['protection'], why: 'Protects a crossing FOR THE RIGHT LOADS — route rules still apply.', ruleId: 'floor-ramp-not-magic' },
   { id: 'plumbing', name: 'Plumbing pipe', ok: false, why: 'Another trade\'s system — never a cable support.', ruleId: 'sup-purpose-built' },
@@ -287,7 +287,7 @@ export const CI_RACK_ISSUES: CiRackIssue[] = [
   { id: 'ri-11', mistakeId: 'hidden-loop', label: 'Service loops zip-tied to the rail beside the amp — no hand fits', zone: 0.55 },
   { id: 'ri-12', mistakeId: 'slack-none', label: 'Interface lines bowstring-tight — zero slack', zone: 0.35 },
   { id: 'ri-13', mistakeId: 'label-mismatch', label: 'The two labels that exist disagree with each other', zone: 0.12 },
-  { id: 'ri-14', mistakeId: 'power-signal-mess', label: 'AC feeds twisted with the amp\'s analog line below the PDU', zone: 0.88 },
+  { id: 'ri-14', mistakeId: 'power-signal-mess', label: 'AC feeds twisted with the amp\'s analog line below the PDU (power distribution unit)', zone: 0.88 },
 ];
 
 export const CI_RACK_GROUPS: { id: string; name: string; tintKey: 'power' | 'analog' | 'network' | 'speaker' | 'control' | 'fiber'; zoneId: string }[] = [
@@ -362,7 +362,7 @@ export const CI_FLOOR_SCENARIOS: CiRouteScenario[] = [
   {
     id: 'foh-run',
     title: 'Stage → FOH for tonight\'s show',
-    brief: 'Temporary snake run to front of house, audience in the room. Egress and accessibility still apply tonight.',
+    brief: 'Temporary snake run to front of house, audience in the room. Egress (exit route) and accessibility rules still apply tonight.',
     cable: 'snake',
     options: [
       {
@@ -392,7 +392,7 @@ export const CI_FLOOR_SCENARIOS: CiRouteScenario[] = [
         relLength: 1.3,
         flags: [
           { ruleId: 'sup-purpose-built', dim: 'routing', cost: 0.3, positive: true, note: 'Off the floor entirely — using points intended for load.' },
-          { ruleId: 'plan-service-access', dim: 'serviceability', cost: 0.15, note: 'Needs the venue\'s rigging approval and a plan for strike.' },
+          { ruleId: 'plan-service-access', dim: 'serviceability', cost: 0.15, note: 'Needs the venue\'s rigging approval and a plan for strike (the teardown).' },
         ],
       },
     ],

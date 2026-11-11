@@ -980,7 +980,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
             <Appear style={{ gap: 8 }} delay={CI_MOTION.quick}>
               <VerdictBanner
                 verdict="correct"
-                text="Cable 3, in seconds — the flag says A-012, so it IS A-012. Yesterday this exact fault produced three guesses and nothing."
+                text="Cable 3, in seconds — the flag says A-012, so it IS A-012. Before the labels, this exact fault produced three guesses and nothing."
               />
               <Text style={styles.docEyebrow}>THE OTHER HALF OF IDENTITY — THE RECORDS</Text>
               <Text style={styles.docLead}>

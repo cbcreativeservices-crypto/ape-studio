@@ -47,7 +47,7 @@ export const C03_COPY = stringsCopy({
     ],
   },
   workedZone: { lap: 'cover.lap', round: 'cover.round' },
-  workedAim: 'Face the coverplate and the upper body — the lab counts it while the mic’s axis, followed in, meets the body within about 17 cm of {head}. Aiming straight at the coverplate’s center is one experiment, not a rule.',
+  workedAim: 'Face the coverplate and the upper body — your aim counts as long as the mic’s axis, traced forward, meets the body within about 17 cm of {head}. Aiming straight at the coverplate’s center is one experiment, not a rule.',
   clearWhat: 'the bar hand, the picking hand, the player’s arms and their view of the neck',
   placementReveal: 'Closer to the cone region tends to give more of its distinct, metallic projection; farther back, a more combined sound. Resonators differ, so “it depends on this one” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {
@@ -55,7 +55,7 @@ export const C03_COPY = stringsCopy({
     instDynCard: 'Ideas to try with a dynamic: a robust close option on a loud stage. Watch the proximity bass and keep it off the coverplate.',
     clipCond: 'Ideas to try with a clip-on: the capsule toward the coverplate’s edge, never on the cone; check it is not all strings.',
   },
-  learnSeparate: 'Distance, position and angle are separate variables: change one at a time. The resonator has no flat-top sound hole — the starting points are read from the coverplate. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
+  learnSeparate: 'Distance, position and angle are separate variables: change one at a time. The resonator has no flat-top sound hole — the starting points are measured from the coverplate. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
   learnTendencies: 'Toward the cone region: more resonator character; toward the neck and strings: more pick and slide, less cone; farther back: more of the whole instrument and the room. These are comparisons to make by ear, not guarantees.',
   context: {
     variant: 'lap',
@@ -67,8 +67,8 @@ export const C03_COPY = stringsCopy({
     looking: 'From above · lap style, mic over the coverplate',
     points: [
       { title: 'A BOOM FROM THE SIDE', text: 'Lap style the coverplate faces up: bring a boom in from the side so the capsule sees the instrument without crossing the bar’s path or the picking hand.' },
-      { title: 'THE PICKUP', text: 'On a loud stage a correctly installed pickup through its preamp or DI can carry the level, with a mic blended as feedback allows. A pickup — or an imaging pedal — is an electrical path, not a microphone.' },
-      { title: 'SHARED OR CLOSE', text: 'A quiet acoustic band may share one or two mics and move in for solos; that needs choreography and a kind room. On a loud stage, close mics give more gain before feedback.' },
+      { title: 'THE PICKUP', text: 'On a loud stage a correctly installed pickup through its preamp or DI can carry the level, with a mic blended as feedback allows. A pickup — or an imaging pedal, which shapes a pickup to sound more like a mic — is an electrical path, not a microphone.' },
+      { title: 'SHARED OR CLOSE', text: 'A quiet acoustic band may share one or two mics and move in for solos; that needs choreography and a good-sounding room. On a loud stage, close mics give more gain before feedback.' },
       { title: 'MOVEMENT', text: 'An upright player may turn toward the room or another player: mark a playing zone, or use a clip that moves with the instrument.' },
     ],
     body: 'With a wedge in front, aim the pattern’s rejection at it by the mic’s actual pattern — a supercardioid hears a little straight behind, so a wedge right behind it can be a poor choice.',

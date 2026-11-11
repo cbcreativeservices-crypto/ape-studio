@@ -63,7 +63,7 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
         ) : !mod ? (
           <View style={styles.authoringCard}>
             <Text style={styles.authoringTitle}>MODULE NOT AVAILABLE</Text>
-            <Text style={styles.authoringBody}>There is no concept module for this item.</Text>
+            <Text style={styles.authoringBody}>There is no concept module for this item. Go back and pick another.</Text>
           </View>
         ) : (
           <>

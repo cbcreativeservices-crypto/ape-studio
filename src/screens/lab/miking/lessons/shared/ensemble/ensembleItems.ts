@@ -102,12 +102,12 @@ export const supportNeed = (p: string, page: SourcePageId, what = 'an inner line
   id: `${p}.need`,
   page,
   prompt: 'When does a section support earn its place under the main pair?',
-  options: [`When ${what} is missing in the pair`, 'Whenever a spare channel on the desk is unused', 'One for each desk of players, as a rule'],
+  options: [`When ${what} is missing in the pair`, 'Whenever a spare channel on the desk is unused', 'One for each desk (stand) of players, as a rule'],
   correct: `When ${what} is missing in the pair`,
   explain: 'Set the main image first. Add a support only for a named need, bring it up from silence just until the line is clearer, and check the image and the mono sum again.',
   why: {
     'Whenever a spare channel on the desk is unused': 'A spare channel is not a reason; every support adds overlap and timing to judge.',
-    'One for each desk of players, as a rule': 'One mic per desk is not needed: a support covers three or four players.',
+    'One for each desk (stand) of players, as a rule': 'One mic per desk (stand) is not needed: a support covers three or four players.',
   },
 });
 

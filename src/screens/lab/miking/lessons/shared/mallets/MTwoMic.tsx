@@ -155,7 +155,7 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   ];
   const [wellW, setWellW] = useState(0);
   const label = `Ideal two-mic sum for the ${noteName(bar.key)} bar: ${equal ? (sEff === 1 ? 'no path difference, no comb' : eqCell === 'CANCELS' ? 'no path difference, and the sum acts as inverted, so the bar cancels' : `no path difference, and the sum acts as inverted, so the bar partly cancels, about ${partDb} dB down`) : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}; level difference ${Math.abs(lvl).toFixed(1)} dB.`;
-  const labelFor = (x: ViewId) => sceneLabel(rig, x, ['A', 'B'], `${preset.label}. Paths from the ${noteName(bar.key)} bar are drawn as an overlay.`);
+  const labelFor = (x: ViewId) => sceneLabel(rig, x, ['A', 'B'], `${preset.label}. The paths from the ${noteName(bar.key)} bar are drawn over the picture.`);
   const pred = lesson.predictions.twoMic;
   const tick = (on: boolean) => (on ? '✓' : '○');
 

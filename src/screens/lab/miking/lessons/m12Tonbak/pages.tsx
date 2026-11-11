@@ -201,8 +201,8 @@ const SPEC: HandSpec = {
   art: TONBAK_ART,
   intro: 'This lesson is about putting a microphone on a tonbak — but first the drum itself: what it is, how it makes its sound, and where it sits with its player. Then the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
   partsBox: { top: { u0: -700, u1: 560, v0: -520, v1: 330 }, side: { u0: -560, u1: 560, v0: -1000, v1: -240 } },
-  figure: { view: 'top', box: { u0: -700, u1: 560, v0: -520, v1: 330 }, title: 'TONBAK', badge: 'A wooden tonbak across the player’s lap, from above · posture drawn as a starting picture', label: 'The tonbak from above, lying across a seated player’s lap: the skin head at the wide end facing the player’s right, the bowl, the narrow neck and the flared foot, open at the end.' },
-  partsBadge: 'A wooden tonbak · tap a part to name it · the posture is a drawing choice',
+  figure: { view: 'top', box: { u0: -700, u1: 560, v0: -520, v1: 330 }, title: 'TONBAK', badge: 'A wooden tonbak across the player’s lap, from above · one possible posture — players differ', label: 'The tonbak from above, lying across a seated player’s lap: the skin head at the wide end facing the player’s right, the bowl, the narrow neck and the flared foot, open at the end.' },
+  partsBadge: 'A wooden tonbak · tap a part to name it · one possible posture — players differ',
   partsLooking: (v) => (v === 'top' ? 'From above · the drum across the lap' : 'From the player’s right · the head nearly face-on'),
   partsNote: 'The fingers and hands strike the head; the bowl and the air inside shape the sound; some leaves the open lower end. Switch the view to see the head face-on.',
   partsWarn: 'The drum is the player’s. Clamp nothing to the rim unless they agree, put nothing inside the opening, and do not move the drum to suit a mic.',
@@ -286,7 +286,7 @@ const SPEC: HandSpec = {
     looking: 'Two mics · A at the head, B outside the lower opening',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes — and try each SOURCE.',
     label: 'The tonbak with a head mic (A) and an opening mic (B)',
-    warn: 'The two mics hear DIFFERENT places on the drum, so this simplified graph shows only the shared part of one source — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels, with deep, edge and roll strokes and the player’s normal movement. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.',
+    warn: 'The two mics hear DIFFERENT places on the drum, but this simplified graph treats the drum as one point and both mics as hearing the same sound — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels, with deep, edge and roll strokes and the player’s normal movement. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.',
     learn: [
       'A common idea: one mic for the head, and a quieter support mic outside the open lower end for some of the body’s resonance. Two mics are not automatically better — start with the head mic working on its own.',
       'At the lowest pitches, the air pushed out of the opening moves opposite to the outside of the head — like the back of an open speaker cabinet — and higher up that relation changes with pitch. That is one reason no polarity setting is right by rule.',
@@ -294,7 +294,7 @@ const SPEC: HandSpec = {
     ],
   },
   practice: {
-    orderNote: 'A one-mic tonbak setup, as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.',
+    orderNote: 'A one-mic tonbak setup, as a sequence: put the steps in order. If you tap a step too early, you see why it cannot come yet.',
     gainId: 'tb.prac.gain',
     secondId: 'tb.prac.3',
     mixIds: ['tb.mix.1', 'tb.mix.2', 'tb.mix.3'],

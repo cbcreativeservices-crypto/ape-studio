@@ -170,7 +170,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>The Visual Audio Analysis lab's own meters on the glass. Ride GAIN: PEAK, TRUE PK and LUFS in the readouts all move by the same amount — a gain change moves these three together and leaves the gap between them alone — and the face moves with them. Switch FACE between the sample peak meter and the loudness meter; change SIGNAL to see how the GAP between peak and loudness depends on the material (that gap is what a limiter spends). The loudness meter here draws no target line on purpose.</Body>
+              <Body>These are the Visual Audio Analysis lab's own meters. Ride GAIN: the PEAK, TRUE PK and LUFS readouts all move by the same amount — a gain change moves these three together and leaves the gap between them alone — and the meter face moves with them. Switch FACE between the sample peak meter and the loudness meter; change SIGNAL to see how the GAP between peak and loudness depends on the material (that gap is what a limiter spends). The loudness meter here draws no target line on purpose.</Body>
               <Card>
                 <Point title="Peak level (dBFS)">The highest sample. It tells you about one instant, not about how loud the piece is.</Point>
                 <Point title="True peak (dBTP)">An estimate of the reconstructed waveform BETWEEN samples (oversampled). It can exceed the sample peak; converters and lossy encoders see it.</Point>
@@ -205,7 +205,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           well: (
             <>
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ QUIETER or ▶ LOUDER" />
-              <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one: the louder render is attenuated by the difference between the two loudness estimates, in LU (1 LU = 1 dB), a BS.1770-style K-weighted estimate, so what remains is the dynamics. The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
+              <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one: the louder version is turned down by the difference between the two loudness estimates (BS.1770-style, K-weighted), in LU (1 LU = 1 dB), so what remains is the dynamics. The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
               <Card tone="warn">
                 <Point title="Before you switch MATCH off">{unmatchedWarning(current ? q?.lufs : undefined, current ? l?.lufs : undefined, 'LOUDER')} Unmatched, nothing replays by itself after a DRIVE change — you press ▶ each time.</Point>
               </Card>

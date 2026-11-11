@@ -170,7 +170,7 @@ describe('Module 7: OS RATE answers on the pinned display', () => {
     assert.ok((t.chart('ImagesView')!.props.height as number) <= H - 14);
     assert.match(textOf(t.rack().stage.render(W, H)), /MODE or LAYERS returns/);
     assert.equal(t.rack().stage.bezel.find((b) => b.k === '1ST IMAGE')?.v, '192 kHz');
-    assert.match(t.rack().stage.badge, /DRAWN SPECTRA/);
+    assert.match(t.rack().stage.badge, /ILLUSTRATIVE SPECTRA/);
     t.rack().stage.onGuide();
     assert.deepEqual(t.help, ['oversampling']);
   });

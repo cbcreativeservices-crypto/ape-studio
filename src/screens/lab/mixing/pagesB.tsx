@@ -54,7 +54,9 @@ function PageStaticMix({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>STEP 2 — COMMIT TO AN ANCHOR</Eyebrow>
         <Body>
-          Your focal point was {focalName ? `“${focalName}”` : 'not chosen yet (page 1)'} — that suggests {track(suggested).name} as the anchor, but the commitment is yours.
+          {focalName
+            ? `Your focal point was “${focalName}” — that suggests ${track(suggested).name} as the anchor, but the commitment is yours.`
+            : `You haven’t chosen a focal point yet (page 1), so ${track(suggested).name} is suggested as the anchor, but the commitment is yours.`}
         </Body>
         <Row>
           {SESSION_TRACKS.map((t) => (

@@ -131,5 +131,5 @@ test('pace timer popup: "No timed runs yet" only from a read that answered', () 
   const s = src('features/study/PaceTimerModal.tsx');
   assert.match(s, /if \(all == null\) \{\s*setRecordRead\('failed'\);/);
   assert.match(s, /recordRead === 'ok'\s*\?\s*encouragingRecord\(record\)/);
-  assert.match(s, /'Your times could not be loaded right now\.'/);
+  assert.match(s, /'Your times could not be loaded right now\. Close this and open it again to retry\.'/);
 });

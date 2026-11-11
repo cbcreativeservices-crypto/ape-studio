@@ -57,7 +57,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 1 · The Envelope Explorer ─────────────────────────────────────────────
   p1: {
     intro: {
-      learning: 'A sound’s envelope is its level over time: attack, decay and release are times; sustain is a level. Rise time, from 10 to 90 %, measures how fast it starts.',
+      learning: 'A sound’s envelope is its level over time: attack, decay and release are times; sustain is a level. Rise time, 10–90 % of peak, measures how fast it starts.',
       start: 'Tap RESET and read the rise time in the tag at top left. Drag the Attack slider and watch the gold dots move apart. Then drag Sustain level to 0 %.',
     },
     seeing: [
@@ -114,7 +114,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     teaches: [
       'Sounds fall into families: struck sounds can only decay; bowed and blown sounds can sustain while energy keeps coming.',
       'A piano has no true sustain: once the hammer strikes, the string only loses energy.',
-      'Speech needs its onsets: many consonants are short bursts.',
+      'Speech needs its onsets to be understood: many consonants are short bursts.',
       'These are typical shapes; real instruments vary with technique, register and room.',
     ],
     tryThis: [
@@ -192,7 +192,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'One sound’s waveform with two lines: peak (solid white) and average (RMS) (dashed purple). RMS (root mean square) is a kind of average level over time.',
-      'The readout: peak, average (RMS) and crest factor, in dB below the top of the envelope (0 dB). So a peak just under the top reads a little below 0 dB.',
+      'The readout: peak and average (RMS) in dB below the top of the envelope (0 dB), and crest factor, the gap between them. So a peak just under the top reads a little below 0 dB.',
       'Below: a WORKED EXAMPLE of crest factor against dynamic range, and WHY IT MATTERS.',
     ],
     control: [
@@ -343,7 +343,7 @@ export const ENVELOPE_END_GUIDE: ScreenGuide = {
     'Peak and average level measure different parts of a sound, and the source and the room each shape what you hear.',
   ],
   tryThis: [
-    'The Envelope Explorer still listed? Tap it, move any slider, then tap MODULE ▾ and WHAT\'S LEFT ›, just under the page list: it has joined the ✓ DONE line.',
+    'The Envelope Explorer still listed? Tap it and move any slider. Then tap MODULE ▾ and WHAT\'S LEFT › just under the page list: The Envelope Explorer has joined the ✓ DONE line.',
     'Only Check your understanding left? Open it, get all four questions right, then tap FINISH ›: the title reads LAB COMPLETE.',
     'Done Peak vs Average Level? Tap REVIEW ▾, reopen it and switch between snare and trumpet again. Then tap MODULE ▾: its ✓ is still there.',
   ],

@@ -57,7 +57,7 @@ const pages: LessonPages = {
     title: 'Top and bottom',
     goal: 'See how a top and a bottom tom mic start out of step, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['tm.two.1', 'tm.two.2', 'tm.two.3', 'tm.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'A tom’s bottom mic hears its resonant head, not wires. Two mics on one drum start opposite when they face opposite heads; polarity flips the sign, it does not remove a delay. Check both states in mono — no setting is required.',
+    takeaway: 'A tom’s bottom mic hears its resonant head, not wires. Two mics on one drum start opposite when they face opposite heads; polarity flips the sign, it does not remove a delay. Check both states in mono — no one setting is always right.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up tom mics in the right order, choose and justify a plan for two briefs (from no tom mics to three), and say what would justify a bottom mic.',
     credit: { scenarios: ['tm.prac.order', 'tm.prac.gain', 'tm.prac.setup1', 'tm.prac.setup2', 'tm.prac.3', 'tm.mix.1', 'tm.mix.2', 'tm.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe clearance, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand, a drum’s name or a genre does not decide it — and more than one plan can pass.',
+    takeaway: 'To pass: safe clearance, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay. A brand, a drum’s name or a genre does not decide it — and more than one plan can pass.',
   },
 };
 
@@ -436,7 +436,7 @@ const symptoms: Symptom[] = [
   {
     id: 'tm.sym.shared',
     observation: 'Two toms on one mic are unequal',
-    firstChecks: 'Inspect drum positions, mic axis and pattern, the source dynamics, and whether independent channels are needed.',
+    firstChecks: 'Inspect drum positions, mic axis and pattern, the source dynamics (how loud and soft each tom is played), and whether independent channels are needed.',
     options: ['The mic’s position, axis and pattern — or give each its own mic', 'Turn the shared channel up until the quieter tom is loud enough', 'Ask the drummer to play the louder tom more softly all night'],
     correct: 'The mic’s position, axis and pattern — or give each its own mic',
     explain: 'One mic’s balance is set by where it sits and points, and by its pattern. If the balance cannot be found, independent channels may be needed.',

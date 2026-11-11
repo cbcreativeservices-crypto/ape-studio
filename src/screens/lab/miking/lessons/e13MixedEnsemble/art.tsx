@@ -48,7 +48,7 @@ const SPEC = ensembleHandSpec({
     warn: 'This simplified graph shows one point source and straight paths, no room. Real players are large sources at different distances, so one delay never suits them all — judge by ear, in mono, against the plain version.',
     learn: [
       'The relevant distance is the difference in paths from the player to each mic — not the distance between the mics. 1 m of path difference is about 2.9 ms.',
-      'Compare main alone, spot alone and both. Try the spot’s level, placement or angle first; a polarity flip only tests one relationship; a room-specific delay method is not a fixed recipe — try it on several notes and dynamics, and keep the plain channels.',
+      'Compare main alone, spot alone and both. Try the spot’s level, placement or angle first; a polarity flip only tests one relationship; a delay set for one room is not a fixed recipe — try it on several notes and dynamics, and keep the plain channels.',
     ],
   },
   practice: {

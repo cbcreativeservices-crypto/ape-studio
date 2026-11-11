@@ -61,7 +61,7 @@ export const AMP_MODULES: AmpModuleDef[] = [
   {
     id: 'realworld', num: 7, title: 'Real-World Amplifier Operation',
     blurb: 'Gain structure, speaker loads, bridge mode, cooling, cabling, and reading a spec sheet.',
-    objective: 'Run an amplifier and speakers the way working engineers do: the right order, sensible levels, no surprises.',
+    objective: 'Learn how working engineers run an amplifier and speakers: the right order, sensible levels, no surprises.',
     takeaway: 'Most amplifier trouble is operating trouble: gain structure, load, connections, and cooling decide what the circuit can safely deliver.',
   },
   {
@@ -291,7 +291,7 @@ export const AMP_CHECKS: AmpCheck[] = [
     q: 'Why is Class C unsuitable for ordinary full-range audio?',
     options: ['It is too efficient to sound natural', 'Its short conduction pulses need a tuned circuit to recover one frequency', 'It requires vacuum tubes, which are now rare', 'Its voltage gain is too low for a loudspeaker'],
     correct: 1,
-    explain: 'Class C conducts in brief pulses and relies on a resonant tank ringing at ONE tuned frequency. Music is broadband, so the recovery trick does not apply — Class C lives in RF.',
+    explain: 'Class C conducts in brief pulses and relies on a resonant tank (a tuned circuit) ringing at ONE tuned frequency. Music is broadband, so the recovery trick does not apply — Class C lives in radio (RF).',
   },
   {
     id: 'c-eff', moduleId: 'classes',
@@ -335,7 +335,7 @@ export const AMP_CHECKS: AmpCheck[] = [
     q: 'Under heavy load, the rail voltage of an unregulated supply typically…',
     options: ['Rises, raising the clip point', 'Sags, lowering the clip point', 'Inverts its polarity', 'Turns from DC back into AC'],
     correct: 1,
-    explain: 'Sustained current draw pulls the reservoir down, so the amplifier clips earlier than its idle rails suggest — one reason continuous ratings differ from burst ratings.',
+    explain: 'Sustained current draw pulls the reservoir capacitors down, so the amplifier clips earlier than its idle rails suggest — one reason continuous ratings differ from burst ratings.',
   },
   {
     id: 's-safety', moduleId: 'supply', scored: true,
@@ -597,7 +597,7 @@ export const APP_SCENARIOS: AppScenario[] = [
     id: 'ap-sub', title: 'Touring subwoofer amplifier',
     brief: 'Thousands of watts into low-impedance loads, night after night, in a road rack.',
     accepted: ['D'],
-    reasoning: { D: 'At kilowatt levels, efficiency decides weight, rack heat and mains draw — most modern touring amplifiers are switching designs with switch-mode supplies for this reason.' },
+    reasoning: { D: 'At kilowatt levels, efficiency decides weight, rack heat and AC power draw — most modern touring amplifiers are switching designs with switch-mode supplies for this reason.' },
     rejected: { A: 'The heat would be measured in kilowatts.', AB: 'Historically used, but its heat and weight at this power are why the industry moved on.', C: 'Not an audio amplifier.', TUBE: 'Impractical at this power and impedance.' },
   },
   {

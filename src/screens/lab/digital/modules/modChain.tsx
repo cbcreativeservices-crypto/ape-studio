@@ -79,13 +79,13 @@ const BLOCK_INFO: Record<AdcBlockKey, BlockInfo> = {
   },
   encoder: {
     title: 'ENCODER',
-    purpose: 'Packs the level numbers into fixed-format binary words (the PCM framing).',
+    purpose: 'Packs the level numbers into fixed-format binary words (PCM: pulse-code modulation).',
     io: 'IN level numbers → OUT PCM words',
     failure: 'Framing or clock errors here sound like clicks, dropouts or bursts of garbage — data faults, not tone faults.',
   },
   pcm: {
     title: 'PCM STREAM',
-    purpose: 'The finished product: a stream of numbers ready for storage, transmission or DSP.',
+    purpose: 'The finished product: a stream of numbers ready for storage, transmission or DSP (digital signal processing).',
     io: 'IN PCM words → OUT file / stream',
     failure: 'Bit errors corrupt individual samples — isolated ticks and glitches rather than smooth distortion.',
   },
@@ -434,7 +434,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       <View style={{ gap: 12 }}>
         {/* ── Gain above zero (the star — its bus is pinned above) ── */}
         <Text style={dstyles.body}>
-          The same bus, two fates. Ride the GAIN lane, then hit TRIM and watch what each path
+          The same bus, two fates. Ride the GAIN fader, then hit TRIM and watch what each path
           gives back.
         </Text>
         <ReadoutGrid

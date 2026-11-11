@@ -272,7 +272,7 @@ export function useWindowStep({ words, onDone }: { words: WindowWords; onDone: (
               ? `A ${T} ms window keeps the floor’s bounce out (it arrives ${(arr[1].ms - direct.ms).toFixed(2)} ms after the direct sound) — but it resolves frequency only in steps of about ${fmtHz(res)}: nothing below that is described.`
               : `A ${T} ms window resolves steps of about ${fmtHz(res)} — and lets in ${inside.length - 1} reflection${inside.length > 2 ? 's' : ''}. More of the lows, more of the room.`}
           </Point>
-          <Point title="STATE IT">Write down the window and the frequency range it supports. A short window is a direct-sound estimate above about 1 ÷ T; a long one is the loudspeaker in this room.</Point>
+          <Point title="STATE IT">Write down the window and the frequency range it supports. A short window is a direct-sound estimate above about 1 ÷ T (T = the window length); a long one is the loudspeaker in this room.</Point>
         </Card>
         <Note>{`Looked at: a window with the direct sound alone ${seen.short ? '✓' : '○'} · a window with every reflection ${seen.long ? '✓' : '○'}.`}</Note>
       </>

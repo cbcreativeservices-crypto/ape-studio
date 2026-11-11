@@ -27,7 +27,7 @@ import type { AmpModuleId } from '../../../features/amp/ampContent';
 export type AmpStepGuide = { key: string; kind: 'rack' | 'read'; guide: ScreenGuide };
 
 const RUN_SLOW = 'RUN and SLOW start, stop or slow the moving playhead. With reduced motion on, one STEP ¼ key replaces them. ⤢ FULL SCREEN enlarges the display.';
-const STRIP = 'The strip under the title moves between steps and modules. ‹ goes back one screen, to the lab menu.';
+const STRIP = 'Use the strip under the title to move between steps and modules. ‹ goes back one screen, to the lab menu.';
 
 export const AMP_HOME_GUIDE: ScreenGuide = {
   intro: {
@@ -153,7 +153,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         ],
         control: [
           'CONTROL fader (0–100%) sets the small control signal.',
-          'DEVICE key picks Generic, BJT, MOSFET or Tube. The drawing changes to that device’s symbol and terminal names.',
+          'DEVICE key picks Generic, BJT or MOSFET (two kinds of transistor), or Tube. The drawing changes to that device’s symbol and terminal names.',
           '⤢ FULL SCREEN enlarges the drawing.',
           STRIP,
         ],
@@ -331,7 +331,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           start: 'With CLASS on Class A and LEVEL at 80%, read EFFIC. Then switch CLASS to B and compare EFFIC. and DISTORT. Then pick AB and raise AB BIAS.',
         },
         seeing: [
-          'The rig for the class you pick: INPUT, DEVICE CURRENT(S) and OUTPUT. In Class C the output shows the raw pulses; dashed is after the tuned circuit.',
+          'The rig for the class you pick: INPUT, DEVICE CURRENT(S) and OUTPUT. In Class C, OUTPUT shows raw pulses; the dashed line is after the tuned circuit.',
           'Readouts: CONDUCT. (degrees each device conducts), IDLE (current with no signal), EFFIC. (illustrative, at this level), HEAT and DISTORT.',
           'Below: the same numbers explained, a ZERO CROSS zoom for B and AB, and SIDE BY SIDE fact cards for A, B, AB, C and D.',
         ],
@@ -410,7 +410,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           start: 'At LEVEL 70%, read TO LOAD and AS HEAT. Then drop LEVEL to 10% and see how much more of the supply’s power turns into heat.',
         },
         seeing: [
-          'A half-bridge: +RAIL and −RAIL, a HIGH SIDE and a LOW SIDE device meeting at the switching node, then L and C (the output filter) and the LOAD speaker, returning to 0 V.',
+          'A half-bridge: +RAIL and −RAIL, a HIGH SIDE and a LOW SIDE device meeting at the switching node, then L and C (the output filter’s inductor and capacitor) and the LOAD speaker, returning to 0 V.',
           'One switching period is drawn over the node wire. Its high part is the high side’s share at the peak.',
           'Readouts: AT PEAK, TO LOAD (share of supply power reaching the speaker) and AS HEAT (share lost).',
         ],
@@ -564,7 +564,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           start: 'Find the flat tops in the OUTPUT picture: at the rail lines, below them, or inside faint outer lines. Then tap the reading that matches.',
         },
         seeing: [
-          'One picture at a time: INPUT (signal) above OUTPUT — what is this amplifier doing?, with the rail lines. Faint outer lines mean the rails have moved in.',
+          'One picture at a time: INPUT (signal) on top and, below it, “OUTPUT — what is this amplifier doing?” with the rail lines. Faint outer lines mean the rails have moved in.',
           'Readouts: PICTURE (which picture you’re on), SCORE (right so far) and READING (RIGHT or WRONG).',
           'Below are eight possible readings to choose from.',
         ],
@@ -642,7 +642,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           STRIP,
         ],
         changes: [
-          'The rig arrives misconfigured: a hot source, a 2 Ω load on a 4 Ω amplifier, and blocked vents. The vents add heat, enough to trip thermal limiting at 4 Ω.',
+          'The rig arrives misconfigured: a hot source, a 2 Ω load on a 4 Ω amplifier, and blocked vents. They trap heat, enough to trip thermal limiting at 4 Ω.',
           'A lower SOURCE stops upstream clipping, and 8 Ω or 4 Ω meets the load rating. Bridging is no fix: each channel then sees half the impedance, a heavier load.',
           'The target: clean output between 50% and 85% of full, with no load, thermal or connection faults.',
         ],

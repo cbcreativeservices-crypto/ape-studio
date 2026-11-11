@@ -519,7 +519,7 @@ const words: MalletWords & { sound: { damped: DampedStrike } } = {
     shapes: {
       intro: 'This is the lowest shape — the note. The middle and the ends move opposite ways about two still points, a little under a quarter of the way in from each end, where the cord passes.',
       tuned: 'A plain bar’s upper shapes ring at uneven ratios (about 2.76 and 5.40 times the lowest). Makers shape real bars to tune them, so a real vibraphone bar’s ratios differ — the still points and the strike-point idea stay.',
-      notes: ['A shape is set moving only as much as the bar moves at the strike point in that shape: a stroke on a still point leaves that shape quiet.'],
+      notes: ['How strongly a shape rings depends on how much the bar moves, in that shape, where the mallet strikes: strike one of its still points and that shape stays quiet.'],
     },
     tube: {
       intro: 'Open under the bar, closed at the bottom: the tube rings at the note whose quarter wavelength fits it — about {len} here. Step to the other end of the keyboard: the length follows the pitch.',
@@ -538,7 +538,7 @@ const words: MalletWords & { sound: { damped: DampedStrike } } = {
     looking: 'Two mics over the vibraphone · paths from one bar',
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below.',
     learn: [
-      'Two layouts to begin from, as alternatives — not both at once: two mics aimed down about 46 cm (1½ ft) above the bars, either about 61 cm (2 ft) apart, or with their grilles together angled 135° apart. A coincident pair, the second: the capsules at one point.',
+      'Two layouts to begin from, as alternatives — not both at once: two mics aimed down about 46 cm (1½ ft) above the bars, either about 61 cm (2 ft) apart, or with their grilles together angled 135° apart. The second is a coincident pair: the capsules at one point.',
       'Spaced: one mic toward the low half, one toward the high, overlapping through the middle — more separate control, a wider picture, and a bar both mics hear at different times can sound colored in mono. Coincident: no time difference for any bar, a steadier mono sum, a narrower picture and less low-versus-high control.',
       'Live, stereo is worth it only when the PA and the audience’s seats make it useful; close placement helps the gain before feedback. If the PA is mono, a single mic or a modest width may serve the audience better.',
     ],
@@ -554,7 +554,7 @@ const copy: Partial<LessonCopy> = {
   axes: malletAxes(VIBE_FAM),
   instrument: {
     figureBadge: 'A three-octave vibraphone, from the audience',
-    figureLabel: 'Front view of a vibraphone from the audience: two rows of metal bars seen end-on, the far row nearest you, a tube hanging under every bar — long at the low end on the right, short at the high end on the left — the fan shafts across the tube tops, the motor under the low end, the frame on casters, the pedal at the player’s feet, and the player behind with two mallets.',
+    figureLabel: 'Front view of a vibraphone from the audience: two rows of metal bars seen end-on, the player’s far row nearest you, a tube hanging under every bar — long at the low end on the right, short at the high end on the left — the fan shafts across the tube tops, the motor under the low end, the frame on casters, the pedal at the player’s feet, and the player behind with two mallets.',
     partsBadge: 'A three-octave vibraphone · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience · low end on the right', top: 'From above · the player at the top, the audience below' },
     partsIdle: 'The mallet strikes a bar; the tube under it rings with it; the fans make it pulse; the pedal decides how long it rings. The next page shows how.',
@@ -587,7 +587,7 @@ const copy: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { motor: 'vb.one', nomotor: 'vb.one' },
-    workedLine: 'This starting point is also read against {line}.',
+    workedLine: 'This starting point also reads how far the mic is from {line}.',
     workedAim: 'Aim down at the bars — the starting point counts while the mic looks within 30° of straight down. Height and angle are separate things to try.',
     workedClear: 'Clear of the raised mallets over both rows, the player’s view of the bars, the pedal and the motor. Clearance comes first, and the player stops before a real stand moves.',
     blocked: { motor: ' Raise it above the mallets’ travel, or move it out to the side.', nomotor: ' Raise it above the mallets’ travel, or move it out to the side.' },
@@ -708,9 +708,9 @@ export const I07_LESSON: MalletLesson = {
       { id: 'kit', label: 'the drum kit', short: 'DRUMS', note: 'Loud and close: every mic over the bars hears it. Where you can, keep the vibraphone away from the drums.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low and loud. A directional mic rejects only part of it — often least at low frequencies.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'piano', label: 'the piano', short: 'PIANO', note: 'Another pitched instrument in the same range: it blends into the vibraphone mics.', prov: { kind: 'illustrative', reason: 'a typical small-group layout' }, tag: 'SPILL', scene: 'all' },
-      { id: 'front', label: 'a floor wedge in front of the vibraphone', short: 'WEDGE', note: 'On the floor in front, facing the player — and facing a mic above the bars from below its front. No pattern null reaches it: keep its level only as high as the player needs.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'front', label: 'a floor wedge in front of the vibraphone', short: 'WEDGE', note: 'On the floor in front, facing the player — and below a mic above the bars, on its front side. No pattern null reaches it: keep its level only as high as the player needs.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'side', label: 'a side fill at stage left', short: 'SIDE FILL', note: 'On a stand at about head height beyond the low end, firing across the stage. Almost level with a mic above the bars and off to its side — a pattern’s null can face it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'The PA faces the audience; every open mic also hears it. If the PA is mono, a wide stereo pair will not reach them as stereo.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
+      { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'The PA faces the audience; every open mic also hears it. If the PA is mono, a wide stereo pair will not reach the audience as stereo.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A room suited to the vibraphone’s decay is part of the sound; a wider position blends the keyboard and the room but adds reflections.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a band on stage — monitors, a PA facing the audience, drums nearby. Spill and the gain before feedback push toward a safe directional mic or pair above the range, and a better layout.',

@@ -57,7 +57,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'Each bar is a sine at a whole-number multiple of F0; added up, they make the shape.',
       'Change WAVE: the bars change, so the shape and the sound (timbre) change; the pitch stays.',
       'Change F0 (IDEAL view): only the pitch moves; the picture stays two cycles, slowed.',
-      'SPKR: a phone speaker can’t reproduce deep bass, so the filter shrinks the lowest bars, most at 110 Hz. You hear it on a phone speaker either way.',
+      'SPKR: a phone speaker can’t reproduce deep bass, so the filter shrinks the lowest bars, most at 110 Hz. Phone speakers lose that bass, SPKR on or off.',
     ],
     teaches: [
       'Every repeating sound is a stack of sines (Fourier). The classic waves differ only in which ones, and how strong.',

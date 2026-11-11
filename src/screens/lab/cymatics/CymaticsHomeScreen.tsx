@@ -194,7 +194,7 @@ export function CymaticsHomeScreen() {
         </Pressable>
         <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => go('CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
           <Text style={[styles.studioBtnText, { color: colors.programPurple }]}>OPEN THE PATTERN GALLERY &amp; ART STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>Save a pattern from any studio · color it · compare 2 or 4 · art print or lab sheet</Text>
+          <Text style={styles.studioBtnSub}>Save a pattern from any studio · color it · compare 2 to 4 · art print or lab sheet</Text>
         </Pressable>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>

@@ -145,7 +145,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1",
         "attackRelease": "5–10 ms / 60–120 ms (or auto)",
         "gainReduction": "3–6 dB",
-        "notes": "Studio: FET for peaks into opto for smoothness; whispers to belts need riding too"
+        "notes": "Studio: a FET compressor for peaks, then an opto compressor for smoothness; whispers to belts need riding too"
       },
       {
         "source": "Requinto (lead guitar)",

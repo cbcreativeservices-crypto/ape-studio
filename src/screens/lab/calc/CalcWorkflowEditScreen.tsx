@@ -32,7 +32,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const WORKFLOW_UNREADABLE =
   'This workflow couldn’t be read just now. It isn’t lost — go back and open it again in a moment.';
-const WORKFLOW_MISSING = 'This workflow isn’t on this device anymore. It may have been deleted.';
+const WORKFLOW_MISSING = 'This workflow isn’t on this device anymore. It may have been deleted. Go back and pick another one.';
 
 export function CalcWorkflowEditScreen() {
   const insets = useSafeAreaInsets();

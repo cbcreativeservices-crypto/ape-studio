@@ -44,7 +44,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
     phones: true,
     words: {
       subject: 'a host at a desk with two mics fixed in front of the mouth',
-      looking: 'From above · the host, two mics fixed on their arms · the side in the corner',
+      looking: 'From above · the host, two mics fixed on their arms · side view in the corner',
       prompt: 'TURN the host’s head both ways, then LOOK down at the script. Which mic’s level changes more?',
       done: 'The mics stay where their arms hold them; the mouth moves. The closer the mic, the bigger the change for the same turn — so a close mic asks for a steady host, and reading down takes the voice off the axis. Move the mic or the script, not the host’s neck.',
     },

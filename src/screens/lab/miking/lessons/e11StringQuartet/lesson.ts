@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A quartet with a loud band. What helps the strings most?',
     options: ['Move amps and drums away; close mics', 'Turn the band down, keep the pair', 'Push the pair up until the strings cut through'],
     correct: 'Move amps and drums away; close mics',
-    explain: 'Move loud amplifiers, drums and loudspeaker coverage away from the strings where you can; individual directional close mics give a usable margin before feedback EQ.',
+    explain: 'Move loud amplifiers, drums and loudspeaker coverage away from the strings where you can; individual directional close mics give a usable margin before feedback, even before any feedback EQ.',
     why: {
       'Turn the band down, keep the pair': 'A distant pair on a loud stage hears the band and the PA.',
       'Push the pair up until the strings cut through': 'More gain on a distant pair invites feedback.',
@@ -343,7 +343,7 @@ const symptoms: Symptom[] = [
   {
     id: 'sq.s.centre',
     observation: 'The center becomes weak',
-    firstChecks: 'A/B spacing and panning. Reduce the spacing or audition another array.',
+    firstChecks: 'A/B (spaced pair) spacing and panning. Reduce the spacing or audition another array.',
     options: ['Reduce spacing or try another array', 'Pan the pair even wider to compensate', 'Raise the cello spot to fill it'],
     correct: 'Reduce spacing or try another array',
     explain: 'A spaced pair too wide thins the middle: narrow it, or compare a coincident or near-coincident pair.',

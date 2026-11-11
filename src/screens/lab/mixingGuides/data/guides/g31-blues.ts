@@ -281,7 +281,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Traditional and acoustic blues masters commonly sit at −14 to −11 LUFS-I; electric and blues-rock at −11 to −9. Keep true peak at or below −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so heavy limiting buys nothing. For traditional masters, aim for a PLR of 11–15 dB; at −2 dBTP that means about −13 LUFS-I or quieter, the quiet end of the usual range. Louder electric masters land nearer 7–9 dB. Target a loudness range of 6–10 LU to keep solo builds and quiet verses alive."
+      "text": "Traditional and acoustic blues masters commonly sit at −14 to −11 LUFS-I; electric and blues-rock at −11 to −9. Keep true peak at or below −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to about −14 LUFS, some to −16, so heavy limiting buys nothing. For traditional masters, aim for a PLR (peak-to-loudness ratio) of 11–15 dB; at −2 dBTP that means about −13 LUFS-I or quieter, the quiet end of the usual range. Louder electric masters land nearer 7–9 dB. Target a loudness range of 6–10 LU to keep solo builds and quiet verses alive."
     }
   ],
   "liveStudio": {

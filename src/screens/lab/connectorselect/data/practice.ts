@@ -150,7 +150,7 @@ export const SAFETY_RULES: readonly SafetyRule[] = [
   {
     id: 'power_separate',
     rule: 'Keep power connectors visually and conceptually separate from audio connectors.',
-    why: 'AC power has its own connectors, its own rules and its own lab. The habit of separating the two families is itself a safety practice.',
+    why: 'AC power has its own connectors, its own rules and its own lesson. The habit of separating the two families is itself a safety practice.',
   },
 ];
 

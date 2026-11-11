@@ -186,7 +186,7 @@ function PageSessionMgmt({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>THIS SESSION’S ROUTING MAP</Eyebrow>
-        <Body>The map for the 8-track session you will repair in the final — channels into family buses, buses into the mix. On a real 80-track session this drawing is the difference between routing and archaeology.</Body>
+        <Body>The map for the 8-track session you will repair on the final page — channels into family buses, buses into the mix. On a real 80-track session this drawing is the difference between routing and archaeology.</Body>
         {/* Art fix 2026-10-16: drawn as the mixer itself — strips, group and
             master faders, every wire on its own pin (advFigures). */}
         <RoutingMapArt />

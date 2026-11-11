@@ -212,7 +212,7 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>THE KEY, DRAWN FROM THE REAL KICK</Eyebrow>
-        <Prompt>The kick track itself, two bars of it — and underneath, the gain the bass compressor applies, computed by the same detector the audio uses.</Prompt>
+        <Prompt>The kick track itself, two bars of it — and underneath, the gain the bass compressor applies, computed by the same detector that shapes what you hear.</Prompt>
         <DuckArt ducking={ducked} />
       </Card>
       <Card>
@@ -373,7 +373,7 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
         wrong={[
           'Shorter is one answer — but the surgical one keeps the lushness you wanted.',
           undefined,
-          'Turning it down trades mud for dryness on a linear dial. Shaping the return breaks that trade.',
+          'Turning it down only swaps mud for dryness. Shaping the return breaks that trade.',
           'A bus reverb bathes EVERYTHING — the opposite of placing one voice in one space.',
         ]}
         onCorrect={() => setCheckDone(true)}

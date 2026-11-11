@@ -35,13 +35,13 @@ const pages: LessonPages = {
     title: 'Before any test',
     goal: 'Settle the question, the room’s state, the source and the safety of the test before anything plays.',
     credit: { scenarios: ['ra.set.1', 'ra.set.2', 'ra.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Room only or system + room — decide it and label it. Log the room’s state and its noise first. No explosive or firearm-like sources; modest levels; the mic never to the PA.',
+    takeaway: 'Room only or system + room — decide it and label it. Log the room’s state and its noise first. No explosive or firearm-like sources; modest levels; the mic never routed into the PA.',
   },
   microphone: {
     title: 'The test chain',
     goal: 'Build a room test link by link — the signal, the source, the receiver, the processing — for the room itself or for the installed system, and see what is refused and why.',
-    credit: { scenarios: ['ra.mic.1', 'ra.mic.2', 'ra.mic.3', 'ra.rec.1'], interactive: 'chainBuilt', note: 'Build a chain that passes its question, and answer the four checks (one reaches back to how the room answers).' },
-    takeaway: 'A controlled sweep or interrupted noise, a well-known source for the room or the actual PA for the system, an omni measurement mic, and every automatic process off.',
+    credit: { scenarios: ['ra.mic.1', 'ra.mic.2', 'ra.mic.3', 'ra.rec.1'], interactive: 'chainBuilt', note: 'Build a chain that fits its question, and answer the four checks (one goes back to the page How a room answers).' },
+    takeaway: 'A controlled sweep or interrupted noise, a source with a known output for the room or the actual PA for the system, an omni measurement mic, and every automatic process off.',
   },
   placement: {
     title: 'Placement Studio',
@@ -59,7 +59,7 @@ const pages: LessonPages = {
     title: 'The decay reader',
     goal: 'Read T20, T30 and EDT from a decay, band by band, and see a fit refused when the range above the noise floor is too short.',
     credit: { scenarios: ['ra.two.1', 'ra.two.2', 'ra.two.3'], interactive: 'decayRead', note: 'See one fit refused and one valid in THE DECAY READER, and answer the three checks.' },
-    takeaway: 'T20 from −5 to −25 dB ×3, T30 from −5 to −35 dB ×2, EDT the first 10 dB ×6 — each needs its end 10 dB above the floor. Report them separately, band by band.',
+    takeaway: 'T20 from −5 to −25 dB ×3, T30 from −5 to −35 dB ×2, EDT the first 10 dB ×6 (each scaled to a 60 dB decay) — each needs its end 10 dB above the floor. Report them separately, band by band.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -192,7 +192,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which test signal gives a repeatable impulse response?',
     options: ['A controlled sweep, deconvolved in software', 'A clap, as loud as the person can make it', 'Whatever music the band is rehearsing that day'],
     correct: 'A controlled sweep, deconvolved in software',
-    explain: 'A stable source playing a controlled sweep, unclipped, with the tail captured and deconvolved: repeatable. Interrupted noise can estimate band decays too.',
+    explain: 'A stable source playing a controlled sweep, unclipped, with the tail captured and deconvolved (turned into an impulse response): repeatable. Interrupted noise can estimate band decays too.',
     why: {
       'A clap, as loud as the person can make it': 'Loud does not make it consistent, and it barely excites the lows.',
       'Whatever music the band is rehearsing that day': 'Music changes all the time: it is not a controlled test signal.',
@@ -218,7 +218,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It is where the listeners’ ears will be',
     explain: 'About 1.2 m (4 ft) is a seated listener’s ear — a sensible height for an audience seat. There is no universal height: the method you use sets it.',
     why: {
-      'It is the single height all room tests use': 'There is no one height: a method may name one, and it picks 1.2 m because that is where seated ears are.',
+      'It is the single height all room tests use': 'There is no one height: a method may name one, and this lab uses 1.2 m because that is where seated ears are.',
       'It keeps the stand from being seen': 'Sightlines matter in a show, but the height follows the listener.',
     },
   },

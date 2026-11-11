@@ -309,7 +309,7 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
       <Body>Outputs first — the PA has to be proven before there is anything to line-check into — then every input. Each probe reveals two readings. On an output: is there signal at the processor output, and does the box play its own feed? On an input: the stagebox LED (did the signal arrive at the stage?) and the console meter (did it arrive at its channel?).</Body>
       <Prompt>Probe each one, read both readings, and mark it honestly — three of these are faults.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <VerdictLine ok={done} warn={!done}>{done ? 'Line check complete: one mis-patched wedge, one mis-patched input and one dead cable found before the band arrived.' : `${correct} of ${ALL_LINES.length} marked correctly.`}</VerdictLine>
+      <VerdictLine ok={done} warn={!done}>{done ? 'Line check complete: one mis-patched wedge, one mis-patched input and one dead cable found before the band arrived.' : `${correct} marked correctly.`}</VerdictLine>
       <Eyebrow>OUTPUTS — DOES EACH LOUDSPEAKER PLAY ITS OWN FEED?</Eyebrow>
       <LineCheckList items={LINE_OUTPUTS} marks={marks} checked={checked} onCheck={check} onMark={mark} selectedId={sel} onSelect={setSel} />
       <Eyebrow>INPUTS — DOES EACH SOURCE ARRIVE AT ITS CHANNEL?</Eyebrow>

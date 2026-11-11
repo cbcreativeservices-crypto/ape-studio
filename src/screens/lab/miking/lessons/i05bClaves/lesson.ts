@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.',
     credit: { scenarios: ['clv.prac.order', 'clv.prac.gain', 'clv.prac.setup1', 'clv.prac.setup2', 'clv.prac.3', 'clv.mix.1', 'clv.mix.2', 'clv.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'The supported resonator and the striker named, a mic outside both hands, acoustic damping told apart from mic placement, and the live trade-off explained. More than one setup can pass.',
+    takeaway: 'Name the supported clave (the resonator) and the striker, keep a mic outside both hands, tell acoustic damping apart from mic placement and explain the live trade-off. More than one setup can pass.',
   },
 };
 
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A cardioid helps when room noise or other instruments must be rejected; an omni may be tried in a quiet, suitable room.',
     why: {
       'A loud stage, so that both hands are heard equally well': 'On a loud stage an omni hears the monitors and band equally too.',
-      'Not on claves: an omni has no front to aim at them': 'Too strong: in a quiet room an omni can sound natural.',
+      'Not on claves: an omni has no front to aim at them': 'That goes too far: in a quiet room an omni can sound natural.',
     },
   },
   {
@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says about 30–60 cm. Measured from where?',
     options: ['The middle of the normal striking area', 'The striker’s hand, wherever it happens to be', 'The far end of the supported clave'],
     correct: 'The middle of the normal striking area',
-    explain: 'The distance is from the center of the striking area; the striker’s whole path sets the clearance, read separately.',
+    explain: 'The distance is from the center of the striking area; the striker’s whole path sets the clearance, checked separately.',
     why: {
       'The striker’s hand, wherever it happens to be': 'The hand moves; the striking area is the reference.',
       'The far end of the supported clave': 'The sound starts at the strike, in the middle.',
@@ -202,9 +202,9 @@ const scenarios: MikingScenario[] = [
     id: 'clv.place.3',
     page: 'placement',
     prompt: 'From a mic farther back, what tends to change?',
-    options: ['Click and body cohere, with more room and spill', 'The click gets sharper as the room gets quieter', 'Nothing: distance does not change a clave'],
-    correct: 'Click and body cohere, with more room and spill',
-    explain: 'Close placement favors direct sound; moving away lets strike and body cohere — at the cost of more room and competing sound.',
+    options: ['Click and body blend, with more room and spill', 'The click gets sharper as the room gets quieter', 'Nothing: distance does not change a clave'],
+    correct: 'Click and body blend, with more room and spill',
+    explain: 'Close placement favors direct sound; moving away lets strike and body blend — at the cost of more room and competing sound.',
     why: {
       'The click gets sharper as the room gets quieter': 'Farther brings more room, not less.',
       'Nothing: distance does not change a clave': 'Distance changes the direct-to-room balance.',
@@ -521,13 +521,13 @@ export const I05B_LESSON: SpLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Name the supported resonator and the striker, secure a mic outside both hands’ full movement, tell acoustic damping from mic placement, and explain the live trade-off between more direct sound and the player’s clearance. With a real pair and the player’s agreement, you can record what you tried below.',
+    task: 'Name the supported clave (the resonator) and the striker, secure a mic outside both hands’ full movement, tell acoustic damping from mic placement, and explain the live trade-off between more direct sound and the player’s clearance. With a real pair and the player’s agreement, you can record what you tried below.',
     fields: [
       { id: 'pair', label: 'Pair (solid or hollowed)', kind: 'text' },
       { id: 'grip', label: 'Grip', kind: 'choice', choices: ['cradled', 'squeezed', 'mixed'] },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['small condenser', 'dynamic', 'area mic only', 'other'] },
       { id: 'dist', label: 'Distances you tried (about 30 and 60 cm)', kind: 'text' },
-      { id: 'clear', label: 'The striker’s closest approach', kind: 'text' },
+      { id: 'clear', label: 'Closest the striker came to the mic', kind: 'text' },
       { id: 'notes', label: 'What you heard (click, body, room, bleed)', kind: 'text' },
     ],
   },

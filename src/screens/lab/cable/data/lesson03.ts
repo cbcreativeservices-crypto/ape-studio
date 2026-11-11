@@ -122,7 +122,7 @@ export const L03_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 0,
     reveal:
-      'Identical plugs, different cable specification. A short analog cable often appears to work; longer or marginal runs drop out or fail to lock — a reliability failure, not damage. Use a true 75-ohm cable for coaxial digital.',
+      'Identical plugs, different cable specification. A short analog cable often appears to work; longer or marginal runs drop out or the receiver fails to lock onto the signal — a reliability failure, not damage. Use a true 75-ohm cable for coaxial digital.',
     wrongHint: 'The shell does not certify the cable behind it — what does the digital interface actually specify?',
   },
 ];

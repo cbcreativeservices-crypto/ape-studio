@@ -148,7 +148,7 @@ function PageCompression({ ctx }: { ctx: PageCtx }) {
         <Prompt>The snare, alone, three ways — all level-matched, same threshold and ratio. Only ATTACK differs. Listen to the front of each hit.</Prompt>
         <AbPlayer pb={pb} variants={variants} onPick={setPick} note="Loudness is matched, so the difference you hear is pure envelope. Which one you PREFER depends on the song — that part is yours." />
         <CompArt settings={(variants.find((v) => v.id === pick)?.settings.snare?.comp as CompSettings | undefined) ?? null} />
-        <Text style={styles.fixName}>The picture follows the button you press: the compressor’s knobs at that render’s settings, one real snare hit from the session before (gray) and after (amber), and the gain the compressor applies.</Text>
+        <Text style={styles.fixName}>The picture follows the button you press: the compressor’s knobs at that version’s settings, one real snare hit from the session before (gray) and after (amber), and the gain the compressor applies.</Text>
       </Card>
       <Card tone="note">
         <Eyebrow>THE HONEST COMPARISON RULE</Eyebrow>
@@ -217,7 +217,7 @@ function PageReverbDelay({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>ONE ROOM GLUES THE BAND</Eyebrow>
-        <Prompt>Three renders, level-matched: no space at all, a single shared plate fed by four sends, and everything drowned.</Prompt>
+        <Prompt>Three versions, level-matched: no space at all, a single shared plate reverb fed by four sends, and everything drowned.</Prompt>
         <SpaceArt settings={variants.find((v) => v.id === pick)?.settings ?? {}} on={pick !== 'dry'} />
         <AbPlayer pb={pb} variants={variants} onPick={setPick} note="The shared room is ONE reverb with four sends into it — the parts start to feel like they were played in the same place. Drowned is the classic beginner mix: depth everywhere is depth nowhere." />
       </Card>

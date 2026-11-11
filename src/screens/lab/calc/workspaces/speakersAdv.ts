@@ -160,7 +160,7 @@ const LINEARRAY: Workspace = {
     'Applying the −3 dB/doubling "line source" rule everywhere — it only holds in the near field; past the transition it reverts to −6 dB/doubling like any point source.',
   ],
   warnings:
-    'Teaching relationships: directivity control onset ≈ c/L (tight at 2c/L); spatial-aliasing ' +
+    'Rules of thumb: directivity control onset ≈ c/L (tight at 2c/L); spatial-aliasing ' +
     'frequency ≈ c/(element spacing); near-field line source loses ~3 dB per distance doubling vs ' +
     '~6 dB for a point source. Real array behavior (steering, curvature) needs manufacturer data.',
   glossary: ['Directivity', 'Inverse square law', 'Wavelength', 'Sound Pressure Level', 'Comb Filtering'],
@@ -301,7 +301,7 @@ const DRIVER: Workspace = {
     { key: 'dist', name: 'DISTANCE', quantity: 'length', meaning: 'length:path', placeholder: '1', help: 'Listening distance (half-space).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'fs', name: 'DRIVER RESONANCE (fs)', quantity: 'frequency', placeholder: '25', help: 'Free-air resonance of the driver.', positive: true, warn: { test: (x) => x <= 0, msg: 'fs must be greater than zero.' } },
     { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', nonNegative: true, placeholder: '0.4', help: 'Total driver Q at resonance.', positive: true, warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },
-    { key: 'vas', name: 'COMPLIANCE VOLUME (Vas)', quantity: 'volume', defaultUnit: 'l', placeholder: '50', help: 'Volume of air with the same compliance as the suspension.', positive: true, warn: { test: (x) => x <= 0, msg: 'Vas must be greater than zero.' } },
+    { key: 'vas', name: 'COMPLIANCE VOLUME (Vas)', quantity: 'volume', defaultUnit: 'l', placeholder: '50', help: 'Volume of air as springy (compliant) as the driver’s suspension.', positive: true, warn: { test: (x) => x <= 0, msg: 'Vas must be greater than zero.' } },
     { key: 'vb', name: 'BOX VOLUME (Vb)', quantity: 'volume', defaultUnit: 'l', placeholder: '30', help: 'Internal net volume of the enclosure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Box volume must be greater than zero.' } },
     { key: 'av', name: 'PORT AREA', quantity: 'area', defaultUnit: 'm2', placeholder: '0.005', help: 'Cross-sectional area of the vent.', positive: true, warn: { test: (x) => x <= 0, msg: 'Port area must be greater than zero.' } },
     { key: 'lv', name: 'PORT LENGTH', quantity: 'length', defaultUnit: 'cm', placeholder: '15', help: 'Physical length of the vent tube.', positive: true, warn: { test: (x) => x <= 0, msg: 'Port length must be greater than zero.' } },
@@ -313,7 +313,7 @@ const DRIVER: Workspace = {
       key: 'excursionSPL',
       name: 'Displacement-limited SPL',
       inputs: ['sd', 'xmax', 'f', 'dist'],
-      formula: 'p = ρ₀·2π·f²·Sd·(Xpk/√2) / r; SPL = 20·log₁₀(p / 20µPa)',
+      formula: 'p = ρ₀·2π·f²·Sd·(Xmax/√2) / r; SPL = 20·log₁₀(p / 20µPa)',
       plainFormula:
         'The radiated pressure equals the air density (1.204 kg/m³) times two pi times the frequency squared times the cone area times the peak excursion over root two, divided by the distance; the SPL is twenty times the base-ten log of that pressure over 20 micropascals.',
       explain:

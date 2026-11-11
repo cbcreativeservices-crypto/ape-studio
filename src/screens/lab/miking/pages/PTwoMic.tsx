@@ -131,7 +131,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       valueLabel: (regions.find((r) => r.id === srcId)?.label ?? '').toUpperCase().slice(0, 10),
       selectedId: srcId,
       onSelect: setSrcId,
-      options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} Drawn as one point for the path overlay.` })),
+      options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} Treated as one point when the paths are drawn.` })),
     },
   ];
   // Δd and Δt are B MINUS A (twoMic.ts: Δd = |S − B| − |S − A|), signed, so
@@ -161,7 +161,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A', 'B']} showZones={false} pathsFrom={src} editing={slot} interactive={!hidden} labelFor={labelFor} />,
-        badge: `Simplified · big amber ring = the mic the keys move · dashed = straight paths · white lobe = pattern shape, not range · one point source, no reflections · c = ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
+        badge: `Simplified · big amber ring = the mic the keys move · dashed = straight paths · white lobe = pattern shape, not range · one point source, no reflections · speed of sound ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s) at 20 °C`,
         bezel,
         params,
         initialParam: 'pos',
@@ -182,7 +182,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so ${equal ? 'the sum acts as' : 'the notches follow the'} ${sEff === 1 ? 'same-polarity' : 'inverted'}${equal ? '' : ' set'} even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
           {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
           <Note tone="warn">{T.warn}</Note>
-          {micType(A.typeId).mount === 'surface' ? <Body>Mic A’s pattern is a half-cardioid boundary — not modeled; its level here follows distance only.</Body> : null}
+          {micType(A.typeId).mount === 'surface' ? <Body>Mic A is a half-cardioid boundary mic; its pattern isn’t included here, so its level follows distance only.</Body> : null}
         </>
       ),
     },

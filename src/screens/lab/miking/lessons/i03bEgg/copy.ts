@@ -35,7 +35,7 @@ export const EGG_COPY: LessonCopy = spCopy({
       { k: 'SOUND', at: ['—', '—', 'ATTACK', 'FROM THE SHELL'], flex: 1.1 },
     ],
     reveal: 'The grains lag the shell, keep going when the stroke turns, and strike the inside of the shell — that burst is the attack; rolling along the wall gives the wash.',
-    after: 'Then the next stroke starts it again. The shell, the grains, the grip and the wrist all change the balance — and an egg’s two directions need not sound the same.',
+    after: 'Then the next stroke starts it again. The shell, the grains, the grip and the wrist all change the balance — and an egg’s forward and return strokes need not sound the same.',
     shapesNotes: ['The pictures show the order of events and where the sound starts — never its level. A few beads stand for the grains.'],
     coupledSubject: 'One egg drawn large',
     coupledNote: 'The grip is part of the instrument: a palm over the shell shields and damps part of it. Ask for the grip the player will really use before you place a mic.',
@@ -88,15 +88,15 @@ export const EGG_COPY: LessonCopy = spCopy({
   },
   placement: {
     workedZone: { one: 'egg.front.one', two: 'egg.between.two', apart: 'egg.right.apart' },
-    workedAim: 'Face the playing area — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
+    workedAim: 'Face the playing area — the lab counts your aim while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
     reveal: 'A closer stroke tends to jump out; a palm over the shell can hide part of it; two eggs may need a mic between them — or, wide apart, one each. Eggs and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A suitably placed dynamic can be useful amid stage spill if there is enough gain; a small condenser tends to show more detail. Compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic. A quiet egg tempts very close miking — which makes level jumps, handling noise and off-axis changes more obvious.',
     learn: {
       intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the usual playing area, aimed into it, is where we suggest you begin; one general tip for percussion is a gap of about 30 cm or more. With two eggs close together, one mic between them; wide apart, perhaps one each. Starting points, not rules.',
-      separate: 'Distance, height and angle are separate variables: change one at a time, with the same grip and phrase. The distance is to the middle of the motion, not to the nearest excursion.',
+      separate: 'Distance, height and angle are separate variables: change one at a time, with the same grip and phrase. The distance is to the middle of the motion, not to the closest point of a stroke.',
       clearance: 'Clearance comes first. At 30 cm a hand may still come close in a big stroke — check the real closest approach. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
-      tendencies: 'If one stroke leaps in level, move back or recenter; if the egg is buried, try closer outside the path, better rejection, or a louder egg. All tendencies to check by ear.',
+      tendencies: 'If one stroke leaps in level, move back or recenter; if the egg is buried, move closer (still outside the hands’ path), use better rejection, or try a louder egg. All tendencies to check by ear.',
     },
   },
   context: {
@@ -108,7 +108,7 @@ export const EGG_COPY: LessonCopy = spCopy({
     studioNote: 'In a quiet overdub, choose an egg whose level and grain suit the part; one mono spot often does everything. Switch back to LIVE for the monitor exercise.',
     points: [
       { title: 'THE EGG, THEN THE GAIN', text: 'A weak egg in a loud setting cannot be rescued by turning up its spot: that turns up the spill too. Move the source, choose a louder egg, or change the layout.' },
-      { title: 'ONE STATION MIC', text: 'A dedicated directional mic for shakers and tambourine is a real touring approach — it does not say where an egg sits; check the real part.' },
+      { title: 'ONE STATION MIC', text: 'A dedicated directional mic for shakers and tambourine is a real touring approach — but it does not tell you where the egg will be; check the real part.' },
       { title: 'THE PATTERN’S NULLS', text: 'Cardioid rejects most behind; supercardioid and hypercardioid have rear lobes and side-rear nulls. An omni is generally unsuitable for a loud monitored stage.' },
       { title: 'NO EGG-MOUNTED MIC', text: 'Avoid attaching a mic or cable to a small egg unless a purpose-built system and the player’s technique make it safe and useful.' },
     ],

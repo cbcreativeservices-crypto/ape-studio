@@ -105,7 +105,7 @@ const LESLIE_PARTS: { id: string; title: string; text: string; view: 'inside' | 
   { id: 'les.driver', title: 'HORN DRIVER', text: 'The speaker under the horn rotor that feeds it; the bells turn above it.', view: 'inside' },
   { id: 'les.xo', title: 'CROSSOVER AND AMPLIFIER', text: `The crossover splits the sound at about ${CROSSOVER_HZ} Hz: highs up to the horn, lows down to the woofer. The amplifier inside is installed equipment, not a mic input.`, view: 'inside' },
   { id: 'les.woofer', title: 'WOOFER', text: 'A 15 in speaker facing DOWN into the low rotor. It does not turn.', view: 'inside' },
-  { id: 'les.drum', title: 'LOW ROTOR', text: 'A turning drum under the woofer with one opening that throws the low sound around the cabinet. Drawn here with one scoop — a drawing choice.', view: 'inside' },
+  { id: 'les.drum', title: 'LOW ROTOR', text: 'A turning drum under the woofer with one opening that throws the low sound around the cabinet. Drawn here with one scoop, for illustration only.', view: 'inside' },
 ];
 
 /* ═══════════════ 1 · MEET THE SPEAKERS ═══════════════ */
@@ -233,7 +233,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
             accessibilityLabel={`The rotary cabinet, ${lView === 'inside' ? 'an inside view drawn as a diagram: the horn rotor at the top, one sounding bell and one capped balance bell, over its driver, the woofer facing down, the crossover and amplifier, and the low rotor drum at the bottom' : 'from the front: the upper louvers and the lower openings'}.${lp ? ` Highlighted: ${lp.title.toLowerCase()}.` : ''}`}
           />
         ),
-        badge: lView === 'inside' ? 'An inside view as a diagram — only a technician opens the cabinet · sizes and openings are drawing choices' : 'From the front · the openings’ layout is a drawing choice',
+        badge: lView === 'inside' ? 'An inside view as a diagram — only a technician opens the cabinet · sizes and openings for illustration only' : 'From the front · the openings’ layout is for illustration only',
         bezel: [
           { k: 'PART', v: lp ? lp.title.split(' ')[0] : 'TAP ONE', flex: 1.4 },
           { k: 'HIGHS', v: 'HORN', sub: `above ${CROSSOVER_HZ} Hz` },
@@ -432,7 +432,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
       layout: 'rack',
       rack: {
         render: (w, h) => <BeamDisplay w={w} h={h} fHz={fHz} micDeg={micDeg} accessibilityLabel={`How a 12 inch speaker spreads its sound at ${fmtHz(fHz)}, a simplified picture. A mic ${micDeg} degrees off the speaker's axis is ${atMic <= -39.5 ? 'in a deep dip' : fmtDb(atMic)} from on-axis.`} />,
-        badge: 'A simplified picture: a rigid disc the size of the cone, in an endless wall, far away · blue = how loud, by direction',
+        badge: 'A simplified picture: the cone as a stiff disc set in an endless flat wall, heard from far away · blue = how loud, by direction',
         bezel: [
           { k: 'PITCH', v: fmtHz(fHz), flex: 1 },
           { k: 'MIC OFF AXIS', v: `${micDeg}°`, flex: 1.1 },
@@ -455,7 +455,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
                 : `Here the cone is large next to the wavelength, so the sound narrows into a beam: half the level (−6 dB) by about ±${Math.round(half)}° off the axis. A mic off to the side hears less of these highs.`}
             </Point>
           </Card>
-          <Note>{`This beam is a far-field picture. At ${fmtHz(fHz)} it only applies from ${fmtLen(farFrom)} out. A mic a few centimeters from the grille sits in the speaker’s near field, where the spot it faces on the cone matters more — the next step.`}</Note>
+          <Note>{`This beam is how the speaker spreads far away (its far field). At ${fmtHz(fHz)} it only holds from ${fmtLen(farFrom)} out. A mic a few centimeters from the grille sits in the near field, where the spot it faces on the cone matters more — the next step.`}</Note>
           {inNearField(50, fHz) ? null : <Note>At this low pitch the wide pattern already holds a few centimeters from the cone, so even a close mic hears it spread wide.</Note>}
         </>
       ),
@@ -506,7 +506,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
       layout: 'rack',
       rack: {
         render: (w, h) => <LeslieDisplay w={w} h={h} rig={les} view={lView} accessibilityLabel={`The rotary cabinet, ${lView === 'plan' ? 'both rotors from above' : lView === 'inside' ? 'an inside view drawn as a diagram' : 'from the front'}. Speed: ${les.mode === 'fast' ? 'fast' : les.mode === 'slow' ? 'slow' : 'stopped'}. ${rampWords()}`} />,
-        badge: `${les.motion ? TIME_BASES.find((b) => b.id === les.timeBase)!.label : 'Stepped'} · true speeds printed · speed changes drawn linear · direction of turn is a drawing choice`,
+        badge: `${les.motion ? TIME_BASES.find((b) => b.id === les.timeBase)!.label : 'Stepped'} · real speeds shown · speed changes drawn as steady ramps · turn direction for illustration only`,
         bezel: [
           { k: 'SPEED', v: les.mode === 'fast' ? 'FAST' : les.mode === 'slow' ? 'SLOW' : 'STOP', sub: les.mode === 'fast' ? 'tremolo' : les.mode === 'slow' ? 'chorale' : 'off', flex: 1 },
           { k: 'HORN', v: `${les.hornRamp.rpm1} rpm`, sub: 'target', flex: 1.1 },
@@ -1212,7 +1212,7 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
             {(sceneW) => <PlacementScene rig={rig} art={cabArt('1x12')} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
           </PatternInset>
         ),
-        badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
+        badge: live ? `${patternInsetBadge(true)} · counts as done within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
         bezel,
         params,
         initialParam: 'aim',
@@ -1345,7 +1345,7 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={cabArt('1x12')} view={view} setView={setView} w={w} h={h} slots={['A', 'B']} showZones={false} interactive={!hidden} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of the open-backed 1 by 12 cabinet, a mic in front and a mic behind. ${cabNow(rig, ['A', 'B'])}`} />,
-        badge: `A simplified picture · each mic hears its own side of the cone · c = ${C20.toFixed(1)} m/s, 20 °C`,
+        badge: `A simplified picture · each mic hears its own side of the cone · speed of sound ${C20.toFixed(1)} m/s, 20 °C`,
         bezel,
         params,
         initialParam: 'pos',

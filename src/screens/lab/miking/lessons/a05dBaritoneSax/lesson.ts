@@ -48,7 +48,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
     prompt: 'A wireless clip pack cuts below about 80 Hz. The baritone’s lowest notes sound near 69 Hz, or 65 Hz with a low A. What follows?',
     options: ['The cut can thin the lowest notes; compare it in and out', 'Nothing — 80 Hz is below the baritone’s whole range', 'It removes the high harmonics that the bell carries out'],
     correct: 'The cut can thin the lowest notes; compare it in and out',
-    explain: 'The baritone’s lowest fundamentals — about 69 Hz, 65 Hz with a low A — sit BELOW an 80 Hz cut, so the cut can take weight off them. Listen on the real low line with it in and out; the cut is there for handling noise.',
+    explain: 'The baritone’s lowest fundamentals — about 69 Hz, 65 Hz with a low A — sit BELOW an 80 Hz cut, so the cut can take weight off them. Listen to the lowest notes of the part with the cut on and off; the cut is there for handling noise.',
     why: {
       'Nothing — 80 Hz is below the baritone’s whole range': 'The baritone goes lower: about 69 Hz, or 65 Hz with a low A. Those are below 80 Hz.',
       'It removes the high harmonics that the bell carries out': 'A low cut removes lows, not highs. The bell’s harmonics are far above 80 Hz.',

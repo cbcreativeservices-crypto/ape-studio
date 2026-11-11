@@ -130,7 +130,7 @@ describe('4. Stereo Imaging: MONO CHECK folds after the pan', () => {
   });
   it('the caption no longer promises a full SIDE cancel with PAN off centre', () => {
     const c = read('src/screens/lab/fxLabConfigs.tsx');
-    assert.match(c, /v\[P\.monoFold\] > 0\.5 && v\[P\.pan\] !== 0 \? ' With PAN off centre, the fold adds what the pan left, so the SIDE does not fully cancel\.'/);
+    assert.match(c, /v\[P\.monoFold\] > 0\.5 && v\[P\.pan\] !== 0 \? ' With PAN off center, L and R are at different levels, so the fold cannot fully cancel the SIDE\.'/);
     assert.match(c, /\(v\[P\.monoFold\] > 0\.5 && v\[P\.pan\] === 0\) \|\| v\[P\.widthPct\] === 0/);
   });
 });

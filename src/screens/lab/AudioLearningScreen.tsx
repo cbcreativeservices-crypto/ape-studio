@@ -156,7 +156,7 @@ export function AudioLearningScreen({ navigation }: Props) {
           accessibilityRole="button"
           accessibilityLabel={
             !locked
-              ? 'Advanced Training Labs. Academy membership. Explore the advanced training labs.'
+              ? 'Advanced Training Labs. Explore the advanced training labs.'
               : 'Advanced Training Labs. Requires Academy membership. Preview advanced training labs.'
           }
           style={({ pressed }) => [styles.card, styles.cardMember, pressed && styles.cardPressed]}

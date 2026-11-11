@@ -133,13 +133,13 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'crackle', label: 'Crackle', confusableWith: ['click'],
-    truth: 'Crackle — a steady rain of small random impulses (dirty pot, dying cable).',
+    truth: 'Crackle — a steady rain of small random impulses (a dirty volume pot, a dying cable).',
     solo: (rng) => crackle(silence(1.6), rng, 0.0004, 0.8),
     onBed: (b, rng, mix) => addUnder(b, crackle(silence(b.length / SR), rng, 0.0004, 0.8), mix),
   },
   {
     key: 'pop', label: 'Pop',
-    truth: 'One low thump — a 30 ms half-cosine at 40–60 Hz. Think plosive or patch-while-hot.',
+    truth: 'One low thump — a 30 ms half-cosine pulse at 40–60 Hz. Think plosive, or plugging in a cable with the system live.',
     solo: pop,
     onBed: (b, rng, mix) => addUnder(b, pop(rng), mix + 10),
   },
@@ -175,7 +175,7 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'rf', label: 'RF interference (emulation)',
-    truth: 'RF pickup (emulation) — a buzz that pulses on and off as radio bursts leak into the audio, the old GSM-near-a-cable sound.',
+    truth: 'RF pickup (emulation) — a buzz that pulses on and off as radio bursts leak into the audio, like an old GSM cell phone near a cable.',
     solo: (rng) => rfInterference(silence(1.6), rng),
     onBed: (b, rng, mix) => addUnder(b, rfInterference(silence(b.length / SR), rng), mix + 6),
   },

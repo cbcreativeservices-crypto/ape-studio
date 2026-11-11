@@ -125,7 +125,7 @@ export const GUIDE: MixingGuide = {
         "source": "Accordion",
         "cut": "HPF 80–120 Hz (treble mic), 60 Hz (bass mic); −2–4 dB at 2.5–4 kHz (reed harshness); −2 dB at 250–400 Hz",
         "boost": "+1–2 dB at 1–2 kHz for bite; gentle 8–10 kHz shelf",
-        "notes": "Musette (wavering, detuned-reed) tuning beats; avoid boosting where it gets shrill"
+        "notes": "Musette (detuned-reed) tuning makes a wavering beat; avoid boosting where it gets shrill"
       },
       {
         "source": "Keyboards / keytar",

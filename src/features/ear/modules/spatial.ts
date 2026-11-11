@@ -79,7 +79,7 @@ const VARIANTS: M6Variant[] = [
   },
   {
     key: 'wide', label: 'Wide',
-    truth: 'Decorrelated side content raised to about 3 dB under the mid — the image spills outward, yet the sides still agree more than they differ (corr about +0.3), so it stays mono-safe.',
+    truth: 'Decorrelated side content raised to about 3 dB under the mid — the image spills outward, yet the sides still agree more than they differ (correlation about +0.3), so it stays mono-safe.',
     make: (m) => sideAt(decorrelate(m), WIDE_SIDE_DB),
   },
   {

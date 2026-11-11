@@ -85,7 +85,7 @@ export const POSTPROD_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'The score counts decisions made, not screens opened.',
-    'Each flagged finding costs up to 2 points, 20 at most. An open blocker keeps it under 100 and Not Approved.',
+    'Flagged findings cost up to 2 points each, 20 max. Open blockers keep the score under 100 and Not Approved.',
     'A blocker clears once fixed or accepted; accepted ones go to PROCEEDING WITH ACCEPTED CONDITIONS and print in the package.',
     'Approved With Documented Conditions: all required decisions made, no blocker, but a condition accepted or something flagged.',
   ],
@@ -137,7 +137,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     control: CONTROL,
     changes: [
       'Wiping or reusing the sources before the copy is proven is a blocker; a file count alone never clears it.',
-      'Counting files doesn’t verify them: a checksum (a fingerprint of every byte) catches any change, equal sizes a file cut short, full playback audible faults.',
+      'A checksum (a fingerprint of every byte) catches any change, matching sizes catch a file cut short, and full playback catches audible faults.',
       'One copy is not a backup. Mixed sample rates or duplicate filenames are flagged; corrupted, truncated or missing files with no plan are a blocker.',
     ],
     teaches: [
@@ -163,7 +163,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'Your session is checked against Stage 1’s delivery: a different sample rate or a shallower bit depth is flagged, and a different frame rate is a blocker.',
       'Flagged: recorders on their own clocks, sync checked only at the start, or a drift fix that doesn’t match its cause.',
-      'A missing folder structure or track structure is flagged, and so is a naming rule that is only a hope.',
+      'A missing folder structure or track structure is flagged, and so is a naming rule with no pattern, like “final” or “newest”.',
     ],
     teaches: [
       'A session is a set of assumptions made once and trusted for weeks: rate, depth, frame rate and start time come first.',
@@ -213,11 +213,11 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     changes: [
       'Each addition is judged against what was there. A replacement with no plan to match it, or one judged only on its own, is flagged.',
       'Material with rights marked Missing or Expired is a blocker; added material with no rights status is flagged.',
-      'Altering a performance without an agreement is flagged, and so is heavy correction with nothing protected.',
+      'Altering a performance without an agreement is flagged, and so is heavy correction with nothing chosen in “What is being protected”.',
     ],
     teaches: [
       'Write down why each addition is made before making it.',
-      'A production can be improved past being itself: ambience that never changes, or tuning that removes what the performer meant.',
+      'A production can be over-improved until it stops sounding like itself: ambience that never changes, or tuning that removes what the performer meant.',
       'Atmosphere runs as a continuous bed under the edits, and music is cut on a phrase, so neither one breaks at every edit.',
     ],
     tryThis: [
@@ -421,7 +421,7 @@ export const POSTPROD_ACTIVITY_GUIDES: Record<string, ScreenGuide> = {
     control: activityControl('PROJECT'),
     changes: ACTIVITY_CHANGES,
     teaches: [
-      'Heavy limiting made this file too loud and too flat: ease it off, then set the level with plain gain.',
+      'Heavy limiting made this file too loud and too squashed: ease it off, then set the level with plain gain.',
       'Measure the exported deliverable, not the session.',
       'Dither belongs once, at the final reduction in bit depth. Applying it again only adds more noise.',
     ],
@@ -458,7 +458,7 @@ export const POSTPROD_PACKET_GUIDE: ScreenGuide = {
   },
   seeing: [
     'The Delivery Package is your whole project as one document. At the top: project, type, verdict.',
-    'WHAT’S LEFT lists every open item by stage, blocked stages and blockers first. It and the type stay off the PDF, which holds the title, verdict and all below SHARE AS PDF.',
+    'WHAT’S LEFT lists every open item by stage, blocked stages and blockers first. The PDF holds the title, verdict and all below SHARE AS PDF, not WHAT’S LEFT or the type.',
     'Below: Revision, Revision date, Prepared by, Status; any MUST BE RESOLVED BEFORE PROCEEDING and ACCEPTED CONDITIONS; every stage’s answers.',
   ],
   control: [
@@ -479,6 +479,6 @@ export const POSTPROD_PACKET_GUIDE: ScreenGuide = {
   tryThis: [
     'On a new project, WHAT’S LEFT opens with STAGE 1 · RECEIVE THE PROJECT, its first row a REQUIRED QUESTION: Project name. Tap it: Stage 1 opens at that question.',
     'Type a name in Stage 1’s “Post-production supervisor”, then come back: Prepared by changes from Unattributed to that name.',
-    'Set Stage 8’s approved version to No: STAGE 8 · DELIVER AND ARCHIVE jumps to the top of WHAT’S LEFT, its BLOCKER first.',
+    'Set Stage 8’s “Is the previously approved version preserved” to No: STAGE 8 · DELIVER AND ARCHIVE jumps to the top of WHAT’S LEFT, its BLOCKER first.',
   ],
 };

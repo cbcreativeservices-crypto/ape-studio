@@ -59,7 +59,7 @@ const FRESH: ChProgress = { stage: 0, pickIdx: 0, found: [] };
 
 function verdictText(opt: ChallengeOption): string {
   return opt.consequence
-    ? `${opt.explain}\nConsequence class: ${CONSEQUENCE_LABEL[opt.consequence]}.`
+    ? `${opt.explain}\nConsequence: ${CONSEQUENCE_LABEL[opt.consequence]}.`
     : opt.explain;
 }
 
@@ -343,7 +343,7 @@ function FaultBlock({
       ) : null}
 
       {whySolved && !allFound ? (
-        <Text style={s.hint}>{`${foundCount} of ${faultIds.length} faults found — keep hunting in the patch list.`}</Text>
+        <Text style={s.hint}>{`${foundCount} ${foundCount === 1 ? 'fault' : 'faults'} found — keep hunting in the patch list.`}</Text>
       ) : null}
       {allFound ? <OptionChip label="FINISH CHALLENGE ✓" active action onPress={onFinish} /> : null}
     </>
@@ -434,7 +434,7 @@ function ChallengeBlock({
       {stage != null && stage.kind === 'faults' ? (
         <>
           <Eyebrow
-            text={`${stage.title} · ${stage.rows.filter((r) => r.fault && prog.found.includes(r.id)).length} OF ${stage.rows.filter((r) => r.fault).length} FOUND`}
+            text={`${stage.title} · ${stage.rows.filter((r) => r.fault && prog.found.includes(r.id)).length} FOUND`}
           />
           <FaultBlock
             stage={stage}

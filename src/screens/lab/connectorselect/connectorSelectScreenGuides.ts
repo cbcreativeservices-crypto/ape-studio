@@ -179,7 +179,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
   benchDigital: {
     intro: {
       learning: 'Why digital, data and MIDI connections are judged by protocol: a plug that fits proves nothing about what the two devices can say to each other.',
-      start: 'Open the MIDI card and read its flag and MAY CARRY. Then open USB-C and HDMI and compare what each flag says varies by port and by cable.',
+      start: 'Open the MIDI card and read its flag and MAY CARRY. Then open USB-C and HDMI and compare their flags: each says what varies by port and by cable.',
     },
     seeing: [
       'You’re at STATION 2 · IDENTIFICATION BENCH — DIGITAL, DATA & MIDI: nine connectors, from USB to MIDI.',
@@ -421,7 +421,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
     changes: [
       'The lamp lights only when a path joins the two contacts you picked.',
       'A healthy cable lights every straight pair — 1→1, 2→2, 3→3 — and nothing else.',
-      'DARK on a straight pair means no path: a break, or a wire landed somewhere else. LIT on a cross pair means two contacts are joined: a short, or a swap. Test the cross pairs before you decide.',
+      'DARK on a straight pair means no path: a break, or a wire landed somewhere else. LIT on a cross pair (like 2→3) means two contacts are joined: a short, or a swap. Test the cross pairs before you decide.',
     ],
     teaches: [
       'A continuity test proves a path: straight pairs should light, cross pairs should stay dark.',
@@ -455,7 +455,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
     changes: [
       'An intermittent break passes at rest. FLICKERING appears only while you flex.',
       'A bent pin reads the same as a broken wire; only INSPECT tells them apart. A half-seated plug reads DARK everywhere until RESEAT PLUG.',
-      'A wrong cable type lights every straight path: the tester can’t see gauge or shielding. On a TS cable, ring and sleeve also read joined, because the plug has one long sleeve.',
+      'A wrong cable type lights every straight path: the tester can’t see gauge or shielding. On a TS cable, the tester’s ring and sleeve contacts also read joined: one long sleeve touches both.',
     ],
     teaches: [
       'A continuity tester only proves a path exists. It can’t show cable type, gauge, shielding or impedance.',
@@ -493,11 +493,11 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
     teaches: [
       'Why the AC safety ground is never defeated to cure hum: it makes a fault trip the breaker instead of leaving the chassis live.',
       'Why power order matters: amplifiers last on and first off keep thumps from upstream gear out of the speakers.',
-      'Why a passive part can’t do an active job: combining signals takes a mixer; converting takes a pad, transformer or DI.',
+      'Why a passive part can’t do an active job: combining signals takes a mixer; converting level, impedance or balance takes a pad, transformer or DI.',
     ],
     tryThis: [
       'Tap I WILL WORK THIS WAY on the AC safety ground rule: it turns to ✓ ACKNOWLEDGED. Its reason: the ground makes a fault trip the breaker instead of leaving the chassis live.',
-      'Compare the Y-cable rule with the adapter rule. Both say a plain passive part can’t do an active job: combining is a mixer’s job; converting takes a pad, transformer or DI.',
+      'Compare the Y-cable rule with the adapter rule. Both say a plain passive part can’t do an active job: combining is a mixer’s job; converting level, impedance or balance takes a pad, transformer or DI.',
     ],
   },
 
@@ -588,7 +588,7 @@ export const CONNECTOR_SELECT_END_GUIDE: ScreenGuide = {
   changes: [
     'A page is finished once all its goal chips read ✓ in one visit. Leave early and they reset to ○. NEXT or FINISH alone doesn’t finish it.',
     'The Final counts only after a pass: 80% and every safety call right.',
-    'Finished pages save to your account. Signed out, the line under the title says if signing in can still keep them. A preview saves nothing. START OVER (PRACTICE) in the contents resets goal chips only.',
+    'Finished pages save to your account. Signed out, the line under the title says if signing in can still keep them. A preview saves nothing. START OVER (PRACTICE) in the page list resets goal chips only.',
   ],
   teaches: [
     'Every connection in this lab is judged by four questions, in order: does it fit, what signal does the equipment expect, is the cable built for it, and is it safe?',

@@ -118,7 +118,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     prompt: 'The PA stays where the show needs it. Turn or tilt the boom mic (AIM), or change its PATTERN, until the PA sits in its rejection — while it still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: aimed down at the mouth from above and to the left, a boom mic’s rear points up and out toward that front corner — the PA there falls well off its axis, near the rejection a supercardioid has about 125° around and a hypercardioid about 110°. The aim and the pattern decide how close it comes.',
-    shieldNote: 'The talker and the stage reflect the PA’s sound too, and the free-field pattern cannot show that. Check it with the system’s operator at a safe level.',
+    shieldNote: 'The talker and the stage reflect the PA’s sound too, and the free-field pattern (how the mic hears in open air) cannot show that. Check it with the system’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the talker is the same — the room, the shot and the PA change.',

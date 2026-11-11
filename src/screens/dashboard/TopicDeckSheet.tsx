@@ -114,8 +114,8 @@ export function TopicDeckSheet({
                 </Pressable>
                 {custom ? (
                   <>
-                    <RowBtn label="↑" disabled={i === 0} onPress={() => move(t.id, -1)} a11y={`Move ${t.name} left`} />
-                    <RowBtn label="↓" disabled={i === active.length - 1} onPress={() => move(t.id, 1)} a11y={`Move ${t.name} right`} />
+                    <RowBtn label="↑" disabled={i === 0} onPress={() => move(t.id, -1)} a11y={`Move ${t.name} earlier`} />
+                    <RowBtn label="↓" disabled={i === active.length - 1} onPress={() => move(t.id, 1)} a11y={`Move ${t.name} later`} />
                   </>
                 ) : null}
                 {/* The LAST topic cannot be removed (B-041): an empty deck leaves

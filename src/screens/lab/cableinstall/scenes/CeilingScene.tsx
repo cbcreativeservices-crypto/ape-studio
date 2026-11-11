@@ -1059,8 +1059,8 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
         <Appear>
           <CiSection title="EXERCISE 2 · INSTALL THE ROUTE">
             <Text style={styles.lead}>
-              Now do it right: a new bundle from the equipment room to the far wall. First, the ritual — the SYSTEM’s
-              criteria are supplied, never folklore:
+              Now do it right: a new bundle from the equipment room to the far wall. Work each step to the SYSTEM’s
+              supplied criteria below — never a rule of thumb:
             </Text>
             <SpecCard text={CI_SUPPORT_SPACING_SPEC} />
             <View style={{ gap: 4 }}>
@@ -1161,7 +1161,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
         Training visualization — colors identify systems and classes here (sprinkler red, existing runs cyan/green, your
         bundle violet); actual field colors vary, and cable diameters are exaggerated so they read. Drawn to scale otherwise
         (1 m bar). If a ceiling cavity is a return-air plenum, cable run in it must be listed for that space (or run in a raceway the code allows
-        there, such as metal conduit) where the code is adopted — confirm with the plans and the AHJ.
+        there, such as metal conduit) where the code is adopted — confirm with the plans and the AHJ (the official who approves the work).
       </Text>
     </View>
   );

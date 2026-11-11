@@ -29,8 +29,8 @@ export const B08_COPY: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { studio: 'b8.mono' },
-    workedLine: 'This starting point also reads how high the mic is above the floor.',
-    workedAim: 'Aim it at the faces of the section — the lab counts it within about {tol}°.',
+    workedLine: 'This starting point also shows how high the mic is above the floor.',
+    workedAim: 'Aim it at the faces of the section — the lab accepts an aim within about {tol}°.',
     workedClear: 'On an approved place, hung by a qualified rigger, out of the aisles, the exits and the cameras’ view.',
     blocked: {},
     reveal: '',

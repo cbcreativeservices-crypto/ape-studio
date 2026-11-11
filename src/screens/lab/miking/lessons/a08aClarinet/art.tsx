@@ -50,7 +50,7 @@ export const CLARINET_ART: LessonArt = windLessonArt({
   sound: {
     fig: { L: SOUND_FIG, box: { u0: -260, u1: 420, v0: -190, v1: 790 }, side: -1, subject: 'A B♭ clarinet on its side, keys toward you, its air column drawn open' },
     other: 'open',
-    notesNote: 'A simplified fingering: real clarinet fingerings close and vent some holes past the first open one, and the throat notes use small keys — but the place most of the note leaves still moves up the body as the pitch rises.',
+    notesNote: 'A simplified fingering: real clarinet fingerings close some holes and open others past the first open one, and the throat notes use small keys — but the place most of the note leaves still moves up the body as the pitch rises.',
     pipeNote: 'The clarinet is close to the ideal closed cylinder: its low register is rich in the odd partials, and its fingerings repeat a twelfth apart. Real tone holes and the bell bend the picture a little.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the clarinet: how a real clarinet sounds depends on the instrument, the reed, the player and the room. The pictures show where the sound is made and where it leaves.',
     reveal: 'Most notes leave from an open hole on the body; only the lowest — every hole closed — leave mainly from the bell.',
@@ -60,7 +60,7 @@ export const CLARINET_ART: LessonArt = windLessonArt({
       { title: 'ASK THE PLAYER FIRST', text: 'Seated or standing, and how do they move? Which notes does the part use — the low register, the throat notes, the top? What sound do they want: a blended orchestral color, an intimate solo, a separated line over a band? Hear the clarinet unamplified first, across its whole range, quiet and loud.' },
       { title: 'WORK WITH THE CLARINET AS IT IS', text: 'A wooden clarinet is delicate, and it is the player’s. Ask before touching it; nothing presses a joint, a ring key, a rod or a pad, and no clip goes on without their agreement.' },
     ],
-    hearing: 'Protect your hearing during rehearsals and soundcheck: a clarinet up close, and the brass and percussion behind a woodwind section, can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitor levels down and use hearing protection where it is loud.',
+    hearing: 'Protect your hearing during rehearsals and soundcheck: a clarinet up close, and the brass and percussion behind a woodwind section, can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitor levels down and use hearing protection where it is loud.',
     sectionLanding: 'Tap anything in the section — or step through ITEM — to see what it means for a clarinet mic. There is nothing to answer yet.',
     sectionIdle: 'The clarinets sit behind the flutes, beside the bassoons. Everything near the clarinet is either the player’s space or a neighbor its mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front and another player’s to the side. Monitors, the PA and a loud band all reach a clarinet mic.',

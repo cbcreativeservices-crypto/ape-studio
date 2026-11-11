@@ -119,7 +119,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
       activityDone: 'done — the wedge sat in a null by your aim or pattern',
       deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
       cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Aimed level at the mouth, its rear points out over the audience — the wedge, down on the floor in front, sits well below that line, near where a supercardioid rejects most. So tilting the mic matters as much as turning it, and the pattern decides where the wedge goes.',
-      shieldNote: 'The singer’s head and body reflect the wedge’s sound too, and the free-field pattern cannot show that. Listen with the monitors on — at the agreed level.',
+      shieldNote: 'The singer’s head and body reflect the wedge’s sound too, and the free-field pattern (measured in open air) cannot show that. Listen with the monitors on — at the agreed level.',
       studioId: o.studio.id,
       studioPrompt: o.studio.prompt,
       studioNote: o.studio.note,
@@ -158,7 +158,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
       standMount: 'Mount: a weighted boom stand, its base and cable clear of the singer’s feet',
       inPath: 'head in path',
       facing: 'facing the mouth',
-      observation: 'For a real singer, with their agreement, and the singer stopped while anything near their face moves. Write tendencies in words — what you heard, not a promised result.',
+      observation: 'Try it with a real singer, with their agreement — and have the singer stop while anything near their face moves. Write tendencies in words — what you heard, not a promised result.',
     },
   };
 }

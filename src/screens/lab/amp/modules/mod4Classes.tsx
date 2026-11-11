@@ -74,7 +74,7 @@ export const CLASS_FACTS: Record<AmpClass, ClassFacts> = {
     efficiency: 'High in tuned service (often quoted above 80%) — not applicable to broadband audio',
     heat: 'Low',
     limitation: 'Recovers ONE tuned frequency only',
-    use: 'RF transmitters and tuned amplifiers',
+    use: 'Radio-frequency (RF) transmitters and tuned amplifiers',
     audio: 'No',
   },
   D: {
@@ -83,7 +83,7 @@ export const CLASS_FACTS: Record<AmpClass, ClassFacts> = {
     idle: 'Low (switching losses continue at idle)',
     efficiency: 'Ideal switch theoretically lossless; practical designs roughly 85–95% at high output, lower at low output',
     heat: 'Low to moderate — never zero',
-    limitation: 'Output filter, switching artifacts, EMI, implementation quality',
+    limitation: 'Output filter, switching artifacts, EMI (electromagnetic interference), implementation quality',
     use: 'Portable, touring subwoofers, installation, most modern pro power amplifiers',
     audio: 'Yes',
   },
@@ -270,7 +270,7 @@ export function Mod4Classes() {
                   {cls === 'A' && !signalOn
                     ? 'Signal off, amplifier on: the device still sits at its operating point, so idle current carries on exactly as before — and the heat does not fall. It even rises a little: the supply pays the same, and none of that power now leaves for the speaker. That standing dissipation is the price of full-cycle conduction.'
                     : cls === 'A'
-                      ? 'Full-cycle conduction: no handoff, so no crossover notch is inherent to the concept. The device is always partly on, which is why efficiency stays low and heat stays high.'
+                      ? 'Full-cycle conduction: no handoff, so there is no crossover notch to begin with. The device is always partly on, which is why efficiency stays low and heat stays high.'
                       : cls === 'B'
                         ? 'Each device conducts about half the cycle and hands off at zero. Idle current is near zero and efficiency is much better — but look at the handoff below.'
                         : cls === 'AB'
@@ -283,7 +283,7 @@ export function Mod4Classes() {
                             ? // NEW COPY — the model no longer conjures a recovered sine from a device that never conducted.
                               'Below the conduction threshold: the device never turns on, so there are no current pulses and the tuned circuit has nothing to ring from. Raise the input — Class C only wakes up for a signal big enough to push it past its bias.'
                             : (c?.resonanceGain ?? 1) > 0.9
-                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
+                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank (that tuned circuit) does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
                               : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
                 </Body>
               </Card>

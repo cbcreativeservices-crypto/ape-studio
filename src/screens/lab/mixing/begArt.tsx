@@ -1159,7 +1159,7 @@ export function BounceArt({ rate, depth, named, inspected }: { rate: '44.1' | '4
       {field(62, 'FORMAT', 'WAV · STEREO INTERLEAVED', true)}
       {field(86, 'SAMPLE RATE', rate ? `${rate} kHz${rate === '48' ? ' (session)' : ' — resampled'}` : 'choose…', rate == null ? null : rate === '48')}
       {field(110, 'BIT DEPTH', depth ? `${depth}-bit` : 'choose…', depth == null ? null : depth === '24')}
-      {field(134, 'DITHER', depth === '16' ? 'ON — on the way down' : 'OFF', true)}
+      {field(134, 'DITHER', depth === '16' ? 'ON — reducing to 16-bit' : 'OFF', true)}
       <T x={22} y={174} anchor="start" color={ART.inkDim} ls={0.6}>
         RANGE
       </T>

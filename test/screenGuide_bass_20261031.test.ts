@@ -252,8 +252,8 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal(STR.E.hz.toFixed(1), '41.2');
     assert.match(G.check.tryThis[1], /MODE NATURAL HARMONICS, STRING E, NODE ¼\. Count the lobes, then compare FREQ, 164\.8 Hz, with open E’s 41\.2 Hz/);
     assert.match(ci.start, /Reread FORMULA \/ CONCEPT on LEARN/);
-    // the PRO TIPS line the LEARN step points at is the first one (old lesson text, or the 2026-11-08 Part A rewrite)
-    assert.match(code('src/features/lab/guidedLessons/content.ts'), /proTips: \[\s*["']Play open E, then (the 12th-fret octave|fret 12), then the (12th-fret|½) harmonic/);
+    // the PRO TIPS line the LEARN step points at is the first one (old lesson text, the 2026-11-08 Part A rewrite, or the 2026-11-11 copy fix naming NODE ½)
+    assert.match(code('src/features/lab/guidedLessons/content.ts'), /proTips: \[\s*["']Play open E, then (the 12th-fret octave|fret 12), then (the (12th-fret|½) harmonic|NODE ½ in NATURAL HARMONICS)/);
   });
 });
 
@@ -276,7 +276,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     for (const c of calls) assert.match(c, /^gen[A-Z]\w*$|^(isAvailable|engineVersion)$/, `ApeDsp.${c} — not a generator call`);
     assert.doesNotMatch(s, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getMeterFrame/);
     // The honesty disclosure stays on the faceplate.
-    assert.match(s, /badge: 'TRUE FRET GEOMETRY — BRIDGE ← NUT · DRAWN FROM THE EQUATIONS'/);
+    assert.match(s, /badge: 'FRETS AT REAL SPACING FROM THE FRET EQUATION — BRIDGE ← NUT'/);
   });
 });
 

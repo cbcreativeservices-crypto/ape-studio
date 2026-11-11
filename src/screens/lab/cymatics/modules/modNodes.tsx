@@ -94,7 +94,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       label: 'SHAPE',
       valueLabel: shape === 'circle' ? 'Disc' : 'Sq',
       options: [
-        { id: 'square', label: 'Square plate', blurb: 'The classic crossed and diagonal figures — degenerate pairs combine into ± Chladni figures.' },
+        { id: 'square', label: 'Square plate', blurb: 'The classic crossed and diagonal figures — degenerate pairs (same-frequency modes) combine into ± Chladni figures.' },
         { id: 'circle', label: 'Circular plate', blurb: 'Nodal circles and diameters — Bessel modes, edge-driven so the diameter modes wake.' },
       ],
       selectedId: shape,

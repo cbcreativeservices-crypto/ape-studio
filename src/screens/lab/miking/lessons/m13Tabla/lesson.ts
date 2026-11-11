@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up the tabla in the right order, choose and justify a setup for two different briefs, and say why you chose your number of mics.',
     credit: { scenarios: ['ta.prac.order', 'ta.prac.gain', 'ta.prac.setup1', 'ta.prac.setup2', 'ta.prac.3', 'ta.mix.1', 'ta.mix.2', 'ta.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real tabla and player.' },
-    takeaway: 'Unobstructed playing, the intended balance between the drums, audible quiet strokes and clean loud passages pass — checked in mono — and more than one setup can pass.',
+    takeaway: 'A setup passes with unobstructed playing, the intended balance between the drums, audible quiet strokes and clean loud passages — checked in mono — and more than one setup can pass.',
   },
 };
 
@@ -224,7 +224,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One mic per drum. Where on the head do you aim first?',
     options: ['Between the patch and the outer head, then one the player suggests', 'Right at the black patch, where the stroke lands', 'At the rim, where the brightest part of the sound leaves the head as well'],
     correct: 'Between the patch and the outer head, then one the player suggests',
-    explain: 'Try a target between the loaded area and the outer playing area, then another chosen with the player. The patch, the rim or the center is not the only useful source.',
+    explain: 'Try a target between the black patch and the outer playing area, then another chosen with the player. The patch, the rim or the center is not the only useful source.',
     why: {
       'Right at the black patch, where the stroke lands': 'The patch is one area among several; try it as a comparison, not as the rule.',
       'At the rim, where the brightest part of the sound leaves the head as well': 'The rim is one area among several; aiming there can also bring the mic into the hand’s path.',
@@ -476,7 +476,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.ring',
     observation: 'Live ringing or too much spill',
-    firstChecks: 'Lower the relevant send, then revisit the monitor and mic geometry.',
+    firstChecks: 'Lower the send feeding the problem, then recheck the monitor and mic placement.',
     options: ['Lower the send, then rethink the mic and monitor geometry', 'Keep the level and let the ring settle on its own', 'Turn the wedge up so the player can hear through the ringing'],
     correct: 'Lower the send, then rethink the mic and monitor geometry',
     explain: 'Reduce the send or output promptly, then correct the placement. Never sustain feedback.',
@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Two directional dynamics, one per drum, close in and angled for separation', ok: true, power: 'none', feedback: 'Selective pickup for a loud stage; dynamics need no phantom.' },
       { id: 'b', label: 'One directional dynamic in front of and above the area between the heads', ok: true, power: 'none', feedback: 'Simple; check the balance between the drums and the quiet strokes.' },
       { id: 'c', label: 'Two cardioid condensers, one per drum', ok: false, power: 'phantom', feedback: 'A fair arrangement — but these inputs have no phantom power.' },
-      { id: 'd', label: 'A coincident pair about 50–80 cm away for a stereo picture', ok: false, power: 'phantom', feedback: 'Far on a loud stage hears the band and the monitors — and condensers would need phantom, which these inputs do not have.' },
+      { id: 'd', label: 'A coincident pair about 50–80 cm away for a stereo picture', ok: false, power: 'phantom', feedback: 'A pair far back on a loud stage hears the band and the monitors — and condensers would need phantom, which these inputs do not have.' },
       { id: 'e', label: 'A dynamic right over the bayan’s patch, where the hand presses', ok: false, power: 'none', feedback: 'The pressing hand comes first: never in its way.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against stage spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],

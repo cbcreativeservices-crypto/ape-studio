@@ -56,7 +56,7 @@ describe('store build (no __DEV__, no preview switch): Miking + Mixing are publi
 describe('round 1', () => {
   it('R1-1 a members-only preview gets words, not a dead MARK AS READ', () => {
     assert.match(GUIDE, /const inPreview = useLabPreview\(\)\.active;/);
-    assert.match(GUIDE, /\) : inPreview \? \(\s*<Text style=\{styles\.previewNote\}>Members-only preview — reading here is not recorded\.<\/Text>/);
+    assert.match(GUIDE, /\) : inPreview \? \(\s*<Text style=\{styles\.previewNote\}>Members-only preview — your reading progress here isn’t saved\.<\/Text>/);
   });
   it('R1-2 hub: the 50 tiles stay mounted (memoised, hidden when filtered) and the grid follows the field deferred', () => {
     assert.match(HUB, /const HubTile = memo\(function HubTile/);

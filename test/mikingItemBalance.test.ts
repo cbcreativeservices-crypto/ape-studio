@@ -146,7 +146,7 @@ const POL = /\b(polarity|invert\w*|flip\w*)\b/i;
 
 describe('miking: one explanation of an opposite-side mic’s polarity', () => {
   it('the shared explanation says the four things', () => {
-    assert.match(OPPOSITE_SIDES_POLARITY, /start opposite/);
+    assert.match(OPPOSITE_SIDES_POLARITY, /start out opposite in polarity/);
     assert.match(OPPOSITE_SIDES_POLARITY, /never a rule/);
     assert.match(OPPOSITE_SIDES_POLARITY, /flips the sign/);
     assert.match(OPPOSITE_SIDES_POLARITY, /both states by ear/);
