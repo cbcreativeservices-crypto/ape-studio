@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the meter yourself — in the open, 2 m from the facade, at the wall — at the method’s height, and see what each position stands for.',
-    credit: { scenarios: ['sl.place.1', 'sl.place.2', 'sl.place.3', 'sl.rec.2'], interactive: 'twoZones', note: 'Rest the meter, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sl.place.1', 'sl.place.2', 'sl.place.3', 'sl.rec.2'], interactive: 'twoZones', note: 'Rest the meter, clear of everything, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Put the meter where the method says, at the height it names, and say which kind of position it is. A reading at a wall is never called an open-field reading.',
   },
   context: {

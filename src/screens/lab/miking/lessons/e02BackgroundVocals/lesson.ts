@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the shared mic (or the group mic) yourself — nearer one singer, higher, back — and see what each singer’s distance does to the balance.',
-    credit: { scenarios: ['bv.place.1', 'bv.place.2', 'bv.step', 'bv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bv.place.1', 'bv.place.2', 'bv.step', 'bv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'At a shared mic the singers’ distances are the mix: matched for a blend, the loudest a step back. Move one thing at a time and mark what works on the floor.',
   },
   context: {
@@ -457,7 +457,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'You monitor three loud vocals and a band on headphones all day. What protects your ears?',
     options: ['Sensible levels and short breaks', 'The mics’ highest level rating', 'Turning up to hear the detail'],
     correct: 'Sensible levels and short breaks',
-    explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people, measured where they listen.',
+    explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are limits for people, measured where they listen.',
     why: { 'The mics’ highest level rating': 'That is about the mic, not your ears.', 'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement.' },
   },
 ];

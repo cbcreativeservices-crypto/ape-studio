@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 30–60 cm from the triangle, in front and a little to one side, away from the beater — then move the mic and see what changes.',
-    credit: { scenarios: ['tri.place.1', 'tri.place.2', 'tri.place.3', 'tri.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tri.place.1', 'tri.place.2', 'tri.place.3', 'tri.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Begin about 30–60 cm away, aimed at the whole triangle, away from the beater — never inside the triangle or the beater’s path. Change one thing at a time, and listen to light and strong strokes, a roll and the cutoff.',
   },
   context: {

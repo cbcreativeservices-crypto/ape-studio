@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the measurement mic yourself — on the axis and off it, close to the woofer, at seats across the venue, at the studio’s listening position and beside it.',
-    credit: { scenarios: ['sy.place.1', 'sy.place.2', 'sy.place.3', 'sy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sy.place.1', 'sy.place.2', 'sy.place.3', 'sy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Keep the radius when you change the angle; sample every region whose sound matters, at an ear height; one chair is not the room. Write the source, the position and the aim for every trace.',
   },
   context: {

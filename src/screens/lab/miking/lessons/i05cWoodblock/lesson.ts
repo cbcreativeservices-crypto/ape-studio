@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 25–50 cm from the block, outside the mallet’s path — from above toward the playing surface, or in front toward the opening.',
-    credit: { scenarios: ['wb.place.1', 'wb.place.2', 'wb.place.3', 'wb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['wb.place.1', 'wb.place.2', 'wb.place.3', 'wb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Two viewpoints to compare — the playing surface and the opening — both outside the mallet’s path, never into the slot.',
   },
   context: {

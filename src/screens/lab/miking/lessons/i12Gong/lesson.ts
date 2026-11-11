@@ -581,6 +581,6 @@ export const I12_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. No gong maker prescribes a mic position: these starting points come from how microphones behave and source-focused versus room-focused pickup, and every gong, mallet, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: a 32 in tam-tam and an 18 in bossed gong, the face’s shapes on a flat disc unsupported at its edge, the build-up as which shapes hold the energy (never a speed or a level), mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured from the face at rest to the mic’s front. Keep clear of the swing and the mallet.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every gong, mallet, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: a 32 in tam-tam and an 18 in bossed gong, the face’s shapes on a flat disc unsupported at its edge, the build-up as which shapes hold the energy (never a speed or a level), mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured from the face at rest to the mic’s front. Keep clear of the swing and the mallet.',
   copy: { words: metalWords('gong', 'player') },
 };

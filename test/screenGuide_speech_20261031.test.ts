@@ -157,7 +157,7 @@ describe('2. every step fits its no-scroll budget', () => {
 describe('3. each guide quotes its page’s real names', () => {
   const NAMES: Record<string, string[]> = {
     p1: ['HEAD AND NECK', 'SIDE VIEW', 'NOT TO SCALE', 'CHEST', 'FRONT VIEW', 'lungs (1)', 'lips (10)', 'jaw (11)', 'Dark blue-gray is air space', 'red is muscle', 'cream is bone', 'pale blue is cartilage', 'pink is the lining', 'a swallowing flap, not a speech part', '⤢', 'FULL SCREEN', '⏮', '‹ PREV', 'NEXT ›', 'MODULE', '▾'],
-    p2: ['‹ PREVIOUS', 'NEXT STAGE ›', '▶ PLAY THE SEQUENCE', '■ STOP', 'What you would see:', 'FULL SCREEN'],
+    p2: ['‹ PREVIOUS', 'NEXT STAGE ›', '▶ PLAY THE SEQUENCE', '■ STOP', 'On a display you would see:', 'FULL SCREEN'],
     p3: ['LOOKING DOWN THE LARYNX · FRONT AT TOP', 'epiglottis', 'false fold', 'vocal fold', 'glottis', 'arytenoid', 'WHAT COMES OUT', 'WHAT THE MIC HEARS', 'THE PAIRS · SAME SHAPE, FOLDS OFF / ON', 'pulses → pitch + harmonics', 'SLOW MOTION · ABOUT', 'FULL SCREEN'],
     p4: ['FRONT', 'BACK', 'HIGH', 'LOW', 'F1', 'F2', 'F3', 'nearly closed', 'half open', 'rounded', 'FULL SCREEN'],
     p5: ['blue → red = quiet → loud', 'closure', 'release', 'hiss', 'nasal hum', 'vowel', 'Energy', 'At the microphone', 'UNDERSTANDING CHECK', 'FULL SCREEN'],

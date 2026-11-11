@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — measured to the snare, aimed at it, clear of the player and the cymbals — then move the mic and see what changes.',
-    credit: { scenarios: ['oh.place.1', 'oh.place.2', 'oh.place.3', 'oh.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['oh.place.1', 'oh.place.2', 'oh.place.3', 'oh.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named reference — usually the snare’s center. Height, position, aim and spacing are separate things to try, and clearance comes first.',
   },
   context: {
@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You will sit beside a loud kit through a long soundcheck. What protects your hearing?',
     options: ['Keeping the level and time down where you are, and hearing protection', 'Standing behind the overhead stands, which block most of the kit’s sound', 'Nothing more — the mics’ maximum SPL keeps the level in a safe range'],
     correct: 'Keeping the level and time down where you are, and hearing protection',
-    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. A mic’s maximum SPL is its own distortion limit.',
+    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. A mic’s maximum SPL is its own distortion limit.',
     why: {
       'Standing behind the overhead stands, which block most of the kit’s sound': 'Thin stands block almost nothing. Limit the level and the time where you are, and use hearing protection.',
       'Nothing more — the mics’ maximum SPL keeps the level in a safe range': 'Maximum SPL says when a MIC distorts. It has nothing to do with what your ears can take.',
@@ -626,7 +626,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your overheads are rated to 140 dB SPL. What does that tell you about sitting by the kit through a long soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mics’ 140 dB', 'It is safe as long as the mics are above the kit'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
     why: {
       'It is safe for a while, as long as the kit stays below the mics’ 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as the mics are above the kit': 'Where the mics are says nothing about your ears. Measure where you listen, and limit the time.',

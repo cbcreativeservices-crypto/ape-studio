@@ -40,7 +40,7 @@ function PageWhyHalf({ ctx }: { ctx: PageCtx }) {
         wrong={[
           'Think back to the last page — you patched the TOP mid-flow. Did the destination lose its signal?',
           undefined,
-          'Both breaking is full-normal. Half-normal keeps one side gentle.',
+          'Both breaking is full-normal. On half-normal, one side does not break.',
           'Neither breaking would leave no way to replace a destination’s source — one side still breaks.',
         ]}
         onCorrect={() => {

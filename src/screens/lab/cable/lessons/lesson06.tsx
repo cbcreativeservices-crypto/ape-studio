@@ -53,7 +53,7 @@ export function Lesson06Body() {
     // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
     // outcome + progress are announced here (sweep 2026-08-15).
     AccessibilityInfo.announceForAccessibility(
-      `Correct. ${Math.min(solvedRef.current, L06_CHECKS.length)} of ${L06_CHECKS.length} solved.`,
+      `Correct. ${Math.min(solvedRef.current, L06_CHECKS.length)} solved.`,
     );
     if (solvedRef.current >= L06_CHECKS.length) {
       setAllDone(true);

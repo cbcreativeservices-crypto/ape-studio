@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the rig yourself — its place, its height, its front — and see what changes: the distance to the source, how far its front is off the scene, whether it stands in the way.',
-    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the rig, clear of the way, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the rig, clear of the way, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A spatial rig is a point of view: where a listener would be, at their height, facing the scene front. Move it one change at a time, log the front and the height — and never in a public route.',
   },
   context: {

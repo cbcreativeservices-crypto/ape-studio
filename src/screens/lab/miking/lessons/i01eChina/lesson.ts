@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the China on the side away from the player, or under its lowest point — clear of the stick and the swing, then move the mic.',
-    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.place.3', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the China turned over), and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.place.3', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the China turned over), and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'There is no set distance for a China: a zone is a place to begin, measured from its rim plane — or, underneath, from its lowest point in its mount. Clearance comes first.',
   },
   context: {

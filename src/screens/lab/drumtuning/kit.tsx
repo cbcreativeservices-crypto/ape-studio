@@ -113,7 +113,7 @@ export function DrumScenarioDeck({ scenarios, onAnswered, keepOrder, intro }: {
     <View style={{ gap: 10 }}>
       {intro ? <Body>{intro}</Body> : null}
       <View style={styles.deckBar}>
-        <Text style={styles.deckCount}>{`CARD ${i + 1} OF ${n}`}</Text>
+        <Text style={styles.deckCount}>{`CARD ${i + 1}`}</Text>
         <Text style={styles.deckRule}>Your FIRST answer on each card is the one remembered; keep going until you find the one that fits — a retry is explained, never penalized.</Text>
       </View>
       {scenarios.map((s, k) => (

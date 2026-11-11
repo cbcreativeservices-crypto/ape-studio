@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the mic yourself — toward one singer, higher, back — and see what each singer’s distance does to the duet.',
-    credit: { scenarios: ['du.place.1', 'du.place.2', 'du.place.3', 'du.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['du.place.1', 'du.place.2', 'du.place.3', 'du.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'At one mic, distance is balance: matched for a matched duet; 15 cm closer is a clear jump. Move the singers before adding mics, and keep both on the same acoustic plane.',
   },
   context: {

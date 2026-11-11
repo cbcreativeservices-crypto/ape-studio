@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a headset boom at the outside corner of the mouth in the booth, a lip ribbon’s guard on the lip at an open position — then move the mic and see what changes.',
-    credit: { scenarios: ['b9.place.1', 'b9.place.2', 'b9.place.3', 'b9.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the commentator, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b9.place.1', 'b9.place.2', 'b9.place.3', 'b9.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the commentator, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The corner of the mouth keeps the capsule out of the breath; clearance from the face, glasses and notes comes first.',
   },
   context: {
@@ -678,6 +678,6 @@ export const B09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. No mic cancels a stadium; avoid uncontrolled feedback; start the headphone level low.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet also shown from 3 m and measured from the lips to the mic’s front. No mic cancels a stadium; avoid uncontrolled feedback; start the headphone level low.',
   copy: B09_COPY,
 };

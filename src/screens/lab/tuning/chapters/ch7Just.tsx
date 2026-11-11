@@ -220,7 +220,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
         : 'Ride NOTES to reveal the mapping one note at a time — each lands on the rail, and from the second note a PLAY key sounds C with the newest one.'}
     >
       <Lead>What if we build around simple harmonic relationships instead of generating every note from pure fifths?</Lead>
-      <Eyebrow>ONE COMMON FIVE-LIMIT JUST C-MAJOR EXAMPLE</Eyebrow>
+      <Eyebrow>ONE COMMON JUST C-MAJOR EXAMPLE</Eyebrow>
       <Row>
         {JUST.notes.slice(0, revealed).map((n, i) => (
           <RatioTile key={i} note={n.spelling} value={n.value} hz={hz(n.value.numericRatio)} fresh={i === revealed - 1} compact showDecimal={ctx.mathView} />

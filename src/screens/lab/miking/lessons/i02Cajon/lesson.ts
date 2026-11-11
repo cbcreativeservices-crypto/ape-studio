@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — in front of the plate (close and dead center, or about 30–40 cm out just below the top edge, angled down), or at the port — outside both hands, the knees and the way off the box.',
-    credit: { scenarios: ['caj.place.1', 'caj.place.2', 'caj.place.3', 'caj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['caj.place.1', 'caj.place.2', 'caj.place.3', 'caj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Front for attack and slap, port for low end and air — two working examples, not an average. Outside the hands, legs, rocking box and exit.',
   },
   context: {
@@ -304,7 +304,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “30–40 cm from the plate”. What else do you need before placing it?',
     options: ['The hands’ arcs, the knees, the port and the exit', 'The cajón’s maker, so the number fits its size', 'Nothing more: the number already says where it goes'],
     correct: 'The hands’ arcs, the knees, the port and the exit',
-    explain: 'The player’s motion sets the clearance; the port sets the other side; the exit keeps the player safe.',
+    explain: 'The player’s motion sets the clearance; the port’s air sets where the mic must not sit; the exit keeps the player safe.',
     why: {
       'The cajón’s maker, so the number fits its size': 'The maker does not change the player’s arcs.',
       'Nothing more: the number already says where it goes': 'A distance means nothing without the motion and the aim.',

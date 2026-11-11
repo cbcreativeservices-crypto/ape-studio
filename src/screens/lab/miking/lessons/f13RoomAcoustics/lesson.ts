@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the receiver yourself — a seat mid-audience, near the back, near a side wall — at a seated ear height, and see what each one stands for.',
-    credit: { scenarios: ['ra.place.1', 'ra.place.2', 'ra.place.3', 'ra.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, at two different suggested seats, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ra.place.1', 'ra.place.2', 'ra.place.3', 'ra.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, at two different suggested seats, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Seats that differ in distance and in their nearest walls, each marked for a second pass. Move only the receiver between runs.',
   },
   context: {

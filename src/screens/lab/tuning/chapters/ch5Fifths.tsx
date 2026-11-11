@@ -155,7 +155,7 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
       <Card tone="math">
         {building && next ? (
           <>
-            <Eyebrow>STEP {revealed + 1} OF 12 · BUILDING</Eyebrow>
+            <Eyebrow>FIFTH {revealed + 1} · BUILDING</Eyebrow>
             <MathLine>{fracLabel(CHAIN[revealed].normalized)} × 3/2 = {fracLabel(next.unreduced)}</MathLine>
             {next.reductions.slice(0, Math.max(0, phase - 1)).map((r, i) => (
               <MathLine key={i} emphasis>{fracLabel(r.before)} is 2 or greater → ÷2 = {fracLabel(r.after)}</MathLine>
@@ -164,12 +164,12 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
           </>
         ) : revealed === 0 ? (
           <>
-            <Eyebrow>STEP 1 OF 12 · READY</Eyebrow>
+            <Eyebrow>FIFTH 1 · READY</Eyebrow>
             <Body>Press ADD FIFTH. You will see the product, every ÷2 it needs, and where the result lands.</Body>
           </>
         ) : (
           <>
-            <Eyebrow>STEP {revealed} OF 12 · DONE{next ? ' · READY FOR THE NEXT' : ''}</Eyebrow>
+            <Eyebrow>FIFTH {revealed} · DONE{next ? ' · READY FOR THE NEXT' : ''}</Eyebrow>
             <MathLine>{fracLabel(CHAIN[revealed - 1].normalized)} × 3/2 = {fracLabel(CHAIN[revealed].unreduced)}</MathLine>
             {CHAIN[revealed].reductions.map((r, i) => (
               <MathLine key={i}>{fracLabel(r.before)} ÷ 2 = {fracLabel(r.after)}</MathLine>

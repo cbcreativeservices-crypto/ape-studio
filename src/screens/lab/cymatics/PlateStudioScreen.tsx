@@ -562,7 +562,7 @@ function PlateStudio() {
   const badge = lib
     ? `SIMULATION · ${lib.validated ? 'CALCULATED · VALIDATED' : 'CALCULATED'} — ${lib.info.label} finite-element modes`
     : spec.shape === 'circle'
-      ? 'SIMULATION · APPROXIMATED — Bessel disc modes, tabulated eigenvalues'
+      ? 'SIMULATION · APPROXIMATED — Bessel disc modes, published values'
       : 'SIMULATION · APPROXIMATED — Ritz free-plate modes';
   // SAVE → the Pattern Gallery (Phase 4): numbers, not a picture — the full
   // state, so the figure is reproducible; the badge it carried rides along.
@@ -739,7 +739,7 @@ function PlateStudio() {
         <Text style={styles.honest}>
           · Calculated: triangle, hexagon, ring, bell and instrument plates — solved numerically (finite elements, 16 modes each) and looked up{lib ? `; this shape: ${lib.validationNote}` : ''}.
         </Text>
-        <Text style={styles.honest}>· Approximated: rectangular free plates (no exact solution — the standard Ritz form) and disc modes (Bessel shapes, tabulated eigenvalues).</Text>
+        <Text style={styles.honest}>· Approximated: rectangular free plates (no exact solution — the standard Ritz form) and disc modes (Bessel shapes, published values).</Text>
         <Text style={styles.honest}>· A real plate’s figures also depend on its flatness, its mounting and the sand itself.</Text>
       </LabShell>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />

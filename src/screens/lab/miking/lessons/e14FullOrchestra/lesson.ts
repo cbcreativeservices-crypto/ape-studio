@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — height, distance and across — and see what changes: the front-to-back balance, the time differences, what the recording angle takes in.',
-    credit: { scenarios: ['orc.place.1', 'orc.place.2', 'orc.31', 'orc.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players and the conductor, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['orc.place.1', 'orc.place.2', 'orc.31', 'orc.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players and the conductor, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'The main array is a perspective: higher hears more of the back rows and the hall, closer more of the front desks. Move the whole array, one change at a time, at matched level — and keep every sightline and walkway clear.',
   },
   context: {
@@ -92,7 +92,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'orc.meet.3',
     page: 'meet',
-    prompt: 'At a main pair over the podium, why do the front desks arrive loudest?',
+    prompt: 'At a main pair over the podium, why do the front desks (the first music stands of each string section) arrive loudest?',
     options: ['They are much closer to the pair', 'Front players simply play louder', 'The back rows face away from it'],
     correct: 'They are much closer to the pair',
     explain: 'Level falls with distance: the front desks may be a third of the distance of the back rows. Height evens the distances out a little — one reason the main pair goes 3–4 m up.',

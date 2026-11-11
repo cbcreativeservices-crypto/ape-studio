@@ -82,7 +82,7 @@ export function Lesson03Body() {
     // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
     // outcome + progress are announced here (sweep 2026-08-15).
     AccessibilityInfo.announceForAccessibility(
-      `Correct. ${solvedRef.current.size} of ${L03_CHECKS.length} solved.`,
+      `Correct. ${solvedRef.current.size} solved.`,
     );
     if (solvedRef.current.size === L03_CHECKS.length && !markedRef.current) {
       markedRef.current = true;
@@ -150,7 +150,7 @@ export function Lesson03Body() {
         balanced.
       </Text>
 
-      <Eyebrow text={`KNOWLEDGE CHECK · ${solvedCount} OF ${L03_CHECKS.length} SOLVED`} />
+      <Eyebrow text={`KNOWLEDGE CHECK · ${solvedCount} SOLVED`} />
       {!allSolved ? (
         <Text style={s.hint}>Solve all four to complete this lesson. Wrong picks stay open — keep trying.</Text>
       ) : null}

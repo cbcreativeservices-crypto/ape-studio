@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — close, between the lip plate and the left hand, off the air jet — then move the mic and see what changes.',
-    credit: { scenarios: ['fl.place.1', 'fl.place.2', 'fl.place.3', 'fl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['fl.place.1', 'fl.place.2', 'fl.place.3', 'fl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Close for detail, behind the head for less breath, a meter in front for the room, a headset or a clip for a moving player — each a place to begin, not a rule. Keep the capsule out of the air jet.',
   },
   context: {
@@ -536,7 +536,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.body', 'ww.body.1', 'ww.body.2', 'ww.body.3', 'ww.body.4', 'ww.headjoint'],
     azMax: 60,
     elMax: 70,
-    aimBlurb: 'Turn the front up to 60° either way — the flute stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the flute stays in front of the mic, a little off its axis.',
     plan: { u0: -1900, u1: 900, v0: -600, v1: 1750 },
     side: { u0: -1900, u1: 900, v0: -500, v1: 1700 },
     target: 'wedge',

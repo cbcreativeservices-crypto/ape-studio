@@ -31,7 +31,7 @@ describe('Cable lab lesson 12: no "0 OF N UNITS CLEARED" on an unreadable read',
     assert.match(src, /useLabCompletionUnreadable\(\)/, 'lesson 12 never asks whether the units could be read');
   });
   it('the progress count and the what\'s-left list are not drawn when unreadable', () => {
-    const at = src.indexOf('LAB PROGRESS ·');
+    const at = src.indexOf('<WhatsLeft nav={nav} />');
     assert.ok(at > 0);
     const before = src.slice(Math.max(0, at - 200), at);
     assert.match(before, /unreadable \? null :/, 'the count and every step "not yet solved" still render under the note');

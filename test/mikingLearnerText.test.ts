@@ -330,7 +330,7 @@ describe('learner-facing text names no source and carries no badge (owner ruling
 
   it('the patterns catch what the ruling removed, and pass plain starting-point words', () => {
     for (const s of ['SOURCED*', 'TRIAL reading', 'PEDAL · ILLUSTRATIVE', 'Beta 52A guide · near', 'kick L39 (L39)', 'Sources', 'a documented zone', 'No published source gives it', 'one engineer’s account']) assert.ok(ALL.some((re) => re.test(s)), s);
-    for (const s of ['Inside, near the batter head', 'Start about 5–7.5 cm (2–3 in) from the batter head.', 'After our research, here is where we recommend you begin.', 'follow the manual for your own equipment', 'A widely used guideline: 85 dBA', 'NIOSH recommends no more than 85 dBA averaged over 8 hours; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.']) assert.deepEqual(ALL.filter((re) => re.test(s)), [], s);
+    for (const s of ['Inside, near the batter head', 'Start about 5–7.5 cm (2–3 in) from the batter head.', 'After our research, here is where we recommend you begin.', 'follow the manual for your own equipment', 'A widely used guideline: 85 dBA', 'NIOSH recommends no more than 85 dBA averaged over 8 hours; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.']) assert.deepEqual(ALL.filter((re) => re.test(s)), [], s);
   });
 
   for (const meta of LESSONS) {

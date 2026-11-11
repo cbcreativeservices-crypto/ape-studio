@@ -1,5 +1,5 @@
 // HOLD B (owner 2026-11-10, "Yes, fix HOLD B"): 85 dB is the SMPTE/THX large-room
-// reference; 79 and 82 dB are common small-room practice, never credited to THX.
+// reference; 79 and 82 dB are common for small and medium rooms, never credited to THX.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 const read = (p: string) => readFileSync(p, 'utf8').replace(/\r\n/g, '\n').replace(/\s+/g, ' ');
 const SCREEN = read('src/screens/tools/SplMeterScreen.tsx');
 const HELP = read('src/features/lab/guidedLessons/toolHelp.tsx');
-const LINE = '85 is the SMPTE / THX reference for large rooms; 79 and 82 are common small-room practice.';
+const LINE = '85 is the SMPTE / THX reference for large rooms; 79 and 82 are common for small and medium rooms.';
 
 describe('SPL credit (HOLD B)', () => {
   it('the screen legend credits only 85 dB to SMPTE / THX', () => {

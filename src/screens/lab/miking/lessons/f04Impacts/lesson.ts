@@ -51,7 +51,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — an airborne mic off to the side of the basin, outside the splash; a close view of the impact; a mic along the stroke — then compare a farther view, and see what changes.',
-    credit: { scenarios: ['f04.place.1', 'f04.place.2', 'f04.place.3', 'f04.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every keep-out, inside two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['f04.place.1', 'f04.place.2', 'f04.place.3', 'f04.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every keep-out, inside two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A starting point is a place to begin, read from the action to the capsule — not a rule. Close means close to the edge of the splash, never inside it; distance trades attack for body, room and tail.',
   },
   context: {

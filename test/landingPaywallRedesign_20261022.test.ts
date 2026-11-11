@@ -84,7 +84,7 @@ describe('A · approved wording, verbatim', () => {
 
   it('H11: the dated note is one line, built from the date constant', () => {
     assert.equal(COPY.pricingNote, `These prices are available until ${CURRENT_PRICING_ENDS_LABEL}.`);
-    assert.equal(COPY.pricingNote, 'These prices are available until 1 January 2027.');
+    assert.equal(COPY.pricingNote, 'These prices are available until January 1, 2027.');
   });
 
   it('the guest account step is plain and short (stated before the plans)', () => {

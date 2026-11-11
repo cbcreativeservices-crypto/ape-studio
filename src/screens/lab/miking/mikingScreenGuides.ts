@@ -609,7 +609,6 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
       req(goalLine.length + seq.length + 1 <= SCREEN_GUIDE_BUDGET.low ? goalLine : x.goal),
       req(seq),
       opt(words.teaches),
-      x.page === 'microphone' ? opt('Microphone Principles, in Audio Fundamentals, covers pickup patterns in depth.') : null,
     ],
     SCREEN_GUIDE_BUDGET.low,
   );
@@ -629,6 +628,8 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
   if (s && !rack && s.kind === 'CHECK' && tries.length < 2) tries.push('Answer the card you are least sure of first: a wrong pick shows its reason, and you choose again.');
   if (tries.length < 2) tries.push(isDefault ? sharp!.tryThis : words.tryThis);
   if (tries.length < 2) tries.push('Before you move on, say in one sentence what this step showed you about the sound.');
+  // Owner 2026-11-11 (UF-56CAE25AB2): the cross-reference lives in TRY THIS, not WHAT THIS TEACHES.
+  if (x.page === 'microphone' && tries.length < 3) tries.push('Microphone Principles, in Audio Fundamentals, covers pickup patterns in depth.');
   const tryThis = tries.slice(0, 3);
 
   return { ...(note?.intro ? { intro: note.intro } : {}), seeing, control, changes, teaches, tryThis };
@@ -720,11 +721,11 @@ export function mikingHubGuide(family?: { family: string }): ScreenGuide {
     ],
     teaches: [
       'Miking follows one order whatever the source: where the sound leaves, real starting setups, the mic’s properties, placement, advanced situations and practice. Here it is all silent and drawn.',
-      'Microphone Principles, in Audio Fundamentals, covers pickup patterns and distance; these lessons put them to work on real sources.',
     ],
     tryThis: [
       'Open a lesson and look at THE JOURNEY map on its first step: the same stages run through every lesson here.',
       'Finish a module, come back, and find that tile’s count has grown (when your progress is saved).',
+      'Microphone Principles, in Audio Fundamentals, covers pickup patterns and distance; these lessons put them to work on real sources.',
     ],
   };
 }

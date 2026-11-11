@@ -51,7 +51,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a broadcast dynamic about 10 cm from the lips in the booth, about 11 cm at the guest desk — then move the mic and see what changes.',
-    credit: { scenarios: ['b7.place.1', 'b7.place.2', 'b7.place.3', 'b7.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the reader, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b7.place.1', 'b7.place.2', 'b7.place.3', 'b7.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the reader, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Close versus moderate is a choice of perspective that the room must support; clearance from the face and the script comes first.',
   },
   context: {

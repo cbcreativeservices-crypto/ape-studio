@@ -731,7 +731,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
             <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and the speaker are the player’s sound. Mic the cabinet they bring; leave the tone controls to them.</Point>
             <Point title="A ROTARY CABINET STAYS CLOSED">Plan the stands while it is off. Keep every mic, stand and cable outside, clear of the openings, the vents, the power cord, the organ pedals and the walkways. Never push anything through a louver; never touch connector pins; leave the organ’s cable and any switch on the cabinet alone. Make sure the cabinet stands steady.</Point>
           </Card>
-          <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+          <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),
@@ -1164,7 +1164,7 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
         selectedId: aimAxis,
         onSelect: (id) => setAimAxis(id as 'az' | 'el'),
         options: [
-          { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way — the speaker stays in front of the mic, a little off its axis.` },
+          { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the mic’s front up to ${AZ_MAX}° either way — the speaker stays in front of the mic, a little off its axis.` },
           { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down.` },
         ],
       },
@@ -1328,7 +1328,7 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
   ];
   const dCell = lenCell(dMm, true);
   const bezel: BezelItem[] = [
-    { k: 'PATH Δd R−F', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
+    { k: 'PATH REAR−FRONT', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
     { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'rear later' : 'rear earlier', flex: 1.3 },
     { k: '1ST NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
     { k: 'REAR', v: B.polarity === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'in step' : 'opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },

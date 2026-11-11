@@ -44,7 +44,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — over the top plate, 30–50 cm out from the plate, out of the plucking hand’s reach — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named point. A broad view of the plate first; toward the bridge for articulation; move in small steps and compare at matched levels.',
   },
   context: {
@@ -199,13 +199,13 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.3`,
     page: 'placement',
-    prompt: 'A study measured a veena’s radiation with mics 25 cm from the top plate. Does that make 25 cm the place to put your mic?',
-    options: ['It does: the study found 25 cm is the best musical distance', 'It does, but only for a mic of exactly the same model as the study’s', 'No: it was where the study measured, not a suggestion'],
-    correct: 'No: it was where the study measured, not a suggestion',
-    explain: 'The study mapped the plate’s radiation at 25, 50, 75 and 100 cm and found it changes with pitch, direction and distance. It supports comparing positions around the face — not one best distance.',
+    prompt: 'Someone measured a veena’s sound with mics 25 cm from the top plate. Does that make 25 cm the place to put your mic?',
+    options: ['It does: they found 25 cm is the best musical distance', 'It does, but only for a mic of exactly the same model as the one they used', 'No: it was where they measured, not a suggestion'],
+    correct: 'No: it was where they measured, not a suggestion',
+    explain: 'Those measurements, taken at 25, 50, 75 and 100 cm, found the plate’s sound changes with pitch, direction and distance. They support comparing positions around the face — not one best distance.',
     why: {
-      'It does: the study found 25 cm is the best musical distance': 'The study names no best musical distance; it measured at several radii.',
-      'It does, but only for a mic of exactly the same model as the study’s': 'Measurement radius is not a musical suggestion, whatever the mic.',
+      'It does: they found 25 cm is the best musical distance': 'Those measurements name no best musical distance; they were taken at several radii.',
+      'It does, but only for a mic of exactly the same model as the one they used': 'Measurement radius is not a musical suggestion, whatever the mic.',
     },
   },
   {

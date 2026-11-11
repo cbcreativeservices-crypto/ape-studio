@@ -40,7 +40,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself on the practice field — along the crew strip, its height and its aim — and see the range and the angle change as you move between A, B and C.',
-    credit: { scenarios: ['fd.place.1', 'fd.place.2', 'fd.place.3', 'fd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['fd.place.1', 'fd.place.2', 'fd.place.3', 'fd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'From one approved mark, the targets differ in range and angle: aim into a named zone, change one thing at a time, and never move into the offset to get closer.',
   },
   context: {

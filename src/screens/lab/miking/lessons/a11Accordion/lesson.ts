@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic about 30–60 cm in front, centered; or a mic for each side — always outside the bellows’ whole travel; then switch BELLOWS and see the bass side move.',
-    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.place.3', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the bellows’ travel and the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.place.3', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the bellows’ travel and the player, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'One mic about 30–60 cm in front, centered, integrates the two sides. A treble mic about 30 cm from the keyboard side and a bass mic just beyond the fully open bass side give separate control — but the bass side’s distance changes all through the cycle.',
   },
   context: {

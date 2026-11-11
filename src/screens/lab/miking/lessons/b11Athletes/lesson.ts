@@ -52,7 +52,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin once a mount is approved — a miniature at the breastbone, a headset boom at the mouth corner — then move it and see what changes.',
-    credit: { scenarios: ['b11.place.1', 'b11.place.2', 'b11.place.3', 'b11.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the wearer’s equipment, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b11.place.1', 'b11.place.2', 'b11.place.3', 'b11.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the wearer’s equipment, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — and only where approved. The cable’s loop, the pack’s retention and the antenna matter as much as the capsule.',
   },
   context: {

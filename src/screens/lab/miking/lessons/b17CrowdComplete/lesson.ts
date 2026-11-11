@@ -44,7 +44,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the audience pair yourself in the mock venue — its viewpoint, its height and its aim — and hear the broad and the close perspective apart.',
-    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.place.3', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair, in its footprint, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.place.3', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair, in its footprint, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A broad viewpoint carries the venue; a closer or lower one picks out nearby voices. Move only the pair’s center, keep the source the same, and listen in mono too.',
   },
   context: {

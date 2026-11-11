@@ -44,7 +44,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about a foot in front of the bridge, aimed at it, clear of the bow — then move the mic and see what changes.',
-    credit: { scenarios: ['vc.place.1', 'vc.place.2', 'vc.place.3', 'vc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['vc.place.1', 'vc.place.2', 'vc.place.3', 'vc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named part — the bridge — not a rule. Distance, height and angle are separate things to try, and the bow’s clearance comes first.',
   },
   context: {

@@ -57,7 +57,7 @@ export function Ch12Tradeoffs({ ctx }: ChapterProps) {
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(
-      `${opened.size} of ${MYTHS.length} corrections opened`,
+      `${opened.size} corrections opened`,
     );
   }, [opened.size]);
   const toggle = (i: number) => {
@@ -84,7 +84,7 @@ export function Ch12Tradeoffs({ ctx }: ChapterProps) {
           {open === i ? <Text style={styles.mythFix}>{m.correction}</Text> : <Text style={styles.tap}>{opened.has(i) ? 'seen · tap to reread ▸' : 'tap for the correction ▸'}</Text>}
         </Pressable>
       ))}
-      <Text style={styles.count} accessibilityLiveRegion="polite">{opened.size} of {MYTHS.length} corrections opened{enough ? '' : ` · open ${MIN_OPENED - opened.size} more to finish`}</Text>
+      <Text style={styles.count} accessibilityLiveRegion="polite">{opened.size} corrections opened{enough ? '' : ` · open ${MIN_OPENED - opened.size} more to finish`}</Text>
       <Eyebrow>WHERE THIS MEETS PROFESSIONAL AUDIO</Eyebrow>
       <Card>
         {PRO.map(([t, d]) => (

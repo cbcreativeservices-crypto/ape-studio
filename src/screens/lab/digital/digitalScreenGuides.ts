@@ -258,7 +258,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     teaches: [
       'The path: mic, preamp, anti-aliasing filter, sample and hold, quantizer, encoder, then a PCM (plain stored samples) stream.',
-      'Gain is set BEFORE conversion. Peaks of −12 to −6 dBFS, the average near −18, keep good SNR and headroom.',
+      'Gain is set BEFORE conversion. Peaks of −18 to −10 dBFS keep good SNR and headroom.',
       'Analog and digital clipping are separate events, and both are permanent.',
       'The filter stops aliases, the quantizer rounds to level steps, and the encoder writes the binary numbers.',
     ],

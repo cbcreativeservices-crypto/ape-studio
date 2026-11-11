@@ -96,7 +96,7 @@ export function Lesson08Body() {
     <>
       <PrincipleBanner />
 
-      <Eyebrow text={`FOURTEEN CONNECTIONS TO CABLE · ${doneCount} OF ${SELECTION_SCENARIOS.length} SOLVED`} />
+      <Eyebrow text={`FOURTEEN CONNECTIONS TO CABLE · ${doneCount} SOLVED`} />
       <Text style={s.body}>
         Every connection below is cabled the same way: name what travels, choose the connector, choose the construction,
         then meet the requirement that makes it reliable and safe. Tap a connection to work it — ✓ marks solved ones, and
@@ -119,7 +119,7 @@ export function Lesson08Body() {
             text={
               st.done
                 ? 'CONNECTION SOLVED'
-                : `DECISION ${Math.min(st.step + 1, scenario.steps.length)} OF ${scenario.steps.length}`
+                : `DECISION ${Math.min(st.step + 1, scenario.steps.length)}`
             }
           />
           {/* ART SLOT: owner-supplied scenario illustration (source and

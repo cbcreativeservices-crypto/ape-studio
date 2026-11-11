@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 30–60 cm from the middle of the playing area — then try one egg, two eggs close together and two hands apart, and see what changes.',
-    credit: { scenarios: ['egg.place.1', 'egg.place.2', 'egg.place.3', 'egg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['egg.place.1', 'egg.place.2', 'egg.place.3', 'egg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'One mic outside the motion, about 30–60 cm from the middle of the playing area. Two eggs close together: one mic between them. Hands wide apart: perhaps one each — if the arrangement needs it.',
   },
   context: {

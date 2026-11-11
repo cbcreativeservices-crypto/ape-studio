@@ -15,7 +15,7 @@
  */
 export const CURRENT_PRICING_ENDS = new Date('2027-01-01T00:00:00');
 /** Rendered form of the date above — one place, so the two never disagree. */
-export const CURRENT_PRICING_ENDS_LABEL = '1 January 2027';
+export const CURRENT_PRICING_ENDS_LABEL = 'January 1, 2027';
 /** False once the deadline has passed, so time-limited copy stops claiming it. */
 export const pricingDeadlineActive = (now: Date = new Date()): boolean =>
   now.getTime() < CURRENT_PRICING_ENDS.getTime();

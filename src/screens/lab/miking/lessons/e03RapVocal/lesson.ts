@@ -51,7 +51,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a dynamic about 10 cm from the lips in the studio, a handheld within about 10 cm on stage — then move the mic and see what changes, and how much a lean inside the working zone moves the level.',
-    credit: { scenarios: ['rp.place.1', 'rp.place.2', 'rp.place.3', 'rp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the performer, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['rp.place.1', 'rp.place.2', 'rp.place.3', 'rp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the performer, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips. Close up, a small lean is a big level change — a rehearsed working zone keeps the verse steady. Clearance from the face comes first.',
   },
   context: {

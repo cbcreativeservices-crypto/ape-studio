@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — at the grille on the dust-cap line, the center, the edge, turned off axis, a little farther back, or behind an open back — measured from the surface each names, then move the mic one thing at a time and see what changes.',
-    credit: { scenarios: ['cv.place.1', 'cv.place.2', 'cv.place.3', 'cv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['cv.place.1', 'cv.place.2', 'cv.place.3', 'cv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named surface — not a rule. Center to edge, angle and distance are separate things to try; mark each position so you can come back to it.',
   },
   context: {
@@ -130,9 +130,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your amp mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck at the amp?',
     options: ['Everyone is safe while the amp stays below the mic’s rated level', 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'You are safe as long as the mic is nearer the amp than you'],
     correct: 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — and a stage amp is loud.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — and a stage amp is loud.',
     why: {
-      'Everyone is safe while the amp stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'Everyone is safe while the amp stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'You are safe as long as the mic is nearer the amp than you': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -620,9 +620,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your amp mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck at the amp?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the amp stays below the mic’s rated level', 'It is safe as long as the mic is nearer the amp than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — measured where the person listens.',
     why: {
-      'It is safe for as long as the amp stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe for as long as the amp stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'It is safe as long as the mic is nearer the amp than you': 'Where the mic sits says nothing about your ears.',
     },
   },

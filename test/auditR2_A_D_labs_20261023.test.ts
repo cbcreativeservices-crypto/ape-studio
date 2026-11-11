@@ -76,7 +76,7 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/dj/pages/p11Grid.tsx", now: "the tempos match, yet each of B’s kicks lands between A’s kicks — sync lined", gone: "the tempos match, yet every kick flams — sync lined" },
   { file: "src/screens/lab/dj/pages/p11Grid.tsx", now: "* which trusts the grid, puts B's kicks between A's. The learner m", gone: "* which trusts the grid, makes the real beats flam. The learner m" },
   { file: "src/screens/lab/dj/pages/p20Pa.tsx", now: "marked with tape so no one trips on them, and kept within the stand’s rated height and load.", gone: "taped clear of feet, and never higher than the stand’s rating." },
-  { file: "src/screens/lab/dj/pages/p20Pa.tsx", now: "is over the NIOSH guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more; the OSHA legal limit is 90 dBA with a 5 dB rule).", gone: "is over the guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more)." },
+  { file: "src/screens/lab/dj/pages/p20Pa.tsx", now: "is over the NIOSH guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more; the OSHA legal limit is 90 dBA, halving the time every 5 dB).", gone: "is over the guideline from Screen 1 (85 dBA for 8 hours, half the time for every 3 dB more)." },
   { file: "src/screens/lab/dj/pages/p20Pa.tsx", now: "anything only on one side gets quieter, and anything out of phase between the sides can vanish.\"", gone: "anything only on one side, or out of phase between the sides, can vanish.\"" },
   { file: "src/screens/lab/dj/pages/p21Rec.tsx", now: "ecording in headphones, not back into the", gone: "ecording in headphones, never back into the" },
   { file: "src/screens/lab/dj/pages/p21Rec.tsx", now: "not MIC), and AUTO LEVEL OFF — or it pumps the mix up and down. A peak limiter can stay on as a backstop, but set the level so it never has to act. If you stream from an app, monitor it in headphones, not back into the", gone: "not MIC), and AUTO LEVEL or its limiter OFF — or it pumps the mix up and down. If you stream from an app, monitor it in headphones, never back into the" },
@@ -88,7 +88,7 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "'The peaks between the notches grow tall and narrow and ring", gone: "'The notches deepen and the pea" }, // 2026-10-31: at MIX 50% FDBK makes notches shallower; the peaks are what grow (combResponseDb)
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "rculates the delayed copy: the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant", gone: "rculates the delayed copy, sharpening the comb: deeper notches, resonant peaks" }, // D42 r2 2026-11-01: "deeper contrast" was false at MIX 50% (notches get shallower)
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "with a very high ratio — peaks held at a ceiling',", gone: "with a very high ratio — a ceiling nothing passes'," },
-  { file: "src/screens/lab/mastering/masteringEngine.ts", now: "note: 'Hot: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Everything", gone: "note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything" },
+  { file: "src/screens/lab/mastering/masteringEngine.ts", now: "note: 'Hot: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Everything", gone: "note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "working level, under the NIOSH recommended exposure limit:", gone: "working level, under the daily exposure limit:" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "te: 'Unsafe for working: about three hours or less a day at this level (NIOSH),", gone: "te: 'Unsafe for working: two hours or less a day at this level," },
   { file: "src/screens/lab/mastering/modules/mod3Room.tsx", now: "DAY readout is the NIOSH recommended daily limit: 8 h at 85 dBA, halved every 3 dB above. The US legal limit (OSHA) is looser: 90 dBA, halved every 5 dB.</Point>", gone: "DAY on the bezel is the DAILY LIMIT: the NIOSH figure of 8 h at 85 dBA, halved every 3 dB above.</Point>" },
@@ -181,7 +181,7 @@ test('audit R2 · owner hearing ruling 2026-10-23: NIOSH and OSHA named together
   assert.doesNotMatch(welcome, /workplace guideline/);
   assert.match(read('src/screens/lab/dj/pages/p20Pa.tsx'), /NIOSH guideline from Screen 1[^)]*OSHA legal limit is 90 dBA/);
   const eng = read('src/screens/lab/mastering/masteringEngine.ts');
-  assert.match(eng, /NIOSH recommended exposure limit is 85 dBA for 8 hours[^']*OSHA\) is 90 dBA with a 5 dB rule/);
+  assert.match(eng, /NIOSH recommended exposure limit is 85 dBA for 8 hours[^']*OSHA\) is 90 dBA, halving the time every 5 dB/);
   assert.match(read('src/screens/lab/mastering/modules/mod3Room.tsx'), /NIOSH recommended daily limit[^<]*OSHA\) is looser: 90 dBA/);
 });
 

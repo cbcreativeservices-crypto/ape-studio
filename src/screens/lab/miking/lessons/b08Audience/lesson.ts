@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the crowd mic yourself on the studio plan — where on the approved places, how high, where it aims — and see the faces and the PA change.',
-    credit: { scenarios: ['b8.place.1', 'b8.place.2', 'b8.place.3', 'b8.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['b8.place.1', 'b8.place.2', 'b8.place.3', 'b8.rec.2'], interactive: 'twoZones', note: 'Rest the mic, on an approved place, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'On an approved place, raised, aimed at the faces of a section: change one thing at a time — the place, the height, the aim — and never into an aisle, an exit or the space over people unless a rigger hung it.',
   },
   context: {

@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — measured from the kick’s front head, facing the kit, clear of exits and walkways — then move the mic and compare.',
-    credit: { scenarios: ['rm.place.1', 'rm.place.2', 'rm.place.3', 'rm.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['rm.place.1', 'rm.place.2', 'rm.place.3', 'rm.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A room-mic starting point is a place to begin and to compare from — not a standard distance. Change one thing at a time, and compare at the same listening level.',
   },
   context: {
@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Long full-kit passes, again and again, for room-mic comparisons. What protects your hearing?',
     options: ['Keeping level and time down where you are, and hearing protection', 'Comparing on headphones, which keep the kit out entirely', 'Nothing more — the mics’ maximum SPL keeps things in a safe range'],
     correct: 'Keeping level and time down where you are, and hearing protection',
-    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. A mic’s maximum SPL is its own distortion limit.',
+    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. A mic’s maximum SPL is its own distortion limit.',
     why: {
       'Comparing on headphones, which keep the kit out entirely': 'Headphones add their own level on top of the kit leaking in. Keep them at a safe, comfortable level, and limit the time.',
       'Nothing more — the mics’ maximum SPL keeps things in a safe range': 'Maximum SPL says when a MIC distorts. It says nothing about your ears.',
@@ -617,7 +617,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your room mic is rated to 140 dB SPL. What does that tell you about sitting in the room through long full-kit passes?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mic’s 140 dB', 'It is safe as long as you sit near the room mic'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
     why: {
       'It is safe for a while, as long as the kit stays below the mic’s 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as you sit near the room mic': 'Where the mic is says nothing about your ears. Measure where you listen, and limit the time.',

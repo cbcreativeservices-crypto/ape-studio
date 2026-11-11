@@ -140,7 +140,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     seeing: [
       'This SAMPLE PEAK meter shows how close your biggest samples get to the ceiling. L and R are segment columns in dBFS, with 0 (full scale) on top.',
       'The segment floating above each bar holds your recent peak. The OVER lamp lights at full scale.',
-      'PEAK is your highest sample now, PK HOLD your highest so far, OVERS your separate trips past full scale. CREST under the columns may read a few tenths off the frame’s.',
+      'PEAK is your highest sample now, PK HOLD your highest so far, OVERS your separate trips past full scale.',
     ],
     control: [
       'Use GAIN (−12 to +18 dB) to drive the columns up toward the lamp. You start at −6.0 dB, still under it.',

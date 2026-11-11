@@ -278,7 +278,7 @@ function PageAssessment({ ctx }: { ctx: PageCtx }) {
       {ASSESSMENT_ITEMS.map((a, i) => (
         <View key={a.id} style={{ gap: 8 }}>
           <UnderstandingCheck
-            eyebrow={`${i + 1} OF ${ASSESSMENT_ITEMS.length} · ${a.eyebrow}`}
+            eyebrow={`${i + 1} · ${a.eyebrow}`}
             question={a.question}
             options={a.options}
             correct={a.correct}
@@ -309,7 +309,7 @@ function PageAssessment({ ctx }: { ctx: PageCtx }) {
           </Body>
         </Card>
       ) : (
-        <Body>{count} of {ASSESSMENT_ITEMS.length} solved.</Body>
+        <Body>{count} solved.</Body>
       )}
       <MantraCard />
     </View>

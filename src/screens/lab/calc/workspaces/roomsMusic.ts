@@ -750,7 +750,7 @@ const WS_ROOMMODES: Workspace = {
     'Axial modes only — tangential and oblique modes are weaker but real, and this tool does not ' +
     'list them. Mode presence ≠ audibility: level depends on source/listener position and ' +
     'surface absorption. Treat modes with bass traps and placement; EQ can trim a peak at one seat but cannot fill a null — formal room ' +
-    'measurement is the domain of ISO 3382.',
+    'measurement (a measured frequency response at the listening seat) confirms what the modes actually do.',
   glossary: ['Room Mode', 'Standing wave', 'Frequency', 'Wavelength'],
   fields: [
     { key: 'len', name: 'ROOM LENGTH', quantity: 'length', placeholder: '5', help: 'Longest floor dimension, wall to wall.' },

@@ -99,6 +99,8 @@ export const F09_COPY: Partial<LessonCopy> = {
   },
   context: {
     ...BASE.context!,
+    // F09 says capsule, never the mic’s front (owner 2026-10-08 L ruling; aim tip 2026-11-11).
+    aimBlurb: 'Turn the capsule up to 60° either way — the mouth stays in front of the mic, a little off its axis.',
     looking: 'The talker live on a stage · the wedge on the floor in front',
     prompt: 'The talker’s wedge stays where they need it. Turn or tilt the MIC (AIM), or change its PATTERN, until the wedge sits in the rejection — while the mic still points at the mouth.',
   },

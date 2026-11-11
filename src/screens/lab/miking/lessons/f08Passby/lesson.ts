@@ -48,7 +48,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic about 1.5 m up, 2–4 m back from the path’s line, outside its envelope — then try the tracked station and a start or end mic.',
-    credit: { scenarios: ['pb.place.1', 'pb.place.2', 'pb.place.3', 'pb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the envelope, in two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['pb.place.1', 'pb.place.2', 'pb.place.3', 'pb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the envelope, in two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A setback is a place to begin, measured from the path’s line — not a rule. Closer steepens the arc and needs more headroom; the envelope stays clear whatever the sound.',
   },
   context: {

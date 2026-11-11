@@ -39,7 +39,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself in the practice room — its place in the equipment area, its height and its aim — and see the range and the angle change between A, B and C.',
-    credit: { scenarios: ['tg.place.1', 'tg.place.2', 'tg.place.3', 'tg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tg.place.1', 'tg.place.2', 'tg.place.3', 'tg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'From one approved area, each source point is a different range and angle: aim at the source’s height, change one thing at a time, and never move into the walking path.',
   },
   context: {

@@ -48,7 +48,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — facing the keys a third of the way down from the bell — then move the mic and see what changes.',
-    credit: { scenarios: ['bsn.place.1', 'bsn.place.2', 'bsn.place.3', 'bsn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['bsn.place.1', 'bsn.place.2', 'bsn.place.3', 'bsn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Each starting point serves a goal: close for a focused spot, a foot away for balance, high on the right for the room, near the bell to compare the lowest note. Clearance comes first.',
   },
   context: {
@@ -466,7 +466,7 @@ const copy: Partial<LessonCopy> = {
     partsBadge: 'A bassoonist from the audience · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience', top: 'Top view · from above' },
     partsIdle: 'The reed on its bocal starts the sound; the air in the long folded cone rings; the open holes and the bell let it out — the next page shows how. The bassoon crosses the body, the bell above the head.',
-    variantNotes: { standing: 'STANDING: the same hold on a harness — the floor and the legs farther from a stand’s base. Switch POSTURE to sit the player down.' },
+    variantNotes: { standing: 'STANDING: the same hold on a harness — the bassoon sits higher, farther above a stand’s base. Switch POSTURE to sit the player down.' },
   },
   placement: {
     workedZone: { seated: 'bsn.dpa', standing: 'bsn.dpa' },
@@ -501,7 +501,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.long', 'ww.long.1', 'ww.long.2', 'ww.bell', 'ww.wing'],
     azMax: 60,
     elMax: 60,
-    aimBlurb: 'Turn the front up to 60° either way — the bassoon stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the bassoon stays in front of the mic, a little off its axis.',
     plan: { u0: -1300, u1: 1700, v0: -500, v1: 1750 },
     side: { u0: -1300, u1: 1700, v0: -800, v1: 1300 },
     target: 'wedge',

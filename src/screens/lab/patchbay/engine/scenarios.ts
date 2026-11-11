@@ -201,7 +201,7 @@ export const DETECTIVE_CASES: DetectiveCase[] = [
       'The source is alive (the meter proves it), yet with no cables the destination hears nothing — there is no default connection. That is a thru pair: every route must be patched.',
     wrong: [
       'That configuration ships with a default route. Re-read Test 1: what did the monitor hear with no cables in?',
-      'That configuration also ships with a default route. Test 1 says the monitor heard nothing with the bay untouched — square that with a normal.',
+      'That configuration also ships with a default route. Test 1 says the monitor heard nothing with the bay untouched — could a normal allow that?',
       undefined,
     ],
   },

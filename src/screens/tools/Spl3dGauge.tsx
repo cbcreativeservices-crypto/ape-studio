@@ -200,7 +200,7 @@ const CALLOUTS: Record<DialMode3d, CalloutDef[]> = {
     { spl: 89, color: C_GOLD, t1: 'SHOW', t2: '85–93 dBA' },
     { spl: 95, color: C_ORANGE, t1: 'HIGH', t2: '94–96 dBA' },
     { spl: 98, color: C_ORANGE, t1: 'LIMIT', t2: '97–99 dBA' },
-    { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN' },
+    { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT' },
   ],
 };
 

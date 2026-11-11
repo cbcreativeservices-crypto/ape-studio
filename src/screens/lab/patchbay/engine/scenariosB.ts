@@ -155,7 +155,7 @@ export const WRONG_PATCH_CASES: WrongPatchCase[] = [
     ],
     correct: 0,
     explain:
-      'Half-normal keeps the top gentle, but the BOTTOM still breaks. The patched source takes over the destination; the original source keeps running — into an open contact.',
+      'On half-normal the top does not break, but the BOTTOM still does. The patched source takes over the destination; the original source keeps running — into an open contact.',
     wrong: [
       undefined,
       'The common bay never ties two sources into one input — the bottom insertion physically opens the normal first. (Two outputs wired together are not a mix.)',
@@ -313,7 +313,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     options: ['Nothing — the tap silenced it', 'The source — and the meter reads a copy', 'The meter’s output'],
     correct: 1,
     explain: 'The non-breaking top is the whole point: original route intact, meter fed in parallel.',
-    wrong: ['That is full-normal behavior — the common half-normal bay keeps the top gentle.', undefined, 'Meters read; they don’t feed.'],
+    wrong: ['That is full-normal behavior — on the common half-normal bay the top does not break.', undefined, 'Meters read; they don’t feed.'],
     render: {
       state: { config: 'half', breakSide: 'bottom', topPlugged: true, bottomPlugged: false },
       sourceLabel: 'CONSOLE OUT 2',
@@ -412,7 +412,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     ],
     correct: 0,
     explain:
-      'A normal is a connection that exists by default — output into its own input is a loop armed the moment gain allows. Processor pairs stay thru.',
+      'A normal is a connection that exists by default — output into its own input is a feedback loop that starts as soon as there is enough gain. Processor pairs stay thru.',
     wrong: [
       undefined,
       'Thru is the SAFE choice for a processor pair — no default connection at all.',

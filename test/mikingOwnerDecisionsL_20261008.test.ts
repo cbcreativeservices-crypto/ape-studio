@@ -98,7 +98,7 @@ describe('after owner-x (2026-10-08): the rounding words and the ground line', (
     for (const id of ['F01', 'B03', 'B04', 'B05', 'B06', 'B09']) {
       const a = lesson(id).accuracyDetail;
       assert.doesNotMatch(a, /rounded to about 5 mm(?! below 1 m)/, id);
-      assert.match(a, /rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m/, id);
+      assert.match(a, /rounded to about 5 mm below 1 m and more coarsely above it, with feet also shown from 3 m/, id); // 2026-11-11 copy audit UF-ACF8658BA0
     }
     // 2026-11-11 copy audit UF-096CDE5AC8: B02 spells the feet rule out.
     // 2026-11-11 copy audit UF-F9EEA2AE88: F02 spells it out the same way.

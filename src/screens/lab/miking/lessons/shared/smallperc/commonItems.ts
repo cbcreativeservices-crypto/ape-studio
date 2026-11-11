@@ -45,9 +45,9 @@ export function quickHearing(w: SpWords): DiagnosticItem {
     prompt: `A mic on ${w.the} is rated far above any level in the room. What does that tell you about a long soundcheck next to it?`,
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the room stays below the mic’s rating', `It is safe as long as the mic is much closer to ${w.the} than you are`],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
     why: {
-      'It is safe while the room stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe while the room stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       [`It is safe as long as the mic is much closer to ${w.the} than you are`]: 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };

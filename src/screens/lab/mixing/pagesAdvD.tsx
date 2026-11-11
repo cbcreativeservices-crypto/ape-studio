@@ -298,7 +298,7 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Your stems sum back 1.5 dB louder and “thicker” than the approved mix. The most likely cause:"
-        options={['WAV files simply gain a little level when copied around', 'The mix bus had processing the stems each re-passed — per-stem it compresses less', 'Stems always sound a bit different; nobody expects a null', 'The sample rate silently changed during the stem bounce']}
+        options={['WAV files simply gain a little level when copied around', 'The mix-bus processing ran on each stem alone — each stem gets compressed less', 'Stems always sound a bit different; nobody expects a null', 'The sample rate silently changed during the stem bounce']}
         correct={1}
         explain="Bounce each stem through the bus chain and every stem meets the compressor alone — less level across the same threshold, less gain reduction — so the stems sum hotter and denser than the mix that was compressed as a whole. Decide the policy, write it in the delivery notes."
         wrong={[

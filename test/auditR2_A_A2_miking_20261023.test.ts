@@ -42,7 +42,7 @@ describe('owner ruling 2026-10-23 (1): the hearing note names NIOSH and OSHA', (
     for (const { f, s } of FILES) {
       s.split('\n').forEach((line, i) => {
         if (/^\s*(\*|\/\/|\/\*)/.test(line) || !/\b85 dBA\b/.test(line) || /\bprov:|\bsrc:|\bquote:/.test(line)) return;
-        if (!/NIOSH advises/.test(line) || !/\(OSHA\) is 90 dBA(?: with a 5 dB rule|, halving the time for every 5 dB)/.test(line)) bad.push(`${f}:${i + 1}`);
+        if (!/NIOSH advises/.test(line) || !/\(OSHA\) is 90 dBA(?: with a 5 dB rule|, halving the time (?:for )?every 5 dB)/.test(line)) bad.push(`${f}:${i + 1}`);
       });
     }
     assert.deepEqual(bad, []);

@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — behind and beside the bell, aimed toward it, or in front of the player — clear of the bell’s rise and the right hand; then move the mic and see what changes.',
-    credit: { scenarios: ['hn.place.1', 'hn.place.2', 'hn.place.3', 'hn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['hn.place.1', 'hn.place.2', 'hn.place.3', 'hn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the horn — not a rule. Behind the bell is direct; in front is the horn with its room. Clearance comes first.',
   },
   context: {

@@ -348,7 +348,7 @@ function MembraneStudio() {
           </View>
           <Text style={styles.trayBlurb}>
             {spec.kettle
-              ? 'The bowl’s air loads the head: the (1,1), (2,1), (3,1)… modes slide toward 1 : 1.5 : 2 : 2.5 — near-harmonic, so the ear hears a pitch (Rossing’s measurements; Approximated).'
+              ? 'The bowl’s air loads the head: the (1,1), (2,1), (3,1)… modes slide toward 1 : 1.5 : 2 : 2.5 — near-harmonic, so the ear hears a pitch (measured on real timpani; Approximated).'
               : 'A bare head’s modes sit at 1 : 1.59 : 2.14 : 2.30 : 2.65 — not integers, so a bare head has no clear pitch.'}
           </Text>
         </View>
@@ -452,7 +452,7 @@ function MembraneStudio() {
   const badge = isSpeaker
     ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED fs, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
     : spec.kettle
-      ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (Rossing)'
+      ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (measured on real timpani)'
       : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes';
   // SAVE → the Pattern Gallery (Phase 4): the full state, never a picture.
   // One save per press: SAVE stays disabled until the write settles, and the
@@ -635,7 +635,7 @@ function MembraneStudio() {
         </View>
         <Text style={styles.honest}>SIMULATION.</Text>
         <Text style={styles.honest}>· Calculated: the clamped membrane’s Bessel modes and the exact tension / size / density scaling; the driver’s resonance response, ka and the 1/f² piston law.</Text>
-        <Text style={styles.honest}>· Approximated: the kettle’s air loading (Rossing’s measured ratios on the principal modes; a plain air-mass factor on the rest).</Text>
+        <Text style={styles.honest}>· Approximated: the kettle’s air loading (ratios measured on real timpani for the principal modes; a plain air-mass factor on the rest).</Text>
         <Text style={styles.honest}>· Illustrative: the six cone stages and the cone’s drawn motion — a stiffness profile, not a cone finite-element model. Real drivers differ in surround, spider and cone geometry.</Text>
       </LabShell>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />

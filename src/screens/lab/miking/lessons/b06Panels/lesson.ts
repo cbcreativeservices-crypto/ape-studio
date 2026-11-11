@@ -52,7 +52,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a panel gooseneck about 20–30 cm from the mouth, a little below its line, the lectern gooseneck about 25–36 cm and a little off the mouth — then move the mic and see what changes.',
-    credit: { scenarios: ['b6.place.1', 'b6.place.2', 'b6.place.3', 'b6.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b6.place.1', 'b6.place.2', 'b6.place.3', 'b6.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. A short and a tall presenter, a turn to a neighbor and a step back all change the answer; clearance from the face, the sight line and the papers comes first.',
   },
   context: {
@@ -374,7 +374,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A first syllable is clipped whenever a new panelist starts speaking. What do you check?',
     options: ['The automatic mixer’s settings, in rehearsal', 'The panelists’ chairs and the table height', 'The PA’s level in the room at that moment'],
     correct: 'The automatic mixer’s settings, in rehearsal',
-    explain: 'Automatic mixers choose or share gain and have hold, off-attenuation and priority settings that vary by model. Rehearse interruptions and listen for clipped first syllables.',
+    explain: 'Automatic mixers choose or share gain and have hold (how long a channel stays open after the talker stops), off-attenuation (how far a closed channel is turned down) and priority settings that vary by model. Rehearse interruptions and listen for clipped first syllables.',
     why: {
       'The panelists’ chairs and the table height': 'Furniture does not clip a first syllable; a gate or an automatic mixer can.',
       'The PA’s level in the room at that moment': 'The automatic mixer’s settings, more than the PA’s level, decide when a channel opens.',
@@ -660,6 +660,6 @@ export const B06_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Avoid uncontrolled feedback; never send phantom power into an unverified feed.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet also shown from 3 m and measured from the lips to the mic’s front. Avoid uncontrolled feedback; never send phantom power into an unverified feed.',
   copy: B06_COPY,
 };

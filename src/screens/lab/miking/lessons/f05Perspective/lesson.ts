@@ -54,7 +54,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic about 0.9–1.8 m from the middle of the path, in front and a little to one side — then try the room mic and the pairs.',
-    credit: { scenarios: ['f05.place.capsule', 'f05.place.1', 'f05.place.2', 'f05.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the path, inside two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['f05.place.capsule', 'f05.place.1', 'f05.place.2', 'f05.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the path, inside two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A starting point is a place to begin, measured to the capsule from the middle of the path — not a rule. Move nearer or farther to fit the shot; the path stays clear.',
   },
   context: {

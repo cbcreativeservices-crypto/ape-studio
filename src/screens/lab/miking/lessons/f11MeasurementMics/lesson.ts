@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the measurement mic yourself — on the axis, farther back, off the axis, out in the room — and see what each position can and cannot stand for.',
-    credit: { scenarios: ['mm.place.1', 'mm.place.2', 'mm.place.3', 'mm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mm.place.1', 'mm.place.2', 'mm.place.3', 'mm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Put the mic where the method defines, not where it is convenient — and write down its reference point, height, distance, angle and grid. Change one thing at a time; return to the first spot to check it repeats.',
   },
   context: {

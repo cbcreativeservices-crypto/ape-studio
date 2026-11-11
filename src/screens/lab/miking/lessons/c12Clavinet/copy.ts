@@ -87,7 +87,7 @@ export const CLAV_COPY: LessonCopy = {
     shield: ['co.cab', 'cb.cab'],
     azMax: 35,
     elMax: 30,
-    aimBlurb: 'Turn the front up to 35° either way — the speaker stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 35° either way — the speaker stays in front of the mic, a little off its axis.',
     plan: { u0: -1000, u1: 2500, v0: -1800, v1: 1500 },
     side: { u0: -600, u1: 2600, v0: -900, v1: 300 },
     target: 'wedge.keys',

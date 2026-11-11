@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 20–40 cm from a side or top view of the bell — with the stick’s whole path clear, and see what each view changes.',
-    credit: { scenarios: ['bell.place.1', 'bell.place.2', 'bell.place.3', 'bell.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bell.place.1', 'bell.place.2', 'bell.place.3', 'bell.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A side or top view, 20–40 cm from the bell, outside every stroke and rebound. Move the mic, not the player’s stroke.',
   },
   context: {

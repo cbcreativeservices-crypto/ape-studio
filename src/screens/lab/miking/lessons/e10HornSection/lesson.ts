@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the section pair yourself — closer, farther, higher — and see what changes across the players.',
-    credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Rehearse the balance before moving mics. Closer favors the nearest player; farther or higher evens the section out with more room. Move the pair as a unit, one change at a time.',
   },
   context: {

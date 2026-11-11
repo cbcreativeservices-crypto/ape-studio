@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a screened condenser about 15 cm from the lips on the mouth’s axis in the studio, a handheld within about 10 cm on stage — then move the mic and see what changes.',
-    credit: { scenarios: ['lv.place.1', 'lv.place.2', 'lv.place.3', 'lv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singer, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['lv.place.1', 'lv.place.2', 'lv.place.3', 'lv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the singer, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Distance, height and the angle off the mouth’s axis are separate tone controls, and clearance from the face comes first.',
   },
   context: {

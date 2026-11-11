@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the bars and a little toward the audience, higher or closer, or a safe lateral angle — and see why a common close position conflicts with the mallets.',
-    credit: { scenarios: ['gl.place.1', 'gl.place.2', 'gl.place.3', 'gl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['gl.place.1', 'gl.place.2', 'gl.place.3', 'gl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, not a rule. The close 10–15 cm example sits inside a real player’s mallet path: never set it unless the player proves every stroke clears it.',
   },
   context: {
@@ -567,7 +567,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['gl.nat.pedal', 'gl.acc.pedal', 'gl.nat.case', 'gl.acc.case', 'gl.lid.case'],
     azMax: 40,
     elMax: 40,
-    aimBlurb: 'Turn the front up to 40° either way.',
+    aimBlurb: 'Turn the mic’s front up to 40° either way.',
     plan: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.zPlayer - 350, v1: FRONT_Z + 500 },
     side: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.yNat - 1100, v1: 60 },
     target: 'side',

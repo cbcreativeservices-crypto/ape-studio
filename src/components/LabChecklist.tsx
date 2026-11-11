@@ -28,7 +28,7 @@ export function LabChecklistSummary({ rows, label }: { rows: readonly LabRequire
     <View style={s.summary}>
       <View style={s.summaryTop}>
         <Text style={s.summaryCount}>
-          {done} of {total} {label ?? 'labs'} complete
+          {done} {label ?? 'labs'} complete
         </Text>
         <Text style={[s.summaryPct, left === 0 && s.summaryPctDone]}>{pct}%</Text>
       </View>
@@ -66,7 +66,7 @@ export function LabChecklist({
         // Units cleared, but only where the lab actually tracks them and is
         // part-way through. "0 of 12" on an untouched lab is noise; the empty
         // checkbox already says it.
-        const partial = !unknown && !r.done && r.total > 0 && r.cleared > 0 ? `${r.cleared} of ${r.total}` : null;
+        const partial = !unknown && !r.done && r.total > 0 && r.cleared > 0 ? `${r.cleared} ${r.cleared === 1 ? 'section' : 'sections'} done` : null;
         const Row = openable ? Pressable : View;
         return (
           <Row
@@ -83,7 +83,7 @@ export function LabChecklist({
                         : unknown
                           ? 'Progress couldn’t load. Try again later.'
                           : partial
-                            ? `${partial} sections done.`
+                            ? `${partial}.`
                             : 'Not started.'
                   } Opens the lab.`,
                 }

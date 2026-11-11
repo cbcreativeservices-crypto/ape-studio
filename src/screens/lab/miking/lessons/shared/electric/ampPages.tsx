@@ -784,7 +784,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and its speaker are the player’s sound. Keep them as set while you compare positions; mic the amp they bring.</Point>
               <Point title="ELECTRICAL SAFETY">Do not open a chassis, defeat a safety ground (the power plug’s ground pin), change speaker wiring or block an amp’s vents for a miking exercise. A DI’s ground-lift switch is different: it lifts only the audio ground at its XLR, a normal control — use it as its manual says. Follow the amp’s own manual for its speaker load and direct outputs. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.</Point>
             </Card>
-            <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Staying below them is not a promise of safety. These are limits for PEOPLE, measured where a person listens, and they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+            <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Staying below them is not a promise of safety. These are limits for PEOPLE, measured where a person listens, and they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
           </>
         ),
@@ -1049,7 +1049,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           selectedId: aimAxis,
           onSelect: (id) => setAimAxis(id as 'az' | 'el'),
           options: [
-            { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way — the speaker stays in front of the mic, a little off its axis.` },
+            { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the mic’s front up to ${AZ_MAX}° either way — the speaker stays in front of the mic, a little off its axis.` },
             { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down.` },
           ],
         },
@@ -1214,7 +1214,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const dCell = lenCell(dMm, rearMode);
     const bezel: BezelItem[] = rearMode
       ? [
-          { k: 'PATH Δd R−F', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
+          { k: 'PATH REAR−FRONT', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
           { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'rear later' : 'rear earlier', flex: 1.3 },
           { k: 'NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
           { k: 'REAR', v: switchB === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'in step' : 'opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },

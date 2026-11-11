@@ -1622,7 +1622,7 @@ function M12Stage({ viz, w, h, amps, morph, focused }: { viz: VizModule; w: numb
 // ─── M13 — Why measurement tools exist: concept → the REAL tool ─────────────
 
 const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] = [
-  { q: 'HOW LOUD IS IT IN THE ROOM?', name: 'SPL Meter', blurb: 'Weighted, time-averaged level from the real mic — ears estimate, meters measure.', route: 'SplMeter' },
+  { q: 'HOW LOUD IS IT IN THE ROOM?', name: 'SPL Meter', blurb: 'Weighted (filtered A, C or flat Z — A follows the ear), time-averaged level from the real mic — ears estimate, meters measure.', route: 'SplMeter' },
   { q: 'WHAT FREQUENCY IS THAT?', name: 'Frequency Counter & Tuner', blurb: 'Measures a steady tone’s exact frequency in Hz — and reads it musically as note, octave, and cents for tuning.', route: 'FrequencyCounter' },
   { q: 'WHAT’S THE RECIPE RIGHT NOW?', name: 'RTA', blurb: 'Live energy per frequency band — Module 12’s Fourier idea, measured.', route: 'Rta' },
   { q: 'HOW DOES IT CHANGE OVER TIME?', name: 'Spectrogram', blurb: 'Frequency vs time — sweeps, decays, harmonics appearing and fading.', route: 'SpectrogramLive' },

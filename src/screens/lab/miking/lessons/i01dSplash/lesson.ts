@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the splash on the side away from the player, or under it on the arm — clear of the stick and the swing, then move the mic.',
-    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the splash on the crash), and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sp.place.1', 'sp.place.2', 'sp.place.3', 'sp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the splash on the crash), and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'There is no set distance for a splash: a zone is a place to begin, measured from the plate. Above, or underneath on the arm; on a crash, above both. Clearance comes first.',
   },
   context: {

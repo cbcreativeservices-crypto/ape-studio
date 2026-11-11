@@ -63,7 +63,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
     ],
     changes: [
-      'The flanger mixes in a copy of your sound 1–2 ms late. Where it lands half a cycle late, it cancels the dry sound: a notch. Notches repeat every 1 ÷ delay: every 500 Hz at 2.0 ms.',
+      'The flanger mixes in a copy of your sound 0.5–5 ms late. Where it lands half a cycle late, it cancels the dry sound: a notch. Notches repeat every 1 ÷ delay: every 500 Hz at 2.0 ms.',
       'The Hz scale runs in octaves, so evenly spaced notches crowd right and fill a band up high.',
       'The LFO (a slow wobble) moves the delay, so every notch slides at once: the jet. Positive FDBK lifts tall, narrow peaks between them.',
     ],

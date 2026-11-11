@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a main pair over the congregation aimed at the main ranks — then compare a case study’s position and a division spot, all from safe floor stands.',
-    credit: { scenarios: ['org.place.1', 'org.place.2', 'org.place.3', 'org.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the aisles, the exits and the organ, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['org.place.1', 'org.place.2', 'org.place.3', 'org.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the aisles, the exits and the organ, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'The main pair in the body of the room is the organ’s sound; walk, listen and compare positions — the pedal changes over short moves. A division spot is a local view for a stated need, under the pair. No universal distances.',
   },
   context: {

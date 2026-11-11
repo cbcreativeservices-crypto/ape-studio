@@ -266,7 +266,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Mariachi restaurants and weddings run 88–95 dBA; theater mariachi and norteño (northern Mexican accordion music) 92–98 dBA LAeq,15min; banda (Mexican brass band), palenque (cockfight-arena venue) and arena shows 98–103 dBA with 112–120 dBC and peaks of 110–115 dBA. The low end is tuba-and-tambora driven, not EDM sub; a C-minus-A gap over about 18 dB means too much sub. A banda horn line on stage is already loud, so in small rooms you may be reinforcing only the vocal and tuba. Cardioid sub arrays help monitor engineers working with 17-plus musicians. The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that, so it allows about 15 minutes a day at 100 dBA; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Offer earplugs and wear your own."
+      "text": "Mariachi restaurants and weddings run 88–95 dBA; theater mariachi and norteño (northern Mexican accordion music) 92–98 dBA LAeq,15min; banda (Mexican brass band), palenque (cockfight-arena venue) and arena shows 98–103 dBA with 112–120 dBC and peaks of 110–115 dBA. The low end is tuba-and-tambora driven, not EDM sub; a C-minus-A gap over about 18 dB means too much sub. A banda horn line on stage is already loud, so in small rooms you may be reinforcing only the vocal and tuba. Cardioid sub arrays help monitor engineers working with 17-plus musicians. The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that, so it allows about 15 minutes a day at 100 dBA; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Offer earplugs and wear your own."
     },
     {
       "label": "Studio / streaming:",

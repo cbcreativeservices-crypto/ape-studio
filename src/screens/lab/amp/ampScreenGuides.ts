@@ -87,7 +87,7 @@ export const AMP_END_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'The lab’s three questions fit any amplifier you meet: what it does to the signal, what load it sees, and where the energy comes from.',
-    'The final and the check test how the ideas connect: reading an output against its rails, matching a class to a job, and judging a load or a gain setting.',
+    'Amplifier ideas work together when you read an output against its rails, match a class to a job, or judge a load or a gain setting.',
   ],
   tryThis: [
     'Open the first row on the list and work down in order.',
@@ -682,7 +682,6 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         ],
         teaches: [
           'How the lab’s ideas connect: bias and class, supply and load limits, and gain structure, each tied to what you see on the waveform and hear in the sound.',
-          'Whether those ideas hold together for you, and exactly where to look again.',
         ],
         tryThis: [
           'Answer all 12 and submit, then open one NEEDS REVIEW item to revisit its module.',

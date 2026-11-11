@@ -195,7 +195,7 @@ export function FirstRunSampler({
   let title = '';
   let sub = '';
   if (phase === 'lead' && current) {
-    eyebrow = `STEP ${stepIndex + 1} OF ${stepCount}`;
+    eyebrow = `STEP ${stepIndex + 1}`;
     title = current.label;
     sub = current.blurb;
   } else if (phase === 'complete' && current) {

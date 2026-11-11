@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 15–30 cm from the tambourine itself, as it is played — and read the CLEAR gap to the nearest stroke separately.',
-    credit: { scenarios: ['tmb.place.1', 'tmb.place.2', 'tmb.place.3', 'tmb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tmb.place.1', 'tmb.place.2', 'tmb.place.3', 'tmb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Measure the start from the instrument as played; keep a CLEAR gap to the nearest stroke; side-to-side tends to be more even than toward-and-away.',
   },
   context: {

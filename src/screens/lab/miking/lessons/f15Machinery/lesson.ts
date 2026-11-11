@@ -48,7 +48,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the mic yourself — the user’s position, the same radius to the side and behind, a close detail outside the zone, a listener’s perspective farther out.',
-    credit: { scenarios: ['mp.place.1', 'mp.place.2', 'mp.place.3', 'mp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mp.place.1', 'mp.place.2', 'mp.place.3', 'mp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of everything, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Positions from outside the zone only, at a logged radius and height, one change at a time — and back to A to check it repeats.',
   },
   context: {

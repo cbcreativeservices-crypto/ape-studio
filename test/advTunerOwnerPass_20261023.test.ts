@@ -21,7 +21,7 @@ describe('Advanced Tuner owner pass 2026-10-23', () => {
   it('piano only: a HOW TO TUNE chip opens the owner text verbatim', () => {
     assert.match(src, /\{inst\.piano \? \(\n\s*<Chip label="HOW TO TUNE"/);
     assert.ok(src.includes('Most piano notes have three strings that should sound as one. You’ll need piano tuning mutes and a properly fitted tuning lever.'));
-    assert.ok(src.includes('Stretch is already included in the app’s targets.'));
+    assert.ok(src.includes('Stretch (bass slightly flat, treble slightly sharp) is already included in the app’s targets.'));
     for (const lead of ['Isolate the center string.', 'Tune the center.', 'Match one outer string.', 'Match the remaining string.', 'Check the complete note.']) {
       assert.ok(src.includes(`'${lead}'`), lead);
     }

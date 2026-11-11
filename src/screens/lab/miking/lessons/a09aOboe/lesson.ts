@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — facing the holes a third of the way up from the bell — then move the mic and see what changes.',
-    credit: { scenarios: ['ob.place.1', 'ob.place.2', 'ob.place.3', 'ob.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['ob.place.1', 'ob.place.2', 'ob.place.3', 'ob.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Each starting point serves a goal: close for a natural spot, a foot away for balance, near the bell for a bright live sound, farther for the room. Distance, height and angle are separate things to try; clearance comes first.',
   },
   context: {
@@ -453,7 +453,7 @@ const copy: Partial<LessonCopy> = {
     partsBadge: 'An oboist from the audience · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience', top: 'Top view · from above' },
     partsIdle: 'The double reed starts the sound; the air in the narrow cone rings; the open holes and the bell let it out — the next page shows how. The player holds it out in front, the hands on the keys.',
-    variantNotes: { standing: 'STANDING: the same hold — the floor and the legs farther from a stand’s base. Switch POSTURE to sit the player down.' },
+    variantNotes: { standing: 'STANDING: the same hold — the oboe sits higher, farther above a stand’s base. Switch POSTURE to sit the player down.' },
   },
   placement: {
     workedZone: { seated: 'ob.dpa', standing: 'ob.dpa' },
@@ -488,7 +488,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.lower', 'ww.lower.1', 'ww.lower.2', 'ww.bell', 'ww.upper'],
     azMax: 60,
     elMax: 60,
-    aimBlurb: 'Turn the front up to 60° either way — the oboe stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the oboe stays in front of the mic, a little off its axis.',
     plan: { u0: -1200, u1: 1700, v0: -500, v1: 1750 },
     side: { u0: -1200, u1: 1700, v0: -400, v1: 1300 },
     target: 'wedge',

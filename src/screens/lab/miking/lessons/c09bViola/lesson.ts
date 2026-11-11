@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — in front of the player and a little above, aimed broadly at the bridge and top, clear of the bow — then move the mic and see what changes.',
-    credit: { scenarios: ['va.place.1', 'va.place.2', 'va.place.3', 'va.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['va.place.1', 'va.place.2', 'va.place.3', 'va.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named part — the bridge — not a rule; the stand distance is a modest suggestion. Move one variable at a time, play both extreme strings, and keep the bow clear.',
   },
   context: {

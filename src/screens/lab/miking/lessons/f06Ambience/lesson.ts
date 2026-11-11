@@ -49,7 +49,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic about 1.5 m up at the listening point, off every path — then try a second position and see what changes.',
-    credit: { scenarios: ['amb.place.1', 'amb.place.2', 'amb.place.3', 'amb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every keep-out, in two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['amb.place.1', 'amb.place.2', 'amb.place.3', 'amb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every keep-out, in two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A listening point is a place to begin, measured from the main bed — not a rule. Distance and height change the balance; paths, lanes and water stay clear.',
   },
   context: {

@@ -188,6 +188,7 @@ export const DRUM_KEY_TERMS: Record<DrumChapterId, readonly { term: string; def:
     { term: 'Batter head', def: 'The head you strike.' },
     { term: 'Resonant head', def: 'The bottom (or front) head, moved by the air the batter pushes — it shapes sustain and the sense of pitch.' },
     { term: 'Bearing edge', def: 'The shaped rim of the shell the head sits on; its profile sets how much head touches shell.' },
+    { term: 'Collar', def: 'The bend where the head film wraps down over the bearing edge to the hoop.' },
     { term: 'Overtones (partials)', def: 'The head\'s higher notes above the main one, at odd (non-whole-number) ratios.' },
     { term: 'Sustain (T60)', def: 'How long the note lasts: the time it takes to fall 60 dB. The lab calls it T60.' },
     { term: 'Pitch bend', def: 'The downward glide of a hard-struck note as the extra tension from the stretch relaxes.' },

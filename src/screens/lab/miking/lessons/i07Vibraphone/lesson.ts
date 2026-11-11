@@ -48,7 +48,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic above the middle, or one of a spaced pair — clear of the raised mallets, then move the mic and see what changes.',
-    credit: { scenarios: ['vb.place.1', 'vb.place.2', 'vb.place.3', 'vb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['vb.place.1', 'vb.place.2', 'vb.place.3', 'vb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. The raised mallets set the minimum height.',
   },
   context: {
@@ -614,7 +614,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['vb.nat.motor', 'vb.acc.motor', 'vb.nat.nomotor', 'vb.acc.nomotor'],
     azMax: 40,
     elMax: 40,
-    aimBlurb: 'Turn the front up to 40° either way.',
+    aimBlurb: 'Turn the mic’s front up to 40° either way.',
     plan: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.zPlayer - 350, v1: FRONT_Z + 500 },
     side: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.yNat - 1250, v1: 60 },
     target: 'side',

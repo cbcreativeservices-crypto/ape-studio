@@ -214,7 +214,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     });
   }
   it('LEARN 1 works the GR sum with OTHER numbers than the check (−25 → 5 dB): −35 → 15 dB, on both routes', () => {
-    assert.match(CHECKS, /source peaks at −20 dBFS and the ceiling is set to −25 dB[\s\S]*?correct: '5 dB'/);
+    assert.match(CHECKS, /source peaks at −20 dBFS and the ceiling is set to −25 dBFS[\s\S]*?correct: '5 dB'/);
     assert.match(GUIDES.learn.tryThis[0], /−20 dBFS under a −35 dB ceiling is held down 15 dB\. On EXPLORE, play SINE 440 Hz at CEILING −35 dB: GR reads about 15/);
     assert.doesNotMatch(GUIDES.learn.tryThis.join(' '), /CHECK’s second question/);
     for (const speaker of [false, true]) {

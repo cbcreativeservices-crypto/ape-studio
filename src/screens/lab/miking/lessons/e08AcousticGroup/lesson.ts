@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the pair yourself — closer, farther, higher — and watch the players’ distances to it: the equal-distance idea, read from the drawing.',
-    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.31', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.31', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Move the pair in small steps and judge the blend, the room, the width and the mono sum. When the players sit about equally far from it, they arrive about equally — moving a player is often the simplest balance control.',
   },
   context: {
