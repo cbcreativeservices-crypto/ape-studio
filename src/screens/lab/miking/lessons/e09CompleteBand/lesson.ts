@@ -37,7 +37,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a plan and move the drum pair yourself — lower, higher, over the kit or in front of it — and see what changes.',
-    credit: { scenarios: ['bd.place.1', 'bd.place.2', 'bd.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the three checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bd.place.1', 'bd.place.2', 'bd.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the three checks. The worked example alone does not count toward this page.' },
     takeaway: 'Change one thing at a time and compare at matched level. A pair over the kit hears the whole kit; nearer the snare, more drums; higher, more cymbals and room.',
   },
   context: {

@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the plate on the side away from the player, or underneath — clear of the stroke and the swing, then move the mic and see what changes.',
-    credit: { scenarios: ['cr.place.1', 'cr.place.2', 'cr.place.3', 'cr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch CRASH for the other one), and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cr.place.1', 'cr.place.2', 'cr.place.3', 'cr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch CRASH for the other one), and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'There is no set number for a crash: a zone is a place to begin, measured from the plate. Above or underneath, on the far side; clear of the follow-through and the swing — clearance comes first.',
   },
   context: {

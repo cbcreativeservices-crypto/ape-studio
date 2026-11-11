@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — measured from the head, from the audience side, clear of the hands — then move the mic and see what changes.',
-    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Distance, viewpoint and angle are separate things to try, one at a time. If one hand or the edge takes over, move to a new viewpoint rather than only turning the mic. The hands’ path comes before every number.',
   },
   context: {
@@ -610,9 +610,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting by the drum through a long soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the drum stays below the mic’s rated level', 'It is safe as long as the mic sits closer than you do'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule (halving the time every 5 dB).',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
     why: {
-      'It is safe for as long as the drum stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe for as long as the drum stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'It is safe as long as the mic sits closer than you do': 'Where the mic sits says nothing about your ears.',
     },
   },
@@ -638,7 +638,7 @@ export const M12_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'The tonbak (also spelled tombak) is an Iranian goblet drum: one skin head stretched over a wide bowl, a narrow neck, and a flared foot that is open at the bottom.', src: 'MET-89.4.304' },
     { title: 'WHERE YOU MEET IT', text: 'In Persian classical and folk music, solo and with other instruments and voices — on stage and in the studio. Tonbaks vary: wooden and other materials exist, so look at the drum in front of you.', src: 'MET-89.4.304 / MET-89.4.332' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A wide vocabulary from one head: deep strokes near the middle, bright strokes at the edge, rolls and quiet finger work. Let the player name their strokes, and ask what must stay audible.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: `The wooden example drawn here is about 41 cm (16 in) long with a 25.4 cm (10 in) head — about ${Math.round((T_R * 2) / 10)} cm across. Held across the lap, the head here faces the player’s right, tilted up: a drawing choice — players differ.`, src: 'MET-89.4.304' },
+    { title: 'ITS SIZE', text: 'The wooden example drawn here is about 41 cm (16 in) long with a 25.4 cm (10 in) head. Held across the lap, the head here faces the player’s right, tilted up: one possible posture — players differ.', src: 'MET-89.4.304' },
   ],
   sound: {
     stages: [

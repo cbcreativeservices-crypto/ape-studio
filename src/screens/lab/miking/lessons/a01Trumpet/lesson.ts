@@ -49,7 +49,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — in front of the bell, a little off its axis, aimed toward it, clear of the player — then move the mic and see what changes.',
-    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s center — not a rule. The angle to the bell’s axis and the distance are separate tone controls, and clearance from the bell, the mutes and the hands comes first.',
   },
   context: {

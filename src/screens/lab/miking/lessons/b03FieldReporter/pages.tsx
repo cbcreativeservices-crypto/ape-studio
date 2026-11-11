@@ -88,7 +88,7 @@ const B03Setting = makeBroadcastSetting({
           id: 'ret',
           label: 'RETURN TO',
           options: [
-            { id: 'ear', label: 'Earpiece', blurb: 'The program return goes to the reporter’s earpiece only.', sends: { ret: ['ifb'] } },
+            { id: 'ear', label: 'Earpiece', blurb: 'The program return (the live program sent back from the station so the reporter can hear it) goes to the reporter’s earpiece only.', sends: { ret: ['ifb'] } },
             { id: 'speaker', label: 'Speaker', blurb: 'The program return plays on a small loudspeaker beside the interview.', sends: { ret: ['monitor'] } },
           ],
         },

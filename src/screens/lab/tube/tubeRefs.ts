@@ -59,10 +59,10 @@ export const pageCountOf = (ref: TubeRef): 1 | 2 => ref.pages ?? TUBE_PAGES;
 export const TUBE_PAGES = 2 as const;
 
 export const TUBE_FAMILY_META: { key: TubeFamily; title: string; note: string }[] = [
-  { key: 'preamp', title: 'PREAMP & SMALL-SIGNAL TRIODES', note: 'Voltage gain at the front of the chain.' },
+  { key: 'preamp', title: 'PREAMP & SMALL-SIGNAL TRIODES', note: 'Voltage gain at the front of the chain. mu (µ) = how much the tube amplifies.' },
   { key: 'power', title: 'POWER PENTODES & BEAM TETRODES', note: 'Current into the output transformer.' },
   { key: 'dht', title: 'DIRECTLY-HEATED TRIODES', note: 'The filament IS the cathode — classic single-ended sound.' },
-  { key: 'rectifier', title: 'RECTIFIERS', note: 'AC → DC for the B+ supply; sag and warm-up character.' },
+  { key: 'rectifier', title: 'RECTIFIERS', note: 'AC → DC for the B+ supply; voltage sag under load and warm-up character.' },
 ];
 
 const t = (

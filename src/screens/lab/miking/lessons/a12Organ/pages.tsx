@@ -76,7 +76,7 @@ function OrganSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
       layout: 'rack',
       rack: {
         render: (w, h) => <PipesFigure w={w} h={h} compare={compare} k={k} accessibilityLabel={`An open pipe and a stopped pipe ${compare === 'samePitch' ? 'half its length' : 'of the same length'}, each showing its pressure swing in mode ${k}.`} />,
-        badge: 'A simplified picture: ideal air columns, no end corrections · blue = pressure swing · silent',
+        badge: 'A simplified picture: ideal air columns (ignoring the small extra length an open end adds) · blue = pressure swing · silent',
         bezel: [
           { k: 'OPEN', v: `${Math.round(f8 * hOpen)} Hz`, sub: `×${hOpen}`, flex: 1 },
           { k: 'STOPPED', v: `${Math.round(stopPitch * hStop)} Hz`, sub: `×${hStop}`, flex: 1 },
@@ -314,7 +314,7 @@ function OrganSetting(p: PageProps) {
             <Point title="DECIDE WHAT IT IS FOR">A recording, a stream of a service, or local PA? Organs are usually picked up for recording or broadcast rather than amplified in the same room — a common practice, not a rule. Do not add the organ to the PA just because a mic is up.</Point>
             <Point title="SAFE ACCESS">Accessible floor stands whenever they meet the goal. Anything elevated or suspended needs the venue’s approval and a qualified rigger with rated supports — never hang a mic from pipes, ornament, sprinklers, lighting or an unverified beam.</Point>
           </Card>
-          <Note tone="warn">Protect your hearing during full-organ and PA tests: NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people where they listen, not a mic’s rating. No deliberate loud feedback test is ever needed.</Note>
+          <Note tone="warn">Protect your hearing during full-organ and PA tests: NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are limits for people where they listen, not a mic’s rating. No deliberate loud feedback test is ever needed.</Note>
           <SpkLink text="An electronic organ and its rotary speaker cabinet are miked like a loudspeaker — covered in full in the Amplified speakers & Leslie module." />
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>

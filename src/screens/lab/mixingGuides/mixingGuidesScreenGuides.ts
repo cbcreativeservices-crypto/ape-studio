@@ -85,7 +85,7 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
   changes: [
     'In the tables — EQ starting points, Compression & dynamics processing, Effects & amounts, Live vs studio — each row shows as a card: its heading on top, then labeled lines.',
     'Sections you open stay open on the next style.',
-    '✓ READ shows only once the reading is recorded; a members-only preview records nothing and says so.',
+    '✓ READ shows only once the reading is recorded; a preview records nothing and says so.',
   ],
   teaches: [
     'What a style’s audience listens for, and where its mix priorities start.',
@@ -119,7 +119,7 @@ export const MIXING_GUIDES_END_GUIDE: ScreenGuide = {
   ],
   changes: [
     'A guide counts as read when you leave it with NEXT › or FINISH ›, or tap MARK AS READ. Just opening it, or jumping away with ‹ PREV or the list, doesn’t count.',
-    'A read guide moves to the ✓ DONE line. A members-only preview records nothing and says so.',
+    'A read guide moves to the ✓ DONE line. A preview records nothing and says so.',
     'If your reading record can’t be loaded, the title reads YOUR PROGRESS and a note says why. Every guide still opens.',
   ],
   teaches: [

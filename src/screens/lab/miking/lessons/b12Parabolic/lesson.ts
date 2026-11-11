@@ -39,7 +39,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the dish yourself from the operator’s place — its aim on A, B or C, inside the arc — and the fixed shotgun it hands off to.',
-    credit: { scenarios: ['pb.place.1', 'pb.place.2', 'pb.place.3', 'pb.rec.2'], interactive: 'twoZones', note: 'Rest a mic, on an approved place and inside the arc, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['pb.place.1', 'pb.place.2', 'pb.place.3', 'pb.rec.2'], interactive: 'twoZones', note: 'Rest a mic, on an approved place and inside the arc, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'From an approved place, small turns inside the arc: the target on the axis, the focus right — and the plan, not the operator’s feet, covers the rest.',
   },
   context: {

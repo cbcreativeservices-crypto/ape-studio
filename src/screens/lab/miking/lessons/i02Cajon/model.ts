@@ -201,7 +201,7 @@ function rearZones(): DocumentedZone[] {
       micTypeIds: ['portClip'],
       mount: 'clip',
       bandProv: ill('the mouth of the port, off its axis: the lab draws no inside (a drawing default)'),
-      tendency: 'A strong, bass-heavy view of the port — and its air. It can cut some boom in one example and pop in another.',
+      tendency: 'A strong, bass-heavy view of the port — and its air. In one example it cut some boom; in another it picked up air pops.',
       checks: ['Air pops on the strongest bass strokes', 'The clamp suits this port; the player agrees', 'Nothing touches the snare wires'],
     }),
   ];

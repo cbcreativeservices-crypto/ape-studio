@@ -35,7 +35,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — closer, farther, higher — and see what changes for the soloist, the bass and the drums.',
-    credit: { scenarios: ['jz.place.1', 'jz.place.2', 'jz.31', 'jz.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['jz.place.1', 'jz.place.2', 'jz.31', 'jz.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Change one thing at a time and compare at matched level. Closer, the front player dominates; farther back, more blend and more room. The pair moves as a unit.',
   },
   context: {

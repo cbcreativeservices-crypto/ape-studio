@@ -76,7 +76,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "The slow intro can sit 8–12 dB below the full groove, with the koplo (fast East-Java style) double-time reff (chorus) as the peak. Kendang (two-headed hand drum) slaps and fills can jump 10–15 dB above the pattern. Indonesian studio practice favors fader automation over heavy compression. Preserve the intro-to-groove jump and reff lift; control kendang peaks and the level swings between rotating singers; ride the suling (bamboo flute) up for fills."
+      "text": "The slow intro can sit 8–12 dB below the full groove, with the koplo (fast East-Java style) double-time reff (chorus) as the peak. Kendang (paired hand drums) slaps and fills can jump 10–15 dB above the pattern. Indonesian studio practice favors fader automation over heavy compression. Preserve the intro-to-groove jump and reff lift; control kendang peaks and the level swings between rotating singers; ride the suling (bamboo flute) up for fills."
     }
   ],
   "balance": [
@@ -87,7 +87,7 @@ export const GUIDE: MixingGuide = {
   "eq": {
     "rows": [
       {
-        "source": "Kendang (two-headed hand drum) – dhut (large head)",
+        "source": "Kendang (paired hand drums) – dhut (large head)",
         "cut": "HPF 45–55 Hz; −2–4 dB at 250–400 Hz (boxy)",
         "boost": "+2–4 dB at 90–130 Hz (body/bend); +2 dB at 2–3 kHz (finger slap)",
         "notes": "Find the pitch of the bend and keep the bass off it"
@@ -235,7 +235,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Room / short plate",
-        "appliedTo": "Kendang (two-headed hand drum)",
+        "appliedTo": "Kendang (paired hand drums)",
         "setting": "0.6–1.0 s decay, 10–20 ms pre-delay",
         "amount": "Subtle; adds resonance without smearing strokes"
       },
@@ -282,7 +282,7 @@ export const GUIDE: MixingGuide = {
   "liveStudio": {
     "rows": [
       {
-        "area": "Kendang (two-headed hand drum)",
+        "area": "Kendang (paired hand drums)",
         "live": "Two close dynamic mics on tak and dhut heads, 3–8 cm; protect from keyboard and vocal bleed",
         "studio": "Add a condenser 30–60 cm above for natural tone; parallel bus for weight"
       },

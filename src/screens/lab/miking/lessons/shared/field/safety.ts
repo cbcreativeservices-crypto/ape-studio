@@ -56,7 +56,7 @@ export const SAFETY: Readonly<Record<SafetyId, SafetyCard>> = {
   hearing: {
     id: 'hearing',
     title: 'HEARING',
-    text: 'Monitor at a comfortable level. For long, loud exposure — traffic, machinery, a loud vehicle — use hearing protection that still lets you hear what is around you. NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+    text: 'Monitor at a comfortable level. For long, loud exposure — traffic, machinery, a loud vehicle — use hearing protection that still lets you hear what is around you. NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
   },
 };
 

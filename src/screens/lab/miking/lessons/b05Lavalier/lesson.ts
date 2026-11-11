@@ -55,7 +55,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a lav on the sternum in the studio, a headset by the corner of the mouth live — then move the mic and see what changes.',
-    credit: { scenarios: ['b5.place.1', 'b5.place.2', 'b5.place.3', 'b5.rec.2'], note: 'Rest the mic in each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b5.place.1', 'b5.place.2', 'b5.place.3', 'b5.rec.2'], note: 'Rest the mic in each of two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The place on the body, the distance and the angle off the mouth are separate controls; comfort, the clothes and the cable come first.',
   },
   context: {
@@ -675,6 +675,6 @@ export const B05_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give chosen for the drawing, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give chosen for the drawing, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet also shown from 3 m and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; avoid uncontrolled feedback.',
   copy: B05_COPY,
 };

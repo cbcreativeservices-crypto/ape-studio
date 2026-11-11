@@ -57,7 +57,7 @@ export const ANATOMY_MIN_SPACING = 44;
 export type Stage = { id: string; name: string; what: string; see: string };
 
 export const PRODUCTION: Stage[] = [
-  { id: 'breath', name: 'Breath', what: 'The lungs\' elastic recoil, helped by the rib and belly muscles, pushes air up while the diaphragm relaxes under control. Airflow is the energy for everything that follows.', see: 'Steady air pressure below the larynx.' },
+  { id: 'breath', name: 'Breath', what: 'The lungs\' elastic recoil, helped by the rib and belly muscles, pushes air up while the diaphragm relaxes under control. Airflow is the energy for everything that follows.', see: 'Steady air pressure below the larynx — no sound yet.' },
   { id: 'phonation', name: 'Vocal folds', what: 'For voiced sounds the folds are brought together; the air pressure blows them apart, the gap closes again, and the cycle repeats — a buzz rich in harmonics.', see: 'A pulse train: the buzz has a fundamental (the pitch) and many harmonics above it.' },
   { id: 'resonance', name: 'Resonance', what: 'The throat, mouth and (sometimes) nose act as tuned cavities that boost some harmonics and swallow others. Those boosted regions are the formants.', see: 'The flat harmonic comb becomes a shape with peaks — the vowel is born here.' },
   { id: 'articulation', name: 'Articulation', what: 'Tongue, lips, teeth, jaw and soft palate move to shape vowels and interrupt the air for consonants.', see: 'Fast changes: bursts, hisses, nasal hums, glides between shapes.' },
@@ -184,7 +184,7 @@ export const CONSONANTS: ConsonantCategory[] = [
   { id: 'fricative', name: 'Fricatives', how: 'Air is forced through a narrow gap and turns turbulent — a continuous hiss.', examples: 'F V S Z SH ZH TH H', energy: 'Noise-like; S and Z peak roughly 4–10 kHz, SH lower, F and TH weaker and broader', bandLoHz: 2000, bandHiHz: 10000, micNote: 'S and Z, and the lower SH, are the sibilants a de-esser hunts.' },
   { id: 'affricate', name: 'Affricates', how: 'A stop released straight into a fricative — burst then hiss.', examples: 'CH J', energy: 'A click followed by a short SH-like hiss', bandLoHz: 1500, bandHiHz: 8000, micNote: 'Can need both a pop filter and a de-esser.' },
   { id: 'nasal', name: 'Nasals', how: 'The mouth passage is blocked (lips for M, tongue for N and NG) and the soft palate drops, so the voiced buzz resonates out through the nose.', examples: 'M N NG', energy: 'Low, hum-like — strong below ~500 Hz, weak highs', bandLoHz: 80, bandHiHz: 800, micNote: 'Weak in the highs already, so muffling changes them little; S, F and TH are the sounds that fade first.' },
-  { id: 'liquid', name: 'Liquids', how: 'The tongue shapes the airway without fully blocking it; voiced and vowel-like.', examples: 'L R', energy: 'Vowel-like formant structure with a dip', bandLoHz: 200, bandHiHz: 2500, micNote: 'Rarely a microphone problem.' },
+  { id: 'liquid', name: 'Liquids', how: 'The tongue shapes the airway without fully blocking it; voiced and vowel-like.', examples: 'L R', energy: 'Vowel-like formant structure; R lowers the third formant, L adds a gap (antiresonance) in the spectrum', bandLoHz: 200, bandHiHz: 2500, micNote: 'Rarely a microphone problem.' },
   { id: 'glide', name: 'Glides (semivowels)', how: 'A fast movement from one vowel shape to another.', examples: 'W Y', energy: 'Vowel-like, sliding formants', bandLoHz: 200, bandHiHz: 2500, micNote: 'Rarely a microphone problem.' },
 ];
 

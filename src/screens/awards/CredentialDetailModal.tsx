@@ -271,11 +271,11 @@ export function CredentialDetailModal({
 
           {copy?.whereApplies.length ? (
             <View style={styles.metaBlock}>
-              <Text style={[styles.metaLabel, { color: accent }]}>WHERE THESE SKILLS APPLY</Text>
+              <Text style={[styles.metaLabel, { color: accent }]}>WHERE THIS KNOWLEDGE APPLIES</Text>
               <View
                 style={styles.tags}
                 accessible
-                accessibilityLabel={`Where these skills apply: ${copy.whereApplies.join(', ')}`}
+                accessibilityLabel={`Where this knowledge applies: ${copy.whereApplies.join(', ')}`}
               >
                 {copy.whereApplies.map((w) => (
                   <View key={w} style={styles.tag}>

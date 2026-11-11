@@ -112,7 +112,7 @@ export function makeReedSound(spec: ReedSoundSpec) {
             <Card>
               <Point title={`${st.shown} · ${S.stages[st.shown - 1].title.toUpperCase()}`}>{stageText(st.shown - 1)}</Point>
             </Card>
-            <Body>{`Activity: ${reached ? 'done — you reached the last step' : `step ${st.shown} of ${n}`}.`}</Body>
+            <Body>{`Activity: ${reached ? 'done — you reached the last step' : `step ${st.shown}`}.`}</Body>
             {reached && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. The reed is a valve that swings: it lets the air through in puffs, at its own frequency — the puffs are the sound.`}</Note> : null}
           </>
         ),

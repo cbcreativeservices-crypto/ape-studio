@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the flute’s close position, between the lip plate and the left hand, off the jet — then compare behind the head and farther in front.',
-    credit: { scenarios: ['pc.place.1', 'pc.place.2', 'pc.place.3', 'pc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['pc.place.1', 'pc.place.2', 'pc.place.3', 'pc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'The flute’s starting points are places to begin on a piccolo, not measured optimums. Copy the relationship, test the whole phrase, and keep the capsule out of the jet.',
   },
   context: {
@@ -529,7 +529,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.body', 'ww.body.1', 'ww.body.2', 'ww.headjoint'],
     azMax: 60,
     elMax: 70,
-    aimBlurb: 'Turn the front up to 60° either way — the piccolo stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the piccolo stays in front of the mic, a little off its axis.',
     plan: { u0: -1700, u1: 900, v0: -600, v1: 1750 },
     side: { u0: -1700, u1: 900, v0: -500, v1: 1700 },
     target: 'wedge',

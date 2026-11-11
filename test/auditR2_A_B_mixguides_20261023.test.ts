@@ -38,7 +38,7 @@ describe('mixing guides: hearing-dose wording names the authority (rule 1, 2026-
     for (const name of ['g09-regional-mexican', 'g49-disco-nu-disco']) {
       const s = read(name);
       assert.match(s, /NIOSH[^.]*85 dBA for 8 hours, halving the time for every 3 dB/, name);
-      assert.match(s, /OSHA[^.]*90 dBA with a 5 dB rule/, name);
+      assert.match(s, /OSHA[^.]*90 dBA, halving the time every 5 dB/, name);
     }
   });
 });

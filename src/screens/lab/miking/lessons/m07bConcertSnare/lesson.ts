@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — measured from the rim or head it names, angled at the head, outside the sticks’ reach — then move the mic and see what changes.',
-    credit: { scenarios: ['cs.place.1', 'cs.place.2', 'cs.place.3', 'cs.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cs.place.1', 'cs.place.2', 'cs.place.3', 'cs.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named rim or head — not a rule, and not a safety clearance. Distance, height and angle are separate things to try, and the player’s whole motion comes first.',
   },
   context: {

@@ -218,7 +218,7 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
   const reader = (
     <View style={{ gap: 10 }}>
       <Card tone="math">
-        <Eyebrow>{(idx % ORDER.length) + 1} OF {ORDER.length} · {block.name.toUpperCase()}</Eyebrow>
+        <Eyebrow>{(idx % ORDER.length) + 1} · {block.name.toUpperCase()}</Eyebrow>
         <Body>{block.what}</Body>
       </Card>
       <Row>

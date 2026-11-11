@@ -46,7 +46,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — over the bow on the side away from the player, clear of the stick and the swing — then try a foot or two above, and underneath.',
-    credit: { scenarios: ['rd.place.1', 'rd.place.2', 'rd.place.3', 'rd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['rd.place.1', 'rd.place.2', 'rd.place.3', 'rd.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from the ride — not a rule. A spot over the bow, a mic a foot or two up for all the cymbals, or one underneath: different jobs. Clearance comes first.',
   },
   context: {

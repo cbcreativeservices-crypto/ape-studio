@@ -51,7 +51,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the handheld under about 15 cm from the speaking mouth, a little below the breath — then move it and see what changes.',
-    credit: { scenarios: ['b10.place.1', 'b10.place.2', 'b10.place.3', 'b10.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b10.place.1', 'b10.place.2', 'b10.place.3', 'b10.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside each of two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Close to the speaking mouth, out of the breath, clear of faces and the lens; the approved area and the exit come first.',
   },
   context: {

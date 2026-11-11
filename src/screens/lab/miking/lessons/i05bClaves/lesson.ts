@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 30–60 cm from the middle of the striking area — outside both hands’ paths, and see what each spot changes.',
-    credit: { scenarios: ['clv.place.1', 'clv.place.2', 'clv.place.3', 'clv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['clv.place.1', 'clv.place.2', 'clv.place.3', 'clv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'One mic in front of the striking area, 30–60 cm away, never between the sticks. A mono mic usually serves one player and one pair.',
   },
   context: {

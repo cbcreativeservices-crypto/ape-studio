@@ -155,7 +155,7 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>{step + 1} · {st.name.toUpperCase()}</Eyebrow>
         <Body>{st.what}</Body>
-        <Text style={styles.see}>What you would see: {st.see}</Text>
+        <Text style={styles.see}>On a display you would see: {st.see}</Text>
       </Card>
       {nav}
       {ctx.reduceMotion ? <Text style={styles.see}>Reduced motion: step through with the buttons; the sequence does not auto-play.</Text> : null}

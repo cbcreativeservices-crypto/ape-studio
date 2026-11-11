@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — 0.6–1.2 m in front, aimed at the middle — then compare the body-and-bell blend and a bell-favoring view.',
-    credit: { scenarios: ['bcl.place.1', 'bcl.place.2', 'bcl.place.3', 'bcl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['bcl.place.1', 'bcl.place.2', 'bcl.place.3', 'bcl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Begin far enough away to hear the whole instrument, then move in. A body-and-bell blend, a bell-favoring view and a clip are comparisons for different goals — and the lowest note decides a lot.',
   },
   context: {
@@ -518,7 +518,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.lower', 'ww.lower.1', 'ww.lower.2', 'ww.bow', 'ww.bell', 'ww.upper'],
     azMax: 60,
     elMax: 60,
-    aimBlurb: 'Turn the front up to 60° either way — the instrument stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the instrument stays in front of the mic, a little off its axis.',
     plan: { u0: -1700, u1: 1200, v0: -500, v1: 1850 },
     side: { u0: -1700, u1: 1200, v0: -400, v1: 1300 },
     target: 'wedge',

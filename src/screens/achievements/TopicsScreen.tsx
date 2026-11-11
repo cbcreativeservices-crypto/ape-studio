@@ -244,7 +244,7 @@ export function TopicsScreen() {
               ? `EARNED ${fmtDate(modalTopic.dateEarned)}`
               : 'EARNED'
             : modalTopic?.status === 'passed_incomplete'
-              ? 'PASSED — TROPHY NOT YET EARNED'
+              ? 'PASSED — RETAKE THE QUIZ FOR THE TROPHY'
               : 'NOT YET EARNED'
         }
         onClose={() => setModalTopic(null)}

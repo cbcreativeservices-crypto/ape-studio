@@ -226,7 +226,6 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
       'The basic colors of sound: what each noise and each wave shape sounds like.',
       'How a spectrum’s slope, or its pattern of harmonics, matches what you hear.',
       'Pink noise is a common test signal for speakers and rooms, so it pays to know it by ear.',
-      'These are the sounds the Noise and Oscillators labs build from their controls.',
     ],
     tryThis: [
       'On a noise trial, read SEE IT after you answer: the trace follows the 0 guide for white, −3 for pink, −6 dB/oct for brown.',

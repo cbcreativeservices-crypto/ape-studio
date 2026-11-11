@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 30–60 cm from the middle of the playing area, outside the whole motion — then change height and angle, and the direction of the shake, and see what changes.',
-    credit: { scenarios: ['shk.place.1', 'shk.place.2', 'shk.place.3', 'shk.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['shk.place.1', 'shk.place.2', 'shk.place.3', 'shk.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'One mic outside the whole arc, about 30–60 cm from the middle of the playing area, is the place to begin. A shake toward the mic makes each forward stroke jump; side to side tends to stay steadier — if the player chooses it.',
   },
   context: {

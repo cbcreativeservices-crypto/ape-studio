@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself in the practice room — its place, its height, and its aim across the walk or along it — and see the range and the angle change.',
-    credit: { scenarios: ['mo.place.1', 'mo.place.2', 'mo.place.3', 'mo.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mo.place.1', 'mo.place.2', 'mo.place.3', 'mo.rec.2'], interactive: 'twoZones', note: 'Rest the mic, in its equipment area, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Aimed across, a short strong sector; aimed along, a longer one with more of what lies beyond. Change one thing at a time from an approved place.',
   },
   context: {

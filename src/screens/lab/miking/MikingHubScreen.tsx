@@ -88,17 +88,18 @@ export function MikingHubScreen() {
                 const n = creditedCount(lp.done);
                 const all = known && n === PAGE_IDS.length;
                 const count = known ? String(n) : '—';
+                const pagesWord = known && n === 1 ? 'page' : 'pages';
                 return (
                   <GlassTile
                     key={ls.id}
                     style={tablet ? styles.tileThird : styles.tileHalf}
                     glassStyle={styles.tileFace}
                     onPress={() => navigation.navigate('MikingLesson', { id: ls.id })}
-                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${known ? `${n} of ${PAGE_IDS.length} pages done.` : 'Your progress isn’t available right now.'}`}
+                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${known ? `${n} ${pagesWord} done.` : 'Your progress isn’t available right now.'}`}
                   >
                     <Text style={styles.tileName}>{`${all ? '✓ ' : ''}${ls.title}`}</Text>
                     <Text style={styles.tileSub}>{ls.subtitle}</Text>
-                    <Text style={[styles.count, all && { color: colors.green }]} {...fitValue(12)}>{`${count} of ${PAGE_IDS.length} pages`}</Text>
+                    <Text style={[styles.count, all && { color: colors.green }]} {...fitValue(12)}>{`${count} ${pagesWord} done`}</Text>
                   </GlassTile>
                 );
               })}

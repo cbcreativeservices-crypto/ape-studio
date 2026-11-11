@@ -546,16 +546,16 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   fixSignal: {
     intro: {
       learning: 'Everyday complaints — boomy, harsh, rumble, honky, sibilant — point to frequency regions. Real problems don’t announce their frequency: read the complaint, look, then decide.',
-      start: 'Tap SCEN and pick BOOMY KICK. Read the complaint, find where the bold SIGNAL bulges above the dim REFERENCE, then set FREQ, GAIN and Q and tap CHECK.',
+      start: 'Tap SCENARIO and pick BOOMY KICK. Read the complaint, find where the bold SIGNAL bulges above the dim REFERENCE, then set FREQ, GAIN and Q and tap CHECK.',
     },
     seeing: [
       'A made-up spectrum again, not a recording: the dim REFERENCE, and the bold SIGNAL carrying the problem from a real-world story.',
       'Below the display you read the CASE name and the complaint, but no frequency until you tap CHECK.',
-      'Watch CASE, SCEN (which scenario) and RESULT (—, FIXED or NOT YET) on the frame as you work.',
+      'Watch CASE, SCENARIO and RESULT (—, FIXED or NOT YET) on the frame as you work.',
     ],
     control: [
       'FREQ, GAIN (−18 to +18 dB) and Q (0.3–12) shape your one correction band.',
-      'Tap SCEN to pick BOOMY KICK, HARSH VOCAL, STAGE RUMBLE, HONKY GUITAR or SIBILANT VOCAL, each with its story.',
+      'Tap SCENARIO to pick BOOMY KICK, HARSH VOCAL, STAGE RUMBLE, HONKY GUITAR or SIBILANT VOCAL, each with its story.',
       'Tap CHECK to have your fix judged. HEAR IT, when shown below, plays the problem plus your fix.',
     ],
     changes: [

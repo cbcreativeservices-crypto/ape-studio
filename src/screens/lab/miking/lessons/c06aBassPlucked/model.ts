@@ -25,7 +25,7 @@ const LIVE_AT = add(FHOLE, scale(ax.z, 30));
 const LIVE_Z: Omit<DocumentedZone, 'start'> = {
   id: 'ub.live',
   label: 'Low-profile mic at an f-hole (stage)',
-  band: 'For a loud stage: a miniature fastened at the far f-hole, its capsule about 1.5–5 cm (½–2 in) from it — never clipped to the bridge.',
+  band: 'For a loud stage: a miniature fastened at the treble (G-string) f-hole, on the far side from the player, its capsule about 1.5–5 cm (½–2 in) from it — never clipped to the bridge.',
   kind: 'sourced',
   src: 'S-RHYTHM',
   quote: 'You can fasten low-profile microphones to the tailpiece, to an f hole, or to the ridge that’s just above the waist of the instrument. Don’t clip them on the bridge - that can inhibit vibrations.',

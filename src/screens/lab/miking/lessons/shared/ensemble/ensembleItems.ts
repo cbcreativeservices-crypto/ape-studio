@@ -159,7 +159,7 @@ export const hearingCheck = (p: string, page: SourcePageId, loud = 'brass and pe
   prompt: `You monitor ${loud} on headphones for an hour. What protects your hearing?`,
   options: ['Sensible levels and limited time', 'The maximum SPL rating of the mics', 'Turning up to hear the detail'],
   correct: 'Sensible levels and limited time',
-  explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people, measured where they listen. Keep monitoring sensible and take breaks.',
+  explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are limits for people, measured where they listen. Keep monitoring sensible and take breaks.',
   why: {
     'The maximum SPL rating of the mics': 'That is about the microphone, not your ears.',
     'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement, not level.',

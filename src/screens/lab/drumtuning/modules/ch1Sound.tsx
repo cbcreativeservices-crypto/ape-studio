@@ -256,7 +256,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
                 <Point title="What one rod does">The tension near that rod changes, so its tap pitch moves. But the head's BALANCE changes too: an uneven head makes two slightly different notes at once, and you hear them beat as a slow warble. BEAT is their difference; SPREAD is the gap in cents (hundredths of a semitone) between the highest and lowest rod.</Point>
               </Card>
               <WhyCard title="WHY · see the vibration">
-                <Body>The VIB entries of VIEW draw the head's shape for one note of this same strike: white lines stay still, the colored regions move up and down — strobed, fading with the hit's own measured loudness. On an uneven head the twin shape mixes in; that is the beat, drawn. Switch VIEW to WAVE or PITCH for the same strike as a waveform or a pitch line.</Body>
+                <Body>The VIB entries of VIEW draw the head's shape for one note of this same strike: white lines stay still, the colored regions move up and down — strobed, fading with the hit's own measured loudness. Each shape is named by two numbers, like (0,1): the first counts the nodal diameters (still lines straight across the head), the second the nodal circles (the rim counts as one). On an uneven head the twin shape mixes in; that is the beat, drawn. Switch VIEW to WAVE or PITCH for the same strike as a waveform or a pitch line.</Body>
               </WhyCard>
             </>
           ),

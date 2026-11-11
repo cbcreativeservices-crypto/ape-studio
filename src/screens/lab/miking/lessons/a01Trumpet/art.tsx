@@ -70,7 +70,7 @@ export const A01_ART: LessonArt = {
         trumpet: {
           straight: 'A cone held in the bell by cork strips: a thinner, more nasal color, quieter, and it reaches a few centimeters past the rim.',
           cup: 'A straight mute with a cup facing back at the bell: darker and softer — and the cup reaches farther past the rim than the open bell.',
-          harmon: 'A bulb sealed in the bell with a stem through it: a buzzy, focused tone that comes out of the stem and its cup — close to the sound’s new source.',
+          harmon: 'A bulb sealed in the bell with a stem through it: a buzzy, focused tone that comes out of the stem and its cup, which become the sound’s new source.',
           plunger: 'A rubber cup the left hand moves in front of the bell, opening and closing for the “wah”. The hand and the cup move all the time: nothing goes in their way.',
         },
         flugelhorn: {

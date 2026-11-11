@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — from the audience side, clear of both hands — then move the mic and see what changes.',
-    credit: { scenarios: ['ta.place.1', 'ta.place.2', 'ta.place.3', 'ta.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ta.place.1', 'ta.place.2', 'ta.place.3', 'ta.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Distance, viewpoint and angle are separate things to try, one at a time. If one drum dominates, move toward the weaker one rather than only turning the mic. Both hands’ paths come before every number.',
   },
   context: {
@@ -619,9 +619,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting near a loud stage through a long soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic sits closer than you do'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
     why: {
-      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'It is safe as long as the mic sits closer than you do': 'Where the mic sits says nothing about your ears.',
     },
   },

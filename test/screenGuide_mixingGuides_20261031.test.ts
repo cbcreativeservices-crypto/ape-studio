@@ -237,7 +237,7 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     // ⏮ (start → go(0)) and the CONTENTS footer (openEnd → finish()) skip beforeAdvance too.
     assert.match(NAV, /const openEnd = useCallback\(\(\) => \{\n\s*if \(lock\(\)\) return;\n\s*setContentsOpen\(false\);\n\s*finish\(\);/);
     assert.ok(GUIDES.end.changes[0].includes('Just opening it, or jumping away with ‹ PREV or the list, doesn’t count'));
-    assert.ok(GUIDES.end.changes[1].includes('A members-only preview records nothing'));
+    assert.ok(GUIDES.end.changes[1].includes('A preview records nothing'));
   });
 
   it('the strip on the end screen: ‹ PREV returns to the guide you came from, the readout reads WHAT’S LEFT', () => {

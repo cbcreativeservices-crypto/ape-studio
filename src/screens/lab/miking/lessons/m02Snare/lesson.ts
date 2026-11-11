@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — over the rim, measured from the rim or the head the starting point names, aimed at the head, clear of the sticks — then move the mic and see what changes.',
-    credit: { scenarios: ['sn.place.1', 'sn.place.2', 'sn.place.3', 'sn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['sn.place.1', 'sn.place.2', 'sn.place.3', 'sn.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named surface — the rim or a head — not a rule. Rim position, height and angle are separate things to try, and the sticks’ clearance comes first.',
   },
   context: {
@@ -620,9 +620,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your snare mic is rated to a very high maximum SPL. What does that tell you about standing by the kit through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the snare stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the snare stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe for a while, as long as the snare stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

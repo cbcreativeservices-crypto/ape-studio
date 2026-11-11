@@ -45,6 +45,8 @@ export function useClaimLadderStep({ ladder, words, onDone }: { ladder: ClaimLad
     if (!v) return '○';
     return (v === 'yes') === supports(ladder, setupId, cid) ? '✓' : '✗';
   };
+  // Per-claim marks, never an "N of total" score (owner rule 4, 2026-11-11).
+  const marks = ladder.claims.map((c) => mark(c.id)).join(' ');
   const params: DockParam[] = [
     { kind: 'options', id: 'setup', label: 'SETUP', valueLabel: setup.short, selectedId: setupId, onSelect: setSetupId, options: ladder.setups.map((s) => ({ id: s.id, label: s.label, blurb: s.blurb })) },
     { kind: 'options', id: 'claim', label: 'CLAIM', valueLabel: claim.short, selectedId: claimId, onSelect: setClaimId, sticky: true, options: ladder.claims.map((c) => ({ id: c.id, label: `${mark(c.id)} ${c.text}` })) },
@@ -63,8 +65,7 @@ export function useClaimLadderStep({ ladder, words, onDone }: { ladder: ClaimLad
   ];
   const bezel: BezelItem[] = [
     { k: 'REACHES', v: ladder.rungs[rungIndex(ladder, setup.reach)].short, tint: GREEN, flex: 1.2 },
-    { k: 'JUDGED', v: `${g.judged} / ${ladder.claims.length}`, flex: 0.9 },
-    { k: 'RIGHT', v: `${g.right} / ${ladder.claims.length}`, tint: g.done ? GREEN : undefined, flex: 0.9 },
+    { k: 'CLAIMS', v: marks, tint: g.done ? GREEN : undefined, flex: 1.8 },
   ];
   const a11y = `A ladder of claims, from ${ladder.rungs.map((r) => r.label.toLowerCase()).join(', up to ')}. ${setup.label} reaches ${ladder.rungs[rungIndex(ladder, setup.reach)].label.toLowerCase()}. The claim “${claim.text}” ${claim.needs === null ? 'needs more than any rung of this ladder' : `needs ${ladder.rungs[rungIndex(ladder, claim.needs)].label.toLowerCase()}`}.`;
   const answer = !pick
@@ -91,7 +92,7 @@ export function useClaimLadderStep({ ladder, words, onDone }: { ladder: ClaimLad
           <Point title="THE SETUP">{setup.blurb}</Point>
           <Point title={`THE CLAIM · “${claim.text}”`}>{answer}</Point>
         </Card>
-        {pick && (pick === 'yes') !== truth ? <Note tone="warn">A retry is fine: change the VERDICT and read why.</Note> : <Note>{`${g.right} of ${ladder.claims.length} claims judged right for this setup${g.done ? ' — all of them.' : '.'}`}</Note>}
+        {pick && (pick === 'yes') !== truth ? <Note tone="warn">A retry is fine: change the VERDICT and read why.</Note> : <Note>{g.done ? 'All judged right for this setup.' : `Claims for this setup: ${marks}`}</Note>}
       </>
     ),
   };

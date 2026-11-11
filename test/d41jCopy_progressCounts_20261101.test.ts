@@ -40,10 +40,14 @@ describe('C2 Cable Install + Cable lab: units counted without a total', () => {
     assert.doesNotMatch(src, /\$\{cleared\}\/\$\{total\} UNITS/);
     assert.doesNotMatch(src, /of \$\{total\} lab units/);
   });
-  it('Cable lab lesson 12 eyebrow reads "LAB PROGRESS · n UNIT(S) CLEARED"', () => {
+  it('Cable lab lesson 12 drops the LAB PROGRESS unit count; WHAT’S LEFT says what remains (owner 2026-11-11)', () => {
     const src = read('src/screens/lab/cable/lessons/lesson12.tsx');
-    assert.match(src, /`LAB PROGRESS · \$\{completion\.cleared\} \$\{completion\.cleared === 1 \? 'UNIT' : 'UNITS'\} CLEARED`/);
+    assert.doesNotMatch(src, /LAB PROGRESS ·/);
     assert.doesNotMatch(src, /OF \$\{completion\.total\} UNITS/);
+    assert.match(src, /<WhatsLeft nav=\{nav\} \/>/);
+    assert.match(src, /`GENERAL · \$\{generalSolved\} SOLVED`/);
+    assert.doesNotMatch(src, /OF \$\{FINAL_QUESTIONS\.length\} SOLVED/);
+    assert.doesNotMatch(src, /of \$\{SAFETY_QUESTIONS\.length\} safety questions/);
   });
 });
 
@@ -67,7 +71,7 @@ describe('C3 Mixing Guides: a preview is never told its reading is saved', () =>
   });
   it('the end guide says a preview records nothing and says so', () => {
     const g = read('src/screens/lab/mixingGuides/mixingGuidesScreenGuides.ts');
-    assert.match(g, /A members-only preview records nothing and says so\./);
+    assert.match(g, /A preview records nothing and says so\./);
   });
 });
 

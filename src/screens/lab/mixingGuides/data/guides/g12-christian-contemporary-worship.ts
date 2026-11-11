@@ -353,7 +353,7 @@ export const GUIDE: MixingGuide = {
     "Lauren Daigle, “You Say”, 2018",
     "Elevation Worship & Maverick City Music, “Jireh”, 2021",
     "Phil Wickham, “Battle Belongs”, 2020",
-    "Brandon Lake, “Gratitude”, 2020"
+    "Brandon Lake, “Gratitude”, 2023"
   ],
   "empty": []
 };

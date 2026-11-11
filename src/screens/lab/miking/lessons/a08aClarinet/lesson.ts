@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — facing the holes a third of the way up from the bell — then move the mic and see what changes.',
-    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named part of the clarinet — not a rule. Distance, height and angle are separate things to try; clearance from the hands and the bell comes first.',
   },
   context: {
@@ -472,7 +472,7 @@ const copy: Partial<LessonCopy> = {
     partsBadge: 'A clarinetist from the audience · tap a part to name it',
     partsLooking: { side: 'Front view · from the audience', top: 'Top view · from above' },
     partsIdle: 'The reed starts the sound; the air column inside the long tube, of wood or plastic, rings; the open holes and the bell let it out — the next page shows how. The player holds it out in front, the hands on the keys.',
-    variantNotes: { standing: 'STANDING: the same hold — the floor and the legs farther from the mic stand’s base. Switch POSTURE to sit the player down.' },
+    variantNotes: { standing: 'STANDING: the same hold — the clarinet sits higher, farther above the mic stand’s base. Switch POSTURE to sit the player down.' },
   },
   placement: {
     workedZone: { seated: 'cl.dpa', standing: 'cl.dpa' },
@@ -507,7 +507,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.lower', 'ww.lower.1', 'ww.lower.2', 'ww.lower.3', 'ww.bell', 'ww.upper'],
     azMax: 60,
     elMax: 60,
-    aimBlurb: 'Turn the front up to 60° either way — the clarinet stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the clarinet stays in front of the mic, a little off its axis.',
     plan: { u0: -1700, u1: 1200, v0: -500, v1: 1750 },
     side: { u0: -1700, u1: 1200, v0: -400, v1: 1300 },
     target: 'wedge',

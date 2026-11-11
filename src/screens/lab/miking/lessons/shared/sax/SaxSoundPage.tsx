@@ -302,6 +302,7 @@ export function makeSaxSoundPage(cfg: SaxSoundConfig): (p: PageProps) => ReactNo
         well: (
           <>
             <Landing looking={`Written ${f.written} · ${register} register`} prompt="Pick a NOTE, or PLAY THE SCALE — it climbs one note at a time and stops at the top (PAUSE any time). Watch where the first open hole goes." />
+            <Note>The sax is a transposing instrument: the written note is what the player reads; it sounds lower (alto a major sixth, tenor a major ninth, baritone an octave and a major sixth).</Note>
             <Card>
               <Point title={f.k === 0 ? 'EVERY KEY CLOSED' : `FIRST OPEN HOLE · ${f.k}`}>
                 {f.k === 0

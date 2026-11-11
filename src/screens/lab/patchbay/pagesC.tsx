@@ -194,7 +194,7 @@ function PageZeroCables({ ctx }: { ctx: PageCtx }) {
         wrong={[
           undefined,
           'Every one of those device connections runs THROUGH the bay’s rear — that is the whole point. What connects top rear to bottom rear inside?',
-          'That was the THRU pair’s truth, not the normalled studio’s. Press the reveal button and look again.',
+          'That was the THRU pair’s truth, not the normalled studio’s. Turn on SHOW THE INVISIBLE NORMALS and look again.',
           'Nothing routes around it — the default routes live INSIDE it. Reveal them.',
         ]}
         onCorrect={() => setSolved(true)}

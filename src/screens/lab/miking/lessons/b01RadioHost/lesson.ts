@@ -53,7 +53,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a broadcast dynamic about 10–15 cm from the lips in the studio, closer on a live show — then move the mic and see what changes.',
-    credit: { scenarios: ['b1.place.1', 'b1.place.2', 'b1.place.3', 'b1.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the host, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b1.place.1', 'b1.place.2', 'b1.place.3', 'b1.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the host, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Distance, height and the angle off the mouth’s axis are separate tone controls; clearance from the face, the sight line and the papers comes first.',
   },
   context: {

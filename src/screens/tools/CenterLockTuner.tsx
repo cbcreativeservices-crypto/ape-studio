@@ -472,7 +472,7 @@ const PIANO_GUIDE = {
   ],
   after: [
     'For two-string notes, tune one and match the other. For single-string notes, tune directly to the app.',
-    'Stretch is already included in the app’s targets. When checking a string with the app, isolate that string so only it sounds by muting (covering and dampening with felt) the other strings above and below it.',
+    'Stretch (bass slightly flat, treble slightly sharp) is already included in the app’s targets. When checking a string with the app, isolate that string so only it sounds by muting (covering and dampening with felt) the other strings above and below it.',
   ],
 } as const;
 

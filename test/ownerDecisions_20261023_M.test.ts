@@ -45,10 +45,11 @@ function files(dir = MK): string[] {
 const ALL = files().map((f) => ({ f, s: readFileSync(f, 'utf8').replace(/\r\n/g, '\n') }));
 
 describe('1 · the 60° AIM tip', () => {
-  const NEW = /^Turn (the front|the capsule|the capsule’s front|the gooseneck’s capsule|the boom mic) up to 60° either way — (the [^.]+) stays in front of the mic, a little off its axis\.$/;
+  const NEW = /^Turn (the mic’s front|the front|the capsule|the capsule’s front|the gooseneck’s capsule|the boom mic) up to 60° either way — (the [^.]+) stays in front of the mic, a little off its axis\.$/;
   const tips = ALL.flatMap(({ f, s }) => [...s.matchAll(/aimBlurb: '([^']*60° either way[^']*)'/g)].map((m) => ({ f, t: m[1] })));
-  it('every 60° tip (32 lessons) says the source stays in front, a little off the axis', () => {
-    assert.equal(tips.length, 32);
+  // 33 since 2026-11-11: F09 carries its own capsule tip over the shared voice one.
+  it('every 60° tip (33 lessons) says the source stays in front, a little off the axis', () => {
+    assert.equal(tips.length, 33);
     for (const { f, t } of tips) assert.match(t, NEW, f);
   });
   it('no 60° tip still claims the mic "still faces" or "still looks at" its source', () => {

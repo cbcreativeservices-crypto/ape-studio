@@ -349,7 +349,7 @@ export function TopicDetailModal({
                       {enrolled && topicWrite === 'pending'
                         ? 'Adding to My Enrollments…'
                         : enrolled && topicWrite === 'failed'
-                        ? 'In your list for now, but this device could not save it yet.'
+                        ? 'In your list for now, but this device could not save it yet. Close this and add it again.'
                         : enrolled
                         ? // Pro Audio Safety + DAW are free for everyone (FREE_ENROLL_GS):
                           // telling a free user they need membership to study them

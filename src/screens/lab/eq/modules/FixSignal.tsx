@@ -158,7 +158,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
     {
       kind: 'options',
       id: 'scenario',
-      label: 'SCEN',
+      label: 'SCENARIO',
       valueLabel: `${idx + 1}/${SCENARIOS.length}`,
       // The scenario's story is its blurb — the mystery you just picked, readable
       // in the tray (the moral stays hidden until solved).
@@ -171,7 +171,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
 
   const bezel: BezelItem[] = [
     { k: 'CASE', v: sc.name, flex: 2 },
-    { k: 'SCEN', v: `${idx + 1}/${SCENARIOS.length}` },
+    { k: 'SCENARIO', v: `${idx + 1}/${SCENARIOS.length}` },
     {
       k: 'RESULT',
       v: checked ? (checked.pass ? 'FIXED' : 'NOT YET') : '—',

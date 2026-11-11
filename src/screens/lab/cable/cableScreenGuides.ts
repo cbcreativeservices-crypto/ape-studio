@@ -404,7 +404,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
       start: 'Look at WHAT’S LEFT and tap any row to finish that step. Then answer the ten GENERAL questions and the seven CRITICAL SAFETY questions.',
     },
     seeing: [
-      'LAB PROGRESS and a WHAT’S LEFT list: each step not yet done, with what remains. When everything is done, you see LAB COMPLETE.',
+      'A WHAT’S LEFT list: each step not yet done, with what remains. When everything is done, you see LAB COMPLETE.',
       'GENERAL: ten questions across the whole lab.',
       'CRITICAL SAFETY: seven questions, and each one must be answered correctly.',
       'REVIEW CONNECTORS › and RETRY FINAL CHALLENGE › sit at the bottom.',

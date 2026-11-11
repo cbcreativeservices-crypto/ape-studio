@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a shotgun at a permitted point outside the setback ring, aimed at the call — then try the dish, the habitat mic or a wider view.',
-    credit: { scenarios: ['wl.place.1', 'wl.place.2', 'wl.place.3', 'wl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the ring and the trail, in two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['wl.place.1', 'wl.place.2', 'wl.place.3', 'wl.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the ring and the trail, in two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'An observation point is a place to begin, outside the ring — not a rule. Aim is the dish’s main control; for a shotgun, aim and a quiet position.',
   },
   context: {

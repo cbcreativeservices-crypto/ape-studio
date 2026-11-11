@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the elements yourself — the baseline pair, a wider pair, a third element off the line — each at a logged coordinate from the origin.',
-    credit: { scenarios: ['ar.place.1', 'ar.place.2', 'ar.place.3', 'ar.rec.2'], interactive: 'twoZones', note: 'Rest an element, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ar.place.1', 'ar.place.2', 'ar.place.3', 'ar.rec.2'], interactive: 'twoZones', note: 'Rest an element, clear of everything, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Every element at a coordinate written from the marked origin, on the axis it belongs to, on the same clock. Change one element at a time and return to the center run.',
   },
   context: {

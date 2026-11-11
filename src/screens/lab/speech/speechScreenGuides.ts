@@ -85,7 +85,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'Across the top, five numbered stages: BREATH, VOCAL FOLDS, RESONANCE, ARTICULATION, SPEECH. The stage you’re on is cyan.',
       'Below, the drawing from The Speech System plays that stage: air rising, the folds buzzing, the throat glowing, the tongue and lips moving.',
-      'The card names the stage, says what happens, and ends with “What you would see:”.',
+      'The card names the stage, says what happens, and ends with “On a display you would see:”.',
     ],
     control: [
       '‹ PREVIOUS and NEXT STAGE › step one stage at a time. Tap a box on the strip to jump straight to it.',

@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic above the middle of the played notes, one of a spaced pair, or a safe off-axis position — then move the mic and see what changes.',
-    credit: { scenarios: ['xy.place.1', 'xy.place.2', 'xy.place.3', 'xy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['xy.place.1', 'xy.place.2', 'xy.place.3', 'xy.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule. Only where it clears both hands and every stroke; move higher or off-axis when it does not.',
   },
   context: {
@@ -560,7 +560,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['xy.nat.yx', 'xy.acc.yx', 'xy.nat.concert', 'xy.acc.concert'],
     azMax: 40,
     elMax: 40,
-    aimBlurb: 'Turn the front up to 40° either way.',
+    aimBlurb: 'Turn the mic’s front up to 40° either way.',
     plan: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.zPlayer - 350, v1: FRONT_Z + 500 },
     side: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.yNat - 1250, v1: 60 },
     target: 'side',

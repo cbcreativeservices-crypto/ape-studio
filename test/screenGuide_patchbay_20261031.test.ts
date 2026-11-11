@@ -184,7 +184,7 @@ describe('3. the numbers and states TRY THIS quotes are what the screen shows', 
     assert.equal(E.contactsOpen(0.84), false);
     assert.equal(E.contactsOpen(0.85), true);
     assert.equal(E.contactsOpen(0.5), false);
-    assert.match(code(`${PB}/art/JackCutaway.tsx`), /opens at \$\{Math\.round\(CONTACT_OPEN_AT \* 100\)\}% in/);
+    assert.match(code(`${PB}/art/JackCutaway.tsx`), /contacts open at \$\{Math\.round\(CONTACT_OPEN_AT \* 100\)\}% in/);
     assert.match(code(`${PB}/rackLayout.tsx`), /Math\.round\(v \* 100\) \/ 100/, '1% fader steps');
     for (const id of ['p5', 'p20']) assert.match(textOf(GUIDES[id]), /85%/);
   });

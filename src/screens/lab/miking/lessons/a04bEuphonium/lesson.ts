@@ -44,7 +44,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about two feet above an upright bell aimed toward its edge, or a foot or two from the bell slightly off axis — clear of the bell’s tilt and the path to stand; then move the mic and see what changes.',
-    credit: { scenarios: ['eu.place.1', 'eu.place.2', 'eu.place.3', 'eu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['eu.place.1', 'eu.place.2', 'eu.place.3', 'eu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the euphonium — not a rule. Aim toward the edge of an upright bell, never down into it. Clearance comes first.',
   },
   context: {
@@ -190,8 +190,8 @@ const scenarios: MikingScenario[] = [
     id: 'eu.mic.4',
     page: 'microphone',
     prompt: 'A clip its maker confirms for this euphonium’s bell; the player agrees; the cable avoids both valve hands. A fair choice for a moving player on a loud stage?',
-    options: ['Yes — then check its noise, the fit and the mute path', 'No — a euphonium can only be miked on a stand', 'No — clips are made for trumpet bells only'],
-    correct: 'Yes — then check its noise, the fit and the mute path',
+    options: ['Yes — then check its noise, fit and room for a mute', 'No — a euphonium can only be miked on a stand', 'No — clips are made for trumpet bells only'],
+    correct: 'Yes — then check its noise, fit and room for a mute',
     explain: 'A confirmed clip keeps the mic at one place on a moving bell. Add strain relief, keep the cable from the valves, slides, mouthpiece and mute, and have the player demonstrate the whole movement.',
     why: {
       'No — a euphonium can only be miked on a stand': 'A stand is the safe default, not the only way. A confirmed clip is fine with the player’s agreement.',

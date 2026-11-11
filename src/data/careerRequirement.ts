@@ -47,7 +47,7 @@ export const REQUIRES_LABEL: Record<RequireKind, string> = {
   DOCTORATE_LICENSE: 'Doctorate + license required',
   CERT: 'Certification required',
   NDT_CERT: 'Nondestructive-testing (NDT) certification required',
-  DEGREE_REGISTRATION: 'Degree + registration required',
+  DEGREE_REGISTRATION: 'Degree + professional registration required',
   PE_LICENSE: 'Degree + Professional Engineer (PE) license may be required',
   CLEARANCE: 'Security clearance required',
 };

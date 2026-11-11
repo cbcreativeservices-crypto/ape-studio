@@ -609,7 +609,7 @@ function PageWrap({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <ChapterTag n={14}>WHAT YOU CAN NOW DO</ChapterTag>
       <Lead>
-        You can name every section of a live sound reinforcement system and say what feeds it. You can pick a system type for a venue and an output configuration for a room. You know which routing tool does which job, what reaches a subwoofer under each feed, how a monitor mix must be tapped, which connections are silent and which are dangerous, what an amplifier can and cannot drive, how a system is deployed, gain-structured, aligned, tuned and rung out — and how a fault is found.
+        You know every section of a live sound reinforcement system and what feeds it. You know which system type suits a venue and which output configuration suits a room. You know which routing tool does which job, what reaches a subwoofer under each feed, how a monitor mix must be tapped, which connections are silent and which are dangerous, what an amplifier can and cannot drive, how a system is deployed, gain-structured, aligned, tuned and rung out — and how a fault is found.
       </Lead>
       <Card tone="ok">
         <Eyebrow>THE FOUR OTHER MODES</Eyebrow>

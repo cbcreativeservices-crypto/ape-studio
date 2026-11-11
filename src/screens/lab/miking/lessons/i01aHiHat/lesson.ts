@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the top cymbal, on the side away from the snare, clear of the stick and the air at the edges — then move the mic and see what changes.',
-    credit: { scenarios: ['hh.place.1', 'hh.place.2', 'hh.place.3', 'hh.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (change MIC for the others), and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['hh.place.1', 'hh.place.2', 'hh.place.3', 'hh.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (change MIC for the others), and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from the top cymbal — not a rule. Height, the spot over the plate and the angle are separate things to try; the snare stays off the mic’s front, and clearance comes first.',
   },
   context: {

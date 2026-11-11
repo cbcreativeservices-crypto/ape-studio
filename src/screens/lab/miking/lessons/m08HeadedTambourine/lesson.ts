@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 15–30 cm from the tambourine, outside the whole motion — then aim at the head or the rim and see what changes.',
-    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'One mic outside the whole motion, about 15–30 cm away, is the place to begin — then the head for body or the rim for jingle. It is a starting point, not a safety clearance, and the player’s motion is never changed for it.',
   },
   context: {

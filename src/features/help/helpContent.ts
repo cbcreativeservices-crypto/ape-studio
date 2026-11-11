@@ -212,7 +212,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-calibration',
         q: 'Are the meters calibrated?',
-        a: 'No — and we say so on every tool. Phone microphones are uncalibrated, so read every level as RELATIVE, for training. For absolute measurements use a calibrated SPL meter or measurement mic.',
+        a: 'Not out of the box. Phone microphones are uncalibrated; the SPL meter lets you set a calibration offset against a trusted meter, which brings readings closer, but still read them as approximate, for training. For absolute measurements use a calibrated SPL meter or measurement mic.',
       },
       {
         id: 'tools-mic',

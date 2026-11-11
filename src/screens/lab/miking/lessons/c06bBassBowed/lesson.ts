@@ -48,7 +48,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — out in front of the strings, a little above the bridge, outside the bow’s whole sweep — then compare lower, an f-hole and a section spot.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Bowed, the front starting point must sit outside the bow’s sweep as well as in front of the strings. Closer to where the bow plays brings more scrape; a broader view integrates the bass with the room.',
   },
   context: {

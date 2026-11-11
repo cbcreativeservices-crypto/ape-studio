@@ -57,7 +57,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a lav on the anchor’s sternum — then try a hidden lav, a boom outside the frame, a desk mic, and see what changes.',
-    credit: { scenarios: ['b2.place.1', 'b2.place.2', 'b2.place.3', 'b2.rec.2'], interactive: 'twoZones', note: 'Rest the mic in each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b2.place.1', 'b2.place.2', 'b2.place.3', 'b2.rec.2'], interactive: 'twoZones', note: 'Rest the mic in each of two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. Where the mic is, its distance and its angle off the mouth are separate controls; consent, the picture and the clothes come first.',
   },
   context: {

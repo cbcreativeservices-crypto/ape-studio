@@ -131,7 +131,7 @@ describe('the REAR cell and the equal-path cell', () => {
   it('Speakers: CANCELS only with matched levels, PARTIAL with one mic turned away, and the switch undoes it', () => {
     spkAt(0, () => {
       const s = reader('SPK', 'twoMic', 'pair');
-      assert.equal(s.cell('PATH Δd R−F')!.v, 'NONE');
+      assert.equal(s.cell('PATH REAR−FRONT')!.v, 'NONE');
       assert.equal(s.cell('1ST NOTCH')!.v, 'CANCELS');
       assert.equal(s.cell('REAR')!.sub, 'opposed');
       s.param('polarity').onToggle!();
@@ -140,7 +140,7 @@ describe('the REAR cell and the equal-path cell', () => {
     });
     spkAt(90, () => {
       const s = reader('SPK', 'twoMic', 'pair');
-      assert.equal(s.cell('PATH Δd R−F')!.v, 'NONE', 'turning a mic moves no path');
+      assert.equal(s.cell('PATH REAR−FRONT')!.v, 'NONE', 'turning a mic moves no path');
       assert.equal(s.cell('1ST NOTCH')!.v, 'PARTIAL');
       assert.equal(s.cell('REAR')!.sub, 'opposed');
     });
@@ -148,14 +148,14 @@ describe('the REAR cell and the equal-path cell', () => {
 
   it('Guitar Amp: the same', () => {
     const on = reader('C02', 'twoMic', 'pair', ampAt(0));
-    assert.equal(on.cell('PATH Δd R−F')!.v, 'NONE');
+    assert.equal(on.cell('PATH REAR−FRONT')!.v, 'NONE');
     assert.equal(on.cell('NOTCH')!.v, 'CANCELS');
     assert.equal(on.cell('REAR')!.sub, 'opposed');
     on.param('polarity').onToggle!();
     assert.equal(on.cell('NOTCH')!.v, 'NO COMB');
     assert.equal(on.cell('REAR')!.sub, 'in step');
     const off = reader('C02', 'twoMic', 'pair', ampAt(90));
-    assert.equal(off.cell('PATH Δd R−F')!.v, 'NONE');
+    assert.equal(off.cell('PATH REAR−FRONT')!.v, 'NONE');
     assert.equal(off.cell('NOTCH')!.v, 'PARTIAL');
   });
 

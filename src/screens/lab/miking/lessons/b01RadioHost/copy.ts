@@ -36,7 +36,7 @@ const BASE = standingVoiceCopy({
     { title: 'PERSPECTIVE', text: 'Studio: a mic each, about 10–15 cm for a broadcast dynamic or 15–20 cm for a condenser, on separate channels. Live: closer, so the voice stays ahead of the PA and the room.' },
     { title: 'SPILL AND FEEDBACK', text: 'Studio bleed and PA feedback are related pickup problems, not the same thing. Live, every open mic hears the PA: fewest open mics, and the pattern’s rejection toward the loudspeaker.' },
     { title: 'MOVEMENT', text: 'Hosts read down, turn to a guest and lean back. A steady seated position matters more than the exact number — move the arm to the host, do not make the host crane to the mic.' },
-    { title: 'THE LOUDEST LINE', text: 'Set gain on the loudest real speech, the laugh and the shout, with headroom at every stage. No single peak number is a placement rule.' },
+    { title: 'THE LOUDEST LINE', text: 'Set gain on the loudest real speech, the laugh and the shout, with headroom at every stage. No single peak reading is the target.' },
   ],
 });
 
@@ -106,7 +106,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     shield: [],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Turn the front up to 60° either way — the mouth stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 60° either way — the mouth stays in front of the mic, a little off its axis.',
     plan: { u0: -600, u1: 3000, v0: -1500, v1: 700 },
     side: { u0: -600, u1: 3000, v0: -1000, v1: 1260 },
     target: 'pa',

@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the mic yourself at the practice line — the shotgun, the compact mic, the boundary on the floor — and see the range and angle change between A, B and C.',
-    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest a mic, in the outside zone, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cl.place.1', 'cl.place.2', 'cl.place.3', 'cl.rec.2'], interactive: 'twoZones', note: 'Rest a mic, in the outside zone, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'From outside the line, aimed at the contact height: one variable at a time, the gain unchanged across A, B and C.',
   },
   context: {

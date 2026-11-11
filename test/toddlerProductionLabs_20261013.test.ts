@@ -178,7 +178,7 @@ describe('lab screens (source pins — React Native screens)', () => {
     const s = read('src/screens/lab/miking/MikingHubScreen.tsx');
     assert.ok(s.includes('const known = hydrated && !unreadable;'));
     assert.ok(s.includes("const count = known ? String(n) : '—';"));
-    assert.ok(s.includes('{`${count} of ${PAGE_IDS.length} pages`}'));
+    assert.ok(s.includes('{`${count} ${pagesWord} done`}'));
   });
   it('Start Here: a guest START OVER lets go of the held ticks and never removes the device copy', () => {
     const s = read('src/screens/startHere/StartHereScreen.tsx');

@@ -41,7 +41,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a shared spot about 1 m above the heads, or a closer one on the conductor’s side — clear of the mallets and the sightline, then move the mic and see what changes.',
-    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch SET to try the four-drum pairs), and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch SET to try the four-drum pairs), and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from the heads — not a rule, and not a safety clearance. The number of drums is not a required number of mics.',
   },
   context: {

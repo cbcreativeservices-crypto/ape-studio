@@ -338,7 +338,7 @@ describe('2. every hand-written name is on the screen it describes', () => {
     const E = code('src/screens/lab/kit/LabEndScreen.tsx') + code('src/screens/lab/kit/labEnd.ts');
     for (const n of ['LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS']) assert.ok(E.includes(n), n);
     const H = code(HUB_SCREEN);
-    for (const n of ['pages`', "'✓ '", 'ProgressUnreadableNote', 'starting points, not rules']) assert.ok(H.includes(n), n);
+    for (const n of ['pagesWord} done`', "'✓ '", 'ProgressUnreadableNote', 'starting points, not rules']) assert.ok(H.includes(n), n);
     const gt = textOf(G.MIKING_END_GUIDE as unknown as Guide) + textOf(G.mikingFoundationsGuide({ pageNum: 3, pageTitle: 'Choose the microphone', prevTitle: 'Starting setups', nextTitle: 'Placement Studio' }) as unknown as Guide);
     for (const n of ['LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'BUILT ON THE FIRST TWO PAGES', 'I ALREADY MIC', 'QUICK CHECK', 'OPEN', '‹ PREV']) assert.ok(gt.includes(n), n);
   });

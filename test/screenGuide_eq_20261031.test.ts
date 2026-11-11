@@ -157,7 +157,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     liveEq: ['VIEW', 'LOW CUT', 'BAND', 'MIC', 'SPECTRUM ONLY', 'EQ ONLY', 'COMBINED', 'BAND ON', 'BAND OFF', 'MIC LIVE — PAUSE', 'MIC PAUSED — RESUME', 'dBFS · UNCALIBRATED APPROXIMATE', 'SLOPE', 'dB/OCT', 'FREQ', 'GAIN'],
     findFreq: ['LVL', 'BAND', 'RESULT', 'PASS', 'MISS', 'LEVEL', 'NEW SIGNAL', 'CHECK', 'NEXT LEVEL ›', 'Target', 'Your selection', 'Difference', 'REFERENCE', 'SIGNAL', 'HEAR IT', 'PINK NOISE', 'SWEEP'],
     matchCurve: ['TARGET', 'MATCH', 'HIDDEN', 'BANDS', 'BAND', 'SCORE', 'HIDE', 'NEW', 'EXCELLENT', 'CLOSE', 'KEEP TRYING'],
-    fixSignal: ['CASE', 'SCEN', 'RESULT', 'FIXED', 'NOT YET', 'BOOMY KICK', 'HARSH VOCAL', 'STAGE RUMBLE', 'HONKY GUITAR', 'SIBILANT VOCAL', 'CHECK', 'REFERENCE', 'SIGNAL', 'HEAR IT'],
+    fixSignal: ['CASE', 'SCENARIO', 'RESULT', 'FIXED', 'NOT YET', 'BOOMY KICK', 'HARSH VOCAL', 'STAGE RUMBLE', 'HONKY GUITAR', 'SIBILANT VOCAL', 'CHECK', 'REFERENCE', 'SIGNAL', 'HEAR IT'],
     challenges: ['THE PROBLEM', 'STRATEGY: CUT', 'STRATEGY: BOOST AROUND', '250 Hz +6 dB', 'overall shift', 'PROBLEM ONLY', 'CUT THE PROBLEM (−6 @ 250)', 'BOOST AROUND IT (+6)', 'CUT −6 @ 250 Hz', 'BOOST +6 AROUND IT', 'FULL SCREEN', 'HEAR IT'],
   };
   const HOME_SRC = [

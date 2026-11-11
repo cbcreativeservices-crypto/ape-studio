@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 30–60 cm from a still player’s hands, a little above; high and wide for a dancer — then move the mic and see what changes.',
-    credit: { scenarios: ['fc.place.1', 'fc.place.2', 'fc.place.3', 'fc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['fc.place.1', 'fc.place.2', 'fc.place.3', 'fc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A still player: about 30–60 cm from the playing area, a little above, seeing both cymbals and the release. A dancer: a wider or higher view outside the whole route — never between the cymbals, and never limiting the dance.',
   },
   context: {
@@ -518,7 +518,7 @@ export const I06B_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT THEY ARE', text: 'A pair of small brass or bronze cymbals, each with a strap or loop through its center. They sound when one strikes the other — the metal itself vibrates. (Crotales, a tuned keyboard of small cymbals, and the drum-kit cymbals are other instruments.)', src: 'MET-TAL' },
-    { title: 'WHERE YOU MEET THEM', text: 'In music and dance traditions where they are worn on the fingers, and in orchestras and percussion sections — in the studio and on stage. (Dance and whole-ensemble setups come later, in Lab 5.)', src: 'PAS-ECV0220' },
+    { title: 'WHERE YOU MEET THEM', text: 'In music and dance traditions where they are worn on the fingers, and in orchestras and percussion sections — in the studio and on stage. (Whole dance-company and ensemble setups come later, in Lab 5.)', src: 'PAS-ECV0220' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Bright, piercing accents, quick rhythms, and a shimmering ring after each stroke. Held still and struck edge-first, or played in rhythm by a dancer — two very different sources for a mic.', src: 'PAS-ECV0220' },
     { title: 'THEIR SIZE', text: 'Small: about 5 cm across. This lab draws a measured pair of 5.5 and 4.8 cm (about 2 in), 2.4 cm high. Thin and thick pairs exist, and a thin pair can sound lower than a thick one — compare the real pairs.', src: 'MET-TAL' },
   ],

@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic centered about 40–80 cm from the midpoint between the heads — then try a spot per head, and a singer’s pair.',
-    credit: { scenarios: ['mar.place.1', 'mar.place.2', 'mar.place.3', 'mar.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mar.place.1', 'mar.place.2', 'mar.place.3', 'mar.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'One centered mic outside both arcs is the place to begin; a spot per head only when one hand disappears or the parts need it — and checked in mono.',
   },
   context: {

@@ -646,7 +646,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud bass rig all soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the rig stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
+    explain: 'For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — measured where the person listens.',
     why: {
       'It is safe for a while, as long as the rig stays below the level of the mic’s rating': 'A mic rating is not a hearing limit.',
       'It is safe as long as the mic is closer than you': 'Where the mic sits says nothing about your ears.',

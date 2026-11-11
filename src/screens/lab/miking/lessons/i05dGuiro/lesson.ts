@@ -43,7 +43,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — roughly 30–60 cm from the middle of the scraped area, covering the whole stroke — facing more of the ridges, or a little lower for more body.',
-    credit: { scenarios: ['gui.place.1', 'gui.place.2', 'gui.place.3', 'gui.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['gui.place.1', 'gui.place.2', 'gui.place.3', 'gui.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Two viewpoints to compare — more ridges or more body — both covering the whole stroke, never across the scraper’s path.',
   },
   context: {

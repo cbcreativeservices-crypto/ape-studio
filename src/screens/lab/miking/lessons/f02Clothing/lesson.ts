@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 1–1.5 m from the active fabric, in front and a little above — then try the close detail start just outside the gesture, and see what changes.',
-    credit: { scenarios: ['f02.place.1', 'f02.place.2', 'f02.place.3', 'f02.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the gesture, inside two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['f02.place.1', 'f02.place.2', 'f02.place.3', 'f02.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the gesture, inside two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A starting point is a place to begin, read from the active fabric to the capsule — not a rule. Closer brings detail and risk; farther brings the garment and the room. The whole gesture stays clear.',
   },
   context: {

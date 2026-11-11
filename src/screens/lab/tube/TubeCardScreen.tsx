@@ -582,7 +582,7 @@ export function TubeCardScreen() {
               {failReason === 'auth'
                 ? `The ${tube.short} card needs an active Academy sign-in — sign in and try again.`
                 : failReason === 'missing'
-                  ? `This page of the ${tube.short} card isn’t available. Nothing is wrong with your account — please let us know so we can add it.`
+                  ? `This page of the ${tube.short} card isn’t available. Nothing is wrong with your account — tell us through Settings › FEEDBACK & SUPPORT › Report a bug so we can add it.`
                   : `Couldn’t load the ${tube.short} card — check your connection.`}
             </Text>
             <Pressable

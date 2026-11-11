@@ -547,7 +547,7 @@ export function ImagesView({ width, os, height = 158 }: { width: number; os: 1 |
         {/* The analog reconstruction filter's response. */}
         <GlowStroke path={paths.filter} color={GREEN} width={1.8} opacity={0.9} />
       </Canvas>
-      <RNText style={[tiny, { left: padL, top: 2 }]}>DRAWN SPECTRUM · √f AXIS</RNText>
+      <RNText style={[tiny, { left: padL, top: 2 }]}>DRAWN SPECTRUM · SQUARE-ROOT FREQUENCY SCALE</RNText>
       <RNText style={[tiny, { left: Math.max(padL, xOf(IMG_B) - 14), top: h - 13, fontFamily: fonts.mono }]}>20k</RNText>
       <RNText style={[tiny, { left: xOf(os) - 10, top: h - 13, fontFamily: fonts.mono, color: withAlpha(RED, 0.85) }]}>
         {os === 1 ? 'fs' : `${os}fs`}

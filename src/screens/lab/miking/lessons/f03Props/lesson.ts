@@ -51,7 +51,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 1–1.4 m from the prop, outside its whole travel, covering the whole action — then aim closer at the part that sounds, and see what changes.',
-    credit: { scenarios: ['f03.place.1', 'f03.place.2', 'f03.place.3', 'f03.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the travel, inside two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['f03.place.1', 'f03.place.2', 'f03.place.3', 'f03.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the travel, inside two different starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Cover the whole action first, from outside the travel; then compare an aimed look at the part that sounds. Distance and aim are separate choices, and the swing and pinch points come first.',
   },
   context: {

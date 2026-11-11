@@ -36,9 +36,9 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       start: 'Watch the waves push the diaphragm, then follow one ⊗/⊙ mark as it flips. Read e = B · l · v under the drawing, then open WHAT’S HAPPENING.',
     },
     seeing: [
-      'Inside a moving-coil (dynamic) mic: the diaphragm, the coil behind it, and the magnet’s gap. The coil stays still in the picture; watch the waves, the current and its glow.',
+      'Inside a moving-coil (dynamic) mic: the diaphragm, the coil behind it, and the magnet’s gap. The coil’s real motion is too small to draw, so it stays still in the picture; watch the waves, the current and its glow.',
       'The amber glow is the current the coil makes. The ⊗/⊙ marks show which way it flows, and they flip each time it reverses.',
-      'Under it, e = B · l · v: the voltage follows the coil’s VELOCITY. WHAT’S HAPPENING explains each part.',
+      'Under it, e = B · l · v: the voltage follows the coil’s VELOCITY.',
     ],
     control: [
       'There’s nothing to set here. The drawing moves on its own, so watch it and read the notes below it.',

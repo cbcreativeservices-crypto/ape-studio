@@ -884,7 +884,7 @@ export function SamplingModule(p: DigitalModuleProps) {
               { k: 'INPUT ATTEN', v: filterOn ? `${attenDb >= 0.05 ? `−${attenDb.toFixed(1)}` : '0.0'} dB` : '0 dB (off)' },
             ]}
           />
-          <Badge text="MAGNITUDE-ROLLOFF MODEL — SHOWS ROLLOFF ONLY (NOT PASSBAND RIPPLE · STOPBAND DEPTH · PHASE)" />
+          <Badge text="SIMPLE MODEL OF HOW THE FILTER TURNS DOWN HIGH FREQUENCIES — NOT EVERY DETAIL OF A REAL FILTER" />
         </PanelCard>
 
         <MythReality

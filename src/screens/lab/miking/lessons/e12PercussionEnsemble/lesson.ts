@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes between the front and back instruments and across the width.',
-    credit: { scenarios: ['pe.place.1', 'pe.place.2', 'pe.31', 'pe.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['pe.place.1', 'pe.place.2', 'pe.31', 'pe.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Move the complete array to change the direct-to-room ratio and the front–back balance. Raising it changes which surfaces dominate — not always a better blend. Compare at a consistent, moderate level.',
   },
   context: {

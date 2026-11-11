@@ -37,7 +37,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — closer, farther, higher — and see how the reeds and the rear brass trade places.',
-    credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the band, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the band, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Close to the front row the reeds are prominent and the rear brass distant; a higher view, a little farther out in front, evens the rows. Compare at matched level, one change at a time; the band’s balance comes first.',
   },
   context: {
@@ -56,7 +56,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalized).' },
-    takeaway: 'Distances, angles and the main position first; overload versus brightness; the support’s level and the handoff; the neighbors of a masked part — before adding level. Reduce a send at once when it rings.',
+    takeaway: 'Distances, angles and the main position first; overload versus brightness; the support’s level and the handoff (bringing up the soloist’s spot mic as the solo starts, then back down); the neighbors of a masked part — before adding level. Reduce a send at once when it rings.',
   },
   practice: {
     title: 'Practice',
@@ -573,7 +573,7 @@ export const E16_LESSON: EnsembleLesson = {
     },
     before: [
       { title: 'PLAN FROM THE SCORE', text: 'The seating chart, solo cues, doubles, mutes, vocal features and the rhythm section’s needs; mark the risers, the monitors, the piano lid, the amps and the safe routes.' },
-      { title: 'LISTEN', text: 'A quiet reed passage, a full brass chord, a solo handoff and the strongest passage — at safe levels.' },
+      { title: 'LISTEN', text: 'A quiet reed passage, a full brass chord, a solo handoff (bringing up the soloist’s spot mic as the solo starts, then back down) and the strongest passage — at safe levels.' },
       { title: 'LET THE BAND BALANCE', text: 'The bandleader sets the balance with the players; then choose the perspective or support that keeps it for the listener.' },
       { title: 'CHOOSE THE CONTROL', text: 'A main pair with rhythm support; section mics with solo spots; a mic on every horn; close sources for the PA with a separate room pair — by the room and the job.' },
     ],

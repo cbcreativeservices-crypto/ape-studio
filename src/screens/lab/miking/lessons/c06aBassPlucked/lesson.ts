@@ -47,7 +47,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — out in front of the strings, a little above the bridge — then move the mic higher, lower and to an f-hole, and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: '“Just above the bridge” means out in front of the strings, a little higher than the bridge — not on it. A stand mic in front and a capsule under the strings are different geometries: their distances are not interchangeable.',
   },
   context: {
@@ -458,7 +458,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage with drums beside the bass. A pickup is installed; one mic channel and one pickup channel; phantom available.',
     setups: [
       { id: 'a', label: 'Pickup on its own channel for the low end; a miniature under the strings below the bridge for detail', ok: true, power: 'phantom', feedback: 'A common, sound plan: the pickup carries the lows, the mic adds detail as feedback allows.' },
-      { id: 'b', label: 'Pickup on its own channel; a low-profile mic at the far f-hole, checked for feedback', ok: true, power: 'phantom', feedback: 'A suggested live spot — never on the bridge — with the pickup carrying the lows.' },
+      { id: 'b', label: 'Pickup on its own channel; a low-profile mic at the treble (G-string) f-hole, checked for feedback', ok: true, power: 'phantom', feedback: 'A suggested live spot — never on the bridge — with the pickup carrying the lows.' },
       { id: 'c', label: 'Pickup and mic summed onto one channel', ok: false, power: 'phantom', feedback: 'Keep them separate, so a feeding-back mic can come down without losing the bass.' },
       { id: 'd', label: 'The mic alone, 1 m in front, turned up to the band’s level', ok: false, power: 'phantom', feedback: 'On a loud stage a distant mic alone runs out of gain before feedback.' },
       { id: 'e', label: 'A clip on the bridge, so the mic gets the strongest vibration', ok: false, power: 'phantom', feedback: 'Never on the bridge: it can inhibit its vibration.' },

@@ -611,7 +611,7 @@ export function useDownmixStep({ onInteractive, done }: { onInteractive: (id: st
     kind: 'TRY',
     layout: 'rack',
     rack: {
-      render: (w, h) => <MeterBoard w={w} h={h} bars={bars} a11y={words} title={fmt === 'mono' ? 'STEREO → MONO · M = (L + R) ÷ 2' : `3/2 → STEREO · L′ = L + ${ITU_K} C + ${ITU_K} LS`} />,
+      render: (w, h) => <MeterBoard w={w} h={h} bars={bars} a11y={words} title={fmt === 'mono' ? 'STEREO → MONO · M = (L + R) ÷ 2' : `5 CHANNELS → STEREO · L′ = L + ${ITU_K} C + ${ITU_K} LS`} />,
       badge: 'Levels against the source’s own level in one channel · an example downmix, a simplified picture — your broadcaster’s coefficients and metadata decide',
       bezel: fmt === 'mono'
         ? [

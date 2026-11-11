@@ -105,7 +105,7 @@ export const JACK_ASPECT = W / H;
 /** The two notes printed under the jack body (R3-PB-02). */
 export const JACK_NOTES = ['ENLARGED — DRAWN LARGER THAN A REAL JACK', 'RING SPRING NOT SHOWN — IT SWITCHES THE SAME WAY'] as const;
 
-export const JACK_BADGE = `CONCEPTUAL MODEL — this one opens at ${Math.round(CONTACT_OPEN_AT * 100)}% in; real jacks open partway, the exact point varies by design.`;
+export const JACK_BADGE = `CONCEPTUAL MODEL — in this drawing the contacts open at ${Math.round(CONTACT_OPEN_AT * 100)}% in; real jacks also open partway, at a point that varies by design.`;
 
 /** W16 (2026-09-18): Android-only live region; silent on iOS. `insertion` is a DRAG,
  *  so this keys on the derived boolean: the contacts opening is the event,

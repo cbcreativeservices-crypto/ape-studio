@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about two feet above an upward bell aimed at its edge, or a foot or two from the bell a little off its axis — clear of the bell’s sway; then move the mic and see what changes.',
-    credit: { scenarios: ['tu.place.1', 'tu.place.2', 'tu.place.3', 'tu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['tu.place.1', 'tu.place.2', 'tu.place.3', 'tu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the tuba — not a rule. Aim across an upward bell, seldom down into it. Clearance comes first.',
   },
   context: {

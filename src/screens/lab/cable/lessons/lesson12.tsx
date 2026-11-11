@@ -145,7 +145,7 @@ export function Lesson12Body() {
     // Screen-reader feedback: the safety reveal is the teaching moment, so it
     // is announced along with progress (sweep 2026-08-15).
     AccessibilityInfo.announceForAccessibility(
-      `Correct. ${q.reveal} ${Math.min(safetyRef.current, SAFETY_QUESTIONS.length)} of ${SAFETY_QUESTIONS.length} safety questions solved.`,
+      `Correct. ${q.reveal} ${Math.min(safetyRef.current, SAFETY_QUESTIONS.length)} safety ${safetyRef.current === 1 ? 'question' : 'questions'} solved.`,
     );
   }, []);
 
@@ -160,14 +160,13 @@ export function Lesson12Body() {
         </>
       ) : unreadable ? null : (
         <>
-          {/* Progress shows what is DONE, never "n of N" (owner D117; D41 C2). */}
-          <Eyebrow text={`LAB PROGRESS · ${completion.cleared} ${completion.cleared === 1 ? 'UNIT' : 'UNITS'} CLEARED`} />
+          {/* No unit count here: WHAT'S LEFT says what remains (owner 2026-11-11). */}
           <WhatsLeft nav={nav} />
         </>
       )}
 
       {/* ── BANK 1 — GENERAL ─────────────────────────────────────────────── */}
-      <Eyebrow text={`GENERAL · ${generalSolved} OF ${FINAL_QUESTIONS.length} SOLVED`} />
+      <Eyebrow text={`GENERAL · ${generalSolved} SOLVED`} />
       <Text style={s.body}>
         Identification, routing, construction, balanced vs unbalanced, levels, protocols, inspection, troubleshooting,
         contact roles and look-alikes — everything the lab taught. Wrong picks stay open; keep trying until each one is

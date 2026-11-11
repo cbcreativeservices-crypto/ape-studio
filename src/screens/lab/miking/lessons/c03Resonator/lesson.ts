@@ -39,7 +39,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — facing the coverplate and upper body, a little off the picking hand — then move the mic and see what changes.',
-    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the coverplate — there is no flat-top sound hole here. Move a few centimeters at a time, then change distance; the bar’s and the hand’s clearance comes first.',
   },
   context: {
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is a resonator with one cone the same sound source as one with three?',
     options: ['Yes: resonators all radiate in exactly the same way', 'Yes, as long as the coverplates look the same', 'No: one cone and three cones radiate differently'],
     correct: 'No: one cone and three cones radiate differently',
-    explain: 'A spider-bridge single cone, a biscuit-bridge single cone and a three-cone design do not present the same sound field. Look at the instrument — without opening it — and test by ear.',
+    explain: 'A spider bridge sits on a metal spider frame over the cone; a biscuit bridge sits on a small wooden disc (the biscuit) glued to the cone’s top. A spider-bridge single cone, a biscuit-bridge single cone and a three-cone design do not present the same sound field. Look at the instrument — without opening it — and test by ear.',
     why: {
       'Yes: resonators all radiate in exactly the same way': 'Designs differ: one cone or three, spider or biscuit bridge, the body and its ports.',
       'Yes, as long as the coverplates look the same': 'What is under the coverplate decides it. Listen around the instrument first.',

@@ -133,7 +133,7 @@ const LIMITER: readonly Q[] = [
   },
   {
     id: 'gr-math',
-    prompt: 'The lab’s source peaks at −20 dBFS and the ceiling is set to −25 dB. How much gain reduction does the limiter apply?',
+    prompt: 'The lab’s source peaks at −20 dBFS and the ceiling is set to −25 dBFS. How much gain reduction does the limiter apply?',
     options: ['5 dB', '20 dB', '25 dB', '45 dB'],
     correct: '5 dB',
     explanation: 'The peaks sit 5 dB above the ceiling (−20 vs −25), so the limiter holds them down by 5 dB. On a steady tone that reduction stays constant on the GR meter.',

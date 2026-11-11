@@ -42,7 +42,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — near the 12th fret, measured from the point the starting point names, clear of the hands — then move the mic and see what changes.',
-    credit: { scenarios: ['ag.place.1', 'ag.place.2', 'ag.place.3', 'ag.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['ag.place.1', 'ag.place.2', 'ag.place.3', 'ag.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named point — the 12th fret, the sound hole, the bridge — not a rule. Distance, position and angle are separate things to try, and the player’s clearance comes first.',
   },
   context: {
@@ -617,9 +617,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your guitar mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic is nearer the guitar than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule (halving the time every 5 dB) — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — measured where the person listens.',
     why: {
-      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule (halving the time every 5 dB).',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'It is safe as long as the mic is nearer the guitar than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

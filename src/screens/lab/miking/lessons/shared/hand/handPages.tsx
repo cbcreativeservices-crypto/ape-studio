@@ -347,7 +347,7 @@ function HandSetting(spec: HandSpec) {
                 </Point>
               ))}
             </Card>
-            <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+            <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
           </>
         ),
@@ -649,7 +649,7 @@ function HandContext(spec: HandSpec) {
                 selectedId: aimAxis,
                 onSelect: (id: string) => setAimAxis(id as 'az' | 'el'),
                 options: [
-                  { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way (seen from above).` },
+                  { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the mic’s front up to ${AZ_MAX}° either way (seen from above).` },
                   { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down (seen from the side).` },
                 ],
               },

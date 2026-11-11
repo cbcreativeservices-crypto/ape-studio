@@ -49,7 +49,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic above the middle of the played span, or one of a spaced pair — clear of every mallet, then move the mic and see what changes.',
-    credit: { scenarios: ['mr.place.1', 'mr.place.2', 'mr.place.3', 'mr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mr.place.1', 'mr.place.2', 'mr.place.3', 'mr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. Center it on the notes the part plays, not on the instrument.',
   },
   context: {
@@ -497,7 +497,7 @@ const words: MalletWords = {
     learn: [
       'Two layouts to begin from, as alternatives: two mics aimed down about 46 cm (1½ ft) above the bars, either about 61 cm (2 ft) apart, or grilles together angled 135° apart — a coincident pair.',
       'Spaced: one mic toward the lower played region, one toward the higher, overlapping through the middle. On a widely played five-octave keyboard 61 cm may be too narrow: test the range and adjust spacing, height and aims. Coincident: no time gap between the two mics, so a clean mono sum and a coherent picture, with less separate register control.',
-      'Listen to each mic alone, both together, and summed to mono before reaching for automatic time alignment or the polarity switch. In a suitable studio a near-coincident or wider pair can be tried too — judge the mono picture and the whole keyboard.',
+      'Listen to each mic alone, both together, and summed to mono before reaching for automatic time alignment or the polarity switch. In a suitable studio a near-coincident pair (capsules a few cm apart, angled outward) or a wider pair can be tried too — judge the mono picture and the whole keyboard.',
     ],
     warn: 'A simplified picture: one point on one bar, straight paths, no room. Judge a real pair by ear — each mic alone, both together, and in mono — at matched levels.',
   },
@@ -571,7 +571,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['mr.nat.oct5', 'mr.acc.oct5', 'mr.nat.oct43', 'mr.acc.oct43'],
     azMax: 40,
     elMax: 40,
-    aimBlurb: 'Turn the front up to 40° either way.',
+    aimBlurb: 'Turn the mic’s front up to 40° either way.',
     plan: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.zPlayer - 350, v1: FRONT_Z + 500 },
     side: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.yNat - 1300, v1: 60 },
     target: 'side',

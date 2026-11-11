@@ -236,7 +236,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
   // ── STAGE 6 · DRESS ───────────────────────────────────────────────────────
   rack: {
     intro: {
-      learning: 'Why a rack is dressed for the next service call: labels identify, managers hold, slack moves, airflow stays clear, and power stays apart from signal by plan.',
+      learning: 'Why a rack is dressed for the next service call: labels identify, managers hold, slack lets the gear slide out for service, airflow stays clear, and power stays apart from signal by plan.',
       start: 'In PHASE A — INSPECT, tap the amber rings or open ▸ SUSPECT LIST and find what’s wrong. Ten finds unlock PHASE B — DRESS.',
     },
     seeing: [
@@ -256,7 +256,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'In C the one cable lights from its A-007 label at the rack entry to the DSP; every other loom dims.',
     ],
     teaches: [
-      'A rack is dressed for the service call: labels identify, managers hold, slack moves, airflow and access stay clear.',
+      'A rack is dressed for the service call: labels identify, managers hold, slack lets the gear slide out for service, airflow and access stay clear.',
       'Power and signal follow a plan that keeps them apart, which limits noise pickup and keeps each cable easy to trace.',
       'Good dressing turns a fault into one traced cable and a quick swap, without disturbing the cables that still work.',
     ],

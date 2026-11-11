@@ -113,7 +113,7 @@ export const GUIDE: MixingGuide = {
       // Owner-approved 2026-10-16 (keyboard low-end pass).
       {
         "source": "Piano / keys",
-        "cut": "HPF 60–80 Hz, but nothing above rumble when a keyboard part covers the bass line (common in reduced orchestrations); −2–3 dB at 250–400 Hz",
+        "cut": "HPF 60–80 Hz, but only a rumble filter when a keyboard part covers the bass line (common in reduced orchestrations); −2–3 dB at 250–400 Hz",
         "boost": "+1–2 dB at 3–5 kHz",
         "notes": "Keep synth pads out of the 1–4 kHz vocal zone. Talk with the keyboardist first, or know their music."
       },

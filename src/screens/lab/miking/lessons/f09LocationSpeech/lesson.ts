@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a boom just above the frame line, aimed at the mouth, on set; a handheld within about 10 cm live — then move the mic and see what changes.',
-    credit: { scenarios: ['loc.place.1', 'loc.place.2', 'loc.place.3', 'loc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, out of the shot and clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['loc.place.1', 'loc.place.2', 'loc.place.3', 'loc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, out of the shot and clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The frame, the head turns and the place change the answer during a take; clearance and safety come first.',
   },
   context: {
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom mic is rated to a very high maximum level. What does that say about a long, loud day on location?',
     options: ['Nothing about ears: it is the mic’s limit', 'The crew is safe up to the mic’s rated level', 'The crew is safe while the mic is nearer the noise'],
     correct: 'Nothing about ears: it is the mic’s limit',
-    explain: 'A mic’s maximum level says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+    explain: 'A mic’s maximum level says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
     why: {
       'The crew is safe up to the mic’s rated level': 'A mic rating is not a hearing limit.',
       'The crew is safe while the mic is nearer the noise': 'Where the mic sits says nothing about your ears.',

@@ -635,9 +635,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud amp all through soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
       'It is safe as long as the mic is closer than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },
@@ -749,5 +749,5 @@ export const SPK_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every speaker, cabinet, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 12 in speaker as the reference, three cabinets, and one classic two-rotor cabinet — its rotor sizes, openings and direction of turning are for illustration only, while its speeds and the times it takes to change speed are the maker’s own figures. Cone motion is drawn larger, mic patterns are textbook shapes, and distances are rounded to about 5 mm and measured to the mic’s front. Never open a rotary cabinet; place mics with the amp off or muted.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every speaker, cabinet, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 12 in speaker as the reference, three cabinets, and one two-rotor cabinet — its rotor sizes, openings and direction of turning are for illustration only, while its speeds and the times it takes to change speed are one adjustable cabinet’s defaults. Cone motion is drawn larger, mic patterns are textbook shapes, and distances are rounded to about 5 mm and measured to the mic’s front. Never open a rotary cabinet; place mics with the amp off or muted.',
 };

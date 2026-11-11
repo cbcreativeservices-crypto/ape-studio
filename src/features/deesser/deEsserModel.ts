@@ -178,7 +178,7 @@ export const FREQ_HINTS: FreqHint[] = [
   { id: 'low-male', name: 'Deep male voice', hz: 4500, note: 'Larger mouth, lower hiss — start around 4–5 kHz.' },
   { id: 'male', name: 'Typical male voice', hz: 5500, note: 'Usually 5–6.5 kHz.' },
   { id: 'female', name: 'Typical female voice', hz: 7000, note: 'Usually 6–8 kHz; sometimes higher.' },
-  { id: 'sh', name: '"SH" rather than "S"', hz: 4000, note: 'SH sits lower, near 3–5 kHz — a de-esser tuned for S may miss it.' },
+  { id: 'sh', name: '"SH" rather than "S"', hz: 4000, note: 'SH sits lower, near 2–5 kHz — a de-esser tuned for S may miss it.' },
   { id: 'bright', name: 'Bright condenser mic', hz: 8000, note: 'The mic’s presence peak adds hiss high up; try 7–9 kHz.' },
 ];
 

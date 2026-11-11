@@ -55,7 +55,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the omni at chest height between the two in a quiet place, or close to the speaking mouth when it is loud — then move it and see what changes.',
-    credit: { scenarios: ['b3.place.1', 'b3.place.2', 'b3.place.3', 'b3.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside each of two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b3.place.1', 'b3.place.2', 'b3.place.3', 'b3.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of both people, inside each of two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The shared place is an easy start; the louder the place, the closer the mic goes to whoever is speaking. Clearance from faces and the lens comes first.',
   },
   context: {
@@ -662,6 +662,6 @@ export const B03_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are measured from the lips to the mic’s front and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, street and wind is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing face to face, mic patterns as textbook shapes, levels by distance alone, wind as marks rather than levels. Distances are measured from the lips to the mic’s front and rounded to about 5 mm below 1 m and more coarsely above it, with feet also shown from 3 m. Safety is exact: off the road, a stop signal agreed, shelter at the first thunder and wait at least 30 minutes after the last.',
   copy: B03_COPY,
 };

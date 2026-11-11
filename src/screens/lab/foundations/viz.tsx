@@ -1198,7 +1198,7 @@ export function ThreeWindowView({
       {/* THE GRAPH — full width UNDER the speaker + air. The wave is created at
           the speaker mouth and travels right; its crests sit under the
           compressions above. */}
-      <OText style={twStyles.winLabel}>THE GRAPH — the speaker creates the wave; it travels right</OText>
+      <OText style={twStyles.winLabel}>THE GRAPH — pressure along the air; the wave travels right</OText>
       <PressureGraphView clock={clock} width={width} height={84 * k} visHz={visHz} amp={amp} mode={mode} lambdaPx={lambdaPx} originX={originX} />
     </View>
   );

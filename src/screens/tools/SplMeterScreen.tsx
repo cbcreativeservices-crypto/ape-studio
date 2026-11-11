@@ -2158,7 +2158,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     speaker, C-weighted slow), not a target for the music itself. The
                     room-size ticks sit at 79 (small rooms, under ~1,500 ft³ / 42 m³, and most critical
                     balance / music mixing), 82 (medium) and 85 (large). 85 is the SMPTE / THX
-                    reference for large rooms; 79 and 82 are common small-room practice. Lower levels are common too: 70–75 for general editing and long
+                    reference for large rooms; 79 and 82 are common for small and medium rooms. Lower levels are common too: 70–75 for general editing and long
                     sessions, 60–65 for detailed or background work, with brief 85–95 checks for
                     impact, punch and low-frequency energy.
                   </Text>
@@ -2166,7 +2166,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     In SPL / OPTIMAL mode the arc reads as a loudness scale: GREEN up to ~85, YELLOW
                     85–90, ORANGE 90–96 and RED from 96. Hearing risk starts near 85 over a full day:
                     the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that, so
-                    in the red it is under an hour. The US legal limit (OSHA) is 90 dBA with a 5 dB rule. The
+                    in the red it is under an hour. The US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. The
                     center number turns the color of the zone it sits in
                     (averaged over ~3 s so it does not flicker at a boundary).
                   </Text>

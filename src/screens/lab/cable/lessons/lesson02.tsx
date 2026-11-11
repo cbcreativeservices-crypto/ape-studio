@@ -66,7 +66,7 @@ export function Lesson02Body() {
     // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
     // outcome + progress are announced here (sweep 2026-08-15).
     AccessibilityInfo.announceForAccessibility(
-      `Correct. ${solvedRef.current.size} of ${L02_CHECKS.length} solved.`,
+      `Correct. ${solvedRef.current.size} solved.`,
     );
     if (solvedRef.current.size >= L02_CHECKS.length) {
       // Genuine solve of all three checks → lesson unit credit (§1.7 honesty:
@@ -114,7 +114,7 @@ export function Lesson02Body() {
 
       <LessonBanner text={L02_RULE} />
 
-      <Eyebrow text={`SEVEN CONSTRUCTIONS · ${fullyPeeled} OF ${CROSS_SECTIONS.length} PEELED`} />
+      <Eyebrow text={`SEVEN CONSTRUCTIONS · ${fullyPeeled} PEELED`} />
       <Text style={s.body}>
         Seven builds cover nearly every cable this lab handles. Pick one and peel it open, layer by layer, from the
         outside in.
@@ -171,7 +171,7 @@ export function Lesson02Body() {
         <OptionChip label={revealed === 0 ? 'PEEL THE FIRST LAYER ›' : 'PEEL DEEPER ›'} active action onPress={peelNext} />
       ) : null}
 
-      <Eyebrow text={`KNOWLEDGE CHECK · ${Math.min(solvedCount, L02_CHECKS.length)} OF ${L02_CHECKS.length} SOLVED`} />
+      <Eyebrow text={`KNOWLEDGE CHECK · ${Math.min(solvedCount, L02_CHECKS.length)} SOLVED`} />
       {L02_CHECKS.map((spec, i) => (
         <CheckQuestion key={spec.question} spec={spec} onSolved={() => onCheckSolved(i)} />
       ))}

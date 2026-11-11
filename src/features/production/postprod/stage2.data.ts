@@ -227,7 +227,7 @@ export const STAGE2_MEDIA: StageDef = {
             { value: "file_count", label: "File count matches" },
             { value: "file_size", label: "File sizes match" },
             { value: "checksum", label: "Checksums match" },
-            { value: "app_verify", label: "The application verified the media" },
+            { value: "app_verify", label: "The copy software verified the media" },
             { value: "playback", label: "Played back and listened to" },
             { value: "none", label: "No verification performed" }
           ]

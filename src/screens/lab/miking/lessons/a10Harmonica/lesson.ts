@@ -50,7 +50,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — a stand mic about 15–30 cm from the harmonica at mouth and hand height, or a mic about 2.5–5 cm from the harp amp’s grille at the dust cap’s edge — then compare.',
-    credit: { scenarios: ['hm.place.1', 'hm.place.2', 'hm.place.3', 'hm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player and the amp, in two different suggested starting points on one path (switching PATH starts afresh), and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['hm.place.1', 'hm.place.2', 'hm.place.3', 'hm.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player and the amp, in two different suggested starting points on one path (switching PATH starts afresh), and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Acoustic: about 15–30 cm from the harmonica, just beyond the hands, facing the playing zone — a little off the breath stream if bursts dominate. Amp: on the real speaker, about 2.5–5 cm from the grille at the dust cap’s edge; toward the center for bite, outward for a softer top.',
   },
   context: {

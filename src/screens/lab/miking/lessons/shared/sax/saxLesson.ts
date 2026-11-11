@@ -109,7 +109,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     placement: {
       title: 'Placement Studio',
       goal: 'Start where we suggest you begin — a few centimeters above the bell, aimed at the sound holes, clear of the player — then move the mic and see what changes.',
-      credit: { scenarios: [id('place.1'), id('place.2'), id('place.3'), id('rec.2')], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+      credit: { scenarios: [id('place.1'), id('place.2'), id('place.3'), id('rec.2')], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
       takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, the tone holes — not a rule. Toward the bell tends to sound brighter, toward the holes warmer with more key noise, farther blends the horn and the room. Clearance comes first.',
     },
     context: {
@@ -566,9 +566,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: `Your ${s} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
       options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the stage stays below the rating', 'It is safe as long as the mic is nearer the bell than you are'],
       correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-      explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
+      explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
       why: {
-        'It is safe for a while, as long as the stage stays below the rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+        'It is safe for a while, as long as the stage stays below the rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
         'It is safe as long as the mic is nearer the bell than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
       },
     },
@@ -635,7 +635,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       shield: ['sx.bell', 'sx.body'],
       azMax: 60,
       elMax: 45,
-      aimBlurb: 'Turn the front up to 60° either way — the horn stays in front of the mic, a little off its axis.',
+      aimBlurb: 'Turn the mic’s front up to 60° either way — the horn stays in front of the mic, a little off its axis.',
       plan: c.contextBoxes.plan,
       side: c.contextBoxes.side,
       target: 'wedge',
