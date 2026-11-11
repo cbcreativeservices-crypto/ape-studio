@@ -68,7 +68,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the vocal mic about 15 cm from the lips, its rejection toward the instrument — then move the mics and see what each hears, and how far apart they are.',
-    credit: { scenarios: ['sw.place.1', 'sw.place.2', 'sw.place.3', 'sw.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of the performer and the instrument, inside two different suggested starting points, and answer the four checks. The worked example earns no credit on its own — it is there to read.' },
+    credit: { scenarios: ['sw.place.1', 'sw.place.2', 'sw.place.3', 'sw.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of the performer and the instrument, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'Each mic is measured from its own source. With a singer behind an instrument the mics end up close together — some bleed is normal; the rejection, the spacing and a mono check decide how much the music can take.',
   },
   context: {

@@ -602,7 +602,7 @@ const WS_DOSE: Workspace = {
         'How long a level can run before the NIOSH-style criterion (85 dBA, 3 dB exchange, 8 hours) is used up. Every 3 dB above 85 halves the allowable time — brutally unintuitive, and why turning it up “just a little” matters so much. A teaching calculation, not medical or legal advice.',
       keySymbols: ['/', 'x²', '−'],
       // Names the authorities (owner ruling 2026-10-23).
-      note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+      note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
       refuse: (v) => underFloor(n(v.lex)),
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);

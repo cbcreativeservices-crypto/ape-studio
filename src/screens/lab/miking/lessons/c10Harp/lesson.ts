@@ -127,9 +127,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your harp mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal next to the orchestra?',
     options: ['Everyone is safe while the music stays below the mic’s rated level', 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'You are safe for as long as the mic stays nearer to the harp than you are'],
     correct: 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — and an orchestra or band around the harp is loud.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that — and an orchestra or band around the harp is loud.',
     why: {
-      'Everyone is safe while the music stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+      'Everyone is safe while the music stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
       'You are safe for as long as the mic stays nearer to the harp than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -617,9 +617,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your harp mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal next to the orchestra?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the music stays below the mic’s rated level', 'It is safe as long as the mic is nearer the harp than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that — measured where the person listens.',
     why: {
-      'It is safe for as long as the music stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+      'It is safe for as long as the music stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
       'It is safe as long as the mic is nearer the harp than you': 'Where the mic sits says nothing about your ears.',
     },
   },

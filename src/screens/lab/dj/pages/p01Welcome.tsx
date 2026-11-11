@@ -54,7 +54,7 @@ function ExposureTile({ onFound }: { onFound: () => void }) {
   return (
     <View style={styles.tile}>
       <Text style={styles.tileHead}>A LOUD NIGHT, IN NUMBERS</Text>
-      <Text style={styles.tileBody}>NIOSH advises 85 dBA for 8 hours, HALVING the time for every 3 dB more. The US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more.</Text>
+      <Text style={styles.tileBody}>NIOSH advises 85 dBA for 8 hours, HALVING the time for every 3 dB more. The US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.</Text>
       <Text style={styles.tileDo}>Pick a 4 h set, then find the LOUDEST level that stays at 100 % or less.</Text>
       <View style={styles.chips}>
         {LEVELS.map((L) => (

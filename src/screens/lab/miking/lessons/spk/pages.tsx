@@ -731,7 +731,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
             <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and the speaker are the player’s sound. Mic the cabinet they bring; leave the tone controls to them.</Point>
             <Point title="A ROTARY CABINET STAYS CLOSED">Plan the stands while it is off. Keep every mic, stand and cable outside, clear of the openings, the vents, the power cord, the organ pedals and the walkways. Never push anything through a louver; never touch connector pins; leave the organ’s cable and any switch on the cabinet alone. Make sure the cabinet stands steady.</Point>
           </Card>
-          <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+          <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

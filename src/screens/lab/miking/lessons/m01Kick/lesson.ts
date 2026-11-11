@@ -630,9 +630,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The kick mic is rated to 174 dB SPL. What does that tell you about standing by the drum through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drum stays below the mic’s 174 dB', 'It is safe as long as the mic itself is inside the drum'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+      'It is safe for a while, as long as the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
       'It is safe as long as the mic itself is inside the drum': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

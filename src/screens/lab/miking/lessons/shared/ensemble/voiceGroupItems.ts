@@ -111,7 +111,7 @@ export const hearingCheck = (p: string, page: SourcePageId, loud: string): Mikin
   prompt: `You monitor ${loud} on headphones for a long session. What protects your hearing?`,
   options: ['Sensible levels and short breaks', 'The highest level rating of the mics', 'Turning up to hear the detail'],
   correct: 'Sensible levels and short breaks',
-  explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are limits for people, measured where they listen. Keep monitoring sensible and take breaks.',
+  explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are limits for people, measured where they listen. Keep monitoring sensible and take breaks.',
   why: {
     'The highest level rating of the mics': 'That is about the microphone, not your ears.',
     'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement, not level.',

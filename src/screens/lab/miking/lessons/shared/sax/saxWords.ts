@@ -13,4 +13,4 @@ export function saxBefore(noun: string): { title: string; text: string }[] {
 
 /** The hearing line (the setting page's warning). */
 export const saxHearing =
-  'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB above that. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about them. Close to the bell a saxophone is very loud: control monitor levels, and use hearing protection where it is loud.';
+  'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about them. Close to the bell a saxophone is very loud: control monitor levels, and use hearing protection where it is loud.';

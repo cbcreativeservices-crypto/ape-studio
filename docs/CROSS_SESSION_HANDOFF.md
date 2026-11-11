@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 15:17 · ccode · 3ca3627d
+changed: Copy: owner's 153 decision-sheet-2 calls applied ("take all suggestions", 2026-11-11) [MD:D59]
+affects other side: nothing (1.0.1 app copy only).
+needs: nothing.
+
+
 ### 2026-11-11 13:49 · ccode · 1713b3b6
 changed: Copy: apply 2,221 one-audit-only fixes (ccode + Comp B, 2026-11-11) [MD:D59]
 affects other side: nothing (app copy only, 1.0.1 build).

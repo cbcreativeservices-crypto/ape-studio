@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom mic is rated to a very high maximum level. What does that say about a long, loud day on location?',
     options: ['Nothing about ears: it is the mic’s limit', 'The crew is safe up to the mic’s rated level', 'The crew is safe while the mic is nearer the noise'],
     correct: 'Nothing about ears: it is the mic’s limit',
-    explain: 'A mic’s maximum level says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
+    explain: 'A mic’s maximum level says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are measured where the person listens.',
     why: {
       'The crew is safe up to the mic’s rated level': 'A mic rating is not a hearing limit.',
       'The crew is safe while the mic is nearer the noise': 'Where the mic sits says nothing about your ears.',

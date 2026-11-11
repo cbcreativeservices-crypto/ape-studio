@@ -400,7 +400,7 @@ describe('E7 — sister cards, plurals, and the corrected text', () => {
     assert.match(read('workspaces/digitalAdv.ts'), /≈ 144 dB of theoretical range/);
     assert.match(read('workspaces/powerElec.ts'), /remote 48 V supplies/);
     assert.doesNotMatch(read('workspaces/powerElec.ts'), /phantom-power feeds|nuisance-trip/);
-    assert.match(read('workspaces/splSafety.ts'), /The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit \(OSHA\) is 90 dBA, halving the time every 5 dB\./);
+    assert.match(read('workspaces/splSafety.ts'), /The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit \(OSHA\) is 90 dBA for 8 hours, halving the time for every 5 dB above that\./);
     assert.match(read('workspaces/splSafety.ts'), /preamp’s input clip point at minimum gain — engage a pad before this SPL/);
     assert.match(read('workspaces/roomsAdvanced.ts'), /bass is most often the weakest link/);
     assert.match(read('workspaces/wavesAdv.ts'), /twice one tone, plus or minus the other/);

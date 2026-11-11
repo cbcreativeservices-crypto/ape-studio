@@ -2464,7 +2464,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                 <RuleFeedback
                   ruleId="rack-service-access"
                   verdict="good"
-                  short="Dress for the service call: labels identify, managers hold, intentional slack moves — one device out, nothing else touched."
+                  short="Dress for the service call: labels identify, managers hold, slack lets the gear slide out for service — one device out, nothing else touched."
                   openSources={openSources}
                 />
               ) : null}
