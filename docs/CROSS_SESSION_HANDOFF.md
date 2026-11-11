@@ -715,6 +715,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 11:04 · ccode · 8f10f9e2
+changed: Copy: apply 327 user-facing fixes both audits agreed on (ccode + Comp B, 2026-11-11) [MD:D59]
+affects other side: nothing (app copy only; port of ape-101 fe0ba758 to the OTA branch, owner 2026-11-11 "everything that can go OTA goes OTA"; not published).
+needs: nothing.
+
+
+### 2026-11-10 14:46 · ccode · e2f85ade
+changed: must-do D59: Comp B user-facing copy audit package (owner 2026-11-10) [MD:D59]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-10 13:50 · ccode · 09b6c35f
 changed: Envelope + Sound Systems check guides: first miss asks to try again, explanation from the second miss (matches checkFeedback.ts; the 11-08 guide rewrite had lost it); must-do D52: 1.0.1 port recorded [MD:D52]
 affects other side: nothing (app wording only; next OTA).
