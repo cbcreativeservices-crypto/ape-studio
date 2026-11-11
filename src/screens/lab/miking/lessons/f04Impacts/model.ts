@@ -46,7 +46,7 @@ export const F04_ZONES: DocumentedZone[] = [
   foleyZone({
     id: 'f04.contact',
     label: 'Close, on the block and the surface',
-    band: 'A suggested trial: about 40–60 cm (16–24 in) from the impact, aimed at the block and the table together, outside the block’s whole travel.',
+    band: 'A suggested start: about 40–60 cm (16–24 in) from the impact, aimed at the block and the table together, outside the block’s whole travel.',
     kind: 'trial',
     src: 'LESSON-F04',
     quote: 'Aim a secure mic at the padded object and the surface together from outside the object’s entire travel.',
@@ -77,12 +77,12 @@ export const F04_ZONES: DocumentedZone[] = [
     micTypeIds: ['scSupercard', 'shotgunShort'],
     bandProv: DD,
     tendency: 'The source and the room joined, the decay or the drip tail with them — farther from splash and air bursts, at the cost of more room noise.',
-    checks: ['Room noise under the soft parts', 'The tail heard to its end', 'The pair together in mono, if paired'],
+    checks: ['Room noise under the soft parts', 'The tail heard to its end', 'Both mics together in mono, if you use two'],
   }),
   foleyZone({
     id: 'f04.stroke',
     label: 'Along the friction line',
-    band: 'A suggested trial: about 30–50 cm (12–20 in) in front of the stroke, aimed along the friction line — never where the brush can cross it.',
+    band: 'A suggested start: about 30–50 cm (12–20 in) in front of the stroke, aimed along the friction line — never where the brush can cross it.',
     kind: 'trial',
     src: 'LESSON-F04',
     quote: 'Aim along the active friction zone without letting the brush cross the mic.',

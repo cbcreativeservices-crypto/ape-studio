@@ -66,7 +66,7 @@ export function fifthsApart(pcA: number, pcB: number): number {
   return Math.min(f, 12 - f);
 }
 
-export type KeyRelation = 'SAME' | 'NEIGHBOURS' | 'DISTANT' | 'OUT OF TUNE';
+export type KeyRelation = 'SAME' | 'NEIGHBORS' | 'DISTANT' | 'OUT OF TUNE';
 
 /**
  * How two decks' keys sit together (both in the same mode in this lab's
@@ -81,7 +81,7 @@ export function keyRelation(a: DeckState, b: DeckState): KeyRelation | null {
   const frac = d - Math.round(d);
   if (Math.abs(frac) > 0.15) return 'OUT OF TUNE';
   const f = fifthsApart(ta, tb);
-  return f === 0 ? 'SAME' : f === 1 ? 'NEIGHBOURS' : 'DISTANT';
+  return f === 0 ? 'SAME' : f === 1 ? 'NEIGHBORS' : 'DISTANT';
 }
 
 /**

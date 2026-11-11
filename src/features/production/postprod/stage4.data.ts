@@ -282,7 +282,7 @@ export const STAGE4_EDIT: StageDef = {
           fieldId: "comp_criteria",
           label: "What the comp was judged on",
           kind: "multiChoice",
-          help: "If this list has no performance term in it, the comp is being assembled by meter rather than by ear.",
+          help: "If this list has no performance term in it, the comp is being assembled by measurement rather than by ear.",
           options: [
             { value: "timing", label: "Timing" },
             { value: "pitch", label: "Pitch" },
@@ -403,7 +403,7 @@ export const STAGE4_EDIT: StageDef = {
           fieldId: "processing_order",
           label: "Processing order",
           kind: "longText",
-          help: "The sequence you intend to work in. Manual editing first almost always, then clicks, then hum, then broadband, then the narrow tools. The right order changes with the problem — having one is what matters.",
+          help: "The sequence you intend to work in. Manual editing almost always comes first, then clicks, then hum, then broadband noise reduction, then the narrow tools. The right order changes with the problem — having one is what matters.",
           placeholder: "e.g. manual edits → click removal → hum removal → broadband reduction → de-ess → final comparison"
         },
         {
@@ -519,7 +519,7 @@ export const STAGE4_EDIT: StageDef = {
       kind: "unrealistic",
       title: "Material cut tight to the edits",
       detail: "With no handles there is nothing to make a fade from and nothing to give when a later change moves the join. Every subsequent revision becomes a re-cut rather than a nudge.",
-      fixHint: "Trim back with room either side. Where it has already been consolidated, keep the uncut source available.",
+      fixHint: "Trim back with room either side. Where it has already been consolidated into new files, keep the uncut source available.",
       needsLogic: true,
       logicIntent: "Fire when handles_preserved is no."
     },
@@ -590,7 +590,7 @@ export const STAGE4_EDIT: StageDef = {
       kind: "unrealistic",
       title: "Restoration with no before-and-after check",
       detail: "Repairs are being applied without listening to what is being removed. Aggressive restoration takes the noise and a share of the voice with it, and the damage it leaves is usually harder to fix than the problem it was aimed at.",
-      fixHint: "Listen to the difference signal on its own. If you can hear speech, music or useful ambience in it, back the processing off.",
+      fixHint: "Listen to the removed signal on its own. If you can hear speech, music or useful ambience in it, back the processing off.",
       needsLogic: true,
       logicIntent: "Fire when problem_list contains a row whose pb_action is reduce or repair AND either artifact_check is no, or comparison_method contains neither difference nor level_matched."
     },

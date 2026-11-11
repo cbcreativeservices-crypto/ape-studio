@@ -342,7 +342,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open CLOCK: set the mixer’s CLOCK switch to CH 1, lead 5-PIN MIDI, and the drum machine to EXTERNAL. Play deck A (START): MACHINE reads deck A’s tempo, and the step lights run.</Do>
+        <Do>Open CLOCK: set the mixer’s CLOCK switch to CH 1, the lead to 5-PIN MIDI, and the drum machine to EXTERNAL. Play deck A (START): MACHINE reads deck A’s tempo, and the step lights run.</Do>
         <P>It follows — but the crowd hears nothing: the clock cable carries no sound. Open AUDIO, give CH 2’s LINE inputs to the drum machine, and bring CH 2 up.</P>
         {startNote ? <Note tone="try">{startNote}</Note> : null}
       </Step>
@@ -373,7 +373,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
           }}
           met={driftSeen.current}
           progress={drift ? `ITS BAR 1: ${phaseText}` : null}
-          explain="On its own clock nothing makes it follow: 0.6 BPM apart is 0.6 beats a minute — a flam within seconds, half a beat off within a minute. EXTERNAL clock from the leader is the cure."
+          explain="On its own clock nothing makes it follow: 0.6 BPM apart, for example, is 0.6 beats a minute — a flam within seconds, half a beat off within a minute. EXTERNAL clock from the leader is the cure."
           onMet={() => setCheck(true)}
         />
         <FaultCard
@@ -388,7 +388,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={arrives && dm.sync === 'EXT' && dm.clockSrc !== 'OFF'}
           hints={['Read the callout at the drum machine’s MIDI IN: does any clock arrive?', 'The lead is a TRS-MIDI of type B; this drum machine uses type A. The plug fits — the wiring does not.', 'Open CLOCK and use a type A cable, or a 5-pin MIDI cable into the DIN input.']}
-          why="MIDI on a 3.5 mm jack comes in more than one wiring, most often type A or B. The wrong one fits perfectly and delivers nothing — just as a USB cable between two USB devices does (they need a host). When a follower will not follow, check what actually ARRIVES before touching the tempo."
+          why="MIDI on a 3.5 mm jack comes in more than one wiring, most often type A or B. The wrong one fits perfectly and delivers nothing — like a USB cable between two USB devices with no computer (host) to run the link. When a follower will not follow, check what actually ARRIVES before touching the tempo."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />

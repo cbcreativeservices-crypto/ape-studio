@@ -20,7 +20,7 @@ const BAND_CARDS = (
       <Point title="A CARDIOID CONDENSER">Section detail, quieter reeds, the piano and a main stereo view. Check its noise, its peak handling, its off-axis sound and the brass spilling into it.</Point>
       <Point title="A MOVING-COIL DYNAMIC">Close horns and amps, with manageable stage hardware. “Dynamic” alone does not promise better isolation — the pattern and the distance do.</Point>
       <Point title="A FIGURE-8 RIBBON">A tonal choice for horns, its sides turned toward an unwanted source. Its back hears too. Check its wind tolerance, its mounting and the preamp gain — and its own manual on power.</Point>
-      <Point title="AN INSTRUMENT MINIATURE">A fixed relationship when a soloist stands or moves, and less stand clutter: an approved clip, clearance, strain relief, the pattern and the input’s headroom.</Point>
+      <Point title="AN INSTRUMENT MINIATURE">A fixed relationship when a soloist stands or moves, and less stand clutter. Check an approved clip, clearance, strain relief, the pattern and the input’s headroom.</Point>
       <Point title="AN OMNI OR WIDE PATTERN">A more inclusive room or section view in controlled conditions; broad pickup can limit the PA’s gain and bring in the next section.</Point>
     </Card>
     <Body>Check the loudest trumpet and trombone attacks with the chosen mic and preamp. A mic’s output sensitivity alone does not decide gain before feedback: pattern, distance, open channels and the loudspeakers do.</Body>
@@ -72,7 +72,7 @@ const SPEC = ensembleHandSpec({
     gainId: 'bb.prac.gain',
     secondId: 'bb.prac.3',
     mixIds: ['bb.need', 'bb.hole', 'bb.ms'],
-    mixIntro: 'Three cards from earlier pages, mixed: what earns a support, a spaced pair spread too wide, and an M/S pair in mono.',
+    mixIntro: 'Three cards from earlier pages, mixed: when a support mic is worth adding, a spaced pair spread too wide, and an M/S pair in mono.',
     sheetNote: 'For a real band, with the bandleader’s, the players’ and the venue’s agreement. Two positions on the same rows: write tendencies in words — what you heard, not a promised result.',
   },
   words: {

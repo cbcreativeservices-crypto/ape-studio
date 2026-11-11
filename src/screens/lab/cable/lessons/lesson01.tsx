@@ -93,7 +93,7 @@ export function Lesson01Body() {
         </DetailCard>
       ) : null}
 
-      <Eyebrow text={`WHAT MUST TRAVEL HERE? · ${Math.min(pairIdx + 1, CARRY_PAIRS.length)} OF ${CARRY_PAIRS.length}`} />
+      <Eyebrow text={`WHAT MUST TRAVEL HERE? · PAIR ${Math.min(pairIdx + 1, CARRY_PAIRS.length)}`} />
       {!allDone ? (
         <>
           <DetailCard>

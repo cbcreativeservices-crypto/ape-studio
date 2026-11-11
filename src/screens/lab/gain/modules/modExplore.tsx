@@ -191,7 +191,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         </GlossaryText>
         <ZoneLegend />
         <Text style={styles.caption}>
-          The source is a quiet mic — fixed — cabled into the preamp’s XLR input. The preamp rides the dock lane; the rest of the chain lives in the PROCESS and LEVELS trays. The MASTER feeds a powered nearfield monitor over a line cable.
+          The source is a quiet mic — fixed — cabled into the preamp’s XLR input. Set the preamp with the PREAMP fader below, and the rest of the chain in the PROCESS and LEVELS trays. The MASTER feeds a powered nearfield monitor over a line cable.
         </Text>
         <View style={[styles.note, healthy && styles.noteGood]}>
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>
@@ -321,7 +321,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
     >
       <View style={styles.well}>
         <GlossaryText style={styles.body}>
-          Free practice — here even the SOURCE is yours, the one control module 6 never hands over.
+          Free practice — here even the SOURCE is yours, the one control Multiple Gain Stages never hands over.
           Feed the rig a whisper or a scream, make deliberate mistakes, recover cleanly. Nothing is
           graded; the chain just tells the truth.
         </GlossaryText>

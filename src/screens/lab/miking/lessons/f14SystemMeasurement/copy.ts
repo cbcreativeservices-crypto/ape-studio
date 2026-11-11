@@ -42,7 +42,7 @@ export const F14_COPY: Partial<LessonCopy> = {
     typeNotes: {
       measFF: 'Free field: aim it as its calibration file says.',
       measRI: 'Random incidence: made for sound from many directions — check the correction before a direct-sound trace.',
-      measQuarter: 'A 1/4 in capsule: for the high levels close to a cone; check its own file.',
+      measQuarter: 'A 1/4 in capsule: for the high levels close to a cone; check its own calibration file.',
     },
     note: 'Log the radius, the angle or the seat for every trace — and the source that was playing.',
     availableLead: 'Starting points for this mic here',

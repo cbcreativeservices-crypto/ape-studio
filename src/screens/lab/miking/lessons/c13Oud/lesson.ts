@@ -198,7 +198,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.3`,
     page: 'placement',
-    prompt: 'Why does this lesson give a farther room view no number?',
+    prompt: 'Why is no distance given for a farther-back room mic?',
     options: ['The oud is too quiet to be miked from farther away', 'Distance and the room change the sound: try it by ear in a good room', 'A far mic sounds much the same wherever in the room it is placed'],
     correct: 'Distance and the room change the sound: try it by ear in a good room',
     explain: 'The oud-specific starting points are close-in ones. Farther back is worth trying where the room is pleasing and quiet — move back from the first start and listen for the oud and the room together.',
@@ -444,7 +444,7 @@ export const C13_LESSON: Lesson = {
       { id: 'player', label: 'the player and the oud', short: 'PLAYER', note: 'Seated, the bowl on the right thigh, the face to the audience, the neck to the left. The risha arc, the left hand, the swinging pegbox and the player’s view are theirs.', prov: { kind: 'illustrative', reason: 'a typical seated posture' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'chair', label: 'the chair', short: 'CHAIR', note: 'Behind the player. Keep stand legs clear of the chair and the player’s feet; mark its place and angle for a repeatable session.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'FLOOR SPACE', scene: 'kit' },
       { id: 'vocal', label: 'the vocal mic (a singing oud player)', short: 'VOCAL MIC', note: 'Above the oud, in front of the mouth. The voice reaches the oud mic and the oud reaches the vocal mic: plan both together.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'riq', label: 'the frame-drum player', short: 'FRAME DRUM', note: 'Beside the oud player. A riq’s jingles and a frame drum are loud and bright next to an oud — closer oud placement and the drum’s own mic help the balance.', prov: { kind: 'illustrative', reason: 'a typical small ensemble' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'riq', label: 'the frame-drum player', short: 'FRAME DRUM', note: 'Beside the oud player. The jingles of a riq (a small frame drum) and a frame drum are loud and bright next to an oud — closer oud placement and the drum’s own mic help the balance.', prov: { kind: 'illustrative', reason: 'a typical small ensemble' }, tag: 'SPILL', scene: 'kit' },
       { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front, facing back at the player. A mic aimed at the oud has it behind and below — aim a rejection at it.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience. Its sound fills the stage and can ring through the oud’s body into a close mic.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage', planIds: ['paL', 'paR'] },
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge. The level the room needs decides how close a mic must be — or whether a pickup helps.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },

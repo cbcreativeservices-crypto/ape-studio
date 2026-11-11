@@ -23,7 +23,7 @@ export type RoleId = 'commentary' | 'action' | 'main' | 'spots';
 export type LayoutId = 'minimal' | 'extensive';
 
 export const ROLES: Readonly<Record<RoleId, { label: string; short: string; job: string }>> = {
-  commentary: { label: 'Commentary', short: 'COMM', job: 'Speech in the program: close, independent inputs with their own cough and mute.' },
+  commentary: { label: 'Commentary', short: 'COMM', job: 'Speech in the program: close, independent inputs with their own cough key and mute.' },
   action: { label: 'Action', short: 'ACTION', job: 'Selected detail of the play from approved sectors, one dominant feed or a handoff at a time.' },
   main: { label: 'Main ambience', short: 'MAIN', job: 'The stable venue bed from a useful permitted viewpoint — it carries the event when detail is lost.' },
   spots: { label: 'Audience spots', short: 'SPOTS', job: 'Local audience sectors where the main ambience leaves a real gap — never one shouting spectator.' },

@@ -336,7 +336,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     control: [
       'Tap a mic to pick it. A new pick clears your factors.',
       'Check the factors that drove your choice, then tap CHECK MY REASONING.',
-      'Once you’ve checked the original brief, CHANGE ONE VARIABLE appears: Original brief, “The boom operator is no longer available,” “The interview is now inside a quiet studio” and “The interviewee must walk around freely.” Pick again, then CHECK MY REASONING.',
+      'Once you’ve tapped CHECK MY REASONING on the original brief, CHANGE ONE VARIABLE appears: Original brief, “The boom operator is no longer available,” “The interview is now inside a quiet studio” and “The interviewee must walk around freely.” Pick again, then CHECK MY REASONING.',
       'Tap NEXT: BUILD YOUR MIC LOCKER ›, or use the strip, to move on.',
     ],
     changes: [

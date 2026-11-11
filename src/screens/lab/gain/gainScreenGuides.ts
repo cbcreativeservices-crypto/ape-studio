@@ -36,13 +36,13 @@ export const GAIN_HOME_GUIDE: ScreenGuide = {
     start: 'Tap What Gain Staging Is to read what it covers, then tap OPEN. New to gain staging? Take the LEARN modules in order before EXPLORE and CHALLENGE.',
   },
   seeing: [
-    'The strip on top, SOURCE › PREAMP › PROCESSING › FADER › OUTPUT, is the signal’s path. Each module shows part of it, or a fuller version.',
+    'The strip on top, SOURCE › PREAMP › PROCESSING › FADER › OUTPUT, is the signal’s path. Each module shows part of the path, or a fuller version.',
     'LEARN shows how each stage feeds the next. EXPLORE adds a full channel strip with Signal X-Ray, plus Free Practice. CHALLENGE: find the stage that’s wrong.',
     'A ✓ marks a module you’ve done. RELATED opens the LEVELS & DECIBELS CALC, SIGNAL CHAIN BUILDER and SPL METER.',
   ],
   control: [
     'Tap a module’s name to read what it covers, then tap OPEN to start it.',
-    'Inside a module, the chain fills the display with live levels on its frame. Your faders sit in the dock at the bottom, and the notes scroll below.',
+    'Inside a module, the chain fills the display, with live level readouts around its edge. Your faders sit in the dock at the bottom, and the notes scroll below.',
     'Use the strip under a module’s title to move between modules, and ‹ to leave the lab. SEE WHAT’S LEFT lists what you still have to do.',
     'Tap the ⓘ at the right of a module’s title whenever you want that screen explained.',
   ],
@@ -104,7 +104,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     },
     seeing: [
       'Your signal runs left to right: SOURCE, PREAMP, OUTPUT. Meter colors: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line (OVERLOAD).',
-      'Gray at the foot of PREAMP and OUTPUT is hiss, the noise floor. The word under a meter names its zone; a mic’s QUIET SOURCE is normal.',
+      'Gray at the foot of PREAMP and OUTPUT is hiss, the noise floor. The word under a meter names its zone; QUIET SOURCE is normal for a mic.',
       'PREAMP (+18 dB) and OUTPUT (+0 dB) are FIXED. Each readout is dB below the 0 dB ceiling; STATUS reads OK, HOT or CLIP.',
     ],
     control: [
@@ -150,7 +150,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     changes: [
       'PREAMP = source + input gain: at +18 dB, −30 + 18 = −12 dB. HEADROOM shrinks as gain rises.',
       'Too little gain leaves the signal in the blue zone, a small gap above the hiss. Too much hits 0 dB: the waveform is clipped flat and HEADROOM reads 0 dB.',
-      'Hiss rises with gain: slowly at first, while the preamp’s own hiss is louder than the source’s, then dB for dB. No gain removes hiss that came in with the source.',
+      'Hiss rises with gain: slowly at first, while the preamp’s own hiss is louder than the source’s, then 1 dB per dB of gain. No gain removes the source’s own hiss.',
     ],
     teaches: [
       'Input gain is the first, and most important, gain decision in the chain.',
@@ -273,7 +273,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     },
     seeing: [
       'A channel strip as seven columns: SOURCE (FIXED, a quiet mic at −30 dB), PREAMP, EQ, COMP, FADER, BUS and MASTER, each with its gain setting below.',
-      'With X-RAY OFF, each stage shows only a SIG light (lit above TOO LOW) and a CLIP light, often all real gear shows you from outside. X-RAY ON shows every meter.',
+      'With X-RAY OFF, each stage shows only a SIG light (lit above TOO LOW) and a CLIP light, which is often all real gear shows you from the outside. X-RAY ON shows every meter.',
       'Readouts: MASTER, HEADROOM, X-RAY and BALANCE (✓ OK when every stage is healthy).',
     ],
     control: [

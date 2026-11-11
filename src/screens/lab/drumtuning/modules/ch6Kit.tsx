@@ -225,7 +225,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
           },
           well: (
             <>
-              <Landing looking="the two toms and a ladder of their pitches; the kit starts upside down." prompt="Ride RACK and FLOOR until the bracket turns green, then ▶ BOTH." />
+              <Landing looking="the two toms and a ladder of their pitches; the kit starts upside down (floor tom tuned above the rack)." prompt="Ride RACK and FLOOR until the bracket turns green, then ▶ BOTH." />
               <DrumStatus playing={rack.playing || floor.playing || both.playing} pending={rack.pending || floor.pending || both.pending} failed={rack.failed || floor.failed || both.failed} rendering={rack.status === 'rendering' || floor.status === 'rendering' || both.status === 'rendering'} idle="stopped · ride RACK and FLOOR, then ▶ BOTH" label={both.playing || both.pending ? 'rack then floor' : rack.playing || rack.pending ? 'the rack tom' : 'the floor tom'} />
               <Feedback tone={verdict.kind === 'distinct' ? 'ok' : 'warn'}>{verdict.message}</Feedback>
               <Card>
@@ -245,7 +245,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
                 <Text style={styles.label}>NAME</Text>
                 <TextInput value={name} onChangeText={setName} placeholder="e.g. Club set, coated heads" placeholderTextColor={colors.textMuted} style={styles.input} maxLength={NAME_MAX} accessibilityLabel="Name for this tuning note" />
                 <Text style={styles.label}>NOTE</Text>
-                <TextInput value={note} onChangeText={setNote} placeholder="heads, room, what worked" placeholderTextColor={colors.textMuted} style={[styles.input, { minHeight: 60 }]} multiline maxLength={NOTE_MAX} accessibilityLabel="Free note" />
+                <TextInput value={note} onChangeText={setNote} placeholder="heads, room, what worked" placeholderTextColor={colors.textMuted} style={[styles.input, { minHeight: 60 }]} multiline maxLength={NOTE_MAX} accessibilityLabel="Your own note: heads, room, what worked" />
                 <Text style={styles.values}>{`rack tom ${rackHz} Hz (${noteName(rackHz)}) · floor tom ${floorHz} Hz (${noteName(floorHz)}) — batter pitches; the relationship is Chapter 4's choice`}</Text>
                 <KeyButton label="SAVE THIS SETUP" onPress={save} tint={colors.green} />
                 {savedFlash ? <Feedback tone={savedFlash.ok ? 'ok' : 'warn'}>{savedFlash.text}</Feedback> : null}

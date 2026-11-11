@@ -349,7 +349,7 @@ export function NoiseLabScreen() {
             ? `The ${selected.label.toLowerCase()} line is that noise AFTER the speaker high-pass; the ideal straight slopes stay dim behind it, and the amber marker sits at the ${SPEAKER_HPF_HZ} Hz corner. Below it the filter cuts about 12 dB per octave, so the line falls away to the left — far less of that low energy reaches the driver.`
             : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
                 selected.slope > 0 ? '+' : ''
-              }${selected.slope} dB per octave (anchored at 1 kHz). ${COLOR_CHARACTER[color]} The shimmering trace is a stylized live-noise hint around the exact slope.`}
+              }${selected.slope} dB per octave (anchored at 1 kHz). ${COLOR_CHARACTER[color]} The shimmering trace is only a drawn hint of live noise around the exact slope.`}
         </Text>
       </View>
 

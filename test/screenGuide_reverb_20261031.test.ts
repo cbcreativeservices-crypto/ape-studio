@@ -411,6 +411,6 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.doesNotMatch(SCREEN, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame|rt60Status|Rt60/);
     assert.doesNotMatch(REVERB, /pollGr/);
     assert.match(SCREEN, /const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';/);
-    assert.match(REVERB, /heroBadge: 'DECAY SLOPE — ANALYTIC/);
+    assert.match(REVERB, /heroBadge: 'DECAY SLOPE — CALCULATED/);
   });
 });

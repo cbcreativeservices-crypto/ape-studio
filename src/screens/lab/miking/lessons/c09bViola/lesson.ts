@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one viola mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.',
     credit: { scenarios: ['va.prac.order', 'va.prac.gain', 'va.prac.setup1', 'va.prac.setup2', 'va.prac.3', 'va.mix.1', 'va.mix.2', 'va.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real viola.' },
-    takeaway: 'Safe clearance from the bow, the arm and the head, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass — and more than one setup can pass.',
+    takeaway: 'You pass with safe clearance from the bow, the arm and the head, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay — and more than one setup can pass.',
   },
 };
 
@@ -356,7 +356,7 @@ const symptoms: Symptom[] = [
   {
     id: 'va.sym.bow',
     observation: 'Bow noise masks the note',
-    firstChecks: 'The capsule is localized near the bow or the bridge: change the angle, or move outward and up.',
+    firstChecks: 'The capsule is too close to the bow or the bridge: change the angle, or move outward and up.',
     options: ['Cut the high frequencies on the viola channel first', 'Ask the player to bow more lightly for the whole of the session', 'Change the angle, or move the mic outward and up'],
     correct: 'Change the angle, or move the mic outward and up',
     explain: 'Very close to the bow, the mic overstates it. A little more distance or a different angle blends the note and the bow.',

@@ -1753,7 +1753,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   ) : null}
                   <Text style={styles.calDraftValue}>
                     {calDraftText}
-                    <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
+                    <Text style={styles.calDraftUnit}>  dB SPL (not set yet)</Text>
                   </Text>
                   <View style={styles.controls}>
                     {[-5, -0.5, +0.5, +5].map((step) => (
@@ -2106,7 +2106,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       ) : null}
                       <Text style={styles.calDraftValue}>
                         {calDraftText}
-                        <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
+                        <Text style={styles.calDraftUnit}>  dB SPL (not set yet)</Text>
                       </Text>
                       <View style={styles.controls}>
                         {[-5, -0.5, +0.5, +5].map((step) => (
@@ -2182,7 +2182,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   <Text style={styles.vuBadge}>
                     {calibrated
                       ? `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
-                      : `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
+                      : `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'}). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
                   </Text>
                 )}
 

@@ -85,7 +85,7 @@ export const MAR_COPY: LessonCopy = spCopy({
   },
   placement: {
     workedZone: { pair: 'mar.centre.pair', singer: 'mar.centre.singer' },
-    workedAim: 'Face the midpoint between the heads — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
+    workedAim: 'Face the midpoint between the heads — the lab counts your aim while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
     reveal: 'Centered and a little farther back, both hands tend to balance; the nearer head can leap in level; a spot per head gives control at a cost. Pairs and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A dynamic can make sense on a loud stage; a small condenser tends to show more of the fine rattle. Compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic — both arms sweep wider than a single shaker. Watch PEAK meters for the brief accents.',

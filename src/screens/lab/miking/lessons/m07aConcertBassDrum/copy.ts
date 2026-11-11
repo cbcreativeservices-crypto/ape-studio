@@ -43,7 +43,7 @@ export const CBD_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the far head OUTWARD — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads keep ringing for a long, low bloom. How long depends on the tuning, the mallet and the player’s damping — the player may stop either head by hand.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them. Players choose the area for the color they want.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, including the lowest shape of all. Players choose the area for the color they want.',
       'This is a simplified head in empty space. On a real drum the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the concert bass drum',
@@ -86,7 +86,7 @@ export const CBD_COPY: LessonCopy = {
     note: 'Clearance comes first: stop the player before moving a real mic. The drum and its stand stay as set; only the player or crew moves them. The loudest hit may need a pad — set gain on it, not on the average.',
     availableLead: 'Starting points for this mic',
     learn: {
-      intro: 'What you just did, in words. After our research, here is where we suggest you begin: a spot above the playing head, looking diagonally down at it from about 45 cm — or closer, for a loud stage. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum, player and hall is different.',
+      intro: 'What you just did, in words. Here is where we suggest you begin: a spot above the playing head, looking diagonally down at it from about 45 cm — or closer, for a loud stage. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time with the same passage. A mic on the far head, a side position or a room mic are experiments for a quiet room — compare them alone and together in mono, and leave them out if they add little.',
       clearance: 'Clearance comes first. Have the player show the mallet’s full arc, rolls, other mallets and both hands damping both heads before anything is placed. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real stage.',
       tendencies: 'A spot near the playing head favors the mallet’s transient; the main pickup and farther mics carry more of the low bloom and the hall. A kick-drum mic’s shaped response may not suit an orchestral bass drum — compare it with a more neutral mic by ear. All tendencies.',
@@ -104,7 +104,7 @@ export const CBD_COPY: LessonCopy = {
     shield: ['cbd.shell', 'cbd.playing', 'cbd.far'],
     azMax: 45,
     elMax: 60,
-    aimBlurb: 'Turn the front up to 45° either way — the playing head stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic’s front up to 45° either way — the playing head stays in front of the mic, a little off its axis.',
     plan: { u0: -1450, u1: 1000, v0: -1560, v1: 1350 },
     side: { u0: -1450, u1: 1000, v0: -900, v1: 840 },
     target: 'downstage',

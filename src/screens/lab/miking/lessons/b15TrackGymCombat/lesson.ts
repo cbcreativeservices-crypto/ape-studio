@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   microphone: {
     title: 'The pickup methods',
-    goal: 'Choose a pickup method by what it contributes and what limits it — a fixed directional, a compact directional, a boundary on a hard surface, an approved plant, the ambience — not by a label or a brand.',
+    goal: 'Choose a pickup method by what it contributes and what limits it — a fixed directional, a compact directional, a boundary on a hard surface, an approved plant (a mic placed near the action), the ambience — not by a label or a brand.',
     credit: { scenarios: ['tg.mic.1', 'tg.mic.2', 'tg.mic.3', 'tg.rec.1'], note: 'Answer the four checks (one reaches back to the venues).' },
     takeaway: 'Fixed detail favors a place, the ambience favors continuity, and air and structure are different paths — choose by the perspective you want.',
   },
@@ -44,8 +44,8 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Live checks',
-    goal: 'Plan the coverage with honest gaps, tell an airborne mic from a structure that rattles, check the headroom of the whole chain, and keep a supplied cue feed on its own input.',
-    credit: { scenarios: ['tg.ctx.1', 'tg.ctx.2', 'tg.ctx.3', 'tg.rec.3'], interactive: 'liveChecks', note: 'Tag every zone fairly on the coverage map, compare every mount, AND set a chain with room for every event, then answer the four checks.' },
+    goal: 'Plan the coverage with honest gaps, tell airborne sound from a structure’s rattles, check the headroom of the whole chain, and keep a supplied cue feed on its own input.',
+    credit: { scenarios: ['tg.ctx.1', 'tg.ctx.2', 'tg.ctx.3', 'tg.rec.3'], interactive: 'liveChecks', note: 'Tag every zone fairly on the coverage map, compare every mount, AND set a chain with headroom for every event, then answer the four checks.' },
     takeaway: 'A coverage map with named handoffs, air kept apart from structure, every stage of the chain checked — and a supplied cue that stays its own controllable input.',
   },
   twoMic: {
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a practice session in order, choose and justify setups for two briefs, and say what would justify another detail channel.',
     credit: { scenarios: ['tg.prac.order', 'tg.prac.gain', 'tg.prac.setup1', 'tg.prac.setup2', 'tg.prac.3', 'tg.mix.1', 'tg.mix.2', 'tg.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real, approved practice.' },
-    takeaway: 'Approved places, one useful sector and an ambience bed, air kept apart from structure, a chain with room and a named fallback pass. More channels or a closer mic in the action space do not.',
+    takeaway: 'What passes: approved places, one useful sector and an ambience bed, air kept apart from structure, a chain with headroom and a named fallback. More channels or a closer mic in the action space do not.',
   },
 };
 
@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The ringside position is short of room. Where may the mic go?',
     options: ['Only at an assigned ringside place', 'On the apron, if it is taped down firmly', 'In the corner of the apron nobody is using'],
     correct: 'Only at an assigned ringside place',
-    explain: 'The apron and the corners belong to the seconds, the officials, cleaning and medical access. A ringside mic stands at an assigned position, on its own support.',
+    explain: 'The apron and the corners belong to the seconds (the corner helpers), the officials, cleaning and medical access. A ringside mic stands at an assigned position, on its own support.',
     why: {
       'On the apron, if it is taped down firmly': 'Taping it down does not make the apron an approved place.',
       'In the corner of the apron nobody is using': 'A neutral corner is not spare audio space either.',
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Can a boundary mic laid on a soft gymnastics mat work as intended?',
     options: ['Poorly: a soft mat is not its surface', 'Well enough, because the mat is large and flat', 'It will, once the gain is turned up more'],
     correct: 'Poorly: a soft mat is not its surface',
-    explain: 'A boundary mic is built for a large, flat, hard surface. A soft mat, or a raised or small surface, does not give it that geometry — and a hard example does not validate a mat.',
+    explain: 'A boundary mic is built for a large, flat, hard surface. A soft mat, or a raised or small surface, does not give it that geometry — and a result on a hard floor does not prove a mat works.',
     why: {
       'Well enough, because the mat is large and flat': 'Large and flat is not enough: it also has to be hard.',
       'It will, once the gain is turned up more': 'Gain does not change the surface the mic is lying on.',
@@ -320,7 +320,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In the practice, a gentle clap peaks at −30 dBFS. Your strongest repeatable clap is louder. Where do you set the gain?',
     options: ['The loudest safe peak near −12 dBFS', 'Bring the quiet clap up to −6 dBFS', 'Leave it as it is, and normalize it later'],
     correct: 'The loudest safe peak near −12 dBFS',
-    explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: set it near −12 dBFS, then keep more margin for an unpredictable event — a trial starting point, not a broadcast standard.',
+    explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: set it near −12 dBFS, then keep more margin for an unpredictable event — a suggested starting point, not a broadcast standard.',
     why: {
       'Bring the quiet clap up to −6 dBFS': 'With a quiet clap already at −6 dBFS, your strongest clap clips.',
       'Leave it as it is, and normalize it later': 'Normalizing later cannot fix a clip, or the noise of a gain set too low.',
@@ -606,7 +606,7 @@ export const B15_LESSON: Lesson = {
       { id: 'apparatus', label: 'apparatus, rings and platforms', short: 'STRUCTURE', note: 'They transmit mechanical noise to their supports: a mic near a frame may favor rattles over the useful airborne action.', prov: { kind: 'illustrative', reason: 'the lesson L81, L111' }, tag: 'VIBRATION', scene: 'all' },
       { id: 'bodies', label: 'athletes, officials and crews', short: 'PEOPLE', note: 'Bodies block one mic and then another as the action turns; their routes are never a place for a stand or a cable.', prov: { kind: 'illustrative', reason: 'the lesson L132, L158' }, tag: 'IN THE WAY', scene: 'all' },
       { id: 'camera', label: 'the cameras', short: 'CAMERAS', note: 'Sound positions are resolved with the cameras and the apparatus crew before installation.', prov: { kind: 'illustrative', reason: 'the lesson L18, L83' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'weather', label: 'wind, rain, sweat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing and humidity tolerance is not immersion protection; mute and replace a soaked mic only when released.', prov: { kind: 'illustrative', reason: 'the lesson L169–L179' }, tag: 'WIND', scene: 'all' },
+      { id: 'weather', label: 'wind, rain, sweat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing and humidity tolerance is not immersion protection; mute a soaked mic and replace it only when the area is released.', prov: { kind: 'illustrative', reason: 'the lesson L169–L179' }, tag: 'WIND', scene: 'all' },
     ],
     stage: 'Commentary, interviews and approved official speech stay separate from the action feed; cues and music on their own inputs; action and crowd mics generally need no reinforcement in the venue. Check the picture’s sync through the real chain.',
     studio: 'A quiet practice allows one change at a time and a repeatable source — but it cannot prove arena isolation, impact tolerance or the peaks a real event can make.',
@@ -615,7 +615,7 @@ export const B15_LESSON: Lesson = {
   practice: {
     task: 'Put a practice session in order, choose and justify setups for a wrestling event and a gymnastics floor final, and say what would justify another detail channel. With an approved practice, you can record what you tried below.',
     fields: [
-      { id: 'event', label: 'Sport or mock case, approving contact and footprint', kind: 'text' },
+      { id: 'event', label: 'Sport or mock case, who approved the setup, and its footprint', kind: 'text' },
       { id: 'target', label: 'Target action and intended perspective', kind: 'text' },
       { id: 'method', label: 'Method', kind: 'choice', choices: ['fixed directional', 'compact directional', 'boundary on a hard surface', 'approved plant', 'ambience', 'other'] },
       { id: 'pos', label: 'Model, pattern, source and capsule heights, range and aim', kind: 'text' },

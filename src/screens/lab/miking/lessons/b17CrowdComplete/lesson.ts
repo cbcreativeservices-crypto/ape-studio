@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a complete-coverage session in order, choose and justify a layout for two briefs, and say what earns an extensive layout its extra channels.',
     credit: { scenarios: ['cc.prac.order', 'cc.prac.gain', 'cc.prac.setup1', 'cc.prac.setup2', 'cc.prac.3', 'cc.mix.1', 'cc.mix.2', 'cc.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The worksheet is optional — it needs a real, approved practice.' },
-    takeaway: 'Separately controllable roles, a stable audience bed, extra inputs only for tested gaps, every output heard and a fallback for every loss pass. More mics for their own sake do not.',
+    takeaway: 'These pass: separately controllable roles, a stable audience bed, extra inputs only for tested gaps, every output heard and a fallback for every loss. More mics for their own sake do not.',
   },
 };
 
@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You widen an M/S pair’s Side. What happens to the mono sum?',
     options: ['It stays the Mid alone', 'It gets louder and wider', 'It loses the center'],
     correct: 'It stays the Mid alone',
-    explain: 'Left = Mid + k × Side and Right = Mid − k × Side: halve their sum and the Side cancels — (L + R) ÷ 2 = Mid, whatever the width. With matched paths and opposite signs.',
+    explain: 'Left = Mid + k × Side and Right = Mid − k × Side, where k is the Side level: halve their sum and the Side cancels — (L + R) ÷ 2 = Mid, whatever the width, if the paths match and the signs stay opposite.',
     why: {
       'It gets louder and wider': 'Mono has no width, and the Side cancels in the sum.',
       'It loses the center': 'The Mid is the center, and it is all the sum keeps.',
@@ -240,7 +240,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What are the mock venue’s 2 m and 4 m?',
     options: ['The practice’s own layout', 'A stadium’s audience distance', 'The rule for a crowd mic'],
     correct: 'The practice’s own layout',
-    explain: 'They are mock coordinates for a dry room; a real venue’s viewpoints come from its own approved plan.',
+    explain: 'They are the practice layout of a dry room; a real venue’s viewpoints come from its own approved plan.',
     why: {
       'A stadium’s audience distance': 'No practice distance carries into a stadium.',
       'The rule for a crowd mic': 'There is no universal crowd distance or stand height.',
@@ -325,7 +325,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In the quiet practice, a gentle collective clap peaks at −26 dBFS. Where do you set the practice gain?',
     options: ['The loudest safe peak near −12 dBFS', 'The gentle clap brought all the way up to −3 dBFS', 'Left as it is, the files normalized later'],
     correct: 'The loudest safe peak near −12 dBFS',
-    explain: 'In this quiet practice the loudest safe peak is the strongest repeatable gentle clap: bring it near −12 dBFS as a trial. A real roar can be far louder, so set the event gain from the real crowd, with much more margin. It is an input peak, not a loudness target.',
+    explain: 'In this quiet practice the loudest safe peak is the strongest repeatable gentle clap: bring it near −12 dBFS as a place to start. A real roar can be far louder, so set the event gain from the real crowd, with much more margin. It is an input peak, not a loudness target.',
     why: {
       'The gentle clap brought all the way up to −3 dBFS': 'With a gentle clap already at −3 dBFS, the first real roar clips.',
       'Left as it is, the files normalized later': 'Normalizing cannot fix a clip, or the noise of a gain set too low.',

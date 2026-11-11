@@ -117,7 +117,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
           <MathLine>fifths: 12 · octave reductions: 7</MathLine>
           <MathLine>exact: {fracLabel(CHAIN[12].normalized)} · decimal: {PYTHAGOREAN_COMMA.decimalLabel}</MathLine>
           <MathLine>cents: 1200 · log₂({PYTHAGOREAN_COMMA.decimalLabel}) = {PYTHAGOREAN_COMMA.cents.toFixed(5)}</MathLine>
-          <Body>Some other charts stop after SIX reductions and compare 2.000000 with ≈2.027286 — the same gap, one octave higher. This lab keeps the two stages separate and uses the seven-octave, 1/1 comparison.</Body>
+          <Body>Some other charts stop after SIX reductions and compare 2.000000 with ≈2.027286 — the same gap, one octave higher. Here all seven reductions are made, so the result is compared with 1/1.</Body>
         </Card>
       ) : null}
 

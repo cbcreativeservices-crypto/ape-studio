@@ -192,7 +192,7 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Listen as the CROWD while you move across: on BLEND the level holds steady; switch to CUT and the middle gets louder, because both tracks are at full level together.</P>
-        <P>Now the summing demonstration (SETUP → the same track on both decks, aligned; it sets CUT with the crossfader in the middle, so both sides are at full level). Pull CH2 to 0 (FADERS → CH2) and read TWO COPIES on the readout strip; bring it back to 85 %. Two identical copies add up to TWICE the amplitude: +6.02 dB on the mix bus. Two different tracks at equal level add about +3 dB of average power instead.</P>
+        <P>Now the summing demonstration (SETUP → the same track on both decks, aligned; it sets CUT with the crossfader in the middle, so both sides are at full level). Pull CH2 to 0 (FADERS → CH2), bring it back to 85 %, then read TWO COPIES on the readout strip. Two identical copies add up to TWICE the amplitude: +6.02 dB on the mix bus. Two different tracks at equal level add about +3 dB of average power instead.</P>
         <Note>Those numbers are for these exact conditions. Real copies are rarely sample-aligned: a few milliseconds apart they comb filter — some frequencies cancel and others rise (a hollow sound that turns jet-like as the gap drifts). Real songs vary, so watch the mix bus meter rather than counting on a rule of thumb.</Note>
         <Note>Deck B’s tempo has been matched to deck A for you — Screen 10 shows how — and the trims are matched by their average level (Screen 6).</Note>
       </Step>

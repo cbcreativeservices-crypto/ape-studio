@@ -72,7 +72,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one bass clarinet mic in the right order, choose and justify a setup for a studio overdub and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['bcl.prac.order', 'bcl.prac.gain', 'bcl.prac.setup1', 'bcl.prac.setup2', 'bcl.prac.3', 'bcl.mix.1', 'bcl.mix.2', 'bcl.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real bass clarinet.' },
-    takeaway: 'The model and its lowest note checked, a view of the bell AND the holes, clearance from the peg, neck, hands and bell, the right power and level, and an accurate account of polarity versus delay pass — and more than one setup can pass.',
+    takeaway: 'What passes: the model and its lowest note checked, a view of the bell AND the holes, clearance from the peg, neck, hands and bell, the right power and level, and an accurate account of polarity versus delay — and more than one setup can pass.',
   },
 };
 
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A low C model reaches three semitones lower than a low E♭ model. What makes that possible?',
     options: ['More tube: a longer lower joint and a deeper bow', 'A thicker reed that vibrates more slowly', 'A wider bell that lowers each of its notes by itself'],
     correct: 'More tube: a longer lower joint and a deeper bow',
-    explain: 'A lower note needs a longer sounding tube; three semitones lower needs about a fifth more. The extension holds its own keys — so the mic and the filter must keep that lowest note.',
+    explain: 'A lower note needs a longer sounding tube; three semitones lower needs about one-fifth more tube. The extension holds its own keys — so the mic and the filter must keep that lowest note.',
     why: {
       'A thicker reed that vibrates more slowly': 'The air column sets the pitch; the reed follows it.',
       'A wider bell that lowers each of its notes by itself': 'The bell shapes the lowest notes; their pitch comes from the tube’s length.',
@@ -529,7 +529,7 @@ const copy: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — the bass clarinet’s range. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the instrument, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-    shieldNote: 'The player’s body and the instrument can reflect stage sound into a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'The player’s body and the instrument can reflect stage sound into a mic aimed at them — the free-field pattern (measured with nothing nearby) cannot show that. Listen with the monitors on.',
     studioId: 'bcl.ctx.studio',
     studioPrompt: 'A studio overdub, a bass clarinet, a good room: what is the mic’s job?',
     studioNote: 'In the studio one well-placed mic often gives a coherent bass clarinet; compare the blend and the bell views. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',

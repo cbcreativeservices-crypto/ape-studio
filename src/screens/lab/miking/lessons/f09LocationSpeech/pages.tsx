@@ -145,7 +145,7 @@ function useFrameStep(): MikingStep {
         <Card>
           <Point title={`${SHOTS[shot].label} SHOT`}>{`The frame’s top edge sits ${shot === 'close' ? 'just' : shot === 'medium' ? 'a little' : 'well'} above the head. The boom’s tip stays 15 cm above that edge, aimed down at the mouth — its capsule ${cm(dBoom)} from the lips. The body mic on the chest stays ${cm(dLav)} away whatever the shot: here the boom hears the voice about ${db.toFixed(0)} dB weaker than the body mic does (by distance alone).`}</Point>
         </Card>
-        {seen.size === 3 ? <Note tone="ok">A wider shot pushes the boom farther from the mouth — more room and noise against the voice. The body mic keeps its distance, but sounds of the chest and the clothes. Often both are recorded, each on its own channel, and the editor chooses.</Note> : null}
+        {seen.size === 3 ? <Note tone="ok">A wider shot pushes the boom farther from the mouth — more room and noise against the voice. The body mic keeps its distance, but sounds chest-heavy and picks up clothing noise. Often both are recorded, each on its own channel, and the editor chooses.</Note> : null}
         <Body>The camera, its distance and the three shots are examples chosen for the drawing; the distances and the dB come from the drawing, by distance alone — a simplified picture. Move a mic, not the gain.</Body>
       </>
     ),
@@ -257,8 +257,8 @@ function useTurnStep(hidden: boolean): MikingStep {
       <>
         <Landing looking="Top view · the talker’s head, the boom above, the body mic on the chest" prompt="TURN the head both ways. Then switch BOOM FOLLOWS to BOOM STAYS and turn again." />
         <Card>
-          <Point title="THE BOOM">{`${cm(b.d)} from the lips, ${deg(b.offAxis)} off the mouth’s axis (${deg(b0.offAxis)} facing the camera)${follow ? ' — the operator turns the mic with the head, so it still points at the mouth.' : b.aimErr != null && b.aimErr > 3 ? ` — left where it was, it now points ${deg(b.aimErr)} away from the mouth.` : '.'}`}</Point>
-          <Point title="THE BODY MIC">{`${cm(l.d)} from the lips, ${deg(l.offAxis)} off the axis (${deg(l0.offAxis)} facing the camera): on the chest, it does not move with the head.`}</Point>
+          <Point title="THE BOOM">{`${cm(b.d)} from the lips, ${deg(b.offAxis)} off the mouth’s axis (${deg(b0.offAxis)} when facing the camera)${follow ? ' — the operator turns the mic with the head, so it still points at the mouth.' : b.aimErr != null && b.aimErr > 3 ? ` — left where it was, it now points ${deg(b.aimErr)} away from the mouth.` : '.'}`}</Point>
+          <Point title="THE BODY MIC">{`${cm(l.d)} from the lips, ${deg(l.offAxis)} off the axis (${deg(l0.offAxis)} when facing the camera): on the chest, it does not move with the head.`}</Point>
         </Card>
         {reached.left && reached.right ? <Note tone="ok">The voice’s highest frequencies go out ahead of the mouth. As the head turns, a mic that stays put drifts off the mouth’s axis and hears a duller voice: a boom is re-aimed through the whole line, rehearsed. A body mic keeps one distance — but under the chin it never was on the axis.</Note> : null}
       </>

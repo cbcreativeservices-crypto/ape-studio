@@ -104,7 +104,7 @@ describe('licensed roles (career_licensed_role_with_varies_prep)', () => {
   });
   it('music teachers name the teaching licence; SLPAs name their programme', () => {
     assert.match(prep('Music Teacher'), /state teaching license for public-school posts/);
-    assert.match(prep('Speech-Language Pathology Assistant'), /^Associate SLPA program or bachelor's in communication sciences/);
+    assert.match(prep('Speech-Language Pathology Assistant'), /^Associate speech-language pathology assistant \(SLPA\) program or bachelor's in communication sciences/);
   });
   it('noise analysts: the unconfirmed licence flag is gone (CAN\'T CONFIRM)', () => {
     for (const t of ['Environmental Noise Analyst', 'Transportation Noise Analyst', 'Airport Noise Specialist']) {

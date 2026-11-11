@@ -73,7 +73,7 @@ function B16Meet(p: PageProps) {
 const ROWS = [SPORTS_SAFETY.approval, SPORTS_SAFETY.play, SPORTS_SAFETY.animals, SPORTS_SAFETY.lightning, SPORTS_SAFETY.weather, SPORTS_SAFETY.electrics, SPORTS_SAFETY.hearing, SPORTS_SAFETY.feedback, SPORTS_SAFETY.withdraw];
 
 function B16Setups(p: PageProps) {
-  const setups = useSetupsStep({ p, scene: PRACTICE_SMALL, setups: B16_SETUPS, prompt: 'Step through SETUP. Each mic is drawn at its approved place with its aim; the corner box shows the mic itself at its height — or the hydrophone in its container.' });
+  const setups = useSetupsStep({ p, scene: PRACTICE_SMALL, setups: B16_SETUPS, prompt: 'Step through SETUP: find each mic at its approved place with its aim, and check the corner box for the mic itself at its height — or the hydrophone in its container.' });
   const steps: MikingStep[] = [
     setups,
     hearsStep(p.lesson, 'A fixed mic hears a moving source change in distance, angle and state all at once — and whatever else shares the axis:'),

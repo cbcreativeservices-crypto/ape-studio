@@ -242,7 +242,7 @@ test('5. the wording says clips count while they play; the accuracy note stays',
   const mon = readFileSync(path.join(root, 'src/features/audio/exposureMonitor.ts'), 'utf8');
   assert.match(mon, /includes tones and lab clips, counted only while they are actually playing/);
   const scr = readFileSync(path.join(root, 'src/screens/tools/ExposureMonitorScreen.tsx'), 'utf8').replace(/\s+/g, ' ');
-  assert.match(scr, /a clip counts only while it is actually playing — never while it is stopped, paused, muted or failed to load/);
-  assert.match(scr, /the phone’s volume buttons are not read/);
+  assert.match(scr, /A clip counts only while it is actually playing — never while it is stopped, paused, muted or failed to load/);
+  assert.match(scr, /the app does not read your phone’s volume setting/);
   assert.match(scr, /<AccuracyNote/);
 });

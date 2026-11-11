@@ -175,7 +175,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which capsule goes at a dish’s focus?',
     options: ['The one the dish’s maker specifies', 'A short shotgun, for the extra reach', 'A small cardioid that fits the mount'],
     correct: 'The one the dish’s maker specifies',
-    explain: 'Use the collector’s own capsule type, focal reference and mount — some call for an omni. A shotgun at the focus by assumption is not the dish’s design.',
+    explain: 'Use the dish’s own capsule type, focal reference and mount — some call for an omni. A shotgun at the focus by assumption is not the dish’s design.',
     why: {
       'A short shotgun, for the extra reach': 'A shotgun is not a dish element; follow the dish’s design.',
       'A small cardioid that fits the mount': 'Fitting is not the test; the maker’s specification is.',
@@ -226,7 +226,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Stop at the arc’s edge and hand off at the rehearsed cue — to a fixed mic or the ambience. The operator stays in the assigned place.',
     why: {
       'Step out of the box for just that play': 'Leaving the box puts the operator in the way of play.',
-      'Lean out over the line to keep it on': 'Leaning out still puts the dish into the space.',
+      'Lean out over the line to keep it on': 'Leaning out still puts the dish into the playing space.',
     },
   },
   {
@@ -603,7 +603,7 @@ export const B13_LESSON: Lesson = {
     items: [
       { id: 'crowd', label: 'the crowd and nearby spectators', short: 'CROWD', note: 'Crowd sound reaches every mic. Put the loudest sector off a shotgun’s axis where an approved angle allows; one nearby spectator can dominate an ambience pair.', prov: { kind: 'illustrative', reason: 'the lesson L46, L49' }, tag: 'SPILL', scene: 'all' },
       { id: 'pa', label: 'the venue PA', short: 'PA', note: 'Announcements and music arrive from the loudspeakers. Keep the PA off the axis where you can, and keep broadcast effects out of the PA’s own feed.', prov: { kind: 'illustrative', reason: 'the lesson L46, L110' }, tag: 'SPILL', scene: 'all' },
-      { id: 'bench', label: 'benches, officials and crews', short: 'PEOPLE', note: 'They block the view and the sound, and their routes are never a place for a stand or a cable. Intelligible tactical speech is not automatically for broadcast.', prov: { kind: 'illustrative', reason: 'the lesson L55, L66' }, tag: 'IN THE WAY', scene: 'all' },
+      { id: 'bench', label: 'benches, officials and crews', short: 'PEOPLE', note: 'They block the view and the sound, and their routes are never a place for a stand or a cable. Tactical speech you can hear clearly is not automatically cleared for broadcast.', prov: { kind: 'illustrative', reason: 'the lesson L55, L66' }, tag: 'IN THE WAY', scene: 'all' },
       { id: 'camera', label: 'the cameras', short: 'CAMERAS', note: 'A mic hidden from one camera may sit in another’s frame. Camera positions are assigned facilities, not general audio access.', prov: { kind: 'illustrative', reason: 'the lesson L113' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'ball', label: 'the ball', short: 'THE BALL', note: 'A low or close mic can be struck. Foul territory can be live; nothing goes through screening into live-ball space.', prov: { kind: 'illustrative', reason: 'the lesson L47, L94–L96' }, tag: 'STRIKE RISK', scene: 'all' },
       { id: 'weather', label: 'wind and rain', short: 'WEATHER', note: 'A basket and fur with a working suspension; the cable clear of it; never tape over a shotgun’s slots. A windscreen is not waterproof.', prov: { kind: 'illustrative', reason: 'the lesson L112–L113' }, tag: 'WIND', scene: 'all' },

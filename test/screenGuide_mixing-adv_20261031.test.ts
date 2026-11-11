@@ -350,7 +350,7 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.equal(defs.length, 20);
     for (const d of defs) assert.match(d, /manualDone: true/, d);
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
-    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done\. NEXT moves on without counting it\.';/);
+    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
     assert.ok(ET.includes('It counts once the goal chips at the foot of that page are done'));
     assert.match(ET, /NEXT and FINISH move you on, but they don’t mark the page done/);

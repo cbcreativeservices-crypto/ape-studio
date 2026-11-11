@@ -105,7 +105,7 @@ export const HANDLING_PRACTICES: HandlingPractice[] = [
     label: 'SIGNAL APART FROM AC POWER',
     title: 'Separate signal from AC power; cross at right angles',
     copy:
-      'Run signal cables and AC power apart, not bundled side by side. Where they must meet, cross cleanly at right angles instead of running parallel — the least coupling for the shortest distance.',
+      'Run signal cables and AC power apart, not bundled side by side. Where they must meet, cross cleanly at right angles instead of running parallel — the least coupling (hum leaking from power into signal) for the shortest distance.',
   },
   {
     id: 'uncoil_reels',

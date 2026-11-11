@@ -842,7 +842,7 @@ const SCENES = [
     label: 'TAPS → Hz',
     watch: 'ALL THREE READOUTS MOVE TOGETHER WHEN THE SPACING CHANGES',
     body:
-      'Every repeating event hides one number: the period T — the gap from one tap to the next. Frequency is simply its inverse (1000 ÷ T in ms), and BPM is the same rate counted per minute, so the three readouts are one measurement wearing three units. The wave under the taps is that same clock as sound: one tap per cycle peak.',
+      'Every repeating event hides one number: the period T — the gap from one tap to the next. Frequency is its inverse (1000 ÷ T in ms), and BPM is the same rate counted per minute, so the three readouts are one measurement wearing three units. The wave under the taps is that same clock as sound: one tap per cycle peak.',
     note: 'Tap mode measures YOUR tapping — give it 8–10 taps so the average dilutes your timing error.',
   },
   {

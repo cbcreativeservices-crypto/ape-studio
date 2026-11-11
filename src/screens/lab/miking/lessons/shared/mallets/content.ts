@@ -35,9 +35,9 @@ export function malletAxes(fam: MalletFamily): LessonCopy['axes'] {
   const origin: Partial<Record<VariantId, Vec3>> = {};
   for (const v of fam.variants) origin[v.row.id] = { x: 0, y: G.barY, z: 0 };
   return {
-    x: { plus: 'toward the low end', minus: 'toward the high end', label: 'ALONG', blurb: 'Along the keyboard, toward the low or the high end (x). Read from the middle.' },
-    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). Read from the bars, not the floor.' },
-    z: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (z). Read from the middle of the two rows.' },
+    x: { plus: 'toward the low end', minus: 'toward the high end', label: 'ALONG', blurb: 'Along the keyboard, toward the low or the high end (x). Measured from the middle.' },
+    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). Measured from the bars, not the floor.' },
+    z: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (z). Measured from the middle of the two rows.' },
     origin,
   };
 }

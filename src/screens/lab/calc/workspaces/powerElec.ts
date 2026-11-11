@@ -534,7 +534,7 @@ const COMPLEXZ: Workspace = {
   ],
   warnings:
     'Ideal lumped components. XL = 2πfL, XC = 1/(2πfC), |Z| = √(R²+(XL−XC)²), phase = ' +
-    'atan((XL−XC)/R), series resonance f₀ = 1/(2π√(LC)). Real parts have parasitics and tolerance. ' +
+    'atan((XL−XC)/R), series resonance f₀ = 1/(2π√(LC)). Real parts add parasitics (stray R, L and C) and tolerance. ' +
     'Enter L in mH and C in µF.',
   glossary: ['Impedance', 'Reactance', 'Resonance', 'Capacitor', 'Inductor', 'Resistance'],
   fields: [

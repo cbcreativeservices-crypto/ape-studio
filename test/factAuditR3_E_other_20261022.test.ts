@@ -73,7 +73,7 @@ const CASES: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F085298', file: 'src/features/soundsystems/check.ts', now: 'Walking forward is steady and skips nothing;', gone: 'Walking forward finds it in the fewest steps;' },
   { id: 'F085225', file: 'src/features/soundsystems/check.ts', now: 'The input can be damaged — speaker level is far beyond what a line input tolerates', gone: 'The input is damaged — speaker level is far beyond what a line input tolerates' },
   { id: 'F085259', file: 'src/features/soundsystems/check.ts', now: 'Reaching level means driving it into clipping, which can overheat drivers, tweeters most of all', gone: 'Reaching level means driving it into clipping, which is what usually damages high-frequency drivers' },
-  { id: 'F085331', file: 'src/features/soundsystems/configs.ts', now: 'A common club and touring layout. Low frequencies are hard to place by ear, so stereo subs buy little and cost cancellation.', gone: 'The standard club and touring layout. Low frequencies are not localised, so stereo subs buy nothing and cost cancellation.' },
+  { id: 'F085331', file: 'src/features/soundsystems/configs.ts', now: 'A common club and touring layout. Low frequencies are hard to place by ear, so stereo subs gain little and add cancellation.', gone: 'The standard club and touring layout. Low frequencies are not localised, so stereo subs buy nothing and cost cancellation.' },
   { id: 'F085355', file: 'src/features/soundsystems/configs.ts', now: 'name: \'Lobby, recording and broadcast feeds\',', gone: 'name: \'Lobby, recording, broadcast and overflow feeds\',' },
   { id: 'F085404', file: 'src/features/soundsystems/configs.ts', now: 'long enough to control — a very short line, like four boxes, gives little control in the low mids.', gone: 'long enough to control — four boxes are a stack, not an array.' },
   { id: 'F085433', file: 'src/features/soundsystems/configs.ts', now: 'why: \'A line array’s controlled vertical coverage is the usual way to keep level at the back without a ceiling full of sound.', gone: 'why: \'Only a line array’s controlled vertical coverage keeps level at the back without a ceiling full of sound.' },
@@ -109,7 +109,7 @@ const CASES: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F088490', file: 'src/screens/tools/ExposureMonitorScreen.tsx', now: '5 dB standard of US workplace law (OSHA) it takes 5 dB', gone: 'occupational-style 5 dB standard it takes 5 dB' },
   { id: 'F088622', file: 'src/screens/tools/SignalGenScreen.tsx', now: 'The sweep that sounds even, and the one most measurement uses.', gone: 'The sweep that sounds even, and the one measurement uses.' },
   { id: 'F088632', file: 'src/screens/tools/SignalGenScreen.tsx', now: '— the frequency is very close, the LEVEL is not.', gone: '— the frequency is exact, the LEVEL is not.' },
-  { id: 'F088637', file: 'src/screens/tools/SignalGenScreen.tsx', now: 'LEVEL moves in 3 dB steps from −60 to 0 dBFS · default −20 (its own stop) ·', gone: 'LEVEL moves in 3 dB steps · −60…0 dBFS · default −20 ·' },
+  { id: 'F088637', file: 'src/screens/tools/SignalGenScreen.tsx', now: 'LEVEL moves in 3 dB steps from −60 to 0 dBFS · default −20 (an extra stop of its own) ·', gone: 'LEVEL moves in 3 dB steps · −60…0 dBFS · default −20 ·' },
   { id: 'F088617', file: 'src/screens/tools/SignalGenScreen.tsx', now: 'The most common measuring and tuning noise.', gone: 'THE measurement and tuning noise.' },
 ];
 

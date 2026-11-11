@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "Wide: 60–90 BPM ballads, 100–140 BPM up-tempo and dance numbers, frequent rubato (flexible, push-pull tempo), tempo changes and spoken-over underscore within a single song",
     "ensemble": "15–40 cast members on body mics (principals often double-mic’d) plus a 6–25-piece pit orchestra or band; 100–140+ inputs on a large show",
     "priority": "Every word intelligible — lyrics and dialogue carry the story — with voices that seem to come from the actor, not the speakers",
-    "liveSpl": "Book/legit shows roughly 80–88 dBA LAeq over an act, big numbers peaking 95–100 dBA; rock/pop-score musicals 90–96 dBA LAeq with peaks near 105 dBA (approximate industry ranges, not published limits)",
+    "liveSpl": "Book/legit (story-led, classically sung) shows roughly 80–88 dBA LAeq over an act, big numbers peaking 95–100 dBA; rock/pop-score musicals 90–96 dBA LAeq with peaks near 105 dBA (approximate industry ranges, not published limits)",
     "studioLoudness": "Cast albums commonly −16 to −9 LUFS-I (traditional orchestral scores −16 to −13; pop/hip-hop scores −11 to −9); most streaming services normalize to about −14 LUFS, some to −16"
   },
   "purpose": [

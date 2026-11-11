@@ -328,7 +328,7 @@ const scenarios: MikingScenario[] = [
     correct: 'One open at a time, with a rehearsed handoff',
     explain: 'Decide who mutes which, and rehearse it. A second mic can be a separately routed backup, not a second open capsule.',
     why: {
-      'Both open, so the voice is twice as safe if one fails': 'Both open on one voice comb and cost margin.',
+      'Both open, so the voice is twice as safe if one fails': 'Both open on one voice: they comb and cost margin.',
       'One polarity flipped, both left open': 'Polarity cannot remove the delay between them.',
     },
   },
@@ -362,9 +362,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second mic on the lectern?',
     options: ['A separately routed backup, kept closed', 'Two open capsules for a fuller, richer voice', 'More level for a soft presenter'],
     correct: 'A separately routed backup, kept closed',
-    explain: 'A backup earns its place if it is routed separately and opened only when needed. Two open capsules on one voice comb.',
+    explain: 'A backup earns its place if it is routed separately and opened only when needed. Two open capsules on one voice: they comb.',
     why: {
-      'Two open capsules for a fuller, richer voice': 'Two open capsules on one voice comb.',
+      'Two open capsules for a fuller, richer voice': 'Two open capsules on one voice: they comb.',
       'More level for a soft presenter': 'Level comes from distance and gain, not another mic.',
     },
   },
@@ -438,7 +438,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Are the headset and the lectern both open? Who mutes which?',
     options: ['Mute one; rehearse the handoff with the operator', 'Boost the low end on both of the channels to fill it in', 'Flip one polarity and leave both open'],
     correct: 'Mute one; rehearse the handoff with the operator',
-    explain: 'Two open mics on one voice comb. Plan who mutes which and rehearse it.',
+    explain: 'Two open mics on one voice: they comb. Plan who mutes which and rehearse it.',
     why: {
       'Boost the low end on both of the channels to fill it in': 'EQ cannot undo a comb between two arrivals.',
       'Flip one polarity and leave both open': 'Polarity cannot remove the delay between them.',
@@ -463,7 +463,7 @@ const orderTasks: OrderTask[] = [
   {
     id: 'b6.prac.order',
     page: 'practice',
-    prompt: 'Tap the steps of a panel and press setup in the order you would do them.',
+    prompt: 'Tap the steps of a panel and press-conference setup in the order you would do them.',
     steps: [
       { text: 'Map every speaking position and every destination', early: 'Start with who speaks where and where each voice goes.' },
       { text: 'Choose a mic for each zone and place it near its talker', early: 'Place the mics once the map is known.' },
@@ -499,7 +499,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A gooseneck each, on separate channels', ok: true, power: 'phantom', feedback: 'A suggested start: the most control — check their view of each other.' },
       { id: 'b', label: 'One shared boundary between them, its front toward both', ok: true, power: 'phantom', feedback: 'A fair start in a quiet room if both stay near it — check its real pattern and the turns.' },
       { id: 'c', label: 'One mic hanging high above the table', ok: false, power: 'phantom', feedback: 'High and far: room and cross-talk.' },
-      { id: 'd', label: 'A loudspeaker on the table for the producer’s cues', ok: false, power: 'none', feedback: 'A loudspeaker among open mics spills into them. Headphones.' },
+      { id: 'd', label: 'A loudspeaker on the table for the producer’s cues', ok: false, power: 'none', feedback: 'A loudspeaker among open mics spills into them. Use headphones.' },
       { id: 'e', label: 'A boundary under the papers, out of sight', ok: false, power: 'phantom', feedback: 'Under the papers, it hears the pages.' },
     ],
     reasons: [docReason('the lips'), clearReason('the faces, the papers and the hands'), { id: 'r.pattern', label: 'The boundary’s actual pattern was checked', role: 'optional', feedback: 'A fair reason for the shared choice.' }, BRAND_REASON('roundtable'), { id: 'r.loud', label: 'Turn the shared mic up until both are loud', role: 'wrong', feedback: 'Gain raises the room with the voices.' }],

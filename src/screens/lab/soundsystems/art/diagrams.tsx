@@ -528,7 +528,7 @@ export function ArrivalTimeline({ needMs, setMs }: { needMs: number; setMs: numb
           <SvgText x={tx(t)} y={yBase + 13} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle">{t}</SvgText>
         </G>
       ))}
-      <SvgText x={x1} y={yBase + 26} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={0.3}>ms AFTER THE DELAY TOWER FIRES (UNDELAYED)</SvgText>
+      <SvgText x={x1} y={yBase + 26} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={0.3}>ms AFTER THE TOWER’S SOUND WOULD ARRIVE (NO DELAY)</SvgText>
       {fused ? (
         <>
           <Path d={pulse(needMs, 40)} fill={colors.greenBright} opacity={0.9} />

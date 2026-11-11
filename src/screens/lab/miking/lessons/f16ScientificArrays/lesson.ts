@@ -40,8 +40,8 @@ const pages: LessonPages = {
   },
   microphone: {
     title: 'The array and its spacing',
-    goal: 'Build an array chain that can answer which element heard a click first, and find a spacing that keeps a uniform line clear of ambiguous lobes up to the top frequency.',
-    credit: { scenarios: ['ar.mic.1', 'ar.mic.2', 'ar.mic.3', 'ar.rec.1'], interactive: 'spacing', note: 'In HALF A WAVELENGTH find a spacing that keeps clear and one that aliases, and answer the four checks.' },
+    goal: 'Build an array chain that can answer which element heard a click first, and find a spacing that keeps a uniform line clear of ambiguous lobes (false extra beams) up to the top frequency.',
+    credit: { scenarios: ['ar.mic.1', 'ar.mic.2', 'ar.mic.3', 'ar.rec.1'], interactive: 'spacing', note: 'In HALF A WAVELENGTH find a spacing that stays clear of aliasing and one that aliases, and answer the four checks.' },
     takeaway: 'One clock, matched elements, the geometry logged, the raw channels kept. For a uniform line, spacing at or below half a wavelength of the top frequency — fmax = c ÷ 2d (c, the speed of sound; d, the spacing).',
   },
   placement: {
@@ -52,15 +52,15 @@ const pages: LessonPages = {
   },
   context: {
     title: 'The intensity probe, on paper',
-    goal: 'Lay out an intensity survey on paper: the enclosing surface, its outward normals, a safe scan path — and see a probe read cos θ of the flow along its axis.',
+    goal: 'Lay out an intensity survey on paper: the enclosing surface, its outward normals (lines pointing straight out of it), a safe scan path — and see a probe read only the part of the flow along its axis (cos θ).',
     credit: { scenarios: ['ar.ctx.1', 'ar.ctx.2', 'ar.rec.3'], interactive: 'probe', note: 'In THE INTENSITY PROBE turn it along the normal, across it and against it, and answer the three checks.' },
     takeaway: 'Pressure has no direction; intensity has one: a probe reads the component along its axis, near zero at 90°. The spacer and calibration set its band. A survey is a method, run by a qualified operator.',
   },
   twoMic: {
     title: 'Specialist kit and claims',
     goal: 'Look at the specialist kit as objects — an acoustic camera, an ultrasonic detector, a hydrophone and its units — then judge which claims each setup can support.',
-    credit: { scenarios: ['ar.two.1', 'ar.two.2', 'ar.two.3'], interactive: 'kitClaims', note: 'In THE SPECIALIST KIT look at all three; on THE CLAIM LADDER judge every claim right for one setup; and answer the three checks.' },
-    takeaway: 'A hot spot is an estimate; a sample-rate label is not a response; water and air levels are not directly comparable. Each claim no bigger than the setup behind it.',
+    credit: { scenarios: ['ar.two.1', 'ar.two.2', 'ar.two.3'], interactive: 'kitClaims', note: 'In THE SPECIALIST KIT look at all three; on THE CLAIM LADDER judge every claim correctly for one setup; and answer the three checks.' },
+    takeaway: 'A hot spot is an estimate; a sample-rate label does not prove a frequency response; water and air levels are not directly comparable. Each claim no bigger than the setup behind it.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What can a two-element arrival order tell you on its own?',
     options: ['Which side was earlier', 'The source’s exact angle', 'How far away the source is'],
     correct: 'Which side was earlier',
-    explain: 'Arrival order shows which side heard it first. A unique azimuth or range needs more elements, known geometry and checks.',
+    explain: 'Arrival order shows which side heard it first. A unique azimuth (direction angle) or range needs more elements, known geometry and checks.',
     why: {
       'The source’s exact angle': 'One baseline has front/back and other ambiguities: not a unique angle.',
       'How far away the source is': 'A single difference does not give the range.',
@@ -253,7 +253,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The probe is turned 90° to the flow. What does it read?',
     options: ['Close to zero along its axis', 'The full flow, unchanged', 'Twice the flow, sideways'],
     correct: 'Close to zero along its axis',
-    explain: 'A two-mic (p–p) probe reads only the part of the flow along its axis: at 90°, cos θ = 0, so it reads near zero — even though the pressure is the same.',
+    explain: 'A two-mic (p–p, pressure–pressure) probe reads only the part of the flow along its axis: at 90°, cos θ = 0, so it reads near zero — even though the pressure is the same.',
     why: {
       'The full flow, unchanged': 'Only the part along the axis is read.',
       'Twice the flow, sideways': 'Turning it does not add flow: cos θ only shrinks it.',
@@ -289,7 +289,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The acoustic camera shows a bright spot on a panel. What is it?',
     options: ['An estimate to check', 'Proof of the fault', 'A photo of the sound'],
     correct: 'An estimate to check',
-    explain: 'A mapped peak can be a source, a reflection, a sidelobe or an artifact. Check with a known source and from another viewpoint.',
+    explain: 'A mapped peak can be a source, a reflection, a sidelobe (a ghost spot made by the array itself) or an artifact. Check with a known source and from another viewpoint.',
     why: {
       'Proof of the fault': 'No map alone proves a fault: check it independently.',
       'A photo of the sound': 'It is a model’s estimate, not a picture of sound.',
@@ -618,7 +618,7 @@ export const F16_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'An array combines pressures measured at known places; an intensity probe estimates the energy flow along its axis; a hydrophone senses pressure under water. Each needs its own geometry, calibration, band and units.', src: 'F16-LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Finding where a sound comes from, mapping a product’s noise, sound-power surveys, underwater and ultrasonic recording — mostly specialist work, run by a qualified operator.', src: 'F16-LESSON' },
     { title: 'THE EXERCISE', text: 'Two omni measurement mics on a straight baseline, one synchronized recorder, a marked origin and axes, and a stationary source at a modest level — a click at the center, then at the side.', src: 'F16-LESSON' },
-    { title: 'THE DRAWING', text: 'A controlled room, a 50 cm baseline 1.2 m above the floor, a source 2 m in front: sizes are drawings. The arrival times are straight paths at 20 °C.', src: 'MW-ULA' },
+    { title: 'THE DRAWING', text: 'A controlled room, a 50 cm baseline 1.2 m above the floor, a source 2 m in front: these sizes are for the drawing only. The arrival times are straight paths at 20 °C.', src: 'MW-ULA' },
   ],
   sound: {
     stages: [
@@ -653,6 +653,6 @@ export const F16_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: there is no single aperture, spacing, scan density or distance for every site, and the array’s own method sets them. Experiment, and trust your ears and the room as well as the map. The lab is silent and draws a simplified picture: straight paths at 20 °C, a two-element baseline, a probe on paper, and specialist kit drawn as objects. Use specialist equipment only with a qualified operator.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: there is no single aperture (array size), spacing, scan density or distance for every site, and the array’s own method sets them. Experiment, and trust your ears and the room as well as the map. The lab is silent and draws a simplified picture: straight paths at 20 °C, a two-element baseline, a probe on paper, and specialist kit drawn as objects. Use specialist equipment only with a qualified operator.',
   copy: F16_COPY,
 };

@@ -77,7 +77,7 @@ export const A02_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: the horn is the same — the room, the band and the monitors change.',
       points: [
-        { title: 'PERSPECTIVE', text: 'Studio: a balanced main mic, and in a large good room a view about 3 m away. Live: a closer directional mic or a bell clip for control against the band.' },
+        { title: 'PERSPECTIVE', text: 'Studio: a main mic placed for a balanced tone, and in a large good room a view about 3 m away. Live: a closer directional mic or a bell clip for control against the band.' },
         { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the section. Live: monitors, the PA, the drums. Aim the pattern’s rejection; the trombone’s lows spread all around, so every open mic hears them.' },
         { title: 'THE SLIDE', text: 'Whatever the context, the slide’s path to 7th is a keep-out — for the stand, the boom and the cable as much as the mic.' },
         { title: 'LOW END ON STAGE', text: 'Subs and risers shake a stand mic. Tell that rumble from the horn’s real lows before filtering — and check the lowest notes of the part after any filter.' },

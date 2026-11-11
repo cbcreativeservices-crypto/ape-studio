@@ -72,7 +72,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one piccolo mic in the right order, choose and justify a setup for an ensemble recording and a loud stage, and say when a spot is needed at all.',
     credit: { scenarios: ['pc.prac.order', 'pc.prac.gain', 'pc.prac.setup1', 'pc.prac.setup2', 'pc.prac.3', 'pc.mix.1', 'pc.mix.2', 'pc.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real piccolo.' },
-    takeaway: 'The ensemble pickup checked first, the capsule off the jet, clearance from the head and hands, the response compared at matched level, safe listening levels, and an accurate account of polarity versus delay pass — and more than one setup can pass.',
+    takeaway: 'What passes: the ensemble pickup checked first, the capsule off the jet, clearance from the head and hands, the response compared at matched level, safe listening levels, and an accurate account of polarity versus delay — and more than one setup can pass.',
   },
 };
 
@@ -339,7 +339,7 @@ const symptoms: Symptom[] = [
     correct: 'Move it off the jet, then a windscreen',
     explain: 'In the jet a capsule hears wind. Aim and distance are the first controls; a windscreen helps after that.',
     why: {
-      'Cut the low frequencies hard on the channel': 'A filter leaves the turbulence’s upper part, and set too high it thins the lowest notes. Move the capsule first.',
+      'Cut the low frequencies hard on the channel': 'A low-cut filter leaves the upper part of the wind noise, and set too high it thins the lowest notes. Move the capsule first.',
       'Ask the player to blow more gently': 'The breath is the player’s art; the mic’s place is yours.',
     },
   },
@@ -540,7 +540,7 @@ const copy: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Close above the piccolo and aimed down at it, its rear points up and away — the wedge down on the floor in front is off that line, so turning and tilting both matter.',
-    shieldNote: 'The player and the piccolo can reflect stage sound into a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'The player and the piccolo can reflect stage sound into a mic aimed at them — the free-field pattern (measured with nothing nearby) cannot show that. Listen with the monitors on.',
     studioId: 'pc.ctx.studio',
     studioPrompt: 'An orchestra session, the main pair up: does the piccolo need its own mic?',
     studioNote: 'In an ensemble recording, hear the main pickup first; a piccolo spot earns its place by a stated balance need. Switch back to LIVE for the monitor exercise.',
@@ -658,7 +658,7 @@ export const A07_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules; on the piccolo they are the flute’s starting points, carried over. Every piccolo, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them, the air column as an ideal pipe, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules; on the piccolo they are the flute’s starting points, carried over. Every piccolo, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes spaced so each one raises the note a semitone, the air column as an ideal pipe, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A piccolo stood on end, keys toward you, its air column drawn open',

@@ -226,7 +226,7 @@ describe('explanations', () => {
   });
   it('a top-two card opens with what the family leans on', () => {
     const dims = dimensionScores(profile(['RC', 'ER'], 4, 1));
-    assert.equal(explainFamily(rec, dims, { rank: 1 }), 'Leans on Record & Capture and Edit & Refine — your strongest interests. It also draws on Create & Perform, which you rated lower — notice how much of each family that is as you compare them.');
+    assert.equal(explainFamily(rec, dims, { rank: 1 }), 'Leans on Record & Capture and Edit & Refine — your strongest interests. It also draws on Create & Perform, which you rated lower — as you compare families, notice how big a part of each one that is.');
   });
   it('names the main activity when the user rated it lower', () => {
     const dims = dimensionScores(profile(['ER', 'CP'], 4, 1)); // RC (primary) low

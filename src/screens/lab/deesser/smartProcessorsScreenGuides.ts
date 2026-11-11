@@ -181,7 +181,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     },
     seeing: [
       'DETECTOR shows how much hiss the detector hears on each frame, in dB, where 0 is the loudest S. The gold THRESHOLD line runs across it.',
-      'Below, GAIN REDUCTION is drawn downward, capped at the range. Orange labels mark the sibilants.',
+      'Below, GAIN REDUCTION is drawn downward, capped at the range (the most it may cut). Orange labels mark the sibilants.',
       'The readout counts the sibilants above the line and any other sounds that cross it.',
     ],
     control: [
@@ -232,7 +232,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'At 6.5 kHz and Q 1.4, “s” · 7.0k is heard 98%. Slide Band width to Q 4.0 · narrow: 86%. A narrow band misses an off-center S.',
-      'Still at 6.5 kHz and Q 4.0, pick “sh” · 4.0k: 24%, Missing it. Under STARTING POINTS, tap "SH" rather than "S" · 4.0k: the detector moves to 4.0 kHz and hears 100%.',
+      'Still at 6.5 kHz and Q 4.0, pick “sh” · 4.0k: 24%, Missing it. Under STARTING POINTS, tap the "SH" rather than "S" · 4.0k button: the detector moves to 4.0 kHz and hears 100%.',
       'Before the next page, set the detector back to 6.5 kHz and Q 1.4, where the lab starts. The next pages’ numbers assume it.',
     ],
   },
@@ -241,7 +241,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
   gr: {
     intro: {
       learning: 'How to read a gain-reduction meter as a question: is it working on the S’s only, and by a sensible amount? And how Range caps the cut.',
-      start: 'With Threshold at −10 dB and Range at 8.0 dB, read the peak and the average. Then pull Range down to 4.0 dB and watch the rail cap every S.',
+      start: 'With Threshold at −10 dB and Range at 8.0 dB, read the peak and the average. Then pull Range down to 4.0 dB and watch the range line cap every S.',
     },
     seeing: [
       'GAIN REDUCTION shows the detector trace on top. Below it, the reduction on each frame is drawn downward, capped at the range line.',
@@ -297,7 +297,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'The mode never changes when the de-esser acts, only what it turns down.',
     ],
     tryThis: [
-      'Set detector 6.5 kHz, Q 1.4, Threshold −10 dB, Range 8.0 dB. JUMP TO AN S lands on frame 3, “s”, at −7.2 dB. In BROADBAND its body bar drops too; in SPLIT-BAND it stays.',
+      'Set detector 6.5 kHz, Q 1.4, Threshold −10 dB, Range 8.0 dB. JUMP TO AN S lands on frame 3, “s”, at −7.2 dB reduction. In BROADBAND its body bar drops too; in SPLIT-BAND it stays.',
       'Step to frame 8, “a”: no reduction, so both modes pass it untouched.',
       'In BROADBAND, tap AUTO-STEP and watch the body bars dip on each S. That dip is the duck you’d hear on the whole voice.',
     ],
@@ -314,7 +314,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'The card names the stage and what you would hear. THE PROGRESSION lists every stage; ▶ marks the current one.',
     ],
     control: [
-      'How hard is one slider, 0–100%. It lowers the threshold from 0 to −24 dB with the range wide open.',
+      'The How hard slider runs 0–100%. It lowers the threshold from 0 to −24 dB with the range wide open.',
       'RESET RACK TO DEFAULTS puts every de-esser setting back where the lab started. ⤢ FULL SCREEN docks the slider.',
       'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
     ],
@@ -351,7 +351,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Each link shows the same idea from another side. Compression has the same detector, threshold and gain computer; Gate / Expander uses the threshold the other way around.',
     ],
     teaches: [
-      'Every part of a de-esser comes from tools you already know; the closing question asks you to put them together in one sentence.',
+      'Every part of a de-esser comes from tools you already know, so one sentence can sum it up.',
       'A gate turns sound down below its threshold; a compressor and a de-esser turn it down above theirs.',
     ],
     tryThis: [

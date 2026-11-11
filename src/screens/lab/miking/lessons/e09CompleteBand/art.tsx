@@ -19,8 +19,8 @@ const L = SINGER_V.lip;
 const BAND_CARDS = (
   <>
     <Card>
-      <Point title="CLOSE DYNAMICS">On the loud sources and the voice: directional, robust and happy at high levels. Close, they hear their own source well ahead of the stage — the most gain before feedback.</Point>
-      <Point title="THE VOCAL MIC’S PATTERN">A cardioid rejects most straight behind; a supercardioid and a hypercardioid reject most off their backs, with a little pickup directly behind. Choose with the wedges in mind.</Point>
+      <Point title="CLOSE DYNAMICS">On the loud sources and the voice: directional, robust and happy at high levels. Close, they hear their own source far louder than the rest of the stage — the most gain before feedback.</Point>
+      <Point title="THE VOCAL MIC’S PATTERN">A cardioid rejects most straight behind; a supercardioid and a hypercardioid reject most to either side of straight behind, with a little pickup directly behind. Choose with the wedges in mind.</Point>
       <Point title="A DI IS NOT A MIC">A line output or DI box carries bass or keys as a clean electrical signal: no spill, no feedback path — and no cabinet or room either.</Point>
       <Point title="THE DRUM PAIR">Two small condensers over the kit (or a low pair in front of it in a good room) hear the kit as one picture; close mics add focus only where it is missing.</Point>
     </Card>

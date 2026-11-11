@@ -150,7 +150,7 @@ function F15Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
   const keep = useKeepOutStep({
     words: {
       title: 'Keep out',
-      badge: 'From above · red dashes = the exclusion zone · the pale cone = the airflow · sizes are drawings',
+      badge: 'From above · red dashes = the exclusion zone · the pale cone = the airflow · sizes are for the drawing only',
       looking: 'The keep-outs',
       prompt: 'Move the mic with DISTANCE and ANGLE: into the zone, into the airflow, then somewhere clear. Then look at the DEVICE that is a no-go.',
     },
@@ -166,7 +166,7 @@ function F15Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       <Card>
         <Point title="FOLEY AND STORYTELLING">A listener-like position and safe exterior details, the load and the surface logged. A designed or layered effect is useful — just never presented as an unaltered measurement.</Point>
         <Point title="A LIVE DEMONSTRATION">Stand, cable and mic out of moving paths; a perspective that shows the product without getting close — and no feed into the local PA. A broadcast mix is for clarity, not for a noise claim.</Point>
-        <Point title="A QUALITY CHECK ON A LINE">A fixed jig, a fixed mic coordinate, the product’s mode and the acceptance method; the background and the run-to-run spread tracked. A pass/fail limit is proven on good and faulty units in the real plant.</Point>
+        <Point title="A QUALITY CHECK ON A LINE">A fixed jig (a holder that puts each unit in the same spot), a fixed mic coordinate, the product’s mode and the acceptance method; the background and the run-to-run spread tracked. A pass/fail limit is proven on good and faulty units in the real plant.</Point>
       </Card>,
     ),
   ];

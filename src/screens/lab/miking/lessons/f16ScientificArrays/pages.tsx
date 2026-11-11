@@ -71,7 +71,7 @@ const F16Before = makeBeforePage({
     { title: 'THE MEDIUM AND THE QUANTITY', text: 'Name them before placing a sensor: airborne pressure at several points, the direction a sound arrives from, a map of a source region, the intensity through a surface, pressure under water, or ultrasonic events.' },
     { title: 'THE ORIGIN AND THE AXES', text: 'Mark a coordinate origin, the array’s axes, the source region and the obstacles. Write down each sensor’s identity, position, orientation, support, the environment, the sampling and the timing.' },
     { title: 'ONE CLOCK, MATCHED CHANNELS', text: 'Record every element on one synchronized clock. Check the sensitivity, the response and the matching; phase and time offsets matter even when each element looks fine alone. Keep the raw channels.' },
-    { title: 'A KNOWN SOURCE FIRST', text: 'Check with a known stationary source at a modest, agreed level: the channel order, the timing and — for a map — its registration to the picture.' },
+    { title: 'A KNOWN SOURCE FIRST', text: 'Check with a known stationary source at a modest, agreed level: the channel order, the timing and — for a map — how well it lines up with the picture.' },
   ],
   safety: [PROBE, ULTRA],
 });
@@ -161,7 +161,7 @@ function F16TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
   const kit = useKitStep({
     words: {
       title: 'The specialist kit',
-      badge: 'Drawn as objects for a qualified operator · sizes are drawings · the map and the levels are simplified',
+      badge: 'Kit for a qualified operator, drawn as objects · sizes are for the drawing only · the map and the levels are simplified',
       looking: 'The kit',
       prompt: 'Look at each KIT: the camera’s map, the detector’s RATE against your TOP frequency, the hydrophone’s units.',
     },

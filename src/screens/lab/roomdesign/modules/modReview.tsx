@@ -130,7 +130,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
         {a.modes.slice(0, 12).map((m, i) => (
           <KV key={i} k={`${m.kind} (${m.nx},${m.ny},${m.nz})`} v={fmtHz(m.f)} tint={a.rectangular ? colors.cyanBright : colors.amber} />
         ))}
-        {a.coincident.length > 0 ? <Caption>{`Near-coincident (one axial, both ≤ 150 Hz, within 5 %): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
+        {a.coincident.length > 0 ? <Caption>{`Near-coincident modes (at least one axial, both ≤ 150 Hz, within 5 % of each other): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
         <Text style={styles.sub}>WHERE THE MODEL PREDICTS STRONGER OR WEAKER PRESSURE AT THE SEAT</Text>
         {a.listenerZones.map((z, i) => {
           const centred = !st || Math.abs(st.axisOffset) < 0.1;
@@ -150,7 +150,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
         <KV k="RT60 500 Hz · Sabine" v={rtText(500)} />
         <KV k="RT60 2 kHz · Sabine" v={rtText(2000)} />
         <KV k="Schroeder frequency" v={Number.isFinite(a.schroeder) ? `≈ ${Math.round(a.schroeder)} Hz` : '—'} />
-        <Caption>{`Teaching-table absorption, not product data; Sabine and Eyring assume a diffuse field this room does not have below its Schroeder frequency, and Sabine ignores air absorption. First cancellations at the seat (ESTIMATED, woofer band, below ~${SBIR_MAX_HZ} Hz, distances to the woofer): ${a.sbir.length ? a.sbir.slice(0, 4).map((s) => `${s.speaker}/${s.surface} ~${fmtHz(s.notchHz)}`).join(' · ') : 'none in that band'}.`}</Caption>
+        <Caption>{`Absorption uses typical textbook values, not product data; Sabine and Eyring assume a diffuse field this room does not have below its Schroeder frequency, and Sabine ignores air absorption. First cancellations at the seat (ESTIMATED, woofer band, below ~${SBIR_MAX_HZ} Hz, distances to the woofer): ${a.sbir.length ? a.sbir.slice(0, 4).map((s) => `${s.speaker}/${s.surface} ~${fmtHz(s.notchHz)}`).join(' · ') : 'none in that band'}.`}</Caption>
         <Text style={styles.sub}>WHAT THIS MAY MEAN FOR THE WORK</Text>
         <Caption>
           {bassJudgement(a)} {imagingJudgement(a)} {translationJudgement(a)}

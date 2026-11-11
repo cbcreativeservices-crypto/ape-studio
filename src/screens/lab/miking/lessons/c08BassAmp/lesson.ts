@@ -26,7 +26,7 @@ const pages: LessonPages = {
   sound: {
     title: 'How it makes its sound',
     goal: 'See how a bass string becomes a signal and the signal becomes moving air — the lowest notes, the pickups, the cone and the horn.',
-    credit: { scenarios: ['ba.snd.1', 'ba.snd.2', 'ba.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and try both pickups, step the cone through to the end, and answer the three checks.' },
+    credit: { scenarios: ['ba.snd.1', 'ba.snd.2', 'ba.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and try both pickups, use STEP to take the speaker cone through to the end, and answer the three checks.' },
     takeaway: 'A bass’s lowest note is about 41 Hz on four strings and about 31 Hz on a five-string’s low B. Each pickup senses its own spot. The woofers carry the body; a horn, if there is one, adds the top end.',
   },
   setting: {
@@ -570,7 +570,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you begin: which pickup will sense the bass’s lowest note — the fundamental — more strongly?', options: ['The neck pickup', 'The bridge pickup', 'They sense it equally'], after: 'Now step HARMONIC and switch PICKUP, and watch the first bar.' },
+  sound: { prompt: 'Before you begin: which pickup will sense the bass’s lowest note — the fundamental — more strongly?', options: ['The neck pickup', 'The bridge pickup', 'They sense it equally'], after: 'Now step HARMONIC and switch PICKUP; watch the first bar, the fundamental.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 5 cm to 30 cm, on the same woofer. What changes most?', options: ['More cabinet and room', 'More upper-mid bite', 'Nothing much'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the bassist’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
@@ -711,7 +711,7 @@ export const C08_LESSON: Lesson = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a mic-and-DI setup for a given rig and show, describe an alternative, and say what would justify the second channel. With a real rig and the player’s agreement, you can log what you tried below.',
+    task: 'Choose a mic-and-DI setup for a given rig and performance, describe an alternative, and say what would justify the second channel. With a real rig and the player’s agreement, you can log what you tried below.',
     fields: [
       { id: 'source', label: 'Bass (fretted or fretless, strings), head, cabinet, the player’s settings', kind: 'text' },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['low-frequency dynamic', 'instrument dynamic', 'small condenser', 'other'] },
@@ -735,5 +735,5 @@ export const C08_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, rig, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 4 × 10 cabinet with a horn (its outer size is real; the layout, the woofer sizes and the head are drawing choices), an ideal string, textbook mic patterns, motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Make connections with levels at zero, never open an amp, and send a speaker output to a speaker, never into a desk input.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, rig, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 4 × 10 cabinet with a horn (its outer size is real; the layout, the woofer sizes and the head are illustrative only), an ideal string, textbook mic patterns, motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Make connections with levels at zero, never open an amp, and send a speaker output to a speaker, never into a desk input.',
 };

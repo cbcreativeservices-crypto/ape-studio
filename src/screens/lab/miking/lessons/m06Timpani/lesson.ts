@@ -462,10 +462,10 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What does the air the head moves — in the bowl and above it — do to a timpani’s sound?',
     options: ['Pulls the main shapes into near-whole-number steps — a pitch', 'Makes the drum much louder, like a megaphone pointed at the floor', 'Nothing — the bowl only holds the head up'],
     correct: 'Pulls the main shapes into near-whole-number steps — a pitch',
-    explain: 'The air the head moves, above it and in the bowl, loads it and shifts its shapes’ pitches toward near-harmonic steps, which the ear hears as a note.',
+    explain: 'The air the head moves, above it and in the bowl, adds to the mass it must move and shifts its shapes’ pitches toward near-harmonic steps, which the ear hears as a note.',
     why: {
-      'Makes the drum much louder, like a megaphone pointed at the floor': 'The bowl is closed above by the head — no megaphone. It works mainly as a baffle; the air the head moves shapes the ratios.',
-      'Nothing — the bowl only holds the head up': 'Its air fine-tunes how the head vibrates, and the bowl works as a baffle — it does more than hold the head up.',
+      'Makes the drum much louder, like a megaphone pointed at the floor': 'The head closes the bowl — no megaphone. It works mainly as a baffle, a wall between the head’s two sides; the air the head moves shapes the ratios.',
+      'Nothing — the bowl only holds the head up': 'Its air fine-tunes how the head vibrates, and the bowl is a baffle, walling off the head’s underside — more than a stand.',
     },
   },
   {
@@ -511,7 +511,7 @@ export const M06_LESSON: Lesson = {
     stages: [
       { title: 'The mallet strikes', text: 'A mallet strikes the head about a third of the way in from the hoop, on the player’s side. That brief contact is where the ATTACK begins.' },
       { title: 'The head see-saws', text: 'The head goes down where it was struck and up on the far side — its (1,1) see-saw shape, drawn much larger than it really moves. This shape and its relatives carry the NOTE.' },
-      { title: 'The bowl’s air is shoved across', text: 'The air under the head is shoved from one side of the bowl to the other rather than squeezed. Moving that air, and the air above, loads the head and pulls its pitched shapes into near-whole-number steps: that is why a timpani has a clear pitch.' },
+      { title: 'The bowl’s air is shoved across', text: 'The air under the head is shoved from one side of the bowl to the other rather than squeezed. Moving that air, and the air above, adds to the mass the head must move and pulls its pitched shapes into near-whole-number steps: that is why a timpani has a clear pitch.' },
       { title: 'Sound leaves the head', text: 'Sound leaves from the head — upward and out to the sides; the bowl holds the air under it. The note blooms and rings on: how long depends on the mallet, the tuning and any damping.' },
     ],
     attack: 'The start of each stroke: the mallet’s brief contact with the head, on the player’s side. A mic close to the head tends to hear more of it — and of the part of the head nearest the mic.',
@@ -579,6 +579,6 @@ export const M06_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the timpani already; when a spot helps, every set, player and hall is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair (or four) of timpani, ideal head shapes with a timpani’s ratios, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the timpani already; when a spot helps, every set, player and hall is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair (or four) of timpani, ideal head shapes with a timpani’s ratios, mic patterns and two-mic comb filtering as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: TIMP_COPY,
 };

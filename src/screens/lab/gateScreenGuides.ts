@@ -71,11 +71,11 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the gate; ■ stops it. Drag the THRESH fader from −50 to −20 dB.',
       'RANGE: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD: 0, 10 or 100 ms. RLS (release): 20 ms CHATTER, 100 ms or 500 ms.',
       'SOURCE: CLICK 90 or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
-      'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
+      'Long-press any key or readout for its lesson entry. Below, in LAB NOTES, read the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve and THE AUDIO PATH, answer two CHECK YOURSELF questions or open the GUIDED LESSON.',
     ],
     changes: [
       'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 dB = 40 dB quieter).',
-      'HOLD keeps the gate open a set time after the level falls. RLS sets how fast it then closes, and how fast its sensed level falls. A level wobbling at the line with a fast RLS flickers: chatter.',
+      'HOLD keeps the gate open a set time once the level falls. RLS sets how fast it then closes, and how fast its sensed level falls. A level wobbling at THRESH with a fast RLS makes the gate chatter.',
       'At the starting THRESH −35 dB each click opens the gate; at −20 dB the short click never reaches it.',
     ],
     teaches: [
@@ -98,7 +98,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the Gate / Expander guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays the sound.',
-      'It starts with what a gate is. Then CONTROLS: THRESH, Attack, HOLD, RLS, RANGE, the GR meter and more. Attack is fixed at 1 ms here; Hysteresis, Lookahead, sidechain and key filter are on real gates, not on this screen.',
+      'It starts with what a gate is. Then CONTROLS: THRESH, Attack, HOLD, RLS, RANGE, the GR meter and more. Attack is fixed at 1 ms here; Hysteresis, Lookahead, sidechain and key filter are on real gates, not in this lab.',
       'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -112,7 +112,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     ],
     teaches: [
       'The words of gating: threshold, range (floor), hold, release, hysteresis (separate open and close levels), key filter (a filter on what the gate listens to), chatter.',
-      'Why a partial range often sounds more natural than full silence: leakage ducks instead of vanishing.',
+      'Why a partial range often sounds more natural than full silence: leakage is turned down instead of vanishing.',
       'How hold and a slower release keep a gate from chattering on a note that fades across the threshold.',
     ],
     tryThis: [

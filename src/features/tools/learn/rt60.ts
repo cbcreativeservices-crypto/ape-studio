@@ -44,7 +44,7 @@ export const RT60_LEARN: ToolLearnContent = {
     {
       claim: 'The tool measures the full 60 dB of decay.',
       truth:
-        'Real rooms rarely offer 60 dB of decay above the background noise, so the tool fits the slope over 20 or 30 dB (T20/T30) and extrapolates — multiplying a T20 result by three assumes the decay stays linear, which is why the method label and quality status matter.',
+        'Real rooms rarely offer 60 dB of decay above the background noise, so the tool fits the slope over 20 or 30 dB (T20/T30) and extrapolates — multiplying the measured 20 dB decay time by three (T20) assumes the decay stays linear, which is why the method label and quality status matter.',
     },
     {
       claim: 'One hand clap gives a reliable RT60.',
@@ -81,12 +81,12 @@ export const RT60_LEARN: ToolLearnContent = {
     {
       text: 'Insufficient decay range detected.',
       why:
-        'If the signal decays into the noise floor before the fit window is covered, the slope is fitted partly to noise and the resulting time is not meaningful.',
+        'If the signal decays into the noise floor before the fit window is covered, the slope is fitted partly to noise and the resulting time is not meaningful — use a louder source or a quieter room, then measure again.',
     },
     {
       text: 'High background noise may invalidate result.',
       why:
-        'Background noise raises the floor and shortens the usable decay range, and any noise event during capture is mistaken for room energy in the curve.',
+        'Background noise raises the floor and shortens the usable decay range, and any noise event during capture is mistaken for room energy in the curve — quiet the room, then measure again.',
     },
     {
       text: 'Repeat measurements from multiple positions.',

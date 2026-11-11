@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one euphonium mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['eu.prac.order', 'eu.prac.gain', 'eu.prac.setup1', 'eu.prac.setup2', 'eu.prac.3', 'eu.mix.1', 'eu.mix.2', 'eu.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real euphonium.' },
-    takeaway: 'The horn identified and its bell found, safe clearance from the tilt, the hands and the path to stand, headroom, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a diaphragm size does not — and more than one setup can pass.',
+    takeaway: 'What passes: the horn identified and its bell found, safe clearance from the tilt, the hands and the player’s path to stand, headroom, pattern reasoning and an accurate account of polarity versus delay. A brand or a diaphragm size does not — and more than one setup can pass.',
   },
 };
 
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Where the bell is — re-place the mic for the new bell',
     explain: '“In front of the player” has a different relationship to each bell. Point the stand in the new bell’s real direction, and recheck the clearance and the player’s path to stand.',
     why: {
-      'Nothing: the player still sits in the same place': 'The player may not move — the bell does. The mic follows the bell.',
+      'Nothing: the player still sits in the same place': 'The player might not move — but the bell does. The mic follows the bell.',
       'Only the gain, since a front bell is a little louder': 'The whole relationship changes: direction, distance and what the mic hears.',
     },
   },
@@ -178,11 +178,11 @@ const scenarios: MikingScenario[] = [
     id: 'eu.mic.3',
     page: 'microphone',
     prompt: 'The euphonium’s strongest attacks are loud close to the bell. What do you check on the mic?',
-    options: ['Its maximum level at that distance, and each gain stage', 'Only the desk meter, since it shows each overload as it happens', 'Its brand’s good standing among brass players'],
+    options: ['Its maximum level at that distance, and each gain stage', 'Only the console meter, since it shows each overload as it happens', 'Its brand’s good standing among brass players'],
     correct: 'Its maximum level at that distance, and each gain stage',
-    explain: 'Strong brass peaks can overload a mic stage even when a console meter has headroom. Check the mic, any wireless stage and the preamp at the loudest real passage.',
+    explain: 'Strong brass peaks can overload the mic or a wireless pack even when a console meter shows headroom. Check the mic, any wireless pack and the preamp at the loudest real passage.',
     why: {
-      'Only the desk meter, since it shows each overload as it happens': 'The meter comes after the mic and a wireless pack; they can clip before it shows.',
+      'Only the console meter, since it shows each overload as it happens': 'The meter comes after the mic and a wireless pack; they can clip before it shows.',
       'Its brand’s good standing among brass players': 'A brand is no measure of headroom. Check the mic’s own specification.',
     },
   },
@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In a dense score the euphonium’s articulation is masked. What do you try first?',
     options: ['A closer spot, a little more toward the axis, matched level', 'A farther mic, for more of the room and the whole section', 'A big low-end boost, so the line sits fuller under the band'],
     correct: 'A closer spot, a little more toward the axis, matched level',
-    explain: 'For masked articulation, compare the closer position and a modestly more central axis at matched level — without forcing a brittle sound.',
+    explain: 'For masked articulation, compare the closer position, aimed a little more toward the bell’s axis, at matched level — without forcing a brittle sound.',
     why: {
       'A farther mic, for more of the room and the whole section': 'That blends the line further into the band — the opposite of what a masked line needs.',
       'A big low-end boost, so the line sits fuller under the band': 'Articulation lives in the attacks and upper harmonics, not in more low end.',
@@ -334,7 +334,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The mic too central or too close, an overload, or the player and the room: compare toward the edge or off axis at matched level, and check the gain stages.',
     options: ['Compare edge or off axis at matched level; check the gain stages', 'Boost the low end on the channel until the whole line fills out again', 'Ask the player to play more softly for a rounder tone'],
     correct: 'Compare edge or off axis at matched level; check the gain stages',
-    explain: 'Right over the bell’s center, or overloaded, a euphonium can sound thin and brittle. Move toward the edge or off axis, and check that no stage clips.',
+    explain: 'Right over the bell’s center, or overloaded, a euphonium can sound thin and brittle. Move toward the edge or off axis, and check that no gain stage clips.',
     why: {
       'Boost the low end on the channel until the whole line fills out again': 'EQ hides the cause. Check the angle, the distance and the gain first.',
       'Ask the player to play more softly for a rounder tone': 'The player’s sound is theirs. The mic’s view and the gain are yours to change.',
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage with a big band. One channel for a bell-front euphonium; the player stands for solos.',
     setups: [
-      { id: 'a', label: 'Small dynamic a foot or two in front of the bell, slightly off axis, the stand clear of the path to stand', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, set for the real bell — check the wedges around its rejection.' },
+      { id: 'a', label: 'Small dynamic a foot or two in front of the bell, slightly off axis, the mic stand clear of the player’s path to stand', ok: true, power: 'none', feedback: 'A suggested starting point: close, directional, set for the real bell — check the wedges around its rejection.' },
       { id: 'b', label: 'A clip its maker confirms for this bell, the cable away from both valve hands and the mute', ok: true, power: 'phantom', feedback: 'A suggested option when a confirmed clip exists: it follows the player who stands for solos.' },
       { id: 'c', label: 'A mic 60 cm above where an upright bell would be', ok: false, power: 'phantom', feedback: 'That suits an upright bell. This one faces the front: point the stand in its real direction.' },
       { id: 'd', label: 'A trumpet clip taped to the bell, for a quick fit', ok: false, power: 'phantom', feedback: 'A trumpet clip may not fit, and tape on a valuable finish is never the answer.' },
@@ -574,7 +574,7 @@ export const A04B_LESSON: Lesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges; a good room carries the euphonium’s size and its phrase.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: monitors feed the players, the PA faces the audience, and the band reaches every open mic. A loud stage pushes toward a closer, directional mic with the wedges around its rejection — tested with the whole band.',
-    studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A farther view can carry a lyrical line; in a band, a main pair may carry it already.',
+    studio: 'STUDIO: no wedges, a room that may sound good, and time to try again whenever the player stops. A farther view can carry a lyrical line; in a band, a main pair may carry it already.',
   },
   diagnostic,
   practice: {

@@ -48,7 +48,7 @@ export const A05C_LESSON: Lesson = buildSaxLesson({
     prompt: 'A wireless clip pack cuts below about 80 Hz. The tenor’s lowest note sounds near 104 Hz. What follows?',
     options: ['The cut sits below its lowest note; still check the low line', 'It will cut the tenor’s lowest notes, so switch it off for good', 'It removes the high harmonics that the bell carries out'],
     correct: 'The cut sits below its lowest note; still check the low line',
-    explain: 'The tenor’s lowest fundamental, about 104 Hz, is above an 80 Hz cut — though not by much. Listen to the real low line with the cut in and out; the cut is there for handling noise.',
+    explain: 'The tenor’s lowest fundamental, about 104 Hz, is above an 80 Hz cut — though not by much. Listen to the lowest notes of the part with the cut on and off; the cut is there for handling noise.',
     why: {
       'It will cut the tenor’s lowest notes, so switch it off for good': 'At about 104 Hz the tenor’s lowest note sits above 80 Hz. Compare by ear rather than removing the cut by habit.',
       'It removes the high harmonics that the bell carries out': 'A low cut removes lows, not highs. The bell’s harmonics are far above 80 Hz.',

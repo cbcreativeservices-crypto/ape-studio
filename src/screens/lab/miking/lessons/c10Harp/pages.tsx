@@ -50,7 +50,7 @@ const SOUND = makeStringSoundPage({
     ends: { left: 'NECK', right: 'BOARD', tone: 'harp' },
     subject: 'One of the harp’s strings',
     notes: [
-      'A shape is set moving only as much as the string moves at the plucked point in that shape. Plucked in the middle, every even shape (2, 4, 6 …) has a still point there and is left out — a round, hollow tone. Near the soundboard almost every shape joins in, and the tone is brighter.',
+      'Each shape starts moving only as much as that shape moves at the point you pluck. Plucked in the middle, every even shape (2, 4, 6 …) has a still point there and is left out — a round, hollow tone. Near the soundboard almost every shape joins in, and the tone is brighter.',
       'This is an ideal, flexible string; a real harp string is close to it. Where the harpist plucks is part of the music, not something to fix with a mic.',
     ],
   },
@@ -116,7 +116,7 @@ const SETTING = makeStagePage({
   nearBadge: 'From above · a typical layout · the harpist at the left, the audience to the right',
   audience: () => HARP_AUDIENCE,
   nearLooking: 'Plan · the harp and the harpist from above',
-  hearing: 'Protect your hearing: the harp itself is gentle, but the band or orchestra around it, and the monitors at soundcheck, are loud. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
+  hearing: 'Protect your hearing: the harp itself is gentle, but the band or orchestra around it, and the monitors at soundcheck, are loud. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more. These are limits for PEOPLE, measured where a person listens — they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });
 
 export const HARP_ART: LessonArt = {

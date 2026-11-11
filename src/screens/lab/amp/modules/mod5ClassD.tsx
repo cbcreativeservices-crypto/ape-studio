@@ -135,7 +135,7 @@ function SwitchingStage({ dutyAtPeak, width, height }: { dutyAtPeak: number; wid
 
 const LOSSES: { label: string; share: number }[] = [
   { label: 'Power supply conversion', share: 0.3 },
-  { label: 'Device conduction (Rds-on)', share: 0.25 },
+  { label: 'Device conduction (on-resistance, Rds-on)', share: 0.25 },
   { label: 'Switching transitions', share: 0.2 },
   { label: 'Control + gate drive', share: 0.1 },
   { label: 'Output filter', share: 0.15 },
@@ -183,7 +183,7 @@ export function Mod5ClassD() {
     heat: sim.heat,
     efficiencyPct: sim.efficiencyPct,
     speaker: view === 'recovered',
-    a11ySummary: `Class D at ${Math.round(drive * 100)} percent input. The high-side device is on about ${Math.round(dutyAtTrough * 100)} percent of each switching period at the trough and ${Math.round(dutyAtPeak * 100)} percent at the peak; the cycle average stays at 50 percent. View: ${view}. Illustrative efficiency ${Math.round(sim.efficiencyPct)} percent.`,
+    a11ySummary: `Class D at ${Math.round(drive * 100)} percent input. The high-side device is on about ${Math.round(dutyAtTrough * 100)} percent of each switching period at the trough and ${Math.round(dutyAtPeak * 100)} percent at the peak; the cycle average stays at 50 percent. View: ${VIEW_OPTIONS.find((o) => o.key === view)?.label ?? view}. Illustrative efficiency ${Math.round(sim.efficiencyPct)} percent.`,
   };
 
   return (

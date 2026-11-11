@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose an anchor’s mic by the shot, the movement and the route: a visible or hidden lav, a boom outside the frame, a gooseneck or a boundary mic on the desk.',
     credit: { scenarios: ['b2.mic.1', 'b2.mic.2', 'b2.mic.3', 'b2.mic.4', 'b2.rec.1'], note: 'Answer the five checks (one reaches back to the anchor and the desk).' },
-    takeaway: 'A centered lav is a reliable first trial; hide it only after the visible place works; a boom avoids the clothes but must stay outside the frame; a desk mic avoids the clothes but meets the papers and the desk’s bounce.',
+    takeaway: 'A centered lav is a reliable place to start; hide it only after the visible place works; a boom avoids the clothes but must stay outside the frame; a desk mic avoids the clothes but meets the papers and the desk’s bounce.',
   },
   placement: {
     title: 'Placement Studio',
@@ -100,7 +100,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The anchor turns from the camera to the guest. What happens at the lav?',
     options: ['It stays put; the mouth turns away from it', 'It turns with the anchor’s head toward the guest', 'It comes closer to the mouth as the head turns'],
     correct: 'It stays put; the mouth turns away from it',
-    explain: 'A lav is on the chest. The head turns about its center, so the mouth moves off the lav’s line — a centered lav changes alike for a turn either way.',
+    explain: 'A lav is on the chest. The head turns about its center, so the mouth moves off the lav’s line — with a centered lav, a turn either way changes the sound alike.',
     why: {
       'It turns with the anchor’s head toward the guest': 'Only a head-worn mic, like a headset, turns with the head. A chest lav moves with the chest.',
       'It comes closer to the mouth as the head turns': 'The mouth swings sideways, away from the middle of the chest.',
@@ -281,7 +281,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A public interview with a PA. A fair step for the desk mics?',
     options: ['Close mics, the fewest open, rejection to the PA', 'Each mic left open so that nothing is missed', 'The boundary turned up to cover the whole desk'],
     correct: 'Close mics, the fewest open, rejection to the PA',
-    explain: 'Every open mic hears the PA. Close mics keep the voices ahead; the fewest open keep the margin; aim each pattern’s rejection at the loudspeaker.',
+    explain: 'Every open mic hears the PA. Close mics keep the voices ahead; the fewest open keep the margin before feedback; aim each pattern’s rejection at the loudspeaker.',
     why: {
       'Each mic left open so that nothing is missed': 'Each open mic lowers the margin before feedback.',
       'The boundary turned up to cover the whole desk': 'A distant boundary hears the PA and the room; more gain brings feedback closer.',
@@ -513,11 +513,11 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A public interview: an anchor and a guest at a desk, an audience and a PA, a broadcast program.',
     setups: [
-      { id: 'a', label: 'A centered lav each, the fewest open, the PA checked with the operator', ok: true, power: 'pack', feedback: 'A suggested start — check the margin at a safe level.' },
+      { id: 'a', label: 'A centered lav each, the fewest open, the PA checked with the operator', ok: true, power: 'pack', feedback: 'A suggested start — check the margin before feedback at a safe level.' },
       { id: 'b', label: 'A gooseneck each, raised, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A suggested start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'Every mic on the desk left open in case', ok: false, power: 'phantom', feedback: 'Each open mic hears the PA: less margin before feedback.' },
       { id: 'd', label: 'The boom and the lav both in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
-      { id: 'e', label: 'Raise the mics until the PA rings, then back off', ok: false, power: 'phantom', feedback: 'Ringing out is the system operator’s job. Bring each to its working level only.' },
+      { id: 'e', label: 'Raise the mics until the PA rings, then back off', ok: false, power: 'phantom', feedback: 'Ringing out is the system operator’s job. Bring each mic to its working level only.' },
     ],
     reasons: [docReason('the lips'), clearReason('the talkers, the papers and the frame'), { id: 'r.one', label: 'One mic on air per voice; the fewest mics open', role: 'required', feedback: 'Say how the open mics are kept to the ones needed.' }, { id: 'r.op', label: 'The PA level and the mics checked with the operator', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('news anchor'), { id: 'r.loudest', label: 'Turn the mics up until the voices beat the PA', role: 'wrong', feedback: 'More gain brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: close mics measured from the lips, one on air per voice, the fewest open, the PA toward the rejection and checked with the operator — and no feedback provoked.',

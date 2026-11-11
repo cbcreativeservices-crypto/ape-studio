@@ -18,7 +18,7 @@ export const TUBA_MODEL: InstrumentModel = lowBrassModel(SPEC, {
   },
   words: {
     bell: 'The flared end of the tube — about 44 cm across here. Nearly all of the sound leaves from its opening: a mic seldom goes in it or close over it.',
-    body: { label: 'body and bows', short: 'body', role: 'About 5.5 m of widening tube in a B♭ tuba, folded into the big body that rests on the lap. The air inside vibrates; the metal gives off very little sound.' },
+    body: { label: 'body and bows', short: 'body', role: 'About 5.5 m of widening tube in a B♭ tuba, folded with U-shaped bends (bows) into the big body that rests on the lap. The air inside vibrates; the metal gives off very little sound.' },
     valves: 'Four piston valves under the right hand switch extra lengths of tube in or out. The fingers move on top of them all the time: keep mics and cables clear.',
     leadpipe: 'Where the player’s lips buzz into the large mouthpiece; the leadpipe carries the air into the valves. Nothing goes near the face.',
     slides: 'Tuning slides stick out of the body; the player pulls them to tune and to empty water. They bend easily: never use one to hold the tuba or a mic.',

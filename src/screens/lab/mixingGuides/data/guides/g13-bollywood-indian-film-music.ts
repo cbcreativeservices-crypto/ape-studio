@@ -140,7 +140,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Lead vocal (stage 2, opto)",
         "use": "Yes",
-        "ratio": "3:1 (program)",
+        "ratio": "3:1 (program-dependent)",
         "attackRelease": "Program-dependent",
         "gainReduction": "3–5 dB",
         "notes": "Smooth, glossy leveling, plus detailed fader rides"

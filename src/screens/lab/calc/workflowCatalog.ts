@@ -141,7 +141,7 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
   tpl('power-run', 'Long Power Run', 'Voltage drop over the run, the gauge that keeps it in spec, then the ampacity check.', [
     { workspaceId: 'vdrop', fnKey: 'drop', note: 'Voltage lost over this length and gauge.' },
     { workspaceId: 'vdrop', fnKey: 'gaugeFor', note: 'Gauge needed for your allowable drop.' },
-    { workspaceId: 'ampacity', fnKey: 'awg', note: 'Whether that conductor may carry the current (NEC Table 310.16 and its limits). Use whichever conductor is larger.' },
+    { workspaceId: 'ampacity', fnKey: 'awg', note: 'Whether that conductor may carry the current (NEC Table 310.16 and its limits). Use the larger conductor: this one or the voltage-drop one.' },
   ]),
   tpl('passive-crossover', 'Passive Crossover', 'First-order and second-order component values for the crossover.', [
     { workspaceId: 'crossover', fnKey: 'firstOrder', note: '6 dB/oct inductor & capacitor values.' },

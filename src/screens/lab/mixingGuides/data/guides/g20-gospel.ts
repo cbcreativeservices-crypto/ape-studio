@@ -46,7 +46,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Drums:",
-      "text": "acoustic kit played with “gospel chops” — fast linear fills, heavy backbeat, big crashes, honed in church and shed sessions.",
+      "text": "acoustic kit played with “gospel chops” — fast linear fills, heavy backbeat, big crashes, honed in church and “shed” (practice-jam) sessions.",
       "bullet": true
     },
     {
@@ -95,7 +95,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Mic the choir from above, 2–3 ft in front of the first row; the less EQ, the more natural"
       },
       {
-        "source": "Praise team / BGV mics",
+        "source": "Praise team / background vocal mics",
         "cut": "HPF 120–150 Hz; −2–3 dB at 300–500 Hz",
         "boost": "+1–2 dB at 2–4 kHz",
         "notes": "Keep them darker than the lead so the lead cuts"
@@ -282,7 +282,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below most contemporary studio masters) and a loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
+      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR (peak-to-loudness ratio) of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below most contemporary studio masters) and a loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
     }
   ],
   "liveStudio": {

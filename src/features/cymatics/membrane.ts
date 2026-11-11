@@ -288,7 +288,7 @@ export function readCone(driver: Driver, f: number): ConeRead {
   } else if (b < 0.55) {
     stage = 'edge';
     drawMode = 1;
-    why = 'Edge flexing: the surround and the outer cone can no longer follow the voice coil rigidly — the centre moves more than the rim (a J₀-like profile). ka has passed 1, so the output begins to beam.';
+    why = 'Edge flexing: the surround and the outer cone can no longer follow the voice coil rigidly — the center moves more than the rim (a J₀-like profile). ka has passed 1 (the rim now spans more than one wavelength), so the output begins to beam forward.';
   } else if (b < 1) {
     stage = 'radial';
     drawMode = 2 + Math.min(3, Math.floor((b - 0.55) / 0.15));

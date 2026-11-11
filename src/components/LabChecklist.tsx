@@ -81,7 +81,7 @@ export function LabChecklist({
                       : r.done
                         ? 'Complete.'
                         : unknown
-                          ? 'Progress could not be read.'
+                          ? 'Progress couldn’t load. Try again later.'
                           : partial
                             ? `${partial} sections done.`
                             : 'Not started.'
@@ -89,7 +89,7 @@ export function LabChecklist({
                 }
               : {
                   accessible: true,
-                  accessibilityLabel: `${r.name}. ${r.tracked ? (r.done ? 'Complete.' : unknown ? 'Progress could not be read.' : 'Not started.') : 'Required.'}`,
+                  accessibilityLabel: `${r.name}. ${r.tracked ? (r.done ? 'Complete.' : unknown ? 'Progress couldn’t load. Try again later.' : 'Not started.') : 'Required.'}`,
                 })}
             style={s.row}
           >

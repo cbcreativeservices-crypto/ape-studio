@@ -56,7 +56,7 @@ export const CLAV_COPY: LessonCopy = {
   },
   placement: {
     workedZone: { combo: 'cl.line', cab: 'cl.line' },
-    workedLine: 'This starting point also places the mic relative to {line}: the readout says how far off it the mic is.',
+    workedLine: 'This starting point also places the mic relative to {line}: the readout says how far the mic is from it.',
     workedAim: 'Aim it straight in at the speaker — the lab counts it while the mic faces the way the starting point names. Distance, position across the cone and angle are separate things to try.',
     workedClear: 'Clear of the grille — the mic never touches it — on a stand that cannot tip into the speaker, its cable out of the player’s way. Clearance comes first, before any number.',
     blocked: {},
@@ -68,7 +68,7 @@ export const CLAV_COPY: LessonCopy = {
     note: `Clearance comes first: the stand holds the mic, never the grille (drawn ${GRILLE_X} mm in front of the baffle), the stand cannot tip into the speaker, and nothing goes near a hot tube chassis.`,
     availableLead: 'Starting points for this mic and amp',
     learn: {
-      intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this amp, measured from the surface it names — the grille, or the open back. They are starting points, not rules: move from there and listen — there is no single right answer.',
+      intro: 'What you just did, in words. Each blue zone is where we suggest you begin with that kind of mic on this amp, measured from the surface it names — the grille, or the open back. They are starting points, not rules: move from there and listen — there is no single right answer.',
       separate: 'Distance from the grille, position across the cone and angle are separate variables: change one at a time, and mark each position so you can return to it. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. The stand holds the mic: it never rests on the grille or touches a moving cone; the stand cannot fall into the speaker; nothing goes near a hot tube chassis; cables are taped where the player walks.',
       tendencies: 'Toward the center of the speaker tends to bring more bite and edge; toward the edge, or turned off axis, a rounder sound; farther back, more cabinet and room. These are tendencies; amps, speakers and settings vary.',

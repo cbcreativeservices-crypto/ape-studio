@@ -189,7 +189,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
     view,
     ['A'],
     live
-      ? `${wedge.label}, ${Math.round(theta)} degrees off the mic's front axis: ${shield ? `the ${shield.label} lies in the path, which this free-field model ignores` : fmtIdealPickup(db)}${inNull && !shield ? ', in the rejection region' : ''}.`
+      ? `${wedge.label}, ${Math.round(theta)} degrees off the mic's front axis: ${shield ? `the ${shield.label} lies in the path, which this free-field (open-air) pattern ignores` : fmtIdealPickup(db)}${inNull && !shield ? ', in the rejection region' : ''}.`
       : 'Studio: no monitor.',
   );
   const pred = lesson.predictions.context;
@@ -222,7 +222,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
             )}
           </PatternInset>
         ),
-        badge: live ? `${patternInsetBadge(true, wedge.glyph === 'none' ? wedge.short : undefined)} · counts within ±${NULL_TOL}° of a null · ${X.badgeWhere ?? 'monitors where a stage often puts them'}` : patternInsetBadge(false),
+        badge: live ? `${patternInsetBadge(true, wedge.glyph === 'none' ? wedge.short : undefined)} · IN NULL means within ±${NULL_TOL}° of a null · ${X.badgeWhere ?? 'monitors where a stage often puts them'}` : patternInsetBadge(false),
         bezel,
         params,
         initialParam: 'aim',
@@ -233,7 +233,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
           <Landing looking={`${X.looking} · ${wedge.short.toLowerCase()}`} prompt={X.prompt} />
           <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? X.activityDone : 'not yet'}.`}</Body>
           {shield ? (
-            <Note tone="warn">{`The ${shield.label} lies between this mic and the ${wedge.short.toLowerCase()}. ${wedge.note} The free-field pattern ignores that shielding, so no pickup number is shown.`}</Note>
+            <Note tone="warn">{`The ${shield.label} lies between this mic and the ${wedge.short.toLowerCase()}. ${wedge.note} The free-field pattern (open air, nothing in the way) ignores that shielding, so no pickup number is shown.`}</Note>
           ) : X.frontIds.includes(wedge.id) ? (
             <Note tone="warn">{wedge.note}</Note>
           ) : null}

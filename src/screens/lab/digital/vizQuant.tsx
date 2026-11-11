@@ -460,7 +460,7 @@ export function DitherView({ width, mode, height }: { width: number; mode: Dithe
           <LinearGradient start={vec(0, 0)} end={vec(0, HH)} colors={['#5bff85', 'rgba(91,255,133,0.25)']} />
         </Path>
       </Strip>
-      <Strip label="NOISE SPECTRUM — SIMPLIFIED SHAPE (NOT AN FFT)" width={width} height={HS}>
+      <Strip label="NOISE SPECTRUM — SIMPLIFIED SHAPE (DRAWN, NOT MEASURED)" width={width} height={HS}>
         <SkLine p1={{ x: g.padX, y: g.specBase }} p2={{ x: width - g.padX, y: g.specBase }} color={GRID} strokeWidth={1} />
         {/* The sine itself. */}
         <SkLine p1={{ x: g.sigX, y: g.specBase }} p2={{ x: g.sigX, y: 5 }} color={WAVE} strokeWidth={2.4} />

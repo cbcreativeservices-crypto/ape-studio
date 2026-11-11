@@ -139,7 +139,7 @@ describe('4 · the veena’s plate', () => {
     const l = read('lessons/c15Veena/lesson.ts');
     assert.ok(l.includes(`quote: '30–50 cm from the top plate, ${P}'`));
     assert.match(l, /right: 'The top plate, around its middle, on the far side of the bridge from the neck'/);
-    assert.ok(read('lessons/c15Veena/copy.ts').includes(`workedAim: 'Aim at a broad area ${P} —`));
+    assert.ok(read('lessons/c15Veena/copy.ts').includes(`workedAim: 'Aim at a broad area ${P}, not straight at one bridge point —`));
   });
 });
 

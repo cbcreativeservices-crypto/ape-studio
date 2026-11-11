@@ -29,7 +29,7 @@ export const SPECTROGRAM_LEARN: ToolLearnContent = {
     {
       head: 'THE NOISE FLOOR',
       body:
-        'Rooms and electronics are never silent, so a real spectrogram always shows a faint haze of low-level background energy — that is the noise floor, not a defect in the display. Raising the dynamic range reveals more of it; lowering the range hides it below the display floor, but hiding it does not remove it. An apparently clean, black background usually means the floor is set above the noise, not that the noise is gone. Learning what your normal noise floor looks like is what lets you spot when something new — hum, HVAC, a buzzing fixture — has been added to it.',
+        'Rooms and electronics are never silent, so a real spectrogram always shows a faint haze of low-level background energy — that is the noise floor, not a defect in the display. Raising the dynamic range reveals more of it; lowering the range hides it below the display floor, but hiding it does not remove it. An apparently clean, black background usually means the floor is set above the noise, not that the noise is gone. Learning what your normal noise floor looks like is what lets you spot when something new — hum, HVAC (heating, ventilation and air-conditioning), a buzzing fixture — has been added to it.',
     },
     {
       head: 'RECOGNIZING PATTERNS',

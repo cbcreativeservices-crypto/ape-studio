@@ -136,7 +136,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
             accessibilityLabel={`The two heads from above, as the player sees them: the bayan on the left with its black patch off-center toward the player, the dayan on the right with its black patch in the middle.${press >= 0.05 ? ' The heel of the hand presses the bayan near the player: its tension and its pitch rise.' : ''}`}
           />
         ),
-        badge: 'From above, as the player sees them · sizes and the patch offset are drawing choices · silent',
+        badge: 'From above, as the player sees them · sizes and the patch offset are approximate · silent',
         bezel: headBezel,
         params: headParams,
         initialParam: 'drum',
@@ -188,7 +188,7 @@ const SPEC: HandSpec = {
   intro: 'This lesson is about putting microphones on a tabla — one instrument made of two drums. First the pair itself: what it is, how it makes its sound, and where it sits with its player. Then the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
   partsBox: { top: { u0: -760, u1: 420, v0: -420, v1: 380 }, side: { u0: -700, u1: 520, v0: -860, v1: 40 } },
   figure: { view: 'top', box: { u0: -760, u1: 420, v0: -420, v1: 380 }, title: 'TABLA', badge: 'The pair from above, as it sits in front of the player · a right-handed layout', label: 'The tabla pair from above, in front of a player seated on the floor: the smaller dayan on the player’s right with its black patch in the middle, the larger bayan on the left with its black patch off-center toward the player, both laced and sitting in cloth rings.' },
-  partsBadge: 'A tabla pair · tap a part to name it · the layout is a drawing choice',
+  partsBadge: 'A tabla pair · tap a part to name it · players’ layouts differ',
   partsLooking: (v) => (v === 'top' ? 'From above · both heads nearly face-on' : 'From the player’s right · the dayan in front, the bayan behind'),
   partsNote: 'Two drums, one instrument: the dayan for ringing and damped strokes, the bayan for the low tones and the pitch glides. Switch the view to see the patches.',
   partsWarn: 'The drums are the player’s: never wet, heat, tape or tune the heads. Do not clip anything to the straps unless it is made for tabla and the player agrees.',
@@ -262,7 +262,7 @@ const SPEC: HandSpec = {
     learn: [
       { title: 'STUDIO', text: 'Compare one shared mic with one per drum before deciding more channels are needed. A coincident pair or a room mic can add space when the room and the music want it. Ask the player about the balance between the drums.' },
       { title: 'LIVE', text: 'The fewest mics that give the balance, close enough for useful pickup, and only the monitor level the player needs. If the stage is too loud for the quiet strokes, talk about the stage balance — more gain is not the answer.' },
-      { title: 'WHAT TO SEND', text: 'Live, a room mic is most often a capture-only channel, not a PA or monitor feed. Let the system operator route the PA, wedges and recording separately.' },
+      { title: 'WHAT TO SEND', text: 'Live, a room mic is most often a recording-only channel, not a PA or monitor feed. Let the system operator route the PA, wedges and recording separately.' },
     ],
   },
   two: {

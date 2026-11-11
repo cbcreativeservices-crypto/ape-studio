@@ -332,7 +332,7 @@ const symptoms: Symptom[] = [
   {
     id: 'orc.s.peaks',
     observation: 'Brass and drum peaks distort',
-    firstChecks: 'Is a mic, a preamp or a converter overloading at forte? Check the pad and the gain on the loudest passage before any EQ.',
+    firstChecks: 'Is a mic, a preamp or a converter overloading at forte (loud)? Check the pad and the gain on the loudest passage before any EQ.',
     options: ['Check pads and gain at forte', 'Add EQ to soften the brass', 'Move the pair closer to the brass'],
     correct: 'Check pads and gain at forte',
     explain: 'Distortion on peaks is overload: find the stage that clips — the mic’s own circuit, the preamp or the converter — and fix its gain or pad.',

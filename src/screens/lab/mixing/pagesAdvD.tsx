@@ -319,7 +319,7 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
 const DELIVERY = [
   { id: 'versions', name: 'Version control', blurb: 'v1, v2, v3 — never “final”. The approved one gets tagged APPROVED and frozen; notes ride in a text file beside it.' },
   { id: 'metadata', name: 'Metadata & documentation', blurb: 'Sample rate, bit depth, tempo, key, what the bus chain was, who to call. The session six months from now is a stranger — write to them.' },
-  { id: 'archive', name: 'Archive & recall', blurb: 'The full session, its samples, and a rendered safety of everything — stored so a recall in a year is an open, not an archaeology dig.' },
+  { id: 'archive', name: 'Archive & recall', blurb: 'The full session, its samples, and a rendered safety copy of everything — stored so a recall in a year is an open, not an archaeology dig.' },
 ] as const;
 
 /** The checklist ENACTED (design pass P2-5): "ticked, not remembered" — so
@@ -529,8 +529,8 @@ const FINAL_ADV_STEPS = [
   { id: 'diagnose', name: '1 · Diagnose', blurb: 'Listen to the handoff and name its problems (check below).', verified: true },
   { id: 'balance', name: '2 · Rebuild the balance', blurb: 'Lead up, guitar tamed — at least four channels reshaped.', verified: true },
   { id: 'masking', name: '3 · Clear the mud', blurb: 'A high-pass or cut on the keys’ low-mid buildup.', verified: true },
-  { id: 'space', name: '4 · Rescue the depth', blurb: 'Rein in the drowned sends (the repair render dries the space as you balance).', verified: true },
-  { id: 'bus', name: '5 · Conservative bus', blurb: 'The repaired render carries gentle glue (2:1, slow) — hear that it holds hands without pumping.', verified: true },
+  { id: 'space', name: '4 · Rescue the depth', blurb: 'Rein in the drowned sends (YOUR REPAIR dries the space as you balance).', verified: true },
+  { id: 'bus', name: '5 · Conservative bus', blurb: 'YOUR REPAIR carries gentle glue (2:1, slow) — hear that it holds hands without pumping.', verified: true },
   { id: 'translate', name: '6 · Translation check', blurb: 'Fold your repair to mono.', verified: true },
   { id: 'deliver', name: '7 · Deliver', blurb: 'Version name, aligned bounces, notes. (On your honor — your DAW, your files.)', verified: false },
 ] as const;

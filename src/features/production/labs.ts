@@ -56,7 +56,7 @@ export const LABS: Record<LabKind, LabDef> = {
   postprod: {
     lab: 'postprod',
     title: 'Audio Post-Production',
-    subtitle: 'Take a finished recording through to a verified delivery.',
+    subtitle: 'Take a folder of recordings through to a verified delivery.',
     blurb:
       'Everything between a folder of recordings and a delivery somebody has accepted. Organize it, edit it, ' +
       'build it, mix it, finish it to the specification, and prove it arrived intact.',

@@ -411,7 +411,7 @@ export const STAGE3_SESSION: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "Several recorders on their own clocks",
-      detail: "Independent clocks drift apart. Over a short take it is inaudible; over an hour it is a flam on every shared source, and it cannot be fixed by nudging the head back into place.",
+      detail: "Independent clocks drift apart. Over a short take it is inaudible; over an hour it is a flam — a doubled, smeared hit — on every shared source, and it cannot be fixed by nudging the head back into place.",
       fixHint: "Check sync at the END of the longest recording, not just at the start, and correct by stretching or reconforming rather than moving.",
       needsLogic: true,
       logicIntent: "Fire when recorder_count is several_free or unknown, and sync_checked_at_end is not yes."
@@ -445,7 +445,7 @@ export const STAGE3_SESSION: StageDef = {
       kind: "mismatch",
       title: "That correction does not match that cause",
       detail: "Material that drifts steadily cannot be corrected by moving it — moving lines up one point and leaves every other point wrong. Equally, stretching a file that only needed an offset damages it for no reason.",
-      fixHint: "Drift from clocks, rate mismatch or pull needs stretching, resampling or reconforming. A constant offset needs moving, and nothing else.",
+      fixHint: "Drift from clocks, rate mismatch or a missing pull-up or pull-down needs stretching, resampling or reconforming. A constant offset needs moving, and nothing else.",
       needsLogic: true,
       logicIntent: "Fire when drift_diagnosis is clock_drift, rate_mismatch, pull or speed AND drift_action is move or accept. Also fire when drift_diagnosis is constant_offset and drift_action is stretch."
     },

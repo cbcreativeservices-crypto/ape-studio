@@ -36,7 +36,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Drums:",
-      "text": "small kit (18–20” kick, shallow toms) with a large 20–22” ride that keeps time; brushes are common. The kick feathers softly and drops “bombs”; the snare comps.",
+      "text": "small kit (18–20” kick, shallow toms) with a large 20–22” ride that keeps time; brushes are common. The kick feathers softly and drops “bombs” (sudden loud accents); the snare comps.",
       "bullet": true
     },
     {
@@ -57,10 +57,10 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "A small group sets up tight around the drums: bass beside the ride cymbal, piano curving around them, horns in front. The form is head (melody) → solos in turn → trading fours with the drums → head out, and the accompanists drop down behind bass and piano solos."
+      "text": "A small group sets up tight around the drums: bass beside the ride cymbal, piano curving around them, horns in front. The form is head (melody) → solos in turn → trading fours (swapping four-bar solos) with the drums → head out, and the accompanists drop down behind bass and piano solos."
     },
     {
-      "text": "A big band sits in three rows: saxes in front (lead alto center, bari on the end), trombones on risers behind, trumpets on the highest risers at the back, rhythm section off to one side. Arrangements move between section writing, soli passages, full-band shout choruses and soloists who stand or come forward to a solo mic. Lead trumpet and lead alto define the top of the ensemble."
+      "text": "A big band sits in three rows: saxes in front (lead alto center, bari on the end), trombones on risers behind, trumpets on the highest risers at the back, rhythm section off to one side. Arrangements move between section writing, soli passages (a section playing a line in harmony), full-band shout choruses and soloists who stand or come forward to a solo mic. Lead trumpet and lead alto define the top of the ensemble."
     }
   ],
   "dynamics": [
@@ -122,8 +122,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Trumpet / trombone",
-        "cut": "HPF 100–150 Hz (tpt), 60–80 Hz (bone); shelf −2–3 dB above 3 kHz on close mics",
-        "boost": "+1–2 dB at 300–400 Hz (bone warmth)",
+        "cut": "HPF 100–150 Hz (trumpet), 60–80 Hz (trombone); shelf −2–3 dB above 3 kHz on close mics",
+        "boost": "+1–2 dB at 300–400 Hz (trombone warmth)",
         "notes": "Close-miked brass often reads too bright"
       },
       {
@@ -227,7 +227,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle–moderate"
       },
       {
-        "effect": "Club convolution IR",
+        "effect": "Club convolution IR (impulse response)",
         "appliedTo": "Small group, studio",
         "setting": "0.8–1.5 s “empty club” IR, HPF 200 Hz, −2 dB at ~5 kHz",
         "amount": "Subtle"
@@ -269,7 +269,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Acoustic jazz is usually mastered to −16 to −14 LUFS-I at −1 dBTP. Trio and ballad records often go quieter, around −18, to keep more dynamic range. Aim for a PLR of 12–16 dB and a loudness range of 8–15 LU. Brass and cymbals distort easily under heavy limiting and lossy codecs; modern releases mastered at −11 to −9 LUFS often sound flatter."
+      "text": "Acoustic jazz is usually mastered to −16 to −14 LUFS-I at −1 dBTP. Trio and ballad records often go quieter, around −18, to keep more dynamic range. Aim for a PLR (peak-to-loudness ratio) of 12–16 dB and a loudness range of 8–15 LU. Brass and cymbals distort easily under heavy limiting and lossy codecs; modern releases mastered at −11 to −9 LUFS often sound flatter."
     }
   ],
   "liveStudio": {

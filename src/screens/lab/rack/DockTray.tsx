@@ -201,7 +201,7 @@ export function DockTray({
         <View style={styles.head}>
           <Text style={styles.title} numberOfLines={1}>
             {param.label}
-            {sticky ? <Text style={styles.stickyNote}>  ·  stays open — A/B while you watch</Text> : null}
+            {sticky ? <Text style={styles.stickyNote}>  ·  stays open — compare while you watch</Text> : null}
           </Text>
           <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={styles.close}>✕</Text>

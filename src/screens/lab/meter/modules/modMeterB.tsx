@@ -252,14 +252,14 @@ const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
   ],
   correctIdx: 0,
   reveal:
-    'Hum is locked to the power grid: a steady family at exact multiples of the power-line frequency, always in the same place. Feedback is a single spike that can appear ANYWHERE the loop gain passes unity — and it grows. Count the spikes, check the frequencies, watch the trend.',
+    'Hum is locked to the power grid: a steady family at exact multiples of the power-line frequency, always in the same place. Feedback is a single spike that can appear ANYWHERE the loop gain passes unity (each trip around the mic-to-speaker loop comes back louder) — and it grows. Count the spikes, check the frequencies, watch the trend.',
   wrongHint: 'One of them is locked to the power grid; the other appears anywhere — and grows.',
 };
 
 const SPECTRUM_MISTAKES = [
   'Calling a single towering spike "hum" — hum is a FAMILY of spikes at exact power-line multiples; feedback is ONE spike, usually growing.',
   'Expecting a good mix to read FLAT — program material naturally tilts down toward pink (≈ −3 dB/oct on this FFT display); flat-to-the-right energy sounds harsh.',
-  'Chasing every wiggle — an analyzer dances constantly; read the SHAPE (where the energy centers, smooth vs spiky), not individual bins.',
+  'Chasing every wiggle — an analyzer dances constantly; read the SHAPE (where the energy centers, smooth vs spiky), not each thin frequency slice (bin).',
   'Forgetting the frequency axis is LOGARITHMIC — each equal step is an octave, not a fixed number of Hz.',
 ];
 
@@ -292,7 +292,7 @@ export function SpectrumModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the shape IS the lesson
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHETIC TEACHING PATTERNS — ANALYTIC, NOT A MEASUREMENT',
+        badge: 'SYNTHETIC TEACHING PATTERNS — CALCULATED, NOT MEASURED',
         onGuide: () => p.help('spectrum_read'),
         bezel: [
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
@@ -440,7 +440,7 @@ export function SpectrogramModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHETIC TEACHING PATTERNS — ANALYTIC, NOT A MEASUREMENT',
+        badge: 'SYNTHETIC TEACHING PATTERNS — CALCULATED, NOT MEASURED',
         onGuide: () => p.help('spectrogram_axes'),
         // AXES FIRST (the module's charter) — printed permanently on the bezel.
         bezel: [

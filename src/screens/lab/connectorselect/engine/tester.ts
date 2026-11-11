@@ -138,7 +138,7 @@ export const FAULTS: readonly FaultCase[] = [
     inspect: 'The jacket is kinked hard right at the strain relief, and the relief spins loosely.',
     options: ['Intermittent break at the strain relief', 'Open conductor on the tip', 'Short between ring and sleeve', 'The cable is fine'],
     correct: 0,
-    explain: 'Every path passes — until you flex the cable at the relief and the tip path flickers. Intermittents hide from a resting test: always wiggle while watching.',
+    explain: 'Every path passes — until you flex the cable at the relief and the tip path flickers. Intermittent faults hide from a resting test: always wiggle while watching.',
   },
   {
     id: 'bent_pin',

@@ -73,7 +73,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     layout: [{ slot: 'mainC', feed: 'M', kind: 'top', aimDeg: 0, coverDeg: 100 }],
     what: 'One loudspeaker position, one signal. Every listener hears the same mix from the same place.',
     when: 'Speech, narrow rooms, small stages, anywhere most of the audience cannot see both sides of a pair. Also the honest choice when a pair would only comb-filter across the middle.',
-    changes: 'No left/right image and no cancellation between two sources — the coverage is one wedge, and the level falls off evenly with distance.',
+    changes: 'No left/right image and no cancellation between two sources — the coverage is one sector, and the level falls off evenly with distance.',
   },
   {
     id: 'dual-mono',
@@ -81,7 +81,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     layout: [TOP_L_MONO, TOP_R_MONO],
     what: 'Two loudspeaker positions carrying the SAME signal. Wider coverage than one box, no stereo image.',
     when: 'Wide rooms with a speech or mostly-mono program, where you need the coverage of two positions but nobody should hear a different mix on the left than on the right.',
-    changes: 'Coverage widens; where the two wedges overlap the same signal arrives twice. On the center line the two arrivals are in step and add (about 6 dB); either side of it they arrive from different distances and comb-filter — the price of any pair carrying the same content.',
+    changes: 'Coverage widens; where the two coverage sectors overlap the same signal arrives twice. On the center line the two arrivals are in step and add (about 6 dB); either side of it they arrive from different distances and comb-filter — the price of any pair carrying the same content.',
   },
   {
     id: 'stereo',
@@ -120,7 +120,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     name: 'Stereo mains with mono subwoofers',
     layout: [TOP_L, TOP_R, { slot: 'subL', feed: 'SUB', kind: 'sub' }, { slot: 'subR', feed: 'SUB', kind: 'sub' }],
     what: 'The tops are stereo; both subs receive the SAME mono sub feed.',
-    when: 'A common club and touring layout. Low frequencies are hard to place by ear, so stereo subs buy little and cost cancellation.',
+    when: 'A common club and touring layout. Low frequencies are hard to place by ear, so stereo subs gain little and add cancellation.',
     changes: 'Two sub positions, one signal: they add down the center line and interfere off to the sides — the power alley and its valleys. The trade for easy rigging; a center cluster or an arrayed layout evens it out.',
   },
   {

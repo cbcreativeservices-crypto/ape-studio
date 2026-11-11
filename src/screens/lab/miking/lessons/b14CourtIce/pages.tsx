@@ -40,7 +40,7 @@ const ROWS = [...INDOOR_ROWS, SPORTS_SAFETY.lightning, SPORTS_SAFETY.weather];
 
 function B14Meet(p: PageProps) {
   const { lesson, journey } = p;
-  const tour = usePlanTourStep({ sports: COURT_SPORTS, title: 'The sports', prompt: 'Step through LAYER on each SPORT: the court, its clear space, the routes people need, the approved places, and the fixtures nothing is attached to.', a11yLead: 'A plan of' });
+  const tour = usePlanTourStep({ sports: COURT_SPORTS, title: 'The sports', prompt: 'Step through LAYER on each SPORT: the court, its clear space, the routes people need, the approved places, and the fixtures nothing may be attached to.', a11yLead: 'A plan of' });
   const range = useRangeStep({ scene: PRACTICE_LINE, from: PL.M, fromH: PL.h, fromLabel: 'M', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: three points on one line from the mark outside — 5, 8 and 11 m.' });
   const box = PRACTICE_LINE.frame;
   const steps: MikingStep[] = [

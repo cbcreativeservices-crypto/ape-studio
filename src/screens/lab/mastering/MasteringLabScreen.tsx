@@ -58,7 +58,7 @@ export const MASTERING_LAB_TITLE = 'Mastering Lab';
 const SUBTITLE = 'From Final Mix to Release';
 
 const ACCURACY_DETAIL =
-  'This lab MODELS mastering on your phone. The LISTEN pages render a synthesized session through real offline DSP and measure it with BS.1770-style ESTIMATES, heard through an UNCALIBRATED output; the diagrams are models. Learn the decisions here; master with calibrated monitoring and certified metering.';
+  'This lab MODELS mastering on your phone. The LISTEN pages render a synthesized session through real offline DSP and measure it with BS.1770-style loudness and true-peak ESTIMATES, heard through an UNCALIBRATED output; the diagrams are models. Learn the decisions here; master with calibrated monitoring and certified metering.';
 
 export function MasteringLabScreen() {
   const insets = useSafeAreaInsets();
@@ -455,7 +455,7 @@ export function MasteringLabScreen() {
 
   const head = (
     <View style={styles.objective}>
-      <Text style={styles.objectiveLabel}>IN THIS MODULE · {mod.num} OF {MASTERING_MODULES.length}</Text>
+      <Text style={styles.objectiveLabel}>IN THIS MODULE · MODULE {mod.num}</Text>
       <Text style={styles.objectiveText}>{mod.objective}</Text>
     </View>
   );
@@ -466,8 +466,8 @@ export function MasteringLabScreen() {
         {done
           ? 'This module is credited. Review it any time — practicing never removes credit.'
           : mod.id === 'project'
-            ? `Credit for this module: answer the ${scenarios.length} track decisions and complete the QC checklist (${answeredCount} of ${scenarios.length} answered). Credit lands the moment the last one does. NEXT still moves on; you can come back.`
-            : `Credit for this module: answer its ${scenarios.length} decisions on the PRACTICE step (${answeredCount} of ${scenarios.length} so far). A wrong pick is fine — the explanation is the point. Credit lands the moment the last one does. NEXT still moves on; you can come back.`}
+            ? `Credit for this module: answer the ${scenarios.length} track decisions and complete the QC checklist (${answeredCount} answered so far). Credit lands the moment the last one does. NEXT still moves on; you can come back.`
+            : `Credit for this module: answer its ${scenarios.length} decisions on the PRACTICE step (${answeredCount} so far). A wrong pick is fine — the explanation is the point. Credit lands the moment the last one does. NEXT still moves on; you can come back.`}
       </Text>
     </>
   );

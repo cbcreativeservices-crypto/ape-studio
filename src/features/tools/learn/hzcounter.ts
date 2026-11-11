@@ -14,7 +14,7 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       head: 'WHAT YOU ARE LOOKING AT',
       body:
-        'This is one measurement engine with two faces. Counter mode shows the raw repetition rate — a large frequency in hertz, with period, minimum, maximum, and average — while Tuner mode interprets the same estimate musically as a note name, octave, and a needle showing cent deviation from the chosen reference. Around the main readout sit a confidence meter, a stability indicator, signal quality, and the active input, and those small displays decide whether the big number deserves your trust. Read them first, the frequency second.',
+        'This is one measurement tool with two faces. Counter mode shows the raw repetition rate — the frequency in hertz in large digits, with period, minimum, maximum, and average — while Tuner mode interprets the same estimate musically as a note name, octave, and a needle showing cent deviation from the chosen reference. Around the main readout sit a confidence meter, a stability indicator, signal quality, and the active input, and those small displays decide whether the big number deserves your trust. Read them first, the frequency second.',
     },
     {
       head: 'FREQUENCY IS NOT PITCH',
@@ -24,7 +24,7 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       head: 'HOW THE TUNER FINDS THE NOTE',
       body:
-        'The engine looks for periodicity — the repeating cycle length in the incoming signal — using autocorrelation-style pitch detection, then converts that period to a fundamental frequency. That is harder than it sounds, because most musical notes carry harmonics at two, three, and four times the fundamental, and on many instruments a harmonic is stronger than the fundamental itself; the detector must reject those or it reads an octave high. Once it has the fundamental, the tuner finds the nearest note in the reference tuning and expresses the difference in cents — hundredths of an equal-tempered semitone. The needle is simply that cent value drawn as an angle: centered means within a few cents of the target.',
+        'The tuner looks for periodicity — the repeating cycle length in the incoming signal — using autocorrelation-style pitch detection, then converts that period to a fundamental frequency. That is harder than it sounds, because most musical notes carry harmonics at two, three, and four times the fundamental, and on many instruments a harmonic is stronger than the fundamental itself; the detector must reject those or it reads an octave high. Once it has the fundamental, the tuner finds the nearest note in the reference tuning and expresses the difference in cents — hundredths of an equal-tempered semitone. The needle is that cent value drawn as an angle: centered means within a few cents of the target.',
     },
     {
       head: 'REFERENCE PITCH IS A CHOICE',
@@ -34,7 +34,7 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       head: 'CONFIDENCE, STABILITY, AND NOISE',
       body:
-        'Confidence is the engine\'s own estimate of how clearly one period stands out in the signal; stability is how consistent successive estimates are over time. Both collapse in noisy environments, because the detector must pick one repeating cycle out of everything the microphone hears — ventilation, other instruments, room reflections — and competing periodicities pull the estimate around. A reading that jumps between values, or a needle that swings while confidence is low, is the tool honestly reporting that there is no single stable answer, not a malfunction. Get closer to the source, wait for a sustained tone past its attack, and only trust readings taken at high confidence and high stability.',
+        'Confidence is the tool\'s own estimate of how clearly one period stands out in the signal; stability is how consistent successive estimates are over time. Both collapse in noisy environments, because the detector must pick one repeating cycle out of everything the microphone hears — ventilation, other instruments, room reflections — and competing periodicities pull the estimate around. A reading that jumps between values, or a needle that swings while confidence is low, is the tool honestly reporting that there is no single stable answer, not a malfunction. Get closer to the source, wait for a sustained tone past its attack, and only trust readings taken at high confidence and high stability.',
     },
     {
       head: 'ACOUSTIC, VIBRATION, OPTICAL — AND TAP',
@@ -51,7 +51,7 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       claim: 'Frequency equals note.',
       truth:
-        'A note name is a label, not a physical property. The engine measures frequency in hertz; which note that frequency belongs to depends on the tuning system and the reference pitch — 440 Hz is A4 under A = 440 equal temperament, but the same 440 Hz reads about 8 cents flat if the reference is 442. Frequency is measured; the note is an interpretation layered on top.',
+        'A note name is a label, not a physical property. The tool measures frequency in hertz; which note that frequency belongs to depends on the tuning system and the reference pitch — 440 Hz is A4 under A = 440 equal temperament, but the same 440 Hz reads about 8 cents flat if the reference is 442. Frequency is measured; the note is an interpretation layered on top.',
     },
     {
       claim: '440 Hz is the only tuning.',
@@ -66,7 +66,7 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       claim: 'The strongest harmonic is always the fundamental.',
       truth:
-        'On many instruments — low piano strings, brass, the human voice — the second or third harmonic carries more energy than the fundamental. A naive detector that grabs the strongest peak reads an octave or more too high. That is why the engine uses period-based detection with harmonic rejection instead of simply picking the tallest spectral peak.',
+        'On many instruments — low piano strings, brass, the human voice — the second or third harmonic carries more energy than the fundamental. A naive detector that grabs the strongest peak reads an octave or more too high. That is why the tool uses period-based detection with harmonic rejection instead of simply picking the tallest spectral peak.',
     },
     {
       claim: 'The camera can measure any frequency.',
@@ -86,24 +86,24 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       claim: 'If the needle touches center for a moment, the note is in tune.',
       truth:
-        'The attack of a note is pitch-unstable — a plucked string starts slightly sharp and settles as it decays, and wind players drift while setting the embouchure. A momentary center crossing during that motion means nothing. Judge tuning from the sustained part of the note, held long enough for both the pitch and the confidence display to settle.',
+        'The attack of a note is pitch-unstable — a plucked string starts slightly sharp and settles as it decays, and wind players drift while setting the embouchure (lip and mouth position). A momentary center crossing during that motion means nothing. Judge tuning from the sustained part of the note, held long enough for both the pitch and the confidence display to settle.',
     },
   ],
   warnings: [
     {
       text: 'Low confidence',
       why:
-        'The engine cannot clearly identify one repeating cycle in the signal, so the displayed frequency is a weak guess that may be far off — improve the signal before trusting the number.',
+        'The tool cannot clearly identify one repeating cycle in the signal, so the displayed frequency is a weak guess that may be far off — improve the signal before trusting the number.',
     },
     {
       text: 'No stable pitch',
       why:
-        'The input has no single steady repetition rate — noise, speech, percussion, and chords all lack one — and reporting a number anyway would be inventing a measurement.',
+        'The input has no single steady repetition rate — noise, speech, percussion, and chords all lack one — and reporting a number anyway would be inventing a measurement. Measure one steady, repeating sound.',
     },
     {
       text: 'Background noise detected',
       why:
-        'Competing sounds add rival periodicities that can pull the estimate away from your source, so the reading may reflect the room instead of the thing you are measuring.',
+        'Competing sounds add rival periodicities that can pull the estimate away from your source, so the reading may reflect the room instead of the thing you are measuring — move closer or quiet the room.',
     },
     {
       text: 'Signal clipped',
@@ -118,17 +118,17 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       text: 'Frequency outside measurable range',
       why:
-        'Every input method has hard limits set by its sensor, and beyond them the tool would be extrapolating rather than measuring — no number is shown because none would be honest.',
+        'Every input method has hard limits set by its sensor, and beyond them the tool would be extrapolating rather than measuring — no number is shown because none would be honest. Try another input method.',
     },
     {
       text: 'Camera frame rate exceeded',
       why:
-        'The rate being measured is at or above half the camera\'s frame rate, so the reading would alias to a false low value instead of degrading gracefully.',
+        'The rate being measured is at or above half the camera\'s frame rate, so the reading would alias to a false low value — try Acoustic mode if the source makes sound.',
     },
     {
       text: 'Lighting inadequate',
       why:
-        'Optical mode measures brightness changes between frames; without enough light and contrast the variation drowns in sensor noise and the detected rate becomes unreliable.',
+        'Optical mode measures brightness changes between frames; without enough light and contrast the variation drowns in sensor noise and the detected rate becomes unreliable — add light or contrast.',
     },
     {
       text: 'Optical measurement approximate',

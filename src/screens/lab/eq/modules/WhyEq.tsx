@@ -122,7 +122,7 @@ export function WhyEqModule(p: EqModuleComponentProps) {
           width={Math.max(120, p.width)}
           aspect={GRAPH_ASPECT}
           title="EQ RESPONSE"
-          badge="DESIGNED RESPONSE — ANALYTIC"
+          badge="DESIGNED RESPONSE — CALCULATED"
           render={(w, h) => <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} width={w} totalHeight={h} mainColor={gc} />}
           controls={
             <View style={styles.controls}>

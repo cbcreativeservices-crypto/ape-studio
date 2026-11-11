@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one banjo mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real banjo.' },
-    takeaway: 'A reproducible, balanced one-mic position, power and level checks, a mono check of any pair, and hands, hardware and hearing kept safe pass. A brand or a “loudest spot” does not.',
+    takeaway: 'What passes: a reproducible, balanced one-mic position, power and level checks, a mono check of any pair, and hands, hardware and hearing kept safe. A brand or a “loudest spot” does not.',
   },
 };
 
@@ -292,7 +292,7 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'Clip the mini to a string, right over the head’s center', ok: false, power: 'phantom', feedback: 'Never clip to a string, the bridge or the head. Use an approved mount.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking hand and forearm, the fretting hand and the neck'), POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the wedge helps against feedback', role: 'optional', feedback: 'A fair live reason — though no position alone prevents feedback.' }, brandReason(BANJO), LOUD_REASON],
-    explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named point, clearance from the player, power that matches the mic — and nothing on the banjo’s setup.',
+    explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point, measured from the point it names, clearance from the player, power that matches the mic — and nothing on the banjo’s setup.',
   },
   {
     id: `${P}.prac.setup2`,
@@ -414,7 +414,7 @@ export const C05A_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'player', label: 'the player and the banjo', short: 'PLAYER', note: 'Standing on a strap, the neck to the player’s left; the picking forearm rests on the rim, the fretting hand travels the neck, and the neck swings as they move.', prov: { kind: 'illustrative', reason: 'a typical standing posture' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'player', label: 'the player and the banjo', short: 'PLAYER', note: 'Standing, the banjo on a strap, the neck to the player’s left; the picking forearm rests on the rim, the fretting hand travels the neck, and the neck swings as they move.', prov: { kind: 'illustrative', reason: 'a typical standing posture' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'vocal', label: 'the vocal mic (a singing player)', short: 'VOCAL MIC', note: 'Above the banjo, in front of the mouth. The voice reaches the banjo mic and the banjo reaches the vocal mic: plan both.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'shared', label: 'a shared band mic', short: 'SHARED MIC', note: 'A bluegrass band may share one or two mics, stepping in for solos and back for balance — an ensemble technique that needs choreography and a kind room.', prov: { kind: 'illustrative', reason: 'a typical bluegrass stage' }, tag: 'ENSEMBLE', scene: 'stage' },
       { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Wedges and overlapping mics can harm both tone and isolation.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

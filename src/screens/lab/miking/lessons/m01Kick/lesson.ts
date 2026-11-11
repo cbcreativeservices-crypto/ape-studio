@@ -131,7 +131,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The beater strikes the exact center of the head. Which of the head’s vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the center'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center, so a center strike drives only the ring-shaped ones, the lowest shape among them.',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the center, so a center strike drives only the ring-shaped ones, including the lowest shape of all.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The beater touches one small spot. A shape is driven only as much as the head moves at that spot in that shape — not at all on a still line.',
       'Only the shapes that have a still line across the center': 'The reverse: a still line through the center means the head does not move there in that shape, so a center strike cannot push it.',

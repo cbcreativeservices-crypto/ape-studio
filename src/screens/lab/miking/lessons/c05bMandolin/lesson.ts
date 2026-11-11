@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two views of a small instrument can thin out together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: [`${P}.two.1`, `${P}.two.2`, `${P}.two.3`, `${P}.two.4`], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two views hear the mandolin at different times, so their sum combs. Polarity flips the sign; it does not remove a delay. A small instrument does not need to be made wide.',
+    takeaway: 'Two views hear the mandolin at different times, so their sum shows comb notches. Polarity flips the sign; it does not remove a delay. A small instrument does not need to be made wide.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mandolin mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real mandolin.' },
-    takeaway: 'A balanced, repeatable position, power and level checks on the strongest chops, a mono check of any pair, and no contact with the bridge, scroll or finish pass. A brand does not.',
+    takeaway: 'What passes: a balanced, repeatable position, power and level checks on the strongest chops, a mono check of any pair, and no contact with the bridge, scroll or finish. A brand does not.',
   },
 };
 
@@ -266,7 +266,7 @@ const symptoms: Symptom[] = [
   {
     id: `${P}.sym.thin`,
     observation: 'The notes seem thin',
-    firstChecks: 'Is the mic mainly hearing strings or a very small region? Include more of the top and body; check the low courses.',
+    firstChecks: 'Is the mic mainly hearing strings or a very small region? Include more of the top and body; check the low courses (string pairs).',
     options: ['Turn the channel up until the notes sound fuller', 'Include more of the top and body; check the low notes', 'Add a second mic aimed at the strings near the nut'],
     correct: 'Include more of the top and body; check the low notes',
     explain: 'A view of the strings or one small region misses the body. Broaden it.',
@@ -413,7 +413,7 @@ export const C05B_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'player', label: 'the player and the mandolin', short: 'PLAYER', note: 'Standing on a strap, the short neck to the player’s left; the pick sweeps over the top and the instrument turns as they move.', prov: { kind: 'illustrative', reason: 'a typical standing posture' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'player', label: 'the player and the mandolin', short: 'PLAYER', note: 'Standing, the mandolin on a strap, the short neck to the player’s left; the pick sweeps over the top and the instrument turns as they move.', prov: { kind: 'illustrative', reason: 'a typical standing posture' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'vocal', label: 'the vocal mic (a singing player)', short: 'VOCAL MIC', note: 'Above the mandolin, in front of the mouth. The voice reaches the mandolin mic and the mandolin the vocal mic: plan both.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'shared', label: 'a shared band mic', short: 'SHARED MIC', note: 'A bluegrass band may share a front mic, stepping in for solos — choreography, restrained monitors and a kind room.', prov: { kind: 'illustrative', reason: 'a typical bluegrass stage' }, tag: 'ENSEMBLE', scene: 'stage' },
       { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Wedges and overlapping mics can color the sound and cut isolation.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

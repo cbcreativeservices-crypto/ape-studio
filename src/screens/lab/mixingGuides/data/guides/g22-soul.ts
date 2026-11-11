@@ -246,7 +246,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tape slap",
         "appliedTo": "Lead vocal",
-        "setting": "100–140 ms (~140 ms at 15 ips), single repeat",
+        "setting": "100–140 ms (~140 ms at 15 ips tape speed), single repeat",
         "amount": "Subtle–moderate"
       },
       {
@@ -304,7 +304,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Vocals",
         "live": "Gain-before-feedback limits; dynamic mics; rides through every song",
-        "studio": "Whole-take or pilot vocals often kept; serial compression, de-essing, reverb rides"
+        "studio": "Whole-take or pilot vocals (sung with the band) often kept; serial compression, de-essing, reverb rides"
       },
       {
         "area": "Low end",
@@ -360,7 +360,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Live, use virtual soundcheck when possible.",
+      "text": "Live, use virtual soundcheck (replay the band’s multitrack through the console) when possible.",
       "bullet": true
     },
     {

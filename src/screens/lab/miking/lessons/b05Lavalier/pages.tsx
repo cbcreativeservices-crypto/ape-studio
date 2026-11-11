@@ -41,7 +41,7 @@ function useTools() {
     pitch: true,
     words: {
       subject: 'a presenter with two lavs and a headset',
-      looking: 'From above · the presenter, a lav on the sternum and one on the lapel, a headset · the side in the corner',
+      looking: 'From above · the presenter, a lav on the sternum and one on the lapel, a headset · the side view in the corner',
       prompt: 'TURN the head both ways, then LOOK down. Switch MIC and read each one: which keeps its distance, and which drifts?',
       done: 'The lavs stay on the chest while the mouth swings: the voice reaches them a little farther away and well off the mouth’s axis — the lapel one more on one side than the other. The headset turns with the head and keeps its distance. A centered lav is the steadier start; a headset, the steadiest.',
     },

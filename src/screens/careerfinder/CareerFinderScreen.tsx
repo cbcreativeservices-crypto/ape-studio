@@ -117,7 +117,7 @@ export function CareerFinderScreen() {
               nothing over it (`saving` false), so "Progress is saved as you
               go" was untrue — and answers given before may still be on the
               phone. Same wording rule as the in-progress note above. */}
-          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers could not be saved on this phone.`} />
+          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers can’t be saved on this phone right now.`} />
           <Text style={styles.note}>{saving ? (guest ? FINDER_INTRO.guestTrust : upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers couldn’t be read on this phone, so new answers aren’t being saved. Reopen the Career Finder to retry.'}</Text>
         </View>
       )}

@@ -12,7 +12,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
   sceneSubject: { back: 'a horn, the player seated, the bell beside the right thigh pointing back' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the back', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the back of the stage (x), from under the player’s seat. The bell points back.' },
+    x: { plus: 'toward the audience', minus: 'toward the back', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the back of the stage (x), measured from under the player’s seat. The bell points back.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). A mic behind the horn often sits low, below the bell.' },
     z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z). The bell is on the player’s right.' },
   },
@@ -26,7 +26,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { back: 'hn.rear' },
-    workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line straight out of the bell.',
+    workedLine: 'At this starting point, the lab also shows how far the mic is from {line}: the dashed line straight out of the bell.',
     workedAim: 'Aim it toward the bell, a little off its axis — the lab counts it while the mic points within about {tol}° of the bell’s center. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell and the space it rises into in a “bells up” passage, the right hand and arm, the player turning, and the chair. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
@@ -69,7 +69,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
     activityDone: 'done — the side-fill sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). A mic behind the horn faces forward, toward the bell, so its rear points at the back of the stage — where a side-fill or a drum kit may be. The player’s own wedge, in FRONT of the mic, sits where no null can reach.',
-    shieldNote: 'Real patterns change with pitch, and the wall behind the player reflects the stage back into the mic — the free-field pattern cannot show that. Test with the full band playing.',
+    shieldNote: 'Real patterns change with pitch, and the wall behind the player reflects the stage back into the mic — the pattern drawn here, as if in open air, cannot show that. Test with the full band playing.',
     studioId: 'hn.ctx.studio',
     studioPrompt: 'A studio session, a horn and piano, a good hall: is a mic behind the bell needed at all?',
     studioNote: 'In a good room, a main pair and front spots may carry the horn with its reflection — the sound most listeners know. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
@@ -92,7 +92,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
       'A common pair: a spot behind the bell for control, and a front mic (or the main pair) for the horn with its room. Each hears the horn at a different time — and the front one hears it after the wall.',
       'When both go in: hear each alone, then the pair in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every pitch, and the reflection adds its own delay.',
     ],
-    warn: 'This simplified graph treats the horn as one point and both paths as straight. A real horn reaches a front mic mostly by way of the room, so the delay between the two is not one number. Read the notch POSITIONS as the direct-path picture, treat their depths as illustrative, and judge the pair by ear, in mono, at matched levels.',
+    warn: 'This simplified graph treats the horn as one point and both paths as straight. A real horn reaches a front mic mostly by way of the room, so the delay between the two is not one number. The notch POSITIONS show the straight, direct-path case; their depths are only a rough picture. Judge the pair by ear, in mono, at matched levels.',
   },
   practice: {
     gain: 'hn.prac.gain',

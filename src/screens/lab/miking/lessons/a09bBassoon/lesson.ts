@@ -73,7 +73,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one bassoon mic in the right order, choose and justify a setup for a studio solo and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['bsn.prac.order', 'bsn.prac.gain', 'bsn.prac.setup1', 'bsn.prac.setup2', 'bsn.prac.3', 'bsn.mix.1', 'bsn.mix.2', 'bsn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real bassoon.' },
-    takeaway: 'Clearance from the bocal, the reed, the hands, the seat strap and the bell, the right power and level, the lowest note checked through any filter, and an accurate account of polarity versus delay pass — and more than one setup can pass.',
+    takeaway: 'What passes: clearance from the bocal, the reed, the hands, the seat strap and the bell, the right power and level, the lowest note checked through any filter, and an accurate account of polarity versus delay — and more than one setup can pass.',
   },
 };
 
@@ -353,7 +353,7 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'A mic on the floor under the boot, aimed up', ok: false, power: 'phantom', feedback: 'Under the boot it sits in the seat strap’s and the feet’s way, and hears little of the holes and the bell.' },
     ],
     reasons: [docReason('the finger holes or the long joint'), clearReason('the bocal and reed, the hands, the seat strap and the bell'), POWER_REASON, { id: 'r.blend', label: 'It hears the holes and some of the bell together', role: 'optional', feedback: 'A fair reason: the lowest note leaves from the bell, the rest from the holes.' }, BRAND_REASON('bassoon'), LOUD_REASON],
-    explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point from its named part, clearance from what moves or bends, and the power the mic needs.',
+    explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point measured from the part it names, clearance from what moves or bends, and the power the mic needs.',
   },
   {
     id: 'bsn.prac.setup2',
@@ -512,7 +512,7 @@ const copy: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies — the bassoon’s range. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the bassoon, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-    shieldNote: 'The player’s body and the bassoon can reflect stage sound into the front of a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'The player’s body and the bassoon can reflect stage sound into the front of a mic aimed at them — the pattern drawn here, measured with no reflections, cannot show that. Listen with the monitors on.',
     studioId: 'bsn.ctx.studio',
     studioPrompt: 'A studio session, a solo bassoon, a good room: what is the mic’s job?',
     studioNote: 'In the studio, one mic at a balanced distance — then a little farther and higher — can carry the whole bassoon and some room. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
@@ -631,7 +631,7 @@ export const A09B_LESSON: WindLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bassoon, reed, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes where the semitone rule puts them along the folded bore, the air column as an ideal cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bassoon, reed, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, tone holes placed by the semitone rule (each hole one semitone above the last) along the folded bore, the air column as an ideal cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy,
   wind: windExtra(SPEC, {
     soundSubject: 'A bassoon on its side, keys toward you, its folded air column drawn open',

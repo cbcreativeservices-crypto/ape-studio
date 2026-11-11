@@ -162,7 +162,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     q: 'On an XLR cable: 1→1 lights, 2→2 and 3→3 are DARK — but 2→3 and 3→2 both light. The cable…',
     options: ['Has pins 2 and 3 swapped', 'Is perfectly healthy', 'Has a short between pins 2 and 3', 'Has a broken shield'],
     correct: 0,
-    explain: 'Every conductor arrives — crossed. It carries audio, inverted; mixed with a correct cable on a paired source, the two partially cancel. Flag and fix.',
+    explain: 'Every conductor arrives — crossed. It still carries audio, but inverted; mixed with the same sound on a correct cable, the two partially cancel. Flag and fix.',
     wrong: [undefined, 'Healthy is straight through: 1→1, 2→2, 3→3 — here the straight signal pairs are dark.', 'A short lights EXTRA paths on top of the straight ones; here the straight pairs went dark instead.', 'Pin 1 passed — the shield is fine; the signal pair is crossed.'],
   },
   {
@@ -171,7 +171,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     q: 'A cable passes every continuity check at rest, yet drops out on stage. Best next test?',
     options: ['Flex the cable at each connector while watching the lamps', 'Declare it healthy — the tester passed it', 'Measure its impedance with the same tester', 'Replace the connectors immediately'],
     correct: 0,
-    explain: 'Intermittents hide at rest and show up under flex — wiggle at the strain reliefs while testing.',
+    explain: 'Intermittent faults hide at rest and show up under flex — wiggle at the strain reliefs while testing.',
     wrong: [undefined, 'A resting pass means nothing to a strain-relief break that only opens when bent.', 'A continuity tester cannot measure characteristic impedance at all.', 'Diagnose before surgery: find WHERE it fails first — it may be one ten-second fix.'],
   },
   {

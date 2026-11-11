@@ -106,7 +106,7 @@ const LAYER_CHIPS: { key: LayerKey; label: string }[] = [
 ];
 
 const OS_CHOICES: (1 | 2 | 4 | 8)[] = [1, 2, 4, 8];
-const IMAGES_BADGE = 'DRAWN SPECTRA — ILLUSTRATIVE MIRROR MATH, √f AXIS COMPRESSION · NOT A MEASUREMENT';
+const IMAGES_BADGE = 'ILLUSTRATIVE SPECTRA — MIRROR IMAGES FROM THE MATH, FREQUENCY AXIS SQUEEZED (√f) · NOT A MEASUREMENT';
 
 export function DacModule({ width, focused, help }: DigitalModuleProps) {
   const viz = useState(() => requireVizDac())[0];

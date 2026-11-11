@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a splash mic in the right order, choose and justify a plan for two briefs (from no splash mic to one under it), and say what would justify one at all.',
     credit: { scenarios: ['sp.prac.order', 'sp.prac.gain', 'sp.prac.setup1', 'sp.prac.setup2', 'sp.prac.3', 'sp.mix.1', 'sp.mix.2', 'sp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe clearance, correct power and level checks, a reason for the mic at all, and an accurate account of polarity versus delay pass. More than one plan can pass.',
+    takeaway: 'To pass, you need safe clearance, correct power and level checks, a reason for the mic at all, and an accurate account of polarity versus delay. More than one plan can pass.',
   },
 };
 
@@ -344,7 +344,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session. The splash sits on top of the 18 in crash; the overheads carry it well. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No splash mic: the overheads already carry the stacked cymbals', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic above the splash on the far side, hearing both plates', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic above the splash on the far side, hearing both plates', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power — fine on this input.' },
       { id: 'c', label: 'A small condenser above the splash on the far side', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A clip-on condenser between the splash and the crash', ok: false, power: 'phantom', feedback: 'No room there, and no phantom power on this input.' },
       { id: 'e', label: 'Take the splash off the crash so a mic can go between them', ok: false, power: 'none', feedback: 'The stack is the player’s choice. Mic it as it is.' },
@@ -466,7 +466,7 @@ export const I01D_LESSON: CymbalLesson = {
   },
   diagnostic,
   practice: {
-    task: 'Decide whether a splash cue needs its own mic for a given kit and performance — none, above, or under it on the arm — place it safely, and explain the choice. With a real kit and the drummer’s agreement, you can record what you tried below.',
+    task: 'Decide whether a splash cue needs its own mic for a given kit and performance — none, above, or under it on the arm — place it safely, and explain the choice. With a real kit and the drummer’s agreement, you can write down what you tried below.',
     fields: practiceSheet('splash', ['no splash mic', 'above the splash', 'under it, on the arm'], 'Aim, and where the crash and the tom sit off it'),
   },
   unknowns: [
@@ -476,7 +476,7 @@ export const I01D_LESSON: CymbalLesson = {
     { text: 'The stack (two or three plates on one bolt) is said in words, not drawn.', dims: [] },
   ],
   live: { wedges: stageWedges('Below and behind a mic under the splash: aimed up, the mic’s rear faces toward it — a null can help.', 'Out on the audience side, low: toward the rear of a mic aimed up from under the splash.') },
-  accuracyDetail: accuracyDetail('a 10 in splash on an arm and an 8 in on a crash, drawn to a common profile'),
+  accuracyDetail: accuracyDetail('a 10 in splash on an arm and an 8 in on a crash, both drawn with a typical shape'),
   copy: SPLASH_COPY,
   cym: SPLASH_CYM,
 };

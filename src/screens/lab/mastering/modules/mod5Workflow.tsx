@@ -78,7 +78,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride FLOW through a common mastering workflow. The order and the scope vary from project to project; the habits do not. The glass carries each stage's detail.</Body>
+              <Body>Ride FLOW through a common mastering workflow. The order and the scope vary from project to project; the habits do not. Read each stage's detail on the display.</Body>
               <Card tone="accent">
                 <Point title={`${step + 1} · ${cur.name}`}>{cur.detail}</Point>
               </Card>
@@ -122,7 +122,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           well: (
             <>
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ BYPASS or ▶ WITH EQ" loud="WITH EQ" />
-              <Body>Set a TILT (a broad brighten or warm; "+4 dB end to end" is ±2 dB at the extremes), then compare WITH EQ against BYPASS. WITH EQ also carries a +{EQ_TRIM_DB} dB output trim, the way a "better" setting usually sneaks in louder (peak-safe: the lab's ceiling at {SAFETY_CEILING_DB} dBFS holds it). A tilt changes the loudness estimate as well as the tone — up or down depending on where the program's energy sits — so watch which way the LUFS cell moves. With MATCH LEVEL on, whichever version reads louder is turned down by the difference between the two loudness estimates, in LU (1 LU = 1 dB), and the tonal decision is the only thing you judge. A change you keep is one that still wins at matched level. With MATCH on, a moved fader re-renders and replays the sounding version.</Body>
+              <Body>Set a TILT (a broad brighten or warm; "+4 dB end to end" is ±2 dB at the extremes), then compare WITH EQ against BYPASS. WITH EQ also carries a +{EQ_TRIM_DB} dB output trim, the way a "better" setting usually sneaks in louder (the lab's ceiling at {SAFETY_CEILING_DB} dBFS keeps its peaks safe). A tilt changes the loudness estimate as well as the tone — up or down depending on where the program's energy sits — so watch which way the LUFS readout moves. With MATCH LEVEL on, whichever version reads louder is turned down by the difference between the two loudness estimates, in LU (1 LU = 1 dB), and the tonal decision is the only thing you judge. Keep a change only if it still wins at matched level. With MATCH on, moving a fader updates the version you are hearing and plays it again.</Body>
               {fresh && mix && eq ? (
                 <Card tone="accent">
                   <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>

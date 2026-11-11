@@ -51,7 +51,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start from the pair and move it yourself — nearer, farther, higher — and see what changes for the front and back rows. From above: the height is in the readout and the words.',
+    goal: 'Start from the pair and move it yourself — nearer, farther, higher — and see what changes for the front and back rows. From above: the height shows in the readout and in the text.',
     credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.31', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the children, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Begin with one pair and move it in small steps. Nearer favors the front row and the words; farther, the blend. Aim at the mouths, not the tops of heads: children stand lower than adults.',
   },
@@ -203,7 +203,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Too high, too close to the front, or aimed at heads: the back row loses its words. Aim at the mouths and the back row; adjust the height and the children’s spacing.',
     why: {
       'The color of the back row’s clothes': 'Clothing does not change how the voices reach the mic.',
-      'The phantom power on the front mics': 'Then nothing would be heard; the balance is a matter of aim and height.',
+      'The phantom power on the front mics': 'Without phantom, nothing would be heard; the balance is a matter of aim and height.',
     },
   },
   threeToOne('cc', 'placement', 'about 60 cm (2 ft)', '1.8 m (6 ft)'),
@@ -274,7 +274,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The soloist sounds thin with both mics up. First change?',
     options: ['Balance the levels, then check mono', 'Flip the polarity until it sounds full', 'Add a delay set from the distance'],
     correct: 'Balance the levels, then check mono',
-    explain: 'Listen to each mic alone, then together and in mono. Level and placement first; polarity tests one relationship, and a delay is a trial judged by ear.',
+    explain: 'Listen to each mic alone, then together and in mono. Level and placement first; a polarity flip tests how these two mics combine, and a delay is a trial judged by ear.',
     why: {
       'Flip the polarity until it sounds full': 'A flip changes the sign, not the time difference behind the thinness.',
       'Add a delay set from the distance': 'Distance alone sets no universal delay; level and placement come first.',
@@ -325,10 +325,10 @@ const symptoms: Symptom[] = [
   {
     id: 'cc.s.front',
     observation: 'The front row dominates',
-    firstChecks: 'Is the array aimed too low or too close to the front row? Raise or angle it toward the acoustic center and recheck the words.',
+    firstChecks: 'Is the pair aimed too low or too close to the front row? Raise or angle it toward the acoustic center and recheck the words.',
     options: ['Raise or angle it to the center', 'Cut the front row with EQ on the bus', 'Spot the back row up loud'],
     correct: 'Raise or angle it to the center',
-    explain: 'Too low or close, the front row is much nearer. Raise or angle the array toward the middle of the choir, then check the words.',
+    explain: 'Too low or close, the front row is much nearer. Raise or angle the pair toward the middle of the choir, then check the words.',
     why: { 'Cut the front row with EQ on the bus': 'EQ cannot separate one row from another.', 'Spot the back row up loud': 'Spots first add overlap and stands near children.' },
   },
   {

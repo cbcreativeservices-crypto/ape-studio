@@ -176,7 +176,7 @@ describe('sources, unknowns and the item rules', () => {
     });
     it(`${id}: no tendency is called a result; the ⓘ note is the starting-points note`, () => {
       for (const z of l.zones) assert.doesNotMatch(z.tendency, /\bresult\b/i);
-      assert.match(l.accuracyDetail, /^ABOUT THESE STARTING POINTS\. After our research/);
+      assert.match(l.accuracyDetail, /^ABOUT THESE STARTING POINTS\. (After our research|Here is where we suggest you begin)/);
     });
   }
   it('every placeholder dim is named in its lesson’s unknowns', () => {

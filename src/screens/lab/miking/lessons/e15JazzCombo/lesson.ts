@@ -131,12 +131,12 @@ const scenarios: MikingScenario[] = [
     id: 'jz.mic.1',
     page: 'microphone',
     prompt: 'Which main pair is most predictable when summed to mono?',
-    options: ['A coincident X/Y pair', 'A widely spaced pair of omnis', 'Two mics at on either side of the stage'],
+    options: ['A coincident X/Y pair', 'A widely spaced pair of omnis', 'Two mics, one on either side of the stage'],
     correct: 'A coincident X/Y pair',
     explain: 'With the capsules together, both mics hear each player at the same time: no time differences to comb in mono. A spaced pair can comb-filter when summed.',
     why: {
       'A widely spaced pair of omnis': 'Spacing adds time differences — the cause of combing in mono.',
-      'Two mics at on either side of the stage': 'Far apart, they hear every player at different times.',
+      'Two mics, one on either side of the stage': 'Far apart, they hear every player at different times.',
     },
   },
   msMono('jz', 'microphone'),
@@ -306,7 +306,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Hear the main alone, the support alone and the sum at matched level, then in mono. State what it adds and what its spill costs.',
     why: {
       'Its brand, its price and its frequency response': 'Those describe the mic, not what it does to the band.',
-      'Only that it makes the line louder': 'Louder is not a reason; clearer without detaching is.',
+      'Only that it makes the line louder': 'Louder is not a reason; clearer without detaching the line is.',
     },
   },
   {
@@ -435,7 +435,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE around the pattern and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The soloist dominates more'], after: 'Farther back, the distances to the front and back players even out: NEAR / FAR shrinks, and the room comes up. Compare at matched level.' },
+  placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The soloist dominates more'], after: 'Farther back, the distances to the front and back players even out: the NEAR / FAR readout shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the bassist, below the bass mic. Can the mic’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'The main pair and a bass spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
@@ -555,7 +555,7 @@ export const E15_LESSON: EnsembleLesson = {
       { id: 'screens', label: 'screens and headphones', short: 'SCREENS', note: 'Screens can improve separation but change how the group hears itself and the room’s tone — a conscious choice, with the players.', prov: { kind: 'sourced', src: 'LESSON-JAZZ', quote: 'Screens can improve separation but may change how the group hears itself (L26)' }, tag: 'ISOLATION', scene: 'studio' },
     ],
     stage: 'LIVE: in a club the drums and horns may already fill the room. Reinforce only what the audience lacks; close pickup gives the gain before feedback a distant view cannot; a separate balance for the stream.',
-    studio: 'A RECORDING: ensemble-first if the players and the room set the balance — the main view, then one support for a specific line; or a more separated session with the neighbors audible enough to keep the cueing.',
+    studio: 'A RECORDING: ensemble-first if the players and the room set the balance — the main view, then one support for a specific line; or a more separated session with the neighbors audible enough for the players to keep cueing.',
   },
   diagnostic,
   practice: {

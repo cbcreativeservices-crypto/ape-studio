@@ -392,7 +392,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'major',
     studentText: 'Route so tiles lift, lights service, and mechanicals stay reachable.',
     whyText:
-      'Every trade above that ceiling will return. A run that blocks a VAV box or pins a light fixture guarantees your cable gets moved — badly — by whoever gets there next.',
+      'Every trade above that ceiling will return. A run that blocks a VAV box (an airflow control unit) or pins a light fixture guarantees your cable gets moved — badly — by whoever gets there next.',
     sourceRefs: ['bicsi_tdmm', 'tia569'],
   },
 
@@ -429,7 +429,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'major',
     studentText: 'Route along edges and lanes, keep performer paths clear, secure at boxes, and separate working slack from loose spaghetti.',
     whyText:
-      'Stages combine traffic, movement, and show-critical timing. Intentional routes with dressed slack survive the show and strike; random webs fail at downbeat.',
+      'Stages combine traffic, movement, and show-critical timing. Intentional routes with dressed slack survive the show and strike (the teardown); random webs fail at downbeat.',
     sourceRefs: ['bicsi_itsimm', 'osha'],
   },
   {
@@ -490,7 +490,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'critical',
     studentText: 'A rated penetration needs the tested/listed system matched to that assembly — not "red caulk."',
     whyText:
-      'Listed firestop systems specify the assembly, the penetrating items, the annular space and the materials together. A tube labeled "fire rated" means nothing outside its tested system; the wrong system is a failed assembly.',
+      'Listed firestop systems specify the assembly, the penetrating items, the annular space (the gap between the opening and what passes through) and the materials together. A tube labeled "fire rated" means nothing outside its tested system; the wrong system is a failed assembly.',
     correctionText: 'Identify the assembly, select a listed system that matches it and the penetrants, and install per that system\'s documentation.',
     sourceRefs: ['bldg_fire', 'firestop_listed', 'nec'],
   },
@@ -559,7 +559,7 @@ export const CI_RULES: CiRule[] = [
     category: 'labeling',
     authorityClass: 'standard',
     severity: 'major',
-    studentText: 'The cable schedule/as-builts must reflect what is actually installed — update them when anything changes.',
+    studentText: 'The cable schedule/as-builts (as-installed drawings) must reflect what is actually installed — update them when anything changes.',
     whyText:
       'Documentation that disagrees with the wall is worse than none: it sends the next technician confidently to the wrong place. Administration standards tie identifiers to records for exactly this reason.',
     sourceRefs: ['tia606', 'avixa_verify'],

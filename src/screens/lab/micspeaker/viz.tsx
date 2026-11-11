@@ -1805,7 +1805,7 @@ export function ProximityApproachView({
           color: '#5bff85',
         }}
       >
-        {`GAP ≈ ${inches} in${directional ? ` · LF +${boostDb} dB` : ' · OMNI — no LF rise'}`}
+        {`GAP ≈ ${inches} in${directional ? ` · bass +${boostDb} dB` : ' · OMNI — no bass rise'}`}
       </RNText>
     </View>
   );

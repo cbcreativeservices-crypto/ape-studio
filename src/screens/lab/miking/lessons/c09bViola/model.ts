@@ -75,7 +75,7 @@ const AIMED_Z: Omit<DocumentedZone, 'start'> = {
 const CLIP_Z: Omit<DocumentedZone, 'start'> = {
   id: 'va.clip',
   label: 'Miniature on a body clip, over the top',
-  band: 'Clip it to the bass-side rib by the lower bout and bring the capsule about 3–9 cm from the bridge’s foot, over the top, aimed at the bridge or toward an f-hole — away from the player’s face.',
+  band: 'Clip it to the bass-side rib by the lower bout (the wide lower part of the body) and bring the capsule about 3–9 cm from the bridge’s foot, over the top, aimed at the bridge or toward an f-hole — away from the player’s face.',
   kind: 'sourced',
   src: 'DPA-VC4099',
   quote: 'Connect a 4099 Instrument Microphone to a violin, viola, banjo or mandolin',

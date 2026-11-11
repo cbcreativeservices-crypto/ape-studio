@@ -192,7 +192,7 @@ export const M2_EQ: EarModule = {
   // NEW COPY
   listenFor: 'Play A, then B, then A again. Ask what B has MORE of (boost) or LESS of (cut) — never which is louder; they are level-matched.',
   levels: 4,
-  levelNames: ['±12 dB wide boosts', '±9 dB boost + cut', '±6 dB, shelves + narrow', '±3 dB, all filter types — size trials use 3–12 dB'],
+  levelNames: ['±12 dB wide boosts', '±9 dB boost + cut', '±6 dB, shelves + narrow', '±3 dB, all filter types — amount questions use 3–12 dB'],
   realSources: true,
   makeTrial: (level, seed, opts) => {
     const rng = rngFor(seed);

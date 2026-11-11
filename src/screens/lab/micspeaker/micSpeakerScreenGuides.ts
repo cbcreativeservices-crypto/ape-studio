@@ -52,8 +52,8 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     ],
     teaches: [
       'A dynamic mic is a small generator: sound becomes motion, and motion becomes voltage.',
-      'A rear port, described in WHAT’S HAPPENING, lets sound reach the back of the diaphragm too. That opening is what makes a mic favor one direction.',
-      'The coil moves back and forth, so the voltage swings positive and negative: a mic’s output is AC, a copy of the sound wave’s motion.',
+      'A rear port lets sound reach the back of the diaphragm too. That opening is what makes a mic favor one direction.',
+      'The coil moves back and forth, so the voltage swings positive and negative: a mic’s output is AC (alternating current), a copy of the sound wave’s motion.',
     ],
     tryThis: [
       'Watch one ⊗/⊙ marker: it swaps twice per cycle. Each swap is the current reversing, because the coil has turned back (AC).',
@@ -118,7 +118,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     ],
     teaches: [
       'Close sound is a high direct-to-room ratio, not just a louder one.',
-      'Turning up the gain cannot fix a distant mic: the room comes up with it.',
+      'Turning up the gain (the input’s boost) cannot fix a distant mic: the room comes up with it.',
       'Typical speech working distance is about 4–12 inches.',
       'Past the critical distance, where direct and room sound are equal, the mic hears more room than voice.',
     ],
@@ -152,7 +152,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     ],
     teaches: [
       'Proximity effect: directional mics get bassier up close; omnis do not.',
-      'It can help (a warm radio voice) or hurt (a muddy singer): one reason channel strips have a high-pass filter, a control that trims the lowest bass.',
+      'It can help (a warm radio voice) or hurt (a muddy singer): one reason mixer channel strips have a high-pass filter, which trims the lowest bass.',
       'Here, at 1 in the bass lift starts at 220 Hz and climbs to about +10 dB near 50 Hz; at 12 in there’s none. Real mics vary.',
       'Moving a singer back a few inches controls the bass at the source.',
     ],
@@ -444,7 +444,7 @@ export const SPEAKER_SCREEN_GUIDES: Record<SpeakerSectionId, ScreenGuide> = {
       'Open SYSTEM: ADD DELAY SPEAKER hangs a delay box over the middle seats, LINE ARRAY turns the main box into an array, and REAR DELAY SPKR hangs a box ahead of the rear rows with a TIME-ALIGNED ● / MISALIGNED switch.',
     ],
     changes: [
-      'Low and level, the front rows sit close to the box and run hot; the far rows cool.',
+      'Low, no tilt: the front rows sit close to the box and run hot; the far rows cool.',
       'Raised, the box is farther from the front rows, so near and far seats sit at more similar distances. Tilt aims the wedge’s loud CENTER far and its quieter EDGE near.',
       'A delay speaker sits nearer the rear seats, so it is fired late and both arrivals land together. MISALIGNED shows them out of step: heard as an echo or a smear.',
     ],
@@ -478,7 +478,7 @@ export const SPEAKER_SCREEN_GUIDES: Record<SpeakerSectionId, ScreenGuide> = {
     ],
     changes: [
       'Red to deep blue spans about 20 dB. Each doubling of distance moves a seat about 6 dB down the ramp.',
-      'BLACK is not just far away: the pattern never reaches that seat at a workable level — geometry failing.',
+      'BLACK is not just far away: the pattern never reaches that seat at a workable level — the speaker layout misses it.',
       'Overlap reads hot; in a real room it also causes comb filtering, boosting some frequencies and cutting others.',
     ],
     teaches: [

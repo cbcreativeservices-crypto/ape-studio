@@ -54,7 +54,7 @@ const pages: LessonPages = {
     title: 'Direct sound or the room',
     goal: 'Choose a time window: short enough to keep the room out, long enough to resolve the lows — and see that it cannot be both.',
     credit: { scenarios: ['sy.ctx.1', 'sy.ctx.2', 'sy.rec.3'], interactive: 'window', note: 'In THE WINDOW, look at a window with the direct sound alone and one with every reflection, and answer the three checks.' },
-    takeaway: 'A window of T resolves steps of about 1 ÷ T: a short one is a direct-sound estimate above that; a long one is the loudspeaker in this room. State the window and the range it supports.',
+    takeaway: 'A window T seconds long resolves steps of about 1 ÷ T: a short one gives a direct-sound estimate above that frequency; a long one is the loudspeaker in this room. State the window and the range it supports.',
   },
   twoMic: {
     title: 'The overlap seat',
@@ -325,7 +325,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before the test signal: what do you check about the mic input?',
     options: ['Its level and headroom, with no clipping', 'That the gain is turned as high as it goes', 'That the trace reads 0 dB at 1 kHz'],
     correct: 'Its level and headroom, with no clipping',
-    explain: 'Confirm the channels, the polarity, the phantom power, the input level and the headroom before excitation — then fix the gain and log it.',
+    explain: 'Confirm the channels, the polarity, the phantom power, the input level and the headroom before any test signal — then fix the gain and log it.',
     why: {
       'That the gain is turned as high as it goes': 'Maximum gain risks clipping on the loudest parts of the test.',
       'That the trace reads 0 dB at 1 kHz': 'A trace’s level at one frequency is not a gain check: look at the headroom.',

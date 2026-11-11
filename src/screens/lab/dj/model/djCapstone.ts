@@ -100,7 +100,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     where: 'Look at what sits between the channel fader and the mix: the crossfader and each channel’s assign.',
     wrong: {
       cause: [
-        { t: 'CH 2’s channel fader was broken.', why: 'Possible, but rare: the assign and the crossfader sat against the channel, and setting them right brought it straight in.' },
+        { t: 'CH 2’s channel fader was broken.', why: 'Possible, but rare: the assign and the crossfader were shutting the channel out, and setting them right brought it straight in.' },
         { t: 'The MASTER was turned down.', why: 'Then deck A would have gone quiet too — the room still heard CH 1.' },
         { t: 'CH 2’s selector was on PHONO.', why: 'Then the CH 2 meter would be dark. It was live.' },
       ],
@@ -129,7 +129,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     repair: 'Turn the MASTER down, plug MASTER R back into PA R, bring the MASTER up again.',
     prevention: 'Dress and secure the output cables so a foot or a bag cannot pull them; check both sides in the line check.',
     probe: 'Both MASTER meters move — so which speaker is actually making sound?',
-    where: 'Follow the board after the MIX, side by side, to the speakers.',
+    where: 'Follow the board from the MIX to the speakers, left and right side by side.',
     wrong: {
       cause: [
         { t: 'The track was mixed mostly in the left channel.', why: 'Then the MASTER R meter would read low. Both MASTER meters were live.' },
@@ -157,7 +157,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     symptom: 'Deck A sounds harsh and crunchy, however low the MASTER is.',
     cause: 'CH 1’s TRIM was turned right up, so the channel itself was clipping.',
     evidence: 'The CH 1 meter sat in the red while the MASTER was low — the distortion started at the channel.',
-    repair: 'Bring TRIM 1 down until the CH 1 meter averages with CH 2 and never reaches CLIP.',
+    repair: 'Bring TRIM 1 down until the CH 1 meter’s average matches CH 2 and never reaches CLIP.',
     prevention: 'Set each channel’s gain on its meter by its average level while you cue it, before it goes on air.',
     probe: 'Where is the FIRST meter in the chain that reaches the red?',
     where: 'Open MIXER: the first gain stage of the channel that crunches.',
@@ -169,7 +169,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
       ],
       evidence: [
         { t: 'The MASTER meters were in the red while CH 1 looked normal.', why: 'That would point at the MASTER. Here CH 1 itself was in the red.' },
-        { t: 'Only the left side of the room crunched.', why: 'A channel fault is in both sides, and so it was.' },
+        { t: 'Only the left side of the room crunched.', why: 'A channel fault is in both sides — and both sides crunched.' },
       ],
       repair: [
         { t: 'Turn the MASTER down until the crunch stops.', why: 'It was already low: the clip happens before the MASTER, so it stays in the sound.' },
@@ -187,7 +187,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     id: 'PA_HUM',
     subsystem: 'power',
     symptom: 'A steady hum comes from the left of the room, even between tracks.',
-    cause: 'PA L was on another circuit: the MASTER L shield (pin 1) closed a ground loop, and PA L’s input let it in (a pin-1 problem).',
+    cause: 'PA L was on another power circuit: the MASTER L cable’s shield (pin 1) closed a ground loop, and PA L’s input let the hum in (a “pin-1 problem”).',
     evidence: 'The hum was in the crowd but not in the booth monitors or the headphones, and only on the left — so it entered after the mixer.',
     repair: 'Power PA L from the booth’s own strip (or put an isolation transformer in the MASTER L line). Never remove the safety ground.',
     prevention: 'Power the whole rig from one distribution point; carry an isolation transformer for the line that hums.',
@@ -266,11 +266,11 @@ export const FAULTS: Record<FaultId, FaultDef> = {
       ],
       repair: [
         { t: 'Turn the mic’s GAIN up.', why: 'The room already heard it: at any gain, a mic not sent to REC is not in the recording.' },
-        { t: 'Move the recorder to the BOOTH OUT.', why: 'The mic is not in the booth send either here — the send is the repair.' },
+        { t: 'Move the recorder to the BOOTH OUT.', why: 'The BOOTH OUT does not carry the mic either — switching MIC → REC on is the repair.' },
       ],
       prevention: [
         { t: 'Turn the mic up for announcements.', why: 'Louder in the room says nothing about the recording.' },
-        { t: 'Record from the MASTER output.', why: 'It may carry the mic, but it rides the MASTER knob — test what you record instead.' },
+        { t: 'Record from the MASTER output.', why: 'It may carry the mic, but its level follows the MASTER knob — test what you record instead.' },
       ],
     },
     inject: (b) => withEv(b, (ev) => ({ ...ev, mic: { ...ev.mic, toRec: false } })),

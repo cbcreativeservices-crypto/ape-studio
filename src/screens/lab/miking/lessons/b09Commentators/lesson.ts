@@ -390,7 +390,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b9.mix.2',
     page: 'practice',
-    prompt: 'The officials’ or the crew’s private talk is near your commentary feed. What must the program carry?',
+    prompt: 'The officials’ or the crew’s private talk could reach your commentary feed. What must the program carry?',
     options: ['Only the routes meant for it, checked before air', 'Whatever the commentary mics happen to pick up', 'All the talk, so viewers can hear the inside story'],
     correct: 'Only the routes meant for it, checked before air',
     explain: 'Confirm that the program feed excludes private communication. A mic is cut with its cough key; private circuits stay on their own routes.',
@@ -477,7 +477,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Turn the return down, fit each headset and set the boom at the mouth corner', early: 'Fit the mics once you know how the commentators work.' },
       { text: 'Set gain on the most excited call, with headroom', early: 'Gain comes once the mic is placed.' },
       { text: 'Each channel alone while the other talks; then an overlap', early: 'Check the partner once both mics are set.' },
-      { text: 'Trace cough, talkback, the return and the crowd bed', early: 'Routing checks come after the mics work.' },
+      { text: 'Trace cough, talkback, the return and the crowd bed (crowd mics)', early: 'Routing checks come after the mics work.' },
       { text: 'Check the fallback mic; bring the return up from low to comfortable under real noise', early: 'The fallback and the return level close the setup.' },
     ],
     explain: 'A sensible order. A passive ribbon: check its interface and phantom setting with the audio lead first. Avoid uncontrolled feedback.',
@@ -516,7 +516,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a commentator’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then turn the head and read your partner in your mic.' },
+  sound: { prompt: 'Before you step through: where does a commentator’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then turn the head and read how much lower your partner’s voice arrives in your mic.' },
   microphone: { prompt: 'Before you move anything: which mic keeps one distance as the head turns?', options: ['A headset boom', 'A desk-arm mic', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the headset capsule from the mouth corner to straight in front of the lips. What changes?', options: ['More pops and breath', 'More crowd', 'It depends on this commentator'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'A figure-8 lip mic faces the mouth. Where is it least sensitive to the PA?', options: ['Straight behind it', 'At its sides', 'In front of it'], after: 'Now turn or tilt the mic with AIM and watch REJECTION.' },
@@ -607,7 +607,7 @@ const wedges: Wedge[] = [
     p: { x: PA_C.x, y: SEATED_FLOOR, z: PA_C.z },
     lift: SEATED_FLOOR - PA_C.y,
     faces: { x: 1, y: 0, z: 0 },
-    note: 'High to the front-left of the open position, facing the crowd: its back and side spill toward the commentator — off the back of a mic held to the mouth, and off to one side.',
+    note: 'High to the front-left of the open position, facing the crowd: sound from its back and side spills toward the commentator — reaching a mic held to the mouth from behind, and from one side.',
     prov: { kind: 'illustrative', reason: 'a typical open announce position: the PA’s place and height are drawing defaults' },
     glyph: 'none',
   },

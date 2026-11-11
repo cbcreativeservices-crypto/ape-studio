@@ -206,7 +206,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
           </Text>
         </Pressable>
       )}
-      <Text style={P.caption}>Both plates run whenever this module is open — a comparison, not a drive. For material, size and thickness, the scaling law behind the comparison is exact.</Text>
+      <Text style={P.caption}>Both plates run whenever this module is open; the tone is locked, so there is nothing to adjust, only compare. For material, size and thickness, the scaling law behind the comparison is exact.</Text>
     </CymaticsRackLayout>
   );
 }

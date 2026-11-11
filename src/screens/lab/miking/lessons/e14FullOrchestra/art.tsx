@@ -35,7 +35,7 @@ const SPEC = ensembleHandSpec({
     prompt: 'The side-fill monitor stays at the front right, facing the players. Turn the support (AIM) or change its PATTERN until the monitor sits in its rejection — and keep its front on the cellos.',
     label: 'the orchestra’s front right with a cardioid support over the cellos and a side-fill monitor,',
     learn: [
-      { title: 'A HALL RECORDING', text: 'One complete picture from the main pair or tree; named supports only after a gap is heard. Set gain on the loudest tutti; record every channel separately when you can, with a channel map.' },
+      { title: 'A HALL RECORDING', text: 'One complete picture from the main pair or tree; named supports only after a gap is heard. Set gain on the loudest tutti (full ensemble); record every channel separately when you can, with a channel map.' },
       { title: 'A BROADCAST', text: 'The same main perspective, with supports for the close-ups on their own channels, and room or audience mics judged against the main image. Cameras need clear sightlines: stands where no camera looks.' },
       { title: 'LIVE REINFORCEMENT', text: 'First ask whether the orchestra needs it at all. If it does: closer section or solo pickup, fewer open mics, each aimed with the loudspeakers and monitors in mind. Keep the distant pair out of the PA; build from the sound already in the room.' },
     ],

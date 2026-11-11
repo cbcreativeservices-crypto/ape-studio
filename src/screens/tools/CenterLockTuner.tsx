@@ -449,7 +449,7 @@ export function CenterLockTuner() {
       <View style={styles.foot}>
         <Text style={styles.honesty}>
           Phone microphone · it listens to the room, not a pedal · IN TUNE confirms inside ±2 ¢ · the
-          strobe shows finer drift than the needle can resolve · silent by design
+          strobe shows finer drift than the needle can resolve · it plays no sound
         </Text>
       </View>
 

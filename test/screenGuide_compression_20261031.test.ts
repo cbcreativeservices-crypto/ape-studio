@@ -430,7 +430,7 @@ describe('6. the compressor drawing and the GR meter run the same click (D41 J4)
     assert.equal(+drawn(-40, 25, true).drop.toFixed(1), 0, '25 ms PUNCH leaves it untouched');
     assert.match(GUIDES.explore.tryThis[2], /so the spike passes untouched/);
     assert.match(GUIDES.learn.tryThis[1], /0\.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0\.0/);
-    assert.match(GUIDES.explore.seeing.join(' '), /the 5 ms CLICK is the real click\. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
+    assert.match(GUIDES.explore.seeing.join(' '), /Drawn as a TEACHING MODEL, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /DRUM-HIT|drawn hit still clamps|longer drawn hit/);
     assert.doesNotMatch(COMP, /its tail trails behind/);
   });

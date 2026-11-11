@@ -303,7 +303,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       // The lane must bind a fader (the rack's contract), so the landing keeps
       // THICK bound and says "ADD an item first" until there is an item.
       rack={{ stage, badge: BADGE.treatment, bezel, params, initialParam: rugSel ? 'size' : 'thick', hideDragTag: true }}
-      caption="ADD places an absorber at the next untreated reflection point the model found (the key names it), bass traps in the corners, a cloud, a rug, a diffuser or a gobo. Drag items on the plan; THICK and SIZE shape the selected one; ITEM ON/OFF compares with and without it. A ✓ on a path means it meets treatment. Keep panels clear of outlets, lights and heaters."
+      caption="ABSORB NEXT places an absorber at the next untreated reflection point the model found (its button names it); the ADD tray also has bass traps in the corners, a cloud, a rug, a diffuser and a freestanding panel (gobo). Drag items on the plan; THICK and SIZE shape the selected one; ITEM ON/OFF compares with and without it. A ✓ on a path means it meets treatment. Keep panels clear of outlets, lights and heaters."
       wellTop={
         sel ? (
           <View style={{ gap: 4 }}>
@@ -329,7 +329,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
         Compare, don't cover: a room with every wall absorbed is fatiguing and makes mixes sound dry everywhere else. Switch each item off and on, read the RT60 estimate and the treated-path count, and keep what changes something. The rear wall is often better scattered (a diffuser) than killed, if there is room for one.
       </Body>
       <Caption>Mount heavy items — bass traps, clouds, wood diffusers — into structure with rated hardware and a safety cable overhead; use fire-rated materials; never block an exit, a heater or a ventilation grille; keep panels clear of outlets and lights, and never hang a cloud under or over a smoke detector, sprinkler head or light fixture. If in doubt about a mounting, ask someone qualified.</Caption>
-      <Caption>{`ESTIMATED throughout: broadband teaching coefficients, and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here) — the 125 Hz figure is indicative only. Sabine also ignores air absorption, which matters above a few kHz in a large room. Measure the real room before and after.`}</Caption>
+      <Caption>{`ESTIMATED throughout: typical textbook absorption values (broadband), and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here) — the 125 Hz figure is indicative only. Sabine also ignores air absorption, which matters above a few kHz in a large room. Measure the real room before and after.`}</Caption>
     </RoomRackLayout>
   );
 }

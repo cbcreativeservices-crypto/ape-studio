@@ -50,7 +50,7 @@ const HAND: HandSpec = {
   axes: {
     x: { label: 'TOWARD THE AUDIENCE', short: 'FRONT', blurb: 'Toward or away from the audience side (x).', fmt: (v) => `${fmtLen(Math.abs(v))} ${v >= 0 ? 'in front of' : 'behind'} the row` },
     y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown as a target.', fmt: (v) => `${fmtLen(Math.abs(v - P0.y))} ${v <= P0.y ? 'above' : 'below'} the middle of the bars` },
-    z: { label: 'ALONG THE ROW', short: 'ALONG', blurb: 'Along the row: toward the long bars (the player’s left) or the short bars (right) (z).', fmt: (v) => `${fmtLen(Math.abs(v))} toward the ${v >= 0 ? 'short' : 'long'} bars` },
+    z: { label: 'ALONG THE ROW', short: 'ALONG', blurb: 'Along the row: toward the long bars (the player’s left) or the short bars (right).', fmt: (v) => `${fmtLen(Math.abs(v))} toward the ${v >= 0 ? 'short' : 'long'} bars` },
   },
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
   outside: 'outside the swing',
@@ -126,7 +126,7 @@ const SPEC: MetalSpec = {
   meet: {
     intro: HAND.intro,
     front: BC_FRONT,
-    figure: { title: 'BAR CHIMES', badge: 'A 27-bar row on a 38 cm rail, face-on from the audience · bar sizes are a drawing choice', label: (v) => `Bar chimes seen face-on from the audience: a wooden rail on a stand, ${v === 'double' ? 'two staggered rows of 30 bars' : 'a single row of 27 bars'} hanging below it on filaments, long bars on the player's left (the screen's right) down to short bars, and the player's hand at the long end ready to sweep.` },
+    figure: { title: 'BAR CHIMES', badge: 'A 27-bar row on a 38 cm rail, face-on from the audience · bar sizes drawn, not measured', label: (v) => `Bar chimes seen face-on from the audience: a wooden rail on a stand, ${v === 'double' ? 'two staggered rows of 30 bars' : 'a single row of 27 bars'} hanging below it on filaments, long bars on the player's left (the screen's right) down to short bars, and the player's hand at the long end ready to sweep.` },
     partsBadge: 'Bar chimes on a stand, face-on · tap a part to name it',
     partsLooking: () => 'From the audience · the row face-on, the player behind',
     partsNote: 'A wooden rail, and graduated metal bars on filaments. Switch ROWS to see a double row.',

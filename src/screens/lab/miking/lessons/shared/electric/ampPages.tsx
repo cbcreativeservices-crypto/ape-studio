@@ -688,7 +688,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               selectedId: patch,
               onSelect: (id) => setPatch(id as 'cab' | 'desk'),
               options: [
-                { id: 'cab', label: 'SPEAKER OUT → THE CABINET', blurb: 'By a speaker cable, as the amp’s manual says — to a speaker, or to a load or DI made for speaker level.' },
+                { id: 'cab', label: 'SPEAKER OUT → THE CABINET', blurb: 'By a speaker cable, as the amp’s manual says — to a speaker, or to a load box or DI made for speaker level.' },
                 { id: 'desk', label: 'SPEAKER OUT → A DESK INPUT', blurb: 'Shown so you can recognize it — never do it: a speaker output carries high power.' },
               ],
             },
@@ -782,7 +782,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             <Card>
               <Point title="ASK THE PLAYER FIRST">{spec.who === 'steel' ? 'Which neck and pickup, the volume-pedal range, the effects and the amp settings that make their sound. Then listen from a safe spot while they play the real passage — quiet swells and the strongest attacks — at its real level.' : 'The instrument, the pickups, the pedals, the amp channel and the level they will really play at. Then listen from a safe spot while they play the real part — the quietest and the strongest passages.'}</Point>
               <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and its speaker are the player’s sound. Keep them as set while you compare positions; mic the amp they bring.</Point>
-              <Point title="ELECTRICAL SAFETY">Do not open a chassis, defeat a safety ground (the power plug’s ground pin — a DI’s ground-lift switch, which lifts only the audio ground at its XLR, is a different, normal control: use it as its manual says), change speaker wiring or block an amp’s vents for a miking exercise. Follow the amp’s own manual for its speaker load and direct outputs. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.</Point>
+              <Point title="ELECTRICAL SAFETY">Do not open a chassis, defeat a safety ground (the power plug’s ground pin), change speaker wiring or block an amp’s vents for a miking exercise. A DI’s ground-lift switch is different: it lifts only the audio ground at its XLR, a normal control — use it as its manual says. Follow the amp’s own manual for its speaker load and direct outputs. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.</Point>
             </Card>
             <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Staying below them is not a promise of safety. These are limits for PEOPLE, measured where a person listens, and they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />

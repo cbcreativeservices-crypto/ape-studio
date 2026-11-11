@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Only on a clamp made for the port, with the player’s say-so',
     explain: 'Do not fasten a clamp to thin wood or into a port unless that hardware is designed for this model — and never a loose mic inside.',
     why: {
-      'Whenever the stage is crowded and short of stands and booms': 'A crowded stage is not a compatible clamp.',
+      'Whenever the stage is crowded and short of stands and booms': 'A crowded stage does not make any clamp a safe fit.',
       'Inside the box, resting loose on the bottom': 'Never a loose mic inside the box: it can touch the wires.',
     },
   },
@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One example puts the front mic close, another 30–40 cm out. Which is right?',
     options: ['Both are working examples — compare by ear', 'The close one — close is the better choice on a cajón', 'Average them: put the mic at about 25 cm'],
     correct: 'Both are working examples — compare by ear',
-    explain: 'Different practitioners’ examples, not two distances to average, and not a guarantee of the same sound.',
+    explain: 'Different engineers’ working examples, not two distances to average, and not a guarantee of the same sound.',
     why: {
       'The close one — close is the better choice on a cajón': 'Close favors attack and puts the mic near the hands.',
       'Average them: put the mic at about 25 cm': 'Averaging two examples is not a third example.',
@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The port is on the FRONT of this model. Where does the port mic go?',
     options: ['At the front, offset from the port’s air', 'Behind the player, where ports usually are', 'Inside the box, through the port hole'],
     correct: 'At the front, offset from the port’s air',
-    explain: 'A front-facing port changes the relevant side of the instrument: revise the port position.',
+    explain: 'A port on the front changes which side matters: the port mic goes in front, offset from the port’s air.',
     why: {
       'Behind the player, where ports usually are': 'There is no rear hole on this model.',
       'Inside the box, through the port hole': 'Never a loose mic inside the box.',
@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A small live stage: does the cajón need two mics?',
     options: ['Not always — one practical mic may suffice', 'Yes — a cajón needs a front and a port mic on stage', 'Yes — one mic cannot hear a cajón live'],
     correct: 'Not always — one practical mic may suffice',
-    explain: 'Each open channel can increase spill and feedback; keep only channels that improve a relevant output.',
+    explain: 'Each open channel can increase spill and feedback; keep only channels that improve the house or a monitor mix.',
     why: {
       'Yes — a cajón needs a front and a port mic on stage': 'A second mic must earn its place.',
       'Yes — one mic cannot hear a cajón live': 'One front or port mic often does.',
@@ -321,7 +321,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The center stroke, the front/port balance — and do two mics cancel in mono?',
     options: ['The balance and the mono sum; then position and polarity', 'A big low-end boost on the front channel’s EQ to fill it out', 'Ask the player to hit the center much harder'],
     correct: 'The balance and the mono sum; then position and polarity',
-    explain: 'Listen to the center stroke and the balance; try relative position and polarity as a conditional test.',
+    explain: 'Listen to the center stroke and the balance; then test the two mics’ spacing and polarity — keep only what helps.',
     why: {
       'A big low-end boost on the front channel’s EQ to fill it out': 'A boost cannot really undo a cancellation.',
       'Ask the player to hit the center much harder': 'The strokes are the music.',
@@ -390,7 +390,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A low-frequency dynamic in front, offset from the upward port', ok: true, power: 'none', feedback: 'The port is in front on this model; a dynamic needs no phantom.' },
       { id: 'b', label: 'A dynamic in front of the plate, angled down, a null toward the wedge', ok: true, power: 'none', feedback: 'One practical mic; a dynamic needs no phantom.' },
-      { id: 'c', label: 'A mic behind the player, aimed at the back', ok: false, power: 'none', feedback: 'This model has no rear port — revise the port position.' },
+      { id: 'c', label: 'A mic behind the player, aimed at the back', ok: false, power: 'none', feedback: 'This model has no rear port — move the port mic to the front.' },
       { id: 'd', label: 'A small condenser in front of the plate', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'e', label: 'A mic straight down the port’s axis, 5 cm away', ok: false, power: 'none', feedback: 'Square in the port’s air: pops and boom.' },
     ],
@@ -475,7 +475,7 @@ export const I02_LESSON: SpLesson = {
   id: 'I02',
   labId: 'percussion',
   title: 'Cajón',
-  subtitle: 'A box you sit on: find the port first — front, back, or both — clear of the hands, the knees and the player’s way off',
+  subtitle: 'A box you sit on: find the port first — front, back, or both — clear of the hands, the knees and the player’s path off the box',
   noun: { one: 'cajón', many: 'cajones' },
   model: CAJ_MODEL,
   micTypeIds: ['orchSdc', 'kickDynCard', 'portClip'],

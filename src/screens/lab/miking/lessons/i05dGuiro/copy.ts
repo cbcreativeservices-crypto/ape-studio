@@ -39,7 +39,7 @@ export const GU_COPY: LessonCopy = spCopy({
     shapesNotes: ['The pictures show the order of events and where the sound starts — never its level; the ridges are drawn wider apart than real.'],
     coupledSubject: 'The güiro lengthwise',
     coupledNote: 'Ask the player for the real phrase — short accents, long strokes and returns — before you move a mic: one short stroke does not show where a long one ends.',
-    silentNote: 'This lab never plays a sound and draws no frequency curve: a body’s material describes an example, not a fixed microphone curve. The pictures show where the sound comes from.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: a body’s material names an example, not one fixed frequency curve. The pictures show where the sound comes from.',
     pair: {
       title: 'Long or short scrape',
       badge: 'A simplified picture: how many ridges a stroke crosses, not how loud · ridges drawn wider apart',
@@ -88,7 +88,7 @@ export const GU_COPY: LessonCopy = spCopy({
   },
   placement: {
     workedZone: { gourd: 'gui.body.gourd', fiberglass: 'gui.body.fiberglass' },
-    workedAim: 'Face the scraped area — the starting point counts while the mic faces its middle within {tol}°. Distance, height and angle are separate things to try.',
+    workedAim: 'Face the scraped area — the lab counts it while the mic faces its middle within {tol}°. Distance, height and angle are separate things to try.',
     reveal: 'Facing more of the ridges, more rasp; a little lower and level, more of the hollow body — while still covering the whole stroke. There is no rule that one side is less harsh, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A cardioid condenser or another suitable mic can both work; step back when the stroke travels widely.' },
     note: 'Clearance comes first: stop the player before moving a real mic — never across the scraper’s path, never inside a gourd. Watch PEAK meters for the strongest real long scrape.',

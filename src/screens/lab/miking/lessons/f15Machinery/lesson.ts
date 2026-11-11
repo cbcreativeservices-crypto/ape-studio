@@ -42,7 +42,7 @@ const pages: LessonPages = {
   microphone: {
     title: 'Two channels',
     goal: 'Build a chain for a before-and-after or a rattle hunt — the airborne mic, the vibration channel, the gain, the claim — and see the wrong ones refused, with why.',
-    credit: { scenarios: ['mp.mic.1', 'mp.mic.2', 'mp.mic.3', 'mp.rec.1'], interactive: 'chainBuilt', note: 'Build a chain that passes its question in TWO CHANNELS, and answer the four checks.' },
+    credit: { scenarios: ['mp.mic.1', 'mp.mic.2', 'mp.mic.3', 'mp.rec.1'], interactive: 'chainBuilt', note: 'In TWO CHANNELS, build a chain the lab accepts for its question, and answer the four checks.' },
     takeaway: 'Airborne pressure and vibration are two channels in two units; their timing gives clues, not a proven path. Fixed gain with headroom; a dBFS peak is not a sound level.',
   },
   placement: {
@@ -60,7 +60,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'The cycle and the claims',
     goal: 'Take a short sample and the whole cycle of a made-up run and see what each catches — then judge which claims each setup can support.',
-    credit: { scenarios: ['mp.two.1', 'mp.two.2', 'mp.two.3'], interactive: 'cycleClaims', note: 'In THE CYCLE LOG take a short sample and the whole cycle; on THE CLAIM LADDER judge every claim right for one setup; and answer the three checks.' },
+    credit: { scenarios: ['mp.two.1', 'mp.two.2', 'mp.two.3'], interactive: 'cycleClaims', note: 'In THE CYCLE LOG take a short sample and the whole cycle; on THE CLAIM LADDER judge every claim correctly for one setup; and answer the three checks.' },
     takeaway: 'Whole cycles, repeated, with the start, the steady state and the stop marked. Then the claim no bigger than the setup: perspective, comparison, calibrated pressure, or sound power under a method.',
   },
   troubleshoot: {
@@ -482,7 +482,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · Is the fan with its new blade quieter for the user? No calibrated chain today.',
     setups: [
       { id: 'a', label: 'One mic at A, before and after, gain and cycle the same, labeled relative', ok: true, power: 'phantom', feedback: 'One position, everything else fixed: an honest relative comparison.' },
-      { id: 'abc', label: 'One mic at A, B and C, before and after, gain fixed, labeled relative', ok: true, power: 'phantom', feedback: 'More positions, still one change at a time: also sound.' },
+      { id: 'abc', label: 'One mic at A, B and C, before and after, gain fixed, labeled relative', ok: true, power: 'phantom', feedback: 'More positions, still one change at a time: also a good plan.' },
       { id: 'phone', label: 'A phone with auto-gain, held where it sounds best', ok: false, power: 'none', feedback: 'Auto-gain and a moving position: nothing compares.' },
     ],
     reasons: [
@@ -615,8 +615,8 @@ export const F15_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'Miking a product while it runs, from repeatable, safe positions: what a user hears at a stated point, a comparison before and after a change, or clues to a fault — each claim no bigger than the setup.', src: 'F15-LESSON' },
     { title: 'THE DEVICE', text: 'A low-risk, intact, guarded device under its own instructions — here a desk fan on a small table. Industrial machines are not a place to practice: they appear here only as a no-go example.', src: 'F15-LESSON' },
-    { title: 'TWO KINDS OF SIGNAL', text: 'A mic reads the airborne pressure where its capsule sits; a contact sensor, fixed on by someone qualified while the device is isolated, reads the housing’s vibration in other units.', src: 'F15-LESSON' },
-    { title: 'THE KEEP-OUTS', text: 'Around the running fan, an exclusion zone — the guard plus a margin — and its airflow. Nothing goes inside either: the drawing’s 0.3 m margin and 30° cone are drawings; the device and the site set the real ones.', src: 'F15-LESSON' },
+    { title: 'TWO KINDS OF SIGNAL', text: 'A mic reads the airborne pressure where its capsule sits; a contact sensor, fixed on by someone qualified while the device is isolated (switched off and cut from its power), reads the housing’s vibration in other units.', src: 'F15-LESSON' },
+    { title: 'THE KEEP-OUTS', text: 'Around the running fan, an exclusion zone — the guard plus a margin — and its airflow. Nothing goes inside either: the 0.3 m margin and 30° cone in the drawing are only examples; the device and the site set the real ones.', src: 'F15-LESSON' },
   ],
   sound: {
     stages: [
@@ -651,6 +651,6 @@ export const F15_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: the product’s own test code and the site set the real positions, distances and limits. Experiment, and trust your ears and the room as well as the meter — but never inside the exclusion zone. The lab is silent and draws a simplified picture: a guarded desk fan on a small table, a zone and an airflow cone as drawings, straight paths at 20 °C, and a made-up cycle strip. Work on real devices only with the owner’s permission and someone qualified on them.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules: the product’s own noise-test code and the site set the real positions, distances and limits. Experiment, and trust your ears and the room as well as the meter — but never inside the exclusion zone. The lab is silent and draws a simplified picture: a guarded desk fan on a small table, a zone and an airflow cone as drawings, straight paths at 20 °C, and a made-up cycle strip. Work on real devices only with the owner’s permission and someone qualified on them.',
   copy: F15_COPY,
 };

@@ -78,7 +78,7 @@ const EYRING: Workspace = {
   reportPrefix: 'RT',
   intro:
     'Sabine’s reverberation formula overestimates RT60 once a room is fairly dead. Eyring corrects ' +
-    'it by using −ln(1−ā) instead of ā, which matters as average absorption climbs. This workspace ' +
+    'it by using −ln(1−ā) instead of the average absorption ā itself, which matters as ā climbs. This workspace ' +
     'gives the Eyring RT60 and shows how far it departs from Sabine for the same room.',
   whyItMatters:
     'In a well-treated control room, studio, or broadcast booth the average absorption is high — ' +
@@ -111,7 +111,7 @@ const EYRING: Workspace = {
       inputs: ['vol', 'surf', 'aBar'],
       formula: 'Eyring: RT60 = 0.161·V / (−S·ln(1−ā))',
       plainFormula:
-        'The Eyring reverberation time equals 0.161 times the room volume, divided by the negative surface area times the natural log of one minus the average absorption.',
+        'The Eyring reverberation time equals 0.161 times the room volume, divided by the surface area times minus the natural log of one minus the average absorption.',
       explain:
         'Sabine’s reverberation formula reads long once a room is fairly dead. Eyring corrects it by using −ln(1−ā) in place of the raw average absorption, which matters as absorption climbs. This gives the Eyring RT60 and how far Sabine over-estimates it for the same room. It assumes a diffuse field and ignores air absorption.',
       keySymbols: ['·', '/', '−', 'ln', 'ā'],
@@ -158,7 +158,7 @@ const EYRING: Workspace = {
       plainFormula:
         'The required average absorption equals one minus e raised to the power of negative 0.161 times the volume, divided by the surface area times the target reverberation time.',
       explain:
-        'The reverse of the Eyring model: the area-averaged absorption a room needs to reach your target RT60. It rearranges the Eyring equation to solve for absorption, then multiplies it by the room’s surface — the sum of area × α the surfaces must add up to.',
+        'The reverse of the Eyring model: the area-averaged absorption a room needs to reach your target RT60. It rearranges the Eyring equation to solve for absorption, then multiplies it by the room’s surface area — the total of area × α (each surface’s absorption coefficient) the surfaces must add up to.',
       keySymbols: ['ā', '−', 'e', '·', '/'],
       note: 'The area-averaged absorption the room needs to hit your target RT60, by the Eyring model.',
       refuse: (v) => {
@@ -204,11 +204,11 @@ const DIFFUSER: Workspace = {
   reportPrefix: 'QRD',
   intro:
     'A quadratic-residue diffuser (QRD) is a row of wells whose depths follow the sequence ' +
-    'sₙ = n² mod N, for a prime N. That number-theory pattern scatters sound evenly over a band. ' +
+    'sₙ = n² mod N (the remainder after dividing n² by N), for a prime N. That number-theory pattern scatters sound evenly over a band. ' +
     'Enter the prime, the design (lowest) frequency, and the well width to get the depths and range.',
   whyItMatters:
     'A diffuser breaks up strong reflections without deadening the room — it keeps energy and ' +
-    'liveliness while killing flutter and harsh specular reflections. The well depths set the LOW ' +
+    'liveliness while killing flutter and harsh specular (mirror-like) reflections. The well depths set the LOW ' +
     'edge of diffusion; the well WIDTH sets the HIGH edge. Get them wrong and it just reflects.',
   example:
     'N = 7, design frequency 500 Hz (λ ≈ 0.686 m at 20 °C), well width 5 cm: the deepest well ' +
@@ -224,7 +224,7 @@ const DIFFUSER: Workspace = {
     'effects; treat depths as a starting point.',
   glossary: ['Diffusion', 'Reflection (acoustics)', 'Wavelength', 'Comb Filtering', 'Standing wave'],
   fields: [
-    { key: 'N', name: 'PRIME N (well count)', quantity: 'number', nonNegative: true, integer: true, placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
+    { key: 'N', name: 'PRIME N (well count)', quantity: 'number', nonNegative: true, integer: true, placeholder: '7', help: 'Wells in one period (the repeating set) — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
     { key: 'f0', name: 'DESIGN (LOW) FREQUENCY', quantity: 'frequency', placeholder: '500', help: 'Lowest frequency you want diffused — sets the deepest well.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'w', name: 'WELL WIDTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Width of each well — sets the high-frequency diffusion limit.', positive: true, warn: { test: (x) => x <= 0, msg: 'Well width must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
@@ -416,7 +416,7 @@ const TRANSMISSION: Workspace = {
     'TL ≈ 41 dB. Doubling the mass to 50 kg/m² adds ~6 dB everywhere.',
   mistakes: [
     'Expecting mass law to hold everywhere — near the panel’s coincidence (critical) frequency TL dips sharply below the prediction.',
-    'Adding a second identical leaf tight against the first — you gain mass (~6 dB) but not the far bigger benefit of a decoupled, air-gapped double wall.',
+    'Adding a second identical layer (leaf) tight against the first — you gain mass (~6 dB) but not the far bigger benefit of a decoupled, air-gapped double wall.',
     'Quoting one TL number as if isolation were flat — by the mass law it rises ~6 dB/octave, so bass is most often the weakest link.',
   ],
   warnings:

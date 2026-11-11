@@ -272,7 +272,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Japanese CD masters are among the loudest anywhere, often −8 to −5 LUFS-I with very small PLR. Most streaming services normalize to about −14 LUFS, some to −16 (−11 on some loud settings), so extreme loudness just costs punch; keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14. A loudness range of 4–6 LU is typical. Deliver a separate TV-size edit for anime use, which Japanese broadcasters normalize to −24 LKFS."
+      "text": "Japanese CD masters are among the loudest anywhere, often −8 to −5 LUFS-I with very small PLR (peak-to-loudness ratio). Most streaming services normalize to about −14 LUFS, some to −16 (−11 on some loud settings), so extreme loudness just costs punch; keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14. A loudness range of 4–6 LU is typical. Deliver a separate TV-size edit for anime use, which Japanese broadcasters normalize to −24 LKFS."
     }
   ],
   "liveStudio": {

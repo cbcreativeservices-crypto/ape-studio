@@ -67,7 +67,7 @@ export const PIANO_COPY: LessonCopy = {
   placement: {
     workedZone: { grand: 'gp.over', short: 'gp.short', baby: 'gp.over', upright: 'up.top', uprightFront: 'up.front' },
     workedLine: 'This starting point also places the mic relative to {line}: the readout says how far behind (or in front of) it the mic is.',
-    workedAim: 'Aim it as the starting point says — the lab counts it while the mic faces the way it names. Height, distance from the hammers and angle are separate things to try.',
+    workedAim: 'Aim it as the starting point says — the lab counts your aim as matching only while the mic faces the way it names. Height, distance from the hammers and angle are separate things to try.',
     workedClear: 'Clear of everything — the strings, the dampers and hammers, the lid and its stick, the pianist’s hands and sight line. Clearance comes first, before any number: set the lid first, then place the mic, and take the mic out before the lid is lowered.',
     blocked: { grand: ' The boom reaches in from the curved side, under the lid.', short: ' Under a short-stick lid there is very little room.', baby: ' The boom reaches in from the curved side, under the lid.', upright: ' The arm comes up out of the top, or around the back.', uprightFront: ' The arm comes up past the open front.' },
     reveal: 'Nearer the hammers tends to bring more attack and mechanism; farther away, a softer attack — and every piano and room is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
@@ -119,7 +119,7 @@ export const PIANO_COPY: LessonCopy = {
         { title: 'PERSPECTIVE', text: 'Studio: the instrument and the room together — an outside pair, or a pair over the strings for more definition. Live: closer, more directional pickup for separation; the room is already in the audience’s ears.' },
         { title: 'THE LID', text: 'Studio: usually the full stick. Live: the short stick or a closed lid (with low-profile mics inside) for separation and gain before feedback — at the cost of a closer, more percussive sound.' },
         { title: 'MONO AND IMAGE', text: 'A bass/treble pair can sound wide and thin out in mono. A stereo piano need not span hard left and right in a full-band mix; check each mic alone, then the pair, in mono.' },
-        { title: 'MOUNTING', text: 'Studio: stands and booms, careful comparisons. Live: secure mounts the owner approves (magnets on the frame, a boundary under the lid), cables clear of the pedals and the bench.' },
+        { title: 'MOUNTING', text: 'Studio: stands and booms, careful comparisons. Live: secure mounts the owner approves (magnets on the frame, a boundary mic under the lid), cables clear of the pedals and the bench.' },
       ],
       body: 'A pattern’s rejection is a tool to aim; lowering the lid and moving the wedge change more than any pattern can. With a singer and a piano sharing a room, the vocal spill may decide where the piano mics go — that belongs to the ensembles lab.',
       warn: 'No mic position alone prevents feedback: the pattern, the lid, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. Turn the level down before moving a mic or the lid.',

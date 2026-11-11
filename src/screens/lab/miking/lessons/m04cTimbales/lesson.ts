@@ -37,7 +37,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the pair by its properties — pattern, power, size, mount and the level it can take — not by its brand.',
     credit: { scenarios: ['tb.mic.1', 'tb.mic.2', 'tb.mic.3', 'tb.mic.4', 'tb.rec.1'], note: 'Answer the five checks (one reaches back to how the timbales sound).' },
-    takeaway: 'A transducer class does not guarantee warmth, isolation, peak handling or safety from a stick. A pad after an overloaded mic cannot repair it — check the strongest rimshot and bell.',
+    takeaway: 'A mic type alone does not guarantee warmth, isolation, peak handling or safety from a stick. A pad after an overloaded mic cannot repair it — check the strongest rimshot and bell.',
   },
   placement: {
     title: 'Placement Studio',
@@ -81,7 +81,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before you place a stand, the player shows you their widest strokes. Which ones matter for clearance?',
     options: ['Heads, rims, shells and accessories, and moving between them', 'Only the heads, since that is where most of the strokes land', 'Only the bell, since it is the highest thing on the stand'],
     correct: 'Heads, rims, shells and accessories, and moving between them',
-    explain: 'The striking envelope reaches above both heads and around the outer shells and the accessories. Keep every mic and boom outside all of it — and avoid anything that could drop onto the player.',
+    explain: 'The space the sticks reach covers both heads, the outer shells and the accessories. Keep every mic and boom outside all of it — and avoid anything that could drop onto the player.',
     why: {
       'Only the heads, since that is where most of the strokes land': 'Rimshots, the cáscara on the shells and the bell all need room too.',
       'Only the bell, since it is the highest thing on the stand': 'The bell is one target among several: heads, rims and shells need clearance too.',
@@ -190,10 +190,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'A compact dynamic is suggested for close stage work, a condenser for a broader view. What decides the choice?',
     options: ['The model’s pattern, size, mount, power and peak level for this job', 'The type alone: dynamics are rugged and condensers are more natural', 'The brand the band happened to use on its last tour'],
     correct: 'The model’s pattern, size, mount, power and peak level for this job',
-    explain: 'Use actual model specifications. A transducer class does not guarantee warmth, isolation, resilience to every peak or safety from a stick.',
+    explain: 'Use actual model specifications. A mic type alone does not guarantee warmth, isolation, resilience to every peak or safety from a stick.',
     why: {
       'The type alone: dynamics are rugged and condensers are more natural': 'Those are stereotypes to test. The specific model’s properties decide.',
-      'The brand the band happened to use on its last tour': 'A tour case shows one workable choice, not a rule.',
+      'The brand the band happened to use on its last tour': 'One band’s tour shows one workable choice, not a rule.',
     },
   },
   {
@@ -238,9 +238,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · You move a stand to reach a new zone. What must the mic, boom and cable stay clear of?',
     options: ['Every stick stroke: heads, rims, shells, bell', 'The front of the pair, so the audience can see', 'The bell only, as it is the loudest thing there'],
     correct: 'Every stick stroke: heads, rims, shells, bell',
-    explain: 'Stop the player, move the stand, and keep everything outside the whole striking envelope — and away from anything that could drop onto the player.',
+    explain: 'Stop the player, move the stand, and keep everything outside the whole space the sticks reach — and away from anything that could drop onto the player.',
     why: {
-      'The front of the pair, so the audience can see': 'How it looks is not the safety question. The stick envelope is.',
+      'The front of the pair, so the audience can see': 'How it looks is not the safety question. The space the sticks reach is.',
       'The bell only, as it is the loudest thing there': 'Every surface the sticks reach needs clearance, not only the bell.',
     },
   },
@@ -596,9 +596,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What must a timbale mic, its boom and cable stay out of?',
     options: ['Every stick path: heads, rims, shells and bell', 'The front of the pair, out of the audience’s view', 'The space under the stand, to keep it level'],
     correct: 'Every stick path: heads, rims, shells and bell',
-    explain: 'The striking envelope reaches above both heads and around the shells and accessories.',
+    explain: 'The space the sticks reach covers both heads and goes around the shells and accessories.',
     why: {
-      'The front of the pair, out of the audience’s view': 'How it looks is not the question; the stick envelope is.',
+      'The front of the pair, out of the audience’s view': 'How it looks is not the question; the space the sticks reach is.',
       'The space under the stand, to keep it level': 'Keep stands stable, but the space that moves is the sticks’.',
     },
   },
@@ -724,7 +724,7 @@ export const M04C_LESSON: HandLesson = {
     strokes: {
       key: 'STICK ON',
       title: 'Head, rim and shell',
-      intro: 'Switch STICK ON between the head, a rimshot and the shell. The bars are the head’s physics; the rim and the shell ring on their own.',
+      intro: 'Switch STICK ON between the head, a rimshot and the shell. The bars show only the head’s physics; the rim and the shell ring on their own.',
       badge: 'A simplified head · the stick drawn at a typical spot · bars = how strongly that spot drives each head shape',
       items: [
         { id: 'head', label: 'THE HEAD', short: 'HEAD', frac: 0.5, tool: 'stick', text: 'The stick on the head: the drum’s tone and attack.' },

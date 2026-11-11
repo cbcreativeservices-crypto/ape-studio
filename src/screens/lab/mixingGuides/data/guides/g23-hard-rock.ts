@@ -54,7 +54,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "Drums center upstage on a riser, bass beside the drummer, guitars stage left and right, singer front center, often with a thrust. Classic acts (AC/DC) split two contrasting guitarists across the stereo field, one on rhythm, one on lead; modern post-grunge quad-tracks the rhythm part in the studio. The song shape is riff intro, palm-muted verse, pre-chorus build, huge chorus with crashes and stacked harmonies, solo after the second chorus, quiet bridge, then a final chorus. Big 1980s-style arena productions stack backing vocals into a choir and add extra chorus stages to keep escalating."
+      "text": "Drums center upstage on a riser, bass beside the drummer, guitars stage left and right, singer front center, often with a thrust (a stage runway into the crowd). Classic acts (AC/DC) split two contrasting guitarists across the stereo field, one on rhythm, one on lead; modern post-grunge quad-tracks the rhythm part in the studio. The song shape is riff intro, palm-muted verse, pre-chorus build, huge chorus with crashes and stacked harmonies, solo after the second chorus, quiet bridge, then a final chorus. Big 1980s-style arena productions stack backing vocals into a choir and add extra chorus stages to keep escalating."
     }
   ],
   "dynamics": [
@@ -281,7 +281,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern active rock masters land around −9 to −6 LUFS-I, often near −8 LUFS-I with a loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); most streaming services normalize to about −14 LUFS, some to −16, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting; at −2 dBTP that means about −10 LUFS-I or quieter, nearer the classic-styled range than modern masters."
+      "text": "Modern active rock masters land around −9 to −6 LUFS-I, often near −8 LUFS-I with a loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); most streaming services normalize to about −14 LUFS, some to −16, so extra loudness only costs punch. A PLR (peak-to-loudness ratio) of 8–11 dB keeps drums hitting; at −2 dBTP that means about −10 LUFS-I or quieter, nearer the classic-styled range than modern masters."
     }
   ],
   "liveStudio": {

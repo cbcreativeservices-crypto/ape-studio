@@ -46,7 +46,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         application: 'Balanced analog audio (microphone or line level)',
         carried: ['mic_level', 'line_level'],
         contacts: [
-          { label: '1', role: 'Cable shield / reference', ink: 'shield', note: 'Ties the cable screen to the equipment reference.' },
+          { label: '1', role: 'Cable shield / reference', ink: 'shield', note: 'Ties the cable shield (screen) to the equipment’s reference.' },
           { label: '2', role: 'Signal + (non-inverting, “hot”)', ink: 'signalPos' },
           { label: '3', role: 'Signal − (inverting, “cold”)', ink: 'signalNeg' },
         ],
@@ -99,7 +99,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: 'XLR AES3 digital cable',
         why: 'Same connector, different cable: AES3 digital audio is specified for 110-ohm balanced digital cable, not analog microphone cable.',
         consequence:
-          'An analog mic cable on a long AES3 run can drop out intermittently or fail to lock at all — a reliability failure, not equipment damage.',
+          'An analog mic cable on a long AES3 run can drop out intermittently or fail to lock (the receiver can’t sync) — a reliability failure, not equipment damage.',
       },
       {
         otherName: 'DMX lighting control run (XLR-shell use)',
@@ -115,7 +115,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       'Crackle or dropout when the cable is flexed near the connector',
     ],
     basicTest:
-      'A continuity tester shows 1→1, 2→2, 3→3 straight through with the shield intact and no contact bridging. A cable that passes 2↔3 swapped still carries audio but inverts polarity — it should be flagged and corrected.',
+      'A continuity tester shows 1→1, 2→2, 3→3 straight through with the shield intact and no contact bridging. A cable with pins 2↔3 swapped still carries audio but inverts polarity — flag it and get it corrected.',
     safety: {
       level: 'signal',
       cautions: [
@@ -181,7 +181,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     },
     advantages: [
       'Rugged, inexpensive, and easy to repair',
-      'The universal instrument-world connector with an enormous installed base',
+      'The universal instrument-world connector, found on a huge amount of gear',
       'Simple two-contact construction is easy to test and re-solder',
     ],
     limitations: [
@@ -287,19 +287,19 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         carried: ['line_level'],
         contacts: [
           { label: 'Tip', role: 'Send (commonly — verify)', ink: 'signalPos', note: 'Tip-send is common, not universal.' },
-          { label: 'Ring', role: 'Return (commonly — verify)', ink: 'signalPos', note: 'Some equipment, such as some older large-format desks, reverses send and return.' },
+          { label: 'Ring', role: 'Return (commonly — verify)', ink: 'signalPos', note: 'Some equipment, such as some older large-format consoles, reverses send and return.' },
           { label: 'Sleeve', role: 'Shield / reference', ink: 'shield' },
         ],
         confidence: 'equipment-dependent',
         verifyAgainst:
-          'The console’s documentation. Tip-send/ring-return is used on most consoles, but some (such as some older large-format desks) use the opposite; a reversed insert cable leaves the channel silent or the processor out of the path.',
+          'The console’s documentation. Tip-send/ring-return is used on most consoles, but some (such as some older large-format consoles) use the opposite; a reversed insert cable leaves the channel silent or the processor out of the path.',
       },
     ],
     balanced: 'either',
     channels: 'varies',
     locking: {
       method: 'friction',
-      howToConfirm: 'A firm push to a positive stop; there is no lock. On insert jacks, a half-seated plug touches the wrong contacts (some engineers do this on purpose to tap the send) — for a normal insert, seat it fully.',
+      howToConfirm: 'A firm push to a positive stop; there is no lock. On insert jacks, a half-seated plug touches the wrong contacts (some engineers do this on purpose to grab a copy of the send) — for a normal insert, seat it fully.',
     },
     hotPlug: {
       policy: 'mute_first',
@@ -329,7 +329,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: '1/4-inch TS',
         why: 'TS and TRS plugs mate with each other’s jacks, so mixed connections happen silently; what results depends on the circuits at both ends.',
         consequence:
-          'Commonly the connection works but becomes unbalanced without announcing it. With some output designs, grounding the inverting leg raises distortion or shifts level, and a minority of electronically balanced outputs are not designed to drive a grounded leg at all. Check the documentation rather than trusting the fit.',
+          'Commonly the connection works but becomes unbalanced without announcing it. With some output designs, grounding the inverting leg raises distortion or shifts level, and a minority of electronically balanced outputs can’t safely work with that leg grounded at all. Check the documentation rather than trusting the fit.',
       },
       {
         otherName: 'Console insert point (send/return on one TRS jack)',
@@ -351,7 +351,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       'Strain relief and jacket condition at the plug',
     ],
     basicTest:
-      'Tip→tip, ring→ring, sleeve→sleeve straight through, with no continuity between different contacts. Bridged or crossed contacts misroute signal: a tip↔ring short collapses a stereo pair or shorts a balanced pair to near-silence.',
+      'Tip→tip, ring→ring, sleeve→sleeve straight through, with no continuity between different contacts. Bridged or crossed contacts misroute signal: a tip↔ring short merges a stereo pair into mono or shorts a balanced pair to near-silence.',
     safety: {
       level: 'signal',
       cautions: [
@@ -420,7 +420,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     channels: 'varies',
     locking: {
       method: 'friction',
-      howToConfirm: 'A light click into the jack’s spring detent; there is no lock. Cable strain unseats it easily.',
+      howToConfirm: 'A light click as the jack’s spring catches the plug; there is no lock. Cable strain unseats it easily.',
     },
     hotPlug: {
       policy: 'mute_first',
@@ -508,7 +508,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
           { label: 'Tip', role: 'Left channel', ink: 'signalPos' },
           { label: 'Ring 1', role: 'Right channel', ink: 'signalPos' },
           { label: 'Ring 2', role: 'Common / ground', ink: 'shield' },
-          { label: 'Sleeve', role: 'Microphone', ink: 'signalPos', note: 'On many devices this contact also carries a small DC bias for the mic (equipment-dependent).' },
+          { label: 'Sleeve', role: 'Microphone', ink: 'signalPos', note: 'On many devices this contact also carries a small DC bias (a voltage that powers the mic; equipment-dependent).' },
         ],
         confidence: 'convention',
         verifyAgainst:
@@ -533,7 +533,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     channels: 'varies',
     locking: {
       method: 'friction',
-      howToConfirm: 'A light click into the jack’s spring detent; there is no lock.',
+      howToConfirm: 'A light click as the jack’s spring catches the plug; there is no lock.',
     },
     hotPlug: {
       policy: 'normally_fine',
@@ -554,7 +554,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       'Assuming all headset plugs are wired alike — CTIA and OMTP both exist',
       'Blaming the headset when the real problem is a contact-order mismatch',
       'Extending a headset with a TRS-only extension cable and losing the microphone',
-      'Presenting either scheme as “the standard” — neither is universal',
+      'Assuming either scheme is “the standard” — neither is universal',
     ],
     notInterchangeableWith: [
       {
@@ -568,7 +568,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: 'CTIA-wired jack ↔ OMTP-wired headset (and vice versa)',
         why: 'The two schemes swap the microphone and ground contacts; the plugs are physically identical.',
         consequence:
-          'Very quiet, hollow or distorted audio and a dead microphone. Passive crossover adapters exist. Annoying, not damaging.',
+          'Very quiet, hollow or distorted audio and a dead microphone. Passive crossover adapters (which swap those two contacts) exist. Annoying, not damaging.',
       },
     ],
     inspectionPoints: [
@@ -627,7 +627,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         ],
         confidence: 'convention',
         verifyAgainst:
-          'Universal consumer-audio practice — center carries signal, shell carries the return. Channel identity comes from the color code (red = right, white or black = left) and the equipment labeling, not the connector.',
+          'The color code (red = right, white or black = left) and the equipment labeling, which set the channel; the connector does not. Center carries signal, shell carries the return — universal consumer-audio practice.',
       },
       {
         id: 'spdif_coax',
@@ -673,11 +673,11 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: 'Coaxial S/PDIF digital connection (same RCA shell)',
         why: 'S/PDIF is specified as a 75-ohm digital interface; ordinary analog interconnects are not impedance-controlled.',
         consequence:
-          'Short analog cables often appear to work; longer or marginal runs drop out or fail to lock. A reliability failure, not damage — use a true 75-ohm cable for digital.',
+          'Short analog cables often appear to work; longer or marginal runs drop out or fail to lock (the receiver can’t sync). A reliability failure, not damage — use a true 75-ohm cable for digital.',
       },
       {
         otherName: 'Turntable phono output (same connectors, very different level)',
-        why: 'A magnetic cartridge outputs millivolts with RIAA pre-emphasis; line level is far higher and flat.',
+        why: 'A magnetic cartridge outputs millivolts with RIAA pre-emphasis (bass cut, treble boost); line level is far higher and flat.',
         consequence:
           'Phono into a line input is faint and thin; line into a phono input is grossly loud and distorted. A level and equalization mismatch, not damage — route through the correct phono stage.',
       },
@@ -738,7 +738,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         ],
         confidence: 'standard',
         verifyAgainst:
-          'Pin roles follow the XLR standard; what the path expects (gain range, pad, phantom routing) is defined by the host equipment’s documentation.',
+          'The host equipment’s documentation, which defines what the path expects (gain range, pad, phantom routing). Pin roles follow the XLR standard.',
       },
       {
         id: 'trs_path',
@@ -751,7 +751,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         ],
         confidence: 'standard',
         verifyAgainst:
-          'Contact roles follow the balanced TRS convention; whether the path is line-only, instrument-switchable, or padded is defined by the host equipment’s documentation.',
+          'The host equipment’s documentation, which defines whether the path is line-only, instrument-switchable, or padded. Contact roles follow the balanced TRS convention.',
       },
     ],
     balanced: 'either',
@@ -801,13 +801,13 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       },
     ],
     inspectionPoints: [
-      'Bent or recessed contacts in either path (inspect with the equipment de-energized)',
+      'Bent or recessed contacts in either path (inspect with the equipment powered off)',
       'Cracked receptacle body or loose panel mounting',
       'An XLR latch that no longer holds, on latching models',
       'Debris in the 1/4-inch bore',
     ],
     basicTest:
-      'The receptacle is checked visually and by exercising it with a known-good cable while de-energized: a bent or recessed contact shows as a missing connection on the corresponding pin. The mating cables are tested as their own connector types.',
+      'Check the receptacle by eye, then plug in a known-good cable with the equipment powered off: a bent or recessed contact shows as a missing connection on that pin. Test the mating cables as their own connector types.',
     safety: {
       level: 'signal',
       cautions: [

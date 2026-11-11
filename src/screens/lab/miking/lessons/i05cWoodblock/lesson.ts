@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.',
     credit: { scenarios: ['wb.prac.order', 'wb.prac.gain', 'wb.prac.setup1', 'wb.prac.setup2', 'wb.prac.3', 'wb.mix.1', 'wb.mix.2', 'wb.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'A muffling support recognized, a secure unobstructed setup, shared mic or spot justified, and tone, mount noise, overload, spill and feedback told apart. More than one setup can pass.',
+    takeaway: 'Recognize a muffling support, set up a secure, unobstructed mic, justify a shared mic or a spot, and tell tone, mount noise, overload, spill and feedback apart. More than one setup can pass.',
   },
 };
 
@@ -81,7 +81,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where is a woodblock usually struck — and why there?',
     options: ['Just off the middle, toward the opening: the most resonant spot', 'At the far end, well away from the opening, for a drier, tighter sound', 'On the front face, right across the slot itself'],
     correct: 'Just off the middle, toward the opening: the most resonant spot',
-    explain: 'The common beating spot is just off the middle toward the opening — the wall over the slot rings there.',
+    explain: 'The usual striking spot is just off the middle toward the opening — the wall over the slot rings there.',
     why: {
       'At the far end, well away from the opening, for a drier, tighter sound': 'Possible as an effect, but the common spot is toward the opening, for resonance.',
       'On the front face, right across the slot itself': 'The block is struck on top; the slot is its opening.',
@@ -177,7 +177,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'wb.place.1',
     page: 'placement',
-    prompt: 'The starting point is 25–50 cm. When is the near end fair?',
+    prompt: 'The starting point is 25–50 cm. When is the closer end fair?',
     options: ['Only where the mallet’s path and isolation allow', 'Whenever the block sounds a little too quiet', 'Only for a held block, not for one resting on a table'],
     correct: 'Only where the mallet’s path and isolation allow',
     explain: 'One general tip for percussion is a gap of about 30 cm or more; a closer live spot may work only when clearance and isolation are confirmed.',
@@ -347,7 +347,7 @@ const symptoms: Symptom[] = [
     correct: 'The mount, the stand and nearby hardware',
     explain: 'Tighten or relocate the support, isolate vibration, and recheck.',
     why: {
-      'A gate set tight on the channel': 'The rattle rides on each hit.',
+      'A gate set tight on the channel': 'The gate opens on each hit, letting the rattle in.',
       'A low-cut filter on the channel, set as high as it goes': 'A filter hides it a little; fix the hardware.',
     },
   },
@@ -357,7 +357,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Which stage distorts — or is the block cracked?',
     options: ['The stage that overloads — or a cracked block', 'Pull the channel fader down a little', 'A softer mallet for the hard strokes'],
     correct: 'The stage that overloads — or a cracked block',
-    explain: 'Fix a source defect or restore the relevant headroom; a pad only where the overload occurs.',
+    explain: 'Fix a defect in the block, or restore headroom at the stage that overloads; a pad only where the overload occurs.',
     why: {
       'Pull the channel fader down a little': 'The fader comes after the overload.',
       'A softer mallet for the hard strokes': 'The mallet is the player’s; find the overload.',

@@ -46,7 +46,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
   ],
   changes: [
     'By what you hear: 1–4 tone; 5 defects; 6 stereo; 7, 10, 14 level, compression, clipping; 8, 9, 12, 13 time and phase (delay, reverb, polarity, comb filtering); 11 pitch.',
-    'Each drill has a level ladder, judged only on answers at your current level: 80 % over your last 20 moves you up; under 50 % drops you back one.',
+    'Each drill has a level ladder, judged only on answers at your current level: 80 % over your last 20 answers moves you up; under 50 % drops you back one.',
     'A module counts once you clear level 2 at 80 % over 20 answers; then it stays counted.',
   ],
   teaches: [
@@ -110,13 +110,13 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     control: [
       '▶ plays a clip and ■ stops it. At the top level each clip allows two plays while you answer, so make the first listen count.',
       'Tap an answer chip to answer. NEXT TRIAL › draws the next tone; after ten, NEXT ROUND › starts a new round.',
-      'If your speaker or headphones can’t play deep bass, check My playback can’t reproduce sub-bass. From the next trial, tones at or below 80 Hz are skipped.',
+      'If your speaker or headphones can’t play deep bass, check “My playback can’t reproduce sub-bass.” From the next trial, tones at or below 80 Hz are skipped.',
       '⤢ FULL SCREEN enlarges the SPECTRUM with the ▶ chips under it, so you can replay a tone while you watch its peak. FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
     ],
     changes: [
       'A pure sine is one frequency: one peak per clip. After you answer, a green band marks the tone (none on higher-or-lower).',
       'Tones under 250 Hz get up to +6 dB of makeup, as ears are less sensitive there: a rough match, not a calibrated level.',
-      'Levels tighten the grid: octaves, every other third, then every third (level 3 half-credits a neighbor). Higher-or-lower pairs close from two octaves to a sixth of one.',
+      'Levels tighten the grid: octaves, every other third-octave, then all (level 3: neighbor = half credit). Higher-or-lower pairs close from two octaves to a sixth of one.',
     ],
     teaches: [
       'Where frequencies sit by ear: 1 kHz as the anchor, weight and boom below it, edge and sizzle above.',
@@ -181,7 +181,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
       '▶ A and ▶ B play the clips (■ stops); at the top level each allows two plays.',
       'Tap the band you think changed; NEXT TRIAL › moves on.',
       'SOURCE: Synth, Piano or Guitar. A recording takes over from the next trial.',
-      'If your playback has no deep bass, check My playback can’t reproduce sub-bass to drop the Sub Bass band (20–60 Hz).',
+      'If your playback has no deep bass, check “My playback can’t reproduce sub-bass” to drop the Sub Bass band (20–60 Hz).',
       '⤢ FULL SCREEN enlarges the shaded bands. FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
     ],
     changes: [
@@ -192,7 +192,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     teaches: [
       'The band names engineers use to talk about a mix, and where each sits in hertz.',
       'How to describe a sound by region (“too much Low Mid”) before reaching for an exact frequency.',
-      'A region is wider than one frequency: in EQ Recognition a move centered on one frequency; here the whole band moves together.',
+      'A region is wider than one frequency: in EQ Recognition a move is centered on one frequency; here the whole band moves together.',
     ],
     tryThis: [
       'After a reveal, read a truth line like “+9 dB in Low Mid (250 Hz–500 Hz), centered near 354 Hz”, then replay B and listen for mud.',
@@ -272,7 +272,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
   stereo: {
     intro: {
       learning: 'How to hear where a sound sits and how wide it is, what a flipped side feels like, and what a goniometer and correlation show.',
-      start: 'Put on headphones and tap I’M ON HEADPHONES. Play the clip, tap what the image is doing, then compare the GONIOMETER shape and corr.',
+      start: 'Put on headphones and tap I’M ON HEADPHONES. Play the clip, tap what the image is doing, then compare the GONIOMETER shape and corr (correlation).',
     },
     seeing: [
       'First, HEADPHONES REQUIRED: phone speakers collapse the stereo image.',
@@ -421,7 +421,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
       'Light is 2:1 above −18 dBFS, Moderate 4:1 above −24, Heavy 8:1 above −30. Pumping, 10:1 above −35 with a 400 ms release, swells back up between hits.',
     ],
     teaches: [
-      'What compression does to a sound’s shape: snap versus sit-down, and pumping.',
+      'What compression does to a sound’s shape: snappy versus flatter hits, and pumping.',
       'Why a compressed track can seem better only because it is louder.',
       'Reading “2:1 above −18 dBFS”: once the level passes −18 dBFS (18 dB under full scale), 2 dB more in gives 1 dB more out. Release is how fast it lets go.',
       'Light compression is meant to be hard to hear. The Compression lab shows the controls behind each setting.',
@@ -483,7 +483,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     changes: [
       'Level 1: identical copies. Flipped, they cancel completely, so silence is the expected result, not a fault; that clip’s level isn’t matched.',
       'Level 2: copies 0.2 ms apart; level 3: 0.5 ms apart, one 3 dB quieter. Flipped, the lows cancel: thin, not silent.',
-      'Partial cancellation is in polarity but 1.2 ms late: notches from about 400 Hz up, lows intact.',
+      'Partial cancellation keeps normal polarity but is 1.2 ms late: notches from about 400 Hz up, lows intact.',
     ],
     teaches: [
       'Polarity (a flip) versus phase (a time offset), and what each does to a sum.',

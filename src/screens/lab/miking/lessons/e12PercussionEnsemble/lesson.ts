@@ -242,7 +242,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'pe.two.0',
     page: 'twoMic',
-    prompt: 'A strike reaches the conga mic 1 m nearer than the pair. What is the gap?',
+    prompt: 'A strike reaches the conga mic 1 m nearer than the pair. What is the time gap?',
     options: ['About 2.9 ms', 'About 29 ms', 'About 0.29 ms'],
     correct: 'About 2.9 ms',
     explain: 'At 343 m/s, 1 m of path difference is about 2.9 ms (1 ÷ 343 s) — an illustrative estimate, not a delay setting.',
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Close directional mics on the stations that need it, wedges in their rejection', ok: true, power: 'phantom', feedback: 'Gain before feedback where it is needed; the monitors where the mics hear least.' },
       { id: 'b', label: 'Two area mics around the moving player’s stations, plus the congas', ok: true, power: 'phantom', feedback: 'Fair: the movement covered with few channels, checked for overlap.' },
-      { id: 'c', label: 'A distant spaced pair turned up for the PA', ok: false, power: 'phantom', feedback: 'It raises the stage spill and the PA with the percussion.' },
+      { id: 'c', label: 'A distant spaced pair turned up for the PA', ok: false, power: 'phantom', feedback: 'It raises the stage spill and the PA’s sound with the percussion.' },
       { id: 'd', label: 'A fixed mic where the shaker started, nothing else', ok: false, power: 'none', feedback: 'A fixed capsule cannot follow an instrument moved out of its pickup.' },
       { id: 'e', label: 'Push the wedges until they ring, then back off', ok: false, power: 'none', feedback: 'Not until they ring: set the level the players need, with a margin.' },
     ],
@@ -444,7 +444,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'A shaker swings out of a fixed mic’s pickup. What helps?',
     options: ['A station mic for its whole movement', 'A brighter mic on the same spot', 'Asking the player for a smaller movement'],
     correct: 'A station mic for its whole movement',
-    explain: 'Cover the actual movement envelope: a station mic and a repeatable working position.',
+    explain: 'Cover the whole space the movement uses: a station mic and a repeatable working position.',
     why: { 'A brighter mic on the same spot': 'Tone does not follow the movement.', 'Asking the player for a smaller movement': 'The movement is part of the performance.' },
   },
   {
@@ -572,7 +572,7 @@ export const E12_LESSON: EnsembleLesson = {
     ],
     safety: 'Suitably rated stands, secured, with overhead hardware out of reach; cables clear of paths, pedals and instrument changes. Never block a resonator or touch a vibrating bar. Keep ears away from close strikes and use hearing protection when the exposure warrants it. Avoid uncontrolled feedback.',
     workedWords: {
-      begin: 'After our research, this is where we suggest you begin with a compact percussion group: one main pair in front and a little above — a suggested trial to start from and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a compact percussion group: one main pair in front and a little above — a suggested place to start and compare, not a rule.',
       clearance: 'The stand in front of the group, clear of the players’ paths and the audience’s way; its cable dressed flat and out of the walkways.',
     },
     learnZones: [

@@ -120,7 +120,7 @@ const WS_SPEAKERPOWER: Workspace = {
       // REQUIRED POWER to a quarter — an amp sized from it clips on every peak.
       nonNegative: true,
       placeholder: '6',
-      help: 'Extra dB kept in reserve for peaks — subtracted from prediction, added to demand.',
+      help: 'Extra dB kept in reserve for peaks — taken off the predicted SPL, added to the power you need.',
     },
     {
       key: 'nspk',
@@ -129,7 +129,7 @@ const WS_SPEAKERPOWER: Workspace = {
       integer: true,
       nonNegative: true,
       placeholder: '1',
-      help: 'Identical boxes covering the same listener. The bonus is an average power sum, as if the boxes were uncorrelated. Boxes playing the same signal can add more where they couple and comb in other places.',
+      help: 'Identical boxes covering the same listener. The extra level is an average power sum, as if the boxes were uncorrelated. Boxes playing the same signal can add more where they couple and comb in other places.',
       warn: { test: (x) => x < 1 || !Number.isInteger(x), msg: 'Enter a whole number of speakers, 1 or more.' },
     },
   ],
@@ -406,7 +406,7 @@ const WS_IMPEDANCE: Workspace = {
         // than the lowest branch" was false beside an 8 Ω total for one 8 Ω box.
         if (zs.length === 1) return [`Only one speaker, so the total is just its impedance: ${fmt(zs[0]!)} Ω. Add more values to combine them.`];
         return [
-          `Sum the reciprocals: ${zs.map((z) => `1/${fmt(z)}`).join(' + ')} = ${fmt(inv)} S.`,
+          `Sum the reciprocals: ${zs.map((z) => `1/${fmt(z)}`).join(' + ')} = ${fmt(inv)} S (siemens).`,
           `Ztot = 1 ÷ ${fmt(inv)} = ${fmt(1 / inv)} Ω — always lower than the lowest branch.`,
           `All branches share the amp’s voltage, so each speaker’s power share is Ztot/Zi — the lowest impedance takes the biggest slice.`,
         ];
@@ -532,7 +532,7 @@ const WS_CABLE: Workspace = {
     'and a maximum run — before you buy the drum of wire.',
   whyItMatters:
     'The loss is invisible until you do the math: a long thin run can quietly burn 10% of the ' +
-    'amplifier’s power warming copper, shave nearly a dB off the top, and cap the system ' +
+    'amplifier’s power warming copper, shave nearly a dB off the level, and cap the system ' +
     'damping factor — the amp’s grip on the woofer — at a number the amplifier spec never ' +
     'promised you.',
   example:
@@ -909,11 +909,11 @@ const WS_CV70: Workspace = {
       key: 'morespeakers',
       name: 'How many more speakers fit (reverse)',
       inputs: ['taps', 'prated', 'tapw', 'hr'],
-      formula: 'more = floor((Prated/10^(headroom/10) − Σtaps) / tap)',
+      formula: 'more = (Prated/10^(headroom/10) − Σtaps) ÷ tap, rounded down',
       plainFormula:
         'The number of extra speakers is the whole-number part of: the usable budget (rated power divided by ten raised to the headroom over ten) minus the current tap total, all divided by the added tap wattage.',
       explain:
-        'Reserves the headroom first, then fills what is left of the amplifier with speakers at a chosen tap. It answers “how many more can I add to this zone?” — the floor of the remaining budget divided by each speaker’s tap.',
+        'Reserves the headroom first, then fills what is left of the amplifier with speakers at a chosen tap. It answers “how many more can I add to this zone?” — the remaining budget divided by each speaker’s tap, rounded down.',
       keySymbols: ['x²', '/', '−', 'Σ'],
       note: 'Reserves the headroom FIRST, then fills what is left with speakers at the given tap.',
       compute: (v) => {
@@ -958,7 +958,7 @@ const WS_CV70: Workspace = {
         return [
           `Usable budget = ${fmt(prated)} W ÷ 10^(${fmt(hr)}/10) = ${fmt(usable)} W after reserving headroom.`,
           `Room left = ${fmt(usable)} − ${fmt(load)} = ${fmt(usable - load)} W.`,
-          `At ${fmt(tapw)} W per speaker: floor(${fmt(usable - load)} ÷ ${fmt(tapw)}) = ${fmtInt(Math.max(0, Math.floor(snapWhole((usable - load) / tapw))))} more speakers.`,
+          `At ${fmt(tapw)} W per speaker: ${fmt(usable - load)} ÷ ${fmt(tapw)}, rounded down = ${fmtInt(Math.max(0, Math.floor(snapWhole((usable - load) / tapw))))} more speakers.`,
         ];
       },
     },

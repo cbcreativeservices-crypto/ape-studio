@@ -143,7 +143,7 @@ describe('2. each guide quotes its page’s real names', () => {
   const NAMES: Record<string, string[]> = {
     p1: ['THE MIXER’S MANTRA', 'THE FIVE DIMENSIONS', 'YOUR FIRST DECISION', 'Pan & width', 'Lead vocal', 'The groove', 'A featured instrument', 'The atmosphere', 'A MIX · THE CHORUS (BARS 3–4)', 'LEAD +3 · BGV IN', 'A MIX · THE VERSE (BARS 1–2)', 'ALL FIVE AT ONCE', '‹ PREV', 'NEXT ›', '⏮', 'When to bring in a pro ›'],
     p2: ['THE PREP CHECKLIST', 'SEPARATE THE JOBS', 'Name, order, color', 'Remove the junk', 'Clip gain first', 'Polarity, phase, timing', 'Leave headroom', 'Pick 1–2 references', 'Save the untouched version', 'Audio_07', 'Audio_02', 'REF 1', 'REF 2'],
-    p3: ['THE EIGHT STATIONS — STUDY THEM (ORDER HIDDEN)', 'NOW BUILD THE PATH', 'THE PARTS — YOUR ORDER SO FAR', 'THE CANONICAL PATH — YOURS NOW', 'THE PATH — SIGNAL ORDER', 'RESET', 'Not yet'],
+    p3: ['THE EIGHT STATIONS — STUDY THEM (ORDER HIDDEN)', 'NOW BUILD THE PATH', 'THE PARTS — YOUR ORDER SO FAR', 'THE STANDARD PATH — YOURS NOW', 'THE PATH — SIGNAL ORDER', 'RESET', 'Not yet'],
     p4: ['WHY HEADROOM', '2 AT ONCE', 'AT 0 dBFS', '4 AT ONCE', 'CLIPPED', 'MIX A', 'MIX B', 'PLAY IT', 'MEASURED', 'A OR B — BLIND', 'B, MATCHED', 'A SOUNDS BETTER', 'B SOUNDS BETTER', 'THEY’RE THE SAME', 'RENDERING THE MIX'],
     p5: ['STEP 1 — HEAR THE PROBLEM', 'THE WALL', 'MY MIX', 'STEP 2 — COMMIT TO AN ANCHOR', 'STEP 3 — BUILD AROUND IT', 'CHANNELS — SWIPE →', 'CHECK IT LIKE A MIXER', 'Ø', 'MUTE', 'RESET MIX', 'THE WALL · EVERY FADER AT 0', 'YOUR BALANCE', 'ANCHOR: ', 'KICK', 'SNARE', 'PERC', 'BASS', 'GTR', 'KEYS', 'LEAD', 'BGV'],
     p6: ['SIX WAYS TO SUBTRACT', 'DECIDE — ', 'THE CROWDED CHORUS', 'Arrangement subtraction', 'Processing subtraction', 'THE HONEST CORRECTION', 'AFTER: ', 'NOTHING CHANGES HERE'],
@@ -321,7 +321,7 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.ok(flags.every(Boolean), 'a page lost manualDone — NEXT would count it; update the END guide');
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     assert.match(KIT, /useMarkWhen\(all, \(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/);
-    assert.match(KIT, /export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done\. NEXT moves on without counting it\.';/);
+    assert.match(KIT, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
     assert.ok(ET.includes('counts once the goals at the foot of the page are done; NEXT moves on without counting it.'), 'says the whole row line');
     assert.match(ET, /every goal chip at its foot shows ✓\. On most pages one chip is Pass the check\. NEXT and FINISH move on without counting it/);

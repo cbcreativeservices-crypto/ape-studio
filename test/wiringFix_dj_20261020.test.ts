@@ -96,7 +96,7 @@ describe('DJ-09: this mixer’s connectors are not taught as universal', () => {
     // balanced line does ("the input rejects hum picked up equally on both
     // wires") instead of "balanced cables … cancel hum"; the "this lab’s
     // mixer" scoping this test pins is unchanged
-    assert.match(read(`${DJ}/pages/p04Build.tsx`), /on this lab’s mixer both on balanced lines/);
+    assert.match(read(`${DJ}/pages/p04Build.tsx`), /on this lab’s mixer both are balanced lines/);
     assert.match(read(`${DJ}/pages/p16Laptop.tsx`), /On this lab’s mixer, channel 1 hears/);
     assert.match(read(`${DJ}/pages/p20Pa.tsx`), /every venue numbers its own/);
     assert.match(read(`${DJ}/pages/p23Changeover.tsx`), /This lab’s mixer has two USB PORTS/);

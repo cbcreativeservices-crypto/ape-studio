@@ -71,7 +71,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a ride mic in the right order, choose and justify a plan for two briefs (from no ride mic to one underneath), and say what would justify a second mic.',
     credit: { scenarios: ['rd.prac.order', 'rd.prac.gain', 'rd.prac.setup1', 'rd.prac.setup2', 'rd.prac.3', 'rd.mix.1', 'rd.mix.2', 'rd.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe clearance, correct power and level checks, a mic chosen for its job and an accurate account of polarity versus delay pass. A brand or a habit does not decide it — and more than one plan can pass.',
+    takeaway: 'To pass, you need safe clearance, correct power and level checks, a mic chosen for its job and an accurate account of polarity versus delay. A brand or a habit does not decide it — and more than one plan can pass.',
   },
 };
 
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'MIXED · You flip the under mic’s polarity. What changes?',
     options: ['The sign of its signal; the delay stays the same', 'The delay between the two mics drops all the way to zero', 'The mic’s pattern turns around to face down'],
     correct: 'The sign of its signal; the delay stays the same',
-    explain: 'Polarity flips the sign; only distance changes when a sound arrives. Compare both states in mono.',
+    explain: 'Polarity flips the sign; only distance (or a delay setting) changes when a sound arrives. Compare both states in mono.',
     why: {
       'The delay between the two mics drops all the way to zero': 'Only distance (or a delay setting) changes the arrival time.',
       'The mic’s pattern turns around to face down': 'The pattern stays where the mic points. Only the sign flips.',
@@ -345,7 +345,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session in a good room. The overheads and the floor-tom mic carry the ride well. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No ride mic: the overheads and the floor-tom mic already carry it', ok: true, power: 'none', feedback: 'A fair plan — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power — fine on this input.' },
       { id: 'c', label: 'A small condenser a foot or two above, for all the cymbals', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A small condenser under the ride, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Keep it off the cymbal and its wing nut: they swing and are struck. Use a stand.' },
@@ -467,7 +467,7 @@ export const I01B_LESSON: CymbalLesson = {
   diagnostic,
   practice: {
     task: 'Choose a ride plan — none, a spot over the bow, a mic for all the cymbals, or one underneath — for a given kit and performance, place it safely, and explain what would justify a second mic. With a real kit and the drummer’s agreement, you can record what you tried below.',
-    fields: practiceSheet('ride', ['no ride mic', 'spot over the bow', 'a foot or two above', 'underneath'], 'Aim (bell, bow or edge), and where the floor tom sits off it'),
+    fields: practiceSheet('ride', ['no ride mic', 'spot over the bow', 'a foot or two above', 'underneath'], 'Aim (bell, bow or edge), and where the floor tom sits off the mic’s front'),
   },
   unknowns: [
     ...COMMON_UNKNOWNS,

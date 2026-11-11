@@ -337,7 +337,7 @@ function SetupTray({ ctx }: { ctx: RoomLabCtx }) {
       <Chips items={CONFIGS} value={design.monitoring.config} onPick={(id) => update((d) => applyConfig(d, id))} />
       <Caption>Stereo + sub adds a subwoofer you can drag anywhere; multichannel adds a center and two surrounds. The sub's position changes which room modes it drives — try it in a corner and in the middle and compare. Two subs in mirrored positions often even the bass out; or do the sub crawl: play a bass loop with the sub at the seat and crawl the floor for the evenest spot, then put the sub there.</Caption>
       <Caption>Set the sub's crossover, polarity and phase/delay by measuring at the seat — the wrong polarity makes a hole at the crossover frequency.</Caption>
-      <Caption>ITU-R BS.775: center 0°, L/R ±30°, surrounds ±100–120°, all equidistant from the ears or delay-aligned. The surrounds spawn on that circle; the readouts above flag an angle or a distance that drifts.</Caption>
+      <Caption>ITU-R BS.775: center 0°, L/R ±30°, surrounds ±100–120°, all equidistant from the ears or delay-aligned. The surrounds start on that circle; the readouts above flag an angle or a distance that drifts.</Caption>
       <Caption>After calibrating, leave the monitors' own gain alone and set level at the monitor controller; red clip lights on a monitor mean turn down, not treat the room.</Caption>
       <TrayHeading>LISTENING DISTANCE CLASS</TrayHeading>
       <Chips items={FIELDS} value={design.monitoring.field} onPick={(id) => update((d) => ({ ...d, monitoring: { ...d.monitoring, field: id } }))} />

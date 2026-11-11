@@ -210,7 +210,7 @@ describe('R3-DJ-02 — Screen 20 SYSTEM, PASSIVE + AMP', () => {
 describe('R3-DJ-03 — Screen 4 says what a balanced line does', () => {
   const p04 = read(DJ + 'pages/p04Build.tsx');
   it('the input rejects hum picked up equally on both wires', () => {
-    assert.match(p04, /balanced lines: the input rejects hum picked up equally on both wires, which matters on long runs\./);
+    assert.match(p04, /balanced lines, whose inputs reject hum picked up equally on both wires, which matters on long runs\./);
     assert.doesNotMatch(p04, /balanced cables, XLR and TRS, which cancel hum on long runs/);
   });
 });

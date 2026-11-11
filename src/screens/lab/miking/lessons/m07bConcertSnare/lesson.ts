@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See how the arrival-time difference between two mics places comb-filter notches — and what polarity does and does not change, top and bottom.',
     credit: { scenarios: ['cs.two.1', 'cs.two.2', 'cs.two.3', 'cs.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Polarity flips the sign; it does not remove a delay. Top and bottom mics face heads that move the same way, so try both polarity states — in mono, at matched levels — and keep the bottom mic only if it earns its channel.',
+    takeaway: 'Polarity flips the sign; it does not remove a delay. The heads move the same way but the mics face opposite ways, so try both polarity states — in mono, at matched levels — and keep the bottom mic only if it earns its channel.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -82,9 +82,9 @@ const scenarios: MikingScenario[] = [
     id: 'cs.snd.1',
     page: 'sound',
     prompt: 'With the snares on, where does the snare drum’s buzz come from?',
-    options: ['The bottom head throws the snares off, and they slap back', 'The batter head rattles against the top rim with each stroke', 'The shell vibrates hardest where the snares are fixed to it'],
-    correct: 'The bottom head throws the snares off, and they slap back',
-    explain: 'Each stroke squeezes the air inside, which pushes the thin bottom head out against the snares; they are thrown off and slap back. With the snares off, the buzz is gone and the drum rings like a small tom.',
+    options: ['The bottom head bounces the snares away, and they slap back', 'The batter head rattles against the top rim with each stroke', 'The shell vibrates hardest where the snares are fixed to it'],
+    correct: 'The bottom head bounces the snares away, and they slap back',
+    explain: 'Each stroke squeezes the air inside, which pushes the thin bottom head out against the snares; they bounce away and slap back. With the snares off, the buzz is gone and the drum rings like a small tom.',
     why: {
       'The batter head rattles against the top rim with each stroke': 'The batter head is held tight by the rim. The buzz is the snares against the bottom head.',
       'The shell vibrates hardest where the snares are fixed to it': 'The snares are fixed at the throw-off and the butt plate, but they buzz where they touch the bottom head.',
@@ -516,7 +516,7 @@ export const M07B_LESSON: Lesson = {
       { title: 'The batter head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here much larger than it really moves. Then it springs back and rings.' },
       {
         title: 'The air pushes the snare-side head',
-        text: 'The batter head squeezes the air inside, and the air pushes the thin bottom head outward — down, onto the snares. The snares are thrown off the head and slap back against it.',
+        text: 'The batter head squeezes the air inside, and the air pushes the thin bottom head outward — down, onto the snares. The snares bounce off the head and slap back against it.',
         byVariant: { off: 'The batter head squeezes the air inside, and the air pushes the thin bottom head outward — down. With the snares off, nothing rests against it: the drum rings more like a small tom.' },
       },
       {

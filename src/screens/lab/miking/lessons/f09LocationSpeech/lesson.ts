@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up location speech in the right order, choose and justify a setup for a wide shot and for a live presenter, and say what would justify a second mic.',
     credit: { scenarios: ['loc.prac.order', 'loc.prac.gain', 'loc.prac.setup1', 'loc.prac.setup2', 'loc.prac.3', 'loc.mix.1', 'loc.mix.2', 'loc.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real scene and permission.' },
-    takeaway: 'Placement before processing, separate channels, the frame respected, consent asked, power lines and weather respected, and an honest account of polarity versus delay pass. A brand or a “hotter” signal does not — and more than one setup can pass.',
+    takeaway: 'What passes: placement before processing, separate channels, the frame respected, consent asked, power lines and weather respected, and an honest account of polarity versus delay. A brand or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 
@@ -201,7 +201,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A short hypercardioid, at the same distance',
     explain: 'Indoors, reflections reach a shotgun from all around; a short directional mic with a smoother off-axis sound often does as well or better. Compare the two at the same distance.',
     why: {
-      'A longer shotgun, so the room drops away more': 'A longer tube stays narrow down to somewhat lower frequencies, but not in the lows; it does not make reflections drop away indoors.',
+      'A longer shotgun, so the room drops away more': 'A longer tube keeps its narrow pickup a little lower in frequency, but not down into the lows; it does not make reflections drop away indoors.',
       'An omni, for a more focused voice': 'An omni hears the room from every side — the opposite of focus.',
     },
   },
@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     correct: 'One steady distance from the mouth in a wide shot',
     explain: 'A body mic stays the same distance from the mouth however wide the shot. The trade-offs: a chest-heavy tone, clothing noise, and it does not turn with the head.',
     why: {
-      'A fuller, more natural voice than a boom can give': 'A well-placed boom often sounds more natural; a body mic can sound of the chest and the clothes.',
+      'A fuller, more natural voice than a boom can give': 'A well-placed boom often sounds more natural; a body mic can sound chest-heavy and pick up clothing noise.',
       'Hearing the whole room around the talker evenly': 'Close to the voice, it hears much less of the room than a boom does.',
     },
   },
@@ -398,10 +398,10 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the boom as close as the frame allows? Is it aimed at the mouth through the whole line? A wider shot may need the body mic.',
     options: ['Bring it as close as the frame allows', 'Turn the boom channel up in the mix', 'Swap it for a longer shotgun from farther'],
     correct: 'Bring it as close as the frame allows',
-    explain: 'Distance decides the voice against the room. Close the gap the frame allows; if the shot is too wide for that, the body mic takes over those moments.',
+    explain: 'Distance decides the voice against the room. Bring the boom as close as the frame allows; if the shot is too wide for that, the body mic takes over those moments.',
     why: {
       'Turn the boom channel up in the mix': 'Gain raises the room as much as the voice.',
-      'Swap it for a longer shotgun from farther': 'A longer tube stays narrow down to somewhat lower frequencies, but not in the lows; it does not reach farther.',
+      'Swap it for a longer shotgun from farther': 'A longer tube keeps its narrow pickup a little lower in frequency, but not down into the lows; it does not reach farther.',
     },
   },
   {
@@ -613,7 +613,7 @@ export const F09_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Speech recorded where it happens — on a set, on a street, on a stage — and the practical sounds of the scene: keys on a counter, a door, a switch. The voice leaves through the mouth; the camera, the movement and the place decide where a mic can be.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Film and documentary sets, interviews, presentations and live events: a boom held just outside the frame, a body mic on the chest, a mic planted in the set, a handheld in view, a mic on the camera.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE STORY', text: 'It carries the words — intelligible, at the right perspective for the picture — and the actions that make a scene feel real. Words and actions take turns at being the most important sound.', src: 'LESSON' },
-    { title: 'NO UNIVERSAL WINNER', text: 'A boom can keep a natural voice when it can get close; a body mic keeps one distance in wide shots but can sound of the chest and the clothes. Many crews record both, each on its own channel. Experimentation is encouraged.', src: 'LESSON' },
+    { title: 'NO UNIVERSAL WINNER', text: 'A boom can keep a natural voice when it can get close; a body mic keeps one distance in wide shots but can sound chest-heavy and pick up clothing noise. Many crews record both, each on its own channel. Experimentation is encouraged.', src: 'LESSON' },
   ],
   sound: {
     stages: [
@@ -661,6 +661,6 @@ export const F09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s capsule. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for higher voltages or if unsure, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are measured from the lips to the mic’s capsule, rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for higher voltages or if unsure, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
   copy: F09_COPY,
 };

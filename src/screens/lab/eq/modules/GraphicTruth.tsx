@@ -132,7 +132,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         badge:
           view === 'mag'
             ? 'Real overlapping 1-octave bells, their dB responses added — not the line through the caps.'
-            : 'Conventional minimum-phase EQ shifts phase around every region it touches — it never changes “only amplitude.”',
+            : 'A conventional (minimum-phase) EQ shifts phase around every region it touches — it never changes “only amplitude.”',
         bezel: [
           { k: 'VIEW', v: view === 'mag' ? 'MAG' : 'PHASE ±180°' },
           { k: 'FILTERS', v: showIndividual ? 'SHOWN' : 'HIDDEN' },
@@ -195,7 +195,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         <Text style={styles.caption}>
           EXAMPLE sets the sliders to a gentle-looking 125 Hz +3, 250 Hz +6, 500 Hz +3 dB — exactly
           the innocent move whose real response surprises people. CLEAR returns every slider to 0 dB.
-          FILTERS reveals every band’s own bell under the composite.
+          FILTERS reveals every band’s own bell under the combined curve.
         </Text>
         <Text style={styles.caption}>
           Switch the VIEW between MAGNITUDE and PHASE to compare the two results: MAGNITUDE shows how

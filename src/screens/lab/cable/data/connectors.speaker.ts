@@ -648,7 +648,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     hotPlug: {
       policy: 'de_energize_first',
       rationale:
-        'Power the amplifier down first. Inserting or removing the plug drags the tip across the sleeve contact, which can momentarily short-circuit the output — and some amplifier designs (notably tube output stages) also tolerate losing their load badly while driven, an equipment-dependent risk stated in the amplifier documentation.',
+        'Power the amplifier down first. Inserting or removing the plug drags the tip across the sleeve contact, which can momentarily short-circuit the output — and some amplifier designs (notably tube output stages) can also be damaged if the speaker is unplugged while the amp is playing, an equipment-dependent risk stated in the amplifier documentation.',
     },
     advantages: [
       'The jack is ubiquitous and the lead is simple to build',

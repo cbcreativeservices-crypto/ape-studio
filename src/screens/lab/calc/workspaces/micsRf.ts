@@ -184,7 +184,7 @@ const MICSENS: Workspace = {
   ],
   warnings:
     'Definitions: dBV/Pa = 20·log₁₀(mV/Pa ÷ 1000). Pressure from SPL: p = 20µPa·10^(SPL/20); output = ' +
-    'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
+    'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, unloaded figures: before a preamp input loads the mic.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
     { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', meaning: 'number:mic-sens', nonNegative: true, ...MIC_SENS_FIELD('SENSITIVITY (mV/Pa)'), placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },

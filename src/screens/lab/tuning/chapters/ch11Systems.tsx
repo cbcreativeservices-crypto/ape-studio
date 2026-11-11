@@ -203,7 +203,7 @@ export function Ch11Systems({ ctx }: ChapterProps) {
       <Body>A / B opens the comparison: pick the example ({exampleName}) and system B ({other.shortName}), play A, B or A → B — and hear the same E over a fixed C in three systems. Same written scale degree, different assigned frequency.</Body>
 
       <Eyebrow>DEVIATION FROM EQUAL TEMPERAMENT · {sys.shortName.toUpperCase()}</Eyebrow>
-      <Body>The chart on the glass: each bar is that note's signed distance from equal temperament in cents. Ride SYSTEM and watch the bars move.</Body>
+      <Body>The chart above: each bar is that note's signed distance from equal temperament in cents. Ride SYSTEM and watch the bars move.</Body>
       {ctx.mathView ? (
         <Card tone="math">
           <Eyebrow>ALL EIGHT · COMPUTED FROM ratio × {root.toFixed(6)} Hz</Eyebrow>

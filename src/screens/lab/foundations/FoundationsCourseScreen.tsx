@@ -1058,7 +1058,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
           <Text style={styles.caption}>
             The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
             in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
-            past the mic); the scope&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
+            past the mic); the mic graph&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
             watch the two readouts move together: distance = speed × time.
           </Text>
         </>
@@ -1287,8 +1287,8 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         highs, and its color is read off the loudness scale at the left. Sweep FREQ with LEVEL
         untouched: SEND never moves, but the dot slides down the curve, its color cools, and the
         wave in the inset shrinks with it — that wave IS the calculated heard level. Move LEVEL:
-        the whole curve re-colors. (Headphones make it honest — phone speakers roll off lows
-        themselves.)
+        the whole curve re-colors. (Use headphones for a fair test — phone speakers already lose
+        low notes themselves.)
       </Text>
       {wellBottom}
     </RackUnit>
@@ -1390,7 +1390,8 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       <AnalyticBadge text="DRAWN FROM THE MATH — THE BOTTOM LINE IS THE EXACT SUM OF THE TWO TRAVELING WAVES (SLOWED)" />
       {tone.stereoReady ? (
         <Text style={styles.caption}>
-          Two REAL tones, hard-panned left/right (the HEAR key). DRIFTING = 220 vs 222 Hz: through
+          Two REAL tones (the HEAR key), hard-panned: one fully left, one fully right. DRIFTING =
+          220 vs 222 Hz: through
           the phone speaker they sum in the air, and their alignment cycles twice a second — loud
           (aligned) … quiet (opposed) … loud. That slow breathing IS phase, audible. On headphones
           each ear gets its own tone, so the beat becomes a softer in-head effect.
@@ -1585,7 +1586,7 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       stage={{
         fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-25)
         size: 'L',
-        badge: 'ANALYTIC DECOMPOSITION OF THE MODEL — SLOWED',
+        badge: 'ANALYTIC — THE WAVE TAKEN APART · SLOWED',
         onGuide: () => help('fourier_morph'),
         bezel: [
           // TONE cell dropped (M9 precedent): the PLAY key's LED already
@@ -1599,7 +1600,7 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="ANALYTIC DECOMPOSITION OF THE MODEL — WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
+      <AnalyticBadge text="ANALYTIC — THE WAVE TAKEN APART: WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
       <Text style={styles.caption}>
         Fourier’s claim: ANY repeating pressure pattern — however jagged — is a stack of plain
         sines. Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer in this
@@ -1626,8 +1627,8 @@ const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] 
   { q: 'WHAT’S THE RECIPE RIGHT NOW?', name: 'RTA', blurb: 'Live energy per frequency band — Module 12’s Fourier idea, measured.', route: 'Rta' },
   { q: 'HOW DOES IT CHANGE OVER TIME?', name: 'Spectrogram', blurb: 'Frequency vs time — sweeps, decays, harmonics appearing and fading.', route: 'SpectrogramLive' },
   { q: 'WHAT IS THE PRESSURE DOING?', name: 'Waveform', blurb: 'Module 2’s graph captured live: real pressure over real time.', route: 'WaveformLive' },
-  { q: 'HOW LONG DOES THE ROOM RING?', name: 'RT60', blurb: 'Clap — the decay is recorded and fitted per octave band.', route: 'Rt60Live' },
-  { q: 'WHAT DO I TEST WITH?', name: 'Signal Generator', blurb: 'Known tones, noise, sweeps and clicks — because a known source exposes the system.', route: 'SignalGen' },
+  { q: 'HOW LONG DOES THE ROOM RING?', name: 'RT60', blurb: 'Clap — the decay is recorded and timed per octave band.', route: 'Rt60Live' },
+  { q: 'WHAT DO I TEST WITH?', name: 'Signal Generator', blurb: 'Known tones, noise, sweeps and clicks — because a known source shows what the system does to sound.', route: 'SignalGen' },
 ];
 
 function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps) {
@@ -1877,7 +1878,7 @@ const STEPS: Step[] = [
     paras: [
       'A wave is not just a rate — it takes up SPACE. While one compression travels away at 343 m/s, the next is already being made behind it. The distance between them is the wavelength, λ.',
       'λ = speed ÷ frequency. A 55 Hz bass note is over six meters long — it doesn’t fit in your bedroom. A 5 kHz sparkle is seven centimeters.',
-      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big drivers. Ride the lane and watch real meters of air.',
+      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big speaker drivers. Ride the lane and watch real meters of air.',
     ],
     Rack: M6Rack,
     check: {
@@ -1899,8 +1900,8 @@ const STEPS: Step[] = [
     title: 'ONE WAVE, TWO QUESTIONS',
     paras: [
       'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
-      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW is simply where you will meet it most.',
-      'Why does it slide LEFT? Because this view is RECORDING, live — exactly what your DAW does when the view follows the playhead: new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
+      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW (recording software) is simply where you will meet it most.',
+      'Why does it slide LEFT? Because this view is RECORDING, live — exactly what a DAW does when the view follows the playhead (the moving play position): new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
       'Freeze, then drag the PROBE. The crests pair up: the crest the mic drew one period ago (4.5 ms at 220 Hz) has traveled exactly one wavelength (1.56 m) past it down the room — distance = speed × time ties the two rulers together at every point. One wave, two rulers, one equation.',
     ],
     Rack: M7Rack,
@@ -1920,7 +1921,7 @@ const STEPS: Step[] = [
     paras: [
       'Frequency is the measured number. PITCH is what you hear — and your hearing is a RATIO instrument, not a difference instrument.',
       '110→220 adds 110 Hz. 440→880 adds 440 Hz. Different amounts — yet both sound like exactly the same step: one octave, a doubling.',
-      'The spiral is that fact drawn honestly: one full turn = one octave = ×2 in frequency. Equal musical steps are equal ANGLES while the Hz number accelerates. This is why every analyzer offers a log axis.',
+      'The spiral is that fact drawn honestly: one full turn = one octave = ×2 in frequency. Equal musical steps are equal ANGLES while the Hz number accelerates. This is why every analyzer offers a log axis (equal space for each doubling).',
     ],
     Rack: M8Rack,
     check: {
@@ -2029,7 +2030,7 @@ const STEPS: Step[] = [
       ],
       correctIdx: 1,
       wrongHint:
-        'Set the RECIPE to a single voice and ride UNMIX again: how many parts does one plain sine come apart into?',
+        'Set the RECIPE to PURE and ride UNMIX again: how many parts does one plain sine come apart into?',
       reveal:
         'UNMIX does not add or remove anything — it shows what was always there. 220 · 440 · 660 is a whole-number family: the signature of ONE 220 Hz tone with its harmonics (Module 11). That list of ingredients is called the SPECTRUM, and reading one is reading a recipe.',
     },
@@ -2054,7 +2055,7 @@ const STEPS: Step[] = [
       correctIdx: 2,
       wrongHint: 'Could a meter inside the app know how loud your ROOM is without a calibrated mic? What can it actually measure?',
       reveal:
-        'dBFS is DIGITAL level: distance below the converter’s full scale. It is not SPL and not loudness (Module 9 showed loudness needs the ear’s curve). This app labels its readings honestly — dBFS · uncalibrated where that is the truth — because a number you misread is worse than no number.',
+        'dBFS is DIGITAL level: distance below the converter’s full scale (the most the digital system can hold). It is not SPL and not loudness (Module 9 showed loudness needs the ear’s curve). This app labels its readings honestly — dBFS · uncalibrated where that is the truth — because a number you misread is worse than no number.',
     },
   },
   {
@@ -2073,7 +2074,7 @@ const STEPS: Step[] = [
     // exact moment the course hands over the keys.
     checks: [
       {
-        question: 'Course check 1 of 3 — to make a sound LOUDER you change one thing; to make it HIGHER you change another. Which pair is right?',
+        question: 'Course check 1 — to make a sound LOUDER you change one thing; to make it HIGHER you change another. Which pair is right?',
         options: [
           'Louder = vibrate farther · Higher = vibrate more often',
           'Louder = vibrate more often · Higher = vibrate farther',
@@ -2085,7 +2086,7 @@ const STEPS: Step[] = [
         wrongHint: 'Modules 4 and 5 were a deliberate contrast pair: AMP changed one thing, FREQ the other. Which was which?',
       },
       {
-        question: 'Course check 2 of 3 — a studio waveform slides by on screen. Reading it left to right, you are moving through…',
+        question: 'Course check 2 — a studio waveform slides by on screen. Reading it left to right, you are moving through…',
         options: ['Space — meters across the room', 'Time — earlier to later', 'Frequency — low notes to high'],
         correctIdx: 1,
         reveal:
@@ -2093,7 +2094,7 @@ const STEPS: Step[] = [
         wrongHint: 'Module 7 froze the display and dragged the probe across two rulers. Which ruler did the mic’s own graph use?',
       },
       {
-        question: 'Course check 3 of 3 — you stack harmonics onto a 220 Hz fundamental. What changes, and what stays put?',
+        question: 'Course check 3 — you stack harmonics onto a 220 Hz fundamental. What changes, and what stays put?',
         options: [
           'The pitch rises; the character stays the same',
           'The character (timbre) changes; the pitch stays at 220 Hz',
@@ -2275,7 +2276,7 @@ export function FoundationsCourseScreen() {
       <GuestStartReminder activity={`lab:${FOUNDATIONS_LAB_KEY}`} />
       {!engineReady ? <EngineGate state={gate} /> : null}
       {tone.error ? <Text style={[styles.body, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
-      <Text style={styles.tag}>{s.tag} · {step + 1} OF {STEPS.length}</Text>
+      <Text style={styles.tag}>{s.tag}</Text>
       <View style={styles.titleRow}>
         <Text style={[styles.stepTitle, { flex: 1 }]}>{s.title}</Text>
         {/* Reveal toggle for the intro TEXT only — collapse it and the dock

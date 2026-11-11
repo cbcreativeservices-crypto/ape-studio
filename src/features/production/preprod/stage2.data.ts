@@ -937,7 +937,7 @@ export const STAGE2_DELIVER: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "The channel format does not match the destination",
-      detail: "A stereo file cannot drive an immersive installation, and an immersive mix cannot be assumed by a destination that only takes stereo. Either way the mismatch is found by the person installing the file, after the mix room has been struck.",
+      detail: "A stereo file cannot drive an immersive installation, and a destination that only takes stereo cannot accept an immersive mix. Either way the mismatch is found by the person installing the file, after the mix room has been packed up.",
       fixHint: "Match the channel configuration of each deliverable to what its destination actually takes, and change the project format in stage 1 if that is where the error is.",
       needsLogic: true,
       logicIntent: "Fire when the stage 1 format is surround, immersive or binaural but every spec_table row is mono or stereo; when any spec_table row is surround, 7.1.4 or object-based but the stage 1 format is mono or stereo; or when a destination of type installation exists and no deliverable of type surround_mix or immersive_mix exists while the stage 1 format is not mono or stereo. Do not assume which destinations accept which formats; compare only what the user has recorded."

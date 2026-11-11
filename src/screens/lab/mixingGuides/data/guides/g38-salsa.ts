@@ -53,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Congas:",
-      "text": "two or three drums (quinto, conga, tumba) with open tones, slaps and the ponche (on beat 4) accent.",
+      "text": "two or three drums (quinto, highest; conga, middle; tumba, lowest) with open tones, slaps and the ponche (on beat 4) accent.",
       "bullet": true
     },
     {
@@ -73,7 +73,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Others:",
-      "text": "tres (Cuban three-course guitar) or cuatro (Puerto Rican ten-string guitar) in some bands, synth pads in romántica (smooth romantic salsa); playback is rare and most bands play without a click.",
+      "text": "tres (Cuban guitar with three pairs of strings) or cuatro (Puerto Rican ten-string guitar) in some bands, synth pads in romántica (smooth romantic salsa); playback is rare and most bands play without a click.",
       "bullet": true
     }
   ],
@@ -284,7 +284,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The sonero (lead improvising singer) is the star. Sit the lead about 2–4 dB above the band, forward but warm, with every Spanish syllable clear; salsa audiences sing along and follow the improvised lines. The coro (vocal chorus) is close behind, often only 2–4 dB below the lead in the montuno (the call-and-response section), panned wide, compressed a bit harder and voiced brighter and thinner than the lead. Pitch correction should be light and inaudible on the lead; the coro can be tightened more in romántica (smooth romantic salsa) productions, where polish is part of the style. Live, use rugged dynamics or handheld condensers; coro singers often play güiro (scraped gourd) and maracas into their mics, so high-pass coro mics and check that the shakers don’t overwhelm the voices."
+      "text": "The sonero (lead improvising singer) is the star. Sit the lead about 2–4 dB above the band, forward but warm, with every Spanish syllable clear; salsa audiences sing along and follow the improvised lines. The coro (vocal chorus) is close behind, often only 2–4 dB below the lead in the montuno (the call-and-response section), panned wide, compressed a bit harder and voiced brighter and thinner than the lead. Pitch correction should be light and inaudible on the lead; the coro can be tightened more in romántica (smooth romantic salsa) productions, where polish is part of the style. Live, use rugged dynamic mics or handheld condensers; coro singers often play güiro (scraped gourd) and maracas into their mics, so high-pass coro mics and check that the shakers don’t overwhelm the voices."
     }
   ],
   "loudness": [

@@ -372,7 +372,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         size: 'L', // the node-drag graph is the star
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: bypass
-          ? 'BYPASSED — output flat · dim = the would-be composite'
+          ? 'BYPASSED — output flat · dim = the combined curve if EQ were on'
           : 'BANDS (thin, colored) + COMBINED (bold)',
         bezel: [
           { k: 'BAND', v: selMeta.label, tint: selMeta.color },
@@ -453,7 +453,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
 
         <Text style={styles.caption}>
           Overlap two boosts and the composite rises HIGHER than either band alone; stack a cut into
-          a boost’s skirt and they partly cancel. The combined curve — not any single band — is what
+          a boost’s skirt (its sloped side) and they partly cancel. The combined curve — not any single band — is what
           the signal experiences.
         </Text>
 

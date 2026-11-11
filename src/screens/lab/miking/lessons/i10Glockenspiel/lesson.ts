@@ -33,7 +33,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a mallet stroke becomes a bright, ringing note — the bar’s shapes, the short tube under it, the damper — and where the sound leaves.',
     credit: { scenarios: ['gl.snd.1', 'gl.snd.2', 'gl.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'A steel bar rings long about its still points; its short tube (or the case’s box) supports it; the damper — a pedal or the player’s hand — decides when it stops.',
+    takeaway: 'A steel bar rings long about its still points; its short tube (or the case’s box) strengthens its ring; the damper — a pedal or the player’s hand — decides when it stops.',
   },
   setting: {
     title: 'Where it sits',
@@ -61,7 +61,7 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'Compare a near-coincident pair with a spaced pair over the glockenspiel — no agreed two-mic dimension exists for it — by what an end bar does to each.',
+    goal: 'Compare a near-coincident pair with a spaced pair over the glockenspiel — there is no standard spacing for two mics on it — by what an end bar does to each.',
     credit: { scenarios: ['gl.two.1', 'gl.two.2', 'gl.two.3', 'gl.two.4'], interactive: 'pairCompared', note: 'Look at both pairs with an end bar as the source, then answer the four checks.' },
     takeaway: 'One mic often suffices. For a wide solo, a near-coincident pair gives a stable picture and a reliable mono sum; a spaced pair more separate low and high control, with color in mono. Mount both outside the mallet arc.',
   },
@@ -251,7 +251,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Only if the mains miss a quiet passage or its balance',
     explain: 'The glockenspiel may already project brightly; a spot may be needed only for a quiet passage or independent balance — brought in at a musical level, checked in mono.',
     why: {
-      'Yes — each instrument needs its own spot in a recording': 'A spot adds spill and timing; it has to earn its place.',
+      'Yes — each instrument needs its own spot in a recording': 'A spot adds spill and timing differences; it has to earn its place.',
       'No — a glockenspiel should not have a spot of its own': 'A quiet passage can justify one.',
     },
   },
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a mallet strikes the middle of a steel bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: a mic 10–15 cm above the bars, as one close example has it. What will the drawing show?', options: ['It sits inside the mallets’ travel', 'It is the safest position', 'It is too far to hear the bars'], after: 'Look for the red band, then rest the mic in two blue zones.' },
+  placement: { prompt: 'Predict: one close example puts a mic 10–15 cm above the bars. What will the drawing show?', options: ['It sits inside the mallets’ travel', 'It is the safest position', 'It is too far to hear the bars'], after: 'Look for the red band, then rest the mic in two blue zones.' },
   context: { prompt: 'The side fill sits off to the side of a mic above the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Two mics close together, angled apart, over the middle: the lowest bar sounds. How big is their arrival-time difference?', options: ['Small', 'Large', 'Exactly zero'], after: 'Now step BAR to an end of the keyboard with each PAIR, and watch DELAY and LEVEL.' },
 };
@@ -477,7 +477,7 @@ const words: MalletWords = {
     shapes: {
       intro: 'This is the lowest shape — the note. The middle and the ends move opposite ways about two still points, where the strings pass.',
       tuned: 'A plain bar’s upper shapes ring at uneven ratios (about 2.76 and 5.40 times the lowest) — part of a bell’s shimmer. Makers shape and tune real bars, so their ratios differ a little; the still points and the strike-point idea stay.',
-      notes: ['A shape is set moving only as much as the bar moves at the strike point in that shape.'],
+      notes: ['Each shape rings only as strongly as the bar moves in that shape where the mallet hits.'],
     },
     tube: {
       intro: 'Open under the bar, closed at the bottom: the tube rings at the note whose quarter wavelength fits it — about {len} here. At the top of the range, barely longer than a fingertip.',
@@ -490,7 +490,7 @@ const words: MalletWords = {
     looking: 'Two mics over the glockenspiel · paths from one bar',
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below.',
     learn: [
-      'One mic often suffices for a short or focused phrase. A wider range or a solo may benefit from two viewpoints. There is no agreed two-mic dimension for the glockenspiel: do not transfer the xylophone, marimba and vibraphone geometry automatically.',
+      'One mic often suffices for a short or focused phrase. A wider range or a solo may benefit from two viewpoints. There is no standard two-mic setup for the glockenspiel: do not carry over the xylophone, marimba and vibraphone setups automatically.',
       'A near-coincident pair over the useful span when a stable picture and a reliable mono sum matter; a spaced pair for more separate low and high coverage — which can color shared notes in mono. Mount both outside the mallet arc.',
       'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change color in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritize a stable mono balance.',
     ],
@@ -541,7 +541,7 @@ const copy: Partial<LessonCopy> = {
   placement: {
     workedZone: { pedal: 'gl.high', case: 'gl.high' },
     workedLine: 'This starting point is also read against {line}.',
-    workedAim: 'Aim down across the played bars, toward the middle of the keyboard — the starting point counts while the mic looks within {tol}° of it.',
+    workedAim: 'Aim down across the played bars, toward the middle of the keyboard — it counts as the starting point while the mic aims within {tol}° of it.',
     workedClear: 'Where the full mallet arc and the damping hand clear it, through the whole passage and the strongest stroke. The red band — a common close position — sits inside the mallets’ travel: it is shown, never a place to rest.',
     blocked: { pedal: ' Move it higher, or out toward the audience.', case: ' Move it higher — above the open lid — or out of the hands’ way.' },
     reveal: 'Yes — the close position sits inside the mallets’ travel on a real passage. The blue zones start higher, a little toward the audience.',
@@ -629,7 +629,7 @@ export const I10_LESSON: MalletLesson = {
   id: 'I10',
   labId: 'percussion',
   title: 'Glockenspiel',
-  subtitle: 'Steel bars that ring long: a safe view above, the close example that conflicts, one mic or two',
+  subtitle: 'Steel bars that ring long: a safe view above, a close example in the mallets’ way, one mic or two',
   noun: { one: 'glockenspiel', many: 'glockenspiels' },
   model: GLOCK_MODEL,
   micTypeIds: ['mlSdc', 'mlDynCard'],
@@ -689,7 +689,7 @@ export const I10_LESSON: MalletLesson = {
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every glockenspiel, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a concert glockenspiel (or a case model) with bar and tube lengths worked out (the tubes as quarter wavelengths at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every glockenspiel, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a concert glockenspiel (or a case model) with bar and tube lengths worked out (the tubes as quarter wavelengths at A = 442 Hz), a plain bar’s shapes, mic patterns and two-mic comb filtering as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy,
   mallet: words,
 };

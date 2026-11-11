@@ -143,7 +143,7 @@ export function ProductionPacketScreen() {
         ? 'Printing to PDF isn’t available on this device. This screen is the whole packet.'
         : res.reason === 'no_share_target'
           ? 'No app on this device can receive the file. This screen is the whole packet.'
-          : 'The packet could not be produced. Nothing in your project was changed.',
+          : 'The packet could not be produced. Nothing in your project was changed — try again.',
     );
   });
 

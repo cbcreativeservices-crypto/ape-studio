@@ -153,7 +153,7 @@ describe('1. every Phase screen has a complete guide', () => {
     assert.match(FLOW, /const kc = \(PI2 \* 3\.0\) \/ w;/);
     // …the same tone as the scope hero and its badge
     assert.match(PH, /<LissajousGraph widthPct=\{100\} invertR=\{v\[PHASE_INV\] > 0\.5\} delayRms=\{v\[PHASE_DLY\]\} toneHz=\{440\} \/>/);
-    assert.match(PH, /heroBadge: 'LISSAJOUS \+ CORRELATION — ANALYTIC \(440 Hz model\)'/);
+    assert.match(PH, /heroBadge: 'LISSAJOUS \+ CORRELATION — CALCULATED \(440 Hz model\)'/);
     // The guide still reads CORRELATION and the sound — never a degree figure.
     // (180° is the polarity flip — true at every frequency, not read off the flow.)
     // 2026-11-08: the LEARN teaches line says "more degrees" in words (no figure), so the
@@ -390,7 +390,7 @@ describe('5. the chip decision: a concept lab', () => {
   it('accuracy chip OFF — the flow is a teaching model and the scope is analytic', () => {
     assert.equal(PHASE_ACCURACY_CHIP, false);
     assert.match(FXSCREEN, /const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';/);
-    assert.match(PH, /heroBadge: 'LISSAJOUS \+ CORRELATION — ANALYTIC \(440 Hz model\)',/);
+    assert.match(PH, /heroBadge: 'LISSAJOUS \+ CORRELATION — CALCULATED \(440 Hz model\)',/);
     assert.doesNotMatch(PH, /pollGr/);
   });
 });

@@ -53,7 +53,7 @@ export function polarityKeepsDelay(w: Words): MikingScenario {
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference between the two mics?',
     options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times: the notches move; Δt does not.',
+    explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times: the notches move; the time difference does not.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still the same distances from the source.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',

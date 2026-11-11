@@ -81,7 +81,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     changes: [
       'AREA is the floor plan. VOLUME is that area times the ceiling height.',
       'Each dimension sets its own bass resonances (room modes). If one is a simple multiple of another, their modes stack on one note.',
-      'Not a rectangle, or not a flat ceiling? Later mode estimates use the bounding box or mean height: LESS reliable.',
+      'Not a rectangle or flat ceiling? Later mode estimates use a bounding box (smallest box around it) or mean height: LESS reliable.',
       'FINISH recolors the plan now; later it changes decay times and reflection levels.',
     ],
     teaches: [
@@ -121,7 +121,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
     teaches: [
       'In a stereo triangle, equal left and right distances keep the center image steady.',
-      'Nearfield listening is about 1–1.5 m (the screen accepts 0.8–1.8 m); midfield is about 2–4 m.',
+      'Nearfield listening is about 1–1.5 m; midfield is about 2–4 m.',
       'Where a speaker sits from the front wall sets where a bass dip falls: farther away, lower dip.',
       'Toe-in is the aim you met in Speaker Placement & Coverage. Get the geometry right first.',
     ],
@@ -151,7 +151,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
       'LAYOUT flips between kept positions: START (where they began; a move made on START goes into EDITED), OPTION A and OPTION B. SAVE keeps the positions in a slot, or saves the whole design.',
     ],
     changes: [
-      'An axial mode bounces between one pair of surfaces: f = n × c ÷ (2 × distance), c = speed of sound. Tangential and oblique modes use two or three pairs and are weaker.',
+      'An axial mode bounces between one pair of surfaces: f = n × c ÷ (2 × distance), n = 1, 2, 3…, c = speed of sound. Tangential and oblique modes use 2 or 3 pairs and are weaker.',
       'Move your seat across the map: AT EARS rises on red, falls on blue. That note sounds heavy or thin there.',
       'A reflection arrives about 1 ms late for every extra 34 cm it travels. Within 15 ms it blurs the image and colors the tone.',
     ],

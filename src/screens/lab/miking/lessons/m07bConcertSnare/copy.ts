@@ -40,10 +40,10 @@ export const CSN_COPY: LessonCopy = {
       { k: 'SNARE HEAD', at: ['AT REST', 'AT REST', 'PUSHED OUT', 'PUSHED OUT'], flex: 1.25 },
       { k: 'SNARES', at: ['—', '—', 'SLAPPED', 'BUZZING'], byVariant: { off: ['OFF', 'OFF', 'OFF', 'OFF'] }, flex: 1 },
     ],
-    reveal: 'The squeezed air pushes the snare-side head OUT, downward — both heads move the same way at that moment. With the snares on, the bottom head throws them off and they slap back: that is the buzz.',
+    reveal: 'The squeezed air pushes the snare-side head OUT, downward — both heads move the same way at that moment. With the snares on, the bottom head bounces them away and they slap back: that is the buzz.',
     after: 'Then both heads spring back and keep ringing, and the snares rattle against the bottom head for as long as it moves. The heads, the snares, the tuning and any muffling all shape that sound — they are the player’s choices.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them; moving out from the center wakes the others.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, including the lowest shape of all; moving out from the center wakes the others.',
       'This is a simplified head in empty space. On a real snare the air inside, the second head and the snares pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the concert snare',
@@ -134,7 +134,7 @@ export const CSN_COPY: LessonCopy = {
   twoMic: {
     A: { typeId: 'smallDynCard', pattern: 'cardioid', zone: 'csn.top' },
     B: { typeId: 'smallDynCard', pattern: 'cardioid', zone: 'csn.bottom' },
-    opposite: { surface: 'batter', note: 'The mics sit on opposite sides of the drum: as the batter head moves away from the top mic, the snare-side head moves toward the bottom mic. One hears a pull while the other hears a push, so the sum starts on the inverted notch set — that is why engineers try the polarity switch on a bottom mic. Try it; never assume it.' },
+    opposite: { surface: 'batter', note: 'The mics sit on opposite sides of the drum: as the batter head moves away from the top mic, the snare-side head moves toward the bottom mic. One hears a pull while the other hears a push, so the pair starts in opposite polarity: its notches fall where an in-polarity pair has peaks — that is why engineers try the polarity switch on a bottom mic. Try it; never assume it.' },
     learn: [
       'A common idea on a snare: a top mic for the stick and the head, and a bottom mic for more of the snares. On a concert snare the bottom mic is optional — the snares’ response is part of the drum’s color, but the bottom mic also hears the stand, the throw-off and the floor. Start with the top mic alone.',
       'When the second channel goes in: hear the pair at the intended levels in MONO, compare both polarity states at a controlled, matched level — a louder state almost always sounds “better” at first — and then check the pair against the main pickup. If it adds more hiss and spill than character, leave it out.',

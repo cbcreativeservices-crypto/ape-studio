@@ -76,7 +76,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a prop mic in the right order, choose and justify a setup for a quiet stage and a live station, and say what would justify a second mic.',
     credit: { scenarios: ['f03.prac.order', 'f03.prac.gain', 'f03.prac.setup1', 'f03.prac.setup2', 'f03.prac.3', 'f03.mix.1', 'f03.mix.2', 'f03.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
-    takeaway: 'The events named, the travel and pinch zones clear, the whole action covered first, headroom for the loudest slam and the quietest latch, and a mono check for a second mic pass. More than one setup can pass.',
+    takeaway: 'What passes: the events named, the travel and pinch zones clear, the whole action covered first, headroom for the loudest slam and the quietest latch, and a mono check for a second mic. More than one setup can pass.',
   },
 };
 
@@ -301,8 +301,8 @@ const scenarios: MikingScenario[] = [
     id: 'f03.prac.3',
     page: 'practice',
     prompt: 'What would justify a second mic on a prop cue?',
-    options: ['A useful perspective option, the mono sum holding', 'Two channels give the mix a wider choice', 'The prop needs more level than one mic on its own gives'],
-    correct: 'A useful perspective option, the mono sum holding',
+    options: ['A useful perspective option, if the mono sum holds up', 'Two channels give the mix a wider choice', 'The prop needs more level than one mic on its own gives'],
+    correct: 'A useful perspective option, if the mono sum holds up',
     explain: 'A close detail channel and a farther room/object channel, recorded separately, can give a reasoned option — if the pair holds up in mono over the whole action.',
     why: {
       'Two channels give the mix a wider choice': 'More channels also mean more room and noise. Add a mic for a reason.',
@@ -522,7 +522,7 @@ export const F03_LESSON: Lesson & { sp: SpExtra } = {
     stages: [
       { title: 'The hand moves it', text: 'The hand grasps and moves the prop, in time with the picture: the start of the action.' },
       { title: 'A small contact', text: 'A small, sharp event in one place on the prop.', byVariant: { keys: 'Key strikes key below the ring: small, bright metal clicks.', live: 'Key strikes key below the ring: small, bright metal clicks.', paper: 'The sheet bends and rubs against the table: friction and a crisp crackle.', door: 'The lever turns and the latch releases at the door’s edge: a small, sharp click.', chair: 'A leg scrapes on the floor as the chair is dragged: the sound starts at the floor.' } },
-      { title: 'The body answers', text: 'The larger part of the prop answers.', byVariant: { keys: 'The ring and the keys ring on together, spreading around the hand.', live: 'The ring and the keys ring on together, spreading around the hand.', paper: 'The table under the sheet answers the set-down: the table can be part of the sound.', door: 'The panel resonates as it swings — over its whole face, away from the latch.', chair: 'The chair’s frame rattles above the legs: structure, not only the floor.' } },
+      { title: 'The body answers', text: 'The larger part of the prop answers.', byVariant: { keys: 'The key ring and the keys keep ringing together, spreading around the hand.', live: 'The key ring and the keys keep ringing together, spreading around the hand.', paper: 'The table under the sheet answers the set-down: the table can be part of the sound.', door: 'The panel resonates as it swings — over its whole face, away from the latch.', chair: 'The chair’s frame rattles above the legs: structure, not only the floor.' } },
       { title: 'The final contact and the room', text: 'A final contact — the key in the lock, the sheet set down, the door into its frame, the chair set down — and the room carries it on.' },
     ],
     attack: 'The small contacts are sharp and brief: a latch, a jingle, a leg’s knock. A close, aimed mic tends to hear more of them — and of the hands.',
@@ -542,7 +542,7 @@ export const F03_LESSON: Lesson & { sp: SpExtra } = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a prop setup for a quiet Foley stage and for a live station, compare a whole-action view with an aimed detail, and explain what would justify a second mic. With a real performer and their agreement, you can record what you tried below.',
+    task: 'Choose a prop setup for a quiet Foley stage and for a live station, compare a whole-action view with an aimed detail, and explain what would justify a second mic. With a real performer and their agreement, you can write down what you tried below.',
     fields: [
       { id: 'cue', label: 'Prop, action and the shot', kind: 'text' },
       { id: 'events', label: 'The audible events, in order', kind: 'text' },
@@ -560,7 +560,7 @@ export const F03_LESSON: Lesson & { sp: SpExtra } = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. For props no one distance is established, so these are our own suggested places to begin. Every prop, performer and room is different: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged. The lab is silent and draws a simplified picture: the artist in a typical pose, the travel and pinch points as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the prop’s sounding part to the mic’s capsule. Place real mics with the performer stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — possible starting points and ideas to consider, not rules. For props no one distance is established, so these are our own suggested places to begin. Every prop, performer and room is different: move the mic, experiment, and trust your ears and the room. Experimentation is encouraged. The lab is silent and draws a simplified picture: the artist in a typical pose, the travel and pinch points as keep-outs, mic patterns and the two-mic comb as textbook shapes. Distances are measured from the prop’s sounding part to the mic’s capsule and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches. Place real mics with the performer stopped, and only with their agreement.',
   copy: F03_COPY,
   sp: SP,
 };

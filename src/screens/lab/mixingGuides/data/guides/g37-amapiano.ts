@@ -272,7 +272,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-oriented masters typically land at −9 to −6 LUFS-I, soulful releases nearer −10 to −8. True peak −1 dBTP, or −2 dBTP if louder than −14 LUFS (common streaming guidance). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and can flatten the log drum’s bounce. For more bounce than the club norm, aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and check phones and small wireless speakers, where the log drum must still read through its harmonics."
+      "text": "Club-oriented masters typically land at −9 to −6 LUFS-I, soulful releases nearer −10 to −8. True peak −1 dBTP, or −2 dBTP if louder than −14 LUFS (common streaming guidance). Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing and can flatten the log drum’s bounce. For more bounce than the club norm, aim for a PLR (peak-to-loudness ratio) of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and check phones and small wireless speakers, where the log drum must still read through its harmonics."
     }
   ],
   "liveStudio": {

@@ -23,7 +23,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
     id: 'instrument_level',
     label: 'INSTRUMENT-LEVEL AUDIO',
     blurb:
-      'A guitar or bass pickup’s signal: usually stronger than mic level and weaker than line level (active pickups can reach line level). A passive pickup is picky about the input that receives it.',
+      'A guitar or bass pickup’s signal: usually stronger than mic level and weaker than line level (active pickups can reach line level). A passive pickup needs a high-impedance input to receive it.',
   },
   {
     id: 'line_level',
@@ -163,7 +163,7 @@ export const CARRY_PAIRS: CarryPair[] = [
     options: ['clock_sync', 'digital_audio', 'control_data', 'line_level'],
     correct: 'clock_sync',
     explain:
-      'Word clock carries no audio at all — it is the timing pulse that keeps every digital device sampling in step. Losing it causes clicks and drift, not silence in the cable.',
+      'Word clock carries no audio at all — it is the timing pulse that keeps every digital device sampling in step. Losing it causes clicks and drift, not silence in the audio.',
   },
   {
     id: 'midi_synth',
@@ -181,7 +181,7 @@ export const CARRY_PAIRS: CarryPair[] = [
     options: ['ac_mains', 'speaker_level', 'dc_power', 'line_level'],
     correct: 'ac_mains',
     explain:
-      'This one is wall power — AC power. It shares nothing with the loudspeaker-level connection an amplifier makes, even though history has seen similar-looking connectors on both. That is exactly why we identify what travels FIRST.',
+      'This one is wall power — AC power. It shares nothing with the loudspeaker-level connection an amplifier makes, even though similar-looking connectors have been used for both over the years. That is exactly why we identify what travels FIRST.',
   },
 ];
 

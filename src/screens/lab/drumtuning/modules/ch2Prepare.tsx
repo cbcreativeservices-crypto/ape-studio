@@ -342,7 +342,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             <>
               <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
               <Card>
-                <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all around — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
+                <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all around — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracking sounds from the film are normal.</Point>
                 <Point title="Why opposing">Tightening neighbors in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
               </Card>
               <Card tone="warn">
@@ -374,7 +374,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug. The numbers on the head are the order the rods turned, the key is on the current rod, and each bar is how far that rod has turned." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
+              <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug. The numbers on the head are the order the rods turned, the drum key is on the current rod, and each bar is how far that rod has turned." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
               <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} failed={knownStrike.failed} rendering={knownStrike.status === 'rendering'} idle="stopped · ride STEP, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
               <Card>
                 <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one color and the pitch climbs clean: each step is a whole round of the star. Rod 1, 5, 3, 7, 2, 6, 4, 8, as numbered on the hoop. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
@@ -433,7 +433,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
                 <Body>• Know the drum and the goal before turning a rod.</Body>
-                <Body>• Rods, lugs, hoops, head, bearing edge — hardware faults masquerade as tuning faults.</Body>
+                <Body>• Rods, lugs, hoops, head, bearing edge — hardware faults can look like tuning faults.</Body>
                 <Body>• A head has a working range; turn rods with a drum key and your fingers only, not pliers or a drill.</Body>
               </Card>
               <KeyTerms terms={DRUM_KEY_TERMS.prepare} />

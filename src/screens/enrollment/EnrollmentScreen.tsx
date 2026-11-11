@@ -1014,7 +1014,7 @@ export const EnrollmentView = memo(function EnrollmentView({
     if (topics.some((gs) => enrolledGs.has(gs) && !isFreeEnrollGs(gs) && !removable.includes(gs))) {
       notify(
         'Some topics stay',
-        'Topics a certificate, program or subject in your list still uses, and required co-requisites you have not completed, stay in your list.',
+        'These stay in your list: topics a certificate, program or subject in your list still uses, and required topics you haven’t completed.',
       );
     }
   };
@@ -1303,7 +1303,7 @@ export const EnrollmentView = memo(function EnrollmentView({
       notify(
         'This topic stays',
         coreLocked
-          ? 'Required co-requisites stay in your list until you complete them.'
+          ? 'This is a required topic, so it stays in your list until you complete it.'
           : 'This topic is always part of your list.',
       );
       return;
@@ -2825,7 +2825,7 @@ export const EnrollmentView = memo(function EnrollmentView({
           <View style={styles.clearCard}>
             <Text style={styles.clearTitle}>Clear enrollment list?</Text>
             <Text style={styles.clearBody}>
-              This resets your enrollment list to the new-user default. Your progress is kept — add any
+              This resets your enrollment list to the starting list every new account gets. Your progress is kept — add any
               topic back from the Browse &amp; Add lists below.
             </Text>
             <HoldToActivate

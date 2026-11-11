@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A digital stagebox feeds the PA and the recording. Who sets the gain?',
     options: ['Agreed in advance: one person controls it', 'Each engineer, whenever they need to', 'Nobody: a digital stagebox needs none'],
     correct: 'Agreed in advance: one person controls it',
-    explain: 'A digital stagebox may share headamp gain and pads across every feed. Agree who controls gain and phantom power, follow the makers’ splitter and grounding instructions — and never lift a safety ground to cure hum.',
+    explain: 'A digital stagebox may share headamp (preamp) gain and pads across every feed. Agree who controls gain and phantom power, follow the makers’ splitter and grounding instructions — and never lift a safety ground to cure hum.',
     why: {
       'Each engineer, whenever they need to': 'A shared gain change reaches every feed at once.',
       'Nobody: a digital stagebox needs none': 'Its preamps still need setting — once, by an agreed person.',

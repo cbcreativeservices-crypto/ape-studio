@@ -67,7 +67,7 @@ const CUES: readonly { id: Cue; label: string; blurb: string }[] = [
   { id: 'B', label: 'At the interviewer', blurb: 'Cued to the interviewer’s mouth for their question.' },
 ];
 const PATTERNS: readonly { id: PatternId; label: string; blurb: string }[] = [
-  { id: 'supercardioid', label: 'Short shotgun', blurb: 'Drawn as its supercardioid base: narrower higher up (a simplified picture).' },
+  { id: 'supercardioid', label: 'Short shotgun', blurb: 'Drawn as a supercardioid: narrower at higher frequencies (a simplified picture).' },
   { id: 'hypercardioid', label: 'Compact hypercardioid', blurb: 'A textbook hypercardioid.' },
 ];
 

@@ -39,7 +39,7 @@ export const BELL_COPY: LessonCopy = spCopy({
     shapesNotes: ['The bell is struck metal, not a horn: a brass instrument’s “aim into the bell” does not carry over. The pictures show where the sound starts — never its level.'],
     coupledSubject: 'The cowbell from the side',
     coupledNote: 'A ring too long for the part? Try the instrument and a secure, compatible mute before any processing — a mute can change the pitch and the level, not only the decay.',
-    silentNote: 'This lab never plays a sound and draws no frequency curve: “low pitch” or “tuned to G” are model descriptions, not pure tones. The pictures show where the sound comes from and where it leaves.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: “low pitch” or “tuned to G” are names makers give their bells, not pure tones. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'Open or muted',
       badge: 'A simplified picture: how freely the walls move, not how loud · motion drawn larger',

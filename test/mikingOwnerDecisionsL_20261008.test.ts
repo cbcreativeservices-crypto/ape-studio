@@ -95,12 +95,28 @@ describe('L6A extended (owner: capsule everywhere) — B04, B10, B11', () => {
 
 describe('after owner-x (2026-10-08): the rounding words and the ground line', () => {
   it('Lab 6/7 accuracy notes say the one distance rule', () => {
-    for (const id of ['F01', 'F02', 'F03', 'F04', 'F09', 'B01', 'B03', 'B04', 'B05', 'B06', 'B07', 'B09', 'B10', 'B11']) {
+    for (const id of ['F01', 'B03', 'B04', 'B05', 'B06', 'B09']) {
       const a = lesson(id).accuracyDetail;
       assert.doesNotMatch(a, /rounded to about 5 mm(?! below 1 m)/, id);
       assert.match(a, /rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m/, id);
     }
     // 2026-11-11 copy audit UF-096CDE5AC8: B02 spells the feet rule out.
+    // 2026-11-11 copy audit UF-F9EEA2AE88: F02 spells it out the same way.
+    // 2026-11-11 copy audit UF-F5992DCB6C: B10 separates the feet clause from the measuring point.
+    // 2026-11-11 copy audit UF-91BD90E74C: B11 separates it the same way.
+    assert.match(lesson('B11').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it, also shown in feet from 3 m, and measured from the lips/);
+    assert.match(lesson('B10').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it, also shown in feet from 3 m, and measured from the lips/);
+    assert.match(lesson('F02').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches/);
+    // 2026-11-11 copy audit UF-64142ED052: F09 spells it out the same way.
+    assert.match(lesson('F09').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches/);
+    // 2026-11-11 copy audit UF-DE0CACAB05: B07 spells it out the same way.
+    assert.match(lesson('B07').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches/);
+    // 2026-11-11 copy audit UF-890E39F861: F04 spells it out the same way.
+    assert.match(lesson('F04').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches/);
+    // 2026-11-11 copy audit (groups 092/096): B01 says the feet are added.
+    assert.match(lesson('B01').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it, with feet added from 3 m/);
+    // 2026-11-11 copy audit (group 074): F03 spells it out the same way.
+    assert.match(lesson('F03').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches/);
     assert.match(lesson('B02').accuracyDetail, /rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches/);
   });
   it('the ground line reads “1.5 m above the ground”, never “above the ground the ground”', () => {

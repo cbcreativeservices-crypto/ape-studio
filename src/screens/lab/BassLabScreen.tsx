@@ -259,7 +259,7 @@ export function BassLabScreen() {
           ? 'The recording could not be fetched (check the connection) — playing the string model instead.'
           : r === 'auth'
             ? 'This recording needs a signed-in account — playing the string model instead.'
-            : 'No recording is published for this note — playing the string model instead.',
+            : 'There’s no recording for this note — playing the string model instead.',
       );
     }
     // 2. Fallback: the string model through the engine.
@@ -420,7 +420,7 @@ export function BassLabScreen() {
         stage: {
           size: 'L', // the fretboard IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
-          badge: 'TRUE FRET GEOMETRY — BRIDGE ← NUT · DRAWN FROM THE EQUATIONS',
+          badge: 'FRETS AT REAL SPACING FROM THE FRET EQUATION — BRIDGE ← NUT',
           onGuide: () => openLesson('display'),
           bezel:
             mode === 'fretted'
@@ -530,7 +530,7 @@ export function BassLabScreen() {
         <Text style={styles.caption}>
           {mode === 'fretted'
             ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
-            : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survives. Nodes are marked; the string rings over its FULL length.`}
+            : `Touching at ${node.frac} damps every vibration mode (harmonic) WITHOUT a node there — harmonic ${node.n} (and its multiples) survives. Nodes are marked; the string rings over its FULL length.`}
         </Text>
       </View>
 
@@ -574,8 +574,8 @@ export function BassLabScreen() {
             {engineReady
               ? additiveReady
                 ? mode === 'fretted'
-                  ? ` The model is a simplified string tone, harmonic amplitudes ≈ 1/n (a real pluck falls off faster), output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                  : ` The model is the single exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                  ? ` The string model is a simplified tone: harmonic n has ≈ 1/n of the fundamental’s amplitude (a real pluck falls off faster), output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                  : ` The string model plays only the exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
                 : ' This version of the app plays a pure sine at the target pitch here; update the app to hear the string tone.'
               : ''}
           </Text>
@@ -585,7 +585,7 @@ export function BassLabScreen() {
             {/* The guard filter is on the string model only — the recording
                 plays unfiltered, so its line names no filter and no dB. */}
             {source === 'model'
-              ? `Speaker high-pass (${SPEAKER_HPF_HZ} Hz) on the string model: its ${soundHz.toFixed(0)} Hz fundamental is reduced by ${Math.abs(speakerGuardDb(soundHz)).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`
+              ? `The string model plays through a ${SPEAKER_HPF_HZ} Hz high-pass filter on the phone speaker: its ${soundHz.toFixed(0)} Hz fundamental is reduced by ${Math.abs(speakerGuardDb(soundHz)).toFixed(1)} dB — you mostly hear its harmonics. Use headphones for the true low end.`
               : `A phone speaker barely reproduces a ${soundHz.toFixed(0)} Hz fundamental — you mostly hear its harmonics. Use headphones for the true low end.`}
           </Text>
         ) : null}
@@ -603,7 +603,7 @@ export function BassLabScreen() {
           ],
           correctIdx: 0,
           reveal:
-            'The fret moves the nut: a shorter string with its own full harmonic series. The node touch keeps the whole string ringing but kills every mode WITHOUT a node there — only H3, H6, H9 survive. Same pitch class, different physics, different tone.',
+            'The fret moves the nut: a shorter string with its own full harmonic series. The node touch keeps the whole string ringing but kills every vibration mode (harmonic) WITHOUT a node there — only H3, H6, H9 survive. Same pitch class, different physics, different tone.',
           wrongHint: 'Switch MODE and watch the lobes: 1 big lobe vs 3 equal ones.',
         }}
       />

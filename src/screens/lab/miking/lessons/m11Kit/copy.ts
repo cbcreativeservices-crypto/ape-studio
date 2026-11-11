@@ -18,7 +18,7 @@ export const M11_COPY: Partial<LessonCopy> = {
     figureLabel: 'Side view of a 5-piece drum kit from the player’s right: the floor tom and the ride nearest, the snare and the rack toms over the kick behind them, the hi-hat and a crash on the far side, the drummer’s keep-out hatched.',
     partsBadge: 'The kit from the side and from above · a typical right-handed layout · tap a part',
     partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
-    partsIdle: 'A complete setup is a coordinated view of kick, snare, toms and cymbals — any room sound chosen deliberately. Tap a part to see what it means for a channel plan.',
+    partsIdle: 'A complete setup plans the whole kit together — kick, snare, toms and cymbals — with any room sound chosen on purpose. Tap a part to see what it means for a channel plan.',
     variantNotes: { live: 'LIVE STAGE: the same kit with monitors and a PA. Every open mic hears them.' },
   },
   setting: {
@@ -99,6 +99,6 @@ export const ROUTE_WORDS = {
   learn: [
     { title: 'STUDIO', text: 'Separate tracks keep later decisions open. In a shared room, other instruments’ bleed can make the kit cohesive — or reduce later control. A poor-sounding room may favor more close pickup.' },
     { title: 'LIVE', text: 'Open mics hear the monitors and the PA: use the channels the audience needs and check gain before feedback with the system operator. A room or audience mic for a recording or broadcast can stay out of the PA and the wedge mixes.' },
-    { title: 'SOUNDCHECK', text: 'The drummer plays the whole show’s dynamics; the operator checks the kick, snare and tom balance, the cymbals, the monitor sends and the level at the audience. Check mutes, patching and polarity labels. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. If a stage before the fader overloads, lower its gain: a fader cannot undo it.' },
+    { title: 'SOUNDCHECK', text: 'The drummer plays the whole show’s dynamics; the operator checks the kick, snare and tom balance, the cymbals, the monitor sends and the level at the audience. Check mutes, patching and polarity labels. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. If a gain stage before the fader overloads, lower its gain: a fader cannot undo it.' },
   ],
 };

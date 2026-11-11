@@ -73,7 +73,7 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
     prompt: 'In what order is a system powered UP?',
     options: ['Sources and console first, amplifiers last', 'Amplifiers first, so they are ready', 'All at once, from one switch', 'Loudspeakers first, then the console'],
     correct: 'Sources and console first, amplifiers last',
-    explanation: 'Every upstream turn-on transient happens before there is an amplifier to send it to the loudspeakers. Power-down is the mirror: amplifiers first.',
+    explanation: 'Every upstream turn-on transient happens before any amplifier is on to send it to the loudspeakers. Power-down is the mirror: amplifiers first.',
   },
   {
     id: 'gain-structure',

@@ -55,7 +55,7 @@ export const B14_COPY: Partial<LessonCopy> = {
   terms: {
     instrument: 'the court',
     aimRef: 'the source point',
-    startIntro: 'This lesson is about action sound at court, racket and ice sports: perimeter and compact mics, floor boundary pickup, approved plants — and the airborne sound kept apart from the structure’s vibration.',
+    startIntro: 'This lesson is about action sound at court, racket and ice sports: perimeter and compact mics, floor boundary pickup, approved plants (mics fixed to a structure near the action) — and the airborne sound kept apart from the structure’s vibration.',
     startNew: 'Good — NEXT takes you through the courts first. You can change how you started here at any time.',
     refTitle: 'MEASURED TO',
     otherRef: 'Distances are read from the capsule to the source point.',

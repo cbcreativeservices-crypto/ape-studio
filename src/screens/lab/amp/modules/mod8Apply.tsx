@@ -21,7 +21,7 @@ import {
   shuffledIndices, hashSeed, type FaultId,
 } from '../../../../features/amp/ampModel';
 import {
-  AMP_CHECKS, AMP_MODULES, MISCONCEPTIONS, WAVE_KINDS, APP_SCENARIOS, APP_CHOICES, MYTH_REVIEW_IDS,
+  AMP_CHECKS, AMP_MODULES, FAULT_COPY, MISCONCEPTIONS, WAVE_KINDS, APP_SCENARIOS, APP_CHOICES, MYTH_REVIEW_IDS,
   type WaveKind, type AppClassChoice, type AmpModuleId,
 } from '../../../../features/amp/ampContent';
 import { isAmpProgressUnreadable, loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
@@ -317,7 +317,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     // Mode, load and vent leave the wave alone, so the stage says it instead.
     stageStatus: true,
     faultTag: faultWord,
-    a11ySummary: `System challenge. Output ${Math.round(challenge.outLevel * 100)} percent of full. ${challenge.rig.primary ? `Fault: ${challenge.rig.primary}.` : 'No fault.'} Current demand ${Math.round(challenge.rig.currentDemand * 100)} percent. Relative heat ${Math.round(challenge.rig.thermal * 100)} percent.`,
+    a11ySummary: `System challenge. Output ${Math.round(challenge.outLevel * 100)} percent of full. ${challenge.rig.primary ? `Fault: ${FAULT_COPY[challenge.rig.primary].title.toLowerCase()}.` : 'No fault.'} Current demand ${Math.round(challenge.rig.currentDemand * 100)} percent. Relative heat ${Math.round(challenge.rig.thermal * 100)} percent.`,
   };
 
   return (

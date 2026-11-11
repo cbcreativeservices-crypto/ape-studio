@@ -228,7 +228,7 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.ok(Math.abs(lat - 326.73) < 0.01 && Math.abs(2 * 330 - 3 * 220) === 0);
     assert.match(SRC, /const soundPair = useCallback\(\(a: number, b: number, d: number, rot: boolean\) => \{\s*const f1 = a \* BASE_F0;/);
     assert.match(textOf(GUIDES.explore), /to hear OSC 1 and OSC 2 as two tones, raised by the same factor until the lower is 220 Hz, so the ratio stays exact\. The platform is silent, so you hear DETUNE in LATERAL only\./);
-    assert.match(read('src/features/lab/understandingChecks.ts'), /▶ sounds the detune in LATERAL only — in ROTARY it moves the silent platform\./);
+    assert.match(read('src/features/lab/understandingChecks.ts'), /▶ lets you hear the detune in LATERAL only; in ROTARY the detune moves the platform, which makes no sound\./);
     assert.doesNotMatch(read('src/features/lab/understandingChecks.ts'), /slowly turning figure and hear it as beating/);
   });
   it('DETUNE acts on OSC 2 in LATERAL, on the platform in ROTARY — as the machine draws it', () => {

@@ -282,7 +282,7 @@ export function ExposureMonitorScreen() {
           {snap.hadGap ? (
             <Text style={styles.note}>
               The microphone stream dropped samples during this session, so measured time may be undercounted — treat
-              this dose as a conservative estimate and restart monitoring for an uninterrupted reading.
+              this dose as a minimum (the real dose may be higher) and restart monitoring for an uninterrupted reading.
             </Text>
           ) : null}
           {/* Today's saved dose could not be read (exposureMonitor
@@ -332,10 +332,10 @@ export function ExposureMonitorScreen() {
           <Text style={styles.note}>
             The monitor tracks BOTH what the app plays and what the microphone measures while you monitor a room or
             venue — using the SPL meter at a concert IS tracked. What the app plays includes tones and lab clips (Ear
-            Training, Drum, Mixing, Mastering, Tuning and the other lab clips): a clip counts only while it is actually
+            Training, Drum, Mixing, Mastering, Tuning and the other lab clips). A clip counts only while it is actually
             playing — never while it is stopped, paused, muted or failed to load. Its level is estimated from the clip
-            itself (measured from its samples where the app holds them, otherwise a deliberately loud assumption) and
-            the reference below for your usual volume; the phone’s volume buttons are not read. Environmental levels
+            itself (measured from its sound where possible; otherwise the app assumes it is loud, to be safe) and from
+            your usual-volume reference below; the app does not read your phone’s volume setting. Room and venue levels
             are measured (approximate) when the SPL meter is field-calibrated, otherwise estimated. Bluetooth and
             external outputs are never assumed to be headphones.
           </Text>
@@ -483,9 +483,9 @@ export function ExposureMonitorScreen() {
           <Text style={styles.note}>
             To set the reference: play steady pink noise through your MONITORS at a level a trusted SPL meter reads at
             the listening position, and adjust until the two agree — the app also uses that offset for headphones,
-            but only as a rough start. For headphones there is no way to verify it at your ear without a measurement coupler, so treat
-            headphone figures as the rougher of the two. The reference is limited to 70–115 dB. Model selection alone
-            cannot guarantee accuracy — fit, seal and device gain differ unit to unit.
+            but only as a rough start. For headphones there is no way to verify it at your ear without a measurement coupler
+            (a test fixture that stands in for an ear), so treat headphone figures as the rougher of the two. The reference
+            is limited to 70–115 dB. Even the same headphone model varies — fit, seal and device gain differ unit to unit.
           </Text>
           <Row label="Current confidence" value={confLabel} />
         </Section>

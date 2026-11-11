@@ -55,7 +55,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "the backbone of nearly every K-pop show — instrument stems, backing vocals, sometimes a guide or full “AR” vocal.",
+      "text": "the backbone of nearly every K-pop show — instrument stems, backing vocals, sometimes a guide or full “AR” (pre-recorded lead) vocal.",
       "bullet": true
     }
   ],
@@ -158,7 +158,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal (stage 2, opto)",
         "use": "Yes",
         "ratio": "3:1",
-        "attackRelease": "Program",
+        "attackRelease": "Program-dependent",
         "gainReduction": "2–4 dB",
         "notes": "Optical compression at tracking is common in Korean studios"
       },

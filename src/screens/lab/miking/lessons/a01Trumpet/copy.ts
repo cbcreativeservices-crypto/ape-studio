@@ -26,8 +26,8 @@ export const A01_COPY: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { trumpet: 'tp.off', flugelhorn: 'fh.far' },
-    workedLine: 'This starting point also reads how far the mic is off {line}: the dashed line straight out of the bell.',
-    workedAim: 'Aim it toward the bell — the lab counts it while the mic points within about {tol}° of the bell. Distance, height and angle are separate things to try.',
+    workedLine: 'This starting point also shows how far the mic is off {line}: the dashed line straight out of the bell.',
+    workedAim: 'Aim it toward the bell — the lab counts it as aimed while the mic points within about {tol}° of the bell. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell, the valve hands, the player’s head and body. Leave room for the bell to move as the player plays, and for every mute. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Toward the axis tends to bring more brightness and bite; off to the side, a softer top; farther, more room and spill. Horns, players and rooms vary, so “it depends on this horn” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
@@ -69,10 +69,10 @@ export const A01_COPY: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the bell and aimed back at it, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-    shieldNote: 'The bell and the player reflect stage sound too, and the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'The bell and the player reflect stage sound too, and the free-field pattern (measured in open air) cannot show that. Listen with the monitors on.',
     studioId: 'tp.ctx.studio',
     studioPrompt: 'A studio overdub, one trumpet, a good quiet room: what is the mic’s job?',
-    studioNote: 'In the studio, one mic a little off the bell’s axis carries a balanced horn; a farther mic in a good room can add depth — check the pair in mono. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
+    studioNote: 'In the studio, one mic a little off the bell’s axis carries a balanced horn; a farther mic in a good room can add depth — check the pair in mono. You can try many placements, stopping the player before each move. Switch back to LIVE for the monitor exercise.',
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: the horn is the same — the room, the band and the monitors change.',
       points: [

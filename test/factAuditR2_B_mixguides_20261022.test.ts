@@ -40,7 +40,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
   });
   it('blues: the 11–15 dB PLR is for traditional masters only', () => {
     const s = g('g31-blues');
-    assert.match(s, /For traditional masters, aim for a PLR of 11–15 dB/);
+    assert.match(s, /For traditional masters, aim for a PLR \(peak-to-loudness ratio\) of 11–15 dB/);
     assert.match(s, /[Ll]ouder electric masters land nearer 7–9 dB/);
   });
   it('classical: largo at 40 BPM, harp is not percussion, no wrong 5–7 dB gap', () => {

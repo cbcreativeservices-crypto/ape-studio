@@ -60,7 +60,7 @@ export const PICCOLO_ART: LessonArt = windLessonArt({
   sound: {
     fig: { L: SOUND_FIG, box: { u0: -200, u1: 400, v0: -60, v1: 360 }, side: -1, subject: 'A piccolo stood on end, keys toward you, its air column drawn open' },
     other: 'closed',
-    notesNote: 'A simplified fingering: real piccolo fingerings vent and cross-finger, and the top uses special fingerings not drawn here — but the first open hole still moves up toward the player as the pitch rises.',
+    notesNote: 'A simplified fingering: real piccolo fingerings open extra holes or close holes below an open one, and the top uses special fingerings not drawn here — but the first open hole still moves up toward the player as the pitch rises.',
     pipeNote: 'Like the flute, the piccolo is close to the ideal pipe open at both ends — at half the length, so every note is an octave higher. Compare a pipe closed at one end with PIPE.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the piccolo: how a real piccolo sounds depends on the instrument, the player and the room. The pictures show where the sound is made and where the sound and the air leave.',
     reveal: 'The embouchure hole radiates for every note; the first open hole carries much of the rest — the open end only when every hole is closed.',
@@ -70,7 +70,7 @@ export const PICCOLO_ART: LessonArt = windLessonArt({
       { title: 'ASK THE PLAYER FIRST', text: 'Standing or seated, and how do they move — the head’s turn, the piccolo’s swing? Which passages: the low notes, the top, soft and strong, trills? What sound do they want? Hear the piccolo unamplified first — and hear what the ensemble pickup already gives you.' },
       { title: 'WORK WITH THE PICCOLO AS IT IS', text: 'A piccolo is small and often wooden. Nothing presses the body, covers a hole or touches a rod or pad; a flute clip is not assumed to fit. If the fit is uncertain, use a stand.' },
     ],
-    hearing: 'Protect your hearing — and remember the player’s: the piccolo’s top register is loud right beside their right ear, and the brass and percussion behind a section can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it.',
+    hearing: 'Protect your hearing — and remember the player’s: the piccolo’s top register is loud right beside their right ear, and the brass and percussion behind a section can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it.',
     sectionLanding: 'Tap anything in the section — or step through ITEM — to see what it means for a piccolo mic. There is nothing to answer yet.',
     sectionIdle: 'The piccolo sits at the end of the flute row, its end out to the player’s right; the clarinets sit right behind. Everything near it is the player’s space, the air jet, or a neighbor its mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front and another player’s to the side. Monitors, the PA and a loud band all reach a piccolo mic.',

@@ -340,7 +340,7 @@ describe('Production guides: the challenged claims, checked against the screens 
     const at = (s: string) => K.indexOf(s);
     assert.ok(at('WHAT’S LEFT') < at('SHARE AS PDF') && at('SHARE AS PDF') < at('built.model.control.map'));
     assert.ok(g.packet.seeing[1].includes('The PDF holds the title, verdict and all below SHARE AS PDF; the type and WHAT’S LEFT stay off it.'));
-    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.packet.seeing[1].includes('It and the type stay off the PDF, which holds the title, verdict and all below SHARE AS PDF.'));
+    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.packet.seeing[1].includes('The PDF holds the title, verdict and all below SHARE AS PDF, not WHAT’S LEFT or the type.'));
     for (const gd of [g.packet, G.PRODUCTION_SCREEN_GUIDES.postprod.packet]) {
       assert.ok(!gd.seeing.join(' ').includes('what you read here is what prints'));
     }
@@ -365,7 +365,7 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(S, /finding: \{[^}]*borderLeftColor: colors\.amber/);
     assert.match(S, /findingBlocker: \{ borderLeftColor: colors\.red \}/);
     const st = g.stages.define as { seeing: string[]; control: string[] };
-    assert.ok(st.seeing.join(' ').includes('amber flagged (or optional, blank)') && st.seeing.join(' ').includes('dark gray not applicable'));
+    assert.ok(st.seeing.join(' ').includes('amber flagged or optional left blank') && st.seeing.join(' ').includes('dark gray not applicable'));
     assert.ok(st.control.join(' ').includes('WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged)'));
   });
   it('SCORE: each attention finding costs 0.02 (2 points), capped at 0.2 and at 40% of what is earned; a blocker caps the score at 99', () => {
@@ -373,8 +373,8 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(R, /const attention = findings\.filter\(\(f\) => f\.severity === 'attention'\)\.length;/);
     assert.match(R, /const penalty = Math\.min\(0\.2, attention \* 0\.02, base \* 0\.4\);/);
     assert.match(R, /export const BLOCKED_CEILING = 99;/);
-    assert.ok(g.home.changes.join(' ').includes('Each flagged finding costs up to 2 points, 20 at most.'));
-    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.home.changes.join(' ').includes('Each flagged finding costs up to 2 points, 20 at most. An open blocker keeps it under 100 and Not Approved.'));
+    assert.ok(g.home.changes.join(' ').includes('Flagged findings cost up to 2 points each, 20 max. An open blocker keeps the score under 100 and Not Ready for Production.'));
+    assert.ok(G.PRODUCTION_SCREEN_GUIDES.postprod.home.changes.join(' ').includes('Flagged findings cost up to 2 points each, 20 max. Open blockers keep the score under 100 and Not Approved.'));
   });
   it('START: the input-list exercise is Music and Live only, and the guide says so', () => {
     const only = Object.fromEntries(LABS[LAB].stages.map((s: { stageId: string; activity: { onlyFor?: string[] } }) => [s.stageId, s.activity.onlyFor ?? null]));

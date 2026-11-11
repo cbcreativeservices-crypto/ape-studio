@@ -143,7 +143,7 @@ export const EGG_ZONES: DocumentedZone[] = [
     variants: ['apart'],
     micTypeIds: BOTH,
     bandProv: { kind: 'unknown', needed: 'the lesson gives no number for the split; the 30–60 cm band is reused (proposal drawing default)' },
-    tendency: 'Its own control of one hand — at the cost of a second stand, more spill and a second arrival of each egg. Check the pair together, in mono.',
+    tendency: 'The right hand on its own channel — at the cost of a second stand, more spill and a second arrival of each egg. Check the pair together, in mono.',
     checks: ['Both spots together, in mono', 'Timing between the hands', 'Spill and stands'],
   }),
   targetZone({

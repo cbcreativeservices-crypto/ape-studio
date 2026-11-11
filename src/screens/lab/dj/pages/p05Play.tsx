@@ -222,7 +222,7 @@ function PagePlay({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={2}>
         <Do>First put deck A on air: press PLAY A — ON AIR on the readout strip reads DECK A. Then open BROWSE, switch to operating DECK B, and LOAD a track deck A can tempo-match (read the BPM in the crate).</Do>
-        <P>The camera follows the deck you operate; the marker at the glass’s corner and ON AIR on the readout strip always say which deck the crowd hears. Glance at them before you press anything.</P>
+        <P>The camera follows the deck you operate; the marker at the display’s top-right corner and ON AIR on the readout strip always say which deck the crowd hears. Glance at them before you press anything.</P>
       </Step>
       <Step n={3}>
         <P>A loaded track starts at its first beat. PLAY and pause it, SEARCH a little (the strip moves through the whole track; the JOG steps move one beat), then press CUE: that is your new cue point. Press PLAY, then CUE again — the deck jumps back and stops, ready.</P>

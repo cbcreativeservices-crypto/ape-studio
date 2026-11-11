@@ -115,7 +115,7 @@ export function clarity(responses: Responses, dims: DimensionScores): Clarity {
 export function clarityCopy(c: Clarity, dims: DimensionScores): string {
   const scores = rated(dims);
   const strong = scores.filter((s) => s >= CLARITY_RULES.strong).length;
-  if (c === 'developing') return 'Many activities were new to you, so the picture is incomplete rather than wrong. Exposure will teach you more than more questions would — open one family you said you didn’t know enough about, then answer again.';
+  if (c === 'developing') return 'Many activities were new to you, so the picture is incomplete rather than wrong. Seeing more of the work will teach you more than more questions would — open one family you said you didn’t know enough about, then answer again.';
   if (c === 'clear') {
     const n = strong === 1 ? 'One activity' : strong === 2 ? 'Two activities' : strong === 3 ? 'Three activities' : 'Several activities';
     return `${n} stood out clearly and the rest sat lower, so these directions rest on real preferences. Open your top two and compare what each one leans on.`;
@@ -197,7 +197,7 @@ export function explainFamily(family: CareerFamily, dims: DimensionScores, opts:
     sentence = because ? `This appeared because you showed ${because}.` : 'This appeared because it ranked highest against your answers overall.';
   }
   const lowOthers = little.filter((l) => l !== primaryLabel || !primaryLow);
-  if (lowOthers.length && !primaryLow) sentence += ` It also draws on ${list(lowOthers)}, which you rated lower — notice how much of each family that is as you compare them.`;
+  if (lowOthers.length && !primaryLow) sentence += ` It also draws on ${list(lowOthers)}, which you rated lower — as you compare families, notice how big a part of each one that is.`;
   else if (lowOthers.length && primaryLow) sentence += ` ${list(lowOthers)} ${lowOthers.length === 1 ? 'is' : 'are'} part of this work too, rated lower as well.`;
   if (none.length) sentence += ` You said you did not know enough about ${list(none)} yet, so that part is unexplored rather than ruled out.`;
   return sentence;

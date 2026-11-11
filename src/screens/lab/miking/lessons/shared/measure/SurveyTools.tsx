@@ -83,7 +83,7 @@ export function useDescriptorsStep({ words, onDone }: { words: DescriptorWords; 
         <Card>
           <Point title={`LAeq OVER ${mins} MIN · ${f1(d.laeq)} dB`}>The energy average over the window — the steady level with the same energy. The loud pass-bys pull it up.</Point>
           <Point title={`MEAN OF THE dB · ${f1(d.meanOfDb)} dB`}>{`Adding the dB readings and dividing gives ${d.laeq !== null ? (d.laeq - d.meanOfDb).toFixed(1) : '—'} dB less here: decibels are logarithms, so their plain average is not the energy average. Never report it as LAeq.`}</Point>
-          <Point title={`L10 ${f1(d.l10)} · L50 ${f1(d.l50)} · L90 ${f1(d.l90)}`}>The levels exceeded 10, 50 and 90 % of the window. L90 may describe a quieter underlying level — but it does not remove a source that never stops.</Point>
+          <Point title={`L10 ${f1(d.l10)} · L50 ${f1(d.l50)} · L90 ${f1(d.l90)}`}>The levels exceeded for 10, 50 and 90 % of the window. L90 may describe a quieter underlying level — but it does not remove a source that never stops.</Point>
           <Point title={`LAFmax · ${f1(d.lafmax)} dB`}>The largest fast reading in the window: one event, not the window’s energy, and not a true peak.</Point>
         </Card>
         <Note>{`Looked at: receiver A ${seen.A ? '✓' : '○'} · receiver B ${seen.B ? '✓' : '○'} · a shorter window ${seen.window ? '✓' : '○'}.`}</Note>

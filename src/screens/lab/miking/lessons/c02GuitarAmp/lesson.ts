@@ -560,8 +560,8 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A dynamic inside the open back, by the tubes', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the tubes get very hot, and high voltage is close by inside.' },
       { id: 'e', label: 'Two dynamics side by side at the same spot on the cone', ok: false, power: 'none', feedback: 'Two mics hearing the same thing add little and can comb — give the second a different view.' },
     ],
-    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-mic pickup.' }, BRAND_REASON, BASS_REASON],
-    explain: 'Two pickups pass. What passes is the reasoning: two different views of the amp, from outside, powered by what these inputs supply, checked in mono.',
+    reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-mic setup.' }, BRAND_REASON, BASS_REASON],
+    explain: 'Two setups pass. What passes is the reasoning: two different views of the amp, from outside, powered by what these inputs supply, checked in mono.',
   },
 ];
 
@@ -692,7 +692,7 @@ export const C02_LESSON: Lesson = {
       { id: 'dibox', label: 'a DI box before the amp', short: 'DI BOX', note: 'Splits the guitar’s signal: one side on to the amp, a balanced output to the desk. It hears no amp, speaker or room — a separate, dry source, not a mic. If pedals come before it, it is no longer dry.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'all' },
       { id: 'amp', label: 'the combo amp', short: 'COMBO', note: 'The amplifier and its speaker in one box. Its settings and its level are the player’s sound. Keep its vents clear, and never change its speaker wiring.', prov: { kind: 'illustrative', reason: 'a generic signal path and stage position' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'cab', label: 'the speaker in the combo', short: 'SPEAKER', note: 'Connected to the amp inside the box — on many combos the amp must never be on without it. The cone moves the air: this is what the mic hears.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'WHAT A MIC HEARS', scene: 'all' },
-      { id: 'mic', label: 'the microphone', short: 'MIC', note: 'An airborne pickup of the speaker, the box and the room. Close in, it hears mostly the speaker; farther back, more of the room and the stage.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
+      { id: 'mic', label: 'the microphone', short: 'MIC', note: 'It hears sound through the air: the speaker, the box and the room. Close in, it hears mostly the speaker; farther back, more of the room and the stage.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'AIR PATH', scene: 'all' },
       { id: 'desk', label: 'the desk (mixing console)', short: 'DESK', note: 'Where every source arrives and the input gain is set — the mic, the DI and any direct output each on its own, labeled channel.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'GAIN HERE', scene: 'all' },
       { id: 'ampdi', label: 'the amp’s own direct output', short: 'AMP OUT', note: 'Some amps have a line or simulated-speaker output. Where it is taken, and whether it imitates a speaker, is in that amp’s manual. Still electrical — not the air.', prov: { kind: 'illustrative', reason: 'a generic signal path' }, tag: 'NOT THE AIR', scene: 'all' },
       { id: 'wedge', label: 'the guitarist’s wedge', short: 'WEDGE', note: 'A floor monitor downstage, facing back toward the player — behind an amp mic aimed at the speaker.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
@@ -706,7 +706,7 @@ export const C02_LESSON: Lesson = {
   },
   diagnostic,
   practice: {
-    task: 'Choose a one-mic setup for a given amp and show, describe an alternative, and say what would justify a second channel. With a real amp and the player’s agreement, you can log what you tried below.',
+    task: 'Choose a one-mic setup for a given amp and situation, describe an alternative, and say what would justify a second channel. With a real amp and the player’s agreement, you can log what you tried below.',
     fields: [
       { id: 'source', label: 'Amp, speaker, open or closed back, the player’s settings', kind: 'text' },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['instrument dynamic', 'small condenser', 'large dynamic', 'other'] },
@@ -750,5 +750,5 @@ export const C02_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every guitar, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), an ideal string, textbook mic patterns, and cone and string motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Place mics with the amp off or muted, never open an amp, and send a speaker output to a speaker, never into a desk input.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every guitar, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are only how we drew them), an ideal string, textbook mic patterns, and cone and string motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Place mics with the amp off or muted, never open an amp, and send a speaker output to a speaker, never into a desk input.',
 };

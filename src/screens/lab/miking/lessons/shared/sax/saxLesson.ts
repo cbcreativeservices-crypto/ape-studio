@@ -134,7 +134,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       title: 'Practice',
       goal: `Set up one ${s} mic in the right order, choose and justify a setup for two briefs, and say what would justify a second mic.`,
       credit: { scenarios: [id('prac.order'), id('prac.gain'), id('prac.setup1'), id('prac.setup2'), id('prac.3'), id('mix.1'), id('mix.2'), id('mix.3')], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real horn and its player.' },
-      takeaway: 'Safe clearance from the bell’s swing and the hands, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+      takeaway: 'What passes: safe clearance from the bell’s swing and the hands, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay. A brand or a “loudest” position does not — and more than one setup can pass.',
     },
   };
 
@@ -308,7 +308,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference between the two mics?',
       options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both arrivals line up in time once more', 'It doubles, because the flipped copy now arrives later'],
       correct: 'Nothing: polarity flips the sign; the delay stays the same',
-      explain: 'Polarity reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
+      explain: 'Polarity reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; the arrival-time difference does not.',
       why: {
         'It drops to zero, so both arrivals line up in time once more': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
         'It doubles, because the flipped copy now arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -348,7 +348,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: 'Quiet phrases sit well below the overload light, but the player’s loudest high notes light it. What do you do?',
       options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader down until the loudest notes sound clean again', 'Ask the player to play their loudest notes more softly'],
       correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
-      explain: 'Set the input gain with headroom for the strongest notes the player really plays, and watch the overload light — in the mic, any wireless pack, the preamp and the converter. A lowered fader does not undo clipping at the input; use a pad only as its manual allows.',
+      explain: 'Set the input gain with headroom for the strongest notes the player really plays, and watch the overload light — in the mic, any wireless pack, the preamp and the converter. A lowered fader does not undo clipping at the input; use the mic’s or preamp’s pad only as its manual allows.',
       why: {
         'Pull the channel fader down until the loudest notes sound clean again': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
         'Ask the player to play their loudest notes more softly': 'Set the gain for the strongest notes the player intends to play — not for a gentler soundcheck.',
@@ -449,10 +449,10 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     {
       id: id('s.fb'),
       observation: 'Feedback, or heavy spill from the stage',
-      firstChecks: 'Lower the level, then change the mic, monitor and player geometry, and close mics you do not need.',
-      options: ['Lower the level, then change the geometry and close spare mics', 'Boost the sax channel so the horn is louder than the ring', 'Swap to an omni mic, which is less likely to feed back'],
-      correct: 'Lower the level, then change the geometry and close spare mics',
-      explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor, and close mics you do not need. Avoid uncontrolled feedback.',
+      firstChecks: 'Lower the level, then change the mic, monitor and player geometry, and mute mics you do not need.',
+      options: ['Lower the level, then change the geometry and mute spare mics', 'Boost the sax channel so the horn is louder than the ring', 'Swap to an omni mic, which is less likely to feed back'],
+      correct: 'Lower the level, then change the geometry and mute spare mics',
+      explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor, and mute mics you do not need. Avoid uncontrolled feedback.',
       why: {
         'Boost the sax channel so the horn is louder than the ring': 'More gain feeds the loop. Lower the level first.',
         'Swap to an omni mic, which is less likely to feed back': 'An omni has no null to aim at the monitor: it usually makes feedback more likely, not less.',
@@ -497,7 +497,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     DOC: { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the part it names', role: 'required', feedback: 'Say why it is a good place to begin, and which part it is measured from.' },
     CLEAR: { id: 'r.clear', label: 'The mic, mount and cable stay clear of the bell’s swing, the hands and the keys', role: 'required', feedback: 'Clearance is part of every passing setup.' },
     BRAND: { id: 'r.brand', label: `It is the brand most engineers reach for on a ${s}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' },
-    LOUD: { id: 'r.loud', label: 'It will give the loudest sound of any position on the horn', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and no position is “the loudest” on every horn.' },
+    LOUD: { id: 'r.loud', label: 'It will give the loudest sound of any position on the horn', role: 'wrong', feedback: 'Loudness is not a reason that counts — level comes from gain — and no position is “the loudest” on every horn.' },
   };
 
   const predictions: Lesson['predictions'] = {
@@ -609,7 +609,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     placement: {
       workedZone: { standing: c.use.worked, seated: c.use.worked },
       workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line out of the bell.',
-      workedAim: c.workedAim ?? 'Aim it down across the body at the sound holes — the lab counts it while the mic’s axis points into the key stack near its middle. Distance, height and angle are separate things to try.',
+      workedAim: c.workedAim ?? 'Aim it down across the body at the sound holes — the lab counts the aim as on target while the mic’s axis points into the key stack near its middle. Distance, height and angle are separate things to try.',
       workedClear: 'Clear of every part — the bell and the keywork, the hands on the keys, the player, and the space the bell swings through. Clearance comes first, before any number, and the player stops before a real mic moves.',
       blocked: {},
       reveal: c.placementReveal,
@@ -646,7 +646,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       activityDone: 'done — the wedge sat in a null by your aim or pattern',
       deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
       cardioidReveal: c.cardioidReveal ?? 'What you just saw: a cardioid rejects most directly behind (180°). Above the bell and aimed down at the body, its rear looks up and forward — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-      shieldNote: 'The bell and the body REFLECT stage sound back toward a mic close to them — the free-field pattern cannot show that. Listen with the monitors on.',
+      shieldNote: 'The bell and the body REFLECT stage sound back toward a mic close to them — the free-field pattern (measured in open air) cannot show that. Listen with the monitors on.',
       studioId: id('ctx.studio'),
       studioPrompt: `A studio session, a solo ${s}, a good room: what is the mic’s job?`,
       studioNote: 'In the studio, a mic a little farther off can carry the whole horn and some of the room; a closer one adds definition when the arrangement needs it. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',

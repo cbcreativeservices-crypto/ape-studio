@@ -46,7 +46,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Playback:",
-      "text": "nearly everything is pre-recorded; the “performance” is the DJ blending records on DJ media players, turntables or controllers through a club mixer, often a rotary mixer with isolators.",
+      "text": "nearly everything is pre-recorded; the “performance” is the DJ blending records on DJ media players, turntables or controllers through a club mixer, often a rotary mixer with isolators (EQs that can cut a band fully).",
       "bullet": true
     }
   ],
@@ -184,7 +184,7 @@ export const GUIDE: MixingGuide = {
         "source": "DJ/FOH system limiter",
         "use": "Yes",
         "ratio": "Brickwall",
-        "attackRelease": "Fast / program",
+        "attackRelease": "Fast / program-dependent",
         "gainReduction": "0 dB normally",
         "notes": "Safety only; if it works constantly, the DJ is too hot"
       }
@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (the loudest tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy; at −2 dBTP that means about −9 LUFS-I or quieter, so the loud end of the club range trades some punch for level."
+      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (the loudest tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to about −14 LUFS, some to −16, so extra loudness buys nothing there. A PLR (peak-to-loudness ratio) of 7–9 dB keeps the kick punchy; at −2 dBTP that means about −9 LUFS-I or quieter, so the loud end of the club range trades some punch for level."
     }
   ],
   "liveStudio": {

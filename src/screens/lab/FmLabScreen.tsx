@@ -383,7 +383,7 @@ export function FmLabScreen() {
             <>
               <Text style={styles.caption}>
                 {env.decaySec > 0
-                  ? `Each STRIKE restarts the index decay (τ = ${env.decaySec}s): bright attack fading to a pure tone — the FM ${envKey}. The header ▶ strikes once and ■ stops.`
+                  ? `Each STRIKE restarts the index decay (time constant τ = ${env.decaySec}s): bright attack fading to a pure tone — the FM ${envKey}. The header ▶ strikes once and ■ stops.`
                   : 'Sustained index — the controls change the running voice live (index and ratio glide smoothly, click-free). The header ▶ starts and ■ stops; STRIKE retriggers.'}{' '}
                 Output {GEN_LEVEL_DB} dBFS · uncalibrated.
               </Text>

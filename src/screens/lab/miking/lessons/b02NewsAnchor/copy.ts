@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'THE SHOT, THE MOVES, THE ROOM', text: 'Before any mic: ask for the widest frame, the camera moves, the light and the likely turns — to the camera, to the guest, down to the script. Listen at the seat for fans, a hard desk and the room; note who handles paper or a tablet.' },
     { title: 'ASK FIRST — CONSENT AND WARDROBE', text: `${SAFETY.consent} ${SAFETY.wardrobe} ${SAFETY.skin}` },
     { title: 'THE STAND AND POWER', text: `A fixed boom stand over a seated person is set up and secured by trained crew before anyone sits beneath it. ${SAFETY.phantom}` },
-    { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'In a public interview with a PA, bring each mic up only to its working level with the responsible operator; at any ring, pull it down at once and fix the geometry — any ring-out is the system operator’s job.' },
+    { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'In a public interview with a PA, bring each mic up only to its working level with the responsible operator; if it starts to ring (feedback), pull it down at once and fix the mic’s place and aim — ringing out the system is the operator’s job.' },
   ],
   studio: {
     id: 'b2.ctx.studio',
@@ -91,7 +91,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     note: 'Ask first: a lav goes on a person only with their agreement and wardrobe’s; nothing on skin except an adhesive made for skin. A fixed boom stand over a seated person is set up and secured by trained crew.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a seated anchor or guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, desk and voice is different.',
-      separate: 'Where the mic is — chest, above, the desk — its distance and its angle off the mouth are separate variables: change one at a time, with the anchor reading, turning and handling papers as they really will. Distances are measured to the mic’s front (a short shotgun’s capsule) and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
+      separate: 'Where the mic is — chest, above, the desk — its distance and its angle off the mouth are separate variables: change one at a time, with the anchor reading, turning and handling papers as they really will. Distances are measured to the mic’s front (a short shotgun’s capsule) and rounded to about 5 mm below 1 m and more coarsely above it; from 3 m up, the value in brackets is in feet, not inches.',
       clearance: 'Clearance comes first: off the clothes and the face, outside every frame, the base away from the papers and the hands.',
       tendencies: 'A chest lav: steady distance, a little chest-heavy, the clothes. A boom above: open, more room, out of the picture. A raised desk mic: closer, but the desk’s bounce. A boundary: low, more room and papers. Tendencies, and sets vary.',
     },
@@ -119,7 +119,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     prompt: 'The PA stays where the show needs it. Turn or tilt the gooseneck’s capsule (AIM), or change its PATTERN, until the PA sits in the rejection — while it still points at the mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: a gooseneck below the mouth, aimed up at it, points its rear down and forward over the desk — the PA, high at the stage’s corner, sits off to the side of that. A supercardioid’s rejection lies around toward the side of its rear; the aim decides how close the PA comes.',
-    shieldNote: 'The desk, the talkers and the room reflect the PA’s sound too, and the free-field pattern cannot show that. Check it with the system’s operator at a safe level.',
+    shieldNote: 'The desk, the talkers and the room reflect the PA’s sound too, and the free-field pattern drawn here (as in open air) cannot show that. Check it with the system’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the anchor is the same — the set, the shot and the PA change.',

@@ -94,10 +94,10 @@ export function Lesson04Body() {
 
   return (
     <>
-      <Eyebrow text={`LOOK-ALIKE ${Math.min(idx + 1, PLUG_COMPARISONS.length)} OF ${PLUG_COMPARISONS.length}`} />
+      <Eyebrow text={`LOOK-ALIKE ${Math.min(idx + 1, PLUG_COMPARISONS.length)}`} />
       <Text style={s.body}>
-        Each pair below fits where the other fits. Decide whether they are interchangeable — then see the technically
-        honest result of choosing wrong.
+        Each pair below fits where the other fits. Decide whether they are interchangeable — then see what really
+        happens if you choose wrong.
       </Text>
 
       {!allDone ? (

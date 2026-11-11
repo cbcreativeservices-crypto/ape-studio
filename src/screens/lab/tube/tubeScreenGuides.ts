@@ -141,7 +141,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     seeing: [
       'This is one small tube stage. A small input wave rides a blue wire into the grid at the left; a large wave leaves the plate on an amber wire at the right.',
       'Inside the glass, the grid dots pulse with the input, and the cathode-to-plate electron stream thickens and thins with them.',
-      'Readouts: GAIN ~×7, IN GRID and OUT PLATE. The output is drawn about seven times taller; real preamp stages often give far more.',
+      'Compare IN GRID with OUT PLATE: at GAIN ~×7, the output is drawn about seven times taller; real preamp stages often give far more.',
     ],
     control: [
       'There’s nothing to adjust here. This screen is a picture to watch.',
@@ -212,7 +212,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     changes: [
       'TRIODE: one control grid. Simple and linear, but the plate’s field reaches back through the grid, limiting gain.',
-      'TETRODE: a positive screen grid shields the control grid and speeds the stream. But when the plate swings below the screen, electrons knocked off the plate (red) are stolen by the screen.',
+      'TETRODE: a positive screen grid shields the control grid and speeds the stream. But when the plate’s voltage swings below the screen’s, electrons knocked off the plate (red) are stolen by the screen.',
       'PENTODE: a suppressor grid beside the plate turns those strays back to the plate.',
     ],
     teaches: [
@@ -298,9 +298,9 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
       start: 'Compare the transistor at TRUE SIZE with the tube beside it. Then look at ENLARGED · CUT OPEN and follow the blue pulses up the middle leg.',
     },
     seeing: [
-      'On the left, a tube: electrons crossing a vacuum. On the right, a transistor at TRUE SIZE, and ENLARGED · CUT OPEN, with carriers crossing its junctions.',
+      'On the left, a tube: electrons crossing a vacuum. On the right, a transistor at TRUE SIZE, and ENLARGED · CUT OPEN, with carriers (moving charges) crossing its junctions.',
       'In the transistor, blue pulses climbing the middle leg are the small base current that controls the flow.',
-      'The readouts are TUBE VACUUM and TRANSISTOR JUNCTION. Below, the two are compared side by side.',
+      'Read TUBE VACUUM and TRANSISTOR JUNCTION, then compare the two side by side below.',
     ],
     control: [
       'There’s nothing to adjust: this screen is a picture to compare. TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing.',
@@ -346,7 +346,7 @@ export const TUBE_END_GUIDE: ScreenGuide = {
     'If your progress can’t be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [
-    'The ideas the check draws on: what warm-up does inside a tube, and how the grid’s voltage changes the electron stream.',
+    'The core ideas: what warm-up does inside a tube, and how the grid’s voltage changes the electron stream.',
     'Also what bias sets, how a tube distorts when pushed past its straight region, and why a switched-off tube amp can still be dangerous inside.',
   ],
   tryThis: [

@@ -481,8 +481,8 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
         ))}
 
         <Text style={styles.caveat}>
-          A phone microphone is an educational measurement source, not a calibrated reference. 1/3
-          OCT · FFT {FFT_SIZE}.
+          A phone microphone is an educational measurement source, not a calibrated reference. 1/3-octave
+          bands · FFT size {FFT_SIZE}.
         </Text>
       </View>
     </RackUnit>

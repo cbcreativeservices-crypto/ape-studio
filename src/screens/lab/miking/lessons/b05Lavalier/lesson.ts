@@ -49,7 +49,7 @@ const pages: LessonPages = {
   microphone: {
     title: 'Choose the microphone',
     goal: 'Choose a body mic by its properties — where it is worn, its pattern, its power and its fit — and by the program: a quiet recording or a loud room with a PA.',
-    credit: { scenarios: ['b5.mic.1', 'b5.mic.2', 'b5.mic.3', 'b5.mic.4', 'b5.rec.1'], note: 'Answer the five checks (one reaches back to the presenter).' },
+    credit: { scenarios: ['b5.mic.1', 'b5.mic.2', 'b5.mic.3', 'b5.mic.4', 'b5.rec.1'], note: 'Answer the five checks (one is a FROM EARLIER card).' },
     takeaway: 'An omni lav is forgiving and discreet; a directional lav rejects more only when it is aimed well; a headset keeps one distance as the head moves — the closest to the mouth for a loud room. Choose for the program, not for a brand.',
   },
   placement: {
@@ -80,7 +80,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Fit a body mic in the right order, choose and justify a setup for a studio interview and for a live talk, and say what would justify a second mic.',
     credit: { scenarios: ['b5.prac.order', 'b5.prac.gain', 'b5.prac.setup1', 'b5.prac.setup2', 'b5.prac.3', 'b5.mix.1', 'b5.mix.2', 'b5.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real, agreeing presenter.' },
-    takeaway: 'Consent, a centered place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal does not — and more than one setup can pass.',
+    takeaway: 'What passes: consent, a centered place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback. A brand or a “hotter” signal does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -503,7 +503,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A lav taped to the skin with camera tape', ok: false, power: 'pack', feedback: 'Camera tape is not skin-safe. Use an adhesive made for skin, after asking.' },
       { id: 'e', label: 'The bodypack lav plugged straight into a phantom input', ok: false, power: 'phantom', feedback: 'Never — only through its own specified adapter.' },
     ],
-    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewelry'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how the person and their clothes were asked first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_VOICE],
+    reasons: [docReason('the lips'), clearReason('the clothes, the hair and the jewelry'), { id: 'r.consent', label: 'The wearer agreed, and wardrobe approved the mount', role: 'required', feedback: 'Say how you asked the person, and wardrobe, first.' }, { id: 'r.hidden', label: 'Hiding a lav always sounds as good as a visible one', role: 'wrong', feedback: 'Cloth over a capsule can dull and rub: compare them.' }, BRAND_REASON('presenter'), LOUD_VOICE],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point measured from the lips, the capsule clear of the clothes, the wearer’s agreement — and no promise that hidden sounds the same.',
   },
   {

@@ -433,7 +433,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     // (PRACTICE) last — so WHAT'S LEFT › is "just under the page list", not
     // "at the foot".
     assert.match(BAR, /\{NAV\.whatsLeft\} ›<\/Text>\s*<\/Pressable>\s*\{nav\.reset \? \(/);
-    assert.match(END.tryThis[0], /tap MODULE ▾ and WHAT'S LEFT ›, just under the page list:/);
+    assert.match(END.tryThis[0], /tap MODULE ▾ and WHAT'S LEFT › just under the page list:/);
     assert.doesNotMatch(END.tryThis[0], /foot of the list/);
     // REVIEW ▾ exists only once something is done; the ✓ is read in CONTENTS
     assert.match(END_SCREEN, /\{w\.credited\.length > 0 \? \(/);

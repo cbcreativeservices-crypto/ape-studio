@@ -50,7 +50,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
       'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint gray outline is the signal before limiting.',
       'The GR (gain reduction) ladder on the right grows down as the level is held down.',
       'CEIL and RLS show your settings. GR is measured live (— dB while stopped).',
-      'TEACHING MODEL: the drawing shows the idea. CLICK is drawn as a longer DRUM-HIT MODEL.',
+      'TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the limiter; ■ stops it. Drag the CEILING fader from −45 to −15 dB to set the level nothing should pass.',
@@ -84,7 +84,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
-      'First what a limiter is. Then CONTROLS: CEILING, Threshold / Input Gain (Drive), RLS, Attack, Lookahead, True-Peak and more. This screen has CEILING and RLS; the rest are on real limiters.',
+      'First what a limiter is. Then CONTROLS: CEILING, Threshold / Input Gain (Drive), RLS, Attack, Lookahead, True-Peak and more. EXPLORE has CEILING and RLS; the rest are on real limiters.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [

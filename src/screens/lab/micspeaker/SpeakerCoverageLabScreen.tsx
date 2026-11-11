@@ -127,7 +127,7 @@ const READING_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black is geometry failing. The fixes are aim, fills, or a delay speaker — turning the level up alone rarely fixes it.',
+    'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black means the speaker’s position, aim and pattern miss that seat. The fixes are aim, fills, or a delay speaker — turning the level up alone rarely fixes it.',
   wrongHint: 'Check the legend: which end of the ramp is black on?',
 };
 
@@ -142,7 +142,7 @@ const SIDE_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Raising the box and aiming it so the loud CENTER of its vertical pattern reaches the DISTANT rows — while the near rows sit at the quieter EDGE of the pattern — lets extra distance and the pattern’s shape offset each other, so front and back hear similar levels. Turning the whole system up just makes the already-loud front rows louder; moving the box closer to the front makes the front-to-back imbalance worse.',
-  wrongHint: 'Raise the HEIGHT fader and add DOWN-TILT so the pattern’s center reaches the back rows, not just the front.',
+  wrongHint: 'Raise the HEIGHT fader and add down-tilt with the TILT fader so the pattern’s center reaches the back rows, not just the front.',
 };
 
 // ── READING IT — the four colors + wrap-up (prose only, plain scroll) ───────
@@ -462,7 +462,7 @@ export function SpeakerCoverageLabScreen() {
       { k: 'V PATTERN', v: lineArray ? 'ARRAY' : `${sideDisp.vDeg}°`, flex: 1.3, helpKey: lineArray ? 'line_array' : 'dispersion' },
       {
         k: 'ROOM',
-        v: `${sloped ? 'sloped' : 'flat'}${delayOn || rearDelay ? ' · dly' : ''}`,
+        v: `${sloped ? 'sloped' : 'flat'}${delayOn || rearDelay ? ' · delay' : ''}`,
         flex: 1.2,
         helpKey: 'room_shape',
       },
@@ -667,8 +667,8 @@ export function SpeakerCoverageLabScreen() {
           ) : null}
           {sectionIdx === 1 && lineArray ? (
             <Text style={styles.badge}>
-              LINE ARRAY — CONCEPTUAL MODEL, NOT AN SPL PREDICTION. The summed field illustrates why a
-              splayed hang holds level deeper than one box; real array prediction is far more involved.
+              LINE ARRAY — CONCEPTUAL MODEL, NOT AN SPL PREDICTION. The summed field illustrates why several
+              hung boxes, angled apart, hold level deeper than one box; real array prediction is far more involved.
             </Text>
           ) : null}
           {sectionIdx === 1 && rearDelay ? (

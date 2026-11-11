@@ -56,7 +56,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'THE MIXER’S MANTRA sits at the top. Every page in this lab comes back to it.',
       'THE FIVE DIMENSIONS: Balance, Frequency, Pan & width, Depth and Movement. Each asks one question about your mix.',
-      'In the mix picture, a track sits higher or lower by its range, left or right by its pan. It’s wider when louder and glows with reverb.',
+      'In the mix picture, a track sits higher or lower by its frequency range, left or right by pan. It’s wider when louder and glows with reverb.',
       'Further down: YOUR FIRST DECISION (the focal point), a check, and goal chips.',
     ],
     control: [
@@ -66,7 +66,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'On the strip under the title, ⏮ goes to the first page; ‹ PREV and NEXT › step through. Tap the readout for every page, with ✓ on the ones you’ve done. The ‹ at the top leaves the lab. “When to bring in a pro ›” opens a short note.',
     ],
     changes: [
-      'MOVEMENT shows A MIX · THE CHORUS (BARS 3–4), marked LEAD +3 · BGV IN: the lead rides up and BGV enters. BGV means backing vocals, a synth pad here.',
+      'MOVEMENT shows A MIX · THE CHORUS (BARS 3–4), marked LEAD +3 · BGV IN: the lead rides up and BGV enters. BGV is backing vocals, played by a synth pad.',
       'Every other dimension shows A MIX · THE VERSE (BARS 1–2), marked ALL FIVE AT ONCE: a mix uses all five together.',
       'Your focal point is a commitment, not a right answer. Page 5 uses it to suggest an anchor track.',
       'Each goal chip at the foot turns ✓ as you do it.',
@@ -125,7 +125,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'THE EIGHT STATIONS — STUDY THEM (ORDER HIDDEN): each station of a channel and its job, shuffled on purpose.',
       'Under NOW BUILD THE PATH, the stations are drawn as gear, titled THE PARTS — YOUR ORDER SO FAR. A line below spells out your order with arrows.',
-      'Once you solve it, THE CANONICAL PATH — YOURS NOW appears, numbered, and the drawing becomes THE PATH — SIGNAL ORDER.',
+      'Once you solve it, THE STANDARD PATH — YOURS NOW appears, numbered, and the drawing becomes THE PATH — SIGNAL ORDER.',
     ],
     control: [
       'Tap the station buttons in the order audio travels, from source to output. Each station you place turns ✓ and grays out.',
@@ -137,7 +137,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'If not, the “Not yet” line names one station that sits too early, the station it must come after, and that station’s job. Think it through, then tap RESET.',
     ],
     teaches: [
-      'Audio moves through a channel in a set order, and every later page in this lab builds on it.',
+      'Audio moves through a channel in a set order, and every later step of a mix builds on it.',
       'A station’s job tells you where it belongs: it can only work on a signal that already exists before it.',
       'This is the usual DAW channel order. Some desks and DAWs let you move parts of it, so check the one you use.',
     ],
@@ -211,7 +211,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Play ▶ THE WALL and pick an anchor. Then pull every other fader down to taste and watch the other shapes narrow around the ringed one.',
-      'Mute KEYS: its shape turns dashed in the picture. Shape five tracks to complete the third goal chip.',
+      'Mute KEYS: its shape turns dashed in the picture. Shape five tracks (change a fader, PAN, MUTE or Ø on each) to complete the third goal chip.',
     ],
   },
 
@@ -239,7 +239,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Often the strongest move is to take something away, not add something.',
-      'Each subtraction works on one of the five dimensions from page 1.',
+      'Each subtraction works on one of the five dimensions of a mix.',
       'Cutting with EQ isn’t automatically better than boosting: find the problem first, then make the smallest change.',
       'Several moves can be right at once; mixing problems usually have more than one answer.',
     ],
@@ -476,7 +476,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Pick LIFT +6 and read the LEAD lane: it steps up by ▲ +6 dB at the chorus. Then play ▶ AUTOMATED.',
-      'Pick LIFT +1 and play ▶ AUTOMATED again: the lead’s lift is barely heard, though the pad still enters.',
+      'Pick LIFT +1 and play ▶ AUTOMATED again: the lead’s lift is barely heard, though the BGV pad still enters.',
     ],
   },
 
@@ -487,7 +487,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Tap each habit in THE FINISHING HABITS to read why it matters. Then play ▶ THE MIX and ▶ IN MONO and watch which parts move.',
     },
     seeing: [
-      'THE FINISHING HABITS: six checks, from Bypass-compare, matched to Take breaks.',
+      'THE FINISHING HABITS: six checks, from “Bypass-compare, matched” to “Take breaks”.',
       'RUN ONE NOW: THE MIX and IN MONO, with the mix picture titled THE MIX · STEREO.',
       'Then a check about tired ears, and goal chips.',
     ],
@@ -507,7 +507,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Play ▶ THE MIX, then ▶ IN MONO: watch GTR and KEYS slide from the sides to the center.',
-      'Open Listen QUIETLY, then turn your own volume all the way down while THE MIX plays. Does the lead still lead?',
+      'Open Listen QUIETLY, then turn your own volume down to a whisper while THE MIX plays. Does the lead still lead?',
     ],
   },
 
@@ -564,7 +564,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       '▶ WHERE YOU STARTED, ▶ YOUR MIX and ▶ YOURS, MONO play each version, all matched. The picture follows the one you press.',
     ],
     changes: [
-      'Step 2 turns ✓ on its own once five tracks are shaped.',
+      'Step 2 turns ✓ on its own once five tracks are shaped: each with its fader, PAN, MUTE or Ø changed.',
       'Steps 4–6 turn ✓ when you play YOUR MIX: it adds a lead compressor (3:1), the shared plate (lead and snare sends) and a +3 dB chorus ride on the lead.',
       'Step 7 turns ✓ once YOURS, MONO has played. When all eight are ✓, WHERE TO GO DEEPER appears.',
     ],
@@ -574,7 +574,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Masking can often be cleared without EQ, using level, pan and mute alone.',
     ],
     tryThis: [
-      'Shape five tracks on YOUR CONSOLE: step 2 turns ✓. Then play ▶ YOUR MIX: steps 4, 5 and 6 turn ✓.',
+      'Shape five tracks on YOUR CONSOLE (change a fader, PAN, MUTE or Ø on each): step 2 turns ✓. Then play ▶ YOUR MIX: steps 4, 5 and 6 turn ✓.',
       'Play ▶ YOURS, MONO and check that your anchor still leads with everything folded to the center.',
     ],
   },

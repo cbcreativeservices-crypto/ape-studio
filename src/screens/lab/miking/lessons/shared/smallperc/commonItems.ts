@@ -211,7 +211,7 @@ export function feedbackSymptom(w: SpWords): Symptom {
     firstChecks: 'Where the wedges and the PA sit against the mic’s real pattern, the stage level, and how many mics are open — before any more gain.',
     options: ['The monitors against the mic’s pattern, stage level, open mics', 'Turn the gain up a little more and hope it settles once the band plays', 'Swap to an omni so the instrument is heard from all sides'],
     correct: 'The monitors against the mic’s pattern, stage level, open mics',
-    explain: 'More gain only brings the ring sooner. Aim the pattern’s rejection at the loudest monitor, lower the spill, close mics that are not helping — with the system operator — and avoid uncontrolled feedback.',
+    explain: 'More gain only brings the ring sooner. Aim the pattern’s rejection at the loudest monitor, lower the spill, mute mics that are not helping — with the system operator — and avoid uncontrolled feedback.',
     why: {
       'Turn the gain up a little more and hope it settles once the band plays': 'More gain brings feedback sooner. Fix the geometry and the spill first.',
       'Swap to an omni so the instrument is heard from all sides': 'An omni hears the monitors from every side too: on a loud stage it usually feeds back sooner.',

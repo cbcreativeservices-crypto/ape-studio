@@ -133,7 +133,7 @@ function F14Microphone({ lesson, answers, onAnswered, onInteractive, interactive
   const timing = useTimingStep({
     words: {
       title: 'The tap and the delay',
-      badge: 'Arrivals at a front-row seat on a real time base · the heights are a made-up example · amber line = your delay',
+      badge: 'Arrivals at a front-row seat, drawn to a true time scale · the heights are a made-up example · amber line = your delay',
       looking: 'The arrivals',
       prompt: 'With the fill ALONE, set the DELAY on its first arrival. Then leave the left main ON and press FINDER: is it right?',
     },

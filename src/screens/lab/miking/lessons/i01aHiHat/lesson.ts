@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See how a mic over the hats and one under them start out of step, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['hh.two.1', 'hh.two.pol', 'hh.two.oh'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
-    takeaway: 'Above and below face opposite sides of the plates, so they start opposite; polarity flips a sign, it does not remove a delay. The overheads hear the hats too: compare every pair in mono.',
+    takeaway: 'Above and below face opposite sides of the plates, so the two mics start in opposite polarity; polarity flips a sign, it does not remove a delay. The overheads hear the hats too: compare every pair of mics in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a hat mic in the right order, choose and justify a plan for two briefs (from no hat mic to a mic underneath), and say what would justify a second mic.',
     credit: { scenarios: ['hh.prac.order', 'hh.prac.gain', 'hh.prac.setup1', 'hh.prac.setup2', 'hh.prac.3', 'hh.mix.1', 'hh.mix.2', 'hh.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real kit.' },
-    takeaway: 'Safe clearance, correct power and level checks, the snare kept off the mic’s front and an accurate account of polarity versus delay pass. A brand or a habit does not decide it — and more than one plan can pass.',
+    takeaway: 'A plan passes with safe clearance, correct power and level checks, the snare kept off the mic’s front and a correct explanation of polarity versus delay. A brand or a habit does not decide it — and more than one plan can pass.',
   },
 };
 
@@ -542,7 +542,7 @@ export const I01A_LESSON: CymbalLesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every pair of hats, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit, a 14 in pair drawn to a common profile, the stick’s side, the swing and the air at the edges as drawn keep-outs, mic patterns as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every pair of hats, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a typical 5-piece kit, a 14 in pair drawn to a common profile, the stick’s side, the swing and the air at the edges as drawn keep-clear areas, mic patterns as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
   copy: HAT_COPY,
   cym: HAT_CYM,
 };

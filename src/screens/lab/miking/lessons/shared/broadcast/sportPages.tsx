@@ -319,7 +319,7 @@ export function useSpillStep(spec: SpillSpec): MikingStep {
       selectedId: `${gap}`,
       onSelect: (id) => setGap(Number(id)),
       sticky: true,
-      options: GAPS.map((g) => ({ id: `${g}`, label: `${(g / 1000).toFixed(1)} m apart`, blurb: g === 900 ? 'The drawing’s booth.' : 'Seats moved.' })),
+      options: GAPS.map((g) => ({ id: `${g}`, label: `${(g / 1000).toFixed(1)} m apart`, blurb: g === 900 ? 'The booth as first drawn.' : 'Seats moved.' })),
     },
   ];
   const bezel: BezelItem[] = [

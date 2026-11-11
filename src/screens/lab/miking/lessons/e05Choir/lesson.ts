@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — nearer, farther, higher — and see what changes for the first and back rows and across the width.',
-    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example alone doesn’t count toward credit.' },
     takeaway: 'Choose the array, then move it toward or away and listen. Nearer favors the first rows and diction; farther, the blend and the room — and the whole choir inside the pair’s angle. Move the pair as a unit.',
   },
   context: {
@@ -178,7 +178,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The 17 cm pair spreads what lies inside its 95° recording angle between the loudspeakers. Close in, the outer sections fall outside it — pushed to the edges, and farther from the pair than the center: move the pair back until the choir fills the angle, or bring the group in.',
     why: {
       'The pair is too high above them': 'Height changes the rows’ balance; the width the pair takes in is set by its distance.',
-      'The pair has no phantom power': 'Then nothing would be heard — the outer sections would not stand out.',
+      'The pair has no phantom power': 'Then nothing would be heard at all, not only the outer sections.',
     },
   },
   threeToOne('ch', 'placement', 'about 60 cm (2 ft)', '1.8 m (6 ft)'),

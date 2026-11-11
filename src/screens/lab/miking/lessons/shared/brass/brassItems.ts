@@ -20,7 +20,7 @@ const LOWGAIN = 'Yes, as long as the preamp gain is set low';
 export const overloadCheck = (id: string, noun: string): MikingScenario => ({
   id,
   page: 'microphone',
-  prompt: `The ${noun}’s loudest accent sounds smeared, yet the desk’s input meter never clips. Is the mic surely fine?`,
+  prompt: `The ${noun}’s loudest accent sounds smeared, yet the desk’s input meter never clips. Can you be sure the mic is fine?`,
   options: [OK, METER, LOWGAIN],
   correct: OK,
   explain: `Close to a ${noun}’s bell the peaks are very high, and a mic’s own capsule and electronics can overload before anything reaches the desk. Check the mic’s rating and any pad its maker allows, then set gain on the strongest real passage.`,
@@ -34,7 +34,7 @@ export const overloadCheck = (id: string, noun: string): MikingScenario => ({
 export const brassFeedback = (id: string, noun: string): Symptom => ({
   id,
   observation: 'Feedback, or the stage bleeds into the mic',
-  firstChecks: 'Lower the offending level; revise the mic, monitor and player geometry and the number of open mics.',
+  firstChecks: 'Lower the offending level; change where the mic, monitor and player sit, and the number of open mics.',
   options: ['Lower the level; then change the layout and open mics', `Boost the ${noun} channel so it rides over the ring`, 'Swap to an omni mic, which is less likely to feed back'],
   correct: 'Lower the level; then change the layout and open mics',
   explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the wedge, aim the pattern’s rejection and close mics you do not need. Avoid uncontrolled feedback.',

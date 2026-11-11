@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — facing the coverplate and upper body, a little off the picking hand — then move the mic and see what changes.',
     credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, read from the coverplate — there is no flat-top sound hole here. Move a few centimeters at a time, then change distance; the bar’s and the hand’s clearance comes first.',
+    takeaway: 'A suggested zone is a place to begin, measured from the coverplate — there is no flat-top sound hole here. Move a few centimeters at a time, then change distance; the bar’s and the hand’s clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one resonator mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second channel.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real instrument.' },
-    takeaway: 'A stable, playable position, power and level checks, a mono check of any blend, and no contact with the resonator hardware pass. A brand or a “loudest spot” does not.',
+    takeaway: 'These pass: a stable, playable position, power and level checks, a mono check of any blend, and no contact with the resonator hardware. A brand or a “loudest spot” does not.',
   },
 };
 
@@ -234,7 +234,7 @@ const scenarios: MikingScenario[] = [
     right: 'The coverplate, facing it and the upper body',
     wrong1: 'The headstock, since that is easy to see',
     wrong2: 'The back of the body, under the player',
-    explain: 'A distance belongs to the point it names: here the coverplate. On a resonator there is no flat-top sound hole to read from.',
+    explain: 'A distance belongs to the point it names: here the coverplate. On a resonator there is no flat-top sound hole to measure from.',
   }),
 ];
 
@@ -284,7 +284,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A square-neck resonator played lap style on a fairly loud bluegrass stage, a wedge in front. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser on a boom from the side, 20–45 cm from the coverplate, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, from the side, clear of the bar and hand, aimed against the wedge.' },
+      { id: 'a', label: 'Small condenser on a boom from the side, 20–45 cm from the coverplate, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, from the side, clear of the bar and hand, its rear toward the wedge.' },
       { id: 'b', label: 'Instrument dynamic on a side boom, about 20 cm from the coverplate, off the picking hand', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point.' },
       { id: 'c', label: 'Clip-on mini on a suitable body clip, capsule toward the coverplate’s edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the instrument — never on the cone.' },
       { id: 'd', label: 'Mic stand straight up over the cone, 5 cm above its center', ok: false, power: 'phantom', feedback: 'In the player’s and the bar’s space, and one close spot sounds narrow. Come in from the side.' },
@@ -391,7 +391,7 @@ export const C03_LESSON: Lesson = {
   pages,
   scenarios,
   symptoms,
-  orderTasks: [setupOrder(P, RESO, 'Have the player stop; place it facing the coverplate from the side; check the bar and hands')],
+  orderTasks: [setupOrder(P, RESO, 'Have the player stop; place the mic facing the coverplate from the side; check the bar and hands')],
   setupTasks,
   predictions,
   orient: [
@@ -416,7 +416,7 @@ export const C03_LESSON: Lesson = {
       { id: 'player', label: 'the player and the resonator', short: 'PLAYER', note: 'Lap style the player sits behind the instrument and leans over it; the bar travels the neck, the picking hand works over the coverplate. All of it is theirs.', prov: { kind: 'illustrative', reason: 'a typical posture' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'chair', label: 'the chair', short: 'CHAIR', note: 'Behind the player. A side boom’s stand shares the floor with the chair and the player’s feet.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'FLOOR SPACE', scene: 'kit' },
       { id: 'di', label: 'DI box and pickup cable', short: 'DI', note: 'A cone or bridge pickup is an electrical path, not a microphone. Route its cable clear of the feet.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGNAL PATH', scene: 'kit' },
-      { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Lap style, a mic over the coverplate has it out in front and below.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Lap style, a mic over the coverplate has the wedge in front of it and below.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band: bass amp and drums', short: 'BAND', note: 'Upstage. In a bluegrass band the banjo, the bass and the voices are the neighbors.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience. A bright resonator mic can feed back if the PA reaches it.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage', planIds: ['paL', 'paR'] },
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },

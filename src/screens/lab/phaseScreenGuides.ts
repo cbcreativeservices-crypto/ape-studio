@@ -105,14 +105,14 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
     ],
     control: [
       'Scroll to read. The tabs under the title switch to EXPLORE, where you hear each idea, and CHECK, where you answer the questions.',
-      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack, so you can read without leaving it.',
+      'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over EXPLORE, so you can read without leaving it.',
       'On EXPLORE, long-press a dock key or a readout to open just its entry. Long-press a SOURCE choice for that test signal’s own note.',
     ],
     changes: [
       'The page is your reference for EXPLORE.',
       'Each CONTROLS entry is named for its dock key: POL, DLY R and FOLD.',
       'The display entry explains the moving L and R picture. The phase scope sits on EXPLORE in LAB NOTES, under DESIGNED RESPONSE.',
-      'COMMON MISTAKES shows how to read the scope: upright line = in phase (+1), flat line = anti-phase (−1), round ball = wide.',
+      'COMMON MISTAKES shows how to read the scope: upright line = in phase (+1), flat line = anti-phase (−1), round ball = wide (near 0).',
     ],
     teaches: [
       'What polarity, phase, comb filtering, correlation, mono compatibility and a goniometer (a stereo phase scope) mean.',
@@ -139,7 +139,7 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. If it’s right, you see CORRECT and a short explanation, and the card locks. If not, you see NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
       'There is no score and no limit on tries.',
-      'Use the tabs under the title to look something up on LEARN or EXPLORE, such as the scope; answers already right stay right. If you leave the lab before the last one, the check starts over.',
+      'Use the tabs under the title to look something up on LEARN or EXPLORE, such as the scope; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],
     changes: [
       'Each right answer stays right while you are in this lab.',

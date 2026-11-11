@@ -100,6 +100,6 @@ export const BADGE = {
   create: 'CALCULATED · dimensions, area and volume are exact arithmetic from your entries',
   monitoring: 'CALCULATED · distances, listening angle and symmetry · ESTIMATED · the boundary-notch guide',
   exploreRect: 'CALCULATED · idealized modes of a rectangular room · ESTIMATED · reflection paths and levels',
-  exploreApprox: 'ESTIMATED · modes from the bounding box / mean ceiling height (not a rectangular box — less reliable) · ESTIMATED · reflections',
-  treatment: 'ESTIMATED · simplified material absorption; Sabine/Eyring are approximations in a small room',
+  exploreApprox: 'ESTIMATED · modes from the smallest rectangle around the plan / mean ceiling height (not a rectangular room — less reliable) · ESTIMATED · reflections',
+  treatment: 'ESTIMATED · simplified material absorption; Sabine/Eyring reverb formulas are approximations in a small room',
 } as const;

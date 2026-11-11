@@ -82,7 +82,7 @@ const DAMPS: { id: number; label: string }[] = [
   { id: 0.85, label: 'High' },
 ];
 const EXCITERS: { id: string; label: string; p: { x: number; y: number } }[] = [
-  { id: 'centre', label: 'Centre', p: { x: 0.5, y: 0.5 } },
+  { id: 'centre', label: 'Center', p: { x: 0.5, y: 0.5 } },
   { id: 'edge', label: 'Edge', p: { x: 0.9, y: 0.5 } },
   { id: 'corner', label: 'Corner', p: { x: 0.85, y: 0.85 } },
 ];
@@ -423,7 +423,7 @@ function PlateStudio() {
               </View>
               <Text style={styles.trayBlurb}>
                 {lib
-                  ? 'Solid wood is ~10× stiffer along the grain than across it. The solved shapes are isotropic, so here wood takes the geometric-mean stiffness and the grain angle does not re-order the modes — use the square or rectangle to see that.'
+                  ? 'Solid wood is ~10× stiffer along the grain than across it. The solved shapes are isotropic (same stiffness every way), so here wood takes the geometric-mean stiffness and the grain angle does not re-order the modes — use the square or rectangle to see that.'
                   : 'Solid wood is ~10× stiffer along the grain than across it. Rotating the grain changes which modes come first.'}
               </Text>
             </>

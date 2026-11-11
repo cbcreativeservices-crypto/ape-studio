@@ -340,19 +340,19 @@ function StripFitWindows() {
       <View style={styles.stripRow}>
         <Text style={[styles.methodTag, { color: colors.amber, borderColor: 'rgba(255,198,77,0.5)' }]}>T30</Text>
         <Text style={styles.stripBody}>
-          <Text style={styles.stripMono}>−5 → −35 dB</Text>, time ×2 — the fit shown on this plot
+          <Text style={styles.stripMono}>−5 → −35 dB</Text>, fit time ×2 = RT60 — the fit shown on this plot
         </Text>
       </View>
       <View style={styles.stripRow}>
         <Text style={styles.methodTag}>T20</Text>
         <Text style={styles.stripBody}>
-          <Text style={styles.stripMono}>−5 → −25 dB</Text>, time ×3 — for noisier rooms
+          <Text style={styles.stripMono}>−5 → −25 dB</Text>, fit time ×3 = RT60 — for noisier rooms
         </Text>
       </View>
       <View style={styles.stripRow}>
         <Text style={styles.methodTag}>EDT</Text>
         <Text style={styles.stripBody}>
-          first <Text style={styles.stripMono}>10 dB</Text> only — tracks perceived liveness
+          early decay: first <Text style={styles.stripMono}>10 dB</Text> only — tracks perceived liveness
         </Text>
       </View>
     </View>
@@ -388,7 +388,7 @@ function StripReject() {
     <View style={styles.strip}>
       <Text style={styles.stripTitle}>WHY THE RESULT IS REJECTED</Text>
       <View style={styles.ledgerRow}>
-        <Text style={styles.ledgerLabel}>Usable span (−5 dB down to floor + 10 dB)</Text>
+        <Text style={styles.ledgerLabel}>Usable span (−5 dB down to 10 dB above the floor)</Text>
         <Text style={[styles.ledgerValue, { color: colors.amber }]}>23 dB</Text>
       </View>
       <View style={styles.ledgerRow}>
@@ -410,7 +410,7 @@ const SCENES = [
     title: 'THE DECAY CURVE',
     watch: 'the amber fit crossing −60 dB at 1.0 s — that crossing is the RT60',
     body:
-      'The source stops, and the room’s response is integrated into this smooth Schroeder decay — level in dB falling against time in seconds, the trace cooling from loud to silent-blue as it dies. The tool fits a straight line to the −5 to −35 dB span (a T30 fit), then rides that slope down to −60 dB. RT60 is read off the fitted slope — about 1.0 s here — never off the raw wiggles.',
+      'The source stops, and the room’s remaining energy is added up over time into this smooth Schroeder decay — level in dB falling against time in seconds, the trace cooling from loud to silent-blue as it dies. The tool fits a straight line to the −5 to −35 dB span (a T30 fit), then rides that slope down to −60 dB. RT60 is read off the fitted slope — about 1.0 s here — never off the raw wiggles.',
     note:
       'FIELD NOTE: check the method label before quoting a number — a T30 extrapolation and a true 60 dB measurement are not the same claim.',
   },

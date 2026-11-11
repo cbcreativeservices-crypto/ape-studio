@@ -280,7 +280,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and amphitheater country typically runs 96–102 dBA LAeq,15min at FOH, with peaks to about 108 dBA and C-weighted levels around 110–120 dBC; louder shows sit nearer 105 dBA with peaks at 108. Country needs firm kick and bass but far less sub than EDM or hip-hop; a C-minus-A gap above about 18–20 dB means too much sub. Honky-tonks and dance halls run 90–98 dBA so dancers can talk. Fairs and rodeos bring families — offer earplugs."
+      "text": "Arena and amphitheater country typically runs 96–102 dBA LAeq,15min at FOH, with peaks to about 108 dBA and C-weighted levels around 110–120 dBC; louder shows sit nearer 105 dBA with peaks at 108. Country needs firm kick and bass but far less sub than EDM or hip-hop; a dBC reading more than about 18–20 dB above dBA means too much sub. Honky-tonks and dance halls run 90–98 dBA so dancers can talk. Fairs and rodeos bring families — offer earplugs."
     },
     {
       "label": "Studio / streaming:",
@@ -306,7 +306,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Low end",
-        "live": "Sidechain bass to kick; watch 80–200 Hz buildup in sheds",
+        "live": "Sidechain bass to kick; watch 80–200 Hz buildup in sheds (amphitheaters)",
         "studio": "Big, warm bass; programmed sub layers on modern tracks"
       },
       {

@@ -29,7 +29,7 @@ const pages: LessonPages = {
   sound: {
     title: 'How it makes its sound',
     goal: 'See how the bar, a pedal and the pickup shape a steel string’s signal, and how the signal becomes moving air.',
-    credit: { scenarios: ['ps.snd.1', 'ps.snd.2', 'ps.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and move the bar, step the cone through to the end, and answer the three checks.' },
+    credit: { scenarios: ['ps.snd.1', 'ps.snd.2', 'ps.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and move the bar, step through the cone’s motion to the end, and answer the three checks.' },
     takeaway: 'The bar is a movable fret: the shorter the sounding length, the higher the note. A pedal or knee lever changes a string’s tension at the changer. The pickup senses its own spot on the string; the speaker does the rest.',
   },
   setting: {
@@ -341,7 +341,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Only moving a mic (or delaying a direct path) changes the timing. Polarity moves the notches.',
     why: {
       'It drops to zero, so the two arrivals now line up exactly': 'The paths are unchanged: so is the delay.',
-      'It doubles, because one copy is now inverted': 'Polarity has no time in it.',
+      'It doubles, because one copy is now inverted': 'Polarity adds no delay.',
     },
   },
   {
@@ -649,7 +649,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting by a loud steel amp all through soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer to the amp than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — and staying below it is not a promise. Measure where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more — and staying below it is not a promise. Measure where the person listens.',
     why: {
       'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit.',
       'It is safe as long as the mic is closer to the amp than you are': 'Where the mic sits says nothing about your ears.',

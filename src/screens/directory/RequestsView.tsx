@@ -1366,17 +1366,17 @@ function ThreadSheet({
                 </Text>
               ) : allow?.messagesLeftThisWeek === 0 ? (
                 <Text style={st.allowance}>
-                  No messages left this week. The oldest frees up 7 days after you sent it.
+                  No messages left this week. You can send another one 7 days after your oldest recent message.
                 </Text>
               ) : allow?.messagesLeftToday === 0 ? (
                 <Text style={st.allowance}>
-                  No messages left today across all conversations. The oldest frees up 24 hours
-                  after you sent it.
+                  No messages left today across all conversations. You can send another one 24 hours
+                  after your oldest recent message.
                 </Text>
               ) : allow && allow.messagesLeftHereToday <= 3 ? (
                 <Text style={st.allowance}>
                   {allow.messagesLeftHereToday === 0
-                    ? 'No replies left in this conversation for now. The oldest frees up 24 hours after you sent it.'
+                    ? 'No replies left in this conversation for now. You can send another one 24 hours after your oldest recent reply.'
                     : `${allow.messagesLeftHereToday} ${allow.messagesLeftHereToday === 1 ? 'reply' : 'replies'} left in this conversation today.`}
                 </Text>
               ) : null}

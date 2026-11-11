@@ -42,7 +42,7 @@ const pages: LessonPages = {
     title: 'Shotgun, dish or wide',
     goal: 'See why a dish helps only where the wavelength is shorter than the dish, why it needs to be aimed precisely, and what a shotgun and an omni do instead.',
     credit: { scenarios: ['wl.mic.1', 'wl.mic.2', 'wl.mic.3', 'wl.rec.1'], interactive: 'dishTried', note: 'Move the pitch below and above the dish’s line, and answer the four checks.' },
-    takeaway: 'A dish gathers mid and high pitches at its focus while the aim holds, and gives little help below about c / D for its size. A shotgun narrows in the highs and follows movement more easily; an omni keeps the place.',
+    takeaway: 'A dish gathers mid and high pitches at its focus while the aim holds, and gives little help below about c / D (speed of sound ÷ dish width) for its size. A shotgun narrows in the highs and follows movement more easily; an omni keeps the place.',
   },
   placement: {
     title: 'Placement Studio',
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which way does the capsule face in a parabolic dish?',
     options: ['Back toward the dish, at its focus', 'Out toward the bird, at the dish’s rim', 'Sideways, along the dish’s rim'],
     correct: 'Back toward the dish, at its focus',
-    explain: 'The capsule sits at the focus facing the dish, as its maker specifies — the bowl sends the sound back to it. Never move it to another product’s focus.',
+    explain: 'The capsule sits at the focus facing the dish, as its maker specifies — the bowl sends the sound back to it. Never set it at a different dish’s focus.',
     why: {
       'Out toward the bird, at the dish’s rim': 'The bowl gathers the sound at the focus; the capsule faces the bowl.',
       'Sideways, along the dish’s rim': 'At the focus, facing the dish — the maker’s position.',
@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Pause, re-aim between phrases',
     explain: 'Re-aim smoothly between phrases from where you stand — or pause. Never chase it with gain, and never step off your point while aiming.',
     why: {
-      'Boost the gain to keep it there': 'Off the axis you would only raise what is there now.',
+      'Boost the gain to keep it there': 'Gain would only raise what the dish points at now.',
       'Walk after it with the dish aimed': 'Feet stay planted: watch your footing and the trail.',
     },
   },
@@ -241,7 +241,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Below about what pitch does a 57 cm dish give little help?',
     options: ['About 600 Hz', 'About 60 Hertz', 'About 6 kHz'],
     correct: 'About 600 Hz',
-    explain: 'Where the wavelength matches the dish: c / D ≈ 343 / 0.57 ≈ 600 Hz for this size. It belongs to this dish, not to every dish.',
+    explain: 'Where the wavelength matches the dish: c / D (speed of sound ÷ dish width) ≈ 343 / 0.57 ≈ 600 Hz for this size. It belongs to this dish, not to every dish.',
     why: {
       'About 60 Hertz': 'That would need a dish about 6 m across.',
       'About 6 kHz': 'That would be a dish under 6 cm across.',
@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Fur, then a basket and suspension',
     explain: 'Foam may be enough in a sheltered forest but not on windy open ground: add fur, a basket and its suspension, and quiet the cable.',
     why: {
-      'A steep low-cut filter, then record on': 'It may take a real low call with the rumble — protect first, and note any filter.',
+      'A steep low-cut filter, then record on': 'It may cut a real low call along with the rumble — protect first, and note any filter.',
       'Hold the mic lower to the ground': 'Lower is not the cure: the capsule needs protection.',
     },
   },
@@ -422,7 +422,7 @@ const symptoms: Symptom[] = [
     options: ['Protection and a sheltered spot', 'A high-pass filter on its own, and go', 'Moving nearer the animal'],
     correct: 'Protection and a sheltered spot',
     explain: 'Protect the capsule first; a filter may remove a real low call. A dish is a large surface in the wind too.',
-    why: { 'A high-pass filter on its own, and go': 'It can take a real low call with the rumble.', 'Moving nearer the animal': 'Moving closer does not stop wind, and it may disturb the animal.' },
+    why: { 'A high-pass filter on its own, and go': 'It can cut a real low call along with the rumble.', 'Moving nearer the animal': 'Moving closer does not stop wind, and it may disturb the animal.' },
   },
   {
     id: 'wl.sym.lost',

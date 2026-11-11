@@ -68,7 +68,7 @@ import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-ges
 const PATTERNS: { key: string; label: string; a: number; b: number; blurb: string }[] = [
   { key: 'omni', label: 'OMNI', a: 1, b: 0, blurb: 'Hears equally in every direction — no rejection anywhere. Natural sound, zero feedback protection.' },
   { key: 'cardioid', label: 'CARDIOID', a: 0.5, b: 0.5, blurb: 'The heart shape: full sensitivity in front, dead at the REAR. The live-vocal standard — point the null at the monitor.' },
-  { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~126° and a small rear lobe appears — aim monitors at the null, not the tail.' },
+  { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~126° and a small rear lobe appears — aim monitors at the null, not the rear lobe.' },
   { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — the best side rejection of the cardioid family, but it hears a fair amount from directly behind (only about 6 dB down).' },
   { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1, blurb: 'Front and back equally, sides completely DEAD — the pattern of most ribbon mics, and one half of mid-side.' },
 ];
@@ -205,7 +205,7 @@ function proxBoostForInches(inches: number): number {
 const POP_MODES: { key: 'none' | 'pop' | 'foam' | 'blimp'; label: string; pass: number; note: string }[] = [
   { key: 'none', label: 'NONE', pass: 1, note: 'The full plosive blast hits the capsule — a low-frequency POP that can overload it.' },
   { key: 'pop', label: 'POP FILTER', pass: 0.3, note: 'A mesh disc a few inches out breaks up the air burst; the voice passes untouched.' },
-  { key: 'foam', label: 'FOAM', pass: 0.5, note: 'Foam over the grille softens wind and breath — good outdoors, mild HF cost.' },
+  { key: 'foam', label: 'FOAM', pass: 0.5, note: 'Foam over the grille softens wind and breath — good outdoors, a slight loss of highs.' },
   { key: 'blimp', label: 'SHOTGUN WINDSHIELD', pass: 0.12, note: 'A full basket creates still air around the mic — the outdoor standard for wind.' },
 ];
 
@@ -301,7 +301,7 @@ const STEREO_TECHS: {
     plain: 'Two mics set well apart, both aimed straight ahead.',
     use: 'Reach for it when you want a big, wide, open room — an orchestra, a piano, an ensemble.',
     mono: 'Risky. Wide spacing means a sound reaches the two mics at different times, so summing can comb-filter it and leave it hollow.',
-    note: 'Two spaced omnis facing forward. The channels differ almost entirely in arrival TIME. Widest image of the four, and the least predictable when folded down.',
+    note: 'Two spaced omnis facing forward. The channels differ almost entirely in arrival TIME. Widest image of the four, and the least predictable when summed to mono.',
   },
   {
     key: 'ms',
@@ -402,7 +402,7 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
             />
             <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
             <DisplayGuideButton onPress={() => help('capsule')} />
-            <Text style={styles.readout}>e = B · l · v — voltage tracks the coil’s VELOCITY</Text>
+            <Text style={styles.readout}>e = B · l · v (field × wire length × speed) — voltage tracks the coil’s VELOCITY</Text>
             <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
               <Text style={styles.caption}>
                 A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt are what make it directional — the same parts you meet again in POLAR, PROXIMITY, and the cupping cutaway.
@@ -482,7 +482,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
         // inside a disclosure. It now lives on the glass as a chip that clears
         // on the first drag.
         badge:
-          'CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff',
+          'CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = the pattern’s sensitivity by angle, r(θ) = |A + B·cosθ|, × 1/d distance falloff',
         onGuide: () => help('polar_pattern'),
         bezel: [
           { k: 'PATTERN', v: pat.label, helpKey: 'polar_pattern' },
@@ -519,7 +519,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
         <Text style={styles.caption}>
           The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear (monitor
           wedges live there). Figure-8 has two lobes and two deep side nulls. Omni hears everything —
-          no proximity effect, no null to aim.
+          no up-close bass boost (proximity effect), no null to aim.
         </Text>
       </CollapsibleSection>
       <CheckQuestion
@@ -693,7 +693,7 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
       label: 'DISTANCE',
       value: d01,
       onChange: setD01,
-      format: () => `${inches} in · ${fmtDb1(relDb)} dB rel 4 in`,
+      format: () => `${inches} in · ${fmtDb1(relDb)} dB vs 4 in`,
       formatShort: () => `${inches} in`,
       helpKey: 'distance',
     },
@@ -739,8 +739,8 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
           ],
           correctIdx: 1,
           reveal:
-            'Direct sound obeys the inverse-square law; the room’s reverberant level barely changes. Past the crossover (~12 in here) the room wins — and gain cannot fix it, because turning up brings the room up with it.',
-          wrongHint: 'Ride the DISTANCE lane across 12 inches and watch which bar overtakes the other.',
+            'Direct sound obeys the inverse-square law; the room’s reverberant level barely changes. Past the crossing point (the critical distance, ~12 in here) the room wins — and gain cannot fix it, because turning up brings the room up with it.',
+          wrongHint: 'Move the DISTANCE fader across 12 inches and watch which bar overtakes the other.',
         }}
       />
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
@@ -825,7 +825,7 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       stage={{
         size: 'L', // approach scene + response curve stack on one glass
         fullScreen: true, // legibility pass 2026-09-25: the rack shows ⤢ FULL SCREEN and docks the controls inside
-        badge: 'ILLUSTRATIVE — conceptual approach scene + a simplified low-shelf response; real mics vary by design',
+        badge: 'ILLUSTRATIVE — conceptual approach scene + a simplified bass-boost (low-shelf) curve; real mics vary by design',
         onGuide: () => help('proximity'),
         bezel: [
           { k: 'DIST', v: `${inches} in`, helpKey: 'proximity' },
@@ -866,7 +866,8 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('proximity')}>
         <Text style={styles.caption}>
           Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
-          the mic turns muddy — and one reason most channel strips have a high-pass filter.
+          the mic turns muddy — and one reason most channel strips have a high-pass filter, which cuts
+          the lowest bass.
         </Text>
       </CollapsibleSection>
       <CheckQuestion spec={PROX_CHECK} />
@@ -943,7 +944,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       stage={{
         size: 'L', // mic diagram + response curve stack on one glass
         fullScreen: true, // legibility pass 2026-09-25: the rack shows ⤢ FULL SCREEN and docks the controls inside
-        badge: 'ILLUSTRATIVE — broadband polar loss + growing high-frequency rolloff off-axis',
+        badge: 'ILLUSTRATIVE — overall level loss off-axis + highs rolling off faster as the angle grows',
         onGuide: () => help('off_axis'),
         bezel: [
           { k: 'ANGLE', v: `${angle}°`, helpKey: 'off_axis' },
@@ -993,7 +994,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
           correctIdx: 1,
           reveal:
             'High frequencies fall off faster off-axis than lows, so tone changes before level. That is why drifting singers sound muffled first — and why smooth off-axis response is a mark of a great microphone.',
-          wrongHint: 'Compare the @100 Hz and @8 kHz readouts as you ride the ANGLE lane — which one collapses first?',
+          wrongHint: 'Compare the @100 Hz and @8 kHz readouts as you move the ANGLE fader — which one collapses first?',
         }}
       />
       {wellBottom}
@@ -1205,7 +1206,7 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: the rack shows ⤢ FULL SCREEN; the pair and its field zoom as one (StereoTechniqueView's scaled Group)
-        badge: "CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASUREMENT · the two capsules' |A + B·cosθ| gains × 1/d, summed for this technique's geometry · the lit deck at the top is the stage",
+        badge: "CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASUREMENT · each capsule’s pattern |A + B·cosθ| × 1/d distance falloff, added together for this technique’s layout · the lit deck at the top is the stage",
         onGuide: () => help('stereo_pair'),
         bezel: [
           { k: 'TECHNIQUE', v: t.label, flex: 1.3, helpKey: 'stereo_pair' },
@@ -1233,9 +1234,9 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
         </Text>
         <Text style={styles.caption}>{t.note}</Text>
         <Text style={styles.caption}>
-          IN MONO — {t.mono} Summing to mono is not a hypothetical: club rigs, broadcast feeds and
-          phone speakers all do it, which is why it is the trade every one of these techniques is
-          really making.
+          IN MONO — {t.mono} Summing to mono really happens: club rigs, broadcast feeds and phone
+          speakers all do it, so every technique here trades stereo width against how it holds up in
+          mono.
         </Text>
       </CollapsibleSection>
       <CheckQuestion
@@ -1248,7 +1249,7 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
           ],
           correctIdx: 1,
           reveal:
-            'AB makes stereo from TIME differences, and summed to one speaker those become comb filtering — the sound goes hollow and phasey. XY differs only in level, so it folds down clean; MS collapses to the MID mic alone, which is why it is the one-take safety choice.',
+            'AB makes stereo from TIME differences, and summed to one speaker those become comb filtering — the sound goes hollow and phasey. XY differs only in level, so it folds down clean; Mid-Side collapses to the MID mic alone, which is why it is the one-take safety choice.',
           wrongHint: 'Read each technique’s IN MONO line — one of the three is built entirely from arrival-time differences.',
         }}
       />
@@ -1269,7 +1270,7 @@ const CUP_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'The cardioid null is what lets the mic sit near a monitor wedge without howling. The rear ports CREATE that null — cover them and the mic hears in every direction (toward omni), the monitor pours straight in, and the engineer must pull the fader down. Cupped mic = quieter in the mix AND worse tone.',
-  wrongHint: 'Watch the polar panel as you ride the GRIP lane to FULL CUP — what happened to the rear of the pattern?',
+  wrongHint: 'Watch the polar panel as you move the GRIP fader to FULL CUP — what happens to the rear of the pattern?',
 };
 
 // HandPlacementView draws at a fixed 216-px height; the drag maps the canvas

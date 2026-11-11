@@ -144,7 +144,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     changes: [
       'YES is never right: fit is not the test.',
-      'NO when the difference is built into the cable, connector or system — gauge, shield, impedance, keying, or a protocol (a port’s data language) the device can’t change. Some add “One way only”: the better cable can do the lesser job.',
+      'NO when the difference is built into the cable, connector or system — gauge, shield, impedance, keying, or a protocol (a port’s data language) the device can’t change. Some pairs add “One way only”: the better one does the lesser job.',
       'IT DEPENDS only when the same cable serves either job and a setting at both ends decides it (TRS assignment, optical S/PDIF vs ADAT).',
     ],
     teaches: [
@@ -179,7 +179,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     changes: [
       'A powered loudspeaker has its own amplifier inside: it takes line level, plus its own power cord for AC power.',
       'A passive loudspeaker has none. It takes the amplifier’s output, whole volts to over a hundred with real current, on heavy conductors.',
-      'On that current, a thin instrument cable heats, loses level and can fail. A 4-pole cable carries two circuits, for a bi-amplified box.',
+      'On that current, a thin instrument cable heats, loses level and can fail. A 4-pole cable carries two circuits, for a bi-amplified box (fed by two amp channels).',
     ],
     teaches: [
       'Line level, speaker level and AC power are three separate jobs around one loudspeaker, each on its own cable.',
@@ -253,7 +253,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     teaches: [
       'A power connector is identified by its shape and its printed labels, and each AC conductor has one role: line (hot), neutral or safety ground.',
-      'Where the line sits: identifying connectors is your part; AC wiring and repair belong to qualified persons.',
+      'Know your limit: identifying connectors is your part; AC wiring and repair belong to qualified persons.',
       'Hum is traced on the signal side; lifting the safety ground is never the cure.',
     ],
     tryThis: [
@@ -387,7 +387,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     teaches: [
       'How a whole system is cabled: every source to every destination, signal kept apart from power.',
-      'The safe power-up and power-down order, and why where amplification sits in it protects the room and the gear.',
+      'The safe power-up and power-down order, and why switching amplification on last and off first protects the room and the gear.',
       'Data has direction: a data or control link needs each end the right way around.',
     ],
     tryThis: [
@@ -410,7 +410,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
       'REVIEW CONNECTORS › and RETRY FINAL CHALLENGE › sit at the bottom.',
     ],
     control: [
-      'Tap a WHAT’S LEFT row to jump to that step. Rows for this page say what is left below.',
+      'Tap a WHAT’S LEFT row to jump to that step. A row for this page tells you what is still left further down.',
       'Tap an answer. A wrong pick stays open until you find the right one.',
       'REVIEW CONNECTORS › takes you to Lesson 3; RETRY FINAL CHALLENGE › to the challenge.',
       'Here the strip’s readout says WHAT’S LEFT; the header ‹ leaves the lab.',

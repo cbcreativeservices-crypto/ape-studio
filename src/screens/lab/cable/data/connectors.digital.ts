@@ -73,7 +73,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
     hotPlug: {
       policy: 'normally_fine',
       rationale:
-        'USB is designed for connection and removal while powered — devices enumerate when plugged in. Close or stop audio software gracefully before unplugging an audio interface to avoid dropouts and driver errors, and eject storage devices before removal.',
+        'USB is designed for connection and removal while powered — devices enumerate (the computer identifies and sets them up) when plugged in. Close or stop audio software gracefully before unplugging an audio interface to avoid dropouts and driver errors, and eject storage devices before removal.',
     },
     advantages: [
       'Host port on most computers and hubs (some newer laptops have only USB-C)',
@@ -114,7 +114,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Jacket pulling out of the overmold at the connector',
     ],
     basicTest:
-      'A USB cable tester (or continuity across matching contacts) shows the power conductors AND the data pair intact end to end. A charge-only cable passes on VBUS/GND and reads open on D+/D− — that is the definitive way to catch one before it wastes troubleshooting time.',
+      'A USB cable tester (or continuity across matching contacts) shows the power conductors AND the data pair intact end to end. A charge-only cable passes on VBUS/GND and reads open (no connection) on D+/D− — that is the definitive way to catch one before it wastes troubleshooting time.',
     safety: {
       level: 'signal',
       cautions: [
@@ -172,7 +172,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
     hotPlug: {
       policy: 'normally_fine',
       rationale:
-        'USB is designed for hot connection — the device enumerates when plugged in. Stop audio software before unplugging a working interface; the connection itself is safe to make or break live.',
+        'USB is designed for hot connection — the device enumerates (the computer identifies and sets it up) when plugged in. Stop audio software before unplugging a working interface; the connection itself is safe to make or break live.',
     },
     advantages: [
       'Larger, sturdier socket than Micro-B — a practical fit for desktop equipment',
@@ -735,7 +735,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
         ],
         confidence: 'convention',
         verifyAgainst:
-          'The equipment manuals: word clock I/O is commonly a 75-ohm system, and whether a chain needs a termination at the last device (or the device self-terminates via a switch) varies by product.',
+          'The equipment manuals: word clock I/O is commonly a 75-ohm system, and whether a chain needs a termination (a load that closes off the end of the line) at the last device (or the device self-terminates via a switch) varies by product.',
       },
     ],
     balanced: 'unbalanced',
@@ -774,14 +774,14 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
         otherName: '50-ohm vs 75-ohm cable/connector families',
         why: 'Both families mate mechanically; the impedance difference is invisible from outside.',
         consequence:
-          'An impedance mismatch causes reflections — on long runs or marginal equipment that means clocking instability or signal-integrity problems, not equipment damage. Match the impedance the system specifies. (True of modern connectors built to the standardized interface. Some pre-1978, pre-standard 75-ohm BNCs used a thinner center pin and can mate unreliably with — or damage — the other family; treat very old coax hardware as an exception and inspect the pin before forcing anything.)',
+          'An impedance mismatch causes reflections (part of the signal bounces back along the cable) — on long runs or marginal equipment that means clocking instability or signal-integrity problems, not equipment damage. Match the impedance the system specifies. (True of modern connectors built to the standardized interface. Some pre-1978, pre-standard 75-ohm BNCs used a thinner center pin and can mate unreliably with — or damage — the other family; treat very old coax hardware as an exception and inspect the pin before forcing anything.)',
       },
       {
         otherId: 'rca',
         otherName: 'RCA coaxial digital connections (via adapters)',
         why: 'Adapters between BNC and RCA exist, and both can carry unbalanced digital audio.',
         consequence:
-          'Adapted connections can work but add discontinuities to a controlled-impedance path — acceptable in a pinch, a reliability compromise on critical or long runs.',
+          'Adapted connections can work but add discontinuities (impedance bumps) to a controlled-impedance path — acceptable in a pinch, a reliability compromise on critical or long runs.',
       },
     ],
     inspectionPoints: [
@@ -936,7 +936,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Capture and streaming hardware',
     ],
     constructionNote:
-      'Multiple individually shielded high-speed pairs plus control conductors and power, all inside one jacket — one of the most complex cables handled in ordinary AV work. At long lengths, passive copper reaches its limit and ACTIVE cables (with electronics inside, sometimes fiber) take over; those actives behave differently from passive cables in ways that matter (see directionality).',
+      'Multiple individually shielded high-speed pairs plus control conductors and power, all inside one jacket — one of the most complex cables handled in ordinary AV work. At long lengths, passive copper reaches its limit and ACTIVE cables (with electronics inside, sometimes fiber) take over; those actives behave differently from passive cables in ways that matter (see CONNECTING IT).',
     pinouts: [
       {
         id: 'hdmi_contact_groups',
@@ -948,7 +948,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
             role: 'Three shielded high-speed pairs — video with embedded audio',
             ink: 'dataA',
           },
-          { label: 'TMDS clock', role: 'Clock pair pacing the three data pairs (a fourth data lane in HDMI 2.1 FRL mode)', ink: 'clock' },
+          { label: 'TMDS clock', role: 'Clock pair pacing the three data pairs (a fourth data lane in HDMI 2.1 FRL — Fixed Rate Link — mode)', ink: 'clock' },
           {
             label: 'DDC',
             role: 'Display Data Channel — the source reads the display’s identity and capabilities here',
@@ -1079,7 +1079,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
             label: '2',
             role: 'Cable shield — grounded at the transmitter side',
             ink: 'shield',
-            note: 'Pin 2 is the physical center pin. Receivers are opto-isolated and leave it unconnected internally, which is how MIDI avoids creating ground loops between instruments.',
+            note: 'Pin 2 is the physical center pin. Receivers are opto-isolated (the signal crosses inside as light, not wire) and leave it unconnected internally, which is how MIDI avoids creating ground loops between instruments.',
           },
           {
             label: '1',
@@ -1115,7 +1115,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Carries control data only — never audio; an instrument at the far end makes the sound',
       'One direction per cable; bidirectional setups need two',
       'A 5-pin DIN connector does not automatically mean MIDI: the same DIN shell served older audio interconnects, sync systems, and other jobs on vintage equipment — check what the port actually is',
-      'Long daisy-chains add latency and, historically, timing slop; star wiring from an interface avoids it',
+      'Long daisy-chains add latency and, historically, timing slop; star wiring (one interface port per instrument) avoids it',
     ],
     commonMistakes: [
       'Expecting sound through a MIDI cable — connecting MIDI OUT toward an amplifier or audio input does nothing; MIDI carries instructions, not audio',

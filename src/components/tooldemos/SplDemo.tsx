@@ -637,7 +637,7 @@ function WeightingScene() {
         </View>
       </View>
       <Text style={styles.deltaLine}>
-        SAME SOURCE · SAME MOMENT · Δ {DBC_EXAMPLE - DBA_EXAMPLE} dB — TRAINING EXAMPLE VALUES
+        SAME SOURCE · SAME MOMENT · {DBC_EXAMPLE - DBA_EXAMPLE} dB APART — TRAINING EXAMPLE VALUES
       </Text>
 
       <View style={[styles.vizPanel, styles.curveBox]}>
@@ -796,7 +796,7 @@ function FastSlowScene() {
           </View>
           <View style={[styles.calloutAnnot, { top: BAR3_H * (1 - ACTION_FRAC) - 5 }]}>
             <View style={[styles.calloutLeader, { backgroundColor: SALMON }]} />
-            <Text style={[styles.calloutText, { color: SALMON }]}>85 dBA · ACTION</Text>
+            <Text style={[styles.calloutText, { color: SALMON }]}>85 dBA · ACTION LEVEL</Text>
           </View>
           <View style={[styles.calloutAnnot, { top: BAR3_H * (1 - SLOW_TREND_FRAC) - 5 }]}>
             <View style={styles.calloutLeader} />

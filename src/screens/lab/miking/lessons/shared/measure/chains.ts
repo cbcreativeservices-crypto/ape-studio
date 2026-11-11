@@ -181,7 +181,7 @@ export const METER_CHAIN: ChainSpec = {
       short: 'WEIGHTING',
       parts: [
         { id: 'A', label: 'A-weighting', short: 'A', blurb: 'Turns the lows down roughly as hearing does at quiet levels; the usual weighting for environmental levels.' },
-        { id: 'C', label: 'C-weighting', short: 'C', blurb: 'Nearly flat across most of the range; often named for peaks.' },
+        { id: 'C', label: 'C-weighting', short: 'C', blurb: 'Nearly flat across most of the range; methods often call for it on peaks.' },
         { id: 'Z', label: 'Z (no weighting)', short: 'Z', blurb: 'Flat: no weighting at all.' },
       ],
     },
@@ -318,7 +318,7 @@ export const ROOM_CHAIN: ChainSpec = {
   ],
   rules: [
     { id: 'blank', all: [['signal', 'blank']], reason: 'No explosive or firearm-like sources in this lab — ever.', safety: true },
-    { id: 'processing', all: [['processing', 'on']], reason: 'Auto-gain, noise reduction or gating changes the decay itself. Turn them off, or write down what cannot be.' },
+    { id: 'processing', all: [['processing', 'on']], reason: 'Auto-gain, noise reduction or gating changes the decay itself. Turn them off, or write down any that cannot be turned off.' },
   ],
   briefs: [
     {

@@ -47,7 +47,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       start: 'Tap ▶ on the default SAW. In LAB NOTES tap MUTE EVEN and watch THD and CREST drop. Then pick PRESET → SQUARE and compare the readouts.',
     },
     seeing: [
-      'Frequency runs up. Each harmonic is a band, brighter and wider when louder. Left labels: harmonic, Hz, note, cents: 1: 100 G2 +35¢.',
+      'Frequency runs up. Each harmonic is a band, brighter and wider when louder. Left labels: harmonic, Hz, note, cents (1: 100 G2 +35¢).',
       'On LOG ♪ a piano runs up the right side; keys under a harmonic glow amber. Below is the summed wave, three cycles.',
       'Readouts: F0, THD (overtones against the fundamental, %), CREST (peak against RMS level, dB), SLOPE (dB per octave). Badge: ANALYTIC MODEL — NOT A MEASUREMENT.',
     ],
@@ -55,7 +55,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'Tap ▶ in the header to hear the twelve harmonics as drawn; ■ stops. Slide F0 to move the fundamental from 60 to 300 Hz.',
       'PRESET: SINE, SQUARE, TRIANGLE, SAW, PULSE and four distortion recipes, SYM CLIP, ASYM CLIP, SOFT SAT and HARD CLIP. RESTORE PRESET undoes your edits; THD CALC shows how THD is worked out.',
       'AXIS: LOG ♪ (equal height per octave) or LIN (equal Hz). MODE: ANALYTIC MODEL or REAL SIGNAL (your mic, live).',
-      'In LAB NOTES, stems H1–H12: drag one up or down; tap for its card and ▶ SOLO; double-tap to reset; long-press for phase, POLARITY +180° and MUTE. Then GROUPS & OVERLAYS, SOLO or MUTE ODD and EVEN, NORMALIZE, SNAPSHOT A, A/B GHOST.',
+      'In LAB NOTES, each stem H1–H12 is one harmonic’s level: drag it up or down; tap for its card and ▶ SOLO; double-tap to reset; long-press for phase, POLARITY +180° and MUTE. Then GROUPS & OVERLAYS, SOLO or MUTE ODD and EVEN, NORMALIZE, SNAPSHOT A, A/B GHOST.',
     ],
     changes: [
       'Harmonics are whole-number multiples of F0. The display rescales with F0, so bands stay put while their labels and lit keys change.',
@@ -127,7 +127,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'On EXPLORE, long-press the F0, PRESET, AXIS or MODE key, the F0, CREST or SLOPE readout, or an ODD/EVEN, ENVELOPE, SPACING, SOLO or MUTE chip to read just that entry. The ⓘ after the readouts does the same for the display.',
     ],
     changes: [
-      'Nothing on this page moves. Use it to explain what the bands, stems and readouts show you on EXPLORE.',
+      'Nothing on this page moves. It explains what the bands, stems and readouts show you on EXPLORE.',
       'Amplitude and duty cycle are ideas here, not keys. On EXPLORE the PULSE preset is fixed at 25 %, and the stems or NORMALIZE set the levels.',
       'Each COMMON MISTAKES line pairs a mix-up with its fix: for example, turning a sound up does not add harmonics.',
     ],

@@ -27,8 +27,8 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { standing: 'vn.front', seated: 'vn.front' },
-    workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line the strings follow.',
-    workedAim: 'Aim it at the bridge and the top around it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
+    workedLine: 'This starting point also gives the mic’s distance from {line}: the dashed line the strings follow.',
+    workedAim: 'Aim it at the bridge and the top around it — the lab accepts your aim while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bow’s full sweep, the bow arm out to the tip of a stroke, the player’s head and the violin itself. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Closer tends to bring more of the bow — articulation, and some scratch; farther, more of the whole violin and the room. Violins and rooms vary, so “it depends on this violin” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
@@ -69,10 +69,10 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the violin, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-    shieldNote: 'Even a small violin’s top REFLECTS stage sound into the front of the mic aimed at it, even with the mic’s back toward the wedge — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'Even a small violin’s top REFLECTS stage sound into the front of the mic aimed at it, even with the mic’s back toward the wedge — the pattern drawn here, measured in open space, cannot show that. Listen with the monitors on.',
     studioId: 'vn.ctx.studio',
     studioPrompt: 'A studio session, a solo classical violin, a good room: what is the mic’s job?',
-    studioNote: 'In the studio, a mic in front and above can carry the whole violin and some room; a closer one adds definition when the arrangement needs it. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
+    studioNote: 'In the studio, a mic in front and above can carry the whole violin and some room; a closer one adds definition when the arrangement needs it. You can try again each time the player stops. Switch back to LIVE for the monitor exercise.',
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: violin and fiddle are the same instrument — the difference is the music and the setting.',
       points: [

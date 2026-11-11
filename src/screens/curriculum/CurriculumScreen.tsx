@@ -236,7 +236,7 @@ export const CurriculumView = memo(function CurriculumView({
       notify(
         'This topic stays',
         coreLocked
-          ? 'Required co-requisites stay in your list until you complete them.'
+          ? 'This is a required topic, so it stays in your list until you complete it.'
           : 'This topic is always part of your list.',
       );
       return;

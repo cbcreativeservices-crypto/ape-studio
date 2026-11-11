@@ -29,7 +29,7 @@ export const QUESTIONS: readonly Question[] = [
   { id: 'TE01', dimension: 'TE', text: 'How would you feel about teaching beginners how sound, signal flow and audio equipment work?' },
   { id: 'LO01', dimension: 'LO', text: 'How would you feel about mixing sound during a concert, broadcast or live event?' },
   { id: 'DA01', dimension: 'DA', text: 'How would you feel about programming an audio plugin, application or digital instrument?' },
-  { id: 'PC01', dimension: 'PC', text: 'How would you feel about cataloging recordings and creating accurate descriptions and metadata?' },
+  { id: 'PC01', dimension: 'PC', text: 'How would you feel about cataloging recordings and creating accurate descriptions and metadata (titles, dates, credits)?' },
   { id: 'BM01', dimension: 'BM', text: 'How would you feel about opening malfunctioning audio equipment and finding the component that failed?' },
   { id: 'MS01', dimension: 'MS', text: 'How would you feel about designing sound that strengthens the emotion and meaning of a film scene?' },
   { id: 'GS01', dimension: 'GS', text: 'How would you feel about interpreting technical standards and checking whether audio systems comply with them?' },

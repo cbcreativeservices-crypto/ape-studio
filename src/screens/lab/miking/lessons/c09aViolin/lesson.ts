@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the violin by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['vn.mic.1', 'vn.mic.2', 'vn.mic.3', 'vn.mic.4', 'vn.rec.1'], note: 'Answer the five checks (one reaches back to how the violin sounds).' },
-    takeaway: 'Pattern, power, size and mount decide what a mic can do here. A stand mic in front gives the integrated violin; a miniature on the violin stays put as the player moves. Both condensers need phantom power.',
+    takeaway: 'Pattern, power, size and mount decide what a mic can do here. A stand mic in front gives the whole violin, blended; a miniature on the violin stays put as the player moves. Both condensers need phantom power.',
   },
   placement: {
     title: 'Placement Studio',
@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one violin mic in the right order, choose and justify a setup for a studio solo and a live fiddle, and say what would justify a second mic.',
     credit: { scenarios: ['vn.prac.order', 'vn.prac.gain', 'vn.prac.setup1', 'vn.prac.setup2', 'vn.prac.3', 'vn.mix.1', 'vn.mix.2', 'vn.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real violin.' },
-    takeaway: 'Safe clearance from the bow, the bow arm and the player’s head, correct power and level checks, pattern reasoning and an accurate account of polarity versus delay pass. A brand or a “loudest” position does not — and more than one setup can pass.',
+    takeaway: 'What passes: safe clearance from the bow, the bow arm and the player’s head, correct power and level checks, pattern reasoning, and an accurate account of polarity versus delay. A brand or a “loudest” position does not — and more than one setup can pass.',
   },
 };
 
@@ -309,7 +309,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Raise it only for a stated balance, and check it in mono',
     explain: 'The main pair carries the ensemble image; a spot supports it. Bring it up gradually, watch that the player does not leap forward, and check the blend in stereo and mono.',
     why: {
-      'Make it the loudest channel, since the violin plays the melody': 'A loud spot pulls the first chair unnaturally forward.',
+      'Make it the loudest channel, since the violin plays the melody': 'A loud spot pulls the violinist unnaturally forward.',
       'Mute the main pair whenever the violin has the tune': 'The main pair is the picture of the group; the spot only supports it.',
     },
   },
@@ -370,7 +370,7 @@ const symptoms: Symptom[] = [
   {
     id: 'vn.sym.string',
     observation: 'One string is much brighter than the others',
-    firstChecks: 'Is the capsule localized on one region? Take a broader perspective and test all four strings.',
+    firstChecks: 'Does the capsule hear only one region? Take a broader view and test all four strings.',
     options: ['Cut that string’s frequencies with a narrow EQ', 'Ask the player to avoid that string where possible', 'Take a broader view and test all four strings'],
     correct: 'Take a broader view and test all four strings',
     explain: 'A close capsule can favor the string or region it faces. A little more distance or a different angle evens the strings out.',
@@ -434,7 +434,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a fiddler in a band with drums and a banjo, moving and stepping up for solos. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature clipped to the bass-side rib, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the fiddle — check the clip fits and the cable is relieved.' },
+      { id: 'a', label: 'A miniature clipped to the bass-side rib, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the fiddle — check the clip fits and the cable cannot tug on it.' },
       { id: 'b', label: 'A miniature on a holder behind the bridge, under the strings, checked for harshness', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over the strings.' },
       { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage a mic a meter away hears the band and the monitors more than the fiddle.' },
       { id: 'd', label: 'A clip pushed onto the bridge, where the sound starts', ok: false, power: 'phantom', feedback: 'No mic goes on the bridge: it can damp it and risk the instrument.' },
@@ -559,7 +559,7 @@ export const C09A_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'The violin is the smallest of the bowed string family, held under the chin on the left shoulder. Its four strings — G, D, A, E — run from the tailpiece over a thin bridge to the scroll; the bow sets them vibrating and the bridge passes that into the hollow body. A fiddle is the same instrument, named for the music it plays.', src: 'DPA-VLN' },
-    { title: 'WHERE YOU MEET IT', text: 'Orchestras, quartets and solo recitals; folk, bluegrass and country bands as the fiddle; studio sessions of every kind. This lesson covers one bowed violin: a studio solo, a live fiddle, and a spot in a group.', src: 'LESSON' },
+    { title: 'WHERE YOU MEET IT', text: 'Orchestras, quartets and solo recitals; folk, bluegrass and country bands as the fiddle; studio sessions of every kind. This lesson covers one bowed violin: a studio solo, a live fiddle, and a spot mic in a group.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries melodies and fast, articulate lines — and the player moves with them. Ask what the music needs: a classical soloist may want the room and a balanced line; a fiddle beside a banjo and drums may need a closer, separated sound.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A full-size violin’s body is about 36 cm long, about 59 cm with the neck and scroll. Its lowest note, the open G, is about 196 Hz. This lab draws a violin about that size, held under the chin — standing, or seated.', src: 'MET-PIQUE' },
   ],
@@ -590,7 +590,7 @@ export const C09A_LESSON: Lesson = {
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'No wedges on the floor; a good room is part of a solo violin’s sound.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and a band is loud. A fiddler moves and steps up for solos: closer, aimed pickup — or a miniature that moves with the violin — helps against the stage and feedback.',
-    studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A modest distance can carry the whole violin and the room; in a group, a main pair may carry it already.',
+    studio: 'STUDIO: no wedges, a room that may sound good, and time to try again whenever the player stops. A modest distance can carry the whole violin and the room; in a group, a main pair may carry it already.',
   },
   diagnostic,
   practice: {

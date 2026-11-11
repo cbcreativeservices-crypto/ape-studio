@@ -52,12 +52,12 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a boom mic by the room, not by its length: a short shotgun or a compact directional mic, a windscreen for the weather, a suspension — and know what the camera’s own mic can and cannot do.',
     credit: { scenarios: ['b4.mic.1', 'b4.mic.2', 'b4.mic.3', 'b4.mic.4', 'b4.rec.1'], note: 'Answer the five checks (one reaches back to the talker and the frame).' },
-    takeaway: 'A shotgun narrows its pickup higher up but does not reach farther; indoors a compact directional mic may sound smoother; foam for mild wind, a basket and fur for strong — none waterproof. Closeness decides the voice against the room.',
+    takeaway: 'A shotgun narrows its pickup at higher frequencies but does not reach farther; indoors a compact directional mic may sound smoother; foam for mild wind, a basket and fur for strong — none waterproof. Closeness decides the voice against the room.',
   },
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the boom just above the frame, aimed at the mouth — then move it below or beside the frame, or to the camera, and see what changes.',
-    credit: { scenarios: ['b4.place.1', 'b4.place.2', 'b4.place.3', 'b4.rec.2'], interactive: 'twoZones', note: 'Rest the mic, outside the frame, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['b4.place.1', 'b4.place.2', 'b4.place.3', 'b4.rec.2'], interactive: 'twoZones', note: 'Rest the mic, outside the frame, inside two different suggested starting-point zones, and answer the four checks. The worked example earns no credit on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The side the boom comes from, its distance and its aim are separate controls; the frame and people’s safety come first.',
   },
   context: {
@@ -82,7 +82,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a boom in the right order, choose and justify a setup for a studio interview and a live event, and say what would justify a second mic.',
     credit: { scenarios: ['b4.prac.order', 'b4.prac.gain', 'b4.prac.setup1', 'b4.prac.setup2', 'b4.prac.3', 'b4.mix.1', 'b4.mix.2', 'b4.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real shoot.' },
-    takeaway: 'Outside every frame, as close as it allows, aimed and re-aimed, safe for people, one mic on air per voice and a tested fallback pass. A longer tube or a “hotter” camera gain does not — and more than one setup can pass.',
+    takeaway: 'What passes: outside every frame, as close as it allows, aimed and re-aimed, safe for people, one mic on air per voice and a tested fallback. A longer tube or a “hotter” camera gain does not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -392,7 +392,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Bring it closer, to the frame’s edge',
     explain: 'Closeness decides the voice against the room. Go as close as the frame allows; a longer tube does not reach farther.',
     why: {
-      'Swap to a longer shotgun, same place': 'A longer tube keeps the pickup narrow lower down; it does not bring the voice closer.',
+      'Swap to a longer shotgun, same place': 'A longer tube keeps the pickup narrow to lower frequencies; it does not bring the voice closer.',
       'Raise the gain until the voice is up front': 'Gain raises the room as much as the voice.',
     },
   },
@@ -541,7 +541,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The widest frame the camera uses',
     explain: 'The boom stays just outside the widest active frame: the wider the shot, the farther away it must be.',
     why: {
-      'The length of the shotgun’s tube': 'A tube changes the pickup higher up, not where the frame ends.',
+      'The length of the shotgun’s tube': 'A tube changes the pickup at higher frequencies, not where the frame ends.',
       'How loud the talker speaks on air': 'Loudness does not move the frame’s edge.',
     },
   },

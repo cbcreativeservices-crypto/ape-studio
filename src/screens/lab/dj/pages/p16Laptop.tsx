@@ -64,11 +64,11 @@ function SetupTray() {
         }}
         note={!l.usbMixer ? 'The mixer is not in the list: its USB cable is out (RIG). A device the computer cannot see — no cable, or no driver on systems that need one — cannot be chosen.' : l.device === 'BUILT-IN' ? 'BUILT-IN: the laptop’s own speakers and headphone jack. Nothing reaches the mixer.' : 'The mixer’s own USB audio interface: deck 1 on the channel pair USB 1/2, deck 2 on the pair USB 3/4 — both pairs over the one USB cable.'}
       />
-      {hot ? <TrayNote warn>FULL LEVEL — the music reached the mixer the instant the device connected, with the channel faders up. The lab keeps it at its own level; for real, pick the device with the faders down.</TrayNote> : null}
+      {hot ? <TrayNote warn>FULL LEVEL — the music reached the mixer the instant the device connected, with the channel faders up. The lab keeps the sound at its usual playback level; for real, pick the device with the faders down.</TrayNote> : null}
       <Choices head="BUFFER (samples)" value={l.buffer} items={BUFFERS.map((b) => ({ id: b, label: `${b} · ${bufferMs(b, l.rate).toFixed(1)} ms` }))} onPick={(b) => setLap(() => ({ buffer: b as number }))} />
       <Choices head="SAMPLE RATE" value={l.rate} items={RATES.map((r) => ({ id: r, label: `${(r / 1000).toFixed(1)} kHz` }))} onPick={(r) => setLap(() => ({ rate: r as number }))} note="The interface and the software must agree; a higher rate also means more samples to work out every millisecond." />
       <Choices head="WHAT THE SOFTWARE IS DOING (workload)" value={l.workload} items={WORKLOADS.map((w) => ({ id: w, label: w }))} onPick={(w) => setLap(() => ({ workload: w as Workload }))} />
-      <TrayNote>{`This model: about ${dropoutsPerMin(l).toFixed(dropoutsPerMin(l) < 10 ? 1 : 0)} dropouts a minute at this setting (load ${Math.round(loadOf(l) * 100)} %). LOAD is the average; dropouts come from short spikes on top of it, so a low average can still drop out at a small buffer. A real laptop is measured with its own software.`}</TrayNote>
+      <TrayNote>{`In this lab’s simulation: about ${dropoutsPerMin(l).toFixed(dropoutsPerMin(l) < 10 ? 1 : 0)} dropouts a minute at this setting (load ${Math.round(loadOf(l) * 100)} %). LOAD is the average; dropouts come from short spikes on top of it, so a low average can still drop out at a small buffer. A real laptop is measured with its own software.`}</TrayNote>
     </View>
   );
 }
@@ -232,7 +232,7 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
       <Step n={4}>
         <Do>Find the SMALLEST buffer that runs 20 s with no dropouts, with both decks playing and the workload on TWO DECKS; then do it again with STEMS LIVE. Unplug the controller and keep the music going.</Do>
         {biggerThanNeeded ? <Note tone="try">Clean — but a smaller buffer may manage too, with less latency. Try one step down.</Note> : null}
-        <P>Smaller buffers suit scratching and quick cueing; bigger ones suit a heavy set. Find the balance for your own laptop — these are this model’s numbers.</P>
+        <P>Smaller buffers suit scratching and quick cueing; bigger ones suit a heavy set. Find the balance for your own laptop — these numbers come from this lab’s simulation.</P>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
         <Note>Before a gig: charger in, sleep and USB power saving off, the interface in a port on the laptop itself (not a hub), notifications and wireless tasks off. A hum or whine that comes and goes with the charger is most likely a ground loop — Screen 23.</Note>
       </Step>

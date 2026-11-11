@@ -66,7 +66,7 @@ export const C01_COPY: LessonCopy = {
     reveal: 'The string itself moves very little air: it is the bridge rocking the TOP that makes most of the sound. The thin top is the loudspeaker; the string is the motor.',
     after: 'Then the strings, the top and the air in the body keep ringing together for a while — the BODY of the sound. How long depends on the guitar, the strings and the player.',
     shapesNotes: [
-      'A pluck sets a shape moving only as much as the string moves at the pick in that shape. Plucked in the exact middle, every even shape has a still point under the pick, so it is not set moving — a rounder, hollower note. Nearer the bridge, the upper shapes join in: brighter.',
+      'A pluck sets each shape moving only as much as that shape moves at the pick. Plucked in the exact middle, every even-numbered shape has a still point under the pick, so it is not set moving — a rounder, hollower note. Nearer the bridge, the upper shapes join in: brighter.',
       'This is an ideal string between rigid ends. A real string is a little stiff and its ends move with the bridge and the top — the reason a real guitar never sounds like this picture alone.',
     ],
     coupledSubject: 'Front view of the guitar',
@@ -90,7 +90,7 @@ export const C01_COPY: LessonCopy = {
   placement: {
     workedZone: { steel: 'fret12.steel', twelve: 'fret12.twelve', nylon: 'fret12.nylon' },
     workedLine: 'This starting point also sits near {line}: within about 8 cm of it, out in front of the guitar.',
-    workedAim: 'Aim it between the upper top and the nearby strings — the lab counts it while the mic’s axis, followed in, meets the top near {head}. Distance, position and angle are separate things to try.',
+    workedAim: 'Aim it between the upper top and the nearby strings — it counts as aimed while the mic’s axis, traced forward, meets the top near {head}. Distance, position and angle are separate things to try.',
     workedClear: 'Clear of every part — the strumming arm and the pick’s swing, the fretting hand, the neck and the player’s sight line to it. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: { steel: ' A stand mic keeps out of the strumming arm and the fretting hand — come in from the front.', twelve: ' A stand mic keeps out of the strumming arm and the fretting hand — come in from the front.', nylon: ' A stand mic keeps out of the hands — come in from the front.' },
     reveal: 'Toward the sound hole tends to bring more body and low end — and more boom close in; toward the neck, more string detail. Every guitar differs, so “it depends on this guitar” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
@@ -135,7 +135,7 @@ export const C01_COPY: LessonCopy = {
     shieldNote: 'Moving a mic for isolation changes the guitar’s tone, too: check both. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'ag.ctx.studio',
     studioPrompt: 'A studio session in a good room: what is the room worth to this guitar?',
-    studioNote: 'In a quiet studio a farther mic can blend the guitar with the room, and an omni can be worth a try. Repeated trials are practical when the player stops. Switch back to LIVE for the wedge exercise.',
+    studioNote: 'In a quiet studio a farther mic can blend the guitar with the room, and an omni can be worth a try. The player can stop and play again, so you can try a position more than once. Switch back to LIVE for the wedge exercise.',
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: a close directional mic can suit a studio take, and a room mic can suit a quiet stage.',
       points: [
@@ -145,7 +145,7 @@ export const C01_COPY: LessonCopy = {
         { title: 'MOVEMENT', text: 'A player may shift several centimeters between sitting, standing, singing and the loud passages. Mark a comfortable position, and test the whole performance.' },
       ],
       body: 'With a wedge in front, a pattern’s rejection is a tool to aim. With a singing player, the voice reaches most guitar mics from the front, where a cardioid’s null cannot help (a figure-8’s side null can) — plan the balance of the two mics too.',
-      warn: 'No guitar-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the geometry. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
+      warn: 'No guitar-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the positions and aim. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {
@@ -154,9 +154,9 @@ export const C01_COPY: LessonCopy = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'bridge.steel' },
     learn: [
       'A second guitar mic is a choice for a defined tone or a wider image — not a requirement. Start with one good mono mic; add the second only for a stated purpose (a neck-side view plus a bridge-side view, or a farther room view), and keep it only if it improves the guitar in the song.',
-      'When it goes in: solo each, then hear the pair in MONO at matched levels. Avoid aiming both into the sound hole. If the sum turns hollow or loses low end, move or rebalance a mic before reaching for the polarity switch — it does not guarantee a match, and neither does a spacing rule.',
+      'When it goes in: solo each, then hear the pair in MONO at matched levels. Avoid aiming both into the sound hole. If the sum turns hollow or loses low end, move or rebalance a mic before reaching for the polarity switch — it does not guarantee a match, and neither does a fixed rule for how far apart the mics sit.',
     ],
-    warn: 'Both mics hear the same guitar, but from different spots, so this simplified graph shows only the timing part of the sum. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.',
+    warn: 'Both mics hear the same guitar, but from different spots, so this simplified graph shows only the timing part of the sum. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this graph estimates from distance alone — so treat the depths as rough. Judge the pair by ear, in mono, at matched levels.',
   },
   practice: {
     gain: 'ag.prac.gain',

@@ -667,7 +667,7 @@ export const C12_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'An electro-mechanical keyboard: 60 keys from contra F to e′′′ (about 44 Hz to 1.3 kHz), one string per note. A key presses its string onto an anvil, and magnetic pickups turn the string’s motion into a small signal at the output (marked 100 mV).', src: 'HOH-D6' },
+    { title: 'WHAT IT IS', text: 'An electro-mechanical keyboard: 60 keys from contra F to e′′′ (about 44 Hz to 1.3 kHz), one string per note. A key presses its string onto an anvil, and magnetic pickups turn the string’s motion into a small signal at the output (rated at 100 mV).', src: 'HOH-D6' },
     { title: 'WHERE YOU MEET IT', text: 'Funk, soul, rock and pop, on stage and in the studio — often through a guitar-style amp and pedals such as wah or fuzz. A clavinet with other performers belongs to the ensembles lab.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Short, percussive, rhythmic parts with a sharp attack; its pickup switches and filters change the tone. Ask for the real parts and settings before choosing a capture.', src: 'LESSON' },
     { title: 'WHAT A MIC HEARS', text: 'Only a speaker: the clavinet’s strings make almost no sound in the air. So there are two capture paths — the direct signal, and a mic on the amp — and this lesson teaches both.', src: 'LESSON' },
@@ -721,6 +721,6 @@ export const C12_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every clavinet, pedal, amp, speaker and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a generic combo and a closed 1×12 cabinet with typical sizes, one string of the clavinet drawn straight, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Electrical faults are for a qualified technician.',
+    'ABOUT THESE STARTING POINTS. Here is where we suggest you begin — ideas and concepts to consider, not rules. Every clavinet, pedal, amp, speaker and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a generic combo and a closed 1×12 cabinet with typical sizes, one string of the clavinet drawn straight, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Electrical faults are for a qualified technician.',
   copy: CLAV_COPY,
 };

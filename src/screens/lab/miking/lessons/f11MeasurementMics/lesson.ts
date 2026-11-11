@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'The field check',
     goal: 'Run the calibrator check before and after: seat it properly, read the level it states, read the after value unadjusted, and decide from the method’s tolerance — then keep two channels’ records apart.',
     credit: { scenarios: ['mm.two.1', 'mm.two.2', 'mm.two.3'], interactive: 'calCheck', note: 'Complete one check, before and after, in THE FIELD CHECK, and answer the three checks.' },
-    takeaway: 'A field check before and after, the after value read unadjusted; drift outside the method’s tolerance marks the run for investigation, never a forced display. One frequency checks the chain near that frequency — not the whole response.',
+    takeaway: 'A field check before and after, the after value read unadjusted; drift outside the method’s tolerance marks the run for investigation — never adjust the reading to pass. One frequency checks the chain near that frequency — not the whole response.',
   },
   troubleshoot: {
     title: 'Troubleshoot',

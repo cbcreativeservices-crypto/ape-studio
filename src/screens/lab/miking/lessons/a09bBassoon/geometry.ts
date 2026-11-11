@@ -92,12 +92,12 @@ function model(Lt: Layout): InstrumentModel {
     rims,
     regions: windRegions(Lt, {
       holes: 'Most notes leave from the first open hole — closer to the reed the higher the note: down the long joint, around the boot, up the wing joint.',
-      end: 'The very lowest note — every hole closed — leaves from the bell at the top; above about 400–500 Hz, the bell carries some of every note.',
+      end: 'The very lowest note — every hole closed — leaves from the bell at the top; for every note, some of the sound above about 400–500 Hz leaves by the bell too.',
       exciter: 'The double reed and the breath: a mic close to the reed hears its edge and the tonguing.',
     }),
     variants: [
       { id: 'seated', label: 'SEATED', blurb: 'The bassoonist sits on a seat strap that holds the boot: the instrument across the body, the bell above the head to the left.' },
-      { id: 'standing', label: 'STANDING', blurb: 'The bassoonist stands, on a harness: the same hold, the floor and the legs farther away.' },
+      { id: 'standing', label: 'STANDING', blurb: 'The bassoonist stands, on a harness: the same hold, the bassoon farther from the floor and the legs.' },
     ],
   });
   // The boot is one wide body round its two bores.

@@ -806,7 +806,7 @@ const REFRACTION_MISTAKES = [
   'Thinking sound only travels straight — gradients bend it.',
   'Confusing refraction (gradual bending through a medium) with reflection or diffraction.',
   'Not grasping why sound carries far at night/over water — the inversion bends it DOWN.',
-  'Assuming wind "blows sound" — it is the GRADIENT → upwind/downwind asymmetry.',
+  'Assuming wind "blows sound" — it is the GRADIENT that makes sound carry differently upwind and downwind.',
 ];
 
 const REFRACTION_CHECK: CheckSpec = {
@@ -1160,7 +1160,7 @@ export function InterferenceModule(p: WaveModuleProps) {
     { k: 'PATH DIFFERENCE', v: `${(r2 - r1).toFixed(2)} m · ${((r2 - r1) / lambda).toFixed(2)} λ` },
     { k: 'PHASE DIFF @ LISTENER', v: `${phiDeg.toFixed(0)}°` },
     { k: 'LEVEL vs ONE SPEAKER', v: vsOne < -20 ? `NULL (${vsOne.toFixed(0)} dB)` : vsOneText },
-    { k: 'LEVEL @ LISTENER (re 1 SOURCE @ 1 m)', v: fmtDb(level) },
+    { k: 'LEVEL @ LISTENER (vs 1 SOURCE @ 1 m)', v: fmtDb(level) },
   ];
 
   return (
@@ -1255,7 +1255,7 @@ export function InterferenceModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
           <ReadoutGrid items={readouts} help={p.help} helpKey="interference" />
-          <Badge text="BOUNDARIES SET TO OPENINGS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RE ONE SOURCE AT 1 m" />
+          <Badge text="NO REFLECTING WALLS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RELATIVE TO ONE SOURCE AT 1 m" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={INTERFERENCE_MISTAKES} />}
@@ -1417,7 +1417,7 @@ export function CombModule(p: WaveModuleProps) {
             half-cycle apart they cancel. The result is a comb: the first notch sits at 1/(2Δt) and
             its brothers repeat every 1/Δt above it. Move the wall and the whole comb stretches; press
             ← MIC or MIC → — six inches, 0.15 m — and every notch jumps to a new frequency. That is the
-            payoff line of this module: you cannot EQ a comb away, but you can MOVE it away.
+            key lesson here: you cannot EQ a comb away, but you can MOVE it away.
           </Text>
           <Text style={dstyles.eyebrow}>WHERE YOU WILL MEET IT</Text>
           <Text style={dstyles.body}>

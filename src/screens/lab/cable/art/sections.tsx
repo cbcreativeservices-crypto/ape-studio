@@ -610,12 +610,12 @@ const XS_LAYERS: Record<CableSectionId, number> = {
 
 /** One-line caption per construction (sizes and what is real). */
 export const SECTION_CAPTION: Record<SectionId, string> = {
-  balanced_shielded: 'Drawn to scale: Ø 6 mm mic cable — two 0.22 mm² conductors inside a braid shield. Insulation colors vary by maker.',
+  balanced_shielded: 'Drawn to scale: Ø 6 mm (Ø = diameter) mic cable — two 0.22 mm² conductors inside a braid shield. Insulation colors vary by maker.',
   instrument_unbalanced: 'Drawn to scale: Ø 6 mm instrument cable — one small conductor inside a braid shield.',
   speaker_2c: 'Drawn to scale: Ø 8.5 mm speaker cable — two 2.5 mm² fine-stranded conductors, no shield. Markings vary by maker.',
   ac_3c_grounded:
-    'Drawn to scale: Ø 8 mm cord, three 16 AWG conductors in the North American colors (black line, white neutral, green ground). Other regions use other codes — e.g. IEC brown, blue, green-yellow.',
-  ethernet_4pair: 'Drawn to scale: Ø 5.3 mm Cat 5e — four pairs in the T568 colors, each twisted at its own rate.',
+    'Drawn to scale: Ø 8 mm cord, three 16 AWG (wire gauge) conductors in the North American colors (black line, white neutral, green ground). Other regions use other codes — e.g. IEC brown, blue, green-yellow.',
+  ethernet_4pair: 'Drawn to scale: Ø 5.3 mm Cat 5e — four pairs in the standard T568 color code, each twisted at its own rate.',
   coax: 'Drawn to scale: Ø 6.1 mm 75-ohm coax — one center conductor, foam dielectric, braid shield.',
   optical_fiber: 'Drawn to scale: Ø 3 mm fiber patch cord. The glass is only 0.125 mm across, so the lens shows it enlarged: cladding around a 0.05 mm core.',
   aes3_110: 'Ø 5.6 mm 110-ohm digital pair: foamed insulation, foil shield and a drain wire.',

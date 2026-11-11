@@ -171,7 +171,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const worked: { title: string; text: string; cell: number }[] = [
     { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
     { title: C.terms?.refTitle ?? (C.words.workedHead ? 'THE SURFACE' : `THE ${C.words.reference.toUpperCase()}`), text: C.words.workedHead ? fill(C.words.workedHead, { head: exHead }) : `The distance is measured from ${exHead}. ${C.terms?.otherRef ?? `The same number from another ${C.words.reference} would put the mic somewhere else entirely.`}`, cell: 0 },
-    { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside that range.`, cell: 0 },
+    { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm steps; here it falls inside that range.`, cell: 0 },
     { title: 'OFF THE LINE', text: exLine ? fill(C.placement.workedLine, { line: exLine }) : exReadLine ? `This starting point sets no distance from ${exReadLine.label}. The lit cell only shows how far off it the mic sits here; the distance from ${exHead} is what places the mic.` : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
     { title: 'THE AIM', text: exZone.aim || exZone.aimAt ? fill(C.placement.workedAim, { head: exHead, tol: `${exZone.aim?.maxOffAxis ?? ''}` }) : C.terms?.noAim ?? C.words.workedNoAim ?? `This starting point gives no aim, so the mic simply faces the ${C.words.instrument}. Distance, height and angle are still separate things to try.`, cell: 2 },
     { title: 'CLEARANCE', text: C.placement.workedClear, cell: 3 },
@@ -357,7 +357,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${t.mount === 'stand' ? C.placement.blocked[variant] ?? '' : ''}`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. ${C.placement.availableLead}: ${available.map((z) => z.label).join('; ') || `none — try another mic type or ${C.variantKey.toLowerCase()}`}.`}</Body>}
-          <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{`Activity: zones rested in, clear of every part — ${visited.size} so far${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
           {tried && C.placement.reveal ? <Note tone="ok">{`You predicted “${predicted}”. ${C.placement.reveal}`}</Note> : null}
           {C.placement.typeNotes[mic.typeId] ? <Note>{C.placement.typeNotes[mic.typeId]}</Note> : null}
           <Note>{C.placement.note}</Note>

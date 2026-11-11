@@ -669,6 +669,6 @@ export const B11_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — once it is approved — ideas and concepts to consider, not rules. Every person, kit, rule and mic is different: move the mic, experiment within the approval, and trust your ears. The lab is silent and draws a simplified picture: a generic figure, illustrative keep-out regions, textbook patterns. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Approval first; protective equipment never touched; never into play.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — once it is approved — ideas and concepts to consider, not rules. Every person, kit, rule and mic is different: move the mic, experiment within the approval, and trust your ears. The lab is silent and draws a simplified picture: a generic figure, illustrative keep-out regions, textbook patterns. Distances are rounded to about 5 mm below 1 m and more coarsely above it, also shown in feet from 3 m, and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Approval first; protective equipment never touched; never into play.',
   copy: B11_COPY,
 };

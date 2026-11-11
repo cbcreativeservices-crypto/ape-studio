@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
   "title": "MPB / Bossa Nova",
   "expects": "Audiences listen to the words, and Brazilian crowds sing along; in a pagode roda (samba circle), singing along is the point.",
   "glance": {
-    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; pagode (informal party samba) rose from samba circles in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)",
+    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB (Música Popular Brasileira, Brazilian popular music) grows out of it from the mid-1960s across Brazil; pagode (informal party samba) rose from samba circles in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)",
     "tempo": "Bossa nova 120–145 BPM (felt “in two” at 60–72); MPB ballads and samba-canção (slow, torch-song samba) 60–90; samba/pagode roughly 90–110 in 2/4",
     "ensemble": "Voice and violão (nylon-string guitar) alone; trio/quartet (guitar, piano, upright or electric bass, brushes/percussion); MPB tours 6–10 piece; pagode 5–8 players who all sing",
     "priority": "The voice and the nylon-string guitar as an equal, intimate pair, with every word of Portuguese clear",
@@ -63,7 +63,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Pagode additions:",
-      "text": "cavaquinho (small four-string guitar), bright and percussive; banjo tuned like a cavaquinho; tantã (a low hand-played drum that replaces the surdo); repique de mão; 7-string violão carrying bass counterlines.",
+      "text": "cavaquinho (small four-string guitar), bright and percussive; banjo tuned like a cavaquinho; tantã (a low hand-played drum that replaces the surdo); repique de mão (a small high drum played by hand); 7-string violão carrying bass counterlines.",
       "bullet": true
     },
     {
@@ -105,7 +105,7 @@ export const GUIDE: MixingGuide = {
         "source": "Violão (piezo/DI)",
         "cut": "HPF 80–100 Hz; −4–6 dB at 1–2 kHz (“quack”); LPF 10–12 kHz",
         "boost": "+1–2 dB at 200 Hz if thin",
-        "notes": "Blend with a mic or use an IR/acoustic simulator"
+        "notes": "Blend with a mic or use an acoustic simulator or IR (impulse response)"
       },
       {
         "source": "Lead vocal",
@@ -129,7 +129,7 @@ export const GUIDE: MixingGuide = {
         "source": "Surdo (deep samba bass drum) / tantã (low hand drum)",
         "cut": "HPF 35–40 Hz; −3–5 dB at 250–400 Hz (mud)",
         "boost": "+2–3 dB at 60–90 Hz; +2 dB at 2–3 kHz (stick/hand)",
-        "notes": "LDC 30–90 cm away sounds more natural than a kick mic up close"
+        "notes": "A large-diaphragm condenser (LDC) 30–90 cm away sounds more natural than a kick mic up close"
       },
       {
         "source": "Pandeiro (Brazilian tambourine)",
@@ -314,7 +314,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Percussion",
         "live": "Few mics, subgroup compression, low monitor bleed",
-        "studio": "LDC at 60–120 cm per instrument; room mics give air"
+        "studio": "Large-diaphragm condenser (LDC) at 60–120 cm per instrument; room mics give air"
       },
       {
         "area": "Low end",

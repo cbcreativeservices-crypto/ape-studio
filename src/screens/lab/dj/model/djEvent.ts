@@ -298,7 +298,7 @@ export const freshRec = (): RecState => ({ tap: 'NONE', gain: 0.5, armedAt: null
 
 /** What the recorder's input carries, in words. */
 export const REC_TAPS: Record<Exclude<RecTap, 'NONE'>, { label: string; blurb: string }> = {
-  REC_OUT: { label: 'REC OUT', blurb: 'The mixer’s record output: here, as on most club mixers, a fixed-level copy of the mix taken before the MASTER knob — your MASTER moves do not ride the take.' },
+  REC_OUT: { label: 'REC OUT', blurb: 'The mixer’s record output: here, as on most club mixers, a fixed-level copy of the mix taken before the MASTER knob — your MASTER moves do not change the take.' },
   BOOTH: { label: 'BOOTH OUT', blurb: 'The booth output: it follows the BOOTH knob, so every booth move is in the take. BOOTH OUT now feeds the recorder, so the booth monitors are unplugged and silent — one plug per jack.' },
   LOOPBACK: { label: 'LOOPBACK', blurb: 'The computer recording what it plays itself. The players and the mic never pass through it.' },
 };
@@ -408,7 +408,7 @@ export const HUM_HZ = MAINS_HZ;
 
 /** Why lifting the mains earth is refused (it is never applied). */
 export const EARTH_LIFT_REFUSAL =
-  'Refused. The ground pin is what keeps a fault on the AC power from making the metal of the gear live — it is the safety, not the hum. Break the loop in the audio path instead (an isolator or a DI with a ground lift), power both from the same strip, or run the laptop on its battery.';
+  'Refused. The ground pin is what keeps a fault on the AC power from making the metal of the gear live — it is there for safety, and lifting it is no cure for hum. Break the loop in the audio path instead (an isolator or a DI with a ground lift), power both from the same strip, or run the laptop on its battery.';
 
 /* ── the whole rig ────────────────────────────────────────────────────── */
 

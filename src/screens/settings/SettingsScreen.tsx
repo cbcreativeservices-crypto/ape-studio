@@ -664,7 +664,7 @@ ${LOCAL_LOSS}`
           setPrefs((p) => (p ? { ...p, notify_weekly_concept: true } : p));
           notify(
             'Notifications',
-            'Weekly concepts could not be switched off. No reminders were sent in the meantime — try again in a moment.',
+            'Weekly concepts could not be switched off, so they are still on — try again in a moment.',
           );
           return;
         }

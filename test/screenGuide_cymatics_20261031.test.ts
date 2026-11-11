@@ -430,7 +430,7 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.match(H, /const beatWindow = tone\.detuned \? 2\.5 \/ Math\.max\(0\.2, beatHz\) : 0;/);
     const t = textOf(MODS.harmony);
     assert.match(t, /A 220 Hz, B 330 Hz/);
-    assert.match(t, /A reads 440 Hz, B 660 Hz, and INTERVAL is still P5/);
+    assert.match(t, /A goes from 220 to 440 Hz, B from 330 to 660 Hz, and INTERVAL is still P5/);
     assert.match(t, /Set VIEW to Lissajous figure, then ride DETUNE to about \+1\.00 %\. At BASE 220 Hz, BEAT reads about 13\.2 Hz/);
     assert.match(t, /Ride DETUNE back to locked, then pick RATIO 1 : 2/);
     assert.match(t, /about two and a half beats/);

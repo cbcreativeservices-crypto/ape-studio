@@ -19,7 +19,7 @@ const SPEC = ensembleHandSpec({
   firstZone: 'ch.live',
   firstMic: 'arrCard',
   mic: {
-    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. Area mics: directional condensers on tall stands, a tighter pattern where the PA is loud. A main pair: matched cardioids (X/Y, the 17 cm pair) or omnis in a fine, quiet room; a figure-8 for an M/S Side. The condensers need phantom power; if the figure-8 is a ribbon, check its manual before you switch phantom on.',
+    intro: 'A mic type (dynamic, condenser or ribbon) alone does not decide tone, spill or headroom: read the real mic’s specifications. Area mics: directional condensers on tall stands, a tighter pattern where the PA is loud. A main pair: matched cardioids (X/Y, the 17 cm pair) or omnis in a fine, quiet room; a figure-8 for an M/S Side. The condensers need phantom power; if the figure-8 is a ribbon, check its manual before you switch phantom on.',
     mountLine: () => 'Mount: a tall stand with a wide base, clear of the risers’ edges, the singers’ feet and their sightlines to the conductor; anything hung is the venue’s, in front of the mouths — never over the heads',
     extra: ARRAY_CARDS,
   },
@@ -52,7 +52,7 @@ const SPEC = ensembleHandSpec({
     ],
   },
   practice: {
-    orderNote: 'Live choir mics as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.',
+    orderNote: 'Put the steps for live choir mics in order. If you tap a step too early, you see why it can’t come yet.',
     gainId: 'ch.prac.gain',
     secondId: 'ch.prac.3',
     mixIds: ['ch.nom', 'ch.31why', 'ch.ring'],

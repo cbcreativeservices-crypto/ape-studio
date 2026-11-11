@@ -540,7 +540,7 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
         <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}><Text style={P.strong}>The visible pattern: </Text>{s.pattern}.</Text></View>
         <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}><Text style={P.strong}>Mode family: </Text>{s.family}.</Text></View>
         {sys === 'string' ? <Text style={P.caption}>Harmonic {n}: {n} loop{n === 1 ? '' : 's'}, {n + 1} still points including the ends. The blue dots are the nodes — a finger touched there lets the harmonic ring on.</Text> : null}
-        {sys === 'pipe' ? <Text style={P.caption}>Open at both ends, the pressure has nodes at the ends and {n === 1 ? 'one antinode' : `${n - 1} more nodes`} inside. Close one end and the pipe sounds about an octave lower, with only the odd harmonics of that new note.</Text> : null}
+        {sys === 'pipe' ? <Text style={P.caption}>Open at both ends, the pressure has nodes at the ends and {n === 1 ? 'one antinode' : n === 2 ? '1 more node' : `${n - 1} more nodes`} inside. Close one end and the pipe sounds about an octave lower, with only the odd harmonics of that new note.</Text> : null}
         {sys === 'levitation' ? <Text style={P.caption}>At 40 kHz the half-wavelength is ≈ 4.3 mm: the beads sit a half-wave apart, held where the pressure amplitude is smallest.</Text> : null}
         {s.link ? <View style={P.chips}><LabChip label={s.link.label} selected={false} onPress={() => s.link!.go(navigation)} /></View> : null}
       </View>

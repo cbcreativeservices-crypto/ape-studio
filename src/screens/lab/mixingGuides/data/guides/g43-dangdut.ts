@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
   "glance": {
     "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s",
     "tempo": "Classic dangdut 120–140 BPM; koplo runs faster (130–160 BPM) and feels busier because the kendang (hand drums) packs in more strokes per bar; slow ballads 70–90 BPM",
-    "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (hand drums), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; or the smaller “organ tunggal” (one-keyboardist band): keyboardist, kendang and singer",
+    "ensemble": "Orkes Melayu (OM, “Malay orchestra”): 7–12 players — kendang (hand drums), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; or the smaller “organ tunggal” (one-keyboardist band): keyboardist, kendang and singer",
     "priority": "The kendang: the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
     "liveSpl": "96–102 dBA LAeq,15min for village stages and festivals; 112–120 dBC LCeq; East Java caps static systems at 120 dBA (2025 rule)",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); most streaming services normalize to about −14 LUFS, some to −16"
@@ -266,13 +266,13 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The singer is the star: about 3–5 dB above the band by feel, every word clear. Audiences judge the cengkok (vocal ornaments) — slides, slow vibrato, rapid turns and, in modern koplo (fast East-Java style), Arabic-style throat ornaments — so compress gently enough that ornaments survive. Pitch correction is light and slow; hard tuning destroys cengkok (except in deliberate remix styles). Tone is bright and forward, often slightly nasal, with a generous reverb tail. Backing and crowd-answer vocals sit wide, 6–10 dB under. Male/female duets are common; match levels and EQ beforehand. Live, use a rugged dynamic, wired or wireless. Singers roam into the crowd during saweran (fans tipping the singer), so pick a high-rejection capsule, ring out monitors and watch the front fills. Lyrics are mostly Indonesian or Javanese; clear consonants (2–4 kHz) matter more than air."
+      "text": "The singer is the star: about 3–5 dB above the band by feel, every word clear. Audiences judge the cengkok (vocal ornaments) — slides, slow vibrato, rapid turns and, in modern koplo (fast East-Java style), Arabic-style throat ornaments — so compress gently enough that ornaments survive. Pitch correction is light and slow; hard tuning destroys cengkok (except in deliberate remix styles). Tone is bright and forward, often slightly nasal, with a generous reverb tail. Backing and crowd-answer vocals sit wide, 6–10 dB under. Male/female duets are common; match levels and EQ beforehand. Live, use a rugged dynamic, wired or wireless. Singers roam into the crowd during saweran (fans tipping the singer), so pick a high-rejection capsule, ring out the monitors (find and cut their feedback frequencies) and watch the front fills. Lyrics are mostly Indonesian or Javanese; clear consonants (2–4 kHz) matter more than air."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq,15min at FOH, peaks 110–115 dBA, C-weighted LCeq around 112–120 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. NIOSH advises no more than about 15 minutes a day at 100 dBA, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
+      "text": "Village stages, kampung (village) festivals and touring OM shows usually run 96–102 dBA LAeq,15min at FOH, peaks 110–115 dBA, C-weighted LCeq around 112–120 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. NIOSH advises no more than about 15 minutes a day at 100 dBA, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",

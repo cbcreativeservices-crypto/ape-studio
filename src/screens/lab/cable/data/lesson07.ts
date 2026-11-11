@@ -74,7 +74,7 @@ export const POWER_GROUPS: L07Group[] = [
     // reliability, not the stakes"), both records' notInterchangeableWith
     // (families do not intermate) and hotPlug (de-energize first default).
     blurb:
-      'Locking stage AC power — the lock changes reliability, not the stakes. The two families do not intermate despite the shared name. The original family must never be connected or disconnected under power. Some TRUE1 models are rated to break a live load, but check the exact product; de-energizing first stays the default for both.',
+      'Locking stage AC power — the lock changes reliability, not the stakes. The two families do not mate with each other despite the shared name. The original family must never be connected or disconnected under power. Some TRUE1 models are rated to break a live load, but check the exact product; de-energizing first stays the default for both.',
     connectors: [
       { id: 'powercon_xx', chip: 'powerCON 20 A' },
       { id: 'powercon_true1', chip: 'powerCON TRUE1' },
@@ -87,7 +87,7 @@ export const POWER_GROUPS: L07Group[] = [
     // usb_c_power.advantages ("voltage rises only after both ends agree"),
     // poe.advantages ("a compliant source powers only devices that ask for it").
     blurb:
-      'Low-voltage power, three disciplines: a barrel connector trusts its printed labels, USB-C raises voltage only after negotiation, and compliant PoE powers only devices that ask for it.',
+      'Low-voltage power, three disciplines: a barrel connector relies on you reading its printed labels, USB-C raises voltage only after negotiation, and compliant PoE powers only devices that ask for it.',
     connectors: [
       { id: 'dc_barrel', chip: 'DC BARREL' },
       { id: 'usb_c_power', chip: 'USB-C POWER' },
@@ -136,7 +136,7 @@ export const NEVER_ITEMS: string[] = [
   // mains_wall.safety.cautions ("Never defeat polarization or grounding";
   // GFCI required in damp/outdoor locations) + keying-protection claims.
   // Derived phrasing — flagged for owner review.
-  'Bypassing any built-in protection — polarization, grounding, connector keying — or powering a damp or outdoor location without the GFCI (RCD) protection it requires.',
+  'Bypassing any built-in protection — polarization, grounding, connector keying — or powering a damp or outdoor location without the ground-fault (GFCI / RCD) protection it requires.',
   // powercon_xx.commonMistakes ("a loudspeaker connector is never used for
   // mains, and a mains connector is never used for loudspeakers")
   'Using a signal or loudspeaker connector for AC power, or an AC power connector for loudspeakers — in either direction.',

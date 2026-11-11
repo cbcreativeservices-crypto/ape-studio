@@ -40,11 +40,11 @@ export type LibraryShapeInfo = {
 
 export const LIBRARY_SHAPES: readonly LibraryShapeInfo[] = [
   { id: 'triangle', label: 'Triangle', unitLabel: 'side', boundaryLabel: 'Free edges (solved)', blurb: 'Equilateral, all edges free — three-fold figures the square cannot make.' },
-  { id: 'hexagon', label: 'Hexagon', unitLabel: 'flat-to-flat', boundaryLabel: 'Free edges (solved)', blurb: 'Regular hexagon, free edges — six-fold families, many degenerate pairs.' },
-  { id: 'ring', label: 'Ring', unitLabel: 'outer Ø', boundaryLabel: 'Free outer and inner edge (solved)', blurb: 'An annulus, inner Ø 35 % — the hole removes the centre antinode.' },
+  { id: 'hexagon', label: 'Hexagon', unitLabel: 'flat-to-flat', boundaryLabel: 'Free edges (solved)', blurb: 'Regular hexagon, free edges — six-fold families, many degenerate pairs (two modes sharing one frequency).' },
+  { id: 'ring', label: 'Ring', unitLabel: 'outer Ø', boundaryLabel: 'Free outer and inner edge (solved)', blurb: 'An annulus (a flat ring), inner Ø 35 % of the outer — the hole removes the center antinode.' },
   { id: 'ring-clamped-inner', label: 'Ring · clamped hub', unitLabel: 'outer Ø', boundaryLabel: 'Free outer edge, clamped inner edge (solved)', blurb: 'The same annulus held rigidly at its hub — every mode rises and the umbrella mode appears.' },
   { id: 'bell', label: 'Bell plate', unitLabel: 'outer Ø', boundaryLabel: 'Clamped centre post (Ø 12 %), free rim (solved)', blurb: 'A disc clamped on a centre post — the classic bowed-plate rig, with the (0,0) umbrella mode.' },
-  { id: 'guitar', label: 'Guitar plate', unitLabel: 'body length', boundaryLabel: 'Free edges (solved)', blurb: 'A classical-guitar top outline — the lutherie bending, torsion and ring modes.' },
+  { id: 'guitar', label: 'Guitar plate', unitLabel: 'body length', boundaryLabel: 'Free edges (solved)', blurb: 'A classical-guitar top outline — the bending, torsion and ring modes luthiers (guitar makers) work with.' },
   { id: 'violin', label: 'Violin plate', unitLabel: 'body length', boundaryLabel: 'Free edges (solved)', blurb: 'A violin top without f-holes — the free-plate modes luthiers tune by tap tone.' },
   { id: 'violin-fholes', label: 'Violin · f-holes', unitLabel: 'body length', boundaryLabel: 'Free edges (solved)', blurb: 'The same top with f-holes cut — see which modes the holes move.' },
 ];

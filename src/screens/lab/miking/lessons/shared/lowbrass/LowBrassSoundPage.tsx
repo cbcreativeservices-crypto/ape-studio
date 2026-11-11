@@ -175,7 +175,7 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
     ];
     const shapeBezel: BezelItem[] = [
       { k: 'SHAPE', v: `${shapeN}`, flex: 0.7 },
-      { k: 'PLAIN TUBE', v: `× ${pipeRatio(shapeN)}`, sub: 'the lowest’s pitch', flex: 1.1 },
+      { k: 'PLAIN TUBE', v: `× ${pipeRatio(shapeN)}`, sub: 'lowest shape’s pitch', flex: 1.1 },
       { k: 'STILL POINTS', v: `${nodes.length}`, sub: 'bell end incl.', flex: 1.1 },
       { k: 'AT THE LIPS', v: 'MOST PRESSURE', flex: 1.3 },
     ];

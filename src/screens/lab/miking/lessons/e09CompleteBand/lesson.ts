@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Those that need independent control',
     explain: 'Do not add mics simply because inputs are available. Each one adds spill, phase relationships, setup time and another path to feed back.',
     why: {
-      'Each one: more channels mean more control later': 'More tracks also bring more crosstalk and phase pairs — not automatically more control.',
+      'Each one: more channels mean more control later': 'More tracks also bring more crosstalk and phase relationships — not automatically more control.',
       'Each one, as long as its mic is a cardioid': 'A pattern does not remove the cost of another open mic.',
     },
   },
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A supercardioid replaces a cardioid on the vocal. What changes for the wedge?',
     options: ['Its best place moves off the mic’s back', 'Nothing: they reject the same direction', 'The wedge can now face the mic’s front'],
     correct: 'Its best place moves off the mic’s back',
-    explain: 'A cardioid rejects most straight behind; a supercardioid’s null sits well off its back, with a little pickup directly behind. Place the wedge by the real pattern.',
+    explain: 'A cardioid rejects most straight behind; a supercardioid’s nulls sit to either side of straight behind, with a little pickup directly behind. Place the wedge by the real pattern.',
     why: {
       'Nothing: they reject the same direction': 'Their nulls are at different angles — the reason the lesson says the monitor angles differ.',
       'The wedge can now face the mic’s front': 'No pattern rejects its front: that is where it hears most.',
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The kick is 3 m from the vocal mic and 4 cm from its own. Which hears it first?',
     options: ['The kick mic, about 9 ms earlier', 'The vocal mic, because it is higher', 'Both at once: one band, one room'],
     correct: 'The kick mic, about 9 ms earlier',
-    explain: 'Sound travels about 1 m in 2.9 ms: 3 m is close to 9 ms. That late copy in the vocal mic is bleed — fine in the mix, comb-filtering if the two are summed loud.',
+    explain: 'Sound travels about 1 m in 2.9 ms: 3 m is close to 9 ms. That late copy in the vocal mic is bleed — fine in the mix, comb-filtering if the two are summed at similar levels.',
     why: {
       'The vocal mic, because it is higher': 'Height does not make a mic early; distance sets the time.',
       'Both at once: one band, one room': 'Different distances mean different arrival times.',
@@ -277,8 +277,8 @@ const scenarios: MikingScenario[] = [
     id: 'bd.two.1',
     page: 'twoMic',
     prompt: 'Flipping the vocal’s polarity makes the kick fuller. What did it fix?',
-    options: ['One relationship, not the arrival time', 'The delay between the two mics, fully and for good', 'The bleed itself, which is now gone'],
-    correct: 'One relationship, not the arrival time',
+    options: ['How these two mics combine, not the arrival time', 'The delay between the two mics, fully and for good', 'The bleed itself, which is now gone'],
+    correct: 'How these two mics combine, not the arrival time',
     explain: 'Polarity flips the sign; it does not move the arrival. Reverse it only when it sounds more coherent, and fix timing problems by moving mics or reducing overlap.',
     why: {
       'The delay between the two mics, fully and for good': 'A polarity flip never moves an arrival in time.',
@@ -406,10 +406,10 @@ const symptoms: Symptom[] = [
     id: 'bd.s.muddy',
     observation: 'The room mics make the mix muddy',
     firstChecks: 'Is the room too reflective, or the room mics too close to loud sources? Move or reduce them, use a more directional pattern, filter only as needed.',
-    options: ['Move or reduce the room mics', 'Raise the room mics to blend more', 'Pan the room mics hard into the middle'],
+    options: ['Move or reduce the room mics', 'Raise the room mics to blend more', 'Pan the room mics into the middle'],
     correct: 'Move or reduce the room mics',
     explain: 'Placement first: farther from the loudest sources, or less of them, before filtering.',
-    why: { 'Raise the room mics to blend more': 'More mud in the mix makes it muddier.', 'Pan the room mics hard into the middle': 'Panning changes width, not the mud.' },
+    why: { 'Raise the room mics to blend more': 'More mud in the mix makes it muddier.', 'Pan the room mics into the middle': 'Panning changes width, not the mud.' },
   },
   {
     id: 'bd.s.energy',
@@ -505,7 +505,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Gain before feedback', 'Nothing, if it is a cardioid', 'Only setup time'],
     correct: 'Gain before feedback',
     explain: 'Each doubling of open mics costs about 3 dB of gain before feedback — close the ones a song does not need.',
-    why: { 'Nothing, if it is a cardioid': 'A cardioid still adds a path for the PA and the wedges.', 'Only setup time': 'It costs feedback margin, phase pairs and noise too.' },
+    why: { 'Nothing, if it is a cardioid': 'A cardioid still adds a path for the PA and the wedges.', 'Only setup time': 'It costs feedback margin, phase relationships and noise too.' },
   },
   {
     id: 'bd.q.5',

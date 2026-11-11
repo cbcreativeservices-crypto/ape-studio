@@ -54,7 +54,7 @@ const STATIONS: readonly { id: StripStation; name: string; what: string; kind: s
   { id: 'insert', name: 'Insert', kind: 'THROUGH', what: 'A processor placed IN the path — a compressor, a gate — so the whole channel passes through it. Nothing is copied; everything goes through. On a digital console it is a block in the strip; on an analog one, a send-and-return jack. Where it sits depends on the console: this lab’s strip puts it after the EQ, most compact analog desks put it before the EQ (right after the preamp and high-pass), and many digital desks let you choose pre- or post-EQ.' },
   { id: 'fader', name: 'Fader, pan and mute', kind: 'THROUGH', what: 'The channel’s level in the main mix and its position between left and right. Post-fader sends follow the fader; pre-fader sends do not. On this console the MUTE also silences the pre-fader sends. That depends on the console: on some analog desks the mute kills the pre-fader sends too, on others it leaves them running, and many digital desks let you choose. A DCA’s LEVEL acts on the fader — a remote hand, with no audio of its own. A DCA’s MUTE and a mute group act on the MUTE, so on this console they silence the pre-fader sends too.' },
   { id: 'sends', name: 'Aux sends', kind: 'A COPY', what: 'Adjustable COPIES of the channel to other buses. PRE-fader for monitors, so the house fader cannot move a wedge; POST-fader for effects — the reverb here — and aux-fed subs, so the wet and the low end stay in proportion to the fader.' },
-  { id: 'assign', name: 'Assignment', kind: 'THE PATH', what: 'Where the channel’s main path goes: direct to the L/R main bus, or into a subgroup that then goes to main — usually one or the other. Both by accident is the double-routing fault: about 6 dB hot, half of it around the group’s insert. Both on purpose is parallel processing — the dry channel plus a heavily compressed group, blended with the group fader. A DCA and mute groups are controls over the channel, not paths for it.' },
+  { id: 'assign', name: 'Assignment', kind: 'THE PATH', what: 'Where the channel’s main path goes: direct to the L/R main bus, or into a subgroup that then goes to main — usually one or the other. Both by accident is the double-routing fault: about 6 dB hot, half of it skipping the group’s insert. Both on purpose is parallel processing — the dry channel plus a heavily compressed group, blended with the group fader. A DCA and mute groups are controls over the channel, not paths for it.' },
   { id: 'direct', name: 'Direct output', kind: 'A COPY', what: 'The channel by itself on its own output, usually for a multitrack recorder — pre- or post-fader by setting, and on a digital console a patch like any other.' },
 ];
 
@@ -116,7 +116,7 @@ function PageChannel({ ctx }: { ctx: PageCtx }) {
       <Body>One channel strip, top to bottom in signal order, the way it is printed on the console. The sends leave as copies at the PRE and POST tap points; the main path ends at the assignment.</Body>
       <Prompt>Tap each block of the strip.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <Body>The same channel on the console model, read-only: the vocal with a pre-fader wedge send and a post-fader reverb send — the two sends that behave differently for a reason.</Body>
+      <Body>The same channel on the lab’s console, view only: the vocal with a pre-fader wedge send and a post-fader reverb send — the two sends that behave differently for a reason.</Body>
       <ConsolePanel cs={cs} onChange={() => {}} channels={['vox']} columns={['fader', 'mute', 'main', 'send:aux1', 'send:aux5']} readonly sendNames={WEDGE_NAMES} />
       <KeyFact>Insert = through. Send = copy. Assignment = where the main path goes. DCA and mute group = controls over the channel, with no audio in them. Four words that end most routing confusion.</KeyFact>
     </SoundSystemsRackLayout>
@@ -241,7 +241,7 @@ function PageWhichTool({ ctx }: { ctx: PageCtx }) {
         return (
           <UnderstandingCheck
             key={c.id}
-            eyebrow={`SITUATION ${i + 1} OF ${WHICH_TOOL.length}`}
+            eyebrow={`SITUATION ${i + 1}`}
             question={c.situation}
             options={options.map(name)}
             correct={0}
@@ -514,7 +514,7 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>INSERTS · DIRECT OUTPUTS · DIGITAL PATCHING</Eyebrow>
-        <Body>An insert puts a processor IN the channel path. A direct output takes the channel alone to a recorder. On a digital console every input and output is a patch: which physical socket feeds which channel, and which bus leaves which socket — the setting behind two of the faults on the bench.</Body>
+        <Body>An insert puts a processor IN the channel path. A direct output takes the channel alone to a recorder. On a digital console every input and output is a patch: which physical socket feeds which channel, and which bus leaves which socket — the setting behind two of the TROUBLESHOOT faults.</Body>
       </Card>
       <UnderstandingCheck
         question="You want to hear a channel in headphones exactly as it sits in the mix, with its fader and pan. Which solo?"
@@ -631,7 +631,7 @@ type Bus = (typeof BUSES)[number];
 const DESTINATIONS: readonly { id: string; name: string; short: string; needs: Bus; why: string }[] = [
   { id: 'procL', name: 'Processor input 1 → mains left', short: 'PROC 1 · L', needs: 'Main L', why: 'The mains take the main mix, left side.' },
   { id: 'procR', name: 'Processor input 2 → mains right', short: 'PROC 2 · R', needs: 'Main R', why: 'The mains take the main mix, right side.' },
-  { id: 'wedge1', name: 'Wedge 1 amplifier', short: 'WEDGE 1', needs: 'Aux 1', why: 'A wedge takes its own aux — never a main output (the fault on the bench).' },
+  { id: 'wedge1', name: 'Wedge 1 amplifier', short: 'WEDGE 1', needs: 'Aux 1', why: 'A wedge takes its own aux — never a main output (one of the TROUBLESHOOT faults).' },
   { id: 'wedge2', name: 'Wedge 2 amplifier', short: 'WEDGE 2', needs: 'Aux 2', why: 'Its own aux, its own mix.' },
   { id: 'subs', name: 'Processor input 4 → subwoofers (aux-fed)', short: 'PROC 4 · SUB', needs: 'Aux 6', why: 'Aux-fed subs take the sub aux, not the main mix.' },
   { id: 'fills', name: 'Processor input 3 → front fills', short: 'PROC 3 · FILL', needs: 'Matrix 2', why: 'Fills are matrix-fed so they can be delayed and equalized on their own.' },
@@ -697,7 +697,7 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
           {wrong.map((d) => (
             <VerdictLine key={d.id} ok={false}>{d.name}: patched from {patch[d.id]}. {d.why}</VerdictLine>
           ))}
-          <VerdictLine ok={done} warn={!done && correct > 0}>{done ? 'Every output leaves the right socket. Document it — the patch list is what the next person rebuilds from.' : `${correct} of ${DESTINATIONS.length} patched correctly.`}</VerdictLine>
+          <VerdictLine ok={done} warn={!done && correct > 0}>{done ? 'Every output leaves the right socket. Document it — the patch list is what the next person rebuilds from.' : `${correct} patched correctly.`}</VerdictLine>
         </>
       }
     >

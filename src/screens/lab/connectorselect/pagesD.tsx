@@ -51,7 +51,7 @@ function PageSafety({ ctx }: { ctx: PageCtx }) {
         const on = acked.has(r.id);
         return (
           <Card key={r.id} tone={on ? 'ok' : 'plain'}>
-            <Eyebrow>{`RULE ${i + 1} OF ${SAFETY_RULES.length}`}</Eyebrow>
+            <Eyebrow>{`RULE ${i + 1}`}</Eyebrow>
             <Prompt>{r.rule}</Prompt>
             <Body>{r.why}</Body>
             <Btn
@@ -125,12 +125,22 @@ function PageMisconceptions({ ctx }: { ctx: PageCtx }) {
 
 /* ── page 16: the final ──────────────────────────────────────────────────── */
 
+/** Words for each question type on the card eyebrow (the Lead names them
+ *  the same way); the raw codes (SAMEJOB…) are not for the student. */
+const KIND_WORDS: Record<AsmtQuestion['kind'], string> = {
+  identify: 'IDENTIFICATION',
+  select: 'CABLE SELECTION',
+  samejob: 'SAME-CONNECTOR TRAP',
+  fault: 'FAULT',
+  safety: 'SAFETY',
+};
+
 function AsmtQuestionCard({ q, num, answer, onAnswer }: { q: AsmtQuestion; num: number; answer: number | undefined; onAnswer: (originalIdx: number) => void }) {
   const { shuffled, order } = useStableShuffle(q.options, q.id);
   const answered = answer !== undefined;
   return (
     <Card>
-      <Eyebrow>{`QUESTION ${num} · ${q.kind.toUpperCase()}${q.critical ? ' · SAFETY-CRITICAL' : ''}${answered ? ' · ANSWERED ✓' : ''}`}</Eyebrow>
+      <Eyebrow>{`QUESTION ${num} · ${KIND_WORDS[q.kind]}${q.critical ? ' · SAFETY-CRITICAL' : ''}${answered ? ' · ANSWERED ✓' : ''}`}</Eyebrow>
       {/* No `name` on the photo — the question asks WHAT this connector is,
           so naming it in the accessibility label would leak the answer. */}
       {q.image ? <ConnectorPhoto id={q.image} size={72} /> : null}
@@ -218,7 +228,7 @@ function PageFinal({ ctx }: { ctx: PageCtx }) {
             />
           ))}
           {!result ? (
-            <Btn label={allAnswered ? 'TURN IN THE JOB SHEET' : `ANSWER ALL 12 (${answers.size}/12)`} tone="primary" disabled={!allAnswered} onPress={grade} a11y={allAnswered ? 'Grade the assessment' : 'Answer every question first'} />
+            <Btn label={allAnswered ? 'TURN IN THE JOB SHEET' : `ANSWER ALL 12 (${12 - answers.size} LEFT)`} tone="primary" disabled={!allAnswered} onPress={grade} a11y={allAnswered ? 'Grade the assessment' : 'Answer every question first'} />
           ) : (
             // warn (red framing) is reserved for the genuine safety case —
             // a plain sub-80% miss is a note, not a hazard (design pass).

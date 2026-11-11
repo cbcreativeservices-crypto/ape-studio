@@ -904,8 +904,8 @@ export function AmplitudeColorBody({
         <Text style={styles.sixViews}>SIX VIEWS · ONE SIGNAL</Text>
         <Text style={styles.sixViewsSub}>{AMP_ORIENT_PARAS[1]}</Text>
         <Text style={styles.sixViewsSub}>
-          Every card draws the SAME example signal — a strong low tone, a weaker high harmonic, and
-          one short burst — in the same level colors.
+          Every card draws the SAME example signal — a strong low tone, a weaker high harmonic (a fainter, higher tone),
+          and one short burst — in the same level colors.
         </Text>
       </View>
 
@@ -926,7 +926,7 @@ export function AmplitudeColorBody({
         </VizCard>
         <VizCard
           title="LEVEL METER"
-          caption="Peak vs RMS — same signal"
+          caption="Peak vs RMS (a kind of average) — same signal"
           a11y="Level meter example: two meters for one signal — PEAK reads higher and hotter, RMS (a kind of average) reads lower and cooler"
         >
           <LevelMeterCard />
@@ -1080,7 +1080,7 @@ export function AmplitudeLabScreen() {
         <ReviewLabEnd
           labKey="af_amplitude"
           labTitle="Understanding Level & Amplitude"
-          stepLabel="Pass the ramp check, then press UNDERSTOOD — MARK REVIEWED"
+          stepLabel="Pass CHECK YOURSELF — THREE QUICK READS, then press UNDERSTOOD — MARK REVIEWED"
           stepDetail="Both are at the foot of the lab, after the six views."
           offerReview={false}
         />

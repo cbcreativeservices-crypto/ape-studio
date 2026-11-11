@@ -1769,7 +1769,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           keyPoint={{
             head: 'RAMP ≠ PERMISSION',
             body:
-              'A cable ramp does not automatically make a crossing acceptable. The protector must suit the actual loads and traffic — and egress and accessibility requirements still apply to the route it sits in.',
+              'A cable ramp does not automatically make a crossing acceptable. The protector must suit the actual loads and traffic — and exit-route (egress) and accessibility requirements still apply to the route it sits in.',
           }}
         />
       </CiSection>

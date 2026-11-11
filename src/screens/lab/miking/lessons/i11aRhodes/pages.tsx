@@ -38,7 +38,7 @@ const AMP: AmpPagesSpec = {
     gainId: 'rh.prac.gain',
     secondId: 'rh.prac.3',
     mixIds: ['rh.mix.1', 'rh.mix.2', 'rh.mix.3'],
-    mixIntro: 'Three cards from earlier pages, mixed: a reference surface, an instrument fault, and the direct signal.',
+    mixIntro: 'Three cards from earlier pages, mixed: where to measure from, an instrument fault, and the direct signal.',
     sheetNote: 'For a real instrument and amp, with the player’s agreement and the amp muted while anything moves. Write tendencies in words — what you heard, not a promised result.',
   },
   notes: {

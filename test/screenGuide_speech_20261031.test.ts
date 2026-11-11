@@ -367,7 +367,7 @@ describe('6. review findings 2026-10-31 — each vetted against the code before 
     assert.equal(d12.plosiveDb, 0);
     assert.equal(d12.proximityDb.toFixed(0), '2');
     assert.doesNotMatch(g('p8', 'changes'), /Every bar is relative/);
-    assert.ok(g('p8', 'changes').includes('Plosive air against the 12" puff') && g('p8', 'changes').includes('Proximity bass is the lift'));
+    assert.ok(g('p8', 'changes').includes('Plosive air to the puff at 12"') && g('p8', 'changes').includes('Proximity bass is the lift'));
     // the full-screen readout may wrap to two lines
     assert.match(B, /<Text style=\{styles\.readout\} numberOfLines=\{2\}>\n\s*\{inches\}"/);
     assert.doesNotMatch(g('p8', 'control'), /one-line/);

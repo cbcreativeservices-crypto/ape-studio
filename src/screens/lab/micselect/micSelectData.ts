@@ -193,7 +193,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Invisible in the room',
       'Even pickup across a surface area',
       'No stand in the shot',
-      'Half-space pickup at the boundary',
+      'Hears the half-sphere above the surface',
     ],
     apps: 'Conference tables, stage floors, piano lids, installed rooms.',
     limitation: 'It hears the whole surface and the room — you place the SURFACE, not the mic.',
@@ -563,7 +563,7 @@ export const SPL_MATCH: Record<string, Record<string, { v: MatchVerdict; note: s
     lav: { v: 'good', note: 'Fine — placement, not electronics, is the challenge now.' },
   },
   loud: {
-    cond: { v: 'watch', note: 'Check the max SPL spec (and use the pad if fitted) — many handle it; the SPEC decides, not the "condenser" label.' },
+    cond: { v: 'watch', note: 'Check the max SPL spec (and use the pad, a level-cut switch, if fitted) — many handle it; the SPEC decides, not the "condenser" label.' },
     dyn: { v: 'good', note: 'Classic use: very high SPL capability and low sensitivity are exactly right.' },
     lav: { v: 'caution', note: 'Approaching its limits — many lavalier capsules distort earlier, so check the max SPL spec.' },
   },
@@ -629,7 +629,7 @@ export const FORM_FACTORS: FormFactor[] = [
   { key: 'headworn', name: 'Headworn', kind: 'headworn', apps: ['Presenters', 'Theater', 'Fitness / instruction'] },
   { key: 'shotgun', name: 'Shotgun', kind: 'shotgun', apps: ['Film / video', 'Location dialogue', 'Boom operation'] },
   { key: 'boundary', name: 'Boundary', kind: 'boundary', apps: ['Conference table', 'Stage / floor', 'Installed rooms'] },
-  { key: 'sdc', name: 'Pencil / SDC', kind: 'sdc', apps: ['Instrument recording', 'Stereo arrays', 'Choir / orchestra'] },
+  { key: 'sdc', name: 'Pencil / SDC (small-diaphragm condenser)', kind: 'sdc', apps: ['Instrument recording', 'Stereo arrays', 'Choir / orchestra'] },
   { key: 'ldc', name: 'Large-diaphragm studio', kind: 'ldc', apps: ['Vocals', 'Voiceover', 'Instruments'] },
 ];
 
@@ -690,7 +690,7 @@ export const JOB_GROUPS: JobGroup[] = [
       { key: 'voiceover', name: 'Voiceover', ratings: [['Self-noise', 5], ['Tonal detail', 5], ['Proximity behavior', 3], ['Ruggedness', 1]], note: 'The mic sits inches from a quiet, controlled voice — noise floor is everything.' },
       { key: 'podcast', name: 'Podcast', ratings: [['Room rejection', 4], ['Ease of use', 4], ['Tonal detail', 3], ['Self-noise', 3]], note: 'Untreated rooms favor directional mics worked close.' },
       { key: 'interview', name: 'Interview', ratings: [['Ruggedness', 4], ['Handling noise', 4], ['Wind tolerance', 4], ['Tonal detail', 3]], note: 'Field conditions: a mic that forgives handling, weather, and hurry.' },
-      { key: 'lectern', name: 'Lectern', ratings: [['Feedback rejection', 5], ['LF rolloff', 4], ['Discreet size', 4], ['Tonal detail', 2]], note: 'A slim directional capsule with the rumble rolled off before it starts.' },
+      { key: 'lectern', name: 'Lectern', ratings: [['Feedback rejection', 5], ['Low-frequency rolloff', 4], ['Discreet size', 4], ['Tonal detail', 2]], note: 'A slim directional capsule with the rumble rolled off before it starts.' },
       { key: 'theater', name: 'Theater', ratings: [['Invisibility', 5], ['Gain-before-feedback', 5], ['Sweat/wear tolerance', 4], ['Tonal detail', 3]], note: 'Headworn or hidden lavalier — most shows keep it out of sight.' },
       { key: 'broadcast', name: 'Broadcast', ratings: [['Speech intelligibility', 5], ['Consistency', 5], ['Self-noise', 4], ['Max SPL', 2]], note: 'A voiced, repeatable speech response, hour after hour.' },
     ],
@@ -699,15 +699,15 @@ export const JOB_GROUPS: JobGroup[] = [
     key: 'instruments',
     name: 'Instruments',
     jobs: [
-      { key: 'kick', name: 'Kick', ratings: [['Max SPL', 5], ['LF response', 5], ['Ruggedness', 4], ['Self-noise', 1]], note: 'Extreme SPL plus a voicing (or EQ) for punch and click.' },
+      { key: 'kick', name: 'Kick', ratings: [['Max SPL', 5], ['Low-frequency response', 5], ['Ruggedness', 4], ['Self-noise', 1]], note: 'Extreme SPL plus a voicing (or EQ) for punch and click.' },
       { key: 'snare', name: 'Snare', ratings: [['Max SPL', 5], ['Ruggedness', 5], ['Isolation', 4], ['Self-noise', 1]], note: 'It WILL be hit by a stick eventually. Plan for that.' },
       { key: 'toms', name: 'Toms', ratings: [['Max SPL', 5], ['Compact mounting', 4], ['Isolation', 4], ['Self-noise', 1]], note: 'Clip-on dynamics exist for exactly this geometry.' },
-      { key: 'overheads', name: 'Cymbals / overheads', ratings: [['Transient detail', 5], ['Extended HF', 4], ['Off-axis consistency', 4], ['Max SPL', 3]], note: 'The whole kit arrives off-axis — it must arrive sounding natural.' },
+      { key: 'overheads', name: 'Cymbals / overheads', ratings: [['Transient detail', 5], ['Extended highs', 4], ['Off-axis consistency', 4], ['Max SPL', 3]], note: 'The whole kit arrives off-axis — it must arrive sounding natural.' },
       { key: 'gtramp', name: 'Guitar amplifier', ratings: [['Max SPL', 5], ['Ruggedness', 4], ['Midrange voicing', 4], ['Self-noise', 1]], note: 'Loud, close, midrange-dense: dynamics and ribbons live here.' },
       { key: 'acgtr', name: 'Acoustic guitar', ratings: [['Transient detail', 5], ['Self-noise', 4], ['Off-axis consistency', 4], ['Max SPL', 2]], note: 'Small-diaphragm precision on a quiet, detailed source.' },
       { key: 'piano', name: 'Piano', ratings: [['Off-axis consistency', 5], ['Transient detail', 4], ['Self-noise', 4], ['Stereo pairing', 4]], note: 'A huge source — matched pairs and even off-axis behavior.' },
-      { key: 'strings', name: 'Strings', ratings: [['Self-noise', 5], ['Smooth HF', 4], ['Tonal detail', 4], ['Max SPL', 1]], note: 'Quiet and delicate; harshness shows instantly.' },
-      { key: 'brass', name: 'Brass', ratings: [['Max SPL', 4], ['Smooth HF', 4], ['Tonal detail', 3], ['Ruggedness', 3]], note: 'Loud AND bright — ribbons’ gentle top is a classic answer.' },
+      { key: 'strings', name: 'Strings', ratings: [['Self-noise', 5], ['Smooth highs', 4], ['Tonal detail', 4], ['Max SPL', 1]], note: 'Quiet and delicate; harshness shows instantly.' },
+      { key: 'brass', name: 'Brass', ratings: [['Max SPL', 4], ['Smooth highs', 4], ['Tonal detail', 3], ['Ruggedness', 3]], note: 'Loud AND bright — ribbons’ gentle top is a classic answer.' },
       { key: 'woodwinds', name: 'Woodwinds', ratings: [['Self-noise', 4], ['Tonal detail', 4], ['Off-axis consistency', 4], ['Max SPL', 2]], note: 'The sound comes from the whole instrument, not just the bell — even pickup matters.' },
       { key: 'perc', name: 'Percussion', ratings: [['Transient detail', 5], ['Max SPL', 4], ['Ruggedness', 3], ['Self-noise', 2]], note: 'Attack fidelity first; some pieces are shockingly loud.' },
     ],
@@ -742,7 +742,7 @@ export const CHALLENGE_MICS: ChallengeMic[] = [
   { key: 'B', label: 'Microphone B', kind: 'shotgun', specs: ['Shotgun condenser', 'Highly directional', 'Wind protection available', 'Boom-ready'] },
   { key: 'C', label: 'Microphone C', kind: 'measurement', specs: ['Omni measurement mic', 'Flat response', 'Calibrated', 'No wind accessories'] },
   { key: 'D', label: 'Microphone D', kind: 'dynamic', specs: ['Handheld moving-coil', 'Cardioid', 'Rugged', 'Low handling noise'] },
-  { key: 'E', label: 'Microphone E', kind: 'lav', specs: ['Wireless lavalier (electret)', 'Omni miniature capsule', 'Body-worn', 'Windjammer available'] },
+  { key: 'E', label: 'Microphone E', kind: 'lav', specs: ['Wireless lavalier (electret)', 'Omni miniature capsule', 'Body-worn', 'Windjammer (furry windscreen) available'] },
 ];
 
 export const CHALLENGE_BASE = {
@@ -753,7 +753,7 @@ export const CHALLENGE_BASE = {
   explain:
     'With a boom operator and a distant camera, the shotgun’s directivity reaches the speaker, rejects the traffic, ' +
     'and takes proper wind protection. A wireless lavalier with a windscreen is also a fair choice, and many crews run both. ' +
-    'The LDC is too sensitive to wind and handling; the measurement omni hears the whole street; the handheld works, but it puts a mic in the shot that the boom makes unnecessary.',
+    'The large-diaphragm condenser is too sensitive to wind and handling; the measurement omni hears the whole street; the handheld works, but it puts a mic in the shot that the boom makes unnecessary.',
 };
 
 export const CHALLENGE_FACTORS: { key: string; label: string; correct: boolean }[] = [

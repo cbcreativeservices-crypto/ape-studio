@@ -46,7 +46,7 @@ const cands = (tilt: number, side: Vec3, dists: number[], spread: number, at: Ve
 const TB_OFF: Z = {
   id: 'tb.off',
   label: 'Above or beside the slide, aimed across the bell',
-  band: 'Try about 30–60 cm (12–24 in) from the bell, a little off its axis — above the slide or out to the bell’s side, away from it — aimed across the bell.',
+  band: 'Try about 30–60 cm (12–24 in) from the bell, a little off its axis — above the slide or out to the bell’s side, away from the slide — aimed across the bell.',
   kind: 'sourced',
   src: 'DPA-TPT',
   quote: 'For a well balanced sound, position the microphone 30 to 50 cm from the bell, slightly off axis (DPA-TPT); 1 to 2 feet from the bell (S-BWS); "above or to the side of the slide’s sweep, aimed across the bell" (L11, the lesson’s own practical arrangement)',

@@ -32,7 +32,7 @@ const dec3 = (x: number) => (Math.abs(x) < 1e7 ? x.toFixed(3).replace(/\.?0+$/, 
 /** A percent change of −100% or less has no dB level (see pctToDb). */
 const pctNoLevel = (p: number) =>
   p === -100
-    ? 'A −100% change leaves no amplitude at all — silence — and silence has no finite dB level (it is −∞ dB).'
+    ? 'A −100% change leaves no amplitude at all — silence — and silence has no finite dB level (it is −∞ dB). Enter a smaller cut.'
     : `An amplitude cannot drop by more than 100%: ${fmt(p)}% would leave a negative amplitude, which does not exist. Check the sign and the value — −50% means half the voltage.`;
 
 // ---------------------------------------------------------------------------
@@ -62,7 +62,7 @@ const WS_LEVEL: Workspace = {
   mistakes: [
     'Using 10·log10 on a voltage ratio (or 20·log10 on a power ratio) — amplitude quantities use 20, power quantities use 10. The same dB result describes both only when the load stays the same, because power goes as voltage squared.',
     'Treating dBu and dBV as interchangeable — they differ by a fixed 2.22 dB (dBu reads higher for the same voltage) because their references differ: 0.7746 V vs 1 V.',
-    'Reading "−10 dBV" as "−10 dBu" on a spec sheet — the pro/consumer gap is ≈ 11.8 dB, not 14 dB.',
+    'Reading "−10 dBV" as "−10 dBu" on a spec sheet makes the gap to +4 dBu look like 14 dB — it is really ≈ 11.8 dB.',
     'Expecting +3 dB to sound twice as loud — it is double the POWER, a small but clearly audible step; to sound twice as loud takes about +10 dB.',
     'Converting a DAW meter reading (dBFS) to volts with this tool — impossible without knowing the converter’s alignment level.',
     'Saying a signal was "reduced by 200%" — a 100% reduction is already silence; percent changes below −100% are meaningless for amplitude.',
@@ -509,7 +509,7 @@ const WS_OHMS: Workspace = {
       plainFormula:
         'The peak voltage equals the RMS voltage times root two; the peak-to-peak voltage is twice the peak.',
       explain:
-        'A sine’s crest sits √2 (about 1.414) above its RMS value, and the peak-to-peak swing is twice that — the full excursion an amplifier’s rails must clear with headroom to spare. Sine waves only; music has a higher crest factor.',
+        'A sine’s crest is √2 (about 1.414) times its RMS value, and the peak-to-peak swing is twice that — the full excursion an amplifier’s rails must clear with headroom to spare. Sine waves only; music has a higher crest factor.',
       keySymbols: ['·', '√'],
       note: 'Sine waves only — music and noise have higher crest factors.',
       compute: (v) => {
@@ -524,7 +524,7 @@ const WS_OHMS: Workspace = {
         const V = n(v.vrms);
         const pk = V * Math.SQRT2;
         return [
-          `A sine’s crest sits √2 ≈ 1.414 above its RMS value.`,
+          `A sine’s crest is √2 ≈ 1.414 times its RMS value.`,
           `Vpeak = ${fmt(V)} × 1.414 = ${fmt(pk)} V; Vpp = 2 × ${fmt(pk)} = ${fmt(2 * pk)} V — the full swing an amp’s rails must accommodate.`,
         ];
       },
@@ -592,7 +592,7 @@ const WS_ELECTRONICS: Workspace = {
     'Reading the RC cutoff as a brick wall — fc is only the −3 dB point; a first-order filter still passes plenty just beyond it, rolling off at a gentle 6 dB per octave.',
   ],
   warnings:
-    'Ideal-component teaching math: real resistors have tolerance, capacitors have ESR and ' +
+    'Ideal-component teaching math: real resistors have tolerance, capacitors have ESR (equivalent series resistance) and ' +
     'leakage, inductors have winding resistance, and the divider result assumes NO load on the ' +
     'output. Fine for audio design intuition; not a substitute for a circuit simulator.',
   glossary: ['Resistance', 'Impedance', 'Capacitor', 'Inductor', 'Voltage divider', 'Cutoff frequency', 'Reactance'],
@@ -602,9 +602,9 @@ const WS_ELECTRONICS: Workspace = {
     { key: 'r1', name: 'R1 (SERIES / TOP)', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The series resistor between input and output.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'r2', name: 'R2 (SHUNT / BOTTOM)', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The resistor from output to ground — the output is taken across it.', positive: true, warn: { test: (x) => x <= 0, msg: 'R2 must be positive — 0 Ω shorts the output to ground.' } },
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', meaning: ['frequency:point', 'frequency:edge'], placeholder: '1000', help: 'The frequency at which to evaluate the reactance or filter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
-    { key: 'cap', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Capacitance in MICROFARADS (µF) — the tool converts to farads internally (×10⁻⁶).', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be positive.' } },
-    { key: 'ind', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Inductance in MILLIHENRIES (mH) — the tool converts to henries internally (×10⁻³).', positive: true, warn: { test: (x) => x <= 0, msg: 'Inductance must be positive.' } },
-    { key: 'r', name: 'RESISTANCE', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The R of the RC network.', positive: true, warn: { test: (x) => x <= 0, msg: 'Resistance must be positive.' } },
+    { key: 'cap', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Capacitance in MICROFARADS (µF) — the calculator converts it to farads for you (×10⁻⁶).', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be positive.' } },
+    { key: 'ind', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Inductance in MILLIHENRIES (mH) — the calculator converts it to henries for you (×10⁻³).', positive: true, warn: { test: (x) => x <= 0, msg: 'Inductance must be positive.' } },
+    { key: 'r', name: 'RESISTANCE', quantity: 'impedance', meaning: 'impedance:resistor', placeholder: '10000', help: 'The resistor’s value in the RC filter or timing circuit.', positive: true, warn: { test: (x) => x <= 0, msg: 'Resistance must be positive.' } },
   ],
   functions: [
     {
@@ -661,7 +661,7 @@ const WS_ELECTRONICS: Workspace = {
         }
         return [
           `In parallel each resistor opens another path for current, so CONDUCTANCES (reciprocals) add.`,
-          `1/Rtotal = ${rs.map((r) => `1/${fmt(r)}`).join(' + ')} = ${fmt(recip)} S.`,
+          `1/Rtotal = ${rs.map((r) => `1/${fmt(r)}`).join(' + ')} = ${fmt(recip)} S (siemens, the unit of conductance).`,
           `Rtotal = 1 ÷ ${fmt(recip)} = ${fmt(1 / recip)} Ω — LESS than the smallest branch (${fmt(Math.min(...rs))} Ω here), as it always is with two or more.`,
         ];
       },
@@ -849,7 +849,7 @@ const WS_QBW: Workspace = {
     'Comparing Q numbers across EQ brands as if they were standardized — some derive Q from different bandwidth definitions (or change width with gain), so Q 2 on one unit is not Q 2 on another.',
     'Using a narrow-Q cut to fix a broad tonal problem — a wide resonance needs a wide filter; stacking narrow notches just makes the response lumpy.',
     'Assuming the filter stops mattering outside f1–f2 — on a bell, these edges are the −3 dB points of the matching bandpass shape, not points 3 dB below the bell’s peak. A big boost can still be most of its height at the edges, so at high gains the audible reach goes well past them.',
-    'Confusing constant-Q with proportional-Q behavior when copying settings between plugins — the same numbers can produce different curves.',
+    'Confusing constant-Q with proportional-Q behavior (width that stays fixed vs. width that narrows as you boost or cut more) when copying settings between plugins — the same numbers can produce different curves.',
   ],
   warnings:
     'The −3 dB edge convention here matches the standard bandpass definition. EQ makers do not ' +

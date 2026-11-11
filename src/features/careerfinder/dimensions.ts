@@ -26,7 +26,7 @@ export const DIMENSIONS: Record<DimensionCode, Dimension> = {
   LO: { code: 'LO', label: 'Live Operation', measures: 'Running shows, reacting quickly and working under real-time pressure.', phrase: 'live operation' },
   SD: { code: 'SD', label: 'Systems & Deployment', measures: 'Designing, connecting, installing, networking and tuning systems.', phrase: 'systems and deployment' },
   BM: { code: 'BM', label: 'Build & Maintain', measures: 'Manufacturing, soldering, repair, construction and physical equipment.', phrase: 'building and maintaining equipment' },
-  DA: { code: 'DA', label: 'Digital, Software & AI', measures: 'Programming, DSP, automation, software and machine learning.', phrase: 'software and digital audio' },
+  DA: { code: 'DA', label: 'Digital, Software & AI', measures: 'Programming, DSP (digital signal processing), automation, software and machine learning.', phrase: 'software and digital audio' },
   AR: { code: 'AR', label: 'Analyze & Research', measures: 'Measurement, experimentation, acoustical analysis and investigation.', phrase: 'analysis and research' },
   HC: { code: 'HC', label: 'Help, Clinical & Access', measures: 'Improving hearing, communication, health and accessibility.', phrase: 'helping people hear and communicate' },
   TE: { code: 'TE', label: 'Teach & Explain', measures: 'Instruction, coaching, documentation and technical communication.', phrase: 'teaching and explaining' },

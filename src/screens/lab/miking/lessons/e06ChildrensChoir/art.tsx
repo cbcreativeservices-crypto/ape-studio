@@ -50,7 +50,7 @@ const SPEC = ensembleHandSpec({
     warn: 'This simplified graph shows one point source and straight paths, no room. Judge the soloist with both mics by ear, in mono, against each mic alone.',
     learn: [
       'The relevant distance is the difference in paths from the soloist’s mouth to each mic — not the distance between the mics. 1 m of path difference is about 2.9 ms.',
-      'Balance the soloist with her own mic’s level; keep the pair for the choir. Polarity tests one relationship; a delay is a trial judged by ear.',
+      'Balance the soloist with her own mic’s level; keep the pair for the choir. A polarity flip tests how these two mics combine; a delay is a trial judged by ear.',
     ],
   },
   practice: {

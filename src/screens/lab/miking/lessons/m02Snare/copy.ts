@@ -43,7 +43,7 @@ export const SNARE_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the snare-side head DOWN — both heads move the same way at that moment. The two heads are coupled through the air inside, and the snare-side head drives the wires.',
     after: 'Then both heads keep ringing and the wires keep rattling for a while — the BODY of the sound. How long depends on the tuning, the wires’ tension and the drum (the Drum Tuning Lab covers tuning).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them. Off center, more shapes join in.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, including the lowest shape. Off center, more shapes join in.',
       'This is a simplified head in empty space. On a real snare, the air inside, the second head and the wires pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the snare',
@@ -55,9 +55,9 @@ export const SNARE_COPY: LessonCopy = {
     kitLanding: 'Tap anything around the snare — or step through ITEM — to see what it means for a snare mic. There is nothing to answer yet.',
     kitIdle: 'The snare sits between the player’s knees, its near half under the sticks. Everything around it is either the player’s space or a loud neighbor — the hi-hat most of all.',
     leftHanded: 'Many left-handed players set the kit up mirrored — the hi-hat on the right, the floor tom on the left.',
-    stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
+    stageA11y: 'The kit on a stage, from above: the drummer’s fill monitor beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
-    stageIdle: 'Two floor monitors: the drummer’s own fill beside the throne, and another player’s wedge on the audience side. Monitors, the PA and a loud band all reach a snare mic.',
+    stageIdle: 'Two floor monitors: the drummer’s own fill monitor beside the throne, and another player’s wedge on the audience side. Monitors, the PA and a loud band all reach a snare mic.',
     studioIdle: 'No monitors on the floor. The room — and the overheads, if they are up — are part of the picture now.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Which strokes do they play — rimshots, cross-stick, brushes, ghost notes — and where do the sticks go? Are the snares on for this passage? Hear the drum without reinforcement first. A buzz or rattle that is there before any mic is the player’s to fix (the Drum Tuning Lab covers tuning): a mic cannot repair a drum or a stand.' },
@@ -67,7 +67,7 @@ export const SNARE_COPY: LessonCopy = {
   placement: {
     workedZone: { on: 'top.close', off: 'top.close' },
     workedLine: 'This starting point also places the mic relative to {line}: “over the rim” is drawn as a band from about 4 cm in to 4 cm out from the edge.',
-    workedAim: 'Aim it at the head — the lab counts it while the mic’s axis, followed down, meets the batter head. Distance, height and angle are separate things to try.',
+    workedAim: 'Aim it at the head — the lab counts it as aimed while the mic’s axis, followed down, meets the batter head. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the sticks’ path and rimshots, the hi-hat, the hoop and the rack tom. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
     reveal: 'Moving away from the rim tends to bring in more of the whole drum — and more of the kit — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
@@ -116,7 +116,7 @@ export const SNARE_COPY: LessonCopy = {
       points: [
         { title: 'KIT PERSPECTIVE', text: 'Studio: overheads or a room perspective may be the main picture; a snare mic adds control when useful. Live: first consider what the acoustic snare already gives the audience, and what the PA must add.' },
         { title: 'PLACEMENT AND SPILL', text: 'Studio: more distance can include more of the drum and the room. Live: closer placement, the right pattern and the right aim may give more snare relative to the hi-hat, the stage and the monitors.' },
-        { title: 'CHANNEL COUNT', text: 'Studio: a bottom mic is justified when its wire sound improves the whole kit. Live: start with the open mics you need — a bottom channel adds spill, a cable and a combining check.' },
+        { title: 'CHANNEL COUNT', text: 'Studio: a bottom mic is justified when its wire sound improves the whole kit. Live: open only the mics you need — a bottom channel adds spill, a cable and a check of how the two mics combine.' },
         { title: 'MOUNTING', text: 'Studio: paused sessions allow careful comparisons. Live: stable mounts, protected cables and repeatable positions matter during a show and a fast changeover.' },
       ],
       body: 'With the hi-hat this close, a pattern’s rejection is a tool to aim — but hi-hat spill is not automatically a defect, and when channels are few one mic angled between the snare and the hi-hat can be an intentional choice.',
@@ -128,13 +128,13 @@ export const SNARE_COPY: LessonCopy = {
     B: { typeId: 'smallDynCard', pattern: 'cardioid', zone: 'bottom' },
     opposite: {
       surface: 'batter',
-      note: 'Top and bottom face the two heads, which move the same way: as the batter head moves down, away from the top mic, the snare-side head moves down, toward the bottom mic — one mic hears a pull while the other hears a push. So the pair starts in opposite polarity, before any arrival-time difference. A simplified picture: the drum’s lowest motion.',
+      note: 'Top and bottom face the two heads, which move the same way: as the batter head moves down, away from the top mic, the snare-side head moves down, toward the bottom mic — one mic hears a pull while the other hears a push. So the pair starts in opposite polarity, before any arrival-time difference. This picture is simplified: it shows only the drum’s lowest motion.',
     },
     learn: [
       'A bottom mic is a choice for more control of the wires’ sound — not a requirement. Start with a useful top mic, bring the bottom one in at a modest level, and keep it only if it improves the snare in the whole kit.',
       `${OPPOSITE_SIDES_POLARITY} A louder state almost always sounds “better” at first. Check it with the overheads and the other open mics, too.`,
     ],
-    warn: 'The top and bottom mics hear DIFFERENT surfaces — the batter head’s crack and the wires’ buzz — so this simplified graph shows only the shared part of the sound, not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.',
+    warn: 'The top and bottom mics hear DIFFERENT surfaces — the batter head’s crack and the wires’ buzz — so this simplified graph shows only the shared part of the sound, not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this graph estimates from distance alone — treat the depths as a rough guide. Judge the pair by ear, in mono, at matched levels.',
   },
   practice: {
     gain: 'sn.prac.gain',

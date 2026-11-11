@@ -49,7 +49,7 @@ const pages: LessonPages = {
   microphone: {
     title: 'Choose the microphone',
     goal: 'Choose an interview mic by how it will be used — one rugged handheld moved between two people, or a mic each — and its pattern by the noise around it, without expecting an omni, or any mic held far off, to pick out a voice.',
-    credit: { scenarios: ['b3.mic.1', 'b3.mic.2', 'b3.mic.3', 'b3.mic.4', 'b3.rec.1'], note: 'Answer the five checks (one reaches back to the two voices).' },
+    credit: { scenarios: ['b3.mic.1', 'b3.mic.2', 'b3.mic.3', 'b3.mic.4', 'b3.rec.1'], note: 'Answer the five checks (one goes back to where the two voices come from).' },
     takeaway: 'An omni forgives aim and hears every side; a directional handheld favors the voice only when its front is on the mouth, close. A mic each avoids the handoff and adds channels to route. No pattern makes up for distance.',
   },
   placement: {
@@ -592,7 +592,7 @@ const wedges: Wedge[] = [
     p: { x: PA_C.x, y: FLOOR, z: PA_C.z },
     lift: FLOOR - PA_C.y,
     faces: { x: 1, y: 0, z: 0 },
-    note: 'On a pole beyond the reporter, facing the crowd: its back and side reach the handheld from in front of the guest and above.',
+    note: 'On a pole beyond the reporter, facing the crowd: sound from its back and side reaches the handheld from in front of the guest and above.',
     prov: { kind: 'illustrative', reason: 'a typical outdoor event: the loudspeaker’s place and height are drawing defaults' },
     glyph: 'none',
   },
@@ -637,7 +637,7 @@ export const B03_LESSON: Lesson = {
       { id: 'street', label: 'the traffic', short: 'TRAFFIC', note: 'The loudest thing on a street, from every side for an omni. Turn the pair, bring the mic to the speaker — and keep everyone off the road.', prov: { kind: 'illustrative', reason: 'the lesson L5–L6' }, tag: 'NOISE', scene: 'all' },
       { id: 'wind', label: 'the wind', short: 'WIND', note: 'Check it at the capsule, not the forecast: a fitted foam for light air, a fitted fur for stronger wind, shelter when even that buffets.', prov: { kind: 'illustrative', reason: 'the lesson L27–L29' }, tag: 'WIND', scene: 'all' },
       { id: 'camera', label: 'the camera', short: 'CAMERA', note: 'A visible handheld makes the speaking turns clear on screen: coordinate its flag, reach and side with the operator, out of the lens’s way.', prov: { kind: 'illustrative', reason: 'the lesson L32' }, tag: 'FRAME', scene: 'all' },
-      { id: 'pa', label: 'a local loudspeaker', short: 'PA', note: 'At a live event, every open mic hears it: what goes to it, and where a directional mic’s rejection points, decide how close it gets to feedback.', prov: { kind: 'illustrative', reason: 'the lesson L35' }, tag: 'FEEDBACK', scene: 'stage' },
+      { id: 'pa', label: 'a local loudspeaker', short: 'PA', note: 'At a live event, every open mic hears it. Two things decide how close the mic gets to feedback: what goes to it, and where a directional mic’s rejection is aimed.', prov: { kind: 'illustrative', reason: 'the lesson L35' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
     stage: 'LIVE EVENT: the handheld close to the speaking mouth, its rejection toward the loudspeaker, brought up only to its working level; the return and the cues in the earpiece only.',
     studio: 'STREET: one omni shared at chest height in a quiet spot, moved to whoever speaks when it is loud, a fitted foam or fur on — or a mic each when there is time.',

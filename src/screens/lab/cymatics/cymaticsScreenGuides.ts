@@ -100,7 +100,7 @@ export const CYMATICS_END_GUIDE: ScreenGuide = {
     'The studios aren’t rows here. To complete the lab, answer CHECK YOUR UNDERSTANDING, on the lab home or on any studio’s CHECK tab.',
   ],
   teaches: [
-    'Every module adds to one question: what decides the figure a vibrating object makes? Modules 1–3 explore it on plates; 4–6 set it beside harmonic series, musical ratios and other vibrating things; 7 sorts evidence from myth.',
+    'What decides the figure a vibrating object makes? The object, not the tone: a frequency has no shape of its own.',
   ],
   tryThis: [
     'Is Change One Thing still listed? Open it first: it is where you test whether the plate or the tone decides the figure.',
@@ -123,7 +123,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     ],
     control: [
       'The sand plate starts on Off resonance · 80.9 Hz. Tap At resonance · 104 Hz to move the drive onto a resonance. Only the frequency changes, never the drive level, so any difference you see comes from frequency alone.',
-      'Tap ⤢ FULL SCREEN under any figure to see it large. The sand plate keeps its two chips there.',
+      'Tap ⤢ FULL SCREEN under any figure to see it large. The sand plate keeps its two frequency buttons there.',
       'Tap OPEN CHANGE ONE THING › to test your answer to the closing question in module 3. Use the strip under the title to move between modules.',
     ],
     changes: [
@@ -151,7 +151,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     seeing: [
       'The plate on the glass, a square to start, drawn the way VIEW sets: Node lines first, or Phase, Heat map, Sand or 3D plate.',
       'MODE names the mode, DRIVE gives the frequency in Hz and LINES counts the nodal lines. RES says if you’re AT a mode, APPROACHING one, BETWEEN modes or BELOW the first.',
-      'It opens on the first mode: DRIVE 104 Hz, MODE (2,0)+(0,2), LINES 2, RES AT.',
+      'It opens on the first mode: DRIVE 104 Hz, MODE (2,0)+(0,2), LINES 2, RES AT. That MODE blends two simple bends.',
     ],
     control: [
       'FREQ (30 Hz–3 kHz) sets the drive. It moves in finer steps near each mode, so you can ride onto one. Its tray, JUMP TO A MODE, lists the plate’s lowest modes, up to eight. Off a mode, LAND ON jumps to the next mode up.',
@@ -263,7 +263,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
     changes: [
       'BASE scales both tones by the same factor, so the ratio, the figure and the interval stay the same.',
       'DETUNE breaks the ratio. The Lissajous figure no longer closes and keeps turning. In Wave addition, A + B is drawn across about two and a half beats, so you see its shape cycle.',
-      'That cycle is the beat. For a ratio n₁ : n₂, the summed shape repeats |n₁ × f₂ − n₂ × f₁| times a second: the number BEAT shows.',
+      'That cycle is the beat. With A = f₁, B = f₂ and ratio n₁ : n₂, it repeats |n₁ × f₂ − n₂ × f₁| times a second: the number BEAT shows.',
     ],
     teaches: [
       'Musical harmony is about ratios between frequencies, not any one frequency.',
@@ -272,7 +272,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
       'Plate modes aren’t in simple ratios, so ratios are a separate subject from Chladni figures.',
     ],
     tryThis: [
-      'Ride BASE from 110 to 220 Hz: A reads 440 Hz, B 660 Hz, and INTERVAL is still P5. The figure doesn’t change.',
+      'Ride BASE from 110 to 220 Hz: A goes from 220 to 440 Hz, B from 330 to 660 Hz, and INTERVAL is still P5. The figure doesn’t change.',
       'Set VIEW to Lissajous figure, then ride DETUNE to about +1.00 %. At BASE 220 Hz, BEAT reads about 13.2 Hz and the figure starts to turn.',
       'Ride DETUNE back to locked, then pick RATIO 1 : 2 — octave. The figure closes and holds still: simple ratios close, detuned ones drift.',
     ],
@@ -454,7 +454,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     seeing: [
       'A drumhead from above: a 14-inch snare-size head at 3 kN/m to start. VIEW › Loudspeaker shows a cone cutaway and front view.',
       'Drum: DRIVE, FUNDAMENTAL (lowest mode), MODE, RESPONSE. Loudspeaker: DRIVE, fs (its resonance), ka (cone size against wavelength: 1 when the rim’s circumference is one wavelength), STAGE.',
-      'LAB NOTES: the resonance card and TUNING, or the cone’s stage ladder, and the SIMULATION notes.',
+      'LAB NOTES: the resonance card and TUNING (or the cone’s stage ladder) and the SIMULATION notes.',
     ],
     control: [
       'FREQ (20 Hz–6 kHz) sets the drive. Its tray is JUMP TO A MODE, or JUMP TO A CONE STAGE while the loudspeaker shows.',
@@ -497,7 +497,7 @@ export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
   ],
   changes: [
     'Nothing on this page moves. When something on EXPLORE surprises you, find its CONTROLS entry here: it says what that part changes and why.',
-    'FORMULA / CONCEPT shows why a thicker plate rings higher and a bigger one lower: frequency follows h/L² · √(E/ρ).',
+    'FORMULA / CONCEPT shows why a thicker plate rings higher and a bigger one lower: frequency follows h/L² · √(E/ρ), for thickness h, size L, stiffness E and density ρ.',
   ],
   teaches: [
     'The words for the lab: node (least movement), antinode (most movement), mode, resonance, damping, Faraday wave, breakup.',
@@ -592,7 +592,7 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
     },
     seeing: [
       'This is the PATTERN GALLERY & ART STUDIO: every pattern you’ve saved from the three studios, each as a card of line art.',
-      'The filter chips are All, Plate, Dish, Drum and ★ Favorites. Nothing saved yet? NOTHING SAVED YET tells you how, with links to each studio.',
+      'The filter chips (All, Plate, Dish, Drum and ★ Favorites) narrow the cards. Nothing saved yet? NOTHING SAVED YET tells you how, with links to each studio.',
     ],
     control: [
       'Tap a card to open it. Long-press a card to make it a favorite.',

@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The stage’s room sounds nothing like the pictured place. What follows?',
     options: ['A distant mic records the wrong room', 'The room will vanish once it is mixed', 'A louder room mic will fix the match'],
     correct: 'A distant mic records the wrong room',
-    explain: 'A farther mic prints the stage’s own room. If it cannot match the picture, favor a closer, drier track — knowing processing will not recreate every reflection.',
+    explain: 'A farther mic records the stage’s own room. If it cannot match the picture, favor a closer, drier track — knowing processing will not recreate every reflection.',
     why: {
       'The room will vanish once it is mixed': 'A recorded room stays in the track.',
       'A louder room mic will fix the match': 'More of the wrong room makes the mismatch worse.',
@@ -200,7 +200,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'f05.place.2',
     page: 'placement',
-    prompt: 'One stage often worked 3–6 ft from footsteps. For your cue, that is…',
+    prompt: 'One Foley team often worked 3–6 ft from footsteps. For your cue, that is…',
     options: ['An example for their stage, not a rule', 'The one distance all Foley cues need', 'Too far for a Foley action at all'],
     correct: 'An example for their stage, not a rule',
     explain: 'There is no universal number of feet from a Foley prop. Log the real distance, angle and room, and compare repeated actions.',
@@ -227,7 +227,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A live Foley station through a PA. A fair first plan?',
     options: ['One stable close mic at a station', 'Close, room and a pair, all open', 'A room mic only, for a natural PA'],
     correct: 'One stable close mic at a station',
-    explain: 'Live, begin with one stable, source-proximate directional mic at a repeatable station, and add a feed only with a clear purpose for the audience.',
+    explain: 'Live, begin with one stable directional mic close to the source, at a repeatable station, and add a feed only with a clear purpose for the audience.',
     why: {
       'Close, room and a pair, all open': 'Each open mic adds room, noise and spill, and takes away margin.',
       'A room mic only, for a natural PA': 'A farther mic hears the PA and wedge: little margin before feedback.',
@@ -277,7 +277,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A fixed delay lines up close and room at the middle of the path. At the ends?',
     options: ['It is wrong again: the delay has changed', 'It holds: a delay suits the whole path', 'It holds if the polarity is flipped too'],
     correct: 'It is wrong again: the delay has changed',
-    explain: 'Any one alignment is only locally true for a moving action. Choose the blend by listening over the whole movement, in mono.',
+    explain: 'For a moving action, any one alignment holds at one spot only. Choose the blend by listening over the whole movement, in mono.',
     why: {
       'It holds: a delay suits the whole path': 'The keys moved, so both distances changed.',
       'It holds if the polarity is flipped too': 'Polarity flips the sign; it never removes a delay.',
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify adding a room mic to the close mic?',
     options: ['The scene wants the room, and mono holds', 'Two channels give the mix more choice', 'The close mic is not loud enough alone'],
     correct: 'The scene wants the room, and mono holds',
-    explain: 'A room channel earns its place when the close mic works alone, the room helps the scene’s perspective, and the pair holds up in mono.',
+    explain: 'A room channel earns its place when the close mic works alone, the room helps the scene’s perspective, and the two hold up together in mono.',
     why: {
       'Two channels give the mix more choice': 'More choice is also more room, noise and comb. Add it for a reason.',
       'The close mic is not loud enough alone': 'Level comes from gain and distance, not another mic.',
@@ -475,7 +475,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The stage’s room cannot match the picture. A distant mic will…',
     options: ['Record the wrong room', 'Hide the room’s sound', 'Fix the picture’s match'],
     correct: 'Record the wrong room',
-    explain: 'A farther mic prints the stage’s own room: favor a closer, drier track.',
+    explain: 'A farther mic records the stage’s own room: favor a closer, drier track.',
     why: { 'Hide the room’s sound': 'It records more of it.', 'Fix the picture’s match': 'It records the mismatch.' },
   },
   clearanceDiag(W),

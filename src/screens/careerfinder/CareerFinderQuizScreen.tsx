@@ -177,7 +177,7 @@ export function CareerFinderQuizScreen() {
                   accessibilityState={{ checked: on }}
                   aria-checked={on}
                   accessibilityLabel={a.label}
-                  accessibilityHint={unknown ? 'Not scored. Tells us this activity is new to you.' : undefined}
+                  accessibilityHint={unknown ? 'Not scored. Marks this activity as new to you.' : undefined}
                 >
                   <View style={[styles.mark, on && styles.markOn, unknown && styles.markUnknown]}>
                     {on ? <Text style={styles.markText}>✓</Text> : null}

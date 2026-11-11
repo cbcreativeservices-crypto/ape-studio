@@ -61,7 +61,7 @@ function useBellows(_p: PageProps): MikingStep {
           accessibilityLabel={`The accordion from the audience, the bellows ${label.toLowerCase()}, ${push ? 'pushing' : 'pulling'}. A mic on a stand beyond the bass side is ${fmtLen(dBass)} from the bass outlets and ${fmtLen(dTreble)} from the treble grille.`}
         />
       ),
-      badge: 'A simplified picture · the sizes are a drawing · straight paths, no room · silent',
+      badge: 'A simplified picture · the sizes are approximate · straight paths, no room · silent',
       bezel: [
         { k: 'BELLOWS', v: label, flex: 1.3 },
         { k: 'TO BASS', v: `${Math.round(dBass / 10)} cm`, flex: 1 },
@@ -149,7 +149,7 @@ const HAND: HandSpec = {
     before: [
       { title: 'ASK THE PLAYER', text: 'Which accordion and registers? Are the bass notes and chords essential to the arrangement, or does a bass player carry them? Will they stand, sit or move — and how far do the bellows and the bass side travel?' },
       { title: 'WATCH A FULL PASSAGE', text: 'Low bass, full chords, the treble melody, quick articulation, opening AND closing strokes, the softest and loudest passage — with the bellows at full stretch. Never make the player constrain their technique for a stand.' },
-      { title: 'NOTHING ON THE INSTRUMENT UNASKED', text: 'No clip, tape or cable on the accordion, its grille, its straps or its bellows without the player’s agreement and hardware made for it. A cable that catches the bellows is a stop.' },
+      { title: 'NOTHING ON THE INSTRUMENT UNASKED', text: 'No clip, tape or cable on the accordion, its grille, its straps or its bellows without the player’s agreement and hardware made for it. A cable that catches the bellows means stop at once.' },
     ],
   },
   mic: {
@@ -197,19 +197,19 @@ const HAND: HandSpec = {
     looking: 'Two mics · A on the keyboard side, B beyond the bass side',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then switch BELLOWS (below) and choose the bass SOURCE: watch the delay move.',
     label: 'The accordion with a treble mic (A) and a bass mic (B)',
-    warn: 'This simplified graph shows one point source and straight paths, no reflections. A real accordion sounds from two sides at once, and one of them moves — so the comb changes all through the phrase. Read the notch depths as illustrative only, and judge the pair by ear, in mono, over full opening and closing strokes.',
+    warn: 'This simplified graph shows one point source and straight paths, no reflections. A real accordion sounds from two sides at once, and one of them moves — so the comb-filter notches change all through the phrase. Read the notch depths as illustrative only, and judge the pair by ear, in mono, over full opening and closing strokes.',
     learn: [
       'Two channels are a balance decision, not an automatic hard stereo pair. First solo each mic while the player plays the part for that side; set gain so peaks do not clip; then balance them for the musical role.',
       'The moving sides change each mic-to-side distance, so a fixed phase correction or a calculated delay cannot hold for the whole phrase. If the sum hollows, move or rebalance — or let one mic carry the sound.',
     ],
   },
   practice: {
-    orderNote: 'A one-mic accordion setup, as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.',
+    orderNote: 'A one-mic accordion setup, as a sequence: put the steps in order. Tap a step too early and you’ll see why it can’t come yet.',
     gainId: 'ac.prac.gain',
     secondId: 'ac.prac.3',
     mixIds: ['ac.mix.1', 'ac.mix.2', 'ac.mix.3'],
     mixIntro: 'Three cards from earlier pages, mixed: a filter on the bass mic, what a null can promise, and what removes a delay.',
-    sheetNote: 'For a real accordion, with the player’s agreement and the player stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
+    sheetNote: 'For a real accordion, with the player’s agreement and the player paused while you move any gear. Write tendencies in words — what you heard, not a promised result.',
   },
   words: {
     placeBadge: 'Blue = suggested starting points · gray dashes = the bellows’ travel and the player · pinch to zoom',

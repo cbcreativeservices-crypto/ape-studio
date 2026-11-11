@@ -231,7 +231,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
               {revealNote ? <Feedback tone={mapShown ? (guess == null || guess === hearHighest ? 'ok' : 'warn') : 'info'}>{revealNote}</Feedback> : null}
               {tapped.size >= SPEC.lugs && !mapShown ? (
                 <Card tone="accent">
-                  <Point title="WHICH LUG SOUNDED HIGHEST?">Pick one, then ◉ REVEAL MAP. This is a free check of your ears — not credit.</Point>
+                  <Point title="WHICH LUG SOUNDED HIGHEST?">Pick one, then ◉ REVEAL MAP. This only checks your ears — it doesn’t count toward credit.</Point>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                     {Array.from({ length: SPEC.lugs }, (_, i) => (
                       <KeyButton key={i} label={guess === i ? `▸ ${i + 1}` : `${i + 1}`} onPress={() => setGuess(i)} tint={guess === i ? colors.amber : undefined} />
@@ -272,7 +272,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the head you are evening; the key sits on the rod you chose, and TURN is how far YOU have moved it this run." prompt="▶ TAP, turn, ▶ TAP again until the map is one color and SPREAD reads 10 ¢ or less." />
+              <Landing looking="the head you are evening; the drum key sits on the rod you chose, and TURN is how far YOU have moved it this run." prompt="▶ TAP, turn, ▶ TAP again until the map is one color and SPREAD reads 10 ¢ or less." />
               <DrumStatus playing={tap.playing || strike.playing} pending={tap.pending || strike.pending} failed={tap.failed || strike.failed} rendering={tap.status === 'rendering' || strike.status === 'rendering'} idle="stopped · ▶ TAP a lug, ride TURN, ▶ TAP again; ▶ STRIKE to hear the whole drum" label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
               {shown ? <Feedback tone="info">{shown}</Feedback> : <Feedback tone={even.verdict === 'even' ? 'ok' : even.verdict === 'close' ? 'info' : 'warn'}>{even.message}</Feedback>}
               {guidedLeft ? <KeyButton label={`▶ SHOW ME A MOVE (${GUIDED_MOVES - guided} left)`} onPress={showMe} tint={colors.amber} /> : null}

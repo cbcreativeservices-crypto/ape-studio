@@ -77,12 +77,12 @@ export const TOOLS: ToolDef[] = [
       'Shows how signal energy is distributed across frequency in real time — connect what you hear to where it lives spectrally: ringing identification, tonal-balance study, noise hunting, EQ regions. A seeing tool, not a judging tool.',
     measures: [
       'Short-term energy vs frequency (windowed FFT on a log-frequency axis)',
-      'Fractional-octave RTA bands (1/1 and 1/3 octave — pink noise reads flat)',
+      'Fractional-octave RTA bands (1/1, 1/3 and 1/6 octave — pink noise reads flat)',
       'Peak-hold per band/bin',
     ],
     notMeasures: [
       'Mix quality',
-      "The room's true transfer function (a single-mic RTA conflates source, room and position)",
+      "The room's true transfer function (a single-mic RTA mixes source, room and position together)",
       'Phase or time-of-arrival',
       'Loudness',
       'How to EQ a room — it cannot tell you that by itself',
@@ -119,7 +119,7 @@ export const TOOLS: ToolDef[] = [
       'When each frequency happened — which neither the RTA nor the waveform can show',
     ],
     notMeasures: [
-      'Musical importance — visible is not audible is not important',
+      'Musical importance — what you see may not be audible, and what you hear may not matter',
       'Exact levels (reading color is only precise to a few dB)',
       'Phase or loudness',
       'Anything below the selected display floor',

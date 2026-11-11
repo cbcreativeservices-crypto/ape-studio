@@ -92,7 +92,7 @@ const SPECS: VoiceZoneSpec[] = [
     variant: 'live',
     start: { d: [300, 280, 320, 260, 350], deg: VOICE_DIMS.sideDeg.mm, at: 'mouth' },
     tendency: 'A natural voice with less bass and fewer S sounds, the mic out of the straight line of the breath. Check the words stay clear.',
-    checks: ['S sounds against on-axis', 'Clarity as the singer turns', 'The wedge against the pattern from this side'],
+    checks: ['S sounds against an on-axis mic', 'Clarity as the singer turns', 'The wedge against the pattern from this side'],
   },
   headsetRow({ id: 'lv.headset', variant: 'live', micTypeIds: ['vocHeadset'] }),
 ];

@@ -652,7 +652,7 @@ const WS_DOSE: Workspace = {
         if (none) {
           return [
             { label: 'ALLOWABLE TIME (90 dBA / 5 dB / 8 h)', text: none },
-            { label: 'CRITERION', text: 'Computed under: 90 dBA criterion · 5 dB exchange rate · 8 h reference · sound from 80 dBA up counted (action level), from 90 dBA up (PEL).' },
+            { label: 'CRITERION', text: 'Computed under: 90 dBA criterion · 5 dB exchange rate · 8 h reference · sound from 80 dBA up counted (action level), from 90 dBA up (PEL, permissible exposure limit).' },
           ];
         }
         return [
@@ -950,7 +950,7 @@ const WS_MIC_GAIN: Workspace = {
       key: 'micout',
       name: 'Mic output voltage from SPL',
       inputs: ['sens', 'spl'],
-      formula: 'p = 20µPa · 10^(SPL/20); V = sens/1000 × p',
+      formula: 'p = 20µPa · 10^(SPL/20); V = sensitivity/1000 × p',
       plainFormula:
         'The pressure equals 20 micropascals times ten raised to the SPL over twenty, in pascals; the voltage equals the sensitivity over 1000 times that pressure.',
       explain:

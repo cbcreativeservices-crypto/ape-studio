@@ -28,7 +28,7 @@ const pages: LessonPages = {
     title: 'How they make their sound',
     goal: 'See how a sweep becomes sound — bars struck one after another, each ringing on and swinging — and why the long bars sound lower.',
     credit: { scenarios: ['bc.snd.1', 'bc.snd.2', 'bc.snd.3'], interactive: 'soundPath', note: 'Step the sweep through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'A sweep is a run of brief attacks with overlapping rings: the shimmer. Each bar is a bar held at neither end; a shorter bar of the same thickness rings higher — half the length, four times the pitch.',
+    takeaway: 'A sweep is a run of brief attacks with overlapping rings: the shimmer. Each bar hangs on its filament, held at neither end; a shorter bar of the same thickness rings higher — half the length, four times the pitch.',
   },
   setting: {
     title: 'Where they sit',
@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 40–80 cm from the middle of the row, facing its length — then move the mic and see what changes.',
-    credit: { scenarios: ['bc.place.1', 'bc.place.2', 'bc.place.3', 'bc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing and the hand, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bc.place.1', 'bc.place.2', 'bc.place.3', 'bc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing and the hand, in two different suggested starting points, and answer the four checks. The worked example earns no credit on its own.' },
     takeaway: 'Begin about 40–80 cm from the middle of the row, facing its whole length, at a height that sees the bars. Check both sweep directions. An end mic alone gives an uneven row; a pair at the ends is a deliberate option.',
   },
   context: {
@@ -156,7 +156,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The meter looks modest, but the densest sweep distorts. Why can that happen?',
     options: ['A slow meter can miss the brief peaks that overload the input', 'The mic distorts when its level is set too low', 'A modest meter reading means the mic cable is faulty somewhere'],
     correct: 'A slow meter can miss the brief peaks that overload the input',
-    explain: 'The attacks are very brief while the sound continues. Check the strongest strike and the densest sweep on a peak meter, at the mic, preamp, converter and live output.',
+    explain: 'The attacks are very brief, so a slow meter can read low while the peaks overload. Check the strongest strike and the densest sweep on a peak meter, at the mic, preamp, converter and live output.',
     why: {
       'The mic distorts when its level is set too low': 'Low level does not cause distortion; brief peaks the meter misses do.',
       'A modest meter reading means the mic cable is faulty somewhere': 'Nothing is broken: the meter is too slow for the peaks.',
@@ -518,13 +518,13 @@ export const I06C_LESSON: Lesson = {
     { title: 'WHAT THEY ARE', text: 'Graduated metal bars, each hung on its own filament from a wooden rail, in a straight row — a mark tree. Not wind chimes (hung in a circle) and not a bell tree (nested bells). The metal bars themselves ring.', src: 'PAS-ECV02' },
     { title: 'WHERE YOU MEET THEM', text: 'On percussion stations in bands and orchestras, in the studio and on stage — a shimmering run into a new section, or a single sparkling accent. (Whole percussion sections come later, in Lab 5.)', src: 'LESSON-BC' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'A sweep up or down the row — a run of attacks with overlapping rings — single bar accents, repeated sweeps, and stopped flourishes when the player or a damper ends them.', src: 'PAS-ECV02' },
-    { title: 'THEIR SIZE', text: 'A rail about 30–40 cm (12–16 in) long. Models differ: one has 27 bars in a single row, another 60 in two rows. This lab draws a 38 cm rail with 27 bars; the bars’ own sizes are a drawing choice.', src: 'MEINL-CH27' },
+    { title: 'THEIR SIZE', text: 'A rail about 30–40 cm (12–16 in) long. Models differ: one has 27 bars in a single row, another 60 in two rows. This lab draws a 38 cm rail with 27 bars; the bars’ own sizes are drawn, not measured.', src: 'MEINL-CH27' },
   ],
   sound: {
     stages: [
       { title: 'The hand enters', text: 'The hand meets the first bar at the long end of the row.' },
       { title: 'One bar after another', text: 'The hand strikes the bars in turn: a run of brief ATTACKS. Each struck bar swings away on its filament — drawn larger than life.' },
-      { title: 'They ring on, overlapping', text: 'Every struck bar keeps ringing and swinging after the hand has passed; the rings overlap — the shimmer. Each bar is a bar held at neither end, its pitch set by its length.' },
+      { title: 'They ring on, overlapping', text: 'Every struck bar keeps ringing and swinging after the hand has passed; the rings overlap — the shimmer. Each bar hangs on its filament, held at neither end, and its length sets its pitch.' },
       { title: 'Sound along the row', text: 'Sound leaves all along the row, until the bars fade or the player or a damper stops them. A mic near one end hears that end louder.' },
     ],
     attack: 'The run of brief strikes as the hand passes each bar. A close mic, or one aimed at part of the row, tends to hear more of the strikes near it; a faster or stronger sweep changes them before the mic does.',

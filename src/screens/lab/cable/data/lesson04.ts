@@ -114,7 +114,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     why:
       'Both families mate mechanically; the impedance difference is invisible from outside — and a continuity tester cannot measure it.',
     consequence:
-      'An impedance mismatch causes reflections — on long runs or marginal equipment that means clocking instability or signal-integrity problems, not equipment damage. Match the impedance the system specifies.',
+      'An impedance mismatch bounces part of the signal back along the cable (reflections) — on long runs or marginal equipment that means unstable clocking or an unreliable signal, not equipment damage. Match the impedance the system specifies.',
   },
   {
     id: 'trs_three_jobs',
@@ -135,7 +135,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     aLabel: 'USB-C charge-only or USB 2.0-only cable',
     bLabel: 'USB-C full-featured cable',
     sameLooks:
-      'Two USB-C cables that look identical can differ in data speed, power rating, and alternate-mode support.',
+      'Two USB-C cables that look identical can differ in data speed, power rating, and alternate-mode (such as video) support.',
     question: 'Interchangeable?',
     answer: 'no',
     why:
@@ -174,11 +174,11 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     aLabel: 'powerCON (20 A family)',
     bLabel: 'powerCON TRUE1',
     sameLooks:
-      'Related names and similar locking stage-power shells — but physically different, non-intermateable connector families.',
+      'Related names and similar locking stage-power shells — but physically different connector families that do not mate with each other.',
     question: 'Interchangeable?',
     answer: 'no',
     why:
-      'A separate connector family with different geometry and keying, despite the related name. They also differ in duty: the original family has no breaking capacity and must never be connected or disconnected under load, while breaking capacity on TRUE1-style couplers is a certified, model-specific property — never assumed from the shape.',
+      'A separate connector family with different geometry and keying, despite the related name. They also differ in duty: the original family has no breaking capacity (it is not rated to switch a live load) and must never be connected or disconnected under load, while breaking capacity on TRUE1-style couplers is a certified, model-specific property — never assumed from the shape.',
     consequence:
       'They do not mate. Treat them as different connectors, not versions of one — the correct mating part is the only fix.',
   },

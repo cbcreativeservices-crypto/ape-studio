@@ -77,7 +77,7 @@ export const F09_COPY: Partial<LessonCopy> = {
     workedZone: { set: 'loc.boom', outdoor: 'loc.boom.out', live: 'loc.stage' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips. As the talker turns, the operator turns the mic with them.',
     workedClear: 'Clear of the talker and out of the shot: the mic, the pole and their shadows stay above the frame line, and nothing touches the talker. Outdoors, nothing within 3 m (10 ft) of a power line, more for higher voltages or if unsure. Clearance comes first, before any number.',
-    reveal: 'Closer tends to bring more voice and less room; a wider shot pushes the boom away; a body mic keeps one distance but sounds of the chest and the clothes. Talkers and places vary, so “it depends on this scene” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more voice and less room; a wider shot pushes the boom away; a body mic keeps one distance but sounds chest-heavy and picks up clothing noise. Talkers and places vary, so “it depends on this scene” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       locBoomSgCap: 'Ideas to try with the shotgun on the pole: bring it as close as the frame allows, keep it pointed at the mouth through the whole line, and listen to the head turns — not only where the talker started.',
       locBoomHyper: 'Ideas to try indoors: a short hypercardioid often sounds smoother off its axis among hard walls than a long shotgun — compare the two at the same distance.',

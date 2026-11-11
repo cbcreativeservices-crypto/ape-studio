@@ -228,7 +228,7 @@ function PageSignalFlow({ ctx }: { ctx: PageCtx }) {
       </Card>
       {solved ? (
         <Card tone="ok">
-          <Eyebrow>THE CANONICAL PATH — YOURS NOW</Eyebrow>
+          <Eyebrow>THE STANDARD PATH — YOURS NOW</Eyebrow>
           {CHANNEL_PATH.map((s, i) => (
             <View key={s.id} style={styles.flowRow} accessible accessibilityLabel={`${i + 1}. ${s.name}: ${s.blurb}`}>
               <Text style={styles.flowNum}>{i + 1}</Text>

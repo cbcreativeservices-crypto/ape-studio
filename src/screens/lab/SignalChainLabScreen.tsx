@@ -177,7 +177,7 @@ const DEFAULTS: Record<number, FxOp[]> = {
 const SCENARIOS: { key: string; label: string; short: string; enable: number[]; sourceIdx: number; lesson: string; hot: number[] }[] = [
   {
     key: 'bass_comp', label: 'EQ BOOST → COMP', short: 'EQ→COMP', enable: [FX.eq, FX.comp], sourceIdx: 1, hot: [1],
-    lesson: 'The +9 dB low shelf feeds the compressor MORE bass — watch its GR rise: EQ before compression changes what the compressor reacts to. On the phone speaker most of the boosted bass is filtered out to protect the speaker, so GR stays near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
+    lesson: 'The +9 dB low shelf feeds the compressor MORE bass — watch its GR rise: EQ before compression changes what the compressor reacts to. On the phone speaker most of the boosted bass is filtered out at the source, before the chain, to protect the speaker, so GR stays near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
   },
   {
     key: 'delay_reverb', label: 'DELAY → REVERB', short: 'DLY→REV', enable: [FX.delay, FX.reverb], sourceIdx: 0, hot: [6],
@@ -189,7 +189,7 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
   },
   {
     key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1, hot: [1, 8],
-    lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order. On the phone speaker most of the boosted bass is filtered out to protect the speaker, so both meters stay near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
+    lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order. On the phone speaker most of the boosted bass is filtered out at the source, before the chain, to protect the speaker, so both meters stay near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
   },
   {
     // All NINE modules — the name says FULL and the lesson says "the whole path

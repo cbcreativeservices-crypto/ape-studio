@@ -210,7 +210,7 @@ export function Lesson10Body() {
     <>
       <PrincipleBanner />
 
-      <Eyebrow text={`VIRTUAL CABLE TESTER · ${solved.length} OF ${TESTER_CABLES.length} CLEARED`} />
+      <Eyebrow text={`VIRTUAL CABLE TESTER · ${solved.length} CLEARED`} />
       <View style={st.simBadge}>
         <Text style={st.simText}>{SIMULATION_BADGE}</Text>
       </View>

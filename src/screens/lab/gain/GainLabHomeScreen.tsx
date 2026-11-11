@@ -135,7 +135,7 @@ export function GainLabHomeScreen() {
         </View>
         <Text style={styles.caption}>
           The exact numbers — dBu, dBV, dBFS and nominal levels — live in the LEVELS &amp; DECIBELS
-          calculator above, and 0 VU gets its own module in the Meter Lab. This lab teaches the
+          calculator above, and 0 VU gets its own module in the Visual Audio Analysis lab. This lab teaches the
           principle first: healthy level, adequate headroom, at every stage.
         </Text>
       </ScrollView>

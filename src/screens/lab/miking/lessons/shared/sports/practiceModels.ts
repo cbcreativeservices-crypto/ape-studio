@@ -59,7 +59,7 @@ const FIELD_PARTS = [
   { id: 'A', label: 'target A (15, 4) — 10 m straight ahead of M', short: 'A', role: 'The near target: 10.0 m from M, straight ahead. The baseline for every comparison.', lesson: true },
   { id: 'B', label: 'target B (5, 10) — 18.9 m, 32° left', short: 'B', role: 'Farther and off to the left: 18.9 m from M, 32° left of straight ahead.', lesson: true },
   { id: 'C', label: 'target C (15, 18) — 24 m straight ahead', short: 'C', role: 'The far target: 24.0 m from M, straight ahead.', lesson: true },
-  { id: 'M', label: 'comparison mark M (15, −6)', short: 'M', role: 'Where the action mics are compared — one at a time: two capsules standing side by side do not share a coordinate.', lesson: true },
+  { id: 'M', label: 'comparison mark M (15, −6)', short: 'M', role: 'Where the action mics are compared — one at a time: two capsules standing side by side are not at the same point.', lesson: true },
   { id: 'E', label: 'the fixed ambience mark E', short: 'E', role: 'A separately approved ambience position in the crew strip: the stable bed under the action mics.', lesson: false },
   { id: 'offset', mark: { top: { u0: -2000, u1: 32000, v0: 0, v1: 4000 }, ground: true }, label: 'the 6 m practice offset (keep clear)', short: 'offset', role: 'Between the rectangle and the crew strip. The 6 m is this practice’s own layout, not a sport’s rule — it may be made larger.', lesson: true },
 ];

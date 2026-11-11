@@ -164,7 +164,7 @@ export const TONBAK_MODEL: InstrumentModel = {
   ],
   lines: [{ id: 'axis', label: 'the drum’s axis', point: T_H0, dir: T_A }],
   envelopes,
-  variants: [{ id: 'wood', label: 'WOODEN', blurb: 'A wooden tonbak with a skin head — the example drawn here. Tonbaks vary (one museum example is brass): work with the drum in front of you.' }],
+  variants: [{ id: 'wood', label: 'WOODEN', blurb: 'A wooden tonbak with a skin head — the example drawn here. Tonbaks vary (one real example is brass): work with the drum in front of you.' }],
   defaultVariant: 'wood',
   views: { side: { u0: -750, u1: 1250, v0: -1250, v1: 40 }, top: { u0: -750, u1: 1250, v0: -700, v1: 700 } },
   viewTags: { side: 'FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },

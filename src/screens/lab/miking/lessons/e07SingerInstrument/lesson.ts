@@ -38,7 +38,7 @@ export const E07_PAIR = {
 export const E07_RATIO = threeToOneRatio(E07_PAIR.apart, E07_PAIR.rVoice, E07_PAIR.rGuitar);
 const cm = (mm: number) => Math.round(mm / 10);
 const NEED = 3 * Math.max(E07_PAIR.rVoice, E07_PAIR.rGuitar);
-const THREE_TO_ONE = `3:1 asks for the two mics to be at least three times the farther mic’s distance apart. Here the vocal mic is about ${cm(E07_PAIR.rVoice)} cm from the lips and the guitar mic about ${cm(E07_PAIR.rGuitar)} cm from the guitar, so 3:1 would want them about ${cm(NEED)} cm apart — they are about ${cm(E07_PAIR.apart)} cm (${E07_RATIO.toFixed(1)} : 1). A seated singer-guitarist usually cannot give that much space: accept some bleed, aim each mic’s rejection at the other source, or choose one mic.`;
+const THREE_TO_ONE = `3:1 asks for the two mics to be at least three times as far apart as the farther mic is from its own source. Here the vocal mic is about ${cm(E07_PAIR.rVoice)} cm from the lips and the guitar mic about ${cm(E07_PAIR.rGuitar)} cm from the guitar, so 3:1 would want them about ${cm(NEED)} cm apart — they are about ${cm(E07_PAIR.apart)} cm (${E07_RATIO.toFixed(1)} : 1). A seated singer-guitarist usually cannot give that much space: accept some bleed, aim each mic’s rejection at the other source, or choose one mic.`;
 
 const pages: LessonPages = {
   instrument: {
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the vocal mic about 15 cm from the lips, its rejection toward the instrument — then move the mics and see what each hears, and how far apart they are.',
-    credit: { scenarios: ['sw.place.1', 'sw.place.2', 'sw.place.3', 'sw.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of the performer and the instrument, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['sw.place.1', 'sw.place.2', 'sw.place.3', 'sw.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of the performer and the instrument, inside two different suggested starting points, and answer the four checks. The worked example earns no credit on its own — it is there to read.' },
     takeaway: 'Each mic is measured from its own source. With a singer behind an instrument the mics end up close together — some bleed is normal; the rejection, the spacing and a mono check decide how much the music can take.',
   },
   context: {
@@ -342,7 +342,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The verses sit well below the overload light, but the loudest chorus lights it. What do you do?',
     options: ['Lower the input gain, then re-check the chorus', 'Pull the channel fader down until it sounds clean', 'Ask the performer to play the chorus more softly'],
     correct: 'Lower the input gain, then re-check the chorus',
-    explain: 'Set gain from the loudest vocal and instrument passages and leave conservative headroom; record a short test before the full take. The fader comes after the overload.',
+    explain: 'Set gain from the loudest vocal and instrument passages and leave conservative headroom; record a short test before the full take. The overload happens before the fader, so the fader can’t fix it.',
     why: {
       'Pull the channel fader down until it sounds clean': 'The overload happens at the input, before the fader.',
       'Ask the performer to play the chorus more softly': 'The chorus is the performance. Set the gain for it.',

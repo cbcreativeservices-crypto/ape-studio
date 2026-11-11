@@ -312,7 +312,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['USB — TYPE-C OR TYPE-B, PER THE INTERFACE', 'HDMI', 'TOSLINK OPTICAL', 'ETHERNET 8P8C'],
         correct: 'USB — TYPE-C OR TYPE-B, PER THE INTERFACE',
         explain:
-          'Audio interfaces connect over USB: many wear USB-C, desktop units often wear the squarish Type-B, and the host end of the cable is Type-A or C. The interface’s own inlet decides which cable — the job is identical.',
+          'Audio interfaces connect over USB: many wear USB-C, desktop units often wear the squarish Type-B, and the host end of the cable is Type-A or C. The interface’s own USB port decides which cable — either way, the connection does the same job.',
         hint: 'The peripheral end matches the interface; the host end matches the computer.',
       },
       {
@@ -524,7 +524,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['HDMI', 'TOSLINK OPTICAL', 'RCA (PHONO)', 'USB TYPE-A'],
         correct: 'HDMI',
         explain:
-          'eARC is an HDMI feature: the audio return channel rides the HEAC contacts of an HDMI link between equipment that supports it.',
+          'eARC is an HDMI feature: the audio return channel rides the HEAC contacts (the HDMI Ethernet and Audio Return Channel pins) of an HDMI link between equipment that supports it.',
         hint: 'The feature’s full name is Audio Return Channel — a channel of which link?',
       },
       {
@@ -626,7 +626,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['VERIFY LABELS → CONNECT BARREL → ENERGIZE SUPPLY', 'ENERGIZE FIRST, THEN TOUCH THE TIP TO TEST', 'IF IT FITS SNUGLY, IT IS FINE'],
         correct: 'VERIFY LABELS → CONNECT BARREL → ENERGIZE SUPPLY',
         explain:
-          'A barrel connector has no negotiation and no breaking design — whatever the supply delivers hits the device the instant the tip touches. Verify both labels first, and prefer connecting the barrel before energizing the supply.',
+          'A barrel connector has no negotiation and no breaking capacity — whatever the supply delivers hits the device the instant the tip touches. Verify both labels first, and prefer connecting the barrel before energizing the supply.',
         hint: 'What happens at the instant a live barrel tip touches the jack?',
       },
     ],

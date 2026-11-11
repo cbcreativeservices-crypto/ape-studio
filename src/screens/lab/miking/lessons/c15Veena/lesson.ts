@@ -27,7 +27,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a pluck becomes sound — the string against the broad bridge, the top plate, the resonator’s air — and where the sound leaves the veena.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The top plate, driven through the bridge, does most of the work, and its pattern changes with pitch, direction and distance. The gourd under the neck is a support, not a second soundboard.',
+    takeaway: 'The top plate, driven through the bridge, does most of the work, and its sound changes with pitch, direction and distance. The gourd under the neck is a support, not a second soundboard.',
   },
   setting: {
     title: 'Where it sits',
@@ -43,7 +43,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — over the top plate, 30–50 cm out, out of the plucking hand’s reach — measured from the point the starting point names, then move the mic and see what changes.',
+    goal: 'Start where we suggest you begin — over the top plate, 30–50 cm out from the plate, out of the plucking hand’s reach — then move the mic and see what changes.',
     credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named point. A broad view of the plate first; toward the bridge for articulation; move in small steps and compare at matched levels.',
   },
@@ -69,7 +69,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one veena mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second path.',
     credit: { scenarios: [`${P}.prac.order`, `${P}.prac.gain`, `${P}.prac.setup1`, `${P}.prac.setup2`, `${P}.prac.3`, `${P}.mix.1`, `${P}.mix.2`, `${P}.mix.3`], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real veena.' },
-    takeaway: 'Safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning and polarity versus delay pass. A brand or a “vocal mic” label does not.',
+    takeaway: 'What passes: safe clearance from a player on the floor, correct power and level checks, honest labels for a pickup, pattern reasoning, and polarity versus delay. A brand or a “vocal mic” label does not.',
   },
 };
 
@@ -117,7 +117,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The player arrives with a veena that has two large gourds on a long tube. What do you do with this lesson’s starting points?',
     options: ['Use them as they are: all veenas look alike to a microphone, really', 'Aim at the larger gourd as if it were the Saraswati top plate', 'Set them aside: work out this veena’s own geometry with the player'],
     correct: 'Set them aside: work out this veena’s own geometry with the player',
-    explain: 'A two-gourd veena such as the rudra veena is a different instrument, held differently, with no Saraswati-style main face. Any target or distance for it is developed with that player, in its own trial.',
+    explain: 'A two-gourd veena such as the rudra veena is a different instrument, held differently, with no Saraswati-style main face. Work out any target or distance for it with that player, by trying positions and listening.',
     why: {
       'Use them as they are: all veenas look alike to a microphone, really': 'Veenas differ in form and posture. These starting points are for the Saraswati veena.',
       'Aim at the larger gourd as if it were the Saraswati top plate': 'There is no Saraswati-style main face to transfer to. Work it out with the player.',
@@ -190,7 +190,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'At the same distance, you turn the mic toward the main bridge and the plucking area. What tends to change?',
     options: ['More of the resonator’s body and the deepest notes, too', 'More of each note’s start — maybe more click or buzz', 'Only the level; the tone stays the same as before'],
     correct: 'More of each note’s start — maybe more click or buzz',
-    explain: 'Toward the bridge, a mic hears more of the onset, and possibly pick click or buzz beyond what the music wants. Tell the instrument’s intended buzz apart from what the aim adds.',
+    explain: 'Toward the bridge, a mic hears more of the onset, and possibly click or buzz beyond what the music wants. Tell the instrument’s intended buzz apart from what the aim adds.',
     why: {
       'More of the resonator’s body and the deepest notes, too': 'That is the broad view of the plate. The bridge adds articulation.',
       'Only the level; the tone stays the same as before': 'Aiming at a different part of the veena changes the balance, not only the level.',
@@ -238,7 +238,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A supercardioid looks down at the plate. Where can a monitor sit in its deepest rejection?',
     options: ['On the floor right in front of the veena, where floor wedges usually go', 'Directly below the mic, under the veena on the floor', 'Toward its rear and off to one side: up and beside the player'],
     correct: 'Toward its rear and off to one side: up and beside the player',
-    explain: 'A supercardioid rejects most off its rear axis (near 125°). Looking down, its rear points up — so a side-fill at head height, beside the player, can sit there.',
+    explain: 'A supercardioid rejects most at about 125° from its front — toward the rear, off to each side. Looking down, its rear points up — so a side-fill at head height, beside the player, can sit there.',
     why: {
       'On the floor right in front of the veena, where floor wedges usually go': 'For a mic looking down, the floor in front is off to its side — in its pickup, not a null.',
       'Directly below the mic, under the veena on the floor': 'Below the mic is where it points: the front of the pattern.',
@@ -259,10 +259,10 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.rec.3`,
     page: 'context',
-    prompt: 'FROM EARLIER · The plate’s measured radiation changed with pitch, direction and distance. What does that suggest for a live mic?',
+    prompt: 'FROM EARLIER · Measurements show the plate’s sound changes with pitch, direction and distance. What does that suggest for a live mic?',
     options: ['Each spot on the plate gives a similar sound, so just pick one of them', 'Compare a few positions around the face; one spot may favor some notes', 'The mic must sit exactly where the study measured, 25 cm out'],
     correct: 'Compare a few positions around the face; one spot may favor some notes',
-    explain: 'Because the pattern changes with pitch and direction, a single close spot can favor some notes or a local resonance. Compare positions around the main face at matched levels.',
+    explain: 'Because the plate’s sound changes with pitch and direction, a single close spot can favor some notes or a local resonance. Compare positions around the main face at matched levels.',
     why: {
       'Each spot on the plate gives a similar sound, so just pick one of them': 'The measurements show the opposite: the radiation varies with direction.',
       'The mic must sit exactly where the study measured, 25 cm out': 'That was a measurement radius, not a placement rule.',
@@ -318,7 +318,7 @@ const symptoms: Symptom[] = [
   {
     id: `${P}.sym.hit`,
     observation: 'The player hits the mic, or has to change posture',
-    firstChecks: 'Stop. Move the stand or boom outside the whole hand and knee envelope.',
+    firstChecks: 'Stop. Move the stand or boom outside the whole reach of the hands and knee.',
     options: ['Ask the player to keep their hands a little narrower while playing', 'Stop, then move the stand out of the hands’ and knee’s reach', 'Tape the boom to the stand so that it cannot move'],
     correct: 'Stop, then move the stand out of the hands’ and knee’s reach',
     explain: 'The player’s full motion comes first. Move the mic out of the hands’ and knee’s reach, then rebuild the position from there.',
@@ -396,10 +396,10 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.3',
     covers: 'sound',
-    prompt: 'The veena’s measured radiation changed with pitch, direction and distance. What does that suggest?',
+    prompt: 'Measurements show the veena’s sound changes with pitch, direction and distance. What does that suggest?',
     options: ['The positions all sound alike, so the first one will do fine', 'Only the 25 cm study radius gives a true sound', 'Compare a few positions around the face before settling'],
     correct: 'Compare a few positions around the face before settling',
-    explain: 'A pattern that changes with pitch and direction means one spot can favor some notes. Compare positions around the main face at matched levels.',
+    explain: 'Sound that changes with pitch and direction means one spot can favor some notes. Compare positions around the main face at matched levels.',
     why: {
       'The positions all sound alike, so the first one will do fine': 'The measurements show the opposite: the sound varies around the face.',
       'Only the 25 cm study radius gives a true sound': 'That was where the study measured, not a placement rule.',
@@ -466,7 +466,7 @@ export const C15_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'player', label: 'the player and the veena', short: 'PLAYER', note: 'Seated cross-legged, the resonator on the floor at the right, the neck across the lap to the left thigh, the face tilted up. The hands, the gamakas, the gourd on the thigh and the player’s view are theirs.', prov: { kind: 'illustrative', reason: 'the proposal’s posture (holding guide unread)' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'player', label: 'the player and the veena', short: 'PLAYER', note: 'Seated cross-legged, the resonator on the floor at the right, the neck across the lap to the left thigh, the veena’s face (its top plate) tilted up. The hands, the gamakas, the gourd on the thigh and the player’s view are theirs.', prov: { kind: 'illustrative', reason: 'the proposal’s posture (holding guide unread)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'rug', label: 'the rug or riser', short: 'RUG', note: 'The performers sit on a rug, often on a low riser. Keep cables clear of the crossed legs, the instrument’s support and the way on and off.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'FLOOR SPACE', scene: 'all' },
       { id: 'mridangam', label: 'the mridangam', short: 'MRIDANGAM', note: 'Beside the veena: a loud two-headed drum. Its sound reaches the veena mic — distance, balance and the drum’s own mics do more than a null.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'tanpura', label: 'the tanpura (the drone)', short: 'TANPURA', note: 'Behind, sustaining the drone. Quiet but continuous; it belongs in the blend.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
@@ -504,7 +504,7 @@ export const C15_LESSON: Lesson = {
     ...C15_COPY,
     instrument: {
       ...C15_COPY.instrument!,
-      variantNotes: { veena: 'RUDRA VEENA — a different instrument: two large gourds on a long tube, held at an angle. None of these starting points transfer to it; work out its geometry with its player, in its own trial.' },
+      variantNotes: { veena: 'RUDRA VEENA — a different instrument: two large gourds on a long tube, held at an angle. None of these starting points transfer to it; work out its geometry with its player, by trying positions and listening.' },
     },
   },
 };

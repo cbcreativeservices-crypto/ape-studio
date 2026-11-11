@@ -621,7 +621,7 @@ export const B10_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'A sports interview: a reporter and a guest — an athlete, a coach — seconds after play at the sideline, or at a post-event mark. One or more moving speakers, a loud crowd, a PA, wind, cameras and limited access.', src: 'LESSON' },
-    { title: 'WHERE YOU MEET IT', text: 'Sidelines, mixed zones and post-event backdrops: a handheld with a flag in the reporter’s hand, a headset on a regular reporter, a body mic or a boom for a scheduled guest.', src: 'LESSON' },
+    { title: 'WHERE YOU MEET IT', text: 'Sidelines, mixed zones (where athletes pass the press) and post-event backdrops: a handheld with a flag in the reporter’s hand, a headset on a regular reporter, a body mic or a boom for a scheduled guest.', src: 'LESSON' },
     { title: 'WHAT IT DOES', text: 'It keeps the question and the answer intelligible on the program — the first words of the answer included — while everyone stays inside the approved area.', src: 'LESSON' },
     { title: 'NO SINGLE RIGHT DISTANCE', text: 'The capsule, the windscreen, the voice and the framing all change the right place. Begin close to the speaking mouth, move with the conversation, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
   ],
@@ -668,6 +668,6 @@ export const B10_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, wind and stadium is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing side by side, mic patterns and the two-mic comb as textbook shapes, levels by distance alone. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never into play or a route; approval before anything goes on a person.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every voice, wind and stadium is different: move the mic, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: two people standing side by side, mic patterns and the two-mic comb as textbook shapes, levels by distance alone. Distances are rounded to about 5 mm below 1 m and more coarsely above it, also shown in feet from 3 m, and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never into play or a route; approval before anything goes on a person.',
   copy: B10_COPY,
 };

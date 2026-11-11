@@ -53,7 +53,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 0.9–1.8 m from the middle of the steps, in front or a little to one side, aimed down at where the feet land — then move the mic and see what changes.',
-    credit: { scenarios: ['f01.place.capsule', 'f01.place.1', 'f01.place.2', 'f01.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the movement, inside two different starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    credit: { scenarios: ['f01.place.capsule', 'f01.place.1', 'f01.place.2', 'f01.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the movement, inside two different starting-point zones, and answer the four checks. The worked example earns no credit on its own — it is there to read.' },
     takeaway: 'A starting point is a place to begin, read from the middle of the steps to the capsule — not a rule. Distance, aim and height are separate tone controls, and the movement and the exit path come first.',
   },
   context: {
@@ -64,7 +64,7 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'See why a close mic and a room mic on the same steps can blur or hollow out together, how the arrival-time difference places comb notches, and why a moving walker makes any one alignment only locally true.',
+    goal: 'See why a close mic and a room mic on the same steps can blur or hollow out together, how the arrival-time difference places comb notches, and why a moving walker makes any one alignment true for one step only.',
     credit: { scenarios: ['f01.two.1', 'f01.two.2', 'f01.two.3', 'f01.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Two mics hear each step at different times: some frequencies cancel in the sum. Bring up the close mic alone, add the second for a reason, check in mono — move or rebalance first; polarity flips the sign and never removes a delay.',
   },
@@ -78,7 +78,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up a footstep mic in the right order, choose and justify a setup for a quiet Foley stage and a live theater booth, and say what would justify a second mic.',
     credit: { scenarios: ['f01.prac.order', 'f01.prac.gain', 'f01.prac.setup1', 'f01.prac.setup2', 'f01.prac.3', 'f01.mix.1', 'f01.mix.2', 'f01.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real stage.' },
-    takeaway: 'Shoe and surface named, the movement and the exit path clear, a starting point read to the capsule, headroom for the hardest step, and a mono check for a second mic pass. A brand or a louder signal does not — and more than one setup can pass.',
+    takeaway: 'What passes: shoe and surface named, the movement and the exit path clear, a starting point read to the capsule, headroom for the hardest step, and a mono check for a second mic. A brand or a louder signal does not — and more than one setup can pass.',
   },
 };
 

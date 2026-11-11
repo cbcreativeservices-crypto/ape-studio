@@ -251,9 +251,11 @@ function levelText(item: GlossaryItem, level: number, gate: MemberGate): string 
         join(item.common_mistakes) ??
         (gate === 'unconfirmed'
           ? notConfirmed('Common-mistakes notes')
-          : member
-            ? fallback('common-mistakes note')
-            : memberOnly('Common-mistakes notes'))
+          : gate === 'checking'
+            ? `(Checking your account… common-mistakes notes show once it is confirmed — here is the definition.)\n\n${item.definition}`
+            : member
+              ? fallback('common-mistakes note')
+              : memberOnly('Common-mistakes notes'))
       );
     case 6:
       // RELATED TERMS shows TERMS only (tester Terry, 2026-10-08): the term's
@@ -1610,7 +1612,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     // the empty-deck early return above.
     confirmDialog(
       'Reset deck?',
-      `Returns ${hidden.size} known card${hidden.size === 1 ? '' : 's'} and clears ${deckFlagIds.length} flag${deckFlagIds.length === 1 ? '' : 's'} from this topic. Progress already earned is kept.`,
+      `Puts ${hidden.size} known card${hidden.size === 1 ? '' : 's'} back in the deck and clears ${deckFlagIds.length} flag${deckFlagIds.length === 1 ? '' : 's'} from this topic. Progress already earned is kept.`,
       'Reset',
       () => {
         const empty = new Set<string>();
@@ -1860,7 +1862,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             accessibilityRole="button"
             accessibilityState={{ selected: soloReveal }}
             aria-pressed={soloReveal}
-            accessibilityLabel={soloReveal ? 'Close study view' : 'Open study view (show definition)'}
+            accessibilityLabel={soloReveal ? 'Close full view' : 'Open full view (term + definition together)'}
           >
             {/* Lit red only when active; neutral grey when off (user request 2026-07-18). */}
             {/* Selected → whole eye red + full-brightness pupil; unselected →
@@ -2461,7 +2463,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 <Text style={styles.fsGuideLine}>On a section, swipe left / right to move between sections</Text>
                 <Text style={styles.fsGuideLine}>Drag up / down to scroll long text</Text>
                 <Text style={styles.fsGuideLine}>Tap the term name to go back, then swipe to change term</Text>
-                <Text style={styles.fsGuideLine}>Shake to mark it Known</Text>
+                <Text style={styles.fsGuideLine}>Shake to mark the card Known (while sound is on, a shake mutes it instead)</Text>
                 <Text style={styles.fsGuideLine}>Tap ✕ (top-right) to exit</Text>
                 <Pressable accessibilityRole="button" style={styles.fsGuideBtn} onPress={() => setShowFsGuide(false)}>
                   <Text style={styles.fsGuideBtnText}>GOT IT</Text>

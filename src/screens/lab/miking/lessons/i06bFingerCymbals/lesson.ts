@@ -285,7 +285,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'fc.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · A dancer moves toward and away from a fixed mic. What does the mic hear change?',
+    prompt: 'FROM EARLIER · A dancer moves toward and away from a fixed mic. What changes in what the mic hears?',
     options: ['The level, as the distance changes', 'The pitch of the cymbals', 'Nothing: the cymbals are the same'],
     correct: 'The level, as the distance changes',
     explain: 'Nearer is louder at the mic. Along a route the level rises and falls — the reason for a wider or higher view that covers it.',
@@ -325,10 +325,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'fc.mix.1',
     page: 'practice',
-    prompt: 'A second pair sounds higher. Can you say thicker cymbals always ring higher?',
+    prompt: 'A second, thicker pair sounds higher. Can you say thicker cymbals always ring higher?',
     options: ['No — compare these pairs; makers and alloys differ', 'Yes — thickness sets the pitch in each pair', 'Yes, as long as both pairs are exactly the same size'],
     correct: 'No — compare these pairs; makers and alloys differ',
-    explain: 'Like for like, a thicker plate rings higher, and one maker describes its thick pair that way; that does not make a rule across makers, alloys, sizes or players. Compare the real pairs.',
+    explain: 'Like for like, a thicker plate rings higher, but that is not a rule across makers, alloys, sizes or players. Compare the real pairs.',
     why: {
       'Yes — thickness sets the pitch in each pair': 'Size, alloy, shape and the player all play a part; compare the real pairs.',
       'Yes, as long as both pairs are exactly the same size': 'Even at one size, alloys and shapes differ between makers.',
@@ -365,11 +365,11 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'fc.s.uneven',
-    observation: 'The pattern’s level is uneven',
+    observation: 'The level is uneven across the phrase',
     firstChecks: 'Do the hands move in and out of the pickup area?',
     options: ['Whether the hands leave the pickup area', 'Compress the channel until it is even', 'Ask the player to keep both hands still for the mic'],
     correct: 'Whether the hands leave the pickup area',
-    explain: 'Cover the full gesture or widen the station; rehearse the route.',
+    explain: 'Cover the full gesture or widen the pickup; rehearse the route.',
     why: {
       'Compress the channel until it is even': 'Processing hides a coverage problem; widen the pickup first.',
       'Ask the player to keep both hands still for the mic': 'The movement is the music; cover it.',
@@ -520,7 +520,7 @@ export const I06B_LESSON: Lesson = {
     { title: 'WHAT THEY ARE', text: 'A pair of small brass or bronze cymbals, each with a strap or loop through its center. They sound when one strikes the other — the metal itself vibrates. (Crotales, a tuned keyboard of small cymbals, and the drum-kit cymbals are other instruments.)', src: 'MET-TAL' },
     { title: 'WHERE YOU MEET THEM', text: 'In music and dance traditions where they are worn on the fingers, and in orchestras and percussion sections — in the studio and on stage. (Dance and whole-ensemble setups come later, in Lab 5.)', src: 'PAS-ECV0220' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Bright, piercing accents, quick rhythms, and a shimmering ring after each stroke. Held still and struck edge-first, or played in rhythm by a dancer — two very different sources for a mic.', src: 'PAS-ECV0220' },
-    { title: 'THEIR SIZE', text: 'Small: about 5 cm across. This lab draws a measured pair of 5.5 and 4.8 cm (about 2 in), 2.4 cm high. Thin and thick pairs exist; one maker describes its thin pair as lower-pitched than its thick — compare the real pairs.', src: 'MET-TAL' },
+    { title: 'THEIR SIZE', text: 'Small: about 5 cm across. This lab draws a measured pair of 5.5 and 4.8 cm (about 2 in), 2.4 cm high. Thin and thick pairs exist, and a thin pair can sound lower than a thick one — compare the real pairs.', src: 'MET-TAL' },
   ],
   sound: {
     stages: [

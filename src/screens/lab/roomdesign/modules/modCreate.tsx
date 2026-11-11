@@ -216,7 +216,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
             {`Floor ${SURFACES[room.floor].label} · walls ${SURFACES[room.walls].label} · ceiling ${SURFACES[room.ceilingMat].label} · ${room.openings.length} opening${room.openings.length === 1 ? '' : 's'} · ${room.features.length} object${room.features.length === 1 ? '' : 's'}`}
           </Text>
           {ratio ? <Text style={styles.summaryLine}>{`${ratio}.`}</Text> : null}
-          {notRect ?<Text style={styles.warn}>{room.ceiling !== 'flat' && room.shape === 'rect' ? `A ${room.ceiling} ceiling: the mode estimates later use the mean ceiling height and are LESS reliable.` : 'Not a rectangle: the mode estimates later use the bounding box and are LESS reliable.'}</Text> : null}
+          {notRect ?<Text style={styles.warn}>{room.ceiling !== 'flat' && room.shape === 'rect' ? `A ${room.ceiling} ceiling: the mode estimates later use the mean ceiling height and are LESS reliable.` : 'Not a rectangle: the mode estimates later use the smallest rectangle around it and are LESS reliable.'}</Text> : null}
         </View>
       }
     >
@@ -390,7 +390,7 @@ function SurfaceTray({ room, setRoom, onCeilingMat }: { room: Room; setRoom: (fn
         }}
       />
       <Caption>{`${SURFACES[room.ceilingMat].blurb} ${alphaLine(room.ceilingMat)}`}</Caption>
-      <Caption>{`ESTIMATED: textbook teaching coefficients, not ISO 354 product data. ${room.ceiling === 'flat' ? `Floor and ceiling ${area.toFixed(1)} m² each` : `Floor ${area.toFixed(1)} m², ceiling ${ceilingArea(room).toFixed(1)} m² (measured along its shape, so larger than the floor)`}; volume ${roomVolume(room).toFixed(1)} m³.`}</Caption>
+      <Caption>{`ESTIMATED: textbook absorption coefficients for teaching, not ISO 354 product data. ${room.ceiling === 'flat' ? `Floor and ceiling ${area.toFixed(1)} m² each` : `Floor ${area.toFixed(1)} m², ceiling ${ceilingArea(room).toFixed(1)} m² (measured along its shape, so larger than the floor)`}; volume ${roomVolume(room).toFixed(1)} m³.`}</Caption>
     </View>
   );
 }

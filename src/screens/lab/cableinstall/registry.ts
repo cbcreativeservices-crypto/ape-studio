@@ -100,7 +100,7 @@ export const CI_MODULES: CiModuleDef[] = [
     id: 'floor',
     tag: 'STAGE 9 · FLOOR',
     title: 'Floor & Temporary Event Runs',
-    intro: 'Stage, FOH and load-in: keep walking routes safe, protect for the real traffic, and coil flexible cable so it deploys straight.',
+    intro: 'Stage, FOH (front of house) and load-in: keep walking routes safe, protect for the real traffic, and coil flexible cable so it deploys straight.',
     unit: 'm_floor',
   },
   {
@@ -177,12 +177,12 @@ export const CI_TITLE = 'Cable Dressing & Installation';
 export const CI_SUBTITLE = 'Route it. Support it. Protect it. Make it serviceable.';
 
 export const CI_OBJECTIVES = [
-  'Plan professional cable routes',
-  'Protect cables from mechanical damage',
-  'Select appropriate supports and pathways',
-  'Dress racks for performance and service',
-  'Manage floor and overhead runs safely',
-  'Inspect an installation professionally',
+  'How professional cable routes are planned',
+  'How cables are protected from mechanical damage',
+  'How the right supports and pathways are chosen',
+  'How racks are dressed for performance and service',
+  'How floor and overhead runs are kept safe',
+  'How a professional installation inspection works',
 ] as const;
 
 export const CI_GOVERN_NOTE =
@@ -230,7 +230,7 @@ export const CI_FIELD_CHECK: { title: string; items: string[] }[] = [
       'Test and verify',
       'Document — records must match reality',
       'Clean the work area',
-      'Update as-builts where applicable',
+      'Update as-builts (as-installed drawings) where applicable',
     ],
   },
 ];

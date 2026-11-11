@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Live and studio',
     goal: 'Aim a duet singer’s handheld so the wedge sits in its rejection — and know why stereo and figure-8 setups are studio choices first.',
     credit: { scenarios: ['du.ctx.1', 'du.ctx.2', 'du.ctx.studio', 'du.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the handheld (or change its pattern) until the wedge sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Live: the fewest open mics, directional handhelds, wedges in their nulls, no ensemble mic in a monitor that can excite it — and monitors brought up only to the agreed level. Stereo pairs and figure-8s are recording choices first.',
+    takeaway: 'Live: the fewest open mics, directional handhelds, wedges in their nulls, no shared mic in a monitor it can feed back into — and monitors brought up only to the agreed level. Stereo pairs and figure-8s are recording choices first.',
   },
   twoMic: {
     title: 'Two singers, two mics',
@@ -170,7 +170,7 @@ const scenarios: MikingScenario[] = [
     prompt: `One singer moves 15 cm (6 in) closer to a mic 40 cm away. About how much louder, by distance alone?`,
     options: [`About ${SIX_IN_DB.toFixed(0)} dB louder`, 'No change at all', 'About 1 dB louder'],
     correct: `About ${SIX_IN_DB.toFixed(0)} dB louder`,
-    explain: `From 40 cm to 25 cm is about ${SIX_IN_DB.toFixed(1)} dB by the inverse-square law (calculated) — and a little bassier at a directional mic. Restore the arrangement and listen for the change.`,
+    explain: `From 40 cm to 25 cm is about ${SIX_IN_DB.toFixed(1)} dB louder by the inverse-square law — and a little bassier at a directional mic. Restore the arrangement and listen for the change.`,
     why: {
       'No change at all': 'Closer is louder: the distance shrank by more than a third.',
       'About 1 dB louder': 'A third less distance is far more than 1 dB.',
@@ -525,7 +525,7 @@ export const E04_LESSON: EnsembleLesson = {
       { id: 'phones', label: 'the headphones', short: 'HEADPHONES', note: 'Each singer’s mix low enough that the mic does not capture the headphone spill.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'Keep each singer’s monitor level low enough that the microphone does not capture loud headphone spill (L46)' }, tag: 'SPILL', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'ROOM', note: 'One mic, a figure-8 or a pair hears the room as part of the duet: a controlled, flattering room.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'when the room is suitable and a coherent blend is wanted (L10)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: the fewest open mics — directional handhelds for a moving or loud duet, the wedges where each pattern rejects most, no ensemble mic in a monitor that can excite it — and monitors brought up only to the agreed level, never to find the feedback point.',
+    stage: 'LIVE: the fewest open mics — directional handhelds for a moving or loud duet, the wedges where each pattern rejects most, no shared mic in a monitor it can feed back into — and monitors brought up only to the agreed level, never to find the feedback point.',
     studio: 'A STUDIO: place the singers first, then one mic, a figure-8 or a pair in a controlled room; a mic each with screens and matched distances when each voice needs its own control.',
   },
   diagnostic,

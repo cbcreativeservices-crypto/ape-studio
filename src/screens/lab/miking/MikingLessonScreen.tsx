@@ -368,7 +368,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   };
   const c = content.credit;
   const answered = c.scenarios.filter((id) => id in answers).length;
-  const standing = [c.scenarios.length ? `${answered} of ${c.scenarios.length} checks right` : '', c.interactive ? `activity ${interactiveDone.has(c.interactive) ? 'done' : 'not yet'}` : ''].filter(Boolean).join(', ');
+  const standing = [c.scenarios.length ? (answered < c.scenarios.length ? `${c.scenarios.length - answered} ${c.scenarios.length - answered === 1 ? 'check' : 'checks'} still to answer` : 'every check answered') : '', c.interactive ? `activity ${interactiveDone.has(c.interactive) ? 'done' : 'not yet'}` : ''].filter(Boolean).join(', ');
   const head = (
     <>
       <Text style={styles.objective}>

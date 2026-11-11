@@ -28,7 +28,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Vocals:",
-      "text": "the star; maqam-based melody with melisma, mawwal (free-time vocal improvisation) intros, and quarter-tone inflections.",
+      "text": "the star; melody built on maqam (melodic mode) with melisma, mawwal (free-time vocal improvisation) intros, and quarter-tone inflections.",
       "bullet": true
     },
     {
@@ -58,7 +58,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "String section:",
-      "text": "violins (often in unison), violas and cellos, inherited from the Egyptian firqa orchestra; they shadow the singer in heterophony.",
+      "text": "violins (often in unison), violas and cellos, inherited from the Egyptian firqa orchestra; they shadow the singer in heterophony (all playing the same melody, each ornamenting it a little differently).",
       "bullet": true
     },
     {
@@ -98,7 +98,7 @@ export const GUIDE: MixingGuide = {
         "source": "Darbuka (goblet drum, top mic)",
         "cut": "HPF 50–60 Hz; −2–4 dB at 300–500 Hz (boxy shell)",
         "boost": "+2–3 dB at 100–130 Hz (dum); +2 dB at 5–8 kHz (tak/skin)",
-        "notes": "Mic 15–25 cm off the head at 45° toward the rim; an optional mic in or below the bell for dum (check polarity)"
+        "notes": "Mic 15–25 cm off the head at 45° toward the rim; an optional mic in or below the bell (the drum’s open bottom) for dum (check polarity)"
       },
       {
         "source": "Riq (Arabic tambourine)",

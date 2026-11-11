@@ -21,7 +21,7 @@ export function IntroModule({ ctx }: { ctx: RoomLabCtx }) {
         <TierTag tier="CALCULATED" />
         <Caption>Dimensions, coordinates, distances, listening angle, and the idealized room-mode frequencies of a rectangular room. Exact arithmetic — the same equations as the app's calculators.</Caption>
         <TierTag tier="ESTIMATED" />
-        <Caption>Where reflections land and how strong they are, how the surfaces absorb, how long the room rings. A simplified model with teaching-table coefficients. It shows where problems are LIKELY.</Caption>
+        <Caption>Where reflections land and how strong they are, how the surfaces absorb, how long the room rings. A simplified model with typical textbook absorption values. It shows where problems are LIKELY.</Caption>
         <TierTag tier="MEASURED" />
         <Caption>A number you took in the real room — a decay time, a resonance you found with a sweep. Only this tier describes what the room actually does. The REVIEW module compares it with the model.</Caption>
       </Card>
@@ -34,7 +34,7 @@ export function IntroModule({ ctx }: { ctx: RoomLabCtx }) {
       </Card>
       <Card>
         <SectionTitle title="HOW THE LAB RUNS" />
-        <Caption>CREATE THE ROOM → MONITORING SETUP → EXPLORE PLACEMENT → ADD TREATMENT → REVIEW. Each live module is a rack: the plan on the display, readouts framing it, controls docked below, and FULL SCREEN when you want the drawing big. Drag on the plan, or ride the lane.</Caption>
+        <Caption>CREATE THE ROOM → MONITORING SETUP → EXPLORE PLACEMENT → ADD TREATMENT → REVIEW. In each live module the plan sits on top with its readouts, the controls sit below, and FULL SCREEN makes the drawing big. Drag on the plan, or slide the controls below.</Caption>
         <Text style={styles.note}>{ctx.guest ? (ctx.preview ? 'This lab is part of membership: design freely, but designs made in a preview are not saved.' : ctx.account ? accountDesignsLine(ctx.account) : 'You are not signed in: design freely. Nothing is saved yet — sign in before you close the app and the designs you SAVE are kept on this device.') :'Designs can be saved on this device and compared later.'}</Text>
       </Card>
       <LabNextButton />

@@ -41,7 +41,7 @@ export const C02_SPEC: AmpPagesSpec = {
     gainId: 'eg.prac.gain',
     secondId: 'eg.prac.3',
     mixIds: ['eg.mix.1', 'eg.mix.2', 'eg.mix.3'],
-    mixIntro: 'Three cards from earlier pages, mixed: a reference surface, an electrical stop, and polarity versus delay.',
+    mixIntro: 'Three cards from earlier pages, mixed: what to measure from, when to stop for an electrical fault, and polarity versus delay.',
     sheetNote: 'For a real amp, with the player’s agreement and the amp off or muted while anything moves. Write tendencies in words — what you heard, not a promised result.',
   },
   notes: {

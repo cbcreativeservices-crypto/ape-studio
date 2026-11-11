@@ -96,7 +96,7 @@ describe('H9-2 — over-budget 70 V zone: the worked steps do no false arithmeti
     const outs = f.compute(v) as Out[];
     assert.match(outs.find((o) => o.label === 'MORE SPEAKERS THAT FIT')?.text ?? '', /^None/);
     const ok = (f.steps?.({ taps: [10, 10], prated: 100, tapw: 10, hr: 1 }) ?? []).join(' ');
-    assert.match(ok, /floor\(59\.43 ÷ 10\) = 5 more speakers/);
+    assert.match(ok, /59\.43 ÷ 10, rounded down = 5 more speakers/);
   });
 });
 

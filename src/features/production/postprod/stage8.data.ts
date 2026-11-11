@@ -21,7 +21,7 @@ export const STAGE8_DELIVER: StageDef = {
   num: 8,
   title: "Deliver and Archive",
   intro: "Run the revision round without damaging what was approved, build the files the specification asks for, prove they arrived intact, and leave behind something that can still be opened in five years.",
-  whyItMatters: "Two things end projects badly. The first is a revision round that overwrites the version a client already approved, so there is nothing to go back to when the new notes turn out to be worse. The second is treating an upload as a delivery: the files went, nobody opened them, and the wrong version, or a version missing a channel, sat on a server for a fortnight with everyone believing the job was done. The archive is the third, and it is the one nobody notices until the day it is needed.",
+  whyItMatters: "Two things end projects badly. The first is a revision round that overwrites the version a client already approved, so there is nothing to go back to when the new notes turn out to be worse. The second is treating an upload as a delivery: the files went, nobody opened them, and the wrong version, or a version missing a channel, sat on a server for two weeks with everyone believing the job was done. The archive is the third, and it is the one nobody notices until the day it is needed.",
   notices: [
     {
       kind: "legal",

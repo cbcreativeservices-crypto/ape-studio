@@ -88,7 +88,7 @@ describe('2 + 5. Stereo Imaging Lab: BASS-MONO and PAN are said and shown', () =
     }
   });
   it('PAN off centre says the goniometer does not show it, both ways', () => {
-    for (const pan of [-1, 1]) assert.match(caption(vals(100, pan, 0, 0)), /draws the width before the pan; the stage shows PAN/);
+    for (const pan of [-1, 1]) assert.match(caption(vals(100, pan, 0, 0)), /shows WIDTH only, not PAN; watch the stage for PAN/);
     assert.doesNotMatch(caption(vals(100, 0, 0, 0)), /the pan/);
   });
   it('the setting reaches the bezel and the stage', () => {

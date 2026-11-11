@@ -170,15 +170,15 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   ];
 
   const caption: Record<Figure, string> = {
-    fold: 'Challenge 1 on the glass: press ×2 or ÷2 until 9/4 sits in the comparison octave. Ride FIGURE for challenges 4 and 6; the rest read below.',
-    third: 'Challenge 4 on the glass: ride THIRD until the third’s 4th harmonic meets the root’s 5th — 4 × ratio = 5. Double-tap the lane for 400 ¢.',
-    emoves: 'Challenge 6 on the glass: PLAY each E over the same fixed C, then answer what moved.',
+    fold: 'Challenge 1 on the display: press ×2 or ÷2 until 9/4 sits in the comparison octave. Ride FIGURE for challenges 4 and 6; the rest read below.',
+    third: 'Challenge 4 on the display: ride THIRD until the third’s 4th harmonic meets the root’s 5th — 4 × ratio = 5. Double-tap the lane for 400 ¢.',
+    emoves: 'Challenge 6 on the display: PLAY each E over the same fixed C, then answer what moved.',
   };
 
   return (
     <TuningRackLayout ctx={ctx} rack={{ size: 'M', initialParam: 'figure', hideDragTag: true, bezel, stage, params }} caption={caption[figure]}>
       <Lead>Six short challenges. Each one is something you did earlier — now do it on purpose.</Lead>
-      <Text style={styles.progress}>{done.filter(Boolean).length} of 6 complete</Text>
+      <Text style={styles.progress}>{done.filter(Boolean).length} {done.filter(Boolean).length === 1 ? 'challenge' : 'challenges'} complete</Text>
 
       <Eyebrow>1 · NORMALIZE</Eyebrow>
       <Prompt>Fold 9/4 into one octave — FIGURE 1 · FOLD, then ×2 / ÷2.</Prompt>
@@ -252,7 +252,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
           'All three were called E. A name is a label; the systems disagree about the FREQUENCY the label gets.',
           undefined,
           'All three E’s sat in the same octave — 386, 400 and 408 ¢ above the same C. The differences are about 8 to 22 cents, not 1200.',
-          'Every clip is rendered to the same loudness rule. What differs is pitch, by ratio — not level.',
+          'Every clip plays at the same loudness. What differs is pitch, by ratio — not level.',
         ]}
         onCorrect={() => mark(5)}
       />
@@ -268,7 +268,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
             'Temperaments redistribute tuning discrepancies according to musical goals.',
             'Twelve-tone equal temperament uses twelve equal multiplicative steps.',
           ].map((t, i) => <Text key={i} style={styles.keep}>{i + 1}. {t}</Text>)}
-          <Body>Lab complete. Use the chapter list at the top to review any chapter, or RETRY to run the challenges again.</Body>
+          <Body>Challenges complete. Use the chapter list at the top to review any chapter, or RETRY THE CHALLENGES to run them again.</Body>
           <Btn label="RETRY THE CHALLENGES" onPress={() => { setDone([false, false, false, false, false, false]); setC1(frac(9, 4)); setC1Hist([]); setPicks({}); setThirdCents(400); setFigure('fold'); }} />
         </Card>
       ) : null}

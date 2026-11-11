@@ -385,7 +385,7 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       <Text style={styles.status}>{r.status}</Text>
-      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The lab refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all. Tap the same two devices again for a second cable where the far one has a free input — a stereo in-ear feed is two cables from the stagebox to the transmitter, Aux 9 and Aux 10, each with its own OUTPUT key — never the same output twice.</KeyFact>
+      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon, mid-setup before the show. The lab refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all. Tap the same two devices again for a second cable where the far one has a free input — a stereo in-ear feed is two cables from the stagebox to the transmitter, Aux 9 and Aux 10, each with its own OUTPUT key — never the same output twice.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }
@@ -504,7 +504,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
         valueLabel: routeReqs.length ? `${routeMet}/${routeReqs.length}` : 'Open',
         render: () => (
           <View style={{ gap: 10 }}>
-            <Body>▲/▼ step a level; PRE lights the pre-fader tap. The buses below show who hears what — computed, not promised. The plot stays live above.</Body>
+            <Body>▲/▼ step a level; PRE lights the pre-fader tap. Check the buses below for who hears what — worked out from your settings. The plot above stays live.</Body>
             <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'MONO', aux9: 'STEREO L', aux10: 'STEREO R' }} />
             {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
             {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
@@ -546,7 +546,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
       {grade.pass ? <VerdictLine ok>Capstone {capstone.n} passed — recorded on the lab’s home page. The build stays here to explore; CONTINUE when ready.</VerdictLine> : null}
       {/* Owner decision 8 (2026-10-20): a capstone passed before the OUTPUTS
           row existed stays passed — the record is never taken back. */}
-      {!grade.pass && ctx.isDone ? <Text style={styles.small}>Passed earlier — still credited. This checklist is the build on the plot now.</Text> : null}
+      {!grade.pass && ctx.isDone ? <Text style={styles.small}>Passed earlier — still credited. The checklist now checks the build on the plot.</Text> : null}
     </Card>
   );
   const r = useBuilderRack(b, capstone.bin, {

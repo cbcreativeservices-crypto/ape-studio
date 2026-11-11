@@ -30,7 +30,7 @@ export const F10_COPY: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { plaza: 'sp.head', event: 'sp.head' },
-    workedLine: 'This starting point also reads how far the mic is from the scene-front line through the listener’s point.',
+    workedLine: 'This starting point also tells you how far the mic is from the scene-front line through the listener’s point.',
     workedAim: 'Face it to the scene front — the lab counts it within about {tol}°.',
     workedClear: 'Clear of the public footpath, on a stable stand, out of everyone’s way.',
     blocked: {},
@@ -58,7 +58,7 @@ export const F10_COPY: Partial<LessonCopy> = {
       'The close mic hears the singer about 6 m — about 17 ms — before the spatial mic does. Summed as they are, the two make a comb of notches packed close together, heard as color or as an echo.',
       'Keep them as two layers on their own channels: the spatial view, and the close voice an array cannot isolate. Any blend is a choice, judged by ear — polarity flips the sign and never removes a delay.',
     ],
-    warn: 'This simplified graph treats the singer as one point and both mics as hearing the same sound with straight paths and no square. A real spatial mic hears the whole place, the close mic mostly the voice — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative.',
+    warn: 'This graph is simplified: the singer is one point, both mics hear the same sound on straight paths, and the square’s reflections are left out. A real spatial mic hears the whole place, the close mic mostly the voice — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative.',
   },
   practice: { gain: 'sp.prac.gain', second: 'sp.prac.3', mixed: ['sp.mix.1', 'sp.mix.2', 'sp.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the deliverable first, the four tracks, and two layers in time.' },
   terms: {

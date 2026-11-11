@@ -78,7 +78,7 @@ function F12Sound({ lesson, answers, onAnswered }: PageProps) {
   const arrivals = useArrivalsStep({
     words: {
       title: 'How sound reaches the meter',
-      badge: 'Straight paths at 20 °C · dashed rings = reflections (the mirror-image picture) · a simplified picture',
+      badge: 'Straight paths at 20 °C · dashed rings = reflections, as if from a mirror-image source · a simplified picture',
       prompt: 'Drag TIME and watch each sound arrive; change POINT between receiver A, receiver B and the wall.',
       looking: 'The site',
       note: 'As if the car and the air unit each made one click at the same instant. Receiver B and the wall position also hear the facade’s reflection; receiver A, out in the open, does not. A real road is a line of moving sources, and the ground’s reflection depends on what it is made of — the picture shows the paths, not the levels.',

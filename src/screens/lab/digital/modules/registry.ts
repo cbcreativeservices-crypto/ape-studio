@@ -19,7 +19,7 @@ export const DIGITAL_MODULES: { id: DigitalModuleId; title: string; blurb: strin
   { id: 'quant', title: 'Quantization & Bit Depth', blurb: 'Measuring amplitude in steps: levels, error, dynamic range — and dither.' },
   { id: 'binary', title: 'Binary Sample Values', blurb: 'What the computer actually stores — inspect any sample, flip its bits.' },
   { id: 'adc', title: 'Analog-to-Digital Conversion', blurb: 'The full ADC pathway, block by block — plus the gain-staging exercise.' },
-  { id: 'processing', title: 'Digital Processing & Formats', blurb: 'Integer vs floating point, and what "above 0 dBFS" really means inside a DAW.' },
+  { id: 'processing', title: 'Digital Processing & Formats', blurb: 'Integer vs floating point, and what "above 0 dBFS" really means inside a DAW (recording software).' },
   { id: 'dac', title: 'D-to-A Reconstruction', blurb: 'How numbers become a CONTINUOUS waveform — the staircase myth, corrected. Inter-sample peaks.' },
   { id: 'errors', title: 'Errors & Limits', blurb: 'Myth vs reality, jitter (timing errors in the sample clock), and how devices share one clock — the misconception-busting heart of the lab.' },
 ];

@@ -83,7 +83,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     ],
     changes: [
       'Move the speaker or listener: path lengths change, so times change. Sound covers about 34 cm per millisecond.',
-      'Each ray leaves a wall at the angle it hit, measured from the normal: the line square to the wall.',
+      'Each ray leaves a wall at the angle it hit, measured from the normal: the line at 90° to the wall.',
       'A reflection always arrives later and quieter: a longer trip, and the wall keeps a share.',
       'MAT and FREQ change REFL LVL and LOSS/BNC, never the paths. Soft walls take mids and highs but return the bass.',
     ],
@@ -109,7 +109,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     seeing: [
       'You’re looking down on a 7 m × 5 m room with all four walls in one material: DRYWALL to start. A glinting inner edge reflects; a matte one absorbs.',
       'RAYS: amber direct, blue reflections. The pulse dots turn from red to blue as the walls soak them up.',
-      'α @ is the share absorbed, 0 to 1. 1 BOUNCE is the energy left after one bounce. α 125 Hz and α 4 kHz compare low and high.',
+      'α @ is the share absorbed at the frequency you picked, 0 to 1. 1 BOUNCE is the energy left after one bounce. α 125 Hz and α 4 kHz compare low and high.',
     ],
     control: [
       'FREQ fader (63 Hz–8 kHz): picks the frequency you’re studying.',
@@ -143,7 +143,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     seeing: [
       'You’re looking down on a 7 m × 5 m concrete room. The top wall carries a DIFFUSER: wells of different depths. Drag the speaker or the listener.',
       'Watch the RAYS off the top wall: a working diffuser breaks the mirror reflection into a fan of thin, dim rays. Below its range, it stays one ray.',
-      'The frame reads TOP WALL, DEPTH, MIN ƒ (the lowest frequency it scatters) and @ (frequency): MIRROR, SCATTER or BELOW ƒ.',
+      'Readouts: TOP WALL, DEPTH, MIN ƒ (lowest frequency it scatters) and @ (at your frequency): MIRROR, SCATTER or BELOW ƒ.',
     ],
     control: [
       'DEPTH fader (0.05–0.60 m): sets how deep the wells are. Watch them deepen on the panel as you slide.',
@@ -179,7 +179,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     seeing: [
       'You’re outdoors, seen from the side: a PA speaker on a pole 2 m up at left, and a listener 150 m away.',
       'Follow the amber ray: it leaves level. The sky tint, thermometer strip and WARM AIR / COOL AIR labels show the warmer layer.',
-      'HEIGHT ×20: heights are stretched to show the bend. Readouts: c GROUND, c @60m (speed and temperature 60 m up), BEND, and H @150 m (the amber ray’s height at the listener).',
+      'HEIGHT ×20 stretches heights to show the bend. Readouts: c GROUND (speed of sound), c @60m (speed and temperature 60 m up), BEND, and H @150 m (amber ray’s height at the listener).',
     ],
     control: [
       'GRAD fader: how temperature changes with height, from LAPSE (cooler air higher up, a sunny day) through NEUTRAL to INVERSION (warmer air higher up, night or over water). It starts on INVERSION. At NEUTRAL with the wind CALM, the display reads UNIFORM AIR.',
@@ -211,7 +211,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       start: 'With BARRIER at 4 m, slide FREQ from bottom to top and watch LOSS @ climb. Then raise BARRIER and watch FRESNEL N and the SHADOW ZONE grow.',
     },
     seeing: [
-      'You’re outdoors, looking from the side, drawn to scale: a speaker, a wall (the barrier) and a listener, each 10 m from the wall and 1.5 m up.',
+      'You’re outdoors, looking from the side, drawn to scale: a speaker and a listener, each 10 m from a wall (the barrier) and 1.5 m up.',
       'Rings spread from the speaker; past the wall’s top a second set bends down behind it. The SHADOW ZONE darkens where more sound is lost.',
       'Readouts: λ (wavelength), BARRIER, FRESNEL N (how many half-wavelengths longer the path over the top is) and LOSS @ (frequency).',
     ],
@@ -220,13 +220,13 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'BARRIER fader (2–8 m): the wall’s height, drawn to scale.',
     ],
     changes: [
-      'Low frequencies are meters long, as big as the wall, so they wrap over the edge: a modest LOSS.',
-      'High frequencies are centimeters long, so the detour is many wavelengths: a deep shadow.',
+      'Low-frequency wavelengths are meters long, as big as the wall, so they wrap over the edge: a modest LOSS.',
+      'High-frequency wavelengths are centimeters long, so the detour is many wavelengths: a deep shadow.',
       'A taller wall lengthens the detour: FRESNEL N and LOSS rise, most of all for the highs.',
       'The glow at the listener shows it: warm means little loss, blue means a lot. The loss is never total.',
     ],
     teaches: [
-      'Diffraction: waves bend around objects about their own size or smaller.',
+      'Diffraction: waves bend around objects about one wavelength across or smaller.',
       'Lows wrap around barriers; highs cast shadows.',
       'A shadow zone isn’t silence. Mostly it’s a loss of highs, so the sound behind a wall is duller, not gone.',
       'Why a pillar in front of a PA dulls the highs behind it while the bass carries on.',
@@ -259,7 +259,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Δ PATH a whole number (0, 1, 2…): the waves arrive in step and add, about +6 dB.',
       'Δ PATH a whole number plus a half (0.5, 1.5…): they arrive opposed and cancel, toward NULL.',
       'Higher FREQ means a shorter wavelength, so the bands crowd together; lower spreads them out.',
-      'DELAY shifts S2 in time, so the bands slide; POL Ø turns its wave over, so add and cancel bands swap. Nothing moves.',
+      'DELAY shifts S2 in time, so the bands slide; POL Ø turns its wave over, so add and cancel bands swap. The speakers never move.',
     ],
     teaches: [
       'Interference: sources add where they arrive in step and cancel where they arrive opposed.',
@@ -283,7 +283,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     seeing: [
       'Top: a speaker, a microphone and one hard wall at right. The other sides are open, so the mic hears the direct sound plus one reflection.',
       'Bottom: the response at the mic, 20 Hz–20 kHz (0 dB = the direct sound alone). The dips are notches, like a comb’s teeth.',
-      'Δt is how much later the reflection lands. Then 1ST NULL, SPACING (between notches) and MIC→WALL.',
+      'Δt is how much later the reflection lands. Then 1ST NULL (the lowest notch), SPACING (between notches) and MIC→WALL.',
     ],
     control: [
       'WALL fader (3–10 m): moves the hard wall farther away.',
@@ -300,7 +300,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Comb filtering: a sound plus a delayed copy of itself makes evenly spaced notches.',
       'It comes from time and position, not tone. EQ can’t fix it; moving the mic or treating the surface can.',
       'A move of a few inches shifts every notch.',
-      'It’s delay plus sum, not a room resonance (that’s Module 8).',
+      'It’s a delayed copy added to the sound, not a room resonance (a room mode).',
     ],
     tryThis: [
       'At the start the mic is 0.50 m from the wall: Δt ≈ 2.91 ms, 1ST NULL ≈ 172 Hz. Press MIC → once: every notch jumps higher.',
@@ -334,7 +334,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       'Room modes: at certain low frequencies, reflections pile up into a pattern that stands still.',
       'On a node, a mic or seat misses that note; on an antinode, it gets too much.',
       'Dimensions set the modes; bass traps damp them but never remove them.',
-      'Modes rule the low end. Above the Schroeder frequency (below the display) they blur into reverberation.',
+      'Modes rule the low end. Above the Schroeder frequency (SCHROEDER ≈ in the readouts) they blur into reverberation.',
     ],
     tryThis: [
       'At the start the listener is mid-room on (1,0): VERDICT NODE, about 34 Hz. Drag it to the left or right wall: ANTINODE.',
@@ -426,7 +426,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     ],
     control: [
       'DELAY fader (0–20 ms): holds back the main speaker.',
-      'XOVER fader (80–120 Hz): the crossover frequency, which both speakers play.',
+      'XOVER fader (80–120 Hz): the crossover, where sub and main hand off; both play it.',
       'ALIGN key: MAIN POLARITY Ø (labeled THE WRONG TOOL) and AUTO-ALIGN, which sets DELAY to REQ for this seat.',
       'Drag the listener. LAYERS key: PRESSURE, HEAT, RAYS and ARRIVALS.',
     ],
@@ -618,7 +618,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'Shrink the room to about 4 × 3 m and set FREQ between 40 and 120 Hz: mode bands appear. Make two walls FIBERGLASS: RT60 falls.',
-      'Add two SUBs 1.2 m apart; delay the rear one about 3.5 ms with POLARITY Ø INVERT. At about 60 Hz: energy forward, quiet behind.',
+      'Add two SUBs and drag one 1.2 m behind the other; delay the rear one about 3.5 ms with POLARITY Ø INVERT. At about 60 Hz: energy forward, quiet behind.',
       'Make one wall CURTAINS and one CONCRETE, then sweep FREQ down: the curtain lets nearly everything through.',
     ],
   },

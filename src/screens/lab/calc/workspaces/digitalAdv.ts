@@ -60,11 +60,11 @@ const CLOCKDRIFT: Workspace = {
     'frequency error — measured in parts per million — slowly slips samples, and eventually a ' +
     'click or a dropout. Enter the sample rate, the clock error, and a duration to see the slip.',
   whyItMatters:
-    'This is why word clock, AES sync, and PTP exist. An unsynced digital link that "sounds fine" ' +
+    'This is why word clock, AES sync, and PTP (Precision Time Protocol) exist. An unsynced digital link that "sounds fine" ' +
     'for a minute can tick or glitch over a long session as the two clocks drift apart. Knowing the ' +
     'rate tells you how tight your sync has to be.',
   example:
-    'At 48 kHz with a 50 ppm error: drift = 50×10⁻⁶, so samples slip at 48000×50µ ≈ 2.4 samples per ' +
+    'At 48 kHz with a 50 ppm error: drift = 50×10⁻⁶, so samples slip at 48000×50×10⁻⁶ ≈ 2.4 samples per ' +
     'second — a full sample about every 0.42 s, and ≈ 8640 samples (180 ms) adrift over an hour.',
   mistakes: [
     'Assuming "same sample rate" means "same clock" — nominal 48 kHz devices still differ by ppm unless one slaves to the other.',
@@ -91,7 +91,7 @@ const CLOCKDRIFT: Workspace = {
       plainFormula:
         'The samples slipped equal the sample rate times the clock error in parts per million (times ten to the minus six), times the elapsed time.',
       explain:
-        'Two digital devices never run at exactly the same rate unless they share a clock. A tiny frequency error in parts per million slowly slips samples until a click or dropout. This gives the samples slipped, the timing error, and how often a whole sample is lost — the cumulative reason word clock and PTP exist.',
+        'Two digital devices never run at exactly the same rate unless they share a clock. A tiny frequency error in parts per million slowly slips samples until a click or dropout. This gives the samples slipped, the timing error, and how often a whole sample is lost — the cumulative reason word clock and PTP (Precision Time Protocol) exist.',
       keySymbols: ['·', '×', 'x⁻¹'],
       compute: (v) => {
         const drift = n(v.ppm) * 1e-6;
@@ -121,7 +121,7 @@ const CLOCKDRIFT: Workspace = {
       inputs: ['sr', 'ppm', 'maxSlip'],
       formula: 't = slip / (SR · ppm×10⁻⁶)',
       plainFormula:
-        'The time to reach the slip budget equals the number of samples of slip divided by the sample rate times the clock error in parts per million.',
+        'The time to reach the slip budget equals the number of samples of slip divided by the product of the sample rate and the clock error in parts per million (times ten to the minus six).',
       explain:
         'The reverse: how long two unsynced clocks can run before they drift by a tolerable number of samples. A higher sample rate or a larger ppm error uses up the budget sooner — the practical measure of how tight your sync must be.',
       keySymbols: ['/', '·', '×', 'x⁻¹'],
@@ -164,7 +164,7 @@ const NETAUDIO: Workspace = {
   mistakes: [
     'Sizing only the raw audio rate — at low latency, per-packet headers add a large, real overhead on top.',
     'Forgetting bandwidth is per DIRECTION — a full-duplex link carries its full rate each way, so check the sending and the receiving traffic against the link on their own; do not add them.',
-    'Running audio and control/other traffic on a switch with no QoS and hoping the other traffic stays light — AoIP wants QoS and headroom.',
+    'Running audio and control/other traffic on a switch with no QoS (traffic priority) and hoping the other traffic stays light — audio over IP (AoIP) needs QoS and headroom.',
   ],
   warnings:
     'Raw rate = channels × sample rate × bit depth. Wire estimate adds ~78 bytes/packet (Ethernet ' +
@@ -214,7 +214,7 @@ const NETAUDIO: Workspace = {
       explain:
         'The wire carries packet headers many times a second on top of the audio. One standard Ethernet packet holds only about 1460 bytes of audio, so a large channel count needs several packets every packet time. Smaller packet times mean lower latency but more packets — and more header overhead. This estimates the realistic on-the-wire rate, showing why very low latency costs bandwidth.',
       keySymbols: ['×', '/'],
-      note: 'Header estimate 78 B/packet (Ethernet+IP+UDP+RTP + preamble + inter-frame gap). Up to ~1460 B of audio per packet (a 1500-byte packet less its IP, UDP and RTP headers). Real systems split channels into streams of their own size, so treat the packet count as a minimum.',
+      note: 'Header estimate 78 B/packet (Ethernet+IP+UDP+RTP + preamble + inter-frame gap). Up to ~1460 B of audio per packet (a 1500-byte packet less its IP, UDP and RTP headers). Real systems split channels into several smaller streams, each sending its own packets, so treat the packet count as a minimum.',
       compute: (v) => {
         const p = netPackets(n(v.channels), n(v.sr), n(v.bitdepth), n(v.packetms));
         return [
@@ -313,7 +313,7 @@ const TIMECODE: Workspace = {
         const totS = n(v.frames) / n(v.fps);
         return [
           `Time = ${fmtCount(n(v.frames))} frames ÷ ${fmt(n(v.fps), 6)} fps = ${fmt(totS)} s.`,
-          `Broken out into HH:MM:SS:FF in the table below (frame remainder uses the whole-frame rate).`,
+          `Broken out into HH:MM:SS:FF in the table below (leftover frames are counted at the whole-number frame rate).`,
         ];
       },
     },
@@ -496,7 +496,7 @@ const CONVOLUTION: Workspace = {
     'makes it run in real time — and the latency your block size buys.',
   example:
     'A 2 s IR at 48 kHz stereo: 96000 taps per channel. Direct form = 96000×48000×2 ≈ 9.2 billion ' +
-    'MAC/s — far too heavy to run in real time by brute force, which is why FFT partitioning exists. The IR itself is ' +
+    'MAC/s (multiply-accumulates per second) — far too heavy to run in real time by brute force, which is why FFT partitioning exists. The IR itself is ' +
     '≈ 768 kB as 32-bit floats.',
   mistakes: [
     'Assuming direct-form convolution is feasible — the MAC/s count shows why partitioned FFT convolution is mandatory for long IRs.',
@@ -608,7 +608,7 @@ const BITDEPTH: Workspace = {
   ],
   warnings:
     'Theoretical ideal: SNR = 6.02·N + 1.76 dB for a full-scale sine against quantization noise of ' +
-    'power q²/12 (exactly 20·log₁₀2 = 6.0206 dB per bit and 10·log₁₀1.5 = 1.761 dB); dynamic range ' +
+    'power q²/12, where q is one quantization step (exactly 20·log₁₀2 = 6.0206 dB per bit and 10·log₁₀1.5 = 1.761 dB); dynamic range ' +
     '= 6.02·N dB; levels = 2^N. With TPDF dither the noise is 4.77 dB higher (SNR 6.02·N − 3.01 dB). ' +
     'Real converters fall short because of analog noise, jitter, and reference limits — treat it ' +
     'as the physics limit, not a spec you will measure.',
@@ -632,7 +632,7 @@ const BITDEPTH: Workspace = {
       refuse: (v) =>
         Number.isFinite(Math.pow(2, n(v.bits)))
           ? null
-          : 'That many bits has more code values than any number this app can show — real PCM uses 16, 24 or 32 bits.',
+          : 'That many bits has more code values than any number this app can show — enter a real PCM depth: 16, 24 or 32 bits.',
       compute: (v) => {
         const N = n(v.bits);
         return [

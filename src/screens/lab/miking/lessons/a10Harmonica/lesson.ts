@@ -55,7 +55,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Aim the stand mic so its rejection faces a loud monitor — and know what the cupped harp mic and the amp change on a stage: no rear null, and no feedback at the mic’s top volume.',
+    goal: 'Aim the stand mic so its rejection faces a loud monitor — and know what the cupped harp mic and the amp change on a stage: the harp mic has no rear null, so set things so nothing feeds back even at its top volume.',
     credit: { scenarios: ['hm.ctx.1', 'hm.ctx.2', 'hm.ctx.studio', 'hm.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the stand mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
     takeaway: 'Live: a directional stand mic as close as the hands allow, its null toward the wedge; the cupped harp mic has no null — set the system so nothing rings even at its top volume. Studio: a stand mic first, then farther if the room is good.',
   },
@@ -75,7 +75,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second feed.',
     credit: { scenarios: ['hm.prac.order', 'hm.prac.gain', 'hm.prac.setup1', 'hm.prac.setup2', 'hm.prac.3', 'hm.mix.1', 'hm.mix.2', 'hm.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'Choose the path first — acoustic, cupped harp mic, or the amp’s speaker. Keep clear of the mouth and the hands, check the input the harp mic needs, start every level low, set no feedback at the top of the knob, and protect hearing.',
+    takeaway: 'Choose the path first — acoustic, cupped harp mic, or the amp’s speaker. Keep clear of the mouth and the hands, check the input the harp mic needs, start every level low, make sure nothing feeds back with the mic’s knob at the top, and protect hearing.',
   },
 };
 
@@ -575,7 +575,7 @@ export const A10_LESSON: Lesson = {
   },
   diagnostic,
   practice: {
-    task: 'Choose the path, keep the mouth and the hands clear, check the input the harp mic needs, start every level low, set no feedback at the top of the knob, and judge any second feed in mono. With the player’s agreement, log what you tried below.',
+    task: 'Choose the path, keep the mouth and the hands clear, check the input the harp mic needs, start every level low, make sure nothing feeds back with the mic’s knob at the top, and judge any second feed in mono. With the player’s agreement, log what you tried below.',
     fields: [
       { id: 'inst', label: 'Harmonica(s) and key(s); any neck holder', kind: 'text' },
       { id: 'path', label: 'Which path', kind: 'choice', choices: ['acoustic stand mic', 'cupped harp mic and amp', 'speaker mic on the amp'] },

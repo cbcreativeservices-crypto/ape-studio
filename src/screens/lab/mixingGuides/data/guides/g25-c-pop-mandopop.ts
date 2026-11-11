@@ -24,7 +24,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "C-pop is above all a singer’s and a lyricist’s music. Its emotional center is the love ballad (qingge): songs of longing, regret and nostalgia that listeners sing in KTV rooms, in the car and at concerts. Teresa Teng’s soft, close-miked delivery set a template of intimacy that still defines the genre, and lyricists such as Vincent Fang and Lin Xi are stars in their own right. Mandarin and Cantonese are tonal languages, so a muffled consonant or a buried vowel can change the meaning of a word."
+      "text": "C-pop is above all a singer’s and a lyricist’s music. Its emotional center is the love ballad (qingge): songs of longing, regret and nostalgia that listeners sing in KTV (karaoke) rooms, in the car and at concerts. Teresa Teng’s soft, close-miked delivery set a template of intimacy that still defines the genre, and lyricists such as Vincent Fang and Lin Xi are stars in their own right. Mandarin and Cantonese are tonal languages, so a muffled consonant or a buried vowel can change the meaning of a word."
     },
     {
       "text": "At concerts, fans wave synchronized lightsticks, sing whole choruses back (the “big chorus,” 大合唱) and judge live vocals harshly; post-show complaints often say the singer could not be heard. Listeners notice at once when the vocal is buried, sibilant or swimming in reverb, when the ballad sections are loud and harsh, or when a famous intro, such as a piano figure or an erhu (two-string fiddle) line, is missing or thin."
@@ -275,7 +275,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Ballads master around −11 to −9 LUFS-I, which at −2 dBTP allows a PLR of about 7–9 dB; dance and idol tracks −8 to −6 LUFS-I. Aim for −1 dBTP, or −2 dBTP when mastering louder than −14 LUFS, as streaming services advise."
+      "text": "Ballads master around −11 to −9 LUFS-I, which at −2 dBTP allows a PLR (peak-to-loudness ratio) of about 7–9 dB; dance and idol tracks −8 to −6 LUFS-I. Aim for −1 dBTP, or −2 dBTP when mastering louder than −14 LUFS, as streaming services advise."
     }
   ],
   "liveStudio": {

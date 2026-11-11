@@ -699,7 +699,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
       <CiSection title="THE CONCEPT FIELD — MOVE THE SIGNAL CABLE">
         <Text style={s.lead}>
           One signal cable near one noisy neighbor. Pick the neighbor, slide the cable, and flip the interconnect between
-          balanced and unbalanced — the exposure call is qualitative, because coupling has levers, not one magic distance.
+          balanced and unbalanced — exposure is judged in words, not numbers, because noise coupling has several levers, not one magic distance.
         </Text>
         {srcChips}
         <ExpandableFigure

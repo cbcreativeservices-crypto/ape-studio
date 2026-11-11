@@ -81,7 +81,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     workedClear: 'Clear of the wearer’s movement: the capsule on a firm edge, off rubbing fabric, hair and jewelry, the cable looped at the clip and secured lower down. The wearer agreed to all of it. Clearance comes first, before any number.',
     reveal: 'On the chest the distance holds as long as the chest does, but a turn of the head moves the mouth away; beside the mouth a headset keeps its distance; under one layer of cloth the top end can dull. People and clothes vary, so “it depends on this presenter” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
-      locLav: 'Ideas to try with an omni lav: begin in the middle of the chest, then try a lapel or the collar and rehearse turns both ways; compare at matched loudness. If a puff reaches it, turning it upside down in its clip is one trial on some models.',
+      locLav: 'Ideas to try with an omni lav: begin in the middle of the chest, then try a lapel or the collar and rehearse turns both ways; compare at matched loudness. If a puff reaches it, turning it upside down in its clip is one thing to try on some models.',
       lavCard: 'Ideas to try with a directional lav: turn its sensitive end to the mouth, then turn the head — listen for how quickly the voice dulls.',
       vocHeadset: 'Ideas to try with a headset: the capsule where its maker says, beside the corner of the mouth and out of the breath — then leave it there.',
       hsCard: 'Ideas to try with a directional headset: aim it as its maker says, then check where its rear points against the PA and the monitors.',
@@ -116,7 +116,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     prompt: 'The PA stays where the show needs it. Turn or tilt the headset’s capsule (AIM) until the PA sits in its rejection — while it still points toward the mouth.',
     activityDone: 'done — the PA sat in the headset’s null by your aim',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind. A directional headset beside the mouth, aimed in at the lips, points its rear out past the cheek — toward the PA on that side. A small turn of the boom decides how close the PA comes to that rejection.',
-    shieldNote: 'The head and the body reflect the PA’s sound too, and the free-field pattern cannot show that. Compare it with the venue’s operator at a safe level.',
+    shieldNote: 'The head and the body reflect the PA’s sound too, and the free-field pattern cannot show that. Check the real result with the venue’s operator at a safe level.',
     learn: {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the presenter is the same — the room, the PA and the picture change.',

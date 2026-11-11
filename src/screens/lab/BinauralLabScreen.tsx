@@ -348,7 +348,7 @@ export function BinauralLabScreen() {
                 <Text style={styles.caption}>
                   {sel.type === BIN_SRC.sine
                     ? sel.freq <= 440
-                      ? 'A smooth low tone images VAGUELY over headphones — but not because the timing cue is weak. In real hearing, below ~1.5 kHz the head casts almost no shadow, so timing (ITD) does most of the work, and it does it well. This simplified model still applies its level drop (to −8 dB at the side) at every frequency, so here a low tone carries a level cue too. What a steady sine lacks is onsets and spectral detail, so it lateralizes without externalizing: the image sits inside your head rather than out in the room.'
+                      ? 'Your ears place a smooth low tone only VAGUELY over headphones — but not because the timing cue is weak. In real hearing, below ~1.5 kHz the head casts almost no shadow, so timing (ITD) does most of the work, and it does it well. This lab’s simplified model still applies its level drop (to −8 dB at the side) at every frequency, so here a low tone carries a level cue too. What a steady sine lacks is onsets and spectral detail, so it sits to the left or right but never seems to come from outside you: the image stays inside your head rather than out in the room.'
                       : 'A higher tone gives the head shadow more to work with — the far ear is darkened more, so level difference carries more of the location.'
                     : 'Broadband noise feeds BOTH cues at once — timing at the low end, shadow at the top. The easiest source to place.'}
                 </Text>

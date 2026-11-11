@@ -175,7 +175,7 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
     if (invalid > 0) lines.push({ label: 'UNRELIABLE BANDS', value: `${invalid} (insufficient range)` });
     lines.push({
       label: 'NOISE FLOOR',
-      value: p.noiseFloorDb != null ? `${p.noiseFloorDb.toFixed(0)} dB rel. peak` : '—',
+      value: p.noiseFloorDb != null ? `${p.noiseFloorDb.toFixed(0)} dB relative to peak` : '—',
     });
     return lines;
   }
@@ -258,7 +258,7 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
     } else {
       lines.push({ label: 'PEAK', value: 'no level above the captured floor' });
     }
-    lines.push({ label: 'DYNAMIC RANGE', value: `${p.dynamicRangeDb} dB · ${p.fftPreset}` });
+    lines.push({ label: 'DYNAMIC RANGE', value: `${p.dynamicRangeDb} dB · ${/^hann-\d+$/.test(p.fftPreset) ? `Hann window · ${p.fftPreset.slice(5)}-point FFT` : p.fftPreset}` });
     return lines;
   }
   // Pro Audio MultiMeter snapshot (owner 2026-07-29) — summary rows. All
@@ -273,7 +273,7 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
         label: 'DOMINANT',
         value:
           p.dominantHz != null
-            ? `${fmtHz(p.dominantHz)} Hz${p.note ? ` · ${p.note}${p.cents != null ? ` (${(Math.abs(p.cents) < 0.05 ? 0 : p.cents) >= 0 ? '+' : ''}${(Math.abs(p.cents) < 0.05 ? 0 : p.cents).toFixed(1)}¢)` : ''}` : ''} · ${p.dominantSource ?? '—'}`
+            ? `${fmtHz(p.dominantHz)} Hz${p.note ? ` · ${p.note}${p.cents != null ? ` (${(Math.abs(p.cents) < 0.05 ? 0 : p.cents) >= 0 ? '+' : ''}${(Math.abs(p.cents) < 0.05 ? 0 : p.cents).toFixed(1)}¢)` : ''}` : ''} · ${p.dominantSource === 'pitch' ? 'from pitch tracker' : p.dominantSource === 'spectrum' ? 'from spectrum peak' : '—'}`
             : '—',
       },
       { label: 'BANDS', value: `${p.bandsHz.length} × 1/3 octave` },

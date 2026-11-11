@@ -107,7 +107,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A strike into the hand versus a regular shake: what differs for the mic?',
     options: ['A stronger, less continuous accent — set gain for it', 'Nothing: the same jingles make the same sound', 'A softer accent, because the hand damps the jingles'],
     correct: 'A stronger, less continuous accent — set gain for it',
-    explain: 'A hand strike into the frame often gives a stronger accent than a shake; reset gain for the strongest planned hit.',
+    explain: 'Striking the ring into the other hand often gives a stronger accent than a shake; reset gain for the strongest planned hit.',
     why: {
       'Nothing: the same jingles make the same sound': 'The same jingles, thrown harder and all at once: a different accent.',
       'A softer accent, because the hand damps the jingles': 'The strike jolts every pair at once — usually stronger, not softer.',

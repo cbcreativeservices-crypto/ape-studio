@@ -119,7 +119,7 @@ export const nullOnPaper = (id: string, target: string): MikingScenario => ({
 export const feedbackSymptom = (id: string, w: Words): Symptom => ({
   id,
   observation: 'Feedback, or the stage bleeds into the mic',
-  firstChecks: 'Lower the offending level; revise the mic, monitor and instrument geometry and the number of open mics. The body can reflect the monitor into the mic.',
+  firstChecks: 'Lower the offending level; change where the mic, monitor and instrument sit, and the number of open mics. The body can reflect the monitor into the mic.',
   options: ['Lower the level, then change the geometry and open mics', `Boost the ${w.noun} channel so it covers the ring`, 'Swap to an omni mic, which is less likely to start feeding back'],
   correct: 'Lower the level, then change the geometry and open mics',
   explain: `Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor and close mics you do not need. The ${w.noun}’s body can reflect a monitor into a mic aimed away from it. Avoid uncontrolled feedback.`,
@@ -144,6 +144,6 @@ export const hollowSymptom = (id: string): Symptom => ({
 
 export const POWER_REASON: SetupReason = { id: 'r.power', label: 'The channel gives the condenser the phantom power it needs', role: 'required', feedback: 'Say how the mic is powered: these condensers need phantom power (a miniature through its adapter).' };
 export const BRAND_REASON = (noun: string): SetupReason => ({ id: 'r.brand', label: `It is the brand most engineers reach for on a ${noun}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' });
-export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest sound of any position on the instrument', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and no position is “the loudest” on every instrument.' };
+export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the loudest sound of any position on the instrument', role: 'wrong', feedback: 'Loudness is not a valid reason — level comes from gain — and no position is “the loudest” on every instrument.' };
 export const docReason = (from: string): SetupReason => ({ id: 'r.doc', label: `It is a suggested starting point for this kind of mic, measured from ${from}`, role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' });
 export const clearReason = (what: string): SetupReason => ({ id: 'r.clear', label: `The mic, mount and cable stay clear of ${what}`, role: 'required', feedback: 'Clearance is part of every passing setup.' });

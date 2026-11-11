@@ -58,7 +58,7 @@ describe('#16 every Mixing page is hands-on: it marks ITSELF, NEXT never does', 
     const shell = read('src/screens/lab/kit/PagedLab.tsx');
     assert.match(shell, /\{ id: String\(i\), label: p\.title, \.\.\.\(handsOnDetail && p\.manualDone \? \{ detail: handsOnDetail \} : null\) \}/);
     const kit = read('src/screens/lab/mixing/kit.tsx');
-    assert.match(kit, /export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done\. NEXT moves on without counting it\.';/);
+    assert.match(kit, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
     for (const s of ['BeginningMixingLabScreen', 'AdvancedMixingLabScreen']) {
       assert.match(read(`src/screens/lab/mixing/${s}.tsx`), /pageCreditKeys=\{PAGE_KEYS\} handsOnDetail=\{HANDS_ON_DETAIL\} \/>/);
     }

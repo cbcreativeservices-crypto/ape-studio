@@ -44,7 +44,7 @@ describe('Round B sweeps across the A2 files', () => {
   it('the ring-shaped shapes include the lowest one', () => {
     // Drums and hand drums (membranes); the gong (i12, a plate) is not in this sweep.
     const drums = FILES.filter(({ f }) => !/i12Gong/.test(f));
-    assert.deepEqual(drums.filter(({ s }) => /drives only the ring-shaped ones(?!, the lowest shape among them)/.test(s)).map(({ f }) => f), []);
+    assert.deepEqual(drums.filter(({ s }) => /drives only the ring-shaped ones(?!, the lowest shape among them|, including the lowest shape)/.test(s)).map(({ f }) => f), []);
   });
   it('"the rest stand still there", never "are still there"', () => {
     assert.deepEqual(filesWith('the rest are still there'), []);
@@ -78,7 +78,7 @@ const PINS: [string, string, string][] = [
   ['lessons/e12PercussionEnsemble/art.tsx', 'angle the mic in from the wedge side', 'where a wedge can sit in its rejection'],
   ['lessons/m03Toms/lesson.ts', 'keep the mics at least three times as far apart as each one is from its own tom', 'than the other mic is'],
   ['lessons/f09LocationSpeech/pages.tsx', 'Little space above the head', 'Little headroom'],
-  ['lessons/f09LocationSpeech/lesson.ts', 'stays narrow down to somewhat lower frequencies', 'narrows down to somewhat lower pitches'],
+  ['lessons/f09LocationSpeech/lesson.ts', 'keeps its narrow pickup a little lower in frequency', 'narrows down to somewhat lower pitches'],
   ['lessons/shared/sax/saxLesson.ts', 'cannot cleanly restore what the filter took away', 'cannot restore what the filter removed'],
   ['lessons/shared/sax/saxLesson.ts', 'hardly changes the pitch', 'hardly takes part'],
   ['lessons/f13RoomAcoustics/lesson.ts', 'EDT needs less range and may still hold', 'report insufficient range for that band'],

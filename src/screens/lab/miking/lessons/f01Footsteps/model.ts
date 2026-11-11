@@ -54,7 +54,7 @@ export const F01_ZONES: DocumentedZone[] = [
   foleyZone({
     id: 'f01.close',
     label: 'Close, in front or to one side',
-    band: 'A suggested trial: start about 0.8–1.0 m from the middle of the steps, in front or to one side, aimed across or down at where the feet land — and farther back if any part of the movement comes near it.',
+    band: 'A suggested start: about 0.8–1.0 m from the middle of the steps, in front or to one side, aimed across or down at where the feet land — and farther back if any part of the movement comes near it.',
     kind: 'trial',
     src: 'LESSON-F01',
     quote: 'place a securely supported directional capsule roughly 0.8–1.0 m from the center of a bounded step area … This range is an exercise design, not a published rule.',

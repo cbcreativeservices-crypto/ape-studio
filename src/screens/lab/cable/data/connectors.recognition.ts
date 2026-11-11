@@ -431,7 +431,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     typicalSources: ['Installed-sound processor and mixer outputs', 'Paging and control system terminals'],
     typicalDestinations: ['Amplifier and processor inputs in equipment racks', 'Wall-panel and ceiling-device terminations'],
     constructionNote:
-      'There is no molded cable: install cable is stripped and terminated into the block by a technician, with screw or spring clamps on the bare conductors. The block then plugs onto the device\'s header.',
+      'There is no molded cable: install cable is stripped and terminated into the block by a technician, with screw or spring clamps on the bare conductors. The block then plugs onto the device\'s header (the pin strip on its panel).',
     pinouts: [
       {
         id: 'balanced_terminals',
@@ -669,7 +669,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     hotPlug: {
       policy: 'mute_first',
       rationale:
-        'For audio uses, connect muted to avoid pops. The DMX512 data link itself is not damaged by re-plugging, but fixtures can respond physically — motorized fixtures may move or re-home without warning and outputs can jump on a data glitch — so never re-plug a control line while anyone is working at a fixture, and coordinate with the lighting operator first.',
+        'For audio uses, connect muted to avoid pops. The DMX512 data link itself is not damaged by re-plugging, but fixtures can respond physically — motorized fixtures may move or re-home (swing back to their start position) without warning and outputs can jump on a data glitch — so never re-plug a control line while anyone is working at a fixture, and coordinate with the lighting operator first.',
     },
     advantages: [
       'The connector specified by the DMX512 lighting-control standard',
@@ -726,7 +726,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     tier: 'recognition',
     carried: ['speaker_level'],
     typicalSources: ['Multichannel amplifier rack panels', 'Loudspeaker processor/amp system outputs'],
-    typicalDestinations: ['Multi-way loudspeaker cabinets (separate LF/MF/HF sections)', 'Loudspeaker breakout panels'],
+    typicalDestinations: ['Multi-way loudspeaker cabinets (separate low-, mid- and high-frequency sections)', 'Loudspeaker breakout panels'],
     constructionNote:
       'Behind it is heavy multiconductor loudspeaker cable — up to four ± pairs, unshielded, sized for amplifier current. Which pair drives which driver section is a property of the system design, not the connector.',
     pinouts: [],
@@ -926,7 +926,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       'Cords run through doorways or pinch points (report the hazard)',
     ],
     basicTest:
-      'None at this tier. Electrical testing of power circuits and connectors is performed by qualified personnel with appropriate equipment and procedures.',
+      'None for beginners. Electrical testing of power circuits and connectors is performed by qualified personnel with appropriate equipment and procedures.',
     safety: {
       level: 'mains',
       qualifiedPersonOnly: true,
@@ -953,7 +953,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     region: 'NA',
     carried: ['ac_mains'],
     typicalSources: ['Dimmer and relay circuits in theatrical rigs', 'Stage power drops and raceways'],
-    typicalDestinations: ['Conventional stage lighting fixtures', 'Two-fers and theatrical cable runs'],
+    typicalDestinations: ['Conventional stage lighting fixtures', 'Two-fers (splitters feeding two fixtures) and theatrical cable runs'],
     construction: 'ac_3c_grounded',
     constructionNote:
       'Behind it is heavy theatrical power cable. The flat body with three in-line pins is the North American entertainment-lighting power connector — AC power, despite looking nothing like a wall plug.',
@@ -1000,7 +1000,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       'Connections lying in walkways or under scenery without protection (report the hazard)',
     ],
     basicTest:
-      'None at this tier. Electrical testing of power circuits and connectors is performed by qualified personnel with appropriate equipment and procedures.',
+      'None for beginners. Electrical testing of power circuits and connectors is performed by qualified personnel with appropriate equipment and procedures.',
     safety: {
       level: 'mains',
       qualifiedPersonOnly: true,
@@ -1027,7 +1027,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     tier: 'qualified-person',
     region: 'NA',
     carried: ['ac_mains'],
-    typicalSources: ['Generator output panels and building company switches (qualified crews only)'],
+    typicalSources: ['Generator output panels and building company switches (the venue\'s tie-in power panels; qualified crews only)'],
     typicalDestinations: ['Main power distribution racks (distros) feeding an entire production'],
     constructionNote:
       'Each connector terminates ONE very heavy single-conductor feeder cable. A complete service is a set of them — phases, neutral, and ground as separate cables — carrying an entire production\'s power.',
@@ -1041,7 +1041,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     hotPlug: {
       policy: 'qualified_person_only',
       rationale:
-        'Feeder connection and disconnection is strictly qualified-person work under site electrical procedures, including connection order and lockout. There is no beginner version of this task.',
+        'Feeder connection and disconnection is strictly qualified-person work under site electrical procedures, including connection order and lockout (locking the supply off so no one can switch it on). There is no beginner version of this task.',
     },
     advantages: [
       'Carries service-level current that most multi-pin connector formats are not built for',
@@ -1068,7 +1068,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       'Cable ramps or protection missing where feeder crosses walkways (report the hazard)',
     ],
     basicTest:
-      'None, ever, at this tier. Feeder verification is qualified-person work under lockout/tagout with rated test equipment.',
+      'None, ever, for beginners. Feeder verification is qualified-person work under lockout/tagout with rated test equipment.',
     safety: {
       level: 'mains',
       qualifiedPersonOnly: true,
@@ -1095,7 +1095,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     tier: 'qualified-person',
     carried: ['ac_mains'],
     typicalSources: ['Dimmer, relay, and power distribution rack outputs'],
-    typicalDestinations: ['Breakout assemblies feeding lighting fixtures', 'Multicircuit drops to electrics and set positions'],
+    typicalDestinations: ['Breakout assemblies feeding lighting fixtures', 'Multicircuit drops to electrics (lighting pipes) and set positions'],
     constructionNote:
       'One round connector, MANY AC circuits: the multicore cable behind it carries several complete power circuits to one position. It closely resembles circular signal multipin connectors — which is exactly why identification matters.',
     pinouts: [],
@@ -1137,7 +1137,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       'Multicircuit cable run without protection through traffic areas (report the hazard)',
     ],
     basicTest:
-      'None at this tier. Multicircuit power testing is qualified-person work with rated equipment under site procedures.',
+      'None for beginners. Multicircuit power testing is qualified-person work with rated equipment under site procedures.',
     safety: {
       level: 'mains',
       qualifiedPersonOnly: true,

@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put an audience setup in order, choose and justify setups for a studio audience and an arena event, and say what would justify another zone.',
     credit: { scenarios: ['b8.prac.order', 'b8.prac.gain', 'b8.prac.setup1', 'b8.prac.setup2', 'b8.prac.3', 'b8.mix.1', 'b8.mix.2', 'b8.mix.3'], note: 'Put the setup in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The placement card is optional — it needs a real venue.' },
-    takeaway: 'A crowd-led pickup for the brief, the PA and the nearest seat named, a stereo pair told from two zones, the mono output checked, and the audience question on its own path. More than one setup can pass.',
+    takeaway: 'A crowd-led pickup for the brief, the PA and the nearest seat named, a stereo pair told apart from two zones, the mono output checked, and the audience question on its own path. More than one setup can pass.',
   },
 };
 
@@ -351,7 +351,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Check each channel in solo and in context: a crowd mic can add delayed PA copies of speech or music to the main mix.',
     why: {
       'Its pattern is too narrow for the room': 'A narrower pattern hears less of the PA, not more: the late PA copies are the smear.',
-      'A longer cable run than the others': 'Cable length does not delay sound you can hear.',
+      'A longer cable run than the others': 'Cable length adds no delay you can hear.',
     },
   },
   {

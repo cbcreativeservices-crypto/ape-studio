@@ -95,7 +95,7 @@ export const CHINA_COPY: Partial<LessonCopy> = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'ch.under' },
     opposite: {
       surface: 'chTopU',
-      note: 'One mic over the China and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture: check both polarity states, no setting is required.',
+      note: 'One mic over the China and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; no setting is required.',
     },
     learn: [
       'A China is loud and cutting: every mic on the kit hears it, each at its own time. Each pair is a two-mic problem: compare in mono, at matched levels.',
@@ -148,7 +148,7 @@ export const CHINA_CYM: CymbalExtra = {
     looking: 'The China from above, drawn as a flat disc',
     notes: [
       'This step draws the China as a flat disc: the shapes’ pattern — still lines across the plate, the outer part moving most — is what it teaches. A real China’s squarer cup and upturned lip change the numbers, and help give it its trashy sound.',
-      'A shape is set moving only as much as the plate moves under the stick. On the shoulder and the lip most shapes move a lot; near the held cup, most barely move.',
+      'A shape is set moving only as much as the plate moves under the stick in that shape. On the shoulder and the lip most shapes move a lot; near the held cup, most barely move.',
     ],
     areas: [
       { id: 'cup', label: 'CUP', blurb: 'The squarer cup at the center.', r: 20, rFrac: 0.09 },

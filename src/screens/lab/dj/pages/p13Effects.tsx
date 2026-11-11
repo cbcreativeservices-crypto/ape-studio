@@ -46,8 +46,8 @@ export const GOALS_FX = ['Echo on every beat', 'Echo out deck A', 'One reverb on
 const TYPE_BLURB: Record<FxType, string> = {
   ECHO: 'Repeats of the sound, spaced in beats. FEEDBACK sets how many.',
   REVERB: 'A room’s tail. TIME sets how long it takes to die away.',
-  FILTER: 'A resonant low-pass sweeping up and down, one sweep per TIME.',
-  FLANGER: 'A tiny moving delay: a jet-like comb sweep, one per TIME.',
+  FILTER: 'A resonant low-pass sweeping up and down, one sweep per TIME (in beats).',
+  FLANGER: 'A tiny moving delay: a jet-like comb sweep, one per TIME (in beats).',
 };
 const ROUTE_BLURB: Record<FxRoute, string> = {
   CH1: 'INSERT on channel 1 (deck A): after its fader, before the crossfader.',
@@ -269,12 +269,12 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>You are looking at the FX SCOPE — the dry sound going INTO the effect (a white line) and the effect’s own sound coming OUT of it (the blue band) over the last seconds — above a map of where the effect sits in the mixer’s signal path. FULL SCREEN adds the mixer’s effects panel.</Look>
         <P>An effect’s sound depends on WHERE it sits: on one channel (an insert), on everything the crowd hears (MASTER), or on a send whose return you add back.</P>
-        <P>Its TIME follows the tempo — on this mixer, that of the deck on its channel (deck A on MASTER or SEND). Many units read the mixer’s BPM counter or let you TAP the tempo, so check its BPM before you trust an echo. LEVEL sets the effect against the dry sound.</P>
+        <P>Its TIME follows the tempo — on this mixer, the tempo of the deck whose channel it sits on (deck A when it sits on MASTER or SEND). Many units read the mixer’s BPM counter or let you TAP the tempo, so check its BPM before you trust an echo. LEVEL sets the effect against the dry sound.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Open DECKS and play deck A. Open FX and press FX ON: an ECHO on channel 1. Watch the scope — each repeat is a step of the blue band, one delay apart.</Do>
-        <P>The second key now names its knob. Open it (FX TIME) and try ¼, ½, ¾, 1 and 2 beats: at 1 beat the repeats land on the thin beat lines. Then choose FEEDBACK and raise it: more repeats, fading more slowly.</P>
+        <P>The FX KNOB key now shows the knob it sets. Open it (FX TIME) and try ¼, ½, ¾, 1 and 2 beats: at 1 beat the repeats land on the thin beat lines. Then choose FEEDBACK and raise it: more repeats, fading more slowly.</P>
       </Step>
       <Step n={3}>
         <P>Switch the TYPE to REVERB, FILTER and FLANGER and listen as the CROWD. Then move CH SELECT: on CH1 only deck A is affected; on MASTER both decks are; on SEND each channel’s SEND knob decides, and the dry sound stays exactly as it was.</P>

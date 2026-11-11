@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Choose the microphones',
     goal: 'Compare a cardioid condenser, a moving-coil dynamic, a figure-8 ribbon and an instrument-mounted miniature by what they do — and check the loudest brass against each one.',
     credit: { scenarios: ['bb.mic.1', 'bb.mic.2', 'bb.mic.3', 'bb.rec.1'], note: 'Answer the four checks (one reaches back to where the sound leaves).' },
-    takeaway: 'Choose by the job: a condenser for detail and the main view, a dynamic for close horns and amps, a figure-8 ribbon to turn its sides on a neighbor. A pad helps only before the stage that overloads; follow each ribbon’s own manual on air and power.',
+    takeaway: 'Choose by the job: a condenser for detail and the main view, a dynamic for close horns and amps, a figure-8 ribbon to turn its sides on a neighbor. A pad helps only before the stage that overloads; follow each ribbon’s own manual on air blasts and power.',
   },
   placement: {
     title: 'Placement Studio',
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A ribbon is patched in. Does it get phantom power?',
     options: ['Follow that model’s own manual', 'On, as ribbons need it to work', 'Off, as it ruins ribbons'],
     correct: 'Follow that model’s own manual',
-    explain: 'Some ribbons are passive and must not be cross-patched with phantom present; active models need power. Mute outputs before changing connections and check the mic, cable and input.',
+    explain: 'Some ribbons are passive and must not be patched in while phantom power is on; active models need power. Mute outputs before changing connections and check the mic, cable and input.',
     why: {
       'On, as ribbons need it to work': 'Passive ribbons need none — and a miswired line can damage them.',
       'Off, as it ruins ribbons': 'Active ribbons need power; the manual says which yours is.',
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Raise the pair and move it back a little',
     explain: 'A higher view, a little farther out in front, evens the distances to the rows. Change one thing at a time, compared at matched level — supports only for what is still missing.',
     why: {
-      'Add a mic on each trumpet right away': 'Spots first hide a placement problem with more channels.',
+      'Add a mic on each trumpet right away': 'Adding spot mics first hides a placement problem under more channels.',
       'Turn the whole band down at the desk': 'Level changes every row equally; the distances still differ.',
     },
   },
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why are the trumpets up on the highest riser?',
     options: ['So their bells clear the rows in front', 'So their mics can be on the floor', 'So the trombones can hear them less'],
     correct: 'So their bells clear the rows in front',
-    explain: 'On the highest riser — seated in many bands, standing in others, as drawn here — the trumpets play over the trombones and saxes in front — and a main pair from an elevated view hears them more evenly with the rows.',
+    explain: 'On the highest riser (seated in many bands, standing in others, as drawn here), the trumpets play over the trombones and saxes in front — and a main pair from an elevated view hears them more evenly with the rows.',
     why: {
       'So their mics can be on the floor': 'Their mics follow the bells, up on the riser.',
       'So the trombones can hear them less': 'The trombones still hear them; the bells clear the heads in front.',
@@ -265,7 +265,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bb.two.0',
     page: 'twoMic',
-    prompt: 'The lead alto stands for a solo at its spot. What else hears the solo?',
+    prompt: 'The lead alto stands for a solo at its spot mic. What else hears the solo?',
     options: ['The section mics and the pair too', 'Only the solo spot, while it is up', 'Nothing until the handoff is over'],
     correct: 'The section mics and the pair too',
     explain: 'The solo also enters the section mics and the pair: hear the combined result, and avoid an abrupt change of timbre or place when the spot comes in.',
@@ -577,7 +577,7 @@ export const E16_LESSON: EnsembleLesson = {
       { title: 'LET THE BAND BALANCE', text: 'The bandleader sets the balance with the players; then choose the perspective or support that keeps it for the listener.' },
       { title: 'CHOOSE THE CONTROL', text: 'A main pair with rhythm support; section mics with solo spots; a mic on every horn; close sources for the PA with a separate room pair — by the room and the job.' },
     ],
-    safety: 'Stable stands; cables protected from chairs, pedals, slides, mutes and access routes. Approved risers, suspended arrays and structural attachments are work for the venue’s qualified rigger. Set levels on the strongest planned passage and follow the venue’s hearing practice; follow each ribbon’s own manual on air and power; never sustain feedback.',
+    safety: 'Stable stands; cables protected from chairs, pedals, slides, mutes and access routes. Approved risers, suspended arrays and structural attachments are work for the venue’s qualified rigger. Set levels on the strongest planned passage and follow the venue’s hearing practice; follow each ribbon’s own manual on air blasts and power; never sustain feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a big band: one main pair in front of the horns, from an elevated view — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the band, clear of the soloists’ path and the audience’s way; its cable dressed flat and out of the walkways.',

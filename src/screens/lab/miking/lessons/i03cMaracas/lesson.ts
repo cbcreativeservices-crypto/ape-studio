@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Compare a single centered mic first: two channels add setup, spill and interaction between the mics.',
     why: {
       'Whenever there are two maracas in the part': 'Two maracas often sit well in one mic.',
-      'When the pair is too quiet for one mic’s gain': 'A second mic does not fix a quiet source; gain may on a quiet stage, a louder pair on a loud one.',
+      'When the pair is too quiet for one mic’s gain': 'A second mic does not fix a quiet source; on a quiet stage, more gain may help; on a loud one, a louder pair.',
     },
   },
   {
@@ -342,7 +342,7 @@ const symptoms: Symptom[] = [
   {
     id: 'mar.s.tone',
     observation: 'The attack is too sharp, or the wash too dull',
-    firstChecks: 'Does the pair or the stroke make it acoustically?',
+    firstChecks: 'Does the pair or the stroke itself cause it, acoustically?',
     options: ['The pair and the technique, then small mic moves', 'A shell-material EQ preset for rawhide or plastic', 'A different mic model, before hearing the pair'],
     correct: 'The pair and the technique, then small mic moves',
     explain: 'Audition a different pair or technique and small position changes; no shell-material fix is universal.',

@@ -122,7 +122,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
       'A right answer locks in, and its explanation stays to read.',
-      'Use the tabs under the title to go back to LEARN or EXPLORE to look something up; answers already right stay right. If you leave the lab before the last one, the check starts over.',
+      'Use the tabs under the title to go back to LEARN or EXPLORE to look something up; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],
     changes: [
       'Every answer opens its explanation — CORRECT, or NOT QUITE — TRY ANOTHER — with the reason.',

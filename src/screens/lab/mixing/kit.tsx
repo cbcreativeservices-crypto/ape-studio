@@ -288,7 +288,7 @@ export function MixMantra() {
  * line. Already-banked credit is never removed (pinned by
  * test/mixingHandsOnCredit_20261014).
  */
-export const HANDS_ON_DETAIL = 'Counts once the goals at the foot of the page are done. NEXT moves on without counting it.';
+export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met. NEXT moves on without counting it.';
 
 /** Sticky exploration goals (patchbay pattern): each goal latches once its
  *  predicate has been true; all latched → the page marks itself done. */

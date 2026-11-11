@@ -40,7 +40,7 @@ function useTools() {
     phones: true,
     words: {
       subject: 'a reader in a booth with a mic fixed in front of the mouth',
-      looking: 'From above · the reader, the script stand, a fixed mic · the side in the corner',
+      looking: 'From above · the reader, the script stand, a fixed mic · the side view in the corner',
       prompt: 'LOOK down to the script, then TURN both ways. Switch MIC: the close mic, or the mic above the script.',
       done: 'Reading down tips the mouth’s axis away from a mic in front of it and toward the page. Raise the script, or put the mic where the reader looks, so the voice stays on the axis — move the script, not the neck.',
     },

@@ -322,7 +322,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 44,
     "title": "MPB / Bossa Nova",
     "line": "The voice and the nylon-string guitar as an equal, intimate pair, with every word of Portuguese clear",
-    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB grows out of it from the mid-1960s across Brazil; pagode (informal party samba) rose from samba circles in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)"
+    "origin": "Rio de Janeiro’s Zona Sul (Copacabana, Ipanema), late 1950s for bossa nova; MPB (Música Popular Brasileira, Brazilian popular music) grows out of it from the mid-1960s across Brazil; pagode (informal party samba) rose from samba circles in Rio’s subúrbios (working-class suburbs; Cacique de Ramos, late 1970s)"
   },
   {
     "id": "drum-and-bass",

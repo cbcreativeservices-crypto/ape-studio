@@ -76,7 +76,7 @@ export const WARNING_INFO: Record<WarningFlag, { label: string; message: string;
   insufficient_decay_range: {
     label: 'DECAY RANGE',
     message: 'Insufficient decay range — the result should not be trusted.',
-    hint: 'Use a louder excitation or a quieter room so the decay clears the noise floor.',
+    hint: 'Use a louder test sound (excitation) or a quieter room so the decay clears the noise floor.',
   },
   settings_mismatch: {
     label: 'SETTINGS',
@@ -86,12 +86,12 @@ export const WARNING_INFO: Record<WarningFlag, { label: string; message: string;
   unsupported_input: {
     label: 'INPUT',
     message: 'This input device is not supported for measurement.',
-    hint: 'Use the built-in microphone or a supported input.',
+    hint: 'Use the built-in microphone, not a Bluetooth mic.',
   },
   capture_dropout: {
     label: 'DROPOUT',
     message: 'The audio stream dropped samples — continuity was interrupted.',
-    hint: 'Close other audio apps and avoid heavy load; restart the measurement for a clean run.',
+    hint: 'Close other audio apps and anything else keeping the phone busy; restart the measurement for a clean run.',
   },
   dead_input: {
     label: 'NO INPUT',

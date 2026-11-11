@@ -108,11 +108,11 @@ const lessonStyles = StyleSheet.create({
 
 // Blurbs are SAMPLING-focused — this module is about what an ADC must capture.
 const WAVE_CHIP_LIST: { key: WaveKind; label: string; blurb: string }[] = [
-  { key: 'sine', label: 'SINE', blurb: 'One frequency, perfectly smooth — the easiest thing an ADC will ever be asked to capture.' },
+  { key: 'sine', label: 'SINE', blurb: 'One frequency, perfectly smooth — the easiest thing a converter (ADC) will ever be asked to capture.' },
   { key: 'square', label: 'SQUARE', blurb: 'Those vertical edges are high harmonics without end — a torture test for sample rate.' },
   { key: 'triangle', label: 'TRIANGLE', blurb: 'Corners, but gentle ones: some high content, far less than a square.' },
   { key: 'saw', label: 'SAW', blurb: 'A ramp with an instant reset — every harmonic present, edge and body at once.' },
-  { key: 'impulse', label: 'IMPULSE', blurb: 'A single infinitely-sharp spike: ALL frequencies at once, for one instant. The ultimate edge case.' },
+  { key: 'impulse', label: 'IMPULSE', blurb: 'A single infinitely-sharp spike: ALL frequencies at once, for one instant. The most extreme case of all.' },
   { key: 'noise', label: 'WHITE NOISE', blurb: 'Random by definition — no repeating shape for the eye or the converter to lock onto.' },
 ];
 
@@ -283,7 +283,7 @@ export function AnalogModule(p: DigitalModuleProps) {
             />
           </View>
           {distOn ? <Badge text="DISTORTION = A SOFT (tanh) BEND OF THE VOLTAGE SHOWN — A SIMPLE MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
-          {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE DRAWN VOLTAGE" /> : null}
+          {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE VOLTAGE SHOWN" /> : null}
         </View>
       ),
     },
@@ -300,7 +300,7 @@ export function AnalogModule(p: DigitalModuleProps) {
         badge:
           // Shortened (emulator pass 2026-10-14): the two-line strip cut the
           // old wording after "(blue quiet →", losing the colour key's end.
-          'ILLUSTRATIVE MODEL, SLOWED · ONE EVENT, 3 PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · COLOR = LOUDNESS (blue quiet → red full scale)',
+          'ILLUSTRATIVE MODEL, SLOWED · ONE EVENT, 3 VIEWS IN STEP: PRESSURE → DIAPHRAGM → VOLTAGE · COLOR = LOUDNESS (blue quiet → red full scale)',
         onGuide: () => p.help('waveform_view'),
         bezel: [
           { k: 'FREQ', v: wave === 'noise' ? 'broadband' : `${freq} Hz`, helpKey: 'source' },
@@ -347,7 +347,7 @@ export function AnalogModule(p: DigitalModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <Badge text="PEAK · RMS · CREST COMPUTED FROM THE ACTUAL DRAWN WAVEFORM SAMPLES" />
+        <Badge text="PEAK · RMS · CREST ARE MEASURED FROM THE WAVE ON SCREEN" />
         <ReadoutGrid
           help={p.help}
           helpKey="waveform_view"
@@ -356,7 +356,7 @@ export function AnalogModule(p: DigitalModuleProps) {
             { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
           ]}
         />
-        <Badge text="SQUARE · SAW · TRIANGLE · IMPULSE ARE DRAWN BAND-LIMITED (12 HARMONICS) — HONEST SHAPES, NOT IDEALIZED CORNERS" />
+        <Badge text="SQUARE · SAW · TRIANGLE · IMPULSE ARE SHOWN BAND-LIMITED (12 HARMONICS) — REAL SHAPES, NOT PERFECTLY SHARP CORNERS" />
 
         <MythReality
           myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
@@ -395,8 +395,8 @@ const CHECK_ALIAS: CheckSpec = {
   correctIdx: 2,
   reveal:
     '30 kHz is above Nyquist (24 kHz), so the sample points fit a lower sinusoid exactly: ' +
-    '|30,000 − 48,000| = 18,000 Hz. Folded around Nyquist: 24k − (30k − 24k) = 18 kHz. Try it on ' +
-    'the sweep slider and fold diagram above.',
+    '|30,000 − 48,000| = 18,000 Hz. Folded around Nyquist: 24k − (30k − 24k) = 18 kHz. Try it with ' +
+    'the FREQ fader and the fold diagram above.',
   wrongHint: 'Fold around Nyquist: alias = |f − nearest multiple of fs|.',
 };
 
@@ -827,7 +827,7 @@ export function SamplingModule(p: DigitalModuleProps) {
           <Text style={dstyles.eyebrow}>ALIAS AUDIO — HEAR THE FOLD</Text>
           <Text style={dstyles.body}>
             Open ALIAS in the dock: play the input tone, then the alias the math predicts for it. Hold PLAY PREDICTED ALIAS
-            and ride the FREQ lane up through Nyquist — the pitch folds back down while the
+            and ride the FREQ fader up through Nyquist — the pitch folds back down while the
             input keeps rising.
           </Text>
           {!engineReady ? (
@@ -844,7 +844,7 @@ export function SamplingModule(p: DigitalModuleProps) {
               ) : null}
               {!canInput || !canAlias ? (
                 <Text style={dstyles.caption}>
-                  Tones outside ~{PLAY_MIN_HZ} Hz–{fmtHz(PLAY_MAX_HZ)} are gated off (generator and
+                  Tones outside ~{PLAY_MIN_HZ} Hz–{fmtHz(PLAY_MAX_HZ)} are not played (generator and
                   hearing range) — the math readouts above stay live.
                 </Text>
               ) : null}

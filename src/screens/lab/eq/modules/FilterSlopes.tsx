@@ -29,7 +29,7 @@ const SLOPES = [6, 12, 18, 24, 36, 48] as const;
 /** Tray blurbs: what each steepness is FOR. 6 dB/oct = one pole; every +6 is
  *  another pole and a steeper wall (owner 2026-08-28). */
 const SLOPE_BLURBS: Record<number, string> = {
-  6: 'One pole — the gentlest tilt there is. Barely a filter: a tone control.',
+  6: 'One pole (each pole adds 6 dB/oct) — the gentlest tilt there is. Barely a filter: a tone control.',
   12: 'Two poles — the workhorse. Enough to clean rumble without sounding processed.',
   18: 'Three poles — noticeably firmer; the classic crossover slope of many PA systems.',
   24: 'Four poles — a real wall. Common on crossovers, subwoofer crossovers included, where overlap causes trouble.',
@@ -118,7 +118,7 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
       stage={{
         size: 'M', // teaching chart
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
-        badge: `Butterworth response — order ${order} (${slope} dB/oct asymptotic).`,
+        badge: `Butterworth response — ${order} pole${order === 1 ? '' : 's'} (slope settles at ${slope} dB/oct).`,
         bezel: [
           { k: 'SLOPE', v: `${slope} dB/OCT` },
           { k: 'CUTOFF', v: `${CUTOFF} Hz` },
@@ -149,7 +149,7 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
         <Text style={styles.caption}>
           Gentle slopes (6–12 dB/oct) sound transparent and are common on channel low-cuts; steep
           slopes (24–48 dB/oct) carve harder and appear in crossovers and surgical cleanup. Watch how
-          the −3 dB point stays put while the skirt swings.
+          the −3 dB point (the cutoff) stays put while the slope beyond it swings.
         </Text>
 
         <CheckQuestion spec={CHECK} />

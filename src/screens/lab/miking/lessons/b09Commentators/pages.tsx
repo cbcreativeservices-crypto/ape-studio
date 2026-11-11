@@ -100,7 +100,7 @@ const B09Setting = makeBroadcastSetting({
       },
       points: [
         { title: 'COUGH AND TALKBACK', text: 'Check where the mic goes while each key is held — off everything for a cough, to the producer only for talkback — before the event, not during it.' },
-        { title: 'THE RETURN', text: 'A commentator hears the program minus their own voice, plus the producer’s cues interrupting it (IFB). Their own voice comes back directly in their headphones, never late through the chain.' },
+        { title: 'THE RETURN', text: 'A commentator hears the program minus their own voice, plus the producer’s cues interrupting it (IFB, interruptible foldback). Their own voice comes back directly in their headphones, never late through the chain.' },
         { title: 'THE CROWD HAS ITS OWN MICS', text: 'The commentary mic is for the voice; the crowd’s energy comes from its own mics on its own channels, added on purpose. A private word off the air stays off the program.' },
       ],
     }),

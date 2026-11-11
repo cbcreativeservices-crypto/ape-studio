@@ -194,7 +194,7 @@ export function GalleryArt({
                 hitSlop={4}
                 style={[styles.swatch, { backgroundColor: c }, c === fillColor && !erase && styles.swatchOn]}
                 accessibilityRole="button"
-                accessibilityLabel={`Fill colour ${c}`}
+                accessibilityLabel={`Fill color ${c}`}
                 accessibilityState={{ selected: c === fillColor && !erase }}
               />
             ))}
@@ -233,7 +233,7 @@ export function GalleryArt({
           <Text style={styles.trayHead}>NODAL LINES</Text>
           <View style={styles.swatches}>
             {[...LINE_COLORS, fillColor].map((c, i) => (
-              <Pressable key={`${c}${i}`} onPress={() => patch({ lineColor: c })} hitSlop={4} style={[styles.swatch, { backgroundColor: c }, c === art.lineColor && styles.swatchOn]} accessibilityRole="button" accessibilityLabel={`Line colour ${c}`} />
+              <Pressable key={`${c}${i}`} onPress={() => patch({ lineColor: c })} hitSlop={4} style={[styles.swatch, { backgroundColor: c }, c === art.lineColor && styles.swatchOn]} accessibilityRole="button" accessibilityLabel={`Line color ${c}`} />
             ))}
           </View>
         </View>

@@ -180,7 +180,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
   const graded = answered === items.length ? res ?? gradeQuickCheck(items, picks) : null;
   return (
     <View style={{ gap: 10 }}>
-      <Text style={styles.note}>{`QUICK CHECK · ${items.length} questions on the first two pages · your FIRST TRY is the one that counts · pass = ${QUICK_CHECK_PASS} of ${items.length} with the safety question right. It opens the activities; it does not credit any page.`}</Text>
+      <Text style={styles.note}>{`QUICK CHECK · ${items.length} questions on the first two pages · your FIRST TRY is the one that counts · to pass: ${QUICK_CHECK_PASS} of ${items.length}, with the safety question right. It opens the activities; it does not credit any page.`}</Text>
       {items.map((it, i) => (
         <QuickItem
           key={it.id}

@@ -86,7 +86,7 @@ export function SingleDeviceGuard() {
         }
         notify(
           'Signed out',
-          'Your account was signed in on another device. Only one device can be signed in at a time.',
+          'Your account was signed in on another device. Only one device can be signed in at a time — sign in again to use this one.',
         );
       } finally {
         handling.current = false;

@@ -94,7 +94,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
     looking: 'The station from above · the wedge on the floor in front of the artist',
     prompt: 'The wedge stays where the artist needs it. Turn or tilt the MIC (AIM), or change its PATTERN, until the wedge sits in the rejection — while the mic still points at the keys.',
     points: [
-      { title: 'ONE STABLE PICKUP', text: 'Studio: one mic for the whole action, then a room channel or a pair only for a reason. Live: one stable, source-proximate directional mic at a repeatable station.' },
+      { title: 'ONE STABLE PICKUP', text: 'Studio: one mic for the whole action, then a room channel or a pair only for a reason. Live: one stable directional mic close to the source, at a repeatable station.' },
       { title: 'EVERY OPEN MIC COSTS', text: 'Extra open room mics pick up the loudspeakers, raise the room and the noise, and take away gain before feedback; add a second feed only with a clear purpose for the audience.' },
       { title: 'MOVEMENT FOR THE SEATS', text: 'Keep any stereo movement intelligible at the audience’s seats, in the mono feeds and in the monitors.' },
       { title: 'WITH THE OPERATOR', text: 'The system operator controls the routing and checks it at a controlled level. Any ring-out is the operator’s job, done before the show, never during it.' },
@@ -116,7 +116,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
       'A close mic and a room mic are two perspectives of one action, each on its own channel — to select or blend by scene. They are not a left/right stereo pair: never hard-pan them just because there are two tracks.',
       'Solo the close mic, solo the room mic, then the sum in MONO over the whole movement: the room mic hears each jingle later, and as the keys travel the delay changes. Change placement or level first; polarity is a diagnostic, not a cure for a time difference.',
     ],
-    warn: 'This simplified graph treats the keys as one still point and both mics as hearing the same sound. Carried across the path, the keys change the delay with every step — any one alignment is only locally true — and the room mic hears more reflections. Read the notch POSITIONS; treat their depths as illustrative.',
+    warn: 'This simplified graph treats the keys as one still point and both mics as hearing the same sound. Carried across the path, the keys change the delay with every step — any one alignment holds at one spot only — and the room mic hears more reflections. Read the notch POSITIONS; treat their depths as illustrative.',
   },
   practice: { gain: 'f05.prac.gain', second: 'f05.prac.3', mixed: ['f05.mix.1', 'f05.mix.2', 'f05.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: two distances or left and right, a pair in mono, and a moving delay.' },
   startIntro: 'This lesson is about perspective on a Foley stage — one mic, a close mic with a room mic, or a stereo pair — on an action that moves across the picture. First the action and where its sound goes, then real starting setups drawn on the stage, the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
@@ -125,7 +125,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
   reveal: 'Nearer, the action grows large and detailed and the room shrinks; farther, the room joins and the travel evens out. A pair at one place shows the travel across the picture. No one distance suits every shot.',
   tendencies: 'Closer: detail, handling, a large object. Farther: the room, an even level along the path, more room noise. A pair: the travel left to right. Two distances are not left and right. Tendencies to check by ear — your ears and the room decide.',
   typeNotes: {
-    arrCard: 'Ideas to try with the cardioid pair: capsules together for X/Y, 17 cm and 110° for ORTF — the whole pair moves, never the geometry.',
+    arrCard: 'Ideas to try with the cardioid pair: capsules together for X/Y, 17 cm and 110° for ORTF — move the whole pair, never change its geometry.',
     arrFig8: 'Ideas to try with the figure-8: as the Side of an M/S pair, facing left and right over the Mid.',
   },
   performer: 'the artist',

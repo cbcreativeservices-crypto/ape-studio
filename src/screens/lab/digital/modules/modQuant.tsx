@@ -122,7 +122,7 @@ const BIT_BLURBS: Record<number, string> = {
   24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range (6 dB/bit rule of thumb; 6.02·24 + 1.76 ≈ 146 dB), far below any room’s noise floor.',
 };
 
-const DITHER_BADGE = 'REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT AN FFT';
+const DITHER_BADGE = 'REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT A MEASURED SPECTRUM (FFT)';
 
 const CHECK_BITDEPTH: CheckSpec = {
   question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL SNR (6.02·N + 1.76 dB, undithered)?',
@@ -243,7 +243,7 @@ export function QuantModule(p: DigitalModuleProps) {
             : errorOnly
               ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
               : bits >= 12
-                ? `AT ${bits}-BIT THE STEPS ARE SUB-PIXEL — DRAWN HONESTLY AS A FINE BAND, NOT EXAGGERATED`
+                ? `AT ${bits}-BIT THE STEPS ARE SMALLER THAN A PIXEL — SHOWN AS A FINE BAND, NOT EXAGGERATED`
                 : 'AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR',
         onGuide: () => p.help(stageView === 'dither' ? 'dither' : 'bit_depth'),
         bezel:
@@ -280,7 +280,7 @@ export function QuantModule(p: DigitalModuleProps) {
       <View style={styles.stack}>
         <Text style={dstyles.body}>
           Sampling measured WHEN; quantization measures HOW LOUD. Each sample is rounded to the nearest of 2ᴺ levels — the red
-          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: ride the LEVEL lane down and watch.
+          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: ride the LEVEL fader down and watch.
         </Text>
         <ReadoutGrid
           help={p.help}
@@ -301,7 +301,7 @@ export function QuantModule(p: DigitalModuleProps) {
         {errorOnly ? (
           <Text style={dstyles.caption}>
             {correlated
-              ? 'This error is NOT noise — at this quiet level it is CORRELATED distortion, locked to the signal: harmonics, buzz, even total gating when the sine falls inside one step.'
+              ? 'This error is NOT noise — at this quiet level it is CORRELATED distortion, locked to the signal: harmonics, buzz, even total gating (the tone cuts out) when the sine falls inside one step.'
               : 'At this healthy level the error is small and noise-like — a benign hiss floor far below the signal.'}
           </Text>
         ) : null}
@@ -331,11 +331,11 @@ export function QuantModule(p: DigitalModuleProps) {
           <Badge text={DITHER_BADGE} />
           <Text style={dstyles.caption}>
             {dither === 'none'
-              ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and gated fades, not hiss.'
+              ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and fades that cut out (gating), not hiss.'
               : dither === 'rpdf'
-                ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — quiet passages can breathe.'
+                ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — in quiet passages the hiss rises and falls.'
                 : dither === 'tpdf'
-                  ? 'TPDF (two uniforms summed, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
+                  ? 'TPDF (two flat noises added together, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
                   : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
           </Text>
         </PanelCard>
@@ -483,7 +483,7 @@ export function BinaryModule(p: DigitalModuleProps) {
     >
       <View style={styles.stack}>
         <Text style={dstyles.body}>
-          A digital recording is nothing but a list of integers. Ride the SAMPLE lane — or tap and
+          A digital recording is nothing but a list of integers. Ride the SAMPLE fader — or tap and
           drag across the strip itself (16-bit · 48 kHz) — and read the SAME stored number every way
           at once: every readout derives from one signed 16-bit integer.
         </Text>
@@ -527,7 +527,7 @@ export function BinaryModule(p: DigitalModuleProps) {
         <PanelCard>
           <SectionHead title="BIT TOGGLING — FLIP THE REGISTER YOURSELF" onHelp={() => p.help('bit_toggle')} />
           <Text style={dstyles.body}>
-            Sixteen switches, one sample. Each bit's weight is printed under it — the MSB carries the only negative weight
+            Sixteen switches, one sample. Each bit's weight is printed under it — the MSB (most significant bit) carries the only negative weight
             (−32,768: the sign bit). Flip bits and watch the value, the level and the sample dot move.
           </Text>
           <View style={styles.byteHead}>

@@ -86,7 +86,7 @@ export const EQ_END_GUIDE: ScreenGuide = {
   ],
   teaches: [
     'EQ knowledge builds in layers: first seeing frequency content, then the controls and filter shapes, then using them to diagnose problems.',
-    'Find the Frequency and Match the Curve deal a fresh problem when you tap NEW SIGNAL or NEW, so a repeat tests your method — where, how much, how wide — not your memory of one answer.',
+    'A diagnosis is a method — where, how much, how wide — so it works on any fresh problem, not only on one answer you remember.',
   ],
   tryThis: [
     'Open the first module on the list and work down in order.',
@@ -176,7 +176,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'At the top is a room — window, chair, person, lamp, speaker on a stand — with a camera whose amber view points into it.',
       'Below it, the EQ curve shares the same frequency axis, so the bell sits right under what the camera sees. Its boost is fixed at +9 dB.',
-      'On the frame: EQ TYPE (FIXED, SEMI or FULL), FREQ, Q, and WIDTH in octaves.',
+      'On the frame, watch EQ TYPE (FIXED, SEMI or FULL), FREQ, Q and WIDTH in octaves.',
     ],
     control: [
       'Tap the EQ TYPE key to pick FIXED, SEMI-PARAMETRIC or FULLY PARAMETRIC; the tray explains each one.',
@@ -312,7 +312,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'One high-pass (low-cut) filter at 80 Hz, drawn at six slopes: your chosen one bright, the other five as dashed ghosts.',
       'Below 80 Hz the curves fall away; above it they stay near 0 dB. The line under the display names the filter’s order: its number of poles.',
-      'On the frame: SLOPE, CUTOFF 80 Hz, and how much is cut @40 Hz (an octave below) and @20 Hz (two octaves below).',
+      'Watch SLOPE, CUTOFF 80 Hz and how much is cut @40 Hz (an octave below) and @20 Hz (two octaves below) on the frame as you slide SLOPE.',
     ],
     control: [
       'Slide SLOPE to step through 6, 12, 18, 24, 36 and 48 dB/OCT.',
@@ -345,7 +345,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'A graphic EQ board: one vertical fader for each fixed band, with the board’s actual response curve drawn above it.',
       'The line under the display reminds you: the curve is the ACTUAL combined response of the board’s fixed-width bells, not a copy of the faders.',
-      'On the frame: BOARD, RANGE ±12 dB, and BAND and LEVEL for the fader under your finger.',
+      'On the frame, watch BOARD, RANGE ±12 dB, and BAND and LEVEL for the fader under your finger.',
     ],
     control: [
       'Drag a fader up or down: −12 to +12 dB in 0.5 dB steps.',
@@ -376,9 +376,9 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       start: 'Drag the LMF node up to +6 dB and watch its thin curve and the bold COMBINED curve. Then drag the HMF node next to it, also to +6 dB.',
     },
     seeing: [
-      'A six-band EQ: HPF, LOW, LMF, HMF, HIGH and LPF. Each band that’s on is a colored dot (node); the selected one is larger.',
+      'A six-band EQ: HPF, LOW, LMF (low mids), HMF (high mids), HIGH and LPF. Each band that’s on is a colored dot (node); the selected one is larger.',
       'Each thin colored curve is one band on its own; a bell at 0 dB draws none. The bold COMBINED curve is all bands together, and its color warms with the biggest boost.',
-      'On the frame: BAND, FREQ, GAIN (— on HPF/LPF), and EQ: how many bands are ACTIVE, or BYPASS.',
+      'On the frame, watch BAND, FREQ, GAIN (— on HPF/LPF), and EQ: how many bands are ACTIVE, or BYPASS.',
     ],
     control: [
       'Drag on the graph to grab the nearest node: sideways sets frequency, up and down sets gain (bells only).',
@@ -413,7 +413,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'A 10-band graphic EQ (31 Hz to 16k) with two curves: a dim line joining the fader caps — what the eye imagines — and the bold ACTUAL response.',
       'THE SLIDERS ARE NOT THE RESPONSE: watch the gap between those two lines.',
-      'On the frame: VIEW (MAG or PHASE ±180°), FILTERS (SHOWN or HIDDEN), and BAND and LEVEL for the fader under your finger.',
+      'On the frame, watch VIEW (MAG or PHASE ±180°), FILTERS (SHOWN or HIDDEN), and BAND and LEVEL for the fader under your finger.',
     ],
     control: [
       'Drag a fader: −12 to +12 dB in 0.5 dB steps.',
@@ -446,7 +446,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     },
     seeing: [
       'Your room’s live 1/3-octave spectrum from the phone microphone, with your EQ drawn over it as an amber curve once you touch a band fader or pick a LOW CUT.',
-      'Bars: dB below full scale (0 to −90), blue quiet to red loud, with peak marks. Gray slots can’t be resolved.',
+      'Bars: dB below full scale (0 to −90), blue quiet to red loud, with peak marks. Gray slots: too narrow to measure.',
       'With no EQ set, the line under the display reads dBFS · UNCALIBRATED APPROXIMATE.',
       'Watch VIEW, LOW CUT, BAND (its frequency, or OFF) and MIC.',
     ],
@@ -468,7 +468,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'One EQ setting treats different sound differently: what it changes depends on what’s there.',
     ],
     tryThis: [
-      'Open LOW CUT and pick 80 Hz: LOW CUT reads 80Hz·12 and the low bars drop under the amber curve.',
+      'Open LOW CUT and pick 80 Hz: LOW CUT reads 80Hz·12 (80 Hz at 12 dB/OCT) and the low bars drop under the amber curve.',
       'Keep 80 Hz and pick SLOPE 48 dB/OCT: the curve falls far more steeply below 80 Hz.',
       'Set GAIN to +8.0 dB and Q high, then ride FREQ: BAND follows it, and the amber bump shows which bars it sits over.',
     ],
@@ -477,13 +477,13 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   // ── 12 ────────────────────────────────────────────────────────────────────
   findFreq: {
     intro: {
-      learning: 'Finding a problem on a spectrum: where first (frequency), then how much (gain), then how wide (Q). A boost needs a cut; a hole needs a boost.',
+      learning: 'Finding a problem on a spectrum: where first (frequency), then how much (gain), then how wide (Q). An unwanted boost needs a cut; a hole needs a boost.',
       start: 'On LEVEL 1, find where the bold SIGNAL pokes above the dim REFERENCE. Slide FREQ under it, pull GAIN down, then tap CHECK.',
     },
     seeing: [
       'A made-up spectrum, not a recording: the dim REFERENCE is healthy; the bold SIGNAL has a hidden problem added.',
       'Your band is marked on the graph. The signal warms toward red while it still pokes above the reference.',
-      'On the frame: LVL, BAND (on level 5) and RESULT (—, PASS or MISS). Read the brief, and later your result, below.',
+      'Watch LVL, BAND (on level 5) and RESULT (—, PASS or MISS) on the frame. Read the brief, and later your result, below.',
     ],
     control: [
       'FREQ, GAIN (−18 to +18 dB) and Q (0.3–12) set your correction band. Double-tap the GAIN lane for 0 dB.',
@@ -518,7 +518,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'The thin gray TARGET curve is made from one or two hidden bells. Your EQ is the bold line; its color follows its gain.',
       'Your band’s frequency is marked on the graph.',
-      'On the frame: MATCH (HIDDEN until you ask), BANDS (how many bells the target uses) and BAND (on two-band targets).',
+      'Watch MATCH (HIDDEN until you ask), BANDS (how many bells the target uses) and BAND (on two-band targets) on the frame as you work.',
     ],
     control: [
       'FREQ, GAIN (−15 to +15 dB) and Q (0.3–12) faders shape your band. Double-tap the GAIN lane for 0 dB.',
@@ -551,7 +551,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'A made-up spectrum again, not a recording: the dim REFERENCE, and the bold SIGNAL carrying the problem from a real-world story.',
       'Below the display you read the CASE name and the complaint, but no frequency until you tap CHECK.',
-      'On the frame: CASE, SCEN (which scenario) and RESULT (—, FIXED or NOT YET).',
+      'Watch CASE, SCEN (which scenario) and RESULT (—, FIXED or NOT YET) on the frame as you work.',
     ],
     control: [
       'FREQ, GAIN (−18 to +18 dB) and Q (0.3–12) shape your one correction band.',

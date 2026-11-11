@@ -62,10 +62,10 @@ const TWO_HEADS: PairCopy = {
   },
   opposed: {
     option: 'HEADS OPPOSED (the higher one)',
-    blurb: 'The heads move in and out together, squeezing and easing the air between them; the air’s springiness makes this the higher-pitched of the pair.',
+    blurb: 'The heads move toward each other, then apart, squeezing and easing the air between them; the air’s springiness makes this the higher-pitched of the pair.',
     short: 'OPPOSED',
     title: 'HEADS OPPOSED',
-    card: 'The heads move in together, then out together. The air between them is squeezed and eased, and its springiness pushes back hard: this is the HIGHER-pitched of the pair. It changes the drum’s whole volume, so it radiates strongly — and spends its energy sooner.',
+    card: 'The heads move toward each other, then apart. The air between them is squeezed and eased, and its springiness pushes back hard: this is the HIGHER-pitched of the pair. It changes the drum’s whole volume, so it radiates strongly — and spends its energy sooner.',
     v0: 'HIGHER',
     sub0: 'of the two',
     v1: 'OPPOSITE',

@@ -171,7 +171,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Drum bus (parallel)",
         "use": "Yes",
-        "ratio": "8:1–20:1 (“all-buttons” FET style)",
+        "ratio": "8:1–20:1 (FET style, all ratio buttons pressed in)",
         "attackRelease": "1–5 ms / 50–100 ms",
         "gainReduction": "8–15 dB, blended 20–40%",
         "notes": "Adds density; saturation on the bus blends breaks with one-shots"

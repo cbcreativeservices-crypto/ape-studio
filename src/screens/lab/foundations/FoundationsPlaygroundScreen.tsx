@@ -714,8 +714,8 @@ export function FoundationsPlaygroundScreen() {
         ) : (
           <Text style={styles.caption}>
             Noise is BROADBAND — every frequency at once, so there is no single pitch and the
-            particles jitter instead of waving. White = equal energy per Hz; pink −3 dB/oct;
-            brown −6 dB/oct.
+            particles jitter instead of waving. White = equal energy per Hz; pink drops 3 dB per octave;
+            brown drops 6 dB per octave.
           </Text>
         )}
         {/* The air window's tracer molecules (owner 2026-10-16). */}
@@ -749,7 +749,7 @@ export function FoundationsPlaygroundScreen() {
             ],
             correctIdx: 1,
             reveal:
-              'A pure sine has ONE partial. A low-pass at 2 kHz cuts mostly above 2 kHz — and your sine sits far below it. Filters change a sound only when something lives near or past the cutoff. Try the same filter on a SAW and count what survives.',
+              'A pure sine has ONE partial (one frequency ingredient). A low-pass at 2 kHz cuts mostly above 2 kHz — and your sine sits far below it. Filters change a sound only when something lives near or past the cutoff. Try the same filter on a SAW and count what survives.',
             wrongHint: 'Look at the spectrum pane: how many lines does a sine have, and where is yours relative to 2 kHz?',
           }}
         />

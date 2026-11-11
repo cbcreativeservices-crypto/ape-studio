@@ -69,7 +69,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       claim: 'A phone SPL app is as good as a real sound level meter.',
       truth:
-        'A certified meter is a calibrated system — matched microphone, verified electronics, and periodic lab checks against IEC 61672 tolerances. A phone uses whatever MEMS mic it shipped with, behind unknown processing, and units of the same model can differ by several dB. Calibrated against a reference, a phone becomes a useful approximate tool; it never becomes a certified instrument.',
+        'A certified meter is a calibrated system — matched microphone, verified electronics, and periodic lab checks against IEC 61672 tolerances. A phone uses whatever tiny built-in MEMS chip mic it shipped with, behind unknown processing, and units of the same model can differ by several dB. Calibrated against a reference, a phone becomes a useful approximate tool; it never becomes a certified instrument.',
     },
     {
       claim: 'One measurement position tells me how loud the room is.',

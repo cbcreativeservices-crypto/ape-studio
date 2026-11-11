@@ -57,7 +57,7 @@ export const METER_HOME_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Work in order, starting with Waveform. Each module reuses what the last one showed you.',
-    'Pick SNARE in VU / RMS Meter: PEAK −1.6, yet NDL MAX only −23.0. That’s a fast reading and a slow one of the same sound.',
+    'Pick SNARE in VU / RMS Meter: PEAK −1.6, yet NDL MAX (the needle’s highest) only −23.0. That’s a fast reading and a slow one of the same sound.',
     'Finish with Signal Detective, and try to name each display before you read the answers.',
   ],
 };
@@ -77,11 +77,11 @@ export const METER_END_GUIDE: ScreenGuide = {
     'Tap a module that’s still left to jump straight to it.',
     'REVIEW ▾ on the ✓ line unfolds the modules you’ve opened. Tap any one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens Module 1 and clears nothing.',
-    'DONE · BACK TO LABS goes back one screen. If you reached this list from a module, that’s this lab’s menu (when you came in through it); if you reached it from the menu, it takes you out of the lab.',
+    'DONE · BACK TO LABS goes back one screen. Came here from a module? It returns to this lab’s menu (if you entered through it). Came from the menu? It takes you out of the lab.',
   ],
   changes: [
     'Each module you open moves to the ✓ line, so this list shrinks as you go.',
-    'Signal Detective joins the ✓ line as soon as you open it. Its separate entry in the lab list counts as finished only once you’ve answered every question of every case right.',
+    'Signal Detective joins the ✓ line as soon as you open it. Its own lab under AUDIO FUNDAMENTALS › Signal counts as finished only once you’ve answered every question of every case right.',
     'Going back into a module takes nothing away, so its ✓ stays.',
   ],
   teaches: [
@@ -317,7 +317,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     changes: [
       'Add DAMPING and the tail shortens. Highs go first (RT·4k drops fast); lows need thick treatment, so RT·125 hangs on.',
       'EQ changes a region’s height; its decay slope (the RT60) stays the same, so a taller region simply takes longer to reach the floor.',
-      'A REVERB slower than the room shows; a faster one hides under the room’s longer tail.',
+      'A REVERB decaying slower than the room shows up; a faster one hides under the room’s tail.',
       'Q RING stores energy in the filter itself, so a thin ridge lingers.',
     ],
     teaches: [
@@ -406,7 +406,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       start: 'Switch SIGNAL between SINE and SQUARE and compare the shapes. Then tap X-Y and drag PHASE to 180°: the line tips onto the other diagonal.',
     },
     seeing: [
-      'Nothing is averaged or weighted here: an oscilloscope draws the voltage itself against time. The TRIG mark is the trigger, where each sweep starts, so CH 1 · SWEEP LOCK holds a repeating wave still.',
+      'Nothing is averaged or weighted here: an oscilloscope draws the voltage itself against time. The TRIG mark is the trigger, where each left-to-right sweep starts, so CH 1 · SWEEP LOCK holds a repeating wave still.',
       'In X-Y mode (X = L · Y = R) the left channel moves the dot across and the right moves it up.',
       'MODE tells you which view you’re in, TIME or X-Y. SIGNAL reads in TIME; CORR and WIDTH read only in X-Y.',
     ],
@@ -444,7 +444,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'CASE and QUESTION keep your place. SOLVED counts your right answers so far.',
     ],
     control: [
-      '‹ CASE and CASE › in the dock move you between the seven cases. A new case starts at its first question.',
+      '‹ CASE and CASE › at the bottom of the screen move you between the seven cases. A new case starts at its first question.',
       'Tap an answer. A wrong one gives you a hint and another try; the right one opens the explanation. The answers are shuffled each time.',
       'Under the question, ‹ PREVIOUS steps back and NEXT QUESTION › steps on. After the last question it becomes NEXT CASE ›.',
     ],

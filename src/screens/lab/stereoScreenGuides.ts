@@ -89,7 +89,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the Stereo Imaging guided lesson as one page to read. ▶ in the header still plays the source you set on EXPLORE.',
-      'It starts with what stereo imaging is, then CONTROLS: the display, PAN, WIDTH, Mid gain (M) and Side gain (S), FOLD, BASS and three ADV entries.',
+      'It starts with what stereo imaging is, then CONTROLS: the display, PAN, WIDTH, Mid gain (M) and Side gain (S), FOLD, BASS and three ADV (advanced) entries.',
       'Then come COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: the Mid/Side sums and what correlation measures.',
     ],
     control: [

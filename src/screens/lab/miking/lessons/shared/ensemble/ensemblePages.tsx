@@ -396,7 +396,7 @@ function PlotCard({ r }: { r: PlotReadout }) {
       {r.mics.length ? (
         <Point title="WHAT ELSE EACH CLOSE MIC HEARS">{r.mics.map((m) => spillWords(m)).join(' ')}</Point>
       ) : null}
-      {r.three ? <Point title={`3:1 · ${r.three.ok ? 'MET' : 'NOT MET'}`}>{`The closest pair, ${r.three.a} and ${r.three.b}: ${fmtDist(r.three.apart)} apart, against ${fmtDist(r.three.need)} for 3 × the farther mic’s distance to its own source.${r.three.ok ? '' : ' Move a mic closer to its source, move the sources apart, or accept the bleed as part of the sound.'}`}</Point> : null}
+      {r.three ? <Point title={`3:1 · ${r.three.ok ? 'MET' : 'NOT MET'}`}>{`The closest pair, ${r.three.a} and ${r.three.b}: ${fmtDist(r.three.apart)} apart; the guideline asks for ${fmtDist(r.three.need)} (3 × the farther mic’s distance to its own source).${r.three.ok ? '' : ' Move a mic closer to its source, move the sources apart, or accept the bleed as part of the sound.'}`}</Point> : null}
       <Text style={styles.small}>A simplified picture: equal source levels, straight paths, ideal patterns, no room — what the drawing implies, not a measurement.</Text>
     </Card>
   );
@@ -476,7 +476,7 @@ export function EnsembleSetups(p: PageProps) {
       well: (
         <>
           <Landing looking={sel ? `${sel.role} · ${VW[view].tag.toLowerCase()}` : s.label} prompt={`Step through SETUP. Each one is drawn on the stage: the stand, the bar or boom, each mic, where it points (amber) and its height and distance (white).${viewsFor(lesson).length > 1 ? ' Switch VIEW for heights or the plan.' : ''}`} />
-          {sel ? <SetupCard s={sel} seating={s} /> : <Note>No starting setup for this seating — try another in the dock.</Note>}
+          {sel ? <SetupCard s={sel} seating={s} /> : <Note>No starting setup for this seating — try another in the controls below.</Note>}
           {eq ? (
             <Card>
               <Point title={`EQUAL DISTANCE · ${fmtDist(eq.spread)} SPREAD`}>{`The players are ${fmtDist(eq.near)} to ${fmtDist(eq.far)} from the array’s center (the white dotted ring, seen from above). The closer those distances, the more evenly the array hears them — moving a player is often the simplest balance control.`}</Point>
@@ -590,7 +590,7 @@ export function EnsemblePlacement(p: PageProps) {
     ? [
         { title: 'WHERE TO BEGIN', text: `${worked!.title}. ${WW.begin}`, view: av('plan'), cell: 0 },
         { title: single ? 'THE MIC' : 'THE ARRAY', text: `${ARRAYS[exRig.id].name}: ${ARRAYS[exRig.id].what}`, view: av('plan'), cell: 0 },
-        { title: 'THE HEIGHT', text: WW.height ?? `${fmtStage(-exC.y)} above the floor — high enough to see past the front players to the rows behind. Higher hears more of the back rows and the hall; lower, more of the front desks.`, view: av('section'), cell: 1 },
+        { title: 'THE HEIGHT', text: WW.height ?? `${fmtStage(-exC.y)} above the floor — high enough to see past the front players to the rows behind. Higher hears more of the back rows and the hall; lower, more of the front desks (the front music stands and their players).`, view: av('section'), cell: 1 },
         { title: 'HOW FAR FORWARD', text: WW.forward ?? `${exC.z >= 0 ? `${fmtStage(exC.z)} in front of the front row` : `${fmtStage(-exC.z)} behind it`}${s.podium ? ', over or just behind the podium' : ''}. Closer tends to give more direct sound and more front-row weight; farther back, more blend and more of the room.`, view: av('section'), cell: 2 },
         { title: 'THE AIM', text: WW.aim ?? `${ARRAYS[exRig.id].recordingAngle ? `Facing the middle of the ensemble; its ${ARRAYS[exRig.id].recordingAngle}° recording angle (the amber wedge) should take in the whole width.` : 'Facing the middle of the ensemble, tilted down toward it.'} Move the whole array to change what it covers — not one mic of it.`, view: av('plan'), cell: 3 },
         { title: 'CLEARANCE', text: WW.clearance, view: av('front'), cell: 3 },
@@ -805,7 +805,7 @@ export function EnsemblePlacement(p: PageProps) {
           ) : (
             <Body>{`Not at a suggested starting point. For this seating: ${zones.map((z) => z.label).join('; ')}.`}</Body>
           )}
-          <Body>{`Activity: zones rested in, clear of the players — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{`Activity: zones rested in, clear of the players: ${visited.size}${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}. Goal: 2.`}</Body>
           {predicted != null && visited.size >= 2 && pred ? <Note tone="ok">{pred.after}</Note> : null}
         </>
       ),

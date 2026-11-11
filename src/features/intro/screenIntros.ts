@@ -195,7 +195,7 @@ export const SCREEN_INTROS: Record<
     title: 'Customize Your Deck',
     body:
       'Study exactly what you want.\n\n' +
-      'Use FILTER to choose which parts of each definition appear when you reveal a card. Use the BEG, INT, ADV, ' +
+      'Use FILTER to choose which parts of each definition appear when you reveal a card. Use the BEG, INT, ADV (beginner, intermediate, advanced), ' +
       'KNOWN, Bookmarks and Custom list buttons to choose which cards are in your deck. Build a flashcard deck ' +
       'that’s tailored to your learning goals.',
     button: 'Got It',

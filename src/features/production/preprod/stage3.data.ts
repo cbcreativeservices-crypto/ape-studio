@@ -31,7 +31,7 @@ export const STAGE3_PEOPLE: StageDef = {
     {
       sectionId: "team",
       title: "Team",
-      intro: "The roles this production needs and the people filling them. Where a role requires a license or certification beyond this app, the field says so; treat that as a requirement to check, not a formality.",
+      intro: "The roles this production needs and the people filling them. Where a role requires a license or certification beyond this training, the field says so; treat that as a requirement to check, not a formality.",
       notices: [
         {
           kind: "qualified",
@@ -141,7 +141,7 @@ export const STAGE3_PEOPLE: StageDef = {
           showWhen: { field: "rigging_required", notEquals: ["no"] },
           label: "Qualified rigger",
           kind: "text",
-          help: "Rigging is skilled, safety-critical work: most venues, unions and insurers require a recognized certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
+          help: "Rigging is skilled, safety-critical work: most venues, unions and insurers require a recognized certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This training does not qualify anyone to rig.",
           required: false,
           onlyFor: [
             "live"

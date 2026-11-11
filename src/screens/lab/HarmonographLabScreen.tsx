@@ -679,7 +679,7 @@ export function HarmonographLabScreen() {
           The machine runs at the true frequency you set (0.5–10 Hz): 1 Hz is one full swing per
           second. Around 0.5–1 Hz you’re at real harmonograph pendulum speeds — slow enough to watch
           every swing. Push toward 10 Hz and the arms blur; the drawing fills in fast. In ROTARY the paper platform is a third pendulum with its own speed — the PLAT
-          lane; tiny platform detunes are what precess the rose.
+          lane; tiny platform detunes are what make the rose-shaped figure precess.
         </Text>
       </View>
 
@@ -721,13 +721,13 @@ export function HarmonographLabScreen() {
             ) : !matched ? (
               <Text style={styles.caption}>
                 A custom ratio has no exact interval to sound. Land on a clean ratio — tap a RATIO
-                chip, or sweep an oscillator until the readouts name the interval — and PLAY renders
-                it audibly.
+                chip, or sweep an oscillator until the readouts name the interval — and PLAY plays
+                it.
               </Text>
             ) : (
               <>
                 <Text style={styles.caption}>
-                  {`The pendulums themselves are below hearing, so PLAY (header ▶) renders the ${ratio.label} ratio audibly` +
+                  {`The pendulums themselves are below hearing, so PLAY (header ▶) plays the ${ratio.label} ratio as sound` +
                     (stereoReady
                       ? ` — HARD-PANNED STEREO, ${matched.n1 * BASE_F0} Hz on LEFT and ${matched.n2 * BASE_F0} Hz on RIGHT (harmonics ${matched.n1} & ${matched.n2} of ${BASE_F0} Hz). The same ratio the machine is drawing, as sound.`
                       : ` — harmonics ${matched.n1} and ${matched.n2} of ${BASE_F0} Hz, built by additive synthesis (${matched.n1 * BASE_F0} & ${matched.n2 * BASE_F0} Hz). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`)}

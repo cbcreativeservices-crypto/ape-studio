@@ -96,7 +96,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "reference_material",
           label: "Reference material used",
           kind: "text",
-          help: "Something finished, in the same idiom, to check against. Level-matched, or it will only tell you which is louder.",
+          help: "Something finished, in the same style, to check against. Level-matched, or it will only tell you which is louder.",
           allowNa: true
         },
         {
@@ -526,7 +526,7 @@ export const STAGE6_MIX: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Nothing recorded as having priority",
-      detail: "Without a stated priority, every balance decision is relitigated from scratch and the mix ends up as an average of the last few opinions.",
+      detail: "Without a stated priority, every balance decision is argued over again from scratch and the mix ends up as an average of the last few opinions.",
       fixHint: "One sentence: what the listener must hear at all times, and what gives way to it.",
       needsLogic: true,
       logicIntent: "Fire when priority is empty."

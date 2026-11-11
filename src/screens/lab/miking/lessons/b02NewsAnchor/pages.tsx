@@ -49,7 +49,7 @@ function useTools() {
     pitch: true,
     words: {
       subject: 'an anchor at a desk with a lav, a fixed boom and a gooseneck',
-      looking: 'From above · the anchor, the guest on their right · the side in the corner',
+      looking: 'From above · the anchor, the guest on their right · a side view in the corner',
       prompt: 'TURN toward the guest and back, then LOOK down at the script. Switch MIC: the lav, the boom, the gooseneck — which drifts most?',
       done: 'Every one stays where it is while the mouth turns: the lav from below the chin, the boom from above, the gooseneck from in front. Turning to the guest takes the voice off each one’s axis — rehearse the real turns, and give the guest their own mic.',
       right: 'toward the guest',
@@ -75,7 +75,7 @@ function useTools() {
     insetAt: { x: 0.3, y: 0.55, w: 0.42, h: 0.43 },
     words: {
       subject: 'An anchor at a desk',
-      looking: 'Side view · the anchor, the camera and its frame · from above in the corner',
+      looking: 'Side view · the anchor, the camera and its frame · a view from above in the corner',
       prompt: 'Switch SHOT: close, then the two-shot. Where can the boom go — and the lav?',
       done: 'The wider two-shot raises the frame’s top: the boom must stay farther away, hearing more room. The lav keeps its distance in any shot. A boom for the program and the lav as its fallback, each on its own track, is a common pairing.',
     },

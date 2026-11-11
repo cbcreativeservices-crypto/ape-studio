@@ -16,7 +16,7 @@
 import type { MikingScenario, SourcePageId } from './types.ts';
 
 export const OPPOSITE_SIDES_POLARITY =
-  'Two mics on opposite sides of one moving surface — the top and bottom of a drum, a head and the drum’s open foot, the front and back of a speaker — hear it push and pull at the same instant, so they usually start opposite. Flipping one is a common first thing to TRY, never a rule: polarity flips the sign and does not remove a delay, so check both states by ear, at matched level, in mono.';
+  'Two mics on opposite sides of one moving surface — the top and bottom of a drum, a head and the drum’s open foot, the front and back of a speaker — hear it push and pull at the same instant, so their signals usually start out opposite in polarity. Flipping one is a common first thing to TRY, never a rule: polarity flips the sign and does not remove a delay, so check both states by ear, at matched level, in mono.';
 
 export type RatingWords = {
   id: string;
@@ -38,9 +38,9 @@ export function micRatingCheck(w: RatingWords): MikingScenario {
     prompt: `Your ${w.mic} is rated to a max SPL well above ${w.loudest} at the mic. Can the mic take that level cleanly?`,
     options: [KEY, SAFE, HEAR],
     correct: KEY,
-    explain: 'Max SPL says when the MIC distorts, so a rating well above the level at the mic means the mic copes. It says nothing about people: hearing risk depends on the level where a person is and for how long — NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+    explain: 'Max SPL says when the MIC distorts, so a rating well above the level at the mic means the mic copes. It says nothing about people: hearing risk depends on the level where a person is and for how long — NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB above that.',
     why: {
-      [SAFE]: 'The rating is the mic’s distortion limit, not a hearing limit. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where they listen.',
+      [SAFE]: 'The rating is the mic’s distortion limit, not a hearing limit. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more. Both are measured where the person listens.',
       [HEAR]: 'It is the other way around: max SPL is the level where the mic starts to distort. Hearing needs its own level and time limit, measured where the person is.',
     },
   };

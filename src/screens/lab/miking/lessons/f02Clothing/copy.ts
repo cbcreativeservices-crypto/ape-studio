@@ -105,7 +105,7 @@ export const F02_COPY: Partial<LessonCopy> = foleyCopy({
       { title: 'THE WEDGE IN THE REJECTION', text: 'Place the wedge where the mic’s pattern rejects most, and check it with the system operator at the intended level — never by making it ring.' },
       { title: 'ON LOCATION IT IS THE OTHER WAY AROUND', text: 'For dialogue on location, cloth is the unwanted noise under the speech: a boom or a costume mic chosen for the voice, its fabric contact managed with the costume team.' },
     ],
-    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed down at the fabric, its rear points up and back — the wedge, on the floor ahead and to the side, sits off that line, nearer a supercardioid’s deeper rejection.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed down at the fabric, its rear points up and back. The wedge, on the floor ahead and to the side, sits off that line — closer to the angle where a supercardioid rejects most.',
     shieldNote: 'The artist’s body and the station reflect the wedge’s sound, which a free-field pattern cannot show. Listen with the wedge at its show level — with the system operator.',
   },
   studio: {

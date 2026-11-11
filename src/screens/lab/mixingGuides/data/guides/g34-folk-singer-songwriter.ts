@@ -279,14 +279,14 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Folk needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −11. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Solo masters often keep a PLR of 12–16 dB; louder band masters have less. Aim for a loudness range of 6–12 LU. Because most streaming services normalize to about −14 LUFS, some to −16, a loud master gains nothing and loses the quiet details the genre lives on."
+      "text": "Folk needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −11. Keep true peak at or below −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Solo masters often keep a PLR (peak-to-loudness ratio) of 12–16 dB; louder band masters have less. Aim for a loudness range of 6–12 LU. Because most streaming services normalize to about −14 LUFS, some to −16, a loud master gains nothing and loses the quiet details the genre lives on."
     }
   ],
   "liveStudio": {
     "rows": [
       {
         "area": "Acoustic guitar",
-        "live": "Piezo/magnetic DI plus close SDC mic near the 12th fret; tame quack, fight feedback",
+        "live": "Piezo/magnetic DI plus a close small-diaphragm condenser near the 12th fret; tame quack, fight feedback",
         "studio": "One or two condensers (12th fret and body/lower bout or a stereo pair); natural tone"
       },
       {
@@ -301,7 +301,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Monitors",
-        "live": "Wedges low and aimed into each mic’s null (its rejection angle), or IEMs; often DI only in wedges",
+        "live": "Wedges low and aimed into each mic’s null (its rejection angle), or in-ear monitors (IEMs); often DI only in wedges",
         "studio": "Headphone mix for the singer"
       },
       {
@@ -332,7 +332,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Ring out the system and wedges before doors; typical problem bands are 250–500 Hz, ~1 kHz and 2–4 kHz. Use narrow 3 dB cuts, not broad scoops.",
+      "text": "Ring out the system and wedges before doors open; typical problem bands are 250–500 Hz, ~1 kHz and 2–4 kHz. Use narrow 3 dB cuts, not broad scoops.",
       "bullet": true
     },
     {

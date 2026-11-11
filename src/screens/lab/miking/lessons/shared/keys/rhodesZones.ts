@@ -43,7 +43,7 @@ const RHODES_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', min: CONE_SPOTS.boundary - TOL, max: CONE_SPOTS.boundary + TOL, prov: ill('"between the dust cover and the speaker cone": the dust-cap radius (a drawing default, 50 mm) ± 15 mm') },
     aim: AIM_TIGHT,
     start: { p: { x: G + 40, y: -CONE_SPOTS.boundary, z: 0 }, az: 0, el: 0 },
-    tendency: 'A dependable first listen for chords and melody: the tine’s attack with the amp’s body. From here, slide toward the center for more bark or toward the edge for warmer comping, keeping the distance.',
+    tendency: 'A dependable first listen for chords and melody: the tine’s attack with the amp’s body. From here, slide toward the center for more bark or toward the edge for warmer backing chords, keeping the distance.',
     checks: ['The grille is not touched', 'Soft chords and hard accents', 'Bass notes and top notes'],
   },
   {
@@ -75,7 +75,7 @@ const RHODES_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', min: CONE_SPOTS.edge - TOL, max: CONE_SPOTS.edge + TOL, prov: ill('"toward the edge": 10 mm inside the surround (a drawing default) ± 15 mm') },
     aim: AIM_TIGHT,
     start: { p: { x: G + 40, y: -CONE_SPOTS.edge, z: 0 }, az: 0, el: 0 },
-    tendency: 'Most often warmer and rounder — full chords for comping. Check that the notes keep their definition in the band.',
+    tendency: 'Most often warmer and rounder — full backing chords. Check that the notes keep their definition in the band.',
     checks: ['Note definition in full chords', 'That it is still the speaker that sounds', 'The grille is not touched'],
   },
   {

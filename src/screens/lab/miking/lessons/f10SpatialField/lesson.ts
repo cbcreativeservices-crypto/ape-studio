@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a spatial recording in order, choose and justify a setup for two briefs, and say what would justify a close mic beside the array.',
     credit: { scenarios: ['sp.prac.order', 'sp.prac.gain', 'sp.prac.setup1', 'sp.prac.setup2', 'sp.prac.3', 'sp.mix.1', 'sp.mix.2', 'sp.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The field sheet is optional — it needs a real place and permission.' },
-    takeaway: 'The deliverable first, the listener’s point, the front logged, the channels kept right and recorded, the destinations checked, and the place and its people kept safe pass. A brand or a “bigger” array does not — and more than one setup can pass.',
+    takeaway: 'What passes: the deliverable first, the listener’s point, the front logged, the channels kept right and recorded, the destinations checked, and the place and its people kept safe. A brand or a “bigger” array does not — and more than one setup can pass.',
   },
 };
 
@@ -284,7 +284,7 @@ const scenarios: MikingScenario[] = [
     explain: 'An open array near a PA hears the PA: fed back into it, it can make a feedback path. Keep it for the stream or the recording; use close mics for the PA.',
     why: {
       'Feed it in: it makes the PA sound more spacious': 'It brings the PA back into itself — a feedback path.',
-      'Feed it in, as long as it is at a low level': 'A low level still closes the loop unless the routing and margin have been worked out.',
+      'Feed it in, as long as it is at a low level': 'A low level still closes the loop unless the routing and the margin before feedback have been worked out.',
     },
   },
   {
@@ -535,7 +535,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Can an Ambisonic capture later isolate one voice in a crowd?',
     options: ['It cannot: record a close mic for a clear voice', 'It can: the converter separates out the sources', 'It can, with enough capsules on the one mic'],
     correct: 'It cannot: record a close mic for a clear voice',
-    explain: 'A spatial mic hears everything at its place; first order is enveloping, not separating.',
+    explain: 'A spatial mic hears everything at its place; a first-order one gives an enveloping field, not separate voices.',
     why: { 'It can: the converter separates out the sources': 'The converter makes a field, not separate sources.', 'It can, with enough capsules on the one mic': 'Capsules give direction, not isolation.' },
   },
   {
@@ -615,7 +615,7 @@ export const F10_LESSON: Lesson = {
       { id: 'walls', label: 'walls and hard surfaces', short: 'REFLECTIONS', note: 'They return the scene a little late — the extra path sets how late. Part of the place. Note them in the log.', prov: { kind: 'illustrative', reason: 'the lesson L6' }, tag: 'ROOM SOUND', scene: 'all' },
       { id: 'speech', label: 'conversations nearby', short: 'PEOPLE', note: 'Speech that may be recognized needs the right permission for the place and the use.', prov: { kind: 'illustrative', reason: 'the lesson L6, L43' }, tag: 'PRIVACY', scene: 'all' },
       { id: 'route', label: 'the public footpath', short: 'THE WAY', note: 'Never block it with a stand or a wide array; never leave stands unattended where people walk.', prov: { kind: 'illustrative', reason: 'the lesson L43' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'pa', label: 'the PA at an event', short: 'PA', note: 'An open array near a PA hears it; fed back into it, a feedback path. Keep the array on the stream path.', prov: { kind: 'illustrative', reason: 'the lesson L41' }, tag: 'FEEDBACK', scene: 'stage' },
+      { id: 'pa', label: 'the PA at an event', short: 'PA', note: 'An open array near a PA hears it; fed back into it, it makes a feedback path. Keep the array on the stream path.', prov: { kind: 'illustrative', reason: 'the lesson L41' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
     stage: 'An array near a PA hears the PA: keep it out of local reinforcement unless the routing and the margin before feedback have been worked out; close mics for the PA; the stream checked in surround, stereo and mono, in time with the picture.',
     studio: 'Keep the raw channels and a record of the channel map, gain, mounting, front, converter and output convention; store renders separately; check every destination the job asks for.',
@@ -641,6 +641,6 @@ export const F10_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for higher voltages or if unsure, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing given, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for higher voltages or if unsure, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
   copy: F10_COPY,
 };

@@ -218,7 +218,7 @@ export function Mod6Supply() {
               <FormulaCard
                 title="What the rails and load decide"
                 lines={['Vrms = Vpeak / √2', 'I = V / R', 'P = Vrms² / R']}
-                note={`Labeled resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
+                note={`Resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
               />
 
               <LearnMore title="WHY THE LIMITS LOOK DIFFERENT">

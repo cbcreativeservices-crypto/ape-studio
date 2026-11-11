@@ -14,7 +14,7 @@ export const SHK_COPY: LessonCopy = {
   viewTag: { side: 'SIDE', top: 'FROM ABOVE' },
   axes: {
     x: { plus: 'toward the mic side', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience and the mic, or toward the player (x).' },
-    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). Distances are read from the middle of the playing area.' },
+    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down. Distances are read from the middle of the playing area.' },
     z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z).' },
     origin: { toward: P0, side: P0 },
   },
@@ -106,7 +106,7 @@ export const SHK_COPY: LessonCopy = {
   },
   placement: {
     workedZone: { toward: 'shk.front.toward', side: 'shk.front.side' },
-    workedLine: 'This starting point is also read against {line}: the readout says how far the mic is from the whole motion.',
+    workedLine: 'This starting point is also measured against {line}: the readout shows how far the mic is from the whole motion.',
     workedAim: 'Face the middle of the playing area — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of the whole motion — the shaker’s arc, the hand and arm, the face. Clearance comes first: the distance is a starting point, not a safety clearance, and the player stops before a real mic moves.',
     blocked: {},
@@ -134,7 +134,7 @@ export const SHK_COPY: LessonCopy = {
     shield: ['shk.shell.side'],
     azMax: 45,
     elMax: 45,
-    aimBlurb: 'Turn the front up to 45° either way — the playing area stays in front of the mic, a little off its axis.',
+    aimBlurb: 'Turn the mic up to 45° either way — the playing area stays in front of it, a little off its axis.',
     plan: { u0: -1300, u1: 1650, v0: -900, v1: 900 },
     side: { u0: -1300, u1: 1650, v0: -1800, v1: 60 },
     target: 'downstage',

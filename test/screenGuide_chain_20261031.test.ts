@@ -282,7 +282,7 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
   }
   it('the guide states exactly those readings', () => {
     const ex = CHAIN_SCREEN_GUIDES.explore.tryThis.join('\n');
-    assert.match(ex, /set SOURCE to SINE 220 and play: COMP reads about −8 dB\. Bypass EQ: about −7 \(−6 on the phone speaker\)/);
+    assert.match(ex, /set SOURCE to SINE 220 and play: COMP reads about −8 dB\. Bypass EQ: about −7 \(−6 on the phone speaker; the app cuts its lows\)/);
     const le = CHAIN_SCREEN_GUIDES.learn.tryThis;
     assert.match(le[0], /COMMON MISTAKES line about EQ before the compressor[\s\S]*EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB/);
     assert.match(le[1], /running stages hot into the limiter[\s\S]*HOT INTO LIMITER with SOURCE on SINE 220: COMP reads about −8 dB, LIMIT 0\.0/);

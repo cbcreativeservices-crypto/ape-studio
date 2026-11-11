@@ -30,7 +30,7 @@ export const C05B_COPY = stringsCopy({
   shapesNote2: 'This is an ideal string between rigid ends. On a mandolin each note is a PAIR of strings tuned together, and the bridge is a floating one on a carved top.',
   coupledNote: 'The top bows in and out around the bridge and pumps the air through the opening — a simplified picture of the lowest motion. A close mic hears the part of the top, the opening or the strings it faces most.',
   setting: {
-    kitA11y: 'The mandolin player from above, standing on a strap, a vocal mic in front of the mouth.',
+    kitA11y: 'The mandolin player from above, standing, the mandolin on a strap, a vocal mic in front of the mouth.',
     kitIdle: 'The space around a mandolin player is theirs: the picking arc over the top, the fretting hand on a short neck, and the instrument turning as they move.',
     leftHanded: 'Left-handed players hold it mirrored: the neck points the other way, and so does everything that keeps clear of it.',
     stageA11y: 'A small stage from above: the player with a floor wedge in front, a shared band mic out front, the band upstage, the PA at the front corners.',
@@ -43,7 +43,7 @@ export const C05B_COPY = stringsCopy({
     ],
   },
   workedZone: { a: 'joint.a', f: 'joint.f' },
-  workedAim: 'Aim it at the junction of the neck and the body — the lab counts it while the mic’s axis, followed in, meets the mandolin within about 11 cm of {head}. Distance, position and angle are separate things to try.',
+  workedAim: 'Aim it at the junction of the neck and the body — the lab counts it as aimed while the line the mic points along meets the mandolin within about 11 cm of {head}. Distance, position and angle are separate things to try.',
   clearWhat: 'the picking arc, the fretting hand, the short neck and the player’s view',
   placementReveal: 'Toward the bridge and top tends to bring chop and upper-register definition; toward the opening, a different body resonance; farther back, the whole instrument and the room. Mandolins differ, so “it depends on this one” is fair too.',
   typeNotes: {

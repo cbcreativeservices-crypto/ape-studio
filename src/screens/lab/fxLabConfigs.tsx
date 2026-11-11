@@ -68,7 +68,7 @@ import { phaseScreenGuide } from './phaseScreenGuides';
 import { stereoScreenGuide } from './stereoScreenGuides';
 
 const P = FX_PARAM;
-const ANALYTIC = 'DESIGNED RESPONSE — ANALYTIC, NOT A MEASUREMENT';
+const ANALYTIC = 'DESIGNED RESPONSE — CALCULATED, NOT A MEASUREMENT';
 
 /** Every lab generator is normalised to peak at −20 dBFS — the figure the
  *  dynamics captions have asserted since they were ratified. Naming it once
@@ -96,7 +96,7 @@ const SRC_PINK_MONO = {
   label: 'PINK NOISE · MONO', short: 'MONO',
   gen: { mode: GEN_MODES.pink },
   monoCompare: true,
-  blurb: 'The same noise in both channels: the SIDE is zero, so WIDTH has nothing to widen. The comparison.',
+  blurb: 'The same noise in both channels: the SIDE is zero, so WIDTH has nothing to widen. Compare it with the stereo sources.',
 };
 const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
 
@@ -320,7 +320,7 @@ const delayConfig: FxLabConfig = {
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
   exploreCaption:
     'Display: each click (gray) crosses the stage and its repeats follow it out — the gap is the delay TIME, each ' +
-    'repeat smaller by the FEEDBACK. The ruler under OUT counts seconds since the stage. Use the CLICK source: a ' +
+    'repeat smaller by the FEEDBACK. The ruler under OUT counts seconds since the click reached the stage. Use the CLICK source: a ' +
     'steady tone or noise hides its repeats.',
   sources: [srcClick(90), SRC_PINK, srcSine(220)],
   params: [
@@ -393,7 +393,7 @@ const delayConfig: FxLabConfig = {
     dampHz: v[P.dampHz],
     src: fxSrcOf(src),
   }),
-  heroBadge: 'ECHO PATTERN — ANALYTIC (spacing = time · decay = feedback)',
+  heroBadge: 'ECHO PATTERN — CALCULATED (spacing = time · decay = feedback)',
   heroCaption: (v) =>
     `${v[P.timeMs]} ms between repeats; each repeat is ${Math.round(v[P.delayFeedback] * 100)}% of the last. ` +
     // A BPM is named only where it is a usual song tempo (≤ 240 BPM → TIME ≥ 250 ms);
@@ -509,7 +509,7 @@ const reverbConfig: FxLabConfig = {
     dampHz: v[P.reverbDampHz],
     src: fxSrcOf(src),
   }),
-  heroBadge: 'DECAY SLOPE — ANALYTIC (RT60 = time to fall 60 dB)',
+  heroBadge: 'DECAY SLOPE — CALCULATED (RT60 = time to fall 60 dB)',
   heroCaption: (v) =>
     v[P.preDelayMs] === 0
       ? `No pre-delay: the wash starts with the dry hit, gluing the source to the tail. Then the tail falls 60 dB in ${v[P.rt60]} s.`
@@ -576,7 +576,7 @@ const chorusConfig: FxLabConfig = {
   intro:
     'Chorus mixes you with a slightly delayed, pitch-wobbling copy of yourself — like two ' +
     'players who can never be perfectly together. The long delay makes the comb notches so ' +
-    'close they blur into shimmer instead of a jet.',
+    'close they blur into shimmer, not a flanger’s sweeping “jet”.',
   // NEW COPY 2026-10-16 (grading fix) — owner review. The old line described
   // the comb graph, not the display above it, and named a CENTER control this
   // lab does not have (its delay key is DELAY).
@@ -788,7 +788,7 @@ const flangerConfig: FxLabConfig = {
   heroCaption: (v) =>
     v[P.modMix] >= 1
       ? 'At 100% MIX there is no dry signal left to cancel against, so there are no deep notches — just a moving delay that wobbles the pitch. FDBK raises resonant peaks that ring at ±70%; at −70% that is the hollow, through-a-tube tone. Set MIX to 50% to bring back the dry signal the notches need.'
-      : `Notches every ${Math.round(1 / (v[P.centerMs] / 1000))} Hz (spacing = 1/delay), sweeping between the ghosts. ` +
+      : `Notches every ${Math.round(1 / (v[P.centerMs] / 1000))} Hz (spacing = 1/delay), sweeping between the dashed curves. ` +
         (v[P.modFeedback] >= 0.7
           ? 'High feedback lifts tall, narrow peaks between the notches — the comb starts to ring.'
           : v[P.modFeedback] <= -0.7
@@ -848,7 +848,7 @@ const phaserConfig: FxLabConfig = {
   title: 'PHASER LAB',
   subtitle: 'All-pass stages · Uneven notches',
   intro:
-    'A phaser shifts PHASE, not time: all-pass stages create a few notches where the shifted ' +
+    'A phaser shifts PHASE, not time: all-pass stages (filters that shift phase without changing level) create a few notches where the shifted ' +
     'copy cancels the dry. Compare the sparse, UNEVEN notches below with the flanger’s even ' +
     'comb — that difference is the whole lesson.',
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
@@ -1109,7 +1109,7 @@ const compConfig: FxLabConfig = {
     // moment) — the guide says so in words.
     signal: dynSignalOf(src, true),
   }),
-  heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
+  heroBadge: 'TRANSFER CURVE — CALCULATED · GR METER — LIVE',
   heroCaption: (v) =>
     `Above ${v[P.thresholdDb]} dB, every ${v[P.ratio]} dB in becomes 1 dB out. The source peaks at −20 dBFS — ` +
     (v[P.thresholdDb] < -20
@@ -1242,7 +1242,7 @@ const gateConfig: FxLabConfig = {
     holdMs: v[P.holdMs],
     signal: dynSignalOf(src),
   }),
-  heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
+  heroBadge: 'TRANSFER CURVE — CALCULATED · GR METER — LIVE',
   heroCaption: (v) =>
     `Below −${Math.abs(v[P.thresholdDb])} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
     (v[P.rangeDb] <= -70 ? 'Full silence is abrupt — a partial floor usually sounds more natural.' : 'A partial floor keeps a little ambience.'),
@@ -1352,7 +1352,7 @@ const limiterConfig: FxLabConfig = {
     holdMs: 0, // a limiter has no hold
     signal: dynSignalOf(src),
   }),
-  heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
+  heroBadge: 'TRANSFER CURVE — CALCULATED · GR METER — LIVE',
   heroCaption: (v) =>
     `Peaks are turned down to about ${v[P.ceilingDb]} dB. This limiter cannot look ahead, so a sharp hit can slip a few dB over first, and peaks between samples can poke above too (see ⓘ). Source at −20 dBFS → ${
       v[P.ceilingDb] < -20
@@ -1521,7 +1521,7 @@ const distConfig: FxLabConfig = {
       ],
       correctIdx: 0,
       reveal:
-        'Drive is the sound: how hard you push into the curve decides how bent — how harmonic-rich — the wave gets. MIX is the blend: 50% PARALLEL adds the clean, undriven signal back to the clipped one. Here the clean copy sits about 20 dB under it at +24 dB, so the result is about 5 dB quieter and nearly as gritty. In a real mix the distorted copy is turned down until it sits under the clean one.',
+        'Drive is the sound: how hard you push into the curve decides how bent — how harmonic-rich — the wave gets. MIX is the blend: 50% PARALLEL adds the clean, undriven signal back to the clipped one. Here, at DRIVE +24 dB, the clean copy sits about 20 dB under the distorted one, so the result is about 5 dB quieter and nearly as gritty. In a real mix the distorted copy is turned down until it sits under the clean one.',
       wrongHint: 'Raise DRIVE for more harmonics and watch the tops flatten, then switch MIX to 50% PARALLEL — the wave gets smaller, but DRIVE still decides the grit.',
     },
   ],
@@ -1542,7 +1542,7 @@ const phaseConfig: FxLabConfig = {
     'POLARITY flips the whole wave (180° at every frequency). PHASE is a frequency-dependent ' +
     'time shift. They are not the same — the Lissajous and correlation below make the ' +
     'difference visible; mono-fold makes it audible.',
-  exploreCaption: 'Sine + POL INVERTED Ø + FOLD MONO (L+R) = silence. That is total cancellation — the core demo.',
+  exploreCaption: 'Sine + POL INVERTED Ø + FOLD MONO (L+R) = silence. That is total cancellation — the two channels erase each other.',
   sources: [srcSine(440), SRC_PINK],
   // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
   // only sets param 0 (enabled) to 0 — every other atomic keeps its last
@@ -1607,7 +1607,7 @@ const phaseConfig: FxLabConfig = {
     monoFold: v[P.monoFold] > 0.5,
     srcIsNoise: isNoiseSrc(src),
   }),
-  heroBadge: 'LISSAJOUS + CORRELATION — ANALYTIC (440 Hz model)',
+  heroBadge: 'LISSAJOUS + CORRELATION — CALCULATED (440 Hz model)',
   // Delay captions scoped 2026-10-31 (two verifiers): on the 440 Hz model the
   // meter reads cos(2π·440·τ), negated when flipped — inverted it is −1.00
   // again at 2.3 ms and +0.99 at 1.1 ms — so a delay caption never claims a

@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'Compare the two published pairs — spaced about 61 cm apart, or grilles together at 135° — by what a bar at each end does to them.',
     credit: { scenarios: ['xy.two.1', 'xy.two.2', 'xy.two.3', 'xy.two.4'], interactive: 'pairCompared', note: 'Look at the spaced pair and the coincident pair with an end bar as the source, then answer the four checks.' },
-    takeaway: 'Grilles together, the capsules see no time difference and the mono sum holds together; spaced, an end bar arrives twice. If stereo is unnecessary on stage, one well-placed mic may be clearer.',
+    takeaway: 'Grilles together, the capsules see no time difference and the mono sum holds together; spaced, an end bar’s sound reaches each mic at a different time. If stereo is unnecessary on stage, one well-placed mic may be clearer.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Add one only if needed, brought in at a musical level',
     explain: 'A close spot can disproportionately add mallet contact and bleed from drums or brass. Listen to the mains first; check the spot in mono with them.',
     why: {
-      'Add one anyway, so that the xylophone has its own channel': 'A channel is not a reason: a spot adds spill and timing.',
+      'Add one anyway, so that the xylophone has its own channel': 'A channel is not a reason: a spot adds spill and timing differences.',
       'Mute the mains while the xylophone plays': 'The mains carry the orchestra; a spot is blended under them.',
     },
   },
@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A solo overdub in a good room. Is a separate room mic needed?',
     options: ['It is an artistic option after a usable main pickup', 'Yes — a xylophone is not complete without one', 'No — a room mic does not suit a bright, hard xylophone at all'],
     correct: 'It is an artistic option after a usable main pickup',
-    explain: 'A room mic is an option once the main pickup works, at no universal distance — checked in mono with the close mics.',
+    explain: 'A room mic is an option once the main pickup works. There is no one right distance; check it in mono with the close mics.',
     why: {
       'Yes — a xylophone is not complete without one': 'It is a choice, not a requirement.',
       'No — a room mic does not suit a bright, hard xylophone at all': 'In a good room it can add natural space; try it.',
@@ -320,7 +320,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “about 45–75 cm above the middle of the played notes”. What else do you need?',
     options: ['The bars as reference, and the player’s full striking arc', 'The xylophone’s brand, so the numbers match its size', 'Nothing more: the band says exactly where it goes'],
     correct: 'The bars as reference, and the player’s full striking arc',
-    explain: 'A distance belongs to its reference; the arc decides whether the band is usable at all.',
+    explain: 'A distance needs the point it is measured from; the arc decides whether the band is usable at all.',
     why: {
       'The xylophone’s brand, so the numbers match its size': 'The brand does not change the reference; the bars do.',
       'Nothing more: the band says exactly where it goes': 'A band is a place to begin; clearance comes first.',
@@ -352,7 +352,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Where are the monitors and the neighbors relative to the mic’s pattern? Improve the stage layout and the aim; use fewer open mics.',
     options: ['The layout, the aim of the real pattern, the open mics', 'Turn the xylophone channel up until it wins over the spill', 'Add a second xylophone mic to drown out the rest'],
     correct: 'The layout, the aim of the real pattern, the open mics',
-    explain: 'Fix the geometry and the channel count before gain or aggressive EQ.',
+    explain: 'Fix the placement and the number of open mics before gain or aggressive EQ.',
     why: {
       'Turn the xylophone channel up until it wins over the spill': 'More gain brings the spill — and feedback — up too.',
       'Add a second xylophone mic to drown out the rest': 'Every open mic adds spill and lowers the gain before feedback.',
@@ -370,7 +370,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · An overdub: a fast passage that runs the whole keyboard. Two channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Two condensers grilles together, 135° apart, about 46 cm above the middle', ok: true, power: 'phantom', feedback: 'The coincident pair: a steady mono sum for a fast, wide part.' },
+      { id: 'a', label: 'Two condensers, grilles together and angled 135° apart, about 46 cm above the middle', ok: true, power: 'phantom', feedback: 'The coincident pair: a steady mono sum for a fast, wide part.' },
       { id: 'b', label: 'Two condensers spaced about 61 cm apart, about 46 cm above the bars, aimed down', ok: true, power: 'phantom', feedback: 'The spaced pair: check the middle and the mono sum.' },
       { id: 'c', label: 'One mic 10 cm over the middle bars', ok: false, power: 'phantom', feedback: 'Inside the mallets’ travel, and it would favor a few bars.' },
       { id: 'd', label: 'One mic inside a tube', ok: false, power: 'phantom', feedback: 'Never into a tube or onto a bar.' },
@@ -471,7 +471,7 @@ const words: MalletWords = {
     shapes: {
       intro: 'This is the lowest shape — the note. The middle and the ends move opposite ways about two still points, where the cord passes.',
       tuned: 'A plain bar’s upper shapes ring at uneven ratios (about 2.76 and 5.40 times the lowest). Xylophone bars are shaped to tune an upper shape — makers call it quint tuning — so a real bar’s ratios differ from this plain one; a marimba’s are tuned differently, which is part of why they sound different.',
-      notes: ['A shape is set moving only as much as the bar moves at the strike point in that shape: where the mallet lands is part of the tone.'],
+      notes: ['Each shape rings only as strongly as the bar moves in that shape where the mallet hits: where the mallet lands is part of the tone.'],
     },
     tube: {
       intro: 'Open under the bar, closed at the bottom: the tube rings at the note whose quarter wavelength fits it — about {len} here. The highest notes need tubes only a few centimeters long.',
@@ -534,7 +534,7 @@ const copy: Partial<LessonCopy> = {
   placement: {
     workedZone: { yx: 'xy.one', concert: 'xy.one' },
     workedLine: 'This starting point is also read against {line}.',
-    workedAim: 'Aim down at the bars — the starting point counts while the mic looks within 30° of straight down.',
+    workedAim: 'Aim down at the bars — it counts as the starting point while the mic aims within 30° of straight down.',
     workedClear: 'Only where it clears both hands and every stroke, the strongest included, and out of the player’s sightline. Clearance comes first, and the player stops before a real stand moves.',
     blocked: { yx: ' Move it higher, or to the off-axis position on the audience side.', concert: ' Move it higher, or to the off-axis position on the audience side.' },
     reveal: 'Off-axis on the audience side tends to soften the click and blend the keyboard, with more room and neighbors; above the middle is more direct — and passages differ, so “it depends” is fair too.',
@@ -584,7 +584,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE PA', text: 'In a mono PA, a hard left/right recording pan does not translate to the room. Keep monitor sends only as high as the player needs.' },
       ],
       body: 'On stage, the monitors stay where the player needs them: aim the real pattern’s rejection at loud neighbors and speakers — cardioid and supercardioid patterns put their nulls in different places.',
-      warn: 'No mic position alone prevents feedback: solve it with mic, speaker and source geometry and the channel count before adding gain or aggressive EQ. Avoid uncontrolled feedback.',
+      warn: 'No mic position alone prevents feedback: solve it with mic, speaker and source placement and the number of open mics before adding gain or aggressive EQ. Avoid uncontrolled feedback.',
     },
   },
   twoMic: {
@@ -681,7 +681,7 @@ export const I09_LESSON: MalletLesson = {
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every xylophone, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a xylophone with bar and tube lengths worked out (the tubes as quarter wavelengths of the sounding notes at A = 442 Hz), a plain bar’s shapes, mic patterns and the two-mic comb as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every xylophone, player, mallet and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a xylophone with bar and tube lengths worked out (the tubes as quarter wavelengths of the sounding notes at A = 442 Hz), a plain bar’s shapes, mic patterns and two-mic comb filtering as textbook shapes, and motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy,
   mallet: words,
 };

@@ -71,7 +71,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up one oboe mic in the right order, choose and justify a setup for a studio solo and a loud stage, and say what would justify a second mic.',
     credit: { scenarios: ['ob.prac.order', 'ob.prac.gain', 'ob.prac.setup1', 'ob.prac.setup2', 'ob.prac.3', 'ob.mix.1', 'ob.mix.2', 'ob.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real oboe.' },
-    takeaway: 'Clearance from the reed, the hands and the keys, the right power and level, a view of the holes and the bell, and an accurate account of polarity versus delay pass. A brand or a bell-only habit does not — and more than one setup can pass.',
+    takeaway: 'What passes: clearance from the reed, the hands and the keys, the right power and level, a view of the holes and the bell, and an accurate account of polarity versus delay. A brand or a bell-only habit does not — and more than one setup can pass.',
   },
 };
 
@@ -499,7 +499,7 @@ const copy: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the oboe, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-    shieldNote: 'The player’s body and the oboe can reflect stage sound into the front of a mic aimed at them — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'The player’s body and the oboe can reflect stage sound into the front of a mic aimed at them — the free-field pattern (measured with nothing nearby) cannot show that. Listen with the monitors on.',
     studioId: 'ob.ctx.studio',
     studioPrompt: 'A studio session, a solo oboe, a good room: what is the mic’s job?',
     studioNote: 'In the studio, a mic facing the holes — or a foot away, or farther — can carry the whole oboe and some room. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',

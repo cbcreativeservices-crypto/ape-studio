@@ -99,7 +99,7 @@ function missLine(trial: EarTrial, picked: number): string | null {
 
 // NEW COPY
 function roundVerdict(pct: number): string {
-  if (pct >= 0.8) return 'sharp — this pace moves the ladder.';
+  if (pct >= 0.8) return 'sharp — this pace moves you up the level ladder.';
   if (pct >= 0.5) return 'solid. Replay the ones you missed with the answer in mind.';
   return 'a tough round. Play each clip again after the reveal — this skill builds on repetition, not on guessing.';
 }
@@ -783,7 +783,7 @@ export function EarModuleScreen() {
                       <Text style={styles.miss}>{missLine(trial, picked)}</Text>
                     ) : null}
                     <Text style={styles.reveal}>{trial.reveal}</Text>
-                    <Text style={styles.hearAgain}>Hear it again with the answer in mind — the chips above stay live.</Text>
+                    <Text style={styles.hearAgain}>Hear it again with the answer in mind — the ▶ buttons above still play.</Text>
                     <SeeItView trial={trial} controls={transport} />
                     {roundDone ? (
                       <View style={styles.roundCard} accessible accessibilityRole="summary">

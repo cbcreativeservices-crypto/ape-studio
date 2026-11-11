@@ -74,7 +74,7 @@ export const B13_ZONES: DocumentedZone[] = [
   {
     id: 'fd.dish.A',
     label: 'The dish at M, on A',
-    band: 'The correctly assembled dish at M, its axis on A, about 10 m away — compared one at a time with the shotgun, never assumed to share its point.',
+    band: 'The correctly assembled dish at M, its axis on A, about 10 m away — compared one at a time with the shotgun, never assumed to sit at the shotgun’s exact spot.',
     kind: 'trial',
     src: 'LESSON-B13',
     quote: 'Compare the two action microphones sequentially at M; do not assume their capsules share a coordinate (L140)',

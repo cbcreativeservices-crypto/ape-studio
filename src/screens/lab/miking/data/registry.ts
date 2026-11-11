@@ -84,7 +84,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I01c', labId: 'percussion', title: 'Crash Cymbal', subtitle: 'Overheads first — then above the plate, or underneath', status: 'ready' },
   { id: 'I01d', labId: 'percussion', title: 'Splash Cymbal', subtitle: 'On an arm or on top of a crash — a short cue among loud neighbors', status: 'ready' },
   { id: 'I01e', labId: 'percussion', title: 'China Cymbal', subtitle: 'Upright or turned over — above it, or under its lowest point', status: 'ready' },
-  { id: 'I02', labId: 'percussion', title: 'Cajón', subtitle: 'A box you sit on: find the port first — front, back, or both — clear of the hands, the knees and the player’s way off', status: 'ready' },
+  { id: 'I02', labId: 'percussion', title: 'Cajón', subtitle: 'A box you sit on: find the port first — front, back, or both — clear of the hands, the knees and the player’s path off the box', status: 'ready' },
   { id: 'I03a', labId: 'percussion', title: 'Handheld Shaker', subtitle: 'A moving source: one mic outside the arc — toward the mic or side to side', status: 'ready' },
   { id: 'I03b', labId: 'percussion', title: 'Egg Shaker', subtitle: 'No handle: one egg, two close, or hands apart — the grip is part of it', status: 'ready' },
   { id: 'I03c', labId: 'percussion', title: 'Maracas', subtitle: 'A pair, two arms: one mic centered on the heads, a spot each, or a singer’s pair', status: 'ready' },
@@ -99,7 +99,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I07', labId: 'percussion', title: 'Vibraphone', subtitle: 'Metal bars, tubes and fans: one mic above, or a spaced or coincident pair', status: 'ready' },
   { id: 'I08', labId: 'percussion', title: 'Marimba', subtitle: 'Wooden bars over pipes, often four to five octaves wide: one mic, or a spaced or coincident pair', status: 'ready' },
   { id: 'I09', labId: 'percussion', title: 'Xylophone', subtitle: 'Hard, bright bars: one mic above, off-axis, or a spaced or coincident pair', status: 'ready' },
-  { id: 'I10', labId: 'percussion', title: 'Glockenspiel', subtitle: 'Steel bars that ring long: a safe view above, the close example that conflicts, one mic or two', status: 'ready' },
+  { id: 'I10', labId: 'percussion', title: 'Glockenspiel', subtitle: 'Steel bars that ring long: a safe view above, a close example in the mallets’ way, one mic or two', status: 'ready' },
   { id: 'I11a', labId: 'percussion', title: 'Rhodes (Tine Piano)', subtitle: 'Mic the speaker it plays through — the direct signal compared alongside', status: 'ready' },
   { id: 'I11b', labId: 'percussion', title: 'Wurlitzer (Reed Piano)', subtitle: 'Two small oval speakers that face the player — a close mic in a narrow gap', status: 'ready' },
   { id: 'I12', labId: 'percussion', title: 'Gong', subtitle: 'Tam-tam or bossed gong: identify it, then a front view, a closer spot or the room', status: 'ready' },
@@ -152,7 +152,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'F05', labId: 'field', title: 'Foley Perspective and Multiple Microphones', subtitle: 'One mic for the whole action, a room mic for a reason, a pair for travel — near and far are not left and right', status: 'ready' },
   { id: 'F06', labId: 'field', title: 'Natural and Urban Ambience', subtitle: 'A listening point chosen by ear, about 1.5 m up and off every path — one mic or a pair, protected from the wind, checked in mono', status: 'ready' },
   { id: 'F07', labId: 'field', title: 'Wildlife and Distant Sounds', subtitle: 'From a permitted point outside the setback ring: a shotgun aimed at the call, a dish for one high caller, a wider view for a group', status: 'ready' },
-  { id: 'F08', labId: 'field', title: 'Moving Sounds and Pass-bys', subtitle: 'The path drawn first: a mic 2–4 m back and outside the envelope, fixed or tracked, the whole pass with headroom — a vehicle only on paper', status: 'ready' },
+  { id: 'F08', labId: 'field', title: 'Moving Sounds and Pass-bys', subtitle: 'The path drawn first: a mic 2–4 m back and outside the envelope, fixed or tracked, the whole pass with headroom — a vehicle pass planned on paper only', status: 'ready' },
   // Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line).
   { id: 'F09', labId: 'field', title: 'Location Speech and Practical Sounds', subtitle: 'A boom just above the frame, a body mic on the chest, a plant for the action — each on its own channel', status: 'ready' },
   { id: 'F10', labId: 'field', title: 'Spatial and Specialist Field Pickup', subtitle: 'The listener’s point first: a binaural head, an Ambisonic mic, a five-channel array — and the channel map that keeps them right', status: 'ready' },
@@ -180,7 +180,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'B10', labId: 'broadcast', title: 'Sideline and Post-Event Interviews', subtitle: 'One handheld moved to the mouth before the answer starts — a body mic or a boom when there is time, inside the approved area', status: 'ready' },
   { id: 'B11', labId: 'broadcast', title: 'Athletes, Coaches and Officials', subtitle: 'Approval is the first mic position: a chest mic or a headset where allowed, the private circuit kept closed, a fallback ready', status: 'ready' },
   /* Lab 7 · part 2 · G2 — action pickup on fields and courts: B12, B13, B14 (one block; each lesson on its own line). */
-  { id: 'B12', labId: 'broadcast', title: 'Parabolic and Tracked Action Pickup', subtitle: 'The bowl helps the highs on its axis: the maker’s focus, small turns inside an approved arc, and a planned handoff', status: 'ready' },
+  { id: 'B12', labId: 'broadcast', title: 'Parabolic and Tracked Action Pickup', subtitle: 'The bowl helps the highs on its axis: the focus the maker specifies, small turns inside an approved arc, and a planned handoff', status: 'ready' },
   { id: 'B13', labId: 'broadcast', title: 'Field and Diamond Sports', subtitle: 'From an approved place: a perimeter shotgun on a named zone, a tracked dish, a fixed ambience bed — and an honest coverage map', status: 'ready' },
   { id: 'B14', labId: 'broadcast', title: 'Court, Racket and Ice Sports', subtitle: 'Outside the clear space, aimed at the contact height: perimeter and compact mics, the floor boundary, approved plants — air kept apart from structure', status: 'ready' },
   /* Lab 7 · part 2 · G3 — arenas, moving sources, complete coverage: B15, B16, B17 (one block; each lesson on its own line). */

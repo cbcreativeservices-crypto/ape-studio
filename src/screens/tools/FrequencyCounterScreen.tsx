@@ -1057,7 +1057,7 @@ function LivePitchMode({
         !inBand(live.freq) && (
           <Text style={styles.liveWarn}>
             ⚠ A pitch at {fmtHz(live.freq)} Hz is outside the detection band ({fmtCut(bandLow)}–
-            {fmtCut(highCut)}). Widen or move the band to include your note.
+            {fmtCut(highCut)}). Use LOW-CUT and HIGH-CUT to widen or move the band.
           </Text>
         )}
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>

@@ -39,7 +39,7 @@ export function stageSeeing(kicker: string, sections: string): string[] {
   return [
     `You’re in ${kicker}: the name, its % or BLOCKED, the intro and WHY THIS MATTERS.`,
     `Sections: ${sections}.`,
-    'Dots: green done, amber flagged (or optional, blank), red conflict, gray required and open, dark gray not applicable.',
+    'Dots: green done, amber flagged or optional left blank, red conflict, gray required and open, dark gray not applicable.',
   ];
 }
 

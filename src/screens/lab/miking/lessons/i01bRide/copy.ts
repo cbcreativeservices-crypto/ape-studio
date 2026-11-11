@@ -83,7 +83,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     prompt: 'The monitors stay where the players need them. Turn the MIC (AIM) or change its PATTERN until the drummer’s fill sits in the rejection — while the mic still looks up at the ride.',
     studioId: 'rd.ctx.studio',
     studioPrompt: 'A studio session: does the ride need its own mic at all?',
-    studioNote: 'In the studio, the overheads and the floor-tom mic often carry the ride; a spot adds definition when the music needs it. Repeated trials are practical when the drummer stops. Switch back to LIVE for the monitor exercise.',
+    studioNote: 'In the studio, the overheads and the floor-tom mic often carry the ride; a spot adds definition when the music needs it. Here the drummer can stop, so you can try again and again. Switch back to LIVE for the monitor exercise.',
   },
   twoMic: {
     variant: 'ride',
@@ -91,7 +91,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'ride.under' },
     opposite: {
       surface: 'rideTop',
-      note: 'One mic over the ride and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; no setting is required.',
+      note: 'One mic over the ride and one under it face opposite sides of the plate: as it moves up, toward the top mic, it moves away from the bottom one — so the pair starts in opposite polarity, before any arrival-time difference. A simplified picture of the plate’s lowest motion: check both polarity states; neither one is required.',
     },
     learn: [
       'A mic under the ride tends to hear less stick and more of the wash — and its rear faces the floor. A second perspective, kept only if it helps the ride in the whole kit.',

@@ -54,7 +54,7 @@ function clearCorner(w: number, h: number, wide: number, tall: number, view: Vie
 
 /** The caption's opening words: names the inset, and what amber stands for. */
 export function patternInsetBadge(live: boolean, source = 'monitor'): string {
-  return `Corner inset: pattern shape, amber = ${live ? source : 'test source'} · white dashed: not range`;
+  return `Corner inset: pattern shape, amber = ${live ? source : 'test source'} · white dashed = shape only, not range`;
 }
 
 export function PatternInset({ w, h, view, box, avoid, typeId, pattern, angle, source, children }: {

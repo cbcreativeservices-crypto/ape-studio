@@ -303,7 +303,7 @@ const LAYERS: readonly { id: LayerId; label: string; short: string; text: (s: Ve
   { id: 'routes', label: 'Routes people need', short: 'ROUTES', text: (s) => (s.routes.length ? `${s.routes.map((r) => r.label).join('; ')}. A route is never a place to stand; a cable crosses it only where the event approves, under a cover.` : 'No route is marked here.') },
   { id: 'footprints', label: 'Approved places', short: 'APPROVED', text: (s) => `${s.footprints.map((f) => f.label).join('; ')}. A mic goes only where the event has approved it — a credential is not an approval.` },
   { id: 'fixtures', label: 'Fixtures', short: 'FIXTURES', text: (s) => (s.badges.length || s.barriers.length ? [...s.badges.map((b) => `${b.label}: ${BADGE_WORDS[b.kind]}`), ...s.barriers.map((b) => `${b.label}: on its far side is live play.`)].filter((x, i, a) => a.indexOf(x) === i).join(' ') : 'No fixture is marked here.') },
-  { id: 'sound', label: 'Cameras, crowd and PA', short: 'CROWD · PA', text: () => 'The cameras’ frames, the crowd and the PA: what a mic must stay out of the picture of, and what it will hear besides the play.' },
+  { id: 'sound', label: 'Cameras, crowd and PA', short: 'CROWD · PA', text: () => 'The cameras’ frames, the crowd and the PA: keep the mic out of every shot, and expect to hear the crowd and PA besides the play.' },
 ];
 
 export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: readonly SportId[]; title: string; prompt: string; a11yLead: string }): MikingStep {
@@ -360,7 +360,7 @@ export function usePlanTourStep({ sports, title, prompt, a11yLead }: { sports: r
         <Card>
           <Point title={layer.label.toUpperCase()}>{layer.text(scene)}</Point>
         </Card>
-        <Body>The outlines are typical layouts for a picture of where approval is needed — your event’s own plan and rules decide.</Body>
+        <Body>The outlines are typical layouts that show where approval is needed — your event’s own plan and rules decide.</Body>
       </>
     ),
   };
@@ -382,7 +382,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
   const slant = slantRange(from, fromH, t.p, t.h);
   const aim = aimRel(from, t.p);
   const db = rangeDb(r0, slant);
-  const words = `${t.label}: ${fmtM1(plan)} from ${fromLabel} in plan, ${fmtM1(slant)} to the source’s height; ${aimWords(aim)}; about ${Math.abs(db).toFixed(1)} dB ${db >= 0 ? 'weaker' : 'stronger'} than ${ts[0].short} (direct sound, open ground).`;
+  const words = `${t.label}: ${fmtM1(plan)} from ${fromLabel} seen from above, ${fmtM1(slant)} to the source’s height; ${aimWords(aim)}; about ${Math.abs(db).toFixed(1)} dB ${db >= 0 ? 'weaker' : 'stronger'} than ${ts[0].short} (direct sound, open ground).`;
   return {
     key: 'range',
     title: 'Where the sound comes from',

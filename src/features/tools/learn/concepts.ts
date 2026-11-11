@@ -28,7 +28,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'WHY THE DIFFERENCE MATTERS',
-        body: 'EQing a room from an RTA conflates the spectrum of the source with the response of the system, so you end up correcting the music instead of the PA. A flat 1/3-octave RTA with pink noise is a useful sanity check, but it still bakes in one microphone position and every reflection arriving at it. RTA alone does not equal system tuning, and no amount of averaging changes that.',
+        body: 'EQing a room from an RTA mixes up the spectrum of the source with the response of the system, so you end up correcting the music instead of the PA. A flat 1/3-octave RTA with pink noise is a useful sanity check, but it still bakes in one microphone position and every reflection arriving at it. RTA alone does not equal system tuning, and no amount of averaging changes that.',
       },
       {
         head: 'WHERE THE RTA STILL SHINES',
@@ -82,7 +82,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     num: 3,
     title: 'Why Delay Matters',
     intro:
-      'Sound is slow. The acoustic copy of the signal has to physically travel from the loudspeaker to the microphone, and digital gear in the path adds its own delay on top. Professional dual-channel analysis lives or dies on compensating for that total delay, which is why every serious analyzer has a delay finder. This module explains the idea, even though delay finding stays tutorial-only in this toolset.',
+      'Sound is slow. The acoustic copy of the signal has to physically travel from the loudspeaker to the microphone, and digital gear in the path adds its own delay on top. Professional dual-channel analysis lives or dies on compensating for that total delay, which is why every serious analyzer has a delay finder. This module explains the idea, even though these tools don’t run a live delay finder.',
     sections: [
       {
         head: 'SOUND IS SLOW',
@@ -151,7 +151,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     sections: [
       {
         head: 'WHY 60 dB IS HARD TO GET',
-        body: 'To watch a full 60 dB decay you need the excitation to sit at least that far above the background noise, and ordinary rooms with ordinary sources rarely allow it. Traffic, HVAC, and the measurement chain’s own noise floor eat the bottom of the range first. So RT60 is usually an extrapolation, not a direct observation — and honest tools say so.',
+        body: 'To watch a full 60 dB decay you need the excitation to sit at least that far above the background noise, and ordinary rooms with ordinary sources rarely allow it. Traffic, HVAC (heating, ventilation and air-conditioning), and the measurement chain’s own noise floor eat the bottom of the range first. So RT60 is usually an extrapolation, not a direct observation — and honest tools say so.',
       },
       {
         head: 'T20 AND T30 ARE EXTRAPOLATIONS',

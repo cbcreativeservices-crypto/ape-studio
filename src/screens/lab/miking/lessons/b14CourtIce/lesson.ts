@@ -44,7 +44,7 @@ const pages: LessonPages = {
   context: {
     title: 'Floor, structure and headroom',
     goal: 'See why a capsule at a hard floor avoids the comb a raised mic hears, how a structure carries vibration into a clamped mic, and check the whole chain’s headroom.',
-    credit: { scenarios: ['cl.ctx.1', 'cl.ctx.2', 'cl.ctx.3', 'cl.rec.3'], interactive: 'liveChecks', note: 'Try every floor height, compare every mount, AND set a chain with room for every event, then answer the four checks.' },
+    credit: { scenarios: ['cl.ctx.1', 'cl.ctx.2', 'cl.ctx.3', 'cl.rec.3'], interactive: 'liveChecks', note: 'Try every floor height, compare every mount, AND set a chain with headroom for every event, then answer the four checks.' },
     takeaway: 'At the surface, the comb leaves the audio band; on a rigid clamp, the structure arrives with the air. Headroom is checked at every stage — a fader cannot undo a clip.',
   },
   twoMic: {
@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a practice session in order, choose and justify setups for two briefs, and say what would justify an end sector or a plant.',
     credit: { scenarios: ['cl.prac.order', 'cl.prac.gain', 'cl.prac.setup1', 'cl.prac.setup2', 'cl.prac.3', 'cl.mix.1', 'cl.mix.2', 'cl.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real, approved practice.' },
-    takeaway: 'Approved positions, the contact height, air kept apart from structure, a dominant feed per sector and a chain with room pass — and more than one setup can pass.',
+    takeaway: 'What passes: approved positions, the contact height, air kept apart from structure, a dominant feed per sector and a chain with headroom — and more than one setup can pass.',
   },
 };
 
@@ -126,7 +126,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Who installs a mic on a basket assembly?',
     options: ['Qualified venue staff, with approval', 'Your crew, if it can be done quickly', 'The players, as they know the hoop'],
     correct: 'Qualified venue staff, with approval',
-    explain: 'Only with express approval, on a reviewed fixture, installed by qualified venue personnel — never on the rim, the net or the breakaway by default.',
+    explain: 'Only with express approval, on a reviewed fixture, installed by qualified venue personnel — never on the rim, the net or the rim’s breakaway mechanism by default.',
     why: {
       'Your crew, if it can be done quickly': 'Speed is not approval; elevated work is the venue’s.',
       'The players, as they know the hoop': 'Players do not install equipment.',
@@ -198,7 +198,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'From A to C with the gain unchanged, what changes most?',
     options: ['More room against the clap', 'Nothing but the meter reading', 'The clap gets brighter'],
     correct: 'More room against the clap',
-    explain: 'C is more than twice as far as A: the clap is weaker against the same room. Compare at similar loudness, not by level.',
+    explain: 'C is more than twice as far as A: the clap is weaker against the same room. Match the loudness first, then compare — don’t judge by which is louder.',
     why: {
       'Nothing but the meter reading': 'The balance of clap and room changes too.',
       'The clap gets brighter': 'Farther tends to be duller, not brighter.',
@@ -210,7 +210,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'At B you turn the shotgun 30° off its axis. What do you note?',
     options: ['The tone and the spill, then re-aim', 'Nothing, as 30° is inside the lobe', 'A louder clap, then leave it there'],
     correct: 'The tone and the spill, then re-aim',
-    explain: 'Note the tonal change, the coverage and the spill, then restore the aim — and draw no universal pattern from one frequency or voice.',
+    explain: 'Note the tonal change, the coverage and the spill, then restore the aim — and don’t judge the mic’s whole pattern from one frequency or one voice.',
     why: {
       'Nothing, as 30° is inside the lobe': 'Off the axis the tone changes even inside a lobe.',
       'A louder clap, then leave it there': 'Off the axis is quieter, not louder.',
@@ -307,7 +307,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You align the pair for a clap at B. The play moves to A. Then?',
     options: ['It no longer fits the new paths', 'It still fits: the mics did not move', 'It fits better: A is nearer'],
     correct: 'It no longer fits the new paths',
-    explain: 'A moving source changes the difference between paths; an alignment that helps at one point may worsen another. Document any static target you align.',
+    explain: 'A moving source changes the difference between paths; an alignment that helps at one point may worsen another. If you align for one fixed point, note which one.',
     why: {
       'It still fits: the mics did not move': 'The source moved; the paths changed.',
       'It fits better: A is nearer': 'Nearer changes the difference; it does not fix it.',
@@ -407,13 +407,13 @@ const symptoms: Symptom[] = [
     firstChecks: 'Cold ratings for the capsule, battery, receiver and cables; condensation from warm, moist air.',
     options: ['Check cold ratings and condensation', 'Turn all the gains right up to maximum', 'Swap the mic for a louder one'],
     correct: 'Check cold ratings and condensation',
-    explain: 'Confirm cold ratings and manage condensation by the equipment’s instructions; let equipment acclimate. A humidity claim is not waterproofing.',
+    explain: 'Confirm cold ratings and manage condensation by the equipment’s instructions; let equipment acclimate. A humidity rating is not waterproofing.',
     why: { 'Turn all the gains right up to maximum': 'Gain does not restore a dead link.', 'Swap the mic for a louder one': 'The cold or condensation would still be there.' },
   },
   {
     id: 'cl.sym.wind',
     observation: 'Outdoor tennis: rumble on the perimeter shotgun',
-    firstChecks: 'Are the basket and fur fitted? Is the suspension working?',
+    firstChecks: 'Are the basket windshield and fur fitted? Is the suspension working?',
     options: ['Fit the basket and fur', 'Tape over the tube’s side slots', 'Cut the low end hard in the mix'],
     correct: 'Fit the basket and fur',
     explain: 'A compatible wind suspension; never tape over the slots. Wind protection is not water resistance.',
@@ -458,7 +458,7 @@ const setupTasks: SetupTask[] = [
       BRAND_REASON('basketball court'),
       { id: 'r.floor', label: 'A low housing is safe in the band', role: 'wrong', feedback: 'Low profile does not mean safe for contact.' },
     ],
-    explain: 'Two setups pass. What passes is the reasoning: approved positions, a feed per end, ambience between them — and the refused positions accepted.',
+    explain: 'Two setups pass. What passes is the reasoning: approved positions, a feed per end, ambience between them — and the refused positions left out.',
   },
   {
     id: 'cl.prac.setup2',
@@ -586,7 +586,7 @@ export const B14_LESSON: Lesson = {
       { id: 'routes', label: 'benches, officials, ball persons, cleaners', short: 'PEOPLE', note: 'Their routes and places are occupied space: no stand, cable or plant in them — and keep the camera lines clear too.', prov: { kind: 'illustrative', reason: 'the lesson L85, L150' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'floor', label: 'the floor', short: 'FLOOR', note: 'A boundary position is an acoustic and a safety decision: an approved protected place on a suitable surface, beyond the clearance.', prov: { kind: 'illustrative', reason: 'the lesson L54–L63' }, tag: 'SAFETY', scene: 'all' },
       { id: 'structure', label: 'posts, baskets, boards and glass', short: 'STRUCTURE', note: 'They carry vibration and can screen sound; a plant needs express approval and an isolated, reviewed fixture.', prov: { kind: 'illustrative', reason: 'the lesson L64–L66, L125' }, tag: 'VIBRATION', scene: 'all' },
-      { id: 'climate', label: 'cold, damp and outdoor weather', short: 'CLIMATE', note: 'At a rink, cold ratings and condensation; outdoors, a basket and fur — never tape over a shotgun’s slots.', prov: { kind: 'illustrative', reason: 'the lesson L144, L154–L156' }, tag: 'WEATHER', scene: 'all' },
+      { id: 'climate', label: 'cold, damp and outdoor weather', short: 'CLIMATE', note: 'At a rink, cold ratings and condensation; outdoors, a basket windshield and fur — never tape over a shotgun’s slots.', prov: { kind: 'illustrative', reason: 'the lesson L144, L154–L156' }, tag: 'WEATHER', scene: 'all' },
     ],
     stage: 'Meter the real program output as well as the inputs — summing can make new peaks. Route only needed feeds to the PA, keep distant action and ambience out of loudspeaker loops, and verify the feedback margin with the venue engineer.',
     studio: 'A quiet, controlled session lets you change one placement variable at a time; a live venue fixes your access and overlaps crowd, PA and action. Prioritize secure, permitted positions and reliable handoffs.',

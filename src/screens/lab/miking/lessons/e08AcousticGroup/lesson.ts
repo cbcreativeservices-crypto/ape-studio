@@ -582,7 +582,7 @@ export const E08_LESSON: EnsembleLesson = {
       { title: 'LISTEN UNAMPLIFIED', text: 'From the listener’s position: the loudest and softest sections, unison and harmony, sustained notes, rhythmic passages and any solos.' },
       { title: 'CHOOSE THE GOAL', text: 'Ensemble-first — the group as one acoustic instrument — or individual control with spots and direct outputs. Neither is automatically more professional.' },
       { title: 'SEAT THEM', text: 'About the same distance from where the main pair will go; a loud instrument farther, a quiet one nearer; bright instruments off their neighbors’ mics.' },
-      { title: 'MARK IT', text: 'Mark the chairs, stands and mic bases so a second take or the interval returns to the same geometry.' },
+      { title: 'MARK IT', text: 'Mark the chairs, stands and mic bases so a second take or the second set returns to the same geometry.' },
     ],
     safety: 'Keep stands out of reach of a performer, a bow, a case or a stagehand; wait for a break or stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; do not push the system into feedback during a performance.',
     workedWords: {

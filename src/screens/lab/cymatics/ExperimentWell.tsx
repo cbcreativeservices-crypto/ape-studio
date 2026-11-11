@@ -162,7 +162,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   return (
     <View style={styles.card}>
       <View style={styles.headRow}>
-        <Text style={styles.eyebrow}>EXPERIMENT {experiment.num} / {EXPERIMENTS.length}</Text>
+        <Text style={styles.eyebrow}>EXPERIMENT {experiment.num}</Text>
         <Pressable onPress={() => setOpen((o) => !o)} hitSlop={8} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={open ? 'Fold the experiment steps' : 'Unfold the experiment steps'}>
           <Text style={styles.fold}>{open ? '▾ FOLD' : '▸ STEPS'}</Text>
         </Pressable>

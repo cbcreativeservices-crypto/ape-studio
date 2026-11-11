@@ -468,7 +468,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'line_level',
         'wrong',
-        'You picked LINE-LEVEL AUDIO — but that is the SIGNAL connection, arriving separately on XLR. What comes out of a wall receptacle is AC voltage, whatever it gets called; treat every wall line as power. What travels here is AC POWER.',
+        'You picked LINE-LEVEL AUDIO — but that is the SIGNAL connection, arriving separately on XLR. What comes out of a wall receptacle is AC voltage, even when people call it “line”; treat every wall line as power. What travels here is AC POWER.',
         'danger',
       ),
       travels(
@@ -749,7 +749,7 @@ const B_PICKS: ConnectionPick[] = [
       travels(
         'line_level',
         'wrong',
-        'You picked LINE-LEVEL AUDIO. A microphone produces thousandths of a volt — far below line level; sending it into a line path leaves it faint and gained-up. What must travel here is MIC-LEVEL AUDIO.',
+        'You picked LINE-LEVEL AUDIO. A microphone produces thousandths of a volt — far below line level; sending it into a line path leaves it faint, so it has to be gained up. What must travel here is MIC-LEVEL AUDIO.',
         'noise',
       ),
       travels(

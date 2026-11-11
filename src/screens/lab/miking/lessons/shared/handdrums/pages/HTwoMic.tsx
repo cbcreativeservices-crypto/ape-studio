@@ -156,7 +156,7 @@ function PairPage({ lesson, art, answers, onAnswered, onInteractive, interactive
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A', 'B']} showZones={false} pathsFrom={src} interactive={!hidden} labelFor={labelFor} />,
-        badge: `A simplified picture · dashed = straight paths · white lobe = pattern shape, not range · one point source, no reflections · c = ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
+        badge: `A simplified picture · dashed = straight paths · white lobe = pattern shape, not range · one point source, no reflections · speed of sound ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
         bezel,
         params,
         initialParam: 'pos',

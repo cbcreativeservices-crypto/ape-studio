@@ -49,8 +49,8 @@ describe('evening pass 2 — community / careers / awards', () => {
     assert.match(fam, /useEnrollmentProgress\(coreGsHere\)/);
     // The words match the Enrollments row's own notice.
     const enr = read('src/screens/enrollment/EnrollmentScreen.tsx');
-    assert.ok(enr.includes("'Required co-requisites stay in your list until you complete them.'"));
-    assert.ok(fam.includes("'Required co-requisites stay in your list until you complete them.'"));
+    assert.ok(enr.includes("'This is a required topic, so it stays in your list until you complete it.'"));
+    assert.ok(fam.includes("'This is a required topic, so it stays in your list until you complete it.'"));
     assert.ok(fam.includes("'This topic is always part of your list.'"));
   });
 

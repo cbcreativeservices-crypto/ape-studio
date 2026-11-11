@@ -48,7 +48,7 @@ import type { BoothRender } from '../engine/djRender';
 import { isEventRender } from '../engine/djEventRender';
 
 const TERMS = [
-  { term: 'Record tap', def: 'Where the recorder takes its feed from. A REC OUT is usually a fixed-level copy of the mix, so your MASTER moves never ride the take; a booth or master output follows its knob. Mixers differ.' },
+  { term: 'Record tap', def: 'Where the recorder takes its feed from. A REC OUT is usually a fixed-level copy of the mix, so your MASTER moves never change the take’s level; a booth or master output follows its knob. Mixers differ.' },
   { term: 'Capture level', def: 'The recorder’s own input gain. Set it on the loudest part with headroom: peaks around −12 to −3 dBFS on the RECORDER’s meter is a good starting point. A clip there is in the file forever.' },
   { term: 'Loopback', def: 'Software that records what the computer itself is playing. It never hears the mixer, the players or the mic — only the computer’s own output.' },
   { term: 'Monitoring loop', def: 'When an app sends what it records back out to something that feeds it again: an echo that can build into a howl. Monitor the recording in headphones, not back into the mix.' },
@@ -367,11 +367,11 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Set REC GAIN so the RECORDER’s peaks sit between −12 and −3 dBFS. Switch MIC → REC on and TALK while you record, then STOP and PLAY THE TAKE: the green marks under the waveform are where the mic is in the file. Listen as RECORDER to hear its input live.</P>
-        <Note>On the recorder itself: its LINE input (not MIC), and AUTO LEVEL OFF — or it pumps the mix up and down. A peak limiter can stay on as a backstop, but set the level so it does not work. If you stream from an app, monitor it in headphones, not back into the mix (Terms: Monitoring loop).</Note>
+        <Note>On the recorder itself: its LINE input (not MIC), and AUTO LEVEL OFF — or it pumps the mix up and down. A peak limiter can stay on as a backstop, but set the level so it never has to act. If you stream from an app, monitor it in headphones, not back into the mix (Terms: Monitoring loop).</Note>
         <Note>Streaming and recording rules depend on the service and on the music: some services will not let you record or stream certain tracks, or need permission. Check the rules of the one you use before the event.</Note>
       </Step>
       <Step n={4}>
-        <Do>Record from REC OUT and prove MASTER does not ride it, set a clean capture level, get the mic into the take, and play back a take with music and voice.</Do>
+        <Do>Record from REC OUT and prove MASTER moves do not change the take, set a clean capture level, get the mic into the take, and play back a take with music and voice.</Do>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
       </Step>
       <Step n={5}>

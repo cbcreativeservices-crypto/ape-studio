@@ -169,7 +169,7 @@ function secondCableVerdict(system: SoundSystem, pair: readonly Link[], a: Place
     return { ok: false, reason: `A cable from the ${fromName} already carries ${outName(out)} into the ${toName} — a second would be the same signal twice.` };
   }
   if (!out && pair.some((l) => !l.out)) {
-    return { ok: false, reason: 'The cable already there carries no single output yet — choose its OUTPUT first, then run a second cable for the other output.' };
+    return { ok: false, reason: 'The cable already there has no output chosen yet — choose its OUTPUT first, then run a second cable for the other output.' };
   }
   return null;
 }

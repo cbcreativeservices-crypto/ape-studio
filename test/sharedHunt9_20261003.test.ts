@@ -37,7 +37,7 @@ test('1 · LabChecklist never says "Not started" (or draws ○ / a partial) for 
   assert.match(src, /const partial = !unknown &&/);
   // Every "Not started." in a label sits behind an `unknown` check.
   const labels = src.split("'Not started.'").length - 1;
-  const guarded = (src.match(/unknown\s*\?\s*'Progress could not be read\.'\s*:\s*(?:partial[\s\S]{0,160}?)?'Not started\.'/g) ?? []).length;
+  const guarded = (src.match(/unknown\s*\?\s*'Progress couldn’t load\. Try again later\.'\s*:\s*(?:partial[\s\S]{0,160}?)?'Not started\.'/g) ?? []).length;
   assert.equal(labels, 2);
   assert.equal(guarded, 2);
 });

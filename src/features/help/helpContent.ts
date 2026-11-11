@@ -128,7 +128,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         // no certificate.
         id: 'study-custom-list',
         q: 'What is My Custom List?',
-        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study Dashboard: turn the topic dial to My Custom List. With membership, all of its study methods (flashcards, fill-in-the-blank, matching and scenarios) are open from the start, and once it holds 30 terms you can take a practice quiz of 30 up to all of them, picked at random. It’s practice only and doesn’t count toward a certificate.',
+        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study Dashboard: turn the topic dial to My Custom List. With membership, all of its study methods (flashcards, fill-in-the-blank, matching and scenarios) are open from the start, and once it holds 30 terms you can take a practice quiz of terms picked at random, choosing a length from 30 up to the whole list. It’s practice only and doesn’t count toward a certificate.',
       },
       {
         id: 'study-quiz',
@@ -279,7 +279,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'pv-calibration',
         q: 'What is “contribute anonymized calibration data”?',
-        a: 'Optional, off until you turn it on: after you calibrate, it shares only your offset and phone model — never audio, location, or anything identifying — so owners of the same phone start closer to accurate.',
+        a: 'Optional, off until you turn it on: after you calibrate, it shares only your calibration offset and phone model — never audio, location, or anything identifying — so owners of the same phone start closer to accurate.',
       },
       {
         id: 'pv-registry',

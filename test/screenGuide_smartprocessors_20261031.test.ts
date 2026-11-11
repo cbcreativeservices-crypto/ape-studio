@@ -220,7 +220,7 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageFrequency'), /min=\{0\.7\} max=\{4\} step=\{0\.1\}/);
     const t = PAGES.frequency.tryThis.join('\n');
     assert.match(t, /“s” · 7\.0k is heard 98%\. Slide Band width to Q 4\.0 · narrow: 86%/);
-    assert.match(t, /pick “sh” · 4\.0k: 24%, Missing it\. Under STARTING POINTS, tap "SH" rather than "S" · 4\.0k: the detector moves to 4\.0 kHz and hears 100%/);
+    assert.match(t, /pick “sh” · 4\.0k: 24%, Missing it\. Under STARTING POINTS, tap the "SH" rather than "S" · 4\.0k button: the detector moves to 4\.0 kHz and hears 100%/);
     // the page leaves the shared rack at 4.0 kHz / Q 4.0 — so it hands it back
     assert.match(t, /set the detector back to 6\.5 kHz and Q 1\.4, where the lab starts/);
     assert.match(pageSrc('PageFrequency'), /set\(\{ freqHz: h\.hz \}\)/);
