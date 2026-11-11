@@ -16,7 +16,7 @@ never uses this, so the declaration is unnecessary."*
 | What I removed | What happened |
 |---|---|
 | `photosPermission: false` on expo-media-library | **Apple rejected the upload, error 90683.** The SDK LINKS PhotoKit read APIs regardless of the flag, and Apple's scanner reads the BINARY, not the code paths. |
-| Android `blockedPermissions` for the same feature | **Save-to-Photos broke on device.** `requestPermissionsAsync(writeOnly:true)` maps to `WRITE_EXTERNAL_STORAGE`/`READ_MEDIA_IMAGES`, and Android returns DENIED instantly for anything the manifest omits. No prompt, no error — the save just does not happen. |
+| Android `blockedPermissions` for the same feature | **Save-to-Photos broke on device.** `requestPermissionsAsync(writeOnly:true)` maps to `WRITE_EXTERNAL_STORAGE`/`READ_MEDIA_IMAGES`, and Android returns DENIED instantly for anything the manifest omits. No prompt, no error — the save just does not happen. (2026-11-11: no longer applies — Android SAVE uses the Share sheet since 2026-10-09; 1.0.1 blocks the pair.) |
 | — | I had ALREADY written the Apple lesson down and flagged Android as "the identical mechanism, untested". It failed within the hour. Writing a warning is not the same as acting on it. |
 
 **The rule:** a permission or purpose string must describe what the BINARY CAN

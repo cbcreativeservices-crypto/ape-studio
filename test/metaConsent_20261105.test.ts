@@ -641,15 +641,16 @@ describe('a person with no account', () => {
     assert.equal(p.sdkTouched(), false);
   });
 
-  it('a guest who says yes in Settings is on for this launch', async () => {
-    const p = phone();
+  it('a guest cannot opt in from Settings either (owner 2026-11-11)', async () => {
+    const p = phone({ choice: 'yes' });
     p.engine.noteMemberGate('locked', true);
     await p.settle();
     p.engine.offerConsent();
-    await p.settle();
-    p.popup.done?.('yes');
-    await p.settle();
-    assert.equal(p.engine.phase(), 'on');
+    await p.pass(600_000);
+    assert.equal(p.count('popup'), 0);
+    assert.equal(p.count('saveConsent'), 0);
+    assert.equal(p.sdkTouched(), false);
+    assert.notEqual(p.engine.phase(), 'on');
   });
 
   it('an unknown session is not a guest: known only from a settled locked gate', () => {
@@ -833,7 +834,7 @@ describe('the wording and the Settings row', () => {
   it('the row shows only behind the Meta gate, never on web', () => {
     assert.match(settings, /if \(Platform\.OS === 'web'\) return;\s+try \{\s+const meta = require\('\.\.\/\.\.\/features\/growth\/metaMeasurement'\)/);
     assert.match(settings, /setAdMeasurementRow\(meta\.adMeasurementAvailable\(\)\);/);
-    assert.match(settings, /\{adMeasurementRow \? <AdMeasurementRow \/> : null\}/);
+    assert.match(settings, /\{adMeasurementRow && adMeasurementSignedIn \? <AdMeasurementRow \/> : null\}/);
     assert.match(settings, /useState\(false\);\s+useEffect\(\(\) => \{\s+if \(Platform\.OS === 'web'\) return;/);
     assert.match(measurement, /export function adMeasurementAvailable\(\): boolean \{\s+if \(Platform\.OS === 'web'\) return false;[\s\S]*?metaAllowed\(device\.gateFacts\(\)\)/);
   });

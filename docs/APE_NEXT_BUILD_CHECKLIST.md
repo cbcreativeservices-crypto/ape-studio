@@ -307,6 +307,8 @@ and worked before E-3 touched it.
 
 **Why it broke:** `saveToLibraryAsync` goes through
 `requestPermissionsAsync(writeOnly: true)`, which maps to
+**UPDATE 2026-11-11:** this warning is out of date. Android SAVE goes through the Share sheet since 2026-10-09 (src/screens/lab/harmoExport.ts:75-78) and never calls the media library, so 1.0.1 blocks READ/WRITE_EXTERNAL_STORAGE and SYSTEM_ALERT_WINDOW (owner 2026-11-11; pinned by test/androidBlockedPermissions_20261111.test.ts). Tap SAVE once on an Android 12-or-lower phone after the build.
+
 `WRITE_EXTERNAL_STORAGE` (and `READ_MEDIA_IMAGES` on API 33+). Android returns
 **denied immediately** for any permission the manifest does not declare — there
 is no prompt and no error worth reading, so the save just does not happen.

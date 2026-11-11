@@ -41,6 +41,7 @@ import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/too
 import { sendFeedback, setFeedbackIdentity } from '../../lib/feedback';
 import { REDEEM_GRANTED_NOT_REFRESHED, redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useTier } from '../../features/commercial/useTier';
 import { supabase } from '../../lib/supabase';
 import { softDeadline, withDeadline } from '../../lib/boundedCall';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
@@ -159,6 +160,11 @@ export function SettingsScreen({ navigation }: Props) {
   const [apeId, setApeId] = useState('');
   // Community mic-catalog contribution consent (device-local, opt-in, default off).
   const [contribute, setContribute] = useState(false);
+  // Ad measurement for a SIGNED-IN account only (owner 2026-11-11): a guest
+  // never opts in. From useTier(), so an unknown session ('unknown', or a read
+  // that has not landed) is no guest either: it simply does not show the row yet.
+  const accountTier = useTier();
+  const adMeasurementSignedIn = accountTier === 'free' || accountTier === 'member';
   // Inside the Meta gate only (region, phone, this build's values). Never on web.
   const [adMeasurementRow, setAdMeasurementRow] = useState(false);
   useEffect(() => {
@@ -1128,7 +1134,7 @@ ${LOCAL_LOSS}`
               }}
             />
           </View>
-          {adMeasurementRow ? <AdMeasurementRow /> : null}
+          {adMeasurementRow && adMeasurementSignedIn ? <AdMeasurementRow /> : null}
         </SettingsSection>
 
         {/* FEEDBACK & SUPPORT — opens the mail composer, pre-filled. */}

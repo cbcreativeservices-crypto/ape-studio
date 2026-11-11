@@ -19,10 +19,14 @@
  *    has started, so `stopNow` is what stops it: nothing more is logged, auto
  *    flushing is turned off so a queued event stays on the phone, ad id
  *    collection goes off, and the next launch does not start the SDK.
- *  • A KNOWN GUEST IS NEVER ASKED. Consent belongs to a person and goes in the
- *    account wipe, and a guest is wiped at every launch: a guest's No could not
- *    be kept, so asking would re-ask it for ever. For the same reason a stored
- *    yes does not start Meta for a guest. Settings still works for this launch.
+ *  • A KNOWN GUEST NEVER OPTS IN (owner 2026-11-11). Consent belongs to a
+ *    person and goes in the account wipe, and a guest is wiped at every launch:
+ *    a guest's No could not be kept, so asking would re-ask it for ever. So a
+ *    known guest is never asked, not at the calm moment and not from Settings
+ *    (the row is hidden for a guest, and `offerConsent` asks nothing for one),
+ *    a yes that lands after the session became a known guest is not kept, and
+ *    a stored yes never starts Meta for a guest. An UNKNOWN session is not a
+ *    guest: it is simply not settled, so nothing starts until it is.
  *  • Only these reach Meta: Meta's install report, the app open with iOS's
  *    session length (`realActivateReportsOpen`), and a purchase with the
  *    store's price and currency. No user id, no email, no Advanced Matching,
@@ -236,7 +240,7 @@ export type MetaEngine = {
   noteMemberGate(gate: MemberGateState, knownGuest?: boolean): void;
   noteAppOpen(): void;
   notePurchase(note: PurchaseNote): void;
-  /** Settings, switching on: the same popup. */
+  /** Settings, switching on: the same popup. Asks nothing for a known guest. */
   offerConsent(): void;
   /** Settings, switching off. */
   withdrawConsent(): void;
@@ -258,8 +262,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
   /** Null until read. A change made meanwhile outranks a read still out. */
   let consent: ConsentRead | null = null;
   let readingConsent = false;
-  /** Said in this launch, so it holds for a guest too (see the rules above). */
-  let yesThisLaunch = false;
   /** One question per launch, whatever the answer. */
   let consentAsked = false;
   /** Bumped by every stop and every change of answer: work that began before
@@ -273,7 +275,8 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     queued = [];
   };
 
-  const consentGiven = () => consent === 'yes' && (yesThisLaunch || !knownGuest);
+  /** A yes never applies to a known guest, stored or said (the rules above). */
+  const consentGiven = () => consent === 'yes' && !knownGuest;
 
   /** Not a device fact, so unlike turnOff this can be undone by a later yes.
    *  Neither SDK has a shutdown call, so this is everything there is. */
@@ -456,7 +459,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     consentRun += 1;
     stopNow(); // first, and in this tick: logging stops before anything is saved
     consent = 'no';
-    yesThisLaunch = false;
     void device.saveConsent('no').catch(() => false);
   };
 
@@ -466,6 +468,8 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       withdraw();
       return;
     }
+    // The popup may have opened before the session settled as a known guest.
+    if (knownGuest) return;
     consentRun += 1;
     const run = consentRun;
     let saved = false;
@@ -476,11 +480,12 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     }
     if (!saved || run !== consentRun) return; // a yes the phone could not keep starts nothing
     consent = 'yes';
-    yesThisLaunch = true;
     decide();
   };
 
+  /** Every question goes through here, so a known guest is never asked. */
   const ask = () => {
+    if (knownGuest) return;
     consentAsked = true;
     try {
       device.askConsent((choice) => void takeAnswer(choice));
@@ -551,6 +556,8 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       else tryStart();
     },
     offerConsent() {
+      // Defence in depth: Settings hides the row for a guest (owner 2026-11-11).
+      if (knownGuest) return;
       ask();
     },
     withdrawConsent() {
@@ -560,7 +567,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       consentRun += 1;
       stopNow();
       consent = 'unset';
-      yesThisLaunch = false;
       // The next person is asked on a later launch, not over this one's end.
       consentAsked = true;
     },

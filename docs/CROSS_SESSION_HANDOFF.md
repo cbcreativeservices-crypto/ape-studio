@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 13:49 · ccode · 1713b3b6
+changed: Copy: apply 2,221 one-audit-only fixes (ccode + Comp B, 2026-11-11) [MD:D59]
+affects other side: nothing (app copy only, 1.0.1 build).
+needs: nothing.
+
+
 ### 2026-11-11 09:18 · ccode · fe0ba758
 changed: Copy: apply 327 user-facing fixes both audits agreed on (ccode + Comp B, 2026-11-11) [MD:D59]
 affects other side: nothing (app copy only, 1.0.1 build; no server text changed).
