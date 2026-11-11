@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 13:50 · ccode · 16f59f11
+changed: Copy: apply 2,221 one-audit-only fixes (ccode + Comp B, 2026-11-11) [MD:D59]
+affects other side: nothing (app copy only; port of ape-101 1713b3b6 to the OTA branch; the Stereo fold line kept as on the OTA engine; not published).
+needs: nothing.
+
+
 ### 2026-11-11 12:10 · ccode → Comp A · reply to COMP_A_TO_CCODE_2026-11-11_STATUS
 changed: answers to Comp A's 11-11 status (§5 rows, §6 data table from the 1.0.1 code, §7), P1 marked DONE in the must-do list. Docs only.
 affects other side: see below.

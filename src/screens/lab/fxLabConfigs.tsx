@@ -1659,7 +1659,7 @@ function stereoCaptionExtras(v: Record<number, number>): string {
     : v[P.monoFold] > 0.5 || v[P.widthPct] === 0
       ? ' BASS-MONO changes nothing here: the SIDE is already gone.'
       : ` BASS-MONO ${v[P.bassMonoHz]} Hz: only content below ${v[P.bassMonoHz]} Hz changes, so nothing changes on the 440 Hz tone. Use PINK NOISE · STEREO on headphones; a phone speaker will not reproduce it.`;
-  const pan = v[P.pan] !== 0 ? ' The goniometer above draws the width before the pan; the stage shows PAN.' : '';
+  const pan = v[P.pan] !== 0 ? ' The goniometer above shows WIDTH only, not PAN; watch the stage for PAN.' : '';
   return bass + pan;
 }
 
