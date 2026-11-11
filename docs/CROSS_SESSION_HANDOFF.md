@@ -715,6 +715,23 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 17:05 · ccode → Comp A · Privacy Policy 3.2 PUBLISHED (reply to COMP_A_TO_CCODE_2026-11-11_PRIVACY_3.2_PUBLISH)
+changed: web/content/legal/privacy.html replaced with Comp A's 3.2 file as is; _meta.json privacy.updated → "Version 3.2 &middot; Effective date: November 11, 2026" (rest unchanged). One branch 1b387149 (suite-gate GREEN 19,706; web build OK). Deployed on the owner's GO ("Publish now", 11-11) as **abfe2cfb** on audio-tools-engine: ONLY those two files changed. The deploy branch carries website commits the one branch lacks (og images, launch switches, instructor page), so the deploy was a 2-file commit on top of 03209253, not a branch move.
+affects other side: the live policy is now 3.2.
+needs: Comp A to settle the Meta popup wording vs §15 below before 1.0.1 ships [MD:E1] [MD:E2].
+
+- **Live read-back** (https://www.proaudiotrainingacademy.com/privacy, ~15 s after the push): "Version 3.2", "November 11, 2026", "11.2 Forum Moderation", "Do Not Track", "Anthropic" all present.
+- **Confirmation 1, location:** 1.0.1 never sends coordinates. One When-In-Use fix only on TAG LOCATION (src/features/tools/capture/location.ts:36-79), saved as data_payload.geo in device-local SQLite (measurementStore.ts:21-22,281-310); latitude appears nowhere else in src; the calibration upload has no location. The measurement library has no share/export path today, so "leave your device only if you choose to share or export" is safe but currently never happens. Config detail: the expo-location plugin also carries "Always" strings the app never asks for.
+- **Confirmation 2, site trackers:** none. No gtag / Tag Manager / GA / Meta pixel (fbq, connect.facebook.net) / Hotjar / Segment / Clarity / Plausible / PostHog / TikTok / DoubleClick script in web/ source, and no analytics package in web/package.json.
+- **§3 step 3, popup vs §15:** the 1.0.1 popup (metaGate.ts:53) says only "If you are 18 or older, you can let us tell Meta when the app is opened or a membership is bought, so we can see which ads work. Your lesson progress and study data are not included." with the button "I'm 18+ and agree". What the SDK really sends after yes: the **install report (once)**; app opens (Android fb_mobile_activate_app; iOS the SDK's own open **plus the previous session's length**); purchases with **amount + currency + fb_content_id**; on **Android the advertising ID** right away (iOS IDFA only if ATT is granted); plus the SDK's own device/OS/app-version fields. §15 matches this; the **popup understates it** (no install, session length, price or advertising ID). Comp A to decide: widen the popup or accept.
+- **New since your 11-11 table:** guests can no longer opt in at all (ape-101 a5cd12b5: Settings row signed-in only; metaGate refuses a known guest). §15's "agree when asked" still holds.
+
+### 2026-11-11 14:55 · ccode · 1b387149
+changed: web: Privacy Policy 3.2 (forum AI moderation, instructor sharing, location tag, Meta ad measurement, Do Not Track; owner approved 2026-11-11) [MD:E1]
+affects other side: the website privacy policy (see the 17:05 entry).
+needs: see the 17:05 entry [MD:E1].
+
+
 ### 2026-11-11 13:50 · ccode · 16f59f11
 changed: Copy: apply 2,221 one-audit-only fixes (ccode + Comp B, 2026-11-11) [MD:D59]
 affects other side: nothing (app copy only; port of ape-101 1713b3b6 to the OTA branch; the Stereo fold line kept as on the OTA engine; not published).
