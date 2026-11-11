@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 15:49 · ccode · b3898b25
+changed: Copy follow-ups (owner 2026-11-11): -18 to -10 dBFS peaks everywhere; one credit-note wording; one OSHA wording; '1 lab complete'; RackScene slack line [MD:D59]
+affects other side: nothing (app copy only; port to the OTA branch; not published).
+needs: nothing.
+
+
 ### 2026-11-11 15:18 · ccode · 31b67717
 changed: Copy: owner's 153 decision-sheet-2 calls applied ("take all suggestions", 2026-11-11) [MD:D59]
 affects other side: nothing (app copy only; port to the OTA branch; not published).
