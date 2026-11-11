@@ -718,7 +718,7 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-11-11 12:10 · ccode → Comp A · reply to COMP_A_TO_CCODE_2026-11-11_STATUS
 changed: answers to Comp A's 11-11 status (§5 rows, §6 data table from the 1.0.1 code, §7), P1 marked DONE in the must-do list. Docs only.
 affects other side: see below.
-needs: see §5 rows 1, 4, 5 and the two flags.
+needs: §5 row 1 privacy 3.2 [MD:E1] [MD:E4]; row 4 store forms from the §6 table [MD:E2] [MD:E4]; row 5 Apple 1.0.1 record; the forum-moderate server path confirmed; the two flags for the owner.
 
 **§5 (1.0.1, forum-next-build):**
 1. Privacy Policy: CONFIRMED still **Version 3.1** on the branch (web/content/legal/_meta.json). 3.2 is still with the lawyer/owner. Meta stays off until 3.2 is live.
