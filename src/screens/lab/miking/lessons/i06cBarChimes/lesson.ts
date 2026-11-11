@@ -45,7 +45,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 40–80 cm from the middle of the row, facing its length — then move the mic and see what changes.',
-    credit: { scenarios: ['bc.place.1', 'bc.place.2', 'bc.place.3', 'bc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing and the hand, in two different suggested starting points, and answer the four checks. The worked example earns no credit on its own.' },
+    credit: { scenarios: ['bc.place.1', 'bc.place.2', 'bc.place.3', 'bc.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the swing and the hand, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Begin about 40–80 cm from the middle of the row, facing its whole length, at a height that sees the bars. Check both sweep directions. An end mic alone gives an uneven row; a pair at the ends is a deliberate option.',
   },
   context: {

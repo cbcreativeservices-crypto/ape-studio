@@ -127,7 +127,7 @@ describe('hearing safety is taught where it matters (audio C1, cognitive C2)', (
     assert.match(p1, /85 dBA averaged over an 8-hour day/);
     assert.match(p1, /every 3 dB\b/);
     assert.match(p1, /NIOSH advises/);
-    assert.match(p1, /\(OSHA\) is 90 dBA, halving the time for every 5 dB above that/);
+    assert.match(p1, /\(OSHA\) is 90 dBA for 8 hours, halving the time for every 5 dB above that/);
     assert.match(p1, /nothing to do with a microphone’s maximum SPL rating/);
     assert.ok(lesson.pages.setting.credit.scenarios.includes('k.inst.2'));
     // The guideline's source is named on screen (owner ruling 2026-10-23) and stays on the record.

@@ -17,7 +17,7 @@ import { SSound } from '../smallperc/pages/SSound';
 import { makeFoleySetting, type FoleySettingSpec } from './FoleySetting';
 
 export const FOLEY_HEARING =
-  'Protect hearing — the performer’s and yours. Keep headphones, monitors and any PA at comfortable levels: a useful balance never needs a dangerous level, and a performer judging texture on headphones needs them comfortable for long sessions. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — limits for PEOPLE, measured where a person listens; a mic’s maximum SPL rating says nothing about them.';
+  'Protect hearing — the performer’s and yours. Keep headphones, monitors and any PA at comfortable levels: a useful balance never needs a dangerous level, and a performer judging texture on headphones needs them comfortable for long sessions. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that — limits for PEOPLE, measured where a person listens; a mic’s maximum SPL rating says nothing about them.';
 
 /** A Foley lesson's art with the family's pages and their step counts.
  *  `path`: the lesson's own decision step on STARTING SETUPS (F04's paths). */

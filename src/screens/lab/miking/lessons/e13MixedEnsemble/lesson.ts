@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes for the front and back players and across the width.',
-    credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example alone earns no credit.' },
+    credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page.' },
     takeaway: 'Change one variable at a time and compare at a consistent level. Closer favors the front players; farther back, more blend and room. The array moves as a unit.',
   },
   context: {

@@ -53,7 +53,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 0.9–1.8 m from the middle of the steps, in front or a little to one side, aimed down at where the feet land — then move the mic and see what changes.',
-    credit: { scenarios: ['f01.place.capsule', 'f01.place.1', 'f01.place.2', 'f01.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the movement, inside two different starting-point zones, and answer the four checks. The worked example earns no credit on its own — it is there to read.' },
+    credit: { scenarios: ['f01.place.capsule', 'f01.place.1', 'f01.place.2', 'f01.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the movement, inside two different starting-point zones, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A starting point is a place to begin, read from the middle of the steps to the capsule — not a rule. Distance, aim and height are separate tone controls, and the movement and the exit path come first.',
   },
   context: {

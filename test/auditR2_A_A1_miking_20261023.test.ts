@@ -89,7 +89,7 @@ describe('Owner ruling 2026-10-23 #1 · hearing guidance names its authorities',
       for (const m of s.matchAll(/[^'`]*\b85 dBA\b[^'`]*/g)) {
         n += 1;
         assert.match(m[0], /NIOSH/, `${f}: ${m[0].slice(0, 80)}`);
-        assert.match(m[0], /OSHA\) is 90 dBA(?: with a 5 dB rule|, halving the time (?:for )?every 5 dB)/, `${f}: ${m[0].slice(0, 80)}`);
+        assert.match(m[0], /OSHA\) is 90 dBA(?: with a 5 dB rule| for 8 hours, halving the time for every 5 dB above that)/, `${f}: ${m[0].slice(0, 80)}`);
         assert.doesNotMatch(m[0], /(workplace|legal) limit[^.;]*85/i, f);
       }
     }

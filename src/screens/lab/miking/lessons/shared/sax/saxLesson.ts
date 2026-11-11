@@ -566,9 +566,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: `Your ${s} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
       options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the stage stays below the rating', 'It is safe as long as the mic is nearer the bell than you are'],
       correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-      explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
+      explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are measured where the person listens.',
       why: {
-        'It is safe for a while, as long as the stage stays below the rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+        'It is safe for a while, as long as the stage stays below the rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
         'It is safe as long as the mic is nearer the bell than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
       },
     },

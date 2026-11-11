@@ -21,14 +21,26 @@ import type { LabRequirementRow } from '../features/lab/labRequirementList';
 import { requirementTally } from '../features/lab/labRequirementList';
 import { colors, fonts } from '../theme/tokens';
 
-export function LabChecklistSummary({ rows, label }: { rows: readonly LabRequirementRow[]; label?: string }) {
+export function LabChecklistSummary({
+  rows,
+  label,
+  labelOne,
+}: {
+  rows: readonly LabRequirementRow[];
+  /** The counted word when the count is not 1 (default 'labs'). */
+  label?: string;
+  /** The counted word when exactly 1 is complete (default 'lab'; a caller
+   *  that passes `label` without `labelOne` keeps its own word). */
+  labelOne?: string;
+}) {
   const { done, total, pct } = requirementTally(rows);
+  const word = done === 1 ? (labelOne ?? label ?? 'lab') : (label ?? 'labs');
   const left = total - done;
   return (
     <View style={s.summary}>
       <View style={s.summaryTop}>
         <Text style={s.summaryCount}>
-          {done} {label ?? 'labs'} complete
+          {done} {word} complete
         </Text>
         <Text style={[s.summaryPct, left === 0 && s.summaryPctDone]}>{pct}%</Text>
       </View>

@@ -213,7 +213,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
       </Text>
       {res.pass ? (
         <>
-          <Text style={styles.resultText}>Go to any page. The check earns no credit on its own: each page earns its credit when you answer all of its questions.</Text>
+          <Text style={styles.resultText}>Go to any page. The check alone does not count toward any page: each page earns its credit when you answer all of its questions.</Text>
           <View style={styles.row}>
             <Go label={`GO TO ${journey.titleOf('microphone').toUpperCase()}`} onPress={() => journey.goPage('microphone')} />
             <Go label={`GO TO ${journey.titleOf('placement').toUpperCase()}`} onPress={() => journey.goPage('placement')} />

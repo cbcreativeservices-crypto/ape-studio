@@ -40,7 +40,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Channel plans',
     goal: 'Build a plan in stages — from one whole-kit mic to an extensive setup — and see what each channel costs.',
-    credit: { scenarios: ['kt.place.1', 'kt.place.2', 'kt.place.3', 'kt.rec.2'], interactive: 'twoPlans', note: 'Build a plan of four mics or fewer and one of eight or more, and answer the four checks. The worked plan alone earns no credit.' },
+    credit: { scenarios: ['kt.place.1', 'kt.place.2', 'kt.place.3', 'kt.rec.2'], interactive: 'twoPlans', note: 'Build a plan of four mics or fewer and one of eight or more, and answer the four checks. The worked plan alone does not count toward this page.' },
     takeaway: 'Establish the picture first, then add each close mic for a purpose. Count channels, stands, inputs and bleed — an optional channel is not automatically an improvement, and the counts never grade a plan.',
   },
   context: {
@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Twelve channels means many full-kit passes at soundcheck. What protects your hearing?',
     options: ['Limiting level and time where you are, and hearing protection', 'The desk’s meters, which show when it is too loud for people', 'Nothing more — the mics’ maximum SPL keeps things in a safe range'],
     correct: 'Limiting level and time where you are, and hearing protection',
-    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB above that. Limit unnecessary loud repetitions.',
+    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Limit unnecessary loud repetitions.',
     why: {
       'The desk’s meters, which show when it is too loud for people': 'Desk meters show signal level, not the level at your ears.',
       'Nothing more — the mics’ maximum SPL keeps things in a safe range': 'Maximum SPL says when a MIC distorts. It says nothing about your ears.',
@@ -616,7 +616,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your kit mics are rated to 140 dB SPL or more. What does that tell you about standing by the kit through a long soundcheck?',
     options: ['Nothing — it is the mics’ distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mics’ rating', 'It is safe as long as the mics are between you and the kit'],
     correct: 'Nothing — it is the mics’ distortion limit, not a hearing limit',
-    explain: 'Max SPL says when a MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB above that. Both are measured where the person listens.',
+    explain: 'Max SPL says when a MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are measured where the person listens.',
     why: {
       'It is safe for a while, as long as the kit stays below the mics’ rating': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as the mics are between you and the kit': 'Mics do not shield your ears. Limit the level and the time, and use hearing protection.',

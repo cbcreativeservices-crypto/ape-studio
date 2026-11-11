@@ -457,7 +457,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'You monitor three loud vocals and a band on headphones all day. What protects your ears?',
     options: ['Sensible levels and short breaks', 'The mics’ highest level rating', 'Turning up to hear the detail'],
     correct: 'Sensible levels and short breaks',
-    explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are limits for people, measured where they listen.',
+    explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are limits for people, measured where they listen.',
     why: { 'The mics’ highest level rating': 'That is about the mic, not your ears.', 'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement.' },
   },
 ];

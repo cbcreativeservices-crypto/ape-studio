@@ -53,9 +53,9 @@ export function hearingDiag(w: FoleyWords, id = `${w.p}.q.hear`): DiagnosticItem
     prompt: 'Your Foley mic is rated far above any level on the stage. What does that tell you about long takes on loud headphones?',
     options: ['Nothing — that is the mic’s limit, not a hearing limit', 'They are safe while the stage stays below the mic’s rating', 'They are safe if the mic is nearer the action than you'],
     correct: 'Nothing — that is the mic’s limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens. Keep headphones and monitors comfortable.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are measured where the person listens. Keep headphones and monitors comfortable.',
     why: {
-      'They are safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+      'They are safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
       'They are safe if the mic is nearer the action than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };

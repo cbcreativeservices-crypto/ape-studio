@@ -146,4 +146,4 @@ export function bassSetting(kind: BassKind): SettingItem[] {
   ];
 }
 
-export const BASS_HEARING = 'Protect your hearing on loud stages and during soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about them. Manage the exposure time, keep monitoring sensible, and use hearing protection where it is loud.';
+export const BASS_HEARING = 'Protect your hearing on loud stages and during soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about them. Manage the exposure time, keep monitoring sensible, and use hearing protection where it is loud.';

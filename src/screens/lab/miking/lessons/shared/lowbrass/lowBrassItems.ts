@@ -31,9 +31,9 @@ export const hearingDiag = (id: string, w: Words): DiagnosticItem => ({
   prompt: `Your ${w.noun} mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal?`,
   options: ['Nothing about ears — it is only where the mic itself distorts', 'It is safe for a while, as long as the stage stays below that rating', 'It is safe as long as you stand farther away than the mic does'],
   correct: 'Nothing about ears — it is only where the mic itself distorts',
-  explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Both are measured where the person listens.',
+  explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are measured where the person listens.',
   why: {
-    'It is safe for a while, as long as the stage stays below that rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB.',
+    'It is safe for a while, as long as the stage stays below that rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that.',
     'It is safe as long as you stand farther away than the mic does': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
   },
 });

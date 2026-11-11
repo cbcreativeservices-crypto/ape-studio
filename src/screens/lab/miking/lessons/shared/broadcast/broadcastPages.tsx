@@ -737,7 +737,7 @@ export function makeBroadcastSound(spec: BroadcastSoundSpec): PageFn {
 
 /** Hearing, for broadcast work (BEFORE ANY MIC). */
 export const BROADCAST_HEARING =
-  'Protect hearing — the talent’s, the guests’ and yours. Keep headphone and earpiece levels comfortable and avoid sudden loud returns: a useful balance should never need a dangerous level. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time every 5 dB — limits for PEOPLE, measured where a person listens. If anyone reports pain, ringing or a change in their hearing, stop and deal with the level.';
+  'Protect hearing — the talent’s, the guests’ and yours. Keep headphone and earpiece levels comfortable and avoid sudden loud returns: a useful balance should never need a dangerous level. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that — limits for PEOPLE, measured where a person listens. If anyone reports pain, ringing or a change in their hearing, stop and deal with the level.';
 
 export type BroadcastSettingSpec = { useRouting: () => MikingStep; hearing?: string };
 

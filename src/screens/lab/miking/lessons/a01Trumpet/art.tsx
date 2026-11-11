@@ -99,7 +99,7 @@ export const A01_ART: LessonArt = {
         { title: 'WORK WITH THE HORN AS IT IS', text: 'The horn is the player’s. Nothing clamps to the bell or its finish without their agreement and a clip made for it; nothing touches the valves, the slides or the mute’s path. The player puts mutes in and takes them out.' },
         { title: 'ONE HORN HERE', text: 'This lesson is one trumpet. Miking a whole horn section — several horns sharing mics, their spacing and their blend — is a topic of its own, in the Horn Sections lesson. Here, when other horns play, hear the section first and treat this mic as a spot.' },
       ],
-      hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA, halving the time for every 5 dB more. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating and the input meter say nothing about it. A trumpet can be very loud close to its bell: keep the bell from firing at anyone’s ear, and use hearing protection where it is loud.',
+      hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating and the input meter say nothing about it. A trumpet can be very loud close to its bell: keep the bell from firing at anyone’s ear, and use hearing protection where it is loud.',
     }),
   },
   stepCounts: { sound: 5 },

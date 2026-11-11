@@ -57,7 +57,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — the boom just above the frame, aimed at the mouth — then move it below or beside the frame, or to the camera, and see what changes.',
-    credit: { scenarios: ['b4.place.1', 'b4.place.2', 'b4.place.3', 'b4.rec.2'], interactive: 'twoZones', note: 'Rest the mic, outside the frame, inside two different suggested starting-point zones, and answer the four checks. The worked example earns no credit on its own — it is there to read.' },
+    credit: { scenarios: ['b4.place.1', 'b4.place.2', 'b4.place.3', 'b4.rec.2'], interactive: 'twoZones', note: 'Rest the mic, outside the frame, inside two different suggested starting-point zones, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. The side the boom comes from, its distance and its aim are separate controls; the frame and people’s safety come first.',
   },
   context: {

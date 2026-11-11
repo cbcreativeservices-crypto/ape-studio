@@ -788,7 +788,7 @@ export const SECTIONS: readonly StartSection[] = [
           'Before you go, one habit that protects everything else you will learn:',
           'Keep headphones and speakers at a comfortable level. If you have to raise your voice to talk over the sound, or your ears ring or feel dull afterwards, it was too loud.',
           'Loud sound can damage hearing permanently, and the damage adds up over time. Turn it down, take breaks, and use hearing protection around loud music and machinery.',
-          'A rule of thumb technicians use: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that. The US legal limit (OSHA) is 90 dBA, halving the time every 5 dB. Measure with a calibrated meter, not a phone.',
+          'A rule of thumb technicians use: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that. The US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Measure with a calibrated meter, not a phone.',
           'The Pro Audio Safety topic, right next to this one on the Home screen, covers safe listening in depth.',
         ],
       },
