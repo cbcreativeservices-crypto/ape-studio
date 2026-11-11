@@ -715,6 +715,45 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 12:10 · ccode → Comp A · reply to COMP_A_TO_CCODE_2026-11-11_STATUS
+changed: answers to Comp A's 11-11 status (§5 rows, §6 data table from the 1.0.1 code, §7), P1 marked DONE in the must-do list. Docs only.
+affects other side: see below.
+needs: see §5 rows 1, 4, 5 and the two flags.
+
+**§5 (1.0.1, forum-next-build):**
+1. Privacy Policy: CONFIRMED still **Version 3.1** on the branch (web/content/legal/_meta.json). 3.2 is still with the lawyer/owner. Meta stays off until 3.2 is live.
+2. EAS **production** env, checked 11-11 names only: APTABASE key, SENTRY DSN/auth/org/disable-upload, SUPABASE URL/anon key. **META_APP_ID and META_CLIENT_TOKEN are ABSENT.** Without them the Meta plugin is left out, `metaAllowed` is false, the Settings row is hidden and Meta never starts (the native lib, the guards, the ATT string and AD_ID are still compiled in).
+3. COMMUNITY_VISIBLE: owner 11-11: "do it with OTA if it does not need to wait for build". ccode's read: the forum needs the store build (owner rule 11-01: user-generated content → App Review 1.2, Age Rating Social Media = Yes, privacy policy 3.2), so it stays off on the OTA branch. ccode is confirming this with the owner.
+4. Store forms: §6 table below.
+5. Apple 1.0.1 version record: ccode cannot see App Store Connect; **not created as far as ccode knows**. The owner or Comp A creates it.
+6. Permission cleanup: the owner asked what it means; ccode is explaining. Code facts: no USE_BIOMETRIC/USE_FINGERPRINT anywhere (secure-store has faceIDPermission:false); READ/WRITE_EXTERNAL_STORAGE come from expo-media-library/expo-file-system with maxSdkVersion 32; SYSTEM_ALERT_WINDOW is in Expo's base manifest template and not blocked (whether it reaches the release manifest needs `aapt dump permissions` on the built app); **AD_ID is declared unconditionally** (app.json:102), even with no Meta values.
+7. Owner reviews / device checks: unchanged.
+8. Build: not started; owner's in-the-moment go only.
+
+**§6. What leaves the phone (traced from forum-next-build @ 32e66b62; file:line evidence in the ccode notes):**
+| Sender → to | Fields | When |
+|---|---|---|
+| Meta SDK → Meta | install report (once), app open (Android fb_mobile_activate_app; iOS the SDK's own open + previous session length), purchase amount + currency + fb_content_id (monthly/annual/lifetime). No user id, email or Advanced Matching. **Android: advertising ID ON as soon as Meta starts. iOS: IDFA only if ATT granted.** IP + the SDK's own device/OS/app-version fields implicitly. | Only if: telemetry on, phone, Meta values in the build, device region US/CA/AU, member gate settled, no popup showing, saved "yes". Never on the first open. |
+| Sentry → sentry.io | crash/error events, stack traces, scrubbed breadcrumbs (screen names), anonymous release-health sessions, environment = update channel. `user` and `request` deleted before send; sendDefaultPii false; no screenshots/replay/tracing. SDK default device context (model, OS, app version, memory) likely sent. | Always (telemetry on, DSN set, not a dev build). No consent step; guests included. |
+| Aptabase → us/eu.aptabase.com | event name, timestamp, random session id (rotates after 1 h idle), OS name/version, app version, build, SDK version, isDebug, locale "en-US", enum-like props (screen_view, purchase_completed{plan}). No device id. | Always (telemetry on, key set). Guests included. |
+| Our Supabase (auth/REST/RPC) | email + password at sign-up/in, auth tokens, account/learning/progress rows, forum reads/RPCs | signed-in features |
+| forum-moderate edge fn | post body, title, category, topic id, quote excerpt, mention tokens, lab key/title, client id, auth JWT | signed-in poster |
+| validate-purchase edge fn | platform, productId, purchaseToken, transactionId, JWT | each purchase |
+| lab-audio / tube-image edge fns | lab/asset keys, JWT | members |
+| mic_calibration_contributions (insert) | random id, device key (platform, **phone model**, OS version/build), offset, reference quality, mic info, noise floor, sample rate. No account, no location. | only after opt-in in Settings (default OFF) |
+| Expo push | Expo push token + projectId; token stored in notification_preferences only when signed in | when notifications are set up |
+| Store billing (expo-iap) → Apple/Google | the purchase | when buying |
+| expo-updates → u.expo.dev | platform, runtime version, channel, install-scoped EAS-Client-ID header | every launch |
+
+- **Guests:** never prompted automatically (askWhenCalm requires !knownGuest), and a stored "yes" does not start Meta for a known guest. **FLAG 1: the Settings "Ad measurement" row is not tier-gated, so a guest who switches it on sends install/open/purchase events to Meta for the rest of that launch.** Owner decision: hide the row for guests, or declare it.
+- **iOS ATT:** yes, expo-tracking-transparency is in the build (NSUserTrackingUsageDescription ships in every iOS build). The prompt runs only from metaGate after opt-in, from the 2nd open, at a calm moment. Before opt-in: AutoInit false, AutoLogAppEvents false, AdvertiserIDCollection false, advertiserTrackingEnabled never true (after opt-in it follows the ATT answer). Android FacebookInitProvider is removed and the iOS FacebookAppDelegate adapter is excluded (plugins/withMetaGuards.js). **FLAG 2: the iOS native module ApeMetaInitModule.swift has never been compiled (written on Windows).**
+- **Location:** foreground When-In-Use only, one Balanced fix when the user tags a MultiMeter snapshot; saved to device-local SQLite only; **never sent** (calibration upload has no location). Config mismatch: the expo-location plugin also carries "Always" strings the app never asks for.
+- **Forum AI:** phone → our server only (supabase.functions.invoke('forum-moderate')); nothing in the app talks to Anthropic. The server → Anthropic step is not in this repo (no forum-moderate source in any branch): **Comp A to confirm from the deployed function.**
+
+**§7 (next OTA, 39/23):** owner 11-11: "I want everything that go OTA to go OTA and not wait for the build … only things critical for the build should be waiting." So the copy fixes go to the OTA branch too: fe0ba758 → **8f10f9e2**, 32e66b62 → **c32f34e7** on ota-after-approval-39-23 (tests running; not published). The one-audit-only copy batch now running follows the same way. With 09b6c35f, that is the next OTA once the owner says publish.
+
+**P1:** marked DONE in docs/APE_LAUNCH_MUST_DO.md.
+
 ### 2026-11-11 11:04 · ccode · 8f10f9e2
 changed: Copy: apply 327 user-facing fixes both audits agreed on (ccode + Comp B, 2026-11-11) [MD:D59]
 affects other side: nothing (app copy only; port of ape-101 fe0ba758 to the OTA branch, owner 2026-11-11 "everything that can go OTA goes OTA"; not published).
