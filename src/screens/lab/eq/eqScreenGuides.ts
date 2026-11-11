@@ -33,10 +33,11 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
     start: 'Tap Seeing Frequency to read what it covers, then tap OPEN. Inside any module, tap ⓘ beside its title whenever you want that screen explained.',
   },
   seeing: [
-    'This is the EQ Lab menu. Each module shows you one idea about seeing, shaping or diagnosing frequency content.',
+    'This is the EQ Lab menu. Each module shows one idea about seeing, shaping or diagnosing frequency content.',
     'The top row is your path through the lab: SEE › MANIPULATE › HEAR › IDENTIFY › CORRECT.',
     'Numbered modules in four groups: LEARN, EXPLORE, TRAIN and CHALLENGE.',
-    'Below them: CHECK YOUR UNDERSTANDING (this lab’s questions), SEE WHAT’S LEFT and RELATED TOOLS.',
+    'Below them: CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT and RELATED TOOLS.',
+    'Modules 1 and 11 use the live mic; the trainers use a made-up spectrum.',
   ],
   control: [
     'Tap a module’s name to read its one-line description; tap OPEN to start it.',
@@ -54,7 +55,7 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
   teaches: [
     'EQ changes the balance of frequency content: where (frequency), how much (gain), how wide (Q).',
     'Each filter shape suits its own job, and overlapping filters add up to one response.',
-    'An uncalibrated phone mic gives Modules 1 and 11 relative levels. Other curves are calculated, not measured; the trainers use a made-up spectrum.',
+    'An uncalibrated phone mic shows only relative levels, not true sound levels; a curve drawn from a filter’s math is calculated, not measured.',
     'Diagnosing a problem follows one order: where first, then how much, then how wide.',
   ],
   tryThis: [

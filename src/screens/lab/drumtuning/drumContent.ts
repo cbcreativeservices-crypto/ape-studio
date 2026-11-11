@@ -172,7 +172,7 @@ export const GOALS: readonly { id: GoalId; label: string; short: string; hint: s
 export type RelationshipId = 'resoHigher' | 'equal' | 'batterHigher';
 
 export const RELATIONSHIPS: readonly { id: RelationshipId; label: string; short: string; semitones: number; tends: string }[] = [
-  { id: 'resoHigher', label: 'Resonant higher than batter', short: 'RESO ↑', semitones: 3, tends: 'In this model, the energy leaves the drum faster: a quicker, more focused note with a clear attack, and the late sound settles ABOVE the batter\'s own pitch. Some players describe this as the "focused" tuning; some manufacturers recommend it as one starting point.' },
+  { id: 'resoHigher', label: 'Resonant higher than batter', short: 'RESO ↑', semitones: 3, tends: 'In this model, the energy leaves the drum faster: a quicker, more focused note with a clear attack, and the late sound settles ABOVE the batter\'s own pitch. Some players describe this as the "focused" tuning; some manufacturers suggest it as one starting point.' },
   { id: 'equal', label: 'Both heads equal', short: 'EQUAL', semitones: 0, tends: 'In this model, the two heads exchange energy freely: the longest sustain, with the late sound settling at the batter\'s own pitch. Often described as the "open" tuning.' },
   { id: 'batterHigher', label: 'Batter higher than resonant', short: 'BATTER ↑', semitones: 3, tends: 'In this model, the late sound settles toward the resonant head\'s LOWER pitch, so the note can seem to drop as it fades — here by up to a couple of hundred cents, on a real drum usually a fraction of that — with a fuller, lower body. Some players tune this way for a "growl".' },
 ];

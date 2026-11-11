@@ -453,7 +453,7 @@ const evalFactors = (v: CalcValues): Factors | Refusal => {
   return { ok: true, insul: ins, ambientC: n(v.ambient), readAs: amb.readAs, row: amb.row, ca: amb.factor, ccc: n(v.ccc), adjRow: adj.row, adj: adj.factor };
 };
 
-const FORMULA = 'I = min(I_table × Ca × Cn, I_term); continuous ≤ 0.8 × I_term';
+const FORMULA = 'I = min(I table × Ca × Cn, I term); continuous ≤ 0.8 × I term';
 const PLAIN =
   'The table ampacity times the ambient correction factor times the conductor-count adjustment factor gives the corrected ampacity; the allowable ampacity is the smaller of that and the table value at the termination temperature; a continuous load may be at most 80% of the termination value (and of the largest breaker allowed).';
 

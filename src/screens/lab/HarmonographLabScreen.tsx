@@ -721,7 +721,7 @@ export function HarmonographLabScreen() {
             ) : !matched ? (
               <Text style={styles.caption}>
                 A custom ratio has no exact interval to sound. Land on a clean ratio — tap a RATIO
-                chip, or sweep an oscillator until the bezel names the interval — and PLAY renders
+                chip, or sweep an oscillator until the readouts name the interval — and PLAY renders
                 it audibly.
               </Text>
             ) : (
@@ -742,8 +742,8 @@ export function HarmonographLabScreen() {
             )
           ) : (
             <Text style={styles.caption}>
-              Interval audio needs the v3 additive engine — this dev build predates it. The figure and
-              lessons work fully; install the v3 build to hear the ratios.
+              This version of the app can’t play the interval sound yet. The figure and lessons work
+              fully; update the app to hear the ratios.
             </Text>
           )
         ) : null}

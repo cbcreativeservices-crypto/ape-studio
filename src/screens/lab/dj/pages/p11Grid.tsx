@@ -131,7 +131,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
     }
     const next = sync(b0, boothNow(), 'B');
     if (!next) {
-      setMsg('SYNC could not find a tempo inside the ±8 % range.');
+      setMsg('SYNC could not find a tempo inside ±8 % — check B GRID BPM.');
       return;
     }
     setMsg(null);

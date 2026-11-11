@@ -198,7 +198,7 @@ export function SoundSystemsLabScreen() {
           <Text style={styles.leftTitle}>{allDone ? 'SOUND SYSTEMS LAB — COMPLETE' : 'WHAT IS LEFT'}</Text>
           {allDone ? (
             <Text style={styles.leftLead}>
-              Every chapter, capstone, exercise and fault — and the understanding check. You can design, wire, route, operate and troubleshoot a live sound reinforcement system, and you have shown it.
+              Every chapter, capstone, exercise and fault — and the understanding check. You have designed, wired, routed, operated and troubleshot a live sound reinforcement system in this lab.
             </Text>
           ) : (
             <>

@@ -159,8 +159,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'Why does this lesson say its upper-body aim comes “from the guitar”?',
-    options: ['Ukuleles can only be miked the way that guitars are miked', 'The ukulele guide gives no sweet spot; the aim is borrowed', 'A ukulele is a small guitar, so the rules are the same'],
-    correct: 'The ukulele guide gives no sweet spot; the aim is borrowed',
+    options: ['Ukuleles can only be miked the way that guitars are miked', 'This lesson sets no ukulele sweet spot; the aim is borrowed', 'A ukulele is a small guitar, so the rules are the same'],
+    correct: 'This lesson sets no ukulele sweet spot; the aim is borrowed',
     explain: 'The guitar’s neck-joint view is applied to the ukulele as an experiment, not a ukulele rule — and the lesson says so. Verify it on the actual instrument.',
     why: {
       'Ukuleles can only be miked the way that guitars are miked': 'They can be miked many ways; this starting point is borrowed and to be tested.',

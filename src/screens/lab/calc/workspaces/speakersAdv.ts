@@ -291,8 +291,8 @@ const DRIVER: Workspace = {
     'Rigid piston in an infinite baffle (half-space), far field, on axis: p = ρ₀·2π·f²·Sd·(Xpk/√2)/r ' +
     'with ρ₀ = 1.204 kg/m³ (air at 20 °C); distances inside the cone’s near field are refused. ' +
     'Free-standing (full-space) boxes play about 6 dB lower at low frequency; room gain adds. Sealed: ' +
-    'fc = fs·√(1+Vas/Vb), Qtc = Qts·√(1+Vas/Vb). Vented (Helmholtz): fb = (c/2π)·√(Av/(Vb·L_eff)), ' +
-    'L_eff = Lv + 1.46·√(Av/π). Thiele–Small small-signal theory; real drivers compress at Xmax.',
+    'fc = fs·√(1+Vas/Vb), Qtc = Qts·√(1+Vas/Vb). Vented (Helmholtz): fb = (c/2π)·√(Av/(Vb·Leff)), ' +
+    'Leff = Lv + 1.46·√(Av/π). Thiele–Small small-signal theory; real drivers compress at Xmax.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Resonance', 'Loudspeaker', 'Q factor'],
   fields: [
     { key: 'sd', name: 'CONE AREA (Sd)', quantity: 'area', defaultUnit: 'm2', placeholder: '0.05', help: 'Effective radiating area of the cone.', positive: true, warn: { test: (x) => x <= 0, msg: 'Area must be greater than zero.' } },

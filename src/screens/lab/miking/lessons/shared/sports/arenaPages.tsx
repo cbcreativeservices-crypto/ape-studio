@@ -637,7 +637,7 @@ export function useDownmixStep({ onInteractive, done }: { onInteractive: (id: st
             if (id === 'surround') setSeen((s) => ({ ...s, surround: true }));
           },
           options: [
-            { id: 'mono', label: 'Stereo to mono', blurb: 'The practice trial: M = (L + R) ÷ 2.' },
+            { id: 'mono', label: 'Stereo to mono', blurb: 'An example mono sum: M = (L + R) ÷ 2.' },
             { id: 'surround', label: 'Five channels to stereo', blurb: 'An example fold-down: L′ = L + 0.7071 C + 0.7071 LS (and the same on the right).' },
           ],
         },

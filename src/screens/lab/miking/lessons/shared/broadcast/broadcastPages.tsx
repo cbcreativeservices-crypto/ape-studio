@@ -218,7 +218,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
             selectedId: micId,
             onSelect: (id: string) => setMicId(id),
             sticky: true,
-            options: spec.mics.map((q) => ({ id: q.id, label: q.label, blurb: `Read ${q.label.toLowerCase()} on the bezel.` })),
+            options: spec.mics.map((q) => ({ id: q.id, label: q.label, blurb: `Read ${q.label.toLowerCase()} in the readouts.` })),
           },
         ]
       : []),

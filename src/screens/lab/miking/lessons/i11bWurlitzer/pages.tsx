@@ -48,7 +48,7 @@ const AMP: AmpPagesSpec = {
   contextPose: close.start,
   worked: {
     speaker: 'In front of one of the two grilles in the lid’s front slope — they face the PLAYER, not the room. Find the one that sounds best from outside, without lifting the lid.',
-    across: 'Off the speaker’s center along its long side, by about a quarter of its length, and turned a little toward the center — a slight angle. The bezel reads how far off the axis the mic sits.',
+    across: 'Off the speaker’s center along its long side, by about a quarter of its length, and turned a little toward the center — a slight angle. The readouts show how far off the axis the mic sits.',
     clearance: 'Off the grille and the lid — never touching or clamped to them — on a stable stand of its own, clear of the keys’ travel, the player’s hands and forearms, the knees and the pedal foot, the cable routed away.',
   },
   mic: {

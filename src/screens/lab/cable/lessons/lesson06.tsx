@@ -86,7 +86,7 @@ export function Lesson06Body() {
       {rec ? <ConnectorCard rec={rec} /> : null}
       {opticalcon ? <RecognitionStrip rec={[opticalcon]} title="ALSO RECOGNIZE" /> : null}
 
-      <Eyebrow text="WHAT THE RECORDS TEACH" />
+      <Eyebrow text="WHAT THE CARDS TEACH" />
       {L06_STRIPS.map((strip) => (
         <DetailCard key={strip.id}>
           <Text style={s.cardTitle}>{strip.title}</Text>

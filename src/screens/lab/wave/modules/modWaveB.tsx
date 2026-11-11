@@ -2131,7 +2131,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             • Build a cardioid: two SUBs 1.2 m apart (SRC key), rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
           </Text>
           <Text style={dstyles.body}>
-            • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the bezel level ripple.
+            • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the level readout ripple.
           </Text>
           <Text style={dstyles.body}>
             • Meet your room modes: shrink the room to ~4 × 3 m (ROOM key), view 40–120 Hz on the lane, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.

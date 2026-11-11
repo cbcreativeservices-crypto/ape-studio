@@ -531,7 +531,7 @@ export const M07B_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'snare', label: 'the concert snare (on its stand)', short: 'SNARE', note: 'In the percussion row at the back of the orchestra, on a stand, its player behind it facing the conductor. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUM', scene: 'all' },
+      { id: 'snare', label: 'the concert snare (on its stand)', short: 'SNARE', note: 'In the percussion row at the back of the orchestra, on a stand, its player behind it facing the conductor — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE DRUM', scene: 'all' },
       { id: 'bassDrum', label: 'the concert bass drum', short: 'BASS DRUM', note: 'A loud neighbor beside the snare. A snare spot hears it too — one reason to keep a spot close and aimed, or to blend it low.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'timpani', label: 'the timpani', short: 'TIMPANI', note: 'Loud and low, a few meters along the row. A snare mic hears them — and the timpani spot hears the snare.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud, close to the snare. A directional spot rejects only part of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },

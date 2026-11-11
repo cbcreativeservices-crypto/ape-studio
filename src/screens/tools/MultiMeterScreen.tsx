@@ -1396,7 +1396,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               <View style={styles.panelHead}>
                 <Text accessibilityRole="header" style={styles.panelEyebrow}>LIVE SPECTRUM</Text>
                 <Text style={styles.panelSettings}>
-                  1/6 OCT · derived · FFT {FFT_SIZE} · α {smoothing.bandAlpha.toFixed(2)}
+                  1/6 OCT · derived · FFT {FFT_SIZE} · smoothing {smoothing.bandAlpha.toFixed(2)}
                 </Text>
               </View>
 

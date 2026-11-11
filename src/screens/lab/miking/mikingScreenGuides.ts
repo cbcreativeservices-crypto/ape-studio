@@ -157,7 +157,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     changes: 'Each part’s card names the places its sound leaves from. Those are the places a mic can hear it best.',
     tryThis: [
       'Tap the part the sound leaves from and read its WHERE SOUND COMES FROM line.',
-      'Step through every part with PART and watch the bezel name each one as you reach it.',
+      'Step through every part with PART and watch the readouts name each one as you reach it.',
     ],
   },
   // STARTING SETUPS (pages/PSetups.tsx)
@@ -239,13 +239,13 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     engineOnly: true,
     intro: {
       learning: 'How a suggested starting point is read: where to begin, the distance from a named surface, the aim, and the clearance that comes first.',
-      start: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit bezel cell (▸) and the part the drawing marks.',
+      start: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit readout (▸) and the part the drawing marks.',
     },
-    seeing: 'A worked example: the mic is placed for you at one suggested starting point (blue). The lit bezel cell (▸) is the piece you’re reading.',
+    seeing: 'A worked example: the mic is placed for you at one suggested starting point (blue). The lit readout (▸) is the piece you’re reading.',
     control: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. The drawing marks the part each piece is about.',
     changes: 'Each distance runs from a named surface to the mic’s FRONT. The same number measured from another surface would put the mic somewhere else.',
     tryThis: [
-      'Step to THE DISTANCE: the lit bezel cell reads inside the suggested range written in the card.',
+      'Step to THE DISTANCE: the lit readout reads inside the suggested range written in the card.',
       'Step to CLEARANCE and read why clearance comes before any sound.',
     ],
   },
@@ -261,7 +261,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     changes: 'Inside a blue zone, its card says what that spot tends to do to the sound. Outside, the words list the zones in reach. A part in the way stops the mic where it would touch.',
     tryThis: [
       'Open ZONE and pick a starting point, then a different one. Resting the mic in two zones, clear of every part, finishes this module’s activity.',
-      'From a zone, change only POSITION or only AIM, and read how the bezel and the card under the drawing change.',
+      'From a zone, change only POSITION or only AIM, and read how the readouts and the card under the drawing change.',
     ],
   },
   // ADVANCED (pages/PContext.tsx, pages/PTwoMic.tsx, pages/PReadPages.tsx)
@@ -543,7 +543,7 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
         : s && s.kind !== 'READ'
           ? opt('A reading step: words and still drawings, no live display.')
           : null,
-      rack && s && s.bezel.length ? opt(`Watch ${s.bezel.join(', ')} on the bezel, the readout cells framing the display.`) : null,
+      rack && s && s.bezel.length ? opt(`Watch ${s.bezel.join(', ')} in the readouts, the cells framing the display.`) : null,
       sameAsStage ? null : opt(`It is part of the journey’s ${stage.title.toUpperCase()} stage.`),
       x.first ? opt(`At the top, “Page ${x.pageNum} goal:” says what this module asks.`) : null,
       x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This page is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,
@@ -594,7 +594,7 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
       // required ran past the no-scroll budget (Guided Lessons return 2026-11-08).
       note?.changes ? opt(stageChanges[0]) : req(stageChanges[0]),
       ...stageChanges.slice(1).map(opt),
-      rack ? opt('Each dock change shows on the drawing, the bezel or the words under it. The lab plays no sound, so you read the change rather than hear it.') : null,
+      rack ? opt('Each dock change shows on the drawing, in the readouts or in the words under it. The lab plays no sound, so you read the change rather than hear it.') : null,
     ],
     SCREEN_GUIDE_BUDGET.low,
   );
@@ -621,7 +621,7 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
     // Only a key with something to switch to (a one-choice TYPE has nothing).
     const choice = s.dock.find((k) => k.kind === 'options' && k.options.length >= 2);
     const toggle = s.dock.find((k) => k.kind === 'toggle');
-    if (fader) tries.push(`Slide ${fader.label} from one end to the other and watch what changes on the drawing and the bezel.`);
+    if (fader) tries.push(`Slide ${fader.label} from one end to the other and watch what changes on the drawing and in the readouts.`);
     if (choice && tries.length < 3) tries.push(`Open ${choice.label} and try each choice in turn: what changes on the drawing and in the words under it?`);
     if (toggle && tries.length < 3) tries.push(`Tap ${toggle.label} and compare the drawing in both settings.`);
     if (tries.length < 2) tries.push('Open ⤢ FULL SCREEN and zoom in on the part this step is about.');

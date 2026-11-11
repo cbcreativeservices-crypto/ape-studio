@@ -139,7 +139,7 @@ export function CareerFinderQuizScreen() {
 
   return (
     <FinderShell
-      kicker="CAREER DISCOVERY LAB"
+      kicker="AUDIO CAREER FINDER"
       title={`Question ${index + 1} of ${QUESTION_COUNT}`}
       onBack={() => safeGoBack(navigation)}
       backLabel={saving ? (guest ? 'Leave the questions. Your answers are kept until you close the app.' : 'Leave the questions. Your answers are saved.') : 'Leave the questions. Your answers could not be saved on this phone.'}

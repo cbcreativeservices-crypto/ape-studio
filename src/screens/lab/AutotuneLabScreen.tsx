@@ -396,7 +396,7 @@ export function AutotuneLabScreen() {
           <Text style={styles.caption}>
             GENERATOR DEMO — plays the demo melody with the app’s tone generator (no microphone), so
             the correction you hear is real retuning of a synthesized voice.{' '}
-            {additiveReady ? '' : 'This build plays the voice as a pure sine. '}
+            {additiveReady ? '' : 'This version of the app plays the voice as a pure sine. '}
             Try FAST at 100% for the robotic hard-tune snap, then SLOW for a natural glide. Output{' '}
             {GEN_LEVEL_DB} dBFS · uncalibrated.
           </Text>

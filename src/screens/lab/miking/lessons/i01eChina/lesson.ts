@@ -47,7 +47,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above the China on the side away from the player, or under its lowest point — clear of the stick and the swing, then move the mic.',
     credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.place.3', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points (switch MOUNT for the China turned over), and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'No distance is published for a China: a zone is a place to begin, measured from its rim plane — or, underneath, from its lowest point in its mount. Clearance comes first.',
+    takeaway: 'There is no set distance for a China: a zone is a place to begin, measured from its rim plane — or, underneath, from its lowest point in its mount. Clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -166,7 +166,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ch.place.1',
     page: 'placement',
-    prompt: 'No distance is published for a China. How do you use “about 20–30 cm above”?',
+    prompt: 'There is no set distance for a China. How do you use “about 20–30 cm above”?',
     options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimeter', 'As a limit: closer than 20 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
     explain: 'With no fixed number to go by, the band is a sensible start — clear of the stick and the swing — and your ears decide from there.',

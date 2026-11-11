@@ -257,7 +257,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'Two nearly equal pitches played together beat at the difference between their frequencies.',
     ],
     tryThis: [
-      'Read the bezel: EXPECTED C 261.63 Hz, ACTUAL B♯ 265.19 Hz, GAP 23.46 ¢.',
+      'Check the readouts: EXPECTED C 261.63 Hz, ACTUAL B♯ 265.19 Hz, GAP 23.46 ¢.',
       'Play A → B: the second note is a shade higher. Then TOGETHER: 3.57 Hz apart, the pair beats about 3.6 times a second.',
     ],
   },
@@ -301,7 +301,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       start: 'Press RATIOS to reveal both scales. Ride NOTE through E, A and B and read the bracket. Then pick the C–E–G triad as EXAMPLE and play A → B.',
     },
     seeing: [
-      'A two-lane rail. At first you see only note names: both scales read C D E F G A B on the bezel.',
+      'A two-lane rail. At first you see only note names: both scales read C D E F G A B in the readouts.',
       'After RATIOS, the Pythagorean notes sit on the top lane and the Just E, A and B below, with a bracket measuring the split. PYTH, JUST, 81/80 and SOUND read it out.',
     ],
     control: [
@@ -354,7 +354,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'Chords that avoid the wolf sound sweet, with pure thirds; any chord that uses the wolf fifth sounds harsh.',
     ],
     tryThis: [
-      'Part A: the readouts give t = 1.118034 and D at 193.16 ¢ — halfway to E 5/4 by ratio, not by hertz.',
+      'Part A: the readouts give t = 1.118034 (the step from C to D) and D at 193.16 ¢ — halfway to E 5/4 by ratio, not by hertz.',
       'Part C at 700 ¢: g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢. Tap SHOW ME: FIFTH 696.58 ¢ and FROM 5/4 reads 0 ¢.',
       'Part E: WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢. Play the normal fifth, then the wolf.',
     ],
@@ -461,7 +461,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     },
     seeing: [
       'Six challenges; three of them use the display. FIGURE picks which: the Octave Elevator (1), the harmonic ladders with a meter (4) or the rail of three E’s over a fixed C (6).',
-      'Readouts follow the figure (for example RATIO, VALUE, REGION), with DONE on FOLD and THIRD; E MOVES shows the three E’s and SOUND. Below: challenge 2 (match the rule) and the questions for 3, 5 and 6.',
+      'Watch the readouts for each figure (for example RATIO, VALUE, REGION); DONE shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND. Below, do challenge 2 (match the rule) and answer the questions for 3, 5 and 6.',
     ],
     control: [
       'FIGURE: 1 · Normalize 9/4, 4 · Align the third, 6 · Hear E move.',
@@ -475,7 +475,6 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     ],
     teaches: [
       'The lab’s ideas used on purpose: folding a ratio, each system’s rule, the comma, aligning a third, the equal step and a note that moves between systems.',
-      'Each challenge ties back to one chapter, from Folding Notes Into One Octave to Compare Tuning Systems, so a miss points to the chapter to reopen.',
     ],
     tryThis: [
       'FOLD: press ÷2 once — 9/4 becomes 9/8, VALUE 1.1250, REGION INSIDE.',

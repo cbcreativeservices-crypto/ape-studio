@@ -993,7 +993,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
           correctIdx: 1,
           reveal:
             'High frequencies fall off faster off-axis than lows, so tone changes before level. That is why drifting singers sound muffled first — and why smooth off-axis response is a mark of a great microphone.',
-          wrongHint: 'Compare the @100 Hz and @8 kHz bezel cells as you ride the ANGLE lane — which one collapses first?',
+          wrongHint: 'Compare the @100 Hz and @8 kHz readouts as you ride the ANGLE lane — which one collapses first?',
         }}
       />
       {wellBottom}

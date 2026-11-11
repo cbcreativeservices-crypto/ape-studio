@@ -957,7 +957,7 @@ export function SignalGenScreen({ navigation }: Props) {
               </>
             ) : null}
             <Text style={styles.caption}>dBFS · uncalibrated approximate — digital output level, not dB SPL · hold for help</Text>
-            {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
+            {genError ? <Text style={styles.errorText}>The tone couldn’t start. {genError}</Text> : null}
           </Pressable>
 
           <Text style={styles.caption}>

@@ -520,7 +520,7 @@ function HandPlacement(spec: HandSpec) {
         },
         well: (
           <>
-            <Landing looking={spec.worked.looking} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
+            <Landing looking={spec.worked.looking} prompt="Step through how this starting point is read, piece by piece. The lit readout and the mark on the drawing show the piece being read." />
             <Card>
               <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
             </Card>

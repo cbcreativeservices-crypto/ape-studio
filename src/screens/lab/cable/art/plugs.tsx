@@ -530,7 +530,7 @@ export function connectorArtAspect(id: ConnectorId): number {
 }
 
 /** The connector's anatomy drawing for its card (pins / contacts named). */
-export function ConnectorAnatomy({ id, width }: { id: ConnectorId; width: number }) {
+export function ConnectorAnatomy({ id, width, name }: { id: ConnectorId; width: number; name?: string }) {
   const aspect = ASPECT[id];
   if (!aspect || width <= 0) return null;
   const body =
@@ -544,7 +544,7 @@ export function ConnectorAnatomy({ id, width }: { id: ConnectorId; width: number
       <PlugAnatomy kind={id === 'trs_quarter' ? 'trs' : id === 'trs_35' ? 'trs35' : id === 'trrs_35' ? 'trrs35' : id === 'rca' ? 'rca' : 'ts'} />
     );
   return (
-    <View style={{ width, height: Math.round(width / aspect) }} accessible accessibilityRole="image" accessibilityLabel={`Drawing of the ${id.replace(/_/g, ' ')} connector with its contacts named`}>
+    <View style={{ width, height: Math.round(width / aspect) }} accessible accessibilityRole="image" accessibilityLabel={`Drawing of the ${name ?? id.replace(/_/g, ' ')} connector with its contacts named`}>
       {body}
     </View>
   );

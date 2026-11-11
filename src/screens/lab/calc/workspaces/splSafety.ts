@@ -89,7 +89,7 @@ export function nioshEdgeWarnings(levels: readonly number[], mins: readonly numb
     ? [
         {
           label: 'ABOVE 140 dBA',
-          text: 'A level here is above 140 dBA. NIOSH’s dose counts sound only from 80 to 140 dBA, and NIOSH recommends that no exposure ever exceed 140 dB peak — a steady level above 140 dBA already peaks above that. Levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
+          text: 'A level here is above 140 dBA. NIOSH’s dose counts sound only from 80 to 140 dBA, and the NIOSH recommended exposure limit also says no exposure should ever exceed 140 dB peak — a steady level above 140 dBA already peaks above that. Levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
         },
       ]
     : [];
@@ -602,7 +602,7 @@ const WS_DOSE: Workspace = {
         'How long a level can run before the NIOSH-style criterion (85 dBA, 3 dB exchange, 8 hours) is used up. Every 3 dB above 85 halves the allowable time — brutally unintuitive, and why turning it up “just a little” matters so much. A teaching calculation, not medical or legal advice.',
       keySymbols: ['/', 'x²', '−'],
       // Names the authorities (owner ruling 2026-10-23).
-      note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
+      note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       refuse: (v) => underFloor(n(v.lex)),
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);
@@ -1030,7 +1030,7 @@ const WS_MIC_GAIN: Workspace = {
       key: 'maxspl',
       name: 'Max SPL before the preamp input clips (reverse)',
       inputs: ['sens', 'maxIn'],
-      formula: 'SPLmax = 93.98 + maxIn dBu − mic dBu@1 Pa',
+      formula: 'SPLmax = 93.98 + max input dBu − mic dBu@1 Pa',
       plainFormula:
         'The maximum SPL equals 93.98 (the SPL of exactly 1 pascal) plus the preamp’s input clip level in dBu, minus the mic’s output level at 1 pascal.',
       explain:
@@ -1145,7 +1145,7 @@ const WS_LIMITER: Workspace = {
       key: 'threshold',
       name: 'Processor limiter threshold',
       inputs: ['pwr', 'z', 'ampGain', 'margin'],
-      formula: 'thr dBu = 20·log10(√(P·Z)/0.7746) − ampGain − margin',
+      formula: 'threshold dBu = 20·log10(√(P·Z)/0.7746) − amp gain − margin',
       plainFormula:
         'The threshold in dBu equals twenty times the base-ten log of the max speaker voltage (root of power times impedance) over 0.7746, minus the amplifier gain, minus the safety margin.',
       explain:

@@ -68,7 +68,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
     tryThis: [
       'Slide AZ to +90°: AZ reads +90° right and ITD 656 µs, the most a head this size gives. Back to 0°: ITD 0 µs, both ears at once.',
       'Set AZ to +30° (ITD 261 µs), then to +150°: ITD reads 261 µs again. The time cue is the same in front and behind.',
-      'With only object 1 on and ▶ playing, slide DIST to 0.5 m: THE MIX, HONESTLY shows Bus norm 0.79. Closer is louder, so the sum is turned down to stay under the cap.',
+      'With only object 1 on and ▶ playing, slide DIST to 0.5 m: THE MIX, HONESTLY shows Bus norm 0.79. Closer is louder, so the whole mix is turned down to stay under its limit.',
     ],
   },
 

@@ -497,8 +497,8 @@ export function strikePartials(p: StrikeParams): Partial[] {
       const loss = lossR * Math.pow(modeRatio(1, 1), 0.7) * dampingLoss(p.damping, 1);
       const lo = hz * (1 - rSplit / 2);
       const hi = hz * (1 + rSplit / 2);
-      out.push({ label: '(1,1)r a', n: 1, s: 1, hz: lo, amp, loss, head: 'reso', pairHz: hi - lo });
-      out.push({ label: '(1,1)r b', n: 1, s: 1, hz: hi, amp, loss, head: 'reso', pairHz: lo - hi });
+      out.push({ label: '(1,1) reso a', n: 1, s: 1, hz: lo, amp, loss, head: 'reso', pairHz: hi - lo });
+      out.push({ label: '(1,1) reso b', n: 1, s: 1, hz: hi, amp, loss, head: 'reso', pairHz: lo - hi });
     }
   }
   // Upper batter modes: uncoupled (they move no net air), split by the map.

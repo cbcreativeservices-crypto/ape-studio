@@ -197,12 +197,12 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   l06_digital: {
     intro: {
       learning: 'Matching ports don’t prove two devices can talk: a digital link works only when the protocol, the cable class and the direction agree at both ends.',
-      start: 'Tap the USB family chip, then USB-C, and open CABLE BEHIND IT. Then read the WHAT THE RECORDS TEACH cards before you try the four questions.',
+      start: 'Tap the USB family chip, then USB-C, and open CABLE BEHIND IT. Then read the WHAT THE CARDS TEACH cards before you try the four questions.',
     },
     seeing: [
       'The amber note at the top: matching ports do not prove two devices compatible.',
       'THE CONNECTORS — BROWSE ALL TEN: family chips, connector chips, an ink key, the connector card and ALSO RECOGNIZE.',
-      'WHAT THE RECORDS TEACH: seven short cards, like USB — THE PLUG DOES NOT DEFINE THE CABLE or MIDI — INSTRUCTIONS, NOT AUDIO. They always show in full.',
+      'WHAT THE CARDS TEACH: seven short cards, like USB — THE PLUG DOES NOT DEFINE THE CABLE or MIDI — INSTRUCTIONS, NOT AUDIO. They always show in full.',
       'KNOWLEDGE CHECK: four questions.',
     ],
     control: [
@@ -237,7 +237,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     seeing: [
       'TWO KINDS OF POWER sets AC POWER beside LOW-VOLTAGE DC.',
       'THREE CONDUCTORS, THREE ROLES: a drawn North American wall-plug face (NEMA 5-15) and a role card for the part you tap.',
-      'POWER CONNECTOR BROWSER · 10 RECORDS: three families, and every card opens with its ⚠ cautions.',
+      'POWER CONNECTOR BROWSER · 10 CONNECTORS: three families, and every card opens with its ⚠ cautions.',
       'THE NEVER LIST in red, RECOGNIZE — NEVER HANDLE, then five questions.',
     ],
     control: [

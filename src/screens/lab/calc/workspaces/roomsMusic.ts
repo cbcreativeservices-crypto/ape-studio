@@ -915,8 +915,8 @@ const WS_SABINE: Workspace = {
   ],
   warnings:
     'Sabine RT60 = 0.161·V/A (0.161 = 24·ln10/c for air at about 20 °C). It assumes a diffuse field ' +
-    'and average absorption below roughly 0.3 — dead rooms need the Eyring equation (Advanced tier), ' +
-    'and it leaves out air absorption (the 4mV term), which shortens the decay of large rooms above ' +
+    'and average absorption below roughly 0.3 — dead rooms need the Eyring equation (see Eyring & Millington RT), ' +
+    'and it leaves out air absorption (the 4mV term, m = air’s absorption per meter), which shortens the decay of large rooms above ' +
     'about 2 kHz. Coefficients here are single-band values; real products are measured per ' +
     'frequency band under ISO 354, and real rooms under ISO 3382.',
   glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Room Mode'],

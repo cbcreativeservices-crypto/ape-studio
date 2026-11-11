@@ -627,7 +627,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'Pick a view: the ROOM from above, colored by level; the HANDOFF, your mixer’s rear and the venue’s stage box; or the SYSTEM, the crossover, tops and sub.',
-      'Readouts follow the view. ROOM: FLOOR, AT THE DECKS, 4-HOUR DOSE and TT LOOP. HANDOFF: DJ L · DJ R. SYSTEM: AT 100 Hz.',
+      'Readouts follow the view. ROOM: FLOOR, AT THE DECKS, 4-HOUR DOSE and TT LOOP (turntable feedback). HANDOFF: DJ L · DJ R. SYSTEM: AT 100 Hz.',
       'The Sound Systems Lab covers the PA in depth; here it’s seen from the decks.',
     ],
     control: [

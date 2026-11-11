@@ -218,7 +218,7 @@ export function AnalogModule(p: DigitalModuleProps) {
       value: freqV,
       onChange: setFreqV,
       format: () => (wave === 'noise' ? 'broadband' : `${freq} Hz`),
-      formatShort: () => (wave === 'noise' ? 'BB' : fmtHzShort(freq)),
+      formatShort: () => (wave === 'noise' ? '—' : fmtHzShort(freq)),
       // D75 (emulator pass 2026-10-14): with WHITE NOISE the fader moved and
       // silently changed a hidden frequency — nothing on the glass followed.
       locked: wave === 'noise' ? 'white noise has no single frequency — pick SINE, SQUARE or another wave under WAVE to tune it' : undefined,

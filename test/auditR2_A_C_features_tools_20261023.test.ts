@@ -70,7 +70,7 @@ const CASES: { id: string; file: string; now: string; gone: string | null }[] = 
   {"id": "R042236", "file": "src/features/soundsystems/loads.ts", "now": "Pushed for the cabinet’s full level, it will clip — and hard clipping adds heat and harsh highs that can kill high-frequency drivers.", "gone": "It will reach level only by clipping — and a clipped amplifier is the usual killer of high-frequency drivers."},
   {"id": "R013641", "file": "src/features/speech/speechModel.ts", "now": "role: 'The edge that air is forced past for S and Z, the brightest sibilants;", "gone": "role: 'The edge that air is forced past for S and Z (the sibilants);"},
   {"id": "R038653", "file": "src/features/startHere/startHereContent.ts", "now": "job: 'A speaker converts an audio signal back into sound. The speaker in this path is a powered speaker: its amplifier is built in, so the mixer can feed it dir", "gone": "job: 'A speaker converts an audio signal back into sound. Many speakers have the amplifier that powers them built in; others are driven by a separate amplifier."},
-  {"id": "R038827", "file": "src/features/startHere/startHereContent.ts", "now": "'A rule of thumb technicians use: NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that. The US legal limit (OSHA) is 90 dBA with a 5 ", "gone": "'A rule of thumb technicians use: 85 dBA for 8 hours is a common workplace limit, and every 3 dB louder halves the safe time (the NIOSH guideline). Measure with"},
+  {"id": "R038827", "file": "src/features/startHere/startHereContent.ts", "now": "'A rule of thumb technicians use: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that. The US legal limit (OSHA) is 90 dBA with a 5 ", "gone": "'A rule of thumb technicians use: 85 dBA for 8 hours is a common workplace limit, and every 3 dB louder halves the safe time (the NIOSH guideline). Measure with"},
   {"id": "R049143", "file": "src/features/startHere/startHereGlossary.ts", "now": "That is not the same as the numbers on the meter. One reason is that your ears are more sensitive to some frequencies than others.", "gone": "That is not the same as the numbers on the meter. This is because your ears are more sensitive to some frequencies than others."},
   {"id": "R010532", "file": "src/features/tools/learn/concepts.ts", "now": "and checking that pink noise reads flat on the 1/3-octave bands are all legitimate", "gone": "and checking that pink noise reads flat are all legitimate"},
   {"id": "R010532", "file": "src/features/tools/learn/concepts.ts", "now": "A flat 1/3-octave RTA with pink noise is a useful sanity check,", "gone": "A flat RTA with pink noise is a useful sanity check,"},
@@ -78,7 +78,7 @@ const CASES: { id: string; file: string; now: string; gone: string | null }[] = 
   {"id": "R057647", "file": "src/features/tools/learn/spectrogram.ts", "now": "With the top of the scale fixed, the same signal can look bright on a 90 dB scale and dim on a 40 dB scale without anything about the sound changing.", "gone": "The same signal can look intense on a 40 dB scale and faint on a 90 dB scale without anything about the sound changing."},
   {"id": "R057654", "file": "src/features/tools/learn/spectrogram.ts", "now": "so the same sound can look bright on a wide scale and dim on a narrow one. To judge actual level you need the scale settings — or an SPL meter, which measures s", "gone": "so the same sound can look intense on a narrow scale and faint on a wide one. To judge actual level you need the scale settings — or an SPL tool, which measures"},
   {"id": "R048235", "file": "src/features/tools/learn/spl.ts", "now": "while a steady sine keeps the two only about 3 dB apart.", "gone": "and a steady sine tone can do the opposite."},
-  {"id": "R038827", "file": "src/features/tools/learn/spl.ts", "now": "NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.", "gone": "Occupational limits treat 85 dB(A) over an eight-hour day as the action level, with safe time roughly halving for every few dB above it."},
+  {"id": "R038827", "file": "src/features/tools/learn/spl.ts", "now": "The NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.", "gone": "Occupational limits treat 85 dB(A) over an eight-hour day as the action level, with safe time roughly halving for every few dB above it."},
   {"id": "R048287", "file": "src/screens/tools/ExposureMonitorScreen.tsx", "now": "To set the reference: play steady pink noise through your MONITORS", "gone": "To set the reference: play a steady tone through your MONITORS"},
   {"id": "R057789", "file": "src/screens/tools/Rt60Screen.tsx", "now": "'Clap hard, pop a balloon held at arm’s length and away from anyone’s ears, or use a clapper — one loud, SHORT sound.", "gone": "'Clap hard, pop a balloon, or use a clapper — one loud, SHORT sound."},
   {"id": "R020841", "file": "src/screens/tools/SignalGenScreen.tsx", "now": "blurb: 'Pink’s mirror: energy RISING 3 dB per octave.", "gone": "blurb: 'Pink’s mirror: energy RISING per octave."},
@@ -89,7 +89,7 @@ const CASES: { id: string; file: string; now: string; gone: string | null }[] = 
   {"id": "R057929", "file": "src/screens/tools/toolsData.ts", "now": "'Likely signal conditions — mains hum (50 or 60 Hz family), supply buzz at twice the mains (100 or 120 Hz), pink-noise character,", "gone": "'Likely signal conditions — mains hum family, 120 Hz harmonics, pink-noise character,"},
   {"id": "R057481", "file": "src/components/tooldemos/RtaDemo.tsx", "now": "'came from the system, the room, or the mic position, as long as the source is clean. White noise ' +", "gone": "'came from the system, the room, or the mic position, never the source. White noise ' +"},
   {"id": "R052230", "file": "src/components/tooldemos/SplDemo.tsx", "now": ">85 dBA · ACTION</Text>", "gone": ">85 dB SPL · ACTION</Text>"},
-  {"id": "R038827", "file": "src/components/tooldemos/SplDemo.tsx", "now": "note: 'Exposure is a dose — level × time. 85 dBA (the NIOSH 8-hour recommendation and the OSHA action level) is an 8-hour average,", "gone": "note: 'Exposure is a dose — level × time. The 85 dBA action level is an 8-hour average,"},
+  {"id": "R038827", "file": "src/components/tooldemos/SplDemo.tsx", "now": "note: 'Exposure is a dose — level × time. 85 dBA (the NIOSH recommended exposure limit and the OSHA action level) is an 8-hour average,", "gone": "note: 'Exposure is a dose — level × time. The 85 dBA action level is an 8-hour average,"},
 ];
 
 for (const c of CASES) {
@@ -103,11 +103,11 @@ for (const c of CASES) {
 test('ruling 1: no 85 dBA "workplace limit" / unnamed rule left in this group hearing lines', () => {
   const start = read('src/features/startHere/startHereContent.ts');
   assert.ok(!/common workplace limit/.test(start));
-  assert.ok(/NIOSH recommends 85 dBA for 8 hours/.test(start) && /OSHA\) is 90 dBA with a 5 dB rule/.test(start));
+  assert.ok(/NIOSH recommended exposure limit is 85 dBA for 8 hours/.test(start) && /OSHA\) is 90 dBA with a 5 dB rule/.test(start));
   const spl = read('src/features/tools/learn/spl.ts');
-  assert.ok(/NIOSH recommends 85 dBA/.test(spl) && /OSHA\) is 90 dBA/.test(spl));
+  assert.ok(/NIOSH recommended exposure limit is 85 dBA/.test(spl) && /OSHA\) is 90 dBA/.test(spl));
   const meter = read('src/screens/tools/SplMeterScreen.tsx');
-  assert.ok(/NIOSH recommends 85 dBA/.test(meter) && /OSHA\) is 90 dBA/.test(meter));
+  assert.ok(/NIOSH recommended exposure limit is 85 dBA/.test(meter) && /OSHA\) is 90 dBA/.test(meter));
 });
 
 test('R055087: the low-frequency advisory no longer sends people to headphones without a volume caution', () => {

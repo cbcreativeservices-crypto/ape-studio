@@ -576,7 +576,7 @@ export function BassLabScreen() {
                 ? mode === 'fretted'
                   ? ` The model is a simplified string tone, harmonic amplitudes ≈ 1/n (a real pluck falls off faster), output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
                   : ` The model is the single exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                : ' This dev build predates the v3 additive engine — the model is a pure sine at the target pitch.'
+                : ' This version of the app plays a pure sine at the target pitch here; update the app to hear the string tone.'
               : ''}
           </Text>
         ) : null}
@@ -609,7 +609,7 @@ export function BassLabScreen() {
       />
       <CheckQuestion
         spec={{
-          question: 'The 5th harmonic\u2019s bezel reads \u2248G\u266F3 \u221214\u00A2. Why the \u2248?',
+          question: 'The 5th harmonic\u2019s readout shows \u2248G\u266F3 \u221214\u00A2. Why the \u2248?',
           options: [
             '5 \u00D7 the fundamental lands 14 cents flat of the equal-tempered note',
             'The string is out of tune',

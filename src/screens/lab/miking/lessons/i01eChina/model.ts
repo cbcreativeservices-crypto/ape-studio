@@ -54,7 +54,7 @@ function topZone(id: string, v: 'upright' | 'inverted'): DocumentedZone {
   return {
     id,
     label: v === 'upright' ? 'Above the China, away from the player' : 'Above the turned-over China',
-    band: 'Start about 20–30 cm (8–12 in) above the China on the side away from the player, aimed at the shoulder — a place to begin; no number is published for a China.',
+    band: 'Start about 20–30 cm (8–12 in) above the China on the side away from the player, aimed at the shoulder — a place to begin; there is no set number for a China.',
     kind: 'trial',
     src: 'LESSON',
     quote: 'above the plate, 200–300, aimed at the bow/shoulder (drawing default)',

@@ -361,8 +361,8 @@ export function FoundationsPlaygroundScreen() {
       : source === 'noise'
         ? NOISES.find((n) => n.key === noise)!.label
         : sweepKey === 'slow'
-          ? 'SWP·S'
-          : 'SWP·F';
+          ? 'SLOW SWEEP'
+          : 'FAST SWEEP';
   const panOn = Math.abs(balance - 0.5) > 0.02;
   const fxValue =
     [panOn ? 'PAN' : null, delayMs > 0 ? 'DLY' : null, eqCut > 0 ? 'EQ' : null]
@@ -377,7 +377,7 @@ export function FoundationsPlaygroundScreen() {
     { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
     { when: 'wave', text: 'LPF 500 Hz on a SAW — count the spectrum lines that should survive before you look.' },
     { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Module 10 answers.' },
-    { when: 'wave', text: 'Double FREQ and watch the bezel: λ should halve. Does it?' },
+    { when: 'wave', text: 'Double FREQ and watch the readouts: λ should halve. Does it?' },
     { when: 'noise', text: 'Step WHITE → PINK → BROWN and watch the spectrum tilt. Which end loses energy each step?' },
     { when: 'sweep', text: 'Listen for the moment the sweep passes the pitch of your speaking voice — then check where the level meter sits.' },
     { when: 'any', text: 'Set LEVEL to the bottom of its range and watch all three views shrink together — same signal, three tellings.' },

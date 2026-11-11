@@ -367,7 +367,6 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Thru has no default route. Full-normal breaks on either jack. Common half-normal breaks only on the bottom jack.',
-      'Which of the three wirings lets you tap a source without interrupting it: read it from the table’s tap row.',
       '“Through” and “non-normalled” are other names for thru.',
     ],
     tryThis: [

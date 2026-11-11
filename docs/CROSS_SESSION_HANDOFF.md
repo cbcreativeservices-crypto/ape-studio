@@ -723,8 +723,8 @@ needs: nothing.
 
 ### 2026-11-10 14:46 · ccode · e2f85ade
 changed: must-do D59: Comp B user-facing copy audit package (owner 2026-11-10) [MD:D59]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (docs only).
+needs: nothing.
 
 
 ### 2026-11-10 13:50 · ccode · 09b6c35f

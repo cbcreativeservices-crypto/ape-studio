@@ -14,7 +14,7 @@ const CASES: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F000788', file: 'src/features/intro/labTermIntroData.ts', now: 'A split-band de-esser turns down only the high band', gone: 'an approach called dynamic EQ' },
   { id: 'F002894', file: 'src/features/lab/understandingChecks.ts', now: 'One mic can be two of them, like a condenser shotgun or a condenser lav.', gone: 'One microphone can be all three.' },
   { id: 'F003359', file: 'src/features/amp/ampContent.ts', now: 'Cannot amplify audio cleanly: it conducts for less than half of each cycle.', gone: 'Cannot pass audio at all.' },
-  { id: 'F008701', file: 'src/features/cymatics/membrane.ts', now: 'raises the system resonance above f_s', gone: 'A sealed box raises f_s and' },
+  { id: 'F008701', file: 'src/features/cymatics/membrane.ts', now: 'raises the system resonance above fs', gone: 'A sealed box raises f_s and' },
   { id: 'F012237', file: 'src/features/ear/modules/defects.ts', now: 'Steady (hum, buzz, hiss) or one-off', gone: 'Tonal (hum, buzz, hiss)' },
   { id: 'F082963', file: 'src/features/production/postprod/stage6.data.ts', now: 'printed under it and summed without it', gone: 'It is only a problem when the stems are printed underneath it and then recombined through it again.' },
   { id: 'F083087', file: 'src/features/production/postprod/stage6.data.ts', now: 'only the routing table shows it', gone: 'all three would have shown up as a residual' },

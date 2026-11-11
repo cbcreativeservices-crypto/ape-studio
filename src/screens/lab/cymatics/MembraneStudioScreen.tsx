@@ -334,7 +334,7 @@ function MembraneStudio() {
               <LabChip key={t} label={`${(t / 1000).toFixed(0)} kN/m`} selected={spec.tensionNpm === t} onPress={() => patch({ tensionNpm: t })} onLongPress={() => openLesson('tension')} />
             ))}
           </View>
-          <Text style={styles.trayBlurb}>Tighter, smaller, lighter → higher: f ∝ √T, ∝ 1/diameter, ∝ 1/√(areal density). The fundamental is on the bezel.</Text>
+          <Text style={styles.trayBlurb}>Tighter, smaller, lighter → higher: f ∝ √T, ∝ 1/diameter, ∝ 1/√(areal density). The fundamental is in the readouts.</Text>
           <Text style={styles.trayHead}>DAMPING</Text>
           <View style={styles.chips}>
             {DAMPS.map((d) => (
@@ -394,7 +394,7 @@ function MembraneStudio() {
             ))}
           </View>
           <Text style={styles.trayBlurb}>{driver.blurb}</Text>
-          <Text style={styles.trayMono}>f_s {driver.fs} Hz · Q_ts {driver.qts} · Ø {driver.diameterMm} mm · breakup ≈ {driver.breakupHz < 1000 ? `${driver.breakupHz} Hz` : `${(driver.breakupHz / 1000).toFixed(1)} kHz`} · {driver.cone}</Text>
+          <Text style={styles.trayMono}>fs {driver.fs} Hz · Qts {driver.qts} · Ø {driver.diameterMm} mm · breakup ≈ {driver.breakupHz < 1000 ? `${driver.breakupHz} Hz` : `${(driver.breakupHz / 1000).toFixed(1)} kHz`} · {driver.cone}</Text>
           <View style={styles.chips}>
             <LabChip label={isSpeaker ? 'Showing the loudspeaker' : 'Show the loudspeaker'} selected={isSpeaker} onPress={() => setView(isSpeaker ? 'head' : 'speaker')} />
           </View>
@@ -436,7 +436,7 @@ function MembraneStudio() {
   const bezel = isSpeaker
     ? [
         { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
-        { k: 'f_s', v: formatHz(driver.fs), helpKey: 'cone' },
+        { k: 'fs', v: formatHz(driver.fs), helpKey: 'cone' },
         { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone' },
         { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1 },
       ]
@@ -541,7 +541,7 @@ function MembraneStudio() {
                 </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>The drum display needs the current app build (Skia). Controls and readouts still work.</Text>
+                  <Text style={styles.noSkiaText}>This version of the app can’t draw the drum. Controls and readouts still work; update the app to see it.</Text>
                 </View>
               ),
           },
@@ -621,7 +621,7 @@ function MembraneStudio() {
               excursion {Math.round(cone.excursion * 100)} % of the resonant peak · ka {cone.ka.toFixed(2)} ({cone.beamDeg != null ? `beam ≈ ${cone.beamDeg}°` : 'omnidirectional'}) · {cone.label}
             </Text>
             <Text style={styles.body}>
-              {driver.label}: f_s {driver.fs} Hz, Q_ts {driver.qts}, first bending frequency ≈ {driver.breakupHz < 1000 ? `${driver.breakupHz} Hz` : `${(driver.breakupHz / 1000).toFixed(1)} kHz`}. The tone you hear is what the cone is doing.
+              {driver.label}: fs {driver.fs} Hz, Qts {driver.qts}, first bending frequency ≈ {driver.breakupHz < 1000 ? `${driver.breakupHz} Hz` : `${(driver.breakupHz / 1000).toFixed(1)} kHz`}. The tone you hear is what the cone is doing.
             </Text>
           </View>
         ) : null}

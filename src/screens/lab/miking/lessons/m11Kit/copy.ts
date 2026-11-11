@@ -79,7 +79,7 @@ export const M11_ARRIVALS: ArrivalsWords = {
 export const PLAN_WORDS = {
   watchTitle: 'Worked plan',
   watchLooking: 'Building up a plan, one channel at a time',
-  watchPrompt: 'STEP through the stages. Each one adds a mic for a reason — the bezel counts what it costs.',
+  watchPrompt: 'STEP through the stages. Each one adds a mic for a reason — the readouts count what it costs.',
   buildTitle: 'Build a plan',
   buildLooking: 'Your plan',
   buildPrompt: 'Choose a PLAN, then add or remove channels under CHANNELS. Build one small plan (four mics or fewer) and one large one (eight or more), and compare what each costs.',

@@ -105,8 +105,8 @@ export const WARNING_INFO: Record<WarningFlag, { label: string; message: string;
   },
   engine_inactive: {
     label: 'ENGINE',
-    message: 'The measurement engine is not active.',
-    hint: 'Live measurement requires the audio engine — no values are simulated.',
+    message: 'Live measurement is not running.',
+    hint: 'Start or restart the measurement; close other apps using the mic.',
   },
 };
 

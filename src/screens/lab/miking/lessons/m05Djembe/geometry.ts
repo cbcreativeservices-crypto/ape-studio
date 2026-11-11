@@ -91,7 +91,7 @@ export const DJ_WORDS: HandWords = {
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
     x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drum’s center (x).', plus: 'front of', minus: 'behind', from: 'centre' },
-    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drum’s foot. Distances in the bezel are read from the surface the zone names.', plus: 'below', minus: 'above', from: 'the foot' },
+    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drum’s foot. Distances in the readouts are measured from the surface the zone names.', plus: 'below', minus: 'above', from: 'the foot' },
     z: { label: 'ACROSS', blurb: 'Toward the player’s left or right.', plus: 'right of', minus: 'left of', from: 'centre' },
   },
   where: { inside: 'inside the drum', outside: 'outside the drum' },

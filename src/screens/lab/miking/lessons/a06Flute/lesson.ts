@@ -262,7 +262,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — start from the same geometry and listen',
     explain: 'A wooden concert flute works like a metal one: the embouchure and the open holes. Begin with the same positions, then move for what you actually hear — not for a material stereotype.',
     why: {
-      'Yes — wood needs a closer, darker mic': 'We found no source showing a fixed sound for a material. Start from the geometry and listen.',
+      'Yes — wood needs a closer, darker mic': 'A material alone is not a sound recipe. Start from the geometry and listen.',
       'Yes — metal needs a treble cut before testing': 'A silver color is not a recipe. Test first, at matched level.',
     },
   },

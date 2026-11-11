@@ -532,7 +532,7 @@ export const M08_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'tambourine', label: 'the headed tambourine (and its player)', short: 'TAMBOURINE', note: 'Held by its player in the percussion row, often next to the trap table. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'tambourine', label: 'the headed tambourine (and its player)', short: 'TAMBOURINE', note: 'Held by its player in the percussion row, often next to the trap table — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical concert layout; no source gives positions' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'table', label: 'the trap table', short: 'TABLE', note: 'Where the tambourine and the other small instruments wait. The player turns and moves between them: a mic placed for one spot may miss the next.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'STATIONS', scene: 'kit' },
       { id: 'cymbal', label: 'a suspended cymbal', short: 'CYMBAL', note: 'Bright and loud, close by. Its bleed into a tambourine mic adds to the jingles’ brightness.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'snare', label: 'the concert snare', short: 'SNARE', note: 'Crisp and loud along the row; its player’s space and the tambourine player’s meet here.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },

@@ -92,7 +92,7 @@ export function ListeningSoonCard({ what }: { what: string }) {
     <View style={styles.soonCard}>
       <Text style={styles.soonTitle}>🔈 VISUAL ONLY — NO AUDIO PLAYBACK</Text>
       <Text style={styles.soonBody}>
-        {what} needs real-time processing in the native audio engine. The visuals above show
+        {what} isn’t available as sound in this lab. The visuals above show
         exactly what happens.
       </Text>
     </View>

@@ -809,7 +809,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
       { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
       { title: 'THE SPEAKER', text: spec.worked?.speaker ?? `In front of the speaker that is really sounding — found from outside the grille with the amp off or muted. ${spec.rig === 'combo' ? 'On this combo it sits off-center, under the controls.' : 'On this cabinet, one woofer — not the gap between two.'}`, cell: 1 },
       { title: 'THE DISTANCE', text: `${exZone.band} The readout measures from the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm.`, cell: 0 },
-      { title: 'ACROSS THE CONE', text: spec.worked?.across ?? 'Off the cone axis by about the dust cap’s radius: aimed at the line where the dust cap meets the cone. The bezel reads how far off the axis the mic sits.', cell: 1 },
+      { title: 'ACROSS THE CONE', text: spec.worked?.across ?? 'Off the cone axis by about the dust cap’s radius: aimed at the line where the dust cap meets the cone. The readouts show how far off the axis the mic sits.', cell: 1 },
       { title: 'THE AIM', text: `Facing the speaker — the lab counts anything within ±${exZone.aim?.maxOffAxis ?? 20}°. Distance, the spot across the cone and the angle are separate things to try, one at a time.`, cell: 2 },
       { title: 'CLEARANCE', text: spec.worked?.clearance ?? `Off the grille cloth — never touching it — on a stable stand, the cable routed away from the player’s ${spec.who === 'steel' ? 'pedals, knee levers and volume pedal' : 'feet and pedalboard'} and from the amp’s hot vents.`, cell: 3 },
     ];
@@ -928,7 +928,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         },
         well: (
           <>
-            <Landing looking={`Worked example · ${micType(spec.micDefault).label.toLowerCase()} · ${spec.ampNoun}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel and the mark on the drawing show the piece being read." />
+            <Landing looking={`Worked example · ${micType(spec.micDefault).label.toLowerCase()} · ${spec.ampNoun}`} prompt="Step through how this starting point is read, piece by piece. The lit readout and the mark on the drawing show the piece being read." />
             <Card>
               <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
             </Card>

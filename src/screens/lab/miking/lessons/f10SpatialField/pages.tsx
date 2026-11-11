@@ -352,7 +352,7 @@ function F10Meet(p: PageProps) {
             )}
           </FieldStage>
         ),
-        badge: 'From above · blue = straight paths to the listener’s point · a simplified picture: no head shadow drawn, sound speed from the Calculator lab',
+        badge: 'From above · blue = straight paths to the listener’s point · a simplified picture: no head shadow drawn',
         bezel: isEvent(variant)
           ? [
               { k: 'PERFORMER', v: `${fmtM(dDirect)} · AHEAD`, flex: 1.4 },

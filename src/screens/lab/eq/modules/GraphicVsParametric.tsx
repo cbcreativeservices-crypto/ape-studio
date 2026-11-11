@@ -124,7 +124,7 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
       <View style={styles.well}>
         <GlossaryText style={styles.body}>
           A graphic EQ is a row of FIXED bands — one slider per frequency, gain only. You’ve been
-          driving a parametric band; now drive the board. The bezel reads the fader under your
+          driving a parametric band; now drive the board. The readouts show the fader under your
           finger.
         </GlossaryText>
 

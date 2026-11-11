@@ -1280,11 +1280,11 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
   'Ring-out and soundcheck': {
     intro: {
       learning: 'How wedges are rung out before the show: move each wedge into its mic’s null first, notch only what still rings, then bring the level up.',
-      start: 'With WEDGE, pick Wedge 1 · Singer and raise SEND to −6 dB: it rings. Then set POSITION to In the null and watch the ! on the bezel disappear.',
+      start: 'With WEDGE, pick Wedge 1 · Singer and raise SEND to −6 dB: it rings. Then set POSITION to In the null and watch the ! in the readouts disappear.',
     },
     seeing: [
       'The stage shows the wedge you picked, with its mic’s pickup pattern. Three wedges start in the live angle; Wedge 3 · Bass already sits in the null.',
-      'The bezel shows every wedge’s send, W1 SINGER, W2 GUITAR, W3 BASS and W4 DRUMS, with a ! on any wedge that is ringing.',
+      'The readouts show every wedge’s send, W1 SINGER, W2 GUITAR, W3 BASS and W4 DRUMS, with a ! on any wedge that is ringing.',
     ],
     control: [
       'WEDGE picks the wedge you’re ringing out.',

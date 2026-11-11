@@ -246,7 +246,7 @@ export function PartialsStage({ width, height, partials, fb, label, progress, pl
   const bars = partials.map((p) => {
     const a = p.amp / peak;
     const h = Math.max(2, a * (bot - top - 6));
-    return { x: xOf(p.hz) - 2.5, y: bot - h, w: 5, h, a, color: levelColor(a), loss: p.loss, label: p.label.replace(/[ab]$/, '') };
+    return { x: xOf(p.hz) - 2.5, y: bot - h, w: 5, h, a, color: levelColor(a), loss: p.loss, label: p.label.replace(/[ab]$/, '').trimEnd() };
   });
   const modeLabels = layoutModeLabels(bars, fsS, { x0, x1, top, bot }, [
     // the batter's pitch note (end-anchored left of its line) and the line itself
@@ -269,7 +269,7 @@ export function PartialsStage({ width, height, partials, fb, label, progress, pl
       {/* beat annotations: one per split pair */}
       {pairs.filter((p) => p.pairHz > 0).slice(0, 2).map((p, k) => (
         <SvgText key={k} x={x1 - 4} y={top + 12 + k * 13} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.mono}>
-          {`${p.label.replace(/[ab]$/, '')} split ${Math.abs(p.pairHz).toFixed(1)} Hz → beats`}
+          {`${p.label.replace(/[ab]$/, '').trimEnd()} split ${Math.abs(p.pairHz).toFixed(1)} Hz → beats`}
         </SvgText>
       ))}
       {pairs.length === 0 ? <SvgText x={x1 - 4} y={top + 12} fontSize={fs} fill={ink.green} textAnchor="end" fontFamily={fonts.mono}>no split pairs · even head</SvgText> : null}

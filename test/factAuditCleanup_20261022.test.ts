@@ -49,7 +49,8 @@ describe('cleanup partners', () => {
   });
   it('mic cutaway caption: displacement lags the driving force, not the front pressure', () => {
     const a = read('screens/lab/micspeaker/micCutawayAsset.ts');
-    assert.match(a, /runs about 180° behind the force driving it\./);
+    assert.match(a, /diaphragm’s position runs<\/text>/);
+    assert.match(a, /about 180° behind the force pushing it\./);
     assert.doesNotMatch(a, /behind the front-face pressure/);
   });
   it('E13 matches E12: as few supports as you can, not a fixed two', () => {

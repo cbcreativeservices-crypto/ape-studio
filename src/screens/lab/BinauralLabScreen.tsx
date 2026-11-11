@@ -408,7 +408,7 @@ export function BinauralLabScreen() {
                 PLAY (header ▶) mixes all enabled objects to one binaural bus at {SRC_LEVEL_DB}{' '}
                 dBFS each · uncalibrated.
                 {busNorm < 0.999
-                  ? ` Bus norm ${busNorm.toFixed(2)} — the peak bound is attenuating the sum (honest level).`
+                  ? ` Bus norm ${busNorm.toFixed(2)} — the objects together are too loud, so the whole mix is turned down.`
                   : ''}
               </Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}

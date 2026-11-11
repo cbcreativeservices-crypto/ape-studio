@@ -250,9 +250,9 @@ export const MIC_LIMITS = [
  * whose Sound and Tuner modes were running off it. See CAMERA_NOTE below.
  */
 export const ENGINE_NOTE =
-  'The live measurement engine is a native audio module (real-time capture + DSP) that is not part of this app build. No simulated readings are shown, because a meter that looks live but isn’t would violate the measurement-integrity rules this module is built on.';
+  'This version of the app can’t read the microphone yet, so no readings are shown — we never show made-up numbers. Update the app to use this tool.';
 
 /** The CAMERA half of the same story — Light-Pulse only. */
-export const CAMERA_NOTE_TITLE = 'LIGHT-PULSE MODE — NOT IN THIS BUILD';
+export const CAMERA_NOTE_TITLE = 'LIGHT-PULSE MODE ISN’T AVAILABLE HERE YET';
 export const CAMERA_NOTE =
   'This version of the app can’t use the camera for Light-Pulse yet. The Sound, Tuner and Tap modes work fully; update the app to use Light-Pulse.';

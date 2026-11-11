@@ -166,7 +166,7 @@ export function CalcWorkflowRunScreen() {
       if (!found) {
         // notify: Alert.alert is a no-op on RN-web — the OK→goBack exit never
         // appeared and the screen sat on "Loading workflow…" (B-013/B-063).
-        if (alive) notify('Workflow unavailable', 'This workflow could not be loaded.', () => safeGoBack(navigation));
+        if (alive) notify('Workflow unavailable', 'This workflow could not be loaded. Go back and open it again, or pick another workflow.', () => safeGoBack(navigation));
         return;
       }
       const { workflow: valid, dropped } = validateWorkflow(found);

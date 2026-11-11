@@ -471,7 +471,7 @@ function PlateStudio() {
               ? 'One drive frequency. Add a second to see two modes share the plate.'
               : tone.dualReady
                 ? `Two tones summed in one channel (${formatHz(freq)} + ${formatHz(freqB!)}) — heard AND shown.`
-                : 'Second tone is SHOWN only — this build’s sound engine plays one tone at a time.'}
+                : 'Second tone is SHOWN only — this version of the app plays one tone at a time.'}
           </Text>
         </View>
       ),
@@ -650,7 +650,7 @@ function PlateStudio() {
                 </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>The plate display needs the current app build (Skia). Controls and readouts still work.</Text>
+                  <Text style={styles.noSkiaText}>This version of the app can’t show the live plate yet; controls and readouts still work. Update the app to see it.</Text>
                 </View>
               ),
           },

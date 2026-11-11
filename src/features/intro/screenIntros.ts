@@ -163,7 +163,7 @@ export const SCREEN_INTROS: Record<
     title: 'Our Commitment to You',
     body:
       'We built this academy to be a trusted place to learn.\n\n' +
-      'Our glossary, lessons, and quizzes are created for education—not advertising. Companies cannot pay to influence our definitions, recommendations, or learning content.\n\n' +
+      'Our glossary, lessons, and quizzes are created for education—not advertising. Companies cannot pay to influence our definitions, suggestions, or learning content.\n\n' +
       'You’ll never have to deal with intrusive ads or sales pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
       'Our pricing is just as straightforward. One membership. Not a series of extra charges—what your membership includes stays included, with no add-ons or surprise fees.\n\n' +
       'Thank you for learning with us.',

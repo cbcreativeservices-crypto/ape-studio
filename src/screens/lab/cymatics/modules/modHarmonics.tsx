@@ -154,7 +154,7 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
           {sel ? `${tone.running ? 'Playing ' : ''}${formatHz(hz)} — ${selLadder?.name}, ratio ${sel.ratio.toFixed(2)}` : 'Pick a MODE to hear it.'}
         </Text>
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
-        {!tone.engineReady ? <Text style={P.caption}>Sound needs the native engine (this build: {tone.gate}).</Text> : null}
+        {!tone.engineReady ? <Text style={P.caption}>This version of the app can’t play this sound; update the app.</Text> : null}
       </View>
       {ladders.map((l) => (
         <View key={l.id} style={{ gap: 2 }}>

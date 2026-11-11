@@ -338,7 +338,7 @@ export function ProductionStageScreen() {
             {project
               ? authored
                 ? 'This stage could not be worked out from the saved answers just now. Your answers are unchanged — go back and open it again.'
-                : 'This stage is not available.'
+                : 'This stage is not available. Go back and open another stage.'
               : loadState === 'unreadable'
                 ? 'This project could not be read on this device just now. Go back and open it again.'
               : loadState === 'missing'

@@ -157,11 +157,11 @@ export function parseLibraryFile(raw: LibraryFile): LibraryShape {
   let validationNote: string;
   if (validated) {
     const worst = Math.max(...validation.map((v) => Math.abs(v.lambda2 / (v.published as number) - 1)));
-    validationNote = `first ${validation.length} modes within ${(worst * 100).toFixed(2)} % of the exact characteristic equation`;
+    validationNote = `the first ${validation.length} modes match the exact solution to within ${(worst * 100).toFixed(2)} %`;
   } else if (validation.some((v) => /mesh refinement/i.test(v.source))) {
-    validationNote = 'no published table exists for this boundary; mesh-refinement check < 0.01 %, solver validated on the exact disc';
+    validationNote = 'no published table exists for this boundary; a finer grid changes results < 0.01 %; method checked against the exact disc solution';
   } else {
-    validationNote = 'custom outline, no published values; solver validated on the exact disc';
+    validationNote = 'custom outline, no published values; method checked against the exact disc solution';
   }
   return {
     id: raw.shape,

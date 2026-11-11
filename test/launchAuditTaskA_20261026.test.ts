@@ -26,7 +26,9 @@ test('2 · Sentry environment follows the EAS channel', () => {
 });
 
 test('3 · the lab probe is dev-only', () => {
-  assert.match(read('src/screens/lab/LabShell.tsx'), /onTitlePress=\{__DEV__ \? titleTap : undefined\}/);
+  // The TEMP touch probe readout is gone from LabShell (copy audit 2026-11-10): no title handler, no PROBE text.
+  const shell = read('src/screens/lab/LabShell.tsx');
+  assert.doesNotMatch(shell, /onTitlePress=|titleTap|probeOn|PROBE · last touch/);
   assert.match(read('src/features/lab/labProbe.ts'), /export function labProbe\(msg: string\): void \{\n\s*\/\/[^\n]*\n\s*if \(!__DEV__\) return;/);
   // With no handler the title is not pressable at all.
   assert.match(read('src/screens/lab/kit/LabNavBar.tsx'), /disabled=\{!onTitlePress\}/);

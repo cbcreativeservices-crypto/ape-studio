@@ -453,7 +453,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     },
     seeing: [
       'A drumhead from above: a 14-inch snare-size head at 3 kN/m to start. VIEW › Loudspeaker shows a cone cutaway and front view.',
-      'Drum: DRIVE, FUNDAMENTAL (lowest mode), MODE, RESPONSE. Loudspeaker: DRIVE, f_s (its resonance), ka (cone size against wavelength: 1 when the rim’s circumference is one wavelength), STAGE.',
+      'Drum: DRIVE, FUNDAMENTAL (lowest mode), MODE, RESPONSE. Loudspeaker: DRIVE, fs (its resonance), ka (cone size against wavelength: 1 when the rim’s circumference is one wavelength), STAGE.',
       'LAB NOTES: the resonance card and TUNING, or the cone’s stage ladder, and the SIMULATION notes.',
     ],
     control: [

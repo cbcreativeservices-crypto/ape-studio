@@ -650,7 +650,7 @@ export const I09_LESSON: MalletLesson = {
   },
   setting: {
     items: [
-      { id: 'xylo', label: 'the xylophone (and its player)', short: 'XYLOPHONE', note: 'The player stands behind it, facing the audience. The drawing every page of this lesson uses.', prov: { kind: 'illustrative', reason: 'a typical section layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
+      { id: 'xylo', label: 'the xylophone (and its player)', short: 'XYLOPHONE', note: 'The player stands behind it, facing the audience — as drawn on every page of this lesson.', prov: { kind: 'illustrative', reason: 'a typical section layout; no source gives positions' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'perc', label: 'other percussion', short: 'PERCUSSION', note: 'Drums and small instruments: a close spot hears them too.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'kit', label: 'a drum kit', short: 'DRUMS', note: 'A close spot can add as much drum bleed as xylophone. Aim the pattern’s rejection toward it where you can.', prov: { kind: 'illustrative', reason: 'a typical section layout' }, tag: 'SPILL', scene: 'all' },
       { id: 'front', label: 'a floor wedge in front of the xylophone', short: 'WEDGE', note: 'On the floor in front, facing the player, below the mic’s front: no pattern null reaches it. Keep its send only as high as needed.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },

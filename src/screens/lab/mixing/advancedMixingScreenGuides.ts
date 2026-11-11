@@ -683,7 +683,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     teaches: [
       'Repairing a mix you didn’t start is the whole job in one: diagnose, repair, glue, check in mono, deliver.',
-      'Every repair here uses a tool this lab covered.',
+      'The tools that build a mix are the tools that fix one.',
       'A habit worth keeping: at the end of every mix, ask whether it honored the priorities you set.',
     ],
     tryThis: [

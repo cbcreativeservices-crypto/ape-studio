@@ -224,11 +224,6 @@ export function AmpLabHomeScreen() {
           />
         ))}
         </TabletGrid>
-        {built.length < AMP_MODULES.length ? (
-          <Text style={styles.note}>
-            Modules {built.length + 1}–{AMP_MODULES.length} are on the bench.
-          </Text>
-        ) : null}
         {/* Certificate credit (owner 2026-10-13): the check renders only once
             questions are authored for this lab (trainingLabKeys UNDERSTANDING_LAB_IDS). */}
         <LabUnderstandingBlock labId="amp" labTitle="Amp Lab" />

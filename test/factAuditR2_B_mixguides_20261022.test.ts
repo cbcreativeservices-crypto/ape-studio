@@ -88,7 +88,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
 });
 
 describe('fact audit R2 · mixing guides: the ONE WHO hearing note (owner ruling 3)', () => {
-  const NOTE = 'WHO recommends audiences be exposed to no more than 100 dB LAeq over 15 minutes — protect your hearing.';
+  const NOTE = 'WHO advises keeping audience exposure to no more than 100 dB LAeq over 15 minutes — protect your hearing.';
   it('is one shared constant, rendered under the live level', () => {
     const types = read('src/screens/lab/mixingGuides/data/types.ts');
     assert.ok(types.includes(`WHO_LIVE_LEVEL_NOTE =\n  '${NOTE}'`));
@@ -97,7 +97,7 @@ describe('fact audit R2 · mixing guides: the ONE WHO hearing note (owner ruling
   });
   it('is not copied into the guide files', () => {
     for (const f of readdirSync(join(ROOT, DIR))) {
-      assert.ok(!read(`${DIR}/${f}`).includes('WHO recommends audiences'), `${f} carries its own copy of the WHO note`);
+      assert.ok(!read(`${DIR}/${f}`).includes('WHO advises keeping audience'), `${f} carries its own copy of the WHO note`);
     }
   });
 });
