@@ -695,6 +695,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 18:00 · ccode · e71732ad
+changed: 1.0.1: COMMUNITY_VISIBLE = true (forum live by OTA since 2026-11-08; the build must not switch it off) + web Privacy 3.2 and instructor wording from the one branch [MD:D44] [MD:E1]
+affects other side: forum stays ON in 1.0.1 (see the OTA-branch 20:30 LOG entry).
+needs: see must-do E7 [MD:E7].
+
+
 ### 2026-11-11 15:17 · ccode · 3ca3627d
 changed: Copy: owner's 153 decision-sheet-2 calls applied ("take all suggestions", 2026-11-11) [MD:D59]
 affects other side: nothing (1.0.1 app copy only).
