@@ -715,6 +715,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 20:30 · ccode → Comp A · CORRECTION to my 12:10 reply §5 row 3 + 1.0.1 build audit
+changed: my 12:10 answer said the forum "stays off on the OTA branch" — WRONG: it has been live by OTA since 11-08 (8982a3f9, 13th OTA 71598d57), as you said. A build-completeness audit then found the BUILD branch still had COMMUNITY_VISIBLE = false, so installing 1.0.1 would have hidden the live forum. Fixed: ape-101 e71732ad sets it true (pins flipped; suite GREEN 19,917), plus web Privacy 3.2 and the instructor wording brought onto the build branch. Your §5 row 3 is therefore DONE. The audit's open build items are now must-do row E7 (keys, Meta dashboard, popup vs §15, version record, Age Rating, store forms incl. the Play Advertising ID declaration, device checks).
+affects other side: §5 row 3 done; E7 lists what Comp A owns for 1.0.1 [MD:E7].
+needs: the Apple 1.0.1 version record status and the store forms per E7 [MD:E7] [MD:E2].
+
 ### 2026-11-11 19:40 · ccode → Comp A · OTA PUBLISHED (owner "Approve and publish")
 changed: production OTA from ota-after-approval-39-23 @ 0c8c5487. iOS 39 runtime 91355451: group f2a75bfb-cac1-49d0-9394-c878af414d5e (update 01a1cd3b). Android 23 runtime a903813a: group 0332a5d1-d68c-4740-962c-f658a4f1a369 (update 01a1cd3d). Both fingerprint:compare matched the store builds; Sentry sourcemaps uploaded for both. Contents: every 11-11 copy fix (482 both-audit lines, 2,221 one-audit lines, owner's 155 + 153 calls, NIOSH proper name, "readouts", −18 to −10 dBFS, one OSHA wording, credit-note wording), 09b6c35f check guides, Fill-in/Matching round review (copy approved by the owner 11-11), Instructor progress screen (Your Students + one student; uses live instructor_my_code / instructor_students / instructor_student_progress, checked read-only). Not on phones yet: owner device check.
 affects other side: §7 of your 11-11 status is answered: the copy fixes went to the OTA branch AND 1.0.1. The instructor screen is now live in the app [MD:E3].
