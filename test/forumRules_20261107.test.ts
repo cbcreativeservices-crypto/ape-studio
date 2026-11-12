@@ -749,7 +749,7 @@ describe('the sample never runs in production', () => {
 
 describe('house rules', () => {
   it('stays off: the one switch is still false', () => {
-    assert.match(read('src/config/communityVisible.ts'), /export const COMMUNITY_VISIBLE = false;/);
+    assert.match(read('src/config/communityVisible.ts'), /export const COMMUNITY_VISIBLE = true;/);
   });
 
   it('the tabs read DIRECTORY · FORUM · MY PROFILE · REQUESTS', () => {

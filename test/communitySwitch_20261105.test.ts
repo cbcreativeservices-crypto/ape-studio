@@ -14,8 +14,8 @@ const read = (p: string) => readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 const UUID = '3f2b8c1e-5d4a-4b6f-9a7e-1c2d3e4f5a6b';
 
 describe('the one switch', () => {
-  it('is off, and a leaf with no imports', () => {
-    assert.equal(COMMUNITY_VISIBLE, false);
+  it('is ON (owner 2026-11-07, forum by OTA, option A), and a leaf with no imports', () => {
+    assert.equal(COMMUNITY_VISIBLE, true);
     assert.doesNotMatch(read('src/config/communityVisible.ts'), /^import /m);
   });
   it('Home and the tab bar read it', () => {
@@ -24,23 +24,23 @@ describe('the one switch', () => {
   });
 });
 
-describe('deep links and push taps do not reach the directory', () => {
-  it('no directory link is claimed', () => {
+describe('with the switch on, deep links and push taps reach the directory', () => {
+  it('directory links are claimed', () => {
     for (const p of ['directory', 'directory/requests', `directory/requests/${UUID}`]) {
-      assert.equal(isClaimedPath(p), false, p);
-      assert.equal(isDirectoryPath(p), true, `${p} keeps its shape for switching back on`);
+      assert.equal(isClaimedPath(p), true, p);
+      assert.equal(isDirectoryPath(p), true, p);
     }
-    assert.equal(isAcceptedLink('https://proaudiotrainingacademy.com/directory'), false);
-    assert.equal(isAcceptedLink(`proaudio://directory/requests/${UUID}`), false);
+    assert.equal(isAcceptedLink('https://proaudiotrainingacademy.com/directory'), true);
+    assert.equal(isAcceptedLink(`proaudio://directory/requests/${UUID}`), true);
   });
-  it('a directory link cannot be parked for after sign-in', () => {
-    assert.equal(setPendingLink(`proaudio://directory/requests/${UUID}`), false);
-    assert.equal(peekPendingLink(), null);
+  it('a directory link can be parked for after sign-in', () => {
+    assert.equal(setPendingLink(`proaudio://directory/requests/${UUID}`), true);
+    assert.notEqual(peekPendingLink(), null);
   });
   it('Pro Registry stays reachable: it is not the community', () => {
     assert.equal(isClaimedPath('awards/directory'), true);
   });
-  it('a tapped member alert opens nothing', () => {
+  it('a tapped member alert opens only through the switch', () => {
     assert.match(
       read('src/features/notifications/push.ts'),
       /if \(COMMUNITY_VISIBLE && tap && community\) community\.open\(rules\(\)\.communityPath\(tap\)\);/,
