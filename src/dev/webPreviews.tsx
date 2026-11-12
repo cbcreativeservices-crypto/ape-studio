@@ -159,6 +159,10 @@ import { OnboardingLandingScreen } from '../screens/onboarding/OnboardingLanding
 // `#labpreview/Paywall/sample` for store-shaped sample prices (src/dev/paywallSample.ts).
 // Also the sibling the landing's SEE MEMBERSHIP PLANS opens inside the harness.
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
+// Game Audio lab (2026-11-12, must-do D60): `#labpreview/GameAudioEngineCheck` is
+// the sound engine's proof screen. The lab is not in the Labs menu yet.
+import { GameAudioEngineCheckScreen } from './GameAudioEngineCheckScreen';
+import { GameAudioLabScreen } from '../screens/lab/gameaudio/GameAudioLabScreen';
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   OnboardingLanding: OnboardingLandingScreen as ComponentType,
@@ -237,6 +241,8 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MasteringLab: MasteringLabScreen as ComponentType,
   DrumTuningLab: DrumTuningLabScreen as ComponentType,
   DJSystemsLab: DJSystemsLabScreen as ComponentType,
+  GameAudioEngineCheck: GameAudioEngineCheckScreen as ComponentType,
+  GameAudioLab: GameAudioLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
