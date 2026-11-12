@@ -376,6 +376,8 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   EarModule: [true, 'Ear Training Lab'],
   EarTrainingLab: [true, 'Ear Training Lab'],
   EmployerAdmin: [false, null],
+  InstructorStudents: [false, null],
+  InstructorStudent: [false, null],
   EnvelopeLab: [true, 'Sound Envelope & Transients Lab'],
   EqLab: [true, 'Equalizer'],
   EqLabHome: [true, 'EQ Lab'],

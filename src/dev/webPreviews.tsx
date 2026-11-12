@@ -57,6 +57,12 @@ import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyList
 import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
 // Audio Community Forum (2026-11-07): `#forumpreview` lists every mockup state.
 import { ForumLabStub, ForumPreviewScreen, withDialogs } from './ForumPreview';
+// Fill-in / Matching end-of-round review (2026-11-07, must-do E4).
+import { RoundReviewPreview } from './RoundReviewPreview';
+// Instructor progress (2026-11-07, must-do E3): `#instructorpreview`.
+import { InstructorPreviewScreen } from './InstructorPreview';
+import { InstructorStudentsScreen } from '../screens/instructor/InstructorStudentsScreen';
+import { InstructorStudentScreen } from '../screens/instructor/InstructorStudentScreen';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { ForumCategoryScreen } from '../screens/directory/forum/ForumCategoryScreen';
 import { ForumThreadScreen } from '../screens/directory/forum/ForumThreadScreen';
@@ -421,6 +427,17 @@ export function renderWebPreview(hash: string): ReactElement | null {
               { name: 'GainLabHome', component: ForumLabStub as ComponentType },
             ],
           }
+      : hash === '#instructorpreview'
+        // A verified instructor's class and one student's progress, on made-up
+        // students (the live server has no verified instructor yet).
+        ? {
+            name: 'InstructorPreview',
+            component: InstructorPreviewScreen as ComponentType,
+            screens: [
+              { name: 'InstructorStudents', component: withDialogs(InstructorStudentsScreen) },
+              { name: 'InstructorStudent', component: withDialogs(InstructorStudentScreen) },
+            ],
+          }
       : hash === '#soundsystemspreview'
         // Sound Systems Lab (owner GO 2026-09-25): the hub plus its five mode
         // screens, so the whole lab can be walked in the browser harness.
@@ -494,7 +511,9 @@ export function renderWebPreview(hash: string): ReactElement | null {
                             component: AwardsScreen as ComponentType,
                             initialParams: { category: hash.split('/')[1] || 'specialization' },
                           }
-                        : labPreviewFromHash(hash);
+                        : hash.startsWith('#roundreviewpreview')
+                          ? { name: 'RoundReview', component: withDialogs(RoundReviewPreview as ComponentType) }
+                          : labPreviewFromHash(hash);
   if (toolPreview) {
     return (
       <SafeAreaProvider>

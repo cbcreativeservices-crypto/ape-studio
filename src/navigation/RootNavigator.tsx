@@ -121,6 +121,9 @@ const Lazy = {
   ForumNotices: lazyScreen(() => require('../screens/directory/forum/ForumNoticesScreen').ForumNoticesScreen),
   ForumMine: lazyScreen(() => require('../screens/directory/forum/ForumMineScreen').ForumMineScreen),
   EmployerAdmin: lazyScreen(() => require('../screens/admin/EmployerAdminScreen').EmployerAdminScreen),
+  // Must-do E3: a verified instructor's class and one student's progress.
+  InstructorStudents: lazyScreen(() => require('../screens/instructor/InstructorStudentsScreen').InstructorStudentsScreen),
+  InstructorStudent: lazyScreen(() => require('../screens/instructor/InstructorStudentScreen').InstructorStudentScreen),
   ReportsAdmin: lazyScreen(() => require('../screens/admin/ReportsAdminScreen').ReportsAdminScreen),
   ToolsHub: lazyScreen(() => require('../screens/tools/ToolsHubScreen').ToolsHubScreen),
   ToolInfo: lazyScreen(() => require('../screens/tools/ToolInfoScreen').ToolInfoScreen),
@@ -455,6 +458,10 @@ export function RootNavigator() {
       <Stack.Screen name="ForumNotices" getComponent={Lazy.ForumNotices} options={swipe} />
       <Stack.Screen name="ForumMine" getComponent={Lazy.ForumMine} />
       <Stack.Screen name="EmployerAdmin" getComponent={Lazy.EmployerAdmin} />
+      {/* Must-do E3 (2026-11-07). Swipe-back left OFF: adding a screen to the
+          iPhone swipe-back set is the owner's call (test/iosSwipeBackSet_20261025). */}
+      <Stack.Screen name="InstructorStudents" getComponent={Lazy.InstructorStudents} />
+      <Stack.Screen name="InstructorStudent" getComponent={Lazy.InstructorStudent} />
       <Stack.Screen name="ReportsAdmin" getComponent={Lazy.ReportsAdmin} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
           The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it

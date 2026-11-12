@@ -59,6 +59,8 @@ import type { StudyStackParamList } from '../../navigation/types';
 import { orderByCredit, remainingCount } from '../../features/study/deckOrder';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useTier } from '../../features/commercial/useTier';
+import { noteAnswer, roundDue, type RoundEntry } from '../../features/study/studyRounds';
+import { RoundReview } from '../../features/study/RoundReview';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'FillInBlank'>;
 
@@ -137,6 +139,16 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   // Baseline for the RESET button: the answered count at the last reset, so the
   // readout's session counters zero without touching earned study progress.
   const answeredBaseRef = useRef(0);
+  // END-OF-ROUND REVIEW (next-build item 2, must-do E4): the round's terms with
+  // "Research and learn more · View images", since the answer itself shows for
+  // under a second. See features/study/studyRounds.ts.
+  const roundRef = useRef<RoundEntry[]>([]);
+  const [review, setReview] = useState<RoundEntry[] | null>(null);
+  const runningRef = useRef(running);
+  runningRef.current = running;
+  const fullscreenRef = useRef(fullscreen);
+  fullscreenRef.current = fullscreen;
+  const reviewResume = useRef({ running: false, fullscreen: false });
 
   useEffect(() => {
     let alive = true;
@@ -358,6 +370,8 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       );
       if (correct) incBrainOutput('fill_in_blank'); // one brain output per correct answer press
       session.current?.addEvent({ item: question.item.id, kind: 'answer', correct });
+      roundRef.current = noteAnswer(roundRef.current, question.item, correct, opt);
+      const reviewNow = roundDue(roundRef.current, order.length);
       setStates((prev) => ({
         ...prev,
         [question.item.id]: {
@@ -371,6 +385,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(() => {
         setPicked(null);
+        // The round is full: show its review instead of the next question.
+        // Next round (closeReview) moves on exactly as this timer would.
+        if (reviewNow) {
+          openReview();
+          return;
+        }
         /**
          * ⛔ ADVANCE AT 100% TOO. A FINISHED METHOD IS NOT A LOCKED ONE.
          *
@@ -396,8 +416,27 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         AccessibilityInfo.announceForAccessibility('Next question.');
       }, FEEDBACK_MS);
     },
-    [question, picked],
+    [question, picked, order.length],
   );
+
+  // Pause the pace clock and leave full screen while the review is up (the
+  // reading is not answering time), then put both back as they were.
+  function openReview() {
+    const entries = roundRef.current;
+    roundRef.current = [];
+    reviewResume.current = { running: runningRef.current, fullscreen: fullscreenRef.current };
+    if (runningRef.current) setRunning('fill_in_blank', false);
+    setFullscreen(false);
+    setReview(entries);
+  }
+  const closeReview = useCallback(() => {
+    session.current?.touch();
+    setReview(null);
+    setQIdx((i) => i + 1);
+    if (reviewResume.current.running) setRunning('fill_in_blank', true);
+    if (reviewResume.current.fullscreen) setFullscreen(true);
+    AccessibilityInfo.announceForAccessibility('Next question.');
+  }, []);
 
   // ONE EXIT for the error / empty Back buttons (night bug pass 3,
   // 2026-10-01) — the Quiz latch. A double tap's second goBack() came from a
@@ -440,6 +479,20 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       <View style={styles.center}>
         <ActivityIndicator color={colors.amber} />
       </View>
+    );
+  }
+
+  if (review) {
+    return (
+      <RoundReview
+        method="fill_in_blank"
+        title="FILL IN THE BLANK"
+        subtitle={`Topic · ${topicName}`}
+        entries={review}
+        showYourAnswer
+        onContinue={closeReview}
+        topInset={insets.top}
+      />
     );
   }
 

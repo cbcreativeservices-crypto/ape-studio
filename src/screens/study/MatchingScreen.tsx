@@ -57,6 +57,8 @@ import { orderByCredit } from '../../features/study/deckOrder';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useTier } from '../../features/commercial/useTier';
+import { noteAnswer, roundDue, type RoundEntry } from '../../features/study/studyRounds';
+import { RoundReview } from '../../features/study/RoundReview';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Matching'>;
 
@@ -158,6 +160,16 @@ export function MatchingScreen({ navigation, route }: Props) {
   // Baseline of the pace window: the answered count when the timer was enabled,
   // so the readout's session counter zeroes without touching earned progress.
   const answeredBaseRef = useRef(0);
+  // END-OF-ROUND REVIEW (next-build item 2, must-do E4): a matched pair fades
+  // out, so the round's terms come back here with "Research and learn more ·
+  // View images". See features/study/studyRounds.ts.
+  const roundRef = useRef<RoundEntry[]>([]);
+  const [review, setReview] = useState<RoundEntry[] | null>(null);
+  const runningRef = useRef(running);
+  runningRef.current = running;
+  const fullscreenRef = useRef(fullscreen);
+  fullscreenRef.current = fullscreen;
+  const reviewResume = useRef({ running: false, fullscreen: false });
 
   useEffect(() => {
     let alive = true;
@@ -393,6 +405,8 @@ export function MatchingScreen({ navigation, route }: Props) {
       if (correct) incBrainOutput('matching'); // one brain output per correct PAIR match (not per board)
       session.current?.addEvent({ item: selectedLeft, kind: 'answer', correct });
       const answeredId = selectedLeft;
+      const answeredItem = board.find((it) => it.id === answeredId);
+      if (answeredItem) roundRef.current = noteAnswer(roundRef.current, answeredItem, correct);
       setStates((prev) => ({
         ...prev,
         [answeredId]: {
@@ -451,9 +465,13 @@ export function MatchingScreen({ navigation, route }: Props) {
            * signalled: the header LED reads 100% and the Dashboard fires the
            * `matching-complete` celebration.
            */
+          // A full round shows its review first; Next round then advances
+          // the board exactly as this timer would.
+          const reviewNow = roundDue(roundRef.current, items?.length ?? 0);
           autoAdvanceTimer.current = scheduleFlash(() => {
             autoAdvanceTimer.current = null;
-            goBoardRef.current(1);
+            if (reviewNow) openReviewRef.current();
+            else goBoardRef.current(1);
           }, ADVANCE_MS);
         }
       } else {
@@ -469,8 +487,27 @@ export function MatchingScreen({ navigation, route }: Props) {
         }, WRONG_FLASH_MS);
       }
     },
-    [board, selectedLeft, locked, wrongPair],
+    [board, selectedLeft, locked, wrongPair, items],
   );
+
+  // Pause the pace clock and leave full screen while the review is up (the
+  // reading is not matching time), then put both back as they were.
+  const openReview = () => {
+    const entries = roundRef.current;
+    roundRef.current = [];
+    reviewResume.current = { running: runningRef.current, fullscreen: fullscreenRef.current };
+    if (runningRef.current) setRunning('matching', false);
+    setFullscreen(false);
+    setReview(entries);
+  };
+  const openReviewRef = useRef(openReview);
+  openReviewRef.current = openReview;
+  const closeReview = useCallback(() => {
+    setReview(null);
+    goBoardRef.current(1);
+    if (reviewResume.current.running) setRunning('matching', true);
+    if (reviewResume.current.fullscreen) setFullscreen(true);
+  }, []);
 
   // ONE EXIT for the error / empty Back buttons (night bug pass 3,
   // 2026-10-01) — the Quiz latch. A double tap's second goBack() came from a
@@ -514,6 +551,20 @@ export function MatchingScreen({ navigation, route }: Props) {
       <View style={styles.center}>
         <ActivityIndicator color={colors.amber} />
       </View>
+    );
+  }
+
+  if (review) {
+    return (
+      <RoundReview
+        method="matching"
+        title="MATCHING · PAIR EACH"
+        subtitle={`Topic · ${topicName}`}
+        entries={review}
+        showYourAnswer={false}
+        onContinue={closeReview}
+        topInset={insets.top}
+      />
     );
   }
 
