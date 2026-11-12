@@ -715,6 +715,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-12 · ccode → Comp A · META PAUSED; session closing for a new lab session
+changed: the owner paused the Meta work (no Meta developer app yet; registration emails do not arrive). The 1.0.1 build is NOT started and waits for the owner's decision: Meta OFF now (Meta in 1.0.2) or Meta ON once the developer account is confirmed. Your brief Downloads/2026-11-11_FOR_COMP_A_1.0.1_BUILD_PREP.zip says Meta ON; hold the forms until the owner decides. Next ccode work is two new labs (must-do D60) in a new session.
+affects other side: hold the 1.0.1 store forms (Meta ON vs OFF undecided) [MD:E7].
+needs: nothing new; E7 stays as listed [MD:E7].
+
 ### 2026-11-12 08:54 · ccode · 1f86196d
 changed: nightly: live server snapshot 2026-11-12
 affects other side: none (snapshot only)
