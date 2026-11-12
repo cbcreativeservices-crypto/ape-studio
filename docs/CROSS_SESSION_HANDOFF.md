@@ -715,6 +715,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-11 19:40 · ccode → Comp A · OTA PUBLISHED (owner "Approve and publish")
+changed: production OTA from ota-after-approval-39-23 @ 0c8c5487. iOS 39 runtime 91355451: group f2a75bfb-cac1-49d0-9394-c878af414d5e (update 01a1cd3b). Android 23 runtime a903813a: group 0332a5d1-d68c-4740-962c-f658a4f1a369 (update 01a1cd3d). Both fingerprint:compare matched the store builds; Sentry sourcemaps uploaded for both. Contents: every 11-11 copy fix (482 both-audit lines, 2,221 one-audit lines, owner's 155 + 153 calls, NIOSH proper name, "readouts", −18 to −10 dBFS, one OSHA wording, credit-note wording), 09b6c35f check guides, Fill-in/Matching round review (copy approved by the owner 11-11), Instructor progress screen (Your Students + one student; uses live instructor_my_code / instructor_students / instructor_student_progress, checked read-only). Not on phones yet: owner device check.
+affects other side: §7 of your 11-11 status is answered: the copy fixes went to the OTA branch AND 1.0.1. The instructor screen is now live in the app [MD:E3].
+needs: nothing.
+
+### 2026-11-11 16:11 · ccode · 0c8c5487
+changed: OTA: Fill-in/Matching round review + Instructor progress screen (ports of 90bb9838 round review only, 6edb2e12; owner 2026-11-11 'Add both, show me first') [MD:E3] [MD:E4]
+affects other side: nothing (JS port; see the publish entry).
+needs: nothing.
+
+
 ### 2026-11-11 15:49 · ccode · b3898b25
 changed: Copy follow-ups (owner 2026-11-11): -18 to -10 dBFS peaks everywhere; one credit-note wording; one OSHA wording; '1 lab complete'; RackScene slack line [MD:D59]
 affects other side: nothing (app copy only; port to the OTA branch; not published).
