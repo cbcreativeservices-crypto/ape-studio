@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 11:14 · ccode · a7f8d090
+changed: Stage Plot + Game Audio: bug test of both labs (101 bugs) and fixes [MD:D60]
+affects other side: nothing changed on the server. Lab-only fixes (Stage Plot, Game Audio; not listed). FOUND while testing: the glossary lookup for a signed-out user times out (Postgres statement timeout on glossary_browse_v, HTTP 500) for "Audio listener", "HRTF", "Audio Occlusion" [MD:D60].
+needs: Comp A to look at the guest glossary_browse_v timeout when the owner says so (read-only finding; nothing applied) [MD:D60].
+
+
 ### 2026-11-13 09:35 · ccode · 629eef6d
 changed: Game Audio Lab: full audit (5 auditors, 147 findings) and one fix round [MD:D60]
 affects other side: nothing. Game Audio lab audit fixes, inside the lab only (not listed, nothing heard); no server table, no new package, no native change [MD:D60].
