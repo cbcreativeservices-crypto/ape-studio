@@ -79,10 +79,16 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // small percussion: three drums of different sizes (no case: a box with
   // circles reads as a loudspeaker)
   percussion: { w: 1.0, h: 0.6, tag: '', shapes: [circle(-0.3, 0.04, 0.18, { fill: 'paper' }), circle(0.06, -0.08, 0.13, { fill: 'paper' }), circle(0.34, 0.08, 0.1, { fill: 'paper' })] },
-  congas: { w: 0.9, h: 0.5, tag: '', shapes: [circle(-0.22, 0, 0.2, { fill: 'paper' }), circle(0.22, 0, 0.22, { fill: 'paper' }), circle(-0.22, 0, 0.12), circle(0.22, 0, 0.14)] },
-  // timbales: two shallow drums side by side, the bell between them at the back
-  timbales: { w: 1.1, h: 0.8, tag: '', shapes: [circle(-0.26, 0.08, 0.24, { fill: 'paper' }), circle(0.26, 0.08, 0.26, { fill: 'paper' }), circle(0, -0.28, 0.1, { fill: 'tone' })] },
-  bongo: { w: 0.6, h: 0.35, tag: '', shapes: [circle(-0.14, 0, 0.12, { fill: 'paper' }), circle(0.15, 0, 0.15, { fill: 'paper' }), line(-0.02, 0, 0.0, 0)] },
+  // THE PLAYER IS UPSTAGE, FACING THE AUDIENCE, so the player's right hand is
+  // toward stage right (-x). These three follow a right-handed setup, the
+  // same as the art on the Stage screen (stage/topArtInstruments.tsx):
+  // congas: the larger drum (tumba) on the player's right
+  congas: { w: 0.9, h: 0.5, tag: '', shapes: [circle(-0.22, 0, 0.22, { fill: 'paper' }), circle(0.22, 0, 0.2, { fill: 'paper' }), circle(-0.22, 0, 0.14), circle(0.22, 0, 0.12)] },
+  // timbales: two shallow drums side by side, the larger (hembra) on the
+  // player's LEFT, the bells between them on the audience's side
+  timbales: { w: 1.1, h: 0.8, tag: '', shapes: [circle(-0.26, -0.08, 0.24, { fill: 'paper' }), circle(0.26, -0.08, 0.26, { fill: 'paper' }), circle(0, 0.28, 0.1, { fill: 'tone' })] },
+  // bongó: the larger drum (hembra) on the player's right
+  bongo: { w: 0.6, h: 0.35, tag: '', shapes: [circle(-0.15, 0, 0.15, { fill: 'paper' }), circle(0.14, 0, 0.12, { fill: 'paper' }), line(0.0, 0, 0.02, 0)] },
   // an amplifier: a cabinet, the grille on the side it faces
   'guitar-amp': { w: 0.7, h: 0.4, tag: '', shapes: [box(0.7, 0.4, { r: 0.04 }), line(-0.3, 0.12, 0.3, 0.12), line(-0.3, 0.06, 0.3, 0.06)] },
   'bass-amp': { w: 0.8, h: 0.5, tag: '', shapes: [box(0.8, 0.5, { r: 0.04 }), line(-0.34, 0.17, 0.34, 0.17), line(-0.34, 0.1, 0.34, 0.1), line(-0.34, 0.03, 0.34, 0.03)] },
@@ -104,8 +110,10 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   'acoustic-guitar': { w: 0.45, h: 0.9, tag: '', shapes: [circle(0, 0.2, 0.2, { fill: 'paper' }), circle(0, -0.06, 0.15, { fill: 'paper' }), line(0, -0.2, 0, -0.45), circle(0, 0.14, 0.06)] },
   // a horn: the bell, opening toward the audience
   horn: { w: 0.4, h: 0.66, tag: '', shapes: [line(0, -0.42, 0, -0.14), poly([-0.04, -0.14, 0.04, -0.14, 0.18, 0.2, -0.18, 0.2]), line(-0.18, 0.2, 0.18, 0.2)] },
-  // a playback rig: a laptop (screen edge at the back)
-  playback: { w: 0.5, h: 0.4, tag: '', shapes: [box(0.5, 0.4, { r: 0.03 }), line(-0.25, -0.1, 0.25, -0.1), rect(-0.09, 0.02, 0.18, 0.1, { fill: 'none' })] },
+  // a playback rig: a laptop. Its operator is upstage of it, like every
+  // player: the trackpad on the operator's side, the screen edge on the
+  // audience's side
+  playback: { w: 0.5, h: 0.4, tag: '', shapes: [box(0.5, 0.4, { r: 0.03 }), line(-0.25, 0.1, 0.25, 0.1), rect(-0.09, -0.12, 0.18, 0.1, { fill: 'none' })] },
   di: { w: 0.3, h: 0.3, tag: 'DI', shapes: [box(0.3, 0.3, { r: 0.03 })] },
   // a wedge: its FRONT (the grille, the wide side) is the side it faces. A
   // wedge at the stage edge is turned 180° so the wide side faces the

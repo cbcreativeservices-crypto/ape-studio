@@ -6,9 +6,12 @@
  * primitive stand-ins): the standing figure from above (figureAboveSvg), and
  * the Cable Install plan's furniture (floorArt): the drum kit, the keyboard,
  * the combo amplifier, the DI box, the tripod microphone stand, the 2-way
- * floor wedge and the stage box. A kind the app has no top view for is drawn
- * with its PRINT SYMBOL (spSymbols `spPlacedShapes`, the same lines the
- * packet prints), in light ink on the dark glass.
+ * floor wedge and the stage box. The kinds the app had no top view for have
+ * their own art, drawn for this lab in the same language (topArtInstruments,
+ * topArtGear; owner 2026-11-12: "create new art for each, do not use simple
+ * line drawings"). Only a kind with no art at all falls back to its PRINT
+ * SYMBOL (spSymbols `spPlacedShapes`, the lines the packet prints), in light
+ * ink on the dark glass.
  *
  * Which way things face. In the project, 0° = facing the audience (down the
  * page). The shared art was drawn for other plans, so each piece is turned to
@@ -37,6 +40,12 @@ import { spPlacedShapes, spSymbol, type SpFill, type SpShape } from '../../../..
 import type { SpObject, SpProject } from '../../../../features/stageplot/spTypes';
 import { fonts } from '../../../../theme/tokens';
 import { DiBoxTop, DrumKitTop, GtrAmpTop, KeysTop, MicStandTop, StageBoxTop, WedgeTop } from '../../cableinstall/scenes/floorArt';
+import { TOP_ART_GEAR } from './topArtGear';
+import { TOP_ART_INSTRUMENTS } from './topArtInstruments';
+import type { TopArtMap } from './topArtTypes';
+
+/** This lab's own top-view art, by kind (the contract: topArtTypes.ts). */
+export const STAGE_TOP_ART: TopArtMap = { ...TOP_ART_INSTRUMENTS, ...TOP_ART_GEAR };
 
 /** floorArt is drawn at 32 units to the meter. */
 const FLOOR_UNITS = 32;
@@ -161,9 +170,25 @@ function Art({ p, o, cx, cy, hw, hh, rot, u, dim }: StageObjectArtProps) {
         </G>
       );
     default: {
-      // the print symbol, turned by spPlacedShapes itself
-      const shapes = spPlacedShapes(p, { ...o, x: 0, y: 0, rot });
       const tag = spSymbol(o.kind).tag;
+      const TopArt = STAGE_TOP_ART[o.kind];
+      if (TopArt) {
+        // this lab's own art: drawn facing the audience, turned here
+        return (
+          <G opacity={opacity}>
+            <G transform={`${at} rotate(${rot}) scale(${k})`}>
+              <TopArt />
+            </G>
+            {tag ? (
+              <SvgText x={cx} y={cy + 3.2} fill={STAGE_INK} fontSize={9} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+                {tag}
+              </SvgText>
+            ) : null}
+          </G>
+        );
+      }
+      // no art for this kind: the print symbol, turned by spPlacedShapes itself
+      const shapes = spPlacedShapes(p, { ...o, x: 0, y: 0, rot });
       return (
         <G opacity={opacity}>
           <G transform={`${at} scale(${u})`}>

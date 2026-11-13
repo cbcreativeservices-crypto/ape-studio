@@ -55,6 +55,7 @@ import {
 } from '../src/features/stageplot/spModel.ts';
 import { spCanMarkReady, spGuidedSteps, spReview } from '../src/features/stageplot/spReview.ts';
 import { SP_TEMPLATES, spFromTemplate } from '../src/features/stageplot/spTemplates.ts';
+import { spSymbol } from '../src/features/stageplot/spSymbols.ts';
 import type { SpProject } from '../src/features/stageplot/spTypes.ts';
 
 const NOW = 1_800_000_000_000;
@@ -817,6 +818,34 @@ describe('review round 2 (owner asked for it, 2026-11-12)', () => {
     assert.equal(spMonoStereoWord(2, 2), '2 mono, 2 stereo');
     assert.match(spTextSummary(spFromTemplate('playback', { id: 'pb', now: NOW })), /Monitor mixes: 4 \(all stereo\)\./);
     assert.doesNotMatch(spTextSummary(spNewProject({ id: 'e', now: NOW })), /Untitled band/);
+  });
+});
+
+describe('print symbols agree with the stage art (art round, 2026-11-12)', () => {
+  // The player is upstage, facing the audience (+y): the player's right is -x.
+  type Circ = { t: 'circle'; cx: number; cy: number; r: number };
+  const circles = (kind: Parameters<typeof spSymbol>[0]): Circ[] => spSymbol(kind).shapes.filter((x) => x.t === 'circle') as unknown as Circ[];
+  const largest = (kind: Parameters<typeof spSymbol>[0]): Circ => circles(kind).reduce((m, c) => (c.r > m.r ? c : m));
+
+  it('congas and bongó: the larger drum is on the player\u2019s right', () => {
+    assert.ok(largest('congas').cx < 0, 'tumba toward stage right');
+    assert.ok(largest('bongo').cx < 0, 'hembra toward stage right');
+  });
+  it('timbales: the larger drum on the player\u2019s left, the bells on the audience\u2019s side', () => {
+    assert.ok(largest('timbales').cx > 0);
+    const bell = circles('timbales').reduce((m, c) => (c.r < m.r ? c : m));
+    assert.ok(bell.cy > 0, 'the bell is downstage of the drums');
+    for (const c of circles('timbales')) assert.ok(Math.abs(c.cy) + c.r <= spSymbol('timbales').h / 2 + 1e-9);
+  });
+  it('a playback laptop faces its operator, who is upstage: the screen edge is on the audience\u2019s side', () => {
+    const hinge = spSymbol('playback').shapes.find((x) => x.t === 'line') as unknown as { y1: number; y2: number };
+    assert.ok(hinge.y1 > 0 && hinge.y2 > 0);
+  });
+  it('the salsa band\u2019s electric piano is drawn as a keyboard (the piano kind is an acoustic piano)', () => {
+    const p = spFromTemplate('salsa', { id: 's', now: NOW });
+    const o = p.objects.find((x) => x.label === 'Piano');
+    assert.equal(o?.kind, 'keyboard');
+    assert.ok(!p.objects.some((x) => x.kind === 'piano'));
   });
 });
 

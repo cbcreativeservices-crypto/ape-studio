@@ -333,7 +333,9 @@ function salsa(b: Build): void {
     s.locationNote = 'Played by the two coro singers at their microphones; no input of their own.';
   });
 
-  b.icon('piano', { x: 0.16, y: 0.5 }, { sourceId: pn.sourceId, label: 'Piano', rot: 270 });
+  // an ELECTRIC piano (two DI channels, the backline says so): the keyboard
+  // symbol. The 'piano' kind is an acoustic piano, taken with microphones.
+  b.icon('keyboard', { x: 0.16, y: 0.5 }, { sourceId: pn.sourceId, label: 'Piano', rot: 270 });
   b.icon('bass-amp', { x: 0.28, y: 0.18 }, { sourceId: bs.sourceId, label: 'Bass amp' });
   b.icon('congas', { x: 0.42, y: 0.54 }, { sourceId: cg.sourceId, label: 'Congas' });
   b.icon('timbales', { x: 0.57, y: 0.47 }, { sourceId: tm.sourceId, label: 'Timbales' });

@@ -75,3 +75,33 @@ No console control. No radio frequency coordination (it records "coordination re
 ## 8. Review round 1 (2026-11-12)
 
 Three independent reviewers: live sound (accuracy; the printed packet read page by page), usability and plain language (the specification line by line; the first ten minutes tap by tap), visual and function (in the browser at phone size). Reports in `reviews/`. One fix round followed. What it changed is listed in the handoff in Downloads (`2026-11-12_STAGE_PLOT_LAB_HANDOFF`).
+
+## 9. Review round 2 (2026-11-12, asked for by the owner)
+
+Two reviewers went through every screen: words (`reviews/REVIEW2_WORDS_2026_11_12.md`, 76 findings) and visuals (`reviews/REVIEW2_VISUALS_2026_11_12.md`, 48 findings). One fix round followed (commit 22b3cba3). Declined and held items are on must-do row D60, items (u) to (x).
+
+## 10. Top-view art for the stage (2026-11-12, owner: "create new art for each, do not use simple line drawings")
+
+Fifteen kinds that were line symbols on the Stage screen have their own art, drawn in code (react-native-svg), at 32 units to the meter, in the language of `cableinstall/scenes/floorArt.tsx`. No image file was created or changed. Contract: `stage/topArtTypes.ts` (centered on 0,0, front toward the audience, inside the kind's print-symbol footprint). The printed packet keeps its black line symbols.
+
+**The convention for every played instrument:** the player is upstage of it, facing the audience, so the player's right hand is toward stage right. The print symbols for congas, bongó, timbales and the playback laptop were turned to agree with it in the same round.
+
+| Kind | What is drawn | Checked against |
+|---|---|---|
+| percussion | A padded percussion table: tambourine, triangle and beater, güiro, two maracas, hand cowbell, two claves | Known from the trade |
+| congas | Conga and the larger tumba, the tumba on the player's right; rawhide heads, counterhoops, lug hooks, staves | Thomann's guide to conga arrangement (tumba to the right); a 12½ in tumba listing (six lugs). Five lugs on the conga: trade knowledge, not sourced |
+| timbales | 14 in macho on the player's right, 15 in hembra on the left, two bells on the center post on the audience's side | world-beats.com on timbales (which drum and which bell on which side); three Wikimedia Commons photographs of timbales. The bells' exact angle varies by player |
+| bongó | Hembra (larger) on the player's right, macho on the left, center block | Wikipedia "Bongo drum" (larger drum on the right for a right-handed player); an LP Matador listing (four lugs) |
+| piano | An upright, keys and player upstage; 52 white and 36 black keys, bass at the player's left | Known from the trade (88 keys = 122.5 cm) |
+| acoustic-guitar | A steel-string guitar lying face up, neck upstage; drawn at 0.88 of life size to fit the footprint | Known from the trade (25.4 in scale) |
+| horn | A B-flat trumpet as held, bell toward the audience. Third-slide ring, pinky hook and water key left out (not confirmed from above) | A stock photograph of a trumpet from overhead (which tube is on which side) |
+| playback | A laptop on a small table with a compact audio interface; the operator is upstage, the screen edge toward the audience | Known from the trade |
+| iem | One half-rack in-ear transmitter on a rack shelf, antenna and two input plugs at the rear | A retailer's listing for the half-rack size (198 × 172 mm); panel and rear layout from the trade |
+| drum-fill | A subwoofer with a two-way box standing on it, grilles toward the front | Known from the trade |
+| sidefill | A three-way trapezoid cabinet on its sub (670 mm front, 419 mm rear, 749 mm deep), two flying tracks | A manufacturer's datasheet for a trapezoid three-way cabinet (the sizes; it confirms two tracks, not their angle) |
+| rack | A shock-mount rack case, lids on: ball corners, lid seams, butterfly latches | Known from the trade |
+| power | A rubber stage quad box (120 × 107 mm) on its cable, with a loop of slack | A manufacturer's datasheet for a quad box |
+| chair | An orchestra chair: seat, curved backrest upstage, four glides | Known from the trade |
+| music-stand | A solid-desk stand on a tripod, the lip on the player's side | A retailer's listing for a symphony stand (desk 20 × 12.5 in) |
+
+Scale: instruments are drawn at or slightly over life size (congas 1.1, bongó 1.2, timbales 1.3, trumpet 1.17), as the stage already does for people and the drum kit. Tests: `test/stagePlotArtInstruments.test.ts`, `test/stagePlotArtGear.test.ts` (each piece inside its footprint, shadow first, no text, image or hook, and the facts in the table).

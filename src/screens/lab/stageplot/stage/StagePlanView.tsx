@@ -430,7 +430,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
               on the side the object faces. A shape, not only a color. */}
           {selBox && ringCorners ? (
             <G>
-              <Polygon points={ringCorners.map((c) => `${c.x},${c.y}`).join(' ')} fill="rgba(255,198,77,0.07)" stroke={HALO} strokeWidth={3.4} strokeLinejoin="round" />
+              <Polygon points={ringCorners.map((c) => `${c.x},${c.y}`).join(' ')} fill="none" stroke={HALO} strokeWidth={3.4} strokeLinejoin="round" />
               <Polygon points={ringCorners.map((c) => `${c.x},${c.y}`).join(' ')} fill="none" stroke={AMBER} strokeWidth={1.5} strokeDasharray="5 3" strokeLinejoin="round" />
               {ringCorners.map((c, i) => {
                 // a bracket: a short stroke along each of the two sides that meet here
