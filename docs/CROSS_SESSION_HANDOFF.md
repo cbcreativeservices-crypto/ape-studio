@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 12:32 · ccode · 35f994a5
+changed: docs: must-do D60: Game Audio items (i) and (j) done
+affects other side: nothing. Must-do note only (owner keeps the longer Stage Plot PDFs) [MD:D60].
+needs: nothing [MD:D60].
+
+
 ### 2026-11-13 12:30 · ccode · ce6bf006
 changed: docs: must-do D60: owner keeps the longer Stage Plot PDFs
 affects other side: nothing. Must-do note only (owner keeps the longer Stage Plot PDFs) [MD:D60].
