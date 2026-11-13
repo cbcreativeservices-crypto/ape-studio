@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-12 16:17 · ccode · 1062daaa
+changed: Stage Plot and Channel Designer: the tool, its PDF packet, one review round (preview only, not listed) [MD:D60]
+affects other side: nothing. The Stage Plot and Channel Designer saves on the device only (no server table) and is not listed. If the owner later wants stage plots to follow an account, that needs a table and a sync design from Comp A first [MD:D60].
+needs: nothing now [MD:D60].
+
+
 ### 2026-11-12 13:56 · ccode · 7b7b0b41
 changed: Game Audio Lab: 22 pages, its own sound engine, one review round (preview only, not listed) [MD:D60]
 affects other side: nothing yet. The lab is not listed and has no credit key. LATER, only after it is live on phones and the owner says so: one `labs` row for the Game Audio lab and requirement rows for cert-game-audio-v3 and prog-game-and-interactive-audio-v3 (ccode will send the SQL as a ZIP) [MD:D60].
