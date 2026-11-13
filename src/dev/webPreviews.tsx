@@ -163,6 +163,7 @@ import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 // the sound engine's proof screen. The lab is not in the Labs menu yet.
 import { GameAudioEngineCheckScreen } from './GameAudioEngineCheckScreen';
 import { GameAudioLabScreen } from '../screens/lab/gameaudio/GameAudioLabScreen';
+import { StagePlotLabScreen } from '../screens/lab/stageplot/StagePlotLabScreen'; // 2026-11-12, must-do D60: `#labpreview/StagePlotLab`; not in the Labs menu yet
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   OnboardingLanding: OnboardingLandingScreen as ComponentType,
@@ -243,6 +244,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   DJSystemsLab: DJSystemsLabScreen as ComponentType,
   GameAudioEngineCheck: GameAudioEngineCheckScreen as ComponentType,
   GameAudioLab: GameAudioLabScreen as ComponentType,
+  StagePlotLab: StagePlotLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
