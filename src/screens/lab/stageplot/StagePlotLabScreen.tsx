@@ -231,7 +231,13 @@ function Editor({ onClose }: { onClose: () => void }) {
 
   return (
     // Regions only where a Rack Unit registers them (the Stage area).
-    <ScreenGuideHost resetKey={area} regions={area === 'stage'}>
+    // ONE HOST PER AREA (keyed by it): an area's first-visit intro card belongs
+    // to that area. It is offered, timed and shown only while the area is
+    // open; switching tabs drops a card that is owed or up, unread and not
+    // marked seen, so it comes back on the next visit to its own area and is
+    // never presented over another one (the Setup card was seen on the Stage
+    // tab, 2026-11-13).
+    <ScreenGuideHost key={area} resetKey={area} regions={area === 'stage'}>
       <LabHeader title={TITLE} subtitle={headerName} guide={GUIDES[area]} guideTitle={tabWord} />
 
       <View style={styles.bar}>

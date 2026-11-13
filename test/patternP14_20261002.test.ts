@@ -224,7 +224,6 @@ const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
     why: 'the house idiom itself: key label (dropped when cropped), unit, and two values drawn smaller by numFs() to the 9 pt floor',
   },
   'screens/lab/rack/DockButton.tsx': { n: 1, why: 'key label (the value uses fitValue)' },
-  'screens/lab/rack/DockTray.tsx': { n: 1, why: 'param label' },
   'screens/lab/rack/ParamLane.tsx': { n: 1, why: 'lane label (the readout uses fitValue)' },
   'screens/lab/soundsystems/art/ChainMeter.tsx': { n: 1, why: 'stage short label (the value uses fitValue)' },
   'screens/lab/soundsystems/art/ConsolePanel.tsx': { n: 4, why: 'channel labels and names' },

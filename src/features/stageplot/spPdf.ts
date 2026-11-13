@@ -51,6 +51,11 @@ export const SP_PDF_PAPER: Record<SpPaper, { w: number; h: number }> = {
 export const SP_PDF_MARGIN = 43.2;
 /** Table text size. A table is never printed smaller than this. */
 export const SP_PDF_TABLE_PT = 10;
+/** KEEP WITH NEXT: a table that starts on a page has its header and at least
+ *  this many rows there (or all of a shorter table); otherwise it starts on
+ *  the next page, whole. A table that goes on overleaf repeats its header. */
+export const SP_PDF_TABLE_KEEP_ROWS = 3;
+const TABLE_KEEP_ROWS = SP_PDF_TABLE_KEEP_ROWS;
 /** The fixed words on the plot (the performer's left and right, facing the audience). */
 export const SP_PDF_PLOT_WORDS = { up: 'UPSTAGE', down: 'AUDIENCE / DOWNSTAGE', right: 'STAGE RIGHT', left: 'STAGE LEFT', key: 'KEY' } as const;
 
@@ -791,21 +796,29 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
   };
   const whole = (r: PRow): number => pieceHeight(r, 0, rowUnits(r));
   /**
-   * What a table needs under its header where it starts: its first row (the
-   * first lines of a very tall one); or ALL of a table of three rows or fewer
-   * (two and one, or one and two, would leave a row alone), with the gray
-   * note under it (`tail`).
+   * What a table needs under its header where it starts (KEEP WITH NEXT, held
+   * item of 2026-11-13: a header and one row were left at the foot of a
+   * page): its first `TABLE_KEEP_ROWS` rows, or ALL of a table that short,
+   * with the gray note under it (`tail`). When that is not here, the table
+   * starts on the next page, whole. Only a very tall first row (over half a
+   * page) asks for less: its first lines; and the rows kept are never more
+   * than half a page.
    */
   const firstPiece = (p: PTable, tail = 0): number => {
     if (!p.rows.length) return p.empty.length * TABLE_LEAD + 2 * CELL_PAD_Y;
     const pageRoom = bottom - pageTop - p.headH;
     const h0 = whole(p.rows[0]);
     if (h0 > pageRoom / 2) return Math.min(h0, 3 * TABLE_LEAD + 2 * CELL_PAD_Y);
-    if (p.rows.length <= 3) {
+    if (p.rows.length <= TABLE_KEEP_ROWS) {
       const all = p.rows.reduce((n, r) => n + whole(r), 0) + tail;
       if (all <= pageRoom) return all;
     }
-    return h0;
+    let h = h0;
+    for (let i = 1; i < Math.min(TABLE_KEEP_ROWS, p.rows.length); i++) {
+      if (h + whole(p.rows[i]) > pageRoom / 2) break;
+      h += whole(p.rows[i]);
+    }
+    return h;
   };
   /**
    * Where a table goes on to a new page: the rows that START a page, worked
@@ -814,7 +827,8 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
    * the top of a new page), the row before it is carried over too, and so on
    * back through the pages. `room0` = the room under the header on the page
    * where the table starts. `lonely` = that first page would be left with the
-   * header and no row: the table should start on a new page.
+   * header and fewer than `TABLE_KEEP_ROWS` rows (or fewer than all of a
+   * shorter table): the table should start on a new page.
    */
   const planTable = (p: PTable, room0: number, tail: number): { starts: Set<number>; lonely: boolean } => {
     const pageRoom = bottom - pageTop - p.headH;
@@ -842,7 +856,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     }
     const starts = new Set<number>();
     for (let k = 1; k < pages.length; k++) if (pages[k].length) starts.add(pages[k][0]);
-    return { starts, lonely: pages.length > 1 && pages[0].length === 0 };
+    return { starts, lonely: pages.length > 1 && pages[0].length < Math.min(TABLE_KEEP_ROWS, p.rows.length) };
   };
   /** `tail` = the height of a short gray note that follows the table: it is
    *  kept on the page of the table's last row. */
@@ -1089,12 +1103,23 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
    * farther off is not "under" this heading, and then only the first lines
    * of what follows are kept with it.
    */
-  const keepAfter = (blocks: SpDocBlock[], from: number, between: number): { h: number; table: boolean } => {
+  const keepAfter = (blocks: SpDocBlock[], from: number, between: number, at: number = y): { h: number; table: boolean } => {
     const most = (bottom - pageTop) / 2;
     let h = 0;
     for (let j = from; j < blocks.length && j <= from + between; j++) {
       const b = blocks[j];
-      if (b.t === 'table') return { h: h + (b.table.columns.length ? prepared(b.table).headH + firstPiece(prepared(b.table), tableNote(blocks[j + 1])) : BODY_LEAD), table: true };
+      if (b.t === 'table') {
+        if (!b.table.columns.length) return { h: h + BODY_LEAD, table: true };
+        const p = prepared(b.table);
+        const tail = tableNote(blocks[j + 1]);
+        const need = h + p.headH + firstPiece(p, tail);
+        // the table starts at `at + h`: where its page breaks would leave
+        // fewer than TABLE_KEEP_ROWS rows there, it moves whole to the next
+        // page (drawTable), and what is kept with it goes too
+        const room0 = bottom - (at + h) - p.headH;
+        if (room0 >= need - h - p.headH && planTable(p, room0, tail).lonely) return { h: Math.max(need, bottom - at + 1), table: true };
+        return { h: need, table: true };
+      }
       if (b.t === 'plot') {
         const info = plotInfo(b.plot);
         return { h: h + plotLeast(info.natural) + info.notes.length * BODY_LEAD + 4, table: false };
@@ -1119,7 +1144,8 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     if (!box.lines.length) return;
     const own = box.lines.length * box.lead + box.after;
     // a heading is never the last thing on a page
-    if (y + (fresh() ? 0 : box.before) + own + keepAfter(blocks, next, 4).h > bottom + 0.01 && !fresh()) newPage();
+    const under = y + (fresh() ? 0 : box.before) + own;
+    if (under + keepAfter(blocks, next, 4, under).h > bottom + 0.01 && !fresh()) newPage();
     gap(box.before);
     box.lines.forEach((l) => {
       pen.text(left, y + baseline(box.size, box.lead), l, box.size, true);
@@ -1146,7 +1172,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       // table (not the gray note UNDER a table: that one belongs to the table above it)
       const under = i > 0 && blocks[i - 1].t === 'table' && tableNote(b) > 0;
       if (lines.length <= 4 && !under) {
-        const keep = keepAfter(blocks, i + 1, 1);
+        const keep = keepAfter(blocks, i + 1, 1, y + lines.length * BODY_LEAD + AFTER.para);
         if (keep.table) ensure(lines.length * BODY_LEAD + AFTER.para + keep.h);
       }
       flow(lines, { size: PT.body, lead: BODY_LEAD, bold: b.tone === 'strong', gray: b.tone === 'muted' ? GRAY.muted : GRAY.ink });

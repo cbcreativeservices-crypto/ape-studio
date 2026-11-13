@@ -12,6 +12,7 @@ import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-na
 import { colors, fonts } from '../../../theme/tokens';
 import { fitValue } from '../../../theme/legibility';
 import type { BezelItem } from './rackTypes';
+import { bezelKeyFit } from './dockFit';
 
 export function BezelReadouts({
   items,
@@ -47,6 +48,9 @@ export function BezelReadouts({
 const V_FS = 13.5;
 const V_CH = V_FS * 0.6;
 const CELL_PAD = 16;
+/** The tap caret after a tappable cell's key: the key line's measures carry it
+ *  too (the line drawn below writes it out). */
+const TAP_CARET = ' ›';
 /** The smallest a value may be drawn (owner: lab display text ≥ 9 pt). */
 const V_MIN_FS = 9;
 
@@ -88,6 +92,17 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
   // tappable).
   const numFs = (s: string): { fontSize: number } | null =>
     fits(s) ? null : { fontSize: Math.max(V_MIN_FS, Math.floor((V_FS * avail * 10) / (s.length * V_CH * (fontScale || 1))) / 10) };
+  // ⛔ A KEY IS WHOLE, SHORT OR GONE — NEVER "…" (held frame item 4,
+  // 2026-11-13: "SURFA…", "PLAYI…" at 320). The value fits but the key does
+  // not: the key line is measured off screen at its natural width (the tap
+  // caret included) against the cell's inner width; it shortens to `kNarrow`
+  // when the readout has one that fits, else it goes and the value keeps the
+  // cell. A key that fits is drawn exactly as before.
+  const [keyW, setKeyW] = useState(0);
+  const [narrowW, setNarrowW] = useState(0);
+  const keyAvail = cellW > 0 ? cellW - CELL_PAD - (it.frame ? 2 : first ? 0 : 1) : 0;
+  const keyFit = bezelKeyFit(keyAvail, keyW, it.kNarrow ? narrowW : undefined);
+  const keyText = keyFit === 'narrow' && it.kNarrow ? it.kNarrow : it.k;
   return (
     <Pressable
       style={[styles.cell, { flex: it.flex ?? 1 }, first && styles.cellFirst, it.onPress && styles.cellTappable, it.frame ? [styles.cellFramed, { borderColor: it.frame, borderLeftColor: it.frame }] : null]}
@@ -99,9 +114,26 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
       accessibilityLabel={`${it.k}: ${it.vA11y ?? it.v}${it.sub ? ` ${it.sub}` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`}
       onLayout={(e) => setCellW(Math.round(e.nativeEvent.layout.width))}
     >
-      {cropped ? null : (
-          <Text style={styles.k} numberOfLines={1}>
+      {/* The key line's natural widths (invisible, never read aloud). */}
+      <View style={styles.measureBox} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
+        <View style={styles.measureRow}>
+          <Text style={styles.k} onLayout={(e) => setKeyW(e.nativeEvent.layout.width)}>
             {it.k}
+            {it.onPress ? <Text style={styles.tapMark}>{TAP_CARET}</Text> : null}
+          </Text>
+        </View>
+        {it.kNarrow ? (
+          <View style={styles.measureRow}>
+            <Text style={styles.k} onLayout={(e) => setNarrowW(e.nativeEvent.layout.width)}>
+              {it.kNarrow}
+              {it.onPress ? <Text style={styles.tapMark}>{TAP_CARET}</Text> : null}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+      {cropped || keyFit === 'none' ? null : (
+          <Text style={styles.k} numberOfLines={1}>
+            {keyText}
             {/* ── A TAPPABLE CELL MUST LOOK TAPPABLE (2026-09-18) ────────────
                 Interactive and static cells were pixel-identical: same border,
                 same padding, same type, no affordance of any kind. In Cymatics
@@ -177,4 +209,7 @@ const styles = StyleSheet.create({
     borderLeftColor: '#26262c',
   },
   guideGlyph: { fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSub },
+  /** A zero-size, clipped, invisible box for the key measures (DockButton's). */
+  measureBox: { position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 },
+  measureRow: { position: 'absolute', left: 0, top: 0, width: 1000, flexDirection: 'row', alignItems: 'flex-start' },
 });

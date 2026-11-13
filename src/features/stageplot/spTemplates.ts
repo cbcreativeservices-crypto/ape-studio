@@ -274,22 +274,28 @@ function playback(b: Build): void {
 }
 
 function salsa(b: Build): void {
+  // THE SPACING (held item, bug test 2026-11-13 S2-03): twelve players on a
+  // phone stage 366 units wide. Each performer's name and mix code has clear
+  // room at 390 × 844 and on the printed plot (test/stagePlotBugtest20261113
+  // pins it): the front line stands a step downstage of the rhythm section,
+  // with a gap between them; the trumpets stand a row behind the trombones
+  // with room between the rows. Move a player here and run that test.
   // front line, downstage
-  const lead = b.performer('Marisol', 'Lead vocal', { x: 0.5, y: 0.7 });
-  const coro1 = b.performer('Tito', 'Coro (chorus vocal) and güiro', { x: 0.36, y: 0.7 });
-  const coro2 = b.performer('Yolanda', 'Coro (chorus vocal) and maracas', { x: 0.64, y: 0.7 });
+  const lead = b.performer('Marisol', 'Lead vocal', { x: 0.52, y: 0.72 });
+  const coro1 = b.performer('Tito', 'Coro (chorus vocal) and güiro', { x: 0.36, y: 0.72 });
+  const coro2 = b.performer('Yolanda', 'Coro (chorus vocal) and maracas', { x: 0.64, y: 0.72 });
   // rhythm section: the pianist sits at stage right and faces across the stage
   const piano = b.performer('Rafa', 'Piano', { x: 0.08, y: 0.5 }, 270);
-  const bass = b.performer('Nelson', 'Bass', { x: 0.28, y: 0.32 });
-  const congas = b.performer('Chino', 'Congas', { x: 0.42, y: 0.44 });
-  const timbales = b.performer('Papo', 'Timbales', { x: 0.57, y: 0.36 });
-  const bongo = b.performer('Luisito', 'Bongó and bell (campana)', { x: 0.43, y: 0.2 });
+  const bass = b.performer('Nelson', 'Bass', { x: 0.27, y: 0.32 });
+  const congas = b.performer('Chino', 'Congas', { x: 0.42, y: 0.43 });
+  const timbales = b.performer('Papo', 'Timbales', { x: 0.57, y: 0.35 });
+  const bongo = b.performer('Luisito', 'Bongó and bell (campana)', { x: 0.43, y: 0.18 });
   // horns, stage left, in two rows: trombones in front (a slide needs clear
   // space ahead), trumpets behind them
-  const tp1 = b.performer('Carmen', 'Trumpet 1', { x: 0.72, y: 0.2 });
-  const tp2 = b.performer('Iván', 'Trumpet 2', { x: 0.9, y: 0.2 });
-  const tb1 = b.performer('Beto', 'Trombone 1', { x: 0.72, y: 0.44 });
-  const tb2 = b.performer('Ana', 'Trombone 2', { x: 0.9, y: 0.44 });
+  const tp1 = b.performer('Carmen', 'Trumpet 1', { x: 0.71, y: 0.13 });
+  const tp2 = b.performer('Iván', 'Trumpet 2', { x: 0.89, y: 0.13 });
+  const tb1 = b.performer('Beto', 'Trombone 1', { x: 0.74, y: 0.44 });
+  const tb2 = b.performer('Ana', 'Trombone 2', { x: 0.89, y: 0.44 });
 
   const row = (label: string): SpPackageRow => ({ label, capture: 'mic', equipment: 'Dynamic instrument microphone', stand: 'short-boom', connector: 'XLR' });
   const cg = b.pack('hand-drums', congas, 'Congas', [row('Conga'), row('Tumba (low conga)')]);
@@ -336,17 +342,17 @@ function salsa(b: Build): void {
   // an ELECTRIC piano (two DI channels, the backline says so): the keyboard
   // symbol. The 'piano' kind is an acoustic piano, taken with microphones.
   b.icon('keyboard', { x: 0.16, y: 0.5 }, { sourceId: pn.sourceId, label: 'Piano', rot: 270 });
-  b.icon('bass-amp', { x: 0.28, y: 0.18 }, { sourceId: bs.sourceId, label: 'Bass amp' });
-  b.icon('congas', { x: 0.42, y: 0.54 }, { sourceId: cg.sourceId, label: 'Congas' });
-  b.icon('timbales', { x: 0.57, y: 0.47 }, { sourceId: tm.sourceId, label: 'Timbales' });
-  b.icon('bongo', { x: 0.43, y: 0.29 }, { sourceId: bg.sourceId, label: 'Bongó' });
-  b.icon('mic-stand', { x: 0.72, y: 0.31 }, { inputId: h1.inputs[0], label: 'Trumpet 1' });
-  b.icon('mic-stand', { x: 0.9, y: 0.31 }, { inputId: h2.inputs[0], label: 'Trumpet 2' });
-  b.icon('mic-stand', { x: 0.72, y: 0.55 }, { inputId: h3.inputs[0], label: 'Trombone 1' });
-  b.icon('mic-stand', { x: 0.9, y: 0.55 }, { inputId: h4.inputs[0], label: 'Trombone 2' });
-  b.icon('vocal-mic', { x: 0.5, y: 0.8 }, { inputId: vL.inputs[0], label: 'Lead vocal' });
-  b.icon('vocal-mic', { x: 0.36, y: 0.8 }, { inputId: vC1.inputs[0], label: 'Coro 1' });
-  b.icon('vocal-mic', { x: 0.64, y: 0.8 }, { inputId: vC2.inputs[0], label: 'Coro 2' });
+  b.icon('bass-amp', { x: 0.27, y: 0.18 }, { sourceId: bs.sourceId, label: 'Bass amp' });
+  b.icon('congas', { x: 0.42, y: 0.53 }, { sourceId: cg.sourceId, label: 'Congas' });
+  b.icon('timbales', { x: 0.57, y: 0.46 }, { sourceId: tm.sourceId, label: 'Timbales' });
+  b.icon('bongo', { x: 0.43, y: 0.27 }, { sourceId: bg.sourceId, label: 'Bongó' });
+  b.icon('mic-stand', { x: 0.71, y: 0.24 }, { inputId: h1.inputs[0], label: 'Trumpet 1' });
+  b.icon('mic-stand', { x: 0.89, y: 0.24 }, { inputId: h2.inputs[0], label: 'Trumpet 2' });
+  b.icon('mic-stand', { x: 0.74, y: 0.55 }, { inputId: h3.inputs[0], label: 'Trombone 1' });
+  b.icon('mic-stand', { x: 0.89, y: 0.55 }, { inputId: h4.inputs[0], label: 'Trombone 2' });
+  b.icon('vocal-mic', { x: 0.52, y: 0.82 }, { inputId: vL.inputs[0], label: 'Lead vocal' });
+  b.icon('vocal-mic', { x: 0.36, y: 0.82 }, { inputId: vC1.inputs[0], label: 'Coro 1' });
+  b.icon('vocal-mic', { x: 0.64, y: 0.82 }, { inputId: vC2.inputs[0], label: 'Coro 2' });
 
   const mLead = b.mix('Lead vocal', [lead], 'mono', 'wedge', 'house', ['Own vocal prominent', 'Some piano']);
   const mCoro = b.mix('Coro', [coro1, coro2], 'mono', 'wedge', 'house', ['Own vocal prominent', 'Some piano']);
@@ -361,15 +367,15 @@ function salsa(b: Build): void {
   b.need(mPiano, cg.inputs[0], 'supporting');
   b.need(mPiano, cg.inputs[1], 'supporting');
   b.need(mPiano, vL.inputs[0], 'supporting');
-  b.device('wedge', mLead, { label: 'Wedge 1', supplier: 'venue', at: { x: 0.5, y: 0.93 } });
-  b.device('wedge', mCoro, { label: 'Wedge 2', supplier: 'venue', at: { x: 0.36, y: 0.93 } });
-  b.device('wedge', mCoro, { label: 'Wedge 3', supplier: 'venue', at: { x: 0.64, y: 0.93 } });
-  b.device('wedge', mHorn, { label: 'Wedge 4', supplier: 'venue', at: { x: 0.72, y: 0.67 } });
-  b.device('wedge', mHorn, { label: 'Wedge 5', supplier: 'venue', at: { x: 0.9, y: 0.67 } });
+  b.device('wedge', mLead, { label: 'Wedge 1', supplier: 'venue', at: { x: 0.52, y: 0.95 } });
+  b.device('wedge', mCoro, { label: 'Wedge 2', supplier: 'venue', at: { x: 0.36, y: 0.95 } });
+  b.device('wedge', mCoro, { label: 'Wedge 3', supplier: 'venue', at: { x: 0.64, y: 0.95 } });
+  b.device('wedge', mHorn, { label: 'Wedge 4', supplier: 'venue', at: { x: 0.74, y: 0.68 } });
+  b.device('wedge', mHorn, { label: 'Wedge 5', supplier: 'venue', at: { x: 0.92, y: 0.67 } });
   b.device('wedge', mPiano, { label: 'Wedge 6', supplier: 'venue', at: { x: 0.08, y: 0.67 } });
-  b.device('wedge', mBass, { label: 'Wedge 7', supplier: 'venue', at: { x: 0.17, y: 0.3 }, rot: 270 });
+  b.device('wedge', mBass, { label: 'Wedge 7', supplier: 'venue', at: { x: 0.17, y: 0.31 }, rot: 270 });
   b.device('wedge', mPerc, { label: 'Wedge 8', supplier: 'venue', at: { x: 0.33, y: 0.45 }, rot: 270 });
-  b.device('wedge', mPerc, { label: 'Wedge 9', supplier: 'venue', at: { x: 0.58, y: 0.6 } });
+  b.device('wedge', mPerc, { label: 'Wedge 9', supplier: 'venue', at: { x: 0.58, y: 0.55 } });
   b.extra('backline', 'Electric piano, bass amplifier, congas, timbales, bongó', 'band');
 }
 

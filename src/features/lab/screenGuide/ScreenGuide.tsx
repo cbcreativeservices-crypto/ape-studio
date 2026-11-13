@@ -51,6 +51,9 @@
  *   closes it. Gates, as the hint's: Low-Light / kill switch, focus, the lab
  *   term popup, any open DimModal and its closing fade (rootModalHoldMs), the
  *   host's `hold`, then a settle. The ⓘ hint waits while a card is owed or up.
+ *   Work under way inside the host (a Rack Unit tray open, a drag on its lane;
+ *   introHold.ts, 2026-11-13) holds an owed card and drops it for this visit,
+ *   and closes one already up: it never sits over an open tray.
  */
 import {
   createContext,
@@ -81,6 +84,7 @@ import {
   useScreenIntroSeen,
 } from './screenIntroCardStore';
 import { measureGuideRegion, measureView } from './guideRegions';
+import { IntroWorkContext, introWorkAction } from './introHold';
 import { onScreen, placeGuideStep, placeIntroCard, unionRect, type GuideLayout } from './placement';
 import {
   SCREEN_GUIDE_HINT_TEXT,
@@ -390,7 +394,7 @@ export function ScreenGuideHost({
   resetKey,
   regions = true,
   backRef,
-  hold = false,
+  hold: screenHold = false,
 }: {
   children: ReactNode;
   resetKey?: string;
@@ -466,8 +470,31 @@ export function ScreenGuideHost({
     claimIntro(claimRef.current);
     setShown(null);
   }, []);
+  // WORK UNDER WAY (held frame item 2, 2026-11-13; introHold.ts): a view
+  // inside this host (the Rack Unit: a tray open, a drag on the lane) holds an
+  // owed card and drops it for this visit, and closes one already up.
+  const [workers, setWorkers] = useState<ReadonlySet<number>>(() => new Set());
+  const reportWork = useCallback((id: number, on: boolean) => {
+    setWorkers((cur) => {
+      if (cur.has(id) === on) return cur;
+      const next = new Set(cur);
+      if (on) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }, []);
+  const working = workers.size > 0;
+  // The screen's own hold, and work under way: either keeps an owed card back.
+  const hold = screenHold || working;
+  const owedId = offer && !handled.has(offer.id) ? offer.id : null;
+  const workAction = introWorkAction(working, owedId != null, shown?.mode ?? null);
+  useEffect(() => {
+    if (workAction === 'close') close();
+    else if (workAction === 'drop' && owedId) handle(owedId);
+  }, [workAction, owedId, close, handle]);
   const introOf = shown?.mode === 'intro' ? shown.guide.intro : undefined;
   return (
+    <IntroWorkContext.Provider value={reportWork}>
     <HostContext.Provider value={api}>
       {children}
       {offer && !handled.has(offer.id) ? (
@@ -503,6 +530,7 @@ export function ScreenGuideHost({
         />
       ) : null}
     </HostContext.Provider>
+    </IntroWorkContext.Provider>
   );
 }
 

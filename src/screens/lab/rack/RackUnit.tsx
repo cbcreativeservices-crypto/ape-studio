@@ -45,6 +45,9 @@ import { LabNextButton, useLabNavContext } from '../kit/LabNavBar';
 // visible, so it MEASURES these three views when it shows a step. Register-only
 // refs — no layout change, nothing runs unless a guide asks.
 import { useGuideRegion } from '../../../features/lab/screenGuide/guideRegions';
+// …and the first-visit intro card never rises over a tray or a drag already
+// under way (held frame item 2, 2026-11-13): leaf context, nothing else.
+import { useScreenGuideWork } from '../../../features/lab/screenGuide/introHold';
 
 /** Tablet glass height as a share of the window height, per declared size
  *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
@@ -341,6 +344,8 @@ export function RackUnit({
   const targetH = Math.max(Math.min(declaredH, STAGE_HEIGHTS.S), Math.min(declaredH, Math.round(fitH)));
   const [glassH, setGlassH] = useState(targetH);
   const interacting = laneActive || trayParam != null;
+  // A hidden rack (`active` false) has no tray anyone can see.
+  useScreenGuideWork(active && interacting);
   useEffect(() => {
     if (!interacting && glassH !== targetH) setGlassH(targetH);
   }, [interacting, glassH, targetH]);

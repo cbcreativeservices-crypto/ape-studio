@@ -23,6 +23,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
 import type { DockParam } from './rackTypes';
 import { trayReleaseIsTap } from './trayTap';
+import { TRAY_STICKY_NOTE, TRAY_STICKY_NOTE_SHORT, TRAY_TITLE_FS, trayTitleFit } from './dockFit';
 
 /** In-tray option chip — LabChip's semantics (selected state, 📷 photoHint,
  *  long-press lesson) in the tools' PopupOpt skin. Own component (not LabChip)
@@ -158,12 +159,18 @@ export function DockTray({
     setTallestH(0);
     setOverflowLatched(false);
   }, [trayId]);
+  /** The sticky title's room and its natural widths (dockFit trayTitleFit). */
+  const [titleW, setTitleW] = useState(0);
+  const [titleFullW, setTitleFullW] = useState(0);
+  const [titleShortW, setTitleShortW] = useState(0);
+  const [titleBareW, setTitleBareW] = useState(0);
   const overflowsNow = contentH - viewH > 4;
   useEffect(() => {
     if (overflowsNow && param) setOverflowLatched(true);
   }, [overflowsNow, param]);
 
   if (!param) return null;
+  const titleFit = trayTitleFit(titleW, titleFullW, titleShortW, titleBareW);
   const blurbSel = param.kind === 'options' ? param.options.find((o) => o.id === param.selectedId) : undefined;
   const blurbNode = blurbSel?.blurb ? (
     <View style={styles.blurbBox}>
@@ -199,9 +206,39 @@ export function DockTray({
         }}
       >
         <View style={styles.head}>
-          <Text style={styles.title} numberOfLines={1}>
+          {/* The title's natural widths with the long note, the short one and
+              none, measured off screen (invisible, never read aloud), so the
+              note gives way before the title is cut (dockFit trayTitleFit). */}
+          {sticky ? (
+            <View style={styles.measureBox} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
+              <View style={styles.measureRow}>
+                <Text style={styles.measureTitle} onLayout={(e) => setTitleFullW(e.nativeEvent.layout.width)}>
+                  {param.label}
+                  <Text style={styles.stickyNote}>{TRAY_STICKY_NOTE}</Text>
+                </Text>
+              </View>
+              <View style={styles.measureRow}>
+                <Text style={styles.measureTitle} onLayout={(e) => setTitleShortW(e.nativeEvent.layout.width)}>
+                  {param.label}
+                  <Text style={styles.stickyNote}>{TRAY_STICKY_NOTE_SHORT}</Text>
+                </Text>
+              </View>
+              <View style={styles.measureRow}>
+                <Text style={styles.measureTitle} onLayout={(e) => setTitleBareW(e.nativeEvent.layout.width)}>
+                  {param.label}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+          <Text
+            style={[styles.title, titleFit.fs !== TRAY_TITLE_FS ? { fontSize: titleFit.fs, letterSpacing: (1.4 * titleFit.fs) / TRAY_TITLE_FS } : null]}
+            numberOfLines={titleFit.wrap ? 2 : 1}
+            onLayout={(e) => setTitleW(e.nativeEvent.layout.width)}
+          >
             {param.label}
-            {sticky ? <Text style={styles.stickyNote}>  ·  stays open — compare while you watch</Text> : null}
+            {sticky && titleFit.note !== 'none' ? (
+              <Text style={styles.stickyNote}>{titleFit.note === 'short' ? TRAY_STICKY_NOTE_SHORT : TRAY_STICKY_NOTE}</Text>
+            ) : null}
           </Text>
           <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={styles.close}>✕</Text>
@@ -321,6 +358,12 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   stickyNote: { fontSize: 12, letterSpacing: 0.3, color: colors.textSub },
+  /** A zero-size, clipped, invisible box for the title measures (DockButton's). */
+  measureBox: { position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 },
+  measureRow: { position: 'absolute', left: 0, top: 0, width: 2000, flexDirection: 'row', alignItems: 'flex-start' },
+  /** `title`'s type at its natural width (no flex: the web reads flex 0 as a
+   *  zero basis and the measure collapsed to one word). */
+  measureTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textPrimary },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, paddingHorizontal: 4 },
   bodyWrap: { flexShrink: 1, minHeight: 0 },
   slack: { flexGrow: 1, flexShrink: 0, marginTop: -8 },

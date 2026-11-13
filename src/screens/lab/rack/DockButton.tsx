@@ -15,14 +15,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import { LABEL_FIT_MARGIN_PX, VALUE_FIT_MARGIN_PX, dockFitSize, dockKeyNeed, dockLabelFit, dockStripFit } from './dockFit';
+import { DOCK_KEY_PAD, LABEL_FIT_MARGIN_PX, VALUE_FIT_MARGIN_PX, dockFitSize, dockKeyNeed, dockLabelFit, dockStripFit } from './dockFit';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
 
 /** What DockStrip hands each key: its width when the keys are not equal, and
- *  where to report the least width its words need. */
-export type DockKeyFit = { keyW?: number; onNeed: (px: number) => void };
+ *  where to report the least width its words need. `padX` (ADDITIVE,
+ *  2026-11-13): the key's side padding when a narrow dock tightened its chrome
+ *  to stay on one row (dockFit DOCK_TIGHT_STEPS); unset = the authored 4. */
+export type DockKeyFit = { keyW?: number; onNeed: (px: number) => void; padX?: number };
 
 /** The row of keys. Equal keys wherever every word fits; see dockStripFit. */
 export function DockStrip({
@@ -44,7 +46,11 @@ export function DockStrip({
   const row = useMemo(() => dockStripFit(order.split('|').map((id) => needs[id] ?? 0), stripW), [order, needs, stripW]);
   return (
     <View style={[style, row && { gap: row.gap, flexWrap: row.wrap ? 'wrap' : 'nowrap' }]} onLayout={(e: LayoutChangeEvent) => setStripW(e.nativeEvent.layout.width)}>
-      {children((id) => ({ keyW: row?.widths[ids.indexOf(id)], onNeed: (px) => note(id, px) }))}
+      {children((id) => ({
+        keyW: row?.widths[ids.indexOf(id)],
+        onNeed: (px) => note(id, px),
+        ...(row && row.padX !== DOCK_KEY_PAD ? { padX: row.padX } : null),
+      }))}
     </View>
   );
 }
@@ -143,9 +149,11 @@ export function DockButton({
   const [spacedGlyphW, setSpacedGlyphW] = useState(0);
   const [valueW, setValueW] = useState(0);
   const [valueH, setValueH] = useState(0);
-  // Inner width: the 1 px border and 4 px padding each side; a key's LED dot
-  // (8) and its gap (6) sit beside its label.
-  const inner = btnW > 0 ? btnW - 2 - 2 * 4 - (isKey && led != null ? 14 : 0) : 0;
+  // Inner width: the 1 px border and 4 px padding each side (less on a narrow
+  // dock that tightened its chrome: DockKeyFit.padX); a key's LED dot (8) and
+  // its gap (6) sit beside its label.
+  const padX = fit?.padX ?? DOCK_KEY_PAD;
+  const inner = btnW > 0 ? btnW - 2 - 2 * padX - (isKey && led != null ? 14 : 0) : 0;
   const fitsLabel = !isKey || labelLines === 1;
   const hasGlyph = !isKey && !!glyph;
   const { fs: labelFs, tight, tracked } = fitsLabel
@@ -159,8 +167,10 @@ export function DockButton({
 
   // The least width that holds these words (dockKeyNeed). A fader's value is
   // left out: it changes under the drag, and the keys must not shift with it.
+  // Always at the authored padding: the strip takes a tightened row's padding
+  // off itself (dockTightRow), so the need never moves with it.
   const need = dockKeyNeed({
-    chrome: 2 + 2 * 4 + (isKey && led != null ? 14 : 0),
+    chrome: 2 + 2 * DOCK_KEY_PAD + (isKey && led != null ? 14 : 0),
     labelBase: LABEL_FS,
     label: labelW,
     spaced: hasGlyph ? spacedW : 0,
@@ -175,7 +185,7 @@ export function DockButton({
     if (need > 0) onNeed?.(need);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [need]);
-  const sized = fit?.keyW != null ? { width: fit.keyW } : styles.even;
+  const sized = fit?.keyW != null ? (padX !== DOCK_KEY_PAD ? { width: fit.keyW, paddingHorizontal: padX } : { width: fit.keyW }) : styles.even;
   const onBtnLayout = (e: LayoutChangeEvent) => setBtnW(e.nativeEvent.layout.width);
 
   const face = (

@@ -19,6 +19,12 @@ export const STAGE_HEIGHTS: Record<StageSize, number> = { S: 160, M: 200, L: 250
  *  {k,v,helpKey} contract, rendered as the glass's bezel strip). */
 export type BezelItem = {
   k: string;
+  /** ADDITIVE (held frame item 4, 2026-11-13): a shorter key drawn when `k`
+   *  does not fit its cell whole ("DIST." for DISTANCE). Without it, or when
+   *  it does not fit either, the key line is dropped and the value stays
+   *  whole: a key is never cut to "…" (dockFit bezelKeyFit). Read aloud is
+   *  always `k`. */
+  kNarrow?: string;
   v: string;
   /** The value in full for the accessibility label when `v` is a short form
    *  (Miking owner decision X3, 2026-10-08). Defaults to `v`. */

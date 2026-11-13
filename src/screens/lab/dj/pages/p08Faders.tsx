@@ -130,8 +130,8 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'CH1 → MIX', v: `${fdb(gA)} dB`, tint: colors.textPrimary },
-          { k: 'CH2 → MIX', v: `${fdb(gB)} dB`, tint: '#8fbcff' },
+          { k: 'CH1 → MIX', kNarrow: 'CH1', v: `${fdb(gA)} dB`, tint: colors.textPrimary },
+          { k: 'CH2 → MIX', kNarrow: 'CH2', v: `${fdb(gB)} dB`, tint: '#8fbcff' },
           added == null
             ? { k: 'ADDED', v: booth.ch[2].fader <= 0.02 ? 'CH2 DOWN' : '—', tint: colors.textSub }
             : { k: sameTrackBoth(booth) ? 'TWO COPIES' : 'ADDED', v: `${added >= 0 ? '+' : '−'}${Math.abs(added).toFixed(1)} dB`, tint: copies.met ? colors.green : colors.amber },

@@ -37,7 +37,7 @@ import {
   spUpdateMix,
   spUpdatePerformer,
 } from '../src/features/stageplot/spModel.ts';
-import { spBuildDoc, spBuildSnapshot, spDocText, spPlotDoc } from '../src/features/stageplot/spPacket.ts';
+import { SP_PLOT_NOMINAL_W, spBuildDoc, spBuildSnapshot, spDocText, spLabelBlock, spPlotDoc, spPlotScale } from '../src/features/stageplot/spPacket.ts';
 import { spPdfBytes, spPdfPageCount } from '../src/features/stageplot/spPdf.ts';
 import { spCanMarkReady, spGuidedSteps, spReview } from '../src/features/stageplot/spReview.ts';
 import { spSymbol } from '../src/features/stageplot/spSymbols.ts';
@@ -187,9 +187,12 @@ describe('SP1 S2-02: removing an instrument symbol asks about its inputs', () =>
 
 describe('SP1 S2-03: a performer named without their mix code', () => {
   it('stands clear of every other label, and the screen says the code is left out', () => {
+    // (since the salsa example was re-spaced, held item 2026-11-13, a 390-wide
+    // phone shows every code: the names shown alone are on a 375 × 667
+    // phone's glass, 351 units wide)
     for (const [gw, gh] of [
-      [366, 250],
-      [366, 300],
+      [351, 230],
+      [351, 250],
     ]) {
       const p = tpl('salsa');
       const T = stageTransformFor(p, gw, gh, STAGE_VIEW_FIT);
@@ -199,7 +202,7 @@ describe('SP1 S2-03: a performer named without their mix code', () => {
       const f = stageFrameBoxes(gw, gh);
       const plan = stageLabelPlan(items, gw, gh, [f.top, f.bottom, f.left, f.right]);
       const gap = (a: { x0: number; y0: number; x1: number; y1: number }, b: typeof a) => Math.hypot(Math.max(0, a.x0 - b.x1, b.x0 - a.x1), Math.max(0, a.y0 - b.y1, b.y0 - a.y1));
-      assert.ok(plan.bare.length > 0, 'the salsa stage has names shown alone at phone size');
+      assert.ok(plan.bare.length > 0, 'the salsa stage has names shown alone on the smaller phone');
       for (const id of plan.bare) {
         const me = plan.labels.find((l) => l.id === id);
         assert.ok(me);
@@ -210,6 +213,101 @@ describe('SP1 S2-03: a performer named without their mix code', () => {
     }
     const plan = src(`${SP}/stage/StagePlanView.tsx`);
     assert.match(plan, /const codesOut = showNumbers \? plan\.bare\.length : 0;/);
+  });
+});
+
+describe('frame fixer, 2026-11-13: an area’s intro card belongs to that area', () => {
+  it('the editor has one guide host per area (keyed by it), so a card owed or up in Setup is dropped, not carried, when the Stage tab opens', () => {
+    const screen = src(`${SP}/StagePlotLabScreen.tsx`);
+    assert.match(screen, /<ScreenGuideHost key=\{area\} resetKey=\{area\} regions=\{area === 'stage'\}>/);
+    // the header that offers the card is inside that host, and takes the area's own guide
+    const host = screen.indexOf('<ScreenGuideHost key={area}');
+    const header = screen.indexOf('<LabHeader title={TITLE} subtitle={headerName} guide={GUIDES[area]}');
+    assert.ok(host > 0 && header > host && header < screen.indexOf('</ScreenGuideHost>', host));
+  });
+});
+
+describe('held item (S2-03): the salsa example gives every performer’s name and mix code clear room', () => {
+  // THE DISTANCES (glass units on the phone, points on the plot document):
+  //   • BESIDE, on the same row: at least 8, twice the 4 that joins a name to
+  //     its own code (NAME_GAP; the plot's own gap is 4 too). Closer than that,
+  //     a neighbor's code reads as this name's ("Marisol M6" was 4 apart).
+  //   • in ANY direction (a row above or below): at least 4.5 on the phone and
+  //     5.5 pt on the plot, about twice the 2.5 between the lines of one name.
+  const ROW = 8;
+  const ANY_PHONE = 4.5;
+  const ANY_PLOT = 5.5;
+  type B = { x0: number; y0: number; x1: number; y1: number };
+  const apart = (a: B, b: B) => ({ d: Math.hypot(Math.max(0, a.x0 - b.x1, b.x0 - a.x1), Math.max(0, a.y0 - b.y1, b.y0 - a.y1)), sameRow: Math.max(0, a.y0 - b.y1, b.y0 - a.y1) === 0 });
+
+  it('on a 390 × 844 phone: every performer shows the name and the code, clear of every other object’s label', () => {
+    // the stage glass of a 390-wide phone is 366 wide; its height depends on the key
+    for (const gh of [250, 280, 300]) {
+      const gw = 366;
+      const p = tpl('salsa');
+      const T = stageTransformFor(p, gw, gh, STAGE_VIEW_FIT);
+      const order = stageDrawOrder(p.objects);
+      const boxes = order.map((o) => stageObjectBox(p, o, T));
+      const items = order.map((o, i) => ({ id: o.id, text: stageName(p, o), badges: stageBadges(p, o), box: boxes[i], person: o.kind === 'performer' }));
+      const f = stageFrameBoxes(gw, gh);
+      const plan = stageLabelPlan(items, gw, gh, [f.top, f.bottom, f.left, f.right]);
+      assert.deepEqual(plan.bare, [], `${gw}×${gh}: no performer is named without the mix code`);
+      const name = (id: string) => p.objects.find((o) => o.id === id)?.label;
+      for (const o of p.objects.filter((x) => x.kind === 'performer')) {
+        const me = plan.labels.find((l) => l.id === o.id);
+        assert.ok(me && me.badges.length === 1 && /^M\d$/.test(me.badges[0].text), `${o.label}: name and mix code`);
+        for (const other of plan.labels) {
+          if (other.id === o.id) continue;
+          const r = apart(me.box, other.box);
+          assert.ok(r.d >= (r.sameRow ? ROW : ANY_PHONE), `${gw}×${gh}: ${o.label} is ${r.d.toFixed(1)} from ${name(other.id)}${r.sameRow ? ' on the same row' : ''}`);
+        }
+      }
+    }
+  });
+
+  it('on the printed plot (one plot for Letter and A4; the usual and the roomy plot-only drawing): the same, and at most one name on a leader', () => {
+    const p = tpl('salsa');
+    for (const how of [{}, { roomy: true }]) {
+      const plot = spPlotDoc(p, how);
+      const k = spPlotScale(plot, SP_PLOT_NOMINAL_W);
+      const labs = plot.items
+        .map((it) => {
+          const b = spLabelBlock(it);
+          if (!b.h) return null;
+          const x0 = it.labelAt.x * k - b.labelW / 2;
+          const y0 = it.labelAt.y * k;
+          return { it, box: { x0, y0, x1: x0 + b.w, y1: y0 + b.h } };
+        })
+        .filter((x): x is NonNullable<typeof x> => !!x);
+      const people = labs.filter((l) => l.it.person);
+      assert.equal(people.length, 12);
+      for (const me of people) {
+        assert.ok(me.it.label && me.it.badges.length === 1, `${me.it.label}: name and mix code`);
+        for (const other of labs) {
+          if (other.it.id === me.it.id) continue;
+          const r = apart(me.box, other.box);
+          assert.ok(r.d >= (r.sameRow ? ROW : ANY_PLOT), `${JSON.stringify(how)}: ${me.it.label} is ${r.d.toFixed(1)} pt from ${other.it.label || other.it.badges.join(' ')}`);
+        }
+      }
+      // at most one performer's name stands off on a leader (it was four)
+      assert.ok(people.filter((l) => l.it.leader).length <= 1);
+    }
+  });
+
+  it('it is still a salsa stage: front line downstage, rhythm section behind it, horns stage left, the piano where it was', () => {
+    const p = tpl('salsa');
+    const at = (label: string) => {
+      const o = p.objects.find((x) => x.label === label);
+      assert.ok(o, label);
+      return o;
+    };
+    const front = ['Tito', 'Marisol', 'Yolanda'].map(at);
+    assert.ok(front[0].x < front[1].x && front[1].x < front[2].x, 'the lead between the two coros');
+    assert.ok(Math.abs(front[1].x - 0.5) <= 0.021, 'the lead at center');
+    for (const r of ['Nelson', 'Chino', 'Papo', 'Luisito'].map(at)) for (const f of front) assert.ok(r.y < f.y - 0.15);
+    for (const h of ['Carmen', 'Iván', 'Beto', 'Ana'].map(at)) assert.ok(h.x > 0.66, 'horns stage left');
+    assert.ok(at('Beto').y > at('Carmen').y && at('Ana').y > at('Iván').y, 'trombones in front of the trumpets');
+    assert.deepEqual([at('Rafa').x, at('Rafa').y, at('Piano').x, at('Piano').y, at('Wedge 6').x, at('Wedge 6').y], [0.08, 0.5, 0.16, 0.5, 0.08, 0.67]);
   });
 });
 

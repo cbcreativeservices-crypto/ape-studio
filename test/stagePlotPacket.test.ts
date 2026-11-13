@@ -511,8 +511,12 @@ describe('how long the packet is: pages counted with the app’s own PDF writer'
     assert.equal(spPdfPageCount(new Uint8Array([1, 2, 3])), 0);
     assert.ok(pagesOf(four(), FULL) >= 2);
   });
-  it('the four-piece full packet is at most 4 pages, on both papers', () => {
-    assert.ok(pagesOf(four(), FULL) <= 4, `Letter: ${pagesOf(four(), FULL)} pages`);
+  // KEEP WITH NEXT (held item 2026-11-13): a table starts with its header and
+  // three rows, or on the next page. On US Letter the four-piece's monitor
+  // devices table no longer starts with two rows at a page's foot, and the
+  // short "to be confirmed" list after it goes overleaf: 5 pages (was 4).
+  it('the four-piece full packet is at most 4 pages on A4 and 5 on US Letter', () => {
+    assert.ok(pagesOf(four(), FULL) <= 5, `Letter: ${pagesOf(four(), FULL)} pages`);
     assert.ok(pagesOf(four(), { paper: 'a4', packet: 'full' }) <= 4);
   });
   it('the salsa full packet (12 performers, 16 inputs) is at most 5 pages, on both papers', () => {
@@ -526,7 +530,9 @@ describe('how long the packet is: pages counted with the app’s own PDF writer'
       assert.ok(c <= f, `${t}: compact ${c}, full ${f}`);
       if (t !== 'solo' || f > 2) assert.ok(c < f, `${t}: compact ${c} is not shorter than full ${f}`);
     }
-    assert.ok(pagesOf(example('four-piece'), COMPACT) <= 3);
+    // (US Letter: the monitor plan's table starts on page 3 with three rows, not one at page 2's foot: 4 pages, was 3)
+    assert.ok(pagesOf(example('four-piece'), COMPACT) <= 4);
+    assert.ok(pagesOf(example('four-piece'), { paper: 'a4', packet: 'compact' }) <= 3);
     assert.ok(pagesOf(example('salsa'), COMPACT) <= 4);
     assert.ok(pagesOf(example('duo'), COMPACT) <= 2);
   });

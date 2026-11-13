@@ -356,8 +356,8 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
         render: stage,
         bezel: [
           find < FINDS.length ? { k: `FIND ${find + 1}/3`, v: FINDS[find].bezel, tint: findMsg && !findMsg.ok ? '#ff8a7e' : colors.amber } : { k: 'CH1 INPUT', v: booth.ch[1].input, tint: colors.amber },
-          { k: 'CH1 L GETS', vA11y: `channel 1 left gets ${sideWord(route.L)}`, v: sideWord(route.L), tint: route.L ? colors.green : colors.textSub },
-          { k: 'CH1 R GETS', vA11y: `channel 1 right gets ${sideWord(route.R)}`, v: sideWord(route.R), tint: route.R ? colors.green : colors.textSub },
+          { k: 'CH1 L GETS', kNarrow: 'CH1 L', vA11y: `channel 1 left gets ${sideWord(route.L)}`, v: sideWord(route.L), tint: route.L ? colors.green : colors.textSub },
+          { k: 'CH1 R GETS', kNarrow: 'CH1 R', vA11y: `channel 1 right gets ${sideWord(route.R)}`, v: sideWord(route.R), tint: route.R ? colors.green : colors.textSub },
           peakShort('CH1 PEAK', peak == null ? null : peak <= -59.9 ? -Infinity : peak),
         ],
         params: [

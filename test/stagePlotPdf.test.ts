@@ -19,7 +19,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SpDoc, SpDocColumn, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection } from '../src/features/stageplot/spDocTypes.ts';
-import { SP_PDF_KEY, SP_PDF_MARGIN, SP_PDF_PAPER, SP_PDF_PLOT, SP_PDF_PLOT_WORDS, SP_PDF_TABLE_PT, spPdfBytes, spPdfWrap } from '../src/features/stageplot/spPdf.ts';
+import { SP_PDF_KEY, SP_PDF_MARGIN, SP_PDF_PAPER, SP_PDF_PLOT, SP_PDF_PLOT_WORDS, SP_PDF_TABLE_KEEP_ROWS, SP_PDF_TABLE_PT, spPdfBytes, spPdfWrap } from '../src/features/stageplot/spPdf.ts';
 import { SP_PDF_HELVETICA, SP_PDF_HELVETICA_BOLD, SP_PDF_MARKS, spPdfEncode, spPdfWidth } from '../src/features/stageplot/spPdfFonts.ts';
 import { spKeySymbol, spSymbol, type SpShape } from '../src/features/stageplot/spSymbols.ts';
 import type { SpObjectKind, SpPaper } from '../src/features/stageplot/spTypes.ts';
@@ -1330,22 +1330,55 @@ describe('stage plot PDF: leaders, a roomy plot, and how a table ends (review 2)
     }
   });
 
+  it('keeps a table’s header with at least three rows where it starts, or moves the table whole (held item 2026-11-13)', () => {
+    assert.equal(SP_PDF_TABLE_KEEP_ROWS, 3);
+    for (const paper of PAPERS) {
+      let moved = 0;
+      let divided = 0;
+      for (const n of [2, 3, 4, 5, 8, 12]) {
+        for (let filler = 0; filler <= 50; filler += 1) {
+          const blocks: SpDocSection['blocks'] = [
+            { t: 'heading', level: 2, text: 'Gamma heading' },
+            { t: 'table', table: { columns: SMALL, rows: rowsOf(n, 'Gamma'), empty: '' } },
+          ];
+          const p = parsePdf(spPdfBytes(tableDoc(filler, blocks, paper)));
+          const pages = rowPages(p, n, 'Gamma');
+          const counts = [...new Set(pages)].map((pg) => pages.filter((x) => x === pg).length);
+          // where the table starts: its header and three rows, or all of a shorter table
+          assert.ok(counts[0] >= Math.min(SP_PDF_TABLE_KEEP_ROWS, n), `${paper}: ${n} rows after ${filler} lines are printed ${counts.join(' + ')}`);
+          // every page it runs to repeats the header; no later page holds one row alone
+          for (const pg of new Set(pages)) assert.equal(p.pages[pg].runs.filter((r) => r.bold && r.text === 'Thing').length, 1, `${paper}: page ${pg + 1} has the header`);
+          counts.slice(1).forEach((c) => assert.ok(c >= 2));
+          // the heading is never the last line of a page: it is on the page of the first row
+          assert.deepEqual(pagesWith(p, 'Gamma heading'), [pages[0]], `${paper}: ${n} rows after ${filler} lines: the heading is with its table`);
+          // a table of four rows or more printed whole at the top of a later page (it moved)
+          if (n > SP_PDF_TABLE_KEEP_ROWS && counts.length === 1 && pages[0] > 0) moved += 1;
+          if (counts.length > 1) divided += 1;
+        }
+      }
+      // both cases were met: a table moved whole to the next page, and a long one divided
+      assert.ok(moved > 0 && divided > 0, `${paper}: moved ${moved}, divided ${divided}`);
+    }
+  });
+
   it('keeps the gray note under a table on the page of the table’s last row', () => {
     const note = 'A mono mix is 1 audio channel and a stereo mix is 2.';
     for (const paper of PAPERS) {
       let carried = 0;
       for (let filler = 0; filler <= 46; filler += 1) {
+        // five rows: the least a table can be divided into now (three where it
+        // starts, SP_PDF_TABLE_KEEP_ROWS, and never one alone overleaf)
         const blocks: SpDocSection['blocks'] = [
-          { t: 'table', table: { columns: SMALL, rows: rowsOf(4, 'Alpha'), empty: '' } },
+          { t: 'table', table: { columns: SMALL, rows: rowsOf(5, 'Alpha'), empty: '' } },
           { t: 'para', text: note, tone: 'muted' },
           { t: 'table', table: { columns: SMALL, rows: rowsOf(3, 'Beta'), empty: '' } },
         ];
         const p = parsePdf(spPdfBytes(tableDoc(filler, blocks, paper)));
-        const rows = rowPages(p, 4, 'Alpha');
-        assert.deepEqual(pagesWith(p, note), [rows[3]], `${paper}, ${filler} lines: the note is with the last row`);
+        const rows = rowPages(p, 5, 'Alpha');
+        assert.deepEqual(pagesWith(p, note), [rows[4]], `${paper}, ${filler} lines: the note is with the last row`);
         // it belongs to the table ABOVE it: it is under that table's last row, not carried off with the next table
-        const pg = p.pages[rows[3]];
-        const last = pg.runs.find((r) => r.text === 'Alpha row <04>');
+        const pg = p.pages[rows[4]];
+        const last = pg.runs.find((r) => r.text === 'Alpha row <05>');
         const noteRun = pg.runs.find((r) => r.text === note);
         assert.ok(last && noteRun && noteRun.y < last.y && last.y - noteRun.y < 30, 'right under the last row');
         const counts = [...new Set(rows)].map((x) => rows.filter((v) => v === x).length);
