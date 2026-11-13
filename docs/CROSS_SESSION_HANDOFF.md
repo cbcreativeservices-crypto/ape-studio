@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 12:27 · ccode · 2a78624c
+changed: Lab frame + Stage Plot: the four held items from the bug test [MD:D60]
+affects other side: nothing. Shared lab frame (rack dock fit, intro hold, tray title, readout keys) + Stage Plot held items; app-only, no server, no new package, no native change [MD:D60].
+needs: nothing [MD:D60].
+
+
 ### 2026-11-13 11:14 · ccode · a7f8d090
 changed: Stage Plot + Game Audio: bug test of both labs (101 bugs) and fixes [MD:D60]
 affects other side: nothing changed on the server. Lab-only fixes (Stage Plot, Game Audio; not listed). FOUND while testing: the glossary lookup for a signed-out user times out (Postgres statement timeout on glossary_browse_v, HTTP 500) for "Audio listener", "HRTF", "Audio Occlusion" [MD:D60].
