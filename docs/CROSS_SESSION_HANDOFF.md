@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 12:30 · ccode · ce6bf006
+changed: docs: must-do D60: owner keeps the longer Stage Plot PDFs
+affects other side: nothing. Must-do note only (owner keeps the longer Stage Plot PDFs) [MD:D60].
+needs: nothing [MD:D60].
+
+
 ### 2026-11-13 12:27 · ccode · 2a78624c
 changed: Lab frame + Stage Plot: the four held items from the bug test [MD:D60]
 affects other side: nothing. Shared lab frame (rack dock fit, intro hold, tray title, readout keys) + Stage Plot held items; app-only, no server, no new package, no native change [MD:D60].
