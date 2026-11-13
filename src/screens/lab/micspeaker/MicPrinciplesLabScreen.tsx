@@ -519,7 +519,9 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
         <Text style={styles.caption}>
           The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear (monitor
           wedges live there). Figure-8 has two lobes and two deep side nulls. Omni hears everything —
-          no up-close bass boost (proximity effect), no null to aim.
+          no up-close bass boost (proximity effect), no null to aim. These shapes are drawn as if no
+          wall reflected any sound. In a real room, reflections reach the null too, so a cardioid’s
+          rear is often only 10–20 dB down, not silent.
         </Text>
       </CollapsibleSection>
       <CheckQuestion
