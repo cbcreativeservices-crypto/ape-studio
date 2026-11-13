@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-12 18:09 · ccode · 47286c74
+changed: Stage Plot: a symbol KEY that is always part of the drawing (owner 2026-11-12) [MD:D60]
+affects other side: nothing. The key is drawn on the device from the stage plot itself; no server table, no new package [MD:D60].
+needs: nothing [MD:D60].
+
+
 ### 2026-11-12 16:17 · ccode · 1062daaa
 changed: Stage Plot and Channel Designer: the tool, its PDF packet, one review round (preview only, not listed) [MD:D60]
 affects other side: nothing. The Stage Plot and Channel Designer saves on the device only (no server table) and is not listed. If the owner later wants stage plots to follow an account, that needs a table and a sync design from Comp A first [MD:D60].
