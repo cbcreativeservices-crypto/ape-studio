@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-12 19:23 · ccode · 22b3cba3
+changed: Stage Plot: review 2 (words + visuals, owner's request) and its fix round [MD:D60]
+affects other side: nothing. Review fixes inside the Stage Plot lab only (device-only, not listed); no server table, no new package [MD:D60].
+needs: nothing [MD:D60].
+
+
 ### 2026-11-12 18:09 · ccode · 47286c74
 changed: Stage Plot: a symbol KEY that is always part of the drawing (owner 2026-11-12) [MD:D60]
 affects other side: nothing. The key is drawn on the device from the stage plot itself; no server table, no new package [MD:D60].
