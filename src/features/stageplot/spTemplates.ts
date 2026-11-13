@@ -47,9 +47,9 @@ export const SP_TEMPLATES: readonly { id: SpTemplateId; name: string; assumes: s
   { id: 'blank', name: 'Blank stage', assumes: 'Nothing is placed and nothing is assumed.' },
   { id: 'solo', name: 'Solo performer', assumes: 'One singer with an acoustic guitar that has a pickup, and one wedge.' },
   { id: 'duo', name: 'Acoustic duo', assumes: 'Two singers: one with an acoustic guitar, one with a keyboard. Each has a wedge.' },
-  { id: 'four-piece', name: 'Four-piece band', assumes: 'Drums with six microphones, bass through a DI, one guitar amplifier, a stereo keyboard, three vocals and a click. Two wedges and two in-ear mixes from the house console.' },
-  { id: 'playback', name: 'Band with playback', assumes: 'A four-piece band with stereo backing tracks and a click, mixing its own wireless in-ear monitors (four transmitters). The venue is asked for an input split.' },
-  { id: 'salsa', name: 'Salsa band', assumes: 'Twelve players: piano (a keyboard through two DI channels), bass, congas, timbales, bongó, two trumpets, two trombones, a lead singer and two coro singers. Six wedge mixes from the house console.' },
+  { id: 'four-piece', name: 'Four-piece band', assumes: 'Drums with six microphones, bass through a DI, one guitar amplifier, a stereo keyboard, three vocals and a click. Two wedge mixes and two in-ear mixes from the house console.' },
+  { id: 'playback', name: 'Band with playback', assumes: 'A four-piece band with stereo backing tracks and a click. The band makes its own in-ear mixes on its own mixer (four wireless transmitters). The venue is asked for an input split.' },
+  { id: 'salsa', name: 'Salsa band', assumes: 'Twelve players: piano (an electric piano through two DI channels), bass, congas, timbales, bongó, two trumpets, two trombones, a lead singer and two coro (chorus) singers. Six wedge mixes from the house console.' },
 ];
 
 /** A small builder so each example reads as a list of what is on the stage. */
@@ -132,30 +132,32 @@ function solo(b: Build): void {
 }
 
 function duo(b: Build): void {
-  const a = b.performer('Alex', 'Vocal and acoustic guitar', { x: 0.36, y: 0.6 });
-  const k = b.performer('Robin', 'Vocal and keyboard', { x: 0.66, y: 0.6 });
-  const vA = b.pack('vocal', a, 'Guitar vocal');
-  b.set(vA.inputs, { label: 'Guitar vocal', ...VENUE_MIC });
+  const a = b.performer('Alex', 'Vocal and acoustic guitar', { x: 0.3, y: 0.6 });
+  const k = b.performer('Robin', 'Vocal and keyboard', { x: 0.7, y: 0.6 });
+  const vA = b.pack('vocal', a, 'Alex vocal');
+  b.set(vA.inputs, { label: 'Alex vocal', ...VENUE_MIC });
   const g = b.pack('acoustic-pickup', a, 'Acoustic guitar');
   b.set(g.inputs, { supplier: 'band', phantom: 'unknown' });
   b.di(g.inputs, { channels: 1, label: 'Guitar DI', supplier: 'band', kind: 'unknown' });
   const keys = b.pack('keys-mono', k, 'Keys');
   b.set(keys.inputs, { supplier: 'tbc', phantom: 'unknown' });
-  const vK = b.pack('vocal', k, 'Keys vocal');
-  b.set(vK.inputs, { label: 'Keys vocal', ...VENUE_MIC });
-  b.icon('vocal-mic', { x: 0.36, y: 0.7 }, { inputId: vA.inputs[0], label: 'Vocal' });
-  b.icon('acoustic-guitar', { x: 0.28, y: 0.6 }, { sourceId: g.sourceId, label: 'Acoustic guitar' });
-  b.icon('keyboard', { x: 0.66, y: 0.7 }, { sourceId: keys.sourceId, label: 'Keys' });
-  b.icon('vocal-mic', { x: 0.74, y: 0.64 }, { inputId: vK.inputs[0], label: 'Vocal' });
+  const vK = b.pack('vocal', k, 'Robin vocal');
+  b.set(vK.inputs, { label: 'Robin vocal', ...VENUE_MIC });
+  b.icon('vocal-mic', { x: 0.3, y: 0.7 }, { inputId: vA.inputs[0], label: 'Alex vocal' });
+  b.icon('acoustic-guitar', { x: 0.22, y: 0.6 }, { sourceId: g.sourceId, label: 'Acoustic guitar' });
+  b.icon('keyboard', { x: 0.7, y: 0.7 }, { sourceId: keys.sourceId, label: 'Keys' });
+  // a boom from her stage-left side, its head toward her (she sits behind the keyboard)
+  b.icon('vocal-mic', { x: 0.77, y: 0.6 }, { inputId: vK.inputs[0], label: 'Robin vocal', rot: 270 });
   const m1 = b.mix('Guitar and vocal', [a], 'mono', 'wedge', 'house', ['Own vocal prominent', 'Some keys']);
   const m2 = b.mix('Keys and vocal', [k], 'mono', 'wedge', 'house', ['Own vocal prominent', 'Some guitar']);
-  b.device('wedge', m1, { label: 'Wedge 1', supplier: 'venue', at: { x: 0.36, y: 0.9 } });
-  b.device('wedge', m2, { label: 'Wedge 2', supplier: 'venue', at: { x: 0.66, y: 0.9 } });
+  b.device('wedge', m1, { label: 'Wedge 1', supplier: 'venue', at: { x: 0.3, y: 0.9 } });
+  b.device('wedge', m2, { label: 'Wedge 2', supplier: 'venue', at: { x: 0.7, y: 0.9 } });
 }
 
 /** The handoff's worked example (§11). */
 function fourPiece(b: Build): void {
-  const drummer = b.performer('Maya', 'Drums', { x: 0.5, y: 0.2 });
+  // the drummer sits on the kit's stool, upstage of the drums
+  const drummer = b.performer('Maya', 'Drums', { x: 0.5, y: 0.15 });
   const bassist = b.performer('Leo', 'Bass and vocal', { x: 0.2, y: 0.52 });
   const keys = b.performer('Nina', 'Keys and vocal', { x: 0.83, y: 0.46 });
   const front = b.performer('Sam', 'Guitar and lead vocal', { x: 0.5, y: 0.68 });
@@ -172,27 +174,29 @@ function fourPiece(b: Build): void {
   b.di(kb.inputs, { channels: 2, label: 'Keys stereo DI', supplier: 'venue', kind: 'unknown' });
   const lead = b.pack('vocal', front, 'Lead vocal'); // 11
   b.set(lead.inputs, { label: 'Lead vocal', ...VENUE_MIC });
-  const bv = b.pack('vocal', bassist, 'Bassist vocal'); // 12
-  b.set(bv.inputs, { label: 'Bassist vocal', ...VENUE_MIC });
-  const kv = b.pack('vocal', keys, 'Keyboardist vocal'); // 13
-  b.set(kv.inputs, { label: 'Keyboardist vocal', ...VENUE_MIC });
+  const bv = b.pack('vocal', bassist, 'Leo vocal'); // 12
+  b.set(bv.inputs, { label: 'Leo vocal', ...VENUE_MIC });
+  const kv = b.pack('vocal', keys, 'Nina vocal'); // 13
+  b.set(kv.inputs, { label: 'Nina vocal', ...VENUE_MIC });
   const click = b.pack('click', drummer, 'Click'); // 14
-  b.set(click.inputs, { supplier: 'band', phantom: 'do-not-apply', level: 'Line level', notes: 'Balanced line output; the receiving input must accept line level.' });
+  b.set(click.inputs, { supplier: 'band', phantom: 'do-not-apply', level: 'Line level', notes: 'The receiving input must accept line level.' });
 
   b.icon('drum-kit', { x: 0.5, y: 0.3 }, { sourceId: kit.sourceId, label: 'Drums' });
   b.icon('riser', { x: 0.5, y: 0.3 }, { label: 'Drum riser', w: 0.4, h: 0.44 });
   b.icon('bass-amp', { x: 0.2, y: 0.36 }, { sourceId: bass.sourceId, label: 'Bass amp' });
-  b.icon('guitar-amp', { x: 0.36, y: 0.5 }, { sourceId: gtr.sourceId, label: 'Guitar amp' });
+  // in front of the riser, not half on it
+  b.icon('guitar-amp', { x: 0.36, y: 0.6 }, { sourceId: gtr.sourceId, label: 'Guitar amp' });
   b.icon('keyboard', { x: 0.83, y: 0.58 }, { sourceId: kb.sourceId, label: 'Keys' });
   b.icon('vocal-mic', { x: 0.5, y: 0.78 }, { inputId: lead.inputs[0], label: 'Lead vocal' });
-  b.icon('vocal-mic', { x: 0.2, y: 0.62 }, { inputId: bv.inputs[0], label: 'Vocal' });
-  b.icon('vocal-mic', { x: 0.72, y: 0.44 }, { inputId: kv.inputs[0], label: 'Vocal' });
-  b.icon('playback', { x: 0.72, y: 0.14 }, { sourceId: click.sourceId, label: 'Click' });
+  b.icon('vocal-mic', { x: 0.2, y: 0.62 }, { inputId: bv.inputs[0], label: 'Leo vocal' });
+  // a boom from her stage-right side, clear of the riser, its head toward her
+  b.icon('vocal-mic', { x: 0.76, y: 0.46 }, { inputId: kv.inputs[0], label: 'Nina vocal', rot: 90 });
+  b.icon('playback', { x: 0.78, y: 0.14 }, { sourceId: click.sourceId, label: 'Click' });
 
   const m1 = b.mix('Lead vocal', [front], 'mono', 'wedge', 'house', ['Own vocal prominent', 'Some guitar']);
   const m2 = b.mix('Bass', [bassist], 'mono', 'wedge', 'house', ['Own vocal prominent', 'Kick and bass']);
   const m3 = b.mix('Drums, in-ear', [drummer], 'stereo', 'wireless-iem', 'house', ['Full band', 'Click required']);
-  const m4 = b.mix('Keys, in-ear', [keys], 'stereo', 'wired-iem', 'house', ['Own vocal prominent', 'Some keys', 'No click']);
+  const m4 = b.mix('Keys, in-ear', [keys], 'stereo', 'wired-iem', 'house', ['Own vocal prominent', 'Own instrument prominent', 'No click']);
   b.device('wedge', m1, { label: 'Wedge 1', supplier: 'venue', at: { x: 0.5, y: 0.92 } });
   b.device('wedge', m2, { label: 'Wedge 2', supplier: 'venue', at: { x: 0.2, y: 0.78 } });
   // the transmitter is what the house cables to, so it is the one drawn; the
@@ -211,7 +215,7 @@ function fourPiece(b: Build): void {
 }
 
 function playback(b: Build): void {
-  const drummer = b.performer('Maya', 'Drums', { x: 0.5, y: 0.2 });
+  const drummer = b.performer('Maya', 'Drums', { x: 0.5, y: 0.15 });
   const bassist = b.performer('Leo', 'Bass', { x: 0.24, y: 0.5 });
   const gtr = b.performer('Sam', 'Guitar and lead vocal', { x: 0.5, y: 0.68 });
   const singer = b.performer('Jo', 'Vocal', { x: 0.74, y: 0.64 });
@@ -239,14 +243,15 @@ function playback(b: Build): void {
 
   b.icon('drum-kit', { x: 0.5, y: 0.3 }, { sourceId: kit.sourceId, label: 'Drums' });
   b.icon('bass-amp', { x: 0.24, y: 0.36 }, { sourceId: bass.sourceId, label: 'Bass amp' });
-  b.icon('guitar-amp', { x: 0.38, y: 0.5 }, { sourceId: cab.sourceId, label: 'Guitar amp' });
+  // clear of the kit, beside the guitarist
+  b.icon('guitar-amp', { x: 0.34, y: 0.6 }, { sourceId: cab.sourceId, label: 'Guitar amp' });
   b.icon('playback', { x: 0.7, y: 0.18 }, { sourceId: tracks.sourceId, label: 'Playback and click' });
   b.icon('vocal-mic', { x: 0.5, y: 0.78 }, { inputId: v1.inputs[0], label: 'Lead vocal' });
-  b.icon('vocal-mic', { x: 0.74, y: 0.74 }, { inputId: v2.inputs[0], label: 'Vocal' });
+  b.icon('vocal-mic', { x: 0.74, y: 0.74 }, { inputId: v2.inputs[0], label: 'Second vocal' });
   b.icon('rack', { x: 0.9, y: 0.3 }, { label: 'Band monitor rack' });
 
-  // four stereo mixes the band creates itself: nothing asked of the house
-  // console. Each has its transmitter (radio equipment the venue must know
+  // four stereo mixes the band creates itself: nothing requested from the
+  // house console. Each has its transmitter (radio equipment the venue must know
   // is coming) and its pack.
   const people: [SpId, string][] = [
     [drummer, 'Drums'],
@@ -260,7 +265,7 @@ function playback(b: Build): void {
     b.device('iem-pack', m, { label: `${name} pack`, supplier: 'band', performerId: id, selfContained: true });
     if (id === drummer) b.need(m, click.inputs[0], 'primary');
   }
-  b.extra('split', 'Input split for the band’s monitor rig', 'tbc', 'Split provider, connection and who handles phantom power: to confirm with the venue.');
+  b.extra('split', 'Input split for the band monitor rig', 'tbc', 'Split provider, connection and who handles phantom power: to confirm with the venue.');
   b.extra('backline', 'Drum kit, bass amplifier, guitar amplifier', 'band');
   b.p = spEdit(b.p, (d) => {
     for (const m of d.mixes) m.venueFeed = 'split';
@@ -271,14 +276,14 @@ function playback(b: Build): void {
 function salsa(b: Build): void {
   // front line, downstage
   const lead = b.performer('Marisol', 'Lead vocal', { x: 0.5, y: 0.7 });
-  const coro1 = b.performer('Tito', 'Coro and güiro', { x: 0.36, y: 0.7 });
-  const coro2 = b.performer('Yolanda', 'Coro and maracas', { x: 0.64, y: 0.7 });
+  const coro1 = b.performer('Tito', 'Coro (chorus vocal) and güiro', { x: 0.36, y: 0.7 });
+  const coro2 = b.performer('Yolanda', 'Coro (chorus vocal) and maracas', { x: 0.64, y: 0.7 });
   // rhythm section: the pianist sits at stage right and faces across the stage
   const piano = b.performer('Rafa', 'Piano', { x: 0.08, y: 0.5 }, 270);
   const bass = b.performer('Nelson', 'Bass', { x: 0.28, y: 0.32 });
   const congas = b.performer('Chino', 'Congas', { x: 0.42, y: 0.44 });
   const timbales = b.performer('Papo', 'Timbales', { x: 0.57, y: 0.36 });
-  const bongo = b.performer('Luisito', 'Bongó and bell', { x: 0.43, y: 0.2 });
+  const bongo = b.performer('Luisito', 'Bongó and bell (campana)', { x: 0.43, y: 0.2 });
   // horns, stage left, in two rows: trombones in front (a slide needs clear
   // space ahead), trumpets behind them
   const tp1 = b.performer('Carmen', 'Trumpet 1', { x: 0.72, y: 0.2 });
@@ -287,9 +292,9 @@ function salsa(b: Build): void {
   const tb2 = b.performer('Ana', 'Trombone 2', { x: 0.9, y: 0.44 });
 
   const row = (label: string): SpPackageRow => ({ label, capture: 'mic', equipment: 'Dynamic instrument microphone', stand: 'short-boom', connector: 'XLR' });
-  const cg = b.pack('hand-drums', congas, 'Congas', [row('Conga'), row('Tumba')]);
+  const cg = b.pack('hand-drums', congas, 'Congas', [row('Conga'), row('Tumba (low conga)')]);
   const tm = b.pack('hand-drums', timbales, 'Timbales', [row('Timbales high'), row('Timbales low'), { label: 'Timbales bell and cymbal', capture: 'mic', equipment: 'Condenser microphone', stand: 'tall-boom', connector: 'XLR' }]);
-  const bg = b.pack('percussion-mic', bongo, 'Bongó', [row('Bongó and bell')]);
+  const bg = b.pack('percussion-mic', bongo, 'Bongó', [row('Bongó and bell (campana)')]);
   b.set([...cg.inputs, ...tm.inputs, ...bg.inputs], { ...VENUE_MIC });
   const bs = b.pack('bass-di', bass, 'Bass');
   // the band's own active DI: it needs phantom power from the console
@@ -321,11 +326,11 @@ function salsa(b: Build): void {
   const vC1 = vox(coro1, 'Coro 1');
   const vC2 = vox(coro2, 'Coro 2');
   // hand percussion is heard through the singers' own microphones
-  b.p = spAddSource(b.p, { label: 'Güiro and maracas', category: 'percussion', performerId: coro1, connection: 'none' }).p;
+  b.p = spAddSource(b.p, { label: 'Güiro and maracas', category: 'percussion', performerId: null, connection: 'none' }).p;
   b.p = spEdit(b.p, (d) => {
     const s = d.sources[d.sources.length - 1];
     s.noneReason = 'acoustic';
-    s.locationNote = 'Played at the coro microphones; no input of their own.';
+    s.locationNote = 'Played by the two coro singers at their microphones; no input of their own.';
   });
 
   b.icon('piano', { x: 0.16, y: 0.5 }, { sourceId: pn.sourceId, label: 'Piano', rot: 270 });
@@ -333,10 +338,10 @@ function salsa(b: Build): void {
   b.icon('congas', { x: 0.42, y: 0.54 }, { sourceId: cg.sourceId, label: 'Congas' });
   b.icon('timbales', { x: 0.57, y: 0.47 }, { sourceId: tm.sourceId, label: 'Timbales' });
   b.icon('bongo', { x: 0.43, y: 0.29 }, { sourceId: bg.sourceId, label: 'Bongó' });
-  b.icon('mic-stand', { x: 0.72, y: 0.31 }, { inputId: h1.inputs[0], label: 'Tpt 1' });
-  b.icon('mic-stand', { x: 0.9, y: 0.31 }, { inputId: h2.inputs[0], label: 'Tpt 2' });
-  b.icon('mic-stand', { x: 0.72, y: 0.55 }, { inputId: h3.inputs[0], label: 'Tbn 1' });
-  b.icon('mic-stand', { x: 0.9, y: 0.55 }, { inputId: h4.inputs[0], label: 'Tbn 2' });
+  b.icon('mic-stand', { x: 0.72, y: 0.31 }, { inputId: h1.inputs[0], label: 'Trumpet 1' });
+  b.icon('mic-stand', { x: 0.9, y: 0.31 }, { inputId: h2.inputs[0], label: 'Trumpet 2' });
+  b.icon('mic-stand', { x: 0.72, y: 0.55 }, { inputId: h3.inputs[0], label: 'Trombone 1' });
+  b.icon('mic-stand', { x: 0.9, y: 0.55 }, { inputId: h4.inputs[0], label: 'Trombone 2' });
   b.icon('vocal-mic', { x: 0.5, y: 0.8 }, { inputId: vL.inputs[0], label: 'Lead vocal' });
   b.icon('vocal-mic', { x: 0.36, y: 0.8 }, { inputId: vC1.inputs[0], label: 'Coro 1' });
   b.icon('vocal-mic', { x: 0.64, y: 0.8 }, { inputId: vC2.inputs[0], label: 'Coro 2' });
@@ -346,7 +351,7 @@ function salsa(b: Build): void {
   const mHorn = b.mix('Horns', [tp1, tp2, tb1, tb2], 'mono', 'wedge', 'house', ['Own instrument prominent', 'Some piano']);
   const mPiano = b.mix('Piano', [piano], 'mono', 'wedge', 'house', ['Own instrument prominent', 'Bass and congas']);
   const mBass = b.mix('Bass', [bass], 'mono', 'wedge', 'house', ['Own instrument prominent', 'Some piano']);
-  const mPerc = b.mix('Percussion', [congas, timbales, bongo], 'mono', 'wedge', 'house', ['Some piano', 'Some bass', 'Full band']);
+  const mPerc = b.mix('Percussion', [congas, timbales, bongo], 'mono', 'wedge', 'house', ['Own instrument prominent', 'Some piano', 'Some bass']);
   // the pianist's mix, as a salsa pianist asks for it
   b.need(mPiano, pn.inputs[0], 'primary');
   b.need(mPiano, pn.inputs[1], 'primary');
@@ -363,7 +368,7 @@ function salsa(b: Build): void {
   b.device('wedge', mBass, { label: 'Wedge 7', supplier: 'venue', at: { x: 0.17, y: 0.3 }, rot: 270 });
   b.device('wedge', mPerc, { label: 'Wedge 8', supplier: 'venue', at: { x: 0.33, y: 0.45 }, rot: 270 });
   b.device('wedge', mPerc, { label: 'Wedge 9', supplier: 'venue', at: { x: 0.58, y: 0.6 } });
-  b.extra('backline', 'Piano or keyboard, bass amplifier, congas, timbales, bongó', 'band');
+  b.extra('backline', 'Electric piano, bass amplifier, congas, timbales, bongó', 'band');
 }
 
 /** A new project started from an example. `now` and `id` come from the

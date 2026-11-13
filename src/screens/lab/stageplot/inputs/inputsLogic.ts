@@ -24,12 +24,13 @@ import {
   SP_CAPTURE_WORD,
   SP_CATEGORY_ORDER,
   SP_CATEGORY_WORD,
+  SP_DEVICE_WORD,
   SP_STAND_WORD,
   SP_SUPPLIER_WORD,
   type SpPackage,
   type SpPackageRow,
 } from '../../../../features/stageplot/spCatalog.ts';
-import { spDeviceCountWord, spInputSupplier, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpEquipLine, type SpInputTotals, type SpPatchRow } from '../../../../features/stageplot/spDerive.ts';
+import { spInputSupplier, spPatchRows, spSummary, type SpBySupplier, type SpEquipLine, type SpInputTotals, type SpPatchRow } from '../../../../features/stageplot/spDerive.ts';
 import { spAssignDi, spInputLocation, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
 import type { SpIssue } from '../../../../features/stageplot/spReview.ts';
 import type { SpDeviceType, SpDiDevice, SpExtra, SpId, SpInput, SpPatch, SpPatchId, SpProject, SpSupplier } from '../../../../features/stageplot/spTypes.ts';
@@ -38,12 +39,14 @@ import type { SpDeviceType, SpDiDevice, SpExtra, SpId, SpInput, SpPatch, SpPatch
 
 export const SP_DI_KIND_WORD: Record<SpDiDevice['kind'], string> = { passive: 'Passive', active: 'Active', unknown: 'To be confirmed' };
 /** Who brings one thing, in the app's words (the packet says "Supplied by"). */
-export const spBringsWord = (s: SpSupplier): string => (s === 'tbc' ? 'To be confirmed who brings it' : `${SP_SUPPLIER_WORD[s]} brings it`);
+export const spBringsWord = (s: SpSupplier): string => (s === 'tbc' ? 'Who brings it: to be confirmed' : `${SP_SUPPLIER_WORD[s]} brings it`);
 /** "A", "A and B", "A, B and C". */
 export const spListWords = (items: readonly string[]): string => (items.length <= 1 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`);
+/** A source that no one performer plays: one name for it, everywhere. */
+export const SP_NOBODY = 'Nobody (shared source)';
 /** The chips for "Who plays or sings it": the same words and the same order
- *  as the Stage area uses. '' = nobody yet (a shared source). */
-export const spPeopleOptions = (p: SpProject): { value: string; label: string }[] => [{ value: '', label: 'Nobody yet' }, ...p.performers.map((x) => ({ value: x.id, label: x.name || 'Unnamed performer' }))];
+ *  as the Stage area uses. '' = nobody (a shared source). */
+export const spPeopleOptions = (p: SpProject): { value: string; label: string }[] => [{ value: '', label: SP_NOBODY }, ...p.performers.map((x) => ({ value: x.id, label: x.name || 'Unnamed performer' }))];
 /** The chips for "It belongs to": a source with its performer, so two
  *  sources with one name can be told apart ("Guitar · Sam", "Guitar · Jo"). */
 export const spSourceOptions = (p: SpProject): { value: string; label: string }[] =>
@@ -75,10 +78,13 @@ export const SP_SUPPLIERS: readonly SpSupplier[] = ['band', 'venue', 'other', 't
 
 /* Words a band member may not know, each explained where it is first met. */
 export const SP_PHANTOM_HINT =
-  'Phantom power is electricity that the mixer sends through the microphone cable. Some microphones and DIs need it. Say what this device needs, if you know. The tool never decides it from the connector or from the word DI. To be confirmed is printed as a question.';
+  'Phantom power is electricity that the mixer sends through the microphone cable. Some microphones and DIs need it. Say what this device needs, if you know. The tool never decides it from the connector or from the word DI. Not required: it works with or without it. Do not apply: phantom power could damage it or cause noise, as with some ribbon microphones and some line outputs. To be confirmed is printed as a question when your band or another provider brings the item. For an item the venue brings, the venue already knows.';
+/** When "To be confirmed" becomes a printed question, said the same way wherever it is offered. */
+export const SP_TBC_PRINTED = 'To be confirmed is printed as a question when your band or another provider brings the item. For an item the venue brings, the venue already knows.';
 export const SP_CUE_HINT = 'A click is a metronome sound for the performers. A cue or talkback is a voice that only the performers hear.';
-export const SP_EXTRAS_HINT = 'Stage box: the box on the stage where the cables plug in. Split: equipment that sends each input to two mixers. Backline: instruments and amplifiers that are supplied for you.';
-export const SP_WIRELESS_NOTE = 'Wireless: the venue must check that its radio equipment and yours do not disturb each other. This tool records that. It does not choose radio frequencies.';
+export const SP_EXTRAS_HINT = 'Stage box: the box on the stage where the cables plug in. Split: equipment that sends each input to two mixers. Backline: the instruments and amplifiers on the stage, such as the drum kit, the amplifiers and the keyboards. Say who brings each.';
+/** "2 wireless receiver outputs: radio frequency coordination needed." The tool lists no radio frequencies. */
+export const spWirelessNote = (n: number): string => `${n} wireless receiver ${n === 1 ? 'output' : 'outputs'}: radio frequency coordination needed.`;
 
 const plural = (n: number, one: string, many: string = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
 
@@ -270,7 +276,7 @@ export type SpRowView = {
   partnerLabel: string;
   /** One side of a pair whose other side is gone (a review question). */
   pairBroken: boolean;
-  /** "Drum kit · Maya", "Sam", or "No performer (shared source)". */
+  /** "Drum kit · Maya", "Sam", or "Nobody (shared source)". */
   who: string;
   /** In stage words; says so when it is not on the stage yet. */
   where: string;
@@ -315,7 +321,7 @@ export function spRowView(p: SpProject, row: SpPatchRow, patchId: SpPatchId = 'h
   const location = spInputLocation(p, i.id);
   const where = location || (source?.offstage ? 'Off the stage on purpose' : 'Not on the stage yet');
   const sameName = row.sourceLabel.trim().toLowerCase() === i.label.trim().toLowerCase();
-  const who = [sameName ? '' : row.sourceLabel, row.performerName || 'No performer (shared source)'].filter(Boolean).join(' · ');
+  const who = [sameName ? '' : row.sourceLabel, row.performerName || SP_NOBODY].filter(Boolean).join(' · ');
   const capture = [SP_CAPTURE_WORD[i.capture], i.equipment.trim()].filter((s, k, all) => s && (k === 0 || s.toLowerCase() !== all[0].toLowerCase())).join(' · ');
   const stand = i.stand === 'none' ? 'No stand' : i.stand === 'custom' && i.standNote.trim() ? i.standNote.trim() : SP_STAND_WORD[i.stand];
   const supplier = spBringsWord(spInputSupplier(p, i));
@@ -437,11 +443,12 @@ export function spMoveRow(p: SpProject, patchId: SpPatchId, inputId: SpId, by: -
   return q;
 }
 
-/** Words to show before the order or the numbers change on a stage plot that
- *  was already shared; null when this revision was never shared. */
+/** Words to show before the order or the numbers change on a revision that
+ *  was marked ready or shared (the tool cannot know it was sent, so it never
+ *  says it was); null when this revision is still open. */
 export function spSharedNotice(p: SpProject): string | null {
   if (p.frozenRevision < p.revision) return null;
-  return `Revision ${p.revision} of this stage plot was already shared. A change to the order or to a channel number starts revision ${p.frozenRevision + 1}, and the packet then shows the new revision number.`;
+  return `Revision ${p.revision} was marked ready or shared. A change to the order or to a channel number starts revision ${p.frozenRevision + 1}, and the packet then shows the new revision number.`;
 }
 
 /* ── stereo to mono, said first ─────────────────────────────────────────── */
@@ -506,7 +513,7 @@ export function spSourcesWithoutInputs(p: SpProject): SpQuietSource[] {
   const out: SpQuietSource[] = [];
   for (const s of p.sources) {
     if (p.inputs.some((i) => i.sourceId === s.id)) continue;
-    const who = p.performers.find((x) => x.id === s.performerId)?.name ?? 'No performer (shared source)';
+    const who = p.performers.find((x) => x.id === s.performerId)?.name ?? SP_NOBODY;
     const state =
       s.connection === 'none'
         ? `No sound system connection needed${s.noneReason === 'acoustic' ? ': acoustic' : s.noneReason === 'self-contained' ? ': it has its own sound' : ''}`
@@ -532,7 +539,7 @@ export function spDiDeviceLine(p: SpProject, d: SpDiDevice): string {
 export type SpDiChannelRow = { inputId: SpId; label: string; on: boolean; elsewhere: string };
 
 /** Every DI channel in the project, seen from one device: on it, on another
- *  device, or with its device still to be confirmed. */
+ *  device, or with no DI device (DI box) yet. */
 export function spDiChannelRows(p: SpProject, deviceId: SpId): SpDiChannelRow[] {
   return p.inputs
     .filter((i) => i.capture === 'di')
@@ -555,14 +562,75 @@ export function spDiToggle(p: SpProject, deviceId: SpId, inputId: SpId): SpProje
 
 export type SpSummaryGroup = { id: 'channels' | 'microphones' | 'wireless' | 'lines' | 'stands' | 'di'; title: string; lines: string[] };
 
-const totalsLine = (name: string, t: SpInputTotals): string =>
-  `${name}: ${plural(t.channels, 'input')}. ${t.audience} for the audience mix, ${t.monitorOnly} monitor only${t.audienceTbc ? `, ${t.audienceTbc} to be confirmed` : ''}.`;
+/* Count lines never print a zero count or a bare category word: "all for the
+   audience mix", "venue", "The venue brings all 9.", never "0 monitor only"
+   or "9 Venue". */
+
+const WHO: Record<Exclude<SpSupplier, 'tbc'>, string> = { band: 'the band', venue: 'the venue', other: 'another provider' };
+const used = (by: SpBySupplier): SpSupplier[] => SP_SUPPLIERS.filter((k) => by[k] > 0);
+const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** After the dash on a list line: "venue", "to be confirmed", or, when more
+ *  than one brings some, "2 from the band, 1 from the venue". */
+export function spBroughtBy(by: SpBySupplier): string {
+  const ks = used(by);
+  if (!ks.length) return '';
+  if (ks.length === 1) return ks[0] === 'tbc' ? 'to be confirmed' : ks[0] === 'other' ? 'other provider' : ks[0];
+  return ks.map((k) => (k === 'tbc' ? `${by[k]} to be confirmed` : `${by[k]} from ${WHO[k]}`)).join(', ');
+}
+
+/** A whole sentence: "The venue brings all 9.", "The band brings it.",
+ *  "Who brings it: to be confirmed.", "The band brings 1 and the venue brings 1." */
+export function spWhoBrings(by: SpBySupplier): string {
+  const ks = used(by);
+  const total = ks.reduce((n, k) => n + by[k], 0);
+  if (!total) return '';
+  if (ks.length === 1) {
+    const k = ks[0];
+    if (k === 'tbc') return total === 1 ? 'Who brings it: to be confirmed.' : 'Who brings them: to be confirmed.';
+    return total === 1 ? `${capital(WHO[k])} brings it.` : `${capital(WHO[k])} brings all ${total}.`;
+  }
+  return `${capital(spListWords(ks.map((k) => (k === 'tbc' ? `${by[k]} ${by[k] === 1 ? 'is' : 'are'} to be confirmed` : `${WHO[k]} brings ${by[k]}`))))}.`;
+}
+
+/** "House system: 10 inputs, all for the audience mix." /
+ *  "House system: 14 inputs. 13 for the audience mix, 1 monitor only (Click)." */
+function houseLine(p: SpProject, t: SpInputTotals): string {
+  if (!t.channels) return 'House system: no inputs yet.';
+  const only = spPatchRows(p, 'house')
+    .filter((r) => r.input.audience === 'monitor-only')
+    .map((r) => r.input.label);
+  const parts: [number, string][] = [
+    [t.audience, 'for the audience mix'],
+    [t.monitorOnly, `monitor only (${only.join(', ')})`],
+    [t.audienceTbc, 'with who hears it to be confirmed'],
+  ];
+  const some = parts.filter(([n]) => n > 0);
+  const head = `House system: ${plural(t.channels, 'input')}`;
+  if (some.length === 1) return `${head}, ${t.channels === 1 ? '' : 'all '}${some[0][1]}.`;
+  return `${head}. ${some.map(([n, words]) => `${n} ${words}`).join(', ')}.`;
+}
+
+/** The band monitor rig feeds no audience: its line says which inputs it
+ *  shares with the house system and which go to it alone.
+ *  "Band monitor rig: 11 inputs. 10 are shared with the house system through
+ *  the split, 1 goes to the band monitor rig only (Click)." */
+function bandLine(p: SpProject, t: SpInputTotals): string {
+  const rows = spPatchRows(p, 'band');
+  const alone = rows.filter((r) => r.input.destination !== 'both').map((r) => r.input.label);
+  const shared = rows.length - alone.length;
+  const head = `Band monitor rig: ${plural(t.channels, 'input')}`;
+  const one = t.channels === 1;
+  if (!alone.length) return `${head}, ${one ? '' : 'all '}shared with the house system through the split.`;
+  if (!shared) return `${head}, ${one ? '' : 'all '}for the band monitor rig only (${alone.join(', ')}).`;
+  return `${head}. ${shared} ${shared === 1 ? 'is' : 'are'} shared with the house system through the split, ${alone.length} ${alone.length === 1 ? 'goes' : 'go'} to the band monitor rig only (${alone.join(', ')}).`;
+}
 const categoryLine = (name: string, t: SpInputTotals): string =>
-  `${name} by type: ${SP_CATEGORY_ORDER.filter((c) => t.byCategory[c])
+  `${name} by group: ${SP_CATEGORY_ORDER.filter((c) => t.byCategory[c])
     .map((c) => `${SP_CATEGORY_WORD[c]} ${t.byCategory[c]}`)
     .join(', ')}.`;
 const equipLine = (l: SpEquipLine): string[] => {
-  const out = [`${l.qty} × ${l.name} — ${spSupplierWords(l.bySupplier)}${l.required ? `. Required: ${l.required}` : ''}`];
+  const out = [`${l.qty} × ${l.name} — ${spBroughtBy(l.bySupplier)}${l.required ? `. Required: ${l.required}` : ''}`];
   if (l.alternatives.length) out.push(`Acceptable instead of ${l.name}: ${l.alternatives.join('; ')}. Not counted as extra equipment.`);
   return out;
 };
@@ -572,12 +640,13 @@ export function spEquipmentGroups(p: SpProject): SpSummaryGroup[] {
   const s = spSummary(p);
   const out: SpSummaryGroup[] = [];
   const channels: string[] = [];
-  if (s.house.channels || !s.band) {
-    channels.push(totalsLine('House system', s.house));
+  if (!s.house.channels && !s.band) channels.push('No inputs yet.');
+  else {
+    channels.push(houseLine(p, s.house));
     if (s.house.channels) channels.push(categoryLine('House system', s.house));
   }
   if (s.band) {
-    channels.push(totalsLine('Band monitor rig', s.band));
+    channels.push(bandLine(p, s.band));
     if (s.band.channels) channels.push(categoryLine('Band monitor rig', s.band));
     channels.push('An input in both lists is one source that feeds two systems. It is one source, not two.');
   }
@@ -599,24 +668,24 @@ export function spEquipmentGroups(p: SpProject): SpSummaryGroup[] {
     out.push({
       id: 'wireless',
       title: 'Wireless receiver outputs',
-      lines: [...s.wirelessLines.flatMap(equipLine), SP_WIRELESS_NOTE],
+      lines: [...s.wirelessLines.flatMap(equipLine), spWirelessNote(s.wirelessInputs)],
     });
   }
   const direct = byCapture(p, 'line');
   const custom = byCapture(p, 'custom');
   if (s.lineInputs || s.customInputs) {
     const lines: string[] = [];
-    if (s.lineInputs) lines.push(`${plural(s.lineInputs, 'direct balanced line')} — ${spSupplierWords(direct.by)} (${direct.labels.join(', ')}).`);
-    if (s.customInputs) lines.push(`${plural(s.customInputs, 'custom connection')} — ${spSupplierWords(custom.by)} (${custom.labels.join(', ')}).`);
+    if (s.lineInputs) lines.push(`${s.lineInputs} × Direct balanced line (${direct.labels.join(', ')}) — ${spBroughtBy(direct.by)}`);
+    if (s.customInputs) lines.push(`${s.customInputs} × Custom connection (${custom.labels.join(', ')}) — ${spBroughtBy(custom.by)}`);
     out.push({ id: 'lines', title: 'Direct lines and custom connections', lines });
   }
   out.push({
     id: 'stands',
     title: 'Stands and mounts',
-    lines: s.stands.length ? s.stands.map((l) => `${l.qty} × ${l.name} — ${spSupplierWords(l.bySupplier)}`) : ['No stands or mounts are listed.'],
+    lines: s.stands.length ? s.stands.map((l) => `${l.qty} × ${l.name} — ${spBroughtBy(l.bySupplier)}`) : ['No stands or mounts are listed.'],
   });
   const di = [s.di.summary];
-  if (s.di.devices) di.push(`DI devices: ${s.di.devices} — ${spSupplierWords(s.di.devicesBySupplier)}.`);
+  if (s.di.devices) di.push(`${plural(s.di.devices, 'DI device')}. ${spWhoBrings(s.di.devicesBySupplier)}`);
   for (const o of s.di.overloaded) di.push(`${o.label} has ${plural(o.channels, 'channel')} and is asked to carry ${o.used}.`);
   out.push({ id: 'di', title: 'DI channels and DI devices', lines: di });
   return out;
@@ -637,13 +706,14 @@ export type SpResponsibility = { supplier: SpSupplier; title: string; lines: str
 
 const RESPONSIBILITY_TITLE: Record<SpSupplier, string> = {
   band: 'The band brings',
-  venue: 'The venue is asked to provide',
+  venue: 'The venue brings',
   other: 'Another provider brings',
-  tbc: 'To be confirmed',
+  tbc: 'Who brings it: to be confirmed',
 };
 
 /** Who brings what: one block for each of Band, Venue, Other provider and To
- *  be confirmed. Each item appears in exactly one block. */
+ *  be confirmed. Each item appears in exactly one block, and every line of a
+ *  block starts the same way: a quantity, "×", the thing. */
 export function spResponsibility(p: SpProject): SpResponsibility[] {
   const s = spSummary(p);
   return SP_SUPPLIERS.map((k) => {
@@ -652,16 +722,16 @@ export function spResponsibility(p: SpProject): SpResponsibility[] {
     for (const l of s.wirelessLines) if (l.bySupplier[k]) lines.push(`${l.bySupplier[k]} × ${l.name} (wireless)`);
     for (const capture of ['line', 'custom'] as const) {
       const mine = p.inputs.filter((i) => i.capture === capture && spInputSupplier(p, i) === k);
-      if (mine.length) lines.push(`${plural(mine.length, capture === 'line' ? 'direct balanced line' : 'custom connection')} (${mine.map((i) => i.label).join(', ')})`);
+      if (mine.length) lines.push(`${mine.length} × ${capture === 'line' ? 'Direct balanced line' : 'Custom connection'} (${mine.map((i) => i.label).join(', ')})`);
     }
     for (const l of s.stands) if (l.bySupplier[k]) lines.push(`${l.bySupplier[k]} × ${l.name}`);
     // a DI channel with a device is listed as the device, once
     for (const d of p.diDevices) if (d.supplier === k) lines.push(`1 × ${d.label} (${d.channels === 2 ? 'stereo' : 'mono'} DI device${d.model.trim() ? `, ${d.model.trim()}` : ''})`);
     const loose = p.inputs.filter((i) => i.capture === 'di' && !i.diDeviceId && spInputSupplier(p, i) === k);
-    if (loose.length) lines.push(`${plural(loose.length, 'DI channel')}, device arrangement to be confirmed (${loose.map((i) => i.label).join(', ')})`);
+    if (loose.length) lines.push(`${loose.length} × DI channel with no DI device (DI box) yet (${loose.map((i) => i.label).join(', ')})`);
     for (const t of Object.keys(s.monitors.devices) as SpDeviceType[]) {
       const n = s.monitors.devicesBySupplier[t][k];
-      if (n) lines.push(spDeviceCountWord(t, n));
+      if (n) lines.push(`${n} × ${SP_DEVICE_WORD[t]}`);
     }
     for (const e of p.extras) {
       if (e.supplier !== k) continue;
@@ -675,7 +745,8 @@ export function spResponsibility(p: SpProject): SpResponsibility[] {
 
 export type SpCountView = { value: number; label: string };
 
-/** The headline counts of the summary panel. */
+/** The headline counts of the summary panel. A count of zero is not a
+ *  headline: it is left out (an empty stage plot has no tiles at all). */
 export function spSummaryCounts(p: SpProject): SpCountView[] {
   const s = spSummary(p);
   const out: SpCountView[] = [
@@ -687,10 +758,10 @@ export function spSummaryCounts(p: SpProject): SpCountView[] {
   out.push({ value: s.microphones, label: s.microphones === 1 ? 'microphone' : 'microphones' });
   out.push({ value: s.di.channels, label: s.di.channels === 1 ? 'DI channel' : 'DI channels' });
   out.push({ value: s.di.devices, label: s.di.devices === 1 ? 'DI device' : 'DI devices' });
-  return out;
+  return out.filter((c) => c.value > 0);
 }
 
-/** "1 × Input split for the band’s monitor rig · To be confirmed who brings it". */
+/** "1 × Split · Who brings it: to be confirmed · <the note>". */
 export function spExtraLine(e: SpExtra): string {
   return [`${e.qty} × ${SP_EXTRA_WORD[e.kind]}`, spBringsWord(e.supplier), e.note.trim()].filter(Boolean).join(' · ');
 }

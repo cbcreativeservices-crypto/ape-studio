@@ -37,7 +37,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { spDeviceCountWord, spInputSupplier, spSummary, spTextSummary, type SpBySupplier, type SpSummary } from '../../../features/stageplot/spDerive';
+import { spDeviceCountWord, spSummary, spTextSummary } from '../../../features/stageplot/spDerive';
 import type { SpDoc } from '../../../features/stageplot/spDocTypes';
 import {
   SP_IS_WEB,
@@ -54,18 +54,19 @@ import {
   type SpFramePrintOutcome,
   type SpPdfVia,
 } from '../../../features/stageplot/spExport';
-import { SP_PACKET_WORD, SP_PAPER_WORD, spAfterExport, spBuildDoc, spBuildSnapshot, spDocText, spEmailText, spShownContact } from '../../../features/stageplot/spPacket';
+import { SP_PACKET_WORD, SP_PAPER_WORD, spAfterExport, spBuildDoc, spBuildSnapshot, spDocText, spEmailText, spEquipmentSplit, spShownContact } from '../../../features/stageplot/spPacket';
 import { SP_PAGES, spPacketHtml } from '../../../features/stageplot/spPacketHtml';
 import { spCanExport } from '../../../features/stageplot/spReview';
-import type { SpDeviceType, SpPacketKind, SpPaper, SpProject, SpSnapshot } from '../../../features/stageplot/spTypes';
+import type { SpDeviceType, SpPacketKind, SpPaper, SpSnapshot } from '../../../features/stageplot/spTypes';
 import { useInFlightLatch, useLatchedPress } from '../../../lib/latch';
 import { cardColumn } from '../../../theme/readingColumn';
 import { colors, fonts } from '../../../theme/tokens';
+import { MailField } from './export/MailField';
 import { spExportSession, spPatchExportSession, type SpExportLine, type SpExportSession, type SpExportTone, type SpKeptPdf } from './export/exportSession';
 import { PacketPreview } from './export/PacketPreview';
 import { WebPrintView } from './export/WebPrintView';
 import { useSpEditor } from './spContext';
-import { Button, Choice, Count, IssueList, Note, Section, TextField } from './spForm';
+import { Button, Choice, Count, IssueList, Note, Section } from './spForm';
 import { goToIssue, runIssueAction } from './spIssueActions';
 
 const PACKETS: readonly { value: SpPacketKind; label: string }[] = [
@@ -78,7 +79,8 @@ const PAPERS: readonly { value: SpPaper; label: string }[] = [
   { value: 'a4', label: SP_PAPER_WORD.a4 },
 ];
 const VIEWS: readonly { value: 'pages' | 'text'; label: string }[] = [
-  { value: 'pages', label: 'Pages' },
+  // (the preview is one continuous sheet with no page edges, so it is not called "Pages")
+  { value: 'pages', label: 'Formatted' },
   { value: 'text', label: 'Text only' },
 ];
 
@@ -97,21 +99,11 @@ const VIA_WORDS: Record<SpPdfVia, string> = {
 const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
 const word = (n: number, one: string, many = `${one}s`): string => (n === 1 ? one : many);
 
-/** Who brings the listed equipment, added up from the same lines the packet prints. */
-function supplierSplit(p: SpProject, s: SpSummary): SpBySupplier {
-  const t: SpBySupplier = { band: 0, venue: 0, other: 0, tbc: 0 };
-  const add = (b: SpBySupplier) => {
-    t.band += b.band;
-    t.venue += b.venue;
-    t.other += b.other;
-    t.tbc += b.tbc;
-  };
-  for (const l of [...s.microphoneLines, ...s.wirelessLines, ...s.stands]) add(l.bySupplier);
-  add(s.di.devicesBySupplier);
-  for (const k of Object.keys(s.monitors.devicesBySupplier) as SpDeviceType[]) add(s.monitors.devicesBySupplier[k]);
-  for (const e of p.extras) t[e.supplier] += e.qty;
-  for (const i of p.inputs) if (i.capture === 'line' || i.capture === 'custom') t[spInputSupplier(p, i)] += 1;
-  return t;
+/** The inputs' routing in words, with no zero count: "all for the audience
+ *  mix", or "13 for the audience mix, 1 monitor only". */
+function routingWords(h: { audience: number; monitorOnly: number; audienceTbc: number }): string {
+  if (!h.monitorOnly && !h.audienceTbc) return 'all for the audience mix';
+  return [h.audience ? `${h.audience} for the audience mix` : '', h.monitorOnly ? `${h.monitorOnly} monitor only` : '', h.audienceTbc ? `${h.audienceTbc} with the audience routing to be confirmed` : ''].filter(Boolean).join(', ');
 }
 
 export function ExportArea() {
@@ -344,7 +336,14 @@ export function ExportArea() {
   const offWhy = 'A packet cannot be made right now. The reason is at the top of this section.';
   const h = summary.house;
   const m = summary.monitors;
-  const split = supplierSplit(project, summary);
+  // the same rows the packet's equipment table prints, added up: the two cannot disagree
+  const split = spEquipmentSplit(project, summary);
+  const equipment = [
+    split.band ? `Equipment the band brings: ${plural(split.band, 'item')}.` : '',
+    split.venue ? `Equipment requested from the venue: ${plural(split.venue, 'item')}.` : '',
+    split.other ? `Equipment from another provider: ${plural(split.other, 'item')}.` : '',
+    split.tbc ? `Equipment to be confirmed: ${plural(split.tbc, 'item')}.` : '',
+  ].filter(Boolean);
   const devices = (Object.keys(m.devices) as SpDeviceType[]).filter((t) => m.devices[t] > 0).map((t) => spDeviceCountWord(t, m.devices[t]));
   const contact = spShownContact(project);
   const contactShown = [contact.name ? 'name' : '', contact.role ? 'role' : '', contact.email ? 'email' : '', contact.phone ? 'phone' : ''].filter(Boolean);
@@ -382,18 +381,20 @@ export function ExportArea() {
             <Count value={summary.di.channels} label={word(summary.di.channels, 'DI channel')} />
             <Count value={summary.di.devices} label={word(summary.di.devices, 'DI device')} />
             <Count value={m.all.mixes} label={word(m.all.mixes, 'monitor mix', 'monitor mixes')} />
-            <Count value={m.house.channels} label={`${word(m.house.channels, 'monitor feed audio channel')} asked of the house`} />
+            <Count value={m.house.channels} label={`${word(m.house.channels, 'monitor audio channel')} requested from the house console`} />
           </View>
           <Note>
             <View style={styles.noteLines}>
-              <Text style={styles.noteText}>{`Inputs: ${h.audience} for the audience mix, ${h.monitorOnly} monitor only${h.audienceTbc ? `, ${h.audienceTbc} to be confirmed` : ''}.${summary.band ? ` The band monitor rig takes ${plural(summary.band.channels, 'input channel')}.` : ''}`}</Text>
+              {h.channels ? <Text style={styles.noteText}>{`Inputs to the house system: ${routingWords(h)}.${summary.band ? ` The band monitor rig takes ${plural(summary.band.channels, 'input channel')}.` : ''}`}</Text> : null}
               <Text style={styles.noteText}>{summary.di.summary}</Text>
-              <Text style={styles.noteText}>{`Asked of the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.${m.bandOwned.mixes ? ` Apart from that, your band creates ${plural(m.bandOwned.mixes, 'mix', 'mixes')} in its own rig.` : ''}${m.byProvider.tbc.mixes ? ` For ${plural(m.byProvider.tbc.mixes, 'mix', 'mixes')}, who creates the mix is to be confirmed.` : ''}`}</Text>
+              {m.all.mixes ? (
+                <Text style={styles.noteText}>{`${m.house.mixes ? `Requested from the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.` : 'Nothing is requested from the house console.'}${m.bandOwned.mixes ? ` Your band creates ${plural(m.bandOwned.mixes, 'mix', 'mixes')} in the band monitor rig.` : ''}${m.byProvider.tbc.mixes ? ` For ${plural(m.byProvider.tbc.mixes, 'mix', 'mixes')}, who creates the mix is to be confirmed.` : ''}`}</Text>
+              ) : null}
               {devices.length ? <Text style={styles.noteText}>{`Monitor devices: ${devices.join(', ')}.`}</Text> : null}
-              <Text style={styles.noteText}>{`Items the band brings: ${split.band}. Items asked of the venue: ${split.venue}.${split.other ? ` Items from another provider: ${split.other}.` : ''} Items to be confirmed: ${split.tbc}.`}</Text>
+              <Text style={styles.noteText}>{equipment.length ? equipment.join(' ') : 'No equipment is listed yet.'}</Text>
             </View>
           </Note>
-          {summary.open.length ? <Note tone="warning">{`${plural(summary.open.length, 'detail is', 'details are')} still to be confirmed. The packet prints each one as unresolved. Nothing is filled in for you.`}</Note> : null}
+          {summary.open.length ? <Note tone="warning">{`${plural(summary.open.length, 'open detail is', 'open details are')} printed as unresolved. Nothing is filled in for you.`}</Note> : null}
         </Section>
 
         <Section title="REVIEW" hint="Answer what you can. What you leave is printed in the packet as unresolved. Review prepares your document; it does not mean the venue has agreed.">
@@ -459,8 +460,8 @@ export function ExportArea() {
               : 'This tool does not send email. It copies your message and opens your phone’s share menu with the PDF. You choose your mail app there and paste the message.'
           }
         >
-          <TextField label="Subject" value={message.subject} onCommit={(subject) => patch({ mail: { ...message, subject } })} onChange={(subject) => patch({ mail: { ...message, subject } })} />
-          <TextField label="Message" value={message.body} multiline onCommit={(body) => patch({ mail: { ...message, body } })} onChange={(body) => patch({ mail: { ...message, body } })} hint="A suggestion. Change any of it. It names only the contact details you chose to show in SETUP." />
+          <MailField label="Subject" value={message.subject} minHeight={66} oneParagraph onChange={(subject) => patch({ mail: { ...message, subject } })} />
+          <MailField label="Message" value={message.body} minHeight={150} onChange={(body) => patch({ mail: { ...message, body } })} hint="A suggestion. Change any of it. It names only the contact details you chose to show in SETUP." />
           {session.mail ? <Button label="USE THE SUGGESTED TEXT AGAIN" onPress={() => patch({ mail: null })} a11yLabel="Replace your message with the suggested subject and message" /> : null}
           <Button label="COPY THE MESSAGE" onPress={onCopyMessage} disabled={!spCanCopy()} disabledReason={NO_COPY} a11yLabel="Copy the subject and the message" />
           <Button

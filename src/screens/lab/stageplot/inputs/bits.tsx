@@ -53,6 +53,11 @@ export function Tag({ text, tone = 'plain' }: { text: string; tone?: TagTone }) 
   );
 }
 
+/** The mark on a card that leads to a next step: it reads as a button, not a note. */
+export function Chevron() {
+  return <Text style={styles.chevron}>›</Text>;
+}
+
 /** A row that is ticked or not. The tick is a mark (✓) in a box. */
 export function TickRow({ title, sub, tags, checked, onPress, a11yLabel }: { title: string; sub?: string; tags?: ReactNode; checked: boolean; onPress: () => void; a11yLabel: string }) {
   return (
@@ -97,8 +102,10 @@ const styles = StyleSheet.create({
   line: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   small: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
   subTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.amberLabel, textTransform: 'uppercase' },
-  tag: { borderWidth: 1, borderRadius: 5, paddingHorizontal: 6, paddingVertical: 2 },
-  tagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8 },
+  // A long tag WRAPS inside its card (it never runs past the card's edge).
+  tag: { borderWidth: 1, borderRadius: 5, paddingHorizontal: 6, paddingVertical: 2, flexShrink: 1, maxWidth: '100%' },
+  tagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, lineHeight: 17, letterSpacing: 0.8, flexShrink: 1 },
+  chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, lineHeight: 26, color: colors.amber, paddingHorizontal: 4 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 },
   tickRow: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#121212' },
   tickRowOn: { borderColor: colors.steelBorder, backgroundColor: '#171717' },

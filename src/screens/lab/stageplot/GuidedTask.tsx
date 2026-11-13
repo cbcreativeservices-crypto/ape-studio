@@ -1,6 +1,6 @@
 /**
  * GuidedTask — the OPTIONAL walk-through of the Stage Plot lab (handoff §9):
- * place the performers, add their real sources, assign monitors, answer the
+ * place the performers, add what each one plays or sings, assign monitors, answer the
  * review, make the packet.
  *
  * It is closed until asked for, it never blocks anything, and a user working
@@ -16,10 +16,10 @@ import { useSpEditor, type SpAreaId } from './spContext';
 import { Button, Section } from './spForm';
 
 const WHERE: Record<SpGuidedStep['id'], { area: SpAreaId; go: string; how: string }> = {
-  performers: { area: 'stage', go: 'Stage', how: 'In Stage, put each performer on the stage.' },
+  performers: { area: 'stage', go: 'Stage', how: 'Add each performer in Setup, then put them on the stage in Stage.' },
   sources: { area: 'inputs', go: 'Inputs', how: 'In Inputs, add what each performer plays or sings.' },
   monitors: { area: 'monitors', go: 'Monitors', how: 'In Monitors, put each performer on a mix, or say they need none.' },
-  review: { area: 'export', go: 'Export', how: 'In Export, answer each question in the review list.' },
+  review: { area: 'export', go: 'Export', how: 'The tab bar marks each area that has a question. Export lists them all.' },
   export: { area: 'export', go: 'Export', how: 'In Export, print or share the packet.' },
 };
 

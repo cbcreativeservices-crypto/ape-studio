@@ -32,7 +32,7 @@ export const SP_GUIDE_LIBRARY: ScreenGuide = {
     'A revision number lets you and the venue check that you are both reading the same document.',
   ],
   tryThis: [
-    'Start the Four-piece band example, open the Inputs area and count the rows. Each row is one input: one audio channel at the mixer.',
+    'Start the Four-piece band example, open the Inputs area and count the rows. Each row is one input: one channel at the mixer.',
     'Make a gig copy of a stage plot and type a venue for it. Then open the master again: the master still has no venue.',
   ],
 };

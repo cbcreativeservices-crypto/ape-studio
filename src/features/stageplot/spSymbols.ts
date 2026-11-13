@@ -55,22 +55,25 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // a microphone on a stand: the round base, the stem, a filled capsule
   'vocal-mic': { w: 0.5, h: 0.6, tag: '', shapes: [circle(0, 0.12, 0.2, { fill: 'paper' }), line(0, 0.12, 0, -0.22), circle(0, -0.24, 0.07, { fill: 'ink' })] },
   'mic-stand': { w: 0.5, h: 0.6, tag: '', shapes: [circle(0, 0.12, 0.2, { fill: 'paper' }), line(0, 0.12, 0, -0.22), circle(0, -0.24, 0.07, { fill: 'ink' })] },
-  // a drum kit: kick, snare, two toms, floor tom, two cymbals, the stool
+  // a drum kit: the stool, kick, snare, floor tom, two rack toms, two cymbals
   'drum-kit': {
     w: 1.9,
     h: 1.7,
     tag: '',
     shapes: [
       // a right-handed kit: the drummer sits upstage and faces the audience,
-      // so the drummer's LEFT (snare, hi-hat) is the viewer's RIGHT (+x)
-      circle(0, 0.2, 0.36, { fill: 'paper' }), // kick
-      circle(0.5, 0.02, 0.2, { fill: 'paper' }), // snare
-      circle(-0.2, -0.22, 0.17, { fill: 'paper' }), // rack tom
-      circle(0.2, -0.22, 0.17, { fill: 'paper' }), // rack tom
-      circle(-0.56, 0.0, 0.24, { fill: 'paper' }), // floor tom
-      circle(0.74, -0.36, 0.22, { dash: true }), // hi-hat
-      circle(-0.72, -0.44, 0.26, { dash: true }), // ride
-      circle(0, -0.62, 0.17, { fill: 'tone' }), // the stool
+      // so the drummer's LEFT (snare, hi-hat) is the viewer's RIGHT (+x).
+      // The layout follows the kit drawn on the screen (review 2,
+      // 2026-11-12): stool upstage, the drums in front of it, the cymbals at
+      // the audience-side corners. One kit, one layout, on screen and paper.
+      circle(0, -0.62, 0.17, { fill: 'paper' }), // the stool (white: the drummer's own circle sits on it)
+      circle(0, -0.04, 0.34, { fill: 'paper' }), // kick
+      circle(0.5, -0.04, 0.2, { fill: 'paper' }), // snare
+      circle(-0.52, -0.06, 0.22, { fill: 'paper' }), // floor tom
+      circle(-0.18, 0.4, 0.16, { fill: 'paper' }), // rack tom
+      circle(0.18, 0.4, 0.16, { fill: 'paper' }), // rack tom
+      circle(0.68, 0.46, 0.24, { dash: true }), // hi-hat and crash side
+      circle(-0.66, 0.46, 0.26, { dash: true }), // ride side
     ],
   },
   // small percussion: three drums of different sizes (no case: a box with
@@ -109,8 +112,11 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // performer; the line inside is the grille's edge
   wedge: { w: 0.7, h: 0.45, tag: '', shapes: [poly([-0.24, -0.22, 0.24, -0.22, 0.35, 0.22, -0.35, 0.22]), line(-0.3, 0.12, 0.3, 0.12)] },
   iem: { w: 0.5, h: 0.3, tag: 'IEM', shapes: [box(0.5, 0.3, { r: 0.14 })] },
-  'drum-fill': { w: 0.8, h: 0.6, tag: '', shapes: [box(0.8, 0.6, { r: 0.04 }), circle(0, 0.02, 0.2), circle(0, 0.02, 0.07, { fill: 'ink' })] },
-  sidefill: { w: 0.7, h: 0.9, tag: '', shapes: [box(0.7, 0.9, { r: 0.04 }), circle(0, 0.16, 0.22), circle(0, -0.24, 0.1)] },
+  // a drum fill and a sidefill, from above: a cabinet with a heavy bar on
+  // the side it faces (a front view with its drivers showing would be the
+  // only symbol not seen from above)
+  'drum-fill': { w: 0.8, h: 0.6, tag: '', shapes: [box(0.8, 0.6, { r: 0.04 }), rect(-0.36, 0.2, 0.72, 0.08, { fill: 'ink' })] },
+  sidefill: { w: 0.7, h: 0.9, tag: '', shapes: [box(0.7, 0.9, { r: 0.04 }), rect(-0.31, 0.34, 0.62, 0.09, { fill: 'ink' }), line(-0.31, -0.1, 0.31, -0.1)] },
   rack: { w: 0.6, h: 0.6, tag: '', shapes: [box(0.6, 0.6, { r: 0.03 }), line(-0.3, -0.12, 0.3, -0.12), line(-0.3, 0.02, 0.3, 0.02), line(-0.3, 0.16, 0.3, 0.16)] },
   // a stage box: a box with its rows of sockets
   'stage-box': {
@@ -123,7 +129,8 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // statement about the circuit)
   power: { w: 0.4, h: 0.4, tag: 'AC', shapes: [circle(0, 0, 0.2, { fill: 'paper' })] },
   chair: { w: 0.45, h: 0.45, tag: '', shapes: [box(0.45, 0.45, { r: 0.05 }), line(-0.22, -0.16, 0.22, -0.16)] },
-  'music-stand': { w: 0.5, h: 0.35, tag: '', shapes: [line(-0.25, -0.05, 0.25, -0.05), line(0, -0.05, 0, 0.2), line(-0.12, 0.2, 0.12, 0.2)] },
+  // a music stand, from above: the desk as a thin bar, three short legs
+  'music-stand': { w: 0.5, h: 0.35, tag: '', shapes: [line(0, 0.02, -0.13, 0.16), line(0, 0.02, 0.13, 0.16), line(0, 0.02, 0, -0.16), rect(-0.25, -0.02, 0.5, 0.07, { fill: 'tone' })] },
   // sized by the band: a dashed outline, so it reads as a platform under things
   riser: { w: 2.4, h: 2.0, tag: '', shapes: [rect(-0.5, -0.5, 1, 1, { dash: true, fill: 'none' })] },
   generic: { w: 0.8, h: 0.6, tag: '', shapes: [rect(-0.5, -0.5, 1, 1, { fill: 'paper', r: 0.04 })] },
@@ -144,7 +151,9 @@ export const spIsSized = (kind: SpObjectKind): boolean => kind === 'riser' || ki
  *  the drawing, never a popup and never behind a switch.
  *
  *  One entry per different-looking symbol: a vocal microphone and any other
- *  microphone on a stand are the same symbol, so they share one entry. */
+ *  microphone on a stand are the same symbol, so they share one entry; so do
+ *  a guitar amplifier and a bass amplifier (two cabinets that look alike at
+ *  key size; each is named on the plot). */
 export type SpKeyEntry = {
   /** The kind whose symbol (or on-screen art) is drawn for this entry. */
   kind: SpObjectKind;
@@ -161,8 +170,8 @@ const KEY_NAME: Record<SpObjectKind, string> = {
   congas: 'Congas',
   timbales: 'Timbales',
   bongo: 'Bongó',
-  'guitar-amp': 'Guitar amplifier',
-  'bass-amp': 'Bass amplifier',
+  'guitar-amp': 'Amplifier (guitar or bass)',
+  'bass-amp': 'Amplifier (guitar or bass)',
   keyboard: 'Keyboard',
   piano: 'Piano',
   'acoustic-guitar': 'Acoustic instrument',
@@ -217,8 +226,24 @@ const KEY_ORDER: readonly SpObjectKind[] = [
  *  that is drawn, in reading order. Empty only when the stage is empty. */
 export function spPlotKey(objects: readonly { kind: SpObjectKind }[]): SpKeyEntry[] {
   const used = new Set<SpObjectKind>();
-  for (const o of objects) used.add(o.kind === 'vocal-mic' ? 'mic-stand' : o.kind);
+  for (const o of objects) used.add(spKeyKind(o.kind));
   return KEY_ORDER.filter((k) => used.has(k)).map((kind) => ({ kind, name: KEY_NAME[kind] }));
+}
+
+/** The key entry a kind is listed under: itself, or the kind it shares a
+ *  look with. */
+export function spKeyKind(kind: SpObjectKind): SpObjectKind {
+  if (kind === 'vocal-mic') return 'mic-stand';
+  if (kind === 'bass-amp') return 'guitar-amp';
+  return kind;
+}
+
+/** How a kind's symbol is turned in the key, in degrees. A wedge on a plot
+ *  is turned so its wide side faces its performer (upstage), so the key
+ *  shows it that way too: the picture beside the words matches the wedges on
+ *  the stage (review 2, 2026-11-12). On-screen keys use the same turn. */
+export function spKeyRot(kind: SpObjectKind): number {
+  return kind === 'wedge' ? 180 : 0;
 }
 
 /** A kind's print symbol for a key cell: its shapes in meters around 0,0,
@@ -226,6 +251,19 @@ export function spPlotKey(objects: readonly { kind: SpObjectKind }[]): SpKeyEntr
  *  object) is given a small sample box so it has a shape to show. */
 export function spKeySymbol(kind: SpObjectKind): SpSymbol {
   const sym = SYMBOLS[kind];
+  if (spKeyRot(kind) === 180) {
+    // half a turn: every point through the center
+    const shapes: SpShape[] = sym.shapes.map((x) =>
+      x.t === 'circle'
+        ? { ...x, cx: -x.cx, cy: -x.cy }
+        : x.t === 'line'
+          ? { ...x, x1: -x.x1, y1: -x.y1, x2: -x.x2, y2: -x.y2 }
+          : x.t === 'poly'
+            ? { ...x, pts: x.pts.map((v) => -v) }
+            : { ...x, x: -x.x - x.w, y: -x.y - x.h },
+    );
+    return { ...sym, shapes };
+  }
   if (!spIsSized(kind)) return sym;
   const w = 0.9;
   const h = 0.6;

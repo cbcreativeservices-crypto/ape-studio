@@ -8,15 +8,16 @@
  * pack or a headphone amplifier is equipment that plays it. So:
  *
  *   • THREE SEPARATE COUNTS sit at the top, each in its own box with its own
- *     sentence: mixes · monitor feed audio channels ASKED OF THE HOUSE
- *     CONSOLE (mono 1, stereo 2) · monitor devices by type. They are never
- *     added together. The middle number holds only what the house console is
- *     asked to create: the audio channels of a mix the band creates in its
- *     own rig are written apart, under it, and are never added into it.
+ *     sentence: mixes · monitor feed audio channels REQUESTED FROM THE HOUSE
+ *     CONSOLE (mono 1, stereo 2) · monitor devices, each kind apart. They are
+ *     never added together. The middle number holds only what is requested
+ *     from the house console: the audio channels of a mix the band creates in
+ *     the band monitor rig are written apart, under it, and never added in.
+ *     That fact is said once in words, at the head of the mix list.
  *   • THE MIX LIST AND THE DEVICE LIST ARE TWO LISTS, in two sections. Several
  *     devices can share one mix; adding a device never adds a mix.
- *   • WHO CREATES A MIX is shown apart: what the HOUSE console is asked to
- *     create, what the band creates in its own rig, what is made on a
+ *   • WHO CREATES A MIX is shown apart: what is requested from the HOUSE
+ *     console, what the band creates in the band monitor rig, what is made on a
  *     personal mixer system (each with what the venue provides for it), and
  *     what is still to be confirmed.
  *   • WHAT A MIX NEEDS TO HEAR is four words for each input (a preference
@@ -51,6 +52,7 @@ import { NeedsPanel } from './monitors/NeedsPanel';
 import {
   SPM_CUE_MEANS,
   SPM_FEED_RULE,
+  SPM_SHARE_WHERE_CARD,
   spmChannelWord,
   spmClickNotes,
   spmCodesInOrder,
@@ -63,12 +65,13 @@ import {
   spmDeviceTitle,
   spmFormatWord,
   spmMixDevicesLine,
+  spmMixFor,
   spmMixGroups,
   spmMixTitle,
   spmNoMonitorByChoice,
   spmPerformerName,
-  spmRecipients,
   spmShareLine,
+  spmShareOpen,
   spmUnmonitored,
 } from './monitors/monitorPlan';
 
@@ -87,19 +90,19 @@ type Popup = { kind: 'mix'; id: SpId } | { kind: 'device'; id: SpId; fromMix?: S
 const MIX_OR_DEVICE =
   'A mix is what a performer hears.\n\n' +
   'A monitor device is the equipment that plays or receives it. It can be a wedge, a wireless in-ear transmitter, a receiver pack, a wired headphone amplifier or a fill.\n\n' +
-  'Several devices can share one mix. Two wedges on the same mix are still one mix. So this area counts three things separately. They are mixes, monitor feed audio channels asked of the house console, and monitor devices by type.\n\n' +
+  'Several devices can share one mix. Two wedges on the same mix are still one mix. So this area counts three things separately. They are mixes, monitor feed audio channels requested from the house console, and monitor devices.\n\n' +
   'A mono mix is 1 audio channel. A stereo mix is 2. A console may show a stereo mix as one linked strip, so the plan says “audio channels”.\n\n' +
-  'Only a mix that the house console creates is asked of the house console. A mix your band creates in its own rig is shown apart. It is never added to that number.';
+  'Only a mix that the house console creates is requested from the house console. A mix your band creates in the band monitor rig is shown apart. It is never added to that number.';
 
 function MixCard({ mix, selected, onEdit, onNeeds }: { mix: SpMix; selected: boolean; onEdit: () => void; onNeeds: () => void }) {
   const { project: p } = useSpEditor();
   const title = spmMixTitle(mix);
   const share = spmShareLine(p, mix);
   return (
-    <RowCard title={title} subtitle={`For ${spmRecipients(p, mix)}`} selected={selected}>
+    <RowCard title={title} subtitle={spmMixFor(p, mix)} selected={selected}>
       <FactTags items={[spmFormatWord(mix.format), SP_DELIVERY_WORD[mix.delivery]]} />
       <Line tone="dim">{spmMixDevicesLine(p, mix)}</Line>
-      {share ? <Line tone="dim">{share}</Line> : null}
+      {share ? <Line tone="dim">{spmShareOpen(p, mix) ? `${share} ${SPM_SHARE_WHERE_CARD}` : share}</Line> : null}
       {mix.instructions.length ? <Line tone="dim">{`Instructions: ${mix.instructions.join(' · ')}`}</Line> : null}
       {mix.outputs.trim() ? <Line tone="dim">{`Requested outputs: ${mix.outputs.trim()}`}</Line> : null}
       {mix.notes.trim() ? <Line tone="dim">{`Notes: ${mix.notes.trim()}`}</Line> : null}
@@ -125,10 +128,10 @@ function DeviceCard({ device, selected, onEdit, onLocate }: { device: SpDevice; 
       <FactTags items={spmDeviceTags(device)} />
       {device.model.trim() ? <Line tone="dim">{`Model: ${device.model.trim()}`}</Line> : null}
       {device.note.trim() ? <Line tone="dim">{`Notes: ${device.note.trim()}`}</Line> : null}
-      <Line tone="dim">{stage.objectId ? `On the stage: ${stage.word}.` : `${stage.word}.`}</Line>
+      <Line tone="dim">{`${stage.line}.`}</Line>
       <ButtonRow>
         <Button label="EDIT DEVICE" onPress={onEdit} a11yLabel={`Edit the device ${title}`} />
-        <Button label={stage.objectId ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Go to the Stage area to place ${title}`} />
+        <Button label={stage.button} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Go to the Stage area to place ${title}`} />
       </ButtonRow>
     </RowCard>
   );
@@ -181,7 +184,8 @@ export function MonitorsArea() {
 
   // A row selected from another area opens here: a mix or a device ("GO TO",
   // "Choose its mix", a monitor symbol on the stage), and a performer who has
-  // no monitor yet ("Add a monitor mix", "GO TO MONITORS" from the stage) gets
+  // no monitor yet (the review answer "Add a monitor mix" from any area, or
+  // "GO TO MONITORS" from the stage) gets
   // the ADD A MIX popup with that performer already on it.
   useEffect(() => {
     // A device this area itself sent to the stage is not opened again when
@@ -273,7 +277,7 @@ export function MonitorsArea() {
     <>
       <ScrollView ref={scrollRef} style={styles.scroll} contentContainerStyle={[styles.content, { paddingBottom: 48 + insets.bottom }]} keyboardShouldPersistTaps="handled">
         <View style={[cardColumn, styles.column]}>
-          <Section title="MONITOR PLAN" hint="Three separate numbers. A mix is what a performer hears. A monitor device is the equipment that plays it.">
+          <Section title="MONITOR PLAN" hint="Three separate counts: mixes, audio channels, devices. A mix is what a performer hears. A monitor device is the equipment that plays it.">
             <Box>
               <View style={styles.counts}>
                 <Count value={counts.mixes} label={counts.mixes === 1 ? 'mix in the plan' : 'mixes in the plan'} />
@@ -282,9 +286,8 @@ export function MonitorsArea() {
             </Box>
             <Box>
               <View style={styles.counts}>
-                <Count value={counts.houseFeedChannels} label={counts.houseFeedChannels === 1 ? 'monitor feed audio channel asked of the house console' : 'monitor feed audio channels asked of the house console'} />
+                <Count value={counts.houseFeedChannels} label={counts.houseFeedChannels === 1 ? 'monitor feed audio channel requested from the house console' : 'monitor feed audio channels requested from the house console'} />
               </View>
-              <Line>{counts.feedLine}</Line>
               <Line tone="dim">{SPM_FEED_RULE}</Line>
               {counts.apartLines.map((text) => (
                 <Line key={text} tone="dim">
@@ -293,7 +296,7 @@ export function MonitorsArea() {
               ))}
             </Box>
             <Box>
-              <GroupHeading>MONITOR DEVICES, BY TYPE</GroupHeading>
+              <GroupHeading>HOW MANY MONITOR DEVICES</GroupHeading>
               {counts.byType.length ? (
                 <View style={styles.counts}>
                   {counts.byType.map((x) => (
@@ -308,7 +311,7 @@ export function MonitorsArea() {
           </Section>
 
           {questions.length ? (
-            <Section title="QUESTIONS ABOUT MONITORS" hint="Answer them here. A question you leave is printed in the packet as unresolved.">
+            <Section title="QUESTIONS ABOUT MONITORS" hint="Answer them here. GO TO opens the mix or the device where an answer is typed. A question you leave is printed in the packet as unresolved.">
               <IssueList issues={questions} onGoTo={goToQuestion} onAction={answerQuestion} />
             </Section>
           ) : null}

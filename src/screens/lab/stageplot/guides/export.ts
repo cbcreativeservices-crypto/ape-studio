@@ -15,15 +15,15 @@ export const SP_GUIDE_EXPORT: ScreenGuide = {
   },
   seeing: [
     'The counts are worked out from your stage, inputs and monitors. You do not type them, so they cannot disagree with your lists.',
-    'REVIEW holds every question that is still open, each with its answers.',
-    'PREVIEW is the packet itself: the plot with the audience at the bottom, then every table row and every note.',
+    'REVIEW holds every question that is still open, each with its answers, or with GO TO where the answer is typed.',
+    'PREVIEW is the packet itself: the plot seen from above, with the audience at the bottom, then every table row and every note.',
   ],
   control: [
     '“Packet” picks the full packet, the stage plot only, or the compact packet. “Paper” picks the page size.',
     'SHARE PDF makes the file and opens your phone’s share menu. PRINT opens the print dialog. In a browser you get DOWNLOAD PDF, and PRINT opens a print view first.',
     'COPY TECHNICAL SUMMARY copies your totals as plain text for a quick message.',
     'The subject and the message are yours to change. COPY THE MESSAGE copies them, so you can paste them into your email.',
-    '“Show the packet as” switches PREVIEW between the pages and text only.',
+    '“Show the packet as” switches PREVIEW between “Formatted” and “Text only”.',
   ],
   changes: [
     'Each button takes a copy of your stage plot at that moment and makes every page from that copy.',

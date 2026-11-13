@@ -82,8 +82,8 @@ describe('the worked example (handoff section 11)', () => {
       '9 Keys L',
       '10 Keys R',
       '11 Lead vocal',
-      '12 Bassist vocal',
-      '13 Keyboardist vocal',
+      '12 Leo vocal',
+      '13 Nina vocal',
       '14 Click',
     ]);
   });
@@ -95,7 +95,7 @@ describe('the worked example (handoff section 11)', () => {
     assert.equal(spPatch(p, 'band'), undefined, 'no second system was asked for');
     assert.equal(byLabel(p, 'Click').audience, 'monitor-only');
   });
-  it('10 microphones, 3 DI audio channels, 2 DI devices (one mono, one stereo)', () => {
+  it('10 microphones, 3 DI channels, 2 DI devices (one mono, one stereo)', () => {
     const s = spSummary(p);
     assert.equal(s.microphones, 10);
     assert.equal(s.di.channels, 3);
@@ -103,7 +103,7 @@ describe('the worked example (handoff section 11)', () => {
     assert.equal(s.di.unassignedChannels, 0);
     assert.deepEqual(p.diDevices.map((d) => d.channels).sort(), [1, 2]);
   });
-  it('4 distinct mixes and 6 monitor feed audio channels, all asked of the house console', () => {
+  it('4 distinct mixes and 6 monitor feed audio channels, all requested from the house console', () => {
     const m = spMonitorTotals(p);
     assert.equal(m.all.mixes, 4);
     assert.equal(m.all.channels, 6);
@@ -145,7 +145,7 @@ describe('the worked example (handoff section 11)', () => {
     const released = spStereoToMono(p, pairId, { keep: 'L', di: 'release' });
     assert.equal(spDiTotals(released).channels, 2);
     assert.equal(spDiTotals(released).devices, 1);
-    assert.equal(spDiTotals(released).unassignedChannels, 1, 'the keys channel now reads: device arrangement to confirm');
+    assert.equal(spDiTotals(released).unassignedChannels, 1, 'the keys channel now reads: no DI device yet');
   });
   it('the review of the example asks nothing that must be corrected', () => {
     assert.ok(spCanMarkReady(spReview(p)));
@@ -154,10 +154,10 @@ describe('the worked example (handoff section 11)', () => {
   it('the text summary states the same totals', () => {
     const t = spTextSummary(p);
     assert.match(t, /Inputs: 14 to the house system \(13 for the audience mix; monitor only, kept out of the audience mix: Click\)/);
-    assert.match(t, /Microphones: 10\. 3 DI audio channels on 2 DI devices\./);
+    assert.match(t, /Microphones: 10\. 3 DI channels on 2 DI devices\./);
     assert.match(t, /Monitor mixes: 4 \(2 mono, 2 stereo\)\./);
-    assert.match(t, /Asked of the house console: 4 mixes, 6 audio channels\./);
-    assert.match(t, /Wireless monitor devices: 1 \(coordination required\)\./);
+    assert.match(t, /Requested from the house console: 4 mixes, 6 audio channels\./);
+    assert.match(t, /Wireless monitor devices: 1 \(radio frequency coordination needed\)\./);
     assert.doesNotMatch(t, /band's own rig/, 'nothing in this example is mixed by the band');
     // a date is printed in words, a single thing is not "1 inputs", an undecided creator is said
     const gig = spEdit(spUpdateInput(p, byLabel(p, 'Kick').id, { destination: 'both' }), (d) => {
@@ -211,7 +211,7 @@ describe('every example band', () => {
     assert.equal(m.all.channels, 6, 'nine wedges on six mono mixes are six feeds, not nine');
     assert.equal(spSummary(p).acousticSources, 1, 'hand percussion is on the stage with no input of its own');
   });
-  it('the band with playback mixes its own in-ears: nothing is asked of the house console, and each input feeds two systems', () => {
+  it('the band with playback mixes its own in-ears: nothing is requested from the house console, and each input feeds two systems', () => {
     const p = spFromTemplate('playback', { id: 'p-pb', now: NOW });
     const m = spMonitorTotals(p);
     assert.equal(m.all.mixes, 4);
@@ -229,8 +229,8 @@ describe('every example band', () => {
     assert.equal(m.devices['iem-tx'], 4);
     assert.equal(m.devices['iem-pack'], 4);
     assert.equal(m.wirelessDevices, 4);
-    assert.match(spTextSummary(p), /Wireless monitor devices: 4 \(coordination required\)/);
-    assert.match(spTextSummary(p), /Asked of the house console: 0 mixes, 0 audio channels\./);
+    assert.match(spTextSummary(p), /Wireless monitor devices: 4 \(radio frequency coordination needed\)/);
+    assert.match(spTextSummary(p), /Requested from the house console: 0 mixes, 0 audio channels\./);
     // one split is one question, however many inputs go through it
     assert.equal(spSummary(p).open.filter((x) => /split is made/.test(x)).length, 1);
     assert.ok(p.mixes.every((x) => x.venueFeed === 'split'));
@@ -364,7 +364,7 @@ describe('order and numbers (section 12, checks 3 and 4)', () => {
   it('the conventional order is a convenience: drums … playback, other, vocals, pairs kept together', () => {
     const p = four();
     const q = spSortConventional(spMoveInput(p, 'house', byLabel(p, 'Lead vocal').id, -10), 'house');
-    assert.deepEqual(labels(q), ['1 Kick', '2 Snare', '3 Rack tom', '4 Floor tom', '5 Overhead L', '6 Overhead R', '7 Bass DI', '8 Guitar cabinet', '9 Keys L', '10 Keys R', '11 Click', '12 Lead vocal', '13 Bassist vocal', '14 Keyboardist vocal']);
+    assert.deepEqual(labels(q), ['1 Kick', '2 Snare', '3 Rack tom', '4 Floor tom', '5 Overhead L', '6 Overhead R', '7 Bass DI', '8 Guitar cabinet', '9 Keys L', '10 Keys R', '11 Click', '12 Lead vocal', '13 Leo vocal', '14 Nina vocal']);
   });
   it('renumber can keep the channels the band reserved', () => {
     const p = four();
@@ -427,7 +427,7 @@ describe('sources, capture paths and equipment (section 12, check 6)', () => {
     const t = spDiTotals(p);
     assert.equal(t.channels, 3);
     assert.equal(t.devices, 0);
-    assert.equal(t.summary, '3 DI audio channels, device arrangement to confirm.');
+    assert.equal(t.summary, '3 DI channels have no DI device (DI box) yet.');
     // a mono DI asked to carry two channels is a capacity mismatch that was ENTERED
     const keys = p.inputs.filter((i) => i.label.startsWith('Keys')).map((i) => i.id);
     const over = spAddDiDevice(p, { channels: 1, label: 'Mono DI', inputIds: keys }).p;
@@ -557,6 +557,8 @@ describe('copies, revisions and saved data (section 12, check 5)', () => {
     const p = spEdit(raw, (d) => {
       d.contact.name = 'Sam Example';
       d.contact.phone = '555 0100';
+      // an example's title would print "(example)" on the venue's copy
+      d.title = 'Club set';
     });
     assert.deepEqual(spGuidedSteps(p, false).map((s) => s.done), [true, true, true, true, false]);
     assert.deepEqual(spGuidedSteps(p, true).map((s) => s.done), [true, true, true, true, true]);
@@ -614,9 +616,9 @@ describe('review round 1: one answer for each thing, and a question for each gap
   it('several devices on one house mix: how the feed reaches them is printed as open', () => {
     const p = four();
     const q = spAddDevice(p, { type: 'wedge', mixId: p.mixes[0].id, label: 'Wedge 3', supplier: 'venue' }).p;
-    assert.ok(spSummary(q).open.some((x) => /^M1 .*how the feed reaches its 2 wedges/.test(x)), spSummary(q).open.join(' | '));
+    assert.ok(spSummary(q).open.some((x) => /^M1 .*how its 2 wedges are fed/.test(x)), spSummary(q).open.join(' | '));
     const told = spUpdateMix(q, q.mixes[0].id, { outputs: 'One output, linked to both wedges' });
-    assert.ok(!spSummary(told).open.some((x) => /how the feed reaches/.test(x)));
+    assert.ok(!spSummary(told).open.some((x) => /wedges are fed/.test(x)));
   });
   it('gaps that are asked: no band name, no contact, a mix with no device, wireless with no transmitter, a riser nobody is asked for', () => {
     const anon = spFromTemplate('four-piece', { id: 'p', now: NOW });
@@ -675,15 +677,24 @@ describe('review round 1: one answer for each thing, and a question for each gap
   it('the drum kit symbol is a right-handed kit as the audience sees it', async () => {
     const { spSymbol } = await import('../src/features/stageplot/spSymbols.ts');
     const circles = spSymbol('drum-kit').shapes.filter((x) => x.t === 'circle');
-    // snare (r 0.2) on the viewer's right, floor tom (r 0.24) on the viewer's left
+    // snare (r 0.2) on the viewer's right, floor tom (r 0.22) on the viewer's left
     assert.ok(circles.some((c) => c.t === 'circle' && c.r === 0.2 && c.cx > 0));
-    assert.ok(circles.some((c) => c.t === 'circle' && c.r === 0.24 && c.cx < 0));
+    assert.ok(circles.some((c) => c.t === 'circle' && c.r === 0.22 && c.cx < 0));
+    // one kit, one layout, on screen and on paper (review 2): the stool is
+    // the most upstage piece and is white (the drummer's circle sits on it);
+    // the cymbals (dashed) are on the audience side of the kick
+    const stool = circles.reduce((a, c) => (c.t === 'circle' && a.t === 'circle' && c.cy < a.cy ? c : a));
+    assert.ok(stool.t === 'circle' && stool.r === 0.17 && stool.fill === 'paper');
+    const kick = circles.find((c) => c.t === 'circle' && c.r === 0.34);
+    for (const c of circles) if (c.t === 'circle' && c.dash && kick?.t === 'circle') assert.ok(c.cy > kick.cy, 'a cymbal is downstage of the kick');
+    const sym = spSymbol('drum-kit');
+    for (const c of circles) if (c.t === 'circle') assert.ok(Math.abs(c.cx) + c.r <= sym.w / 2 + 1e-9 && Math.abs(c.cy) + c.r <= sym.h / 2 + 1e-9, 'inside its footprint');
   });
 });
 
 describe('the key of a stage drawing (owner 2026-11-12)', () => {
   it('names every kind of symbol that is on the plot, once each, and nothing that is not', async () => {
-    const { spPlotKey, spKeySymbol } = await import('../src/features/stageplot/spSymbols.ts');
+    const { spPlotKey, spKeySymbol, spKeyKind } = await import('../src/features/stageplot/spSymbols.ts');
     for (const t of SP_TEMPLATES) {
       const p = spFromTemplate(t.id, { id: `k-${t.id}`, now: NOW });
       const key = spPlotKey(p.objects);
@@ -694,11 +705,11 @@ describe('the key of a stage drawing (owner 2026-11-12)', () => {
       const kinds = key.map((k) => k.kind);
       assert.equal(new Set(kinds).size, kinds.length, `${t.id}: an entry twice`);
       for (const o of p.objects) {
-        const k = o.kind === 'vocal-mic' ? 'mic-stand' : o.kind;
+        const k = spKeyKind(o.kind);
         assert.ok(kinds.includes(k), `${t.id}: ${o.kind} is drawn and is not in the key`);
       }
       for (const k of key) {
-        assert.ok(p.objects.some((o) => (o.kind === 'vocal-mic' ? 'mic-stand' : o.kind) === k.kind), `${t.id}: ${k.kind} is in the key and not on the plot`);
+        assert.ok(p.objects.some((o) => spKeyKind(o.kind) === k.kind), `${t.id}: ${k.kind} is in the key and not on the plot`);
         assert.ok(k.name.length >= 2);
         const sym = spKeySymbol(k.kind);
         assert.ok(sym.shapes.length > 0 && sym.w > 0 && sym.h > 0, `${k.kind} has a symbol to show`);
@@ -711,6 +722,101 @@ describe('the key of a stage drawing (owner 2026-11-12)', () => {
     const key = spPlotKey([{ kind: 'vocal-mic' }, { kind: 'mic-stand' }, { kind: 'wedge' }]);
     assert.deepEqual(key.map((k) => k.kind), ['mic-stand', 'wedge']);
     assert.match(key[1].name, /wide side faces the performer/);
+  });
+});
+
+describe('review round 2 (owner asked for it, 2026-11-12)', () => {
+  it('the key: two amplifiers that look alike share one entry, and its wedge is turned like the wedges on the plot', async () => {
+    const { spPlotKey, spKeySymbol, spSymbol, spKeyRot } = await import('../src/features/stageplot/spSymbols.ts');
+    const key = spPlotKey([{ kind: 'bass-amp' }, { kind: 'guitar-amp' }, { kind: 'wedge' }]);
+    assert.deepEqual(key.map((k) => k.kind), ['guitar-amp', 'wedge']);
+    assert.equal(key[0].name, 'Amplifier (guitar or bass)');
+    assert.deepEqual(spPlotKey([{ kind: 'bass-amp' }]).map((k) => k.name), ['Amplifier (guitar or bass)']);
+    // on a plot a wedge is turned 180°, its wide side upstage toward the
+    // performer: the key shows it the same way up
+    assert.equal(spKeyRot('wedge'), 180);
+    const wide = (s: { shapes: readonly { t: string; pts?: number[] }[] }) => {
+      const poly = s.shapes.find((x) => x.t === 'poly');
+      const pts = poly?.pts ?? [];
+      let best = { w: 0, y: 0 };
+      for (let i = 0; i + 3 < pts.length; i += 2) {
+        if (pts[i + 1] === pts[i + 3] && Math.abs(pts[i] - pts[i + 2]) > best.w) best = { w: Math.abs(pts[i] - pts[i + 2]), y: pts[i + 1] };
+      }
+      // the closing side
+      if (pts[1] === pts[pts.length - 1] && Math.abs(pts[0] - pts[pts.length - 2]) > best.w) best = { w: Math.abs(pts[0] - pts[pts.length - 2]), y: pts[1] };
+      return best.y;
+    };
+    assert.ok(wide(spSymbol('wedge')) > 0, 'the symbol itself: wide side toward the audience at 0°');
+    assert.ok(wide(spKeySymbol('wedge')) < 0, 'in the key: wide side upstage, as on the plots');
+    for (const t of SP_TEMPLATES) {
+      const p = spFromTemplate(t.id, { id: `w-${t.id}`, now: NOW });
+      for (const o of p.objects) if (o.kind === 'wedge') assert.notEqual(o.rot, 0, `${t.id}: ${o.label} faces its performer, not the audience`);
+    }
+  });
+  it('the examples: one name for an input on the plot and in the list, and no abbreviation left unexplained', () => {
+    for (const t of SP_TEMPLATES) {
+      const p = spFromTemplate(t.id, { id: `n-${t.id}`, now: NOW });
+      for (const o of p.objects) {
+        if (!o.inputId) continue;
+        const i = p.inputs.find((x) => x.id === o.inputId);
+        assert.equal(o.label, i?.label, `${t.id}: the plot says "${o.label}" and the list says "${i?.label}"`);
+      }
+      for (const x of [...p.objects.map((o) => o.label), ...p.inputs.map((i) => i.label)]) assert.doesNotMatch(x, /^(Tpt|Tbn)\b/, `${t.id}: ${x}`);
+      for (const i of p.inputs) assert.doesNotMatch(i.label, /^(Guitar|Keys|Bassist|Keyboardist) vocal$/, `${t.id}: ${i.label}`);
+    }
+    const s = spFromTemplate('salsa', { id: 's', now: NOW });
+    assert.ok(s.performers.some((x) => /Coro \(chorus vocal\)/.test(x.role)), 'a non-English term carries its English meaning where it is first met');
+    assert.ok(s.inputs.some((x) => x.label === 'Tumba (low conga)'));
+    const hand = s.sources.find((x) => x.label === 'Güiro and maracas');
+    assert.equal(hand?.performerId, null, 'played by two singers: it belongs to neither one alone');
+    const perc = s.mixes.find((m) => m.name === 'Percussion');
+    assert.ok(perc && !perc.instructions.includes('Full band'), 'a mix does not ask for "some piano" and "full band" at once');
+    const f = four();
+    assert.ok(f.mixes.find((m) => m.name === 'Keys, in-ear')?.instructions.includes('Own instrument prominent'), 'a keyboard on in-ears makes no sound on the stage: its player hears it first');
+  });
+  it('the examples: nothing stands half on the drum riser, and the drummer sits on the stool', async () => {
+    const { spObjectBoxM, spSymbol } = await import('../src/features/stageplot/spSymbols.ts');
+    for (const id of ['four-piece', 'playback'] as const) {
+      const p = spFromTemplate(id, { id: `r-${id}`, now: NOW });
+      const kit = p.objects.find((o) => o.kind === 'drum-kit');
+      const drummer = p.objects.find((o) => o.kind === 'performer' && o.label === 'Maya');
+      assert.ok(kit && drummer);
+      const k = spObjectBoxM(p, kit);
+      const d = spObjectBoxM(p, drummer);
+      const stool = spSymbol('drum-kit').shapes.find((x) => x.t === 'circle' && x.r === 0.17);
+      assert.ok(stool && stool.t === 'circle');
+      assert.ok(Math.hypot(d.cx - (k.cx + stool.cx), d.cy - (k.cy + stool.cy)) < 0.3, `${id}: the drummer is on the stool`);
+      const riser = p.objects.find((o) => o.kind === 'riser');
+      if (!riser) continue;
+      const r = spObjectBoxM(p, riser);
+      for (const o of p.objects) {
+        if (o.id === riser.id || o.kind === 'riser') continue;
+        const b = spObjectBoxM(p, o);
+        const inside = Math.abs(b.cx - r.cx) <= r.w / 2 && Math.abs(b.cy - r.cy) <= r.h / 2;
+        const overlap = Math.abs(b.cx - r.cx) < r.w / 2 + b.w / 2 - 0.02 && Math.abs(b.cy - r.cy) < r.h / 2 + b.h / 2 - 0.02;
+        if (inside) assert.ok(Math.abs(b.cx - r.cx) + b.w / 2 <= r.w / 2 + 0.05 && Math.abs(b.cy - r.cy) + b.h / 2 <= r.h / 2 + 0.05, `${id}: ${o.label} is on the riser and hangs over its edge`);
+        else assert.ok(!overlap, `${id}: ${o.label} stands half on the riser`);
+      }
+    }
+  });
+  it('the review: an example title is asked about, and a sentence meant for the band is not printed to the venue', () => {
+    const p = four();
+    const ex = spReview(p).find((i) => i.rule === 'example-title');
+    assert.ok(ex && ex.level === 'ask' && ex.area === 'setup');
+    assert.ok(!spReview(spEdit(p, (d) => { d.title = 'Club set'; })).some((i) => i.rule === 'example-title'));
+    assert.ok(!spReview(spEdit(p, (d) => { d.title = ''; })).some((i) => i.rule === 'example-title'));
+    const c = spReview(p).find((i) => i.rule === 'no-contact');
+    assert.ok(c?.packetText && !/nobody to ask/.test(c.packetText));
+    for (const i of spReview(p)) if (i.rule === 'to-be-confirmed') assert.doesNotMatch(i.text, /^To be confirmed/, 'the tag already says it');
+  });
+  it('counts are never printed as zero: all mono, all stereo, or both', async () => {
+    const { spMonoStereoWord } = await import('../src/features/stageplot/spDerive.ts');
+    assert.equal(spMonoStereoWord(6, 0), 'all mono');
+    assert.equal(spMonoStereoWord(0, 4), 'all stereo');
+    assert.equal(spMonoStereoWord(1, 0), 'mono');
+    assert.equal(spMonoStereoWord(2, 2), '2 mono, 2 stereo');
+    assert.match(spTextSummary(spFromTemplate('playback', { id: 'pb', now: NOW })), /Monitor mixes: 4 \(all stereo\)\./);
+    assert.doesNotMatch(spTextSummary(spNewProject({ id: 'e', now: NOW })), /Untitled band/);
   });
 });
 

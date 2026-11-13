@@ -52,7 +52,7 @@ import type { SpAudience, SpCapture, SpDestination, SpId, SpInput, SpPatchId, Sp
 import { useSpEditor } from '../spContext';
 import { Button, Choice, Fields, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
-import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_PHANTOM_HINT, SP_SUPPLIERS, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber } from './inputsLogic';
+import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber } from './inputsLogic';
 
 const opts = <T extends string>(words: Record<T, string>, order: readonly T[]): { value: T; label: string }[] => order.map((value) => ({ value, label: words[value] }));
 
@@ -69,7 +69,7 @@ const DI_ANSWER: { value: DiAnswer; label: string }[] = [
   { value: 'keep', label: 'Keep it on the one channel' },
   { value: 'release', label: 'Take it off this input' },
 ];
-const DI_ANSWER_HINT = 'If you take it off and nothing else uses it, the device leaves the list. The DI channel then says its device is to be confirmed.';
+const DI_ANSWER_HINT = 'If you take it off and nothing else uses it, the device leaves the list. The DI channel then has no DI device (DI box) yet.';
 
 type TextKey = 'label' | 'equipment' | 'alternatives' | 'connector' | 'level' | 'adapterNote' | 'standNote' | 'splitNote' | 'notes';
 
@@ -252,7 +252,7 @@ export function InputEditor({
       <View style={bitStyles.gap}>
         <SubTitle>On the stage</SubTitle>
         <Small>
-          {source ? `${source.label}${performer ? ` · ${performer.name}` : ' · no performer (shared source)'}` : ''}
+          {source ? `${source.label}${performer ? ` · ${performer.name}` : ` · ${SP_NOBODY}`}` : ''}
           {location ? ` · ${location}` : source?.offstage ? ' · Off the stage on purpose' : ' · Not on the stage yet'}
         </Small>
         <Button
@@ -303,12 +303,12 @@ export function InputEditor({
             <Choice
               label="DI device for this input"
               value={input.diDeviceId ?? ''}
-              options={[{ value: '', label: 'Device arrangement to be confirmed' }, ...p.diDevices.map((d) => ({ value: d.id, label: `${d.label} (${d.channels === 2 ? 'stereo, 2 channels' : 'mono, 1 channel'})` }))]}
+              options={[{ value: '', label: 'No DI device (DI box) yet' }, ...p.diDevices.map((d) => ({ value: d.id, label: `${d.label} (${d.channels === 2 ? 'stereo, 2 channels' : 'mono, 1 channel'})` }))]}
               onChange={(v) => (v === (input.diDeviceId ?? '') ? undefined : ed.apply((q) => spAssignDi(q, inputId, v || null)))}
               hint="A DI channel is one input. A DI device carries it: a mono device carries one DI channel, a stereo device two."
             />
           ) : (
-            <Note>No DI device is listed yet. Add one under DI DEVICES, or leave the device arrangement to be confirmed.</Note>
+            <Note>No DI device (DI box) is listed yet. Add one under DI DEVICES, or leave it: the packet then says this DI channel has no DI device yet.</Note>
           )
         ) : null}
         <Fields>
@@ -326,7 +326,7 @@ export function InputEditor({
           value={input.destination}
           options={DESTINATION}
           onChange={(destination) => (destination === input.destination ? undefined : set({ destination }))}
-          hint="An input that also feeds your band’s own rig gets a second channel number in that list."
+          hint="An input that also feeds the band monitor rig gets a second channel number in that list."
         />
         {input.destination === 'both' || input.destination === 'custom' ? (
           <TextField
@@ -346,7 +346,7 @@ export function InputEditor({
         {patchIds.map((pid) => (
           <TextField
             key={pid}
-            label={pid === 'band' ? 'Your monitor rig’s channel or socket, if it differs' : 'The venue’s own channel or socket'}
+            label={pid === 'band' ? 'The band monitor rig’s channel or socket, if it differs' : 'The venue’s own channel or socket'}
             value={spPatch(p, pid)?.venue[inputId] ?? ''}
             onCommit={venue(pid)}
             placeholder="CH 17, SB-A 4"

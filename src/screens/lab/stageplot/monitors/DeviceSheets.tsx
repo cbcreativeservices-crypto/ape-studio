@@ -9,11 +9,12 @@
  * several devices can share one mix. Both bodies say so where the choice is
  * made.
  *
- * Wireless is recorded as "coordination required", with what that means in
- * plain words. This tool never chooses a radio frequency. A transmitter is
+ * Wireless is recorded as "agree radio frequencies with the venue", with
+ * what that means in plain words. This tool never chooses a radio frequency. A transmitter is
  * wireless when it is added; a receiver pack is covered by its transmitter
- * and says so (one radio link is recorded once). A model name is the band's
- * own words.
+ * and says so (one radio link is recorded once). A receiver pack is WORN:
+ * with no symbol on the stage it says so, and offers DRAW IT ANYWAY, never
+ * "not on the stage yet". A model name is the band's own words.
  */
 import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -79,7 +80,7 @@ export function DeviceBody({ device, onDone, onLocate }: { device: SpDevice; onD
   const radio = device.type === 'iem-tx' || device.type === 'iem-pack';
   const wireless = (
     <>
-      <Switch label="Wireless" value={device.wireless} onChange={(on) => set({ wireless: on })} hint="On: the packet says “Wireless: coordination required” for this device." />
+      <Switch label="Wireless" value={device.wireless} onChange={(on) => set({ wireless: on })} hint="On: the packet says radio frequency coordination is needed for this device." />
       {device.wireless ? <Note>{SPM_WIRELESS_NOTE}</Note> : device.type === 'iem-pack' ? <Note>{SPM_PACK_NOTE}</Note> : null}
     </>
   );
@@ -89,16 +90,16 @@ export function DeviceBody({ device, onDone, onLocate }: { device: SpDevice; onD
       <TextField label="Name in your stage plot" value={device.label} onCommit={(label) => set({ label })} placeholder="For example: Wedge 3" />
       <Choice label="What it is" value={device.type} options={SPM_DEVICE_OPTIONS} onChange={(type) => set({ type })} />
       <Choice label="The mix it is on" value={device.mixId ?? NO_MIX} options={mixOptions(p.mixes)} onChange={(v) => set({ mixId: v || null })} hint={SHARE_HINT} />
-      <Switch label="Part of your band’s own rig" value={device.selfContained} onChange={(selfContained) => set({ selfContained })} hint="On: it needs nothing from the house system." />
-      {!device.mixId && !device.selfContained ? <Note tone="warning">This device is not on any mix. Choose a mix, or mark it as part of your band’s own rig.</Note> : null}
+      <Switch label="Part of the band monitor rig" value={device.selfContained} onChange={(selfContained) => set({ selfContained })} hint="On: it needs nothing from the house system." />
+      {!device.mixId && !device.selfContained ? <Note tone="warning">This device is not on any mix. Choose a mix, or mark it as part of the band monitor rig.</Note> : null}
       <Choice label="Who uses it" value={device.performerId ?? ''} options={people} onChange={(v) => set({ performerId: v || null })} hint="For a pack or a headphone amplifier that one person wears or uses." />
       <Choice label="Who brings it" value={device.supplier} options={SPM_SUPPLIER_OPTIONS} onChange={(supplier) => set({ supplier })} />
       {radio ? wireless : null}
 
       <View style={styles.block}>
         <SubHeading>ON THE STAGE</SubHeading>
-        <Line>{stage.objectId ? `On the stage: ${stage.word}.` : 'Not on the stage yet. A device can be in the list with no symbol on the stage.'}</Line>
-        <Button label={stage.objectId ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Go to the Stage area to place ${title}`} />
+        <Line>{stage.objectId || stage.worn ? `${stage.line}.` : `${stage.line}. A device can be in the list with no symbol on the stage.`}</Line>
+        <Button label={stage.button} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Go to the Stage area to place ${title}`} />
       </View>
 
       <MoreDetails>

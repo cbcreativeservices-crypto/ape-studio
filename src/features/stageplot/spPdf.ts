@@ -19,7 +19,9 @@
  *   • table text is 10 pt: a long table gets MORE PAGES, never smaller text
  *   • a table's header is printed again on every page the table runs to
  *   • a row and its note stay on one page (only a row taller than a whole
- *     page is divided, because nothing else is possible)
+ *     page is divided, because nothing else is possible); the last row of
+ *     a table is never alone at the top of a page (the row before it goes
+ *     with it); a gray note under a table stays with its last row
  *   • a heading, and the line or two under it, stay with the first row of
  *     the table that follows; a phone number is never divided at a line end
  *   • a section starts where the packet says (`breakBefore`): on a new page,
@@ -61,7 +63,7 @@ const CELL_PAD_Y = 2.5;
 /** Space under a paragraph, a list, a facts block, a table. */
 const AFTER = { para: 4, item: 1.5, list: 3, facts: 6, table: 7, plot: 6 } as const;
 const NOTE_INDENT = 10;
-const GRAY = { ink: 0, muted: 0.35, rule: 0.45, soft: 0.75, tone: 0.82, head: 0.88, grid: 0.74, paper: 1 } as const;
+const GRAY = { ink: 0, muted: 0.35, rule: 0.45, leader: 0.54, soft: 0.75, tone: 0.82, head: 0.88, grid: 0.74, paper: 1 } as const;
 
 /** A space that a line is never broken at. It is printed as an ordinary space. */
 const NBSP = String.fromCharCode(160);
@@ -312,7 +314,7 @@ function makePen(pageH: number, used: Used): Pen {
 
 // ───────────────────────── tables ─────────────────────────
 type PRow = { cells: SpPdfText[][]; note: SpPdfText[]; strong: boolean; cellUnits: number };
-type PTable = { widths: number[]; xs: number[]; head: SpPdfText[][]; headH: number; rows: PRow[]; empty: SpPdfText[]; center: boolean[] };
+type PTable = { widths: number[]; xs: number[]; head: SpPdfText[][]; headH: number; rows: PRow[]; empty: SpPdfText[]; center: boolean[]; noteX: number };
 
 /** The longest word of some encoded text, in points. */
 function longestWord(t: SpPdfText, bold: boolean): number {
@@ -354,17 +356,22 @@ function prepareTable(table: SpDocTable, left: number, total: number): PTable {
     x += w;
   }
   const inner = (i: number): number => Math.max(4, widths[i] - 2 * CELL_PAD_X);
+  // A row's note starts under the text of the SECOND column when the first
+  // is a narrow centered one (the channel number): then it lines up with the
+  // input's name. In any other table it is set in a little from the left.
+  const noteX = table.columns.length > 1 && table.columns[0].align === 'center' ? xs[1] + CELL_PAD_X : left + CELL_PAD_X + NOTE_INDENT;
+  const noteW = Math.max(4, left + total - CELL_PAD_X - noteX);
   const head = table.columns.map((c, i) => spPdfWrap(E(c.label), SP_PDF_TABLE_PT, true, inner(i)));
   const headH = Math.max(1, ...head.map((l) => l.length)) * TABLE_LEAD + 2 * CELL_PAD_Y;
   const rows = table.rows.map((r): PRow => {
     const strong = !!r.strong;
     const cells = table.columns.map((c, i) => spPdfWrap(E(r.cells[c.key] ?? ''), SP_PDF_TABLE_PT, strong, inner(i)));
     const noteText = E(r.note ?? '');
-    const note = noteText ? spPdfWrap(noteText, SP_PDF_TABLE_PT, false, Math.max(4, total - 2 * CELL_PAD_X - NOTE_INDENT)) : [];
+    const note = noteText ? spPdfWrap(noteText, SP_PDF_TABLE_PT, false, noteW) : [];
     return { cells, note, strong, cellUnits: Math.max(1, ...cells.map((l) => l.length)) };
   });
   const empty = spPdfWrap(E(table.empty), SP_PDF_TABLE_PT, false, Math.max(4, total - 2 * CELL_PAD_X));
-  return { widths, xs, head, headH, rows, empty, center: table.columns.map((c) => c.align === 'center') };
+  return { widths, xs, head, headH, rows, empty, center: table.columns.map((c) => c.align === 'center'), noteX };
 }
 
 /** A row is a stack of LINE UNITS: first the lines of its cells, then the
@@ -396,6 +403,8 @@ export const SP_PDF_PLOT = {
   charW: 0.52,
   charWBold: 0.58,
   side: 16,
+  /** A leader's line width (a hairline, in a middle gray: `LEADER` in spPacketHtml.ts). */
+  leader: 0.5,
   maxH: 380,
   /** A plot with `smallPeople` performers or fewer is drawn at most `smallH`
    *  tall (`SP_PLOT_SMALL_H`, `SP_PLOT_SMALL_PEOPLE`), so a solo act's packet
@@ -533,13 +542,14 @@ function layoutKey(items: SpDocKeyItem[], W: number): { height: number; draw: (p
 
 /** The plot, `W` points wide. `shrink` (1 = the usual size) makes the drawing
  *  smaller when a page cannot hold it; the words keep their size. */
-function buildPlot(plot: SpDocPlot, W: number, shrink: number): PlotLayout {
+function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0): PlotLayout {
   const P = SP_PDF_PLOT;
   const widthM = Math.max(0.1, fin(plot.widthM, 7.2));
   const depthM = Math.max(0.1, fin(plot.depthM, 4.5));
   const m = plotMargin(plot, widthM, depthM);
   const people = (plot.items ?? []).filter((i) => i.person).length;
-  const tallest = people <= P.smallPeople ? P.smallH : P.maxH;
+  // `tall` (a roomy plot) = the height the page has for the drawing, in place of the usual cap
+  const tallest = tall > 0 ? tall : people <= P.smallPeople ? P.smallH : P.maxH;
   const k = Math.min((W - 2 * P.side) / (widthM + 2 * m), tallest / (depthM + 2 * m)) * shrink;
   const drawW = (widthM + 2 * m) * k;
   const drawH = (depthM + 2 * m) * k;
@@ -563,8 +573,23 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number): PlotLayout {
     pen.box(ox + X(0), oy + Yp(0), widthM * k, depthM * k, null, GRAY.ink, 1.4);
     pen.line(ox + X(0), oy + Yp(depthM), ox + X(widthM), oy + Yp(depthM), 3);
   });
-  // the symbols, then the short word inside each
+  // a leader: a hairline from a name to its own symbol, UNDER the symbols
+  // (the packet sets one when the name could not stand right beside it)
   for (const item of plot.items ?? []) {
+    const l = item.leader;
+    if (!l || !l.from || !l.to) continue;
+    const pts = [l.from.x, l.from.y, l.to.x, l.to.y];
+    if (!pts.every((v) => Number.isFinite(v))) continue;
+    const x1 = clamp(X(pts[0]), 0, W);
+    const y1 = clamp(Yp(pts[1]), P.top, P.top + drawH);
+    const x2 = clamp(X(pts[2]), 0, W);
+    const y2 = clamp(Yp(pts[3]), P.top, P.top + drawH);
+    ops.push((pen, ox, oy) => pen.line(ox + x1, oy + y1, ox + x2, oy + y2, P.leader, GRAY.leader));
+  }
+  // the symbols (people last, so a drummer's circle covers the kit's stool
+  // and reads as a person sitting on it), then the short word inside each
+  const drawn = [...(plot.items ?? []).filter((i) => !i.person), ...(plot.items ?? []).filter((i) => i.person)];
+  for (const item of drawn) {
     for (const s of item.shapes ?? []) {
       const placed = placeShape(s, X, Yp, k);
       ops.push((pen, ox, oy) => pen.shape(placeShape(placed, (v) => v + ox, (v) => v + oy, 1), 1));
@@ -655,7 +680,8 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number): PlotLayout {
   const noteText = E(plot.toScale ? `Stage size: ${plot.sizeNote ?? ''}` : String(plot.sizeNote ?? '').toUpperCase());
   const noteLines = noteText ? spPdfWrap(noteText, P.direction, noteBold, W) : [];
   const noteLead = P.direction + 2.5;
-  const noteX = clamp(left, 0, Math.max(0, W - Math.max(0, ...noteLines.map((l) => spPdfWidth(l, P.direction, noteBold)))));
+  // at the key's left edge, so the two headings of one block (KEY, NOT TO SCALE) line up
+  const noteX = clamp(P.side, 0, Math.max(0, W - Math.max(0, ...noteLines.map((l) => spPdfWidth(l, P.direction, noteBold)))));
   const noteTop = keyTop + key.height;
   noteLines.forEach((l, i) => ops.push((pen, ox, oy) => pen.text(ox + noteX, oy + noteTop + P.note - 4 + i * noteLead, l, P.direction, noteBold)));
   return {
@@ -670,13 +696,13 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number): PlotLayout {
 /** The plot at its usual size, or with a smaller DRAWING when the whole
  *  block (drawing, key, size note) must be no taller than `maxH`: the key and
  *  every word keep their size. */
-function layoutPlot(plot: SpDocPlot, W: number, maxH: number): PlotLayout {
+function layoutPlot(plot: SpDocPlot, W: number, maxH: number, tall = 0): PlotLayout {
   let shrink = 1;
-  let lay = buildPlot(plot, W, shrink);
+  let lay = buildPlot(plot, W, shrink, tall);
   for (let n = 0; n < 6 && lay.height > maxH + 0.01 && shrink > 0.2; n++) {
     const wanted = lay.drawH - (lay.height - maxH);
     shrink = Math.max(0.2, shrink * Math.min(0.985, (wanted / lay.drawH) * 0.995));
-    lay = buildPlot(plot, W, shrink);
+    lay = buildPlot(plot, W, shrink, tall);
   }
   return lay;
 }
@@ -763,9 +789,64 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     }
     return p;
   };
-  const firstPiece = (p: PTable): number => (p.rows.length ? Math.min(pieceHeight(p.rows[0], 0, rowUnits(p.rows[0])), 3 * TABLE_LEAD + 2 * CELL_PAD_Y) : p.empty.length * TABLE_LEAD + 2 * CELL_PAD_Y);
-
-  const drawTable = (table: SpDocTable): void => {
+  const whole = (r: PRow): number => pieceHeight(r, 0, rowUnits(r));
+  /**
+   * What a table needs under its header where it starts: its first row (the
+   * first lines of a very tall one); or ALL of a table of three rows or fewer
+   * (two and one, or one and two, would leave a row alone), with the gray
+   * note under it (`tail`).
+   */
+  const firstPiece = (p: PTable, tail = 0): number => {
+    if (!p.rows.length) return p.empty.length * TABLE_LEAD + 2 * CELL_PAD_Y;
+    const pageRoom = bottom - pageTop - p.headH;
+    const h0 = whole(p.rows[0]);
+    if (h0 > pageRoom / 2) return Math.min(h0, 3 * TABLE_LEAD + 2 * CELL_PAD_Y);
+    if (p.rows.length <= 3) {
+      const all = p.rows.reduce((n, r) => n + whole(r), 0) + tail;
+      if (all <= pageRoom) return all;
+    }
+    return h0;
+  };
+  /**
+   * Where a table goes on to a new page: the rows that START a page, worked
+   * out before anything is drawn. Rows fill each page; then, where a page
+   * after the first would hold ONE ROW ALONE (the last row of the table at
+   * the top of a new page), the row before it is carried over too, and so on
+   * back through the pages. `room0` = the room under the header on the page
+   * where the table starts. `lonely` = that first page would be left with the
+   * header and no row: the table should start on a new page.
+   */
+  const planTable = (p: PTable, room0: number, tail: number): { starts: Set<number>; lonely: boolean } => {
+    const pageRoom = bottom - pageTop - p.headH;
+    const last = p.rows.length - 1;
+    // a row taller than a page is divided where it falls: nothing to plan
+    if (p.rows.some((r) => whole(r) > pageRoom)) return { starts: new Set<number>(), lonely: false };
+    const pages: number[][] = [[]];
+    let room = room0;
+    p.rows.forEach((r, i) => {
+      const h = whole(r);
+      if (h + (i === last ? tail : 0) > room + 0.01 && pages[pages.length - 1].length) {
+        pages.push([]);
+        room = pageRoom;
+      }
+      pages[pages.length - 1].push(i);
+      room -= h;
+    });
+    const height = (k: number): number => pages[k].reduce((n, i) => n + whole(p.rows[i]), 0) + (k === pages.length - 1 ? tail : 0);
+    for (let k = pages.length - 1; k >= 1; k--) {
+      if (pages[k].length !== 1 || !pages[k - 1].length) continue;
+      const moved = pages[k - 1][pages[k - 1].length - 1];
+      if (height(k) + whole(p.rows[moved]) > pageRoom + 0.01) continue; // two rows that no page can hold together
+      pages[k - 1].pop();
+      pages[k].unshift(moved);
+    }
+    const starts = new Set<number>();
+    for (let k = 1; k < pages.length; k++) if (pages[k].length) starts.add(pages[k][0]);
+    return { starts, lonely: pages.length > 1 && pages[0].length === 0 };
+  };
+  /** `tail` = the height of a short gray note that follows the table: it is
+   *  kept on the page of the table's last row. */
+  const drawTable = (table: SpDocTable, tail = 0): void => {
     if (!table.columns.length) {
       flow(spPdfWrap(E(table.empty), PT.body, false, W), { size: PT.body, lead: BODY_LEAD, gray: GRAY.muted });
       y += AFTER.table;
@@ -806,7 +887,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       });
       for (let u = Math.max(u0, r.cellUnits); u < u1; u++) {
         const by = y + CELL_PAD_Y + (u - u0) * TABLE_LEAD + baseline(SP_PDF_TABLE_PT, TABLE_LEAD);
-        pen.text(left + CELL_PAD_X + NOTE_INDENT, by, r.note[u - r.cellUnits], SP_PDF_TABLE_PT, false);
+        pen.text(p.noteX, by, r.note[u - r.cellUnits], SP_PDF_TABLE_PT, false);
       }
       // column lines beside the cells only: the note runs the full width
       if (cellEnd > u0) {
@@ -819,7 +900,13 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       y += h;
     };
 
-    ensure(p.headH + firstPiece(p));
+    const pageRoom = bottom - pageTop - p.headH;
+    ensure(p.headH + firstPiece(p, tail));
+    let plan = planTable(p, bottom - y - p.headH, tail);
+    if (plan.lonely && !fresh()) {
+      newPage();
+      plan = planTable(p, bottom - y - p.headH, tail);
+    }
     header();
     if (!p.rows.length) {
       const h = p.empty.length * TABLE_LEAD + 2 * CELL_PAD_Y;
@@ -829,10 +916,15 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       pen.line(left, y + h, right, y + h, 0.5, GRAY.rule);
       y += h;
     }
-    /** Room for rows on a page that holds only the page header and the table header. */
-    const pageRoom = bottom - pageTop - p.headH;
+    // (pageRoom = the room for rows on a page that holds only the page header and the table header)
     let underHeader = true;
-    for (const r of p.rows) {
+    p.rows.forEach((r, i) => {
+      // the planned page breaks: a row is never left alone on a page, and the
+      // last row keeps the gray note that follows the table
+      if (plan.starts.has(i) && !underHeader) {
+        carryOn();
+        underHeader = true;
+      }
       const all = rowUnits(r);
       let u0 = 0;
       while (u0 < all) {
@@ -859,11 +951,13 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
         underHeader = false;
         u0 = u1;
       }
-    }
+    });
     y += AFTER.table;
   };
 
   // ── the plot block ──
+  /** Set by a roomy plot: the next SECTION starts on a new page (what follows the plot in its own section runs on). */
+  let pageOwed = false;
   const plots = new Map<SpDocPlot, { natural: PlotLayout; notes: SpPdfText[] }>();
   const plotInfo = (plot: SpDocPlot): { natural: PlotLayout; notes: SpPdfText[] } => {
     let p = plots.get(plot);
@@ -894,7 +988,18 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       if (natural.height + legendH - room <= 0.15 * natural.drawH) return layoutPlot(plot, W, room - legendH);
       return natural.height <= room ? natural : null;
     };
-    let lay = fit();
+    // A ROOMY plot (a plot-only packet, six or more performers) is drawn as
+    // tall as this page allows after the header, the key and the notes (the
+    // page width still bounds it), and the next section starts on a new page.
+    // When the key and the notes leave the drawing less than its usual
+    // height, it is laid out as any other plot (it never gets smaller for
+    // being roomy).
+    const roomy = (): PlotLayout | null => {
+      const other = natural.height - natural.drawH;
+      const forDrawing = bottom - y - notesH - legendH - other;
+      return forDrawing > natural.drawH ? layoutPlot(plot, W, bottom - y - notesH - legendH, forDrawing) : null;
+    };
+    let lay = (plot.roomy ? roomy() : null) ?? fit();
     if (!lay && !fresh() && bottom - y - notesH < plotLeast(natural)) {
       newPage();
       lay = fit();
@@ -906,6 +1011,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     if (legend.length) y += 3;
     for (const lines of legend) flow(lines, { size: PT.legend, lead: LEGEND_LEAD, x: left + 12, keep: true, bullet: E('•') });
     y += AFTER.plot;
+    if (plot.roomy) pageOwed = true;
   };
 
   // ── facts: label / value pairs, in two columns when there are three or more ──
@@ -988,7 +1094,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     let h = 0;
     for (let j = from; j < blocks.length && j <= from + between; j++) {
       const b = blocks[j];
-      if (b.t === 'table') return { h: h + (b.table.columns.length ? prepared(b.table).headH + firstPiece(prepared(b.table)) : BODY_LEAD), table: true };
+      if (b.t === 'table') return { h: h + (b.table.columns.length ? prepared(b.table).headH + firstPiece(prepared(b.table), tableNote(blocks[j + 1])) : BODY_LEAD), table: true };
       if (b.t === 'plot') {
         const info = plotInfo(b.plot);
         return { h: h + plotLeast(info.natural) + info.notes.length * BODY_LEAD + 4, table: false };
@@ -1023,14 +1129,23 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     y += box.after;
   };
 
+  /** The height of a short gray note right under a table (0 = there is none). */
+  const tableNote = (b: SpDocBlock | undefined): number => {
+    if (!b || b.t !== 'para' || b.tone !== 'muted') return 0;
+    const n = paraLines(b).length;
+    return n >= 1 && n <= 4 ? n * BODY_LEAD + AFTER.table : 0;
+  };
+
   const drawBlock = (blocks: SpDocBlock[], i: number): void => {
     const b = blocks[i];
     if (b.t === 'heading') heading(b.text, b.level === 1 ? 1 : 2, blocks, i + 1);
     else if (b.t === 'para') {
       const lines = paraLines(b);
       if (!lines.length) return;
-      // a line or two of text just above a table goes to the next page with the table
-      if (lines.length <= 4) {
+      // a line or two of text just above a table goes to the next page with the
+      // table (not the gray note UNDER a table: that one belongs to the table above it)
+      const under = i > 0 && blocks[i - 1].t === 'table' && tableNote(b) > 0;
+      if (lines.length <= 4 && !under) {
         const keep = keepAfter(blocks, i + 1, 1);
         if (keep.table) ensure(lines.length * BODY_LEAD + AFTER.para + keep.h);
       }
@@ -1045,7 +1160,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
         y += AFTER.item;
       }
       y += AFTER.list;
-    } else if (b.t === 'table') drawTable(b.table);
+    } else if (b.t === 'table') drawTable(b.table, tableNote(blocks[i + 1]));
     else if (b.t === 'plot') drawPlot(b.plot);
   };
 
@@ -1054,7 +1169,8 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
   for (const sec of d.sections ?? []) {
     // where the section starts: 'page' = always a new page; 'auto' = a new
     // page only when less than a third of this one is left; 'none' = it follows on
-    if (!fresh() && (sec.breakBefore === 'page' || (sec.breakBefore === 'auto' && bottom - y < (bottom - pageTop) / 3))) newPage();
+    if (!fresh() && (pageOwed || sec.breakBefore === 'page' || (sec.breakBefore === 'auto' && bottom - y < (bottom - pageTop) / 3))) newPage();
+    pageOwed = false;
     const blocks = sec.blocks ?? [];
     // a section whose first block already is its title gets the title once
     const first = blocks[0];

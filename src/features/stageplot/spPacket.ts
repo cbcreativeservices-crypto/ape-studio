@@ -33,15 +33,16 @@ import {
   SP_DELIVERY_WORD,
   SP_DEVICE_WORD,
   SP_NEED_WORD,
+  SP_PALETTE,
   SP_PRIORITY_WORD,
   SP_PROVIDER_WORD,
   SP_STAND_WORD,
   SP_SUPPLIER_WORD,
   SP_VENUE_FEED_WORD,
 } from './spCatalog.ts';
-import { spAllInputsInOrder, spBadge, spDeviceCountWord, spInputSupplier, spMixesOf, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
+import { spAllInputsInOrder, spBadge, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
 import type { SpDoc, SpDocBlock, SpDocColumn, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
-import { spEdit, spFreeze, spInputLocation, spLocationWord, spMix, spObjectOfInput, spPerformer } from './spModel.ts';
+import { spEdit, spFreeze, spLocationWord, spMix, spObjectOfInput, spPerformer } from './spModel.ts';
 import { spReview, type SpIssue } from './spReview.ts';
 import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
 import type { SpDeviceType, SpExportOptions, SpId, SpInput, SpMix, SpMixNeed, SpObject, SpPacketKind, SpProject, SpSnapshot } from './spTypes.ts';
@@ -82,7 +83,13 @@ const num = (n: number): string => (Number.isInteger(n) ? String(n) : String(Mat
 export const SP_PACKET_WORD: Record<SpPacketKind, string> = { full: 'Full packet', plot: 'Stage plot only', compact: 'Compact packet' };
 export const SP_PAPER_WORD = { letter: 'US Letter', a4: 'A4' } as const;
 
-const bandName = (p: SpProject): string => p.band.trim() || 'Untitled band';
+/** The band's name as typed; '' when none is typed. A made-up name is never
+ *  printed as the band's: the header then has no name, and the first block
+ *  says `Band: not named yet`. */
+const bandName = (p: SpProject): string => p.band.trim();
+const NO_BAND = 'not named yet';
+const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const countWord = (n: number): string => COUNT_WORDS[n] ?? String(n);
 
 /* ── the snapshot ───────────────────────────────────────────────────────── */
 
@@ -135,10 +142,12 @@ function fileWord(s: string): string {
 }
 
 /** "TheExampleFour_StagePlot_2026-12-05_Rev03.pdf"; no date part when the
- *  project has no event date (handoff §7). */
+ *  project has no event date (handoff §7), and no name part when the band
+ *  has no name ("StagePlot_Rev01.pdf"). */
 export function spFileName(p: SpProject): string {
   const date = /^\d{4}-\d{2}-\d{2}$/.test(p.eventDate.trim()) ? `${p.eventDate.trim()}_` : '';
-  return `${fileWord(p.band) || 'Band'}_StagePlot_${date}Rev${String(p.revision).padStart(2, '0')}.pdf`;
+  const band = fileWord(p.band);
+  return `${band ? `${band}_` : ''}StagePlot_${date}Rev${String(p.revision).padStart(2, '0')}.pdf`;
 }
 
 /** The contact items the user chose to show, and only those. */
@@ -161,13 +170,12 @@ function contactLine(p: SpProject): string {
  *  this tool. It names only the contact items the user chose to show. */
 export function spEmailText(p: SpProject): { subject: string; body: string } {
   const event = [p.venue.trim(), spDateWords(p.eventDate)].filter(Boolean).join(', ');
-  const c = spShownContact(p);
-  const reach = [c.email, c.phone].filter(Boolean).join(' or ');
-  const contact = c.name ? `${c.name}${reach ? ` (${reach})` : ''}` : reach ? `us at ${reach}` : 'us';
   const band = bandName(p);
+  const what = `tage plot, input list and monitor plan${event ? ` for ${event}` : ''} (revision ${p.revision})`;
+  const contact = contactLine(p);
   return {
-    subject: `${band}: stage plot, input list and monitor plan${event ? ` for ${event}` : ''} (revision ${p.revision})`,
-    body: `Attached is our stage plot, input list, and monitor plan${event ? ` for ${event}` : ''}. The packet identifies what we bring and what we are requesting from the venue. Please confirm any substitutions or unresolved details with ${contact}. Revision ${p.revision}. Thank you.`,
+    subject: band ? `${band}: s${what}` : `S${what}`,
+    body: `Hello,\n\nAttached are our s${what}. The packet shows what we bring and what we ask the venue to provide. Please tell us about any substitutions, and help us settle the details marked “to be confirmed”.\n\nThank you.${contact ? `\n\nTechnical contact: ${contact}` : ''}`,
   };
 }
 
@@ -181,12 +189,15 @@ export function spStamp(p: SpProject, issues: SpIssue[] = spReview(p)): string {
 /** Every "to be confirmed" and every review question still open, in words.
  *  Printed as they are: the packet never answers one for the band. The list
  *  is printed under its own heading "Unresolved: to be confirmed", so the
- *  same words are not repeated at the start of every line. */
+ *  same words are not repeated at the start of every line. A review question
+ *  that has a sentence written for the venue (`packetText`) prints that. */
 export function spUnresolved(issues: SpIssue[]): string[] {
   const out: string[] = [];
   for (const i of issues) {
     if (i.level !== 'open' && i.level !== 'ask') continue;
-    const text = i.text.replace(/^To be confirmed — /, '');
+    // a question to the band about its own title is not the venue's to read
+    if (i.rule === 'example-title') continue;
+    const text = (i.packetText ?? i.text).replace(/^To be confirmed — /, '');
     if (!out.includes(text)) out.push(text);
   }
   return out;
@@ -234,8 +245,16 @@ export const SP_PLOT_MAX_H = 380;
 export const SP_PLOT_SMALL_H = 240;
 export const SP_PLOT_SMALL_PEOPLE = 2;
 
+/** A plot that needs room (`SpDocPlot.roomy`: the plot-only packet, or six or
+ *  more performers) may grow to this height, in points, when its page has
+ *  it: the least a page has left after the header, the key and the notes
+ *  (US Letter). A renderer that knows its page may allow more. */
+export const SP_PLOT_ROOMY_H = 520;
+export const SP_PLOT_ROOMY_PEOPLE = 6;
+
 /** The tallest this plot is drawn, in points. */
-export function spPlotMaxH(plot: { items?: readonly { person: boolean }[] }): number {
+export function spPlotMaxH(plot: { items?: readonly { person: boolean }[]; roomy?: boolean }): number {
+  if (plot.roomy) return SP_PLOT_ROOMY_H;
   if (!plot.items) return SP_PLOT_MAX_H;
   return plot.items.filter((i) => i.person).length <= SP_PLOT_SMALL_PEOPLE ? SP_PLOT_SMALL_H : SP_PLOT_MAX_H;
 }
@@ -311,11 +330,14 @@ export function spLabelBlock(item: Pick<SpDocPlotItem, 'label' | 'badges' | 'per
 
 /** Points per meter for a plot drawn `width` points wide. With the plot's
  *  `items` it applies the small-stage rule (`spPlotMaxH`). */
-export function spPlotScale(plot: Pick<SpDocPlot, 'widthM' | 'depthM' | 'marginM'> & { items?: readonly { person: boolean }[] }, width: number): number {
-  return Math.min((width - SP_PLOT_SIDE * 2) / (plot.widthM + plot.marginM * 2), spPlotMaxH(plot) / (plot.depthM + plot.marginM * 2));
+export function spPlotScale(plot: Pick<SpDocPlot, 'widthM' | 'depthM' | 'marginM'> & { items?: readonly { person: boolean }[]; roomy?: boolean }, width: number, maxH: number = spPlotMaxH(plot)): number {
+  return Math.min((width - SP_PLOT_SIDE * 2) / (plot.widthM + plot.marginM * 2), maxH / (plot.depthM + plot.marginM * 2));
 }
 
 type Box = { x0: number; y0: number; x1: number; y1: number };
+
+/** A point of a shape, to start its box from. */
+const shapeAt = (s: SpShape): { x: number; y: number } => (s.t === 'circle' ? { x: s.cx, y: s.cy } : s.t === 'line' ? { x: s.x1, y: s.y1 } : s.t === 'poly' ? { x: s.pts[0] ?? 0, y: s.pts[1] ?? 0 } : { x: s.x, y: s.y });
 
 function shapesBox(shapes: SpShape[], at: { x: number; y: number }): Box {
   const b: Box = { x0: at.x, y0: at.y, x1: at.x, y1: at.y };
@@ -411,9 +433,18 @@ const inputName = (p: SpProject, id: SpId): string => {
 };
 const joinAnd = (list: string[]): string => (list.length <= 1 ? list.join('') : `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`);
 
+/** The name of a plot item that is printed with its reference alone (no room
+ *  for the name beside the symbol): the text view still says the name. */
+const PLOT_NAMES = new WeakMap<object, string>();
+/** The name of a plot item, printed or not. */
+export const spPlotItemName = (item: SpDocPlotItem): string => item.label || PLOT_NAMES.get(item) || '';
+
 /** The stage plot as data: every stage object, placed, with the name printed
  *  beside it and its references (input channels, monitor mixes). */
-export function spPlotDoc(p: SpProject, brief = false): SpDocPlot {
+export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?: boolean } = false): SpDocPlot {
+  const brief = typeof how === 'boolean' ? how : !!how.brief;
+  // a drawing that needs room: the plot alone, or a stage with many people
+  const roomy = (typeof how === 'object' && how.roomy) || p.performers.length >= SP_PLOT_ROOMY_PEOPLE;
   const st = spStageMeters(p);
 
   // which symbol each input is shown at: the same answer "Locate on stage" gives
@@ -424,9 +455,14 @@ export function spPlotDoc(p: SpProject, brief = false): SpDocPlot {
     inputsAt.set(o.id, [...(inputsAt.get(o.id) ?? []), spBadge(p, i.id)]);
   }
 
-  type Draft = SpDocPlotItem & { box: Box; sized: boolean };
+  // `parts` = the box of each shape of the symbol: a name may stand between
+  // the drums of a kit, never on one of them
+  type Draft = SpDocPlotItem & { box: Box; parts: Box[]; sized: boolean; onStage: boolean; placed: boolean; full: string };
   // sized kinds (risers, labeled boxes) first: they are drawn under the rest
-  const objects = [...p.objects].sort((a, b) => Number(spIsSized(b.kind)) - Number(spIsSized(a.kind)));
+  // then the equipment, then the PEOPLE, so a performer's circle is drawn over
+  // the stool of the kit they sit at
+  const drawRank = (o: SpObject): number => (spIsSized(o.kind) ? 0 : o.kind === 'performer' ? 2 : 1);
+  const objects = [...p.objects].sort((a, b) => drawRank(a) - drawRank(b));
   const drafts: Draft[] = objects.map((o) => {
     const b = spObjectBoxM(p, o);
     const at = { x: b.cx, y: b.cy };
@@ -440,116 +476,259 @@ export function spPlotDoc(p: SpProject, brief = false): SpDocPlot {
       if (m) mixCodes.push(m.code);
     }
     for (const c of mixCodes) if (c && !badges.includes(c)) badges.push(c);
-    return { id: o.id, shapes, tag: spSymbol(o.kind).tag, at, label: objectLabel(p, o), labelAt: at, badges, person: o.kind === 'performer', box: shapesBox(shapes, at), sized: spIsSized(o.kind) };
+    return { id: o.id, shapes, tag: spSymbol(o.kind).tag, at, label: objectLabel(p, o), labelAt: at, badges, person: o.kind === 'performer', box: shapesBox(shapes, at), parts: shapes.map((s) => shapesBox([s], shapeAt(s))), sized: spIsSized(o.kind), onStage: o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1, placed: true, full: '' };
   });
 
-  // Where each name goes: under its symbol, unless that place is taken; then
-  // above, to one side, or a little farther off. A riser's name goes INSIDE
-  // its box. Worked out at the printed size, so every renderer puts the name
-  // in the same place.
+  // WHERE EACH NAME GOES (review 2: a name on the wrong object sends a
+  // channel to the wrong microphone). Worked out at the printed size, so
+  // every renderer puts the name in the same place. HARD RULES, never traded
+  // for a nearer place:
+  //   1. a name never lies over another object's symbol;
+  //   2. a name never lies over another name;
+  //   3. the name of an object on the stage is wholly inside the stage
+  //      outline, 4 pt clear of it;
+  //   4. a name never sits on a platform's dashed edge: it is wholly inside
+  //      the platform or wholly outside it;
+  //   5. a name placed beside its symbol is nearer to its own symbol than to
+  //      any other, edge to edge, by at least NEAR points.
+  // When no place beside the symbol keeps all five, the name goes to the
+  // nearest place farther out that keeps rules 1 to 4, and a thin LEADER
+  // line ties it to its symbol, so rule 5 is not needed to read it.
+  const PAD = 1.5; // points kept clear around a name
+  const EDGE = 4; // points between a name and the stage outline
+  const NEAR = 0.5; // points by which a name is nearer to its own symbol than to any other
   let symbolOver = 0;
   for (const d of drafts) symbolOver = Math.max(symbolOver, -d.box.x0, d.box.x1 - st.width, -d.box.y0, d.box.y1 - st.depth);
   const symbolMargin = Math.max(0.6, Math.round((symbolOver + 0.15) * 100) / 100);
   let marginM = symbolMargin;
+  const stageBox: Box = { x0: 0, y0: 0, x1: st.width, y1: st.depth };
+  const within = (a: Box, b: Box): boolean => a.x0 >= b.x0 - 1e-9 && a.x1 <= b.x1 + 1e-9 && a.y0 >= b.y0 - 1e-9 && a.y1 <= b.y1 + 1e-9;
+  const grow = (a: Box, by: number): Box => ({ x0: a.x0 - by, y0: a.y0 - by, x1: a.x1 + by, y1: a.y1 + by });
+  /** How far apart two boxes are (0 when they touch or overlap). */
+  const apart = (a: Box, b: Box): number => Math.hypot(Math.max(0, a.x0 - b.x1, b.x0 - a.x1), Math.max(0, a.y0 - b.y1, b.y0 - a.y1));
+  /** Does a box lie over any part of a symbol? A thin line of a symbol
+   *  counts too (its box is given a hair of width). */
+  const lies = (box: Box, o: Draft): boolean => {
+    if (overlap(box, o.box) <= 0 && !(o.box.x0 === o.box.x1 || o.box.y0 === o.box.y1)) return false;
+    for (const part of o.parts) if (overlap(box, grow(part, 1e-4)) > 0) return true;
+    return false;
+  };
+  /** How far a box is from the nearest part of a symbol. */
+  const away = (box: Box, o: Draft): number => {
+    let least = Infinity;
+    for (const part of o.parts) least = Math.min(least, apart(box, part));
+    return least;
+  };
+  const solid = drafts.filter((d) => !d.sized);
+  const platforms = drafts.filter((d) => d.sized);
   for (let pass = 0; pass < 4; pass += 1) {
-    const k = spPlotScale({ widthM: st.width, depthM: st.depth, marginM, items: drafts }, SP_PLOT_NOMINAL_W);
+    const k = spPlotScale({ widthM: st.width, depthM: st.depth, marginM, items: drafts, roomy }, SP_PLOT_NOMINAL_W);
     const gap = 3 / k;
+    const pad = PAD / k;
     const taken: Box[] = [];
-    // the part of the page the drawing has: a name is kept inside it
     const page: Box = { x0: -marginM, y0: -marginM, x1: st.width + marginM, y1: st.depth + marginM };
-    const stageBox: Box = { x0: 0, y0: 0, x1: st.width, y1: st.depth };
-    // people first, then the platforms, then the longest names: a short name
-    // fits almost anywhere
-    const order = [...drafts].sort((a, b) => Number(b.person) - Number(a.person) || Number(b.sized) - Number(a.sized) || spLabelBlock(b).w - spLabelBlock(a).w);
-    for (const d of order) {
-      const size = spLabelBlock(d);
-      const w = size.w / k;
-      const h = size.h / k;
-      if (!size.h) {
-        d.labelAt = { x: d.at.x, y: d.box.y1 + gap };
-        continue;
+    const inside = grow(stageBox, -EDGE / k);
+    for (const d of drafts) {
+      delete d.leader;
+      d.placed = true;
+      if (d.full) d.label = d.full;
+      d.full = d.label;
+    }
+    /** Rules 1, 3, 4 (and 5 when `beside`): what does not depend on the
+     *  names already placed. */
+    const fits = (d: Draft, box: Box, beside: boolean): boolean => {
+      if (!within(box, d.onStage ? inside : page)) return false;
+      const clear = grow(box, pad);
+      for (const o of solid) if (o !== d && lies(clear, o)) return false;
+      if (!d.sized && lies(clear, d)) return false;
+      for (const r of platforms) {
+        if (r === d) continue;
+        if (overlap(clear, r.box) > 0 && !within(clear, r.box)) return false;
       }
+      if (beside && !d.sized) {
+        // nearer to its own symbol than to any other, edge to edge, and by
+        // a clear step (NEAR points), so the eye cannot give it to a neighbor
+        const own = away(box, d);
+        for (const o of solid) if (o !== d && away(box, o) < own + NEAR / k) return false;
+      }
+      return true;
+    };
+    /** Rule 2: clear of every name already placed. */
+    const free = (box: Box): boolean => {
+      const clear = grow(box, pad);
+      for (const x of taken) if (overlap(clear, x) > 0) return false;
+      return true;
+    };
+
+    /** The places beside a symbol, best first: each is the row's box. */
+    const beside = (d: Draft, w: number, h: number): Box[] => {
       const b = d.box;
       const cx = d.at.x;
       const cy = d.at.y;
-      // each spot is the row's left edge and top
-      const around: [number, number][] = [
-        [cx - w / 2, b.y1 + gap],
-        [cx - w / 2, b.y0 - gap - h],
-        [b.x1 + gap, cy - h / 2],
-        [b.x0 - gap - w, cy - h / 2],
-        [b.x1 + gap, b.y1 - h],
-        [b.x0 - gap - w, b.y1 - h],
-        [b.x1 + gap, b.y0],
-        [b.x0 - gap - w, b.y0],
-        [cx, b.y1 + gap],
-        [cx - w, b.y1 + gap],
-        [cx, b.y0 - gap - h],
-        [cx - w, b.y0 - gap - h],
-        [cx - w / 2, b.y1 + gap * 2 + h],
-        [cx - w / 2, b.y0 - gap * 2 - h * 2],
-        // the four corners, clear of the symbol on both sides
-        [b.x1 + gap, b.y1 + gap],
-        [b.x0 - gap - w, b.y1 + gap],
-        [b.x1 + gap, b.y0 - gap - h],
-        [b.x0 - gap - w, b.y0 - gap - h],
-      ];
-      // a platform that is big enough carries its name inside, in a corner
-      const fits = d.sized && w + gap * 2 <= b.x1 - b.x0 && h + gap * 2 <= b.y1 - b.y0;
-      const inside: [number, number][] = fits
-        ? [
-            [b.x0 + gap, b.y0 + gap],
-            [b.x1 - gap - w, b.y0 + gap],
-            [b.x0 + gap, b.y1 - gap - h],
-            [b.x1 - gap - w, b.y1 - gap - h],
-            [cx - w / 2, b.y0 + gap],
-            [cx - w / 2, b.y1 - gap - h],
-          ]
-        : [];
-      const spots = [...inside, ...around];
-      let best = spots[0];
-      let bestCost = Infinity;
-      spots.forEach((s, n) => {
-        // a row that would reach past the drawing is moved back inside, as
-        // the renderers do, so the spot is judged where it will be drawn
-        if (w < page.x1 - page.x0) s[0] = Math.max(page.x0, Math.min(page.x1 - w, s[0]));
-        s[1] = Math.max(page.y0, Math.min(page.y1 - h, s[1]));
-        const box: Box = { x0: s[0], y0: s[1], x1: s[0] + w, y1: s[1] + h };
-        const area = w * h;
-        // the first spot is the usual one; a spot is worse the more of the
-        // row lies over another name (worst), over a symbol, or off the page.
-        // A place outside its own platform is a last resort.
-        let cost = n * 0.03 + (inside.length && n >= inside.length ? 1.5 : 0);
-        cost += 3 * (1 - overlap(box, page) / area);
-        // a name half on the stage and half off it has the outline through it
-        const on = overlap(box, stageBox) / area;
-        if (on > 0.02 && on < 0.98) cost += 1;
-        // two names keep a small gap between them, so one does not run into the next
-        const padded: Box = { x0: box.x0 - gap, y0: box.y0 - gap / 2, x1: box.x1 + gap, y1: box.y1 + gap / 2 };
-        for (const t of taken) {
-          const o = overlap(padded, t);
-          if (o > 0) cost += 2 + (4 * o) / area;
-        }
-        for (const other of drafts) if (other !== d && !other.sized) cost += ((other.person ? 4 : 3) * overlap(box, other.box)) / area;
-        if (cost < bestCost) {
-          bestCost = cost;
-          best = s;
-        }
-      });
-      taken.push({ x0: best[0], y0: best[1], x1: best[0] + w, y1: best[1] + h });
-      d.labelAt = { x: best[0] + size.labelW / k / 2, y: best[1] };
+      let spots: [number, number][];
+      if (d.sized) {
+        // a platform carries its name inside its box, in a corner; if the box
+        // is too small for it, directly under the box
+        spots = [
+          [b.x0 + gap + pad, b.y0 + gap + pad],
+          [b.x1 - gap - pad - w, b.y0 + gap + pad],
+          [b.x0 + gap + pad, b.y1 - gap - pad - h],
+          [b.x1 - gap - pad - w, b.y1 - gap - pad - h],
+          [cx - w / 2, b.y0 + gap + pad],
+          [cx - w / 2, b.y1 - gap - pad - h],
+          [cx - w / 2, b.y1 + gap + pad],
+          [b.x0, b.y1 + gap + pad],
+          [b.x1 - w, b.y1 + gap + pad],
+          [cx - w / 2, b.y0 - gap - pad - h],
+        ];
+      } else {
+        const g = gap + pad;
+        spots = [
+          [cx - w / 2, b.y1 + g],
+          [cx - w / 2, b.y0 - g - h],
+          [b.x1 + g, cy - h / 2],
+          [b.x0 - g - w, cy - h / 2],
+          [b.x1 + g, b.y1 - h],
+          [b.x0 - g - w, b.y1 - h],
+          [b.x1 + g, b.y0],
+          [b.x0 - g - w, b.y0],
+          [cx, b.y1 + g],
+          [cx - w, b.y1 + g],
+          [cx, b.y0 - g - h],
+          [cx - w, b.y0 - g - h],
+          [b.x1 + g, b.y1 + g],
+          [b.x0 - g - w, b.y1 + g],
+          [b.x1 + g, b.y0 - g - h],
+          [b.x0 - g - w, b.y0 - g - h],
+        ];
+        // …then every other place that still touches the symbol: slid along
+        // its lower and upper edge, and up and down its two sides, nearest
+        // the middle first
+        const slid: [number, number][] = [];
+        const step = 4 / k;
+        for (let x = b.x0 - w + step; x <= b.x1 - step; x += step) slid.push([x, b.y1 + g], [x, b.y0 - g - h]);
+        for (let y = b.y0 - h + step / 2; y <= b.y1 - step / 2; y += step / 2) slid.push([b.x1 + g, y], [b.x0 - g - w, y]);
+        const off = (s: [number, number]): number => Math.hypot(s[0] + w / 2 - cx, s[1] + h / 2 - cy);
+        slid.sort((m, n) => off(m) - off(n));
+        spots.push(...slid);
+      }
+      return spots.map((s) => ({ x0: s[0], y0: s[1], x1: s[0] + w, y1: s[1] + h }));
+    };
+
+    type Job = { d: Draft; w: number; h: number; labelW: number; all: Box[]; ok: Box[] };
+    const jobFor = (d: Draft): Job => {
+      const size = spLabelBlock(d);
+      const w = size.w / k;
+      const h = size.h / k;
+      const all = beside(d, w, h);
+      return { d, w, h, labelW: size.labelW / k, all, ok: all.filter((box) => fits(d, box, true)) };
+    };
+    const jobs: Job[] = [];
+    for (const d of drafts) {
+      if (!spLabelBlock(d).h) {
+        d.labelAt = { x: d.at.x, y: d.box.y1 + gap };
+        continue;
+      }
+      jobs.push(jobFor(d));
     }
-    // room around the stage, so anything off the stage (and its name) shows.
-    // Names may ask for a little more room than the symbols, never without
-    // limit: a renderer moves a name that still reaches the edge back inside.
+    /** A piece of equipment that has a number or a mix code can be printed
+     *  with that reference alone: the key says what the symbol is, and the
+     *  input list or the monitor plan names it. */
+    const canShorten = (d: Draft): boolean => !d.person && !d.sized && !!d.label && d.badges.length > 0;
+    const put = (j: Job, box: Box): void => {
+      taken.push(box);
+      j.d.labelAt = { x: box.x0 + j.labelW / 2, y: box.y0 };
+    };
+    // Farther out, for a name with no place beside its symbol (it is placed
+    // at once, in its turn, so a person's name is still placed before any
+    // equipment): the nearest
+    // place that lies on nothing, tied to its symbol by a leader line.
+    const farOut = (short: Job): void => {
+      // (equipment arrives here already shortened to its reference: a number
+      // on a short leader reads better than a name on a long one)
+      const j = short;
+      const { d, w, h } = j;
+      const area = d.onStage ? inside : page;
+      const stepX = 3 / k;
+      const stepY = 2 / k;
+      let best: Box | null = null;
+      let bestD = Infinity;
+      for (let y = area.y0; y + h <= area.y1 + 1e-9; y += stepY) {
+        for (let x = area.x0; x + w <= area.x1 + 1e-9; x += stepX) {
+          const box: Box = { x0: x, y0: y, x1: x + w, y1: y + h };
+          const far = away(box, d);
+          if (far >= bestD) continue;
+          if (!fits(d, box, false) || !free(box)) continue;
+          bestD = far;
+          best = box;
+        }
+      }
+      if (best) {
+        // from the edge of the row that faces the symbol, to the symbol's center
+        const from = { x: Math.max(best.x0, Math.min(best.x1, d.at.x)), y: Math.max(best.y0, Math.min(best.y1, d.at.y)) };
+        d.leader = { from, to: { x: d.at.x, y: d.at.y } };
+        put(j, best);
+        return;
+      }
+      // nowhere at all keeps the rules (a stage with no free room): the
+      // least bad place beside the symbol
+      d.placed = false;
+      let least = Infinity;
+      let worst = j.all[0];
+      for (const box of j.all) {
+        let cost = 3 * (1 - overlap(box, page) / (w * h));
+        for (const x of taken) cost += (4 * overlap(box, x)) / (w * h);
+        for (const o of solid) if (o !== d && lies(box, o)) cost += 3;
+        if (cost < least) {
+          least = cost;
+          worst = box;
+        }
+      }
+      put(j, worst);
+    };
+    // THE ORDER: people first (a performer's name is what a reader looks
+    // for, and equipment can fall back on its number alone); within people,
+    // and then within the rest, the name with the fewest places left goes
+    // first, so a name that can stand in many places never takes the one
+    // place another has. (Between equals: platforms, then the longest name.)
+    const rank = (j: Job): number => (j.d.person ? 0 : j.d.sized ? 1 : 2);
+    let waiting = [...jobs];
+    while (waiting.length) {
+      let pick: Job | null = null;
+      let pickLeft: Box[] = [];
+      for (const j of waiting) {
+        const left = j.ok.filter(free);
+        j.ok = left;
+        const first = (j.d.person ? 0 : 1) - (pick?.d.person ? 0 : 1);
+        if (!pick || first < 0 || (first === 0 && (left.length < pickLeft.length || (left.length === pickLeft.length && (rank(j) < rank(pick) || (rank(j) === rank(pick) && j.w > pick.w)))))) {
+          pick = j;
+          pickLeft = left;
+        }
+      }
+      if (!pick) break;
+      waiting = waiting.filter((j) => j !== pick);
+      if (pickLeft.length) put(pick, pickLeft[0]);
+      else if (canShorten(pick.d)) {
+        // no room for the name beside its symbol: the reference alone, which
+        // is a few characters wide and nearly always has a place there
+        pick.d.label = '';
+        waiting.push(jobFor(pick.d));
+      } else farOut(pick);
+    }
+    // room around the stage, so anything off the stage (and its name) shows
     let over = 0;
-    for (const b of taken) over = Math.max(over, -b.x0, b.x1 - st.width, -b.y0, b.y1 - st.depth);
+    for (const x of taken) over = Math.max(over, -x.x0, x.x1 - st.width, -x.y0, x.y1 - st.depth);
     const need = Math.min(symbolMargin + 0.6, Math.max(symbolMargin, Math.round((over + 0.05) * 100) / 100));
     if (need <= marginM + 0.01) break;
     marginM = need;
   }
 
-  const items: SpDocPlotItem[] = drafts.map((d) => ({ id: d.id, shapes: d.shapes, tag: d.tag, at: d.at, label: d.label, labelAt: d.labelAt, badges: d.badges, person: d.person }));
+  const items: SpDocPlotItem[] = drafts.map((d) => {
+    const item: SpDocPlotItem = { id: d.id, shapes: d.shapes, tag: d.tag, at: d.at, label: d.label, labelAt: d.labelAt, badges: d.badges, person: d.person };
+    if (d.leader) item.leader = d.leader;
+    if (!d.label && d.full) PLOT_NAMES.set(item, d.full);
+    return item;
+  });
   const grid = printedGrid(p, st.width, st.toScale);
   const unit = p.stage.unit;
   const sizeNote = st.toScale ? `${num(p.stage.width ?? 0)} ${unit} × ${num(p.stage.depth ?? 0)} ${unit} (${p.stage.dims})` : 'Not to scale';
@@ -566,12 +745,14 @@ export function spPlotDoc(p: SpProject, brief = false): SpDocPlot {
   const legend: string[] = [];
   legend.push(
     brief
-      ? 'Seen from the audience: the audience is at the bottom, and stage right is on the left of this drawing.'
-      : 'Seen from the audience: the audience is at the bottom. Stage right and stage left are the performers’ own right and left, so stage right is on the left of this drawing.',
+      ? 'Seen from above, with the audience at the bottom: stage right is on the left of this drawing.'
+      : 'Seen from above, with the audience at the bottom. Stage right and stage left are the performers’ own right and left, so stage right is on the left of this drawing.',
   );
   if (badges.length) {
     const lines = [brief ? 'A number in a box is an input channel. A code in a rounded box, such as M1, is a monitor mix.' : 'A number in a box is an input channel in the input list. A code in a rounded box, such as M1, is a monitor mix.'];
     if (badges.some((b) => /^B\d/.test(b))) lines.push('A number with B is a channel of the band monitor rig.');
+    // a crowded stage: equipment printed with its reference alone
+    if (items.some((i) => !i.label && i.badges.length)) lines.push(brief ? 'A number or a code with no name beside it: the key shows what the symbol is.' : 'Where a number or a code has no name beside it, the key shows what the symbol is, and the input list or the monitor plan names it.');
     legend.push(lines.join(' '));
   }
   // an exclusion is visible on every export, the plot alone included
@@ -594,7 +775,7 @@ export function spPlotDoc(p: SpProject, brief = false): SpDocPlot {
     return { kind: e.kind, name: e.name, w: sym.w, h: sym.h, shapes: sym.shapes, tag: sym.tag };
   });
 
-  return { widthM: st.width, depthM: st.depth, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, key };
+  return { widthM: st.width, depthM: st.depth, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, roomy, key };
 }
 
 /* ── tables ─────────────────────────────────────────────────────────────── */
@@ -619,6 +800,11 @@ const countInputs = (p: SpProject, list: SpInput[]): SpBySupplier => {
 const UNNAMED = 'Unnamed performer';
 const MONITOR_ONLY = 'MONITOR ONLY: kept out of the audience mix';
 
+/** A kind and the name of the thing, said once: "Microphone" and "Kick drum
+ *  microphone" print as "Kick drum microphone" (the name already says the
+ *  kind); "Microphone" and "SM58" print as "Microphone: SM58". */
+const kindAndName = (kind: string, name: string): string => (name.toLowerCase().includes(kind.toLowerCase()) ? name : `${kind}: ${name}`);
+
 /** What captures the sound, in as few words as say it. Only what differs
  *  from the usual is printed: the priority when it is not "preferred", the
  *  connector when it is not an XLR on a microphone, DI or wireless row, and
@@ -628,15 +814,20 @@ const MONITOR_ONLY = 'MONITOR ONLY: kept out of the audience mix';
 function captureCell(p: SpProject, i: SpInput): string {
   const word = SP_CAPTURE_WORD[i.capture];
   const eq = i.equipment.trim();
-  const parts: string[] = [eq && eq.toLowerCase() !== word.toLowerCase() ? `${word}: ${eq}` : word];
+  // a line-level row says "balanced line" once: "Direct balanced line, line level"
+  const line = i.capture === 'line';
+  const named = eq && eq.toLowerCase() !== word.toLowerCase() && !(line && /balanced line/i.test(eq));
+  const level = lower(i.level.trim());
+  const head = named ? kindAndName(word, eq) : word;
+  const parts: string[] = [line && level ? `${head}, ${level}` : head];
   if (i.priority === 'required') parts.push('REQUIRED');
   else if (i.priority === 'flexible') parts.push(lower(SP_PRIORITY_WORD.flexible));
   const connector = i.connector.trim();
   const usual = /^xlr$/i.test(connector) && (i.capture === 'mic' || i.capture === 'di' || i.capture === 'wireless');
   if (connector && !usual) parts.push(connector);
-  if (i.level.trim()) parts.push(i.level.trim());
+  if (level && !line) parts.push(level);
   if (i.phantom === 'required') parts.push('phantom power required');
-  else if (i.phantom === 'do-not-apply') parts.push('phantom power: do not apply');
+  else if (i.phantom === 'do-not-apply') parts.push('do not apply phantom power');
   else if (i.phantom === 'unknown' && (i.capture === 'mic' || i.capture === 'di') && spInputSupplier(p, i) !== 'venue') parts.push('phantom power to be confirmed');
   return parts.join('; ');
 }
@@ -663,34 +854,47 @@ function audienceCell(i: SpInput): string {
   return 'Yes';
 }
 
-/** Where an input is, in the list: its PERFORMER's own position, so one
- *  person is never given two positions in one packet; an input with no
- *  performer is where its own symbol is. */
+/** What a kind of stage object is called in a sentence: "guitar amplifier". */
+const kindWords = (kind: SpObject['kind']): string => lower(SP_PALETTE.find((x) => x.kind === kind)?.name ?? '');
+
+/** Who plays an input and WHERE THE INPUT IS: its own symbol on the plot
+ *  (the amplifier, the playback rig, the microphone), which is where the
+ *  engineer puts the microphone or runs the line, and not where its
+ *  performer stands. "Sam · at the guitar amplifier, center stage". An input
+ *  with no symbol of its own is where its performer is. */
 function whoCell(p: SpProject, i: SpInput, performerName: string, sourceLabel: string, compact: boolean): string {
   const source = p.sources.find((s) => s.id === i.sourceId);
   const note = source?.locationNote.trim() ?? '';
   const pf = spPerformer(p, source?.performerId ?? null);
-  if (pf) {
-    const o = p.objects.find((x) => x.performerId === pf.id && x.kind === 'performer') ?? p.objects.find((x) => x.performerId === pf.id);
-    return [performerName || pf.name.trim() || UNNAMED, compact ? '' : o ? spLocationWord(o) : 'Not placed on the stage yet', note].filter(Boolean).join(' · ');
+  const o = spObjectOfInput(p, i.id);
+  const who = pf ? performerName || pf.name.trim() || UNNAMED : sourceLabel && sourceLabel !== i.label ? sourceLabel : '';
+  if (compact && pf) return [who, note].filter(Boolean).join(' · ');
+  let where: string;
+  if (!o) where = source?.offstage ? 'Off the stage' : 'Not placed on the stage yet';
+  else {
+    const place = spLocationWord(o);
+    // a figure or a microphone needs no "at the…": its place says it
+    const thing = o.kind === 'performer' || o.kind === 'vocal-mic' || o.kind === 'mic-stand' ? '' : kindWords(o.kind);
+    where = thing ? `at the ${thing}, ${lower(place)}` : place;
   }
-  const where = spInputLocation(p, i.id) || (source?.offstage ? 'Off the stage' : 'Not placed on the stage yet');
-  return [sourceLabel && sourceLabel !== i.label ? sourceLabel : '', where, note].filter(Boolean).join(' · ');
+  return [who, where, note].filter(Boolean).join(' · ');
 }
 
-/** The house list (and any list that is not the band's own rig): one row for
+/** The house list (and any list that is not the band monitor rig): one row for
  *  each input, with everything the house needs to plug it in. */
 function inputTable(p: SpProject, patchId: 'house' | 'band', compact: boolean): SpDocTable {
   const rows = spPatchRows(p, patchId);
   const withVenue = rows.some((r) => r.venue.trim());
   const columns: SpDocColumn[] = [
     col('ch', 'Ch', 0.7, 'center'),
-    col('input', 'Input', 2.2),
-    compact ? col('who', 'Performer', 1.8) : col('who', 'Performer and position', 2.6),
-    col('capture', 'Capture and equipment', compact ? 3.6 : 3.2),
-    col('stand', 'Stand', 1.6),
-    col('supplier', 'Supplied by', 1.9),
-    col('audience', 'Audience mix', 2),
+    col('input', 'Input', compact ? 2.2 : 2),
+    compact ? col('who', 'Performer', 1.8) : col('who', 'Performer and where the input is', 2.8),
+    col('capture', 'Capture and equipment', compact ? 3.6 : 3.3),
+    // (review 2: "Short boom stand" wrapped on three lines while "Audience
+    // mix" had room to spare: Stand 13% of the full table, taken from it)
+    col('stand', 'Stand', 1.85),
+    col('supplier', 'Supplied by', compact ? 1.9 : 1.8),
+    col('audience', 'Audience mix', 1.75),
   ];
   if (withVenue) columns.push(col('venue', 'Venue channel', 2));
   const docRows: SpDocRow[] = rows.map((r) => {
@@ -714,7 +918,7 @@ function inputTable(p: SpProject, patchId: 'house' | 'band', compact: boolean): 
   return { columns, rows: docRows, empty: 'No inputs yet.' };
 }
 
-/** The band's own rig: four columns. An input that is also in the house list
+/** The band monitor rig: four columns. An input that is also in the house list
  *  is described there, so here it is its two numbers only; an input that
  *  feeds the band's rig alone gets its full description in the notes. */
 function bandTable(p: SpProject): SpDocTable {
@@ -728,7 +932,7 @@ function bandTable(p: SpProject): SpDocTable {
     const own = inHouse
       ? [r.venue.trim() ? `Venue channel: ${r.venue.trim()}` : '', i.splitNote.trim() ? `Split: ${i.splitNote.trim()}` : '']
       : [captureCell(p, i), i.stand === 'none' ? '' : standCell(i), `Supplied by: ${supplierCell(p, i)}`, i.audience === 'monitor-only' ? MONITOR_ONLY : '', r.venue.trim() ? `Venue channel: ${r.venue.trim()}` : '', inputNote(i)];
-    const row: SpDocRow = { cells: { ch: r.number != null ? String(r.number) : DASH, input: i.label, house: inHouse ? (n != null ? String(n) : DASH) : 'Band rig only', notes: own.filter(Boolean).join(' · ') } };
+    const row: SpDocRow = { cells: { ch: r.number != null ? String(r.number) : DASH, input: i.label, house: inHouse ? (n != null ? String(n) : DASH) : 'Band monitor rig only', notes: own.filter(Boolean).join(' · ') } };
     if (!inHouse && (i.priority === 'required' || i.audience === 'monitor-only')) row.strong = true;
     return row;
   });
@@ -751,7 +955,7 @@ function mixNote(p: SpProject, m: SpMix): string {
 function mixTableCompact(p: SpProject): SpDocTable {
   const columns = [col('mix', 'Mix', 2.2), col('who', 'For', 1.8), col('format', 'Format and delivery', 2.9), col('by', 'Who creates it', 2.4), col('devices', 'Devices', 3.3)];
   const rows: SpDocRow[] = p.mixes.map((m) => {
-    const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody yet');
+    const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody in particular');
     const devices = p.devices.filter((d) => d.mixId === m.id).map((d) => `${d.label.trim() || SP_DEVICE_WORD[d.type]} (${SP_SUPPLIER_WORD[d.supplier]})`);
     const own = m.provider === 'band-console' || m.provider === 'personal-mixer';
     const row: SpDocRow = {
@@ -771,15 +975,16 @@ function mixTableCompact(p: SpProject): SpDocTable {
 }
 
 function mixTable(p: SpProject): SpDocTable {
-  const columns = [col('mix', 'Mix', 2), col('who', 'For', 2), col('format', 'Format', 1.1), col('by', 'Who creates it', 2.2), col('delivery', 'Delivery and devices', 3), col('asks', 'Asked to hear', 2.7)];
+  // widths as review 2 measured them on the playback example (percent of the table)
+  const columns = [col('mix', 'Mix', 14), col('who', 'For', 10), col('format', 'Format', 8), col('by', 'Who creates it', 30), col('delivery', 'Delivery and devices', 22), col('asks', 'Asked to hear', 16)];
   const rows: SpDocRow[] = p.mixes.map((m) => {
-    const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody yet');
+    const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody in particular');
     const devices = p.devices.filter((d) => d.mixId === m.id).map((d) => `${d.label.trim() || SP_DEVICE_WORD[d.type]} (${SP_SUPPLIER_WORD[d.supplier]})`);
     const delivery = [SP_DELIVERY_WORD[m.delivery], devices.join('; '), m.outputs.trim() ? `Requested outputs: ${m.outputs.trim()}` : ''].filter(Boolean).join('. ');
     const feed = `The venue provides: ${lower(SP_VENUE_FEED_WORD[m.venueFeed])}`;
     const by =
       m.provider === 'band-console'
-        ? `${SP_PROVIDER_WORD[m.provider]} (the band’s own rig). ${feed}`
+        ? `${SP_PROVIDER_WORD[m.provider]}. ${feed}`
         : m.provider === 'personal-mixer'
           ? `${SP_PROVIDER_WORD[m.provider]} (not mixed on the house console). ${feed}`
           : SP_PROVIDER_WORD[m.provider];
@@ -800,16 +1005,21 @@ function mixTable(p: SpProject): SpDocTable {
   return { columns, rows, empty: 'No monitor mixes yet.' };
 }
 
-function deviceTable(p: SpProject): SpDocTable {
-  const columns = [col('device', 'Device', 2.6), col('type', 'Type', 2.4), col('mix', 'Mix', 1.6), col('who', 'Used by', 1.8), col('supplier', 'Supplied by', 1.6), col('notes', 'Notes', 3)];
+const OWN_RIG = 'part of the band monitor rig: nothing is requested from the venue’s monitor system';
+
+/** `saidAbove` = every device is part of the band monitor rig and a sentence
+ *  above the table says so once, so no row repeats it. */
+function deviceTable(p: SpProject, saidAbove: boolean): SpDocTable {
+  // widths as review 2 measured them (percent of the table): the notes get the room
+  const columns = [col('device', 'Device', 17), col('type', 'Type', 18), col('mix', 'Mix', 7), col('who', 'Used by', 10), col('supplier', 'Supplied by', 11), col('notes', 'Notes', 37)];
   const rows: SpDocRow[] = p.devices.map((d) => {
     const m = spMix(p, d.mixId);
-    const notes = [d.model.trim(), d.wireless ? 'Wireless: coordination required' : '', d.selfContained ? 'Part of the band’s own rig: nothing asked of the venue’s monitor system' : '', d.note.trim()].filter(Boolean).join(' · ');
+    const notes = [d.model.trim(), d.wireless ? 'Wireless: radio frequency coordination needed' : '', d.selfContained && !saidAbove ? `Part ${OWN_RIG.slice(5)}` : '', d.note.trim()].filter(Boolean).join(' · ');
     return {
       cells: {
         device: d.label.trim() || SP_DEVICE_WORD[d.type],
         type: SP_DEVICE_WORD[d.type],
-        mix: m ? m.code : d.selfContained ? 'Band’s own rig' : 'Not on a mix',
+        mix: m ? m.code : d.selfContained ? 'Band monitor rig' : 'Not on a mix',
         who: spPerformer(p, d.performerId)?.name.trim() ?? '',
         supplier: SP_SUPPLIER_WORD[d.supplier],
         notes,
@@ -821,7 +1031,9 @@ function deviceTable(p: SpProject): SpDocTable {
 
 const EXTRA_WORD: Record<SpProject['extras'][number]['kind'], string> = { 'stage-box': 'Stage box', split: 'Split', backline: 'Backline', riser: 'Riser', power: 'Power location', other: 'Other item' };
 
-type EquipRow = { item: string; qty: number; by: SpBySupplier; notes: string; strong: boolean; say: string };
+/** `qtyText` = what the Qty cell prints when it is not the number (a row
+ *  that names several things has no one quantity: "–"). */
+type EquipRow = { item: string; qty: number; qtyText?: string; by: SpBySupplier; notes: string; strong: boolean; say: string };
 
 /** Every listed item once, with who supplies how many. `say` is the part of
  *  its notes that must also be printed in the compact form. */
@@ -832,12 +1044,12 @@ function equipmentRows(p: SpProject, s: SpSummary): EquipRow[] {
     for (const l of kind === 'mic' ? s.microphoneLines : s.wirelessLines) {
       const notes = [
         l.required ? `${l.required} REQUIRED` : '',
-        kind === 'wireless' ? 'Coordination required' : '',
+        kind === 'wireless' ? 'Radio frequency coordination needed' : '',
         l.alternatives.length ? `Acceptable alternatives (not extra items): ${l.alternatives.join('; ')}` : '',
       ]
         .filter(Boolean)
         .join(' · ');
-      add(`${SP_CAPTURE_WORD[kind]}: ${l.name}`, l.qty, l.bySupplier, notes, l.required > 0, [l.required ? `${l.required} REQUIRED` : '', kind === 'wireless' ? 'coordination required' : ''].filter(Boolean).join(', '));
+      add(kindAndName(SP_CAPTURE_WORD[kind], l.name), l.qty, l.bySupplier, notes, l.required > 0, [l.required ? `${l.required} REQUIRED` : '', kind === 'wireless' ? 'radio frequency coordination needed' : ''].filter(Boolean).join(', '));
     }
   }
   for (const kind of ['line', 'custom'] as const) {
@@ -848,26 +1060,52 @@ function equipmentRows(p: SpProject, s: SpSummary): EquipRow[] {
   for (const d of p.diDevices) {
     // "passive or active" still open is a question: it is in the unresolved list, once
     const kind = d.kind === 'unknown' ? '' : d.kind;
-    const feeds = p.inputs.filter((i) => i.diDeviceId === d.id).map((i) => i.label);
+    // the input it carries, with its channel: a device and its input often share a name
+    const house = p.patches.find((x) => x.id === 'house');
+    const feeds = p.inputs
+      .filter((i) => i.diDeviceId === d.id)
+      .map((i) => {
+        const n = house?.numbers[i.id];
+        return n != null ? `${i.label} (channel ${n})` : i.label;
+      });
     const by = noSupplier();
     by[d.supplier] = 1;
-    add(`DI device: ${d.label}${d.model.trim() ? ` (${d.model.trim()})` : ''}`, 1, by, [d.channels === 2 ? 'Stereo: 2 DI channels' : 'Mono: 1 DI channel', kind, feeds.length ? `For ${feeds.join(', ')}` : ''].filter(Boolean).join(' · '));
+    add(`DI device: ${d.label}${d.model.trim() ? ` (${d.model.trim()})` : ''}`, 1, by, [d.channels === 2 ? 'Stereo: 2 DI channels' : 'Mono: 1 DI channel', kind, feeds.length ? `Carries: ${feeds.join(', ')}` : ''].filter(Boolean).join(' · '));
   }
   const loose = p.inputs.filter((i) => i.capture === 'di' && !i.diDeviceId);
-  if (loose.length) add('DI channels with no DI device chosen', loose.length, countInputs(p, loose), `Device arrangement to be confirmed: ${loose.map((i) => i.label).join(', ')}`);
+  if (loose.length) {
+    const one = loose.length === 1;
+    add(`DI channel${one ? '' : 's'} with no DI device yet`, loose.length, countInputs(p, loose), `Which DI box carries ${one ? 'it' : 'them'} is to be confirmed: ${loose.map((i) => i.label).join(', ')}`);
+  }
   for (const t of Object.keys(s.monitors.devices) as SpDeviceType[]) {
     const n = s.monitors.devices[t];
     if (!n) continue;
     const mine = p.devices.filter((d) => d.type === t);
     const radio = mine.some((d) => d.wireless);
-    add(SP_DEVICE_WORD[t], n, s.monitors.devicesBySupplier[t], [mine.map((d) => d.label.trim()).filter(Boolean).join(', '), radio ? 'Wireless: coordination required' : ''].filter(Boolean).join(' · '), false, radio ? 'wireless: coordination required' : '');
+    add(SP_DEVICE_WORD[t], n, s.monitors.devicesBySupplier[t], [mine.map((d) => d.label.trim()).filter(Boolean).join(', '), radio ? 'Wireless: radio frequency coordination needed' : ''].filter(Boolean).join(' · '), false, radio ? 'wireless: radio frequency coordination needed' : '');
   }
   for (const e of p.extras) {
     const by = noSupplier();
     by[e.supplier] = e.qty;
-    add(e.label.trim() || EXTRA_WORD[e.kind], e.qty, by, e.note.trim(), false, e.note.trim());
+    const label = e.label.trim() || EXTRA_WORD[e.kind];
+    if (e.kind === 'backline') {
+      // the row says what it is; a row that names several things ("drum kit,
+      // bass amplifier, …") has no one quantity
+      const item = /^backline\b/i.test(label) ? label : `Backline: ${lower(label)}`;
+      add(item, e.qty, by, e.note.trim(), false, e.note.trim());
+      if (e.qty === 1 && /,| and /.test(label)) rows[rows.length - 1].qtyText = DASH;
+    } else add(label, e.qty, by, e.note.trim(), false, e.note.trim());
   }
   return rows;
+}
+
+/** How many of the listed items each supplier brings: the SAME rows the
+ *  equipment table prints, added up, so a summary on the screen and the
+ *  table in the packet cannot disagree. */
+export function spEquipmentSplit(p: SpProject, s: SpSummary = spSummary(p)): SpBySupplier {
+  const out = noSupplier();
+  for (const r of equipmentRows(p, s)) for (const k of Object.keys(out) as (keyof SpBySupplier)[]) out[k] += r.by[k];
+  return out;
 }
 
 function equipmentTable(rows: EquipRow[]): SpDocTable {
@@ -875,7 +1113,7 @@ function equipmentTable(rows: EquipRow[]): SpDocTable {
   return {
     columns,
     rows: rows.map((r) => {
-      const row: SpDocRow = { cells: { item: r.item, qty: String(r.qty), ...supplierCells(r.by), notes: r.notes } };
+      const row: SpDocRow = { cells: { item: r.item, qty: r.qtyText ?? String(r.qty), ...supplierCells(r.by), notes: r.notes } };
       if (r.strong) row.strong = true;
       return row;
     }),
@@ -899,8 +1137,8 @@ type Break = SpDocSection['breakBefore'];
 
 function plotSection(p: SpProject, stamp: string, kind: SpPacketKind): SpDocSection {
   const compact = kind !== 'full';
-  const facts: [string, string][] = [['Band', bandName(p)]];
-  if (p.title.trim()) facts.push(['Stage plot', p.title.trim()]);
+  const facts: [string, string][] = [['Band', bandName(p) || NO_BAND]];
+  if (p.title.trim()) facts.push(['Title', p.title.trim()]);
   if (p.venue.trim()) facts.push(['Venue', p.venue.trim()]);
   if (p.eventDate.trim()) facts.push(['Date', spDateWords(p.eventDate)]);
   const times = [p.loadIn.trim() ? `Load-in ${p.loadIn.trim()}` : '', p.soundcheck.trim() ? `Soundcheck ${p.soundcheck.trim()}` : '', p.performance.trim() ? `Performance ${p.performance.trim()}` : ''].filter(Boolean);
@@ -914,7 +1152,7 @@ function plotSection(p: SpProject, stamp: string, kind: SpPacketKind): SpDocSect
     : `Ready to advance: prepared for discussion with the venue${p.venueConfirmed ? '. The band recorded that the venue confirmed this revision' : ''}`;
   facts.push(['Revision', `${p.revision} · ${status}${p.modifiedAt > 0 ? ` · changed ${spDayWords(p.modifiedAt)}` : ''}`]);
 
-  const blocks: SpDocBlock[] = [{ t: 'facts', rows: facts }, { t: 'plot', plot: spPlotDoc(p, kind === 'compact') }];
+  const blocks: SpDocBlock[] = [{ t: 'facts', rows: facts }, { t: 'plot', plot: spPlotDoc(p, { brief: kind === 'compact', roomy: kind === 'plot' }) }];
 
   const stageNotes = p.objects.filter((o) => o.note.trim()).map((o) => `${objectLabel(p, o) || 'An object with no name'}: ${o.note.trim()}`);
   if (stageNotes.length) blocks.push(h2('Notes on the stage'), { t: 'list', items: stageNotes });
@@ -927,7 +1165,7 @@ function plotSection(p: SpProject, stamp: string, kind: SpPacketKind): SpDocSect
       name: pf.name.trim() || UNNAMED,
       role: pf.role.trim(),
       where: o ? spLocationWord(o) : 'Not placed on the stage yet',
-      mix: mixes.length ? mixes.join(', ') : ownRig ? 'Band’s own rig' : pf.noMonitor === true ? 'None requested' : 'To be confirmed',
+      mix: mixes.length ? mixes.join(', ') : ownRig ? 'Band monitor rig' : pf.noMonitor === true ? 'None requested' : 'To be confirmed',
     };
   });
   // The full packet lists the performers under the plot. The compact packet
@@ -951,11 +1189,18 @@ function inputsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact: 
     const quiet = spPatchRows(p, 'house')
       .filter((r) => r.input.audience === 'monitor-only')
       .map((r) => r.input.label);
-    const routing = h.monitorOnly || h.audienceTbc ? `${h.audience} for the audience mix, ${h.monitorOnly} monitor only${quiet.length ? ` (${quiet.join(', ')})` : ''}${h.audienceTbc ? `, ${h.audienceTbc} with the audience routing to be confirmed` : ''}` : 'all for the audience mix';
+    // a zero count is never printed
+    const ways: string[] = [];
+    if (h.monitorOnly || h.audienceTbc) {
+      if (h.audience) ways.push(`${h.audience} for the audience mix`);
+      if (h.monitorOnly) ways.push(`${h.monitorOnly} monitor only${quiet.length ? ` (${quiet.join(', ')})` : ''}`);
+      if (h.audienceTbc) ways.push(`${h.audienceTbc} with the audience routing to be confirmed`);
+    }
+    const routing = ways.length ? ways.join(', ') : 'all for the audience mix';
     const first = [`${plural(h.channels, 'input channel')} to the house system: ${routing}.`];
     if (s.band) first.push(`${plural(s.band.channels, 'input channel')} to the band monitor rig.`);
     const second = [`${plural(s.microphones, 'microphone')}.`, s.di.summary];
-    if (s.wirelessInputs) second.push(`${plural(s.wirelessInputs, 'wireless receiver output')}: coordination required.`);
+    if (s.wirelessInputs) second.push(`${plural(s.wirelessInputs, 'wireless receiver output')}: radio frequency coordination needed.`);
     if (s.lineInputs) second.push(`${plural(s.lineInputs, 'direct balanced line output')}.`);
     if (s.customInputs) second.push(`${plural(s.customInputs, 'custom capture path')}.`);
     const groups = SP_CATEGORY_ORDER.filter((c) => h.byCategory[c]).map((c) => `${SP_CATEGORY_WORD[c]} ${h.byCategory[c]}`);
@@ -996,12 +1241,13 @@ function monitorsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact
   const m = s.monitors;
   const blocks: SpDocBlock[] = [];
   const dev = (Object.keys(m.devices) as SpDeviceType[]).filter((t) => m.devices[t] > 0).map((t) => spDeviceCountWord(t, m.devices[t]));
-  const wireless = m.wirelessDevices ? `${plural(m.wirelessDevices, 'wireless monitor device')}: coordination required. This packet lists no radio frequencies.` : '';
+  const wireless = m.wirelessDevices ? `${plural(m.wirelessDevices, 'wireless monitor device')}: radio frequency coordination needed. This packet lists no radio frequencies.` : '';
   // The headline never adds the band's own mixes to what the house is asked
-  // for: "feed" would read as something the house sends.
-  const head = `${plural(m.all.mixes, 'monitor mix', 'monitor mixes')} (${m.all.mono} mono, ${m.all.stereo} stereo). Asked of the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.`;
+  // for: "feed" would read as something the house sends. No zero count.
+  const asked = m.house.mixes ? `Requested from the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.` : 'Nothing is requested from the house console.';
+  const head = `${plural(m.all.mixes, 'monitor mix', 'monitor mixes')} (${spMonoStereoWord(m.all.mono, m.all.stereo)}). ${asked}`;
   const apart: string[] = [];
-  if (m.bandOwned.mixes) apart.push(`Created in the band’s own rig, and not asked of the house console: ${plural(m.bandOwned.mixes, 'mix', 'mixes')} (${plural(m.bandOwned.channels, 'audio channel')} inside that rig).`);
+  if (m.bandOwned.mixes) apart.push(`Created in the band monitor rig, and not requested from the house console: ${plural(m.bandOwned.mixes, 'mix', 'mixes')} (${plural(m.bandOwned.channels, 'audio channel')} inside that rig).`);
   if (m.byProvider.tbc.mixes) apart.push(`For ${plural(m.byProvider.tbc.mixes, 'mix', 'mixes')}, who creates the mix is to be confirmed.`);
   if (compact) {
     // ONE line of totals, then the table: no explaining paragraphs
@@ -1039,8 +1285,14 @@ function monitorsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact
   }
   // the compact packet lists each device once: in the mix table above and
   // in the equipment table, not a third time here
-  if (!compact && p.devices.length) blocks.push(h2('Monitor devices'), { t: 'table', table: deviceTable(p) });
-  else if (compact) {
+  if (!compact && p.devices.length) {
+    blocks.push(h2('Monitor devices'));
+    const n = p.devices.length;
+    const allOwn = p.devices.every((d) => d.selfContained);
+    if (allOwn) blocks.push(para(n === 1 ? `This device is ${OWN_RIG}.` : `${n === 2 ? 'Both' : `All ${countWord(n)}`} devices are ${OWN_RIG}.`));
+    blocks.push({ t: 'table', table: deviceTable(p, allOwn) });
+  }
+  if (compact) {
     // what the device table alone would have said is kept, in one line
     const said = p.devices.filter((d) => d.model.trim() || d.note.trim() || (!d.mixId && !d.selfContained)).map((d) => `${d.label.trim() || SP_DEVICE_WORD[d.type]}: ${[d.model.trim(), !d.mixId && !d.selfContained ? 'not on a mix' : '', d.note.trim()].filter(Boolean).join(' · ')}`);
     if (said.length) blocks.push({ t: 'list', items: said });
@@ -1058,7 +1310,7 @@ function equipmentSection(p: SpProject, s: SpSummary, breakBefore: Break, compac
     rows: rows.map((r) => {
       // one supplier for all of them: its name alone; otherwise how many each
       const who = (Object.keys(r.by) as (keyof SpBySupplier)[]).filter((k) => r.by[k] > 0);
-      const row: SpDocRow = { cells: { item: r.item, qty: String(r.qty), by: who.length === 1 ? SP_SUPPLIER_WORD[who[0]] : spSupplierWords(r.by) } };
+      const row: SpDocRow = { cells: { item: r.item, qty: r.qtyText ?? String(r.qty), by: who.length === 1 ? SP_SUPPLIER_WORD[who[0]] : spSupplierWords(r.by) } };
       if (r.strong) row.strong = true;
       if (r.say) row.note = r.say.charAt(0).toUpperCase() + r.say.slice(1);
       return row;
@@ -1067,6 +1319,9 @@ function equipmentSection(p: SpProject, s: SpSummary, breakBefore: Break, compac
   };
   return { id: 'equipment', title: 'Equipment and who supplies it', blocks: [{ t: 'table', table }], breakBefore };
 }
+
+/** The most open questions the last section may hold and still run on. */
+export const SP_SHORT_NOTES = 4;
 
 function notesSection(p: SpProject, issues: SpIssue[], generatedAt: number, breakBefore: Break): SpDocSection {
   const blocks: SpDocBlock[] = [];
@@ -1082,7 +1337,11 @@ function notesSection(p: SpProject, issues: SpIssue[], generatedAt: number, brea
   else blocks.push(para('No open question is recorded in this revision.'));
   const made = spMomentWords(generatedAt);
   blocks.push(para(`This packet records what the band is requesting, for discussion with the venue. It is not a confirmation by the venue.${made ? ` Made ${made}.` : ''}`, 'muted'));
-  return { id: 'notes', title: alone ? 'Unresolved: to be confirmed' : 'Notes and unresolved questions', blocks, breakBefore };
+  // A last section of a few lines runs on under the equipment table: it is
+  // not sent to a page of its own while the page before it has room (a
+  // renderer still keeps the heading with its first lines).
+  const short = alone && open.length <= SP_SHORT_NOTES;
+  return { id: 'notes', title: alone ? 'Unresolved: to be confirmed' : 'Notes and unresolved questions', blocks, breakBefore: short ? 'none' : breakBefore };
 }
 
 /* ── the document ───────────────────────────────────────────────────────── */
@@ -1108,9 +1367,11 @@ export function spBuildDoc(s: SpSnapshot): SpDoc {
     sections.push(inputsSection(p, summary, br, compact), monitorsSection(p, summary, br, compact), equipmentSection(p, summary, br, compact), notesSection(p, issues, s.generatedAt, br));
   }
   return {
-    title: `${band} — ${kind === 'plot' ? 'Stage plot' : 'Stage plot and input list'}`,
+    // the header names everything the packet holds; with no band name it
+    // has no name in it (a made-up one is never printed)
+    title: `${band ? `${band} — ` : ''}${kind === 'plot' ? 'Stage plot' : 'Stage plot, input list and monitor plan'}`,
     paper: s.options.paper,
-    footer: `${band} · Revision ${p.revision}`,
+    footer: `${band ? `${band} · ` : ''}Revision ${p.revision}`,
     stamp,
     sections,
     fileName: spFileName(p),
@@ -1132,12 +1393,29 @@ function tableText(t: SpDocTable): string[] {
   return out;
 }
 
+/** A plot item's boxed references, in words: ". Input channels 1–6",
+ *  ". Monitor mix M3". */
+function badgeWords(badges: string[]): string {
+  const house = badges.filter((b) => /^\d/.test(b));
+  const band = badges.filter((b) => /^B\d/.test(b));
+  const open = badges.filter((b) => b === '?');
+  const mixes = badges.filter((b) => !house.includes(b) && !band.includes(b) && b !== '?');
+  const many = (list: string[]): boolean => list.length > 1 || /–/.test(list[0] ?? '');
+  const out: string[] = [];
+  if (house.length) out.push(`Input channel${many(house) ? 's' : ''} ${house.join(', ')}`);
+  if (band.length) out.push(`Band monitor rig channel${many(band) ? 's' : ''} ${band.join(', ')}`);
+  if (open.length) out.push('Input channel not numbered yet');
+  if (mixes.length) out.push(`Monitor mix${mixes.length > 1 ? 'es' : ''} ${mixes.join(', ')}`);
+  return out.map((x) => `. ${x}`).join('');
+}
+
 function plotText(plot: SpDocPlot): string[] {
   const out: string[] = [`Stage size: ${plot.sizeNote}.`, 'The drawing, in words (upstage is the back of the stage; downstage is the edge nearest the audience):'];
   if (!plot.items.length) out.push('Nothing is placed on the stage yet.');
-  for (const i of plot.items) {
+  // (the drawing lists people last, so they are drawn over a stool; a reader hears them first)
+  for (const i of [...plot.items.filter((x) => x.person), ...plot.items.filter((x) => !x.person)]) {
     const where = spLocationWord({ x: i.at.x / plot.widthM, y: i.at.y / plot.depthM });
-    out.push(`- ${i.label || (i.tag ? `${i.tag} symbol` : 'An object with no name')}: ${where}${i.badges.length ? `. References: ${i.badges.join(', ')}` : ''}`);
+    out.push(`- ${spPlotItemName(i) || (i.tag ? `${i.tag} symbol` : 'An object with no name')}: ${lower(where)}${badgeWords(i.badges)}`);
   }
   if (plot.key.length) out.push(`Key: ${plot.key.map((k) => k.name).join('; ')}.`);
   if (plot.viewNote) out.push(`Viewpoint: ${plot.viewNote}`);

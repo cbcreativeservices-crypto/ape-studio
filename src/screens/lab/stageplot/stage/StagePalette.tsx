@@ -16,17 +16,21 @@
  *   • "only a drawing": the object stands for nothing in the lists.
  * So an input never appears because a drawing was placed.
  *
+ * EACH KIND IS SHOWN BEFORE IT IS PLACED: a palette button carries the kind's
+ * own art, the same picture the key and the stage draw (visual review 2, B8).
+ *
  * It is drawn in the kit's popup on a phone and in the dock tray in FULL
  * SCREEN (where a popup cannot be presented), so it opens no popup of its
  * own. Every step starts at its top (StageStepScroll).
  */
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SP_DEVICE_WORD, SP_PALETTE, type SpPackage, type SpPaletteItem } from '../../../../features/stageplot/spCatalog';
 import type { SpDeviceType, SpId, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { spPackagePreview, spPackageToggle } from '../inputs/inputsLogic';
 import { Button, Choice, Note, Switch, TextField } from '../spForm';
+import { StageKindIcon } from './StageKey';
 import { StageStepScroll } from './StageStepScroll';
 import {
   stageAddDrawing,
@@ -36,6 +40,7 @@ import {
   stageAddWithPackage,
   stageDeviceChoices,
   stageDeviceTypesFor,
+  stageFreeSpot,
   stageInputChoices,
   stageLinkMode,
   stagePackagesFor,
@@ -68,8 +73,9 @@ export function StagePalette({
 }: {
   project: SpProject;
   /** Make the edit (one undo step) and select what was added. The parent
-   *  hands in where a new object goes. */
-  onAdd: (make: (p: SpProject, at: Pt) => StageAdded) => void;
+   *  hands in the place the user is looking at; the palette finds the nearest
+   *  place there that is free for the kind being added. */
+  onAdd: (make: (p: SpProject, near: Pt) => StageAdded) => void;
   onGoInputs: () => void;
   onGoMonitors: () => void;
   /** The height its own scroller may take inside the popup or the tray. */
@@ -84,9 +90,12 @@ export function StagePalette({
   const [who, setWho] = useState<string>(NOBODY);
   const [devType, setDevType] = useState<SpDeviceType>('wedge');
   const [mixId, setMixId] = useState<string>(NO_MIX);
+  /** Every source is listed (not only those of the symbol's own kind). */
+  const [everySource, setEverySource] = useState(false);
 
-  const done = (name: string, make: (q: SpProject, at: Pt) => StageAdded) => {
-    onAdd(make);
+  const done = (kind: SpObjectKind, name: string, make: (q: SpProject, at: Pt) => StageAdded) => {
+    // a free place for THIS kind's own box, near where the user is looking
+    onAdd((q, near) => make(q, stageFreeSpot(q, near, kind)));
     setAdded((a) => ({ name, n: a.n + 1 }));
     setNewName('');
     setStep({ at: 'pick' });
@@ -95,9 +104,10 @@ export function StagePalette({
 
   const pick = (item: SpPaletteItem) => {
     if (stageLinkMode(item.kind) === 'none') {
-      done(item.name, (q, at) => stageAddDrawing(q, item.kind, at));
+      done(item.kind, item.name, (q, at) => stageAddDrawing(q, item.kind, at));
       return;
     }
+    setEverySource(false);
     setStep({ at: 'link', item });
   };
   const openPackage = (item: SpPaletteItem, pkg: SpPackage) => {
@@ -132,7 +142,10 @@ export function StagePalette({
             </Text>
             <View style={styles.chips}>
               {SP_PALETTE.filter((it) => it.group === g.id).map((it) => (
-                <Button key={it.kind} label={it.name.toUpperCase()} a11yLabel={`Add: ${it.name}`} onPress={() => pick(it)} />
+                <Pressable key={it.kind} onPress={() => pick(it)} style={({ pressed }) => [styles.kind, pressed && styles.kindPressed]} accessibilityRole="button" accessibilityLabel={`Add: ${it.name}`}>
+                  <StageKindIcon project={p} kind={it.kind} />
+                  <Text style={styles.kindText}>{it.name.toUpperCase()}</Text>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -156,7 +169,11 @@ export function StagePalette({
     return wrap(
       <>
         <Text style={styles.title} accessibilityRole="header">{`${item.name}: ${pkg.name}`}</Text>
-        <Note>{`This package assumes: ${pkg.assumes} It is a starting point. You can leave out any row now, and change any row later in Inputs.`}</Note>
+        <Text style={styles.heading} accessibilityRole="header">
+          THIS PACKAGE ASSUMES
+        </Text>
+        <Text style={styles.lead}>{pkg.assumes}</Text>
+        <Note>It is a starting point. You can leave out any row now, and change any row later in Inputs.</Note>
         <Text style={styles.heading} accessibilityRole="header">
           THE INPUTS IT WOULD ADD
         </Text>
@@ -175,7 +192,7 @@ export function StagePalette({
           label={n === 1 ? 'ADD THE SYMBOL AND 1 INPUT' : `ADD THE SYMBOL AND ${n} INPUTS`}
           disabled={n === 0}
           disabledReason="Every row is left out. Keep at least one row, or go back and choose ONLY A DRAWING."
-          onPress={() => done(item.name, (q, at) => stageAddWithPackage(q, kind, at, pkg, { ticked, performerId }))}
+          onPress={() => done(kind, item.name, (q, at) => stageAddWithPackage(q, kind, at, pkg, { ticked, performerId }))}
         />
         <Button label="‹ BACK" onPress={() => setStep({ at: 'link', item })} a11yLabel="Back to the choices. Nothing is added." />
       </>,
@@ -197,7 +214,7 @@ export function StagePalette({
           onChange={setMixId}
           hint={mixId === NO_MIX ? 'With no mix, the review asks which mix it plays. Mixes are made in Monitors.' : undefined}
         />
-        <Button tone="primary" label="ADD THE SYMBOL AND THE DEVICE" onPress={() => done(item.name, (q, at) => stageAddWithDevice(q, kind, at, { type: devType, mixId: mixId === NO_MIX ? null : mixId }))} />
+        <Button tone="primary" label="ADD THE SYMBOL AND THE DEVICE" onPress={() => done(kind, item.name, (q, at) => stageAddWithDevice(q, kind, at, { type: devType, mixId: mixId === NO_MIX ? null : mixId }))} />
         <Button label="‹ BACK" onPress={() => setStep({ at: 'link', item })} a11yLabel="Back to the choices. Nothing is added." />
       </>,
     );
@@ -212,7 +229,7 @@ export function StagePalette({
             key={c.id}
             label={`${c.label}${c.detail ? ` · ${c.detail}` : ''}${c.placed ? ' · already has a symbol' : ''}`.toUpperCase()}
             a11yLabel={`Place the symbol for ${c.label}${c.placed ? '. It already has a symbol on the stage' : ''}. Nothing is added to the lists.`}
-            onPress={() => done(c.label, (q, at) => stageAddLinked(q, kind, at, link(c.id)))}
+            onPress={() => done(kind, c.label, (q, at) => stageAddLinked(q, kind, at, link(c.id)))}
           />
         ))}
       </View>
@@ -236,9 +253,9 @@ export function StagePalette({
           A NEW PERFORMER
         </Text>
         <TextField label="Name" value={newName} onCommit={setNewName} onChange={setNewName} placeholder="The name to print on the plot" />
-        <Button tone="primary" label="ADD THIS PERFORMER" disabled={!typed} disabledReason="Type a name first." onPress={() => done(typed, (q, at) => stageAddPerformer(q, at, typed))} />
+        <Button tone="primary" label="ADD THIS PERFORMER" disabled={!typed} disabledReason="Type a name first." onPress={() => done(kind, typed, (q, at) => stageAddPerformer(q, at, typed))} />
         <Text style={styles.heading}>OR</Text>
-        <Button label="ONLY A DRAWING (NOT A PERFORMER)" a11yLabel="Add a figure that is only a drawing: not a performer in Setup" onPress={() => done(item.name, (q, at) => stageAddDrawing(q, kind, at))} />
+        <Button label="ONLY A DRAWING (NOT A PERFORMER)" a11yLabel="Add a figure that is only a drawing: not a performer in Setup" onPress={() => done(kind, item.name, (q, at) => stageAddDrawing(q, kind, at))} />
         {BackButton}
       </>,
     );
@@ -257,7 +274,7 @@ export function StagePalette({
         </Text>
         <Button label="ADD IT TO THE MONITOR PLAN TOO ›" onPress={() => openDevice(item)} a11yLabel="Add a new monitor device with this symbol. The next step shows the choices first." />
         <Text style={styles.heading}>OR</Text>
-        <Button label="ONLY A DRAWING" a11yLabel="Only a drawing: it is not in the monitor plan" onPress={() => done(item.name, (q, at) => stageAddDrawing(q, kind, at, { visualOnly: true }))} />
+        <Button label="ONLY A DRAWING" a11yLabel="Only a drawing: it is not in the monitor plan" onPress={() => done(kind, item.name, (q, at) => stageAddDrawing(q, kind, at, { visualOnly: true }))} />
         <Button label="GO TO MONITORS ›" onPress={onGoMonitors} a11yLabel="Go to the Monitors area. Nothing is added." />
         {BackButton}
       </>,
@@ -266,6 +283,11 @@ export function StagePalette({
 
   const packages = stagePackagesFor(kind);
   const capture = mode === 'capture';
+  // sources of the symbol's own kind first; the rest behind one button, so a
+  // drum kit is not offered three vocals before its own kit
+  const sources = capture ? [] : stageSourceChoices(p, kind);
+  const ownKind = sources.filter((c) => c.match);
+  const hidden = sources.length - ownKind.length;
   return wrap(
     <>
       <Text style={styles.title} accessibilityRole="header">{`${item.name}: what does this symbol stand for?`}</Text>
@@ -274,7 +296,8 @@ export function StagePalette({
       </Text>
       {capture
         ? existing(stageInputChoices(p, kind), (id) => ({ inputId: id }), kind === 'di' ? 'No DI input is in the input list yet.' : 'No microphone input is in the input list yet.')
-        : existing(stageSourceChoices(p, kind), (id) => ({ sourceId: id }), 'No sources yet.')}
+        : existing(everySource ? sources : ownKind, (id) => ({ sourceId: id }), sources.length ? 'No source of this kind is in the input list yet.' : 'No sources yet.')}
+      {!capture && hidden > 0 && !everySource ? <Button label="SHOW EVERY SOURCE ▾" a11yLabel={`Show every source in the input list: ${hidden} more`} onPress={() => setEverySource(true)} /> : null}
       {packages.length ? (
         <>
           <Text style={styles.heading} accessibilityRole="header">
@@ -291,8 +314,8 @@ export function StagePalette({
         <Note>{kind === 'di' ? 'A DI symbol shows an input that is already in the input list. It never adds a second input. New DI inputs are added in Inputs.' : 'New inputs for this are added in Inputs, where every field can be set.'}</Note>
       )}
       <Text style={styles.heading}>OR</Text>
-      <Button label="ONLY A DRAWING: IT NEEDS NO INPUT" a11yLabel="Only a drawing: acoustic or self-contained, it needs no input" onPress={() => done(item.name, (q, at) => stageAddDrawing(q, kind, at, { visualOnly: true }))} />
-      {kind === 'mic-stand' || kind === 'di' ? null : <Button label="DECIDE LATER" a11yLabel="Place the symbol now and decide later. The review will ask what it stands for." onPress={() => done(item.name, (q, at) => stageAddDrawing(q, kind, at))} />}
+      <Button label="ONLY A DRAWING: IT NEEDS NO INPUT" a11yLabel="Only a drawing: acoustic or self-contained, it needs no input" onPress={() => done(kind, item.name, (q, at) => stageAddDrawing(q, kind, at, { visualOnly: true }))} />
+      {kind === 'mic-stand' || kind === 'di' ? null : <Button label="DECIDE LATER" a11yLabel="Place the symbol now and decide later. The review will ask what it stands for." onPress={() => done(kind, item.name, (q, at) => stageAddDrawing(q, kind, at))} />}
       <Button label="GO TO INPUTS ›" onPress={onGoInputs} a11yLabel="Go to the Inputs area. Nothing is added." />
       {BackButton}
     </>,
@@ -302,6 +325,10 @@ export function StagePalette({
 const styles = StyleSheet.create({
   group: { gap: 8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  // a palette button: the kind's own art, then its name (the kit's button look)
+  kind: { minHeight: 46, flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 9, borderWidth: 1, borderColor: '#3a3a42', backgroundColor: '#141418', paddingLeft: 8, paddingRight: 14, paddingVertical: 8 },
+  kindPressed: { borderColor: colors.amber, backgroundColor: '#1d1709' },
+  kindText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.1, color: colors.textPrimary },
   list: { gap: 8 },
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },

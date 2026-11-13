@@ -5,17 +5,21 @@
  *
  * The one idea the area must make unmistakable (owner's handoff, §5 and §11):
  * A MIX IS NOT A DEVICE. So these tests check RELATIONSHIPS a band relies on:
- *   • mixes, monitor feed audio channels ASKED OF THE HOUSE CONSOLE and
- *     monitor devices are three separate numbers, each in its own sentence;
- *   • the middle number holds only what the house console is asked to create:
- *     a mix the band creates in its own rig, a mix on a personal mixer system
+ *   • mixes, monitor feed audio channels REQUESTED FROM THE HOUSE CONSOLE and
+ *     monitor devices are three separate numbers;
+ *   • the middle number holds only what is requested from the house console:
+ *     a mix the band creates in the band monitor rig, a mix on a personal mixer system
  *     and a mix nobody is named to create are said apart and NEVER added in
  *     (review 1, live sound: "feed" reads as something the house sends);
  *   • adding a wedge to a mix changes the wedge count and nothing else;
  *   • a mono mix is 1 audio channel and a stereo mix is 2;
  *   • a name offered for a mix or a device never holds a performer's name, so
  *     renaming a performer leaves nothing stale;
- *   • a click starts as MONITOR ONLY and "Must exclude" in every mix.
+ *   • a click starts as MONITOR ONLY and "Must exclude" in every mix;
+ *   • review 2's words: "requested from the house console", "band monitor
+ *     rig", no zero count and no bare category word, a worn receiver pack is
+ *     not "not on the stage yet", and the two-wedges question says what an
+ *     answer looks like and where to type it.
  * Then the house copy rules on the area's own source, and the screen guide.
  */
 import assert from 'node:assert/strict';
@@ -24,18 +28,21 @@ import { describe, it } from 'node:test';
 import { SCREEN_GUIDE_BUDGET, SCREEN_GUIDE_SECTIONS, SCREEN_INTRO_WORDS } from '../src/features/lab/screenGuide/types.ts';
 import { SP_MIX_INSTRUCTIONS } from '../src/features/stageplot/spCatalog.ts';
 import { spMonitorTotals } from '../src/features/stageplot/spDerive.ts';
-import { spAddMix, spAddPerformer, spEdit, spNewProject, spRemoveDevice, spRemoveMix, spRenumberMixes, spSetNeed, spUpdateInput, spUpdateMix, spUpdatePerformer } from '../src/features/stageplot/spModel.ts';
+import { spAddMix, spAddPerformer, spEdit, spLocationWord, spNewProject, spRemoveDevice, spRemoveMix, spRenumberMixes, spSetNeed, spUpdateDevice, spUpdateInput, spUpdateMix, spUpdatePerformer } from '../src/features/stageplot/spModel.ts';
 import { spReview } from '../src/features/stageplot/spReview.ts';
 import { spFromTemplate } from '../src/features/stageplot/spTemplates.ts';
 import type { SpDelivery, SpProject } from '../src/features/stageplot/spTypes.ts';
 import { SP_GUIDE_MONITORS } from '../src/screens/lab/stageplot/guides/monitors.ts';
+import { spBringsWord } from '../src/screens/lab/stageplot/inputs/inputsLogic.ts';
 import {
-  SPM_BRINGS,
+  SPM_BAND_RIG_MEANS,
   SPM_FEED_HINT,
   SPM_MONITOR_ONLY,
   SPM_NEEDS,
-  SPM_OWN_RIG_MEANS,
   SPM_PERSONAL_MIXER_NOTE,
+  SPM_SHARE_WHERE_CARD,
+  SPM_SHARE_WHERE_POPUP,
+  SPM_WIRELESS_TAG,
   spmAddDevice,
   spmAddDevicesToMix,
   spmAddMixWithDevices,
@@ -43,6 +50,8 @@ import {
   spmAudienceLabel,
   spmBandSentence,
   spmBlankDraft,
+  spmBrings,
+  spmBringsLine,
   spmClickNotes,
   spmCodesInOrder,
   spmCounts,
@@ -55,9 +64,12 @@ import {
   spmFeedWhy,
   spmHouseOutputNote,
   spmHouseSentence,
+  spmFormatWords,
   spmList,
   spmMixDevicesLine,
+  spmMixFor,
   spmMixGroups,
+  spmMixLine,
   spmNeedRows,
   spmNeedSummary,
   spmNeedsTransmitter,
@@ -68,6 +80,7 @@ import {
   spmRecipients,
   spmRowWord,
   spmShareLine,
+  spmShareOpen,
   spmSuggestName,
   spmTbcSentence,
   spmToggleInstruction,
@@ -92,8 +105,8 @@ const read = (p: string) => readFileSync(new URL(p, ROOT), 'utf8').replace(/\r\n
 const AREA = 'src/screens/lab/stageplot';
 const OWN_FILES = [`${AREA}/MonitorsArea.tsx`, `${AREA}/guides/monitors.ts`, ...readdirSync(new URL(`${AREA}/monitors/`, ROOT)).map((f) => `${AREA}/monitors/${f}`)];
 
-describe('three separate counts: mixes, audio channels asked of the house console, monitor devices by type', () => {
-  it('the four-piece example: 4 mixes, 6 audio channels asked of the house, 5 devices of four types (handoff §11)', () => {
+describe('three separate counts: mixes, audio channels requested from the house console, monitor devices', () => {
+  it('the four-piece example: 4 mixes, 6 audio channels requested from the house console, 5 devices of four kinds (handoff §11)', () => {
     const c = counts(make('four-piece'));
     assert.equal(c.mixes, 4);
     assert.equal(c.houseFeedChannels, 6);
@@ -103,7 +116,6 @@ describe('three separate counts: mixes, audio channels asked of the house consol
       ['2 wedges', '1 wireless in-ear transmitter', '1 in-ear receiver pack', '1 wired headphone amplifier'],
     );
     assert.equal(c.mixLine, '4 mixes: 2 mono, 2 stereo.');
-    assert.equal(c.feedLine, '6 monitor feed audio channels are asked of the house console.');
     assert.deepEqual(c.apartLines, [], 'every mix is the house console’s: nothing is apart');
     assert.equal(c.deviceLine, '5 monitor devices: 2 wedges, 1 wireless in-ear transmitter, 1 in-ear receiver pack and 1 wired headphone amplifier.');
   });
@@ -125,12 +137,18 @@ describe('three separate counts: mixes, audio channels asked of the house consol
     assert.equal(q.mixes.length, p.mixes.length);
     assert.equal(q.devices.find((d) => d.id === added.id)?.label, 'Wedge 3');
     // the screen says in words that nothing else moved, and what is still open
-    assert.equal(spmShareLine(q, mixByCode(q, 'M1')), '2 wedges share this mix. It is still 1 mix and 1 audio channel. How the feed reaches each one is to be confirmed.');
+    assert.equal(spmShareLine(q, mixByCode(q, 'M1')), '2 wedges share this mix. It is still 1 mix and 1 audio channel. How they are fed (linked from one output, or one output each) is to be confirmed.');
+    assert.equal(spmShareOpen(q, mixByCode(q, 'M1')), true);
+    // the question says what an answer looks like, and the screen says where to type it
+    assert.equal(SPM_SHARE_WHERE_CARD, 'Type it under EDIT MIX › MORE DETAILS, or leave it for the venue.');
+    assert.match(SPM_SHARE_WHERE_POPUP, /^Type it under MORE DETAILS, in “Requested output channels or sockets”, or leave it for the venue\.$/);
     assert.equal(spmShareLine(p, m1), '', 'one wedge: nothing is shared');
+    assert.equal(spmShareOpen(p, m1), false);
     // once the band writes how the feed is sent, the open question is gone
     const told = spUpdateMix(q, m1.id, { outputs: 'One output, linked to both wedges' });
     assert.equal(spmShareLine(told, mixByCode(told, 'M1')), '2 wedges share this mix. It is still 1 mix and 1 audio channel.');
-    // in the band's own rig, how a feed reaches two devices is the band's own business
+    assert.equal(spmShareOpen(told, mixByCode(told, 'M1')), false);
+    // in the band monitor rig, how a feed reaches two devices is the band's own business
     const own = spUpdateMix(q, m1.id, { provider: 'band-console' });
     assert.equal(spmShareLine(own, mixByCode(own, 'M1')), '2 wedges share this mix. It is still 1 mix and 1 audio channel.');
   });
@@ -142,8 +160,7 @@ describe('three separate counts: mixes, audio channels asked of the house consol
     assert.equal(c.mixes, 4);
     assert.equal(c.houseFeedChannels, 5);
     assert.equal(c.mixLine, '4 mixes: 3 mono, 1 stereo.');
-    assert.equal(c.feedLine, '5 monitor feed audio channels are asked of the house console.');
-    assert.equal(spmHouseSentence(spMonitorTotals(q)), 'The house console is asked to create 4 mixes (3 mono, 1 stereo): 5 monitor feed audio channels.');
+    assert.equal(spmHouseSentence(spMonitorTotals(q)), '4 mixes are requested from the house console (3 mono, 1 stereo): 5 monitor feed audio channels.');
     assert.equal(c.devices, 5, 'the devices did not change');
   });
 
@@ -153,25 +170,52 @@ describe('three separate counts: mixes, audio channels asked of the house consol
     assert.equal(c.mixes, 6);
     assert.equal(c.houseFeedChannels, 6);
     assert.equal(c.devices, 9);
-    assert.equal(c.mixLine, '6 mixes: 6 mono.');
+    assert.equal(c.mixLine, '6 mixes, all mono.', 'never "6 mono, 0 stereo"');
+    assert.equal(spmHouseSentence(spMonitorTotals(p)), '6 mixes are requested from the house console (all mono): 6 monitor feed audio channels.');
     assert.equal(c.deviceLine, '9 monitor devices: 9 wedges.');
     const horns = p.mixes.find((m) => m.name === 'Horns');
     assert.ok(horns);
     assert.equal(horns.recipients.length, 4, 'several performers share one mix');
     assert.equal(spmRecipients(p, horns), spmList(horns.recipients.map((id) => p.performers.find((x) => x.id === id)?.name ?? '?')));
+    assert.equal(spmMixFor(p, horns), `For ${spmRecipients(p, horns)}`);
     assert.equal(spmMixDevicesLine(p, horns), 'Devices on this mix: Wedge 4 and Wedge 5.');
     assert.match(spmShareLine(p, horns), /^2 wedges share this mix\. It is still 1 mix and 1 audio channel\./);
     assert.deepEqual(
       spmDeviceGroups(p).map((g) => [g.heading, g.brings]),
-      [['9 wedges', 'Who brings them: 9 Venue.']],
+      [['9 wedges', 'The venue brings all 9.']],
     );
+  });
+
+  it('no zero count is printed: "all mono", "stereo" for one mix, and who a mix is for when nobody is named', () => {
+    const t = (mono: number, stereo: number) => ({ mixes: mono + stereo, mono, stereo, channels: mono + 2 * stereo });
+    assert.equal(spmFormatWords(t(2, 2)), '2 mono, 2 stereo');
+    assert.equal(spmFormatWords(t(6, 0)), 'all mono');
+    assert.equal(spmFormatWords(t(0, 4)), 'all stereo');
+    assert.equal(spmFormatWords(t(1, 0)), 'mono');
+    assert.equal(spmFormatWords(t(0, 1)), 'stereo');
+    assert.equal(spmFormatWords(t(0, 0)), '');
+    assert.equal(spmMixLine(t(1, 0)), '1 mix, mono.');
+    assert.equal(spmMixLine(t(0, 4)), '4 mixes, all stereo.');
+    assert.equal(spmMixLine(t(2, 2)), '4 mixes: 2 mono, 2 stereo.');
+    for (const ex of ['four-piece', 'playback', 'salsa'] as const) {
+      const totals = spMonitorTotals(make(ex));
+      for (const s of [spmCounts(totals).mixLine, spmHouseSentence(totals), spmBandSentence(totals), spmPersonalSentence(totals)]) assert.ok(!/\b0 (mono|stereo)\b/.test(s), s);
+    }
+    // a mix with nobody on it: said as something to do; a fill may name nobody
+    const p = make('four-piece');
+    const empty = spAddMix(p, {});
+    assert.equal(spmMixFor(empty.p, empty.p.mixes.find((m) => m.id === empty.id)!), 'Nobody is on this mix yet');
+    const fill = spAddMix(p, { delivery: 'sidefill' });
+    assert.equal(spmMixFor(fill.p, fill.p.mixes.find((m) => m.id === fill.id)!), 'For an area of the stage, with no performer named');
+    assert.equal(spmRecipients(empty.p, empty.p.mixes.find((m) => m.id === empty.id)!), '');
   });
 
   it('an empty plan says so in words, with no zero dressed up as a count', () => {
     const blank = spNewProject({ id: 'p-blank', now: NOW });
     const c = counts(blank);
     assert.equal(c.mixLine, 'No mixes yet.');
-    assert.equal(c.feedLine, 'No mixes yet, so nothing is asked of the house console.');
+    assert.equal(c.houseFeedChannels, 0);
+    assert.equal(spmHouseSentence(spMonitorTotals(blank)), 'Nothing is requested from the house console yet.');
     assert.equal(c.deviceLine, 'No monitor devices yet.');
     assert.deepEqual(c.byType, []);
     assert.deepEqual(c.apartLines, []);
@@ -179,11 +223,11 @@ describe('three separate counts: mixes, audio channels asked of the house consol
   });
 });
 
-describe('asked of the house console, apart from what the band creates itself', () => {
-  it('four-piece: everything is asked of the house, and the outputs note counts audio channels, not mixes', () => {
+describe('requested from the house console, apart from what the band creates itself', () => {
+  it('four-piece: everything is requested from the house console, and the outputs note counts audio channels, not mixes', () => {
     const p = make('four-piece');
     const t = spMonitorTotals(p);
-    assert.equal(spmHouseSentence(t), 'The house console is asked to create 4 mixes (2 mono, 2 stereo): 6 monitor feed audio channels.');
+    assert.equal(spmHouseSentence(t), '4 mixes are requested from the house console (2 mono, 2 stereo): 6 monitor feed audio channels.');
     // 4 mixes, 6 audio channels: "one output for each" is 6, and only when said of AUDIO CHANNELS
     assert.match(spmHouseOutputNote(t), /^If each audio channel is carried on its own analog console output, that is 6 outputs\./);
     assert.match(spmHouseOutputNote(t), /to be confirmed with the venue\.$/);
@@ -202,17 +246,17 @@ describe('asked of the house console, apart from what the band creates itself', 
     const c = spmCounts(t);
     assert.equal(c.mixes, 4);
     assert.equal(allChannels(p), 8, 'the four stereo mixes are 8 audio channels in all');
-    assert.equal(c.houseFeedChannels, 0, 'and NONE of them is asked of the house console');
-    assert.equal(c.feedLine, 'No monitor feed audio channels are asked of the house console.');
-    assert.deepEqual(c.apartLines, ['Apart, and not added to that number: 8 audio channels in 4 mixes that your band creates in its own rig.']);
+    assert.equal(c.houseFeedChannels, 0, 'and NONE of them is requested from the house console');
+    assert.equal(c.mixLine, '4 mixes, all stereo.');
+    assert.deepEqual(c.apartLines, ['Apart, and not added to that number: 8 audio channels in 4 mixes that your band creates in the band monitor rig.']);
     assert.equal(c.devices, 8);
     assert.deepEqual(
       c.byType.map((x) => `${x.n} ${x.label}`),
       ['4 wireless in-ear transmitters', '4 in-ear receiver packs'],
     );
-    assert.equal(spmHouseSentence(t), 'Nothing is asked of the house console: no mix on this list is created there.');
+    assert.equal(spmHouseSentence(t), 'Nothing is requested from the house console: no mix on this list is created there.');
     assert.equal(spmHouseOutputNote(t), '');
-    assert.equal(spmBandSentence(t), 'Your band creates 4 mixes in its own rig (4 stereo). That is 8 audio channels that the house console is not asked to create.');
+    assert.equal(spmBandSentence(t), 'Your band creates 4 mixes in the band monitor rig (all stereo). That is 8 audio channels that are not requested from the house console.');
     assert.deepEqual(spmVenueFeedLines(p), ['For M1, M2, M3 and M4, the venue provides: an input split.']);
     const groups = spmMixGroups(p);
     assert.deepEqual(
@@ -223,15 +267,18 @@ describe('asked of the house console, apart from what the band creates itself', 
       ],
     );
     assert.equal(groups[0].sentence, spmHouseSentence(t), 'the house group is there to say "nothing" in words');
-    assert.deepEqual(groups[1].notes, [SPM_OWN_RIG_MEANS, ...spmVenueFeedLines(p)]);
-    // the transmitters and the packs are part of the band's own rig; a pack names who uses it
+    assert.deepEqual(groups[1].notes, [SPM_BAND_RIG_MEANS, ...spmVenueFeedLines(p)]);
+    assert.equal(groups[1].title, 'CREATED IN THE BAND MONITOR RIG');
+    // the transmitters and the packs are part of the band monitor rig; a pack names who uses it
     const pack = p.devices.find((d) => d.type === 'iem-pack');
     assert.ok(pack);
-    assert.match(spmDeviceFacts(p, pack), /^In-ear receiver pack · On M1 Drums, in-ear · Part of your band’s own rig · Used by \S+/);
+    assert.match(spmDeviceFacts(p, pack), /^In-ear receiver pack · On M1 [^·]+ · Part of the band monitor rig · Used by \S+/);
     // every wireless in-ear mix has its transmitter, marked wireless: the venue is told radio equipment is coming
     assert.ok(p.mixes.every((m) => !spmNeedsTransmitter(p, m)));
     assert.equal(p.devices.filter((d) => d.wireless).length, 4);
-    assert.ok(spmDeviceTags(p.devices.find((d) => d.type === 'iem-tx')!).includes('Wireless: coordination required'));
+    assert.equal(SPM_WIRELESS_TAG, 'Wireless: agree radio frequencies with the venue');
+    assert.ok(spmDeviceTags(p.devices.find((d) => d.type === 'iem-tx')!).includes(SPM_WIRELESS_TAG));
+    assert.ok(!spmDeviceTags(pack).includes(SPM_WIRELESS_TAG));
   });
 
   it('for a mix the house does not create, the plan says what the venue provides, and keeps "to be confirmed" as its own line', () => {
@@ -247,8 +294,11 @@ describe('asked of the house console, apart from what the band creates itself', 
     assert.deepEqual(spmVenueFeedLines(make('four-piece')), []);
     // each choice is explained in one line, and the band's own rig is explained where it is chosen
     assert.equal(SPM_FEED_HINT.split('\n').length, 4);
-    assert.match(SPM_FEED_HINT, /^An input split: a copy of every stage input for your own mixer\./);
-    assert.ok(spmFeedWhy('band-console').includes(SPM_OWN_RIG_MEANS));
+    assert.match(SPM_FEED_HINT, /^An input split: a copy of every stage input for the mixer that makes this mix\./);
+    // a return line runs from the mixing position BACK to the stage (review 2)
+    assert.match(SPM_FEED_HINT, /\nReturn lines: cables in the venue’s snake \([^)]+\)\. They carry signals from the mixing position back to the stage\.\n/);
+    assert.ok(spmFeedWhy('band-console').includes(SPM_BAND_RIG_MEANS));
+    assert.match(spmFeedWhy('band-console'), /it is not requested from the house console/);
     assert.ok(!/your band creates/i.test(spmFeedWhy('personal-mixer')), 'a personal mixer system is not called the band’s');
   });
 
@@ -257,12 +307,11 @@ describe('asked of the house console, apart from what the band creates itself', 
     const q = spUpdateMix(p, mixByCode(p, 'M1').id, { provider: 'house' });
     const t = spMonitorTotals(q);
     const c = spmCounts(t);
-    assert.equal(spmHouseSentence(t), 'The house console is asked to create 1 mix (1 stereo): 2 monitor feed audio channels.');
-    assert.equal(spmBandSentence(t), 'Your band creates 3 mixes in its own rig (3 stereo). That is 6 audio channels that the house console is not asked to create.');
+    assert.equal(spmHouseSentence(t), '1 mix is requested from the house console (stereo): 2 monitor feed audio channels.');
+    assert.equal(spmBandSentence(t), 'Your band creates 3 mixes in the band monitor rig (all stereo). That is 6 audio channels that are not requested from the house console.');
     assert.equal(c.mixes, 4);
     assert.equal(c.houseFeedChannels, 2);
-    assert.equal(c.feedLine, '2 monitor feed audio channels are asked of the house console.');
-    assert.deepEqual(c.apartLines, ['Apart, and not added to that number: 6 audio channels in 3 mixes that your band creates in its own rig.']);
+    assert.deepEqual(c.apartLines, ['Apart, and not added to that number: 6 audio channels in 3 mixes that your band creates in the band monitor rig.']);
     assert.equal(allChannels(q), 8);
   });
 
@@ -271,21 +320,21 @@ describe('asked of the house console, apart from what the band creates itself', 
     const q = spUpdateMix(spUpdateMix(p, mixByCode(p, 'M2').id, { provider: 'tbc' }), mixByCode(p, 'M4').id, { provider: 'personal-mixer' });
     const t = spMonitorTotals(q);
     const c = spmCounts(t);
-    assert.equal(spmHouseSentence(t), 'The house console is asked to create 2 mixes (1 mono, 1 stereo): 3 monitor feed audio channels.');
+    assert.equal(spmHouseSentence(t), '2 mixes are requested from the house console (1 mono, 1 stereo): 3 monitor feed audio channels.');
     assert.equal(c.houseFeedChannels, 3);
     assert.equal(allChannels(q), 6, 'the plan still holds 6 audio channels');
     assert.deepEqual(c.apartLines, [
       'Apart, and not added to that number: 2 audio channels in 1 mix on a personal mixer system (not mixed on the house console).',
       'Apart, and not added to that number: 1 audio channel in 1 mix, with who creates it still to be confirmed.',
     ]);
-    assert.equal(spmBandSentence(t), '', 'a personal mixer system is not "your band’s own rig": a venue may own one');
-    assert.equal(spmPersonalSentence(t), '1 mix is made on a personal mixer system (1 stereo), not mixed on the house console. That is 2 audio channels inside that system.');
-    assert.equal(spmTbcSentence(t), 'For 1 mix, who creates it is to be confirmed. It is not counted for the house console or for your band’s own rig.');
+    assert.equal(spmBandSentence(t), '', 'a personal mixer system is not the band monitor rig: a venue may own one');
+    assert.equal(spmPersonalSentence(t), '1 mix is made on a personal mixer system (stereo), not mixed on the house console. That is 2 audio channels inside that system.');
+    assert.equal(spmTbcSentence(t), 'For 1 mix, who creates it is to be confirmed. It is not counted for the house console or for the band monitor rig.');
     const groups = spmMixGroups(q);
     assert.deepEqual(
       groups.map((g) => [g.key, g.title]),
       [
-        ['house', 'ASKED OF THE HOUSE CONSOLE'],
+        ['house', 'REQUESTED FROM THE HOUSE CONSOLE'],
         ['personal', 'ON A PERSONAL MIXER SYSTEM'],
         ['tbc', 'WHO CREATES IT: TO BE CONFIRMED'],
       ],
@@ -409,7 +458,7 @@ describe('the usual devices for a delivery: a proposal, shown before it is added
         ['Headphone amplifier', ids[3]],
       ],
     );
-    assert.ok(p.devices.every((d) => d.supplier === 'tbc' && !d.selfContained), 'nobody is guessed to bring a device; house mixes are not the band’s own rig');
+    assert.ok(p.devices.every((d) => d.supplier === 'tbc' && !d.selfContained), 'nobody is guessed to bring a device; house mixes are not the band monitor rig');
     assert.ok(p.devices.every((d) => d.mixId && p.mixes.some((m) => m.id === d.mixId)));
     assert.deepEqual(
       p.devices.filter((d) => d.wireless).map((d) => d.type),
@@ -430,7 +479,7 @@ describe('the usual devices for a delivery: a proposal, shown before it is added
     assert.equal(spmDraftLine({ ...draft, format: 'stereo' }, 2), 'This adds 1 mix (stereo, 2 audio channels) and 2 devices.');
   });
 
-  it('a mix the band creates keeps what the venue provides, and its devices start as the band’s own rig; a personal mixer system’s do not', () => {
+  it('a mix the band creates keeps what the venue provides, and its devices start as part of the band monitor rig; a personal mixer system’s do not', () => {
     const base = make('four-piece');
     const drummer = base.performers[0].id;
     const draft = { ...spmBlankDraft([drummer]), format: 'stereo' as const, delivery: 'wireless-iem' as const, provider: 'band-console' as const, venueFeed: 'split' as const };
@@ -439,14 +488,14 @@ describe('the usual devices for a delivery: a proposal, shown before it is added
     assert.equal(mix?.venueFeed, 'split');
     assert.equal(mix?.code, 'M5');
     assert.ok(r.deviceIds.length === 2 && r.deviceIds.every((id) => r.p.devices.find((d) => d.id === id)?.selfContained));
-    // the house is asked for no more than before: not a mix, not an audio channel
+    // no more is requested from the house console than before: not a mix, not an audio channel
     assert.equal(spmHouseSentence(spMonitorTotals(r.p)), spmHouseSentence(spMonitorTotals(base)));
     assert.equal(counts(r.p).houseFeedChannels, counts(base).houseFeedChannels);
     assert.equal(counts(r.p).mixes, counts(base).mixes + 1);
     // a house mix does not carry a venue-feed answer it was never asked
     const house = spmAddMixWithDevices(base, { ...draft, provider: 'house' }, []);
     assert.equal(house.p.mixes.find((m) => m.id === house.mixId)?.venueFeed, 'tbc');
-    // a personal mixer system may be the venue's: its devices are not marked as the band's own rig
+    // a personal mixer system may be the venue's: its devices are not marked as part of the band monitor rig
     const pm = spmAddMixWithDevices(base, { ...draft, provider: 'personal-mixer' }, spmUsualDevices(base, draft));
     assert.equal(pm.p.mixes.find((m) => m.id === pm.mixId)?.venueFeed, 'split');
     assert.ok(pm.deviceIds.every((id) => !pm.p.devices.find((d) => d.id === id)?.selfContained));
@@ -487,7 +536,7 @@ describe('the usual devices for a delivery: a proposal, shown before it is added
         .map((i) => i.target.id),
       q.mixes.filter((m) => spmNeedsTransmitter(q, m)).map((m) => m.id),
     );
-    // the fix the popup offers: one transmitter on that mix, wireless, part of the band's own rig
+    // the fix the popup offers: one transmitter on that mix, wireless, part of the band monitor rig
     const fixed = spmAddDevice(q, 'iem-tx', m1.id);
     const added = fixed.p.devices.find((d) => d.id === fixed.id);
     assert.ok(added?.wireless && added.selfContained && added.mixId === m1.id);
@@ -592,10 +641,6 @@ describe('what each mix needs to hear: four words, one mix at a time', () => {
     assert.deepEqual(spmAddOwnInstruction(['Less cymbals'], 'less cymbals'), ['Less cymbals']);
     assert.deepEqual(spmAddOwnInstruction(['Full band'], '   '), ['Full band']);
     assert.deepEqual(spmOwnInstructions(['Full band', 'Less cymbals', SP_MIX_INSTRUCTIONS[0]]), ['Less cymbals']);
-    // the salsa pianist's own words are kept as the band's own instruction
-    const salsaPiano = make('salsa').mixes.find((m) => m.name === 'Piano');
-    assert.ok(salsaPiano);
-    assert.deepEqual(spmOwnInstructions(salsaPiano.instructions), ['Bass and congas']);
 
     const p = make('four-piece');
     const click = p.inputs.find((i) => i.cue);
@@ -622,7 +667,7 @@ describe('devices and performers', () => {
     assert.ok(pack);
     const user = p.performers.find((x) => x.id === pack.performerId);
     assert.ok(user);
-    assert.equal(spmDeviceFacts(p, pack), `In-ear receiver pack · On M3 Drums, in-ear · Used by ${user.name}`);
+    assert.equal(spmDeviceFacts(p, pack), `In-ear receiver pack · On M3 ${mixByCode(p, 'M3').name} · Used by ${user.name}`);
     const q = spRemoveMix(p, mixByCode(p, 'M1').id);
     const wedge = q.devices.find((d) => d.label === 'Wedge 1');
     assert.ok(wedge);
@@ -636,17 +681,21 @@ describe('devices and performers', () => {
     assert.deepEqual(
       spmDeviceGroups(p).map((g) => [g.heading, g.brings]),
       [
-        ['2 wedges', 'Who brings them: 2 Venue.'],
-        ['1 wireless in-ear transmitter', 'Who brings it: 1 Band.'],
-        ['1 in-ear receiver pack', 'Who brings it: 1 Band.'],
-        ['1 wired headphone amplifier', 'Who brings it: 1 Band.'],
+        ['2 wedges', 'The venue brings all 2.'],
+        ['1 wireless in-ear transmitter', 'The band brings it.'],
+        ['1 in-ear receiver pack', 'The band brings it.'],
+        ['1 wired headphone amplifier', 'The band brings it.'],
       ],
     );
-    assert.deepEqual(spmDeviceTags(wedge), ['Venue brings it']);
-    assert.deepEqual(SPM_BRINGS, { band: 'Band brings it', venue: 'Venue brings it', other: 'Other provider brings it', tbc: 'To be confirmed who brings it' });
-    // the same words as the Inputs area, read from its source (one fact, one wording)
-    const inputsWords = read(`${AREA}/inputs/inputsLogic.ts`);
-    assert.ok(inputsWords.includes(`'${SPM_BRINGS.tbc}'`) && inputsWords.includes('} brings it`'), 'Inputs words who brings an item the same way');
+    // no zero count and no bare category word, whatever the split
+    assert.equal(spmBringsLine({ band: 0, venue: 0, other: 0, tbc: 1 }, 1), 'Who brings it: to be confirmed.');
+    assert.equal(spmBringsLine({ band: 0, venue: 0, other: 0, tbc: 3 }, 3), 'Who brings them: to be confirmed for all 3.');
+    assert.equal(spmBringsLine({ band: 2, venue: 1, other: 0, tbc: 1 }, 4), 'Who brings them: the band 2, the venue 1 and 1 to be confirmed.');
+    assert.equal(spmBringsLine({ band: 0, venue: 0, other: 2, tbc: 0 }, 2), 'Another provider brings all 2.');
+    for (const g of [...spmDeviceGroups(p), ...spmDeviceGroups(make('playback')), ...spmDeviceGroups(make('salsa'))]) assert.ok(!/\b0\b|\d (Band|Venue|To be confirmed)/.test(g.brings), g.brings);
+    // a device's own tag is the Inputs area's wording for the same fact, by its function
+    assert.deepEqual(spmDeviceTags(wedge), [spBringsWord('venue')]);
+    for (const s of ['band', 'venue', 'other', 'tbc'] as const) assert.equal(spmBrings(s), spBringsWord(s));
   });
 
   it('LOCATE ON THE STAGE finds a device’s symbol, and says when there is none', () => {
@@ -655,9 +704,18 @@ describe('devices and performers', () => {
     const pack = p.devices.find((d) => d.type === 'iem-pack');
     assert.ok(wedge && pack);
     const at = spmDeviceStage(p, wedge.id);
-    assert.ok(at.objectId && p.objects.find((o) => o.id === at.objectId)?.deviceId === wedge.id);
-    assert.equal(at.word, 'Downstage center');
-    assert.deepEqual(spmDeviceStage(p, pack.id), { objectId: null, word: 'Not on the stage yet' }, 'a pack is worn, not drawn');
+    const drawn = p.objects.find((o) => o.id === at.objectId);
+    assert.ok(drawn && drawn.deviceId === wedge.id);
+    assert.deepEqual(at, { objectId: drawn.id, line: `On the stage: ${spLocationWord(drawn)}`, button: 'LOCATE ON THE STAGE', worn: false });
+    // a receiver pack is WORN: with no symbol it is not "not on the stage yet" (review 2)
+    const user = p.performers.find((x) => x.id === pack.performerId);
+    assert.ok(user);
+    assert.deepEqual(spmDeviceStage(p, pack.id), { objectId: null, line: `Worn by ${user.name}: it needs no symbol on the stage`, button: 'DRAW IT ANYWAY', worn: true });
+    const nobody = spUpdateDevice(p, pack.id, { performerId: null });
+    assert.equal(spmDeviceStage(nobody, pack.id).line, 'A receiver pack is worn: it needs no symbol on the stage');
+    // any other device with no symbol is still to place
+    const bare = spmAddDevice(p, 'wedge', null);
+    assert.deepEqual(spmDeviceStage(bare.p, bare.id), { objectId: null, line: 'Not on the stage yet', button: 'PLACE ON THE STAGE', worn: false });
   });
 
   it('a performer with no monitor is asked about, then listed as "by choice", and it agrees with the review', () => {
@@ -707,6 +765,8 @@ describe('the area’s own words and wiring', () => {
       // the lab's names (review 1, usability, section 5)
       assert.ok(!/audio program|distinct mix|advance preference|\bmusicians?\b|band member|Supplied by|Who supplies|the venue’s monitor system/i.test(s), `${f}: a name the lab does not keep`);
       assert.ok(!/Locate on stage|Go to Stage|MONITOR ONLY —/.test(s), `${f}: an old label`);
+      // review 2: one name for one thing
+      assert.ok(!/asked of|is asked to|own rig|your rig|coordination required|Nobody yet|by type|Three separate numbers|, on this mix|DI audio channel/i.test(s), `${f}: a phrase review 2 replaced`);
       assert.ok(!/\b(dock|bezel|press(es)? (the|a) key|\bkey\b(?!=))/i.test(s.replace(/key=\{|\bkey:|\.key\b|\(key\b|\bkey\)|keyboardShouldPersistTaps|r\.key|x\.key/g, '')), `${f}: a button is a button, never a key`);
     }
     assert.match(all, /audio channels/);
@@ -720,7 +780,7 @@ describe('the area’s own words and wiring', () => {
         buttons += 1;
         assert.equal(m[1], m[1].toUpperCase(), `${f}: the button "${m[1]}" is not in capitals`);
       }
-      for (const m of s.matchAll(/<Button\b[^>]*?\blabel=\{([^}]+)\}/g)) assert.match(m[1], /^(stage\.objectId \? '[A-Z ]+' : '[A-Z ]+'|`EDIT \$\{spmDeviceTitle\(d\)\.toUpperCase\(\)|`EDIT \$\{spmDeviceTitle\(d\).toUpperCase\()/, `${f}: a worked-out button label that may not be in capitals: ${m[1]}`);
+      for (const m of s.matchAll(/<Button\b[^>]*?\blabel=\{([^}]+)\}/g)) assert.match(m[1], /^(stage\.button$|`EDIT \$\{spmDeviceTitle\(d\)\.toUpperCase\(\))/, `${f}: a worked-out button label that may not be in capitals: ${m[1]}`);
       for (const m of s.matchAll(/<(?:Choice|TextField|Switch)\b[^>]*?\blabel="([^"]+)"/g)) assert.notEqual(m[1], m[1].toUpperCase(), `${f}: the field label "${m[1]}" is in capitals`);
       for (const m of s.matchAll(/<SubHeading>([^<{]+)<\/SubHeading>/g)) assert.equal(m[1], m[1].toUpperCase(), `${f}: the sub-heading "${m[1]}"`);
       for (const m of s.matchAll(/<Section\b[^>]*?\btitle="([^"]+)"/g)) assert.equal(m[1], m[1].toUpperCase(), `${f}: the section title "${m[1]}"`);
@@ -728,7 +788,9 @@ describe('the area’s own words and wiring', () => {
     assert.ok(buttons >= 15, `${buttons} buttons checked`);
     const area = strip(read(`${AREA}/MonitorsArea.tsx`));
     assert.match(area, /popupTitle = 'Add a mix'/);
-    for (const label of ['ADD A MIX', 'EDIT MIX', 'ADD A DEVICE', 'EDIT DEVICE', 'LOCATE ON THE STAGE', 'PLACE ON THE STAGE', 'ASK AGAIN', 'GO TO THIS INPUT']) assert.ok(area.includes(`'${label}'`) || area.includes(`"${label}"`), label);
+    for (const label of ['ADD A MIX', 'EDIT MIX', 'ADD A DEVICE', 'EDIT DEVICE', 'ASK AGAIN', 'GO TO THIS INPUT']) assert.ok(area.includes(`'${label}'`) || area.includes(`"${label}"`), label);
+    const plan = strip(read(`${AREA}/monitors/monitorPlan.ts`));
+    for (const label of ['LOCATE ON THE STAGE', 'PLACE ON THE STAGE', 'DRAW IT ANYWAY']) assert.ok(plan.includes(`button: '${label}'`), label);
   });
 
   it('house rules: no raw Alert, no one-line text without fitValue, every Pressable says what it does, no text under 12 pt', () => {
@@ -769,7 +831,18 @@ describe('the area’s own words and wiring', () => {
     const iDev = area.indexOf('title="MONITOR DEVICES"');
     assert.ok(iMix > 0 && iDev > iMix, 'the mix list and the device list are two sections');
     for (const part of ['value={counts.mixes}', 'value={counts.houseFeedChannels}', 'counts.apartLines.map(', 'counts.byType.map(']) assert.ok(area.indexOf(part) > 0 && area.indexOf(part) < iMix, `${part} is in a count box at the top`);
-    assert.match(area, /value=\{counts\.houseFeedChannels\} label=\{[^}]*'monitor feed audio channels asked of the house console'\}/);
+    assert.match(area, /value=\{counts\.houseFeedChannels\} label=\{[^}]*'monitor feed audio channels requested from the house console'\}/);
+    // one fact is said once in words: the count box holds the number, the mix list's first group holds the sentence
+    assert.ok(!/feedLine/.test(area) && !('feedLine' in counts(make('four-piece'))));
+    assert.match(area, /hint="Three separate counts: mixes, audio channels, devices\./);
+    // the two-wedges question: where to type the answer, on the card and in the popup (which opens MORE DETAILS for it)
+    assert.match(area, /spmShareOpen\(p, mix\) \? `\$\{share\} \$\{SPM_SHARE_WHERE_CARD\}` : share/);
+    const mixPopup = strip(read(`${AREA}/monitors/MixSheets.tsx`));
+    assert.match(mixPopup, /shareOpen \? `\$\{share\} \$\{SPM_SHARE_WHERE_POPUP\}` : share/);
+    assert.match(mixPopup, /<MoreDetails initiallyOpen=\{shareOpen\}>/);
+    // a worn pack: the card and the popup take the line and the button from one place
+    assert.match(area, /<Button label=\{stage\.button\}/);
+    assert.match(strip(read(`${AREA}/monitors/DeviceSheets.tsx`)), /<Button label=\{stage\.button\}/);
     assert.ok(!/t(otals)?\.all\.channels|allChannels|feedChannels\b(?!})/.test(area.replace(/houseFeedChannels/g, '')), 'the sum over every mix is not shown as a count');
     // the review answer "Add a monitor mix" opens the same popup as the button, with the performer on it
     assert.match(area, /action === 'add-mix' && kind === 'performer' && id\) setPopup\(\{ kind: 'new-mix', recipients: \[id\] \}\)/);
@@ -779,6 +852,7 @@ describe('the area’s own words and wiring', () => {
     assert.match(needs, /<AudienceTag text=\{row\.audienceLabel\}/);
     assert.match(needs, /SPM_NEEDS_NOTE/);
     assert.ok(!/No preference yet\./.test(needs), 'an empty row is its own message');
+    assert.match(needs, /`\$\{row\.performerName\} \(hears this mix\)`/);
     assert.ok(!/Slider|fader=|<Fader/.test(needs), 'never a fader');
     assert.match(area, /<AudienceTag text=\{c\.audienceLabel\}/);
     // a mix with no device is offered its usual devices in the mix popup

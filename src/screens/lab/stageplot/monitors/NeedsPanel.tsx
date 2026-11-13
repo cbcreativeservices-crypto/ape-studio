@@ -24,12 +24,12 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { useSpEditor } from '../spContext';
 import { Button, Choice, HelpTip, Note } from '../spForm';
 import { AudienceTag, ChipRow, Line, ToggleChip } from './bits';
-import { SPM_NEED_MEANING, SPM_NEEDS, SPM_NEEDS_NOTE, spmChannelWord, spmMixTitle, spmNeedRows, spmNeedSummary, spmRecipients, type SpmNeedRow } from './monitorPlan';
+import { SPM_NEED_MEANING, SPM_NEEDS, SPM_NEEDS_NOTE, spmChannelWord, spmMixFor, spmMixTitle, spmNeedRows, spmNeedSummary, type SpmNeedRow } from './monitorPlan';
 
 const FOUR_WORDS = SPM_NEEDS.map((k) => `${SP_NEED_WORD[k]}: ${SPM_NEED_MEANING[k]}`).join('\n');
 
 const NeedRow = memo(function NeedRow({ row, mixTitle, onSet }: { row: SpmNeedRow; mixTitle: string; onSet: (inputId: SpId, need: SpMixNeed | null) => void }) {
-  const who = row.performerName ? (row.own ? `${row.performerName}, on this mix` : row.performerName) : '';
+  const who = row.performerName ? (row.own ? `${row.performerName} (hears this mix)` : row.performerName) : '';
   return (
     <View style={styles.row}>
       <View style={styles.rowHead}>
@@ -76,7 +76,7 @@ export function NeedsPanel({ mixId, onPickMix }: { mixId: SpId | null; onPickMix
   return (
     <View style={styles.wrap}>
       <Choice label="Mix" value={mix.id} options={p.mixes.map((m) => ({ value: m.id, label: spmMixTitle(m) }))} onChange={onPickMix} hint="One mix at a time. Each mix keeps its own answers." />
-      <Line tone="strong">{`${title}, for ${spmRecipients(p, mix)}`}</Line>
+      <Line tone="strong">{`${title}. ${spmMixFor(p, mix)}.`}</Line>
       <Note>{SPM_NEEDS_NOTE}</Note>
       <HelpTip title="The four words" body={`${FOUR_WORDS}\n\nTap a chosen word again to clear it. An input with no word has no preference recorded.`} />
       {rows.length ? (

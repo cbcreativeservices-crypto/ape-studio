@@ -164,16 +164,16 @@ export const SP_PALETTE: readonly SpPaletteItem[] = [
   { kind: 'mic-stand', name: 'Microphone on a stand', group: 'capture', label: '', sized: false },
   { kind: 'di', name: 'DI', group: 'capture', label: 'DI', sized: false },
   { kind: 'wedge', name: 'Wedge monitor', group: 'monitors', label: '', sized: false },
-  { kind: 'iem', name: 'In-ear system', group: 'monitors', label: 'IEM', sized: false },
+  { kind: 'iem', name: 'In-ear monitor equipment', group: 'monitors', label: 'IEM', sized: false },
   { kind: 'drum-fill', name: 'Drum fill', group: 'monitors', label: 'Drum fill', sized: false },
   { kind: 'sidefill', name: 'Sidefill', group: 'monitors', label: 'Sidefill', sized: false },
   { kind: 'rack', name: 'Equipment rack', group: 'stage', label: 'Rack', sized: false },
   { kind: 'stage-box', name: 'Stage box', group: 'stage', label: 'Stage box', sized: false },
-  { kind: 'power', name: 'Power drop', group: 'stage', label: 'Power', sized: false },
+  { kind: 'power', name: 'Power location', group: 'stage', label: 'Power', sized: false },
   { kind: 'chair', name: 'Chair', group: 'stage', label: '', sized: false },
   { kind: 'music-stand', name: 'Music stand', group: 'stage', label: '', sized: false },
   { kind: 'riser', name: 'Riser', group: 'stage', label: 'Riser', sized: true },
-  { kind: 'generic', name: 'Labeled object', group: 'stage', label: 'Object', sized: true },
+  { kind: 'generic', name: 'Other object', group: 'stage', label: 'Object', sized: true },
 ];
 
 export const spPaletteItem = (kind: SpObjectKind): SpPaletteItem => SP_PALETTE.find((p) => p.kind === kind) ?? SP_PALETTE[SP_PALETTE.length - 1];

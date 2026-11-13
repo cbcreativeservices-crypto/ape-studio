@@ -16,22 +16,36 @@
  *                    the bare stage slides the drawing.
  *            TURN    the lane: the selected object's turn (one edit when the
  *                    finger lets go).
- *            ADD     the palette. A symbol never adds an input by itself.
- *            OBJECT  the selected object's inspector.
- *            VIEW    grid, snap, names, numbers, FIT STAGE, UNDO, REDO.
+ *            ADD     the palette (each kind with its own art). A symbol
+ *                    never adds an input by itself.
+ *            OBJECT  the selected object's position and turn buttons, under
+ *                    the drawing; NAME, LINKS AND MORE opens the rest.
+ *            VIEW    four switches: grid, snap, names, numbers. (FIT STAGE is
+ *                    under ZOOM; UNDO and REDO are in the bar at the top, and
+ *                    in the VIEW tray in FULL SCREEN, which has no bar.)
  *   WELL   reading, and THE LIST ALTERNATIVE TO DRAGGING: what is not on the
  *          stage yet, the review's stage questions, and every object as a
  *          row that opens its position buttons and its typed position.
  *
- * ADD, OBJECT AND VIEW OPEN AS POPUPS (fix round 2026-11-12, decision 2). On
- * a 390 × 844 phone the rack's tray had a 94-point window for 900 points of
- * palette. So outside FULL SCREEN the three dock buttons open the kit's
- * centered popup (`Sheet`). In FULL SCREEN a popup cannot be presented over
- * the full-screen view (iOS refuses it), so there the same three buttons open
- * the dock tray, with the fader strip folded away (`hideLane`) so the tray
- * has the height. The drawing's full-screen copy tells this area which of the
- * two is showing (`onFullScreen`). In both, the palette and the inspector
- * scroll in their own scroller, which starts at the top on every step.
+ * ADD AND VIEW OPEN AS POPUPS; OBJECT OPENS UNDER THE DRAWING (fix rounds
+ * 2026-11-12). On a 390 × 844 phone the rack's tray had a 94-point window
+ * for 900 points of palette, so outside FULL SCREEN the ADD and VIEW buttons
+ * open the kit's centered popup (`Sheet`, with this area's own scroller in
+ * it: one scroll bar). In FULL SCREEN a popup cannot be presented over the
+ * full-screen view (iOS refuses it), so there the same buttons open the dock
+ * tray, with the fader strip folded away (`hideLane`).
+ *
+ * OBJECT is a tray in both, because its first job is to MOVE and TURN the
+ * selected object, and a control must show its effect: the tray lies over
+ * the well, UNDER the pinned drawing, and holds the position and turn
+ * buttons (StageMovePad). The rest of the object (its name, its links, its
+ * group, its note, duplicate, remove) is one press away: NAME, LINKS AND
+ * MORE opens the popup, or, in FULL SCREEN, opens it in the tray. The
+ * OBJECT button's second line is the selected object's name.
+ *
+ * The drawing's full-screen copy tells this area which surface is showing
+ * (`onFullScreen`), and how many names it had to leave out at the present
+ * size (`onNamesLeftOut`), so the line under the drawing tells the truth.
  *
  * ONE MODEL. Nothing here keeps a copy of the stage plot: every change is a
  * spModel edit through the editor's `apply` (one undo step each; a drag is
@@ -42,7 +56,6 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { spEdit, spGridStep, spMoveObject, spObject, spToScale, spUpdateObject } from '../../../features/stageplot/spModel';
-import { spPlotKey } from '../../../features/stageplot/spSymbols';
 import type { SpId, SpProject } from '../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../theme/tokens';
 import { RackUnit } from '../rack/RackUnit';
@@ -51,12 +64,13 @@ import { useSpEditor } from './spContext';
 import { Button, HelpTip, IssueList, Note, Sheet, Switch } from './spForm';
 import { goToIssue, runIssueAction } from './spIssueActions';
 import { StageInspector } from './stage/StageInspector';
+import { StageMovePad } from './stage/StageMovePad';
 import { StageObjectList } from './stage/StageObjectList';
 import { StagePalette } from './stage/StagePalette';
 import { StagePlanView } from './stage/StagePlanView';
 import { StageStepScroll, stageSheetScrollHeight, stageTrayScrollHeight } from './stage/StageStepScroll';
-import { STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageFacingShort, stageFacingWord, stageGlassWidthGuess, stageKeyLayout, stagePosWords, stageScaleNote, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
-import { STAGE_NEW_SPOT, stageFreeSpot, stageListName, stageListOrder, stagePlace, stageSelectedObjectId, stageSelectionName, stageUnplaced, type StageAdded } from './stage/stageLinks';
+import { STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageFacingShort, stageFacingWord, stageGlassWidthGuess, stageKeyLayout, stageScaleNote, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
+import { STAGE_NEW_SPOT, stageKeyEntries, stageListName, stageListOrder, stagePlace, stageSelectedObjectId, stageSelectionName, stageUnplaced, stageWhere, type StageAdded } from './stage/stageLinks';
 
 /** The TURN lane moves in 5° steps (0…355). */
 const turnOf = (v: number): number => (Math.round((Math.max(0, Math.min(1, v)) * 360) / 5) * 5) % 360;
@@ -84,6 +98,10 @@ export function StageArea() {
   const [panel, setPanel] = useState<Panel | null>(null);
   /** True while the drawing's FULL SCREEN copy is showing. */
   const [inFull, setInFull] = useState(false);
+  /** How many names the drawing leaves out at its present size. */
+  const [leftOut, setLeftOut] = useState(0);
+  /** FULL SCREEN: the object whose details are open in the OBJECT tray. */
+  const [detailsFor, setDetailsFor] = useState<SpId | null>(null);
 
   const selId = stageSelectedObjectId(p, ed.selection);
   const sel = selId ? spObject(p, selId) : undefined;
@@ -93,14 +111,15 @@ export function StageArea() {
 
   const select = useCallback((id: SpId | null) => ed.select(id ? { kind: 'object', id } : null), [ed]);
   const closePanel = useCallback(() => setPanel(null), []);
-  /** Where a new object goes: a free place near downstage center, or near
-   *  the middle of what the drawing shows when it is zoomed in. */
-  const spot = (q: SpProject): Pt => stageFreeSpot(q, view.zoom > 1 ? { x: view.cx, y: view.cy } : STAGE_NEW_SPOT);
+  /** Where a new object is wanted: downstage center, or the middle of what
+   *  the drawing shows when it is zoomed in. The edit itself finds the
+   *  nearest place there that is free for the box of what is added. */
+  const near: Pt = view.zoom > 1 ? { x: view.cx, y: view.cy } : STAGE_NEW_SPOT;
   /** One edit that adds something, then select it. */
   const add = (make: (q: SpProject, at: Pt) => StageAdded | null) => {
     let id = '';
     ed.apply((q) => {
-      const r = make(q, spot(q));
+      const r = make(q, near);
       if (!r) return q;
       id = r.id;
       return r.p;
@@ -145,6 +164,7 @@ export function StageArea() {
       onMove={(id, to) => ed.apply((q) => spMoveObject(q, id, to))}
       onResize={(id, size) => ed.apply((q) => spUpdateObject(q, id, { w: size.w, h: size.h }))}
       onFullScreen={setInFull}
+      onNamesLeftOut={setLeftOut}
     />
   );
 
@@ -165,34 +185,70 @@ export function StageArea() {
   const paletteBody = (maxHeight: number, onAdd: (make: (q: SpProject, at: Pt) => StageAdded) => void) => (
     <StagePalette project={p} onAdd={onAdd} onGoInputs={() => ed.goTo('inputs')} onGoMonitors={() => ed.goTo('monitors')} maxHeight={maxHeight} />
   );
-  const objectBody = (maxHeight: number, onDone?: () => void) => (
-    <StageStepScroll stepKey={sel ? sel.id : 'none'} maxHeight={maxHeight}>
-      {sel ? (
-        <StageInspector id={sel.id} onDone={onDone} />
+  const chooser = (
+    <>
+      <Text style={styles.body}>Nothing is selected. Tap an object on the stage, or choose one here.</Text>
+      {p.objects.length ? (
+        <View style={styles.buttons}>
+          {stageListOrder(p.objects).map((o) => (
+            <Button key={o.id} label={stageListName(p, o).toUpperCase()} a11yLabel={`Select ${stageListName(p, o)}`} onPress={() => selectFromList(o.id)} />
+          ))}
+        </View>
       ) : (
-        <>
-          <Text style={styles.body}>Nothing is selected. Tap an object on the stage, or choose one here.</Text>
-          {p.objects.length ? (
-            <View style={styles.buttons}>
-              {stageListOrder(p.objects).map((o) => (
-                <Button key={o.id} label={stageListName(p, o).toUpperCase()} a11yLabel={`Select ${stageListName(p, o)}`} onPress={() => selectFromList(o.id)} />
-              ))}
-            </View>
-          ) : (
-            <Text style={styles.caption}>The stage is empty. ADD opens the palette.</Text>
-          )}
-        </>
+        <Text style={styles.caption}>The stage is empty. ADD opens the palette.</Text>
       )}
+    </>
+  );
+  /** THE OBJECT TRAY, under the pinned drawing: move and turn, seen to work. */
+  const objectTray = () => {
+    const body = sel ? (
+      <View style={styles.tray}>
+        <StageMovePad id={sel.id} />
+        <View style={styles.buttons}>
+          <Button
+            label={inFull && detailsFor === sel.id ? 'HIDE NAME, LINKS AND MORE' : 'NAME, LINKS AND MORE ›'}
+            a11yLabel={`${selName}: its name, what it stands for, its group, its note, duplicate and remove`}
+            onPress={() => (inFull ? setDetailsFor((cur) => (cur === sel.id ? null : sel.id)) : setPanel('object'))}
+          />
+          <Button label="DESELECT" a11yLabel={`Deselect ${selName}`} onPress={() => select(null)} />
+        </View>
+        {inFull && detailsFor === sel.id ? <StageInspector id={sel.id} part="details" /> : null}
+      </View>
+    ) : (
+      <View style={styles.tray}>{chooser}</View>
+    );
+    // in FULL SCREEN the tray is tall: its own scroller starts at the top for each object
+    return inFull ? (
+      <StageStepScroll stepKey={`${sel ? sel.id : 'none'}:${detailsFor ?? ''}`} maxHeight={trayH}>
+        {body}
+      </StageStepScroll>
+    ) : (
+      body
+    );
+  };
+  /** THE OBJECT POPUP: everything about the object except moving and turning it. */
+  const objectSheet = (
+    <StageStepScroll stepKey={sel ? sel.id : 'none'} maxHeight={sheetH}>
+      {sel ? <StageInspector id={sel.id} part="details" onDone={closePanel} /> : chooser}
     </StageStepScroll>
   );
-  const viewBody: ReactNode = (
-    <View style={styles.tray}>
+  const viewSwitches = (
+    <>
       <Switch label="Grid" value={p.stage.grid} onChange={(v) => setStage({ grid: v })} hint={`Lines on the stage to place things by. ${gridWords(p)}`} />
       <Switch label="Snap to the grid" value={p.stage.snap} onChange={(v) => setStage({ snap: v })} hint="On: an object you drag or move with a position button lands on the nearest grid step. A typed position is kept exactly as typed." />
       <Switch label="Names on the drawing" value={names} onChange={setNames} hint="For this screen only. The packet always prints the names." />
-      <Switch label="Channel numbers and mix codes on the drawing" value={numbers} onChange={setNumbers} hint="For this screen only. A number in a square box is an input channel. A code in a round box (M1, M2) is a monitor mix." />
+      <Switch label="Channel numbers and mix codes on the drawing" value={numbers} onChange={setNumbers} hint="For this screen only. A number in a square box is an input channel. A code in a rounded box (M1, M2) is a monitor mix." />
+    </>
+  );
+  /** The VIEW popup holds the four switches and nothing else: FIT STAGE is
+   *  under the ZOOM fader, UNDO and REDO are in the bar at the top. */
+  const viewBody: ReactNode = <View style={styles.tray}>{viewSwitches}</View>;
+  /** In FULL SCREEN the bar at the top is not there, so UNDO and REDO are
+   *  in the tray. */
+  const viewTray: ReactNode = (
+    <View style={styles.tray}>
+      {viewSwitches}
       <View style={styles.buttons}>
-        <Button label="FIT STAGE" onPress={fit} a11yLabel="Show the whole stage in the drawing" />
         <Button label="UNDO" onPress={ed.undo} disabled={!ed.canUndo} disabledReason="Nothing to undo." a11yLabel="Undo the last change" />
         <Button label="REDO" onPress={ed.redo} disabled={!ed.canRedo} disabledReason="Nothing to redo." a11yLabel="Redo the change that was undone" />
       </View>
@@ -204,8 +260,8 @@ export function StageArea() {
     setTurn(null);
     if (sel && rot !== sel.rot) ed.apply((q) => spUpdateObject(q, sel.id, { rot }));
   };
-  /** One of the three buttons that open a surface: a popup outside FULL
-   *  SCREEN, the tray (with the fader strip folded) inside it. */
+  /** ADD and VIEW: a popup outside FULL SCREEN, the tray (with the fader
+   *  strip folded) inside it. */
   const opener = (id: Panel, label: string, valueLabel: string, valueA11y: string, render: () => ReactNode): DockParam =>
     inFull ? { kind: 'group', id, label, valueLabel, valueA11y, hideLane: true, render } : { kind: 'action', id, label, onPress: () => setPanel(id) };
   const params: DockParam[] = [
@@ -243,34 +299,34 @@ export function StageArea() {
         ? [
             { label: '↺ 15°', onPress: () => commitTurn((sel.rot + 345) % 360), a11y: `Turn ${selName} 15 degrees counterclockwise` },
             { label: '↻ 15°', onPress: () => commitTurn((sel.rot + 15) % 360), a11y: `Turn ${selName} 15 degrees clockwise` },
-            { label: 'FACE AUDIENCE', onPress: () => commitTurn(0), a11y: `Turn ${selName} to face the audience` },
+            { label: 'FACE THE AUDIENCE', onPress: () => commitTurn(0), a11y: `Turn ${selName} to face the audience` },
           ]
         : undefined,
       locked: sel ? undefined : 'nothing is selected. Tap an object on the stage first',
     },
     opener('add', 'ADD', 'NEW', 'the palette of objects', () => paletteBody(trayH, add)),
-    // where the button has a value line (the tray button, in FULL SCREEN) it names the selection
-    opener('object', 'OBJECT', sel ? selName.toUpperCase() : 'NOTHING', sel ? `${selName} is selected` : 'nothing is selected', () => objectBody(trayH)),
-    opener('view', 'VIEW', p.stage.snap ? 'SNAP' : p.stage.grid ? 'GRID' : 'PLAIN', `grid ${p.stage.grid ? 'on' : 'off'}, snap ${p.stage.snap ? 'on' : 'off'}`, () => viewBody),
+    // OBJECT: a tray on both screens, under the drawing; its second line is the selection's name
+    { kind: 'group', id: 'object', label: 'OBJECT', valueLabel: sel ? selName.toUpperCase() : 'NOTHING', valueA11y: sel ? `${selName} is selected` : 'nothing is selected', hideLane: true, render: objectTray },
+    opener('view', 'VIEW', p.stage.snap ? 'SNAP' : p.stage.grid ? 'GRID' : 'PLAIN', `grid ${p.stage.grid ? 'on' : 'off'}, snap ${p.stage.snap ? 'on' : 'off'}`, () => viewTray),
   ];
 
   // ── the well ──────────────────────────────────────────────────────────────
   const unplaced = stageUnplaced(p);
-  const stageIssues = ed.issues.filter((i) => i.area === 'stage');
+  // a review question that only repeats "X is not on the stage yet" is left
+  // out here: the block above it already says so, with the same button
+  const offered = new Set(unplaced.map((u) => `${u.kind}:${u.id}`));
+  const stageIssues = ed.issues.filter((i) => i.area === 'stage' && !((i.rule === 'performer-unplaced' || i.rule === 'source-unplaced') && offered.has(`${i.target.kind}:${i.target.id}`)));
   // a taller glass where the phone has the room (the rack still protects the
   // dock and the well)
   // THE KEY under the stage is part of the display, so the display grows by
   // the key's height: the stage keeps its room, and the well keeps its
   // minimum (the rack still clamps the glass for the dock and the well).
-  const keyHeight = Math.ceil(stageKeyLayout(spPlotKey(p.objects), stageGlassWidthGuess(winW), scaleNote).height);
+  const keyHeight = Math.ceil(stageKeyLayout(stageKeyEntries(p.objects), stageGlassWidthGuess(winW), scaleNote).height);
   const phoneHeight = Math.max(250, Math.min(320, Math.round(winH * 0.36))) + keyHeight;
   // On a tall window (a tablet) the well keeps about a third of the height:
   // the list of objects under the drawing is the way to work without a drag,
   // and it was read through a 165-point slot there (visual review).
   const minWell = winH >= 900 ? Math.round(winH * 0.3) : 110;
-  // A large band at the whole-stage zoom on a phone: the names cannot all be
-  // clear of each other. The screen says how to read them.
-  const crowded = p.objects.length > 16 && view.zoom < 1.5;
   const placeName = toPlace ? stageSelectionName(p, toPlace) : '';
   // A popup shows only outside FULL SCREEN (there the same button opens the tray).
   const shown = inFull ? null : panel;
@@ -280,10 +336,12 @@ export function StageArea() {
       <RackUnit stage={{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true }} params={params} initialParam="zoom">
         <View style={styles.well}>
           <Text style={styles.status} accessibilityLiveRegion="polite">
-            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName}, ${stagePosWords(p, sel)}, ${stageFacingWord(sel.rot)}.` : 'Nothing is selected.'}`}
+            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel)}, ${stageFacingWord(sel.rot)}).` : 'Nothing is selected.'}`}
           </Text>
-          {crowded ? <Note>{`This stage has ${p.objects.length} objects. At this size some names sit close together. Press ZOOM IN, or open FULL SCREEN, to read every name.`}</Note> : null}
-          <Text style={styles.body}>Drag an object to move it; tap it to select it. ADD opens the palette, OBJECT edits what is selected, and TURN faces it another way. You are looking from the audience: stage right is on your left.</Text>
+          {leftOut > 0 ? (
+            <Note>{`At this size ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} not shown, to keep the names apart. The equipment keeps its channel numbers and mix codes, and every performer is named. Press ZOOM IN to see every name. In FULL SCREEN, turn the phone sideways for a larger stage.`}</Note>
+          ) : null}
+          <Text style={styles.body}>Drag an object to move it; tap it to select it. ADD opens the palette, OBJECT moves and turns what is selected, and NAME, LINKS AND MORE opens the rest. You are looking down on the stage, with the audience at the bottom: stage right is on your left.</Text>
           <Text style={styles.caption}>A performer, their instrument, their microphone and their wedge are separate objects. Group them in OBJECT to move them together.</Text>
 
           {toPlace ? (
@@ -292,7 +350,6 @@ export function StageArea() {
               <Button tone="primary" label="PLACE ON THE STAGE" a11yLabel={`Place ${placeName} on the stage`} onPress={() => add((q, at) => stagePlace(q, toPlace, at))} />
             </Note>
           ) : null}
-
 
           {unplaced.length ? (
             <View style={styles.block}>
@@ -344,12 +401,12 @@ export function StageArea() {
         </View>
       </RackUnit>
 
-      {/* ADD, OBJECT and VIEW: the kit's popup, over the whole screen */}
-      <Sheet visible={shown === 'add'} title="Add to the stage" onClose={closePanel}>
+      {/* ADD, VIEW and an object's details: the kit's popup, over the whole screen */}
+      <Sheet visible={shown === 'add'} title="Add to the stage" onClose={closePanel} scroll={false}>
         {paletteBody(sheetH, addFromPalette)}
       </Sheet>
-      <Sheet visible={shown === 'object'} title={sel ? selName : 'Choose an object'} onClose={closePanel}>
-        {objectBody(sheetH, closePanel)}
+      <Sheet visible={shown === 'object'} title={sel ? selName : 'Choose an object'} onClose={closePanel} scroll={false}>
+        {objectSheet}
       </Sheet>
       <Sheet visible={shown === 'view'} title="View" onClose={closePanel}>
         {viewBody}

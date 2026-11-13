@@ -55,6 +55,9 @@ export type SpIssue = {
   rule: string;
   level: SpIssueLevel;
   text: string;
+  /** The same fact as the VENUE reads it, when `text` speaks to the band
+   *  ("…has nobody to ask"). The packet prints `packetText ?? text`. */
+  packetText?: string;
   /** Where to go to fix it, and which row. */
   area: SpArea;
   target: { kind: 'input' | 'source' | 'performer' | 'mix' | 'device' | 'object' | 'di' | 'extra' | 'patch' | 'project'; id: SpId | null; patchId?: SpPatchId };
@@ -91,7 +94,12 @@ export function spReview(p: SpProject): SpIssue[] {
 
   // whose packet is it?
   if ((p.performers.length || p.inputs.length) && !hasText(p.band)) {
-    add({ key: 'band', rule: 'no-band-name', level: 'ask', text: 'The packet has no band or artist name on it.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
+    add({ key: 'band', rule: 'no-band-name', level: 'ask', text: 'The packet has no band or artist name on it.', packetText: 'No band or artist name is given.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
+  }
+
+  // an example's own title would print "(example)" on a document sent to a venue
+  if (/\(example\)\s*$/i.test(p.title)) {
+    add({ key: 'example-title', rule: 'example-title', level: 'ask', text: 'The title still says “(example)”. Change it or clear it in Setup.', packetText: 'The title of this stage plot is still an example’s.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
   }
 
   // who should the engineer contact? (one of the seven questions a packet answers)
@@ -100,7 +108,7 @@ export function spReview(p: SpProject): SpIssue[] {
     const named = c.show.name && hasText(c.name);
     const reachable = (c.show.phone && hasText(c.phone)) || (c.show.email && hasText(c.email));
     if ((p.performers.length || p.inputs.length) && (!named || !reachable)) {
-      add({ key: 'contact', rule: 'no-contact', level: 'ask', text: 'The packet shows no technical contact with a phone number or an email. The venue’s engineer has nobody to ask.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
+      add({ key: 'contact', rule: 'no-contact', level: 'ask', text: 'The packet shows no technical contact with a phone number or an email. The venue’s engineer has nobody to ask.', packetText: 'No technical contact is listed for this band.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
     }
   }
 
@@ -241,7 +249,7 @@ export function spReview(p: SpProject): SpIssue[] {
   // every "to be confirmed": kept, and printed as unresolved
   for (const o of spSummary(p).openItems) {
     const area: SpArea = o.kind === 'mix' || o.kind === 'device' ? 'monitors' : 'inputs';
-    add({ key: `open:${o.kind}:${o.id}:${o.text}`, rule: 'to-be-confirmed', level: 'open', text: `To be confirmed — ${o.text}.`, area, target: { kind: o.kind, id: o.id }, actions: ['edit'] });
+    add({ key: `open:${o.kind}:${o.id}:${o.text}`, rule: 'to-be-confirmed', level: 'open', text: `${o.text}.`, area, target: { kind: o.kind, id: o.id }, actions: ['edit'] });
   }
   return out;
 }
@@ -290,7 +298,7 @@ export function spGuidedSteps(p: SpProject, exported: boolean): SpGuidedStep[] {
   const reviewed = placed && sources && monitors && !issues.some((i) => i.level !== 'open');
   return [
     { id: 'performers', label: 'Place every performer on the stage', done: placed },
-    { id: 'sources', label: 'Add each performer’s real sources', done: sources },
+    { id: 'sources', label: 'Add what each performer plays or sings', done: sources },
     { id: 'monitors', label: 'Give every performer a monitor, or say they need none', done: monitors },
     { id: 'review', label: 'Answer every review question', done: reviewed },
     { id: 'export', label: 'Make the packet', done: reviewed && exported },

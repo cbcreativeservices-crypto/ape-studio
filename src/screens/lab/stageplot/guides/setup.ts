@@ -13,12 +13,12 @@ export const SP_GUIDE_SETUP: ScreenGuide = {
   },
   seeing: [
     'Setup is the first of five work areas. The tab bar above it opens the others in any order.',
-    'A small mark on a tab means the review has a question for you in that area.',
+    'A mark on a tab counts what the review has for you there: “?” is a question, “!” is something that must be corrected.',
     'Between ALL PLOTS and UNDO you can read the revision, its status, and whether your work is saved on this device.',
     'The ‹ at the top leaves the lab. ALL PLOTS returns to your list.',
   ],
   control: [
-    'A field keeps what you typed when you leave it. UNDO and REDO step back and forward through your changes, in every area.',
+    'A field keeps what you typed when you leave it. UNDO and REDO step back and forward through your changes, in every area. A change of status is not one of them: choose Draft again.',
     'The switch beside each contact field chooses whether the venue sees that detail in the packet.',
     'Under Status, choose Draft or Ready to advance. Ready is refused while something must be corrected.',
     'ADD A PERFORMER adds a performer to your band. REMOVE lists what that performer is linked to before anything is removed.',

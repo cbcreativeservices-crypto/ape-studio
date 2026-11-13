@@ -30,7 +30,7 @@
 import { spGridStep, spGroupOf, spStageAspect } from '../../../../features/stageplot/spModel.ts';
 import { spIsSized, spStageMeters, spSymbol } from '../../../../features/stageplot/spSymbols.ts';
 import type { SpId, SpObject, SpProject } from '../../../../features/stageplot/spTypes.ts';
-import { overlapArea, pickSpot, type Box } from '../../roomdesign/planLabels.ts';
+import { overlapArea, type Box } from '../../roomdesign/planLabels.ts';
 
 export type Pt = { x: number; y: number };
 
@@ -154,6 +154,18 @@ export function stagePan(start: StageView, T: StageTransform, dxGlass: number, d
   return { zoom: next.zoom, cx: next.cx, cy: next.cy };
 }
 
+/** The zoom at which the stage fills the HEIGHT of a glass that is taller
+ *  than the stage needs (FULL SCREEN with the phone upright): there the
+ *  whole-stage zoom leaves the stage a narrow band with dark above and below.
+ *  1 when the glass is already filled (a wide glass, a phone on its side). */
+export function stageFillZoom(aspect: number, gw: number, gh: number, region: StageRegion): number {
+  const fit = stageTransform(aspect, gw, gh, region);
+  const innerH = fit.inner.y1 - fit.inner.y0;
+  const ry = Math.max(0.2, region.y1 - region.y0);
+  const z = innerH / (ry * fit.ky);
+  return z > 1.12 ? Math.min(STAGE_ZOOM_MAX, Math.round(z * 20) / 20) : 1;
+}
+
 /** Change the zoom. Coming up from the whole stage, the picture centers on
  *  `focus` (the selected object) when there is one; already zoomed, it keeps
  *  the place the user is looking at. */
@@ -172,6 +184,22 @@ export function stageSymbolScale(p: SpProject, T: StageTransform): number {
   return Math.max(T.kx / spStageMeters(p).width, STAGE_SYMBOL_MIN);
 }
 
+/** The size (meters) of what the SCREEN draws for a kind: the print symbol's
+ *  footprint, except where the on-screen art is another shape. The figure is
+ *  drawn 0.72 m across the shoulders and 0.42 m front to back; a microphone
+ *  on its tripod, with its boom, is 0.74 m long. The selection frame, the hit
+ *  box and the room a name keeps clear are all this box, so a frame never
+ *  cuts through the art it is round. */
+const ART_SIZE: Partial<Record<SpObject['kind'], { w: number; h: number }>> = {
+  performer: { w: 0.72, h: 0.42 },
+  'vocal-mic': { w: 0.5, h: 0.74 },
+  'mic-stand': { w: 0.5, h: 0.74 },
+};
+export function stageArtSize(kind: SpObject['kind']): { w: number; h: number } {
+  const sym = spSymbol(kind);
+  return ART_SIZE[kind] ?? { w: sym.w, h: sym.h };
+}
+
 /** An object's box on the glass: its center, its half width and half depth
  *  (before turning) and its turn in degrees. */
 export type StageObjBox = { id: SpId; cx: number; cy: number; hw: number; hh: number; rot: number; sized: boolean };
@@ -188,16 +216,21 @@ export function stageObjectBox(p: SpProject, o: SpObject, T: StageTransform, liv
     const h = live.size?.h ?? o.h ?? 0.1;
     return { id: o.id, cx: c.x, cy: c.y, hw: (w * T.kx) / 2, hh: (h * T.ky) / 2, rot, sized };
   }
-  const sym = spSymbol(o.kind);
+  const size = stageArtSize(o.kind);
   const u = stageSymbolScale(p, T);
-  return { id: o.id, cx: c.x, cy: c.y, hw: (sym.w * u) / 2, hh: (sym.h * u) / 2, rot, sized };
+  return { id: o.id, cx: c.x, cy: c.y, hw: (size.w * u) / 2, hh: (size.h * u) / 2, rot, sized };
 }
 
+const INSTRUMENT_KINDS: readonly SpObject['kind'][] = ['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'rack', 'stage-box', 'power', 'chair', 'music-stand'];
+
 /** The order things are painted in: platforms first (a riser lies UNDER what
- *  stands on it), then labeled boxes, then every symbol in the order it was
- *  added. The last one is on top. */
+ *  stands on it), then labeled boxes, then instruments and furniture, then
+ *  the PERFORMERS (a drummer is seen at the kit, not hidden under its
+ *  largest drum), then what stands in front of a performer: microphones, DI
+ *  boxes and monitors. Inside each layer, the order they were added in. The
+ *  last one is on top. */
 export function stageDrawOrder(objects: readonly SpObject[]): SpObject[] {
-  const rank = (o: SpObject): number => (o.kind === 'riser' ? 0 : o.kind === 'generic' ? 1 : 2);
+  const rank = (o: SpObject): number => (o.kind === 'riser' ? 0 : o.kind === 'generic' ? 1 : INSTRUMENT_KINDS.includes(o.kind) ? 2 : o.kind === 'performer' ? 3 : 4);
   return objects.map((o, i) => ({ o, i })).sort((a, b) => rank(a.o) - rank(b.o) || a.i - b.i).map((x) => x.o);
 }
 
@@ -375,8 +408,12 @@ export type StageLabelIn = {
   /** Channel numbers and mix codes, each printed in its own small box. */
   badges: readonly string[];
   box: StageObjBox;
-  /** A person: the name is set a size larger and placed first. */
+  /** A person: the name is set a size larger and placed first. A person's
+   *  name is never left out. */
   person: boolean;
+  /** The selected object: its name is never left out either, and it stands
+   *  clear of the selection frame. */
+  selected?: boolean;
 };
 
 export type StageBadgeOut = { text: string; x: number; y: number; w: number; h: number };
@@ -457,107 +494,259 @@ function layBlock(id: SpId, m: Block, x0: number, y0: number, badges: readonly s
   return { id, fs: m.fs, lines, badges: out, box: { x0, y0, x1: x0 + m.w, y1: y0 + m.h } };
 }
 
+/** The area two boxes share, with `pad` of air round the first. Two boxes
+ *  that only TOUCH share nothing: objects stand on a grid, so an edge of a
+ *  label often lies exactly on an edge of a neighbor's art, and the rounding
+ *  of that sum must not read as "over it". */
+const shared = (a: Box, b: Box, pad: number): number => {
+  const v = overlapArea(a, b, pad);
+  return v > 0.01 ? v : 0;
+};
+
+/** How far apart the centers of two boxes are. */
+const centerGap = (a: Box, b: Box): number => Math.hypot((a.x0 + a.x1) / 2 - (b.x0 + b.x1) / 2, (a.y0 + a.y1) / 2 - (b.y0 + b.y1) / 2);
+
+export type StageLabelPlan = {
+  labels: StageLabelOut[];
+  /** The objects whose NAME is not shown at this size (their numbers and mix
+   *  codes, when they have any, still are). Empty when every name fits. */
+  dropped: SpId[];
+  /** The performers (and the selection) shown by NAME ALONE at this size:
+   *  the name fits where the name with its mix code did not. */
+  bare: SpId[];
+};
+
+/** How far from its symbol a label may stand, nearest first (glass units). */
+const LABEL_STEPS: readonly number[] = [0, 5, 11, 18, 26, 35];
+/** A label this close to its symbol stands AGAINST it: no leader is drawn
+ *  (stageLabelLeader's `near`), and it is read with the symbol it touches. */
+const LABEL_AGAINST = 8;
+
+type Spot = { x0: number; y0: number; box: Box };
+
 /**
- * Place every name (with its numbers) beside its symbol. People are placed
- * first, then everything else in paint order. Each label offers its spots in
- * order of preference (under the symbol, over it, beside it, at its corners,
- * then a line further out) and takes the first that is inside the picture
- * and clear of every symbol and of every label placed before it; when none
- * is clear it takes the one that overlaps least. A LABEL YIELDS ITS PLACE,
- * NEVER ITS WORDS: nothing is hidden or shortened to make room.
+ * Place every name (with its numbers) beside its symbol.
+ *
+ * THE RULES A PLACE MUST KEEP (visual review 2, 2026-11-12):
+ *   1. A label is never over another object's art.
+ *   2. A label's nearest object is its own: its center is not nearer to
+ *      another symbol's center than to the center of the one it names. A
+ *      label may stand away from its symbol under this rule, with a leader
+ *      line that says whose it is. Where no such place is free, a label may
+ *      still stand AGAINST its own symbol (touching distance: a large
+ *      symbol's label is nearer to a small neighbor's center by nature, and
+ *      it is read with the symbol it touches). It never stands away from
+ *      its symbol AND nearer to another one: that reads as the other's name.
+ *   3. Two labels never overlap, and a label keeps off another label's
+ *      leader line.
+ *   4. A platform's name (a riser) is only ever inside its own box or
+ *      directly under it.
+ *   5. A label is inside the picture, clear of the four direction words.
+ * So moving one object can never send another object's name onto a third.
+ *
+ * WHEN NO PLACE KEEPS THE RULES (a crowded stage at a small zoom), in the
+ * house's order "a cropped readout drops its label, never its number":
+ *   • a piece of EQUIPMENT drops its NAME and keeps its channel numbers and
+ *     mix codes: a small box that fits where the whole row did not, or, when
+ *     even that has no clear place, the numbers printed ON its own symbol
+ *     (where they cannot be read as another object's). With no number to
+ *     keep, it shows nothing. The name comes back as the user zooms in.
+ *     `dropped` lists them, so the screen can say so.
+ *   • a PERFORMER, and the selected object, always keep their names. When
+ *     the name with its mix code has no place, the name alone is tried (the
+ *     code is still on the monitor it belongs to); then any free place, with
+ *     a leader; then the place that breaks the rules least.
+ *   • a PLATFORM's name is left out when neither its own box nor the strip
+ *     under it has room (the key names the dashed outline).
+ * People are placed first, then everything else in paint order. A label that
+ * had to stand away from its symbol gets a leader (stageLabelLeader).
  *
  * An object that is wholly outside the picture (zoomed in, panned away) has
- * no label and is no obstacle: there is nothing of it to name.
- *
- * The picture is the glass INSIDE the frame that carries the four direction
- * words: a label is always held inside it, so a name is never hidden under a
- * direction word. `keepOut`: more boxes no label should sit on.
+ * no label and is no obstacle. One that is all but outside it (its center
+ * past the edge, and less than a third of it showing) has no label either:
+ * there is no room beside what is not there, and its name comes back as the
+ * drawing slides. What does show of it is still art a name keeps off.
+ * `keepOut`: more boxes no label may sit on.
  */
-export function stageLabels(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = []): StageLabelOut[] {
-  const taken: Box[] = [...keepOut];
+export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = []): StageLabelPlan {
   const glass: Box = { x0: STAGE_FRAME.side, y0: STAGE_FRAME.top, x1: Math.max(STAGE_FRAME.side + 1, gw - STAGE_FRAME.side), y1: Math.max(STAGE_FRAME.top + 1, gh - STAGE_FRAME.bottom) };
-  const shown = items.filter((it) => overlapArea(stageBoxBounds(it.box), glass, 0) > 0);
-  // symbols are obstacles; platforms are not (a name may sit on a riser)
-  for (const it of shown) if (!it.box.sized) taken.push(stageBoxBounds(it.box, -1));
-  const order = [...shown.filter((i) => i.person), ...shown.filter((i) => !i.person)].filter((it) => it.text.trim() || it.badges.length);
+  const shown = items.filter((it) => shared(stageBoxBounds(it.box), glass, 0) > 0);
+  // every symbol's art (a platform is not art a name must keep off: a name
+  // may sit on a riser's deck)
+  const art = shown.filter((it) => !it.box.sized).map((it) => ({ id: it.id, box: stageBoxBounds(it.box) }));
+  const placed: { id: SpId; box: Box }[] = [];
+  const leaders: Box[] = [];
   const out = new Map<SpId, StageLabelOut>();
-  const placeOne = (it: StageLabelIn): void => {
-    const others = [...taken];
-    for (const [id, l] of out) if (id !== it.id) others.push(l.box);
-    const m = measure(it);
-    const bb = stageBoxBounds(it.box);
+  const dropped: SpId[] = [];
+  const bare: SpId[] = [];
+
+  const hold = (x0: number, y0: number, m: Block): Spot => {
+    // a place that hangs off the picture is first slid back onto it
+    const x = clamp(x0, glass.x0 + 1, Math.max(glass.x0 + 1, glass.x1 - m.w - 1));
+    const y = clamp(y0, glass.y0 + 1, Math.max(glass.y0 + 1, glass.y1 - m.h - 1));
+    return { x0: x, y0: y, box: { x0: x, y0: y, x1: x + m.w, y1: y + m.h } };
+  };
+
+  /** Every place a block of this size may be offered, nearest first. */
+  const spotsFor = (it: StageLabelIn, m: Block): Spot[] => {
+    const bb = stageBoxBounds(it.box, it.selected ? 5 : 0);
     const cx = it.box.cx;
     const cy = it.box.cy;
-    const gap = 3;
-    const spots: { x0: number; y0: number }[] = it.box.sized
-      ? [
-          // a platform carries its name inside one of its corners or edges,
-          // then outside
-          { x0: bb.x0 + gap, y0: bb.y0 + gap },
-          { x0: bb.x1 - m.w - gap, y0: bb.y0 + gap },
-          { x0: cx - m.w / 2, y0: bb.y0 + gap },
-          { x0: bb.x0 + gap, y0: bb.y1 - m.h - gap },
-          { x0: bb.x1 - m.w - gap, y0: bb.y1 - m.h - gap },
-          { x0: cx - m.w / 2, y0: bb.y1 - m.h - gap },
-          { x0: cx - m.w / 2, y0: bb.y0 - m.h - gap },
-          { x0: cx - m.w / 2, y0: bb.y1 + gap },
-          { x0: bb.x0 - m.w - gap, y0: bb.y0 },
-          { x0: bb.x1 + gap, y0: bb.y0 },
-        ]
-      : [
-          { x0: cx - m.w / 2, y0: bb.y1 + gap },
-          { x0: cx - m.w / 2, y0: bb.y0 - m.h - gap },
-          { x0: bb.x1 + gap, y0: cy - m.h / 2 },
-          { x0: bb.x0 - m.w - gap, y0: cy - m.h / 2 },
-          { x0: bb.x1 + gap, y0: bb.y1 - m.h / 2 },
-          { x0: bb.x0 - m.w - gap, y0: bb.y1 - m.h / 2 },
-          { x0: bb.x1 + gap, y0: bb.y0 - m.h / 2 },
-          { x0: bb.x0 - m.w - gap, y0: bb.y0 - m.h / 2 },
-          { x0: cx, y0: bb.y1 + gap },
-          { x0: cx - m.w, y0: bb.y1 + gap },
-          { x0: cx, y0: bb.y0 - m.h - gap },
-          { x0: cx - m.w, y0: bb.y0 - m.h - gap },
-          { x0: cx - m.w / 2, y0: bb.y1 + gap + m.h + 2 },
-          { x0: cx - m.w / 2, y0: bb.y0 - 2 * m.h - gap - 2 },
-          { x0: bb.x1 + gap, y0: bb.y1 + gap },
-          { x0: bb.x0 - m.w - gap, y0: bb.y1 + gap },
-          { x0: bb.x1 + gap, y0: bb.y0 - m.h - gap },
-          { x0: bb.x0 - m.w - gap, y0: bb.y0 - m.h - gap },
-        ];
-    // a spot that hangs off the picture is first slid back onto it
-    const cands = spots.map((s) => {
-      const x0 = clamp(s.x0, glass.x0 + 1, Math.max(glass.x0 + 1, glass.x1 - m.w - 1));
-      const y0 = clamp(s.y0, glass.y0 + 1, Math.max(glass.y0 + 1, glass.y1 - m.h - 1));
-      return { x0, y0, boxes: [{ x0, y0, x1: x0 + m.w, y1: y0 + m.h }] as Box[] };
-    });
-    const pick = pickSpot(cands, others, gw, gh);
-    out.set(it.id, layBlock(it.id, m, pick.x0, pick.y0, it.badges));
+    const raw: [number, number][] = [];
+    if (it.box.sized) {
+      const g = 3;
+      const own = stageBoxBounds(it.box);
+      // inside its own box: the corners and edges; then directly under it
+      // (under its selection frame, when it is selected)
+      for (const y0 of [own.y0 + g, own.y1 - m.h - g, cy - m.h / 2]) for (const x0 of [own.x0 + g, own.x1 - m.w - g, cx - m.w / 2]) raw.push([x0, y0]);
+      for (const x0 of [cx - m.w / 2, own.x0, own.x1 - m.w]) raw.push([x0, bb.y1 + g]);
+    } else {
+      for (const d of LABEL_STEPS) {
+        const g = 3 + d;
+        const under = bb.y1 + g;
+        const over = bb.y0 - m.h - g;
+        const right = bb.x1 + g;
+        const left = bb.x0 - m.w - g;
+        raw.push([cx - m.w / 2, under], [cx - m.w / 2, over], [right, cy - m.h / 2], [left, cy - m.h / 2]);
+        raw.push([cx, under], [cx - m.w, under], [cx, over], [cx - m.w, over]);
+        raw.push([cx - m.w / 4, under], [cx - (m.w * 3) / 4, under], [cx - m.w / 4, over], [cx - (m.w * 3) / 4, over]);
+        raw.push([right, bb.y1 - m.h / 2], [left, bb.y1 - m.h / 2], [right, bb.y0 - m.h / 2], [left, bb.y0 - m.h / 2]);
+        raw.push([right, under], [left, under], [right, over], [left, over]);
+      }
+    }
+    return raw.map(([x0, y0]) => hold(x0, y0, m));
   };
-  for (const it of order) placeOne(it);
-  // A LABEL THAT IS CLEAR STAYS WHERE IT IS. Only the labels that still touch
-  // another label are placed again (twice at most), each against all the
-  // others: one placed early may be standing on the only spot a later one
-  // had. So adding or moving one object does not send the other names round
-  // their symbols.
-  for (let round = 0; round < 2; round++) {
-    const clashing = new Set<SpId>();
-    const placed = [...out.entries()];
-    for (let i = 0; i < placed.length; i++)
-      for (let j = i + 1; j < placed.length; j++)
-        if (overlapArea(placed[i][1].box, placed[j][1].box, 0) > 0) {
-          clashing.add(placed[i][0]);
-          clashing.add(placed[j][0]);
+
+  /** What a place breaks: 0 = it keeps every rule. `nearest: false` leaves
+   *  rule 2 out (a performer's name in a crowd). */
+  const faults = (it: StageLabelIn, box: Box, nearest = true): number => {
+    let cost = 0;
+    for (const k of keepOut) cost += shared(box, k, 0) * 6;
+    for (const pl of placed) if (pl.id !== it.id) cost += shared(box, pl.box, 1) * 6;
+    for (const l of leaders) cost += shared(box, l, 0) * 2;
+    const own = art.find((a) => a.id === it.id);
+    const ownGap = own ? centerGap(box, own.box) : 0;
+    let nearer = false;
+    for (const a of art) {
+      const over = shared(box, a.box, 0);
+      if (over > 0) cost += a.id === it.id ? over + 1 : over * 8 + 20;
+      // nearer to another symbol than to its own (a platform's name is
+      // judged by rule 4 alone: what stands on it is nearer by nature)
+      else if (a.id !== it.id && own && centerGap(box, a.box) < ownGap - 1e-6) nearer = true;
+    }
+    if (nearer && nearest) cost += 30;
+    // a label that stands away from its symbol has a leader: the line may
+    // not run through another label or another symbol
+    const lead = own ? stageLabelLeader(box, own.box) : null;
+    if (lead) {
+      const n = Math.max(1, Math.ceil(Math.hypot(lead.x2 - lead.x1, lead.y2 - lead.y1) / 3));
+      for (let k = 1; k < n; k++) {
+        const x = lead.x1 + ((lead.x2 - lead.x1) * k) / n;
+        const y = lead.y1 + ((lead.y2 - lead.y1) * k) / n;
+        const hits = (q: Box): boolean => x >= q.x0 && x <= q.x1 && y >= q.y0 && y <= q.y1;
+        if (placed.some((pl) => pl.id !== it.id && hits(pl.box)) || art.some((a) => a.id !== it.id && hits(a.box))) cost += 6;
+      }
+    }
+    return cost;
+  };
+
+  const first = (it: StageLabelIn, spots: readonly Spot[], nearest = true): Spot | null => {
+    for (const sp of spots) if (faults(it, sp.box, nearest) === 0) return sp;
+    return null;
+  };
+  /** The place that breaks the rules least (the earliest, on a tie). */
+  const leastBad = (it: StageLabelIn, spots: readonly Spot[]): Spot => {
+    let best = spots[0];
+    let bestCost = Number.POSITIVE_INFINITY;
+    spots.forEach((sp, k) => {
+      const c = faults(it, sp.box) + k * 0.25;
+      if (c < bestCost) {
+        best = sp;
+        bestCost = c;
+      }
+    });
+    return best;
+  };
+  const put = (it: StageLabelIn, m: Block, sp: Spot, badges: readonly string[]): void => {
+    const lab = layBlock(it.id, m, sp.x0, sp.y0, badges);
+    out.set(it.id, lab);
+    placed.push({ id: it.id, box: lab.box });
+    // a label that stands away from its symbol is joined to it by a leader:
+    // later labels keep off that line
+    const own = art.find((a) => a.id === it.id);
+    const lead = own ? stageLabelLeader(lab.box, own.box) : null;
+    if (lead) {
+      const n = Math.max(1, Math.ceil(Math.hypot(lead.x2 - lead.x1, lead.y2 - lead.y1) / 4));
+      for (let k = 0; k <= n; k++) {
+        const x = lead.x1 + ((lead.x2 - lead.x1) * k) / n;
+        const y = lead.y1 + ((lead.y2 - lead.y1) * k) / n;
+        leaders.push({ x0: x - 1.5, y0: y - 1.5, x1: x + 1.5, y1: y + 1.5 });
+      }
+    }
+  };
+
+  const keeps = (it: StageLabelIn): boolean => it.person || !!it.selected;
+  /** Enough of it is in the picture to be named there. */
+  const inView = (it: StageLabelIn): boolean => {
+    if (it.box.cx >= glass.x0 && it.box.cx <= glass.x1 && it.box.cy >= glass.y0 && it.box.cy <= glass.y1) return true;
+    const b = stageBoxBounds(it.box);
+    return shared(b, glass, 0) >= (b.x1 - b.x0) * (b.y1 - b.y0) * 0.3;
+  };
+  const order = [...shown.filter(keeps), ...shown.filter((i) => !keeps(i))].filter((it) => (it.text.trim() || it.badges.length) && inView(it));
+  /** The places that stand against the symbol itself (a platform's places
+   *  are all its own). */
+  const against = (it: StageLabelIn, spots: readonly Spot[]): Spot[] => {
+    const own = art.find((a) => a.id === it.id);
+    if (!own) return [...spots];
+    return spots.filter((sp) => Math.hypot(Math.max(0, own.box.x0 - sp.box.x1, sp.box.x0 - own.box.x1), Math.max(0, own.box.y0 - sp.box.y1, sp.box.y0 - own.box.y1)) <= LABEL_AGAINST + 0.01);
+  };
+  for (const it of order) {
+    const full = measure(it);
+    const spots = spotsFor(it, full);
+    // rule 2 first (near or far); then a free place against its own symbol
+    const whole = first(it, spots) ?? first(it, against(it, spots), false);
+    if (whole) {
+      put(it, full, whole, it.badges);
+      continue;
+    }
+    if (keeps(it)) {
+      // a person and the selection keep their names: the name alone beside
+      // them, then any free place, then the least bad place
+      if (it.badges.length && it.text.trim()) {
+        const nameOnly = measure({ ...it, badges: [] });
+        const nameSpots = spotsFor(it, nameOnly);
+        const alone = first(it, nameSpots) ?? first(it, against(it, nameSpots), false);
+        const far = alone ? null : first(it, spots, false);
+        if (far) {
+          put(it, full, far, it.badges);
+          continue;
         }
-    if (!clashing.size) break;
-    for (const it of order) if (clashing.has(it.id)) placeOne(it);
+        bare.push(it.id);
+        put(it, nameOnly, alone ?? first(it, nameSpots, false) ?? leastBad(it, nameSpots), []);
+      } else put(it, full, first(it, spots, false) ?? leastBad(it, spots), it.badges);
+      continue;
+    }
+    // equipment: the NAME goes, the numbers stay
+    if (it.text.trim()) dropped.push(it.id);
+    if (!it.badges.length) continue;
+    const nums = measure({ ...it, text: '' });
+    const numSpots = spotsFor(it, nums);
+    // …beside the symbol when a place keeps the rules, otherwise ON it
+    const onIt = hold(it.box.cx - nums.w / 2, it.box.cy - nums.h / 2, nums);
+    const onItClear = !placed.some((pl) => shared(onIt.box, pl.box, 0) > 0) && !art.some((a) => a.id !== it.id && shared(onIt.box, a.box, 0) > 0);
+    put(it, nums, first(it, numSpots) ?? first(it, against(it, numSpots), false) ?? (onItClear ? onIt : (first(it, numSpots, false) ?? leastBad(it, [onIt, ...numSpots]))), it.badges);
   }
-  // back in the order given
-  return items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x);
+  return { labels: items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x), dropped, bare };
+}
+
+/** The labels alone (see stageLabelPlan). */
+export function stageLabels(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = []): StageLabelOut[] {
+  return stageLabelPlan(items, gw, gh, keepOut).labels;
 }
 
 /** The area two label boxes share (0 = clear), for tests and for the view's
  *  own checks. */
-export const stageLabelClash = (a: Box, b: Box): number => overlapArea(a, b, 0);
+export const stageLabelClash = (a: Box, b: Box): number => shared(a, b, 0);
 
 /** The boxes the four direction words stand in (the frame). The view prints
  *  the words there; labels keep off them. */
@@ -759,10 +948,31 @@ export type StageKeyLayout<K extends string = string> = {
 
 const keyTextW = (text: string): number => text.length * STAGE_KEY_FS * STAGE_KEY_CHAR_W;
 
+/** A name split at its spaces into `n` lines of about the same length
+ *  (never cut; fewer lines when it has fewer words). */
+function keyBalanced(name: string, n: number): string[] {
+  const cuts: number[] = [];
+  for (let k = 1; k < n; k++) {
+    const target = (name.length * k) / n;
+    let best = -1;
+    for (let i = (cuts[cuts.length - 1] ?? -1) + 1; i < name.length; i++) if (name[i] === ' ' && (best < 0 || Math.abs(i - target) < Math.abs(best - target))) best = i;
+    if (best >= 0) cuts.push(best);
+  }
+  const out: string[] = [];
+  let from = 0;
+  for (const c of cuts) {
+    out.push(name.slice(from, c));
+    from = c + 1;
+  }
+  out.push(name.slice(from));
+  return out.filter((line) => line.length > 0);
+}
+
 /** A name on as few lines as fit `maxW`, broken at spaces (never cut). A
- *  name longer than `wrapAt` letters is first split in two near its middle,
- *  so a long name makes a narrow, two-line cell. */
-function keyNameLines(name: string, maxW: number, wrapAt: number): string[] {
+ *  name wider than `wrapW` is first split into two or three lines of about
+ *  the same length, so a long name makes a narrow cell of two or three lines
+ *  ("Wedge monitor / (speaker side faces / the performer)"). */
+function keyNameLines(name: string, maxW: number, wrapW: number): string[] {
   const fit = (text: string): string[] => {
     if (keyTextW(text) <= maxW) return [text];
     const out: string[] = [];
@@ -777,16 +987,11 @@ function keyNameLines(name: string, maxW: number, wrapAt: number): string[] {
     if (line) out.push(line);
     return out;
   };
-  if (name.length > wrapAt && name.includes(' ')) {
-    const mid = name.length / 2;
-    let best = -1;
-    for (let i = 0; i < name.length; i++) if (name[i] === ' ' && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
-    return [...fit(name.slice(0, best)), ...fit(name.slice(best + 1))];
-  }
-  return fit(name);
+  const n = Math.min(3, Math.max(1, Math.ceil(keyTextW(name) / wrapW)));
+  return (n > 1 && name.includes(' ') ? keyBalanced(name, n) : [name]).flatMap(fit);
 }
 
-function keyLayoutWith<K extends string>(entries: readonly { kind: K; name: string }[], gw: number, wrapAt: number, note: string): StageKeyLayout<K> {
+function keyLayoutWith<K extends string>(entries: readonly { kind: K; name: string }[], gw: number, wrapW: number, note: string): StageKeyLayout<K> {
   // the heading KEY stands at the left of the first row; the rows under it
   // use the whole width
   const first = KEY_PAD_X + KEY_HEADING_W;
@@ -799,7 +1004,7 @@ function keyLayoutWith<K extends string>(entries: readonly { kind: K; name: stri
   // measure every cell against the narrowest row, then fill rows from the left
   const narrow = right - first;
   const measured = entries.map((e) => {
-    const lines = keyNameLines(e.name, narrow - STAGE_KEY_ART.w - KEY_ART_GAP, wrapAt);
+    const lines = keyNameLines(e.name, narrow - STAGE_KEY_ART.w - KEY_ART_GAP, wrapW);
     const textW = Math.max(...lines.map(keyTextW));
     return { e, lines, w: Math.min(narrow, STAGE_KEY_ART.w + KEY_ART_GAP + textW), h: Math.max(KEY_ROW_H, lines.length * KEY_LINE_H + 3) };
   });
@@ -846,9 +1051,9 @@ function keyLayoutWith<K extends string>(entries: readonly { kind: K; name: stri
 }
 
 /** Ways to set the names, tried in this order: each on one line where it
- *  fits; names longer than 18 letters on two lines ("Wedge monitor (wide
- *  side / faces the performer)"); names longer than 13 on two lines. */
-const KEY_WRAPS: readonly number[] = [Number.POSITIVE_INFINITY, 18, 13];
+ *  fits; then no line wider than this many glass units (a long name on two
+ *  or three lines of about the same length). */
+const KEY_WRAPS: readonly number[] = [Number.POSITIVE_INFINITY, 135, 110, 95, 80];
 
 /** `note`: the scale words printed at the right end of the heading row
  *  ("NOT TO SCALE", or the stage's size): see stageScaleNote. */
@@ -868,8 +1073,8 @@ export function stageKeyLayout<K extends string>(entries: readonly { kind: K; na
   // The shortest strip wins (the earlier way, on a tie): the key takes its
   // height from the stage's display, so every row it saves goes to the stage.
   let best = keyLayoutWith(entries, gw, KEY_WRAPS[0], note);
-  for (const wrapAt of KEY_WRAPS.slice(1)) {
-    const tryIt = keyLayoutWith(entries, gw, wrapAt, note);
+  for (const wrapW of KEY_WRAPS.slice(1)) {
+    const tryIt = keyLayoutWith(entries, gw, wrapW, note);
     if (tryIt.height < best.height - 1e-6) best = tryIt;
   }
   return best;

@@ -44,6 +44,11 @@ export type SpDocPlotItem = {
   badges: string[];
   /** A person: its name is printed larger than an equipment label. */
   person: boolean;
+  /** A thin line from the label to its own symbol (meters), set when the
+   *  label could not be placed right beside the symbol without sitting on
+   *  another object (review 2, 2026-11-12). A renderer draws it as a hairline
+   *  in the muted gray, under the symbols. Absent = no line. */
+  leader?: { from: { x: number; y: number }; to: { x: number; y: number } };
 };
 
 export type SpDocPlot = {
@@ -61,6 +66,11 @@ export type SpDocPlot = {
   viewNote: string;
   /** What the references on the plot mean, in words. */
   legend: string[];
+  /** true = this drawing needs room (a plot-only packet, or six or more
+   *  performers): the renderer lets it grow to the height the page has left
+   *  after the header, the key and the notes, and starts the next section on
+   *  a new page. false = the usual cap (`spPlotMaxH`). Review 2, 2026-11-12. */
+  roomy: boolean;
   /** THE KEY: each kind of symbol that is on this plot, with its name. It is
    *  part of the drawing (owner 2026-11-12): every renderer prints it WITH
    *  the plot, in every packet kind, and never leaves an entry out. A

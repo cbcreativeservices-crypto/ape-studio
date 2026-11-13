@@ -18,7 +18,7 @@ import { spAddInput, spAddPackage, spAddSource, spSource, spUpdateSource } from 
 import type { SpCapture, SpCategory, SpId, SpProject } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
 import { Button, Choice, Note, RowCard } from '../spForm';
-import { SheetBody, Small, SubTitle, Tag, TickRow, bitStyles } from './bits';
+import { Chevron, SheetBody, Small, SubTitle, Tag, TickRow, bitStyles } from './bits';
 import { spPackageAllTicked, spPackagePreview, spPackageToggle, spPeopleOptions, spSourceOptions, spUniqueLabel } from './inputsLogic';
 
 export type AddKind = 'package' | 'single' | 'quiet';
@@ -33,13 +33,15 @@ export function AddMenu({ onPick }: { onPick: (kind: AddKind) => void }) {
         title="A ready-made package"
         subtitle="The usual inputs for one source. You see every row before it is added, and you can leave rows out."
         onPress={() => onPick('package')}
+        right={<Chevron />}
         a11yLabel="Add a ready-made package. You see every row before it is added."
       />
-      <RowCard title="One input" subtitle="A single input, on a source you already have or on a new one." onPress={() => onPick('single')} a11yLabel="Add one input" />
+      <RowCard title="One input" subtitle="A single input, on a source you already have or on a new one." onPress={() => onPick('single')} right={<Chevron />} a11yLabel="Add one input" />
       <RowCard
         title="No sound system connection needed"
         subtitle="An acoustic or self-contained source. It stays on the stage and adds no input."
         onPress={() => onPick('quiet')}
+        right={<Chevron />}
         a11yLabel="Add a source that needs no sound system connection"
       />
     </SheetBody>
@@ -66,6 +68,7 @@ export function PackagePicker({ sourceId, onPick, onBack }: { sourceId: SpId | n
                 subtitle={def.assumes}
                 badges={[def.rows.length === 1 ? '1 INPUT' : `${def.rows.length} INPUTS`]}
                 onPress={() => onPick(def.id)}
+                right={<Chevron />}
                 a11yLabel={`${def.name}. ${def.assumes} Shows its rows before anything is added.`}
               />
             ))}
@@ -104,7 +107,8 @@ export function PackagePreview({ packageId, sourceId, onBack, onAdded }: { packa
 
   return (
     <SheetBody>
-      <Note>This package assumes: {view.assumes}</Note>
+      <SubTitle>This package assumes</SubTitle>
+      <Note>{view.assumes}</Note>
       <SubTitle>Its rows</SubTitle>
       <Small>Untick a row to leave it out. Every row can be changed or removed after it is added.</Small>
       <View style={bitStyles.gap}>

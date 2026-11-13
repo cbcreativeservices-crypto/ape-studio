@@ -14,7 +14,7 @@
  *     that area.
  *
  * Above the tabs, in every area: the way back to the library, the revision
- * and status ("Rev 2 · Draft"), where the work stands ("Saved on this device"
+ * and status ("Revision 2 · Draft"), where the work stands ("Saved on this device"
  * only from a write the device accepted), and UNDO / REDO.
  *
  * WHO IS SAVED (house guest rule): the tier decides, through useTier(). A
@@ -73,7 +73,7 @@ import { StageArea } from './StageArea';
 const TITLE = 'STAGE PLOT AND CHANNEL DESIGNER';
 export const STAGE_PLOT_LAB_KEY = 'stageplot';
 
-// A review answer that would renumber a revision already shared asks first,
+// A review answer that would renumber a revision that may have been sent asks first,
 // with the house popup (spIssueActions is a pure file and cannot import it).
 setSpIssueAsk((title, body, yesText, yes) => confirmDialog(title, body, yesText, yes));
 
@@ -202,6 +202,11 @@ function Editor({ onClose }: { onClose: () => void }) {
     const out: Record<SpAreaId, { ask: number; must: number }> = { setup: { ask: 0, must: 0 }, stage: { ask: 0, must: 0 }, inputs: { ask: 0, must: 0 }, monitors: { ask: 0, must: 0 }, export: { ask: 0, must: 0 } };
     for (const i of ed.issues) {
       if (i.level === 'open') continue;
+      // "There is nothing to send yet" is true of every new, blank stage plot:
+      // a mark for it would tell a user who has done nothing that something
+      // "must be corrected". It stays in the review list and still refuses
+      // Ready; the tab shows no mark until a performer or an input exists.
+      if (i.rule === 'empty') continue;
       // Counted apart, so one thing that must be corrected is never also
       // called a question.
       if (i.level === 'block') out[i.area].must += 1;
@@ -214,8 +219,13 @@ function Editor({ onClose }: { onClose: () => void }) {
   const p = ed.project;
   // The header has two lines at most, so it carries the band's name only; the
   // title is in Setup. With no band name yet, whatever name the plot has.
-  const headerName = p.band.trim() || spProjectName(p);
-  const statusWord = p.status === 'ready' ? 'Ready to advance' : 'Draft';
+  // A gig copy says so in the header, in every area: it is not the master.
+  const headerName = `${p.band.trim() || spProjectName(p)}${p.kind === 'gig' ? ' · gig copy' : ''}`;
+  // One word in the bar, so it is never cut at a phone's width; the full
+  // words ("Ready to advance") are under Status in Setup and are what a
+  // screen reader hears.
+  const statusWord = p.status === 'ready' ? 'Ready' : 'Draft';
+  const statusSaid = p.status === 'ready' ? 'ready to advance' : 'draft';
 
   return (
     // Regions only where a Rack Unit registers them (the Stage area).
@@ -229,8 +239,10 @@ function Editor({ onClose }: { onClose: () => void }) {
         <View style={styles.state}>
           {/* The revision is on screen in every area: the first change after a
               revision was shared moves it on, and the user must see that. */}
-          <Text style={styles.rev} {...fitValue(12)} maxFontSizeMultiplier={1.35} accessibilityLabel={`Revision ${p.revision}, ${statusWord}.`}>
-            Rev {p.revision} · {statusWord}
+          {/* No one-line limit here: a browser cannot shrink a line to fit, it
+              cuts it with "…". If it does not fit, it wraps. */}
+          <Text style={styles.rev} maxFontSizeMultiplier={1.35} accessibilityLabel={`Revision ${p.revision}, ${statusSaid}.`}>
+            Revision {p.revision} · {statusWord}
           </Text>
           <Text style={[styles.save, ed.saveState === 'failed' && styles.saveFailed, ed.saveState === 'session-only' && styles.saveSession]} accessibilityLiveRegion="polite">
             {SAVE_WORDS[ed.saveState]}

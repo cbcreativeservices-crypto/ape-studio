@@ -157,11 +157,12 @@ export function spDiTotals(p: SpProject): SpDiTotals {
     if (used > d.channels) overloaded.push({ label: d.label, channels: d.channels, used });
   }
   const ch = di.length;
-  const chWord = `${ch} DI audio channel${ch === 1 ? '' : 's'}`;
+  const chWord = `${ch} DI channel${ch === 1 ? '' : 's'}`;
+  const noDevice = (n: number) => (n === 1 ? '1 DI channel has no DI device (DI box) yet' : `${n} DI channels have no DI device (DI box) yet`);
   let summary: string;
   if (!ch) summary = 'No DI channels.';
-  else if (!p.diDevices.length) summary = `${chWord}, device arrangement to confirm.`;
-  else if (unassigned) summary = `${chWord}: ${p.diDevices.length} DI device${p.diDevices.length === 1 ? '' : 's'} listed, and ${unassigned} channel${unassigned === 1 ? '' : 's'} with the device arrangement to confirm.`;
+  else if (!p.diDevices.length) summary = `${noDevice(ch)}.`;
+  else if (unassigned) summary = `${chWord}: ${p.diDevices.length} DI device${p.diDevices.length === 1 ? '' : 's'} listed, and ${noDevice(unassigned)}.`;
   else summary = `${chWord} on ${p.diDevices.length} DI device${p.diDevices.length === 1 ? '' : 's'}.`;
   return { channels: ch, devices: p.diDevices.length, devicesBySupplier: bySupplier, unassignedChannels: unassigned, overloaded, summary };
 }
@@ -313,7 +314,7 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
     if (m.provider === 'house' && !m.outputs.trim()) {
       const byType = new Map<SpDeviceType, number>();
       for (const d of p.devices) if (d.mixId === m.id) byType.set(d.type, (byType.get(d.type) ?? 0) + 1);
-      for (const [type, n] of byType) if (n >= 2) what.push(`how the feed reaches its ${n} ${SP_DEVICE_PLURAL[type]}`);
+      for (const [type, n] of byType) if (n >= 2) what.push(`how its ${n} ${SP_DEVICE_PLURAL[type]} are fed (linked from one output, or one output each)`);
     }
     if (what.length) open.push({ text: `${m.code}${m.name ? ` ${m.name}` : ''}: ${what.join('; ')}`, kind: 'mix', id: m.id });
   }
@@ -393,22 +394,31 @@ export function spDateInWords(iso: string): string {
 const count = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
 
 /** A plain-text technical summary, for a quick message (handoff §7). */
+/** "all mono", "all stereo", "mono", "2 mono, 2 stereo": never a zero
+ *  count (review 2, 2026-11-12). */
+export function spMonoStereoWord(mono: number, stereo: number): string {
+  if (mono && stereo) return `${mono} mono, ${stereo} stereo`;
+  const n = mono + stereo;
+  const word = mono ? 'mono' : 'stereo';
+  return n === 1 ? word : `all ${word}`;
+}
+
 export function spTextSummary(p: SpProject): string {
   const s = spSummary(p);
   const m = s.monitors;
   const lines: string[] = [];
-  lines.push(`${p.band || 'Untitled band'}${p.title ? ` — ${p.title}` : ''} (revision ${p.revision}${p.status === 'draft' ? ', draft' : ''})`);
+  lines.push(`${[p.band, p.title].filter((x) => x.trim()).join(' — ') || 'Stage plot and input list'} (revision ${p.revision}${p.status === 'draft' ? ', draft' : ''})`);
   if (p.venue || p.eventDate) lines.push([p.venue, spDateInWords(p.eventDate)].filter(Boolean).join(', '));
   const monitorOnly = spPatchRows(p, 'house').filter((r) => r.input.audience === 'monitor-only').map((r) => r.input.label);
   lines.push(`Inputs: ${s.house.channels} to the house system (${s.house.audience} for the audience mix${monitorOnly.length ? `; monitor only, kept out of the audience mix: ${monitorOnly.join(', ')}` : ''}${s.house.audienceTbc ? `; ${s.house.audienceTbc} to be confirmed` : ''}).`);
   if (s.band) lines.push(`Band monitor rig: ${count(s.band.channels, 'input')}.`);
   lines.push(`Microphones: ${s.microphones}. ${s.di.summary}`);
-  if (s.wirelessInputs) lines.push(`Wireless receiver outputs: ${s.wirelessInputs} (coordination required).`);
-  lines.push(`Monitor mixes: ${m.all.mixes} (${m.all.mono} mono, ${m.all.stereo} stereo).`);
-  lines.push(`Asked of the house console: ${m.house.mixes} mix${m.house.mixes === 1 ? '' : 'es'}, ${m.house.channels} audio channel${m.house.channels === 1 ? '' : 's'}.`);
-  if (m.bandOwned.mixes) lines.push(`Created in the band's own rig, and not asked of the house console: ${m.bandOwned.mixes} mix${m.bandOwned.mixes === 1 ? '' : 'es'}.`);
+  if (s.wirelessInputs) lines.push(`Wireless receiver outputs: ${s.wirelessInputs} (radio frequency coordination needed).`);
+  lines.push(`Monitor mixes: ${m.all.mixes}${m.all.mixes ? ` (${spMonoStereoWord(m.all.mono, m.all.stereo)})` : ''}.`);
+  lines.push(`Requested from the house console: ${m.house.mixes} mix${m.house.mixes === 1 ? '' : 'es'}, ${m.house.channels} audio channel${m.house.channels === 1 ? '' : 's'}.`);
+  if (m.bandOwned.mixes) lines.push(`Created in the band monitor rig, and not requested from the house console: ${m.bandOwned.mixes} mix${m.bandOwned.mixes === 1 ? '' : 'es'}.`);
   if (m.byProvider.tbc.mixes) lines.push(`Who creates ${count(m.byProvider.tbc.mixes, 'mix', 'mixes')} is to be confirmed.`);
-  if (m.wirelessDevices) lines.push(`Wireless monitor devices: ${m.wirelessDevices} (coordination required).`);
+  if (m.wirelessDevices) lines.push(`Wireless monitor devices: ${m.wirelessDevices} (radio frequency coordination needed).`);
   const dev = (Object.keys(m.devices) as SpDeviceType[]).filter((t) => m.devices[t] > 0).map((t) => spDeviceCountWord(t, m.devices[t]));
   if (dev.length) lines.push(`Monitor equipment: ${dev.join(', ')}.`);
   if (s.open.length) lines.push(`To be confirmed: ${s.open.length} item${s.open.length === 1 ? '' : 's'} (listed in the packet).`);

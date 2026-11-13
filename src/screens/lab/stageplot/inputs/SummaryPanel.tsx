@@ -39,14 +39,16 @@ export function SummaryPanel({ onOpenIssue }: { onOpenIssue: (issue: SpIssue) =>
   return (
     <Section title="EQUIPMENT AND WHO BRINGS IT" hint="Counted from your rows each time. To change a number here, change the row.">
       <HelpTip
-        title="Band supplied and venue supplied"
-        body="Each item has someone who brings it: the band, the venue, another provider, or to be confirmed. The packet prints these apart, so the venue sees what it is asked to provide and what is still open."
+        title="Who brings what"
+        body="Each item has someone who brings it: the band, the venue, another provider, or to be confirmed. The packet prints these apart, so the venue sees what your band asks it to bring and what is still open."
       />
-      <View style={bitStyles.counts}>
-        {counts.map((c) => (
-          <Count key={c.label} value={c.value} label={c.label} />
-        ))}
-      </View>
+      {counts.length ? (
+        <View style={bitStyles.counts}>
+          {counts.map((c) => (
+            <Count key={c.label} value={c.value} label={c.label} />
+          ))}
+        </View>
+      ) : null}
       {groups.map((g) => (
         <View key={g.id} style={bitStyles.gap}>
           <SubTitle>{g.title}</SubTitle>
@@ -67,7 +69,7 @@ export function SummaryPanel({ onOpenIssue }: { onOpenIssue: (issue: SpIssue) =>
         ))}
         {open.elsewhere.length ? (
           <>
-            <Small>Answered in MONITORS:</Small>
+            <Small>To answer in MONITORS:</Small>
             <Lines lines={open.elsewhere.map(spOpenLine)} mark="?" />
           </>
         ) : null}

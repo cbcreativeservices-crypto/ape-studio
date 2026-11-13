@@ -48,7 +48,7 @@ export function SubHeading({ children }: { children: ReactNode }) {
   );
 }
 
-/** The heading of one group inside a section ("ASKED OF THE HOUSE CONSOLE"). */
+/** The heading of one group inside a section ("REQUESTED FROM THE HOUSE CONSOLE"). */
 export function GroupHeading({ children }: { children: ReactNode }) {
   return (
     <Text style={styles.groupHeading} accessibilityRole="header">

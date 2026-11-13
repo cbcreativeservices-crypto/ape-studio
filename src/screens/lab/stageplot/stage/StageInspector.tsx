@@ -5,10 +5,13 @@
  * it is a platform, what it stands for in the lists (with a way to go there),
  * its group, and duplicate / remove.
  *
- * It is drawn in three places from this one file: in the popup the OBJECT
- * button opens, in the dock tray in FULL SCREEN (where a popup cannot be
- * presented), and under the object's row in the list of objects. So it opens
- * no popup of its own.
+ * It is drawn in three places from this one file. Under the object's row in
+ * the list of objects it is whole (`part="all"`): the drawing is pinned above
+ * the list, so the position and turn buttons are seen to work. In the popup
+ * that OBJECT's "NAME, LINKS AND MORE" opens, and in the FULL SCREEN tray, it
+ * is the DETAILS only (`part="details"`): the popup covers the drawing, so
+ * the buttons that move and turn stay in the dock, under the drawing
+ * (StageMovePad; visual review 2, B10). It opens no popup of its own.
  *
  * Every change is one spModel edit through the editor's `apply`: one undo
  * step. Removing asks in place first, as the Inputs area does (RemoveStep),
@@ -26,18 +29,29 @@ import { parseRoomNumber } from '../../roomdesign/roomParse';
 import { RemoveStep } from '../inputs/bits';
 import { useSpEditor } from '../spContext';
 import { Button, MoreDetails, Note, Switch, TextField } from '../spForm';
-import { stageFacingWord, stagePosFraction, stagePosUnit, stagePosValue, stagePosWords, stageSizeFraction } from './stageGeom';
-import { stageDeviceChoices, stageInputBadges, stageInputChoices, stageKindName, stageLinkMode, stageListName, stageMoveExact, stageNudge, stagePerformerChoices, stageSourceChoices } from './stageLinks';
+import { StageMovePad } from './StageMovePad';
+import { stageFacingWord, stagePosFraction, stagePosUnit, stagePosValue, stageSizeFraction } from './stageGeom';
+import { stageDeviceChoices, stageInputBadges, stageInputChoices, stageKindName, stageLinkMode, stageListName, stageMoveExact, stageObjectKindName, stagePerformerChoices, stageSourceChoices } from './stageLinks';
 
-const fromEdge = { x: 'the stage right edge', y: 'the upstage edge' } as const;
-
+/** Short labels, so the two boxes sit at one height; the long words are in
+ *  the line under them. */
 function posLabel(p: SpProject, axis: 'x' | 'y'): string {
   const unit = stagePosUnit(p);
-  if (unit === '%') return axis === 'x' ? 'Across (% from stage right)' : 'Depth (% from upstage)';
-  return axis === 'x' ? `Across (${unit} from stage right)` : `Depth (${unit} from upstage)`;
+  return `${axis === 'x' ? 'Across' : 'Depth'} ${unit === '%' ? '%' : `(${unit})`}`;
 }
 
-export function StageInspector({ id, onDone }: { id: SpId; /** Called when the object is deselected or removed here (the popup closes). */ onDone?: () => void }) {
+export function StageInspector({
+  id,
+  onDone,
+  part = 'all',
+}: {
+  id: SpId;
+  /** Called when the object is deselected or removed here (the popup closes). */
+  onDone?: () => void;
+  /** 'all' under the list row; 'details' in the popup and the FULL SCREEN tray
+   *  (no name heading: the popup's title is the name; no position or turn). */
+  part?: 'all' | 'details';
+}) {
   const ed = useSpEditor();
   const p = ed.project;
   const o = spObject(p, id);
@@ -54,7 +68,6 @@ export function StageInspector({ id, onDone }: { id: SpId; /** Called when the o
     const f = stageSizeFraction(p, axis, parseRoomNumber(text));
     if (f != null) set(axis === 'x' ? { w: f } : { h: f });
   };
-  const nudge = (dx: number, dy: number) => ed.apply((q) => stageNudge(q, id, dx, dy));
   const unit = stagePosUnit(p);
   const sized = spIsSized(o.kind);
   const mode = stageLinkMode(o.kind);
@@ -76,10 +89,12 @@ export function StageInspector({ id, onDone }: { id: SpId; /** Called when the o
   return (
     <View style={styles.wrap}>
       <View style={styles.head}>
-        <Text style={styles.name} accessibilityRole="header">
-          {name}
-        </Text>
-        <Text style={styles.sub}>{`${stageKindName(o.kind)} · ${spLocationWord(o)} · ${stageFacingWord(o.rot)}`}</Text>
+        {part === 'all' ? (
+          <Text style={styles.name} accessibilityRole="header">
+            {name}
+          </Text>
+        ) : null}
+        <Text style={styles.sub}>{[stageObjectKindName(o.kind).toLowerCase() === name.toLowerCase() ? '' : stageObjectKindName(o.kind), spLocationWord(o), stageFacingWord(o.rot)].filter(Boolean).join(' · ')}</Text>
       </View>
 
       {/* ── name ── */}
@@ -89,40 +104,26 @@ export function StageInspector({ id, onDone }: { id: SpId; /** Called when the o
         <TextField label="Name on the plot" value={o.label} onCommit={(t) => set({ label: t })} placeholder={stageKindName(o.kind)} hint="Leave it empty to print no name beside this object." />
       )}
 
-      {/* ── position: typed, or one step at a time ── */}
-      <Text style={styles.heading} accessibilityRole="header">
-        POSITION
-      </Text>
-      <Text style={styles.line}>{stagePosWords(p, o)}</Text>
-      <View style={styles.row}>
-        <TextField label={posLabel(p, 'x')} value={String(stagePosValue(p, 'x', o.x))} onCommit={typed('x')} keyboard="numeric" width="half" />
-        <TextField label={posLabel(p, 'y')} value={String(stagePosValue(p, 'y', o.y))} onCommit={typed('y')} keyboard="numeric" width="half" />
-      </View>
-      <Text style={styles.hint}>{`0 is ${fromEdge.x} (the left of the drawing) and ${fromEdge.y} (the top). ${p.stage.snap ? 'A position button moves one grid step.' : 'A position button moves one hundredth of the stage.'}${group.length ? ' Its group moves with it.' : ''}`}</Text>
-      <View style={styles.row}>
-        <Button label="◀ STAGE RIGHT" a11yLabel={`Move ${name} one step toward stage right`} onPress={() => nudge(-1, 0)} />
-        <Button label="STAGE LEFT ▶" a11yLabel={`Move ${name} one step toward stage left`} onPress={() => nudge(1, 0)} />
-        <Button label="▲ UPSTAGE" a11yLabel={`Move ${name} one step upstage`} onPress={() => nudge(0, -1)} />
-        <Button label="▼ DOWNSTAGE" a11yLabel={`Move ${name} one step downstage, toward the audience`} onPress={() => nudge(0, 1)} />
-      </View>
+      {/* ── position and turn: only where the drawing is in view ── */}
+      {part === 'all' ? (
+        <>
+          <Text style={styles.heading} accessibilityRole="header">
+            POSITION AND TURN
+          </Text>
+          <StageMovePad id={id} />
+          <View style={styles.row}>
+            <TextField label={posLabel(p, 'x')} value={String(stagePosValue(p, 'x', o.x))} onCommit={typed('x')} keyboard="numeric" width="half" />
+            <TextField label={posLabel(p, 'y')} value={String(stagePosValue(p, 'y', o.y))} onCommit={typed('y')} keyboard="numeric" width="half" />
+          </View>
+          <Text style={styles.hint}>Type a position to place it exactly. Across is measured from the stage right edge (the left of the drawing). Depth is measured from the upstage edge (the top).</Text>
+        </>
+      ) : null}
       {!spOnStage(o) ? (
         <>
           <Note tone="warning">{`${name} is outside the stage. That is allowed: the plot shows it there, marked OFF STAGE.`}</Note>
           <Switch label="It is off the stage on purpose" value={o.offstageOk} onChange={(v) => set({ offstageOk: v })} hint="Turn this on and the review stops asking about it." />
         </>
       ) : null}
-
-      {/* ── which way it faces ── */}
-      <Text style={styles.heading} accessibilityRole="header">
-        TURN
-      </Text>
-      <Text style={styles.line}>{`${o.rot}° · ${stageFacingWord(o.rot)}`}</Text>
-      <View style={styles.row}>
-        <Button label="↺ 15°" a11yLabel={`Turn ${name} 15 degrees counterclockwise`} onPress={() => set({ rot: o.rot - 15 })} />
-        <Button label="↻ 15°" a11yLabel={`Turn ${name} 15 degrees clockwise`} onPress={() => set({ rot: o.rot + 15 })} />
-        <Button label="FACE THE AUDIENCE" onPress={() => set({ rot: 0 })} a11yLabel={`Turn ${name} to face the audience`} />
-        <Button label="FACE UPSTAGE" onPress={() => set({ rot: 180 })} a11yLabel={`Turn ${name} to face upstage`} />
-      </View>
 
       {/* ── a platform's own size ── */}
       {sized ? (
@@ -169,7 +170,7 @@ export function StageInspector({ id, onDone }: { id: SpId; /** Called when the o
       ) : null}
       {device ? (
         <>
-          <Text style={styles.line}>{`Monitor device: ${device.label || SP_DEVICE_WORD[device.type]} (${SP_DEVICE_WORD[device.type]}). ${deviceMix ? `It plays mix ${deviceMix.name ? `${deviceMix.code} ${deviceMix.name}` : deviceMix.code}.` : device.selfContained ? 'It is part of your band’s own rig.' : 'It is not on a mix yet.'}`}</Text>
+          <Text style={styles.line}>{`Monitor device: ${device.label || SP_DEVICE_WORD[device.type]} (${SP_DEVICE_WORD[device.type]}). ${deviceMix ? `It plays mix ${deviceMix.name ? `${deviceMix.code} ${deviceMix.name}` : deviceMix.code}.` : device.selfContained ? 'It is part of the band monitor rig.' : 'It is not on a mix yet.'}`}</Text>
           <Button label="GO TO THIS DEVICE ›" a11yLabel={`Go to ${device.label || SP_DEVICE_WORD[device.type]} in Monitors`} onPress={() => ed.goTo('monitors', { kind: 'device', id: device.id })} />
         </>
       ) : null}
@@ -217,7 +218,7 @@ export function StageInspector({ id, onDone }: { id: SpId; /** Called when the o
         <MoreDetails title="Group it with other objects">
           <Text style={styles.hint}>A group moves, duplicates and is removed together: a drummer, the kit and the riser under them, for example.</Text>
           {others.map((x) => (
-            <Switch key={x.id} label={stageListName(p, x)} hint={`${stageKindName(x.kind)} · ${spLocationWord(x)}`} value={groupPick.includes(x.id)} onChange={(on) => setGroupPick((cur) => (on ? [...cur.filter((c) => c !== x.id), x.id] : cur.filter((c) => c !== x.id)))} />
+            <Switch key={x.id} label={stageListName(p, x)} hint={`${stageObjectKindName(x.kind)} · ${spLocationWord(x)}`} value={groupPick.includes(x.id)} onChange={(on) => setGroupPick((cur) => (on ? [...cur.filter((c) => c !== x.id), x.id] : cur.filter((c) => c !== x.id)))} />
           ))}
           <Button
             tone="primary"

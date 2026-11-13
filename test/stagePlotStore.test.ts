@@ -573,7 +573,10 @@ describe('spIssueActions — each answer does what its words say', () => {
       actions.runIssueAction(ed, issueOf(sharedDoc, 'duplicate-channel'), 'renumber');
       assert.equal(asked.length, 1);
       assert.equal(ed.edits, 0, 'not renumbered silently (handoff §4)');
-      assert.match(asked[0].body, /Revision 1 .* already shared/);
+      // true of a revision that was only marked ready: nothing claims it was sent
+      assert.equal(asked[0].title, 'Renumber a stage plot that may have been sent?');
+      assert.match(asked[0].body, /^Revision 1 was marked ready or shared\./);
+      assert.doesNotMatch(asked[0].title + asked[0].body, /already shared|a shared stage plot/);
       assert.match(asked[0].body, /revision 2/);
       asked[0].yes();
       assert.equal(has(ed.project, 'duplicate-channel'), false);
@@ -692,7 +695,11 @@ describe('the shell is wired as the builders’ contract says', () => {
     assert.match(screen, /<GuestStartReminder activity=\{`lab:\$\{STAGE_PLOT_LAB_KEY\}`\} kind="progress"/);
     assert.match(screen, /would need a new kind in the shared rules file, which is the owner's call \[MD:D60\]/);
     assert.match(screen, /'session-only': 'Not saved: kept only until you close the app'/);
-    assert.match(screen, /Rev \{p\.revision\} · \{statusWord\}/, 'the revision and status are on screen in every area');
+    assert.match(screen, /Revision \{p\.revision\} · \{statusWord\}/, 'the revision and status are on screen in every area');
+    assert.match(screen, /const statusWord = p\.status === 'ready' \? 'Ready' : 'Draft';/, 'one word in the bar, so it is never cut at 390 pt');
+    assert.doesNotMatch(screen, /style=\{styles\.rev\} \{\.\.\.fitValue/, 'the status line wraps; a browser would cut a one-line text with "…"');
+    assert.match(screen, /\$\{p\.kind === 'gig' \? ' · gig copy' : ''\}/, 'a gig copy says so in the header');
+    assert.match(screen, /if \(i\.rule === 'empty'\) continue;/, 'a new blank stage plot opens with no tab mark');
     assert.match(screen, /aria-selected=\{on\}/, 'the chosen tab is said on the web too');
     assert.match(screen, /setSpIssueAsk\(\(title, body, yesText, yes\) => confirmDialog\(title, body, yesText, yes\)\);/);
     assert.deepEqual([...ctx.matchAll(/\{ id: '(\w+)', label: '([A-Z]+)' \}/g)].map((m) => m[2]), ['SETUP', 'STAGE', 'INPUTS', 'MONITORS', 'EXPORT']);
@@ -771,6 +778,68 @@ describe('the shell is wired as the builders’ contract says', () => {
     for (const d of links.devices) assert.equal(p.devices.some((x) => x.id === d.id), false, `${d.label} went with them`);
     for (const o of links.objects) assert.equal(p.objects.some((x) => x.id === o.id), false, `${o.label} went with them`);
     assert.equal(review.spReview(p).some((i) => i.rule === 'device-no-mix' || i.rule === 'icon-no-input' || i.rule === 'icon-no-device'), false, 'no new question about something left standing');
+  });
+
+  it('review 2, the words: the viewpoint hint, the help line, one date style, and nothing said that is not true', () => {
+    const setup = read('src/screens/lab/stageplot/SetupArea.tsx');
+    const lib = read('src/screens/lab/stageplot/ProjectLibrary.tsx');
+    const task = read('src/screens/lab/stageplot/GuidedTask.tsx');
+    // S1: stage left and right are the performer's; the example of "another viewpoint" is the audience's
+    assert.ok(setup.includes('hint="Stage left and stage right are the performer’s left and right, facing the audience. If any of your names use another viewpoint, such as overhead microphones named as the audience sees the kit, say so here."'));
+    assert.doesNotMatch(setup, /Left and right on the drawing are the performer/);
+    assert.ok(setup.includes('“Advancing” a show means sending your technical details to the venue before show day.'));
+    assert.ok(setup.includes('What each one plays or sings, and what each one hears, is linked to them in the other areas.'));
+    assert.ok(setup.includes('was marked ready or shared. Your next change starts revision'));
+    assert.ok(setup.includes('never carries the number of one you may already have sent.'));
+    assert.doesNotMatch(setup + lib + screen, /already shared|has been shared/);
+    assert.ok(setup.includes('that only they use ('));
+    assert.ok(setup.includes('{m.name ? ` “${m.name}”` : \'\'} is only theirs.'), 'a mix name with a comma is set in quotation marks');
+    // the trade words of the examples are explained before an example is chosen
+    assert.ok(lib.includes('title="Words used in the examples"'));
+    assert.ok(lib.includes('A wedge is a monitor speaker on the floor, aimed at a performer. In-ear monitors are earphones that do the same job. A DI (direct box) connects an instrument straight to the mixer, with no microphone. A click is a metronome that only the players hear. The house console is the venue’s mixer. An input split sends each input to two mixers: the venue’s and the band’s own.'));
+    assert.ok(lib.indexOf('title="What a stage plot is for"') < lib.indexOf('title="Words used in the examples"'));
+    assert.ok(lib.indexOf('title="Words used in the examples"') < lib.indexOf('title="START A STAGE PLOT"'));
+    // one date style wherever a date is shown; the typing example has its comma
+    assert.match(lib, /const MONTHS = \['January', 'February', 'March'/);
+    assert.doesNotMatch(lib + setup, /Dec 5 2026/);
+    assert.ok(lib.includes('like Dec 5, 2026.') && setup.includes('or Dec 5, 2026.'));
+    // the card's facts are plain small text; only OPEN and MORE look like buttons
+    assert.doesNotMatch(lib, /badges=\{/);
+    assert.match(lib, /<Text style=\{styles\.tags\}>/);
+    assert.match(lib, /\]\.join\(' · '\)\}/);
+    // the guided task says where a performer comes from and where a question is answered
+    assert.ok(task.includes("'Add each performer in Setup, then put them on the stage in Stage.'"));
+    assert.ok(task.includes("'The tab bar marks each area that has a question. Export lists them all.'"));
+    // a popup keeps its title and body while it closes, and can leave scrolling to its content
+    assert.match(form, /if \(p\.visible\) last\.current = \{ title: p\.title, children: p\.children \};/);
+    assert.match(form, /scroll\?: boolean \}\)/);
+    assert.match(form, /p\.scroll === false \? \(/);
+    assert.equal(actions.spIssueActionLabel('mark-self-contained-device'), 'IT IS PART OF THE BAND MONITOR RIG');
+  });
+
+  it('a Setup question goes to its own field: the title, the band name, the contact block', () => {
+    const went: [string, unknown][] = [];
+    const ed = { goTo: (area: string, sel?: unknown) => void went.push([area, sel]) };
+    const about = (rule: string): SpIssue => ({ key: rule, rule, level: 'ask', text: 'x', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
+    for (const [rule, field] of [
+      ['example-title', 'title'],
+      ['no-band-name', 'band'],
+      ['no-contact', 'contact'],
+      ['empty', 'performers'],
+    ] as const) {
+      actions.runIssueAction({ ...ed, project: four(), apply: () => undefined }, about(rule), 'edit');
+      assert.deepEqual(went[went.length - 1], ['setup', null]);
+      assert.equal(actions.spSetupField(actions.takeSpSetupAsk()), field, rule);
+      assert.equal(actions.takeSpSetupAsk(), null, 'taken once: a later visit to Setup does not jump again');
+    }
+    // a question of another area leaves nothing for Setup
+    actions.goToIssue(ed, { ...about('duplicate-channel'), area: 'inputs' });
+    assert.equal(actions.takeSpSetupAsk(), null);
+    // …and Setup takes it when it opens, and shows the question at the field
+    const setup = read('src/screens/lab/stageplot/SetupArea.tsx');
+    assert.match(setup, /const field = spSetupField\(takeSpSetupAsk\(\)\);/);
+    assert.match(setup, /\{exampleTitle \? <Note tone="warning">\{exampleTitle\.text\}<\/Note> : null\}/);
+    assert.ok(setup.indexOf('label="Title of this stage plot"') < setup.indexOf('{exampleTitle ? <Note'));
   });
 
   it('the store is on the shared safe store, under one swept key, and exports no stray reset', () => {

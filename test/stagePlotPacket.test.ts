@@ -27,12 +27,14 @@ import {
   spBuildSnapshot,
   spDocText,
   spEmailText,
+  spEquipmentSplit,
   spFileName,
   spKeyLayout,
   spKeyLines,
   spLabelBlock,
   spPdfPageCount,
   spPlotDoc,
+  spPlotItemName,
   spPlotMaxH,
   spPlotScale,
   spStamp,
@@ -40,11 +42,15 @@ import {
   SP_KEY_CELL,
   SP_PLOT_MAX_H,
   SP_PLOT_NOMINAL_W,
+  SP_PLOT_ROOMY_H,
+  SP_PLOT_ROOMY_PEOPLE,
   SP_PLOT_SMALL_H,
   SP_PLOT_SMALL_PEOPLE,
+  SP_SHORT_NOTES,
+  spTextW,
 } from '../src/features/stageplot/spPacket.ts';
-import { SP_PAGES, spIsInputBadge, spPacketHtml, spPlotScene } from '../src/features/stageplot/spPacketHtml.ts';
-import { spKeySymbol, spPlotKey } from '../src/features/stageplot/spSymbols.ts';
+import { SP_PAGES, SP_ROOMY_H, spIsInputBadge, spKeyScene, spPacketHtml, spPlotPreview, spPlotScene } from '../src/features/stageplot/spPacketHtml.ts';
+import { spIsSized, spKeySymbol, spPlotKey } from '../src/features/stageplot/spSymbols.ts';
 import { spPdfBytes } from '../src/features/stageplot/spPdf.ts';
 import { spReview } from '../src/features/stageplot/spReview.ts';
 import { spFromTemplate, type SpTemplateId } from '../src/features/stageplot/spTemplates.ts';
@@ -126,9 +132,9 @@ describe('the worked example, as a packet (handoff section 11)', () => {
       '13 for the audience mix',
       '1 monitor only (Click)',
       '10 microphones',
-      '3 DI audio channels on 2 DI devices',
+      '3 DI channels on 2 DI devices',
       '4 monitor mixes (2 mono, 2 stereo)',
-      'Asked of the house console: 4 mixes, 6 audio channels',
+      'Requested from the house console: 4 mixes, 6 audio channels',
       'If each audio channel is carried on its own analog console output, that is 6 outputs',
       '2 wedges',
       '1 wireless in-ear transmitter',
@@ -176,7 +182,7 @@ describe('the worked example, as a packet (handoff section 11)', () => {
     p = spUpdateInput(p, lead.id, { priority: 'required', alternatives: 'A similar dynamic vocal microphone' });
     const d2 = docOf(p);
     const [eq] = tablesOf(d2, 'equipment');
-    const row = eq.rows.find((r) => r.cells.item === 'Microphone: Dynamic vocal microphone');
+    const row = eq.rows.find((r) => r.cells.item === 'Dynamic vocal microphone');
     assert.equal(row?.cells.qty, '3');
     assert.equal(row?.strong, true);
     assert.match(row?.cells.notes ?? '', /1 REQUIRED/);
@@ -195,8 +201,13 @@ describe('a row says only what differs from the usual (review 1: the two-minute 
     return r;
   };
   it('"preferred", an XLR connector and "phantom power not required" are not printed; one line above the table says the rule', () => {
-    assert.equal(row('Kick').cells.capture, 'Microphone: Kick drum microphone');
-    assert.equal(row('Lead vocal').cells.capture, 'Microphone: Dynamic vocal microphone');
+    // a kind and a name that already says the kind are printed once
+    assert.equal(row('Kick').cells.capture, 'Kick drum microphone');
+    assert.equal(row('Lead vocal').cells.capture, 'Dynamic vocal microphone');
+    const named = spUpdateInput(p, p.inputs.find((i) => i.label === 'Kick')!.id, { equipment: 'Large-diaphragm dynamic' });
+    assert.equal(tablesOf(docOf(named), 'inputs')[0].rows[0].cells.capture, 'Microphone: Large-diaphragm dynamic', 'a name that does not say the kind keeps it');
+    assert.ok(tablesOf(docOf(named), 'equipment')[0].rows.some((r) => r.cells.item === 'Microphone: Large-diaphragm dynamic'));
+    assert.ok(tablesOf(d, 'equipment')[0].rows.some((r) => r.cells.item === 'Kick drum microphone'));
     assert.equal(row('Bass DI').cells.capture, 'DI');
     for (const r of inputs.rows) assert.ok(!/preferred|XLR|not required/i.test(r.cells.capture), r.cells.capture);
     assert.ok(parasOf(d, 'inputs').some((t) => t.includes('Equipment named here is a preference unless it says REQUIRED.')));
@@ -205,8 +216,8 @@ describe('a row says only what differs from the usual (review 1: the two-minute 
     let q = spUpdateInput(p, p.inputs.find((i) => i.label === 'Kick')!.id, { priority: 'flexible' });
     q = spUpdateInput(q, q.inputs.find((i) => i.label === 'Snare')!.id, { priority: 'required', connector: 'TRS 1/4 inch' });
     const t = tablesOf(docOf(q), 'inputs')[0];
-    assert.equal(t.rows.find((r) => r.cells.input === 'Kick')?.cells.capture, 'Microphone: Kick drum microphone; flexible');
-    assert.equal(t.rows.find((r) => r.cells.input === 'Snare')?.cells.capture, 'Microphone: Dynamic instrument microphone; REQUIRED; TRS 1/4 inch');
+    assert.equal(t.rows.find((r) => r.cells.input === 'Kick')?.cells.capture, 'Kick drum microphone; flexible');
+    assert.equal(t.rows.find((r) => r.cells.input === 'Snare')?.cells.capture, 'Dynamic instrument microphone; REQUIRED; TRS 1/4 inch');
     // XLR on a line output is not "the usual": it is printed
     const click = q.inputs.find((i) => i.label === 'Click')!;
     const withXlr = spUpdateInput(q, click.id, { connector: 'XLR' });
@@ -216,8 +227,10 @@ describe('a row says only what differs from the usual (review 1: the two-minute 
     // the venue's own stereo DI, phantom unknown: the venue is not asked about its own box
     assert.equal(row('Keys L').cells.capture, 'DI');
     const q = spUpdateInput(p, p.inputs.find((i) => i.label === 'Kick')!.id, { phantom: 'required' });
-    assert.equal(tablesOf(docOf(q), 'inputs')[0].rows[0].cells.capture, 'Microphone: Kick drum microphone; phantom power required');
-    assert.match(row('Click').cells.capture, /phantom power: do not apply$/);
+    assert.equal(tablesOf(docOf(q), 'inputs')[0].rows[0].cells.capture, 'Kick drum microphone; phantom power required');
+    // a line-level row says "balanced line" once, and the three phantom wordings are one family
+    assert.equal(row('Click').cells.capture, 'Direct balanced line, line level; do not apply phantom power');
+    assert.equal(row('Click').note, 'The receiving input must accept line level.');
     const solo = docOf(example('solo'));
     assert.equal(tablesOf(solo, 'inputs')[0].rows.find((r) => r.cells.input === 'Acoustic guitar DI')?.cells.capture, 'DI; phantom power to be confirmed', 'the band supplies this DI and has not said');
   });
@@ -235,14 +248,32 @@ describe('a row says only what differs from the usual (review 1: the two-minute 
     assert.equal(t.rows.find((r) => r.cells.input === 'Keys R')?.cells.supplier, 'Venue');
     assert.equal(tablesOf(d2, 'equipment')[0].rows.find((r) => r.cells.item === 'DI device: Keys stereo DI')?.cells.venue, '1');
   });
-  it('the list prints each PERFORMER’s own position: one person never has two positions in one packet', () => {
-    const performers = tablesOf(d, 'plot')[0];
-    for (const r of performers.rows) {
-      const mine = inputs.rows.filter((x) => x.cells.who.startsWith(`${r.cells.name} · `));
-      assert.ok(mine.length > 0, `${r.cells.name} has inputs`);
-      for (const x of mine) assert.equal(x.cells.who, `${r.cells.name} · ${r.cells.where}`);
-    }
-    assert.ok(!/stage stage|Mid-stage/.test(spDocText(d)), 'no doubled "stage" in a position');
+  it('the list prints where the INPUT is, not where its performer stands (review 2, words S1)', () => {
+    assert.equal(inputs.columns.find((c) => c.key === 'who')?.label, 'Performer and where the input is');
+    // the amplifier is at center stage and Sam sings downstage center; the playback rig is upstage left and Maya plays upstage center
+    assert.equal(row('Guitar cabinet').cells.who, 'Sam · at the guitar amplifier, center stage');
+    assert.equal(row('Click').cells.who, 'Maya · at the playback rig, upstage left');
+    assert.equal(row('Kick').cells.who, 'Maya · at the drum kit, upstage center');
+    assert.equal(row('Bass DI').cells.who, 'Leo · at the bass amplifier, stage right');
+    // a microphone's place says it: no "at the microphone"
+    assert.equal(row('Lead vocal').cells.who, 'Sam · Downstage center');
+    assert.equal(row('Nina vocal').cells.who, 'Nina · Stage left');
+    // every row agrees with the drawing: the place is the place of the input's own symbol
+    const text = spDocText(d);
+    assert.ok(text.includes('- Guitar amp: center stage. Input channel 8'));
+    assert.ok(text.includes('- Click: upstage left. Input channel 14'));
+    assert.ok(text.includes('- Sam: downstage center. Monitor mix M1'));
+    assert.ok(!/stage stage|Mid-stage/.test(text), 'no doubled "stage" in a position');
+    // the compact packet has no place column, so it cannot print a wrong one
+    const c = tablesOf(docOf(p, COMPACT), 'inputs')[0];
+    assert.equal(c.columns.find((x) => x.key === 'who')?.label, 'Performer');
+    assert.equal(c.rows.find((r) => r.cells.input === 'Guitar cabinet')?.cells.who, 'Sam');
+  });
+  it('the Stand column is 13% of the full input table, taken from "Audience mix" (review 2)', () => {
+    const total = inputs.columns.reduce((a, c) => a + c.width, 0);
+    const share = (key: string) => (inputs.columns.find((c) => c.key === key)?.width ?? 0) / total;
+    assert.ok(Math.abs(share('stand') - 0.13) < 0.002, `Stand is ${(share('stand') * 100).toFixed(1)}%`);
+    assert.ok(share('audience') < share('stand'));
   });
   it('says whose the channel numbers are', () => {
     assert.ok(parasOf(d, 'inputs').some((t) => t.startsWith('Channel numbers are the band’s proposed order. The venue may patch in another order.')));
@@ -282,9 +313,12 @@ describe('a large band: 32 inputs, long names and long notes (section 12, check 
       assert.ok(html.includes(esc(line)), `not on the sheet: ${o}`);
       assert.ok(text.includes(line), `not in the text view: ${o}`);
     }
+    // the sentence as the VENUE reads it; a question to the band about its own title is not printed
     const wanted = spReview(p)
-      .filter((i) => i.level !== 'block')
-      .map((i) => i.text.replace(/^To be confirmed — /, ''));
+      .filter((i) => i.level !== 'block' && i.rule !== 'example-title')
+      .map((i) => (i.packetText ?? i.text).replace(/^To be confirmed — /, ''));
+    assert.ok(listed.includes('No technical contact is listed for this band.'));
+    assert.ok(!listed.some((l) => /has nobody to ask|still says/.test(l)), 'never the sentence written for the band');
     for (const w of wanted) assert.ok(listed.includes(w), `a review question is not printed: ${w}`);
     assert.deepEqual(spUnresolved(spReview(p)), [...new Set(wanted)]);
     // the heading says "to be confirmed" once; the lines do not repeat it
@@ -342,7 +376,7 @@ describe('the file name (handoff section 7)', () => {
   });
   it('accents are folded and characters a file system may refuse are removed', () => {
     assert.equal(spFileName({ ...four(), band: 'bongó & café / <Rock>: "live"?' }), 'BongoCafeRockLive_StagePlot_Rev01.pdf');
-    assert.equal(spFileName({ ...four(), band: '   ' }), 'Band_StagePlot_Rev01.pdf');
+    assert.equal(spFileName({ ...four(), band: '   ' }), 'StagePlot_Rev01.pdf', 'no made-up band name in the file name');
     assert.match(spFileName({ ...four(), band: '../../etc/passwd' }), /^EtcPasswd_StagePlot_Rev01\.pdf$/);
   });
 });
@@ -397,9 +431,12 @@ describe('paper, packet kind and the stamp', () => {
         ['inputs', 'auto'],
         ['monitors', 'auto'],
         ['equipment', 'auto'],
-        ['notes', 'auto'],
+        // a last section of a few lines runs on under the equipment table
+        ['notes', 'none'],
       ],
     );
+    assert.equal(SP_SHORT_NOTES, 4);
+    assert.equal(docOf(big()).sections.find((s) => s.id === 'notes')?.breakBefore, 'auto', 'a long last section keeps the usual rule');
     const compact = docOf(four(), COMPACT);
     assert.ok(compact.sections.every((s) => s.breakBefore === 'none'));
     assert.equal(compact.sections.length, 5);
@@ -409,7 +446,11 @@ describe('paper, packet kind and the stamp', () => {
     const plotOnly = docOf(four(), { paper: 'letter', packet: 'plot' });
     assert.deepEqual(plotOnly.sections.map((s) => s.id), ['plot']);
     assert.equal(plotOnly.title, 'The Example Four — Stage plot');
-    assert.equal(docOf(four()).title, 'The Example Four — Stage plot and input list');
+    assert.equal(docOf(four()).title, 'The Example Four — Stage plot, input list and monitor plan', 'the header names everything the packet holds');
+    assert.equal(compact.title, 'The Example Four — Stage plot, input list and monitor plan');
+    const facts = docOf(four()).sections[0].blocks.find((b) => b.t === 'facts');
+    assert.ok(facts && facts.t === 'facts');
+    assert.deepEqual(facts.rows.slice(0, 2), [['Band', 'The Example Four'], ['Title', 'Four-piece band (example)']], 'the field under the heading "Stage plot" is labeled Title');
   });
 });
 
@@ -443,7 +484,7 @@ describe('the compact packet really is compact (review 1)', () => {
     assert.equal(t.rows[0].cells.devices, 'Wedge 1 (Venue)');
     assert.equal(t.rows[0].note, 'Asked to hear: Own vocal prominent; Some guitar · Must exclude: Click (14)');
     const paras = parasOf(compact, 'monitors');
-    assert.equal(paras[0], '4 monitor mixes (2 mono, 2 stereo). Asked of the house console: 4 mixes, 6 audio channels. 1 wireless monitor device: coordination required. This packet lists no radio frequencies.');
+    assert.equal(paras[0], '4 monitor mixes (2 mono, 2 stereo). Requested from the house console: 4 mixes, 6 audio channels. 1 wireless monitor device: radio frequency coordination needed. This packet lists no radio frequencies.');
     assert.ok(paras.some((x) => x.startsWith('Click (14) is MONITOR ONLY')), 'the exclusion stays visible');
     assert.ok(!paras.some((x) => /If each audio channel|A mono mix is/.test(x)), 'no explaining paragraphs');
   });
@@ -453,11 +494,11 @@ describe('the compact packet really is compact (review 1)', () => {
     assert.equal(t.rows.find((r) => r.cells.item === 'Wedge')?.cells.by, 'Venue');
     assert.equal(t.rows.find((r) => r.cells.item === 'DI device: Bass DI')?.cells.by, 'Band');
     assert.equal(t.rows.find((r) => r.cells.item === 'Drum riser')?.cells.by, 'To be confirmed');
-    assert.equal(t.rows.find((r) => r.cells.item === 'Wireless in-ear transmitter')?.note, 'Wireless: coordination required');
+    assert.equal(t.rows.find((r) => r.cells.item === 'Wireless in-ear transmitter')?.note, 'Wireless: radio frequency coordination needed');
     assert.equal(t.rows.length, tablesOf(full, 'equipment')[0].rows.length, 'no item is dropped');
     // two suppliers for one kind of item: how many each
     const q = spUpdateInput(p, p.inputs.find((i) => i.label === 'Lead vocal')!.id, { supplier: 'band' });
-    assert.equal(tablesOf(docOf(q, COMPACT), 'equipment')[0].rows.find((r) => r.cells.item === 'Microphone: Dynamic vocal microphone')?.cells.by, '1 Band, 2 Venue');
+    assert.equal(tablesOf(docOf(q, COMPACT), 'equipment')[0].rows.find((r) => r.cells.item === 'Dynamic vocal microphone')?.cells.by, '1 Band, 2 Venue');
   });
   it('the notes and every unresolved line are kept', () => {
     assert.deepEqual(listsOf(compact, 'notes'), listsOf(full, 'notes'));
@@ -516,8 +557,9 @@ describe('how long the packet is: pages counted with the app’s own PDF writer'
 describe('the plot', () => {
   const p = four();
   const plot = spPlotDoc(p);
+  // (by its name, printed or not: on a crowded stage a piece of equipment is printed with its number alone)
   const item = (label: string) => {
-    const i = plot.items.find((x) => x.label === label);
+    const i = plot.items.find((x) => spPlotItemName(x) === label);
     assert.ok(i, `no plot item named ${label}`);
     return i;
   };
@@ -540,7 +582,7 @@ describe('the plot', () => {
     const outsideKey = html.replace(/<g class="key">[\s\S]*?<\/g>/, '');
     assert.ok(!/Chair|Music stand/.test(outsideKey), 'no kind name is made up beside the object');
     assert.ok(html.includes('>Chair</text>') && html.includes('>Music stand</text>'), 'the key names the two kinds');
-    assert.ok(spDocText(d).includes('- An object with no name: Downstage'));
+    assert.ok(spDocText(d).includes('- An object with no name: downstage'));
   });
   it('prints the performers’ names, as people', () => {
     for (const name of ['Maya', 'Leo', 'Nina', 'Sam']) assert.equal(item(name).person, true);
@@ -616,7 +658,7 @@ describe('the plot', () => {
     assert.ok(plot.legend.includes('IEM = in-ear monitor.'));
     const pb = spPlotDoc(example('playback'));
     assert.ok(pb.items.some((i) => i.badges.some((b) => /^B\d/.test(b))), 'the click is a band-rig-only channel');
-    assert.ok(pb.legend.some((l) => l.endsWith('A number with B is a channel of the band monitor rig.')));
+    assert.ok(pb.legend.some((l) => l.includes('A number with B is a channel of the band monitor rig.')));
     assert.ok(pb.legend.includes('Click (B11) is monitor only: kept out of the audience mix.'));
   });
   it('no word on the plot is smaller than 9 points, at print size and at the preview size', () => {
@@ -659,20 +701,21 @@ describe('the plot', () => {
       for (const b of rows) if (a !== b) assert.ok(a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0, `${a.label} lies over ${b.label}`);
     }
   });
-  it('moving a microphone moves it on the plot, and the input list keeps the PERFORMER’s position (section 12, check 2)', () => {
+  it('moving a microphone moves it on the plot AND in the input list: the list says where the input is (section 12, check 2)', () => {
     const mic = p.objects.find((o) => o.label === 'Lead vocal');
     assert.ok(mic);
     const moved = spMoveObject(p, mic.id, { x: 0.1, y: 0.1 }, { snap: false });
     const d = docOf(moved);
     const at = plotOf(d).items.find((i) => i.id === mic.id)?.at;
     assert.ok(at && Math.abs(at.x - 0.1 * plotOf(d).widthM) < 1e-9 && Math.abs(at.y - 0.1 * plotOf(d).depthM) < 1e-9);
-    assert.ok(spDocText(d).includes('- Lead vocal: Upstage right. References: 11'));
-    assert.equal(tablesOf(d, 'inputs')[0].rows.find((r) => r.cells.input === 'Lead vocal')?.cells.who, 'Sam · Downstage center');
-    // moving the PERFORMER moves the position in the list and in the performers table together
+    assert.ok(spDocText(d).includes('- Lead vocal: upstage right. Input channel 11'));
+    assert.equal(tablesOf(d, 'inputs')[0].rows.find((r) => r.cells.input === 'Lead vocal')?.cells.who, 'Sam · Upstage right');
+    assert.equal(tablesOf(d, 'plot')[0].rows.find((r) => r.cells.name === 'Sam')?.cells.where, 'Downstage center', 'the performer has not moved');
+    // moving the PERFORMER moves him in the performers table; his microphone's row stays where the microphone is
     const sam = p.objects.find((o) => o.kind === 'performer' && o.label === 'Sam');
     assert.ok(sam);
     const d2 = docOf(spMoveObject(p, sam.id, { x: 0.9, y: 0.1 }, { snap: false }));
-    assert.equal(tablesOf(d2, 'inputs')[0].rows.find((r) => r.cells.input === 'Lead vocal')?.cells.who, 'Sam · Upstage left');
+    assert.equal(tablesOf(d2, 'inputs')[0].rows.find((r) => r.cells.input === 'Lead vocal')?.cells.who, 'Sam · Downstage center');
     assert.equal(tablesOf(d2, 'plot')[0].rows.find((r) => r.cells.name === 'Sam')?.cells.where, 'Upstage left');
   });
   it('something off the stage is still drawn, with room for it', () => {
@@ -825,7 +868,7 @@ describe('the KEY is part of every drawing of a stage (owner 2026-11-12)', () =>
   });
   it('the on-screen plot draws the same list, so the preview has the same key', () => {
     const src = readFileSync(new URL('../src/screens/lab/stageplot/export/PlotView.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
-    assert.match(src, /const scene = spPlotScene\(plot, sceneW\);/);
+    assert.match(src, /const parts = spPlotPreview\(plot, width, SP_PLOT_MIN_W\);/);
     assert.match(src, /\{scene\.ops\.map\(op\)\}/);
     assert.match(src, /export const SP_PLOT_MIN_W = 520;/, 'drawn at its printed size on a phone: key text stays 9 pt');
   });
@@ -895,7 +938,7 @@ describe('a name cannot break the page', () => {
   });
   it('the file name, the text view and the PDF keep working', () => {
     assert.equal(d.fileName, 'RockRoll_StagePlot_Rev01.pdf');
-    assert.ok(spDocText(d).includes('<ROCK & ROLL> — STAGE PLOT AND INPUT LIST'));
+    assert.ok(spDocText(d).includes('<ROCK & ROLL> — STAGE PLOT, INPUT LIST AND MONITOR PLAN'));
     assert.ok(spPdfPageCount(spPdfBytes(d)) >= 1);
   });
 });
@@ -962,8 +1005,20 @@ describe('an empty draft, a band with its own monitor rig, and the message', () 
     const html = spPacketHtml(d);
     const text = spDocText(d);
     assert.equal(d.stamp, 'DRAFT');
-    assert.equal(d.title, 'Untitled band — Stage plot and input list');
-    assert.equal(d.fileName, 'Band_StagePlot_Rev01.pdf');
+    // no band name: none is made up, anywhere
+    assert.equal(d.title, 'Stage plot, input list and monitor plan');
+    assert.equal(d.footer, 'Revision 1');
+    assert.equal(d.fileName, 'StagePlot_Rev01.pdf');
+    assert.ok(text.includes('Band: not named yet'));
+    assert.ok(!/Untitled/i.test(text + html));
+    assert.equal(spEmailText(empty).subject, 'Stage plot, input list and monitor plan (revision 1)');
+    // a band with a stage and no name: the same, and the venue reads why
+    const unnamed = docOf({ ...four(), band: '' });
+    assert.equal(unnamed.title, 'Stage plot, input list and monitor plan');
+    assert.equal(docOf({ ...four(), band: '' }, { paper: 'letter', packet: 'plot' }).title, 'Stage plot');
+    assert.ok(spDocText(unnamed).includes('Band: not named yet'));
+    assert.ok(listsOf(unnamed, 'notes').includes('No band or artist name is given.'));
+    assert.ok(!/Untitled/i.test(spDocText(unnamed) + spPacketHtml(unnamed)));
     for (const words of ['No inputs yet.', 'No monitor mixes yet.', 'No equipment listed yet.', 'No performers yet.', 'No open question is recorded in this revision.', 'NOT TO SCALE', 'AUDIENCE / DOWNSTAGE']) assert.ok(html.includes(words), `the empty packet does not say "${words}"`);
     assert.ok(text.includes('Nothing is placed on the stage yet.'));
     for (const once of ['No inputs yet.', 'No monitor mixes yet.', 'No equipment listed yet.']) assert.equal(text.split(once).length - 1, 1, `"${once}" is said once`);
@@ -974,12 +1029,25 @@ describe('an empty draft, a band with its own monitor rig, and the message', () 
     const p = example('playback', 'Tracks');
     const d = docOf(p);
     const text = spDocText(d);
-    assert.ok(text.includes('4 monitor mixes (0 mono, 4 stereo). Asked of the house console: 0 mixes, 0 audio channels.'));
-    assert.ok(text.includes('Created in the band’s own rig, and not asked of the house console: 4 mixes (8 audio channels inside that rig).'));
+    assert.ok(text.includes('4 monitor mixes (all stereo). Nothing is requested from the house console.'), 'no zero count');
+    assert.ok(text.includes('Created in the band monitor rig, and not requested from the house console: 4 mixes (8 audio channels inside that rig).'));
     assert.ok(!/monitor feed audio channels/.test(text), '"feed" would read as something the house sends');
     assert.ok(!/If each audio channel/.test(text), 'nothing is asked of the house: no output sentence');
-    assert.ok(text.includes('4 wireless monitor devices: coordination required. This packet lists no radio frequencies.'));
-    assert.match(tablesOf(d, 'monitors')[0].rows[0].cells.by, /^Band monitor console \(the band’s own rig\)\. The venue provides: an input split$/);
+    assert.ok(text.includes('4 wireless monitor devices: radio frequency coordination needed. This packet lists no radio frequencies.'));
+    assert.equal(tablesOf(d, 'monitors')[0].rows[0].cells.by, 'Band monitor console. The venue provides: an input split');
+    // said ONCE above the device table, not in all eight rows
+    const once = 'All eight devices are part of the band monitor rig: nothing is requested from the venue’s monitor system.';
+    assert.equal(text.split(once).length - 1, 1);
+    const devices = tablesOf(d, 'monitors')[1];
+    assert.equal(devices.rows.length, 8);
+    assert.ok(!devices.rows.some((r) => /part of the band monitor rig/i.test(r.cells.notes)));
+    // when only some devices are the band's own, each of those rows says it
+    const mixed = spEdit(p, (x) => {
+      x.devices[0].selfContained = false;
+    });
+    const rows2 = tablesOf(docOf(mixed), 'monitors')[1].rows;
+    assert.ok(!spDocText(docOf(mixed)).includes('All eight devices'));
+    assert.equal(rows2.filter((r) => r.cells.notes.includes('Part of the band monitor rig: nothing is requested from the venue’s monitor system')).length, 7);
   });
   it('a personal mixer system is not called the band’s own rig: it is "not mixed on the house console"', () => {
     const p = spEdit(example('playback'), (d) => {
@@ -997,8 +1065,8 @@ describe('an empty draft, a band with its own monitor rig, and the message', () 
     const kick = band.rows.find((r) => r.cells.input === 'Kick');
     assert.deepEqual([kick?.cells.ch, kick?.cells.house, kick?.cells.notes], ['1', '1', '']);
     const click = band.rows.find((r) => r.cells.input === 'Click');
-    assert.equal(click?.cells.house, 'Band rig only');
-    assert.match(click?.cells.notes ?? '', /^Direct balanced line: Balanced line output; .*Supplied by: Band · MONITOR ONLY: kept out of the audience mix$/);
+    assert.equal(click?.cells.house, 'Band monitor rig only');
+    assert.match(click?.cells.notes ?? '', /^Direct balanced line, line level; .*Supplied by: Band · MONITOR ONLY: kept out of the audience mix/);
     assert.ok(!house.rows.some((r) => r.cells.input === 'Click'), 'the house is not sent the click');
     const text = spDocText(d);
     assert.ok(text.includes('House system: 10 input channels:'));
@@ -1017,11 +1085,18 @@ describe('an empty draft, a band with its own monitor rig, and the message', () 
     });
     const mail = spEmailText(p);
     assert.equal(mail.subject, 'The Example Four: stage plot, input list and monitor plan for The Blue Room, December 5, 2026 (revision 1)');
-    assert.equal(
-      mail.body,
-      'Attached is our stage plot, input list, and monitor plan for The Blue Room, December 5, 2026. The packet identifies what we bring and what we are requesting from the venue. Please confirm any substitutions or unresolved details with Sam (sam@example.test). Revision 1. Thank you.',
-    );
-    assert.match(spEmailText(four()).body, /unresolved details with us\. Revision 1\. Thank you\.$/);
+    const said = 'The packet shows what we bring and what we ask the venue to provide. Please tell us about any substitutions, and help us settle the details marked “to be confirmed”.';
+    assert.equal(mail.body, `Hello,\n\nAttached are our stage plot, input list and monitor plan for The Blue Room, December 5, 2026 (revision 1). ${said}\n\nThank you.\n\nTechnical contact: Sam · sam@example.test`);
+    // no contact shown: the reviewer's text, to the letter
+    assert.equal(spEmailText(four()).body, `Hello,\n\nAttached are our stage plot, input list and monitor plan (revision 1). ${said}\n\nThank you.`);
+    // a contact item the band hid is not in the message
+    const hidden = spEdit(p, (d) => {
+      d.contact.show.email = false;
+    });
+    assert.ok(!spEmailText(hidden).body.includes('sam@example.test'));
+    assert.ok(spEmailText(hidden).body.endsWith('Technical contact: Sam'));
+    // no band name: the subject starts with what is attached
+    assert.equal(spEmailText({ ...four(), band: ' ' }).subject, 'Stage plot, input list and monitor plan (revision 1)');
   });
 });
 
@@ -1182,6 +1257,348 @@ describe('the Export area: its guide, its memory and its wiring', async () => {
     assert.ok(area.indexOf('<Section title="PREVIEW"') > 0);
     assert.ok(area.indexOf('<Section title="PREVIEW"') < area.indexOf('<Section title="PRINT, SHARE AND SAVE"'));
     assert.ok(area.indexOf('<Section title="PRINT, SHARE AND SAVE"') < area.indexOf('title="EMAIL"'));
+  });
+});
+
+/* ── review 2 (2026-11-12) ──────────────────────────────────────────────── */
+
+const EXAMPLES = ['solo', 'duo', 'four-piece', 'playback', 'salsa'] as const;
+const srcOf = (rel: string): string => readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+
+type Bx = { x0: number; y0: number; x1: number; y1: number };
+type PlotItem = SpDocPlot['items'][number];
+/** The box of each shape of a symbol (meters, on the stage), a hair wider so a thin line counts. */
+const partBoxes = (i: PlotItem): Bx[] =>
+  i.shapes.map((s) => {
+    let b: Bx;
+    if (s.t === 'circle') b = { x0: s.cx - s.r, y0: s.cy - s.r, x1: s.cx + s.r, y1: s.cy + s.r };
+    else if (s.t === 'line') b = { x0: Math.min(s.x1, s.x2), y0: Math.min(s.y1, s.y2), x1: Math.max(s.x1, s.x2), y1: Math.max(s.y1, s.y2) };
+    else if (s.t === 'poly') {
+      const xs = s.pts.filter((_, n) => n % 2 === 0);
+      const ys = s.pts.filter((_, n) => n % 2 === 1);
+      b = { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
+    } else b = { x0: s.x, y0: s.y, x1: s.x + s.w, y1: s.y + s.h };
+    return { x0: b.x0 - 1e-4, y0: b.y0 - 1e-4, x1: b.x1 + 1e-4, y1: b.y1 + 1e-4 };
+  });
+const overlapOf = (a: Bx, b: Bx): number => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+const gapOf = (a: Bx, b: Bx): number => Math.hypot(Math.max(0, a.x0 - b.x1, b.x0 - a.x1), Math.max(0, a.y0 - b.y1, b.y0 - a.y1));
+const unionOf = (list: Bx[]): Bx => ({ x0: Math.min(...list.map((b) => b.x0)), y0: Math.min(...list.map((b) => b.y0)), x1: Math.max(...list.map((b) => b.x1)), y1: Math.max(...list.map((b) => b.y1)) });
+
+/** The label rules of review 2 (visuals A1, A2, A6, A8), measured on one plot
+ *  at the printed scale. Every count but `leaders` and `short` must be 0. */
+function labelFacts(p: SpProject, how: { roomy?: boolean } = {}) {
+  const plot = spPlotDoc(p, how);
+  const k = spPlotScale(plot, SP_PLOT_NOMINAL_W);
+  const sized = new Set(p.objects.filter((o) => spIsSized(o.kind)).map((o) => o.id));
+  const onStage = new Set(p.objects.filter((o) => o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1).map((o) => o.id));
+  const rows = plot.items
+    .filter((i) => spLabelBlock(i).h > 0)
+    .map((i) => {
+      const b = spLabelBlock(i);
+      const x0 = i.labelAt.x - b.labelW / k / 2;
+      return { i, box: { x0, y0: i.labelAt.y, x1: x0 + b.w / k, y1: i.labelAt.y + b.h / k } };
+    });
+  const facts = { names: rows.length, overSymbol: 0, overName: 0, notNearest: 0, outside: 0, onRiserEdge: 0, leaders: 0, short: 0 };
+  const said: string[] = [];
+  const nameOf = (i: PlotItem) => spPlotItemName(i) || i.id;
+  for (const r of rows) {
+    const mine = sized.has(r.i.id);
+    // 1. never over a symbol: another object's, or its own
+    for (const o of plot.items) {
+      if (sized.has(o.id)) continue;
+      if (partBoxes(o).some((b) => overlapOf(r.box, b) > 1e-9)) {
+        facts.overSymbol += 1;
+        said.push(`${nameOf(r.i)} lies over ${nameOf(o)}`);
+      }
+    }
+    // 2. never over another name
+    for (const q of rows) if (q !== r && overlapOf(r.box, q.box) > 1e-9) facts.overName += 1;
+    // 3. a name beside its symbol is nearer to its own symbol than to any other (edge to edge)
+    if (!r.i.leader && !mine) {
+      const own = Math.min(...partBoxes(r.i).map((b) => gapOf(r.box, b)));
+      for (const o of plot.items) {
+        if (o === r.i || sized.has(o.id)) continue;
+        if (Math.min(...partBoxes(o).map((b) => gapOf(r.box, b))) <= own + 1e-9) {
+          facts.notNearest += 1;
+          said.push(`${nameOf(r.i)} is as near to ${nameOf(o)} as to its own symbol`);
+        }
+      }
+    }
+    // 4. an on-stage object's name is inside the outline, 4 pt clear of it
+    if (onStage.has(r.i.id)) {
+      const m = 4 / k - 1e-6;
+      if (r.box.x0 < m || r.box.y0 < m || r.box.x1 > plot.widthM - m || r.box.y1 > plot.depthM - m) {
+        facts.outside += 1;
+        said.push(`${nameOf(r.i)} is not inside the stage outline`);
+      }
+    }
+    // 5. never on a platform's dashed edge: wholly inside it, or wholly outside
+    for (const o of plot.items) {
+      if (o === r.i || !sized.has(o.id)) continue;
+      const box = unionOf(partBoxes(o));
+      const inside = r.box.x0 >= box.x0 && r.box.x1 <= box.x1 && r.box.y0 >= box.y0 && r.box.y1 <= box.y1;
+      if (overlapOf(r.box, box) > 1e-9 && !inside) {
+        facts.onRiserEdge += 1;
+        said.push(`${nameOf(r.i)} is on the edge of ${nameOf(o)}`);
+      }
+    }
+  }
+  facts.leaders = plot.items.filter((i) => i.leader).length;
+  facts.short = plot.items.filter((i) => !i.label && i.badges.length > 0).length;
+  return { plot, facts, said };
+}
+
+describe('names on the plot keep the hard rules (review 2, visuals A1)', () => {
+  // leaders and numbers printed alone, as they are today; the five rule counts are always 0
+  const TODAY: Record<(typeof EXAMPLES)[number], { leaders: number; short: number }> = {
+    solo: { leaders: 0, short: 0 },
+    duo: { leaders: 0, short: 1 },
+    'four-piece': { leaders: 1, short: 4 },
+    playback: { leaders: 0, short: 0 },
+    salsa: { leaders: 5, short: 12 },
+  };
+  for (const t of EXAMPLES) {
+    it(`${t}: no name over a symbol or a name, every name nearest its own symbol, inside the outline, off the riser's edge`, () => {
+      for (const how of [{}, { roomy: true }]) {
+        const { facts, said } = labelFacts(example(t), how);
+        assert.deepEqual({ overSymbol: facts.overSymbol, overName: facts.overName, notNearest: facts.notNearest, outside: facts.outside, onRiserEdge: facts.onRiserEdge }, { overSymbol: 0, overName: 0, notNearest: 0, outside: 0, onRiserEdge: 0 }, said.join('; '));
+        assert.ok(facts.names > 0);
+      }
+      const { facts } = labelFacts(example(t));
+      assert.ok(facts.leaders <= TODAY[t].leaders, `${t}: ${facts.leaders} leaders`);
+      assert.ok(facts.short <= TODAY[t].short, `${t}: ${facts.short} numbers printed with no name`);
+    });
+  }
+  it('the same rules hold on the 32-input band and on a hand-moved stage', () => {
+    const a = labelFacts(big());
+    assert.deepEqual([a.facts.overSymbol, a.facts.overName, a.facts.notNearest, a.facts.outside, a.facts.onRiserEdge], [0, 0, 0, 0, 0], a.said.join('; '));
+    // everything pushed into one corner: names go farther out on leaders before they lie on anything
+    const crowded = spEdit(four(), (d) => {
+      d.objects.forEach((o, n) => {
+        if (o.kind !== 'riser') {
+          o.x = 0.08 + (n % 4) * 0.07;
+          o.y = 0.1 + Math.floor(n / 4) * 0.09;
+        }
+      });
+    });
+    const b = labelFacts(crowded);
+    assert.deepEqual([b.facts.overName, b.facts.outside], [0, 0], b.said.join('; '));
+  });
+  it('a name that cannot stand beside its symbol: equipment keeps its number alone, a person keeps the name on a leader line', () => {
+    const { plot } = labelFacts(example('salsa'));
+    const short = plot.items.filter((i) => !i.label && i.badges.length > 0);
+    assert.ok(short.length > 0, 'the 12-performer stage is crowded');
+    for (const i of short) {
+      assert.equal(i.person, false, 'a performer always keeps the name');
+      assert.ok(spPlotItemName(i), 'the name is kept for the text view');
+    }
+    for (const i of plot.items.filter((x) => x.person)) assert.ok(i.label, 'every performer is named on the drawing');
+    // the legend says how to read a number with no name, only when there is one
+    assert.ok(plot.legend.some((l) => l.includes('Where a number or a code has no name beside it, the key shows what the symbol is, and the input list or the monitor plan names it.')));
+    assert.ok(!spPlotDoc(example('solo')).legend.some((l) => /no name beside it/.test(l)));
+    // the text view names every one of them
+    const text = spDocText(docOf(example('salsa')));
+    for (const i of short) assert.ok(text.includes(`- ${spPlotItemName(i)}: `), `the text view does not name ${spPlotItemName(i)}`);
+    assert.ok(!text.includes('An object with no name'));
+  });
+  it('a leader runs from the name to its own symbol, and the sheet draws it as a gray hairline under the symbols', () => {
+    const { plot } = labelFacts(example('salsa'));
+    const led = plot.items.filter((i) => i.leader);
+    assert.ok(led.length > 0);
+    const k = spPlotScale(plot, SP_PLOT_NOMINAL_W);
+    for (const i of led) {
+      assert.deepEqual(i.leader?.to, { x: i.at.x, y: i.at.y });
+      const b = spLabelBlock(i);
+      const x0 = i.labelAt.x - b.labelW / k / 2;
+      const f = i.leader!.from;
+      assert.ok(f.x >= x0 - 1e-9 && f.x <= x0 + b.w / k + 1e-9 && f.y >= i.labelAt.y - 1e-9 && f.y <= i.labelAt.y + b.h / k + 1e-9, 'it starts on the name’s own row');
+    }
+    const scene = spPlotScene(plot, 526);
+    const lines = scene.ops.map((o, n) => ({ o, n })).filter((x) => x.o.t === 'line' && x.o.stroke === '#8a8a8a');
+    assert.equal(lines.length, led.length);
+    const firstSymbol = scene.ops.findIndex((o) => o.t === 'circle');
+    assert.ok(lines.every((x) => x.n < firstSymbol), 'leaders are drawn first, so a symbol covers the end of its line');
+    assert.ok(!spPlotDoc(example('solo')).items.some((i) => i.leader));
+  });
+  it('people are listed last, so a performer is drawn over the stool of the kit; the text view still reads them first', () => {
+    const plot = spPlotDoc(four());
+    const first = plot.items.findIndex((i) => i.person);
+    assert.ok(first > 0 && plot.items.slice(first).every((i) => i.person));
+    const text = spDocText(docOf(four()));
+    assert.ok(text.indexOf('- Maya: upstage center. Monitor mix M3') < text.indexOf('- Drums: upstage center. Input channels 1–6'));
+    assert.ok(!text.includes('References'));
+    assert.ok(spDocText(docOf(example('playback'))).includes('- Playback and click: upstage left. Input channels 7–8. Band monitor rig channel B11'));
+  });
+});
+
+describe('a plot that needs room (review 2, visuals A3)', () => {
+  it('the plot-only packet and any plot with six or more performers are roomy; nothing else is', () => {
+    assert.deepEqual([SP_PLOT_ROOMY_H, SP_PLOT_ROOMY_PEOPLE, SP_ROOMY_H.letter, SP_ROOMY_H.a4], [520, 6, 520, 560]);
+    assert.equal(plotOf(docOf(four())).roomy, false);
+    assert.equal(plotOf(docOf(four(), COMPACT)).roomy, false);
+    assert.equal(plotOf(docOf(four(), { paper: 'letter', packet: 'plot' })).roomy, true);
+    assert.equal(plotOf(docOf(example('salsa'))).roomy, true, '12 performers');
+    assert.equal(plotOf(docOf(example('solo'), { paper: 'a4', packet: 'plot' })).roomy, true);
+  });
+  it('a roomy plot may be 520 pt tall, and is drawn larger when its stage has the width for it', () => {
+    const usual = spPlotDoc(example('duo'));
+    const roomy = spPlotDoc(example('duo'), { roomy: true });
+    assert.equal(spPlotMaxH(usual), 240);
+    assert.equal(spPlotMaxH(roomy), 520);
+    assert.ok(spPlotScale(roomy, 526) > spPlotScale(usual, 526));
+    assert.ok(spPlotScene(roomy, 526).h > spPlotScene(usual, 526).h);
+    const drawH = (plot: SpDocPlot, maxH?: number) => (plot.depthM + plot.marginM * 2) * spPlotScale(plot, 526, maxH);
+    assert.ok(drawH(roomy) <= 520 + 1e-6);
+    assert.ok(drawH(roomy, SP_ROOMY_H.a4) <= 560 + 1e-6);
+  });
+  it('on the sheet the section after a roomy plot starts a new page; after any other plot it does not', () => {
+    assert.ok(spPacketHtml(docOf(example('salsa'))).includes('class="sec newpage"'));
+    assert.ok(!spPacketHtml(docOf(four())).includes('class="sec newpage"'));
+    assert.equal(pagesOf(example('salsa'), { paper: 'letter', packet: 'plot' }), 1);
+  });
+});
+
+describe('the key in the Export preview is always in view (review 2, visuals C)', () => {
+  const plot = spPlotDoc(four());
+  it('in a window narrower than the drawing, the stage scrolls sideways alone and the key is laid out at the window’s width', () => {
+    const v = spPlotPreview(plot, 334, 520);
+    assert.equal(v.scrolls, true);
+    assert.equal(v.stage.w, 520);
+    assert.equal(v.stage.key, null, 'the sideways scroller holds no key');
+    assert.ok(!v.stage.ops.some((o) => o.t === 'text' && o.text === 'KEY'));
+    assert.ok(v.key);
+    assert.equal(v.key.w, 334);
+    assert.equal(spKeyLayout(plot.key, 334).cols, 2);
+    const words = v.key.ops.flatMap((o) => (o.t === 'text' ? [o] : []));
+    const read = words.map((o) => o.text).join(' ');
+    for (const e of plot.key) for (const w of e.name.split(' ')) assert.ok(read.includes(w), `the key under the preview does not say "${w}"`);
+    for (const o of words) {
+      assert.ok(o.size >= 9);
+      assert.ok(o.x >= 0 && o.x + spTextW(o.text, o.size, o.bold) <= 334 + 0.5, `"${o.text}" would run past the window`);
+    }
+    assert.deepEqual(v.key.ops, spKeyScene(plot.key, 334).ops);
+  });
+  it('in a window as wide as the drawing, the key is part of the one drawing', () => {
+    const v = spPlotPreview(plot, 700, 520);
+    assert.equal(v.scrolls, false);
+    assert.equal(v.key, null);
+    assert.ok(v.stage.key, 'the key is in the scene');
+    assert.equal(v.stage.w, 700);
+    // a stage with nothing on it has no key in either layout
+    const empty = spPlotDoc(spNewProject({ id: 'p-none', now: NOW }));
+    assert.equal(spPlotPreview(empty, 334, 520).key, null);
+  });
+  it('PlotView draws it that way: only the stage inside the sideways scroller, the key after it; the choice is "Formatted"', () => {
+    const view = srcOf('screens/lab/stageplot/export/PlotView.tsx');
+    const scroller = /<ScrollView horizontal[\s\S]*?<\/ScrollView>/.exec(view);
+    assert.ok(scroller);
+    assert.ok(scroller[0].includes('<Scene scene={parts.stage}'));
+    assert.ok(!scroller[0].includes('parts.key'));
+    assert.ok(view.indexOf('<Scene scene={parts.key}') > view.indexOf('</ScrollView>'));
+    assert.match(view, /seen from above, with the audience at the bottom/);
+    const area = srcOf('screens/lab/stageplot/ExportArea.tsx');
+    assert.match(area, /\{ value: 'pages', label: 'Formatted' \}/);
+    assert.ok(!/label: 'Pages'/.test(area));
+  });
+});
+
+describe('the words of review 2 in the packet', () => {
+  const texts = EXAMPLES.map((t) => {
+    const d = docOf(example(t));
+    return spDocText(d) + '\n' + spPacketHtml(d) + '\n' + spDocText(docOf(example(t), COMPACT));
+  }).join('\n');
+  it('one name for one thing: none of the retired words is printed, in any example', () => {
+    for (const old of [/asked of/i, /own rig\b/i, /Band rig/, /coordination required/i, /DI audio/i, /seen from the audience/i, /References:/, /Untitled/i, /Nobody yet/i, /\bround box/i, /by type/i, /device arrangement/i]) assert.ok(!old.test(texts), `the packet still says ${old}`);
+    assert.ok(texts.includes('Seen from above, with the audience at the bottom. Stage right and stage left are the performers’ own right and left, so stage right is on the left of this drawing.'));
+    assert.ok(texts.includes('rounded box'));
+    assert.ok(texts.includes('by group'));
+  });
+  it('no zero count is printed: "(all mono)", "(all stereo)", "(mono)", "all for the audience mix"', () => {
+    assert.ok(!/\b0 (mono|stereo|mix|mixes|monitor only|for the audience mix|audio channels?)\b/.test(texts));
+    assert.ok(spDocText(docOf(example('salsa'))).includes('6 monitor mixes (all mono).'));
+    assert.ok(spDocText(docOf(example('playback'))).includes('4 monitor mixes (all stereo).'));
+    assert.match(spDocText(docOf(example('solo'))), /1 monitor mix \((mono|stereo)\)\./);
+    assert.ok(spDocText(docOf(example('salsa'))).includes('16 input channels to the house system: all for the audience mix.'));
+    // routing still to be confirmed and nothing monitor only: no "0 monitor only"
+    const p = spEdit(four(), (d) => {
+      for (const i of d.inputs) i.audience = i.label === 'Kick' ? 'tbc' : 'audience';
+    });
+    assert.ok(spDocText(docOf(p)).includes('14 input channels to the house system: 13 for the audience mix, 1 with the audience routing to be confirmed.'));
+  });
+  it('wireless: "radio frequency coordination needed", for inputs and for monitor devices', () => {
+    const p = spAddPackage(four(), 'vocal-wireless', { sourceLabel: 'Guest' }).p;
+    const text = spDocText(docOf(p));
+    assert.ok(text.includes('1 wireless receiver output: radio frequency coordination needed.'));
+    assert.ok(text.includes('1 wireless monitor device: radio frequency coordination needed. This packet lists no radio frequencies.'));
+    assert.ok(text.includes('Notes: Wireless: radio frequency coordination needed'));
+  });
+  it('the equipment table: a backline row says what it is and has no made-up quantity; a DI device says what it carries', () => {
+    const [eq] = tablesOf(docOf(four()), 'equipment');
+    const backline = eq.rows.find((r) => r.cells.item.startsWith('Backline'));
+    assert.deepEqual([backline?.cells.item, backline?.cells.qty, backline?.cells.band], ['Backline: drum kit, bass amplifier, guitar amplifier, keyboard', '–', '1']);
+    assert.equal(eq.rows.find((r) => r.cells.item === 'DI device: Bass DI')?.cells.notes, 'Mono: 1 DI channel · passive · Carries: Bass DI (channel 7)');
+    assert.equal(eq.rows.find((r) => r.cells.item === 'DI device: Keys stereo DI')?.cells.notes, 'Stereo: 2 DI channels · Carries: Keys L (channel 9), Keys R (channel 10)');
+    // one thing, counted: its quantity is printed
+    const p = spEdit(four(), (d) => {
+      const b = d.extras.find((e) => e.kind === 'backline');
+      assert.ok(b);
+      b.label = 'Guitar amplifier';
+      b.qty = 2;
+    });
+    const row = tablesOf(docOf(p), 'equipment')[0].rows.find((r) => r.cells.item.startsWith('Backline'));
+    assert.deepEqual([row?.cells.item, row?.cells.qty], ['Backline: guitar amplifier', '2']);
+  });
+  it('a DI channel with no DI device yet is one honest row, in the singular and in the plural', () => {
+    const loose = (labels: string[]) =>
+      spEdit(four(), (d) => {
+        for (const i of d.inputs) if (labels.includes(i.label)) i.diDeviceId = null;
+      });
+    const one = tablesOf(docOf(loose(['Bass DI'])), 'equipment')[0].rows.find((r) => r.cells.item.startsWith('DI channel'));
+    assert.deepEqual([one?.cells.item, one?.cells.qty, one?.cells.notes], ['DI channel with no DI device yet', '1', 'Which DI box carries it is to be confirmed: Bass DI']);
+    const two = tablesOf(docOf(loose(['Keys L', 'Keys R'])), 'equipment')[0].rows.find((r) => r.cells.item.startsWith('DI channel'));
+    assert.deepEqual([two?.cells.item, two?.cells.qty, two?.cells.notes], ['DI channels with no DI device yet', '2', 'Which DI box carries them is to be confirmed: Keys L, Keys R']);
+  });
+  it('the tables give the room to the columns that need it (relative widths, as review 2 measured them)', () => {
+    const [mixes, devices] = tablesOf(docOf(example('playback')), 'monitors');
+    assert.deepEqual(mixes.columns.map((c) => [c.label, c.width]), [['Mix', 14], ['For', 10], ['Format', 8], ['Who creates it', 30], ['Delivery and devices', 22], ['Asked to hear', 16]]);
+    assert.deepEqual(devices.columns.map((c) => [c.label, c.width]), [['Device', 17], ['Type', 18], ['Mix', 7], ['Used by', 10], ['Supplied by', 11], ['Notes', 37]]);
+  });
+  it('the Export summary counts the SAME equipment rows the packet prints', () => {
+    for (const t of EXAMPLES) {
+      const p = example(t);
+      const [eq] = tablesOf(docOf(p), 'equipment');
+      const sum = (key: string) => eq.rows.reduce((a, r) => a + (Number(r.cells[key]) || 0), 0);
+      assert.deepEqual(spEquipmentSplit(p), { band: sum('band'), venue: sum('venue'), other: sum('other'), tbc: sum('tbc') }, t);
+    }
+    // review 2: a hand-built plot with a microphone, a stand, a DI channel with no device and a wedge, all to be confirmed
+    const p = spEdit(four(), (d) => {
+      for (const i of d.inputs) if (i.label === 'Bass DI') i.diDeviceId = null;
+    });
+    const before = spEquipmentSplit(four());
+    const after = spEquipmentSplit(p);
+    assert.equal(after.band + after.venue + after.other + after.tbc, before.band + before.venue + before.other + before.tbc + 1, 'the DI channel with no device is counted');
+    const area = srcOf('screens/lab/stageplot/ExportArea.tsx');
+    assert.match(area, /const split = spEquipmentSplit\(project, summary\);/);
+    assert.match(area, /`Equipment to be confirmed: \$\{plural\(split\.tbc, 'item'\)\}\.`/);
+    assert.match(area, /plural\(summary\.open\.length, 'open detail is', 'open details are'\)\} printed as unresolved\./);
+    assert.ok(!/asked of|Asked of|in its own rig|Items to be confirmed/.test(area));
+    assert.match(area, /requested from the house console/);
+  });
+  it('the EMAIL fields show all of their text: the subject two lines, the message as tall as what is in it', () => {
+    const area = srcOf('screens/lab/stageplot/ExportArea.tsx');
+    assert.match(area, /<MailField label="Subject" value=\{message\.subject\} minHeight=\{66\} oneParagraph /);
+    assert.match(area, /<MailField label="Message" value=\{message\.body\} minHeight=\{150\} /);
+    const field = srcOf('screens/lab/stageplot/export/MailField.tsx');
+    assert.match(field, /const height = Math\.max\(p\.minHeight, Math\.ceil\(boxH\)\);/);
+    // the height comes from a hidden copy of the text, never from the input's own content-size
+    // event: in a browser that event already holds the height we set, and the field grew without
+    // end until React stopped the Export screen (seen in the web preview, 2026-11-12)
+    assert.ok(!/onContentSizeChange=/.test(field), 'the field does not size itself from its own content-size event');
+    assert.match(field, /styles\.mirror/);
+    assert.match(field, /Math\.abs\(was - h\) > 0\.5 \? h : was/, 'only a real change of height is stored');
+    assert.match(field, /scrollEnabled=\{false\}/, 'no scroll bar of its own');
+    assert.match(field, /accessibilityLabel=/);
+    assert.ok(!/Alert\.alert/.test(field));
   });
 });
 

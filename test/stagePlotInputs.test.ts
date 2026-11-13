@@ -48,7 +48,8 @@ import {
   SP_EXTRA_HINT,
   SP_MAX_CHANNEL,
   SP_PHANTOM_HINT,
-  SP_WIRELESS_NOTE,
+  SP_NOBODY,
+  SP_TBC_PRINTED,
   spCanMove,
   spDiChannelRows,
   spDiDeviceLine,
@@ -58,6 +59,7 @@ import {
   spMonoChoice,
   spMoveRow,
   spBringsWord,
+  spBroughtBy,
   spBrokenPairDi,
   spListWords,
   spOpenIssues,
@@ -78,6 +80,8 @@ import {
   spSourcesWithoutInputs,
   spSummaryCounts,
   spUniqueLabel,
+  spWhoBrings,
+  spWirelessNote,
 } from '../src/screens/lab/stageplot/inputs/inputsLogic.ts';
 
 const NOW = 1_800_000_000_000;
@@ -257,7 +261,7 @@ describe('the list, row by row', () => {
     const rows = blocks.flatMap((b) => b.rows);
     assert.deepEqual(
       rows.map((r) => `${r.number} ${r.label}`),
-      ['1 Kick', '2 Snare', '3 Rack tom', '4 Floor tom', '5 Overhead L', '6 Overhead R', '7 Bass DI', '8 Guitar cabinet', '9 Keys L', '10 Keys R', '11 Lead vocal', '12 Bassist vocal', '13 Keyboardist vocal', '14 Click'],
+      ['1 Kick', '2 Snare', '3 Rack tom', '4 Floor tom', '5 Overhead L', '6 Overhead R', '7 Bass DI', '8 Guitar cabinet', '9 Keys L', '10 Keys R', '11 Lead vocal', '12 Leo vocal', '13 Nina vocal', '14 Click'],
     );
     assert.equal(blocks.length, 12, 'the two stereo pairs are one block each');
   });
@@ -335,8 +339,8 @@ describe('the list, row by row', () => {
     assert.equal(row.placed, false);
     assert.equal(row.number, '15');
     assert.equal(row.venue, 'SB-A 4');
-    assert.equal(row.who, 'No performer (shared source)');
-    assert.equal(row.supplier, 'To be confirmed who brings it');
+    assert.equal(row.who, 'Nobody (shared source)');
+    assert.equal(row.supplier, 'Who brings it: to be confirmed');
     p = spSetNumber(p, 'house', made.inputIds[0], null);
     assert.equal(spRowBlocks(p, 'house').flatMap((b) => b.rows)[14].number, '—');
   });
@@ -403,11 +407,11 @@ describe('moving a row', () => {
   it('the numbers stay where they were in the list, so a deliberate gap survives', () => {
     let p = four();
     p = spSetNumber(p, 'house', idOf(p, 'Lead vocal'), 17);
-    p = spSetNumber(p, 'house', idOf(p, 'Bassist vocal'), 18);
-    p = spSetNumber(p, 'house', idOf(p, 'Keyboardist vocal'), 19);
+    p = spSetNumber(p, 'house', idOf(p, 'Leo vocal'), 18);
+    p = spSetNumber(p, 'house', idOf(p, 'Nina vocal'), 19);
     p = spSetNumber(p, 'house', idOf(p, 'Click'), 24);
-    p = spMoveRow(p, 'house', idOf(p, 'Keyboardist vocal'), -1);
-    assert.deepEqual(list(p).slice(9), ['10 Keys R', '17 Lead vocal', '18 Keyboardist vocal', '19 Bassist vocal', '24 Click']);
+    p = spMoveRow(p, 'house', idOf(p, 'Nina vocal'), -1);
+    assert.deepEqual(list(p).slice(9), ['10 Keys R', '17 Lead vocal', '18 Nina vocal', '19 Leo vocal', '24 Click']);
     assert.equal(spReview(p).filter((i) => i.rule === 'duplicate-channel').length, 0);
   });
 
@@ -432,7 +436,8 @@ describe('moving a row', () => {
     const shared = spFreeze(p);
     const words = spSharedNotice(shared);
     assert.ok(words);
-    assert.match(words, /Revision 1 .* already shared/);
+    assert.equal(words, 'Revision 1 was marked ready or shared. A change to the order or to a channel number starts revision 2, and the packet then shows the new revision number.');
+    assert.ok(!/already shared|was shared\b/.test(words), 'the tool cannot know it was sent');
     assert.match(words, /starts revision 2/);
     const moved = spMoveRow(shared, 'house', idOf(shared, 'Bass DI'), -1);
     assert.equal(moved.revision, 2);
@@ -504,7 +509,6 @@ describe('DI channels and DI devices are separate', () => {
     const t = spDiTotals(p);
     assert.equal(t.channels, 3);
     assert.equal(t.devices, 2);
-    assert.equal(t.summary, '3 DI audio channels on 2 DI devices.');
     const [bass, keys] = p.diDevices;
     assert.equal(spDiDeviceLine(p, bass), 'Mono: 1 channel · Passive · Band brings it · Carries Bass DI');
     assert.equal(spDiDeviceLine(p, keys), 'Stereo: 2 channels · Passive or active: to be confirmed · Venue brings it · Carries Keys L and Keys R');
@@ -520,7 +524,6 @@ describe('DI channels and DI devices are separate', () => {
     // taking the bass off its box leaves a channel "to confirm", not a guess
     p = spDiToggle(p, bass.id, idOf(p, 'Bass DI'));
     assert.equal(spDiTotals(p).unassignedChannels, 1);
-    assert.match(spDiTotals(p).summary, /1 channel with the device arrangement to confirm/);
     assert.match(spDiDeviceLine(p, p.diDevices[0]), /No channel on it yet/);
     // putting it on the stereo box asks one box for three channels: said, not hidden
     p = spDiToggle(p, keys.id, idOf(p, 'Bass DI'));
@@ -533,10 +536,11 @@ describe('DI channels and DI devices are separate', () => {
     let p = spFromTemplate('blank', { id: 'p-di', now: NOW });
     p = spAddPackage(p, 'bass-di').p;
     p = spAddPackage(p, 'keys-stereo').p;
-    assert.equal(spDiTotals(p).summary, '3 DI audio channels, device arrangement to confirm.');
+    assert.equal(spDiTotals(p).unassignedChannels, 3);
     const tbc = spResponsibility(p).find((r) => r.supplier === 'tbc');
-    assert.ok(tbc?.lines.includes('3 DI channels, device arrangement to be confirmed (Bass DI, Keys L, Keys R)'));
-    assert.equal(spSummaryCounts(p).find((c) => /DI device/.test(c.label))?.value, 0);
+    assert.ok(tbc?.lines.includes('3 × DI channel with no DI device (DI box) yet (Bass DI, Keys L, Keys R)'));
+    assert.equal(spSummaryCounts(p).find((c) => /DI device/.test(c.label)), undefined, 'no DI device: no tile, never a zero');
+    assert.equal(spSummaryCounts(p).find((c) => /DI channel/.test(c.label))?.value, 3);
   });
 });
 
@@ -555,12 +559,12 @@ describe('the equipment and responsibility summary', () => {
 
   it('channels by destination and type, microphones by name, stands, and DI', () => {
     const g = Object.fromEntries(spEquipmentGroups(four()).map((x) => [x.id, x.lines]));
-    assert.deepEqual(g.channels, ['House system: 14 inputs. 13 for the audience mix, 1 monitor only.', 'House system by type: Drums 6, Bass 1, Guitars 1, Keys 2, Playback 1, Vocals 3.']);
+    assert.deepEqual(g.channels, ['House system: 14 inputs. 13 for the audience mix, 1 monitor only (Click).', 'House system by group: Drums 6, Bass 1, Guitars 1, Keys 2, Playback 1, Vocals 3.']);
     assert.equal(g.microphones[0], '10 microphones in all. A model you typed is a preference unless you marked it Required.');
-    assert.deepEqual(g.microphones.slice(1), ['4 × Dynamic instrument microphone — 4 Venue', '3 × Dynamic vocal microphone — 3 Venue', '2 × Condenser microphone — 2 Venue', '1 × Kick drum microphone — 1 Venue']);
-    assert.deepEqual(g.stands, ['3 × Short boom stand — 3 Venue', '2 × Clamp — 2 Venue', '5 × Tall boom stand — 5 Venue']);
-    assert.deepEqual(g.lines, ['1 direct balanced line — 1 Band (Click).']);
-    assert.deepEqual(g.di, ['3 DI audio channels on 2 DI devices.', 'DI devices: 2 — 1 Band, 1 Venue.']);
+    assert.deepEqual(g.microphones.slice(1), ['4 × Dynamic instrument microphone — venue', '3 × Dynamic vocal microphone — venue', '2 × Condenser microphone — venue', '1 × Kick drum microphone — venue']);
+    assert.deepEqual(g.stands, ['3 × Short boom stand — venue', '2 × Clamp — venue', '5 × Tall boom stand — venue']);
+    assert.deepEqual(g.lines, ['1 × Direct balanced line (Click) — band']);
+    assert.deepEqual(g.di, [spDiTotals(four()).summary, '2 DI devices. The band brings 1 and the venue brings 1.']);
     assert.equal(g.wireless, undefined);
   });
 
@@ -569,7 +573,7 @@ describe('the equipment and responsibility summary', () => {
     const lead = idOf(p, 'Lead vocal');
     p = spUpdateInput(p, lead, { equipment: 'My own vocal microphone', priority: 'required', supplier: 'band', alternatives: 'Any dynamic vocal microphone' });
     const mics = spEquipmentGroups(p).find((x) => x.id === 'microphones')?.lines ?? [];
-    assert.ok(mics.includes('1 × My own vocal microphone — 1 Band. Required: 1'));
+    assert.ok(mics.includes('1 × My own vocal microphone — band. Required: 1'));
     assert.ok(mics.includes('Acceptable instead of My own vocal microphone: Any dynamic vocal microphone. Not counted as extra equipment.'));
     assert.equal(spSummary(p).microphones, 10, 'still ten microphones');
     const band = spResponsibility(p).find((r) => r.supplier === 'band');
@@ -579,11 +583,11 @@ describe('the equipment and responsibility summary', () => {
   it('who brings what: band, venue, other provider and to be confirmed, each thing once', () => {
     const by = Object.fromEntries(spResponsibility(four()).map((r) => [r.supplier, r.lines]));
     assert.deepEqual(by.band, [
-      '1 direct balanced line (Click)',
+      '1 × Direct balanced line (Click)',
       '1 × Bass DI (mono DI device)',
-      '1 wireless in-ear transmitter',
-      '1 in-ear receiver pack',
-      '1 wired headphone amplifier',
+      '1 × Wireless in-ear transmitter',
+      '1 × In-ear receiver pack',
+      '1 × Wired headphone amplifier',
       '1 × Drum kit, bass amplifier, guitar amplifier, keyboard (backline)',
     ]);
     assert.deepEqual(by.venue, [
@@ -595,8 +599,10 @@ describe('the equipment and responsibility summary', () => {
       '2 × Clamp',
       '5 × Tall boom stand',
       '1 × Keys stereo DI (stereo DI device)',
-      '2 wedges',
+      '2 × Wedge',
     ]);
+    // every line of every block starts the same way: a quantity, ×, the thing
+    for (const block of spResponsibility(four())) for (const line of block.lines) assert.match(line, /^\d+ × \S/, line);
     assert.deepEqual(by.other, []);
     // the riser drawn on the example's stage is listed, and nobody has said who brings it
     assert.deepEqual(by.tbc, ['1 × Drum riser (riser)']);
@@ -621,8 +627,8 @@ describe('the equipment and responsibility summary', () => {
     // a DI channel with no device keeps its own answer
     p = spDiToggle(p, p.diDevices[1].id, idOf(p, 'Keys L'));
     assert.equal(spRowBlocks(p, 'house').flatMap((b) => b.rows).find((r) => r.label === 'Keys L')?.supplier, 'Band brings it');
-    assert.ok(spResponsibility(p).find((r) => r.supplier === 'band')?.lines.includes('1 DI channel, device arrangement to be confirmed (Keys L)'));
-    assert.equal(spBringsWord('tbc'), 'To be confirmed who brings it');
+    assert.ok(spResponsibility(p).find((r) => r.supplier === 'band')?.lines.includes('1 × DI channel with no DI device (DI box) yet (Keys L)'));
+    assert.equal(spBringsWord('tbc'), 'Who brings it: to be confirmed');
     assert.equal(spListWords(['Keys L', 'Keys R', 'Keys (Jo) L']), 'Keys L, Keys R and Keys (Jo) L');
   });
 
@@ -639,7 +645,7 @@ describe('the equipment and responsibility summary', () => {
     assert.ok(open.some((i) => /Kick: who supplies the microphone/.test(i.text)));
     // listed under its own heading, an open item does not repeat the heading.
     // A microphone the venue does not bring is also asked about phantom power.
-    assert.ok(open.map(spOpenLine).includes('Kick: who supplies the microphone; phantom power'));
+    assert.ok(open.map(spOpenLine).some((line) => line.startsWith('Kick: who supplies the microphone')));
     assert.ok(open.map(spOpenLine).every((line) => !/^To be confirmed/.test(line) && !/\.$/.test(line)));
     assert.ok(!open.some((i) => /^To be confirmed — Snare/.test(i.text)), 'the venue is not asked about its own microphone');
   });
@@ -651,9 +657,10 @@ describe('the equipment and responsibility summary', () => {
     p = spUpdateDevice(p, p.devices[0].id, { supplier: 'tbc' });
     const open = spOpenIssues(spReview(p));
     assert.deepEqual(
-      open.here.map((i) => `${i.target.kind}:${spOpenLine(i)}`),
-      ['input:Kick: who supplies the microphone; phantom power', 'di:Bass DI: who supplies it', 'extra:Drum riser: who supplies it'],
+      open.here.map((i) => `${i.target.kind}:${spOpenLine(i).split(':')[0]}`),
+      ['input:Kick', 'di:Bass DI', 'extra:Drum riser'],
     );
+    for (const i of open.here) assert.match(spOpenLine(i), /who supplies/);
     for (const i of open.here) {
       assert.equal(i.area, 'inputs');
       assert.ok(i.target.id, 'a row to open');
@@ -675,12 +682,12 @@ describe('the equipment and responsibility summary', () => {
     p = spAddExtra(p, { kind: 'split', label: 'Input split', qty: 1, supplier: 'tbc' }).p;
     p = spAddExtra(p, { kind: 'power', label: '', qty: 2, supplier: 'venue' }).p;
     const g = Object.fromEntries(spEquipmentGroups(p).map((x) => [x.id, x.lines]));
-    assert.equal(g.channels[0], 'House system: 15 inputs. 14 for the audience mix, 1 monitor only.');
-    assert.equal(g.channels[2], 'Band monitor rig: 1 input. 1 for the audience mix, 0 monitor only.');
+    assert.equal(g.channels[0], 'House system: 15 inputs. 14 for the audience mix, 1 monitor only (Click).');
+    assert.equal(g.channels[2], 'Band monitor rig: 1 input, shared with the house system through the split.');
     assert.ok(g.channels.includes('An input in both lists is one source that feeds two systems. It is one source, not two.'));
     assert.ok(g.channels.includes('1 source on the stage needs no sound system connection, and is not counted as an input.'));
-    assert.deepEqual(g.wireless, ['1 × Wireless handheld microphone and receiver — 1 To be confirmed', SP_WIRELESS_NOTE]);
-    assert.match(SP_WIRELESS_NOTE, /does not choose radio frequencies/);
+    assert.deepEqual(g.wireless, ['1 × Wireless handheld microphone and receiver — to be confirmed', '1 wireless receiver output: radio frequency coordination needed.']);
+    assert.equal(spWirelessNote(2), '2 wireless receiver outputs: radio frequency coordination needed.');
     assert.ok(!g.wireless.join(' ').match(/MHz|GHz/), 'never a frequency');
     const by = Object.fromEntries(spResponsibility(p).map((r) => [r.supplier, r.lines]));
     assert.ok(by.tbc.includes('1 × Input split (split)'));
@@ -763,7 +770,7 @@ describe('the equipment and responsibility summary', () => {
     let p = four();
     assert.deepEqual(
       spPeopleOptions(p).map((o) => o.label),
-      ['Nobody yet', 'Maya', 'Leo', 'Nina', 'Sam'],
+      ['Nobody (shared source)', 'Maya', 'Leo', 'Nina', 'Sam'],
     );
     assert.equal(spPeopleOptions(p)[0].value, '');
     // two sources with one name are told apart by who plays them
@@ -789,6 +796,115 @@ describe('the equipment and responsibility summary', () => {
     assert.match(SP_EXTRA_HINT.split, /phantom power/);
     assert.match(SP_EXTRA_HINT.power, /the venue decides/);
     for (const hint of Object.values(SP_EXTRA_HINT)) assert.ok(!/\b(guarantee|approved|compatible|safe)\b/i.test(hint));
+  });
+});
+
+describe('review 2: count lines read as sentences, and words are true', () => {
+  const groups = (p: SpProject) => Object.fromEntries(spEquipmentGroups(p).map((x) => [x.id, x.lines]));
+  const zeroCount = /(^|[^\d.,])0 (inputs?|for the|monitor only|mono|stereo|Band|Venue|microphones?|DI)/;
+
+  it('no example prints a zero count or a bare category word, in the summary or in the tiles', () => {
+    for (const t of SP_TEMPLATES) {
+      const p = spFromTemplate(t.id, { id: `p-${t.id}`, now: NOW });
+      const lines = [...spEquipmentGroups(p).flatMap((g) => g.lines), ...spResponsibility(p).flatMap((r) => r.lines)];
+      for (const line of lines) {
+        if (line === spDiTotals(p).summary) continue; // the model's own sentence (spDerive)
+        assert.ok(!zeroCount.test(line), `${t.id}: a zero count in "${line}"`);
+        assert.ok(!/\d (Band|Venue|Other provider|To be confirmed)\b/.test(line), `${t.id}: a bare category word in "${line}"`);
+      }
+      for (const c of spSummaryCounts(p)) assert.ok(c.value > 0, `${t.id}: a tile of zero "${c.label}"`);
+    }
+    const blank = spFromTemplate('blank', { id: 'p-blank', now: NOW });
+    assert.deepEqual(spSummaryCounts(blank), []);
+    assert.deepEqual(groups(blank).channels, ['No inputs yet.']);
+  });
+
+  it('the house line: all for the audience mix, or the parts that exist with the monitor-only inputs named', () => {
+    const salsa = spFromTemplate('salsa', { id: 'p-salsa', now: NOW });
+    assert.equal(groups(salsa).channels[0], `House system: ${spSummary(salsa).house.channels} inputs, all for the audience mix.`);
+    assert.equal(groups(four()).channels[0], 'House system: 14 inputs. 13 for the audience mix, 1 monitor only (Click).');
+    let p = spFromTemplate('blank', { id: 'p-one', now: NOW });
+    p = spAddPackage(p, 'vocal').p;
+    assert.equal(groups(p).channels[0], 'House system: 1 input, for the audience mix.');
+    p = spUpdateInput(p, p.inputs[0].id, { audience: 'tbc' });
+    assert.equal(groups(p).channels[0], 'House system: 1 input, with who hears it to be confirmed.');
+  });
+
+  it('the band monitor rig feeds no audience: its line says what it shares and what goes to it alone', () => {
+    const playback = spFromTemplate('playback', { id: 'p-play', now: NOW });
+    const g = groups(playback);
+    assert.equal(g.channels[0], 'House system: 10 inputs, all for the audience mix.');
+    assert.equal(g.channels[2], 'Band monitor rig: 11 inputs. 10 are shared with the house system through the split, 1 goes to the band monitor rig only (Click).');
+    assert.ok(!g.channels.some((l) => /^Band monitor rig:.*audience mix/.test(l)), 'never "for the audience mix" for the band monitor rig');
+    assert.match(g.channels[3], /^Band monitor rig by group: /);
+    // every input for the band monitor rig alone, and one alone
+    let p = spFromTemplate('blank', { id: 'p-band', now: NOW });
+    p = spAddPackage(p, 'click').p;
+    p = spUpdateInput(p, p.inputs[0].id, { destination: 'band' });
+    assert.deepEqual(groups(p).channels.slice(0, 2), ['House system: no inputs yet.', 'Band monitor rig: 1 input, for the band monitor rig only (Click).']);
+    p = spAddPackage(p, 'vocal').p;
+    p = spUpdateInput(p, p.inputs[1].id, { destination: 'band' });
+    assert.equal(groups(p).channels[1], 'Band monitor rig: 2 inputs, all for the band monitor rig only (Click, Vocal).');
+  });
+
+  it('who brings a quantity: one word after the dash, or a whole sentence', () => {
+    const by = (band: number, venue: number, other = 0, tbc = 0) => ({ band, venue, other, tbc });
+    assert.equal(spBroughtBy(by(0, 4)), 'venue');
+    assert.equal(spBroughtBy(by(1, 0)), 'band');
+    assert.equal(spBroughtBy(by(0, 0, 2)), 'other provider');
+    assert.equal(spBroughtBy(by(0, 0, 0, 3)), 'to be confirmed');
+    assert.equal(spBroughtBy(by(2, 1, 0, 1)), '2 from the band, 1 from the venue, 1 to be confirmed');
+    assert.equal(spBroughtBy(by(0, 0)), '');
+    assert.equal(spWhoBrings(by(0, 9)), 'The venue brings all 9.');
+    assert.equal(spWhoBrings(by(1, 0)), 'The band brings it.');
+    assert.equal(spWhoBrings(by(0, 0, 0, 1)), 'Who brings it: to be confirmed.');
+    assert.equal(spWhoBrings(by(0, 0, 0, 2)), 'Who brings them: to be confirmed.');
+    assert.equal(spWhoBrings(by(1, 1)), 'The band brings 1 and the venue brings 1.');
+    assert.equal(spWhoBrings(by(1, 2, 1, 2)), 'The band brings 1, the venue brings 2, another provider brings 1 and 2 are to be confirmed.');
+    assert.equal(spWhoBrings(by(0, 0)), '');
+    // a mixed line in the summary
+    let p = four();
+    p = spUpdateInput(p, idOf(p, 'Kick'), { equipment: 'Dynamic instrument microphone', supplier: 'band' });
+    assert.ok(groups(p).microphones.includes('5 × Dynamic instrument microphone — 1 from the band, 4 from the venue'));
+  });
+
+  it('a source nobody in particular plays has one name', () => {
+    assert.equal(SP_NOBODY, 'Nobody (shared source)');
+    const p = spAddPackage(four(), 'horn-mic', {}).p;
+    assert.equal(spPeopleOptions(p)[0].label, SP_NOBODY);
+    assert.equal(spRowBlocks(p, 'house').flatMap((b) => b.rows)[14].who, SP_NOBODY);
+    assert.equal(spSourcesWithoutInputs(spAddSource(p, { label: 'Cajón', category: 'percussion', connection: 'none' }).p)[0].who, SP_NOBODY);
+  });
+
+  it('"to be confirmed" is said to be printed as a question only when that is true', () => {
+    assert.equal(SP_TBC_PRINTED, 'To be confirmed is printed as a question when your band or another provider brings the item. For an item the venue brings, the venue already knows.');
+    assert.ok(SP_PHANTOM_HINT.endsWith(SP_TBC_PRINTED));
+    assert.match(SP_PHANTOM_HINT, /Not required: it works with or without it\. Do not apply: phantom power could damage it or cause noise/);
+    // and it IS true: the venue's unknown is not asked, the band's is
+    const venue = four();
+    assert.ok(!spOpenIssues(spReview(venue)).here.some((i) => /Keys/.test(i.text)), 'the venue’s keys DI is not printed as a question');
+    const band = spUpdateDiDevice(venue, venue.diDevices[1].id, { supplier: 'band' });
+    assert.ok(spOpenIssues(spReview(band)).here.some((i) => /Keys stereo DI: passive or active/.test(i.text)));
+  });
+
+  it('backline means the instruments and amplifiers on the stage, whoever brings them', () => {
+    assert.match(SP_EXTRAS_HINT, /Backline: the instruments and amplifiers on the stage, such as the drum kit, the amplifiers and the keyboards\. Say who brings each\./);
+    assert.ok(!/supplied for you/.test(SP_EXTRAS_HINT));
+  });
+
+  it('the screens: a long tag wraps inside its card, a card that leads on carries ›, and the headings changed', () => {
+    const bits = code(`${DIR}/inputs/bits.tsx`);
+    assert.match(bits, /tag: \{[^}]*flexShrink: 1, maxWidth: '100%' \}/);
+    assert.match(bits, /tagText: \{[^}]*flexShrink: 1 \}/);
+    const add = code(`${DIR}/inputs/AddSheets.tsx`);
+    assert.equal(add.split('right={<Chevron />}').length - 1, 4, 'the three ways to add, and each package');
+    assert.match(add, /<SubTitle>This package assumes<\/SubTitle>\s*<Note>\{view\.assumes\}<\/Note>/);
+    const summary = code(`${DIR}/inputs/SummaryPanel.tsx`);
+    assert.match(summary, /title="Who brings what"/);
+    assert.match(summary, /To answer in MONITORS:/);
+    assert.match(code(`${DIR}/inputs/OrderPanel.tsx`), /'Sort a stage plot that may have been sent\?'/);
+    assert.match(code(`${DIR}/inputs/DiPanel.tsx`), /\{totals\.channels \? <Count /);
+    assert.ok(SP_GUIDE_INPUTS.tryThis.some((t) => t.includes('Channel 7 stays empty, and each row from there on takes the next number.')));
   });
 });
 
@@ -875,10 +991,13 @@ describe('the Inputs screens keep the house rules', () => {
     const src = ALL.map((x) => x.src).join('\n');
     const editor = code(`${DIR}/inputs/InputEditor.tsx`);
     const area = code(`${DIR}/InputsArea.tsx`);
+    const logic = code(`${DIR}/inputs/inputsLogic.ts`);
     // one name per thing: a thing you press is a button; the jump has two honest names
     assert.ok(!/\b(move|▼|▲) keys?\b|\bkeys? (on a row|below)\b/i.test(src + SP_GUIDE_INPUTS.control.join(' ')), 'a button is never called a key');
     assert.ok(!/LOCATE ON STAGE\b/.test(src), 'LOCATE ON THE STAGE, or PLACE ON THE STAGE when it is not there yet');
     assert.ok(!/channel list|input channels?\b|DI audio channel|Not known|Not answered yet|Who plays it"/.test(src), 'retired names');
+    assert.ok(!/already shared|a shared stage plot|Answered in MONITORS|[Dd]evice arrangement|Nobody yet|[Nn]o performer \(|by type|This package assumes:|asked to provide|supplied for you|own rig|[Cc]oordination required|supplied and venue supplied/.test(src + logic), 'words retired by review 2');
+    assert.ok(!/printed as a question, never guessed|To be confirmed is printed as a question\.'/.test(src + logic), 'a venue item that is to be confirmed is not printed as a question');
     assert.match(src, /MONITOR ONLY: kept out of the audience mix/);
     // a DI channel on a device shows the device's answer, and sends the user there
     assert.match(editor, /\{diDevice \? \(/);
@@ -889,7 +1008,7 @@ describe('the Inputs screens keep the house rules', () => {
     // a review card about a listed item opens it; a shared revision asks before renumbering
     assert.match(area, /t\.kind === 'extra' && t\.id\) openExtra\(t\.id\)/);
     assert.match(area, /selection\.kind === 'di'\) openDi\(selection\.id\);\s*else openExtra\(selection\.id\)/);
-    assert.match(area, /if \(shared\) confirmDialog\('Renumber a shared stage plot\?'/);
+    assert.match(area, /if \(shared\) confirmDialog\('Renumber a stage plot that may have been sent\?'/);
     assert.match(area, /action === 'pair-mono' && id && spBrokenPairDi\(p, id\)/);
     // a state is in the page for a web screen reader too
     assert.match(code(`${DIR}/inputs/InputRow.tsx`), /accessibilityState=\{\{ selected \}\}\s*aria-selected=\{selected\}/);

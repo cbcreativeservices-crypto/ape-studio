@@ -401,25 +401,37 @@ export function Count(p: { value: string | number; label: string }) {
 
 /* ── popups ─────────────────────────────────────────────────────────────── */
 
-/** A bottom sheet / centered popup for picking or editing (popups, never pulldowns). */
-export function Sheet(p: { visible: boolean; title: string; onClose: () => void; children: ReactNode }) {
+/** A bottom sheet / centered popup for picking or editing (popups, never pulldowns).
+ *  `scroll={false}` (an addition): the popup's body does not scroll, for content that
+ *  brings its own scroller, so a popup never shows two scroll bars. */
+export function Sheet(p: { visible: boolean; title: string; onClose: () => void; children: ReactNode; scroll?: boolean }) {
+  // WHILE IT CLOSES, a popup keeps the title and the body it had. The caller
+  // has usually let go of the row by then ("Remove Maya?" became "Remove this
+  // performer?" during the fade-out, and a menu's title went blank).
+  const last = useRef<{ title: string; children: ReactNode }>({ title: p.title, children: p.children });
+  if (p.visible) last.current = { title: p.title, children: p.children };
+  const { title, children } = last.current;
   return (
     <Modal accessibilityViewIsModal visible={p.visible} transparent animationType="fade" onRequestClose={p.onClose}>
       <Pressable accessible={false} style={styles.backdrop} onPress={p.onClose}>
         <Pressable accessible={false} style={styles.sheet} onPress={() => {}}>
           <View style={styles.sheetHead}>
             <Text style={styles.sheetTitle} accessibilityRole="header">
-              {p.title}
+              {title}
             </Text>
-            <Pressable onPress={p.onClose} style={styles.sheetClose} accessibilityRole="button" accessibilityLabel={`Close ${p.title}`}>
+            <Pressable onPress={p.onClose} style={styles.sheetClose} accessibilityRole="button" accessibilityLabel={`Close ${title}`}>
               <Text style={styles.sheetCloseText}>✕</Text>
             </Pressable>
           </View>
-          {/* "handled": with the keyboard up, the first tap on a button must
-              press the button, not only put the keyboard away. */}
-          <ScrollView contentContainerStyle={styles.sheetBody} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
-            {p.children}
-          </ScrollView>
+          {p.scroll === false ? (
+            <View style={[styles.sheetBody, styles.sheetBodyFixed]}>{children}</View>
+          ) : (
+            // "handled": with the keyboard up, the first tap on a button must
+            // press the button, not only put the keyboard away.
+            <ScrollView contentContainerStyle={styles.sheetBody} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
+              {children}
+            </ScrollView>
+          )}
         </Pressable>
       </Pressable>
     </Modal>
@@ -560,7 +572,7 @@ const styles = StyleSheet.create({
   buttonPrimary: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.14)' },
   buttonDanger: { borderColor: '#5a2c2c', backgroundColor: '#160d0d' },
   buttonOff: { opacity: 0.45 },
-  // Capitals are set HERE, so every key in the lab reads alike however its label was typed.
+  // Capitals are set HERE, so every button in the lab reads alike however its label was typed.
   buttonText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.1, color: colors.textPrimary, textAlign: 'center', textTransform: 'uppercase' },
   buttonTextPrimary: { color: colors.amber },
   buttonTextDanger: { color: DANGER },
@@ -586,6 +598,7 @@ const styles = StyleSheet.create({
   sheetClose: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   sheetCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textSub },
   sheetBody: { padding: 18, gap: 16 },
+  sheetBodyFixed: { flexShrink: 1 },
 
   tip: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 },
   tipMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.amber },

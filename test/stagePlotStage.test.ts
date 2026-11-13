@@ -25,10 +25,10 @@ import { pathToFileURL } from 'node:url';
 import { SCREEN_GUIDE_BUDGET, SCREEN_GUIDE_SECTIONS, SCREEN_INTRO_WORDS, type ScreenGuide } from '../src/features/lab/screenGuide/types.ts';
 import { SP_PACKAGES, SP_PALETTE } from '../src/features/stageplot/spCatalog.ts';
 import { spHistoryApply, spHistoryStart, spHistoryUndo } from '../src/features/stageplot/spHistory.ts';
-import { spAddObject, spGridStep, spGroup, spInputLocation, spMoveObject, spNewProject, spObject, spRemoveObjects, spUpdateObject } from '../src/features/stageplot/spModel.ts';
+import { spAddObject, spGridStep, spGroup, spInputLocation, spMoveObject, spNewProject, spObject, spRemoveObjects, spStageAspect, spUpdateObject } from '../src/features/stageplot/spModel.ts';
 import { spmAddDevice } from '../src/screens/lab/stageplot/monitors/monitorPlan.ts';
 import { spReview } from '../src/features/stageplot/spReview.ts';
-import { spKeySymbol, spPlacedShapes, spPlotKey } from '../src/features/stageplot/spSymbols.ts';
+import { spKeyKind, spKeyRot, spKeySymbol, spPlacedShapes, spPlotKey } from '../src/features/stageplot/spSymbols.ts';
 import { spFromTemplate, type SpTemplateId } from '../src/features/stageplot/spTemplates.ts';
 import type { SpProject } from '../src/features/stageplot/spTypes.ts';
 import { touchToGlass } from '../src/screens/lab/roomdesign/planGeom.ts';
@@ -46,12 +46,14 @@ import {
   STAGE_VIEW_FIT,
   STAGE_ZOOM_MAX,
   stageBoxBounds,
+  stageArtSize,
   stageAxisWords,
   stageBoxDistance,
   stageDrawOrder,
   stageFacingPoint,
   stageFacingShort,
   stageFacingWord,
+  stageFillZoom,
   stageFrameBoxes,
   stageGlassWidthGuess,
   stageGridLines,
@@ -61,6 +63,7 @@ import {
   stageKeyWords,
   stageLabelClash,
   stageLabelLeader,
+  stageLabelPlan,
   stageLabels,
   stageLivePositions,
   stageNameLines,
@@ -97,12 +100,14 @@ import {
   stageDeviceChoices,
   stageFreeSpot,
   stageInputChoices,
+  stageKeyEntries,
   stageKindForSource,
   stageLinkMode,
   stageListOrder,
   stageMoveExact,
   stageName,
   stageNudge,
+  stageObjectKindName,
   stagePackagesFor,
   stagePlace,
   stageSelectedObjectId,
@@ -531,17 +536,27 @@ describe('names and numbers on the stage', () => {
     for (const line of three) assert.ok(line.length < long.length / 2, line);
     assert.deepEqual(stageNameLines('Keys headphone amplifier'), ['Keys headphone', 'amplifier']);
     assert.deepEqual(stageNameLines('   '), []);
+    // a name is printed WHOLE or not printed: never a part of it. Where it is
+    // left out (a crowded stage), the plan says so, and the numbers stay
     for (const id of TEMPLATES) {
       const p = tpl(id);
       const { items } = labelItems(p, PHONE.gw, PHONE.gh);
-      const out = stageLabels(items, PHONE.gw, PHONE.gh, frameOf(PHONE.gw, PHONE.gh));
+      const plan = stageLabelPlan(items, PHONE.gw, PHONE.gh, frameOf(PHONE.gw, PHONE.gh));
       for (const it of items) {
         if (!it.text && !it.badges.length) continue;
-        const l = out.find((x) => x.id === it.id);
+        const l = plan.labels.find((x) => x.id === it.id);
+        const shownName = l ? l.lines.map((x) => x.text).join(' ') : '';
+        if (plan.dropped.includes(it.id)) {
+          assert.equal(it.person, false, `${id}: a performer’s name is never left out (${it.text})`);
+          assert.equal(shownName, '', `${id}: ${it.text} is left out whole`);
+          if (it.badges.length) assert.deepEqual(l?.badges.map((b) => b.text), [...it.badges], `${id}: ${it.text} keeps every number`);
+          continue;
+        }
         assert.ok(l, `${id}: ${it.text} has its label`);
-        assert.equal(l.lines.map((x) => x.text).join(' '), it.text, 'the whole name');
-        assert.deepEqual(l.badges.map((b) => b.text), [...it.badges], 'every number');
-        assert.doesNotMatch(l.lines.map((x) => x.text).join(' '), /…|\.\.\.$/);
+        assert.equal(shownName, it.text, 'the whole name');
+        if (plan.bare.includes(it.id)) assert.equal(l.badges.length, 0, 'a name alone');
+        else assert.deepEqual(l.badges.map((b) => b.text), [...it.badges], 'every number');
+        assert.doesNotMatch(shownName, /…|\.\.\.$/);
       }
     }
   });
@@ -587,10 +602,228 @@ describe('names and numbers on the stage', () => {
 
   it('an object that is not in the picture has no label and is in nobody’s way', () => {
     const p = tpl('four-piece');
-    const all = stageLabels(labelItems(p, PHONE.gw, PHONE.gh).items, PHONE.gw, PHONE.gh);
+    const whole = stageLabelPlan(labelItems(p, PHONE.gw, PHONE.gh).items, PHONE.gw, PHONE.gh);
     const zoomed = stageLabels(labelItems(p, PHONE.gw, PHONE.gh, 4).items, PHONE.gw, PHONE.gh);
-    assert.equal(all.length, p.objects.length);
-    assert.ok(zoomed.length < all.length && zoomed.length > 0);
+    // at the whole stage, the only objects with no label are those whose name
+    // was left out and that have no number to keep (the riser)
+    const none = p.objects.filter((o) => !whole.labels.some((l) => l.id === o.id));
+    for (const o of none) assert.ok(whole.dropped.includes(o.id) && stageBadges(p, o).length === 0, `${o.label} has no label`);
+    assert.ok(zoomed.length < whole.labels.length && zoomed.length > 0);
+  });
+
+  // ── review 2: the hard rules for a name on the screen ─────────────────────
+  type Box4 = { x0: number; y0: number; x1: number; y1: number };
+  const centerGap = (a: Box4, b: Box4) => Math.hypot((a.x0 + a.x1) / 2 - (b.x0 + b.x1) / 2, (a.y0 + a.y1) / 2 - (b.y0 + b.y1) / 2);
+  /** Lay a project's labels as the screen does, and list what breaks a rule. */
+  const audit = (p: SpProject, g: { gw: number; gh: number }, zoom = 1, selId: string | null = null) => {
+    const base = labelItems(p, g.gw, g.gh, zoom);
+    const items = base.items.map((it) => ({ ...it, selected: it.id === selId }));
+    const glass = { x0: STAGE_FRAME.side, y0: STAGE_FRAME.top, x1: g.gw - STAGE_FRAME.side, y1: g.gh - STAGE_FRAME.bottom };
+    const shown = items.filter((it) => stageLabelClash(stageBoxBounds(it.box), glass) > 0);
+    const plan = stageLabelPlan(items, g.gw, g.gh, frameOf(g.gw, g.gh));
+    const name = (id: string) => items.find((x) => x.id === id)?.text || id;
+    const overlap: string[] = [];
+    const onOtherArt: string[] = [];
+    const personOnOtherArt: string[] = [];
+    const strayed: string[] = [];
+    const riser: string[] = [];
+    plan.labels.forEach((l, i) => {
+      for (const m of plan.labels.slice(i + 1)) if (stageLabelClash(l.box, m.box) > 0) overlap.push(`${name(l.id)} × ${name(m.id)}`);
+      const own = items.find((x) => x.id === l.id)!;
+      const ownBox = stageBoxBounds(own.box);
+      if (own.box.sized) {
+        // a platform's name: inside its own box, or directly under it
+        const inside = l.box.x0 >= ownBox.x0 - 1e-6 && l.box.x1 <= ownBox.x1 + 1e-6 && l.box.y0 >= ownBox.y0 - 1e-6 && l.box.y1 <= ownBox.y1 + 1e-6;
+        // (a selected platform's frame stands 5 units out: its name goes under the frame)
+        const under = l.box.y0 >= ownBox.y1 && l.box.y0 <= ownBox.y1 + 9 && l.box.x1 > ownBox.x0 && l.box.x0 < ownBox.x1;
+        if (!inside && !under) riser.push(name(l.id));
+        return;
+      }
+      const keeper = own.person || own.selected;
+      for (const it of shown) {
+        if (it.id === l.id || it.box.sized) continue;
+        if (stageLabelClash(l.box, stageBoxBounds(it.box)) > 0) (keeper ? personOnOtherArt : onOtherArt).push(`${name(l.id)} on ${name(it.id)}`);
+      }
+      // a label that stands AWAY from its symbol (it has a leader) is nearer
+      // to its own symbol than to any other. (An object whose center is past
+      // the edge of a zoomed-in drawing is not judged: most of it is not there.)
+      const inView = own.box.cx >= glass.x0 && own.box.cx <= glass.x1 && own.box.cy >= glass.y0 && own.box.cy <= glass.y1;
+      if (!keeper && inView && stageLabelLeader(l.box, ownBox)) {
+        const mine = centerGap(l.box, ownBox);
+        for (const it of shown) if (it.id !== l.id && !it.box.sized && centerGap(l.box, stageBoxBounds(it.box)) < mine - 1e-6) strayed.push(`${name(l.id)} is nearer ${name(it.id)}`);
+      }
+    });
+    return { plan, items, overlap, onOtherArt, personOnOtherArt, strayed, riser };
+  };
+  /** The glass a 390 × 844 phone gives the stage above a three-row key. */
+  const SCREEN = { gw: 366, gh: 262 };
+  const SIZES = [SCREEN, PHONE, PHONE_TALL, { gw: 700, gh: 420 }];
+
+  it('no name is over another name, in every example, at every size and zoom', () => {
+    for (const id of TEMPLATES)
+      for (const g of SIZES)
+        for (const zoom of [1, 1.5, 2, 3]) assert.deepEqual(audit(tpl(id), g, zoom).overlap, [], `${id} ${g.gw}×${g.gh} ×${zoom}`);
+  });
+
+  it('a name of a piece of equipment is never over another object’s art, and when it stands away from its symbol its nearest object is its own', () => {
+    for (const id of TEMPLATES)
+      for (const g of SIZES)
+        for (const zoom of [1, 1.5, 2, 3]) {
+          const a = audit(tpl(id), g, zoom);
+          assert.deepEqual(a.onOtherArt, [], `${id} ${g.gw}×${g.gh} ×${zoom}`);
+          assert.deepEqual(a.strayed, [], `${id} ${g.gw}×${g.gh} ×${zoom}`);
+        }
+    // a performer always keeps a name; on the phone, at the whole stage, it
+    // is clear of every other object in the four small examples (the salsa
+    // band's front line is the one place a name may touch a neighbor's box)
+    for (const id of ['solo', 'duo', 'four-piece', 'playback'] as const) assert.deepEqual(audit(tpl(id), SCREEN).personOnOtherArt, [], id);
+    assert.ok(audit(tpl('salsa'), SCREEN).personOnOtherArt.length <= 1);
+    assert.deepEqual(audit(tpl('salsa'), SCREEN, 1.5).personOnOtherArt, []);
+  });
+
+  it('a riser’s name is inside its own box or directly under it, or it is left out: it never crosses the stage', () => {
+    const p = tpl('four-piece');
+    const riserObj = p.objects.find((o) => o.kind === 'riser');
+    assert.ok(riserObj);
+    for (const g of SIZES)
+      for (const zoom of [1, 1.5, 2, 3]) {
+        const a = audit(p, g, zoom);
+        assert.deepEqual(a.riser, [], `${g.gw}×${g.gh} ×${zoom}`);
+      }
+    // on the phone the kit fills the riser: the name is left out (the key
+    // names the dashed outline). With room, it is printed
+    assert.ok(audit(p, SCREEN).plan.dropped.includes(riserObj.id));
+    const roomy = spUpdateObject(spRemoveObjects(p, p.objects.filter((o) => o.kind !== 'riser').map((o) => o.id)), riserObj.id, {});
+    const alone = audit(roomy, SCREEN);
+    assert.equal(alone.plan.labels.length, 1);
+    assert.deepEqual(alone.riser, []);
+  });
+
+  it('moving one object never sends another object’s name onto a third (review 2, B1)', () => {
+    // the case that was seen: Sam one step toward stage left
+    const p = tpl('four-piece');
+    const sam = p.objects.find((o) => o.kind === 'performer' && stageName(p, o) === 'Sam');
+    const riserObj = p.objects.find((o) => o.kind === 'riser');
+    assert.ok(sam && riserObj);
+    const moved = stageNudge(p, sam.id, 1, 0);
+    const seen = audit(moved, SCREEN, 1, sam.id);
+    assert.deepEqual(seen.riser, []);
+    assert.deepEqual(seen.onOtherArt, []);
+    assert.deepEqual(seen.overlap, []);
+    // …and every object of the four-piece and the playback example, one step each way, selected as it is after a move
+    const artOf = (pp: SpProject, id: string) => stageBoxBounds(stageObjectBox(pp, pp.objects.find((x) => x.id === id)!, stageTransformFor(pp, SCREEN.gw, SCREEN.gh)));
+    for (const id of ['four-piece', 'playback'] as const) {
+      const q = tpl(id);
+      for (const o of q.objects)
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const after = stageNudge(q, o.id, dx, dy);
+          const a = audit(after, SCREEN, 1, o.id);
+          const what = `${id}: ${stageName(q, o) || o.kind} moved ${dx},${dy}`;
+          // two objects whose own drawings lie on each other (one pushed
+          // onto the other) leave no clean place between them: that one pair
+          // is not judged here. Every other rule still is.
+          const idOf = (name: string) => q.objects.find((x) => (stageName(q, x) || x.id) === name)?.id ?? name;
+          const judged = a.onOtherArt.filter((f) => {
+            const [who, on] = f.split(' on ');
+            return stageLabelClash(artOf(after, idOf(who)), artOf(after, idOf(on))) === 0;
+          });
+          assert.deepEqual(a.overlap, [], what);
+          assert.deepEqual(judged, [], what);
+          assert.deepEqual(a.strayed, [], what);
+          assert.deepEqual(a.riser, [], what);
+        }
+    }
+  });
+
+  it('on a crowded stage an equipment row drops its NAME and keeps its numbers; performers keep their names; the names come back with zoom (B2)', () => {
+    const p = tpl('salsa');
+    const at = (zoom: number) => audit(p, SCREEN, zoom);
+    const one = at(1);
+    assert.ok(one.plan.dropped.length >= 5, `${one.plan.dropped.length} names left out at the whole stage`);
+    for (const id of one.plan.dropped) {
+      const it = one.items.find((x) => x.id === id)!;
+      assert.equal(it.person, false, `${it.text} is equipment`);
+      const l = one.plan.labels.find((x) => x.id === id);
+      if (it.badges.length) {
+        assert.ok(l, `${it.text} still shows its numbers`);
+        assert.equal(l.lines.length, 0);
+        assert.deepEqual(l.badges.map((b) => b.text), [...it.badges]);
+      } else assert.equal(l, undefined);
+    }
+    // every performer is named, at every zoom at which they are in view
+    for (const zoom of [1, 1.5, 2, 3]) {
+      const a = at(zoom);
+      for (const l of a.plan.labels) {
+        const it = a.items.find((x) => x.id === l.id)!;
+        if (it.person) assert.equal(l.lines.map((x) => x.text).join(' '), it.text, `×${zoom}: ${it.text}`);
+      }
+    }
+    for (const o of p.objects.filter((x) => x.kind === 'performer')) assert.ok(one.plan.labels.some((l) => l.id === o.id), stageName(p, o));
+    // zooming in brings the names back
+    assert.ok(at(1.5).plan.dropped.length < one.plan.dropped.length);
+    assert.ok(at(2).plan.dropped.length < at(1.5).plan.dropped.length);
+    assert.equal(at(3).plan.dropped.length, 0);
+    // a small band loses no name at the whole stage
+    for (const id of ['solo', 'duo', 'playback'] as const) assert.deepEqual(audit(tpl(id), SCREEN).plan.dropped, [], id);
+    // the selected object always keeps its name, equipment too
+    const four = tpl('four-piece');
+    const plain = audit(four, SCREEN);
+    const lost = plain.plan.dropped.map((id) => four.objects.find((o) => o.id === id)!).find((o) => o.kind !== 'riser');
+    assert.ok(lost, 'the four-piece leaves a name out on the phone');
+    const picked = audit(four, SCREEN, 1, lost.id);
+    assert.equal(picked.plan.dropped.includes(lost.id), false);
+    assert.equal(picked.plan.labels.find((l) => l.id === lost.id)?.lines.map((x) => x.text).join(' '), stageName(four, lost));
+  });
+
+  it('the screen says how many names are left out, and only then', () => {
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    const area = code(`${SP}/StageArea.tsx`);
+    assert.match(plan, /const leftOut = showNames \? plan\.dropped\.length : 0;/);
+    assert.match(plan, /leftOutRef\.current\?\.\(leftOut\);/);
+    assert.match(area, /onNamesLeftOut=\{setLeftOut\}/);
+    assert.match(area, /\{leftOut > 0 \? \(\s*<Note>\{`At this size \$\{leftOut === 1 \? '1 equipment name is' : `\$\{leftOut\} equipment names are`\} not shown, to keep the names apart\. The equipment keeps its channel numbers and mix codes, and every performer is named\. Press ZOOM IN to see every name\. In FULL SCREEN, turn the phone sideways for a larger stage\.`\}<\/Note>/);
+    assert.doesNotMatch(area, /some names sit close together|to read every name/);
+  });
+
+  it('a performer is drawn after the instrument they sit at, and a platform under everything (B3)', () => {
+    const p = tpl('four-piece');
+    const order = stageDrawOrder(p.objects).map((o) => o.kind);
+    assert.equal(order[0], 'riser');
+    assert.ok(order.lastIndexOf('drum-kit') < order.indexOf('performer'), 'the drummer is on top of the kit');
+    assert.ok(order.lastIndexOf('keyboard') < order.indexOf('performer'));
+    assert.ok(order.indexOf('performer') < order.indexOf('wedge'), 'microphones and monitors are on top');
+    // the selection frame is the box of what is DRAWN: a figure is 0.72 m wide
+    assert.deepEqual(stageArtSize('performer'), { w: 0.72, h: 0.42 });
+    assert.deepEqual(stageArtSize('vocal-mic'), stageArtSize('mic-stand'));
+    assert.deepEqual(stageArtSize('wedge'), { w: spKeySymbol('wedge').w, h: spKeySymbol('wedge').h });
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    assert.match(plan, /const ringCorners = selBox \? stageBoxCorners\(selBox, 3\) : null;/);
+  });
+
+  it('FULL SCREEN in portrait opens at the zoom that fills the glass height (B4)', () => {
+    for (const id of TEMPLATES) {
+      const p = tpl(id);
+      const aspect = spStageAspect(p);
+      const region = stageRegion(p.objects);
+      // a phone held upright: 366 wide, about 370 tall above the key
+      const g = { gw: 366, gh: 370 };
+      const z = stageFillZoom(aspect, g.gw, g.gh, region);
+      assert.ok(z > 1.2 && z <= STAGE_ZOOM_MAX, `${id}: ${z}`);
+      near(z * 20, Math.round(z * 20), 1e-6);
+      const fit = stageTransform(aspect, g.gw, g.gh, region);
+      const full = stageTransform(aspect, g.gw, g.gh, region, { zoom: z, cx: 0.5, cy: 0.5 });
+      const innerH = g.gh - STAGE_FRAME.top - STAGE_FRAME.bottom;
+      const tall = (region.y1 - region.y0) * full.ky;
+      assert.ok(Math.abs(tall - innerH) <= innerH * 0.04, `${id}: what there is to see is ${tall} tall in ${innerH}`);
+      assert.ok(full.ky > fit.ky * 1.2, 'larger than on the normal screen');
+      // turned sideways the stage fills the height already: no zoom is forced
+      assert.equal(stageFillZoom(aspect, 800, 330, region), 1, `${id} sideways`);
+    }
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    assert.match(plan, /const fill = stageFillZoom\(aspect, gw, gh, region\);/);
+    // only on entering FULL SCREEN, only while the user has not chosen a zoom, and put back on leaving
+    assert.match(plan, /if \(st\.view\.zoom !== auto\.current\.applied\) return undefined;/);
+    assert.match(plan, /auto\.current = null;/);
   });
 
   it('placing the labels is the same every time (no label jumps when nothing moved)', () => {
@@ -876,6 +1109,51 @@ describe('a symbol is not an input', () => {
     for (const o of four.objects) assert.ok(Math.abs(o.x - at.x) > 0.05 || Math.abs(o.y - at.y) > 0.05, `clear of ${o.label}`);
   });
 
+  it('fourteen objects added one after another never land on each other: a place is free for the new object’s own BOX (B7)', () => {
+    const KINDS = ['piano', 'congas', 'timbales', 'drum-fill', 'stage-box', 'power', 'chair', 'sidefill', 'music-stand', 'rack', 'di', 'horn', 'percussion', 'keyboard'] as const;
+    for (const stage of [{ width: 24, depth: 16, unit: 'ft' as const }, { width: 8, depth: 5, unit: 'm' as const }, {}, { width: 24, depth: 16, unit: 'ft' as const, snap: false }]) {
+      let p = blank(stage);
+      for (const kind of KINDS) {
+        const at = stageFreeSpot(p, STAGE_NEW_SPOT, kind);
+        assert.ok(at.x > 0 && at.x < 1 && at.y > 0 && at.y < 1, `${kind} is on the stage`);
+        p = stageAddDrawing(p, kind, at, { visualOnly: true }).p;
+      }
+      assert.equal(p.objects.length, KINDS.length);
+      const T = stageTransformFor(p, 700, 420);
+      const boxes = p.objects.map((o) => ({ o, b: stageBoxBounds(stageObjectBox(p, o, T)) }));
+      for (let i = 0; i < boxes.length; i++)
+        for (let j = i + 1; j < boxes.length; j++) assert.equal(stageLabelClash(boxes[i].b, boxes[j].b), 0, `${boxes[i].o.kind} and ${boxes[j].o.kind} share a place on a ${JSON.stringify(stage)} stage`);
+    }
+    // the old test of centers called this free: a sidefill 0.4 m from the congas
+    const p = spAddObject(blank({ width: 24, depth: 16, unit: 'ft' }), 'congas', STAGE_NEW_SPOT).p;
+    const at = stageFreeSpot(p, { x: STAGE_NEW_SPOT.x + 0.06, y: STAGE_NEW_SPOT.y }, 'sidefill');
+    const q = stageAddDrawing(p, 'sidefill', at).p;
+    const T = stageTransformFor(q, 700, 420);
+    assert.equal(stageLabelClash(stageBoxBounds(stageObjectBox(q, q.objects[0], T)), stageBoxBounds(stageObjectBox(q, q.objects[1], T))), 0);
+    // a new object may stand ON a riser
+    const withRiser = spAddObject(blank({ width: 24, depth: 16, unit: 'ft' }), 'riser', STAGE_NEW_SPOT).p;
+    near(stageFreeSpot(withRiser, STAGE_NEW_SPOT, 'drum-kit').x, 0.5, 0.05);
+    // the palette and "PLACE ON THE STAGE" both ask for the kind's own place
+    const palette = code(`${SP}/stage/StagePalette.tsx`);
+    assert.match(palette, /onAdd\(\(q, near\) => make\(q, stageFreeSpot\(q, near, kind\)\)\);/);
+    assert.match(code(`${SP}/stage/stageLinks.ts`), /stageFreeSpot\(p, near, kind\)/);
+  });
+
+  it('a position button moves ONE axis: the other stays exactly where it was', () => {
+    const base = blank({ width: 24, depth: 16, unit: 'ft' });
+    const r = spAddObject(base, 'chair', { x: 0.5, y: 0.5 });
+    // typed to a place between grid lines
+    const typed = stageMoveExact(r.p, r.id, { x: 0.5, y: 0.6812 });
+    assert.equal(spObject(typed, r.id)?.y, 0.6812);
+    const left = spObject(stageNudge(typed, r.id, 1, 0), r.id)!;
+    assert.equal(left.y, 0.6812, 'STAGE LEFT does not change the depth');
+    near(left.x, 0.5 + 1 / 24, 1e-9);
+    const up = spObject(stageNudge(typed, r.id, 0, -1), r.id)!;
+    assert.equal(up.x, 0.5, 'UPSTAGE does not change the place across');
+    near(up.y * 16, Math.round(up.y * 16), 1e-9);
+    assert.ok(up.y < 0.6812);
+  });
+
   it('the likely source comes first when a symbol is linked: its own kind, then the rest', () => {
     const p = tpl('four-piece');
     const amp = stageSourceChoices(p, 'guitar-amp');
@@ -884,6 +1162,16 @@ describe('a symbol is not an input', () => {
     assert.equal(p.sources.find((x) => x.id === stageSourceChoices(p, 'keyboard')[0].id)?.category, 'keys');
     // an acoustic piano is offered microphones first
     assert.equal(stagePackagesFor('piano')[0].id, 'piano-mics');
+    // a drum kit is shown the drums, and the rest only behind SHOW EVERY SOURCE
+    const kit = stageSourceChoices(p, 'drum-kit');
+    const own = kit.filter((c) => c.match);
+    assert.ok(own.length >= 1 && own.length < kit.length);
+    for (const c of own) assert.equal(p.sources.find((x) => x.id === c.id)?.category, 'drums');
+    assert.deepEqual(kit.slice(0, own.length), own, 'its own kind first');
+    const palette = code(`${SP}/stage/StagePalette.tsx`);
+    assert.match(palette, /existing\(everySource \? sources : ownKind,/);
+    assert.match(palette, /label="SHOW EVERY SOURCE ▾"/);
+    assert.match(palette, /setEverySource\(false\);\s*setStep\(\{ at: 'link', item \}\);/);
   });
 
   it('the list of objects reads upstage to downstage, stage right to stage left', () => {
@@ -939,15 +1227,88 @@ describe('the Stage screen', () => {
     assert.match(plan, /stageFacingPoint\(selBox/);
   });
 
-  it('ADD, OBJECT and VIEW open as the kit’s popup; in FULL SCREEN they are trays with the fader strip folded', () => {
+  it('ADD and VIEW open as the kit’s popup; in FULL SCREEN they are trays with the fader strip folded', () => {
     for (const id of ['add', 'object', 'view']) assert.match(area, new RegExp(`<Sheet visible=\\{shown === '${id}'\\}`), `${id} has its popup`);
-    // one opener for the three: a button that opens the popup, or (in FULL
+    // one opener for the two: a button that opens the popup, or (in FULL
     // SCREEN, where a popup cannot be presented) a tray that folds the lane
     assert.match(area, /inFull \? \{ kind: 'group', id, label, valueLabel, valueA11y, hideLane: true, render \} : \{ kind: 'action', id, label, onPress: \(\) => setPanel\(id\) \}/);
     assert.match(area, /const shown = inFull \? null : panel;/);
     assert.match(area, /onFullScreen=\{setInFull\}/);
     assert.match(plan, /fullRef\.current\?\.\(true\);\s*return \(\) => fullRef\.current\?\.\(false\);/);
-    for (const id of ['add', 'object', 'view']) assert.match(area, new RegExp(`opener\\('${id}'`));
+    for (const id of ['add', 'view']) assert.match(area, new RegExp(`opener\\('${id}'`));
+    // one scroll bar in a popup: the popup's own scroller is off where this area brings its own
+    assert.match(area, /<Sheet visible=\{shown === 'add'\} title="Add to the stage" onClose=\{closePanel\} scroll=\{false\}>/);
+    assert.match(area, /<Sheet visible=\{shown === 'object'\} title=\{sel \? selName : 'Choose an object'\} onClose=\{closePanel\} scroll=\{false\}>/);
+  });
+
+  it('OBJECT opens UNDER the drawing on both screens: the position and turn buttons are seen to work (B10)', () => {
+    // a tray (the drawing stays pinned above it), never a popup over the stage
+    assert.match(area, /\{ kind: 'group', id: 'object', label: 'OBJECT', valueLabel: sel \? selName\.toUpperCase\(\) : 'NOTHING', valueA11y: sel \? `\$\{selName\} is selected` : 'nothing is selected', hideLane: true, render: objectTray \}/);
+    assert.doesNotMatch(area, /opener\('object'/);
+    const tray = area.slice(area.indexOf('const objectTray = '), area.indexOf('const objectSheet = '));
+    assert.match(tray, /<StageMovePad id=\{sel\.id\} \/>/);
+    assert.match(tray, /label=\{inFull && detailsFor === sel\.id \? 'HIDE NAME, LINKS AND MORE' : 'NAME, LINKS AND MORE ›'\}/);
+    assert.match(tray, /inFull \? setDetailsFor\(\(cur\) => \(cur === sel\.id \? null : sel\.id\)\) : setPanel\('object'\)/);
+    assert.match(tray, /label="DESELECT"/);
+    // the popup (and the FULL SCREEN tray) hold the rest: no position, no turn
+    assert.match(area, /<StageInspector id=\{sel\.id\} part="details" onDone=\{closePanel\} \/>/);
+    assert.match(area, /\{inFull && detailsFor === sel\.id \? <StageInspector id=\{sel\.id\} part="details" \/> : null\}/);
+    const inspector = code(`${SP}/stage/StageInspector.tsx`);
+    assert.match(inspector, /\{part === 'all' \? \(\s*<>\s*<Text style=\{styles\.heading\} accessibilityRole="header">\s*POSITION AND TURN\s*<\/Text>\s*<StageMovePad id=\{id\} \/>/);
+    assert.equal((inspector.match(/<StageMovePad\b/g) ?? []).length, 1);
+    // the popup's title is the name: it is not printed a second time under it
+    assert.match(inspector, /\{part === 'all' \? \(\s*<Text style=\{styles\.name\} accessibilityRole="header">/);
+    // two short labels at one height; the long words are in the line under them
+    assert.match(inspector, /return `\$\{axis === 'x' \? 'Across' : 'Depth'\} \$\{unit === '%' \? '%' : `\(\$\{unit\}\)`\}`;/);
+    assert.match(inspector, /Across is measured from the stage right edge \(the left of the drawing\)\. Depth is measured from the upstage edge \(the top\)\./);
+    // the pad: eight buttons, each 44 points high, each with words and a spoken name
+    const pad = code(`${SP}/stage/StageMovePad.tsx`);
+    assert.equal((pad.match(/<PadButton /g) ?? []).length, 8);
+    assert.match(pad, /button: \{ flex: 1, minHeight: 44,/);
+    assert.match(pad, /accessibilityRole="button" accessibilityLabel=\{a11y\}/);
+    for (const w of ['STAGE RIGHT', 'UPSTAGE', 'DOWNSTAGE', 'STAGE LEFT', 'FACE THE AUDIENCE', 'FACE UPSTAGE']) assert.ok(pad.includes(`word="${w}"`), w);
+    assert.match(pad, /ed\.apply\(\(q\) => stageNudge\(q, id, dx, dy\)\)/);
+    assert.match(pad, /ed\.apply\(\(q\) => spUpdateObject\(q, id, \{ rot \}\)\)/);
+    // one wording for the same turn, in the dock and in the pad
+    assert.match(area, /label: 'FACE THE AUDIENCE'/);
+    assert.doesNotMatch(all, /FACE AUDIENCE/);
+  });
+
+  it('VIEW holds the four switches and nothing else; FULL SCREEN adds UNDO and REDO, which have no bar there', () => {
+    const switches = area.slice(area.indexOf('const viewSwitches = ('), area.indexOf('const viewBody'));
+    assert.equal((switches.match(/<Switch /g) ?? []).length, 4);
+    assert.doesNotMatch(switches, /<Button /);
+    assert.match(area, /const viewBody: ReactNode = <View style=\{styles\.tray\}>\{viewSwitches\}<\/View>;/);
+    const tray = area.slice(area.indexOf('const viewTray'), area.indexOf('const commitTurn'));
+    assert.match(tray, /label="UNDO"/);
+    assert.match(tray, /label="REDO"/);
+    assert.doesNotMatch(tray, /FIT STAGE/);
+    assert.equal((area.match(/label: 'FIT STAGE'/g) ?? []).length, 1, 'FIT STAGE is under the ZOOM fader only');
+  });
+
+  it('the palette shows each kind’s own art before it is placed (B8)', () => {
+    const palette = code(`${SP}/stage/StagePalette.tsx`);
+    const key = code(`${SP}/stage/StageKey.tsx`);
+    assert.match(palette, /<Pressable key=\{it\.kind\} onPress=\{\(\) => pick\(it\)\} style=\{.+?\} accessibilityRole="button" accessibilityLabel=\{`Add: \$\{it\.name\}`\}>\s*<StageKindIcon project=\{p\} kind=\{it\.kind\} \/>\s*<Text style=\{styles\.kindText\}>\{it\.name\.toUpperCase\(\)\}<\/Text>/);
+    assert.match(palette, /kind: \{ minHeight: 46,/);
+    // the same art as the stage and the key, hidden from a screen reader (the button says the name)
+    const icon = key.slice(key.indexOf('export function StageKindIcon'));
+    assert.match(icon, /<Svg aria-hidden \{\.\.\.SVG_HIDDEN_NATIVE\}/);
+    assert.match(icon, /<StageObjectArt p=\{project\} o=\{sample\(kind\)\} [^>]*rot=\{spKeyRot\(kind\)\}/);
+    // a package says what it assumes under its own heading (one colon a sentence)
+    assert.match(palette, />\s*THIS PACKAGE ASSUMES\s*<\/Text>\s*<Text style=\{styles\.lead\}>\{pkg\.assumes\}<\/Text>/);
+    assert.doesNotMatch(palette, /This package assumes:/);
+  });
+
+  it('a thing the first block already offers to place is not asked again in the review block', () => {
+    assert.match(area, /const offered = new Set\(unplaced\.map\(\(u\) => `\$\{u\.kind\}:\$\{u\.id\}`\)\);/);
+    assert.match(area, /ed\.issues\.filter\(\(i\) => i\.area === 'stage' && !\(\(i\.rule === 'performer-unplaced' \|\| i\.rule === 'source-unplaced'\) && offered\.has\(`\$\{i\.target\.kind\}:\$\{i\.target\.id\}`\)\)\);/);
+    // the rules and their targets are the review's own
+    const p = spRemoveObjects(tpl('four-piece'), tpl('four-piece').objects.filter((o) => o.kind === 'performer' || o.kind === 'drum-kit').map((o) => o.id));
+    const offered = new Set(stageUnplaced(p).map((u) => `${u.kind}:${u.id}`));
+    const repeats = spReview(p).filter((i) => i.area === 'stage' && (i.rule === 'performer-unplaced' || i.rule === 'source-unplaced'));
+    assert.ok(repeats.length >= 2);
+    for (const i of repeats) assert.ok(offered.has(`${i.target.kind}:${i.target.id}`), i.text);
   });
 
   it('every step of the palette starts at its top (the question is never out of view)', () => {
@@ -958,8 +1319,8 @@ describe('the Stage screen', () => {
     // the key changes with the step, the kind, the package, and each object added
     assert.match(palette, /const stepKey = step\.at === 'pick' \? `pick:\$\{added\.n\}` : step\.at === 'package' \? `package:\$\{step\.item\.kind\}:\$\{step\.pkg\.id\}` : `\$\{step\.at\}:\$\{step\.item\.kind\}`;/);
     assert.equal((palette.match(/return wrap\(/g) ?? []).length, 6, 'every step is drawn inside the scroller');
-    // the inspector starts at its top for each object
-    assert.match(area, /<StageStepScroll stepKey=\{sel \? sel\.id : 'none'\} maxHeight=\{maxHeight\}>/);
+    // the object's popup starts at its top for each object
+    assert.match(area, /<StageStepScroll stepKey=\{sel \? sel\.id : 'none'\} maxHeight=\{sheetH\}>/);
   });
 
   it('the palette and the inspector open no popup of their own (they are drawn inside one, and in the FULL SCREEN tray)', () => {
@@ -997,6 +1358,26 @@ describe('the Stage screen', () => {
     assert.match(shown, /MONITOR ONLY: kept out of the audience mix/);
     assert.match(shown, /label="Who plays or sings it"/);
     assert.match(shown, /Symbols are drawings, not the real size of the equipment\./);
+    // review 2: the drawing is seen from ABOVE, with the audience at the bottom
+    assert.match(shown, /Stage plot, seen from above, with the audience at the bottom: stage right is on the left\./);
+    assert.match(shown, /You are looking down on the stage, with the audience at the bottom: stage right is on your left\./);
+    assert.doesNotMatch(shown, /seen from the audience|looking from the audience|as the audience sees the stage|view from the audience/);
+    assert.match(shown, /A code in a rounded box \(M1, M2\) is a monitor mix\./);
+    assert.doesNotMatch(shown, /round box/);
+    assert.match(shown, /label="Nobody \(shared source\)"|'Nobody \(shared source\)'/);
+    assert.doesNotMatch(shown, /Nobody yet|No performer \(shared source\)|band’s own rig|Band rig/);
+    assert.match(shown, /It is part of the band monitor rig\./);
+    // one drawn thing, one name: both microphone kinds are a "Microphone on a stand" in the list
+    assert.equal(stageObjectKindName('vocal-mic'), 'Microphone on a stand');
+    assert.equal(stageObjectKindName('mic-stand'), 'Microphone on a stand');
+    assert.equal(stageObjectKindName('iem'), 'In-ear monitor equipment');
+    assert.equal(stageObjectKindName('power'), 'Power location');
+    assert.equal(stageObjectKindName('generic'), 'Other object');
+    // the kind is printed in a row only when it is not the name already ("Congas · Congas")
+    const list = code(`${SP}/stage/StageObjectList.tsx`);
+    assert.match(list, /kind\.toLowerCase\(\) === name\.toLowerCase\(\) \? '' : kind/);
+    // a short status line
+    assert.match(shown, /\$\{sel \? `Selected: \$\{selName\} \(\$\{stageWhere\(sel\)\}, \$\{stageFacingWord\(sel\.rot\)\}\)\.` : 'Nothing is selected\.'\}/);
     // removing asks in place first, as the Inputs area does
     assert.match(shown, /<RemoveStep\s/);
   });
@@ -1017,7 +1398,10 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
   it('every kind of symbol on the stage has ONE cell, in the model’s order and with the model’s names', () => {
     for (const id of KEY_TEMPLATES) {
       const p = tpl(id);
-      const entries = spPlotKey(p.objects);
+      const entries = stageKeyEntries(p.objects);
+      // the model's entries, in its order; the screen changes one name only
+      assert.deepEqual(entries.map((e) => e.kind), spPlotKey(p.objects).map((e) => e.kind));
+      for (const e of entries) assert.equal(e.name, e.kind === 'wedge' ? 'Wedge monitor (speaker side faces the performer)' : spPlotKey(p.objects).find((x) => x.kind === e.kind)?.name);
       for (const gw of WIDTHS) {
         const L = stageKeyLayout(entries, gw);
         assert.deepEqual(L.cells.map((c) => c.kind), entries.map((e) => e.kind), `${id} at ${gw}`);
@@ -1026,15 +1410,33 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
         for (const c of L.cells) assert.equal(c.lines.map((l) => l.text).join(' '), c.name);
       }
       // every kind that is drawn is in the key (a vocal microphone under "Microphone on a stand")
-      for (const o of p.objects) assert.ok(entries.some((e) => e.kind === (o.kind === 'vocal-mic' ? 'mic-stand' : o.kind)), `${id}: ${o.kind}`);
+      for (const o of p.objects) assert.ok(entries.some((e) => e.kind === spKeyKind(o.kind)), `${id}: ${o.kind}`);
     }
-    assert.ok(spPlotKey(tpl('four-piece').objects).length >= 8);
+    // the four-piece: guitar and bass amplifier are ONE entry
+    const four = stageKeyEntries(tpl('four-piece').objects);
+    assert.equal(four.length, 9);
+    assert.equal(four.find((e) => e.kind === 'guitar-amp')?.name, 'Amplifier (guitar or bass)');
+    assert.equal(four.some((e) => e.kind === 'bass-amp'), false);
+  });
+
+  it('the key’s wedge is turned as the wedges on the stage are: its speaker side toward the performer', () => {
+    assert.equal(spKeyRot('wedge'), 180);
+    assert.equal(spKeyRot('performer'), 0);
+    const key = code(`${SP}/stage/StageKey.tsx`);
+    assert.match(key, /rot: spKeyRot\(kind\),/);
+    assert.match(key, /<StageObjectArt key=\{`a\$\{c\.kind\}`\} [^>]*rot=\{spKeyRot\(c\.kind\)\}/);
+    // a new wedge on the stage faces the same way
+    assert.equal(stageDefaultRot('wedge', { x: 0.5, y: 0.9 }), spKeyRot('wedge'));
+    // on the screen the wedge is a rectangle with a grille: "wide side" would name nothing
+    const words = stageKeyWords(stageKeyEntries([{ kind: 'wedge' }]));
+    assert.equal(words, 'Key: Wedge monitor (speaker side faces the performer).');
+    assert.doesNotMatch(code(`${SP}/stage/StagePlanView.tsx`), /spPlotKey\(/);
   });
 
   it('no cell is wider than the glass, no two cells share a place, and nothing runs off any edge', () => {
     for (const id of KEY_TEMPLATES)
       for (const gw of WIDTHS) {
-        const L = stageKeyLayout(spPlotKey(tpl(id).objects), gw);
+        const L = stageKeyLayout(stageKeyEntries(tpl(id).objects), gw);
         for (const c of L.cells) {
           assert.ok(c.x >= 0 && c.x + c.w <= gw + 1e-6, `${id} ${gw}: ${c.name} is inside the glass`);
           assert.ok(c.y >= 0 && c.y + c.h <= L.height + 1e-6, `${id} ${gw}: ${c.name} is inside the strip`);
@@ -1071,14 +1473,30 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
   });
 
   it('the salsa band’s key fits a 390-wide phone in at most four rows; the small examples in fewer', () => {
-    const rows = (id: SpTemplateId) => stageKeyLayout(spPlotKey(tpl(id).objects), stageGlassWidthGuess(390)).rows;
+    const lay = (id: SpTemplateId, gw = stageGlassWidthGuess(390)) => stageKeyLayout(stageKeyEntries(tpl(id).objects), gw, 'NOT TO SCALE');
+    const rows = (id: SpTemplateId) => lay(id).rows;
     assert.equal(stageGlassWidthGuess(390), 366);
     assert.ok(rows('salsa') <= 4, `salsa: ${rows('salsa')} rows`);
     assert.ok(rows('four-piece') <= 4, `four-piece: ${rows('four-piece')} rows`);
     assert.ok(rows('solo') <= 2, `solo: ${rows('solo')} rows`);
-    for (const id of TEMPLATES) assert.ok(stageKeyLayout(spPlotKey(tpl(id).objects), 366).height <= 90, `${id}: the key is ${stageKeyLayout(spPlotKey(tpl(id).objects), 366).height} tall`);
+    for (const id of TEMPLATES) {
+      const h = lay(id).height;
+      assert.ok(h <= 95, `${id}: the key is ${h} tall`);
+      // …so the stage floor keeps its size: on a 390 × 844 phone the rack
+      // gives the display 351 points, and the floor (as wide as the glass
+      // lets it be) needs its own height plus the two direction bands
+      const p = tpl(id);
+      const floor = stageTransformFor(p, 366, 351 - h);
+      const widest = stageTransformFor(p, 366, 2000);
+      near(floor.kx, widest.kx, 1e-6);
+      assert.ok(floor.kx >= 300 && floor.ky >= 185, `${id}: the floor is ${Math.round(floor.kx)} × ${Math.round(floor.ky)}`);
+    }
     // a wider glass never needs more rows
-    for (const id of TEMPLATES) assert.ok(stageKeyLayout(spPlotKey(tpl(id).objects), 700).rows <= rows(id));
+    for (const id of TEMPLATES) assert.ok(lay(id, 700).rows <= rows(id));
+    // a long name is set on two or three lines of about the same length, never cut
+    const wedge = lay('four-piece').cells.find((c) => c.kind === 'wedge');
+    assert.ok(wedge && wedge.lines.length >= 2 && wedge.lines.length <= 3);
+    assert.equal(wedge.lines.map((l) => l.text).join(' '), 'Wedge monitor (speaker side faces the performer)');
   });
 
   it('an empty stage still shows the heading and says so, so the place of the key is learned', () => {
@@ -1094,24 +1512,24 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
 
   it('the strip’s height is what the rack is told, and what the drawing takes from the stage', () => {
     const p = tpl('salsa');
-    const L = stageKeyLayout(spPlotKey(p.objects), 366);
+    const L = stageKeyLayout(stageKeyEntries(p.objects), 366);
     // the height is the rows it drew: the last cell's bottom, plus the foot
     const bottom = Math.max(...L.cells.map((c) => c.y + c.h));
     assert.ok(L.height > bottom && L.height - bottom <= 6);
     assert.ok(stageKeyLayout([], 366).height < L.height, 'one row is a shorter strip than three');
-    assert.ok(stageKeyLayout(spPlotKey(p.objects), 250).height > L.height, 'a narrower glass needs more rows, and says so in its height');
-    assert.deepEqual(stageKeyLayout(spPlotKey(p.objects), 366), L, 'the same every time');
+    assert.ok(stageKeyLayout(stageKeyEntries(p.objects), 250).height > L.height, 'a narrower glass needs more rows, and says so in its height');
+    assert.deepEqual(stageKeyLayout(stageKeyEntries(p.objects), 366), L, 'the same every time');
     const area = code(`${SP}/StageArea.tsx`);
     const plan = code(`${SP}/stage/StagePlanView.tsx`);
     // the area tells the rack: the usual display height PLUS the key's height
-    assert.match(area, /const keyHeight = Math\.ceil\(stageKeyLayout\(spPlotKey\(p\.objects\), stageGlassWidthGuess\(winW\), scaleNote\)\.height\);/);
+    assert.match(area, /const keyHeight = Math\.ceil\(stageKeyLayout\(stageKeyEntries\(p\.objects\), stageGlassWidthGuess\(winW\), scaleNote\)\.height\);/);
     assert.match(area, /const phoneHeight = [^;]+ \+ keyHeight;/);
     // …and nothing else: no readout row and no line under the glass, so the
     // rack gives their height to the glass, and the key does not cost the stage
     assert.match(area, /stage=\{\{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true \}\}/);
     assert.doesNotMatch(area, /\bbezel\b|\bbadge\b|BezelItem/);
     // the drawing lays the same key out for its real width, and the stage takes the height above it
-    assert.match(plan, /const keyEntries = useMemo\(\(\) => spPlotKey\(p\.objects\), \[p\.objects\]\);/);
+    assert.match(plan, /const keyEntries = useMemo\(\(\) => stageKeyEntries\(p\.objects\), \[p\.objects\]\);/);
     assert.match(plan, /const keyLayout = useMemo\(\(\) => stageKeyLayout\(keyEntries, gw, scaleNote\), \[keyEntries, gw, scaleNote\]\);/);
     assert.match(plan, /const gh = Math\.max\(ghAll \/ 3, ghAll - keyLayout\.height\);/);
   });
@@ -1124,7 +1542,7 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     for (const id of KEY_TEMPLATES)
       for (const gw of WIDTHS)
         for (const note of ['NOT TO SCALE', '24 × 16 ft · ESTIMATED']) {
-          const L = stageKeyLayout(spPlotKey(tpl(id).objects), gw, note);
+          const L = stageKeyLayout(stageKeyEntries(tpl(id).objects), gw, note);
           assert.equal(L.note?.text, note);
           // right-aligned at the strip's right edge, on the heading's own line
           assert.ok((L.note?.x ?? 0) <= gw && (L.note?.x ?? 0) >= gw - 8);
@@ -1133,7 +1551,7 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
           const noteLeft = (L.note?.x ?? 0) - note.length * STAGE_KEY_FS * 0.62;
           for (const c of L.cells.filter((x) => x.row === 0)) assert.ok(c.x + c.w <= noteLeft + 1e-6 || gw < 300, `${id} ${gw}: ${c.name} is clear of “${note}”`);
           // every entry is still there, once
-          assert.equal(L.cells.length, spPlotKey(tpl(id).objects).length);
+          assert.equal(L.cells.length, stageKeyEntries(tpl(id).objects).length);
         }
     assert.equal(stageKeyLayout([], 366).note, null);
     const key = code(`${SP}/stage/StageKey.tsx`);
@@ -1145,11 +1563,13 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     assert.match(area, /NOT TO SCALE: no stage width and depth are set in Setup/);
   });
 
-  it('with no readout row, the selection is still named: on the drawing, in the well, and on the OBJECT button where it has a value line', () => {
+  it('with no readout row, the selection is still named: on the drawing, in the well, and on the OBJECT button’s second line (on both screens)', () => {
     const area = code(`${SP}/StageArea.tsx`);
     const plan = code(`${SP}/stage/StagePlanView.tsx`);
-    assert.match(area, /opener\('object', 'OBJECT', sel \? selName\.toUpperCase\(\) : 'NOTHING',/);
-    assert.match(area, /objects`\} on the stage\. \$\{sel \? `Selected: \$\{selName\}, /);
+    assert.match(area, /id: 'object', label: 'OBJECT', valueLabel: sel \? selName\.toUpperCase\(\) : 'NOTHING',/);
+    assert.match(area, /objects`\} on the stage\. \$\{sel \? `Selected: \$\{selName\} \(/);
+    // the selected object's name is kept even on a crowded stage (stageLabelPlan's `selected`)
+    assert.match(plan, /selected: o\.id === selectedId,/);
     // the selected object's label is drawn even when it has no name, or names are switched off
     assert.match(plan, /text: o\.id === selectedId \? stageListName\(p, o\) : showNames \? stageName\(p, o\) : '',/);
     assert.match(plan, /fill=\{isSel \? AMBER : '#f1f2f5'\}/);
@@ -1171,9 +1591,10 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     assert.match(key, /<View pointerEvents="none">\s*<Svg aria-hidden \{\.\.\.SVG_HIDDEN_NATIVE\}/);
     // one labeled element: "Key: Performer, Drum kit, …"
     assert.match(key, /accessible accessibilityRole="text" accessibilityLabel=\{layout\.note \? `\$\{stageKeyWords\(entries\)\} \$\{scaleWords\(layout\.note\.text\)\}` : stageKeyWords\(entries\)\}/);
-    const words = stageKeyWords(spPlotKey(tpl('four-piece').objects));
+    const words = stageKeyWords(stageKeyEntries(tpl('four-piece').objects));
     assert.match(words, /^Key: Performer, Drum kit, /);
-    assert.match(words, /Wedge monitor \(wide side faces the performer\)/);
+    assert.match(words, /Wedge monitor \(speaker side faces the performer\)/);
+    assert.doesNotMatch(words, /wide side/);
     // the SAME art as the stage, and the model's key symbol for its size
     assert.match(key, /<StageObjectArt\b/);
     assert.match(key, /spKeySymbol\(c\.kind\)/);

@@ -5,7 +5,7 @@
  * A DI channel is an input. A DI device is a box: a mono one carries one
  * channel, a stereo one carries two. The panel says both numbers, and the
  * sentence from spDiTotals never claims a box count nobody gave ("3 DI audio
- * channels, device arrangement to confirm"). Passive or active is asked, with
+ * channels with no DI device (DI box) yet"). Passive or active is asked, with
  * "not known" as a real answer; nothing here decides phantom power.
  */
 import { View } from 'react-native';
@@ -16,7 +16,7 @@ import type { SpDiDevice, SpId, SpSupplier } from '../../../../features/stageplo
 import { useSpEditor } from '../spContext';
 import { Button, Choice, Count, Note, RowCard, Section, TextField } from '../spForm';
 import { RemoveStep, SheetBody, Small, SubTitle, TickRow, bitStyles } from './bits';
-import { SP_DI_KIND_WORD, SP_SUPPLIERS, spDiChannelRows, spDiDeviceLine, spDiToggle } from './inputsLogic';
+import { SP_DI_KIND_WORD, SP_SUPPLIERS, SP_TBC_PRINTED, spDiChannelRows, spDiDeviceLine, spDiToggle } from './inputsLogic';
 
 const SUPPLIER: { value: SpSupplier; label: string }[] = SP_SUPPLIERS.map((value) => ({ value, label: SP_SUPPLIER_WORD[value] }));
 type Channels = '1' | '2';
@@ -39,10 +39,12 @@ export function DiPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOpe
 
   return (
     <Section title="DI DEVICES" hint="The DI devices, listed apart from the DI channels they carry. A mono device carries one DI channel, a stereo device two.">
-      <View style={bitStyles.counts}>
-        <Count value={totals.channels} label={totals.channels === 1 ? 'DI channel' : 'DI channels'} />
-        <Count value={totals.devices} label={totals.devices === 1 ? 'DI device' : 'DI devices'} />
-      </View>
+      {totals.channels || totals.devices ? (
+        <View style={bitStyles.counts}>
+          {totals.channels ? <Count value={totals.channels} label={totals.channels === 1 ? 'DI channel' : 'DI channels'} /> : null}
+          {totals.devices ? <Count value={totals.devices} label={totals.devices === 1 ? 'DI device' : 'DI devices'} /> : null}
+        </View>
+      ) : null}
       <Note tone={totals.unassignedChannels || totals.overloaded.length ? 'warning' : 'plain'}>{totals.summary}</Note>
       {totals.overloaded.map((o) => (
         <Note key={o.label} tone="warning">
@@ -85,7 +87,7 @@ export function DiEditor({ deviceId, onClose }: { deviceId: SpId; onClose: () =>
     <SheetBody>
       <TextField label="Name of this DI device" value={d.label} onCommit={(t) => (t && t !== d.label ? set({ label: t }) : undefined)} placeholder="Bass DI, Keys stereo DI" />
       <Choice<Channels> label="Mono or stereo" value={d.channels === 2 ? '2' : '1'} options={CHANNELS} onChange={(v) => (Number(v) === d.channels ? undefined : set({ channels: v === '2' ? 2 : 1 }))} hint="A mono device carries one DI channel. A stereo device carries two." />
-      <Choice<SpDiDevice['kind']> label="Passive or active" value={d.kind} options={KIND} onChange={(kind) => (kind === d.kind ? undefined : set({ kind }))} hint="To be confirmed is a real answer: it is printed as a question, never guessed." />
+      <Choice<SpDiDevice['kind']> label="Passive or active" value={d.kind} options={KIND} onChange={(kind) => (kind === d.kind ? undefined : set({ kind }))} hint={`To be confirmed is a real answer, never guessed. ${SP_TBC_PRINTED}`} />
       <Choice<SpSupplier> label="Who brings it" value={d.supplier} options={SUPPLIER} onChange={(supplier) => (supplier === d.supplier ? undefined : set({ supplier }))} hint="This is also the answer for every DI channel on this device." />
       <TextField label="Model, if it matters" value={d.model} onCommit={(t) => (t === d.model ? undefined : set({ model: t }))} hint="Type it yourself. Leave it empty for any suitable DI." />
 
@@ -96,7 +98,7 @@ export function DiEditor({ deviceId, onClose }: { deviceId: SpId; onClose: () =>
             <TickRow
               key={r.inputId}
               title={r.label}
-              sub={r.on ? 'On this device' : r.elsewhere ? `On ${r.elsewhere} now. Ticking moves it here.` : 'Device arrangement to be confirmed'}
+              sub={r.on ? 'On this device' : r.elsewhere ? `On ${r.elsewhere} now. Ticking moves it here.` : 'No DI device (DI box) yet'}
               checked={r.on}
               onPress={() => ed.apply((q) => spDiToggle(q, deviceId, r.inputId))}
               a11yLabel={`${r.label}. ${r.on ? `On ${d.label}. Press to take it off.` : r.elsewhere ? `On ${r.elsewhere} now. Press to move it to ${d.label}.` : `No device yet. Press to put it on ${d.label}.`}`}
@@ -114,7 +116,7 @@ export function DiEditor({ deviceId, onClose }: { deviceId: SpId; onClose: () =>
 
       <RemoveStep
         label="REMOVE THIS DI DEVICE"
-        question={`Remove ${d.label}?${used ? ` Its ${used === 1 ? 'DI channel stays' : `${used} DI channels stay`} in the input list, with the device arrangement to be confirmed.` : ''}`}
+        question={`Remove ${d.label}?${used ? ` Its ${used === 1 ? 'DI channel stays' : `${used} DI channels stay`} in the input list, with no DI device (DI box) yet.` : ''}`}
         yes="YES, REMOVE IT"
         onRemove={() => {
           ed.apply((q) => spRemoveDiDevice(q, deviceId));

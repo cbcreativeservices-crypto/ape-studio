@@ -48,6 +48,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { GuidedTask } from './GuidedTask';
 import { DATE_HOW, spWhen } from './ProjectLibrary';
 import { useSpEditor } from './spContext';
+import { spSetupField, takeSpSetupAsk } from './spIssueActions';
 import { Button, Choice, Count, Fields, HelpTip, Note, RowCard, Section, Sheet, Switch, TextField, type SpCommitHow } from './spForm';
 
 const CONTACT_FIELDS: readonly { key: 'name' | 'role' | 'email' | 'phone'; label: string; word: string; keyboard: 'default' | 'email' | 'phone'; placeholder?: string }[] = [
@@ -121,6 +122,22 @@ export function SetupArea() {
     // Asked once: coming back to Setup later must not open the row again.
     select(null);
   }, [asked, select]);
+  // A review question about a Setup FIELD ("Go to" from another area): the
+  // rule is left by spIssueActions and taken once here. The band name and
+  // the title are on the first screen; the contact block and the performers
+  // are scrolled to when they have been laid out.
+  const wanted = useRef<'contact' | 'performers' | null>(null);
+  const contactY = useRef<number | null>(null);
+  useEffect(() => {
+    const field = spSetupField(takeSpSetupAsk());
+    if (field === 'performers') {
+      if (performersY.current != null) scrollRef.current?.scrollTo({ y: Math.max(0, performersY.current - 8), animated: false });
+      else showAsked.current = true;
+    } else if (field === 'contact') {
+      if (contactY.current != null) scrollRef.current?.scrollTo({ y: Math.max(0, contactY.current - 8), animated: false });
+      else wanted.current = 'contact';
+    }
+  }, []);
   const [removing, setRemoving] = useState<string | null>(null);
   const [dateNote, setDateNote] = useState(false);
   const [sizeNote, setSizeNote] = useState(false);
@@ -140,6 +157,7 @@ export function SetupArea() {
   // off a phone's first screen (visual review, 2026-11-12).
   const notSaved = ed.saveState === 'failed' ? 'Not saved: this device could not store your last change. Your work is still on screen. Saving is tried again with your next change, and when you leave this stage plot.' : null;
   const noBandName = ed.issues.find((i) => i.rule === 'no-band-name');
+  const exampleTitle = ed.issues.find((i) => i.rule === 'example-title');
   const noContact = ed.issues.find((i) => i.rule === 'no-contact');
   const email = p.contact.email.trim();
 
@@ -245,6 +263,7 @@ export function SetupArea() {
             <TextField label="Band or artist name" value={p.band} onCommit={(band) => set((d) => (d.band = band))} />
             {noBandName ? <Note tone="warning">{noBandName.text} Type it above.</Note> : null}
             <TextField label="Title of this stage plot" value={p.title} onCommit={(title) => set((d) => (d.title = title))} hint="Optional. For example: Club set, Festival set." />
+            {exampleTitle ? <Note tone="warning">{exampleTitle.text}</Note> : null}
             {template ? (
               <Note>
                 Started from the example “{template.name}”. It assumed: {template.assumes} Change anything that is not true for your band.
@@ -264,7 +283,7 @@ export function SetupArea() {
               }
             }}
           >
-          <Section title="PERFORMERS" hint="Everyone on the stage. Their sources, inputs and monitors are linked to them in the other areas.">
+          <Section title="PERFORMERS" hint="Everyone on the stage. What each one plays or sings, and what each one hears, is linked to them in the other areas.">
             {p.performers.length === 0 ? <Text style={styles.quiet}>No performers yet.</Text> : null}
             {p.performers.map((pf) => {
               const open = openPerformer === pf.id;
@@ -303,7 +322,7 @@ export function SetupArea() {
 
           <Section title="THE GIG" hint="All optional. Type what you know now. You can add the rest later.">
             <TextField label="Venue" value={p.venue} onCommit={(venue) => set((d) => (d.venue = venue))} />
-            <TextField label="Event date" value={p.eventDate} onCommit={commitDate} placeholder="2026-12-05" hint="Year first, or the month as a word: 2026-12-05, or Dec 5 2026. It is also used in the packet’s file name." />
+            <TextField label="Event date" value={p.eventDate} onCommit={commitDate} placeholder="2026-12-05" hint="Year first, or the month as a word: 2026-12-05, or Dec 5, 2026. It is also used in the packet’s file name." />
             {p.eventDate && !dateNote ? <Text style={styles.quiet}>Read as {spDateWords(p.eventDate)}.</Text> : null}
             {dateNote ? <Note tone="warning">That date was not read, so it was not changed. {DATE_HOW}</Note> : null}
             <Fields>
@@ -313,6 +332,15 @@ export function SetupArea() {
             </Fields>
           </Section>
 
+          <View
+            onLayout={(e) => {
+              contactY.current = e.nativeEvent.layout.y;
+              if (wanted.current === 'contact') {
+                wanted.current = null;
+                scrollRef.current?.scrollTo({ y: Math.max(0, e.nativeEvent.layout.y - 8), animated: false });
+              }
+            }}
+          >
           <Section title="TECHNICAL CONTACT" hint="The person the venue’s engineer should ask. You choose which details the venue sees.">
             {noContact ? <Note tone="warning">{noContact.text}</Note> : null}
             {CONTACT_FIELDS.map((f) => (
@@ -323,6 +351,7 @@ export function SetupArea() {
               </View>
             ))}
           </Section>
+          </View>
 
           <Section title="REVISION AND STATUS">
             <View style={styles.counts}>
@@ -331,7 +360,7 @@ export function SetupArea() {
             {p.modifiedAt > 0 ? <Text style={styles.quiet}>Last changed {spWhen(p.modifiedAt)}.</Text> : null}
             {shared ? (
               <Note>
-                Revision {p.revision} has been shared or marked ready. Your next change starts revision {p.revision + 1} as a draft. A changed document never carries the number of the one you already sent.
+                Revision {p.revision} was marked ready or shared. Your next change starts revision {p.revision + 1} as a draft. A changed document never carries the number of one you may already have sent.
               </Note>
             ) : null}
             <Choice
@@ -339,7 +368,7 @@ export function SetupArea() {
               value={p.status}
               options={STATUS_OPTIONS}
               onChange={setStatus}
-              hint="Ready to advance means your document is prepared for discussion with the venue. It does not mean the venue has agreed to it."
+              hint="“Advancing” a show means sending your technical details to the venue before show day. Ready to advance means your document is prepared for that. It does not mean the venue has agreed to it."
             />
             {!canReady ? (
               <Note tone="warning">
@@ -386,7 +415,7 @@ export function SetupArea() {
               value={p.viewNote}
               multiline
               onCommit={(viewNote) => set((d) => (d.viewNote = viewNote))}
-              hint="Left and right on the drawing are the performer’s, facing the audience. If any of your names use another viewpoint, such as overhead microphones named from the drummer’s seat, say so here."
+              hint="Stage left and stage right are the performer’s left and right, facing the audience. If any of your names use another viewpoint, such as overhead microphones named as the audience sees the kit, say so here."
             />
           </Section>
         </View>
@@ -407,18 +436,18 @@ export function SetupArea() {
               {links.soleMixes.map((m) => (
                 <Text key={m.id} style={styles.link}>
                   • Mix {m.code}
-                  {m.name ? ` ${m.name}` : ''} is only theirs.
+                  {m.name ? ` “${m.name}”` : ''} is only theirs.
                 </Text>
               ))}
               {links.sharedMixes.map((m) => (
                 <Text key={m.id} style={styles.link}>
                   • Mix {m.code}
-                  {m.name ? ` ${m.name}` : ''} is shared. It stays, with the others still on it.
+                  {m.name ? ` “${m.name}”` : ''} is shared. It stays, with the others still on it.
                 </Text>
               ))}
               {links.devices.length ? (
                 <Text style={styles.link}>
-                  • {plural(links.devices.length, 'monitor device', 'monitor devices')} ({links.devices.map((d) => d.label.trim() || 'no name').join(', ')}): what they use, and what plays a mix that is only theirs.
+                  • {plural(links.devices.length, 'monitor device', 'monitor devices')} that only they use ({links.devices.map((d) => d.label.trim() || 'no name').join(', ')}).
                 </Text>
               ) : null}
               {links.objects.length > ownObjects.length ? <Text style={styles.link}>• The object that stands for them on the stage. It is removed with them in both choices.</Text> : null}

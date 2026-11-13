@@ -16,7 +16,7 @@
  * made (which mix, which devices, what happens to a stereo DI device) is a
  * jump to the place that asks, never a silent pick.
  *
- * AN ANSWER THAT RENUMBERS A SHARED REVISION ASKS FIRST. The lab screen hands
+ * AN ANSWER THAT RENUMBERS A REVISION THAT MAY HAVE BEEN SENT ASKS FIRST. The lab screen hands
  * this file its question popup (`setSpIssueAsk`, the house confirmDialog); a
  * file that node tests load cannot import it. With no popup set, the answer
  * runs directly (the tests).
@@ -41,7 +41,7 @@ export function setSpIssueAsk(ask: SpIssueAsk | null): void {
   askFirst = ask;
 }
 
-/** True when this revision was already printed, shared or marked ready: the
+/** True when this revision was marked ready, printed or shared: the
  *  next change starts the next revision. */
 export const spRevisionShared = (p: Pick<SpProject, 'revision' | 'frozenRevision'>): boolean => p.frozenRevision >= p.revision;
 
@@ -55,8 +55,30 @@ export function spIssueSelection(issue: SpIssue): SpSelection {
   return { kind, id };
 }
 
-/** "Go to": open the issue's own area with its row selected. */
+/** A Setup question is about a FIELD, not a row, and a selection cannot name
+ *  a field. So "Go to" leaves the question's rule here, and Setup takes it
+ *  when it opens and brings that field into view (the title for
+ *  `example-title`, the band name for `no-band-name`, the contact block for
+ *  `no-contact`). Taken once. */
+let setupAsk: string | null = null;
+export function takeSpSetupAsk(): string | null {
+  const rule = setupAsk;
+  setupAsk = null;
+  return rule;
+}
+/** Which part of Setup a question's rule is answered in. */
+export function spSetupField(rule: string | null): 'title' | 'band' | 'contact' | 'performers' | null {
+  if (rule === 'example-title') return 'title';
+  if (rule === 'no-band-name') return 'band';
+  if (rule === 'no-contact') return 'contact';
+  if (rule === 'empty') return 'performers';
+  return null;
+}
+
+/** "Go to": open the issue's own area with its row selected (for Setup, its
+ *  field brought into view). */
 export function goToIssue(ed: Pick<SpEditor, 'goTo'>, issue: SpIssue): void {
+  if (issue.area === 'setup') setupAsk = issue.rule;
   ed.goTo(issue.area, spIssueSelection(issue));
 }
 
@@ -85,7 +107,7 @@ export function spIssueActionLabel(action: SpIssueAction, issue?: SpIssue): stri
     case 'assign-mix':
       return 'CHOOSE ITS MIX';
     case 'mark-self-contained-device':
-      return 'IT IS PART OF YOUR BAND’S OWN RIG';
+      return 'IT IS PART OF THE BAND MONITOR RIG';
     case 'add-mix':
       return 'ADD A MONITOR MIX';
     case 'mark-no-monitor':
@@ -183,8 +205,8 @@ export function runIssueAction(ed: SpIssueEditor, issue: SpIssue, action: SpIssu
       // Never renumber a revision that already went out without asking first.
       if (askFirst && spRevisionShared(p)) {
         askFirst(
-          'Renumber a shared revision?',
-          `Revision ${p.revision} of this stage plot was already shared or marked ready. Renumbering starts revision ${p.frozenRevision + 1} as a draft, and its channel numbers will differ from the ones you sent.`,
+          'Renumber a stage plot that may have been sent?',
+          `Revision ${p.revision} was marked ready or shared. Renumbering starts revision ${p.frozenRevision + 1} as a draft, and its channel numbers will differ from the ones in revision ${p.revision}.`,
           'Renumber',
           run,
         );

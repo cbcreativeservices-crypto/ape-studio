@@ -218,6 +218,7 @@ function plot30(grid = 0.5): SpDocPlot {
     viewNote: 'Overhead microphones: left and right as the audience sees the kit.',
     legend: ['A number in a box is an input channel on the input list.', 'M and a number in a box is a monitor mix.', 'AC is a place where the band asks for power.'],
     key: [],
+    roomy: false,
   };
 }
 
@@ -980,7 +981,12 @@ describe('stage plot PDF: the plot', () => {
     }
     assert.equal(numberIn(packetSrc, /const room = K\.colW - K\.symbolW - K\.gap - ([\d.]+);/), SP_PDF_KEY.right, moved);
     assert.match(packetSrc, /const cols = Math\.max\(1, Math\.floor\(width \/ K\.colW\)\);/, moved);
-    assert.match(htmlSrc, /spKeyLayout\(plot\.key, width - SP_PLOT_SIDE \* 2\)/, moved);
+    assert.match(htmlSrc, /keyOps\(plot\.key, SP_PLOT_SIDE, keyTop, width - SP_PLOT_SIDE \* 2, ops\)/, moved);
+    // the size note at the key's left edge; a leader's line; people drawn over the other symbols
+    assert.match(htmlSrc, /x: SP_PLOT_SIDE, y: h - 4, text: plot\.toScale/, moved);
+    assert.match(htmlSrc, /const LEADER = '#8a8a8a';/, moved);
+    assert.match(htmlSrc, /stroke: LEADER, sw: 0\.5, dash: false/, moved);
+    assert.match(htmlSrc, /\[\.\.\.plot\.items\.filter\(\(i\) => !i\.person\), \.\.\.plot\.items\.filter\(\(i\) => i\.person\)\]/, moved);
   });
 });
 
@@ -1019,6 +1025,7 @@ describe('stage plot PDF: the key (what each drawn symbol is)', () => {
     viewNote: 'Left and right are as the audience sees them.',
     legend: ['A number in a box is an input channel.'],
     key,
+    roomy: false,
   });
   const docOf = (plot: SpDocPlot, paper: SpPaper = 'letter', filler = 0): SpDoc => ({
     ...packet({ paper }),
@@ -1144,6 +1151,229 @@ describe('stage plot PDF: the key (what each drawn symbol is)', () => {
       }
     }
     save('sp_key26_letter.pdf', spPdfBytes(docOf(keyPlot(all, 1), 'letter', 8)));
+  });
+});
+
+// ───────────────────────── review 2: leaders, a roomy plot, how a table ends ─────────────────────────
+describe('stage plot PDF: leaders, a roomy plot, and how a table ends (review 2)', () => {
+  const plotOf = (o: Partial<SpDocPlot> & { people?: number } = {}): SpDocPlot => {
+    const { people, ...rest } = o;
+    return {
+      widthM: 7.2,
+      depthM: 4.5,
+      toScale: false,
+      sizeNote: 'Not to scale',
+      marginM: 0.6,
+      gridM: 0,
+      items: Array.from({ length: people ?? 3 }, (_, i) => item(`p${i}`, 'performer', 1 + i, 2.2, PEOPLE[i], [`M${i + 1}`], true)),
+      viewNote: '',
+      legend: ['A number in a box is an input channel.'],
+      key: [],
+      roomy: false,
+      ...rest,
+    };
+  };
+  const AFTER_PLOT: SpDocSection['blocks'] = [
+    { t: 'heading', level: 2, text: 'Performers' },
+    { t: 'para', text: 'The first line after the plot.' },
+  ];
+  const plotDoc = (plot: SpDocPlot, paper: SpPaper = 'letter', after: SpDocSection['blocks'] = AFTER_PLOT): SpDoc => ({
+    ...packet({ paper }),
+    sections: [
+      { id: 'plot', title: 'Stage plot', breakBefore: 'none', blocks: [{ t: 'facts', rows: [['Band', 'The Example Four']] }, { t: 'plot', plot }, ...after] },
+      { id: 'inputs', title: 'Input list', breakBefore: 'auto', blocks: [{ t: 'para', text: 'The first line of the input list.' }] },
+    ],
+  });
+  /** The height of the whole drawing (the stage and the room around it), from the stage outline. */
+  const drawingHeight = (pg: Page, plot: SpDocPlot): number => {
+    const front = /(^|\n)3 w 0 G \[\] 0 d [\d.]+ ([\d.]+) m/.exec(pg.stream);
+    const outline = /(^|\n)1\.4 w 0 G \[\] 0 d [\d.]+ ([\d.]+) m/.exec(pg.stream);
+    assert.ok(front && outline);
+    return ((Number(outline[2]) - Number(front[2])) * (plot.depthM + 2 * plot.marginM)) / plot.depthM;
+  };
+  const LEADER = /(?:^|\n)0\.5 w 0\.54 G \[\] 0 d ([\d.]+) ([\d.]+) m ([\d.]+) ([\d.]+) l S/g;
+
+  it('draws a leader as one hairline in the muted gray, from the name to its symbol, under the symbols', () => {
+    const plain = plotOf();
+    const led = plotOf();
+    // Billie's name was moved away from her: 1.8 m toward stage left and 1.2 m upstage of her
+    led.items[1] = { ...led.items[1], labelAt: { x: 3.8, y: 0.9 }, leader: { from: { x: 3.8, y: 1 }, to: { x: 2, y: 2.2 } } };
+    for (const paper of PAPERS) {
+      const none = parsePdf(spPdfBytes(plotDoc(plain, paper))).pages[0].stream;
+      const s = parsePdf(spPdfBytes(plotDoc(led, paper))).pages[0].stream;
+      assert.equal([...none.matchAll(LEADER)].length, 0, 'no leader, no line');
+      const lines = [...s.matchAll(LEADER)];
+      assert.equal(lines.length, 1, 'one leader, one line');
+      const [x1, y1, x2, y2] = lines[0].slice(1).map(Number);
+      // the same slope as in the document (PDF's y grows upward, so "upstage" is a larger y)
+      assert.ok(x1 > x2 && y1 > y2);
+      assert.ok(Math.abs((x1 - x2) / (y1 - y2) - 1.8 / 1.2) < 0.01);
+      // its symbol end is the middle of Billie's circle: between Alex's name and Casey's
+      // under the symbols: after the stage outline, before the first symbol
+      const at = s.indexOf(lines[0][0]);
+      assert.ok(at > s.search(/(^|\n)3 w 0 G/) && at < s.search(/(^|\n)1 w 0 G \[\] 0 d 0\.82 g/), 'between the stage and the symbols');
+      assert.equal(SP_PDF_PLOT.leader, 0.5);
+    }
+    // a leader with a missing or broken end is left out, and nothing else changes
+    const broken = plotOf();
+    broken.items[1] = { ...broken.items[1], leader: { from: { x: Number.NaN, y: 1 }, to: { x: 2, y: 2.2 } } };
+    assert.equal([...parsePdf(spPdfBytes(plotDoc(broken))).pages[0].stream.matchAll(LEADER)].length, 0);
+  });
+
+  it('lets a roomy plot grow to the height the page has left, and starts what follows on a new page', () => {
+    for (const paper of PAPERS) {
+      const { h } = SP_PDF_PAPER[paper];
+      // a deep stage with six performers: the usual cap is 380 pt
+      const usual = plotOf({ depthM: 9, people: 5 });
+      const roomy = plotOf({ depthM: 9, people: 5, roomy: true });
+      const a = parsePdf(spPdfBytes(plotDoc(usual, paper)));
+      const b = parsePdf(spPdfBytes(plotDoc(roomy, paper)));
+      assert.ok(Math.abs(drawingHeight(a.pages[0], usual) - SP_PDF_PLOT.maxH) < 0.1, `${paper}: the usual plot is 380 pt`);
+      const tall = drawingHeight(b.pages[0], roomy);
+      assert.ok(tall > SP_PDF_PLOT.maxH + 80, `${paper}: the roomy plot is ${Math.round(tall)} pt tall`);
+      // it uses the page: the legend is its last line, near the footer and above it
+      const legend = b.pages[0].runs.find((r) => r.text === 'A number in a box is an input channel.');
+      const foot = b.pages[0].runs[b.pages[0].runs.length - 1];
+      assert.ok(legend && legend.y > foot.y + 10 && legend.y < foot.y + 45, `${paper}: the plot block ends at the foot of the page`);
+      for (const r of b.pages[0].runs) assert.ok(r.y >= SP_PDF_MARGIN - 0.5 && r.y <= h - SP_PDF_MARGIN + 0.5, `"${r.text}"`);
+      for (const m of b.pages[0].stream.matchAll(/(-?[\d.]+) (-?[\d.]+) (m|l)( |\n)/g)) assert.ok(Number(m[2]) >= SP_PDF_MARGIN - 1 && Number(m[2]) <= h - SP_PDF_MARGIN + 1);
+      // the words keep their size
+      assert.equal(b.pages[0].runs.find((r) => r.text === PEOPLE[0])?.size, SP_PDF_PLOT.person);
+      // what follows: on the same page for the usual plot, on a new page for the roomy one
+      assert.deepEqual(pagesWith(a, 'The first line after the plot.'), [0]);
+      assert.deepEqual(pagesWith(b, 'The first line after the plot.'), [1]);
+      assert.deepEqual(pagesWith(b, 'Performers'), [1]);
+      assert.equal(b.pages[1].runs.filter((r) => r.size > 9)[0].text, 'Performers', 'it starts the new page');
+      // with nothing after the plot in its section, the next SECTION starts the new page
+      const c = parsePdf(spPdfBytes(plotDoc(roomy, paper, [])));
+      assert.deepEqual(pagesWith(c, 'The first line of the input list.'), [1]);
+      assert.equal(c.pages.length, 2);
+      // a plot-only packet is one page
+      const only = plotDoc(roomy, paper, []);
+      only.sections = only.sections.slice(0, 1);
+      assert.equal(parsePdf(spPdfBytes(only)).pages.length, 1);
+    }
+  });
+
+  it('cannot make a roomy plot wider than the page: a wide, shallow stage keeps its size, a small act’s plot grows', () => {
+    // 7.2 m × 4.5 m with 0.6 m around it is as wide as the page at 335 pt tall: the height has nothing to give
+    const wide = plotOf({ people: 5 });
+    const wideRoomy = plotOf({ people: 5, roomy: true });
+    const a = drawingHeight(parsePdf(spPdfBytes(plotDoc(wide))).pages[0], wide);
+    const b = drawingHeight(parsePdf(spPdfBytes(plotDoc(wideRoomy))).pages[0], wideRoomy);
+    assert.ok(a < SP_PDF_PLOT.maxH && Math.abs(a - b) < 0.1, `${a} and ${b}`);
+    // the page is not full then: what follows the plot in its own section runs on, and the NEXT SECTION starts a new page
+    const p = parsePdf(spPdfBytes(plotDoc(wideRoomy)));
+    assert.deepEqual(pagesWith(p, 'The first line after the plot.'), [0]);
+    assert.deepEqual(pagesWith(p, 'The first line of the input list.'), [1]);
+    // (a section that follows on: only the roomy plot sends it to a new page)
+    const follows = (plot: SpDocPlot): number => {
+      const d = plotDoc(plot);
+      d.sections[1].breakBefore = 'none';
+      return pagesWith(parsePdf(spPdfBytes(d)), 'The first line of the input list.')[0];
+    };
+    assert.equal(follows(wide), 0);
+    assert.equal(follows(wideRoomy), 1);
+    // one performer: 240 pt as a rule, the page width when roomy (a plot-only packet)
+    const solo = plotOf({ people: 1 });
+    const soloRoomy = plotOf({ people: 1, roomy: true });
+    assert.ok(Math.abs(drawingHeight(parsePdf(spPdfBytes(plotDoc(solo))).pages[0], solo) - SP_PDF_PLOT.smallH) < 0.1);
+    assert.ok(Math.abs(drawingHeight(parsePdf(spPdfBytes(plotDoc(soloRoomy))).pages[0], soloRoomy) - a) < 0.1);
+  });
+
+  it('starts the size note at the key’s left edge, under the heading KEY', () => {
+    for (const paper of PAPERS) {
+      const x = SP_PDF_MARGIN + SP_PDF_PLOT.side;
+      // a small act: the drawing is much narrower than the page
+      const plot = plotOf({ people: 1, key: [{ kind: 'performer', name: 'Performer', w: 0.6, h: 0.6, shapes: spKeySymbol('performer').shapes, tag: '' }] });
+      const pg = parsePdf(spPdfBytes(plotDoc(plot, paper))).pages[0];
+      const key = pg.runs.find((r) => r.text === SP_PDF_PLOT_WORDS.key);
+      const note = pg.runs.find((r) => r.text === 'NOT TO SCALE');
+      assert.ok(key && note);
+      assert.ok(Math.abs(key.x - x) < 0.01 && Math.abs(note.x - x) < 0.01, `${paper}: KEY at ${key.x}, NOT TO SCALE at ${note.x}`);
+      const sized = parsePdf(spPdfBytes(plotDoc(plotOf({ people: 1, toScale: true, sizeNote: '12 ft × 8 ft (estimated)' }), paper))).pages[0];
+      assert.ok(Math.abs((sized.runs.find((r) => r.text.startsWith('Stage size:'))?.x ?? 0) - x) < 0.01);
+    }
+  });
+
+  // tables of one-line rows after `filler` one-line paragraphs
+  const SMALL: SpDocColumn[] = [
+    { key: 'ch', label: 'Ch', width: 1, align: 'center' },
+    { key: 'name', label: 'Thing', width: 5 },
+    { key: 'who', label: 'Supplied by', width: 3 },
+  ];
+  const rowsOf = (n: number, tag: string): SpDocRow[] => Array.from({ length: n }, (_, i) => ({ cells: { ch: String(i + 1), name: `${tag} row <${pad(i + 1)}>`, who: 'Venue' } }));
+  const tableDoc = (filler: number, blocks: SpDocSection['blocks'], paper: SpPaper = 'letter'): SpDoc => ({
+    ...packet({ paper }),
+    sections: [{ id: 'notes', title: 'Filler', breakBefore: 'none', blocks: [...Array.from({ length: filler }, (_, i) => ({ t: 'para' as const, text: `Filler line <${pad(i + 1)}>.` })), ...blocks] }],
+  });
+  const rowPages = (p: Parsed, n: number, tag: string): number[] => Array.from({ length: n }, (_, i) => pagesWith(p, `${tag} row <${pad(i + 1)}>`)[0]);
+
+  it('never leaves one row of a table alone on a page: the row before it is carried too', () => {
+    for (const paper of PAPERS) {
+      const shapes = new Set<string>();
+      for (const n of [3, 5, 8]) {
+        for (let filler = 0; filler <= 46; filler += 1) {
+          const p = parsePdf(spPdfBytes(tableDoc(filler, [{ t: 'table', table: { columns: SMALL, rows: rowsOf(n, 'Alpha'), empty: '' } }], paper)));
+          const pages = rowPages(p, n, 'Alpha');
+          const counts = [...new Set(pages)].map((pg) => pages.filter((x) => x === pg).length);
+          // after the page where the table starts, no page holds one row; a table of three rows is never divided
+          counts.slice(1).forEach((c) => assert.ok(c >= 2, `${paper}: ${n} rows after ${filler} lines are printed ${counts.join(' + ')}`));
+          if (n === 3) assert.equal(counts.length, 1, `${paper}: 3 rows after ${filler} lines are printed ${counts.join(' + ')}`);
+          for (const pg of new Set(pages)) assert.equal(p.pages[pg].runs.filter((r) => r.bold && r.text === 'Thing').length, 1, 'each of its pages has the header');
+          shapes.add(counts.join('+'));
+        }
+      }
+      // the table WAS divided in these runs, and the last page then holds two rows or more
+      assert.ok([...shapes].some((s) => /\+2$/.test(s)), `${paper}: seen ${[...shapes].join(', ')}`);
+      assert.ok(![...shapes].some((s) => /\+1(\+|$)/.test(s)), `${paper}: seen ${[...shapes].join(', ')}`);
+    }
+  });
+
+  it('keeps the gray note under a table on the page of the table’s last row', () => {
+    const note = 'A mono mix is 1 audio channel and a stereo mix is 2.';
+    for (const paper of PAPERS) {
+      let carried = 0;
+      for (let filler = 0; filler <= 46; filler += 1) {
+        const blocks: SpDocSection['blocks'] = [
+          { t: 'table', table: { columns: SMALL, rows: rowsOf(4, 'Alpha'), empty: '' } },
+          { t: 'para', text: note, tone: 'muted' },
+          { t: 'table', table: { columns: SMALL, rows: rowsOf(3, 'Beta'), empty: '' } },
+        ];
+        const p = parsePdf(spPdfBytes(tableDoc(filler, blocks, paper)));
+        const rows = rowPages(p, 4, 'Alpha');
+        assert.deepEqual(pagesWith(p, note), [rows[3]], `${paper}, ${filler} lines: the note is with the last row`);
+        // it belongs to the table ABOVE it: it is under that table's last row, not carried off with the next table
+        const pg = p.pages[rows[3]];
+        const last = pg.runs.find((r) => r.text === 'Alpha row <04>');
+        const noteRun = pg.runs.find((r) => r.text === note);
+        assert.ok(last && noteRun && noteRun.y < last.y && last.y - noteRun.y < 30, 'right under the last row');
+        const counts = [...new Set(rows)].map((x) => rows.filter((v) => v === x).length);
+        counts.slice(1).forEach((c) => assert.ok(c >= 2));
+        if (counts.length === 2) carried += 1;
+      }
+      assert.ok(carried >= 1, `${paper}: the table was divided ${carried} times`);
+    }
+  });
+
+  it('starts a row’s note under the second column when the first is the channel number', () => {
+    const p = parsePdf(spPdfBytes(packet({ inputs: 8 })));
+    const runs = p.pages.flatMap((pg) => pg.runs);
+    const label = runs.find((r) => r.text === inputLabel(1));
+    const note = runs.find((r) => r.text.startsWith('Note 02:'));
+    const ch = runs.find((r) => r.text === '2' && r.size === SP_PDF_TABLE_PT && !r.bold);
+    assert.ok(label && note && ch);
+    assert.equal(note.x, label.x, 'the note starts at the Input column’s left edge');
+    assert.ok(note.x > ch.x + 10 && note.y < label.y);
+    // every line of it stays inside the table
+    for (const r of runs.filter((x) => x.size === SP_PDF_TABLE_PT)) assert.ok(r.x + spPdfWidth(spPdfEncode(r.text), r.size, r.bold) <= SP_PDF_PAPER.letter.w - SP_PDF_MARGIN + 0.5);
+    // a table whose first column is not a centered number keeps the small indent
+    const d = packet();
+    d.sections = [{ id: 'notes', title: 'Notes', breakBefore: 'none', blocks: [{ t: 'table', table: { columns: [{ key: 'a', label: 'Item', width: 2 }, { key: 'b', label: 'Qty', width: 1 }], rows: [{ cells: { a: 'Wedge', b: '2' }, note: 'A note under the row.' }], empty: '' } }] }];
+    const q = parsePdf(spPdfBytes(d)).pages[0].runs;
+    const item0 = q.find((r) => r.text === 'Wedge');
+    const note0 = q.find((r) => r.text === 'A note under the row.');
+    assert.ok(item0 && note0 && Math.abs(note0.x - item0.x - 10) < 0.01);
   });
 });
 

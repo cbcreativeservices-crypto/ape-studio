@@ -23,6 +23,7 @@ import {
   spDevice,
   spGridStep,
   spInput,
+  spLocationWord,
   spMix,
   spMoveObject,
   spObject,
@@ -34,6 +35,7 @@ import {
   spUpdateObject,
 } from '../../../../features/stageplot/spModel.ts';
 import type { SpCategory, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes.ts';
+import { spIsSized, spObjectBoxM, spPlotKey, spStageMeters, spSymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
 import { spPackagePreview, spUniqueLabel } from '../inputs/inputsLogic.ts';
 import { spmAddDevice } from '../monitors/monitorPlan.ts';
 import { stageNudgeStep, type Pt } from './stageGeom.ts';
@@ -44,8 +46,21 @@ export type StageSelection = { kind: 'object' | 'input' | 'source' | 'performer'
 
 /* ── names and numbers ──────────────────────────────────────────────────── */
 
-/** The kind of thing, in words ("Drum kit"). */
+/** The kind of thing, in words ("Drum kit"): the palette's name for it. */
 export const stageKindName = (kind: SpObjectKind): string => spPaletteItem(kind).name;
+
+/** What an object ON THE STAGE is called in the list and the inspector: the
+ *  name the key gives its symbol. A vocal microphone and any other microphone
+ *  on a stand are one symbol, so both are "Microphone on a stand" (the
+ *  palette keeps "Vocal microphone" as a thing to add). */
+export const stageObjectKindName = (kind: SpObjectKind): string => (kind === 'vocal-mic' ? spPaletteItem('mic-stand').name : spPaletteItem(kind).name);
+
+/** "Sam (downstage center, facing the audience)" style words for where an
+ *  object is: its place in stage words, in lower case. */
+export const stageWhere = (o: { x: number; y: number }): string => {
+  const w = spLocationWord(o);
+  return w.charAt(0).toLowerCase() + w.slice(1);
+};
 
 /** The name printed beside an object: a performer's own name, else the
  *  object's label, else '' (a bare chair or stand has no name to print). */
@@ -112,6 +127,15 @@ export function stageBadges(p: SpProject, o: SpObject, at: Pt = o): string[] {
   const out = [...stageInputBadges(p, o), ...stageMixBadges(p, o)];
   if (!spOnStage(at)) out.push('OFF STAGE');
   return out;
+}
+
+/** THE KEY's entries as the SCREEN names them: the model's list and names
+ *  (the printed packet's), with one difference. On paper a wedge is a
+ *  trapezoid, and "wide side" tells which way it faces; on the screen it is
+ *  drawn as a real wedge from above, a rectangle with its speaker grille on
+ *  one side, so the screen says "speaker side". */
+export function stageKeyEntries(objects: readonly { kind: SpObjectKind }[]): SpKeyEntry[] {
+  return spPlotKey(objects).map((e) => (e.kind === 'wedge' ? { ...e, name: 'Wedge monitor (speaker side faces the performer)' } : e));
 }
 
 /* ── selection ──────────────────────────────────────────────────────────── */
@@ -185,7 +209,7 @@ export function stagePackagesFor(kind: SpObjectKind): SpPackage[] {
   return (STAGE_PACKAGES[kind] ?? []).map((id) => SP_PACKAGES.find((x) => x.id === id)).filter((x): x is SpPackage => !!x);
 }
 
-export type StageChoice = { id: SpId; label: string; detail: string; placed: boolean };
+export type StageChoice = { id: SpId; label: string; detail: string; placed: boolean; /** Of the symbol's own kind (sources): shown first; the rest are behind SHOW EVERY SOURCE. */ match?: boolean };
 
 /** Performers a new figure can stand for; those not on the stage come first. */
 export function stagePerformerChoices(p: SpProject): StageChoice[] {
@@ -224,7 +248,7 @@ export function stageSourceChoices(p: SpProject, kind: SpObjectKind): StageChoic
     .map((s, i) => {
       const who = spPerformer(p, s.performerId)?.name ?? '';
       const placed = p.objects.some((o) => o.sourceId === s.id);
-      return { c: { id: s.id, label: s.label, detail: [who, s.connection === 'none' ? 'no sound system connection' : channelWords(p, s.id)].filter(Boolean).join(' · '), placed }, rank: (cats.includes(s.category) ? 0 : 2) + (placed ? 1 : 0), i };
+      return { c: { id: s.id, label: s.label, detail: [who, s.connection === 'none' ? 'no sound system connection' : channelWords(p, s.id)].filter(Boolean).join(' · '), placed, match: cats.includes(s.category) }, rank: (cats.includes(s.category) ? 0 : 2) + (placed ? 1 : 0), i };
     })
     .sort((a, b) => a.rank - b.rank || a.i - b.i)
     .map((x) => x.c);
@@ -264,7 +288,7 @@ export function stageDeviceChoices(p: SpProject, kind: SpObjectKind): StageChoic
     .filter((d) => types.includes(d.type))
     .map((d) => {
       const m = spMix(p, d.mixId);
-      return { id: d.id, label: d.label || SP_DEVICE_WORD[d.type], detail: [SP_DEVICE_WORD[d.type], m ? `mix ${m.code}` : d.selfContained ? 'part of your band’s own rig' : 'no mix yet'].join(' · '), placed: p.objects.some((o) => o.deviceId === d.id) };
+      return { id: d.id, label: d.label || SP_DEVICE_WORD[d.type], detail: [SP_DEVICE_WORD[d.type], m ? `mix ${m.code}` : d.selfContained ? 'part of the band monitor rig' : 'no mix yet'].join(' · '), placed: p.objects.some((o) => o.deviceId === d.id) };
     })
     .sort((a, b) => Number(a.placed) - Number(b.placed));
 }
@@ -326,36 +350,62 @@ const KIND_FOR_DEVICE: Record<SpDeviceType, SpObjectKind> = { wedge: 'wedge', 'i
  *  downstage center, where a band starts placing its front line. */
 export const STAGE_NEW_SPOT: Pt = { x: 0.5, y: 0.7 };
 
-/** A free place ON the stage near `at` for a new object. With snap on it is
- *  a point of the grid (so the typed position reads as a whole step), and the
- *  places tried are whole steps apart; with snap off they are about a
- *  symbol's width apart. The first place no other object stands on is taken,
- *  nearest first, so a new symbol never lands on top of another one. */
-export function stageFreeSpot(p: SpProject, at: Pt): Pt {
+/** A kind's box in METERS as a new object of it would be drawn (a platform
+ *  or a labeled box at the size a new one gets), upright as it will stand:
+ *  a sidefill is placed a quarter turn round, so its sides are swapped. */
+function newBoxM(p: SpProject, kind: SpObjectKind, at: Pt): { w: number; h: number } {
+  const st = spStageMeters(p);
+  if (spIsSized(kind)) return kind === 'riser' ? { w: 0.3 * st.width, h: 0.25 * st.depth } : { w: 0.12 * st.width, h: 0.1 * st.depth };
+  const sym = spSymbol(kind);
+  const turned = Math.abs(Math.sin((stageDefaultRot(kind, at) * Math.PI) / 180)) > 0.7;
+  return turned ? { w: sym.h, h: sym.w } : { w: sym.w, h: sym.h };
+}
+
+/** A free place ON the stage near `at` for a new object of `kind`. A place
+ *  is free when the new object's own BOX, with 0.1 m of air round it, touches
+ *  no other object's box: a sidefill is not dropped over the congas because
+ *  their centers are a little apart (visual review 2, B7). With snap on, the
+ *  place is a point of the grid, so the typed position reads as a whole
+ *  step. The nearest free place is taken; a platform or a labeled box under
+ *  the new object does not count (things stand on a riser). */
+export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generic'): Pt {
   const snap = p.stage.snap;
-  const step = spGridStep(p);
-  const onGrid = (v: number, st: number): number => {
-    if (!snap) return Math.max(0.04, Math.min(0.96, v));
-    const last = Math.max(1, Math.round(1 / st) - 1);
-    return Math.max(1, Math.min(last, Math.round(v / st))) * st;
+  const step = snap ? spGridStep(p) : { x: 0.02, y: 0.02 };
+  const st = spStageMeters(p);
+  const mine = newBoxM(p, kind, at);
+  const air = 0.1;
+  // every other object's box, upright (a quarter turn swaps its sides)
+  const others = p.objects
+    .filter((o) => !spIsSized(o.kind))
+    .map((o) => {
+      const b = spObjectBoxM(p, o);
+      const turned = Math.abs(Math.sin((b.rot * Math.PI) / 180)) > 0.7;
+      return { cx: b.cx, cy: b.cy, hw: (turned ? b.h : b.w) / 2, hh: (turned ? b.w : b.h) / 2 };
+    });
+  const busy = (q: Pt): boolean => {
+    const cx = q.x * st.width;
+    const cy = q.y * st.depth;
+    return others.some((o) => Math.abs(o.cx - cx) < o.hw + mine.w / 2 + air && Math.abs(o.cy - cy) < o.hh + mine.h / 2 + air);
   };
-  // far enough apart for a symbol and its name: whole grid steps with snap on
-  const dx = snap ? Math.max(1, Math.ceil(0.08 / step.x - 1e-9)) * step.x : 0.08;
-  const dy = snap ? Math.max(1, Math.ceil(0.1 / step.y - 1e-9)) * step.y : 0.1;
-  const base = { x: onGrid(at.x, step.x), y: onGrid(at.y, step.y) };
-  const busy = (q: Pt): boolean => p.objects.some((o) => Math.abs(o.x - q.x) < dx * 0.9 && Math.abs(o.y - q.y) < dy * 0.9);
+  // the new object stays wholly on the stage where the stage is large enough
+  const mx = Math.min(0.45, mine.w / 2 / st.width);
+  const my = Math.min(0.45, mine.h / 2 / st.depth);
+  const nx = Math.max(1, Math.round(1 / step.x));
+  const ny = Math.max(1, Math.round(1 / step.y));
   const tries: { q: Pt; d: number; k: number }[] = [];
   let k = 0;
-  for (let j = -5; j <= 5; j++)
-    for (let i = -5; i <= 5; i++) {
-      const q = { x: base.x + i * dx, y: base.y + j * dy };
+  for (let j = 0; j <= ny; j++)
+    for (let i = 0; i <= nx; i++) {
+      const q = { x: i * step.x, y: j * step.y };
       k += 1;
-      if (q.x < 0.03 || q.x > 0.97 || q.y < 0.03 || q.y > 0.97) continue;
-      tries.push({ q, d: Math.hypot(i * dx, j * dy), k });
+      if (q.x < mx - 1e-9 || q.x > 1 - mx + 1e-9 || q.y < my - 1e-9 || q.y > 1 - my + 1e-9) continue;
+      // distances in meters, so "nearest" means the same across and deep
+      tries.push({ q, d: Math.hypot((q.x - at.x) * st.width, (q.y - at.y) * st.depth), k });
     }
   tries.sort((m, n) => m.d - n.d || m.k - n.k);
   for (const t of tries) if (!busy(t.q)) return t.q;
-  return base;
+  // a full stage: the nearest point all the same (never off the stage)
+  return tries[0]?.q ?? { x: Math.max(0.04, Math.min(0.96, at.x)), y: Math.max(0.04, Math.min(0.96, at.y)) };
 }
 
 /** The way a NEW object faces (0° = toward the audience). A monitor never
@@ -427,34 +477,43 @@ export function stageAddWithDevice(p: SpProject, kind: SpObjectKind, at: Pt, f: 
 
 /** Put something that is in the lists onto the stage ("Place on the stage" for
  *  a row with no symbol). Null when the selection cannot be drawn. */
-export function stagePlace(p: SpProject, sel: StageSelection, at: Pt): StageAdded | null {
+export function stagePlace(p: SpProject, sel: StageSelection, near: Pt): StageAdded | null {
   if (!sel) return null;
-  if (sel.kind === 'performer') return spPerformer(p, sel.id) ? stageAddLinked(p, 'performer', at, { performerId: sel.id }) : null;
+  /** a free place near `near` for the kind that will be drawn */
+  const add = (kind: SpObjectKind, link: Parameters<typeof stageAddLinked>[3]): StageAdded => stageAddLinked(p, kind, stageFreeSpot(p, near, kind), link);
+  if (sel.kind === 'performer') return spPerformer(p, sel.id) ? add('performer', { performerId: sel.id }) : null;
   if (sel.kind === 'source') {
     const s = spSource(p, sel.id);
-    return s ? stageAddLinked(p, stageKindForSource(s.label, s.category), at, { sourceId: s.id }) : null;
+    return s ? add(stageKindForSource(s.label, s.category), { sourceId: s.id }) : null;
   }
   if (sel.kind === 'input') {
     const i = spInput(p, sel.id);
     if (!i) return null;
     const s = spSource(p, i.sourceId);
     const kind: SpObjectKind = i.capture === 'di' ? 'di' : i.capture === 'mic' || i.capture === 'wireless' ? (s?.category === 'vocals' ? 'vocal-mic' : 'mic-stand') : s ? stageKindForSource(s.label, s.category) : 'generic';
-    return stageAddLinked(p, kind, at, { inputId: i.id });
+    return add(kind, { inputId: i.id });
   }
   if (sel.kind === 'device') {
     const d = spDevice(p, sel.id);
-    return d ? stageAddLinked(p, KIND_FOR_DEVICE[d.type], at, { deviceId: d.id }) : null;
+    return d ? add(KIND_FOR_DEVICE[d.type], { deviceId: d.id }) : null;
   }
   return null;
 }
 
 /** One nudge of an object (and its group): a grid step with snap on,
- *  otherwise one hundredth of the stage. dx / dy are −1, 0 or 1. */
+ *  otherwise one hundredth of the stage. dx / dy are −1, 0 or 1. ONLY THE
+ *  AXIS THAT IS NUDGED is snapped: a sideways button never changes the depth
+ *  of an object that was typed or dragged to a place between grid lines
+ *  (visual review 2: STAGE LEFT ▶ moved "68% down" to "67%"). */
 export function stageNudge(p: SpProject, id: SpId, dx: number, dy: number): SpProject {
   const o = spObject(p, id);
   if (!o) return p;
   const step = stageNudgeStep(p);
-  return spMoveObject(p, id, { x: o.x + dx * step.x, y: o.y + dy * step.y });
+  const along = (v: number, by: number, st: number): number => {
+    if (!by) return v;
+    return p.stage.snap ? Math.round((v + by * st) / st) * st : v + by * st;
+  };
+  return spMoveObject(p, id, { x: along(o.x, dx, step.x), y: along(o.y, dy, step.y) }, { snap: false });
 }
 
 /** Put an object exactly at a typed place (no snapping: the number typed is

@@ -35,6 +35,8 @@ export const SP_PAGES: Record<SpPaper, { w: number; h: number; css: string }> = 
   letter: { w: 612, h: 792, css: '612pt 792pt' },
   a4: { w: 595, h: 842, css: '595pt 842pt' },
 };
+/** How tall a plot that needs room (`SpDocPlot.roomy`) may be on each paper, in points. */
+export const SP_ROOMY_H: Record<SpPaper, number> = { letter: 520, a4: 560 };
 /** 0.6 in on every side; a little more at the bottom for the footer. */
 export const SP_PAGE_MARGIN = { top: 43, right: 43, bottom: 50, left: 43 } as const;
 
@@ -67,6 +69,7 @@ export const SP_INK = '#111111';
 export const SP_PAPER = '#ffffff';
 const TONE = '#d2d2d2';
 const GRID = '#bdbdbd';
+const LEADER = '#8a8a8a';
 const NONE = 'none';
 export const SP_DASH = '4 3';
 const fillOf = (f: SpFill | undefined): string => (f === 'ink' ? SP_INK : f === 'tone' ? TONE : f === 'paper' ? SP_PAPER : NONE);
@@ -82,9 +85,9 @@ export const spIsInputBadge = (b: string): boolean => /^(?:B?\d+(?:–B?\d+)?|\?
 
 /** The plot, laid out `width` points wide. Upstage is at the top and the
  *  audience at the bottom; stage right is on the left. */
-export function spPlotScene(plot: SpDocPlot, width: number): SpPlotScene {
+export function spPlotScene(plot: SpDocPlot, width: number, how: { key?: boolean; maxH?: number } = {}): SpPlotScene {
   const T = SP_PLOT_TYPE;
-  const k = spPlotScale(plot, width);
+  const k = spPlotScale(plot, width, how.maxH);
   const m = plot.marginM;
   const drawW = (plot.widthM + m * 2) * k;
   const drawH = (plot.depthM + m * 2) * k;
@@ -106,8 +109,15 @@ export function spPlotScene(plot: SpDocPlot, width: number): SpPlotScene {
   ops.push({ t: 'rect', x: sx, y: sy, w: sw, h: sh, r: 0, fill: NONE, stroke: SP_INK, sw: 1.4 });
   ops.push({ t: 'line', x1: sx, y1: sy + sh, x2: sx + sw, y2: sy + sh, stroke: SP_INK, sw: 3, dash: false });
 
-  // the symbols
+  // a leader ties a name that had to go farther out to its own symbol: a
+  // thin gray line, under the symbols
   for (const item of plot.items) {
+    if (item.leader) ops.push({ t: 'line', x1: X(item.leader.from.x), y1: Y(item.leader.from.y), x2: X(item.leader.to.x), y2: Y(item.leader.to.y), stroke: LEADER, sw: 0.5, dash: false });
+  }
+
+  // the symbols: people last, so a drummer's circle covers the kit's stool
+  // and reads as a person sitting on it
+  for (const item of [...plot.items.filter((i) => !i.person), ...plot.items.filter((i) => i.person)]) {
     for (const s of item.shapes) {
       if (s.t === 'circle') ops.push({ t: 'circle', cx: X(s.cx), cy: Y(s.cy), r: s.r * k, fill: fillOf(s.fill), stroke: SP_INK, sw: 1, dash: !!s.dash });
       else if (s.t === 'line') ops.push({ t: 'line', x1: X(s.x1), y1: Y(s.y1), x2: X(s.x2), y2: Y(s.y2), stroke: SP_INK, sw: 1, dash: !!s.dash });
@@ -155,42 +165,71 @@ export function spPlotScene(plot: SpDocPlot, width: number): SpPlotScene {
   ops.push({ t: 'text', x: left + drawW + 4, y: midY, text: 'STAGE LEFT', size: T.direction, bold: true, anchor: 'middle', rotate: 90 });
 
   // THE KEY: under the stage, part of the same drawing. One cell for each
-  // kind of symbol on this plot: the symbol small, then its name.
+  // kind of symbol on this plot: the symbol small, then its name. (A caller
+  // that shows the drawing in a sideways scroller draws the key apart, at
+  // its own width, with `spKeyScene`: the key must never scroll out of view.)
   const keyTop = TOP + drawH + BOTTOM;
-  const layout = spKeyLayout(plot.key, width - SP_PLOT_SIDE * 2);
   const keyFrom = ops.length;
-  if (layout.cells.length) {
-    const K = SP_KEY_CELL;
-    ops.push({ t: 'text', x: SP_PLOT_SIDE, y: keyTop + K.headPt, text: 'KEY', size: K.headPt, bold: true, anchor: 'start', rotate: 0 });
-    layout.cells.forEach((cell, n) => {
-      const item = plot.key[n];
-      const x0 = SP_PLOT_SIDE + cell.x;
-      const y0 = keyTop + cell.y;
-      // the symbol, scaled to fit its box with its own shape kept
-      const b = boxOf(item.shapes);
-      const s = Math.min(K.symbolW / Math.max(b.x1 - b.x0, 1e-6), K.symbolH / Math.max(b.y1 - b.y0, 1e-6));
-      const kx = (x: number) => x0 + K.symbolW / 2 + (x - (b.x0 + b.x1) / 2) * s;
-      const ky = (y: number) => y0 + K.symbolH / 2 + (y - (b.y0 + b.y1) / 2) * s;
-      for (const sh of item.shapes) {
-        if (sh.t === 'circle') ops.push({ t: 'circle', cx: kx(sh.cx), cy: ky(sh.cy), r: sh.r * s, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
-        else if (sh.t === 'line') ops.push({ t: 'line', x1: kx(sh.x1), y1: ky(sh.y1), x2: kx(sh.x2), y2: ky(sh.y2), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
-        else if (sh.t === 'poly') ops.push({ t: 'poly', pts: sh.pts.map((v, i) => (i % 2 ? ky(v) : kx(v))), closed: !!sh.closed, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
-        else ops.push({ t: 'poly', pts: [kx(sh.x), ky(sh.y), kx(sh.x + sh.w), ky(sh.y), kx(sh.x + sh.w), ky(sh.y + sh.h), kx(sh.x), ky(sh.y + sh.h)], closed: true, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
-      }
-      if (item.tag) ops.push({ t: 'text', x: kx(0), y: ky(0) + K.textPt * 0.35, text: item.tag, size: K.textPt, bold: true, anchor: 'middle', rotate: 0 });
-      // its name, in lines that fit the cell: never cut
-      const textH = cell.lines.length * K.lineH;
-      const top = y0 + Math.max(0, (K.symbolH - textH) / 2);
-      cell.lines.forEach((line, i) => ops.push({ t: 'text', x: x0 + K.symbolW + K.gap, y: top + K.textPt * 0.9 + i * K.lineH, text: line, size: K.textPt, bold: false, anchor: 'start', rotate: 0 }));
-    });
-  }
-  const key = layout.cells.length ? { from: keyFrom, to: ops.length } : null;
+  const keyH = how.key === false ? 0 : keyOps(plot.key, SP_PLOT_SIDE, keyTop, width - SP_PLOT_SIDE * 2, ops);
+  const key = ops.length > keyFrom ? { from: keyFrom, to: ops.length } : null;
 
   // the size note: always printed
-  const h = TOP + drawH + BOTTOM + layout.h + NOTE;
-  ops.push({ t: 'text', x: left, y: h - 4, text: plot.toScale ? `Stage size: ${plot.sizeNote}` : plot.sizeNote.toUpperCase(), size: T.direction, bold: !plot.toScale, anchor: 'start', rotate: 0 });
+  const h = TOP + drawH + BOTTOM + keyH + NOTE;
+  ops.push({ t: 'text', x: SP_PLOT_SIDE, y: h - 4, text: plot.toScale ? `Stage size: ${plot.sizeNote}` : plot.sizeNote.toUpperCase(), size: T.direction, bold: !plot.toScale, anchor: 'start', rotate: 0 });
 
   return { w: width, h, ops, key };
+}
+
+/** Draw the key into `ops`, its top-left corner at (`left`, `top`), `width`
+ *  points wide. Returns its height (0 for an empty key: no heading). */
+function keyOps(keyItems: SpDocPlot['key'], left: number, top: number, width: number, ops: SpSceneOp[]): number {
+  const layout = spKeyLayout(keyItems, width);
+  if (!layout.cells.length) return 0;
+  const K = SP_KEY_CELL;
+  ops.push({ t: 'text', x: left, y: top + K.headPt, text: 'KEY', size: K.headPt, bold: true, anchor: 'start', rotate: 0 });
+  layout.cells.forEach((cell, n) => {
+    const item = keyItems[n];
+    const x0 = left + cell.x;
+    const y0 = top + cell.y;
+    // the symbol, scaled to fit its box with its own shape kept
+    const b = boxOf(item.shapes);
+    const s = Math.min(K.symbolW / Math.max(b.x1 - b.x0, 1e-6), K.symbolH / Math.max(b.y1 - b.y0, 1e-6));
+    const kx = (x: number) => x0 + K.symbolW / 2 + (x - (b.x0 + b.x1) / 2) * s;
+    const ky = (y: number) => y0 + K.symbolH / 2 + (y - (b.y0 + b.y1) / 2) * s;
+    for (const sh of item.shapes) {
+      if (sh.t === 'circle') ops.push({ t: 'circle', cx: kx(sh.cx), cy: ky(sh.cy), r: sh.r * s, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+      else if (sh.t === 'line') ops.push({ t: 'line', x1: kx(sh.x1), y1: ky(sh.y1), x2: kx(sh.x2), y2: ky(sh.y2), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+      else if (sh.t === 'poly') ops.push({ t: 'poly', pts: sh.pts.map((v, i) => (i % 2 ? ky(v) : kx(v))), closed: !!sh.closed, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+      else ops.push({ t: 'poly', pts: [kx(sh.x), ky(sh.y), kx(sh.x + sh.w), ky(sh.y), kx(sh.x + sh.w), ky(sh.y + sh.h), kx(sh.x), ky(sh.y + sh.h)], closed: true, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+    }
+    if (item.tag) ops.push({ t: 'text', x: kx(0), y: ky(0) + K.textPt * 0.35, text: item.tag, size: K.textPt, bold: true, anchor: 'middle', rotate: 0 });
+    // its name, in lines that fit the cell: never cut
+    const textH = cell.lines.length * K.lineH;
+    const lineTop = y0 + Math.max(0, (K.symbolH - textH) / 2);
+    cell.lines.forEach((line, i) => ops.push({ t: 'text', x: x0 + K.symbolW + K.gap, y: lineTop + K.textPt * 0.9 + i * K.lineH, text: line, size: K.textPt, bold: false, anchor: 'start', rotate: 0 }));
+  });
+  return layout.h;
+}
+
+/** The key alone, `width` points wide: for a screen that shows the drawing
+ *  in a sideways scroller and keeps the key in view under it. */
+export function spKeyScene(keyItems: SpDocPlot['key'], width: number): SpPlotScene {
+  const ops: SpSceneOp[] = [];
+  const h = keyOps(keyItems, 0, 0, width, ops);
+  return { w: width, h, ops, key: ops.length ? { from: 0, to: ops.length } : null };
+}
+
+/** What a screen preview draws in a window `width` points wide, when the
+ *  plot is never drawn narrower than `minW` (so its names stay readable):
+ *  ONE scene with the key in it when the drawing fits the window; otherwise
+ *  the stage alone, to scroll sideways, and the key as its own scene at the
+ *  window's width, so the key never scrolls out of view (owner 2026-11-12:
+ *  the key is always there; review 2, visuals C). */
+export function spPlotPreview(plot: SpDocPlot, width: number, minW: number): { scrolls: boolean; stage: SpPlotScene; key: SpPlotScene | null } {
+  const sceneW = Math.max(minW, Math.floor(width));
+  const scrolls = sceneW > width + 0.5;
+  if (!scrolls) return { scrolls, stage: spPlotScene(plot, sceneW), key: null };
+  return { scrolls, stage: spPlotScene(plot, sceneW, { key: false }), key: plot.key.length ? spKeyScene(plot.key, Math.floor(width)) : null };
 }
 
 /** The box around a symbol's shapes (the symbol's own units). */
@@ -313,8 +352,9 @@ function tableHtml(t: SpDocTable): string {
 
 function plotHtml(plot: SpDocPlot, d: SpDoc): string {
   const page = SP_PAGES[d.paper];
-  const scene = spPlotScene(plot, page.w - SP_PAGE_MARGIN.left - SP_PAGE_MARGIN.right);
-  const label = `Stage plot drawing, seen from the audience. ${plot.items.length} ${plot.items.length === 1 ? 'object' : 'objects'}. ${plot.sizeNote}.`;
+  // a plot that needs room may take what the page has left under the header
+  const scene = spPlotScene(plot, page.w - SP_PAGE_MARGIN.left - SP_PAGE_MARGIN.right, plot.roomy ? { maxH: SP_ROOMY_H[d.paper] } : {});
+  const label = `Stage plot drawing, seen from above, with the audience at the bottom. ${plot.items.length} ${plot.items.length === 1 ? 'object' : 'objects'}. ${plot.sizeNote}.`;
   const view = plot.viewNote ? `<p class="viewnote"><strong>Viewpoint:</strong> ${esc(plot.viewNote)}</p>` : '';
   const legend = plot.legend.length ? `<ul class="legend">${plot.legend.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : '';
   return `<figure class="plot">${spPlotSvg(scene, label)}</figure>${view}${legend}`;
@@ -339,7 +379,9 @@ export function spPacketHtml(d: SpDoc): string {
       // cannot be told "only when less than a third of the page is left",
       // so on this sheet (the web print view, and the phone's fallback) a
       // short packet is never padded with a forced break.
-      const fresh = n > 0 && s.breakBefore === 'page';
+      // …and the section after a plot that was given the page's room
+      const afterRoomy = n > 0 && d.sections[n - 1].blocks.some((b) => b.t === 'plot' && b.plot.roomy);
+      const fresh = n > 0 && (s.breakBefore === 'page' || afterRoomy);
       const run = fresh ? `<div class="runhead">${esc(d.footer)}${d.stamp ? ` · <strong>${esc(d.stamp)}</strong>` : ''}</div>` : '';
       return `<section class="sec${fresh ? ' newpage' : ''}">${run}<h1>${esc(s.title)}</h1>${s.blocks.map((b) => blockHtml(b, d)).join('\n')}</section>`;
     })

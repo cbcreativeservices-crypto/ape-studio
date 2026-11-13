@@ -38,6 +38,7 @@ import {
   SPM_PERSONAL_MIXER_NOTE,
   SPM_PROVIDER_HINT,
   SPM_PROVIDER_OPTIONS,
+  SPM_SHARE_WHERE_POPUP,
   SPM_USUAL_NOTE,
   spmAddDevice,
   spmAddDevicesToMix,
@@ -57,6 +58,7 @@ import {
   spmPerformerName,
   spmRowWord,
   spmShareLine,
+  spmShareOpen,
   spmToggleInstruction,
   spmUsualDevices,
   type SpmDeviceRow,
@@ -186,6 +188,9 @@ export function MixBody({
   const change = (from: (now: SpMix) => MixPatch) => ed.apply((cur) => spUpdateMix(cur, id, from(cur.mixes.find((x) => x.id === id) ?? mix)));
   const devices = spmDevicesOfMix(p, id);
   const share = spmShareLine(p, mix);
+  /** "How its devices are fed" is open: the popup says where to type it, and
+   *  shows that field (MORE DETAILS opens with it). */
+  const shareOpen = spmShareOpen(p, mix);
   const clickNotes = spmClickNotes(p, mix);
   const own = spmOwnInstructions(mix.instructions);
 
@@ -244,8 +249,8 @@ export function MixBody({
             <Button label="ADD A TRANSMITTER" onPress={() => ed.apply((cur) => (cur.mixes.some((x) => x.id === id && spmNeedsTransmitter(cur, x)) ? spmAddDevice(cur, 'iem-tx', id).p : cur))} a11yLabel={`Add a wireless in-ear transmitter to ${title}`} />
           </>
         ) : null}
-        {share ? <Note>{share}</Note> : null}
-        {spmOwnRig(mix) && devices.some((d) => !d.selfContained) ? <Line tone="dim">If a device here needs nothing from the house system, open it and mark it as part of your band’s own rig.</Line> : null}
+        {share ? <Note>{shareOpen ? `${share} ${SPM_SHARE_WHERE_POPUP}` : share}</Note> : null}
+        {spmOwnRig(mix) && devices.some((d) => !d.selfContained) ? <Line tone="dim">If a device here needs nothing from the house system, open it and mark it as part of the band monitor rig.</Line> : null}
         <Line tone="dim">Adding a device does not add a mix or an audio channel.</Line>
         <Button label="ADD A DEVICE TO THIS MIX" onPress={() => onAddDevice(id)} a11yLabel={`Add a device to ${title}`} />
       </View>
@@ -257,7 +262,7 @@ export function MixBody({
       ))}
       <Button label="WHAT THIS MIX NEEDS TO HEAR" onPress={() => onNeeds(id)} a11yLabel={`Choose what ${title} needs to hear`} />
 
-      <MoreDetails>
+      <MoreDetails initiallyOpen={shareOpen}>
         <TextField
           label="Requested output channels or sockets"
           value={mix.outputs}

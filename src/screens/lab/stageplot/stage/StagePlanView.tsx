@@ -13,12 +13,19 @@
  *   • Everything is laid out in GLASS UNITS (box ÷ StageTextScale) and painted
  *     through one viewBox, so FULL SCREEN is the same picture, larger, and a
  *     touch divided by the same scale lands under the finger (stageGeom.ts).
+ *   • FULL SCREEN with the phone upright opens at the zoom that fills the
+ *     glass height (the stage would otherwise be a narrow band with dark
+ *     above and below it); the drawing then slides sideways, and FIT STAGE
+ *     shows all of it again. Leaving FULL SCREEN puts the zoom back.
  *   • FULL SCREEN is given NO fixed shape: the drawing takes the whole body
  *     and fits the stage into it, so 1× always shows the whole stage and the
  *     shared full-screen view has no FIT step that could cut the stage's
  *     sides off (visual review 2026-11-12). The dock's ZOOM is the zoom.
  *   • Names and numbers are at least 9.5 glass units, set in the open (a dark
- *     halo behind each), clear of the symbols and of each other.
+ *     halo behind each). A name is never over another object's art and two
+ *     labels never overlap; where a crowded stage has no such place, a piece
+ *     of equipment shows its numbers without its name (stageLabelPlan), and
+ *     the area is told how many names are left out (`onNamesLeftOut`).
  *   • The selected object is told by SHAPE: a dashed ring with four corner
  *     brackets and a pointer on the side it faces. Its group wears a dotted
  *     ring. Color only repeats it.
@@ -42,7 +49,6 @@ import { PanResponder, Platform, View, type ViewStyle } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../modules/ape-gesture-exclusion';
 import { spStageAspect } from '../../../../features/stageplot/spModel';
-import { spPlotKey } from '../../../../features/stageplot/spSymbols';
 import type { SpId, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { StageDeck } from '../../cableinstall/scenes/floorArt';
@@ -63,8 +69,9 @@ import {
   stageHit,
   stageKeyLayout,
   stageScaleNote,
+  stageFillZoom,
   stageLabelLeader,
-  stageLabels,
+  stageLabelPlan,
   stageLivePositions,
   stageObjectBox,
   stagePan,
@@ -79,7 +86,7 @@ import {
   type StageTransform,
   type StageView,
 } from './stageGeom';
-import { stageBadges, stageListName, stageName } from './stageLinks';
+import { stageBadges, stageKeyEntries, stageListName, stageName } from './stageLinks';
 
 const GLASS = '#0c0c10';
 const WORD = '#c9ccd5';
@@ -118,6 +125,10 @@ export type StagePlanProps = {
   /** Told true while THIS drawing is the one shown in FULL SCREEN (the rack
    *  draws a second copy there), and false when that copy goes away. */
   onFullScreen?: (on: boolean) => void;
+  /** How many names are not shown at this size (equipment that shows its
+   *  numbers alone, or nothing): told when the count changes, so the screen
+   *  can say so in words. */
+  onNamesLeftOut?: (count: number) => void;
 };
 
 type Drag = {
@@ -148,8 +159,6 @@ const Deck = memo(function Deck({ x, y, w, h, xs, ys }: { x: number; y: number; 
       <Rect x={x} y={y} width={w} height={h} rx={4} fill="none" stroke="#5d5142" strokeWidth={1} />
       <Rect x={x} y={y + h - 1} width={w} height={4.5} rx={1.5} fill="#8a7450" />
       <Line x1={x + 2} y1={y + h - 0.6} x2={x + w - 2} y2={y + h - 0.6} stroke="#e7d3a4" strokeWidth={1.3} strokeLinecap="round" />
-      {/* the center line's mark on the front edge */}
-      <Path d={`M${x + w / 2} ${y + h - 7} V${y + h + 3.5}`} stroke="#e7d3a4" strokeWidth={1} />
     </G>
   );
 });
@@ -168,13 +177,13 @@ function Halo({ x, y, text, fs, anchor, fill, family }: { x: number; y: number; 
   );
 }
 
-export function StagePlanView({ w, h, project, selectedId, view, onView, showNames, showNumbers, turn, onSelect, onMove, onResize, onFullScreen }: StagePlanProps) {
+export function StagePlanView({ w, h, project, selectedId, view, onView, showNames, showNumbers, turn, onSelect, onMove, onResize, onFullScreen, onNamesLeftOut }: StagePlanProps) {
   const p = project;
   const s = useStageTextScale();
   const gw = w / s;
   // THE KEY takes its rows at the bottom of the glass; the stage is laid out
   // in the height above it (never under a third of the glass).
-  const keyEntries = useMemo(() => spPlotKey(p.objects), [p.objects]);
+  const keyEntries = useMemo(() => stageKeyEntries(p.objects), [p.objects]);
   const scaleNote = stageScaleNote(p);
   const keyLayout = useMemo(() => stageKeyLayout(keyEntries, gw, scaleNote), [keyEntries, gw, scaleNote]);
   const ghAll = h / s;
@@ -203,6 +212,37 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
     return () => fullRef.current?.(false);
   }, [inFull]);
 
+  // FULL SCREEN WITH THE PHONE UPRIGHT: the glass is much taller than the
+  // stage, so the whole-stage zoom leaves the stage the size it has on the
+  // normal screen, with dark above and below (visual review 2, B4). The
+  // full-screen copy opens at the zoom that fills the height. It does so only
+  // while the zoom is still the one this effect set: once the user chooses a
+  // zoom, theirs stands. Leaving FULL SCREEN puts back the zoom from before.
+  const auto = useRef<{ applied: number; before: StageView } | null>(null);
+  useEffect(() => {
+    if (!inFull) return undefined;
+    const st = ref.current;
+    if (!auto.current) auto.current = { applied: st.view.zoom, before: st.view };
+    if (st.view.zoom !== auto.current.applied) return undefined;
+    const fill = stageFillZoom(aspect, gw, gh, region);
+    if (fill !== st.view.zoom) {
+      auto.current.applied = fill;
+      const sel = st.selectedId ? st.p.objects.find((o) => o.id === st.selectedId) : undefined;
+      st.onView({ zoom: fill, cx: sel?.x ?? 0.5, cy: sel?.y ?? 0.5 });
+    }
+    return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inFull, gw, gh, aspect, region]);
+  useEffect(() => {
+    if (!inFull) return undefined;
+    return () => {
+      const a = auto.current;
+      auto.current = null;
+      if (a) ref.current.onView(a.before);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inFull]);
+
   const order = useMemo(() => stageDrawOrder(p.objects), [p.objects]);
   const livePos = useMemo(() => (live ? stageLivePositions(p, live.id, live.to) : null), [p, live]);
   const boxes = useMemo(
@@ -223,8 +263,8 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
 
   // ── names and numbers ─────────────────────────────────────────────────────
   const frame = useMemo(() => stageFrameBoxes(gw, gh), [gw, gh]);
-  const labels = useMemo(() => {
-    if (!showNames && !showNumbers && !selectedId) return [];
+  const plan = useMemo(() => {
+    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [] };
     const items: StageLabelIn[] = order.map((o, i) => ({
       id: o.id,
       // the selected object is always named on the drawing (there is no
@@ -233,9 +273,20 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
       badges: showNumbers ? stageBadges(p, o, livePos?.get(o.id) ?? o) : [],
       box: boxes[i],
       person: o.kind === 'performer',
+      selected: o.id === selectedId,
     }));
-    return stageLabels(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right]);
+    return stageLabelPlan(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right]);
   }, [order, boxes, p, livePos, showNames, showNumbers, selectedId, gw, gh, frame]);
+  const labels = plan.labels;
+  // names left out because the stage is crowded at this size (not because the
+  // user switched names off): the area says so under the drawing
+  const leftOut = showNames ? plan.dropped.length : 0;
+  const leftOutRef = useRef(onNamesLeftOut);
+  leftOutRef.current = onNamesLeftOut;
+  useEffect(() => {
+    // the copy that is on screen reports: the glass, or the FULL SCREEN one
+    leftOutRef.current?.(leftOut);
+  }, [leftOut, inFull]);
 
   const grid = useMemo(() => (p.stage.grid ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T]);
 
@@ -336,9 +387,10 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const midX = gw / 2;
   const midY = (STAGE_FRAME.top + gh - STAGE_FRAME.bottom) / 2;
   const selName = selected ? stageListName(p, selected) : '';
-  const a11y = `Stage plot, seen from the audience: the audience is at the bottom, stage right is on the left. ${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`}. ${selected ? `${selName} is selected.` : 'Nothing is selected.'} The list of objects under the drawing moves each one without dragging.`;
-  const ringCorners = selBox ? stageBoxCorners(selBox, 5) : null;
-  const facing = selBox && !selBox.sized ? stageFacingPoint(selBox, 11) : null;
+  const a11y = `Stage plot, seen from above, with the audience at the bottom: stage right is on the left. ${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`}. ${selected ? `${selName} is selected.` : 'Nothing is selected.'} The list of objects under the drawing moves each one without dragging.`;
+  // the frame is the drawn art's own box, 3 units clear of it
+  const ringCorners = selBox ? stageBoxCorners(selBox, 3) : null;
+  const facing = selBox && !selBox.sized ? stageFacingPoint(selBox, 9) : null;
   const handle = selBox?.sized ? stageResizeHandle(selBox) : null;
 
   return (

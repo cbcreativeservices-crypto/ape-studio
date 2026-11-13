@@ -48,9 +48,10 @@ import { accountWhy, type AccountWording } from '../kit/labEnd';
 import type { SpSaveState } from './spContext';
 import { Button, HelpTip, Note, RowCard, Section, Sheet, TextField } from './spForm';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-/** "Nov 12, 2026, 3:05 PM", in the device's own time. */
+/** "November 12, 2026, 3:05 PM", in the device's own time. One style for every
+ *  date the lab SHOWS: the month in full, with a comma. */
 export function spWhen(ms: number): string {
   const d = new Date(ms);
   if (!Number.isFinite(d.getTime()) || ms <= 0) return '';
@@ -71,7 +72,7 @@ export function spNotSavedLine(tier: Tier, wording: { guest: boolean; account?: 
 }
 
 /** How to type a date so it can be read one way only. */
-export const DATE_HOW = 'Type the year first, like 2026-12-05, or write the month as a word, like Dec 5 2026. A date such as 5/12/2026 is not read, because it can mean two days.';
+export const DATE_HOW = 'Type the year first, like 2026-12-05, or write the month as a word, like Dec 5, 2026. A date such as 5/12/2026 is not read, because it can mean two days.';
 
 const CAP_LINE = `This device keeps ${SP_MAX_PROJECTS} stage plots, and it is full. Delete one you no longer need, then start another.`;
 
@@ -121,7 +122,7 @@ export function ProjectLibrary({ onOpen }: { onOpen: (project: SpProject, saveSt
       closeMenu();
       return;
     }
-    // A rename is an edit: on a revision that was already shared it starts
+    // A rename is an edit: on a revision that was marked ready or shared it starts
     // the next revision, because the name prints on the packet.
     const next = spEdit(cur, (d) => {
       d.band = band;
@@ -210,6 +211,10 @@ export function ProjectLibrary({ onOpen }: { onOpen: (project: SpProject, saveSt
         title="What a stage plot is for"
         body="A stage plot shows who performs and where they stand. It comes with two lists. The input list has every sound that reaches the sound system. The monitor plan says what each performer needs to hear. A venue’s sound engineer reads all three before your show, so they can prepare the stage before you arrive."
       />
+      <HelpTip
+        title="Words used in the examples"
+        body="A wedge is a monitor speaker on the floor, aimed at a performer. In-ear monitors are earphones that do the same job. A DI (direct box) connects an instrument straight to the mixer, with no microphone. A click is a metronome that only the players hear. The house console is the venue’s mixer. An input split sends each input to two mixers: the venue’s and the band’s own."
+      />
       {notSaved ? <Note tone="warning">{notSaved}</Note> : null}
 
       <Section title="START A STAGE PLOT" hint="An example is a starting point. Read what it assumes; you can change every part of it.">
@@ -241,15 +246,14 @@ export function ProjectLibrary({ onOpen }: { onOpen: (project: SpProject, saveSt
               key={p.id}
               title={spProjectName(p)}
               subtitle={lines.join('\n')}
-              badges={[
-                p.kind === 'gig' ? 'GIG COPY' : 'MASTER',
-                `REVISION ${p.revision}`,
-                p.status === 'ready' ? 'READY TO ADVANCE' : 'DRAFT',
-                ...(state === 'session-only' ? ['NOT SAVED'] : state === 'failed' ? ['NOT SAVED YET'] : []),
-              ]}
               onPress={() => onOpen(p, state)}
               a11yLabel={`Open ${spProjectName(p)}. ${[p.kind === 'gig' ? '' : 'Master', ...lines].filter(Boolean).join('. ')}. Revision ${p.revision}, ${p.status === 'ready' ? 'ready to advance' : 'draft'}${state === 'saved' ? '' : ', not saved'}.`}
             >
+              {/* Plain small text, not outlined boxes: on this card only OPEN
+                  and MORE are buttons, and only they look like buttons. */}
+              <Text style={styles.tags}>
+                {[p.kind === 'gig' ? 'GIG COPY' : 'MASTER', `REVISION ${p.revision}`, p.status === 'ready' ? 'READY TO ADVANCE' : 'DRAFT', ...(state === 'session-only' ? ['NOT SAVED'] : state === 'failed' ? ['NOT SAVED YET'] : [])].join(' · ')}
+              </Text>
               <View style={styles.rowButtons}>
                 <Button label="OPEN" tone="primary" onPress={() => onOpen(p, state)} a11yLabel={`Open ${spProjectName(p)}`} />
                 <Button label="MORE" onPress={() => openMenu(p)} a11yLabel={`More for ${spProjectName(p)}: rename, duplicate, delete`} />
@@ -298,7 +302,7 @@ export function ProjectLibrary({ onOpen }: { onOpen: (project: SpProject, saveSt
               onCommit={(date) => setDraft((d) => ({ ...d, date }))}
               onChange={(date) => setDraft((d) => ({ ...d, date }))}
               placeholder="2026-12-05"
-              hint="Optional. Year first, or the month as a word: 2026-12-05, or Dec 5 2026."
+              hint="Optional. Year first, or the month as a word: 2026-12-05, or Dec 5, 2026."
             />
             {draft.date.trim() ? <Text style={styles.quiet}>{gigDay ? `Read as ${spDateWords(gigDay)}.` : `Not read as a date yet. ${DATE_HOW}`}</Text> : null}
             <Button label="MAKE THE GIG COPY" tone="primary" onPress={() => duplicate('gig')} />
@@ -315,6 +319,7 @@ const styles = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
   quiet: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.textSub },
+  tags: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, lineHeight: 17, letterSpacing: 0.8, color: colors.textSub },
   rowButtons: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   rule: { height: 1, backgroundColor: '#232329' },
 });

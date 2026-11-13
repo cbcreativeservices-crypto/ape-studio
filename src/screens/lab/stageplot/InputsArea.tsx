@@ -76,7 +76,7 @@ export function InputsArea() {
 
   const band = spPatch(p, 'band');
   const house = spPatch(p, 'house');
-  // A stage plot whose inputs all feed the band's own rig still shows a list.
+  // A stage plot whose inputs all feed the band monitor rig still shows a list.
   const patchId: SpPatchId = band && (wanted === 'band' || !house?.order.length) ? 'band' : 'house';
   const patch = spPatch(p, patchId);
   const blocks = useMemo(() => spRowBlocks(p, patchId), [p, patchId]);
@@ -161,7 +161,7 @@ export function InputsArea() {
     } else if (action === 'renumber') {
       // A shared revision is never renumbered in silence.
       const shared = spSharedNotice(p);
-      if (shared) confirmDialog('Renumber a shared stage plot?', shared, 'Renumber', () => runIssueAction(ed, issue, action));
+      if (shared) confirmDialog('Renumber a stage plot that may have been sent?', shared, 'Renumber', () => runIssueAction(ed, issue, action));
       else runIssueAction(ed, issue, action);
     } else runIssueAction(ed, issue, action);
   };
@@ -266,7 +266,7 @@ export function InputsArea() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={[cardColumn, styles.column]}>
           {questions.length ? (
-            <Section title="QUESTIONS ABOUT THE INPUTS" hint="Each one has its answers. Answering them prepares your stage plot. It does not mean the venue has agreed.">
+            <Section title="QUESTIONS ABOUT THE INPUTS" hint="Each one has its answers, or GO TO where the answer is typed. Answering them prepares your stage plot. It does not mean the venue has agreed.">
               <IssueList issues={questions} onGoTo={goToIssue} onAction={answer} />
             </Section>
           ) : null}
@@ -290,8 +290,8 @@ export function InputsArea() {
                 label="Input list for"
                 value={patchId}
                 options={[
-                  { value: 'house', label: `${house?.name ?? 'House system'} (${house?.order.length ?? 0})` },
-                  { value: 'band', label: `${band.name} (${band.order.length})` },
+                  { value: 'house', label: `${house?.name ?? 'House system'} (${house?.order.length || 'no inputs'})` },
+                  { value: 'band', label: `${band.name} (${band.order.length || 'no inputs'})` },
                 ]}
                 onChange={setWanted}
                 hint="Each system has its own channel numbers. The same number in both lists is not a clash."

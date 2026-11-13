@@ -24,11 +24,11 @@
  */
 import { Platform, View } from 'react-native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
-import { spKeySymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols';
+import { spKeyRot, spKeySymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols';
 import type { SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { StageObjectArt } from './stageArt';
-import { STAGE_KEY_FS, stageKeyScale, stageKeyWords, type StageKeyLayout } from './stageGeom';
+import { STAGE_KEY_ART, STAGE_KEY_FS, stageKeyScale, stageKeyWords, type StageKeyLayout } from './stageGeom';
 
 const GLASS = '#0c0c10';
 /** The light ink the stage's names are set in. */
@@ -42,13 +42,16 @@ const SVG_HIDDEN_NATIVE = Platform.OS === 'web' ? {} : ({ accessibilityElementsH
 /** The scale words as a sentence for a screen reader. */
 const scaleWords = (note: string): string => (note === 'NOT TO SCALE' ? 'Not to scale.' : `Stage size: ${note.toLowerCase()}.`);
 
-/** A stand-in object of one kind, facing the audience, for the art to draw. */
+/** A stand-in object of one kind for the art to draw: facing the audience,
+ *  except a wedge, which is turned as the wedges on a stage are (its speaker
+ *  toward the performer, upstage): the picture beside the words matches the
+ *  thing it explains (`spKeyRot`, the same turn as the printed key). */
 const sample = (kind: SpObjectKind): SpObject => ({
   id: `key-${kind}`,
   kind,
   x: 0,
   y: 0,
-  rot: 0,
+  rot: spKeyRot(kind),
   label: '',
   w: null,
   h: null,
@@ -88,7 +91,7 @@ export function StageKey({ project, entries, layout, w, gw }: { project: SpProje
             // the same art as on the stage, at the scale that fits the art box
             const sym = spKeySymbol(c.kind);
             const u = stageKeyScale(sym.w, sym.h);
-            return <StageObjectArt key={`a${c.kind}`} p={project} o={sample(c.kind)} cx={c.artCx} cy={c.artCy} hw={(sym.w * u) / 2} hh={(sym.h * u) / 2} rot={0} u={u} />;
+            return <StageObjectArt key={`a${c.kind}`} p={project} o={sample(c.kind)} cx={c.artCx} cy={c.artCy} hw={(sym.w * u) / 2} hh={(sym.h * u) / 2} rot={spKeyRot(c.kind)} u={u} />;
           })}
           {layout.cells.map((c) =>
             c.lines.map((ln, k) => (
@@ -99,6 +102,23 @@ export function StageKey({ project, entries, layout, w, gw }: { project: SpProje
           )}
         </Svg>
       </View>
+    </View>
+  );
+}
+
+/** One kind's art alone, at the key's size: the picture on a palette button,
+ *  so a kind is SEEN before it is placed. Hidden from a screen reader (the
+ *  button it is in says the kind's name). */
+export function StageKindIcon({ project, kind }: { project: SpProject; kind: SpObjectKind }) {
+  const sym = spKeySymbol(kind);
+  const u = stageKeyScale(sym.w, sym.h);
+  const w = STAGE_KEY_ART.w + 4;
+  const h = STAGE_KEY_ART.h + 6;
+  return (
+    <View pointerEvents="none">
+      <Svg aria-hidden {...SVG_HIDDEN_NATIVE} width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        <StageObjectArt p={project} o={sample(kind)} cx={w / 2} cy={h / 2} hw={(sym.w * u) / 2} hh={(sym.h * u) / 2} rot={spKeyRot(kind)} u={u} />
+      </Svg>
     </View>
   );
 }

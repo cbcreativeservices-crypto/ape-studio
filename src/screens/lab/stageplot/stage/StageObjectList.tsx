@@ -20,7 +20,7 @@ import type { SpId, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RowCard } from '../spForm';
 import { StageInspector } from './StageInspector';
-import { stageBadges, stageKindName, stageListName, stageListOrder } from './stageLinks';
+import { stageBadges, stageListName, stageListOrder, stageObjectKindName } from './stageLinks';
 
 export function StageObjectList({ project, selectedId, onSelect }: { project: SpProject; selectedId: SpId | null; onSelect: (id: SpId | null) => void }) {
   const p = project;
@@ -36,7 +36,9 @@ export function StageObjectList({ project, selectedId, onSelect }: { project: Sp
         const badges = stageBadges(p, o);
         const grouped = o.groupId ? 'in a group' : '';
         const flag = !spOnStage(o) && !o.offstageOk ? 'the review asks about it' : '';
-        const sub = [stageKindName(o.kind), where, grouped, flag].filter(Boolean).join(' · ');
+        // the kind is said only when it is not the name already ("Congas · Congas")
+        const kind = stageObjectKindName(o.kind);
+        const sub = [kind.toLowerCase() === name.toLowerCase() ? '' : kind, where, grouped, flag].filter(Boolean).join(' · ');
         return (
           <View key={o.id} style={styles.item}>
             <RowCard

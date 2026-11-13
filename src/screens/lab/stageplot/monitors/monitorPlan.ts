@@ -8,19 +8,23 @@
  * keeps three numbers apart and says each one in words:
  *
  *   • MIXES;
- *   • MONITOR FEED AUDIO CHANNELS ASKED OF THE HOUSE CONSOLE (a mono mix is
+ *   • MONITOR FEED AUDIO CHANNELS REQUESTED FROM THE HOUSE CONSOLE (a mono mix is
  *     1, a stereo mix is 2: the words are "audio channels", because a console
  *     may show a stereo mix as one linked strip). Only what the house console
- *     is asked to create is in this number. The audio channels of a mix the
- *     band creates in its own rig, of a mix on a personal mixer system, or of
+ *     is requested to create is in this number. The audio channels of a mix the
+ *     band creates in the band monitor rig, of a mix on a personal mixer system, or of
  *     a mix nobody is named to create are said APART and are never added in:
  *     "feed" reads as something the house sends (review 1, live sound);
- *   • MONITOR DEVICES, BY TYPE.
+ *   • MONITOR DEVICES, each kind counted apart.
  *
- * And it keeps WHO CREATES A MIX apart: the house console; your band's own
- * rig (a mixer the band brings); a personal mixer system (which a venue may
- * also own, so it is called "not mixed on the house console", never "the
- * band's rig"); or to be confirmed.
+ * And it keeps WHO CREATES A MIX apart: the house console; the band monitor
+ * rig (its mixer is the band monitor console); a personal mixer system (which
+ * a venue may also own, so it is called "not mixed on the house console",
+ * never the band's); or to be confirmed.
+ *
+ * One name for one thing (review 2): "requested from the house console",
+ * "band monitor rig", "band monitor console". No zero count is printed and no
+ * bare category word: "all mono", "The venue brings all 9."
  *
  * Nothing here stores a count: every number is read from spDerive each time.
  * Nothing here guesses who brings an item, nothing here names a radio
@@ -31,7 +35,7 @@
  * Pure: no React, no native modules. US spelling.
  */
 import { SP_DELIVERY_WORD, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_MIX_INSTRUCTIONS, SP_NEED_WORD, SP_PROVIDER_WORD, SP_SUPPLIER_WORD, SP_VENUE_FEED_WORD } from '../../../../features/stageplot/spCatalog.ts';
-import { spAllInputsInOrder, spBadge, spDeviceCountWord, spMixChannels, spMonitorTotals, spSupplierWords, type SpMixTotals, type SpMonitorTotals } from '../../../../features/stageplot/spDerive.ts';
+import { spAllInputsInOrder, spBadge, spDeviceCountWord, spMixChannels, spMonitorTotals, type SpBySupplier, type SpMixTotals, type SpMonitorTotals } from '../../../../features/stageplot/spDerive.ts';
 import { spAddDevice, spAddMix, spLocationWord } from '../../../../features/stageplot/spModel.ts';
 import type {
   SpDelivery,
@@ -48,6 +52,7 @@ import type {
   SpSupplier,
   SpVenueFeed,
 } from '../../../../features/stageplot/spTypes.ts';
+import { spBringsWord } from '../inputs/inputsLogic.ts';
 
 /* ── small words ────────────────────────────────────────────────────────── */
 
@@ -84,8 +89,8 @@ export const SPM_NEEDS_NOTE = 'A preference you give before the show, not a fade
 
 /* ── explanations of the words the choices use ──────────────────────────── */
 
-/** Said once where the band's own rig is first chosen. */
-export const SPM_OWN_RIG_MEANS = 'Your band’s own rig is the monitor equipment your band brings and mixes itself.';
+/** Said once where the band monitor rig is first chosen. */
+export const SPM_BAND_RIG_MEANS = 'The band monitor rig is the monitor equipment your band brings and mixes itself, on its band monitor console.';
 
 /** Under "Who creates this mix". */
 export const SPM_PROVIDER_HINT = 'House console: the venue’s mixer. Band monitor console: a mixer your band brings for its monitors. Personal mixer system: a small mixer for each performer.';
@@ -95,16 +100,16 @@ export const SPM_DELIVERY_HINT = 'Wedge: a loudspeaker on the floor, aimed at th
 
 /** Under "What the venue provides for it": one line for each choice. */
 export const SPM_FEED_HINT =
-  'An input split: a copy of every stage input for your own mixer.\n' +
-  'Feeds from the house console: mixes or groups sent from the house console into your rig.\n' +
-  'Return lines: spare lines in the venue’s stage box for your rig to use.\n' +
+  'An input split: a copy of every stage input for the mixer that makes this mix.\n' +
+  'Feeds from the house console: mixes or groups sent from the house console to the mixer that makes this mix.\n' +
+  'Return lines: cables in the venue’s snake (its multi-channel stage cable). They carry signals from the mixing position back to the stage.\n' +
   'No monitor feeds: nothing is needed from the house console for this mix.';
 
 /** Why the question is asked, by who creates the mix. */
 export const spmFeedWhy = (provider: SpMixProvider): string =>
   provider === 'personal-mixer'
-    ? 'This mix is made on a personal mixer system, so the house console is not asked to create it. Say what the venue provides for it.'
-    : `Your band creates this mix, so the house console is not asked to create it. Say what the venue provides for it. ${SPM_OWN_RIG_MEANS}`;
+    ? 'This mix is made on a personal mixer system, so it is not requested from the house console. Say what the venue provides for it.'
+    : `Your band creates this mix on its band monitor console, so it is not requested from the house console. Say what the venue provides for it. ${SPM_BAND_RIG_MEANS}`;
 
 /** Above the click, cue and talkback inputs. */
 export const SPM_CUE_MEANS = 'A click is a metronome sound for the performers. A cue or talkback is a voice that only the performers hear.';
@@ -126,18 +131,31 @@ export const SPM_DEVICE_OPTIONS = options<SpDeviceType>(SPM_DEVICE_TYPES, SP_DEV
 
 /* ── who creates a mix ──────────────────────────────────────────────────── */
 
-/** A mix the house console is NOT asked to create, and somebody is: the
+/** A mix that is NOT requested from the house console, and somebody creates it: the
  *  question "what the venue provides for it" belongs to these. */
 export const spmOffHouse = (m: { provider: SpMixProvider }): boolean => m.provider === 'band-console' || m.provider === 'personal-mixer';
 
-/** A mix the band creates on a mixer it brings: "your band's own rig". A
- *  personal mixer system is not called that (a venue may own one). */
+/** A mix the band creates on its band monitor console, in the band monitor
+ *  rig. A personal mixer system is not called that (a venue may own one). */
 export const spmOwnRig = (m: { provider: SpMixProvider }): boolean => m.provider === 'band-console';
 
 /* ── the three counts ───────────────────────────────────────────────────── */
 
-/** "2 mono, 2 stereo": only the formats that have some. */
-export const spmFormatWords = (t: SpMixTotals): string => [t.mono ? `${t.mono} mono` : '', t.stereo ? `${t.stereo} stereo` : ''].filter(Boolean).join(', ');
+/** "2 mono, 2 stereo", "all mono", "stereo" (one mix): never a zero count. */
+export function spmFormatWords(t: SpMixTotals): string {
+  if (!t.mixes) return '';
+  if (t.mixes === 1) return t.stereo ? 'stereo' : 'mono';
+  if (!t.stereo) return 'all mono';
+  if (!t.mono) return 'all stereo';
+  return `${t.mono} mono, ${t.stereo} stereo`;
+}
+
+/** "4 mixes: 2 mono, 2 stereo.", "6 mixes, all mono.", "1 mix, mono." */
+export function spmMixLine(t: SpMixTotals): string {
+  if (!t.mixes) return 'No mixes yet.';
+  const words = spmFormatWords(t);
+  return t.mono && t.stereo ? `${count(t.mixes, 'mix', 'mixes')}: ${words}.` : `${count(t.mixes, 'mix', 'mixes')}, ${words}.`;
+}
 
 /** The rule behind the middle count, said under it. */
 export const SPM_FEED_RULE = 'A mono mix is 1 audio channel. A stereo mix is 2.';
@@ -147,14 +165,13 @@ export type SpmTypeCount = { type: SpDeviceType; n: number; /** "wedges", "in-ea
 export type SpmCounts = {
   /** Every mix in the plan, whoever creates it. */
   mixes: number;
-  /** Monitor feed audio channels ASKED OF THE HOUSE CONSOLE, and nothing else. */
+  /** Monitor feed audio channels REQUESTED FROM THE HOUSE CONSOLE, and nothing else. */
   houseFeedChannels: number;
   devices: number;
   /** Only the device types that have at least one. */
   byType: SpmTypeCount[];
   mixLine: string;
-  feedLine: string;
-  /** Audio channels that are NOT asked of the house console, one line for
+  /** Audio channels that are NOT requested from the house console, one line for
    *  each kind. They are shown apart and never added to `houseFeedChannels`. */
   apartLines: string[];
   deviceLine: string;
@@ -177,7 +194,7 @@ export function spmCounts(t: SpMonitorTotals): SpmCounts {
   const own = t.byProvider['band-console'];
   const personal = t.byProvider['personal-mixer'];
   const tbc = t.byProvider.tbc;
-  if (own.mixes) apartLines.push(`Apart, and not added to that number: ${channelsIn(own)} that your band creates in its own rig.`);
+  if (own.mixes) apartLines.push(`Apart, and not added to that number: ${channelsIn(own)} that your band creates in the band monitor rig.`);
   if (personal.mixes) apartLines.push(`Apart, and not added to that number: ${channelsIn(personal)} on a personal mixer system (not mixed on the house console).`);
   if (tbc.mixes) apartLines.push(`Apart, and not added to that number: ${channelsIn(tbc)}, with who creates ${tbc.mixes === 1 ? 'it' : 'them'} still to be confirmed.`);
   return {
@@ -185,12 +202,7 @@ export function spmCounts(t: SpMonitorTotals): SpmCounts {
     houseFeedChannels: house,
     devices,
     byType,
-    mixLine: mixes ? `${count(mixes, 'mix', 'mixes')}: ${spmFormatWords(t.all)}.` : 'No mixes yet.',
-    feedLine: !mixes
-      ? 'No mixes yet, so nothing is asked of the house console.'
-      : house
-        ? `${count(house, 'monitor feed audio channel is', 'monitor feed audio channels are')} asked of the house console.`
-        : 'No monitor feed audio channels are asked of the house console.',
+    mixLine: spmMixLine(t.all),
     apartLines,
     deviceLine: devices ? `${count(devices, 'monitor device', 'monitor devices')}: ${spmList(byType.map((x) => spDeviceCountWord(x.type, x.n)))}.` : 'No monitor devices yet.',
   };
@@ -198,29 +210,31 @@ export function spmCounts(t: SpMonitorTotals): SpmCounts {
 
 /* ── the mix list, by who creates each mix ──────────────────────────────── */
 
-/** What the HOUSE console is asked to create. Mixes created anywhere else,
- *  and mixes nobody is named to create, are not in this sentence. */
+/** What is requested from the HOUSE console. Mixes created anywhere else,
+ *  and mixes nobody is named to create, are not in this sentence. This is
+ *  the one place the screen says it in words (the count box above it holds
+ *  the number): one fact is not said three times (review 2). */
 export function spmHouseSentence(t: SpMonitorTotals): string {
   const h = t.house;
-  if (!h.mixes) return t.all.mixes ? 'Nothing is asked of the house console: no mix on this list is created there.' : 'Nothing is asked of the house console yet.';
-  return `The house console is asked to create ${count(h.mixes, 'mix', 'mixes')} (${spmFormatWords(h)}): ${count(h.channels, 'monitor feed audio channel', 'monitor feed audio channels')}.`;
+  if (!h.mixes) return t.all.mixes ? 'Nothing is requested from the house console: no mix on this list is created there.' : 'Nothing is requested from the house console yet.';
+  return `${count(h.mixes, 'mix is', 'mixes are')} requested from the house console (${spmFormatWords(h)}): ${count(h.channels, 'monitor feed audio channel', 'monitor feed audio channels')}.`;
 }
 
 /** The outputs note: a number only for the one case the band can know (one
  *  output for each AUDIO CHANNEL, never for each mix), and the reason the
- *  real number is the venue's to confirm. '' when the house is asked for
- *  nothing. */
+ *  real number is the venue's to confirm. '' when nothing is requested from
+ *  the house console. */
 export function spmHouseOutputNote(t: SpMonitorTotals): string {
   const n = t.house.channels;
   if (!n) return '';
   return `If each audio channel is carried on its own analog console output, that is ${count(n, 'output', 'outputs')}. The real number depends on how the venue sends the feeds to the stage: to be confirmed with the venue.`;
 }
 
-/** What the band creates on a mixer it brings. '' when it creates none. */
+/** What the band creates in the band monitor rig. '' when it creates none. */
 export function spmBandSentence(t: SpMonitorTotals): string {
   const b = t.byProvider['band-console'];
   if (!b.mixes) return '';
-  return `Your band creates ${count(b.mixes, 'mix', 'mixes')} in its own rig (${spmFormatWords(b)}). That is ${count(b.channels, 'audio channel', 'audio channels')} that the house console is not asked to create.`;
+  return `Your band creates ${count(b.mixes, 'mix', 'mixes')} in the band monitor rig (${spmFormatWords(b)}). That is ${count(b.channels, 'audio channel that is', 'audio channels that are')} not requested from the house console.`;
 }
 
 /** Mixes on a personal mixer system. '' when there are none. */
@@ -238,8 +252,8 @@ export function spmTbcSentence(t: SpMonitorTotals): string {
   const n = t.byProvider.tbc.mixes;
   if (!n) return '';
   return n === 1
-    ? 'For 1 mix, who creates it is to be confirmed. It is not counted for the house console or for your band’s own rig.'
-    : `For ${n} mixes, who creates them is to be confirmed. They are not counted for the house console or for your band’s own rig.`;
+    ? 'For 1 mix, who creates it is to be confirmed. It is not counted for the house console or for the band monitor rig.'
+    : `For ${n} mixes, who creates them is to be confirmed. They are not counted for the house console or for the band monitor rig.`;
 }
 
 const FEED_ORDER: readonly SpVenueFeed[] = ['split', 'feeds', 'returns', 'none', 'tbc'];
@@ -269,15 +283,15 @@ export type SpmMixGroup = {
 };
 
 /** The mix list, kept in groups by who creates each mix. The house group is
- *  always there once a mix exists, so the screen can say "nothing is asked of
- *  the house console" in words. [] when there is no mix at all. */
+ *  always there once a mix exists, so the screen can say "nothing is requested
+ *  from the house console" in words. [] when there is no mix at all. */
 export function spmMixGroups(p: SpProject, t: SpMonitorTotals = spMonitorTotals(p)): SpmMixGroup[] {
   if (!p.mixes.length) return [];
   const out: SpmMixGroup[] = [];
   const houseNote = spmHouseOutputNote(t);
-  out.push({ key: 'house', title: 'ASKED OF THE HOUSE CONSOLE', sentence: spmHouseSentence(t), notes: houseNote ? [houseNote] : [], mixes: p.mixes.filter((m) => m.provider === 'house') });
+  out.push({ key: 'house', title: 'REQUESTED FROM THE HOUSE CONSOLE', sentence: spmHouseSentence(t), notes: houseNote ? [houseNote] : [], mixes: p.mixes.filter((m) => m.provider === 'house') });
   const band = p.mixes.filter(spmOwnRig);
-  if (band.length) out.push({ key: 'band', title: 'CREATED IN YOUR BAND’S OWN RIG', sentence: spmBandSentence(t), notes: [SPM_OWN_RIG_MEANS, ...spmVenueFeedLines(p, spmOwnRig)], mixes: band });
+  if (band.length) out.push({ key: 'band', title: 'CREATED IN THE BAND MONITOR RIG', sentence: spmBandSentence(t), notes: [SPM_BAND_RIG_MEANS, ...spmVenueFeedLines(p, spmOwnRig)], mixes: band });
   const personal = p.mixes.filter((m) => m.provider === 'personal-mixer');
   if (personal.length) out.push({ key: 'personal', title: 'ON A PERSONAL MIXER SYSTEM', sentence: spmPersonalSentence(t), notes: [SPM_PERSONAL_MIXER_NOTE, ...spmVenueFeedLines(p, (m) => m.provider === 'personal-mixer')], mixes: personal });
   const tbc = p.mixes.filter((m) => m.provider === 'tbc');
@@ -291,11 +305,19 @@ export const spmMixTitle = (m: { code: string; name: string }): string => `${m.c
 
 export const spmPerformerName = (pf: SpPerformer | undefined): string => (pf ? pf.name.trim() || 'Unnamed performer' : '');
 
-/** "Sam", "Tito and Yolanda", or "Nobody yet". Read from the performers each
- *  time, so it follows a rename. */
+/** "Sam", "Tito and Yolanda", or '' when nobody is on the mix. Read from the
+ *  performers each time, so it follows a rename. */
 export function spmRecipients(p: SpProject, m: SpMix): string {
-  const names = m.recipients.map((id) => spmPerformerName(p.performers.find((x) => x.id === id))).filter(Boolean);
-  return names.length ? spmList(names) : 'Nobody yet';
+  return spmList(m.recipients.map((id) => spmPerformerName(p.performers.find((x) => x.id === id))).filter(Boolean));
+}
+
+/** Who a mix is for, as the line under its name: "For Sam". A fill covers an
+ *  area of the stage, so it may name nobody; any other mix with nobody on it
+ *  says so as something still to do. */
+export function spmMixFor(p: SpProject, m: SpMix): string {
+  const who = spmRecipients(p, m);
+  if (who) return `For ${who}`;
+  return m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'For an area of the stage, with no performer named' : 'Nobody is on this mix yet';
 }
 
 /** The format with its audio channels: never just "stereo". */
@@ -325,18 +347,31 @@ export function spmNeedsTransmitter(p: SpProject, m: SpMix): boolean {
 
 /** When two or more devices of one type share a mix: say that the mix count
  *  and the audio channels did NOT change. For a house mix with nothing
- *  written under "Requested output channels or sockets", how the feed reaches
- *  each device is the open question (the packet's unresolved list asks the
- *  same one; handoff §11: never raise the requested outputs by itself).
- *  '' when nothing is shared. */
+ *  written under "Requested output channels or sockets", how the devices are
+ *  fed is the open question, said with what an answer looks like (the
+ *  packet's unresolved list asks the same one; handoff §11: never raise the
+ *  requested outputs by itself). '' when nothing is shared. */
 export function spmShareLine(p: SpProject, m: SpMix): string {
   const devs = spmDevicesOfMix(p, m.id);
   const shared = SPM_DEVICE_TYPES.map((type) => ({ type, n: devs.filter((d) => d.type === type).length })).filter((x) => x.n > 1);
   if (!shared.length) return '';
   const ch = spMixChannels(m);
   const base = `${upperFirst(spmList(shared.map((x) => spDeviceCountWord(x.type, x.n))))} share this mix. It is still 1 mix and ${count(ch, 'audio channel', 'audio channels')}.`;
-  return m.provider === 'house' && !m.outputs.trim() ? `${base} How the feed reaches each one is to be confirmed.` : base;
+  return spmShareOpen(p, m) ? `${base} How they are fed (linked from one output, or one output each) is to be confirmed.` : base;
 }
+
+/** Is "how its devices are fed" still open for this mix? (A house mix, two
+ *  or more devices of one type, nothing typed under the requested outputs.) */
+export function spmShareOpen(p: SpProject, m: SpMix): boolean {
+  if (m.provider !== 'house' || m.outputs.trim()) return false;
+  const devs = spmDevicesOfMix(p, m.id);
+  return SPM_DEVICE_TYPES.some((type) => devs.filter((d) => d.type === type).length > 1);
+}
+
+/** Where the answer is typed, said beside the question on the mix card… */
+export const SPM_SHARE_WHERE_CARD = 'Type it under EDIT MIX › MORE DETAILS, or leave it for the venue.';
+/** …and inside the mix popup, where MORE DETAILS is opened for it. */
+export const SPM_SHARE_WHERE_POPUP = 'Type it under MORE DETAILS, in “Requested output channels or sockets”, or leave it for the venue.';
 
 /** A name offered for a new mix, from the ROLES of who is on it ("Drums",
  *  "Bass and vocal, in-ear"). Never a performer's name: the mix would keep
@@ -400,7 +435,7 @@ export const spmNewDeviceLabel = (p: SpProject, type: SpDeviceType): string => n
  *  A PROPOSAL: nothing is added until the band says so. A label never holds
  *  a performer's name; a pack or a headphone amplifier is LINKED to the
  *  performer who uses it. Only a transmitter is marked wireless: the radio
- *  coordination is recorded once for a transmitter and its packs. */
+ *  frequency coordination is recorded once for a transmitter and its packs. */
 export function spmUsualDevices(p: SpProject, f: { delivery: SpDelivery; recipients: readonly SpId[] }): SpmDeviceRow[] {
   const used = usedLabels(p);
   const people = f.recipients.filter((id) => p.performers.some((x) => x.id === id));
@@ -437,7 +472,7 @@ export const spmDraftLine = (draft: SpmMixDraft, devices: number): string =>
   `This adds 1 mix (${draft.format === 'stereo' ? 'stereo, 2 audio channels' : 'mono, 1 audio channel'}) and ${devices ? count(devices, 'device', 'devices') : 'no device'}.`;
 
 /** Put proposed devices on a mix that is already there. Devices on a mix the
- *  band creates in its own rig start as part of that rig. Who brings each
+ *  band creates in the band monitor rig start as part of that rig. Who brings each
  *  device starts as "to be confirmed". No mix is added or changed. */
 export function spmAddDevicesToMix(p: SpProject, mixId: SpId, rows: readonly SpmDeviceRow[]): { p: SpProject; deviceIds: SpId[] } {
   const mix = p.mixes.find((m) => m.id === mixId);
@@ -475,14 +510,29 @@ export function spmAddDevice(p: SpProject, type: SpDeviceType, mixId: SpId | nul
 
 /* ── devices, in words ──────────────────────────────────────────────────── */
 
-export type SpmDeviceGroup = { type: SpDeviceType; /** "2 wedges" */ heading: string; /** "Who brings them: 2 Venue." */ brings: string; devices: SpDevice[] };
+export type SpmDeviceGroup = { type: SpDeviceType; /** "2 wedges" */ heading: string; /** "The venue brings all 2." */ brings: string; devices: SpDevice[] };
 
-/** The device list by type, each with its own count and who brings them. */
+const WHO_BRINGS: Record<SpSupplier, string> = { band: 'the band', venue: 'the venue', other: 'another provider', tbc: '' };
+
+/** Who brings the devices of one kind, with no zero count and no bare
+ *  category word: "The venue brings all 9.", "The band brings it.", "Who
+ *  brings it: to be confirmed.", "Who brings them: the band 2 and the venue 1." */
+export function spmBringsLine(b: SpBySupplier, n: number): string {
+  const kinds = (['band', 'venue', 'other', 'tbc'] as const).filter((k) => b[k] > 0);
+  if (kinds.length === 1) {
+    const k = kinds[0];
+    if (k === 'tbc') return n === 1 ? 'Who brings it: to be confirmed.' : `Who brings them: to be confirmed for all ${n}.`;
+    return n === 1 ? `${upperFirst(WHO_BRINGS[k])} brings it.` : `${upperFirst(WHO_BRINGS[k])} brings all ${n}.`;
+  }
+  return `Who brings them: ${spmList(kinds.map((k) => (k === 'tbc' ? `${b[k]} to be confirmed` : `${WHO_BRINGS[k]} ${b[k]}`)))}.`;
+}
+
+/** The device list by kind, each with its own count and who brings them. */
 export function spmDeviceGroups(p: SpProject, t: SpMonitorTotals = spMonitorTotals(p)): SpmDeviceGroup[] {
   return SPM_DEVICE_TYPES.filter((type) => t.devices[type] > 0).map((type) => ({
     type,
     heading: spDeviceCountWord(type, t.devices[type]),
-    brings: `Who brings ${t.devices[type] === 1 ? 'it' : 'them'}: ${spSupplierWords(t.devicesBySupplier[type])}.`,
+    brings: spmBringsLine(t.devicesBySupplier[type], t.devices[type]),
     devices: p.devices.filter((d) => d.type === type),
   }));
 }
@@ -492,38 +542,55 @@ export function spmDeviceFacts(p: SpProject, d: SpDevice): string {
   const parts: string[] = [SP_DEVICE_WORD[d.type]];
   const mix = d.mixId ? p.mixes.find((m) => m.id === d.mixId) : undefined;
   if (mix) parts.push(`On ${spmMixTitle(mix)}`);
-  else parts.push(d.selfContained ? 'No mix asked of the venue' : 'Not on any mix');
-  if (d.selfContained) parts.push('Part of your band’s own rig');
+  else parts.push(d.selfContained ? 'No mix requested from the venue' : 'Not on any mix');
+  if (d.selfContained) parts.push('Part of the band monitor rig');
   const who = spmPerformerName(p.performers.find((x) => x.id === d.performerId));
   if (who) parts.push(`Used by ${who}`);
   return parts.join(' · ');
 }
 
-/** Who brings a device: the words the Inputs area uses for the same fact. */
-export const SPM_BRINGS: Record<SpSupplier, string> = {
-  band: `${SP_SUPPLIER_WORD.band} brings it`,
-  venue: `${SP_SUPPLIER_WORD.venue} brings it`,
-  other: `${SP_SUPPLIER_WORD.other} brings it`,
-  tbc: 'To be confirmed who brings it',
-};
+/** Who brings a device: the Inputs area's own words for the same fact (its
+ *  function, so the two areas cannot drift apart). */
+export const spmBrings = (s: SpSupplier): string => spBringsWord(s);
+
+/** The wireless tag of a device (shown in CAPITALS). */
+export const SPM_WIRELESS_TAG = 'Wireless: agree radio frequencies with the venue';
 
 /** Said for every wireless device. The plan records the need; it never
  *  chooses a frequency. */
-export const SPM_WIRELESS_NOTE = 'Wireless: the venue must check that its radio equipment and yours do not disturb each other. This tool records that. It does not choose radio frequencies.';
+export const SPM_WIRELESS_NOTE = 'Wireless: radio frequency coordination is needed. The venue must check that its radio equipment and yours do not disturb each other. This tool records that. It does not choose radio frequencies.';
 
 /** Said on a receiver pack that is not marked wireless. */
-export const SPM_PACK_NOTE = 'A receiver pack is covered by its transmitter: the radio coordination is recorded once, on the transmitter. Turn this on only when no transmitter is listed for this pack.';
+export const SPM_PACK_NOTE = 'A receiver pack is covered by its transmitter: the radio frequency coordination is recorded once, on the transmitter. Turn this on only when no transmitter is listed for this pack.';
 
 export function spmDeviceTags(d: SpDevice): string[] {
-  const out = [SPM_BRINGS[d.supplier]];
-  if (d.wireless) out.push('Wireless: coordination required');
+  const out = [spmBrings(d.supplier)];
+  if (d.wireless) out.push(SPM_WIRELESS_TAG);
   return out;
 }
 
-/** Where a device is drawn on the stage, for "LOCATE ON THE STAGE". */
-export function spmDeviceStage(p: SpProject, deviceId: SpId): { objectId: SpId | null; word: string } {
+export type SpmDeviceStage = {
+  objectId: SpId | null;
+  /** The whole line, with no full stop: "On the stage: Downstage center". */
+  line: string;
+  /** The button that goes to the stage for it. */
+  button: 'LOCATE ON THE STAGE' | 'PLACE ON THE STAGE' | 'DRAW IT ANYWAY';
+  /** A receiver pack with no symbol: it is worn, so nothing is left undone. */
+  worn: boolean;
+};
+
+/** Where a device is on the stage, and the button that goes there. A
+ *  receiver pack is WORN: with no symbol it says so, and is not shown as
+ *  something still to place (review 2). */
+export function spmDeviceStage(p: SpProject, deviceId: SpId): SpmDeviceStage {
   const o = p.objects.find((x) => x.deviceId === deviceId);
-  return o ? { objectId: o.id, word: spLocationWord(o) } : { objectId: null, word: 'Not on the stage yet' };
+  if (o) return { objectId: o.id, line: `On the stage: ${spLocationWord(o)}`, button: 'LOCATE ON THE STAGE', worn: false };
+  const d = p.devices.find((x) => x.id === deviceId);
+  if (d?.type === 'iem-pack') {
+    const who = spmPerformerName(p.performers.find((x) => x.id === d.performerId));
+    return { objectId: null, line: who ? `Worn by ${who}: it needs no symbol on the stage` : 'A receiver pack is worn: it needs no symbol on the stage', button: 'DRAW IT ANYWAY', worn: true };
+  }
+  return { objectId: null, line: 'Not on the stage yet', button: 'PLACE ON THE STAGE', worn: false };
 }
 
 /* ── the needs grid, one mix at a time ──────────────────────────────────── */

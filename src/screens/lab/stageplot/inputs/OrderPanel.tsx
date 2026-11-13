@@ -3,7 +3,7 @@
  * list: the usual order (a convenience, never called a standard), Renumber
  * with or without the reserved channels, and the reserved channels as typed.
  *
- * A document that was already shared says so first: the next change to the
+ * A revision that was marked ready or shared says so first: the next change to the
  * order or to a number starts a new revision, and the packet shows it. The
  * venue's own channels are never touched from here.
  */
@@ -30,7 +30,7 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
   const inStep = spNumbersFollowOrder(p, patchId);
   const reserved = spReservedText(patch.reserved);
 
-  /** A whole-list change on a shared stage plot is asked first. */
+  /** A whole-list change on a revision that was marked ready or shared is asked first. */
   const whole = (title: string, yes: string, run: () => void) => {
     if (!shared) {
       run();
@@ -38,8 +38,8 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
     }
     confirmDialog(title, shared, yes, run);
   };
-  const sort = () => whole('Sort a shared stage plot?', 'Sort the list', () => ed.apply((q) => spSortConventional(q, patchId, { keepReserved })));
-  const renumber = () => whole('Renumber a shared stage plot?', 'Renumber', () => ed.apply((q) => spRenumber(q, patchId, { keepReserved })));
+  const sort = () => whole('Sort a stage plot that may have been sent?', 'Sort the list', () => ed.apply((q) => spSortConventional(q, patchId, { keepReserved })));
+  const renumber = () => whole('Renumber a stage plot that may have been sent?', 'Renumber', () => ed.apply((q) => spRenumber(q, patchId, { keepReserved })));
 
   const commitReserved = (text: string) => {
     const read = spParseReserved(text);

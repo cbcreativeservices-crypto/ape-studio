@@ -37,7 +37,7 @@ export const SP_GUIDE_INPUTS: ScreenGuide = {
   ],
   tryThis: [
     'Add the stereo keyboard package, then open one of its rows and choose MAKE IT MONO. The number of inputs and the number of DI channels each drop by one.',
-    'Type 7 in the reserved channels field, then press RENUMBER. Channel 7 stays empty and the rows after it move down by one.',
+    'Type 7 in the reserved channels field, then press RENUMBER. Channel 7 stays empty, and each row from there on takes the next number.',
     'Change who brings one microphone from the venue to the band. Find it again in the summary under what the band brings.',
   ],
 };
