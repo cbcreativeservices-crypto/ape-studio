@@ -9,11 +9,16 @@
  *   TrayChip       a chip in a dock tray, a full 44 points high; its state
  *                  is in its LABEL (`marked` from ../bits, or `onOff` here),
  *                  not in the highlight alone
+ *   useNowWhile    the scene clock now, re-read a few times a second while
+ *                  something is waiting, so a "seconds left" readout counts
+ *                  down instead of standing still
  *   tray           the styles of this group's dock trays
  */
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { useDecorativeMotion } from '../../../../features/settings/decorativeMotion';
+import { gaNow } from '../model/gaStore';
 
 /* ── a read-only card ───────────────────────────────────────────────────── */
 
@@ -62,6 +67,26 @@ export function useRoseWhile(count: number, cond: boolean): boolean {
   if (count > last.current && cond) hit.current = true;
   last.current = count;
   return hit.current;
+}
+
+/* ── a readout that counts down ─────────────────────────────────────────── */
+
+/** The scene clock (model/gaStore `gaNow`, the clock `state.t` and every due
+ *  time are stamped from). While `active`, the caller is drawn again every
+ *  `stepMs` so a number of seconds left counts down. The number is
+ *  information, so it is never lost: with reduce-motion on (the shared gate,
+ *  `useDecorativeMotion`) it steps once a second instead of five times.
+ *  When nothing is waiting it costs nothing. */
+export function useNowWhile(active: boolean, stepMs = 200): number {
+  const smooth = useDecorativeMotion();
+  const every = smooth ? stepMs : Math.max(stepMs, 1000);
+  const [, bump] = useState(0);
+  useEffect(() => {
+    if (!active) return undefined;
+    const id = setInterval(() => bump((n) => (n + 1) % 1000000), every);
+    return () => clearInterval(id);
+  }, [active, every]);
+  return gaNow();
 }
 
 /* ── styles ─────────────────────────────────────────────────────────────── */

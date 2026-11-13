@@ -3,12 +3,15 @@
  *
  *   tray furniture   a heading and a row of chips, for a `group` dock key;
  *                    `TrayChip` is 44 points high. A tray COVERS the well
- *                    while it is open, so a tray whose presses need reading
- *                    shows the newest log lines (`TrayLog`).
+ *                    while it is open and has little room on a phone (lead's
+ *                    decision 15), so a tray here is two or three one-line
+ *                    rows and nothing else: what a press did is read on the
+ *                    display (the readouts, the instrument strip), and in
+ *                    the page's log once the tray is closed.
  *   read-only        the door's chain (page 6), the game-information table
- *   figures          (page 8) and the strip of takes (page 9). None of them
- *                    is a control. Each carries its state in words for a
- *                    screen reader, and no state is shown by color alone.
+ *   figures          (page 8). Neither is a control. Each
+ *                    carries its state in words for a screen reader, and no
+ *                    state is shown by color alone.
  *   one hook         `useCountWhen` judges "this fact happened WHILE that
  *                    was true" from the model's own counts.
  *
@@ -19,10 +22,7 @@
 import { useRef, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { ActivityLog } from '../bits';
-import type { GaState } from '../model/gaModel';
 import { doorChainSummary, type ChbChain } from './data/chbPipeline';
-import type { ChbTake } from './data/chbScene';
 
 /* ── hooks ──────────────────────────────────────────────────────────────── */
 
@@ -75,11 +75,6 @@ export function TrayChip({ label, selected = false, onPress }: { label: string; 
     </Pressable>
   );
 }
-/** The newest log lines, inside a tray. */
-export function TrayLog({ state, lines = 2 }: { state: GaState; lines?: number }) {
-  return <ActivityLog state={state} lines={lines} />;
-}
-
 /* ── page 6: the chain ──────────────────────────────────────────────────── */
 
 /** The door's chain as three numbered cards with a named link under each.
@@ -150,7 +145,7 @@ export function SyncTable({ rows, state }: { rows: SyncRow[]; state: string }) {
   const label =
     `Game information, one row for each object. ` +
     rows.map((r) => `${r.object}: local ${r.kind.toLowerCase()}, ${r.value}${r.wrong ? `, wrong: ${r.wrong}` : ''}`).join('. ') +
-    `. Global state for every object: mood ${state.toLowerCase()}. A trigger has no row: it happens once and is gone, and the log records it.`;
+    `. Global state for every object: MOOD ${state.toLowerCase()}. A trigger has no row: it happens once and is gone, and the log records it.`;
   return (
     <View style={styles.table} accessible accessibilityRole="summary" accessibilityLabel={label}>
       <View style={styles.tRow}>
@@ -171,42 +166,11 @@ export function SyncTable({ rows, state }: { rows: SyncRow[]; state: string }) {
           </View>
           <View style={styles.tGlobal}>
             <Text style={styles.tKind}>STATE</Text>
-            <Text style={styles.tCell}>{`mood: ${state}`}</Text>
+            <Text style={styles.tCell}>{`MOOD: ${state}`}</Text>
           </View>
         </View>
       ))}
-      <Text style={styles.tFoot}>A trigger has no row. It happens once and is gone; the log records it.</Text>
-    </View>
-  );
-}
-
-/* ── page 9: the takes that played ──────────────────────────────────────── */
-
-/** The footstep takes played on this visit, oldest on the left. A take that
- *  is the same as the one before it is marked with a double frame and the
- *  word SAME. */
-export function TakeStrip({ takes, surfaceName }: { takes: readonly ChbTake[]; surfaceName: (s: ChbTake['surface']) => string }) {
-  const repeats = takes.filter((t) => t.repeat).length;
-  const label = takes.length
-    ? `Footstep takes played, oldest first: ${takes.map((t) => `take ${t.take} on ${surfaceName(t.surface).toLowerCase()}${t.repeat ? ', the same as the one before' : ''}`).join('; ')}. Takes that repeat the one before: ${repeats}.`
-    : 'Footstep takes played: none yet.';
-  return (
-    <View style={styles.strip} accessible accessibilityRole="summary" accessibilityLabel={label}>
-      <Text style={styles.stripHead}>TAKES PLAYED — OLDEST ON THE LEFT</Text>
-      {takes.length === 0 ? <Text style={styles.stripEmpty}>No steps yet. Press STEP in the dock.</Text> : null}
-      <View style={styles.stripRow}>
-        {takes.map((t) => (
-          <View key={t.key} style={styles.tileWrap}>
-            <View style={[styles.tile, t.repeat && styles.tileRepeat]}>
-              <Text style={[styles.tileNum, t.repeat && styles.rowBad]}>{t.take}</Text>
-            </View>
-            <Text style={[styles.tileWord, t.repeat && styles.rowBad]}>{t.repeat ? 'SAME' : ' '}</Text>
-          </View>
-        ))}
-      </View>
-      {takes.length ? (
-        <Text style={styles.stripFoot}>{`${surfaceName(takes[takes.length - 1].surface)} · ${repeats === 0 ? 'no take repeats the one before it' : `${repeats} ${repeats === 1 ? 'take repeats' : 'takes repeat'} the one before`}`}</Text>
-      ) : null}
+      <Text style={styles.tFoot}>A trigger has no row. It happens once and is gone. The log records it.</Text>
     </View>
   );
 }
@@ -246,7 +210,7 @@ const styles = StyleSheet.create({
   tRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', paddingVertical: 5 },
   tLine: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#34343c' },
   tHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1 },
-  tObj: { width: 82 },
+  tObj: { width: 92 },
   tObjText: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1 },
   tLocal: { flex: 1.25 },
   tGlobal: { flex: 1 },
@@ -254,14 +218,4 @@ const styles = StyleSheet.create({
   tCell: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   tFoot: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, paddingTop: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#34343c' },
 
-  strip: { borderRadius: 10, borderWidth: 1, borderColor: '#2c2c33', borderTopColor: '#3a3a44', borderLeftColor: '#3a3a44', backgroundColor: '#0d0d10', padding: 10, gap: 6 },
-  stripHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
-  stripEmpty: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 13 },
-  stripRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
-  tileWrap: { alignItems: 'center', gap: 1 },
-  tile: { width: 27, height: 27, borderRadius: 6, borderWidth: 1, borderColor: '#4a4a55', backgroundColor: '#16161b', alignItems: 'center', justifyContent: 'center' },
-  tileRepeat: { borderWidth: 3, borderColor: BAD },
-  tileNum: { color: colors.amber, fontFamily: fonts.mono, fontSize: 14 },
-  tileWord: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 0.6 },
-  stripFoot: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
 });

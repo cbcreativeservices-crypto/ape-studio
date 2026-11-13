@@ -6,23 +6,24 @@ import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.
 
 export const G01: ScreenGuide = {
   intro: {
-    learning: 'What game audio is, how each page of this lab is laid out, and the safe way to start any sound: low first, then up slowly.',
+    learning: 'How a game asks for sound, and how the audio side answers. How each page is laid out. The safe way to start any sound: low first, then up slowly.',
     start: 'Move LEVEL down to 40% or lower, turn SOUND on, then switch SCENE on. Raise LEVEL slowly until the scene is comfortable, and find ■ STOP at the end of the dock.',
   },
   seeing: [
-    'You’re looking down on a courtyard and a workshop. The figure marked YOU is the player, and the amber wedge marks the listener.',
-    'LEVEL and SCENE show your two controls. PLAYING counts instances, VOICES counts the sound files playing at this moment, and SOUND says whether you can hear them.',
+    'You are looking down on a courtyard and a workshop. The figure marked YOU is the player, and the amber wedge marks the listener.',
+    'LEVEL and SCENE show your two controls. PLAYING and VOICES count what is sounding now, and SOUND says whether you can hear it.',
+    'The strip under the picture has a bar for each background sound. LEVEL moves every bar.',
     'The activity log lists each request and each answer, newest first.',
   ],
   control: [
     'LEVEL sets how loud the lab plays, from 0 to 100%. It is the lab’s own level; your device’s volume control is separate.',
-    'SCENE starts or stops the background: the courtyard wind, the workshop’s room tone and the fountain.',
+    'SCENE starts or stops the background: the courtyard wind, the workshop’s room tone and the fountain. While it runs, a bird calls now and then.',
     'SOUND turns the lab’s sound on or off. ■ STOP stops everything that is playing.',
   ],
   changes: [
-    'Switching SCENE on adds three GAME lines and three START lines to the log, and PLAYING shows 3.',
-    'The room tone starts at zero level, because the listener is outside. It is running, so it is counted.',
-    'Switching SOUND off stops everything, like ■ STOP. A scene you start while SOUND is off still runs, and each START line says the sound was not heard.',
+    'Switching SCENE on adds three GAME lines and three START lines to the log. PLAYING shows 3, and 4 for a moment when a bird calls.',
+    'The room tone runs at zero level while the listener is outside. This scene still counts it. A real engine usually does not.',
+    'Switching SOUND off stops everything, like ■ STOP. A scene started with SOUND off still runs, and each START line says so.',
   ],
   teaches: [
     'Game audio is every sound a game makes, and it is interactive: it reacts to what the player does.',

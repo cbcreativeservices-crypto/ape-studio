@@ -5,9 +5,9 @@
  * changes the scene; `chbRoute` only RETURNS the `move` actions a page
  * dispatches.
  */
-import { surfaceOf, type GaAction, type GaInstance, type GaState } from '../../model/gaModel.ts';
-import { DOOR_POS, START, WALL_X, surfaceAt, zoneAt, type GaPoint, type GaZone } from '../../model/gaWorld.ts';
-import { footstepId } from '../../sounds/gaSoundBank.ts';
+import { surfaceOf, type GaAction, type GaInstance, type GaLogKind, type GaState } from '../../model/gaModel.ts';
+import { DOOR_POS, START, WALL_X, surfaceAt, zoneAt, type GaPoint, type GaSurfaceId, type GaZone } from '../../model/gaWorld.ts';
+import { footstepId, gaAsset } from '../../sounds/gaSoundBank.ts';
 import { FOOTSTEP_TAKES, GA_SURFACES, type GaSurface } from '../../sounds/gaSynth.ts';
 
 export const CHB_SURFACES = GA_SURFACES;
@@ -66,6 +66,22 @@ export const chbOrphans = (s: GaState): GaInstance[] => s.inst.filter((i) => i.e
 /** The guide's footstep switch reads the surface under THE GUIDE while the
  *  player stands on a different one: the proof that the switch is local. */
 export const chbGuideOwnSurface = (s: GaState): boolean => surfaceOf(s, 'guide') === surfaceAt(s.chars.guide) && surfaceAt(s.chars.guide) !== surfaceAt(s.chars.player);
+
+/**
+ * The guide's surface switch AS THE PAGE SHOWS IT. A planted fault does not
+ * name itself (lead's decision 10): while the switch is set for everyone and
+ * the learner has not yet produced the symptom (`named` false: no guide step
+ * has used a wrong surface since the fault began), the readout and the table
+ * keep the surface the guide stands on, which is the value its last footstep
+ * sent. After that they show what the switch really reads.
+ */
+export const chbGuideSurfaceShown = (s: GaState, named: boolean): GaSurfaceId => (s.faults.globalSurface && !named ? surfaceAt(s.chars.guide) : surfaceOf(s, 'guide'));
+
+/** Page 8's log shows the lines its steps tell the learner to read: what the
+ *  GAME sent (each trigger with its switch value, each event), VALUE and
+ *  STATE lines, a FAULT, and a NOTE that says why a move did nothing. The
+ *  START and STOP lines of four footsteps would push them out of view. */
+export const CHB_P08_LOG: readonly GaLogKind[] = ['trigger', 'value', 'state', 'failed', 'note'];
 
 /** How many footsteps a character has taken (every surface). */
 export const chbSteps = (s: GaState, who: 'player' | 'guide'): number => GA_SURFACES.reduce((n, su) => n + (s.facts[`step:${who}:${su}`] ?? 0), 0);
@@ -127,6 +143,26 @@ export function chbBeds(s: GaState): ChbBeds {
   const yard = s.inst.filter((i) => i.event === 'bed_yard');
   return { room: s.inst.filter((i) => i.event === 'bed_room').length, yard: yard.length, raw: yard.some((i) => i.chose.includes('amb_yard_raw')) };
 }
+
+/** Page 10's log leaves out the four lines every footstep prints and the
+ *  bird calls' START lines, so a ZONE line (kind `state`) is still in view
+ *  after the walk that caused it. A NOTE stays: it says why a step did
+ *  nothing (the wall, the closed door, the edge of the scene). */
+export const CHB_P10_LOG: readonly GaLogKind[] = ['state', 'mix', 'failed', 'note'];
+
+/** The courtyard bed that is playing the RAW CUT: when it started and how
+ *  long one pass of its file is. Null while the prepared loop plays, or no
+ *  courtyard bed plays. */
+export function chbRawBed(s: GaState): { id: string; born: number; loopS: number } | null {
+  const bed = s.inst.find((i) => i.event === 'bed_yard' && i.chose.includes('amb_yard_raw'));
+  const loopS = gaAsset('amb_yard_raw')?.loopS;
+  return bed && loopS ? { id: bed.id, born: bed.born, loopS } : null;
+}
+
+/** How many times a loop has passed its JOIN (its end meeting its start) by
+ *  scene time `now`. The raw cut's level jumps there. Counted from the
+ *  model's clock, so it is the same with sound off. */
+export const chbJoinsPassed = (bed: { born: number; loopS: number } | null, now: number): number => (bed && now > bed.born ? Math.floor((now - bed.born) / bed.loopS + 1e-9) : 0);
 
 /** How many loops are playing (a bed, the fountain, a generator, an alarm). */
 export const chbLoops = (s: GaState): number => s.inst.filter((i) => i.loop).length;

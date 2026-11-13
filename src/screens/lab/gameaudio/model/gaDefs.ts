@@ -19,7 +19,7 @@
  * model never depends on one tool's structure.
  */
 import type { GaBus } from '../engine/gaEngineProtocol.ts';
-import { FOOTSTEP_TAKES, GA_SURFACES, type GaSurface } from '../sounds/gaSynth.ts';
+import { FOOTSTEP_TAKES, GA_SURFACES, MUSIC_STINGER_LEAD_S, type GaSurface } from '../sounds/gaSynth.ts';
 import { footstepId } from '../sounds/gaSoundBank.ts';
 import type { GaAttenuation } from './gaWorld.ts';
 
@@ -36,7 +36,12 @@ export type GaEventId =
   | 'ui_deny'
   | 'vo_greeting'
   | 'vo_warning'
-  | 'chat';
+  | 'chat'
+  /** A courtyard spot sound the wind bed scatters (audit 2, F14). */
+  | 'bird'
+  /** The music's one-shot accent. It is posted by the music system when its
+   *  boundary comes, never by a game event (audit 2, F3). */
+  | 'stinger';
 
 export type GaLayer = {
   id: string;
@@ -78,6 +83,85 @@ export type GaEventDef = {
   /** Takes vary a little in level and pitch each time (when variation is on). */
   vary?: { gainDb: number; cents: number };
 };
+
+/** The courtyard's spot sounds (audit 2, F14). While the courtyard bed plays
+ *  the model posts one of these at a random place in the courtyard, at a
+ *  random time every GA_BIRD_MIN_S … GA_BIRD_MAX_S scene seconds, on the
+ *  ambience bus, and never when the voice budget is full. */
+export const GA_BIRD_ASSETS = ['bird_1', 'bird_2', 'bird_3'] as const;
+export const GA_BIRD_MIN_S = 4;
+export const GA_BIRD_MAX_S = 9;
+
+/** The door's two takes: `door` when it opens, `door_close` when it closes
+ *  (audit 2, F13). One event, Play_Door, plays both. */
+export const GA_DOOR_OPEN_ASSET = 'door';
+export const GA_DOOR_CLOSE_ASSET = 'door_close';
+
+/** The stinger file, and how far into it the HIT is: a half beat at 96 BPM
+ *  (0.3125 s; the number is the file's own, sounds/gaSynth). The engine
+ *  starts the file that much BEFORE the boundary, so the hit lands on the
+ *  line (audit 2, F9). */
+export const GA_STINGER_ASSET = 'mu_stinger';
+export const GA_STINGER_LEAD_S = MUSIC_STINGER_LEAD_S;
+export const GA_STINGER_GAIN = 0.9;
+
+/** The engine starts the music this long after it is asked (gaEngineSource:
+ *  `t0: now() + 0.12`; a test holds the two equal). The model's bar lines
+ *  start from the engine's own answer when it has one (N5). */
+export const GA_MUSIC_START_AHEAD_S = 0.12;
+
+/** The engine never promises a boundary nearer than this: a change (or a
+ *  stinger's pickup) takes the first line at least this far away. The model
+ *  counts its own unheard waits by the same rule, so a change lands on the
+ *  same line heard or not. */
+export const GA_MUSIC_MARGIN_S = 0.06;
+
+/** BURST (lesson 17) spreads its impacts over this long: a busy moment is
+ *  many hits close together, not one file twelve times in one instant
+ *  (audit 2, F28). */
+export const GA_BURST_SPREAD_S = 0.3;
+
+/** A network action is SENT now and takes effect this much later, on every
+ *  machine (accuracy audit B5). The figure is this scene's choice, long
+ *  enough to SEE on the network strip; it is not a typical real delay. Real
+ *  delays vary from moment to moment and from player to player, and are
+ *  often shorter than this. */
+export const GA_NET_DELAY_S = 0.25;
+/** How long a landed action stays in `netFlights` for the display. */
+export const GA_NET_KEEP_S = 4;
+
+/** The ambience beds cross-fade over this long when the listener changes
+ *  zone (lesson 10 prints it). */
+export const GA_BED_FADE_S = 1.5;
+
+/** THE NAME OF EACH BUS as a learner knows it (the words on the mix page's
+ *  controls). Every log line and every display prints these, never the ids
+ *  (learning audit L-03, decision 11). */
+export const GA_BUS_NAME: Readonly<Record<GaBus, string>> = {
+  ambience: 'AMBIENCE',
+  sfx: 'EFFECTS',
+  dialogue: 'DIALOGUE',
+  music: 'MUSIC',
+  ui: 'INTERFACE',
+  chat: 'CHAT',
+};
+
+/** THE NAME OF EACH GAME OBJECT as the controls and the scene label it. The
+ *  ids (player, generator-1 …) stay inside the model. */
+export const GA_OWNER_NAME: Readonly<Record<string, string>> = {
+  player: 'YOU',
+  guide: 'GUIDE',
+  'generator-1': 'GENERATOR 1',
+  'generator-2': 'GENERATOR 2',
+  door: 'DOOR',
+  crate: 'CRATE',
+  fountain: 'FOUNTAIN',
+  bird: 'BIRD',
+  scene: 'SCENE',
+  music: 'MUSIC',
+  game: 'GAME',
+};
+export const gaOwnerName = (owner: string): string => GA_OWNER_NAME[owner] ?? owner.toUpperCase();
 
 const takes = (s: GaSurface) => Array.from({ length: FOOTSTEP_TAKES }, (_, t) => footstepId(s, t));
 const FOOTSTEP_ASSETS = Object.fromEntries(GA_SURFACES.map((s) => [s, takes(s)])) as Record<GaSurface, string[]>;
@@ -122,7 +206,11 @@ export const GA_EVENTS: Readonly<Record<GaEventId, GaEventDef>> = {
       { id: 'fan', assets: ['gen_air'], select: 'fixed', gainDb: -4, speedGain: [0.15, 1], speedRate: [0.9, 1.15] },
     ],
     spatial: true,
-    atten: { min: 2, max: 13 },
+    // min 4 m (audit 2, F6: from where every page opens the generator was
+    // 20 dB under a spoken line); max 12 m (walk audit F01: the west end of
+    // the stone path must be PAST the maximum, so "walk until it is virtual"
+    // can always be done)
+    atten: { min: 4, max: 12 },
     priority: 40,
     retrigger: 'ignore',
   },
@@ -132,7 +220,9 @@ export const GA_EVENTS: Readonly<Record<GaEventId, GaEventDef>> = {
     label: 'Fountain',
     bus: 'ambience',
     kind: 'loop',
-    layers: [{ id: 'water', assets: ['fountain'], select: 'fixed', gainDb: -3 }],
+    // 0 dB (was -3): the rebuilt fountain file is 3.6 dB quieter at the same
+    // gain, so this keeps the fountain where it sat in the scene
+    layers: [{ id: 'water', assets: ['fountain'], select: 'fixed', gainDb: 0 }],
     spatial: true,
     atten: { min: 1.5, max: 9 },
     priority: 20,
@@ -144,7 +234,8 @@ export const GA_EVENTS: Readonly<Record<GaEventId, GaEventDef>> = {
     label: 'Room tone',
     bus: 'ambience',
     kind: 'loop',
-    layers: [{ id: 'bed', assets: ['amb_room'], select: 'fixed' }],
+    // a bed sits well under speech (audit 2, F12)
+    layers: [{ id: 'bed', assets: ['amb_room'], select: 'fixed', gainDb: -12 }],
     spatial: false,
     priority: 10,
     retrigger: 'ignore',
@@ -155,7 +246,7 @@ export const GA_EVENTS: Readonly<Record<GaEventId, GaEventDef>> = {
     label: 'Courtyard wind',
     bus: 'ambience',
     kind: 'loop',
-    layers: [{ id: 'bed', assets: ['amb_yard'], select: 'fixed' }],
+    layers: [{ id: 'bed', assets: ['amb_yard'], select: 'fixed', gainDb: -8 }],
     spatial: false,
     priority: 10,
     retrigger: 'ignore',
@@ -182,7 +273,9 @@ export const GA_EVENTS: Readonly<Record<GaEventId, GaEventDef>> = {
     label: 'Overheat alarm',
     bus: 'sfx',
     kind: 'loop',
-    layers: [{ id: 'beeper', assets: ['alarm'], select: 'fixed', gainDb: -6 }],
+    // -11 dB (audit 2, F20): at -6 it was the hottest sound in the lab and
+    // covered the warning line it goes with
+    layers: [{ id: 'beeper', assets: ['alarm'], select: 'fixed', gainDb: -11 }],
     spatial: true,
     atten: { min: 3, max: 30 },
     priority: 90,
@@ -244,6 +337,31 @@ export const GA_EVENTS: Readonly<Record<GaEventId, GaEventDef>> = {
     spatial: false,
     priority: 70,
     retrigger: 'ignore',
+  },
+  bird: {
+    id: 'bird',
+    name: 'Play_Courtyard_Bird',
+    label: 'Bird',
+    bus: 'ambience',
+    kind: 'one-shot',
+    layers: [{ id: 'call', assets: GA_BIRD_ASSETS, select: 'random' }],
+    spatial: true,
+    atten: { min: 3, max: 22 },
+    // the least important sound in the scene: it never takes a voice
+    priority: 5,
+    retrigger: 'overlap',
+    vary: { gainDb: 2, cents: 60 },
+  },
+  stinger: {
+    id: 'stinger',
+    name: 'Play_Music_Stinger',
+    label: 'Stinger',
+    bus: 'music',
+    kind: 'one-shot',
+    layers: [{ id: 'accent', assets: [GA_STINGER_ASSET], select: 'fixed' }],
+    spatial: false,
+    priority: 85,
+    retrigger: 'overlap',
   },
 };
 

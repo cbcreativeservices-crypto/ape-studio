@@ -23,7 +23,10 @@
  *              front versus behind — the lab shows that, it does not hide it
  *   the wall   a sound on the other side of the CLOSED door is turned down
  *              and low-passed: an authored treatment, not a simulation of
- *              how sound really passes a wall
+ *              how sound really passes a wall. The trade calls this
+ *              OCCLUSION (a wall between source and listener). There is no
+ *              line of sight here: only "different rooms and the door
+ *              closed" is treated, wherever the listener stands
  */
 
 export const WORLD_W = 16;
@@ -64,21 +67,31 @@ export const START = {
   guide: { x: 11.2, y: 7.9, facing: 270 },
 } as const;
 
+/** What held a walker back, if anything: the edge of the scene, the wall, or
+ *  the doorway with the door closed. */
+export type GaWalkStop = 'edge' | 'wall' | 'door' | null;
+
 /** Keep a walker inside the scene and out of the wall (it passes only
- *  through the doorway, and only when the door is open). */
-export function walkTo(from: GaPoint, to: GaPoint, doorOpen: boolean): GaPoint {
+ *  through the doorway, and only when the door is open), and say what
+ *  stopped it. The wall outranks the edge when both did. */
+export function walkResult(from: GaPoint, to: GaPoint, doorOpen: boolean): GaPoint & { stopped: GaWalkStop } {
   // 0.9 m from every edge: the figure and its ring stay inside the picture
   const x = Math.max(0.9, Math.min(WORLD_W - 0.9, to.x));
   const y = Math.max(0.9, Math.min(WORLD_H - 0.9, to.y));
+  const edge: GaWalkStop = x !== to.x || y !== to.y ? 'edge' : null;
   const crosses = (from.x < WALL_X) !== (x < WALL_X);
-  if (!crosses) return { x, y };
+  if (!crosses) return { x, y, stopped: edge };
   // where the straight path meets the wall
   const t = (WALL_X - from.x) / (x - from.x);
   const yAtWall = from.y + (y - from.y) * t;
   const throughDoor = yAtWall > DOOR_Y0 + 0.25 && yAtWall < DOOR_Y1 - 0.25;
-  if (throughDoor && doorOpen) return { x, y };
+  if (throughDoor && doorOpen) return { x, y, stopped: edge };
   // stopped at the wall, on the side it came from
-  return { x: from.x < WALL_X ? WALL_X - 0.45 : WALL_X + 0.45, y };
+  return { x: from.x < WALL_X ? WALL_X - 0.45 : WALL_X + 0.45, y, stopped: throughDoor ? 'door' : 'wall' };
+}
+export function walkTo(from: GaPoint, to: GaPoint, doorOpen: boolean): GaPoint {
+  const r = walkResult(from, to, doorOpen);
+  return { x: r.x, y: r.y };
 }
 
 export const distance = (a: GaPoint, b: GaPoint): number => Math.hypot(a.x - b.x, a.y - b.y);
@@ -124,17 +137,30 @@ export function relative(listener: GaListener, source: GaPoint): { right: number
   return { right: dx * rx + dy * ry, front: dx * fx + dy * fy };
 }
 
-/** Left/right pan −1 … +1 for a stereo output. Height and distance behind
- *  do not exist in a stereo pan: a source dead ahead and one dead behind
- *  both read 0. Very close sources are pulled to the centre (a sound at your
- *  feet is not hard left). */
+/** The widest a stereo pan goes. A source square to the side reaches this,
+ *  not ±1: at ±1 one ear gets digital silence, which is uncomfortable on
+ *  headphones and is not what a game's stereo pan does (audit 2, F25). */
+export const GA_PAN_WIDTH = 0.85;
+
+/** Left/right pan −GA_PAN_WIDTH … +GA_PAN_WIDTH for a stereo output. Height
+ *  and distance behind do not exist in a stereo pan: a source dead ahead and
+ *  one dead behind both read 0. Very close sources are pulled to the center
+ *  (a sound at your feet is not hard left). */
 export function stereoPan(listener: GaListener, source: GaPoint): number {
   const { right, front } = relative(listener, source);
   const flat = Math.hypot(right, front);
   const d = Math.hypot(flat, listener.height);
   if (d < 1e-6) return 0;
   const near = Math.min(1, flat / 1.0);
-  return Math.max(-1, Math.min(1, (right / d) * near));
+  return Math.max(-1, Math.min(1, (right / d) * near)) * GA_PAN_WIDTH;
+}
+
+/** What an equal-power stereo pan gives each side for a pan of −1 … +1 (the
+ *  law the engine's stereo panner uses for a one-channel sound): linear gain
+ *  for the left and the right. Center is 0.707 on both. */
+export function panGains(pan: number): { l: number; r: number } {
+  const a = ((Math.max(-1, Math.min(1, pan)) + 1) * Math.PI) / 4;
+  return { l: Math.cos(a), r: Math.sin(a) };
 }
 
 /** The direction for a head-related (binaural) panner: +x right, +y up,
@@ -155,12 +181,21 @@ export function bearing(listener: GaListener, source: GaPoint): number {
 
 /* ── the wall ───────────────────────────────────────────────────────────── */
 
+/* NAMING (accuracy audit B8). What this file calls OBSTRUCTED / obstruction()
+ * is, in the trade's words and in lesson 12's, an OCCLUSION treatment: a wall
+ * between the source and the listener, so the direct sound AND the room's
+ * echoes are lowered and dulled. The old names are imported by pages, the
+ * scene and tests, so they stay; `OCCLUDED` and `occlusion` are the same
+ * things under the right word. Write learner text from the right word. */
 export type GaObstruction = { gain: number; lowpassHz: number; obstructed: boolean };
 export const OBSTRUCTED: GaObstruction = { gain: Math.pow(10, -9 / 20), lowpassHz: 900, obstructed: true };
 export const CLEAR: GaObstruction = { gain: 1, lowpassHz: 20000, obstructed: false };
 
-/** The authored treatment for a source the listener cannot see directly:
- *  different zones and the door closed. */
+/** The authored treatment for a source in the other room with the door
+ *  closed. NO line of sight is tested: with the door open nothing is
+ *  treated, wherever the listener stands (lesson 12 says so). */
 export function obstruction(listener: GaPoint, source: GaPoint, doorOpen: boolean): GaObstruction {
   return zoneAt(listener) !== zoneAt(source) && !doorOpen ? OBSTRUCTED : CLEAR;
 }
+export const OCCLUDED = OBSTRUCTED;
+export const occlusion = obstruction;

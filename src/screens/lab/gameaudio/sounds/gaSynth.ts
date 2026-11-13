@@ -10,23 +10,32 @@
  *
  * Every sound is a small physical RECIPE, not a tone:
  *   footstep   a heel contact then a ball-of-foot contact; the SURFACE is the
- *              recipe (wood = low hollow modes, stone = a short hard click,
- *              gravel = many small grains); the four takes of a surface
- *              differ in mode tuning, timing and level, as real steps do
- *   door       two latch clicks, a stick-slip hinge creak, the leaf's thud
+ *              recipe (wood = a heel click on hollow board modes, stone = a
+ *              short hard click, gravel = many small grains); the four takes
+ *              of a surface differ in mode tuning, timing and level, as real
+ *              steps do
+ *   door       OPENING: two latch clicks, a stick-slip hinge creak, the
+ *              leaf's thud. CLOSING (its own take): the leaf meets the frame
+ *              first, then the latch drops home
  *   rattle     a loose latch settling (a bouncing run of metal pings) — the
  *              SECONDARY detail the lesson layers after the door
- *   generator  HUM: harmonics of a 50 Hz firing rate with a slow roughness;
- *              AIR: band noise from the cooling fan. Two loops, so the lab
- *              can move them separately with SPEED
- *   fountain   band noise with a restless level plus many droplet blips
+ *   generator  HUM: harmonics of a 50 Hz firing rate up to 2 kHz with a slow
+ *              roughness; AIR: band noise from the cooling fan. Two loops,
+ *              so the lab can move them separately with SPEED
+ *   fountain   droplets and small splashes, in clusters, over a soft narrow
+ *              bed of falling water (the droplets ARE the sound: a steady
+ *              hiss alone reads as a fan). 24 kHz
  *   ambience   ROOM: low room rumble and a faint mains hum; YARD: wind whose
- *              colour drifts, a few bird calls. Stereo, 24 kHz (nothing in
- *              them reaches above 10 kHz)
+ *              color drifts, two gusts of different size in each pass.
+ *              Stereo, 24 kHz (nothing in them reaches above 10 kHz)
+ *   birds      three short calls, one-shots: the courtyard's SPOT sounds.
+ *              They are not in the wind bed, so nothing repeats on its clock
  *   bad loop   the yard wind cut with NO loop preparation: its level jumps
  *              at the join — the fault lesson 10 lets the learner hear
- *   impact     a crate dropped: a low thud, a wood knock, a crack; DEBRIS is
- *              the scatter that follows it
+ *   impact     a crate dropped: the floor's low thud under the box's own
+ *              wood (a body mode and three knock modes), a crack, and a
+ *              lighter second knock as it settles; DEBRIS is the scatter
+ *              that follows it
  *   alarm      a two-tone beeper on the generator (an overheat warning)
  *   interface  a rising two-note confirm and a falling deny
  *   voice      the app's wordless stand-in voice (dj/engine/djVoice): the
@@ -35,9 +44,11 @@
  *   music      three layers of one 4-bar phrase at 96 BPM (A minor: Am F C
  *              G, a bar each) written to be layered, and a stinger. Every
  *              layer is rendered into a RING, so tails wrap and the loop
- *              boundary is seamless by construction
+ *              boundary is seamless by construction. The stinger is a
+ *              half-beat noise swell into an open-fifth hit (A and E, no
+ *              third), so it agrees with every bar it can land on
  *   room       an impulse response (decaying noise, about 1.1 s) for the
- *              shared reverb
+ *              shared reverb, at 48 kHz
  *
  * Loops are seamless by construction: periodic content uses whole cycles,
  * noise content is cross-faded tail-into-head (equal power).
@@ -46,7 +57,8 @@ import { SR, applyBiquad, brownNoise, makeRng, pinkNoise, rbj, whiteNoise, type 
 import { voiceBuf, voiceSpans } from '../../dj/engine/djVoice.ts';
 
 export { SR };
-/** Sample rate of the ambience beds and the reverb (see the header). */
+/** Sample rate of the ambience beds and the fountain (see the header). The
+ *  reverb impulse is at 48 kHz (roomImpulse). */
 export const SR_BED = 24_000;
 
 export type GaSound = { sr: number; ch: Float32Array[] };
@@ -208,6 +220,20 @@ function wander(len: number, sr: number, rng: () => number, rateHz: number): Flo
 export const GA_SURFACES = ['wood', 'stone', 'gravel'] as const;
 export type GaSurface = (typeof GA_SURFACES)[number];
 export const FOOTSTEP_TAKES = 4;
+/** A wood floor under a hard sole: [Hz, level, decay s]. The hollow low mode
+ *  is 6 dB under where it was (alone it read as a soft drum, audit 2 F10);
+ *  the panel modes up to about 1.3 kHz are what a small speaker can play. */
+const WOOD_MODES = [
+  [92, 0.5, 0.06],
+  [178, 0.5, 0.045],
+  [305, 0.4, 0.034],
+  [410, 0.42, 0.028],
+  [640, 0.3, 0.02],
+  [905, 0.27, 0.015],
+  [1340, 0.13, 0.009],
+] as const;
+/** The heel click's level against the board modes (1.5 before check E, +10 dB). */
+const WOOD_CLICK = 1.5 * Math.pow(10, 10 / 20);
 
 export function footstep(surface: GaSurface, take: number): GaSound {
   const rng = makeRng(7100 + GA_SURFACES.indexOf(surface) * 97 + take * 13);
@@ -220,17 +246,24 @@ export function footstep(surface: GaSurface, take: number): GaSound {
     // each take lands on a slightly different part of the board: the modes
     // shift together (the board) and a little apart (where the foot fell)
     const board = j(0.14);
-    for (const [hz, amp, d] of [[92, 1, 0.07], [178, 0.55, 0.05], [305, 0.3, 0.035]] as const) {
+    for (const [hz, amp, d] of WOOD_MODES) {
       mode(out, SR, 0, hz * board * j(0.07), amp * heel * j(0.25), d * j(0.2));
       mode(out, SR, toeAt, hz * 1.32 * board * j(0.07), amp * toe * j(0.25), d * 0.8 * j(0.2));
     }
-    burst(out, SR, rng, 0, 0.004, 0.5 * heel, { hi: 1500 });
-    burst(out, SR, rng, toeAt, 0.006, 0.3 * toe, { hi: 2200 });
+    // the heel CLICK: the sole's hard edge meeting the board. Raised 10 dB
+    // (check E, problem 11): it was 25 dB under the step's total, and on a
+    // small speaker the wood step was still the dark, quiet one.
+    burst(out, SR, rng, 0, 0.005, WOOD_CLICK * heel, { lo: 1500, hi: 4000 });
+    burst(out, SR, rng, 0, 0.004, 0.3 * heel, { hi: 1500 });
+    burst(out, SR, rng, toeAt, 0.007, 0.4 * WOOD_CLICK * toe, { lo: 1100, hi: 3200 });
   } else if (surface === 'stone') {
-    burst(out, SR, rng, 0, 0.006, 1.0 * heel, { lo: 1400 * j(0.1), hi: 5200 });
+    burst(out, SR, rng, 0, 0.011, 1.0 * heel, { lo: 1400 * j(0.1), hi: 5200 });
     mode(out, SR, 0, 150 * j(0.08), 0.5 * heel, 0.012);
+    // the heel's own short "tock" on a hard slab
+    mode(out, SR, 0, 950 * j(0.08), 0.34 * heel, 0.008);
+    mode(out, SR, 0, 1650 * j(0.08), 0.24 * heel, 0.006);
     mode(out, SR, 0, 2300 * j(0.08), 0.18 * heel, 0.004);
-    burst(out, SR, rng, toeAt, 0.014, 0.42 * toe, { lo: 2600, hi: 9000 });
+    burst(out, SR, rng, toeAt, 0.016, 0.5 * toe, { lo: 2600, hi: 9000 });
     mode(out, SR, toeAt, 190 * j(0.08), 0.22 * toe, 0.01);
   } else {
     const grains = 9 + Math.floor(rng() * 5);
@@ -242,7 +275,20 @@ export function footstep(surface: GaSurface, take: number): GaSound {
     }
     mode(out, SR, 0, 85 * j(0.1), 0.3 * heel, 0.02);
   }
-  return { sr: SR, ch: [edges(toPeak(out, 0.7), SR)] };
+  if (surface === 'stone') {
+    // Stone is nearly all click (a very high crest), so at the same peak it
+    // was the quietest surface by far (audit 2 F10). The click's first
+    // millisecond is rounded off and the take trimmed up, so the three
+    // surfaces sit together.
+    toPeak(out, 1);
+    const k = 1.4;
+    const norm = Math.tanh(k);
+    for (let i = 0; i < out.length; i++) out[i] = Math.tanh(out[i] * k) / norm;
+    return { sr: SR, ch: [edges(toPeak(out, 0.88), SR)] };
+  }
+  // the click now sets wood's peak, so the take is set a little hotter to
+  // keep its loudness with the other surfaces
+  return { sr: SR, ch: [edges(toPeak(out, surface === 'wood' ? 0.86 : 0.7), SR)] };
 }
 
 /* ── door and its secondary rattle ──────────────────────────────────────── */
@@ -275,6 +321,28 @@ export function door(): GaSound {
   return { sr: SR, ch: [edges(toPeak(out, 0.7), SR)] };
 }
 
+/** The door CLOSING, its own take (audit 2 F13): the leaf meets the frame
+ *  first (a thud with the frame's knock in it), THEN the latch drops home. */
+export function doorClose(): GaSound {
+  const rng = makeRng(4203);
+  const out = buf(0.62);
+  // a short push of air before the leaf lands
+  burst(out, SR, rng, 0, 0.03, 0.05, { lo: 300, hi: 1400 });
+  const hit = 0.09;
+  for (const [hz, a, d] of [[78, 0.9, 0.06], [131, 0.5, 0.045], [240, 0.3, 0.03]] as const) mode(out, SR, hit, hz, a, d);
+  // the frame: what a small speaker still plays of a door shutting
+  for (const [hz, a, d] of [[345, 0.6, 0.03], [530, 0.45, 0.024], [870, 0.24, 0.016]] as const) mode(out, SR, hit + 0.002, hz, a, d);
+  burst(out, SR, rng, hit, 0.008, 0.3, { hi: 900 });
+  burst(out, SR, rng, hit, 0.006, 0.22, { lo: 900, hi: 3200 });
+  // the latch rides over the strike plate and snaps in, a moment later
+  const latch = hit + 0.058;
+  for (const [t, k] of [[latch, 1], [latch + 0.046, 0.55]] as const) {
+    for (const [hz, a] of [[2100, 0.5], [3400, 0.35], [5150, 0.22]] as const) mode(out, SR, t, hz, a * k, 0.006);
+    burst(out, SR, rng, t, 0.003, 0.35 * k, { lo: 2500 });
+  }
+  return { sr: SR, ch: [edges(toPeak(out, 0.7), SR)] };
+}
+
 export function doorRattle(): GaSound {
   const rng = makeRng(4207);
   const out = buf(0.62);
@@ -297,15 +365,24 @@ export function doorRattle(): GaSound {
 
 export const GEN_HUM_S = 2;
 export const GEN_AIR_S = 3;
+/** 50 Hz × 40 = 2 kHz: the hum's highest partial. */
+export const GEN_HUM_PARTIALS = 40;
+/** The set's casing and exhaust ring broadly around 480 Hz: the partials
+ *  there are lifted by up to this much (linear, added to 1). That band is
+ *  what passes the wall's 900 Hz filter AND what a small speaker can play. */
+const GEN_HUM_BODY = 1.8;
 
 export function generatorHum(): GaSound {
   const N = Math.round(GEN_HUM_S * SR);
   const out = new Float32Array(N);
   const rng = makeRng(5301);
-  // every partial is a whole number of cycles in the loop → seamless
-  for (let k = 1; k <= 14; k++) {
+  // every partial is a whole number of cycles in the loop → seamless.
+  // Forty partials (to 2 kHz) at a slow roll-off: with fourteen at 1/k the
+  // hum was nearly all below 60 Hz, and a phone speaker had almost nothing
+  // of it to play (audit 2 F6c).
+  for (let k = 1; k <= GEN_HUM_PARTIALS; k++) {
     const hz = 50 * k;
-    const amp = (k % 2 ? 1 : 0.62) / Math.pow(k, 0.95);
+    const amp = ((k % 2 ? 1 : 0.62) / Math.pow(k, 0.8)) * (1 + GEN_HUM_BODY * Math.exp(-(Math.log2(hz / 480) ** 2) / (2 * 0.6 * 0.6)));
     const ph = rng() * TAU;
     const w = (TAU * hz) / SR;
     for (let i = 0; i < N; i++) out[i] += Math.sin(w * i + ph) * amp;
@@ -319,7 +396,9 @@ export function generatorHum(): GaSound {
   toPeak(rumble, 0.25);
   toPeak(out, 0.6);
   for (let i = 0; i < N; i++) out[i] += rumble[i];
-  return { sr: SR, ch: [toPeak(out, 0.6)] };
+  // Forty partials peak higher than fourteen did for the same loudness: the
+  // peak is set so the hum's RMS is what it was (-14.5 dBFS), only brighter.
+  return { sr: SR, ch: [toPeak(out, 0.68)] };
 }
 
 export function generatorAir(): GaSound {
@@ -335,23 +414,85 @@ export function generatorAir(): GaSound {
 
 /* ── the fountain (a local emitter) ─────────────────────────────────────── */
 
-export const FOUNTAIN_S = 4;
+export const FOUNTAIN_S = 8;
+/** A small fountain (audit 2 F11, F14). What says "water" is the DROPLETS: a
+ *  drop entering water rings a bubble, a short tone that rises as it shrinks,
+ *  and drops come in runs. Under them is the soft, narrow noise of the
+ *  falling sheet, 8 dB under where it was (it alone read as a fan), and a
+ *  few low splashes. 8 s, so a pass does not repeat inside one breath; it is
+ *  rendered at 24 kHz (nothing in it reaches 6 kHz), so it costs no more
+ *  than the old 4 s file. Droplets are written into the RING: none is cut or
+ *  faded by the loop join. */
 export function fountain(): GaSound {
   const rng = makeRng(6101);
-  const total = FOUNTAIN_S + 0.6;
-  let x: Mono = whiteNoise(total, rng);
-  x = applyAt(x, SR, 900, 'highpass');
-  x = applyBiquad(x, rbj(2600, 0.8, 5, 'peak'));
-  x = applyAt(x, SR, 7500, 'lowpass');
-  const w = wander(x.length, SR, rng, 7);
-  for (let i = 0; i < x.length; i++) x[i] *= 0.55 + 0.45 * w[i];
-  toPeak(x, 0.4);
-  for (let d = 0; d < 150; d++) {
-    const t = rng() * (total - 0.05);
-    const f = 900 + rng() * 2000;
-    glide(x, SR, t, 0.012 + rng() * 0.02, f, f * (1.25 + rng() * 0.4), 0.05 + rng() * 0.09, 0.002, 0.008);
+  const sr = SR_BED;
+  const N = Math.round(FOUNTAIN_S * sr);
+  const fade = 0.6;
+  let bed: Mono = whiteNoise(FOUNTAIN_S + fade, rng).slice(0, N + Math.round(fade * sr));
+  bed = applyAt(bed, sr, 1500, 'highpass');
+  bed = applyAt(bed, sr, 5000, 'lowpass');
+  const w = wander(bed.length, sr, rng, 5);
+  for (let i = 0; i < bed.length; i++) bed[i] *= 0.6 + 0.4 * w[i];
+  const out = toPeak(seamless(Float32Array.from(bed), sr, FOUNTAIN_S, fade), 0.11);
+  // small bubbles, many and short: the water's sparkle
+  for (let b = 0; b < 640; b++) {
+    const f = 1500 + rng() * 3300;
+    const dur = 0.008 + rng() * 0.01;
+    glide(out, sr, rng() * FOUNTAIN_S, dur, f, f * (1.1 + rng() * 0.2), 0.035 + rng() * 0.06, 0.001, dur * 0.3, true);
   }
-  return { sr: SR, ch: [toPeak(seamless(x, SR, FOUNTAIN_S, 0.6), 0.5)] };
+  // the DROPS a listener picks out: lower, longer, each rising as its bubble
+  // closes, and they come in runs (one stream breaking up)
+  const drop = (t: number, f: number, amp: number) => {
+    const dur = 0.03 + rng() * 0.05;
+    glide(out, sr, t % FOUNTAIN_S, dur, f, f * (1.18 + rng() * 0.35), amp, 0.002, dur * 0.22, true);
+  };
+  for (let c = 0; c < 30; c++) {
+    let t = rng() * FOUNTAIN_S;
+    const base = 520 + rng() * 1100;
+    const n = 2 + Math.floor(rng() * 4);
+    const level = 0.17 + rng() * 0.17;
+    for (let k = 0; k < n; k++) {
+      drop(t, base * (0.8 + rng() * 0.5), level * (0.55 + rng() * 0.45));
+      t += 0.03 + rng() * 0.07;
+    }
+  }
+  for (let d = 0; d < 40; d++) drop(rng() * FOUNTAIN_S, 600 + rng() * 1300, 0.12 + rng() * 0.16);
+  // low splashes: water landing on water
+  for (let k = 0; k < 22; k++) burst(out, sr, rng, rng() * FOUNTAIN_S, 0.03 + rng() * 0.03, 0.2 + rng() * 0.14, { lo: 300, hi: 800 }, true);
+  return { sr, ch: [toPeak(out, 0.5)] };
+}
+
+/* ── the courtyard's spot sounds: three bird calls ──────────────────────── */
+
+export const BIRD_CALLS = 3;
+/** One of three short bird calls (0 … 2), a one-shot. They were six fixed
+ *  notes inside the wind loop, the same every 10.0 s (audit 2 F14); as
+ *  separate one-shots the game decides when and where each one sounds.
+ *  Authored QUIET (peak 0.12): a call sits under speech at event gain 1.
+ *    0  two rising whistles          1  three notes, the middle one highest
+ *    2  a fast trill of falling chirps */
+export function birdCall(kind: number): GaSound {
+  const k = ((Math.round(kind) % BIRD_CALLS) + BIRD_CALLS) % BIRD_CALLS;
+  const out = buf(k === 2 ? 0.5 : k === 1 ? 0.56 : 0.4);
+  // a whistle and its faint octave: a pure sine reads as a test tone
+  const whistle = (t: number, dur: number, f0: number, f1: number, amp: number) => {
+    glide(out, SR, t, dur, f0, f1, amp, 0.008, dur * 0.55);
+    glide(out, SR, t, dur, f0 * 2, f1 * 2, amp * 0.1, 0.008, dur * 0.4);
+  };
+  if (k === 0) {
+    whistle(0, 0.09, 3100, 3780, 1);
+    whistle(0.22, 0.1, 3500, 4270, 0.9);
+  } else if (k === 1) {
+    whistle(0, 0.09, 2700, 3290, 0.9);
+    whistle(0.18, 0.09, 3300, 4030, 1);
+    whistle(0.36, 0.11, 2950, 3600, 0.8);
+  } else {
+    for (let n = 0; n < 10; n++) {
+      const swell = Math.sin(((n + 0.5) / 10) * Math.PI);
+      whistle(n * 0.044, 0.03, 4500 - n * 25, 3400 - n * 25, 0.35 + 0.65 * swell);
+    }
+  }
+  return { sr: SR, ch: [edges(toPeak(out, 0.12), SR, 1, 8)] };
 }
 
 /* ── ambience beds (stereo, 24 kHz) ─────────────────────────────────────── */
@@ -411,10 +552,29 @@ function windSide(seed: number, gust: Float32Array, prepared: boolean): Float32A
   }
   return prepared ? seamless(out, SR_BED, AMB_YARD_S, 1.5) : out.slice(0, Math.round(AMB_YARD_S * SR_BED));
 }
+/** The prepared bed's gusts: [center s, half-width s, size]. Two of
+ *  DIFFERENT size and spacing in each 10 s pass, with a lull at the join, so
+ *  the loop does not read as one swell on a clock (audit 2 F14). */
+export const YARD_GUSTS = [
+  [2.7, 2.4, 1],
+  [7.2, 1.6, 0.4],
+] as const;
 function yard(prepared: boolean): GaSound {
   const n = Math.round((AMB_YARD_S + 1.5) * SR_BED);
-  const gust = wander(n, SR_BED, makeRng(8203), 0.22);
-  if (!prepared) {
+  const gust = new Float32Array(n);
+  if (prepared) {
+    // periodic in the loop length, so the cross-fade joins like with like
+    const flutter = wander(n, SR_BED, makeRng(8203), 1.3);
+    for (let i = 0; i < n; i++) {
+      const t = (i / SR_BED) % AMB_YARD_S;
+      let g = 0.13;
+      for (const [at, half, size] of YARD_GUSTS) {
+        const d = Math.abs(t - at) / half;
+        if (d < 1) g += size * (0.5 + 0.5 * Math.cos(Math.PI * d)) ** 1.4;
+      }
+      gust[i] = Math.min(1, g * (0.86 + 0.14 * flutter[i]));
+    }
+  } else {
     // the unprepared cut ends in a gust and begins in a lull
     for (let i = 0; i < n; i++) {
       const p = Math.min(1, i / (AMB_YARD_S * SR_BED));
@@ -424,16 +584,8 @@ function yard(prepared: boolean): GaSound {
   const l = windSide(8201, gust, prepared);
   const r = windSide(8202, gust, prepared);
   const N = l.length;
-  if (prepared) {
-    // bird calls: two-note rising whistles, placed in the stereo field
-    const birds: [number, number, number][] = [[1.4, 3100, -0.6], [1.62, 3500, -0.6], [4.9, 2700, 0.5], [5.08, 3300, 0.5], [5.26, 2950, 0.5], [8.1, 3900, 0.1]];
-    for (const [t, hz, pan] of birds) {
-      const gl = Math.cos(((pan + 1) * Math.PI) / 4);
-      const gr = Math.sin(((pan + 1) * Math.PI) / 4);
-      glide(l, SR_BED, t, 0.09, hz, hz * 1.22, 0.07 * gl, 0.01, 0.05, true);
-      glide(r, SR_BED, t, 0.09, hz, hz * 1.22, 0.07 * gr, 0.01, 0.05, true);
-    }
-  }
+  // No birds in here: they are one-shots of their own (birdCall), posted by
+  // the game at its own times and places.
   const p = Math.max(peak(l), peak(r));
   const g = 0.45 / p;
   for (let i = 0; i < N; i++) {
@@ -448,12 +600,29 @@ export const ambienceYardUnprepared = (): GaSound => yard(false);
 
 /* ── impact, debris, alarm, interface ───────────────────────────────────── */
 
+/** A wooden crate's knock: [Hz, level, decay s] (inharmonic, as a box is). */
+const CRATE_KNOCK = [
+  [420, 1.25, 0.055],
+  [765, 0.9, 0.045],
+  [1180, 0.55, 0.04],
+] as const;
 export function crateImpact(): GaSound {
   const rng = makeRng(9101);
   const out = buf(0.7);
+  // the floor's thud
   for (const [hz, a, d] of [[68, 1, 0.07], [112, 0.6, 0.05], [163, 0.35, 0.035]] as const) mode(out, SR, 0, hz, a, d);
-  for (const [hz, a, d] of [[420, 0.5, 0.022], [765, 0.36, 0.016], [1180, 0.22, 0.011]] as const) mode(out, SR, 0.004, hz, a, d);
+  // the crate's own wood: a body mode and three knock modes, 8 dB up and
+  // longer than they were. With the thud alone on top it read as a kick drum
+  // and a small speaker lost most of it (audit 2 F10).
+  mode(out, SR, 0.002, 250, 0.7, 0.05);
+  for (const [hz, a, d] of CRATE_KNOCK) mode(out, SR, 0.004, hz, a, d);
   burst(out, SR, rng, 0, 0.005, 0.6, { lo: 1800, hi: 7000 });
+  // it lands on one edge and settles onto the other: a lighter second knock
+  const settle = 0.092;
+  mode(out, SR, settle, 74, 0.28, 0.05);
+  mode(out, SR, settle, 268, 0.22, 0.04);
+  for (const [hz, a, d] of CRATE_KNOCK) mode(out, SR, settle + 0.003, hz * 1.08, a * 0.34, d * 0.75);
+  burst(out, SR, rng, settle, 0.004, 0.18, { lo: 1800, hi: 6000 });
   return { sr: SR, ch: [edges(toPeak(out, 0.8), SR)] };
 }
 export function crateDebris(): GaSound {
@@ -632,37 +801,68 @@ export function musicLayer(layer: GaMusicLayer): GaSound {
   return { sr: SR, ch: [toPeak(x, layer === 'calm' ? 0.34 : layer === 'pulse' ? 0.36 : 0.42)] };
 }
 
-/** A two-chord hit, E major into A minor, for "something just happened". */
+/** Seconds from the stinger file's first sample to its HIT: exactly half a
+ *  beat (0.3125 s at 96 BPM). The engine is told this `lead` and starts the
+ *  file that much BEFORE the line, so the hit lands on the line (audit 2 F9). */
+export const MUSIC_STINGER_LEAD_S = MUSIC_BEAT_S / 2;
+export const MUSIC_STINGER_S = 2.4;
+
+/** "Something just happened": a half-beat swell of noise (no pitch, so it
+ *  agrees with any bar), then the hit: an open fifth, A and E with no third.
+ *  Over the four bars that reads Am, F major 7, C6 and G6/9: never a
+ *  semitone against the chord. (It was E major into A minor, 420 ms in: off
+ *  the grid, and G sharp against three bars of four.) */
 export function musicStinger(): GaSound {
   const rng = makeRng(3390);
-  const out = buf(2.4);
+  const out = buf(MUSIC_STINGER_S);
+  const hit = MUSIC_STINGER_LEAD_S;
   const ring = new Float32Array(out.length * 2);
-  for (const st of [7, 11, 14, 19]) note(ring, 0, 0.3, semi(st), 0.12, 0.012, 0.25, 9, 1.0);
-  for (const st of [0, 12, 15, 19, 24]) note(ring, 0.42, 0.55, semi(st), 0.12, 0.012, 1.3, 9, 1.05);
+  for (const st of [0, 7, 12, 19, 24, 31]) note(ring, hit, 0.55, semi(st), st === 31 ? 0.07 : 0.12, 0.004, 1.3, 9, 1.05);
   out.set(ring.subarray(0, out.length));
-  burst(out, SR, rng, 0.42, 0.22, 0.2, { lo: 5000 });
-  glide(out, SR, 0.42, 0.3, 110, 55, 0.5, 0.003, 0.12);
-  return { sr: SR, ch: [edges(toPeak(Float32Array.from(applyBiquad(out, rbj(4200, 0.707, 0, 'lowpass'))), 0.6), SR, 1, 60)] };
+  burst(out, SR, rng, hit, 0.22, 0.2, { lo: 5000 });
+  glide(out, SR, hit, 0.3, 110, 55, 0.5, 0.003, 0.12);
+  let x: Mono = Float32Array.from(applyBiquad(out, rbj(4200, 0.707, 0, 'lowpass')));
+  // the pickup: band noise rising into the line, gone 6 ms before the hit
+  const n = Math.round(hit * SR);
+  let sw: Mono = new Float32Array(n);
+  for (let i = 0; i < n; i++) sw[i] = rng() * 2 - 1;
+  sw = applyAt(applyAt(sw, SR, 1800, 'highpass'), SR, 1800, 'highpass');
+  sw = applyAt(sw, SR, 7000, 'lowpass');
+  const gap = Math.round(0.006 * SR);
+  for (let i = 0; i < n; i++) {
+    const p = i / n;
+    x[i] += sw[i] * 0.5 * p ** 2.2 * Math.min(1, (n - i) / gap);
+  }
+  return { sr: SR, ch: [edges(toPeak(x, 0.6), SR, 1, 60)] };
 }
 
 /* ── the room: a reverb impulse response ────────────────────────────────── */
 
 export const ROOM_RT60_S = 1.1;
+/** The room impulse, at 48 kHz (check E, problem 9). At 24 kHz it had to be
+ *  upsampled on every 48 kHz device, and straight-line steps left images of
+ *  its 3 to 6 kHz content at 18 to 21 kHz (−22 dB re the wet total). At the
+ *  rate most devices run at, nothing is converted; a 44.1 kHz device steps
+ *  DOWN, far from anything in it. */
 export function roomImpulse(): GaSound {
   const side = (seed: number): Float32Array => {
     const rng = makeRng(seed);
-    const n = Math.round(1.5 * SR_BED);
+    const n = Math.round(1.5 * SR);
     let x: Mono = new Float32Array(n);
     // −60 dB at RT60: amplitude e^(−6.908 t / RT60)
-    for (let i = 0; i < n; i++) x[i] = (rng() * 2 - 1) * Math.exp((-6.908 * (i / SR_BED)) / ROOM_RT60_S);
-    x = applyAt(x, SR_BED, 5200, 'lowpass');
-    x = applyAt(x, SR_BED, 140, 'highpass');
+    for (let i = 0; i < n; i++) x[i] = (rng() * 2 - 1) * Math.exp((-6.908 * (i / SR)) / ROOM_RT60_S);
+    x = applyAt(x, SR, 5200, 'lowpass');
+    x = applyAt(x, SR, 140, 'highpass');
     // a few early reflections in the first 40 ms
-    for (let k = 0; k < 5; k++) x[Math.round((0.006 + rng() * 0.034) * SR_BED)] += (rng() > 0.5 ? 1 : -1) * (0.5 - k * 0.07);
-    const pre = Math.round(0.004 * SR_BED);
+    for (let k = 0; k < 5; k++) x[Math.round((0.006 + rng() * 0.034) * SR)] += (rng() > 0.5 ? 1 : -1) * (0.5 - k * 0.07);
+    // band-limited as the 24 kHz take was: nothing of the room above about
+    // 11 kHz (the early reflections are single samples, so without this the
+    // 48 kHz take would ring brighter than the one it replaces)
+    for (let k = 0; k < 4; k++) x = applyAt(x, SR, 10000, 'lowpass');
+    const pre = Math.round(0.004 * SR);
     const out = new Float32Array(n);
     for (let i = pre; i < n; i++) out[i] = x[i - pre];
-    return edges(out, SR_BED, 0, 80);
+    return edges(out, SR, 0, 80);
   };
   const l = side(2601);
   const r = side(2602);
@@ -671,5 +871,5 @@ export function roomImpulse(): GaSound {
     l[i] /= p * 2.2;
     r[i] /= p * 2.2;
   }
-  return { sr: SR_BED, ch: [l, r] };
+  return { sr: SR, ch: [l, r] };
 }

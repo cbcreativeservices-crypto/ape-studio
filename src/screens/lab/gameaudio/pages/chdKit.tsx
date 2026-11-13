@@ -4,15 +4,22 @@
  * read-only card for the well, and a hook that follows the scene from one
  * state to the next.
  *
- * TRAYS FIT THE PHONE. A tray covers the well and has about 300 points of
- * height on a phone, so every tray here is a few rows of equal-width chips
- * (`TrayGrid`), each chip a full 44 points high, and it ends with the
- * scene's answer in three short lines (`TrayLast`: the caption while a line
- * speaks, then the newest log lines) so a press and its result are read in
- * the same place without scrolling.
+ * TRAYS FIT THE PHONE. A tray covers the well. On a 390 x 844 phone it has
+ * about 242 points of height (measured, audit 2 W2-03; 220 once the shell's
+ * "more ↓" line shows), and about 24 fewer on a page whose display carries
+ * an instrument strip. So a tray here is two or three rows of equal-width
+ * chips (`TrayGrid`), each chip a full 44 points high, with every chip a
+ * step names above any fold: design for 200 points. What a press DID is
+ * read on the pinned display (the readouts, the strip), which a tray never
+ * covers. A TRAY KEEPS ITS SIZE while the learner works in it: it grows
+ * upward, so anything that appears or wraps inside it (a caption, a log
+ * line going from one line to three, a row for GENERATOR 2) moves every
+ * chip under the finger (seen at 390 x 844 on pages 16, 18 and 19). Pages
+ * 16–19 therefore put no `TrayLast` in a tray; it stays here for a tray
+ * that can give it a fixed place.
  *
  * A chip never shows its state by highlight alone: the page puts a word or a
- * mark in the label (`onOff`, and `marked` from bits).
+ * mark in the label (`onOff`, `speaking`, and `marked` from bits).
  *
  * WHY TWO STATES. Most goals are "a fact went up since the page opened"
  * (pages/shared `useSince`). Page 19's bench needs more: a symptom only
@@ -23,6 +30,7 @@
 import { Children, useRef, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { gaLogEmpty, gaLogRow, gaLogSpoken } from '../bitsLogic';
 import type { GaLogKind, GaState } from '../model/gaModel';
 import { useGa } from '../model/gaStore';
 
@@ -74,50 +82,42 @@ export function TrayNote({ children }: { children: ReactNode }) {
   return <Text style={styles.note}>{children}</Text>;
 }
 
-/** The log's first-column word for each kind of line (the same words the
- *  page's activity log prints). */
-const KIND_WORD: Record<GaLogKind, string> = {
-  trigger: 'GAME',
-  start: 'START',
-  stop: 'STOP',
-  value: 'VALUE',
-  state: 'STATE',
-  refused: 'REFUSED',
-  failed: 'FAULT',
-  mix: 'MIX',
-  music: 'MUSIC',
-  net: 'NETWORK',
-  note: 'NOTE',
-};
-
-/** The scene's answer, inside the tray, newest first: the caption while a
- *  line speaks, then the newest log lines. Each is shown whole (a log line
- *  or a caption cut to "…" can lose the one word that matters). Read-only. */
-export function TrayLast({ lines = 3, caption = false }: { lines?: number; caption?: boolean }) {
+/** The scene's answer inside a tray, kept small: the caption while a line
+ *  is spoken (`caption`), then the newest `lines` log lines (of the kinds in
+ *  `only`, when given), newest first, worded as the page's activity log
+ *  words them. Each is shown whole (a line cut to "…" can lose the one word
+ *  that matters). `lines={0}` with `caption` shows the spoken words only,
+ *  and nothing at all while nobody speaks. Read-only. */
+export function TrayLast({ lines = 1, caption = false, only }: { lines?: number; caption?: boolean; only?: readonly GaLogKind[] }) {
   const s = useGa();
-  const rows = s.log.slice(-lines).reverse();
+  const pool = only ? s.log.filter((l) => only.includes(l.kind)) : s.log;
+  const rows = lines > 0 ? pool.slice(-lines).reverse() : [];
   const said = caption && s.caption ? `GUIDE says: ${s.caption.text}` : null;
-  const spoken = [said, ...rows.map((r) => `${KIND_WORD[r.kind]}: ${r.text}`)].filter(Boolean).join('. ');
+  if (!said && lines <= 0) return null;
+  const none = lines > 0 && rows.length === 0 ? gaLogEmpty(only, s.log.length) : null;
+  const spoken = [said, ...rows.map((r) => gaLogSpoken(r.kind, r.text)), none].filter(Boolean).join('. ');
   return (
-    <View style={styles.last} accessible accessibilityRole="summary" accessibilityLabel={`Newest log lines. ${spoken || 'Nothing has happened yet.'}`}>
-      {said ? (
-        <Text style={styles.lastSaid}>
-          {said}
-        </Text>
-      ) : null}
-      {rows.length === 0 ? <Text style={styles.lastText}>LOG · nothing has happened yet</Text> : null}
-      {rows.map((r) => (
-        <Text key={r.n} style={styles.lastText}>
-          <Text style={styles.lastKind}>{KIND_WORD[r.kind]} </Text>
-          {r.text}
-        </Text>
-      ))}
+    <View style={styles.last} accessible accessibilityRole="summary" accessibilityLabel={lines > 0 ? `Newest log ${lines === 1 ? 'line' : 'lines'}. ${spoken}` : spoken}>
+      {said ? <Text style={styles.lastSaid}>{said}</Text> : null}
+      {none ? <Text style={styles.lastText}>{none}</Text> : null}
+      {rows.map((r) => {
+        const row = gaLogRow(r.kind, r.text);
+        return (
+          <Text key={r.n} style={styles.lastText}>
+            <Text style={styles.lastKind}>{row.word} </Text>
+            {row.text}
+          </Text>
+        );
+      })}
     </View>
   );
 }
 
 /** `LABEL · ON` / `LABEL · OFF`: a switch chip says its state as a word. */
 export const onOff = (label: string, on: boolean): string => `${label} · ${on ? 'ON' : 'OFF'}`;
+/** `LABEL · SPEAKING` while a spoken line plays (page 15's wording): a line's
+ *  chip says so in a word, not by its highlight alone. */
+export const speaking = (label: string, on: boolean): string => (on ? `${label} · SPEAKING` : label);
 
 /* ── a read-only card for the well ──────────────────────────────────────── */
 

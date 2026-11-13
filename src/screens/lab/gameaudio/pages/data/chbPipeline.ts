@@ -4,13 +4,27 @@
  * TypeScript (node:test loads it: test/gameAudioChB.test.ts).
  *
  * Every value is READ from the lab's own records (sounds/gaSoundBank
- * `GA_ASSETS`, model/gaDefs `GA_EVENTS`), so the cards cannot drift from
- * what the model plays. With the planted fault (`missingDoor`) the door
- * layer of the event asks for a file the build does not contain; the name
- * below is the one the reducer prints in its FAULT line (the test pins the
- * two together).
+ * `GA_ASSETS`, model/gaDefs `GA_EVENTS`, `GA_BUS_NAME`), so the cards cannot
+ * drift from what the model plays.
+ *
+ * ONE EVENT, TWO FILES. The door layer asks for `door_open.wav` when the door
+ * opens and `door_close.wav` when it closes (model: `postDoor`). The asset
+ * record card shows the file of the way the door last moved.
+ *
+ * THE PLANTED FAULT (`missingDoor`): the door layer asks, both ways, for a
+ * file the build does not contain; the name below is the one the reducer
+ * prints in its FAULT line (the test pins the two together). A planted fault
+ * does not name itself (lead's decision 10): until the learner has produced
+ * the symptom, the chain is drawn `named: false`. It then still shows the
+ * TRUE file name the event asks for (as a real tool would), but with no mark,
+ * no red and no verdict. The mark and the words BROKEN LINK come only with
+ * `named: true`.
+ *
+ * The EVENT card names only what the lab has taught by page 6: the event's
+ * name, the files its layers ask for, and the bus it is sent to (the name on
+ * the controls, never the model's id). Priority waits for pages 15 and 17.
  */
-import { GA_EVENTS } from '../../model/gaDefs.ts';
+import { GA_BUS_NAME, GA_DOOR_CLOSE_ASSET, GA_DOOR_OPEN_ASSET, GA_EVENTS } from '../../model/gaDefs.ts';
 import { gaAsset } from '../../sounds/gaSoundBank.ts';
 
 /** The file name the door event asks for while the fault is planted. */
@@ -27,10 +41,23 @@ export type ChbCard = {
 };
 export type ChbChain = {
   cards: ChbCard[];
-  /** The link from the asset record to the event is broken. */
+  /** The link from the asset record to the event is broken AND the chain
+   *  says so (false while a planted fault is still unnamed). */
   broken: boolean;
+  /** The door layer asks for a file the build does not contain, whether or
+   *  not the chain names it yet. */
+  missing: boolean;
+  /** The file name the event's door layer asks for now. */
+  asksFor: string;
   /** The words on the link UNDER each card, in card order. */
   links: [string, string, string];
+};
+
+export type ChbChainView = {
+  /** The door last CLOSED: the closing take's record is the one on card 1. */
+  closing?: boolean;
+  /** Name the break (the mark, the red row, BROKEN LINK). Default true. */
+  named?: boolean;
 };
 
 const ROLE_WORDS: Record<string, string> = {
@@ -40,38 +67,51 @@ const ROLE_WORDS: Record<string, string> = {
   'impulse response': 'impulse response',
 };
 
+/** The file a door asset id stands for (its record's file name). */
+export function doorFile(closing: boolean): string {
+  const id = closing ? GA_DOOR_CLOSE_ASSET : GA_DOOR_OPEN_ASSET;
+  return gaAsset(id)?.file ?? id;
+}
+
 /** The door's chain. `missing` = the planted fault is in. */
-export function doorChain(missing: boolean): ChbChain {
+export function doorChain(missing: boolean, view: ChbChainView = {}): ChbChain {
+  const closing = !!view.closing;
+  const named = view.named !== false;
   const ev = GA_EVENTS.door_open;
-  const door = gaAsset('door');
-  if (!door) throw new Error('the door asset record is missing from GA_ASSETS');
+  const record = gaAsset(closing ? GA_DOOR_CLOSE_ASSET : GA_DOOR_OPEN_ASSET);
+  if (!record) throw new Error('the door asset record is missing from GA_ASSETS');
+  const asksFor = missing ? CHB_MISSING_FILE : record.file;
+  const flagged = missing && named;
   const layers: ChbRow[] = ev.layers.map((l, i) => {
     const id = (l.assets as readonly string[])[0];
     const isDoor = l.id === 'door';
-    const file = isDoor && missing ? CHB_MISSING_FILE : (gaAsset(id)?.file ?? id);
     const late = l.delayS ? `, ${l.delayS} s later` : '';
-    const lost = isDoor && missing;
-    return { k: i === 0 ? 'LAYERS' : '', v: lost ? `${l.id} asks for ${file}: not in the build` : `${l.id} plays ${file}${late}`, bad: lost };
+    if (!isDoor) return { k: i === 0 ? 'LAYERS' : '', v: `${l.id} asks for ${gaAsset(id)?.file ?? id}${late}` };
+    // the door layer: one file for each way the door moves
+    const which = missing ? '' : closing ? ' (when the door closes)' : ' (when the door opens)';
+    return { k: i === 0 ? 'LAYERS' : '', v: `${l.id} asks for ${asksFor}${which}${flagged ? ': not in the build' : ''}`, bad: flagged };
   });
   return {
-    broken: missing,
+    broken: flagged,
+    missing,
+    asksFor,
     cards: [
       {
         id: 'asset',
         stage: 'IMPORT',
         head: 'ASSET RECORD',
         rows: [
-          { k: 'FILE', v: door.file },
-          { k: 'SOUND', v: door.label },
-          { k: 'ROLE', v: ROLE_WORDS[door.role] ?? door.role },
-          { k: 'MADE', v: door.made === 'app' ? 'in the app' : door.made },
+          { k: 'FILE', v: record.file },
+          { k: 'SOUND', v: record.label },
+          { k: 'ROLE', v: ROLE_WORDS[record.role] ?? record.role },
+          { k: 'MADE', v: record.made === 'app' ? 'in the app' : record.made },
         ],
       },
       {
         id: 'event',
         stage: 'AUTHOR',
         head: 'EVENT',
-        rows: [{ k: 'NAME', v: ev.name }, ...layers, { k: 'BUS', v: ev.bus }, { k: 'PRIORITY', v: String(ev.priority) }],
+        rows: [{ k: 'NAME', v: ev.name }, ...layers, { k: 'SENT TO', v: `${GA_BUS_NAME[ev.bus]} bus` }],
       },
       {
         id: 'scene',
@@ -85,15 +125,17 @@ export function doorChain(missing: boolean): ChbChain {
       },
     ],
     links: [
-      missing ? `BROKEN LINK: the event asks for ${CHB_MISSING_FILE}, not for this file` : 'the event plays this file',
+      flagged ? `BROKEN LINK: the event asks for ${CHB_MISSING_FILE}, not for this file` : 'the event asks for a file by its name',
       'the scene posts this event',
       'the log shows the result',
     ],
   };
 }
 
-/** The chain in words, for a screen reader. */
+/** The chain in words, for a screen reader. A fault that is not named yet
+ *  gets no verdict: neither "broken" nor "in place". */
 export function doorChainSummary(c: ChbChain): string {
   const cards = c.cards.map((card, i) => `${i + 1}, ${card.head}: ${card.rows.map((r) => (r.k ? `${r.k} ${r.v}` : r.v)).join('; ')}`);
-  return `The door’s chain, top to bottom. ${cards.join('. ')}. ${c.broken ? `The chain is broken: ${c.links[0]}.` : 'Every link is in place.'} The result is the activity log below.`;
+  const verdict = c.broken ? ` The chain is broken: ${c.links[0]}.` : c.missing ? '' : ' Every link is in place.';
+  return `The door’s chain, top to bottom. ${cards.join('. ')}.${verdict} The result is the activity log below.`;
 }

@@ -1,15 +1,16 @@
 /**
  * gaBudget — what page 17 ("Budgets and voice limits") needs beside the
- * model: the BUDGET lane's stops, the memory arithmetic the page shows, and
- * how many protected voices are sounding (the budget cannot be set below
- * that number). Pure TypeScript (test/gameAudioChD.test.ts).
+ * model: the BUDGET lane's stops, the memory arithmetic the page shows, how
+ * many protected voices are sounding (the budget cannot be set below that
+ * number), and what the last BURST cost, read from the model's own log.
+ * Pure TypeScript (test/gameAudioChD.test.ts).
  *
  * MEMORY. A decoded sound is its samples, each kept as a 32-bit number
  * (4 bytes), for every channel: samples × 4 × channels. That is the only
  * cost this page prints, because it is exact. It prints no processing
  * figure: the lab does not measure one.
  */
-import type { GaState } from '../../model/gaModel.ts';
+import type { GaLogEntry, GaState } from '../../model/gaModel.ts';
 
 /* ── the BUDGET lane ────────────────────────────────────────────────────── */
 
@@ -29,7 +30,10 @@ export const budgetToLane = (limit: number): number => stopIndex(limit) / LAST;
 export const budgetStep = (limit: number, dir: -1 | 1): number => BUDGET_STOPS[Math.max(0, Math.min(LAST, stopIndex(limit) + dir))];
 
 export const budgetShort = (limit: number): string => (limit ? String(limit) : 'NONE');
-export const budgetWords = (limit: number): string => (limit ? `BUDGET ${limit} ${limit === 1 ? 'VOICE' : 'VOICES'}` : 'BUDGET: NO LIMIT');
+/** The lane's value, beside the lane's own name BUDGET: "8 VOICES",
+ *  "1 VOICE", "NO LIMIT" (so a screen reader says "BUDGET: 8 VOICES", not
+ *  the name twice). */
+export const budgetWords = (limit: number): string => (limit ? `${limit} ${limit === 1 ? 'VOICE' : 'VOICES'}` : 'NO LIMIT');
 
 /* ── memory ─────────────────────────────────────────────────────────────── */
 
@@ -86,3 +90,63 @@ export const memoryRowSpoken = (r: MemoryRow): string =>
 export const protectedSounding = (s: GaState): number => s.voices.filter((v) => v.protected && v.state !== 'virtual').length;
 /** Would the model refuse to go this low right now? */
 export const budgetHeld = (s: GaState, limit: number): boolean => limit !== 0 && limit < protectedSounding(s);
+
+/* ── what the last burst cost ───────────────────────────────────────────── */
+
+/** How many crate impacts one press of BURST posts. */
+export const BURST_COUNT = 12;
+
+/** One voice the budget took for a new sound: whose it was, and what became
+ *  of it (a loop goes virtual and waits; a one-shot stops). `times` counts a
+ *  run of the same name one after another ("Crate impact" four times). */
+export type BurstTheft = { name: string; loop: boolean; times: number };
+export type BurstReport = {
+  /** In the order the voices were taken: the least important first. */
+  thefts: BurstTheft[];
+  /** Voices taken, and new sounds refused, since that BURST. */
+  stolen: number;
+  refused: number;
+};
+
+const STOLEN_LINE = /^Voice STOLEN from (.+?) \(i\d+\)/;
+
+/** What happened since the newest BURST, read from the log lines the model
+ *  wrote (one STOP line per theft, one REFUSED line per refusal). null until
+ *  a burst is in the log. The test holds this against the reducer, so a
+ *  reworded log line cannot empty the card unnoticed. */
+export function lastBurst(log: readonly GaLogEntry[]): BurstReport | null {
+  let at = -1;
+  for (let i = log.length - 1; i >= 0; i--) {
+    if (log[i].kind === 'trigger' && log[i].text.startsWith('BURST:')) {
+      at = i;
+      break;
+    }
+  }
+  if (at < 0) return null;
+  const thefts: BurstTheft[] = [];
+  let stolen = 0;
+  let refused = 0;
+  for (const l of log.slice(at + 1)) {
+    if (l.kind === 'refused') refused += 1;
+    if (l.kind !== 'stop') continue;
+    const m = STOLEN_LINE.exec(l.text);
+    if (!m) continue;
+    stolen += 1;
+    const loop = l.text.includes('It is a loop');
+    const last = thefts[thefts.length - 1];
+    if (last && last.name === m[1] && last.loop === loop) last.times += 1;
+    else thefts.push({ name: m[1], loop, times: 1 });
+  }
+  return { thefts, stolen, refused };
+}
+
+/** One row of the card: "Room tone · a loop: virtual now" /
+ *  "Crate impact × 4 · a one-shot: stopped". */
+export const burstTheftWords = (t: BurstTheft): string => `${t.name}${t.times > 1 ? ` × ${t.times}` : ''} · ${t.loop ? 'a loop: it went virtual' : t.times > 1 ? 'one-shots: they stopped' : 'a one-shot: it stopped'}`;
+
+/** The card in one spoken sentence. */
+export function burstSpoken(r: BurstReport | null): string {
+  if (!r) return 'No burst yet. Press BURST.';
+  const taken = r.thefts.length ? `Voices taken, in order: ${r.thefts.map(burstTheftWords).join('; ')}.` : 'No voice was taken.';
+  return `${taken} ${r.refused} new ${r.refused === 1 ? 'sound was' : 'sounds were'} refused.`;
+}

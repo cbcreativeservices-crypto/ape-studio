@@ -28,11 +28,15 @@ const HANDS_ON = 'Counts once its practice goals and its check are done; NEXT mo
 
 /** The end screen's line for a page that is not done yet. Three pages count
  *  by a different rule from the rest, and each says its own (by page index:
- *  20 "The same ideas in real tools", 21 "Game audio today", 22 the capstone). */
+ *  19 = page 20 "Finding your way in the tools", 20 = page 21 "Game audio
+ *  today", 21 = page 22 the capstone). The numbers follow the pages: page 20
+ *  has six checks (P20_CHECKS), page 21 two, the capstone seven goals
+ *  (GA_CAPSTONE); test/gameAudioChETools.test.ts holds them together. The
+ *  capstone's line does not say NEXT: its key is FINISH (audit 2, W2-29). */
 const PAGE_DETAIL: Readonly<Record<number, string>> = {
-  19: 'Counts once its four checks are done; NEXT moves on without counting it.',
+  19: 'Counts once its six checks are done; NEXT moves on without counting it.',
   20: 'Counts once its two checks are done; NEXT moves on without counting it.',
-  21: 'Counts once its seven goals are done in one visit; NEXT moves on without counting it.',
+  21: 'Counts once its seven goals are done in one visit. Its check is optional, and FINISH moves on without counting it.',
 };
 const pageDetail = (i: number): string | undefined => PAGE_DETAIL[i];
 

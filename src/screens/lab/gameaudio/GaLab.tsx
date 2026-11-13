@@ -11,6 +11,9 @@
  *                   well, every control in the dock.
  *   dock keys       SOUND and ■ STOP are on every page, in the same place;
  *                   a page adds its own teaching controls before them.
+ *                   SOUND switches sound ON (through the app's output gate)
+ *                   and OFF again; ■ STOP stops what is playing and leaves
+ *                   sound as it is.
  *
  * Every page opens on a CLEAN scene (model: 'enterPage'): start positions,
  * door closed, nothing playing, standard settings, an empty log. The lab's
@@ -22,12 +25,16 @@ import { colors } from '../../../theme/tokens';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
+import { StageAspectReport, StageInFullScreen } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { GaEngineHost } from './engine/GaEngineHost';
 import { useGaSound, type GaSoundState } from './engine/useGaSound';
 import { gaVoiceCount, type GaState } from './model/gaModel';
 import { gaBindEngine, gaCloseScene, gaDispatch, useGa } from './model/gaStore';
-import { GA_SCENE_ASPECT, GaScene, type GaSceneSelect } from './scene/GaScene';
+import { gaCount } from './bitsLogic';
+import { GA_SCENE_ASPECT, GaScene, type GaSceneSelect, type GaSceneShow } from './scene/GaScene';
+import { GA_GLASS_PAD, GA_SPLIT_ASPECT, gaGlassSplit } from './scene/gaSceneLogic';
+import { GA_HUDS, GA_HUD_H, type GaHudId } from './scene/hud';
 
 /* ── the lab session ────────────────────────────────────────────────────── */
 
@@ -35,8 +42,12 @@ export type GaLabApi = {
   sound: GaSoundState;
   /** Ask for sound; `assets` are loaded before it resolves. */
   enableSound: (assets?: readonly string[]) => Promise<boolean>;
-  /** Stop everything (the model and the engine). */
+  /** Stop everything (the model and the engine). Sound stays as it is. */
   stopAll: () => void;
+  /** Switch sound OFF: everything stops and `sound` reads 'off' until
+   *  `enableSound` is asked again (audit 2, SND F7: the SOUND key could not
+   *  switch sound off; it was a second ■ STOP). */
+  disableSound: () => void;
   /** Make sure the engine holds these sounds (a page calls it on open, so
    *  the first tap is not the one that pays for building them). */
   preload: (assets: readonly string[]) => void;
@@ -55,7 +66,7 @@ export const GA_CORE_ASSETS = ['door', 'door_rattle', 'gen_hum', 'gen_air', 'ir_
 
 export function GaLabProvider({ children }: { children: ReactNode }) {
   const session = useGaSound(() => gaDispatch({ type: 'stopAll' }));
-  const { engine, ensure, enable, stopAll, sound } = session;
+  const { engine, ensure, enable, stopAll, disable, sound } = session;
 
   useEffect(() => gaBindEngine(engine, ensure), [engine, ensure]);
   useEffect(() => {
@@ -87,7 +98,7 @@ export function GaLabProvider({ children }: { children: ReactNode }) {
     },
     [engine, ensure],
   );
-  const api = useMemo<GaLabApi>(() => ({ sound, enableSound, stopAll, preload }), [sound, enableSound, stopAll, preload]);
+  const api = useMemo<GaLabApi>(() => ({ sound, enableSound, stopAll, disableSound: disable, preload }), [sound, enableSound, stopAll, disable, preload]);
 
   return (
     <GaLabContext.Provider value={api}>
@@ -106,7 +117,7 @@ export const GA_SOUND_WORD: Record<GaSoundState, string> = {
   on: 'ON',
   blocked: 'TAP AGAIN',
   declined: 'OFF',
-  unavailable: 'NO ENGINE',
+  unavailable: 'NO SOUND',
   failed: 'FAILED',
 };
 
@@ -120,11 +131,60 @@ export type GaRackSpec = {
   initialParam: string;
   /** Up to two page readouts, shown before the standard three. */
   readouts?: BezelItem[];
+  /** The source whose MIN and MAX distance rings (and their numbers) the
+   *  scene draws, with a line from the listener to it. */
   select?: GaSceneSelect;
+  /** Print every object's name in the scene (otherwise only the selected). */
   showNames?: boolean;
+  /** What else the scene shows on this page, each OFF unless asked for
+   *  (scene/GaScene `GaSceneShow`):
+   *    ids           page 7: the INSTANCE id by each generator's rings
+   *    mood          page 8: MOOD · CALM / MOOD · ALERT, and a border around
+   *                  the whole picture while it is ALERT
+   *    guideListens  page 18: a blue listener wedge on the guide
+   *    surface       page 8: the SURFACE by the foot that stepped
+   *    take          page 9: the TAKE by the foot that stepped
+   *    beds          pages 1 and 10: a mark over each zone while its bed
+   *                  plays, as strong as the bed's level */
+  show?: GaSceneShow;
   /** The sounds this page plays (loaded when sound comes on). */
   assets?: readonly string[];
+  /** The instrument strip under the scene (scene/hud): the one thing this
+   *  page teaches that the scene cannot draw. Read-only; the dock changes it. */
+  hud?: GaHudId | null;
+  /** The page's own choice for its strip (which output, which topic). */
+  hudArg?: string;
+  /** A page whose display is NOT the scene (page 20's tool windows) draws
+   *  its own glass. Read-only, like everything on the glass. */
+  glass?: (w: number, h: number) => ReactNode;
 };
+
+/** The glass of a scene page: the scene at its own aspect, centered, and the
+ *  page's instrument strip (if it has one) under it, full width. */
+function GaGlass({ w, h, spec, state }: { w: number; h: number; spec: GaRackSpec; state: GaState }) {
+  const full = useContext(StageInFullScreen);
+  const report = useContext(StageAspectReport);
+  const Hud = spec.hud ? GA_HUDS[spec.hud] : undefined;
+  // with a strip, the full-screen canvas takes the shape of scene + strip
+  // (StageFit, below, reports the scene's own shape first; this effect runs
+  // after it and is the one that counts)
+  useEffect(() => {
+    if (Hud) report?.aspect(GA_SPLIT_ASPECT, GA_GLASS_PAD);
+  }, [Hud, report]);
+  const { hudH, sceneH, sceneW, sceneDrawH } = gaGlassSplit(w, h, !!Hud, full);
+  return (
+    <View style={{ width: w, height: h }}>
+      <StageFit w={w} h={sceneH} aspect={GA_SCENE_ASPECT} pad={GA_GLASS_PAD}>
+        <GaScene w={sceneW} h={sceneDrawH} state={state} select={spec.select ?? null} showNames={!!spec.showNames} show={spec.show} />
+      </StageFit>
+      {Hud ? (
+        <View style={{ width: w, height: hudH }}>
+          <Hud w={w} h={hudH} state={state} arg={spec.hudArg} />
+        </View>
+      ) : null}
+    </View>
+  );
+}
 
 /** Glass height: taller where the phone allows, as the DJ and Miking labs. */
 const glassHeight = (winH: number): number => Math.max(200, Math.min(270, Math.round(winH * 0.3)));
@@ -157,7 +217,7 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
   const lab = useGaLab();
   const { height: winH } = useWindowDimensions();
   const assets = spec.assets;
-  const { sound, enableSound, stopAll, preload } = lab;
+  const { sound, enableSound, disableSound, preload } = lab;
 
   useGaCleanScene();
   useEffect(() => {
@@ -169,8 +229,10 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
     id: 'sound',
     label: sound === 'on' ? 'SOUND ON' : 'SOUND',
     value: sound === 'on',
+    // ON → OFF really switches sound off (the readout then says OFF); it is
+    // not a second ■ STOP
     onToggle: () => {
-      if (sound === 'on') stopAll();
+      if (sound === 'on') disableSound();
       else void enableSound(assets ? [...new Set([...GA_CORE_ASSETS, ...assets])] : undefined);
     },
   };
@@ -179,8 +241,8 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
   const voices = gaVoiceCount(s);
   const bezel: BezelItem[] = [
     ...(spec.readouts ?? []),
-    { k: 'PLAYING', v: String(s.inst.length), vA11y: `${s.inst.length} instances playing` },
-    { k: 'VOICES', v: s.voiceLimit ? `${voices}/${s.voiceLimit}` : String(voices), vA11y: s.voiceLimit ? `${voices} of ${s.voiceLimit} voices` : `${voices} voices` },
+    { k: 'PLAYING', v: String(s.inst.length), vA11y: `${gaCount(s.inst.length, 'instance')} playing` },
+    { k: 'VOICES', v: s.voiceLimit ? `${voices}/${s.voiceLimit}` : String(voices), vA11y: s.voiceLimit ? `${voices} of ${gaCount(s.voiceLimit, 'voice')}` : gaCount(voices, 'voice') },
     { k: 'SOUND', v: GA_SOUND_WORD[sound], tint: sound === 'on' ? colors.green : sound === 'failed' || sound === 'unavailable' ? colors.red : colors.textSub },
   ];
 
@@ -190,19 +252,13 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
       initialParam={spec.initialParam}
       stage={{
         size: 'L',
-        phoneHeight: glassHeight(winH),
+        // a page with a strip gets half the strip's height from the well and
+        // half from the scene
+        phoneHeight: glassHeight(winH) + (spec.hud && GA_HUDS[spec.hud] ? GA_HUD_H / 2 : 0),
         minWell: 120,
         fullScreen: true,
         bezel,
-        render: (w, h) => {
-          // the same box StageFit centres: the widest 16:10 that fits the glass
-          const fitW = Math.max(40, Math.min(w - 4, (h - 4) * GA_SCENE_ASPECT));
-          return (
-            <StageFit w={w} h={h} aspect={GA_SCENE_ASPECT} pad={2}>
-              <GaScene w={fitW} h={fitW / GA_SCENE_ASPECT} state={s} select={spec.select ?? null} showNames={!!spec.showNames} />
-            </StageFit>
-          );
-        },
+        render: (w, h) => (spec.glass ? spec.glass(w, h) : <GaGlass w={w} h={h} spec={spec} state={s} />),
       }}
     >
       <View style={styles.well}>{children}</View>

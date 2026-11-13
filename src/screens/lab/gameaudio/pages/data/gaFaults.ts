@@ -10,22 +10,32 @@
  *             every page opens on a clean scene with no fault in)
  *   seen      its SYMPTOM really happened while it was in      (two states
  *             compared: a fact the reducer counted went up)
- *   fixed     planted, seen, and the setting is right again    (the state)
+ *   fixed     planted, seen, and the setting corrected         (the state)
  *
  * Every fault goes in SILENTLY. The repeat fault is the VARIATION option,
  * and the model logs option changes, so it is planted with `quiet: true`:
- * a planted fault must not name itself in the log. Putting it right is the
+ * a planted fault must not name itself in the log. Correcting it is the
  * learner's own change and is logged like any other setting.
  *
  * So a learner who starts a fault and switches it straight back has fixed
  * nothing: finding comes before fixing. The orphan loop needs one thing
- * more, the stray loop itself gone, because putting the setting right does
+ * more, the stray loop itself gone, because correcting the setting does
  * not stop a loop that already lost its owner.
  *
  * EVERY SYMPTOM CAN BE MADE FROM THE CLEAN SCENE with the page's own TEST
- * tray (the test walks each one). The wrong-surface fault needs YOU off the
- * wood floor, and a student can walk anywhere, so the tray has two places
- * to stand (`standMoves`).
+ * tray, as often as the learner likes (the test walks each one). So the
+ * tray's two STEP chips step IN PLACE (`stepInPlace`): a character that
+ * walked would reach a wall after a few presses, and a step that cannot
+ * move plays no footstep, which would leave faults 3 and 4 with no symptom
+ * to make. The wrong-surface fault needs YOU off the wood floor, so the
+ * tray has two places to stand (`standMoves`).
+ *
+ * ONE NAME FOR EACH SETTING. The FIX tray uses the words the learner met
+ * where each setting was taught (page 7: WHEN A GENERATOR IS REMOVED · STOP
+ * ITS LOOP / LEAVE IT PLAYING; page 8: FOR EACH CHARACTER / FOR EVERYONE;
+ * page 9: VARIATION · ON / VARIATION · OFF), the model's bus names, and
+ * "generator", never "machine" (page 18 uses that word for a player's
+ * computer).
  */
 import { gaFact, type GaAction, type GaInstance, type GaState } from '../../model/gaModel.ts';
 import { DOOR_POS, START, WALL_X, surfaceAt, zoneAt, type GaPoint, type GaZone } from '../../model/gaWorld.ts';
@@ -46,8 +56,11 @@ export type FaultDef = {
   /** How many times the symptom has to be seen (identical footsteps are
    *  only a pattern after a few). */
   need: number;
-  /** The setting's row in the FIX tray: its name and its two values. */
+  /** The setting in the FIX tray: its name (the heading over its two
+   *  values), the short name on its chip in the tray's first row, and its
+   *  two values. */
   setting: string;
+  pick: string;
   right: string;
   wrong: string;
   /** The wrong value is the first of the two chips (mixed from row to row,
@@ -60,15 +73,16 @@ export const FAULTS: readonly FaultDef[] = [
     id: 'missingFile',
     title: 'FAULT 1 · THE DOOR HAS LOST ITS MAIN SOUND',
     goal: 'Fault 1 fixed: the door',
-    symptom: 'Start the fault. Open TEST and press the door key. The door moves in the picture, but its main sound does not start. Only the latch rattle plays, one second later. Read the newest log lines to find the reason.',
+    symptom: 'Start the fault. In TEST, press OPEN DOOR. The door moves in the picture, but its main sound does not start. Only the latch rattle plays, one second later. Read the newest log lines to find the reason.',
     hints: [
       'Look for the GAME lines first: was the door event posted?',
       'The next line is marked FAULT, and it names a file.',
-      'Open FIX. The door event can point at one of two files. One of them is not in the build.',
+      'Open FIX and choose DOOR FILE. The door event can point at one of two files. One of them is not in the build.',
     ],
-    why: 'The game posted the event correctly. The file the event pointed to was not in the build, so the door layer could not play. Only the rattle layer played. The picture changed all the same; only the log showed the problem. Press the door key again and read the START line for the door layer.',
+    why: 'The game posted the event correctly. The file the event pointed to was not in the build, so the door layer could not play. Only the rattle layer played. The picture changed all the same; only the log showed the problem. Press the door key again and read the START line that names the door’s file.',
     need: 1,
     setting: 'DOOR EVENT: FILE',
+    pick: 'DOOR FILE',
     right: 'door_open.wav',
     wrong: 'door_open_v2.wav',
     wrongFirst: false,
@@ -80,12 +94,13 @@ export const FAULTS: readonly FaultDef[] = [
     symptom: 'Start the fault. In TEST, switch GENERATOR 1 on so that something is playing, then press GUIDE LINE. The caption appears and the line starts, but the log prints no DUCK line and the generator stays at full level. Read which bus the line went to.',
     hints: [
       'A START line ends with the bus the sound was sent to.',
-      'This one reads “→ sfx bus”. In this lab, sfx is the effects bus.',
-      'The duck acts only for a line on the dialogue bus. Open FIX and look at where the guide’s voice goes.',
+      'This one ends “→ EFFECTS bus”.',
+      'The duck acts only for a line on the DIALOGUE bus. Open FIX and choose VOICE BUS.',
     ],
-    why: 'The line itself was fine, and it played. It was sent to the effects bus, so the mix did not treat it as speech and nothing turned down. A good sound can still fail through its routing. Play the line again and read DUCK on.',
+    why: 'The line itself was fine, and it played. It was sent to the effects bus, so the mix did not treat it as speech and nothing turned down. A good sound can still fail through its routing. When the line has ended, play it again and read DUCK on.',
     need: 1,
     setting: 'GUIDE’S VOICE: BUS',
+    pick: 'VOICE BUS',
     right: 'DIALOGUE',
     wrong: 'EFFECTS',
     wrongFirst: true,
@@ -94,51 +109,55 @@ export const FAULTS: readonly FaultDef[] = [
     id: 'repeat',
     title: 'FAULT 3 · EVERY FOOTSTEP IS IDENTICAL',
     goal: 'Fault 3 fixed: the footsteps',
-    symptom: 'Start the fault. In TEST, press STEP · GUIDE three times or more and read the START lines. Each one names the same take, and each step sounds exactly like the one before.',
+    symptom: 'Start the fault. In TEST, press STEP: GUIDE three times or more and read the START lines. Each one names the same take, and each step sounds exactly like the one before.',
     hints: [
       'Each footstep START line names its take, for example “take 1 of 4”.',
       'With the fault in, the take number does not change.',
-      'Open FIX and look at how the footstep takes are chosen.',
+      'Open FIX and choose TAKES.',
     ],
     why: 'Four takes were in the build, but the event played only the first. The ear notices an exact repeat very quickly. With variation on, the take changes from step to step, and level and pitch move a little each time.',
     need: 3,
-    setting: 'FOOTSTEP: TAKES',
-    right: 'VARIED',
-    wrong: 'ONE TAKE',
+    setting: 'FOOTSTEPS: THE TAKES',
+    // five chips share a row: FOOTSTEPS broke into "FOOTSTE / PS" (seen at 390 pt)
+    pick: 'TAKES',
+    right: 'VARIATION · ON',
+    wrong: 'VARIATION · OFF',
     wrongFirst: false,
   },
   {
     id: 'scope',
     title: 'FAULT 4 · THE GUIDE’S STEPS USE THE WRONG SURFACE',
     goal: 'Fault 4 fixed: the surface',
-    symptom: 'Start the fault. In TEST, choose STONE PATH so that you stand outside. The guide stands on the wood floor of the workshop. Press STEP · GUIDE and read which surface the log names.',
+    symptom: 'Start the fault. In TEST, choose YOU: STONE PATH so that you stand outside. The guide stands on the wood floor of the workshop. Press STEP: GUIDE and read which surface the log names.',
     hints: [
-      'The first GAME line for a footstep reads “SWITCH surface = …”.',
-      'Compare that word with the floor under the guide in the picture. If you and the guide stand on the same surface, the fault cannot show: choose STONE PATH in TEST.',
-      'The guide’s step used YOUR surface. Open FIX and look at how the surface switch is set.',
+      'The first GAME line for a footstep ends “SWITCH surface = …”.',
+      'Compare that word with the floor under the guide in the picture. If you and the guide stand on the same surface, the fault cannot show: choose YOU: STONE PATH in TEST.',
+      'The guide’s step used YOUR surface. Open FIX and choose SURFACE.',
     ],
     why: 'The surface is a switch that each character holds for itself. Set for everyone, it gave every character the player’s surface. This is a scope fault: a value that belongs to one object was applied to all of them.',
     need: 1,
     setting: 'SURFACE SWITCH',
-    right: 'PER CHARACTER',
+    pick: 'SURFACE',
+    right: 'FOR EACH CHARACTER',
     wrong: 'FOR EVERYONE',
     wrongFirst: true,
   },
   {
     id: 'orphan',
-    title: 'FAULT 5 · A LOOP PLAYS WITH NO MACHINE',
+    title: 'FAULT 5 · A LOOP PLAYS WITH NO GENERATOR',
     goal: 'Fault 5 fixed: the loop',
-    symptom: 'Start the fault. In TEST, press ADD GENERATOR 2, switch GENERATOR 2 on, then press REMOVE GENERATOR 2. The machine leaves the picture. Read the log and the PLAYING readout.',
+    symptom: 'Start the fault. In TEST, press ADD GENERATOR 2, switch GENERATOR 2 on, then press REMOVE GENERATOR 2. The generator leaves the picture. Read the log and the PLAYING readout.',
     hints: [
       'The newest log line is marked FAULT and contains the word ORPHAN.',
-      'PLAYING still counts the loop, although its machine is gone.',
-      'Put the setting right in FIX. Then stop the stray loop: add generator 2 and remove it again, or press ■ STOP.',
+      'PLAYING still counts the loop, although its generator is gone.',
+      'Open FIX, choose REMOVAL and correct the setting. Then stop the stray loop: press ADD GENERATOR 2 and REMOVE GENERATOR 2 again, or press ■ STOP.',
     ],
-    why: 'Removing the machine did not stop its loop, so the loop kept its voices with no owner. Cleanup is part of a sound’s design: whatever starts a loop also needs a way to stop it.',
+    why: 'Removing the generator did not stop its loop, so the loop kept its voices with no owner. Cleanup is part of a sound’s design: whatever starts a loop also needs a way to stop it.',
     need: 1,
-    setting: 'REMOVING A MACHINE',
-    right: 'STOPS ITS LOOP',
-    wrong: 'LEAVES ITS LOOP',
+    setting: 'WHEN A GENERATOR IS REMOVED',
+    pick: 'REMOVAL',
+    right: 'STOP ITS LOOP',
+    wrong: 'LEAVE IT PLAYING',
     wrongFirst: false,
   },
 ];
@@ -162,7 +181,7 @@ export function faultSet(id: FaultId, s: GaState): boolean {
   }
 }
 
-/** The actions that put a fault in, or put its setting right. Planting is
+/** The actions that put a fault in, or correct its setting. Planting is
  *  silent (see the header). Planting the routing fault also makes sure the
  *  duck is on: a test starts from a known situation, and without the duck
  *  there would be nothing to miss. */
@@ -191,6 +210,13 @@ export function fixChoices(def: FaultDef): readonly { label: string; right: bool
 
 /** Generator loops still playing whose machine is no longer in the scene. */
 export const strayLoops = (s: GaState): GaInstance[] => s.inst.filter((i) => i.event === 'generator' && !s.machines.some((m) => m.id === i.owner));
+
+/* ── the TEST tray's steps ──────────────────────────────────────────────── */
+
+/** STEP: GUIDE and STEP: YOU on page 19: one footstep where the character
+ *  stands. A step in place posts its foot-contact trigger and its footstep
+ *  like any other, and can be repeated without end (see the header). */
+export const stepInPlace = (who: 'player' | 'guide'): GaAction => ({ type: 'step', who, dx: 0, dy: 0 });
 
 /* ── two places to stand ────────────────────────────────────────────────── */
 
@@ -297,3 +323,29 @@ export function faultFixed(id: FaultId, b: Bench, s: GaState): boolean {
 export const faultsOpen = (b: Bench, s: GaState): number => FAULT_IDS.filter((id) => faultOpen(id, b, s)).length;
 /** How many of the five settings are wrong right now. */
 export const settingsWrong = (s: GaState): number => FAULT_IDS.filter((id) => faultSet(id, s)).length;
+
+/* ── one card on screen (walk audit W2-19) ──────────────────────────────── */
+
+/** How a fault stands on this visit, in one word and one mark: not started,
+ *  ACTIVE (its wrong setting, or the stray loop it left, is in the scene),
+ *  or FIXED. A fault that was started and switched straight back, with its
+ *  symptom never seen, is "not started" again: it can be started again. */
+export type FaultStatus = 'idle' | 'active' | 'fixed';
+export function faultStatus(id: FaultId, b: Bench, s: GaState): FaultStatus {
+  if (faultOpen(id, b, s)) return 'active';
+  return faultFixed(id, b, s) ? 'fixed' : 'idle';
+}
+export const FAULT_STATUS_MARK: Readonly<Record<FaultStatus, string>> = { idle: '○', active: '●', fixed: '✓' };
+export const FAULT_STATUS_WORD: Readonly<Record<FaultStatus, string>> = { idle: 'not started', active: 'active', fixed: 'fixed' };
+
+/** The fault after this one that is not fixed yet (in order, coming back to
+ *  the start); null when every other fault is fixed. The card's NEXT FAULT
+ *  button goes there. */
+export function nextFault(from: FaultId, b: Bench, s: GaState): FaultId | null {
+  const at = FAULT_IDS.indexOf(from);
+  for (let k = 1; k < FAULT_IDS.length; k++) {
+    const id = FAULT_IDS[(at + k) % FAULT_IDS.length];
+    if (!faultFixed(id, b, s)) return id;
+  }
+  return null;
+}

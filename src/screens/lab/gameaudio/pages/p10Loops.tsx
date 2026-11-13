@@ -1,42 +1,49 @@
 /**
  * Page 10 — LOOPS, AMBIENCE AND ZONES (chapter 2 closes).
  *
- * One-shots and loops; a loop's join; beds and a local emitter; entering and
- * leaving a zone. The learner starts the scene, opens the door, walks from
- * the courtyard into the workshop and reads ONE cross-fade per crossing;
- * swaps the courtyard wind for the cut with no loop preparation and hears
- * the jump at its join; then meets the planted fault `bedPileUp`: every
- * position update starts the bed again and the copies stack.
+ * A loop's join; beds and spot sounds; a local emitter; entering and leaving
+ * a zone. The learner starts the scene, opens the door, walks from the
+ * courtyard into the workshop and reads ONE crossfade per crossing; swaps
+ * the courtyard wind for the cut with no loop preparation and waits for its
+ * join; then meets the planted fault `bedPileUp`: every position update
+ * starts the bed again and the copies stack.
  *
- * Three keys: FACING (the lane) and STEP walk the player for real, and the
- * SCENE tray holds the scene, the door, two shortcuts for a learner who has
- * walked into a corner, the wind file, and the rule for when a bed starts
- * (the fault is that rule set wrong).
+ * BED PLUS SPOT SOUNDS (audit 2, sound F14): the courtyard bed is wind only.
+ * The bird calls are one-shots the audio side posts at random times and
+ * places while that bed plays, so the background never repeats exactly.
+ *
+ * THE RAW CUT IS JUDGED FROM THE CLOCK, not from a choice and not from
+ * hearing: the goal is met when the raw file has passed its join (every
+ * 10 s from the moment that bed started) while the listener stood in the
+ * courtyard. The `beds` strip under the picture draws the loop, its play
+ * position and the JUMP at the join ("JUMPS n"), so the moment is seen with
+ * sound off too.
+ *
+ * Four keys: FACING (the lane) and STEP walk the player for real; the SOUNDS
+ * tray holds the scene, the door and the rule for when a bed starts (the
+ * fault is that rule set wrong): two rows, so it fits the tray's box on a
+ * phone (lead's decision 15); WIND FILE chooses the courtyard wind's file.
  *
  * Common mistake taught against: starting a new background loop on every
  * update while the player stays in one area.
  */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
 import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
-import { gaPlaying, listenerOf, type GaLogKind } from '../model/gaModel';
-import { gaDispatch, gaGet, useGa } from '../model/gaStore';
+import { gaPlaying, listenerOf } from '../model/gaModel';
+import { gaDispatch, gaGet, gaNow, useGa } from '../model/gaStore';
 import { zoneAt } from '../model/gaWorld';
-import { TrayBox, TrayChip, TrayLog, TrayNote, TrayRow, onOff, useCountWhen } from './chbBits';
-import { CHB_FOOTSTEP_ASSETS, chbBeds, chbLoops, chbRoute } from './data/chbScene';
+import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen } from './chbBits';
+import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbJoinsPassed, chbLoops, chbRawBed } from './data/chbScene';
 import { G10 } from './guides/p10';
 import { facingKey, gaFact, stepKey, useSince } from './shared';
 
-const ASSETS: readonly string[] = ['amb_room', 'amb_yard', 'amb_yard_raw', 'fountain', 'door', 'door_rattle', ...CHB_FOOTSTEP_ASSETS];
+const ASSETS: readonly string[] = ['amb_room', 'amb_yard', 'amb_yard_raw', 'bird_1', 'bird_2', 'bird_3', 'fountain', 'door', 'door_close', 'door_rattle', ...CHB_FOOTSTEP_ASSETS];
 const TERMS = gaTerms('Ambience zone', 'Ambient loop', 'Loop Point', 'Crossfade', 'Room Tone');
-/** The page's log leaves out the four lines every footstep prints, so a ZONE
- *  line (kind `state`) is still in view after the walk that caused it. The
- *  lesson says so; the tray's own log is complete. */
-const PAGE_LOG: readonly GaLogKind[] = ['state', 'mix', 'failed'];
 
 const setRawLoop = (on: boolean) => {
   if (gaGet().options.rawYardLoop !== on) gaDispatch({ type: 'option', patch: { rawYardLoop: on } });
@@ -45,123 +52,166 @@ const setPileUp = (on: boolean) => {
   if (gaGet().faults.bedPileUp !== on) gaDispatch({ type: 'fault', patch: { bedPileUp: on } });
 };
 
-/** The SCENE tray: the background, the door, the wind file, the start rule. */
-function SceneTray() {
+/** The SOUNDS tray: the background and the door, and the rule for when a
+ *  bed starts. Two one-line rows and nothing else. */
+function SoundsTray() {
   const s = useGa();
-  const [blocked, setBlocked] = useState(false);
   const beds = chbBeds(s);
   const sceneOn = beds.room + beds.yard > 0 || gaPlaying(s, 'fountain');
-  const zone = zoneAt(s.chars.player);
-  const goTo = (to: 'stone' | 'workshop') => {
-    const now = gaGet();
-    const r = chbRoute(now.chars.player, now.doorOpen, to);
-    for (const a of r.moves) gaDispatch(a);
-    // arrive facing the door, so STEP walks back through it
-    if (!r.blocked) gaDispatch({ type: 'face', who: 'player', facing: to === 'workshop' ? 270 : 90 });
-    setBlocked(r.blocked);
-  };
   return (
     <TrayBox>
       <TrayRow head="SCENE AND DOOR">
         <TrayChip label={onOff('SCENE', sceneOn)} selected={sceneOn} onPress={() => gaDispatch({ type: 'scene', on: !sceneOn })} />
-        <TrayChip
-          label={s.doorOpen ? 'CLOSE DOOR' : 'OPEN DOOR'}
-          onPress={() => {
-            gaDispatch({ type: 'door' });
-            setBlocked(false);
-          }}
-        />
+        <TrayChip label={s.doorOpen ? 'CLOSE DOOR' : 'OPEN DOOR'} onPress={() => gaDispatch({ type: 'door' })} />
       </TrayRow>
-      <TrayRow head="COURTYARD WIND FILE">
-        <TrayChip label={marked('PREPARED LOOP', !s.options.rawYardLoop)} selected={!s.options.rawYardLoop} onPress={() => setRawLoop(false)} />
-        <TrayChip label={marked('RAW CUT', s.options.rawYardLoop)} selected={s.options.rawYardLoop} onPress={() => setRawLoop(true)} />
-      </TrayRow>
-      {/* the log sits under the two rows the lesson uses, so it is in view
-          on a phone; the fault's rule and the shortcuts follow it */}
-      <TrayLog state={s} lines={2} />
       <TrayRow head="A BED STARTS">
         <TrayChip label={marked('ONCE, WITH THE SCENE', !s.faults.bedPileUp)} selected={!s.faults.bedPileUp} onPress={() => setPileUp(false)} />
         <TrayChip label={marked('ON EVERY UPDATE', s.faults.bedPileUp)} selected={s.faults.bedPileUp} onPress={() => setPileUp(true)} />
       </TrayRow>
-      <TrayRow head="GO STRAIGHT TO">
-        <TrayChip label={marked('COURTYARD', zone === 'yard')} selected={zone === 'yard'} onPress={() => goTo('stone')} />
-        <TrayChip label={marked('WORKSHOP', zone === 'room')} selected={zone === 'room'} onPress={() => goTo('workshop')} />
-      </TrayRow>
-      {blocked && !s.doorOpen ? <TrayNote>The door is closed, so you stopped in front of it. Choose OPEN DOOR, then choose the place again.</TrayNote> : null}
     </TrayBox>
   );
+}
+
+/**
+ * How many times the raw cut has passed its join WHILE THE LISTENER STOOD IN
+ * THE COURTYARD, on this visit. A join is a moment on the scene clock
+ * (`chbJoinsPassed`); a timer wakes the page just after the next one, and
+ * the count goes up only if the listener is in the courtyard then. Nothing
+ * here is heard or pressed: it is the same with sound off.
+ */
+function useYardJoins(raw: { id: string; born: number; loopS: number } | null, inYard: boolean): number {
+  const [, wake] = useState(0);
+  const seen = useRef<{ key: string; passed: number }>({ key: '', passed: 0 });
+  const count = useRef(0);
+  const key = raw ? `${raw.id}@${raw.born}` : '';
+  const born = raw ? raw.born : null;
+  const loopS = raw ? raw.loopS : 0;
+  const passed = chbJoinsPassed(raw, gaNow());
+  if (seen.current.key !== key) seen.current = { key, passed };
+  else if (passed > seen.current.passed) {
+    if (inYard) count.current += 1;
+    seen.current.passed = passed;
+  }
+  useEffect(() => {
+    if (born == null || !(loopS > 0)) return undefined;
+    const next = born + (passed + 1) * loopS;
+    const id = setTimeout(() => wake((n) => n + 1), Math.max(0, (next - gaNow()) * 1000) + 40);
+    return () => clearTimeout(id);
+  }, [key, born, loopS, passed]);
+  return count.current;
 }
 
 function Page({ ctx }: { ctx: PageCtx }) {
   const s = useGa();
   const { since } = useSince(s);
-  const [check, setCheck] = useState(false);
+  const [zoneCheck, setZoneCheck] = useState(false);
+  const [joinCheck, setJoinCheck] = useState(false);
   const beds = chbBeds(s);
   const zone = zoneAt(listenerOf(s));
   const sceneOn = beds.room + beds.yard > 0 || gaPlaying(s, 'fountain');
   const loops = chbLoops(s);
+  const raw = chbRawBed(s);
+  const yardJoins = useYardJoins(raw, zone === 'yard');
 
-  // crossings that really cross-faded the beds (the model's own count)
+  // crossings that really crossfaded the beds (the model's own count)
   const crossings = since('zoneCrossFade');
   // ■ STOP was pressed while loops were playing, and none is left
   const loopsBefore = useRef(loops);
   const silenced = useCountWhen(gaFact(s, 'stopAll'), loopsBefore.current > 0 && loops === 0) > 0;
   loopsBefore.current = loops;
+  // the planted fault's symptom happened on this visit: an update started a bed again
+  const pileSeen = since('bedPileUp') > 0;
+  // the card is active while the rule is wrong, and afterward while the stacked copies still play
+  const faultArmed = s.faults.bedPileUp || (pileSeen && (beds.room > 1 || beds.yard > 1));
 
   const goals = [
     { label: 'Cross the doorway twice with the scene running', hit: crossings >= 2 },
-    { label: 'Stand in the courtyard while the raw cut plays', hit: since('take:bed_yard::amb_yard_raw') > 0 && beds.raw && zone === 'yard' },
+    { label: 'Stay in the courtyard until the raw cut passes its join', hit: yardJoins > 0 },
     { label: 'Silence every loop with ■ STOP', hit: silenced },
-    { label: 'Pass the check', hit: check },
+    { label: 'Pass both checks', hit: zoneCheck && joinCheck },
   ];
   const latched = useVisitGoals(ctx, goals);
 
-  const sceneKey: DockParam = {
+  const soundsKey: DockParam = {
     kind: 'group',
     id: 'scene',
-    label: 'SCENE',
-    valueLabel: sceneOn ? 'RUNNING' : 'STOPPED',
-    valueA11y: `the scene’s background is ${sceneOn ? 'running' : 'stopped'}; the door is ${s.doorOpen ? 'open' : 'closed'}`,
-    render: () => <SceneTray />,
+    label: 'SOUNDS',
+    // "SCENE ON" was cut to "SCENE …" in a six-key dock at 390 (seen); the
+    // key's own label, SOUNDS, says what is on
+    valueLabel: sceneOn ? 'ON' : 'OFF',
+    valueA11y: `the scene’s background is ${sceneOn ? 'on' : 'off'}; the door is ${s.doorOpen ? 'open' : 'closed'}`,
+    render: () => <SoundsTray />,
   };
-  const rawNow = sceneOn ? beds.raw : s.options.rawYardLoop;
+  const windKey: DockParam = {
+    kind: 'options',
+    id: 'wind-file',
+    label: 'WIND FILE',
+    valueLabel: s.options.rawYardLoop ? 'RAW' : 'LOOP',
+    valueA11y: s.options.rawYardLoop ? 'the courtyard wind is the raw cut, with no loop preparation' : 'the courtyard wind is the prepared loop',
+    options: [
+      { id: 'loop', label: 'PREPARED LOOP', blurb: 'The wind file was blended across its join, so its end runs into its start with no jump.' },
+      { id: 'raw', label: 'RAW CUT', blurb: 'The same wind, cut with no loop preparation. It ends in a gust and begins in a lull, so the level jumps at the join.' },
+    ],
+    selectedId: s.options.rawYardLoop ? 'raw' : 'loop',
+    onSelect: (id) => setRawLoop(id === 'raw'),
+  };
+  const copies = beds.room + beds.yard;
 
   return (
     <GaRack
       spec={{
-        keys: [facingKey(s), stepKey('player'), sceneKey],
+        keys: [facingKey(s), stepKey('player'), soundsKey, windKey],
         initialParam: 'facing',
+        hud: 'beds',
         readouts: [
-          { k: 'ZONE', v: zone === 'room' ? 'ROOM' : 'YARD', vA11y: `the listener is in the ${zone === 'room' ? 'workshop' : 'courtyard'}` },
-          { k: 'WIND FILE', v: rawNow ? 'RAW' : 'LOOP', vA11y: rawNow ? 'the courtyard wind is the cut with no loop preparation' : 'the courtyard wind is the prepared loop' },
+          // a wider cell: at 320 wide an even cell cut the value to "COURTYA…" (seen)
+          { k: 'ZONE', v: zone === 'room' ? 'WORKSHOP' : 'COURTYARD', vA11y: `the listener is in the ${zone === 'room' ? 'workshop' : 'courtyard'}`, flex: 1.6 },
+          { k: 'BEDS', v: String(copies), vA11y: `${copies} ${copies === 1 ? 'copy of a bed is' : 'copies of the beds are'} playing` },
         ],
         showNames: true,
+        show: { beds: true },
         assets: ASSETS,
       }}
     >
       <Step n={1}>
-        <Look>The courtyard and the workshop are two ambience zones, joined by one door. The fountain is a local emitter: its sound has a place.</Look>
-        <P>A one-shot plays once. A loop repeats, so the join where its end meets its start has to be prepared, or you hear a jump on every pass. A bed is a loop with no position: courtyard wind, workshop room tone.</P>
-        <P>Both beds start once, with the scene. When the listener enters another zone, one bed fades down while the other fades up: a cross-fade. A fade smooths a change; it does not repair a badly cut loop.</P>
+        <Look>Two ambience zones, the courtyard and the workshop, share one door. The fountain is a local emitter: its sound has a place.</Look>
+        <P>A loop repeats, so the join where its end meets its start must be prepared, or it jumps on every pass. A bed is a loop with no position: courtyard wind, workshop room tone. The birds are spot sounds: one-shots at random times and places, so the background does not repeat.</P>
+        <P>Both beds start once, with the scene. Entering the other zone fades one bed down and the other up: a crossfade. A fade does not repair a badly cut loop.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>In SCENE, switch SCENE on and choose OPEN DOOR. Close the tray. Press STEP until you pass the doorway, then find the ZONE line in the log. Set FACING near 270° and walk back.</Do>
-        <P>Each crossing prints one ZONE line: one cross-fade of about a second and a half. No bed starts or stops; only their levels change. The log on this page shows only STATE, MIX and FAULT lines.</P>
-        <ActivityLog state={s} lines={6} only={PAGE_LOG} />
+        <Do>In SOUNDS, switch SCENE on and choose OPEN DOOR. Close the tray. STEP through the doorway, then set FACING near 270° and walk back.</Do>
+        <P>Each crossing prints one STATE line that begins ZONE: one crossfade of 1.5 s. No bed starts or stops. Only levels change. This scene counts a silent bed as a voice. A real engine usually makes it virtual.</P>
+        <ActivityLog state={s} lines={6} only={CHB_P10_LOG} />
       </Step>
       <Step n={3}>
-        <Do>In the courtyard, choose RAW CUT in SCENE and listen for 30 seconds. Then choose PREPARED LOOP.</Do>
-        <P>A MIX line names the swap. The raw cut is a wind file cut with no loop preparation: it ends in a gust and begins in a lull, so the level jumps at the join every 10 seconds. The prepared loop was blended across its join.</P>
-        <Note tone="mistake">Starting a new background loop on every position update while the player stays in one area. The copies stack, get louder and use up voices.</Note>
+        <Do>In the courtyard, set WIND FILE to RAW CUT. Under the picture, JUMPS counts each pass of the join. Then choose PREPARED LOOP and start the fault on the TROUBLESHOOT card.</Do>
+        <P>The raw cut was not prepared as a loop. It ends in a gust and begins in a lull, so it jumps every 10 s.</P>
+        <Note tone="mistake">Starting a background loop again on every position update in one area. The copies stack, get louder and use voices.</Note>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>
         <GoalChips goals={goals} latched={latched} />
+        <FaultCard
+          title="THE BACKGROUND THAT KEEPS GROWING"
+          symptom="Start the fault and switch SCENE on. Take several steps without crossing the doorway. The background becomes louder with each step, and BEDS, PLAYING and VOICES climb."
+          // still active after the rule is corrected, while the stacked copies play on
+          armed={faultArmed}
+          fixed={pileSeen && !s.faults.bedPileUp && beds.room <= 1 && beds.yard <= 1}
+          seen={pileSeen}
+          onStart={() => setPileUp(true)}
+          hints={[
+            'With SCENE on, take several steps without crossing the doorway. Watch BEDS and PLAYING in the readouts.',
+            'The FAULT lines in the log say a bed was STARTED AGAIN by a position update, and count the copies.',
+            'Open SOUNDS and change the rule under A BED STARTS. The extra copies are still playing: ■ STOP silences everything, then switch SCENE on again.',
+          ]}
+          why="The game reported your position many times while you stayed in one zone, and each report started the bed again. A bed needs one start. Here both beds start once, with the scene, and a crossing only changes their levels. A change of rule does not remove copies that are already playing, so they had to be stopped."
+        />
+        {faultArmed ? <ActivityLog state={s} lines={4} only={CHB_P10_LOG} /> : null}
       </Step>
       <Step n={5}>
         <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
+          eyebrow="QUESTION 1"
           question="You stay inside the workshop and walk around. How many copies of the room tone are playing?"
           options={[
             'One: it started once, with the scene',
@@ -174,26 +224,31 @@ function Page({ ctx }: { ctx: PageCtx }) {
           wrong={[
             undefined,
             'A step is a trigger for a footstep, not for the bed.',
-            'That is the fault on this page: every update starts another copy, and the copies stack.',
+            'That would be a fault. A bed needs one start, not one for every update.',
             'A bed does not follow your movement inside its zone. It keeps playing.',
           ]}
-          onCorrect={() => setCheck(true)}
+          onCorrect={() => setZoneCheck(true)}
+        />
+        <UnderstandingCheck
+          eyebrow="QUESTION 2"
+          question="A wind loop jumps in level every 10 seconds. Someone makes the crossfade at the doorway twice as long. What happens to the jump?"
+          options={[
+            'It stays, because the join inside the file is unchanged',
+            'It goes, because a crossfade smooths every change of level',
+            'It comes half as often, because the fade is twice as long',
+            'It moves to the doorway, where the crossfade happens',
+          ]}
+          correct={0}
+          explain="The jump is at the loop’s join, inside the file. The crossfade at the doorway works only while you cross. The file has to be prepared as a loop."
+          wrong={[
+            undefined,
+            'A crossfade works between two sounds while you cross. This jump is inside one file, on every pass.',
+            'The file is still 10 seconds long, so it still passes its join every 10 seconds.',
+            'The join is a moment in the file. It is not a place in the scene.',
+          ]}
+          onCorrect={() => setJoinCheck(true)}
         />
       </Step>
-      <FaultCard
-        title="THE BACKGROUND THAT KEEPS GROWING"
-        symptom="Start the fault and switch SCENE on. Take several steps without crossing the doorway. The background becomes louder with each step, and PLAYING and VOICES climb."
-        // still "in" after the rule is put right, while the stacked copies play on
-        armed={s.faults.bedPileUp || (since('bedPileUp') > 0 && (beds.room > 1 || beds.yard > 1))}
-        fixed={since('bedPileUp') > 0 && !s.faults.bedPileUp && beds.room <= 1 && beds.yard <= 1}
-        onStart={() => setPileUp(true)}
-        hints={[
-          'With SCENE on, take several steps without crossing the doorway. Watch PLAYING and VOICES in the readouts.',
-          'The FAULT lines in the log say a bed was STARTED AGAIN by a position update, and count the copies.',
-          'Open SCENE and change the rule under A BED STARTS. The extra copies are still playing: ■ STOP silences everything, then switch SCENE on again.',
-        ]}
-        why="The game reported your position many times while you stayed in one zone, and each report started the bed again. A bed needs one start. Here both beds start once, with the scene, and a crossing only changes their levels. A change of rule does not remove copies that are already playing, so they had to be stopped."
-      />
     </GaRack>
   );
 }

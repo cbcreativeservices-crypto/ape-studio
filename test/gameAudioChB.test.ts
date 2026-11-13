@@ -10,22 +10,29 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { GA_EVENTS } from '../src/screens/lab/gameaudio/model/gaDefs.ts';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { GA_BUS_NAME, GA_EVENTS } from '../src/screens/lab/gameaudio/model/gaDefs.ts';
 import { gaFact, gaInitial, gaReduce, surfaceOf, type GaAction, type GaState } from '../src/screens/lab/gameaudio/model/gaModel.ts';
 import { WALL_X, surfaceAt, zoneAt } from '../src/screens/lab/gameaudio/model/gaWorld.ts';
 import { gaAsset } from '../src/screens/lab/gameaudio/sounds/gaSoundBank.ts';
-import { CHB_MISSING_FILE, doorChain, doorChainSummary } from '../src/screens/lab/gameaudio/pages/data/chbPipeline.ts';
+import { CHB_MISSING_FILE, doorChain, doorChainSummary, doorFile } from '../src/screens/lab/gameaudio/pages/data/chbPipeline.ts';
 import {
   CHB_DOORSTEP,
   CHB_FOOTSTEP_ASSETS,
+  CHB_P08_LOG,
+  CHB_P10_LOG,
   CHB_PLACES,
   chbBeds,
   chbDoorLayers,
   chbGuideOwnSurface,
+  chbGuideSurfaceShown,
+  chbJoinsPassed,
   chbLoops,
   chbNoteTakes,
   chbOrphans,
   chbPlaceOf,
+  chbRawBed,
   chbRoute,
   chbSteps,
   chbTakeOf,
@@ -48,7 +55,7 @@ const stepInPlace = (who: 'player' | 'guide' = 'player'): GaAction => ({ type: '
 const go = (s: GaState, to: ChbPlaceId): GaState => run(s, ...chbRoute(s.chars.player, s.doorOpen, to).moves);
 
 describe('page 6: the door’s chain is read from the lab’s own records', () => {
-  it('the three cards name the real file, event, layers, bus and priority', () => {
+  it('the three cards name the real file, event, layers and the bus by the name on the controls', () => {
     const c = doorChain(false);
     assert.deepEqual(c.cards.map((x) => x.head), ['ASSET RECORD', 'EVENT', 'SCENE CONNECTION']);
     const rows = (i: number) => c.cards[i].rows.map((r) => r.v).join(' | ');
@@ -56,8 +63,9 @@ describe('page 6: the door’s chain is read from the lab’s own records', () =
     assert.ok(rows(0).includes('in the app'));
     assert.ok(rows(1).includes(GA_EVENTS.door_open.name));
     assert.ok(rows(1).includes(gaAsset('door_rattle')!.file), 'the second layer names its own file');
-    assert.ok(rows(1).includes(String(GA_EVENTS.door_open.priority)));
-    assert.ok(rows(1).includes(GA_EVENTS.door_open.bus));
+    // the bus as a learner knows it (decision 11), never the model's id; priority is not taught until pages 15 and 17
+    assert.ok(rows(1).includes(`${GA_BUS_NAME[GA_EVENTS.door_open.bus]} bus`));
+    assert.ok(!c.cards[1].rows.some((r) => r.v === GA_EVENTS.door_open.bus || r.k === 'PRIORITY'));
     assert.equal(c.broken, false);
     assert.ok(!c.cards.some((x) => x.rows.some((r) => r.bad)));
     assert.ok(doorChainSummary(c).includes('Every link is in place'));
@@ -73,6 +81,32 @@ describe('page 6: the door’s chain is read from the lab’s own records', () =
     const s = run(fresh(), { type: 'fault', patch: { missingDoor: true } }, { type: 'door' });
     assert.ok(texts(s).some((t) => t.includes(`"${CHB_MISSING_FILE}"`) && t.includes('NOT IN THE BUILD')));
     assert.ok(doorChainSummary(c).includes('broken'));
+  });
+  it('one event, two files: the closing take is door_close.wav, and card 1 and the log agree with the model', () => {
+    assert.equal(doorFile(false), 'door_open.wav');
+    assert.equal(doorFile(true), 'door_close.wav');
+    const closing = doorChain(false, { closing: true });
+    assert.equal(closing.cards[0].rows[0].v, 'door_close.wav');
+    assert.ok(closing.cards[1].rows.some((r) => r.v.includes('door_close.wav')));
+    const s = run(fresh(), { type: 'door' }, { type: 'door' });
+    const starts = s.log.filter((l) => l.kind === 'start' && l.text.startsWith('Door · door')).map((l) => l.text);
+    assert.equal(starts.length, 2);
+    assert.ok(starts[0].includes('door_open.wav') && starts[1].includes('door_close.wav'), 'the START line names the file of each move');
+    assert.equal(gaFact(s, 'take:door_open::door') + gaFact(s, 'take:door_open::door_close'), 2, 'page 6 counts both files as the door playing');
+    // with the fault, closing asks for the missing name too
+    const f = run(fresh(), { type: 'fault', patch: { missingDoor: true } }, { type: 'door' }, { type: 'door' });
+    assert.equal(f.log.filter((l) => l.kind === 'failed' && l.text.includes(`"${CHB_MISSING_FILE}"`)).length, 2);
+  });
+  it('a planted fault does not name itself: unnamed, the chain shows the true file name with no mark and no verdict (decision 10)', () => {
+    const c = doorChain(true, { named: false });
+    assert.equal(c.missing, true);
+    assert.equal(c.broken, false);
+    assert.ok(!c.cards.some((x) => x.rows.some((r) => r.bad)), 'no red row');
+    assert.ok(!c.links.some((l) => /BROKEN|not in the build/i.test(l)));
+    assert.ok(c.cards[1].rows.some((r) => r.v.includes(CHB_MISSING_FILE)), 'what the event asks for is still shown, as a tool would');
+    assert.ok(!c.cards.some((x) => x.rows.some((r) => /not in the build/.test(r.v))));
+    const said = doorChainSummary(c);
+    assert.ok(!/broken|in place/i.test(said), said);
   });
 });
 
@@ -142,6 +176,26 @@ describe('page 7: orphans', () => {
 });
 
 describe('page 8: the switch is local', () => {
+  it('the planted fault does not name itself: until a guide step uses the wrong surface, the guide shows the floor it stands on', () => {
+    let s = go(fresh(), 'gravel');
+    s = run(s, { type: 'fault', patch: { globalSurface: true } });
+    assert.equal(surfaceOf(s, 'guide'), 'gravel', 'the model already reads the wrong value');
+    assert.equal(chbGuideSurfaceShown(s, false), 'wood', 'unnamed: the readout and the table keep the guide’s own floor');
+    assert.equal(chbGuideSurfaceShown(s, true), 'gravel', 'named: the true (wrong) value');
+    const before = gaFact(s, 'stepWrongSurface');
+    s = run(s, stepInPlace('guide'));
+    assert.equal(gaFact(s, 'stepWrongSurface') - before, 1, 'the symptom the page waits for is the model’s own count');
+    // with no fault, both views are the truth
+    const clean = go(fresh(), 'gravel');
+    assert.equal(chbGuideSurfaceShown(clean, false), surfaceOf(clean, 'guide'));
+  });
+  it('page 8’s log shows the GAME lines that carry each switch value, and leaves out START lines', () => {
+    assert.ok(CHB_P08_LOG.includes('trigger'));
+    assert.ok(!CHB_P08_LOG.includes('start'));
+    const s = run(fresh(), stepInPlace('guide'));
+    const shown = s.log.filter((l) => CHB_P08_LOG.includes(l.kind)).map((l) => l.text);
+    assert.ok(shown.some((t) => t.includes('· GUIDE · SWITCH surface = wood')), shown.join(' / '));
+  });
   it('true while the guide reads its own surface and you stand on another', () => {
     let s = go(fresh(), 'gravel');
     assert.equal(chbGuideOwnSurface(s), true);
@@ -246,7 +300,7 @@ describe('page 10: beds and loops', () => {
     assert.deepEqual(chbBeds(s), { room: 1, yard: 1, raw: false });
     const zone = texts(s).filter((t) => t.startsWith('ZONE:'));
     assert.equal(zone.length, 1);
-    assert.ok(zone[0].includes('ONE cross-fade of the ambience beds'), 'what page 10 says a crossing prints');
+    assert.ok(zone[0].includes('ONE crossfade of the ambience beds'), 'what page 10 says a crossing prints');
   });
   it('a crossing with no bed playing fades nothing and is not counted as a cross-fade', () => {
     const s = go(run(fresh(), { type: 'door' }), 'workshop');
@@ -256,8 +310,39 @@ describe('page 10: beds and loops', () => {
   });
   it('the wind-file swap is named in the log by a MIX line', () => {
     const s = run(fresh(), { type: 'scene', on: true }, { type: 'option', patch: { rawYardLoop: true } });
-    assert.ok(s.log.some((l) => l.kind === 'mix' && /^SETTING courtyard wind file with no loop preparation: ON$/.test(l.text)));
+    assert.ok(s.log.some((l) => l.kind === 'mix' && l.text === 'SETTING courtyard wind file: RAW CUT'));
     assert.ok(texts(s).some((t) => t.includes('the loop file was swapped')));
+    const back = run(s, { type: 'option', patch: { rawYardLoop: false } });
+    assert.ok(back.log.some((l) => l.kind === 'mix' && l.text === 'SETTING courtyard wind file: PREPARED LOOP'));
+  });
+  it('the raw cut is judged from the clock: its join comes every loop length after that bed started', () => {
+    let s = run(fresh(), { type: 'scene', on: true });
+    assert.equal(chbRawBed(s), null, 'the prepared loop is playing');
+    s = run(s, { type: 'option', patch: { rawYardLoop: true } });
+    const raw = chbRawBed(s);
+    assert.ok(raw);
+    assert.equal(raw.loopS, gaAsset('amb_yard_raw')!.loopS);
+    assert.equal(raw.loopS, 10, 'page 10 prints "every 10 s"');
+    assert.equal(chbJoinsPassed(raw, raw.born + 9.9), 0, 'no join before one whole pass');
+    assert.equal(chbJoinsPassed(raw, raw.born + 10), 1);
+    assert.equal(chbJoinsPassed(raw, raw.born + 25), 2);
+    assert.equal(chbJoinsPassed(null, 100), 0);
+    // choosing RAW CUT alone never meets the goal: no time has passed
+    assert.equal(chbJoinsPassed(raw, s.t), 0);
+    s = run(s, { type: 'stopAll' });
+    assert.equal(chbRawBed(s), null);
+  });
+  it('the courtyard bed is wind only; the birds are separate one-shots posted while it plays', () => {
+    assert.ok(!/bird/i.test(gaAsset('amb_yard')!.label), gaAsset('amb_yard')!.label);
+    let s = run(fresh(), { type: 'scene', on: true });
+    assert.deepEqual(chbBeds(s), { room: 1, yard: 1, raw: false });
+    s = gaReduce(s, { type: 'tick', t: s.t + 20 }, s.t + 20).state;
+    assert.ok(gaFact(s, 'inst:bird') >= 1, 'a bird call is its own instance');
+    assert.deepEqual(chbBeds(s), { room: 1, yard: 1, raw: false }, 'a bird is not a copy of the bed');
+  });
+  it('page 10’s log keeps ZONE (STATE), MIX, FAULT and the NOTE that says why a step did nothing; footsteps are left out', () => {
+    for (const k of ['state', 'mix', 'failed', 'note'] as const) assert.ok(CHB_P10_LOG.includes(k));
+    assert.ok(!CHB_P10_LOG.includes('start') && !CHB_P10_LOG.includes('trigger'));
   });
 });
 
@@ -339,6 +424,91 @@ describe('the log lines pages 6, 7 and 9 describe', () => {
     assert.equal(texts(s).filter((t) => t.startsWith('EVENT Play_Door')).length, 1);
     assert.equal(s.log.filter((l) => l.kind === 'start').length, 2);
     assert.ok(texts(s).some((t) => t.includes('rattle, 1 s later')));
+  });
+});
+
+const PAGES = ['p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p09Variation', 'p10Loops'] as const;
+const src = (f: string) => readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages', `${f}.tsx`), 'utf8').replace(/\r\n/g, '\n');
+/** The lesson prose (P, Do, Look, Note), as the learning audit counted it. */
+const prose = (f: string): string[] => [...src(f).replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/<(P|Do|Look|Note)(\s[^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[3].replace(/\{[^}]*\}/g, 'X').replace(/\s+/g, ' ').trim());
+const words = (t: string) => t.split(/\s+/).filter(Boolean).length;
+
+describe('pages 6–10 as the learner reads them (audit 2)', () => {
+  it('page 8: Game Syncs, RTPC and Switch Group are Wwise’s words, and a Wwise Trigger is not a footstep (A1, L-01)', () => {
+    const t = prose('p08GameSyncs').join(' ');
+    assert.ok(!/often called Game Syncs|These are general meanings/.test(t));
+    assert.match(t, /Wwise groups switches, states and parameters as Game Syncs/);
+    assert.match(t, /Switch Group/);
+    assert.match(t, /FMOD Studio does these jobs with parameters/);
+    assert.match(t, /A Wwise Trigger starts a music stinger/);
+  });
+  it('pages 7 and 8: the speed is kept on the generator and its instance follows it (decision 6, A4)', () => {
+    const p7 = prose('p07Instances').join(' ');
+    const p8 = prose('p08GameSyncs').join(' ');
+    assert.ok(!/stored on that machine’s instance|each instance keeps its own values/.test(p7 + p8));
+    assert.match(p7, /kept on the generator, and its instance follows it/);
+    assert.match(p7, /Some tools keep such a value on the object, others on the playing instance/);
+    assert.match(p8, /kept on one generator, and its instance follows it/);
+  });
+  it('page 6: three things result, and they are three (L-13); the door’s two files are named', () => {
+    const t = prose('p06Pipeline').join(' ');
+    assert.ok(!/Three different things result/.test(t));
+    assert.match(t, /Three things come out of this work/);
+    assert.ok(!/runtime package/.test(t));
+  });
+  it('page 10: the bed is wind only and the birds are spot sounds; the raw-cut goal is about the join, not a choice', () => {
+    const t = prose('p10Loops').join(' ');
+    assert.match(t, /The birds are spot sounds: one-shots at random times and places/);
+    assert.ok(!/listen for 30 seconds/.test(t));
+    assert.match(src('p10Loops'), /label: 'Stay in the courtyard until the raw cut passes its join', hit: yardJoins > 0/);
+    assert.ok(!/cross-fade/.test(src('p10Loops')), 'crossfade is one word, as the glossary spells it');
+  });
+  it('the TROUBLESHOOT card comes before the check, inside step 4, and a step points to it (L-10)', () => {
+    for (const f of ['p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p10Loops']) {
+      const code = src(f);
+      const card = code.indexOf('<FaultCard');
+      assert.ok(card > code.indexOf('<Step n={4}>') && card < code.indexOf('<Step n={5}>'), `${f}: the card is in step 4`);
+      assert.ok(prose(f).some((x) => /TROUBLESHOOT card/.test(x)), `${f}: a Do line names the card`);
+      assert.match(code, /seen=\{/, `${f}: the card is told whether the symptom was seen (decision 10)`);
+    }
+  });
+  it('page 6’s and page 8’s keys and readouts stay neutral until the symptom (decision 10)', () => {
+    const p6 = src('p06Pipeline');
+    assert.match(p6, /const fileWord = unnamed \? '\?' : missing \? 'MISSING' : 'FOUND'/);
+    assert.match(p6, /locked: unnamed \?/);
+    const p8 = src('p08GameSyncs');
+    assert.match(p8, /wrong: !unnamed && guideRead !== guideTrue/);
+    assert.match(p8, /valueLabel: unnamed \? '\?'/);
+  });
+  it('no check has its correct option as the longest (L-16)', () => {
+    let checks = 0;
+    for (const f of PAGES) {
+      for (const m of src(f).matchAll(/options=\{\[([\s\S]*?)\]\}\s*correct=\{(\d)\}/g)) {
+        const opts = [...m[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((x) => x[1]);
+        const right = opts[Number(m[2])];
+        assert.ok(opts.length >= 3, f);
+        assert.ok(opts.some((o, i) => i !== Number(m[2]) && o.length >= right.length), `${f}: “${right}” is the longest option`);
+        checks += 1;
+      }
+    }
+    assert.equal(checks, 7, 'pages 6, 7, 8 have one check; pages 9 and 10 have two');
+  });
+  it('lesson prose is within the plan’s length: 260 words, page 8 at most 290 (it carries the Wwise correction)', () => {
+    for (const f of PAGES) {
+      const n = prose(f).reduce((a, t) => a + words(t), 0);
+      assert.ok(n <= (f === 'p08GameSyncs' ? 290 : 260) && n >= 150, `${f}: ${n} words`);
+    }
+  });
+  it('the learner reads one name for each thing: GENERATORS (not MACHINES), MOOD (not STATE) as the key, COURTYARD / WORKSHOP', () => {
+    assert.ok(!/label: 'MACHINES'/.test(src('p07Instances')));
+    assert.match(src('p07Instances'), /label: 'GENERATORS'/);
+    assert.match(src('p08GameSyncs'), /label: 'MOOD'/);
+    assert.ok(!/label: 'STATE'/.test(src('p08GameSyncs')));
+    assert.ok(!/'YARD'|'ROOM'/.test(src('p10Loops')));
+    assert.ok(!/'YOU ON'|'GUIDE ON'/.test(src('p08GameSyncs')));
+  });
+  it('no tray on these pages carries a log strip or a note that names a fault (decision 15, decision 10)', () => {
+    for (const f of PAGES) assert.ok(!/TrayLog|TrayNote>An instance is playing with no owner/.test(src(f)), f);
   });
 });
 

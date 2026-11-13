@@ -12,17 +12,17 @@ export const G03: ScreenGuide = {
   seeing: [
     'The scene is the same courtyard and workshop. Here it stands for one small game that could run on many kinds of device.',
     'CARD names the platform card you opened and LISTEN names the listening setup you chose. VOICES shows the voices in use, then the budget after the slash.',
-    'The open card is in step 2: an example, what to compare, what stays the same, what could change, and one test.',
+    'The strip under the picture draws the listening setup from above. The open card is in step 2.',
   ],
   control: [
     'BUDGET has two positions: COMPACT allows 8 voices at the same time and EXPANDED allows 16. The slider controls it when the page opens.',
-    'PLATFORM opens one of seven cards: MOBILE, DESKTOP, CONSOLE, HANDHELD, BROWSER, XR and CLOUD.',
+    'PLATFORM opens one of seven platform cards, MOBILE and BROWSER among them. Its tray shows the chosen card’s one test, and the key counts the cards you have seen.',
     'LISTENING chooses how the player hears the game: a phone speaker, headphones, TV speakers, a soundbar or a headset. Its tray stays open, so you can compare them.',
   ],
   changes: [
     'Picking a card changes only what you read. It does not change the phone in your hand or how this lab plays.',
     'Moving BUDGET prints a MIX line in the log. The open card stays as it was.',
-    'With nothing playing, only the number after the slash in VOICES changes. The Budgets page fills the budget.',
+    'With nothing playing, only the number after the slash in VOICES changes. Page 17 plays enough sounds to reach the limit.',
   ],
   teaches: [
     'Platform is where the game runs, delivery is how it reaches the player, and output is how the player hears it. These can be three different devices.',

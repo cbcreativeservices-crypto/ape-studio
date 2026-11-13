@@ -8,23 +8,24 @@ import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.
 export const G16: ScreenGuide = {
   intro: {
     learning: 'How a game mix is organized: sounds feed buses, each bus has its own level, and other buses turn down while a line is spoken.',
-    start: 'Open SCENE and switch on SCENE, GENERATOR 1 and MUSIC. Press GUIDE LINE and read the activity log: DUCK on when the line starts, DUCK off when it ends.',
+    start: 'Open SOUNDS and switch on SCENE, GENERATOR 1 and MUSIC. Press GUIDE LINE and watch DUCK: DUCKING while the line speaks, READY when it ends.',
   },
   seeing: [
-    'You’re looking down on the courtyard and the workshop. Rings mark each source that is sounding.',
-    'DUCK shows READY, DUCKING or OFF. The readout beside it is the bus you chose: its level right now, or MUTED, or SILENT when another bus is soloed.',
-    'A source on a silenced bus keeps one still, dashed ring. With ALARM and VISUAL CUE on, a warning sign with the word OVERHEAT stands by the generator.',
+    'You are looking down on the courtyard and the workshop. Rings mark each sounding source; on a silenced bus a source keeps one still, dashed ring.',
+    'The strip under the picture has a meter per bus. It shows the level, the fader as a white tick, and the duck as an amber band.',
+    'DUCK shows READY, DUCKING or OFF. Beside it is the chosen bus: its gain (fader plus duck), MUTED, or SILENT when another bus is soloed.',
   ],
   control: [
     'BUS is one key with two jobs. Tap it to choose a bus, then move the slider to set that bus between −24 and +6 dB.',
-    'SCENE opens the sound sources: SCENE, GENERATOR 1 and MUSIC, and the ALARM with its VISUAL CUE.',
-    'GUIDE LINE, in the same tray, is on the dialogue bus and starts the duck. CHAT LINE is on the chat bus and does not.',
+    'SOUNDS opens the sound sources: SCENE, GENERATOR 1 and MUSIC, the two lines, and the ALARM with its VISUAL CUE.',
+    'GUIDE LINE is on the dialogue bus and starts the duck. CHAT LINE is on the chat bus and does not.',
     'MIX opens DUCK ON and DUCK OFF, and a MUTE chip and a SOLO chip for each of the six buses.',
   ],
   changes: [
-    'A line on the dialogue bus starts the duck: music drops 10 dB, ambience 8 dB and effects 5 dB, and the log prints DUCK on. They return when the last line ends.',
-    'Choosing DUCK OFF prints a SETTING line. After that a line dips nothing, and no DUCK on is printed.',
-    'A bus fader, MUTE or SOLO changes only that one group. Each change prints a MIX line.',
+    'A line on the dialogue bus starts the duck: music drops 10 dB, ambience 8 dB and effects 5 dB. They return when the last line ends.',
+    'With DUCK OFF chosen, a line turns nothing down.',
+    'A bus fader, MUTE or SOLO changes only that one group. A quiet bus still plays.',
+    'With ALARM and VISUAL CUE on, a warning sign with the word OVERHEAT stands by the generator.',
   ],
   teaches: [
     'A bus groups sounds of one kind: one control changes them all.',
@@ -34,7 +35,7 @@ export const G16: ScreenGuide = {
     'An important sound can also be shown, so it does not depend on hearing.',
   ],
   tryThis: [
-    'Start SCENE, GENERATOR 1 and MUSIC, then press GUIDE LINE. Watch DUCK change to DUCKING and back to READY, and find the two DUCK lines in the log.',
+    'Switch on SCENE, GENERATOR 1 and MUSIC, then press GUIDE LINE. Watch DUCK change to DUCKING and back to READY, and three meters dip in the strip.',
     'Tap BUS and choose MUSIC. Pull its fader down to −12 dB. Then solo AMBIENCE in MIX: the music readout changes from a level to SILENT.',
     'Switch ALARM on with VISUAL CUE off, then switch the cue on. Look at the generator in the picture each time.',
   ],

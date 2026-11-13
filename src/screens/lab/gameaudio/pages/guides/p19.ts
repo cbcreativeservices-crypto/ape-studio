@@ -10,20 +10,20 @@ export const G19: ScreenGuide = {
     start: 'Open TEST and try each action while nothing is wrong, reading the log each time. Then start fault 1 on its card in step 4 and repeat the action.',
   },
   seeing: [
-    'The scene is a test room. FAULTS counts the faults that are in now, and FIXED counts the ones you have repaired on this visit.',
-    'Step 4 has one card for each of the five faults. The activity log sits under the first fault that is still in.',
+    'FAULTS counts the faults active now; FIXED counts the ones you repaired on this visit. The strip under the picture follows the fault you chose.',
+    'Step 4 has a chip for each of the five faults: ○ not started, ● active, ✓ fixed. The card of the one you choose, and the activity log, are under them.',
     'A log line marked FAULT is the audio side reporting that it could not do what was asked.',
   ],
   control: [
-    'TEST opens the actions that reproduce a symptom: the door, GUIDE LINE, STEP · GUIDE and STEP · YOU, GENERATOR 1, and ADD GENERATOR 2 with its REMOVE GENERATOR 2.',
-    'STONE PATH and WORKSHOP, in the same tray, put you in one of two places. With the door closed you stop at the door.',
-    'FIX opens the five settings. Each has two values, and a filled dot marks the one that is in now. Tap the other value to change it.',
-    'On each card, the start button puts one wrong setting in, and the hint button gives one hint at a time.',
+    'TEST opens the actions that reproduce a symptom: the door, GUIDE LINE, STEP: GUIDE and STEP: YOU. Its other rows hold GENERATOR 1, ADD GENERATOR 2 and REMOVE GENERATOR 2.',
+    'YOU: STONE PATH and YOU: WORKSHOP, in the same tray, put you in one of two places. With the door closed you stop at the door.',
+    'FIX opens the five settings. Choose one in the first row: its two values appear under it, and a filled dot marks the one in use. Tap the other value to change it.',
+    'On a fault’s card, the start button puts one wrong setting in, and the hint button gives one hint at a time. NEXT goes on to a fault that is not fixed yet.',
     'LEVEL is the lab’s playback level, on the slider.',
   ],
   changes: [
     'Starting a fault changes one setting and nothing you can see. The symptom appears only when you repeat the right action.',
-    'A card turns to FIXED after its symptom has happened and its setting is right again. Fault 5 also needs the stray loop stopped.',
+    'A card turns to FIXED after its symptom has happened and its setting is correct again. Fault 5 also needs the stray loop stopped.',
     'After a repair, the same action prints the normal pattern again: GAME lines, then START.',
   ],
   teaches: [
@@ -32,8 +32,8 @@ export const G19: ScreenGuide = {
     'A test is useful when the situation can be repeated exactly, before and after the repair.',
   ],
   tryThis: [
-    'Start fault 1 and press the door key in TEST. Find the FAULT line and read the file name it gives. Then compare the two files in FIX.',
-    'Start fault 4, choose STONE PATH and press STEP · GUIDE. Read the surface in the first GAME line, then look at the floor under the guide.',
-    'After fault 5 shows, read PLAYING. It still counts the generator loop, although the second machine has left the picture.',
+    'Start fault 1 and press OPEN DOOR in TEST. Find the FAULT line and read the file name it gives. Then compare the two files in FIX, under DOOR FILE.',
+    'Start fault 4, choose YOU: STONE PATH and press STEP: GUIDE. Read the surface in the first GAME line, then look at the floor under the guide.',
+    'After fault 5 shows, read PLAYING. It still counts the generator loop, although the second generator has left the picture.',
   ],
 };

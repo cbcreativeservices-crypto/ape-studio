@@ -33,6 +33,14 @@
  * The platform and listening lists are page 3's (data/gaPlatforms): one
  * list, two pages. They are choices recorded for the summary. They change
  * nothing in the sound.
+ *
+ * A BRIEF, NOT A SCRIPT (audit 2, L-04; lead's decision 14). The page states
+ * what to build and the seven goals are the evidence, so a goal chip names
+ * a RESULT ("A door with its second layer"), never the keys that make it.
+ * Each requirement carries one optional HINT, which does name the keys: the
+ * page shows a hint only when the learner asks for one, for the first goal
+ * not met yet. Every key a hint names is a label on page 22 (the test holds
+ * it), and the hints together are the test's reference run.
  */
 import { GA_SURFACES } from '../../sounds/gaSynth.ts';
 import { gaPlaying, type GaState } from '../../model/gaModel.ts';
@@ -94,8 +102,11 @@ export function gaVisitSince(v: GaVisit, s: GaState): GaFacts {
 
 export type GaCapstoneReq = {
   id: 'steps' | 'speed' | 'zone' | 'rattle' | 'duck' | 'music' | 'cue';
-  /** The goal chip: an instruction, naming the page's own controls. */
+  /** The goal chip: the RESULT the scene must show, in the learner's words.
+   *  It names no key (the hint does). */
   chip: string;
+  /** One optional hint: the keys of page 22 that make this result. */
+  hint: string;
   /** What was wired, as the learning summary lists it. */
   label: string;
   /** What it proves, in one line (shown in the learning summary). */
@@ -117,7 +128,8 @@ export function gaStepTakes(since: GaFacts): Record<string, number> {
 export const GA_CAPSTONE: readonly GaCapstoneReq[] = [
   {
     id: 'steps',
-    chip: 'Walk on two surfaces and play two takes on one',
+    chip: 'Footsteps on two surfaces, two takes on one',
+    hint: 'MOVE: press STEP FORWARD twice on the stone path. Then choose GO: GRAVEL and press STEP FORWARD again.',
     label: 'Footsteps on two surfaces, two takes on one',
     why: 'One footstep event served every surface. A switch chose the surface and a random choice chose the take.',
     met: (_s, since) => {
@@ -127,42 +139,48 @@ export const GA_CAPSTONE: readonly GaCapstoneReq[] = [
   },
   {
     id: 'speed',
-    chip: 'Run the generator and change its SPEED',
+    chip: 'A generator whose speed changes while it runs',
+    hint: 'SOUNDS: switch GENERATOR 1 on. Close the tray, then move the slider while the generator runs.',
     label: 'Generator running, speed changed as it played',
-    why: 'Speed is a parameter. The value moved on the instance that was already playing, and nothing restarted.',
+    why: 'Speed is a parameter. The value is kept on the generator, and the instance already playing followed it. Nothing restarted.',
     met: (s, since) => gaPlaying(s, 'generator') && n(since, 'speedWhilePlaying') > 0,
   },
   {
     id: 'zone',
-    chip: 'Cross the doorway once with SCENE on',
+    chip: 'One crossfade at the doorway',
+    hint: 'SOUNDS: switch SCENE on and press OPEN DOOR. Then MOVE: choose GO: WORKSHOP.',
     label: 'One zone crossing with the beds running',
-    why: 'The ambience beds follow the listener. One crossing gave one cross-fade, not a new loop.',
+    why: 'The ambience beds follow the listener. One crossing gave one crossfade, not a new loop.',
     met: (_s, since) => n(since, 'zoneCrossFade') > 0,
   },
   {
     id: 'rattle',
-    chip: 'Play the door with its rattle layer',
+    chip: 'A door with its second layer',
+    hint: 'SOUNDS: press OPEN DOOR. The latch rattle follows one second later.',
     label: 'A door event with its rattle layer',
     why: 'One event can play several layers. The door played, and its loose latch followed one second later.',
     met: (_s, since) => n(since, 'take:door_open::door_rattle') > 0,
   },
   {
     id: 'duck',
-    chip: 'Play a GUIDE LINE that ducks the mix',
+    chip: 'A line that ducks the mix',
+    hint: 'SOUNDS: press GUIDE LINE. The log prints DUCK on while the line speaks.',
     label: 'A guide line that ducked the mix',
     why: 'Dialogue has its own bus. While the line spoke, music, ambience and effects were turned down, then came back.',
     met: (_s, since) => n(since, 'duck') > 0,
   },
   {
     id: 'music',
-    chip: 'Make one music change that lands on a bar',
+    chip: 'A music change that lands on a bar',
+    hint: 'MUSIC: switch MUSIC on, then choose ALERT. The change waits for the next bar line.',
     label: 'One music change applied on a bar',
     why: 'The change was asked for immediately and applied on the next bar line, so the music stayed in time.',
     met: (_s, since) => n(since, CAP_MUSIC_BAR) > 0,
   },
   {
     id: 'cue',
-    chip: 'Run the ALARM with its VISUAL CUE on',
+    chip: 'A warning the player can also see',
+    hint: 'SOUNDS: switch VISUAL CUE on, then switch ALARM on.',
     label: 'Overheat alarm running, visual cue on',
     why: 'An important sound has a second way to reach the player: a sign in the picture as well as the alarm.',
     met: (s, since) => gaPlaying(s, 'alarm') && s.options.visualCue && n(since, 'alarmOn') + n(since, 'option:visualCue:true') > 0,
@@ -170,6 +188,15 @@ export const GA_CAPSTONE: readonly GaCapstoneReq[] = [
 ];
 
 export const gaCapstoneMet = (s: GaState, since: GaFacts): boolean[] => GA_CAPSTONE.map((r) => r.met(s, since));
+
+/** The hint for the first goal not met yet (in the goals' order), or null
+ *  when all seven are met. `done` is the page's latched goals. */
+export function gaCapstoneNextHint(done: readonly boolean[]): { id: GaCapstoneReq['id']; chip: string; hint: string } | null {
+  const i = GA_CAPSTONE.findIndex((_, k) => !done[k]);
+  if (i < 0) return null;
+  const r = GA_CAPSTONE[i];
+  return { id: r.id, chip: r.chip, hint: r.hint };
+}
 
 /* ── one test for each choice ───────────────────────────────────────────── */
 
@@ -193,7 +220,9 @@ const NOT_CHOSEN = 'not chosen yet';
 
 export type GaSummaryLine = { kind: 'head' | 'item' | 'detail' | 'foot'; text: string };
 
-/** The summary as lines (the card draws them; the share text joins them). */
+/** The summary as lines (the card draws them; the share text joins them).
+ *  "Connected", not "wired" (audit 2, L-32): the page asks the learner to
+ *  connect the ideas. */
 export function gaCapstoneSummaryLines(platform: GaPlatformId | null, listening: GaListeningId | null, done: readonly boolean[]): GaSummaryLine[] {
   const p = gaPlatform(platform);
   const l = gaListening(listening);
@@ -203,13 +232,13 @@ export function gaCapstoneSummaryLines(platform: GaPlatformId | null, listening:
   lines.push({ kind: 'head', text: 'Listening setup' }, { kind: 'item', text: l ? titleCase(l.label) : NOT_CHOSEN });
   const lt = gaListeningTest(listening);
   if (lt) lines.push({ kind: 'detail', text: `One test: ${lt}` });
-  lines.push({ kind: 'head', text: 'Wired in the scene' });
+  lines.push({ kind: 'head', text: 'Connected in the scene' });
   const wired = GA_CAPSTONE.filter((_, i) => done[i]);
   if (!wired.length) lines.push({ kind: 'item', text: 'Nothing yet.' });
   for (const r of wired) lines.push({ kind: 'item', text: `Done: ${r.label}` }, { kind: 'detail', text: r.why });
   const left = GA_CAPSTONE.filter((_, i) => !done[i]);
   if (left.length && wired.length) {
-    lines.push({ kind: 'head', text: 'Still to wire' });
+    lines.push({ kind: 'head', text: 'Still to connect' });
     for (const r of left) lines.push({ kind: 'item', text: r.label });
   }
   lines.push({ kind: 'foot', text: GA_SUMMARY_FOOT });

@@ -1,7 +1,8 @@
 /**
- * Page 22 — CAPSTONE AND FREE PLAY (chapter 6, "Into the real tools").
+ * Page 22 — CAPSTONE AND FREE PLAY (group E, pages 20 to 22: see
+ * pages/index.ts).
  *
- * No new idea: the student wires ONE scene from the ideas of the whole
+ * No new idea: the student connects ONE scene from the ideas of the whole
  * lab. Seven requirements (data/gaCapstone), each judged from the model's
  * facts and state during this visit, never from a key press:
  *
@@ -11,19 +12,42 @@
  *   ducked the mix · one music change applied on a bar · the overheat alarm
  *   running with its visual cue on
  *
+ * A BRIEF, NOT A SCRIPT (audit 2, L-04; lead's decision 14). Step 2 says
+ * what to build and that the seven goals are the evidence; it names no key.
+ * The learner plans. SHOW A HINT under the goals gives the keys for the
+ * first goal not met yet, one goal at a time, only when asked.
+ *
  * THE DOCK gives the whole scene in three keys, each a tray:
  *   MOVE    STEP FORWARD and three places; its slider is which way you face
- *   WORLD   door, scene, generator 1, guide line, alarm, visual cue, CLEAN
- *           SCENE;
- *           its slider is the generator's SPEED (the page's teaching control)
+ *   SOUNDS  door, scene, generator 1, guide line, alarm, visual cue, CLEAN
+ *           SCENE; its slider is the generator's SPEED (the page's teaching
+ *           control). It was WORLD, a name no other page uses (L-32); page
+ *           17's tray of the scene's sounds is SOUNDS too.
  *   MUSIC   start and stop, mood, layers, stinger
  * and a fourth key for the record, which changes nothing in the sound:
- *   SETUP   a PLATFORM and a LISTENING setup (page 3's lists), one test for
- *           each, and SHARE SUMMARY. (The key was SUMMARY; that word was
- *           cut in a six-key dock at 390 wide, visual review 2026-11-12.)
- * The MUSIC and SETUP trays have no use for the slider, so the lane steps
+ *   REPORT  SHARE SUMMARY first (W2-03: it was under the fold), then a
+ *           PLATFORM and a LISTENING setup (page 3's lists). The one test
+ *           for each choice is printed in the summary card, not the tray.
+ *           (The key was SUMMARY, cut in a six-key dock at 390 wide; then
+ *           SETUP, which is page 9's variation tray: L-32.)
+ * The MUSIC and REPORT trays have no use for the slider, so the lane steps
  * aside while they are open (`hideLane`): in full screen the dock then
- * rises less far over the picture.
+ * rises less far over the picture. Their chips are chdKit's 44 pt TrayChip
+ * (they were 35 pt LabChips, W2-26).
+ *
+ * THE STRIP under the scene follows the tray in use (lead's decision 1): a
+ * chip in MUSIC shows the MUSIC strip (bars, beats, the waiting change); a
+ * chip in SOUNDS shows the MIX strip (the six bus meters and the duck). It
+ * opens on MIX. MOOD is printed on the picture (`show.mood`). The two slider
+ * keys say what their number is: FACE 90°, SPEED 40% (W2-26).
+ *
+ * THE SLIDER UNDER AN OPEN TRAY (audit 2, W2-01, S1). MOVE and SOUNDS are
+ * sticky choosers: the tray stays open, and the shared shell
+ * (rack/RackUnit) hands the slider to the key only when the tray CLOSES. So
+ * on the first tap the slider still belongs to the other key. The shell is
+ * not this page's to change tonight; the two tray titles and step 2 say the
+ * truth instead ("CLOSE THIS: THE SLIDER TURNS YOU" / "… IS SPEED"). The
+ * need is recorded for the owner: bind the lane when a sticky chooser OPENS.
  *
  * Once the seven are met the same scene stays open as a sandbox: nothing is
  * locked before, and nothing is taken away after.
@@ -43,13 +67,15 @@
  *
  * Common mistake taught against: judging a scene by the keys that were
  * pressed, when the log shows what the audio side really did.
+ *
+ * LENGTH (audit 2, L-06): 272 words of prose against a plan of 150 to 260;
+ * the key-by-key lines went into the hints.
  */
 import { useState } from 'react';
-import { Platform, Share, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useInFlightLatch } from '../../../../lib/latch';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
-import { LabChip } from '../../LabShell';
 import { useRackLeaveFull } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
@@ -60,8 +86,10 @@ import { gaPlaying, surfaceOf, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, gaResetScene, useGa } from '../model/gaStore';
 import { DOOR_POS, WALL_X, zoneAt, type GaPoint } from '../model/gaWorld';
 import { GA_ASSETS } from '../sounds/gaSoundBank';
-import { Tray, TrayNote, TrayRow, useCapstoneVisit } from './cheKit';
-import { GA_CAPSTONE, GA_SUMMARY_TITLE, gaCapstoneMet, gaCapstoneSummary, gaCapstoneSummaryLines, gaListeningTest, gaPlatformTest } from './data/gaCapstone';
+import { Tray, TrayChip, TrayGrid, TrayNote, onOff } from './chdKit';
+import { useCapstoneVisit } from './cheKit';
+import { pendingLine } from './data/chcMusicVoice';
+import { GA_CAPSTONE, GA_SUMMARY_TITLE, gaCapstoneMet, gaCapstoneNextHint, gaCapstoneSummary, gaCapstoneSummaryLines } from './data/gaCapstone';
 import { GA_LISTENING, GA_PLATFORMS, gaListening, gaPlatform, type GaListeningId, type GaPlatformId } from './data/gaPlatforms';
 import { G22 } from './guides/p22';
 import { facingKey, speedKey } from './shared';
@@ -71,9 +99,15 @@ const ASSETS: readonly string[] = [
   ...GA_ASSETS.filter((a) => a.id.startsWith('fs_')).map((a) => a.id),
   'door', 'door_rattle', 'gen_hum', 'gen_air', 'fountain', 'amb_room', 'amb_yard', 'alarm', 'vo_greeting', 'vo_greeting_long', 'mu_calm', 'mu_pulse', 'mu_drive', 'mu_stinger', 'ir_room',
 ];
-const TERMS = gaTerms('Audio event (game)', 'Game Syncs', 'Dynamic mixing', 'Adaptive music');
+// "Game Syncs" was here, as if it were the general word (audit 2, A1): it is
+// Wwise's, and page 8 and page 20 teach it as Wwise's
+const TERMS = gaTerms('Audio event (game)', 'Audio parameter', 'Dynamic mixing', 'Adaptive music');
 
-const onOff = (label: string, on: boolean): string => `${label} · ${on ? 'ON' : 'OFF'}`;
+/** The two sticky trays' titles: what the slider does, said truthfully
+ *  (W2-01: the slider binds when the tray CLOSES). Kept short so the title
+ *  itself is never cut (the shell adds "stays open …" after it). */
+export const P22_MOVE_TITLE = 'MOVE · CLOSE THIS: THE SLIDER TURNS YOU';
+export const P22_SOUNDS_TITLE = 'SOUNDS · CLOSE THIS: THE SLIDER IS SPEED';
 const sceneOn = (s: GaState): boolean => gaPlaying(s, 'bed_room') || gaPlaying(s, 'bed_yard');
 const alarmOn = (s: GaState): boolean => gaPlaying(s, 'alarm');
 const SURFACE_WORD = { wood: 'WOOD', stone: 'STONE', gravel: 'GRAVEL' } as const;
@@ -81,10 +115,12 @@ const SURFACE_WORD = { wood: 'WOOD', stone: 'STONE', gravel: 'GRAVEL' } as const
  *  four lines, and moving SPEED prints many: unfiltered, they push the
  *  ZONE line and the DUCK line out of view). Step 2: what the game asked
  *  and what started, with the ZONE line. Step 3: the mix and the music. */
-const LOG_KINDS = ['trigger', 'start', 'state', 'refused', 'failed'] as const;
+const LOG_KINDS = ['trigger', 'start', 'state', 'refused', 'failed', 'note'] as const;
 const MIX_KINDS = ['mix', 'music', 'refused', 'failed'] as const;
 
 /* ── MOVE: places to go without walking every step ──────────────────────── */
+// (a STEP that cannot move, against the closed door or the edge, prints a
+// NOTE line saying why: LOG_KINDS lets it through)
 
 type Spot = 'path' | 'gravel' | 'room';
 const SPOTS: Record<Spot, GaPoint> = { path: { x: 5.2, y: DOOR_POS.y }, gravel: { x: 6.0, y: 2.6 }, room: { x: 11.0, y: DOOR_POS.y } };
@@ -112,23 +148,26 @@ function goTo(spot: Spot): void {
 type FaderKey = Extract<DockParam, { kind: 'fader' }>;
 type Chooser = NonNullable<FaderKey['chooser']>;
 /** A shared slider key that also opens a tray: one key, a tray and a lane. */
-const withTray = (base: DockParam, label: string, chooser: Chooser): DockParam => (base.kind === 'fader' ? { ...base, label, chooser } : base);
+/** The key's value says what its number is ("FACE 90°", "SPEED 40%"):
+ *  W2-26, the key read "MOVE 90°" and "WORLD 40%". */
+const withTray = (base: DockParam, label: string, chooser: Chooser, word: string): DockParam =>
+  base.kind === 'fader' ? { ...base, label, chooser, formatShort: (v: number) => `${word} ${(base.formatShort ?? base.format)(v)}` } : base;
 
 const moveKey = (s: GaState): DockParam =>
   withTray(facingKey(s), 'MOVE', {
-    title: 'MOVE · SLIDER = FACING',
+    title: P22_MOVE_TITLE,
     sticky: true,
     selectedId: null,
     options: [{ id: 'step', label: 'STEP FORWARD' }, ...(Object.keys(SPOTS) as Spot[]).map((id) => ({ id, label: crosses(s, id) && !s.doorOpen ? `${SPOT_LABEL[id]} · DOOR IS CLOSED` : SPOT_LABEL[id] }))],
     onSelect: (id) => (id === 'step' ? gaDispatch({ type: 'step', who: 'player' }) : goTo(id as Spot)),
-  });
+  }, 'FACE');
 
-/* ── WORLD: the scene's sounds; the slider is the generator's speed ─────── */
+/* ── SOUNDS: the scene's sounds; the slider is the generator's speed ────── */
 
-const worldKey = (s: GaState): DockParam => {
+const soundsKey = (s: GaState, onUse: () => void): DockParam => {
   const generatorOn = !!s.machines[0]?.on;
-  return withTray(speedKey(s), 'WORLD', {
-    title: 'WORLD · SLIDER = GENERATOR SPEED',
+  return withTray(speedKey(s), 'SOUNDS', {
+    title: P22_SOUNDS_TITLE,
     sticky: true,
     selectedId: null,
     options: [
@@ -140,6 +179,7 @@ const worldKey = (s: GaState): DockParam => {
       { id: 'cue', label: onOff('VISUAL CUE', s.options.visualCue) },
     ],
     onSelect: (id) => {
+      onUse();
       const now = gaGet();
       if (id === 'door') gaDispatch({ type: 'door' });
       else if (id === 'scene') gaDispatch({ type: 'scene', on: !sceneOn(now) });
@@ -149,35 +189,40 @@ const worldKey = (s: GaState): DockParam => {
       else if (id === 'cue') gaDispatch({ type: 'option', patch: { visualCue: !now.options.visualCue } });
     },
     onReset: { label: 'CLEAN SCENE', onPress: gaResetScene },
-  });
+  }, 'SPEED');
 };
 
 /* ── MUSIC ──────────────────────────────────────────────────────────────── */
 
-function MusicTray() {
+/** Two rows of 44 pt chips and one line (W2-03: the tray must fit about
+ *  196 pt with the strip in place). The waiting change is said in page 14's
+ *  own words (data/chcMusicVoice `pendingLine`), as PENDING. */
+function MusicTray({ onUse }: { onUse: () => void }) {
   const s = useGa();
+  const act = (f: () => void) => () => {
+    onUse();
+    f();
+  };
   const m = s.music;
-  const waiting = m.pending ? `Waiting: ${m.pending.what}, for the next ${m.pending.boundary === 'now' ? 'moment' : m.pending.boundary}.` : m.on ? 'Nothing is waiting.' : 'Start the music first. A change needs a running bar to land on.';
+  const waiting = m.on || m.pending || m.stinger ? `PENDING · ${pendingLine(s)}` : 'Start the music first. A change needs a running bar to land on.';
   return (
     <Tray>
-      <TrayRow head="MUSIC (three layers on one clock)">
-        <LabChip label={onOff('MUSIC', m.on)} selected={m.on} onPress={() => gaDispatch({ type: gaGet().music.on ? 'musicStop' : 'musicStart' })} />
-        <LabChip label="STINGER" selected={false} onPress={() => gaDispatch({ type: 'stinger' })} />
-      </TrayRow>
-      <TrayRow head="MOOD (a state for the whole game)">
-        <LabChip label={marked('CALM', s.mood === 'calm')} selected={s.mood === 'calm'} onPress={() => gaDispatch({ type: 'mood', mood: 'calm' })} />
-        <LabChip label={marked('ALERT', s.mood === 'alert')} selected={s.mood === 'alert'} onPress={() => gaDispatch({ type: 'mood', mood: 'alert' })} />
-      </TrayRow>
-      <TrayRow head="LAYERS (each change waits for the bar)">
-        <LabChip label={onOff('PULSE', m.layers.pulse)} selected={m.layers.pulse} onPress={() => gaDispatch({ type: 'musicLayer', layer: 'pulse', on: !gaGet().music.layers.pulse })} />
-        <LabChip label={onOff('DRIVE', m.layers.drive)} selected={m.layers.drive} onPress={() => gaDispatch({ type: 'musicLayer', layer: 'drive', on: !gaGet().music.layers.drive })} />
-      </TrayRow>
+      <TrayGrid head="MUSIC · THREE LAYERS ON ONE CLOCK" cols={4}>
+        <TrayChip label={onOff('MUSIC', m.on)} selected={m.on} onPress={act(() => gaDispatch({ type: gaGet().music.on ? 'musicStop' : 'musicStart' }))} />
+        <TrayChip label={onOff('PULSE', m.layers.pulse)} selected={m.layers.pulse} onPress={act(() => gaDispatch({ type: 'musicLayer', layer: 'pulse', on: !gaGet().music.layers.pulse }))} />
+        <TrayChip label={onOff('DRIVE', m.layers.drive)} selected={m.layers.drive} onPress={act(() => gaDispatch({ type: 'musicLayer', layer: 'drive', on: !gaGet().music.layers.drive }))} />
+        <TrayChip label={m.stinger ? 'STINGER · WAITING' : 'STINGER'} selected={!!m.stinger} onPress={act(() => gaDispatch({ type: 'stinger' }))} />
+      </TrayGrid>
+      <TrayGrid head="MOOD · A GAME STATE" cols={4}>
+        <TrayChip label={marked('CALM', s.mood === 'calm')} selected={s.mood === 'calm'} onPress={act(() => gaDispatch({ type: 'mood', mood: 'calm' }))} />
+        <TrayChip label={marked('ALERT', s.mood === 'alert')} selected={s.mood === 'alert'} onPress={act(() => gaDispatch({ type: 'mood', mood: 'alert' }))} />
+      </TrayGrid>
       <TrayNote>{waiting}</TrayNote>
     </Tray>
   );
 }
 
-/* ── SETUP: the two choices, one test for each, and the share key ───────── */
+/* ── REPORT: the share key, then the two choices ────────────────────────── */
 
 type SummaryProps = {
   platform: GaPlatformId | null;
@@ -188,30 +233,70 @@ type SummaryProps = {
   shareNote: string | null;
 };
 
+/** SHARE SUMMARY on the first row, so it is never under the fold (W2-03,
+ *  W2-17); then the two lists in 44 pt chips. The one test for each choice
+ *  is printed in the summary card in the well, not here. */
 function SummaryTray({ platform, listening, onPlatform, onListening, onShare, shareNote }: SummaryProps) {
   // in full screen the share sheet opens after the rack has left full screen
   const leaveFull = useRackLeaveFull();
-  const pTest = gaPlatformTest(platform);
-  const lTest = gaListeningTest(listening);
+  // MEASURED at 390 x 844 (2026-11-13): for about a second after it opens,
+  // this tray's viewport is 218 pt (then 241, once the slider steps aside).
+  // So: one heading for both lists, a 6 pt gap, the five listening chips in
+  // one row: 215 pt, every chip above the fold from the first frame.
   return (
-    <Tray>
-      <TrayRow head="PLATFORM (for your summary; it changes no sound)">
+    <View style={styles.reportTray}>
+      <TrayGrid cols={1}>
+        <TrayChip label="SHARE SUMMARY · AS PLAIN TEXT" onPress={() => (leaveFull ? leaveFull(onShare) : onShare())} />
+      </TrayGrid>
+      <TrayGrid head="PLATFORM, THEN LISTENING · CHANGE NO SOUND" cols={4}>
         {GA_PLATFORMS.map((p) => (
-          <LabChip key={p.id} label={marked(p.label, platform === p.id)} selected={platform === p.id} onPress={() => onPlatform(p.id)} />
+          <TrayChip key={p.id} label={marked(p.label, platform === p.id)} selected={platform === p.id} onPress={() => onPlatform(p.id)} />
         ))}
-      </TrayRow>
-      {pTest ? <TrayNote>{`One test: ${pTest}`}</TrayNote> : null}
-      <TrayRow head="LISTENING (for your summary; it changes no sound)">
+      </TrayGrid>
+      {/* the house chip's 12 pt text broke HEADPHONES and SOUNDBAR in a
+          fifth of the width, so this row uses NarrowChip */}
+      <TrayGrid cols={5}>
         {GA_LISTENING.map((l) => (
-          <LabChip key={l.id} label={marked(l.label, listening === l.id)} selected={listening === l.id} onPress={() => onListening(l.id)} />
+          <NarrowChip key={l.id} label={marked(l.label, listening === l.id)} selected={listening === l.id} onPress={() => onListening(l.id)} />
         ))}
-      </TrayRow>
-      {lTest ? <TrayNote>{`One test: ${lTest}`}</TrayNote> : null}
-      <TrayRow head="YOUR LEARNING SUMMARY, AS PLAIN TEXT">
-        <LabChip label="SHARE SUMMARY" selected={false} onPress={() => (leaveFull ? leaveFull(onShare) : onShare())} />
-      </TrayRow>
+      </TrayGrid>
+      {/* after the chips, so a note never pushes a chip under the fold */}
       {shareNote ? <TrayNote>{shareNote}</TrayNote> : null}
-    </Tray>
+    </View>
+  );
+}
+
+/** A 44 pt tray chip for a fifth of the tray's width: the same look as
+ *  chdKit's TrayChip, with 10.5 pt text and no letter spacing, so a word
+ *  of ten capitals (HEADPHONES) fits one line. Its state is in the label. */
+function NarrowChip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  return (
+    <Pressable style={[styles.narrow, selected && styles.narrowOn]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected }} aria-pressed={selected}>
+      <Text style={[styles.narrowText, selected && styles.narrowTextOn]} numberOfLines={2}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/** SHOW A HINT: the keys for the first goal not met yet, only when asked.
+ *  One hint at a time; it follows the goals as they are met. */
+function HintLine({ done }: { done: readonly boolean[] }) {
+  const [asked, setAsked] = useState(false);
+  const next = gaCapstoneNextHint(done);
+  if (!next) return null;
+  return (
+    <View style={styles.hint}>
+      {asked ? (
+        <Text style={styles.hintText} accessibilityLiveRegion="polite">
+          <Text style={styles.hintHead}>{`HINT · ${next.chip.toUpperCase()}  `}</Text>
+          {next.hint}
+        </Text>
+      ) : null}
+      <Pressable style={styles.hintBtn} onPress={() => setAsked((a) => !a)} accessibilityRole="button" accessibilityLabel={asked ? 'Hide the hint' : 'Show a hint for the first goal not met yet'}>
+        <Text style={styles.hintBtnText}>{asked ? 'HIDE THE HINT' : 'SHOW A HINT'}</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -238,6 +323,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const [platform, setPlatform] = useState<GaPlatformId | null>(null);
   const [listening, setListening] = useState<GaListeningId | null>(null);
   const [shareNote, setShareNote] = useState<string | null>(null);
+  const [strip, setStrip] = useState<'mix' | 'music'>('mix');
   const shareLatch = useInFlightLatch();
 
   const metNow = gaCapstoneMet(s, since);
@@ -261,22 +347,25 @@ function Page({ ctx }: { ctx: PageCtx }) {
 
   const surface = SURFACE_WORD[surfaceOf(s, 'player')];
   const musicWord = !s.music.on ? 'OFF' : s.mood === 'alert' ? 'ALERT' : 'CALM';
-  const setupKey: DockParam = {
+  const reportKey: DockParam = {
     kind: 'group',
-    id: 'setup',
-    label: 'SETUP',
+    id: 'report',
+    label: 'REPORT',
     // a word of six letters or fewer: a longer value is cut in a six-key dock
     valueLabel: platform && listening ? 'CHOSEN' : 'CHOOSE',
     hideLane: true,
     valueA11y: `platform ${gaPlatform(platform)?.name ?? 'not chosen yet'}; listening setup ${gaListening(listening)?.label.toLowerCase() ?? 'not chosen yet'}`,
     render: () => <SummaryTray platform={platform} listening={listening} onPlatform={setPlatform} onListening={setListening} onShare={share} shareNote={shareNote} />,
   };
-  const musicKey: DockParam = { kind: 'group', id: 'music', label: 'MUSIC', valueLabel: musicWord, valueA11y: `music ${musicWord.toLowerCase()}`, hideLane: true, render: () => <MusicTray /> };
+  const musicKey: DockParam = { kind: 'group', id: 'music', label: 'MUSIC', valueLabel: musicWord, valueA11y: `music ${musicWord.toLowerCase()}`, hideLane: true, render: () => <MusicTray onUse={() => setStrip('music')} /> };
 
   return (
     <GaRack
       spec={{
-        keys: [moveKey(s), worldKey(s), musicKey, setupKey],
+        keys: [moveKey(s), soundsKey(s, () => setStrip('mix')), musicKey, reportKey],
+        // the strip follows the tray in use: MUSIC shows the bars, SOUNDS the bus meters
+        hud: strip,
+        show: { mood: true },
         initialParam: 'speed-generator-1',
         readouts: [
           { k: 'SURFACE', v: surface, vA11y: `you stand on ${surface.toLowerCase()}` },
@@ -288,30 +377,32 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>The courtyard and the workshop again, with every sound of this lab ready. Nothing runs until you start it.</Look>
-        <P>This page adds no new idea. You connect the ideas you know into one scene. Events start the sounds. Game Syncs change them. The mix turns other sounds down for speech. The music follows the game.</P>
+        <P>This page adds no new idea. You connect the ideas you know into one scene. Events start the sounds. Switches, parameters and states change them.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open WORLD, switch SCENE on and press OPEN DOOR. Then open MOVE and press STEP FORWARD until you are inside the workshop.</Do>
-        <P>Then read the log. For each step, a GAME line names the surface and a START line names the take. The door starts two layers. The doorway prints one ZONE line.</P>
+        <Do>Build one scene that shows all seven goals in step 4. Plan it first: which sound each goal needs, and what starts it. Any order works. Everything you need is in MOVE, SOUNDS and MUSIC.</Do>
+        <P>MOVE and SOUNDS stay open while you choose. The slider changes to their control only when you close the tray.</P>
+        <P>After each action, read the log.</P>
         <ActivityLog state={s} lines={8} only={LOG_KINDS} />
       </Step>
       <Step n={3}>
-        <Do>In WORLD, switch GENERATOR 1, ALARM and VISUAL CUE on and press GUIDE LINE. Close the tray and move the slider: it now shows GENERATOR 1. In MUSIC, switch MUSIC on and choose ALERT.</Do>
-        <P>The line turns the other buses down while it speaks: the log prints DUCK on, then DUCK off. The music change waits for the next bar. The alarm now has a sign in the picture, for a player who cannot hear it.</P>
+        <P>For each step, a GAME line names the surface and a START line names the take. The door starts two layers. Crossing the doorway prints one STATE line that begins ZONE.</P>
+        <P>A guide line ducks the other buses: a MIX line begins DUCK on, then DUCK off. A music change waits for the next bar. The alarm has a sign in the picture, for a player who cannot hear it.</P>
         <Caption state={s} />
         <ActivityLog state={s} lines={5} only={MIX_KINDS} />
         <Note tone="mistake">Judging a scene by the keys you pressed. A key press is only a request. The log shows what the audio side did with it.</Note>
       </Step>
       <Step n={4}>
-        <P>Seven goals. Each one is marked done when it really happens in the scene, not when you press a key.</P>
+        <P>Each goal is marked done when it really happens in the scene, not when you press a key.</P>
         <GoalChips goals={goals} latched={latched} />
+        <HintLine done={latched} />
         {allMet ? <Note tone="try">All seven are met. The scene is now a free-play sandbox: every control stays live.</Note> : null}
-        <Do>Open SETUP. Choose a PLATFORM and a way of LISTENING. They change nothing in the sound.</Do>
+        <Do>Open REPORT. Choose a PLATFORM and a way of LISTENING. They change nothing in the sound.</Do>
         <SummaryCard platform={platform} listening={listening} done={latched} />
       </Step>
       <Step n={5}>
-        <P>This check is optional. The seven goals are what this page counts.</P>
+        <P>This check is optional: the seven goals complete this page.</P>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="You pressed GUIDE LINE, but the music did not turn down. Where do you look first?"
@@ -342,6 +433,16 @@ const styles = StyleSheet.create({
   cardItem: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },
   cardDetail: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, paddingLeft: 10 },
   cardFoot: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, marginTop: 8 },
+  narrow: { minHeight: 44, justifyContent: 'center', alignItems: 'center', borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', paddingVertical: 4, paddingHorizontal: 0 },
+  narrowOn: { borderColor: 'rgba(255,198,77,0.65)', backgroundColor: '#1a1409' },
+  narrowText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, lineHeight: 13, letterSpacing: 0, textAlign: 'center' },
+  narrowTextOn: { color: colors.amber },
+  reportTray: { gap: 6 },
+  hint: { gap: 6 },
+  hintText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
+  hintHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2 },
+  hintBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: colors.amber, paddingHorizontal: 12, minHeight: 44, justifyContent: 'center' },
+  hintBtnText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.2 },
 });
 
 export const P22: PageDef = { title: 'Capstone and free play', short: 'CAPSTONE', Component: Page, manualDone: true, rack: true, guide: G22 };

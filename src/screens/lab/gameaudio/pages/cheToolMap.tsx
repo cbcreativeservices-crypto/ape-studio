@@ -14,7 +14,9 @@
  *   ToolNameCards       for each core idea, the closest name in four tools
  *                       (data/gaToolMap). A phone is too narrow for a table
  *                       of five columns at a readable size, so each idea is
- *                       a card with four labeled lines.
+ *                       a card with four labeled lines. Where a tool has a
+ *                       dash, the line goes on to say what to look for in
+ *                       that tool instead (data/gaToolMap GA_TOOL_INSTEAD).
  *
  * THE NUMBERS READ IN ORDER (visual review 2026-11-12): three rows, numbered
  * left to right and top to bottom, 1 2 3 / 4 5 / 6 7 8, and the list under
@@ -31,7 +33,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { levelColor } from '../../../../features/tools/levelColor';
 import { fitValue } from '../../../../theme/legibility';
 import { colors, fonts } from '../../../../theme/tokens';
-import { GA_TOOLS, GA_TOOL_MAP, GA_TOOL_NONE, GA_TOOL_WINDOWS, gaToolRowSpoken, gaToolWindowMet, type GaToolWindow } from './data/gaToolMap';
+import { GA_TOOLS, GA_TOOL_MAP, GA_TOOL_NONE, GA_TOOL_WINDOWS, gaToolInstead, gaToolRowSpoken, gaToolWindowMet, type GaToolWindow } from './data/gaToolMap';
 
 const BLUE = '#6fa8ff';
 const win = (id: GaToolWindow['id']): GaToolWindow => GA_TOOL_WINDOWS.find((w) => w.id === id) as GaToolWindow;
@@ -341,10 +343,15 @@ export function ToolNameCards() {
           <View style={cards.rule} />
           {GA_TOOLS.map((t) => {
             const none = row[t.id] === GA_TOOL_NONE;
+            // a dash is never left alone: the line says what to look for instead
+            const instead = none ? gaToolInstead(row.id, t.id) : null;
             return (
               <View key={t.id} style={cards.line}>
                 <Text style={cards.tool}>{t.label}</Text>
-                <Text style={[cards.name, none && cards.none]}>{row[t.id]}</Text>
+                <Text style={[cards.name, none && cards.none]}>
+                  {row[t.id]}
+                  {instead ? <Text style={cards.instead}>{`  ${instead}`}</Text> : null}
+                </Text>
               </View>
             );
           })}
@@ -433,4 +440,5 @@ const cards = StyleSheet.create({
   tool: { width: 104, color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.9, lineHeight: 19 },
   name: { flex: 1, color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },
   none: { color: colors.textMuted },
+  instead: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
 });

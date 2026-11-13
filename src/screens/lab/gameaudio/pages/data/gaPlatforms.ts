@@ -24,8 +24,9 @@ export type GaPlatformCard = {
   id: GaPlatformId;
   /** The dock chip and the card's title. */
   label: string;
-  /** For the dock key and the readout: 7 letters at most (an 8-letter value
-   *  is cut in a five-key dock). */
+  /** For the CARD readout. It is the card's own name: ONE name for each
+   *  thing (learning audit L-07, walk audit W1 F18: the readout said HYBRID
+   *  for the HANDHELD card). The dock key shows how many cards were seen. */
   short: string;
   /** The card's sub-title, and the name read aloud. */
   name: string;
@@ -61,7 +62,7 @@ export const GA_PLATFORMS: readonly GaPlatformCard[] = [
     example: 'A strategy game or a simulation.',
     compare: ['Distant units', 'Many possible sound sources at the same time', 'The camera’s viewpoint', 'An order of importance for interface cues and alerts'],
     same: 'Each sound, its variations and its place in the mix are built the same way.',
-    change: 'The output can change during play: laptop speakers, headphones, an audio interface. A computer may not have surround speakers, large memory or high speed.',
+    change: 'The output can change during play: laptop speakers, headphones, an audio interface. A computer may not have surround speakers, much memory or a fast processor.',
     test: 'Change the output device while the game runs, for example by unplugging the headphones. Confirm the sound continues on the new device.',
   },
   {
@@ -78,7 +79,7 @@ export const GA_PLATFORMS: readonly GaPlatformCard[] = [
   {
     id: 'handheld',
     label: 'HANDHELD',
-    short: 'HYBRID',
+    short: 'HANDHELD',
     name: 'Handheld and hybrid systems',
     example: 'A portable game that can also be docked to a TV.',
     compare: ['Changes between speaker and headphones', 'Pause and resume', 'Battery power'],
@@ -95,7 +96,7 @@ export const GA_PLATFORMS: readonly GaPlatformCard[] = [
     compare: ['Sound that waits for the player’s first tap or click', 'Files that fail to load', 'A tab that the browser pauses in the background', 'Differences between browsers'],
     same: 'Sounds are asked for by name, varied and mixed with the same ideas as in an installed game.',
     change: 'Many browsers start sound only after the player acts. A web build of a game engine may offer fewer audio features than its installed build.',
-    test: 'Open the game in a new tab. Confirm that no sound is needed before the first tap or click, and that a file that fails to load is reported.',
+    test: 'Open the game in a new tab. Confirm the game does not try to play sound before the first tap or click, and that a file that fails to load is reported.',
   },
   {
     id: 'xr',
@@ -129,6 +130,19 @@ export const GA_PLATFORM_CORE: readonly GaPlatformId[] = ['mobile', 'desktop', '
 /** True once every core card has been opened. */
 export const gaComparedCore = (seen: readonly GaPlatformId[]): boolean => GA_PLATFORM_CORE.every((id) => seen.includes(id));
 
+/** CHECK 2 of the page (learning audit L-21: the lesson's success is that
+ *  the learner can pick the test that belongs to a platform). Each option is
+ *  one card's test in fewer words; the test pins each to its card. */
+export const GA_PLATFORM_TEST_CHECK: Readonly<{ ask: GaPlatformId; options: readonly { of: GaPlatformId; text: string }[] }> = {
+  ask: 'browser',
+  options: [
+    { of: 'browser', text: 'Open it in a new tab: no sound may play before the first tap' },
+    { of: 'console', text: 'Suspend the game in the middle of a scene, then resume it' },
+    { of: 'handheld', text: 'Dock and undock during play, then listen on each output' },
+    { of: 'cloud', text: 'Play through the stream: do sound and picture arrive together?' },
+  ],
+};
+
 /* ── output: how the player hears it ────────────────────────────────────── */
 
 export type GaListeningId = 'speaker' | 'headphones' | 'tv' | 'soundbar' | 'headset';
@@ -136,7 +150,10 @@ export type GaListeningId = 'speaker' | 'headphones' | 'tv' | 'soundbar' | 'head
 export type GaListening = {
   id: GaListeningId;
   label: string;
-  /** For the dock key and the readout: 7 letters at most. */
+  /** For the LISTEN readout: a word of the setup's own name, never a second
+   *  name for it (learning audit L-07: headphones read "PHONES", in a list
+   *  that opens with PHONE SPEAKER, on a page whose first card is "Phones
+   *  and tablets"). Ten letters at most: the readout is the wide one. */
   short: string;
   /** What this output means for the audio, in one or two sentences. */
   blurb: string;
@@ -144,13 +161,24 @@ export type GaListening = {
 
 export const GA_LISTENING: readonly GaListening[] = [
   { id: 'speaker', label: 'PHONE SPEAKER', short: 'SPEAKER', blurb: 'A small speaker. Low notes are weak, and left and right are hard to tell apart, so a cue needs to be clear without them.' },
-  { id: 'headphones', label: 'HEADPHONES', short: 'PHONES', blurb: 'Left and right are fully separate and quiet details are easy to hear. Outside noise may or may not be blocked.' },
+  { id: 'headphones', label: 'HEADPHONES', short: 'HEADPHONES', blurb: 'Left and right are fully separate and quiet details are easy to hear. Outside noise may or may not be blocked.' },
   { id: 'tv', label: 'TV SPEAKERS', short: 'TV', blurb: 'Small speakers heard from across a room that has its own noise. Clear speech is a common concern.' },
-  { id: 'soundbar', label: 'SOUNDBAR', short: 'BAR', blurb: 'One long speaker unit under the TV. Many widen the sound or add a bass unit, and each product does this in its own way.' },
+  { id: 'soundbar', label: 'SOUNDBAR', short: 'SOUNDBAR', blurb: 'One long speaker unit under the TV. Many widen the sound or add a bass unit, and each product does this in its own way.' },
   { id: 'headset', label: 'HEADSET', short: 'HEADSET', blurb: 'Headphones with a microphone. The player often hears voice chat and the game in the same ears.' },
 ];
 
 export const gaListening = (id: GaListeningId | null): GaListening | undefined => GA_LISTENING.find((l) => l.id === id);
+
+/** What the PLATFORM tray says about the card that is chosen: its ONE test,
+ *  so the tests can be compared without leaving the tray (the whole card is
+ *  in step 2 of the page). The tray prints the card's label above it, so the
+ *  name is not repeated: measured at 390 x 844, page 3's tray has 155 pt with
+ *  a card chosen (its lane keeps a nudge row), the chips take 96. */
+export const gaPlatformBlurb = (p: GaPlatformCard): string => `One test: ${p.test}`;
+
+/** What a dock key shows for "how many were opened": PICK before the first,
+ *  then a count with no total (house rule: never "N of total"). */
+export const gaSeenWord = (n: number): string => (n > 0 ? `${n} SEEN` : 'PICK');
 
 /* ── the resource budget: a scenario setting, independent of the card ───── */
 

@@ -1,19 +1,29 @@
 /**
  * Page 17 — BUDGETS AND VOICE LIMITS (plan page 17; handoff lesson 15).
  *
- * Voices, memory, processing time, loading, streaming and latency are
- * related but different resources. The learner sets a voice budget, posts a
- * burst of twelve crate impacts, and reads in the log which voices were
- * STOLEN and why; starts the protected alarm and an important line and
- * bursts again; then lowers the budget until a new sound is REFUSED. The
- * model keeps the budget at or above the protected voices sounding, and
- * the page says so.
+ * Voices, memory and processing time are related but different resources.
+ * The learner sets a voice budget, posts a burst of twelve crate impacts,
+ * and reads on the LAST BURST card whose voices were taken, in order, and
+ * what became of each; starts the protected alarm and bursts again; then
+ * lowers the budget to 1 so that every new impact is REFUSED.
  *
- * The voice rule is stated exactly as model/gaModel applies it, and said
- * once to be this lab's teaching rule. The MEMORY card prints only exact
- * arithmetic (samples × 4 bytes × channels, with each sound's own samples
- * per second). There is no processing figure on this page: the lab does not
- * measure one.
+ * THE BUDGET SWITCHES NOTHING OFF (lead's decision 4, accuracy audit A2).
+ * A stolen one-shot stops. A stolen LOOP becomes virtual (tracked, silent)
+ * and comes back when a voice is free, so GENERATOR 1 and SCENE stay ON
+ * through a burst. A new loop that finds no voice starts virtual.
+ *
+ * WHAT IS COUNTED IS SAID (decision 5, A5): this scene counts a loop at zero
+ * level as a voice and leaves the music out; a real engine counts the music
+ * and usually makes a silent loop virtual.
+ *
+ * The voice rule is stated exactly as model/gaModel applies it, and said to
+ * be this lab's teaching rule. STOLEN counts voices taken by a NEW sound; a
+ * voice given up because BUDGET was lowered is not a theft and is not in
+ * that count. The model keeps the budget at or above the protected voices
+ * sounding (the guide says so and gives the experiment). The MEMORY card
+ * prints only exact arithmetic (samples × 4 bytes × channels, with each
+ * sound's own samples per second). There is no processing figure on this
+ * page: the lab does not measure one.
  *
  * Common mistake taught against: reading every number as a measurement.
  */
@@ -31,13 +41,11 @@ import { gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { footstepId, gaAsset, gaSound } from '../sounds/gaSoundBank';
 import { FOOTSTEP_TAKES, GA_SURFACES } from '../sounds/gaSynth';
-import { InfoCard, Tray, TrayChip, TrayGrid, TrayLast, onOff } from './chdKit';
-import { MEMORY_IDS, budgetHeld, budgetShort, budgetStep, budgetToLane, budgetWords, fmtInt, laneToBudget, memoryRow, memoryRowSpoken, type MemoryRow } from './data/gaBudget';
+import { InfoCard, Tray, TrayChip, TrayGrid, onOff, speaking } from './chdKit';
+import { BURST_COUNT, MEMORY_IDS, budgetHeld, budgetShort, budgetStep, budgetToLane, budgetWords, burstSpoken, burstTheftWords, fmtInt, laneToBudget, lastBurst, memoryRow, memoryRowSpoken, type MemoryRow } from './data/gaBudget';
 import { G17 } from './guides/p17';
 import { useSince } from './shared';
 
-/** How many crate impacts one press of BURST posts. */
-const BURST_COUNT = 12;
 const ASSETS: readonly string[] = [
   'impact',
   'alarm',
@@ -54,7 +62,10 @@ const TERMS = gaTerms('Playback limit', 'Playback priority', 'Virtual voice', 'V
 const sceneOn = (s: GaState): boolean => gaPlaying(s, 'bed_room') || gaPlaying(s, 'bed_yard') || gaPlaying(s, 'fountain');
 const alarmOn = (s: GaState): boolean => gaPlaying(s, 'alarm');
 
-/** SOUNDS tray: what fills the voices before a burst, least important first. */
+/** SOUNDS tray: what fills the voices before a burst, least important
+ *  first. Two rows (chdKit); VOICES, STOLEN and REFUSED above the tray and
+ *  the strip say what each press did. Nothing is added to the tray while a
+ *  line speaks, so no chip moves under a finger. */
 function SoundsTray() {
   const s = useGa();
   const gen = !!s.machines[0]?.on;
@@ -65,11 +76,10 @@ function SoundsTray() {
         <TrayChip label={onOff('GENERATOR 1', gen)} selected={gen} onPress={() => gaDispatch({ type: 'machine', id: 'generator-1', on: !gaGet().machines[0]?.on })} />
         <TrayChip label="STEP" onPress={() => gaDispatch({ type: 'step', who: 'player' })} />
       </TrayGrid>
-      <TrayGrid head="PROTECTED, OR MORE IMPORTANT" cols={3}>
+      <TrayGrid head="PROTECTED: THEIR VOICE IS NOT TAKEN" cols={3}>
         <TrayChip label={onOff('ALARM', alarmOn(s))} selected={alarmOn(s)} onPress={() => gaDispatch({ type: 'alarm', on: !alarmOn(gaGet()) })} />
-        <TrayChip label="WARNING LINE" selected={gaPlaying(s, 'vo_warning')} onPress={() => gaDispatch({ type: 'post', event: 'vo_warning', owner: 'guide' })} />
+        <TrayChip label={speaking('WARNING LINE', gaPlaying(s, 'vo_warning'))} selected={gaPlaying(s, 'vo_warning')} onPress={() => gaDispatch({ type: 'post', event: 'vo_warning', owner: 'guide' })} />
       </TrayGrid>
-      <TrayLast lines={3} caption />
     </Tray>
   );
 }
@@ -116,7 +126,39 @@ function MemoryCard() {
         <Text style={styles.memNote}>Working out the three sizes…</Text>
       )}
       <Text style={styles.memNote}>This lab keeps each sample as a 32-bit number, which is 4 bytes. One second of one channel at 48,000 samples per second is 48,000 × 4 = 192,000 bytes.</Text>
-      <Text style={styles.memNote}>A real game often keeps a sound compressed in memory and decodes it while it plays: less memory, more processing time. A long sound is often streamed from storage. The file on disk is a different, smaller number, and an engine adds its own overhead.</Text>
+      <Text style={styles.memNote}>A real game often keeps a sound compressed in memory and decodes it while it plays: less memory, more processing time. The file on disk is a different, smaller number, and an engine adds its own overhead.</Text>
+    </InfoCard>
+  );
+}
+
+/** SINCE THE LAST BURST: whose voice was taken, in the order it happened,
+ *  and what became of each; how many new sounds were refused; how many loops
+ *  are waiting for a voice right now. Read-only: it is the model's own log
+ *  lines, put in order (data/gaBudget `lastBurst`). The log scrolls; this
+ *  card keeps the lines that teach the rule readable (walk audit W2-09). */
+function LastBurstCard({ s }: { s: GaState }) {
+  const r = lastBurst(s.log);
+  // loops tracked without a voice because of the budget: taken by a burst
+  // (stolen) or refused one when they started (waiting)
+  const waiting = s.voices.filter((v) => v.state === 'virtual' && (v.stolen || v.waiting)).length;
+  const now = waiting ? `${waiting} loop ${waiting === 1 ? 'voice is' : 'voices are'} virtual now, waiting for a free voice.` : 'No loop is waiting: every loop that is on has its voice.';
+  return (
+    <InfoCard head="SINCE THE LAST BURST · VOICES TAKEN, IN ORDER" a11y={`Since the last burst. ${burstSpoken(r)} ${now}`}>
+      {!r ? <Text style={styles.memNote}>No burst yet. Press BURST.</Text> : null}
+      {r && r.thefts.length === 0 ? <Text style={styles.memNote}>No voice was taken.</Text> : null}
+      {r
+        ? r.thefts.map((x, i) => (
+            <Text key={`${i}-${x.name}`} style={styles.memName}>
+              {i + 1}. {burstTheftWords(x)}
+            </Text>
+          ))
+        : null}
+      {r ? (
+        <Text style={styles.memSum}>
+          TAKEN {r.stolen} · REFUSED {r.refused}
+        </Text>
+      ) : null}
+      <Text style={styles.memNote}>{now}</Text>
     </InfoCard>
   );
 }
@@ -144,7 +186,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const goals = [
     { label: 'Fill the budget until a voice is STOLEN', hit: stolen > 0 },
     { label: 'Keep the alarm through a burst that fills the budget', hit: since('alarmSurvivedBurst') > 0 },
-    { label: 'With ALARM on, lower the budget until a sound is REFUSED', hit: refused > 0 },
+    { label: 'Lower BUDGET until a new sound is REFUSED', hit: refused > 0 },
     { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);
@@ -177,6 +219,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       spec={{
         keys: [budgetKey, burstKey, soundsKey],
         initialParam: 'budget',
+        hud: 'voices',
         readouts: [
           { k: 'STOLEN', v: String(stolen), vA11y: `${stolen} voices stolen since you opened this page` },
           { k: 'REFUSED', v: String(refused), vA11y: `${refused} sounds refused since you opened this page` },
@@ -186,27 +229,28 @@ function Page({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>VOICES counts the sound files playing at this moment against the budget, such as 5/8. STOLEN and REFUSED count what the budget cost on this visit.</Look>
-        <P>A voice is one sound file playing at this moment. One instance can use several voices. A project limits voices for the whole game or per event: that limit is a playback limit.</P>
-        <P>Voices are one of several separate budgets. Memory holds the loaded sounds. Processing time is the work the device does for sound many times each second. Loading and streaming bring a sound from storage. Latency is the delay before you hear it.</P>
-        <P>A limit is a project’s choice, not a property of a platform’s name.</P>
+        <Look>VOICES counts the voices in use against the budget. STOLEN and REFUSED count what the budget cost on this visit.</Look>
+        <P>A voice is one sound file playing at this moment. A limit on voices is called a playback limit.</P>
+        <P>Voices are one budget. Memory and processing time are others.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Set BUDGET to 8. In SOUNDS, switch on SCENE and GENERATOR 1. Press BURST.</Do>
-        <P>Twelve crate impacts arrive at the same time. This log keeps only STOP and REFUSED lines: read whose voice was STOLEN. Taking a voice is called voice stealing.</P>
-        <P>This lab’s rule: at the limit, a new sound takes the voice of the least important sound playing, the oldest among equals. A protected voice is not taken, nor is a more important one. If none can be taken, the NEW sound is refused.</P>
-        <Note>This is a teaching rule. Real engines have their own rules. Some make a sound virtual instead of stopping it: they keep track of it and bring it back when a voice is free.</Note>
-        <ActivityLog state={s} lines={8} only={['stop', 'refused']} />
+        <P>Twelve crate impacts arrive within 0.3 s. The card lists whose voice was taken: voice stealing.</P>
+        <P>This lab’s teaching rule: at the limit, a new sound takes the voice of the least important sound playing. Of several equal ones, the oldest is taken. A protected sound keeps its voice, and so does a more important one. If no voice can be taken, the new sound is REFUSED.</P>
+        <P>A stolen one-shot stops. A stolen loop becomes virtual: tracked and silent until a voice is free. GENERATOR 1 and SCENE stay on: their sounds return when the impacts end.</P>
+        <LastBurstCard s={s} />
+        <Note>This scene counts a silent loop as a voice and leaves the music out. A real engine counts the music and usually makes a silent loop virtual.</Note>
+        <ActivityLog state={s} lines={6} only={['stop', 'refused', 'state']} />
       </Step>
       <Step n={3}>
-        <Do>In SOUNDS, switch ALARM on and press WARNING LINE, then BURST. Lower BUDGET to 1 and press BURST again.</Do>
-        <P>The alarm is protected and the warning is more important than an impact, so both keep their voices. At a budget of 1 only the alarm plays: every impact is REFUSED. BUDGET does not go below the protected voices sounding.</P>
+        <Do>With BUDGET at 8, switch ALARM on in SOUNDS and press BURST. Then lower BUDGET to 1 and press BURST again.</Do>
+        <P>At a budget of 1 the protected alarm holds the only voice, so every impact is REFUSED.</P>
         <MemoryCard />
-        <Note tone="mistake">Reading every number as a measurement. Ask where a number comes from. Here the voice counts and the decoded sizes are exact. No processing figure is shown, because this lab does not measure one.</Note>
+        <Note tone="mistake">Reading every number as a measurement. The voice counts and decoded sizes here are exact. This lab measures no processing time.</Note>
       </Step>
       <Step n={4}>
-        <P>Each one is marked done when it really happens in the scene.</P>
+        <P>Each goal is marked done when it really happens in the scene.</P>
         <GoalChips goals={goals} latched={latched} />
       </Step>
       <Step n={5}>
@@ -214,7 +258,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="The budget is 2. The protected alarm and a warning line hold both voices. A crate impact, which is less important, is posted. What happens by this lab’s rule?"
           options={[
-            'The impact is refused, and both playing sounds continue',
+            'The impact is refused, and both sounds continue',
             'The alarm is stopped, because it is the oldest voice',
             'The impact plays anyway, and three voices sound',
             'The warning line is stopped, because a line is short',

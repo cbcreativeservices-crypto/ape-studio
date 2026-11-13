@@ -8,6 +8,9 @@
  *   GA_TOOL_MAP       for twelve core ideas of this lab, the CLOSEST name in
  *                     Wwise, FMOD Studio, Unity's own audio and Unreal
  *                     Engine's own audio.
+ *   GA_TOOL_INSTEAD   for every dash in the map, what a learner looks for in
+ *                     that tool INSTEAD (audit 2, L-05: Unity showed a dash
+ *                     on six of twelve cards with nothing to look for).
  *
  * THE MAP IS A LOOKUP AID, NOT A TRANSLATION. The tools organize these ideas
  * differently (owner's handoff, section 14: "their terms are not exact
@@ -22,6 +25,18 @@
  * be verified, the cell is GA_TOOL_NONE. NEVER fill a cell from memory:
  * check the vendor's page, then change this file and the record together.
  * Sources are internal and are never shown to the student.
+ *
+ * AUDIT 2 (2026-11-12, accuracy report section 3): 27 cells were re-read on
+ * the vendors' pages and found right; the lead confirmed nine of the twelve
+ * Wwise names on Audiokinetic's glossary the same night. One cell changed:
+ * Unreal Engine's "Random choice" now also names the MetaSound node (B3).
+ * UNREAL ENGINE HAS TWO SOUND-BUILDING SYSTEMS, the older Sound Cue and the
+ * newer MetaSound; a cell names the one with the closest idea, and page 20
+ * says so once.
+ *
+ * A CELL'S SHAPE: the name first; anything after the first ", " or " (" is
+ * a qualifier. The tool-window display (scene/hud/cModel `cCellHead`) prints
+ * the part before it in a small window, so keep that part a whole name.
  */
 
 export const GA_TOOL_NONE = '—';
@@ -58,7 +73,7 @@ export const GA_TOOL_MAP: readonly GaToolRow[] = [
   {
     id: 'instance',
     idea: 'Instance',
-    meaning: 'One single time a sound is actually playing.',
+    meaning: 'One copy of a sound that is playing now.',
     wwise: 'Playing ID',
     fmod: 'Event instance',
     unity: GA_TOOL_NONE,
@@ -100,7 +115,7 @@ export const GA_TOOL_MAP: readonly GaToolRow[] = [
     wwise: 'Random Container',
     fmod: 'Multi instrument',
     unity: 'Audio Random Container',
-    unreal: 'Random node in a Sound Cue',
+    unreal: 'Random node in a Sound Cue, or Random Get node in a MetaSound',
   },
   {
     id: 'bus',
@@ -113,7 +128,8 @@ export const GA_TOOL_MAP: readonly GaToolRow[] = [
   },
   {
     id: 'mix',
-    idea: 'Saved mix setup',
+    // the glossary and page 16 call this idea a snapshot (audit 2, L-33)
+    idea: 'Snapshot (a saved mix setup)',
     meaning: 'A stored set of mix settings the game can recall.',
     wwise: 'State',
     fmod: 'Snapshot',
@@ -158,10 +174,48 @@ export const GA_TOOL_MAP: readonly GaToolRow[] = [
   },
 ];
 
-/** One card read aloud: the idea, then each tool's closest name. */
+/**
+ * WHAT TO LOOK FOR INSTEAD OF A DASH. A dash is honest (the tool has no close
+ * idea of its own), but it left a learner who opens Unity with nothing to
+ * look for on half the cards. Each line says what does that job in the tool,
+ * in plain words, and names ONLY things the register already holds for that
+ * tool: another cell of its column (Audio Source, Audio Random Container,
+ * Snapshot of an Audio Mixer, Audio Component, Control Bus Mix) or the words
+ * of the vendor's page quoted beside the dash ("Audio Clip"). Every line is
+ * recorded word for word in SOURCES_TOOLS.md, and the test fails if a dash
+ * has no line, or a line has no dash.
+ */
+export const GA_TOOL_INSTEAD: Readonly<Record<string, Partial<Record<GaToolId, string>>>> = {
+  event: { unity: 'No event layer. A script tells an Audio Source to play an Audio Clip.' },
+  instance: {
+    unity: 'The Audio Source that is playing. A script reaches the sound through it.',
+    unreal: 'The Audio Component that is playing. The game reaches the sound through it.',
+  },
+  parameter: { unity: 'A script changes the settings of the Audio Source while it plays.' },
+  switch: { unity: 'A script chooses which Audio Clip the Audio Source plays.' },
+  state: {
+    unity: 'A script keeps the mode. For the mix, see Snapshot of an Audio Mixer.',
+    unreal: 'The game’s own code keeps the mode. For the mix, see Control Bus Mix.',
+  },
+  bank: {
+    unity: 'No audio bank. The engine packs sounds with the rest of the game.',
+    unreal: 'No audio bank. The engine packs sounds with the rest of the game.',
+  },
+};
+
+/** What to look for in `tool` where its cell of row `rowId` is a dash; null
+ *  where the cell holds a name. */
+export const gaToolInstead = (rowId: string, tool: GaToolId): string | null => GA_TOOL_INSTEAD[rowId]?.[tool] ?? null;
+
+/** One card read aloud: the idea, then each tool's closest name. A dash is
+ *  read as words, with what to look for instead. */
 export function gaToolRowSpoken(row: GaToolRow): string {
-  const cells = GA_TOOLS.map((t) => `${t.spoken}: ${row[t.id] === GA_TOOL_NONE ? 'no close idea of its own' : row[t.id]}`);
-  return `${row.idea}. ${row.meaning} ${cells.join('. ')}.`;
+  const cells = GA_TOOLS.map((t) => {
+    if (row[t.id] !== GA_TOOL_NONE) return `${t.spoken}: ${row[t.id]}.`;
+    const instead = gaToolInstead(row.id, t.id);
+    return `${t.spoken}: no close idea of its own.${instead ? ` ${instead}` : ''}`;
+  });
+  return `${row.idea}. ${row.meaning} ${cells.join(' ')}`;
 }
 
 /* ── the usual windows ──────────────────────────────────────────────────── */
@@ -236,7 +290,8 @@ export const GA_TOOL_WINDOWS: readonly GaToolWindow[] = [
     id: 'audition',
     n: 7,
     tag: 'AUDITION',
-    name: 'A way to audition',
+    // a window's name, like the other seven (audit 2, L-33: it is a check option)
+    name: 'The audition controls',
     does: 'You play an event with no game running and move its values by hand. A sound can be tested before it is in a build.',
     met: [],
     metNote: 'every page with the scene: you pressed the keys in place of a game',

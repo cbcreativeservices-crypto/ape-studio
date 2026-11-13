@@ -2,12 +2,22 @@
  * The Game Audio Lab's pages, in order. One file per page; this list is the
  * only place their order lives.
  *
- *   Chapter 1  The big picture                       1–5
- *   Chapter 2  From a sound file to a playing sound   6–10
- *   Chapter 3  Space                                  11–13
- *   Chapter 4  Music and voice                        14–15
- *   Chapter 5  Making it work together                16–19
- *   Chapter 6  Into the real tools                    20–22
+ * GROUPS (the one statement of them; audit 2, L-34). The pages fall into
+ * five groups, A to E. They are the first handoff's chapters and the helper
+ * files' prefixes (chA…, chb…, chc…, chd…, che…); a page's header comment
+ * names its group by letter.
+ *
+ *   A  What game audio is              1–5    chAViews
+ *   B  How a game asks for sound       6–10   chbBits
+ *   C  Space, music and voice          11–15  chcBits, chcSpeakerMap
+ *   D  The mix and its limits          16–19  chdKit
+ *   E  The real tools                  20–22  cheKit, cheToolMap
+ *
+ * The learner sees NO group: the shared shell lists the 22 page titles with
+ * no heading, and no learner string says "chapter". (The approved plan had
+ * six chapters, with 11–13 and 14–15 apart; the build merged them into C.
+ * Older comments that say "chapter 3, Space" or "chapter 6" mean C and E.)
+ * Showing groups to the learner is the shell's to add, and is not done.
  */
 import type { PageDef } from '../../kit/PagedLab';
 import { P01 } from './p01Welcome';

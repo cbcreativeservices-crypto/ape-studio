@@ -66,7 +66,11 @@ export type GaCmd =
       /** Send into the shared reverb, 0 … 1. */
       rev?: number;
     }
-  | { t: 'set'; v: string; gain?: number; pan?: number; pos?: GaVec3; rate?: number; lowpass?: number; rev?: number; ramp?: number }
+  /** `mode` (optional) moves a LIVING voice to another renderer without
+   *  restarting its source: the placements cross-fade over 30 ms and a loop
+   *  keeps its place (audit 2, F26). Send `pan` / `pos` for the new mode
+   *  with it. Without `mode` a set never changes how a voice is placed. */
+  | { t: 'set'; v: string; gain?: number; pan?: number; pos?: GaVec3; rate?: number; lowpass?: number; rev?: number; ramp?: number; mode?: GaPanMode }
   | { t: 'stop'; v: string; fade?: number }
   | { t: 'bus'; bus: GaBus; gain: number; ramp?: number }
   /** The lab's own master fader, 0 … 1, BEFORE the fixed output ceiling. */
@@ -85,7 +89,10 @@ export type GaCmd =
       stems: { id: string; buf: string; gain: number }[];
     }
   | { t: 'music'; op: 'layers'; req: string; at: GaMusicBoundary; gains: Record<string, number>; ramp?: number }
-  | { t: 'music'; op: 'stinger'; req: string; at: GaMusicBoundary; buf: string; gain: number }
+  /** `lead` = seconds from the file's first sample to its HIT. The engine
+   *  starts the file at (boundary - lead), so the hit lands ON the line; it
+   *  picks the first boundary that leaves room for the lead (audit 2, F9). */
+  | { t: 'music'; op: 'stinger'; req: string; at: GaMusicBoundary; buf: string; gain: number; lead?: number }
   | { t: 'music'; op: 'cancel'; req: string }
   | { t: 'music'; op: 'stop'; fade?: number }
   | { t: 'stopAll'; fade?: number }
@@ -114,11 +121,21 @@ export type GaEvt =
   | { e: 'music'; what: 'queued'; req: string; at: number; inS: number; boundary: GaMusicBoundary }
   | { e: 'music'; what: 'applied'; req: string; at: number }
   | { e: 'music'; what: 'cancelled'; req: string }
+  /** The music was stopped BY A STOP COMMAND. Never sent for the engine's
+   *  own restart inside a `start` (audit 2, F5). */
   | { e: 'music'; what: 'stopped' }
+  /** A stinger that had begun to sound has ended by itself, or was stopped
+   *  (music stop, stopAll): it is tracked until then (audit 2, F3). */
+  | { e: 'music'; what: 'stinger'; req: string; state: 'ended' | 'stopped' }
+  /** The answer to a `reverb` command: false = this device has no reverb
+   *  (the impulse could not be loaded), and the lab must say so (F1). */
+  | { e: 'reverb'; ok: boolean; why?: string }
   /** The mix BEFORE the output ceiling: RMS and peak, linear full scale;
    *  `l` / `r` are each side's RMS (how a pan is SHOWN, not just claimed). */
   | { e: 'level'; rms: number; peak: number; l: number; r: number; voices: number }
-  | { e: 'clock'; now: number; state: GaEngineState; latencyS: number | null }
+  /** The answer to a `ping`. The web view page's FIRST message has the
+   *  same shape with `hello: true` (the page is up; seen again, it reloaded). */
+  | { e: 'clock'; now: number; state: GaEngineState; latencyS: number | null; hello?: true }
   | { e: 'error'; msg: string };
 
 /* ── encoders (the web view transport) ──────────────────────────────────── */

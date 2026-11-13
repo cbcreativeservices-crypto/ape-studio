@@ -162,6 +162,7 @@ import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 // Game Audio lab (2026-11-12, must-do D60): `#labpreview/GameAudioEngineCheck` is
 // the sound engine's proof screen. The lab is not in the Labs menu yet.
 import { GameAudioEngineCheckScreen } from './GameAudioEngineCheckScreen';
+import { GameAudioToolsStageCheck } from './GameAudioToolsStageCheck'; // dev check for the mix / voices / net strips and page 20's tool-window stage: `#labpreview/GameAudioToolsStageCheck`
 import { GameAudioLabScreen } from '../screens/lab/gameaudio/GameAudioLabScreen';
 import { StagePlotLabScreen } from '../screens/lab/stageplot/StagePlotLabScreen'; // 2026-11-12, must-do D60: `#labpreview/StagePlotLab`; not in the Labs menu yet
 
@@ -243,6 +244,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   DrumTuningLab: DrumTuningLabScreen as ComponentType,
   DJSystemsLab: DJSystemsLabScreen as ComponentType,
   GameAudioEngineCheck: GameAudioEngineCheckScreen as ComponentType,
+  GameAudioToolsStageCheck: GameAudioToolsStageCheck as ComponentType,
   GameAudioLab: GameAudioLabScreen as ComponentType,
   StagePlotLab: StagePlotLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,

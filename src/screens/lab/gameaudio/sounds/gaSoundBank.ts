@@ -18,6 +18,7 @@
  */
 import {
   ALARM_S,
+  BIRD_CALLS,
   AMB_ROOM_S,
   AMB_YARD_S,
   FOOTSTEP_TAKES,
@@ -31,9 +32,11 @@ import {
   ambienceRoom,
   ambienceYard,
   ambienceYardUnprepared,
+  birdCall,
   crateDebris,
   crateImpact,
   door,
+  doorClose,
   doorRattle,
   footstep,
   fountain,
@@ -84,16 +87,25 @@ const FOOTSTEPS: GaAsset[] = GA_SURFACES.flatMap((s) =>
   ),
 );
 
+/** The courtyard's SPOT sounds: three bird calls, one-shots. They were six
+ *  fixed notes inside the wind loop (audit 2 F14); the game now posts them. */
+const BIRD_WORD = ['two rising whistles', 'three notes', 'a fast trill'];
+const BIRDS: GaAsset[] = Array.from({ length: BIRD_CALLS }, (_, k) =>
+  A(`bird_${k + 1}`, `amb_courtyard_bird_0${k + 1}.wav`, `Bird call: ${BIRD_WORD[k]}`, 'one-shot', () => birdCall(k)),
+);
+
 export const GA_ASSETS: readonly GaAsset[] = [
   ...FOOTSTEPS,
-  A('door', 'door_open.wav', 'Door: latch, hinge, thud', 'one-shot', door),
+  A('door', 'door_open.wav', 'Door opening: latch, hinge, thud', 'one-shot', door),
+  A('door_close', 'door_close.wav', 'Door closing: thud, then the latch', 'one-shot', doorClose),
   A('door_rattle', 'door_latch_rattle.wav', 'Loose latch settling', 'one-shot', doorRattle),
   A('gen_hum', 'generator_hum_loop.wav', 'Generator hum', 'loop', generatorHum, GEN_HUM_S),
   A('gen_air', 'generator_fan_loop.wav', 'Generator cooling fan', 'loop', generatorAir, GEN_AIR_S),
   A('fountain', 'fountain_loop.wav', 'Fountain', 'loop', fountain, FOUNTAIN_S),
   A('amb_room', 'amb_room_tone_loop.wav', 'Room tone', 'loop', ambienceRoom, AMB_ROOM_S),
-  A('amb_yard', 'amb_courtyard_wind_loop.wav', 'Courtyard wind and birds', 'loop', ambienceYard, AMB_YARD_S),
+  A('amb_yard', 'amb_courtyard_wind_loop.wav', 'Courtyard wind', 'loop', ambienceYard, AMB_YARD_S),
   A('amb_yard_raw', 'amb_courtyard_wind_RAW.wav', 'Courtyard wind, cut with no loop preparation', 'loop', ambienceYardUnprepared, AMB_YARD_S),
+  ...BIRDS,
   A('impact', 'crate_impact.wav', 'Crate dropped', 'one-shot', crateImpact),
   A('debris', 'crate_debris.wav', 'Debris scatter', 'one-shot', crateDebris),
   A('alarm', 'generator_overheat_alarm_loop.wav', 'Overheat alarm', 'loop', alarm, ALARM_S),

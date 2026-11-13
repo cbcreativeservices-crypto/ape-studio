@@ -17,6 +17,19 @@
  * WATCH: in this glossary "Localization" is hearing where a sound comes from,
  * NOT translating a game. Language versions are taught with "Dialogue
  * systems" and the subtitle terms, never under that word.
+ *
+ * ONE TOOL'S WORDS SAY WHOSE THEY ARE (audit 2, 2026-11-12: accuracy A1, B2,
+ * B7; learning L-01). "Game Syncs", "RTPC", "Switch group", "State group" and
+ * the container names are Wwise's own words, so each meaning says so, and a
+ * learner who opens another tool is not sent looking for them there. A Game
+ * Sync in Wwise is a State, a Switch, an RTPC (Game Parameter), a Trigger or an
+ * Argument (dynamic dialogue, not taught here, so not named), and a Wwise
+ * Trigger starts a music stinger; the lab's own word "trigger" (the
+ * game says "this happened") is the entry "Audio trigger". Pages 8 and 20 say
+ * the same: change the three together or not at all.
+ *
+ * NEVER RENAME OR REMOVE A KEY: every key is a live glossary entry's exact
+ * name, and all 22 pages take their chips from here.
  */
 import type { Term } from './bits';
 
@@ -25,24 +38,24 @@ export const GA_TERMS = {
   'Interactive audio': 'Sound that reacts to what you do. Nothing plays on a fixed timeline; it changes live with your actions and the situation.',
   'Audio event (game)': 'The game does not ask for a sound file. It calls out a name, such as Play_Door, and the audio side decides what that name plays. The sound designer can change what is behind the name without a programmer.',
   'Event-driven audio': 'Sound that plays because something happened, not on a schedule. The door opens, and the door sound starts at that moment.',
-  'Audio parameter': 'A control for sound that the game turns by itself. Here, the generator’s SPEED is a parameter: as it rises, the hum climbs.',
-  'Playback instance': 'One single time a sound is actually playing. Two generators running from the same event are two instances, and each can be changed on its own.',
+  'Audio parameter': 'A sound control that the game moves while it runs. Here, the generator’s SPEED is a parameter: as it rises, the hum climbs.',
+  'Playback instance': 'One copy of a sound that is playing now. Two generators running from the same event are two instances, and each can be changed on its own.',
   'Game engine': 'The software a game is built in. It runs the graphics, the physics and the sound together.',
   'Controller speaker': 'A small speaker inside some game controllers. The game can send it its own short cues, apart from the main mix.',
   'Platform certification': 'The checks a platform owner runs before a game can be sold on its console. Audio has its share of the rules, and each platform has its own list.',
   'Audio listener': 'A virtual pair of ears placed in the scene. The game measures every sound against it to decide direction and loudness.',
-  'Listener position': 'Where those virtual ears are. It is often the player, but in an overhead view it may be the camera.',
+  'Listener position': 'Where the listener, the game’s virtual ears, is placed. It is often the player, but in an overhead view it may be the camera.',
   'Listener orientation': 'Which way the listener faces. Turn, and a sound that was in front is now at your side.',
   'Split-screen audio': 'Several players sharing one screen and one set of speakers. Each has a listener, so the engine takes care not to play one event twice.',
   'Ambient loop': 'A background sound edited so it can repeat with no gap, like wind or room tone. A short recording then fills a long scene.',
   'Gameplay sound effect': 'A sound that plays because of something you do: a step, a hit, opening a door.',
   'Interface sound': 'A short sound for a menu or a message, such as a confirm click. It tells you your action worked.',
-  'NPC bark': 'A short line a character says on its own during play, picked from a pool so the same line does not come back too soon.',
+  'NPC bark': 'A short line a non-player character (NPC) says on its own during play. It is picked from a pool, so the same line does not come back too soon.',
   'Diegetic Sound': 'Sound that belongs to the world of the scene, so the characters could hear it too: the generator, the fountain, footsteps.',
   'Non-Diegetic Sound': 'Sound that exists only for the player, not the world: the score, a menu click.',
   'Foley': 'Everyday sounds performed to match movement: footsteps, clothing, handling an object.',
   'Audio asset': 'One piece of sound in a project: one effect, one music layer, one recorded line. Each is a file you can name, store and reuse.',
-  'Audio Middleware': 'A tool that sits between the sounds and the game. Sound designers set up how sounds react there, and the game simply asks for them by name.',
+  'Audio Middleware': 'A tool that sits between the sounds and the game. Sound designers set up how sounds react there, and the game asks for them by name.',
   'Sound bank': 'A bundle of sounds and the rules for playing them, packed into one file the game loads when it needs that set.',
   'Implementation': 'Putting sounds into the game and making them play at the right time. It is how audio reacts to what the player does.',
   'Audio implementer': 'The person who connects each sound to the actions that should make it play.',
@@ -53,16 +66,16 @@ export const GA_TERMS = {
   'Audio trigger': 'The thing that makes a sound play. A foot touching the ground is a trigger; so is a door opening.',
   'Trigger (game engine)': 'A game rule that fires when something happens. In audio it often starts or stops a sound.',
   'Audio state': 'A named mode for the whole game’s sound, such as calm or alert. When the state changes, many sounds change together.',
-  'State group': 'A list of game-wide situations of which only one is active, such as Exploring, Combat or Paused.',
-  'Switch group': 'A list of options, such as wood, stone or gravel, where EACH game object has its own current choice. One footstep event can then sound different for every character.',
-  'Switch container': 'A holder for several versions of a sound that plays the one matching the current choice, such as the surface under a foot.',
-  'Real-Time Parameter Control (RTPC)': 'A link from a game value to a sound setting. As the value changes, the sound changes right away, with nothing restarted.',
-  'Game Syncs': 'The ways a game tells its sound engine what is happening: choices from a list (switches), game-wide modes (states) and numbers that keep changing (parameters).',
+  'State group': 'Wwise’s name for a list of game-wide situations of which only one is active, such as Exploring, Combat or Paused.',
+  'Switch group': 'Wwise’s name for a list of options, such as wood, stone or gravel, where EACH game object has its own current choice. One footstep event can then sound different for every character.',
+  'Switch container': 'Wwise’s name for a holder of several versions of a sound. It plays the one that matches the current choice, such as the surface under a foot.',
+  'Real-Time Parameter Control (RTPC)': 'Wwise’s name for a link from a game value to a sound setting. As the value changes, the sound changes right away, with nothing restarted.',
+  'Game Syncs': 'Wwise’s name for the game information it uses: Switches, States, Game Parameters (linked by RTPCs) and Triggers. A Wwise Trigger starts a music stinger. A footstep is an Event. FMOD Studio uses parameters for the same jobs.',
   'Sound variation': 'Another version of the same sound, a little different, so repeats do not sound identical.',
-  'Random container': 'A holder for several versions of a sound that picks one at random each time the game asks.',
-  'Sequence container': 'A holder that plays its sounds one after another, in an order you set.',
-  'Layer container': 'A holder that plays several sounds at the same time, stacked into one bigger sound.',
-  'Blend container': 'A holder that plays several sounds together and mixes between them as a game value changes.',
+  'Random container': 'A holder for several versions of a sound that picks one at random each time the game asks. The name is Wwise’s. FMOD Studio calls the same idea a multi instrument.',
+  'Sequence container': 'A holder that plays its sounds one after another, in an order you set. The name is Wwise’s.',
+  'Layer container': 'A general name for a holder that plays several sounds at the same time, stacked into one bigger sound. No tool on page 20 uses this exact name: in Wwise, sounds that play together sit in a Blend Container.',
+  'Blend container': 'Wwise’s name for a holder that plays several sounds together and can mix between them as a game value changes.',
   'Avoid-repeat setting': 'A setting that stops the same version playing twice in a row when several exist.',
   'Machine-gun effect': 'What you hear when the exact same clip repeats: the ear notices immediately, and it sounds like a machine, not a person.',
   'Pitch randomization': 'Each play gets a slightly different pitch. In most engines this changes the playback speed, so the length changes with it.',
@@ -84,7 +97,7 @@ export const GA_TERMS = {
   'Channel-based audio': 'Every sound is mixed into a fixed set of channels, and each channel goes to one speaker: left, right and so on. It assumes a known speaker layout.',
   'Object-Based Audio': 'Each sound is kept with where it should be, and a renderer maps it to whatever speakers or headphones are present.',
   'Binaural rendering': 'Headphone sound made to seem all around you, by filtering each sound for the left and right ear the way a head would.',
-  'HRTF': 'How your head and outer ears change a sound before it reaches the eardrum, by direction. It is the filter behind 3D headphone sound.',
+  'HRTF': 'Head-related transfer function: how your head and outer ears change a sound before it reaches the eardrum, by direction. It is the filter behind 3D headphone sound.',
   'Ambisonics': 'A way to store sound arriving from every direction as one scene, which can then be played on any speaker setup or on headphones.',
   'Head tracking': 'Sensing which way your head is turned so sounds stay put in the room as you move.',
   'Downmix': 'Folding a mix down to fewer channels, for example stereo to mono.',
@@ -102,31 +115,58 @@ export const GA_TERMS = {
   'Closed Captioning': 'On-screen text of what is said and heard, which the player can switch on or off.',
   'Subtitles for the deaf and hard of hearing': 'Subtitles that also name who is speaking and describe the sounds you would otherwise hear.',
   'Audio Bus (Game Audio)': 'A group channel many sounds feed into, such as all the effects. One control then changes the whole group.',
-  'Ducking': 'One sound gets quieter while another plays, and comes back up afterwards. Here, music and background dip under speech.',
+  'Ducking': 'One sound gets quieter while another plays, and comes back up afterward. Here, music and background dip under speech.',
   'Snapshot (Game Mix State)': 'A saved mix setup the game can recall, such as a quieter outside when you go indoors.',
   'Dynamic mixing': 'A game mix that changes as you play, so the important sounds stay clear.',
   'Headroom': 'The space left above the usual level, so sudden loud moments come through cleanly instead of distorting.',
-  'Playback limit': 'How many copies of a sound, or how many sounds in all, may play at the same time, and what happens when the limit is reached.',
+  'Playback limit': 'How many copies of a sound, or how many sounds in all, may play at the same time. It also says what happens when the limit is reached.',
   'Virtual voice': 'A sound the engine has stopped processing but has not forgotten. It costs almost nothing, and it is brought back when it matters again.',
-  'Voice Stealing': 'When every voice is busy and a new sound arrives, one playing sound is stopped to make room.',
+  'Voice Stealing': 'When every voice is busy and a new sound arrives, a less important playing sound gives up its voice to make room.',
   'Audio memory budget': 'The share of memory audio is allowed. It decides how many sounds can be loaded at the same time.',
   'Audio CPU budget': 'The share of processing time audio is allowed each frame. Every voice and effect uses some of it.',
   'Audio level of detail (audio LOD)': 'Distant or unimportant sounds get simpler, cheaper versions, or are dropped, so the important ones can be afforded.',
   'Prefetch streaming': 'Keeping the first fraction of a second of a long file in memory, so it starts immediately while the rest is read.',
-  'In-game voice chat': 'Players talking to each other live while the game runs. The game usually dips its own sound so speech stays clear.',
+  'In-game voice chat': 'Players talking to each other live while the game runs. The platform or the game can dip the game’s sound so speech stays clear. Often the player chooses.',
   'Proximity voice chat': 'Voice chat where you only hear players near you, from where their characters are.',
   'Audio profiling': 'Watching the audio engine while the game runs: every sound that started, how many played at the same time, what they cost.',
   'Quality assurance': 'Testing that everything works. In audio: that sounds play correctly, cleanly and at the right time.',
   Wwise: 'A widely used game audio tool (middleware). Sound designers build events, mixes and music rules in it, then connect it to the game engine.',
-  FMOD: 'The other widely used game audio tool (middleware), with the same job: events, live mixing and music that changes with play.',
+  FMOD: 'Another widely used game audio tool (middleware), with the same job: events, live mixing and music that changes with play.',
   'Unity (game engine)': 'A popular game engine. It plays and positions sound itself, and can also host Wwise or FMOD.',
-  'Unreal Engine': 'A powerful game engine with its own sound and music tools, which can also host Wwise or FMOD.',
+  'Unreal Engine': 'A widely used game engine with its own sound and music tools, which can also host Wwise or FMOD.',
   MetaSounds: 'Unreal Engine’s tool for building sounds from connected nodes, made and processed live inside the game.',
   'Procedural Audio': 'Sound made live by rules and code rather than a fixed recording, so it can follow the game smoothly.',
   'Steam Audio': 'A free toolkit for 3D game sound: headphone rendering, muffling through walls, paths around corners and reflections.',
 } as const;
 
 export type GaTermName = keyof typeof GA_TERMS;
+
+/**
+ * KEPT, NOT SHOWN (audit 2, 2026-11-12: accuracy B7, learning L-30). The
+ * first handoff said all 103 terms are used; 89 were. Since then pages 6, 13
+ * and 14 show Audio pipeline, Head tracking and Music transition rule (92
+ * shown). These are the entries no page shows as a chip. They stay because
+ * each is a Game Audio entry of the live glossary, verified by exact name,
+ * and the pages' own text already talks about several of them (state groups
+ * and switch containers on page 8, layers on page 9, streaming on page 17):
+ * a page may add the chip without a new glossary check. A term a page starts to show comes OFF this
+ * list (test/gameAudioTerms.test.ts: every unshown term is here). "Layer
+ * container" is on it for a second reason: it is a general word, not a
+ * container type of any tool on page 20, and its meaning says so.
+ */
+export const GA_TERMS_KEPT_UNSHOWN: readonly GaTermName[] = [
+  'Trigger (game engine)',
+  'State group',
+  'Switch container',
+  'Layer container',
+  'Blend container',
+  'Seamless music loop',
+  'Volume (game engine)',
+  'Mono compatibility',
+  'Music segment',
+  'Audio level of detail (audio LOD)',
+  'Prefetch streaming',
+];
 
 /** The Terms list for a page: names only; the meanings come from here. */
 export const gaTerms = (...names: GaTermName[]): Term[] => names.map((term) => ({ term, def: GA_TERMS[term] }));

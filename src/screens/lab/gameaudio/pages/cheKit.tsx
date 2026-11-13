@@ -1,13 +1,14 @@
 /**
- * cheKit — small view pieces shared by chapter 6's pages (20 Finding your
- * way in the tools, 21 Game audio today, 22 Capstone and free play).
+ * cheKit — small view pieces shared by group E's pages (pages/index.ts: 20
+ * Finding your way in the tools, 21 Game audio today, 22 Capstone and free
+ * play).
  *
  *   DocSection        a headed block of a DOCUMENT page. Pages 20 and 21 are
  *                     reading pages with no scene, so they have no five
  *                     steps: a plain heading, short paragraphs, then its
  *                     checks.
  *   useDocDone        a document page counts once ALL its checks are
- *                     passed (page 20 has four, page 21 has two).
+ *                     passed (page 20 has six, page 21 has two).
  *   Tray / TrayRow /  the furniture of a dock tray on the capstone: a heading
  *   TrayNote          and a row of chips, a line of plain text.
  *   useCapstoneVisit  the capstone's facts-since-visit (data/gaCapstone): it

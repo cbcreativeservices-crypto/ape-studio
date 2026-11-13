@@ -5,8 +5,8 @@
  *   16 The game mix      the bus lane, the words for a bus, the duck's amounts
  *   17 Budgets           the BUDGET stops, the memory arithmetic, the counts
  *                        the page and its guide quote, "the alarm survived"
- *   18 Multiplayer       action ids, one message on two machines, a double
- *                        that was really heard here
+ *   18 Multiplayer       action IDs, one message on two machines, SENT and
+ *                        ARRIVING 0.25 s later, a double really heard here
  *   19 Testing           five faults: planted, SEEN, then fixed — never fixed
  *                        by pressing two buttons without the symptom
  *
@@ -17,21 +17,25 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { GA_BUSES } from '../src/screens/lab/gameaudio/engine/gaEngineProtocol.ts';
-import { GA_DUCK_DB } from '../src/screens/lab/gameaudio/model/gaDefs.ts';
-import { gaFact, gaInitial, gaPlaying, gaReduce, gaVoiceCount, type GaAction, type GaState } from '../src/screens/lab/gameaudio/model/gaModel.ts';
+import { GA_BUS_NAME, GA_DUCK_DB, GA_NET_DELAY_S } from '../src/screens/lab/gameaudio/model/gaDefs.ts';
+import { gaFact, gaInitial, gaPlaying, gaReduce, gaStolenCount, gaVoiceCount, type GaAction, type GaState } from '../src/screens/lab/gameaudio/model/gaModel.ts';
 import { surfaceAt } from '../src/screens/lab/gameaudio/model/gaWorld.ts';
 import { gaAsset, gaSound, gaSoundBytes } from '../src/screens/lab/gameaudio/sounds/gaSoundBank.ts';
 import {
   BUDGET_STOPS,
+  BURST_COUNT,
   MEMORY_IDS,
   budgetHeld,
   budgetShort,
   budgetStep,
   budgetToLane,
   budgetWords,
+  burstSpoken,
+  burstTheftWords,
   decodedBytes,
   fmtInt,
   laneToBudget,
+  lastBurst,
   memoryRow,
   memoryRowSpoken,
   protectedSounding,
@@ -45,19 +49,23 @@ import {
   faultFixed,
   faultOpen,
   faultSet,
+  faultStatus,
   faultsOpen,
   fixChoices,
+  nextFault,
   settingsWrong,
   standMoves,
   standingOn,
+  stepInPlace,
   strayLoops,
   type Bench,
   type FaultId,
 } from '../src/screens/lab/gameaudio/pages/data/gaFaults.ts';
 import { BUS_DB_MAX, BUS_DB_MIN, BUS_LANE_HOME, MIX_BUSES, SIGNAL_PATH, busNow, busNowSpoken, busNowWord, dbToLane, duckWords, fmtDb, laneToDb, lineSpeaking, mixBus, signalPathSpoken } from '../src/screens/lab/gameaudio/pages/data/gaMix.ts';
-import { netEffectWords, netMessageWords, netOutcome, nextNetId, type NetSend } from '../src/screens/lab/gameaudio/pages/data/gaNet.ts';
+import { netArrivalOutcome, netCheckAtArrival, netFlightKey, netEffectWords, netMemoryAdvance, netMemoryStart, netMessageWords, netOutcome, newestFlight, nextNetId, type NetSend } from '../src/screens/lab/gameaudio/pages/data/gaNet.ts';
 import { G16 } from '../src/screens/lab/gameaudio/pages/guides/p16.ts';
 import { G17 } from '../src/screens/lab/gameaudio/pages/guides/p17.ts';
+import { G18 } from '../src/screens/lab/gameaudio/pages/guides/p18.ts';
 
 /** Run actions through the real reducer (sound off: the model works unheard). */
 function run(s: GaState, ...actions: GaAction[]): GaState {
@@ -66,17 +74,35 @@ function run(s: GaState, ...actions: GaAction[]): GaState {
   return out;
 }
 const texts = (s: GaState, from = 0) => s.log.filter((l) => l.n > from).map((l) => l.text);
+/** The START lines (the START column; the text no longer repeats the word). */
+const starts = (s: GaState, from = 0) => s.log.filter((l) => l.n > from && l.kind === 'start').map((l) => l.text);
+/** Move the scene clock on (the store ticks by itself: a network action lands). */
+const tick = (s: GaState, by: number): GaState => gaReduce(s, { type: 'tick', t: s.t + by }).state;
+/** End every one-shot that is playing, as its timer or the engine would. */
+function endOneShots(s: GaState, by = 3): GaState {
+  let out = tick(s, by);
+  for (const v of out.voices.filter((x) => !x.loop)) out = gaReduce(out, { type: 'expire', v: v.v }).state;
+  return out;
+}
 /** The scene a page opens on (GaRack sends `enterPage` when it mounts). */
 const clean = (from: GaState = gaInitial()): GaState => gaReduce(from, { type: 'enterPage' }).state;
 
 /* ── 16 · the game mix ──────────────────────────────────────────────────── */
 
 describe('page 16 — the bus lane and the words for a bus', () => {
-  it('every bus of the engine has its word, and the log’s two short ids are explained', () => {
+  it('every bus has ONE name, the model’s, on the controls and in the log; a readout label fits', () => {
     assert.deepEqual(MIX_BUSES.map((b) => b.id).sort(), [...GA_BUSES].sort());
-    assert.match(mixBus('sfx').carries, /calls it sfx/);
-    assert.match(mixBus('ui').carries, /calls it ui/);
-    for (const b of MIX_BUSES) assert.ok(b.code.length <= 5 && b.label.length <= 10, `${b.id}: fits a dock key`);
+    for (const b of MIX_BUSES) {
+      assert.equal(b.label, GA_BUS_NAME[b.id], `${b.id}: the chooser says what the log says`);
+      assert.ok(b.readout.length <= 7, `${b.id}: its readout label keeps its value (${b.readout})`);
+      assert.ok(b.code.length <= 5, `${b.id}: a narrow meter's code`);
+      // the apologies for the log's developer ids are gone (L-03): the log says EFFECTS now
+      assert.ok(!/calls it|\bsfx\b|\bui\b/.test(b.carries), `${b.id}: ${b.carries}`);
+    }
+    const s = run(gaInitial(), { type: 'bus', bus: 'sfx', db: -6 }, { type: 'bus', bus: 'ui', mute: true });
+    assert.ok(texts(s).includes('BUS EFFECTS: -6 dB'));
+    assert.ok(texts(s).some((t) => t.startsWith('BUS INTERFACE:') && t.includes('MUTED')));
+    assert.ok(!texts(s).some((t) => /\b(sfx|ui)\b/.test(t)));
   });
   it('the lane covers −24…+6 dB in whole steps and rests at 0 dB', () => {
     assert.equal(laneToDb(0), BUS_DB_MIN);
@@ -129,6 +155,23 @@ describe('page 16 — the bus lane and the words for a bus', () => {
     for (const w of ['MUTED', 'SILENT', '−24 dB', '+6 dB']) assert.ok(w.length <= 7, w);
     assert.equal(gaFact(s, 'bus:ambience'), 1);
   });
+  it('page 16 step 2 as written: the guide’s line ducks and lets go; the chat line ducks nothing; a quiet bus still plays', () => {
+    let s = run(clean(), { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true }, { type: 'musicStart' });
+    const n = s.logN;
+    s = run(s, { type: 'post', event: 'vo_greeting', owner: 'guide' });
+    assert.ok(lineSpeaking(s), 'DUCK reads DUCKING');
+    assert.ok(texts(s, n).includes('DUCK on: a line is speaking. Music, ambience and effects turn down'));
+    s = endOneShots(s);
+    assert.ok(!lineSpeaking(s), 'DUCK reads READY again');
+    assert.ok(texts(s, n).includes('DUCK off: the last line ended. The mix comes back'));
+    const k = s.logN;
+    s = run(s, { type: 'post', event: 'chat' });
+    assert.ok(gaPlaying(s, 'chat') && !lineSpeaking(s));
+    assert.ok(!texts(s, k).some((t) => t.startsWith('DUCK')));
+    s = run(s, { type: 'bus', bus: 'sfx', db: -24 });
+    assert.equal(busNowWord(s, 'sfx'), '−24 dB');
+    assert.ok(gaPlaying(s, 'generator') && !busNow(s, 'sfx').silent);
+  });
   it('the visual cue is a state the page can read while the alarm runs', () => {
     const s = run(gaInitial(), { type: 'alarm', on: true }, { type: 'option', patch: { visualCue: true } });
     assert.ok(gaPlaying(s, 'alarm') && s.options.visualCue);
@@ -168,12 +211,12 @@ describe('page 16 — the bus lane and the words for a bus', () => {
     assert.ok(gaPlaying(chat, 'chat') && !lineSpeaking(chat));
     assert.equal(gaFact(chat, 'duck'), gaFact(s, 'duck'));
   });
-  it('the signal path card names both paths, and the chat bus is a stand-in voice', () => {
+  it('the signal path card names both paths (the control row is page 8’s four kinds), and the chat bus is a stand-in voice', () => {
     assert.deepEqual([...SIGNAL_PATH.audio], ['sound', 'its bus', 'master', 'output']);
-    assert.deepEqual([...SIGNAL_PATH.control], ['event', 'switch', 'parameter', 'state']);
+    assert.deepEqual([...SIGNAL_PATH.control], ['trigger', 'switch', 'parameter', 'state']);
     assert.equal(
       signalPathSpoken(),
-      'Signal path. Audio: sound, then its bus, then master, then output. Control: the game sends an event, a switch, a parameter or a state. Control tells the audio path what to do and carries no audio.',
+      'Signal path. Audio: sound, then its bus, then master, then output. Control: the game sends a trigger, a switch, a parameter or a state. Control tells the audio path what to do and carries no audio.',
     );
     assert.match(mixBus('chat').carries, /stand-in voice/);
   });
@@ -197,9 +240,10 @@ describe('page 17 — the BUDGET lane', () => {
     assert.equal(laneToBudget(budgetToLane(6)), 8);
     assert.equal(budgetShort(0), 'NONE');
     assert.equal(budgetShort(8), '8');
-    assert.equal(budgetWords(1), 'BUDGET 1 VOICE');
-    assert.equal(budgetWords(8), 'BUDGET 8 VOICES');
-    assert.equal(budgetWords(0), 'BUDGET: NO LIMIT');
+    // the lane's value beside its name BUDGET (W2-30: "BUDGET: BUDGET: NO LIMIT")
+    assert.equal(budgetWords(1), '1 VOICE');
+    assert.equal(budgetWords(8), '8 VOICES');
+    assert.equal(budgetWords(0), 'NO LIMIT');
   });
 });
 
@@ -237,15 +281,79 @@ describe('page 17 — what the budget does, as the page and its guide say it', (
     assert.equal(gaFact(s, 'refused'), 0);
     assert.equal(gaVoiceCount(s), 8);
   });
-  it('with the scene and the generator running, the least important voices go first', () => {
-    const before = run(gaInitial(), { type: 'voiceLimit', limit: 8 }, { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true });
+  it('with the scene and the generator running: the least important voices go first, and NOTHING is switched off (decision 4)', () => {
+    const before = run(clean(), { type: 'voiceLimit', limit: 8 }, { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true });
     assert.equal(gaVoiceCount(before), 5);
-    const s = run(before, { type: 'burst', count: 12 });
-    const stolen = texts(s, before.logN).filter((t) => t.startsWith('voice STOLEN from')).map((t) => t.replace(/^voice STOLEN from (.+?) \(.*$/, '$1'));
-    assert.deepEqual(stolen, ['Room tone', 'Courtyard wind', 'Fountain', 'Generator', 'Generator', 'Crate impact', 'Crate impact', 'Crate impact', 'Crate impact']);
+    const s = run(before, { type: 'burst', count: BURST_COUNT });
+    const stolen = texts(s, before.logN)
+      .filter((t) => t.startsWith('Voice STOLEN from'))
+      .map((t) => t.replace(/^Voice STOLEN from (.+?) \(i\d+\).*$/, '$1'));
+    assert.deepEqual(stolen, ['Room tone', 'Courtyard wind', 'Fountain', 'Generator · hum', 'Generator · fan', 'Crate impact · impact', 'Crate impact · impact', 'Crate impact · impact', 'Crate impact · impact']);
+    assert.equal(gaFact(s, 'stolen') - gaFact(before, 'stolen'), 9);
     assert.equal(gaVoiceCount(s), 8);
-    assert.equal(s.machines[0].on, false, 'the generator lost both voices, so it reads as off');
+    // the five loop voices are virtual and waiting; the generator and the scene are still ON
+    assert.equal(gaStolenCount(s), 5);
+    assert.equal(s.machines[0].on, true, 'the budget does not switch the generator off');
+    assert.ok(gaPlaying(s, 'bed_room') && gaPlaying(s, 'bed_yard') && gaPlaying(s, 'fountain') && gaPlaying(s, 'generator'));
+    assert.ok(texts(s, before.logN).some((t) => t.endsWith('It is a loop: VIRTUAL until a voice is free')));
+    assert.ok(texts(s, before.logN).some((t) => t.endsWith('It is a one-shot: it stops')));
     assert.equal(gaFact(s, 'alarmSurvivedBurst'), 0, 'no alarm, no survival');
+    // the impacts end: every loop has its voice again
+    const after = endOneShots(s);
+    assert.equal(gaStolenCount(after), 0);
+    assert.equal(gaVoiceCount(after), 5);
+    assert.equal(texts(after, s.logN).filter((t) => t.endsWith('has a voice again: no longer VIRTUAL')).length, 5);
+  });
+  it('the LAST BURST card reads the model’s own lines: in order, runs grouped, loops told from one-shots', () => {
+    assert.equal(lastBurst([]), null);
+    assert.match(burstSpoken(null), /No burst yet/);
+    const before = run(clean(), { type: 'voiceLimit', limit: 8 }, { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true });
+    const s = run(before, { type: 'burst', count: BURST_COUNT });
+    const r = lastBurst(s.log)!;
+    assert.deepEqual(r.thefts.map(burstTheftWords), [
+      'Room tone · a loop: it went virtual',
+      'Courtyard wind · a loop: it went virtual',
+      'Fountain · a loop: it went virtual',
+      'Generator · hum · a loop: it went virtual',
+      'Generator · fan · a loop: it went virtual',
+      'Crate impact · impact × 4 · one-shots: they stopped',
+    ]);
+    assert.equal(r.stolen, gaFact(s, 'stolen') - gaFact(before, 'stolen'));
+    assert.equal(r.refused, 0);
+    // a second burst starts a new card
+    const again = run(s, { type: 'alarm', on: true }, { type: 'voiceLimit', limit: 1 }, { type: 'burst', count: BURST_COUNT });
+    const r2 = lastBurst(again.log)!;
+    assert.deepEqual([r2.stolen, r2.refused], [0, 12]);
+    assert.match(burstSpoken(r2), /No voice was taken\. 12 new sounds were refused\./);
+  });
+  it('a bird call can be the first voice taken: STOLEN is then 10', () => {
+    let s = run(clean(), { type: 'voiceLimit', limit: 8 }, { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true });
+    s = gaReduce(s, { type: 'tick', t: s.birdAt! }).state;
+    assert.ok(gaPlaying(s, 'bird'), 'a bird is calling');
+    assert.equal(gaVoiceCount(s), 6);
+    const n = gaFact(s, 'stolen');
+    s = run(s, { type: 'burst', count: BURST_COUNT });
+    assert.equal(gaFact(s, 'stolen') - n, 10);
+    assert.equal(lastBurst(s.log)!.thefts[0].name, 'Bird');
+  });
+  it('a NEW loop refused a voice starts virtual and plays when a voice is free; lowering BUDGET is not counted as STOLEN', () => {
+    let s = run(clean(), { type: 'alarm', on: true }, { type: 'voiceLimit', limit: 1 }, { type: 'machine', id: 'generator-1', on: true });
+    assert.equal(s.machines[0].on, true);
+    // refused a voice, not robbed of one: it WAITS (the model's word), it is not STOLEN
+    const waits = (x: GaState) => x.voices.filter((v) => v.state === 'virtual' && v.waiting).length;
+    assert.ok(gaPlaying(s, 'generator') && waits(s) === 2 && gaStolenCount(s) === 0 && gaVoiceCount(s) === 1);
+    assert.ok(texts(s).some((t) => t.includes('has no voice yet: it WAITS (tracked, not played) and plays when a voice is free')));
+    s = run(s, { type: 'voiceLimit', limit: 4 });
+    assert.equal(gaVoiceCount(s), 3);
+    assert.equal(waits(s), 0);
+    // shedding: five loop voices, budget 2: three give up their voice, none of it STOLEN
+    let w = run(clean(), { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true });
+    const stolen0 = gaFact(w, 'stolen');
+    const shed0 = gaFact(w, 'shed');
+    w = run(w, { type: 'voiceLimit', limit: 2 });
+    assert.equal(gaFact(w, 'stolen'), stolen0);
+    assert.equal(gaFact(w, 'shed') - shed0, 3);
+    assert.ok(w.machines[0].on && gaPlaying(w, 'bed_room'));
   });
   it('the alarm on, budget 1, burst 12: every impact is refused and the alarm stays', () => {
     const before = run(gaInitial(), { type: 'alarm', on: true }, { type: 'voiceLimit', limit: 1 });
@@ -254,7 +362,7 @@ describe('page 17 — what the budget does, as the page and its guide say it', (
     assert.equal(gaVoiceCount(s), 1);
     assert.ok(gaPlaying(s, 'alarm'));
     assert.equal(gaFact(s, 'alarmSurvivedBurst'), 1);
-    assert.ok(texts(s).some((t) => t.includes('REFUSED: the one voice is in use')));
+    assert.ok(texts(s).some((t) => t.includes('REFUSED: the one voice is in use by a sound that is more important or protected')));
   });
   it('the budget does not go below the protected voices sounding, and the page knows when it is held', () => {
     let s = run(gaInitial(), { type: 'voiceLimit', limit: 8 }, { type: 'alarm', on: true }, { type: 'post', event: 'vo_warning', owner: 'guide' });
@@ -263,7 +371,7 @@ describe('page 17 — what the budget does, as the page and its guide say it', (
     s = run(s, { type: 'voiceLimit', limit: 1 });
     assert.equal(s.voiceLimit, 2);
     assert.equal(gaFact(s, 'limitHeldByProtected'), 1);
-    assert.ok(texts(s).some((t) => t.includes('the budget stays at 2')));
+    assert.ok(texts(s).some((t) => t.includes('The budget stays at 2')));
     s = run(s, { type: 'burst', count: 12 });
     assert.equal(gaFact(s, 'refused'), 12);
     assert.equal(gaVoiceCount(s), 2);
@@ -272,6 +380,23 @@ describe('page 17 — what the budget does, as the page and its guide say it', (
     assert.ok(!budgetHeld(one, 1));
     assert.equal(run(one, { type: 'voiceLimit', limit: 1 }).voiceLimit, 1);
     assert.ok(G17.changes.join(' ').includes('does not go below the protected voices'));
+    // the guide's experiment: the alarm and the warning line, then BUDGET 1: it stays at 2
+    assert.ok(G17.tryThis.join(' ').includes('It stays at 2, because two protected voices are playing'));
+  });
+  it('page 17 steps 2 and 3 as written: ALARM on at budget 8, BURST; then BUDGET 1, BURST: every impact REFUSED', () => {
+    let s = run(clean(), { type: 'voiceLimit', limit: 8 }, { type: 'scene', on: true }, { type: 'machine', id: 'generator-1', on: true });
+    s = endOneShots(run(s, { type: 'burst', count: BURST_COUNT }));
+    const survived = gaFact(s, 'alarmSurvivedBurst');
+    s = run(s, { type: 'alarm', on: true }, { type: 'burst', count: BURST_COUNT });
+    assert.equal(gaFact(s, 'alarmSurvivedBurst') - survived, 1, 'goal 2');
+    s = endOneShots(s);
+    s = run(s, { type: 'voiceLimit', limit: 1 });
+    assert.equal(s.voiceLimit, 1, 'one protected voice: a budget of 1 is accepted');
+    const refused = gaFact(s, 'refused');
+    s = run(s, { type: 'burst', count: BURST_COUNT });
+    assert.equal(gaFact(s, 'refused') - refused, 12, 'every impact REFUSED');
+    assert.ok(gaPlaying(s, 'alarm') && gaVoiceCount(s) === 1);
+    assert.ok(s.machines[0].on, 'the generator is still on, its loop waiting');
   });
   it('the alarm and the warning line keep their voices through a burst at budget 8', () => {
     const before = run(gaInitial(), { type: 'voiceLimit', limit: 8 }, { type: 'alarm', on: true }, { type: 'post', event: 'vo_warning', owner: 'guide' });
@@ -303,7 +428,10 @@ describe('page 18 — action ids', () => {
     for (let i = 0; i < 4; i++) {
       const id = nextNetId(s.netSeen);
       ids.push(id);
+      // the next ID is taken at once, even before this action has arrived
       s = run(s, { type: 'net', id, what: 'door', to: 'world' });
+      assert.notEqual(nextNetId(s.netSeen), id);
+      s = tick(s, GA_NET_DELAY_S);
     }
     assert.deepEqual(ids, ['A1', 'A2', 'A3', 'A4']);
     assert.equal(gaFact(s, 'netDuplicateIgnored'), 0);
@@ -316,6 +444,8 @@ describe('page 18 — one message on two machines', () => {
     { id: 'A1', what: 'alert', to: 'me' },
     { id: 'A1', what: 'alert', to: 'them' },
   ];
+  /** Send, then let it arrive (0.25 s later). */
+  const deliver = (s: GaState, send: NetSend): GaState => tick(run(s, { type: 'net', ...send }), GA_NET_DELAY_S);
   /** Did this machine start a sound for the message? */
   const played = (prev: GaState, next: GaState) => gaFact(next, 'inst:door_open') + gaFact(next, 'inst:ui_confirm') > gaFact(prev, 'inst:door_open') + gaFact(prev, 'inst:ui_confirm');
 
@@ -324,17 +454,22 @@ describe('page 18 — one message on two machines', () => {
       for (const idCheck of [true, false]) {
         const s0 = run(gaInitial(), { type: 'option', patch: { dedupe: idCheck } });
         const first = netOutcome(send, false, idCheck);
-        const s1 = run(s0, { type: 'net', ...send });
+        const s1 = deliver(s0, send);
         assert.equal(played(s0, s1), first.here === 'plays', `${send.to} first, check ${idCheck}`);
         assert.equal(first.second, false);
         const again = netOutcome(send, true, idCheck);
-        const s2 = run(s1, { type: 'net', ...send });
+        const s2 = deliver(s1, send);
         assert.equal(played(s1, s2), again.here === 'plays', `${send.to} again, check ${idCheck}`);
         assert.equal(gaFact(s2, 'netDuplicateIgnored') === 1, again.here === 'ignored');
         assert.equal(again.second, !idCheck);
         // the model's double is one that PLAYED here: never for the other player's alert
         assert.equal(gaFact(s2, 'netDoublePlayed') === 1, !idCheck && send.to !== 'them', `${send.to} double, check ${idCheck}`);
         assert.equal(gaFact(s1, 'netDoublePlayed'), 0);
+        // the card's record of each arrival says the same as the rule
+        const f1 = newestFlight(s1)!;
+        const f2 = newestFlight(s2)!;
+        assert.deepEqual(netArrivalOutcome(send, { result: f1.result as 'played', again: !!f1.again, door: f1.door }), first);
+        assert.deepEqual(netArrivalOutcome(send, { result: f2.result as 'played', again: !!f2.again, door: f2.door }), again);
       }
     }
   });
@@ -345,8 +480,51 @@ describe('page 18 — one message on two machines', () => {
     assert.deepEqual(netOutcome(sends[0], true, true), { here: 'ignored', there: 'ignored', second: false });
     assert.deepEqual(netOutcome(sends[0], true, false), { here: 'plays', there: 'plays', second: true });
   });
-  it('the card’s words name the id, the action and who it is for', () => {
-    assert.equal(netMessageWords(sends[0]), 'A1 · door opened · for the world');
+  it('nothing happens at the press: the action is SENT, and ARRIVES 0.25 s later', () => {
+    const s0 = clean();
+    const s1 = run(s0, { type: 'net', id: 'A1', what: 'door', to: 'world' });
+    assert.equal(s1.doorOpen, false);
+    assert.equal(gaFact(s1, 'inst:door_open'), gaFact(s0, 'inst:door_open'));
+    assert.deepEqual(texts(s1), ['Action A1 (door) SENT: it arrives in 0.25 s']);
+    assert.equal(newestFlight(s1)?.result, 'pending');
+    assert.equal(tick(s1, GA_NET_DELAY_S - 0.01).doorOpen, false, 'not yet');
+    const s2 = tick(s1, GA_NET_DELAY_S);
+    assert.equal(s2.doorOpen, true);
+    assert.equal(newestFlight(s2)?.door, 'opened');
+    // the page's memory takes the arrival in, and keeps it after the model forgets it
+    let m = netMemoryStart();
+    m = netMemoryAdvance(m, s0, s1);
+    assert.equal(Object.keys(m.landed).length, 0);
+    m = netMemoryAdvance(m, s1, s2);
+    const n = netFlightKey(newestFlight(s1)!);
+    assert.deepEqual(m.landed[n], { result: 'played', again: false, door: 'opened' });
+    assert.equal(netMemoryAdvance(m, s2, s2), m, 'nothing new: the same record');
+    const later = tick(s2, 10);
+    assert.equal(later.netFlights!.length, 0, 'the model forgot it');
+    assert.equal(netMemoryAdvance(m, s2, later).landed[n].door, 'opened');
+    // the model counts its flights from 1 again once it has forgotten them:
+    // the next delivery must not be taken for the old one (seen on screen)
+    const s3 = run(later, { type: 'net', id: 'A1', what: 'door', to: 'world' });
+    assert.equal(newestFlight(s3)!.n, newestFlight(s1)!.n, 'the model reuses the number');
+    assert.notEqual(netFlightKey(newestFlight(s3)!), n);
+    const m2 = netMemoryAdvance(netMemoryAdvance(m, later, s3), s3, tick(s3, GA_NET_DELAY_S));
+    assert.deepEqual(m2.landed[netFlightKey(newestFlight(s3)!)], { result: 'ignored', again: true, door: undefined });
+  });
+  it('ID CHECK is read when the action ARRIVES, not when it is sent', () => {
+    let s = tick(run(clean(), { type: 'net', id: 'A1', what: 'door', to: 'world' }), GA_NET_DELAY_S);
+    // sent with the check ON, switched OFF on its way: it is handled a second time
+    s = run(s, { type: 'net', id: 'A1', what: 'door', to: 'world' }, { type: 'option', patch: { dedupe: false } });
+    s = tick(s, GA_NET_DELAY_S);
+    assert.equal(newestFlight(s)!.result, 'played');
+    assert.equal(gaFact(s, 'netDoublePlayed'), 1);
+    assert.equal(netCheckAtArrival({ result: 'played', again: true }), false);
+    assert.equal(netCheckAtArrival({ result: 'ignored', again: true }), true);
+    assert.equal(netCheckAtArrival({ result: 'played', again: false }), null);
+  });
+  it('the card’s words name the ID, the action, which way the door moved, and who it is for', () => {
+    assert.equal(netMessageWords(sends[0]), 'A1 · door · for the world');
+    assert.equal(netMessageWords(sends[0], 'opened'), 'A1 · door opened · for the world');
+    assert.equal(netMessageWords(sends[0], 'closed'), 'A1 · door closed · for the world');
     assert.equal(netMessageWords(sends[2]), 'A1 · alert · for the other player only');
     assert.match(netEffectWords(sends[0], 'ignored', false), /A1 was already handled/);
     assert.match(netEffectWords(sends[0], 'plays', true), /SECOND time/);
@@ -357,35 +535,51 @@ describe('page 18 — one message on two machines', () => {
     const send = sends[0];
     const s0 = clean();
     assert.equal(s0.doorOpen, false);
-    const s1 = run(s0, { type: 'net', ...send });
+    const s1 = deliver(s0, send);
     assert.equal(s1.doorOpen, true, 'the new action opened the door');
     assert.equal(gaFact(s1, 'inst:door_open') - gaFact(s0, 'inst:door_open'), 1);
     // the same id again, check on: ignored, nothing moves, nothing plays
-    const s2 = run(s1, { type: 'net', ...send });
+    const s2 = deliver(s1, send);
     assert.equal(s2.doorOpen, true);
     assert.equal(gaFact(s2, 'inst:door_open'), gaFact(s1, 'inst:door_open'));
     // check off: the sound a second time, the door where it was
-    const s3 = run(s2, { type: 'option', patch: { dedupe: false } }, { type: 'net', ...send });
+    const s3 = deliver(run(s2, { type: 'option', patch: { dedupe: false } }), send);
     assert.equal(s3.doorOpen, true, 'a repeat does not move the door');
     assert.equal(gaFact(s3, 'inst:door_open') - gaFact(s2, 'inst:door_open'), 1);
     assert.equal(gaFact(s3, 'netDoublePlayed') - gaFact(s2, 'netDoublePlayed'), 1);
-    // a second NEW action closes it again
-    assert.equal(run(s3, { type: 'net', id: 'A2', what: 'door', to: 'world' }).doorOpen, false);
+    // a second NEW action closes it again, and the model says so (W2-04)
+    const s4 = deliver(s3, { id: 'A2', what: 'door', to: 'world' });
+    assert.equal(s4.doorOpen, false);
+    assert.equal(newestFlight(s4)?.door, 'closed');
+    assert.ok(texts(s4).some((t) => t.startsWith('Action A2 (door closes) ARRIVED')));
     // the card says the same
     assert.equal(netEffectWords(send, 'plays', false), 'Moves the door and plays its sound, placed for its own listener.');
     assert.equal(netEffectWords(send, 'plays', true), 'Plays the door sound a SECOND time: a double. The door does not move again.');
   });
-  it('the log lines the page quotes are the reducer’s', () => {
+  it('the log lines the page and its guide quote are the reducer’s', () => {
     const send = sends[0];
-    let s = run(gaInitial(), { type: 'net', ...send }, { type: 'net', ...send });
-    assert.ok(texts(s).some((t) => t.includes('already handled, ignored')));
-    s = run(s, { type: 'option', patch: { dedupe: false } }, { type: 'net', ...send });
-    assert.ok(texts(s).includes('SETTING network id check: OFF'));
-    assert.ok(texts(s).some((t) => t.endsWith('handled a SECOND time')));
-    s = run(s, { type: 'net', id: 'A2', what: 'alert', to: 'them' }, { type: 'net', id: 'A3', what: 'alert', to: 'me' });
+    let s = deliver(deliver(gaInitial(), send), send);
+    assert.ok(texts(s).includes('Action A1 ARRIVED AGAIN: it was already handled, so it is ignored'));
+    assert.ok(G18.intro!.start.includes('already handled, so it is ignored'));
+    s = deliver(run(s, { type: 'option', patch: { dedupe: false } }), send);
+    assert.ok(texts(s).includes('SETTING network ID check: OFF'));
+    assert.ok(texts(s).some((t) => t.includes('handled a SECOND time')));
+    assert.ok(G18.tryThis.join(' ').includes('handled a SECOND time'));
+    s = deliver(deliver(s, { id: 'A2', what: 'alert', to: 'them' }), { id: 'A3', what: 'alert', to: 'me' });
     assert.equal(gaFact(s, 'netPrivateOther'), 1);
     assert.equal(gaFact(s, 'netPrivateMe'), 1);
     assert.ok(texts(s).some((t) => t.includes('nothing plays here')));
+    assert.equal(GA_NET_DELAY_S, 0.25, 'the page and its guide print 0.25 s');
+  });
+  it('every page 18 goal latches with sound off, by the written steps', () => {
+    let s = clean();
+    const f0 = { ...s.facts };
+    s = deliver(s, { id: 'A1', what: 'door', to: 'world' });
+    s = deliver(s, { id: 'A1', what: 'door', to: 'world' });
+    s = deliver(run(s, { type: 'option', patch: { dedupe: false } }), { id: 'A1', what: 'door', to: 'world' });
+    s = deliver(s, { id: 'A2', what: 'alert', to: 'me' });
+    s = deliver(s, { id: 'A3', what: 'alert', to: 'them' });
+    for (const k of ['netDuplicateIgnored', 'netDoublePlayed', 'netPrivateMe', 'netPrivateOther']) assert.ok(gaFact(s, k) > (f0[k] ?? 0), k);
   });
 });
 
@@ -408,13 +602,15 @@ const plant = (r: Run, id: FaultId): Run => drive(r, ...faultActions(id, true));
 const repair = (r: Run, id: FaultId): Run => drive(r, ...faultActions(id, false));
 
 /** The actions that make each fault's symptom happen FROM THE CLEAN SCENE,
- *  each one a chip of page 19's TEST tray (door key, GENERATOR 1, GUIDE
- *  LINE, STEP · GUIDE, ADD GENERATOR 2, GENERATOR 2, REMOVE GENERATOR 2). */
+ *  each one a chip of page 19's TEST tray (OPEN DOOR, GENERATOR 1, GUIDE
+ *  LINE, STEP: GUIDE in place, ADD GENERATOR 2, GENERATOR 2, REMOVE
+ *  GENERATOR 2). */
+const GUIDE_STEP = stepInPlace('guide');
 const REPRODUCE: Record<FaultId, GaAction[]> = {
   missingFile: [{ type: 'door' }],
   wrongBus: [{ type: 'machine', id: 'generator-1', on: true }, { type: 'post', event: 'vo_greeting', owner: 'guide' }],
-  repeat: [{ type: 'step', who: 'guide' }, { type: 'step', who: 'guide' }, { type: 'step', who: 'guide' }],
-  scope: [{ type: 'step', who: 'guide' }],
+  repeat: [GUIDE_STEP, GUIDE_STEP, GUIDE_STEP],
+  scope: [GUIDE_STEP],
   orphan: [{ type: 'addMachine' }, { type: 'machine', id: 'generator-2', on: true }, { type: 'removeMachine', id: 'generator-2' }],
 };
 
@@ -435,14 +631,55 @@ describe('page 19 — five faults, each one wrong setting', () => {
     // the right value is not always in the same place in the FIX tray
     assert.equal(new Set(FAULTS.map((f) => fixChoices(f)[0].right)).size, 2);
   });
-  it('the learner text keeps the house rules', () => {
+  it('the learner text keeps the house rules and the lab’s one name for each thing', () => {
     for (const f of FAULTS) {
-      const t = [f.title, f.goal, f.symptom, ...f.hints, f.why, f.setting, f.right, f.wrong].join('\n');
+      const t = [f.title, f.goal, f.symptom, ...f.hints, f.why, f.setting, f.pick, f.right, f.wrong].join('\n');
+      assert.ok(!/\bmachine\b/i.test(t), `${f.id}: a generator is a generator (page 18 keeps "machine" for a player’s computer)`);
+      assert.ok(!/\b(sfx|ui)\b|STEP ·|· guide ·|put (it|the setting) right/.test(t), `${f.id}: the names the screen uses`);
+      assert.ok(f.pick.length <= 10, `${f.id}: the FIX chip ${f.pick}`);
       assert.ok(!/\b(colour|behaviour|centre|metre|programme|organis|recognis|grey)\b/i.test(t), `${f.id}: US spelling`);
       assert.ok(!/\b(must|always|never)\b/i.test(t), `${f.id}: no dogma words`);
       assert.ok(!/you(’|')ll (master|build|mix|be able)|you will (master|be able to)/i.test(t), `${f.id}: knowledge, not skills`);
       assert.ok(!/locali[sz]ation/i.test(t));
     }
+  });
+  it('the FIX values are the words of the pages that taught each setting (L-31)', () => {
+    const page = (f: string) => readFileSync(new URL(`../src/screens/lab/gameaudio/pages/${f}.tsx`, import.meta.url), 'utf8');
+    const byId = Object.fromEntries(FAULTS.map((f) => [f.id, f]));
+    assert.deepEqual([byId.orphan.setting, byId.orphan.right, byId.orphan.wrong], ['WHEN A GENERATOR IS REMOVED', 'STOP ITS LOOP', 'LEAVE IT PLAYING']);
+    for (const w of ['STOP ITS LOOP', 'LEAVE IT PLAYING', 'WHEN A GENERATOR IS REMOVED']) assert.ok(page('p07Instances').includes(w), w);
+    assert.deepEqual([byId.scope.right, byId.scope.wrong], ['FOR EACH CHARACTER', 'FOR EVERYONE']);
+    for (const w of ['FOR EACH CHARACTER', 'FOR EVERYONE']) assert.ok(page('p08GameSyncs').includes(w), w);
+    // page 9's chip is onOff('VARIATION', …): VARIATION · ON / VARIATION · OFF
+    assert.deepEqual([byId.repeat.right, byId.repeat.wrong], ['VARIATION · ON', 'VARIATION · OFF']);
+    assert.ok(page('p09Variation').includes("onOff('VARIATION'"));
+    assert.deepEqual([byId.wrongBus.right, byId.wrongBus.wrong], [GA_BUS_NAME.dialogue, GA_BUS_NAME.sfx]);
+    assert.equal(new Set(FAULTS.map((f) => f.pick)).size, 5);
+  });
+  it('a STEP chip can be pressed without end: a step in place always posts its footstep', () => {
+    let r = open();
+    for (let k = 0; k < 12; k++) r = drive(r, GUIDE_STEP, stepInPlace('player'));
+    assert.equal(starts(r.s).filter((t) => t.startsWith('Footstep')).length, 24);
+    assert.equal(surfaceAt(r.s.chars.guide), 'wood');
+    assert.equal(surfaceAt(r.s.chars.player), 'stone');
+  });
+  it('one card at a time: each fault’s status, and NEXT goes to one that is not fixed', () => {
+    let r = open();
+    for (const id of FAULT_IDS) assert.equal(faultStatus(id, r.b, r.s), 'idle');
+    assert.equal(nextFault('missingFile', r.b, r.s), 'wrongBus');
+    assert.equal(nextFault('orphan', r.b, r.s), 'missingFile', 'it comes back to the start');
+    r = plant(r, 'missingFile');
+    assert.equal(faultStatus('missingFile', r.b, r.s), 'active');
+    r = repair(drive(r, ...REPRODUCE.missingFile), 'missingFile');
+    assert.equal(faultStatus('missingFile', r.b, r.s), 'fixed');
+    assert.equal(nextFault('orphan', r.b, r.s), 'wrongBus', 'a fixed fault is skipped');
+    // started and switched straight back: not started again, so it can be started again
+    const back = repair(plant(open(), 'scope'), 'scope');
+    assert.equal(faultStatus('scope', back.b, back.s), 'idle');
+    for (const id of FAULT_IDS.slice(1)) r = repair(drive(plant(r, id), ...REPRODUCE[id]), id);
+    r = drive(r, { type: 'stopAll' });
+    for (const id of FAULT_IDS) assert.equal(faultStatus(id, r.b, r.s), 'fixed', id);
+    assert.equal(nextFault('scope', r.b, r.s), null);
   });
   it('a clean scene has nothing planted, nothing open, nothing fixed', () => {
     const r = open();
@@ -489,18 +726,20 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(FAULTS[0].wrong, 'door_open_v2.wav');
     assert.equal(FAULTS[0].right, 'door_open.wav');
     // only the door layer is lost: the rattle still starts, as the card says
-    assert.ok(texts(r.s).some((t) => t.startsWith('START') && t.includes('Door · rattle')));
-    assert.ok(!texts(r.s).some((t) => t.startsWith('START') && t.includes('Door · door')));
+    assert.ok(starts(r.s).some((t) => t.includes('Door · rattle')));
+    assert.ok(!starts(r.s).some((t) => t.includes('Door · door')));
     assert.match(FAULTS[0].symptom, /Only the latch rattle plays/);
     const n = r.s.logN;
     r = drive(repair(r, 'missingFile'), { type: 'door' });
-    assert.ok(texts(r.s, n).some((t) => t.startsWith('START') && t.includes('Door · door')));
+    // the START line names the door's file, as the card's reason says (the second press closes it)
+    assert.ok(starts(r.s, n).some((t) => t.includes('Door · door · door_close.wav')));
   });
-  it('fault 2: the line goes to the sfx bus and nothing ducks; planting it switches the duck on', () => {
+  it('fault 2: the line goes to the EFFECTS bus and nothing ducks; planting it switches the duck on', () => {
     let r = open(run(gaInitial(), { type: 'option', patch: { duck: false } }));
     r = drive(plant(r, 'wrongBus'), ...REPRODUCE.wrongBus);
     assert.ok(r.s.options.duck, 'a known situation: the duck is on');
-    assert.ok(texts(r.s).some((t) => t.includes('Guide: greeting') && t.endsWith('→ sfx bus')));
+    assert.ok(starts(r.s).some((t) => t.includes('Guide: greeting') && t.includes('→ EFFECTS bus')));
+    assert.ok(FAULTS[1].hints.some((h) => h.includes('“→ EFFECTS bus”')), 'the hint quotes the log');
     assert.equal(gaFact(r.s, 'duck'), 0);
     assert.ok(!texts(r.s).some((t) => t.startsWith('DUCK on')));
     // the repair, then the SAME action again from a quiet scene: now it ducks
@@ -510,27 +749,44 @@ describe('page 19 — five faults, each one wrong setting', () => {
     r = drive(r, { type: 'post', event: 'vo_greeting', owner: 'guide' });
     assert.equal(gaFact(r.s, 'duck'), ducksBefore + 1);
     assert.ok(texts(r.s, n).some((t) => t.startsWith('DUCK on')));
-    assert.ok(texts(r.s, n).some((t) => t.includes('Guide: greeting') && t.endsWith('→ dialogue bus')));
+    assert.ok(starts(r.s, n).some((t) => t.includes('Guide: greeting') && t.includes('→ DIALOGUE bus')));
     assert.ok(faultFixed('wrongBus', r.b, r.s));
   });
+  it('fault 2 corrected WHILE the wrongly routed line still speaks: no DUCK on for it (W2-27)', () => {
+    let r = drive(plant(open(), 'wrongBus'), ...REPRODUCE.wrongBus);
+    const ducks = gaFact(r.s, 'duck');
+    const n = r.s.logN;
+    r = repair(r, 'wrongBus');
+    assert.ok(gaPlaying(r.s, 'vo_greeting'), 'the line still speaks');
+    assert.equal(gaFact(r.s, 'duck'), ducks);
+    assert.ok(!texts(r.s, n).some((t) => t.startsWith('DUCK')));
+    assert.ok(faultFixed('wrongBus', r.b, r.s));
+    // the same line again while it speaks is ignored; after it ends, it ducks (the card's reason)
+    r = drive(r, { type: 'post', event: 'vo_greeting', owner: 'guide' });
+    assert.equal(gaFact(r.s, 'duck'), ducks);
+    r = { s: endOneShots(r.s), b: r.b };
+    r = drive(r, { type: 'post', event: 'vo_greeting', owner: 'guide' });
+    assert.equal(gaFact(r.s, 'duck'), ducks + 1);
+    assert.match(FAULTS[1].why, /When the line has ended, play it again/);
+  });
   it('fault 3: every step names take 1, and two steps are not yet a pattern', () => {
-    let r = drive(plant(open(), 'repeat'), { type: 'step', who: 'guide' }, { type: 'step', who: 'guide' });
+    let r = drive(plant(open(), 'repeat'), GUIDE_STEP, GUIDE_STEP);
     assert.equal(r.b.repeat.seen, 2);
     assert.ok(!faultFixed('repeat', repair(r, 'repeat').b, repair(r, 'repeat').s));
-    r = drive(r, { type: 'step', who: 'player' });
-    const starts = texts(r.s).filter((t) => t.startsWith('START') && t.includes('Footstep'));
-    assert.equal(starts.length, 3);
-    for (const t of starts) assert.ok(t.includes('take 1 of 4'), t);
+    r = drive(r, stepInPlace('player'));
+    const steps = starts(r.s).filter((t) => t.includes('Footstep'));
+    assert.equal(steps.length, 3);
+    for (const t of steps) assert.ok(t.includes('take 1 of 4'), t);
     r = repair(r, 'repeat');
     assert.ok(r.s.options.variation && faultFixed('repeat', r.b, r.s));
   });
   it('fault 4: the guide’s step uses YOUR surface, and cannot show when you share a surface', () => {
-    let r = drive(plant(open(), 'scope'), { type: 'step', who: 'guide' });
-    assert.ok(texts(r.s).some((t) => t === 'TRIGGER foot contact · guide · SWITCH surface = stone'));
+    let r = drive(plant(open(), 'scope'), GUIDE_STEP);
+    assert.ok(texts(r.s).some((t) => t === 'TRIGGER foot contact · GUIDE · SWITCH surface = stone'));
     assert.equal(r.b.scope.seen, 1);
     // both indoors on wood: the fault is in, but no symptom can be seen
     r = drive(open(), { type: 'door' }, { type: 'move', who: 'player', x: 11, y: 5 });
-    r = drive(plant(r, 'scope'), { type: 'step', who: 'guide' });
+    r = drive(plant(r, 'scope'), GUIDE_STEP);
     assert.equal(r.b.scope.seen, 0);
     assert.ok(!faultFixed('scope', repair(r, 'scope').b, repair(r, 'scope').s));
   });
@@ -600,7 +856,7 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.ok(!step.blocked);
     assert.equal(standingOn(step.r.s), 'workshop');
     // both on wood: the fault is in but cannot show
-    r = drive(plant(step.r, 'scope'), { type: 'step', who: 'guide' });
+    r = drive(plant(step.r, 'scope'), GUIDE_STEP);
     assert.equal(r.b.scope.seen, 0);
     // YOU wander off inside, then the door is closed: STONE PATH is blocked until it is opened
     r = drive(r, { type: 'step', who: 'player' }, { type: 'step', who: 'player' }, { type: 'door' });
@@ -610,14 +866,14 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.ok(!step.blocked);
     assert.equal(standingOn(step.r.s), 'path');
     // now the guide's step uses YOUR surface: the symptom
-    r = drive(step.r, { type: 'step', who: 'guide' });
+    r = drive(step.r, GUIDE_STEP);
     assert.equal(r.b.scope.seen, 1);
-    assert.ok(texts(r.s).includes('TRIGGER foot contact · guide · SWITCH surface = stone'));
+    assert.ok(texts(r.s).includes('TRIGGER foot contact · GUIDE · SWITCH surface = stone'));
     assert.ok(faultFixed('scope', repair(r, 'scope').b, repair(r, 'scope').s));
     // from the gravel (neither chip is marked) the same holds
     r = drive(open(), { type: 'move', who: 'player', x: 4.2, y: 7.5 });
     assert.equal(standingOn(r.s), null);
-    r = drive(plant(r, 'scope'), { type: 'step', who: 'guide' });
+    r = drive(plant(r, 'scope'), GUIDE_STEP);
     assert.equal(r.b.scope.seen, 1);
   });
   it('no fault names itself when it starts: all five go in with no log line', () => {
@@ -647,16 +903,41 @@ describe('chapter 5 — lesson text', () => {
   const src = (p: string) => readFileSync(new URL(`../src/screens/lab/gameaudio/pages/${p}.tsx`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   /** The words inside <P>, <Look>, <Do> and <Note> in the five steps. */
   const lesson = (p: string): string => [...src(p).matchAll(/<(P|Look|Do|Note)(?: [^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[2].replace(/\{[^}]*\}/g, 'x')).join(' ');
-  it('each page’s steps stay short (the review round added required sentences: up to 380 words)', () => {
+  it('each page’s lesson prose is inside the approved plan’s 150–260 words (decision 12)', () => {
     for (const p of PAGES) {
       const n = lesson(p).trim().split(/\s+/).length;
-      assert.ok(n >= 150 && n <= 380, `${p}: ${n} words`);
+      assert.ok(n >= 150 && n <= 260, `${p}: ${n} words`);
     }
+  });
+  it('in each check the correct option is not the longest (L-16)', () => {
+    for (const p of PAGES) {
+      const s = src(p);
+      const opts = [...s.match(/options=\{\[([\s\S]*?)\]\}/)![1].matchAll(/'([^']*)'/g)].map((m) => m[1]);
+      const k = Number(s.match(/correct=\{(\d)\}/)![1]);
+      const others = opts.filter((_, i) => i !== k).map((o) => o.length);
+      assert.ok(opts[k].length < Math.max(...others), `${p}: correct ${opts[k].length}, others ${others}`);
+    }
+  });
+  it('the words the pages were told to stop using are gone, and the fixes the audits asked for are in', () => {
+    for (const p of PAGES) {
+      const t = lesson(p);
+      assert.ok(!/sfx means|ui means|After DUCK off/.test(t), `${p}: the log's ids and "After DUCK off" (L-03, L-09)`);
+      assert.ok(!/\bid\b/.test(t), `${p}: ID in capitals (L-25)`);
+    }
+    assert.ok(!/REMOVING A MACHINE|NO MACHINE/.test(src('p19Testing')));
+    assert.ok(/hudArg: sel/.test(src('p16Mix')), 'page 16 marks the chosen bus on its mix strip');
+    // the line chips say SPEAKING in a word, not by their highlight alone (W2-24)
+    assert.ok(/speaking\('GUIDE LINE'/.test(src('p16Mix')) && /speaking\('CHAT LINE'/.test(src('p16Mix')));
+    // the tray kit gives the measured tray room, not "300 points" (W2-03), and words a log line as the log does
+    const kit = readFileSync(new URL('../src/screens/lab/gameaudio/pages/chdKit.tsx', import.meta.url), 'utf8');
+    assert.ok(!/300 points/.test(kit) && /242 points/.test(kit));
+    assert.ok(/gaLogRow/.test(kit), 'a tray never prints the kind word twice');
   });
   it('the fix round’s shared wording rules hold in the pages, their guides and their data', () => {
     const files = [
       ...PAGES.map((p) => `pages/${p}.tsx`),
       ...['16', '17', '18', '19'].map((n) => `pages/guides/p${n}.ts`),
+      'pages/chdKit.tsx',
       ...['gaMix', 'gaBudget', 'gaNet', 'gaFaults'].map((d) => `pages/data/${d}.ts`),
     ];
     for (const f of files) {
@@ -675,6 +956,7 @@ describe('chapter 5 — lesson text', () => {
   it('dock values and readout labels are seven letters or fewer', () => {
     for (const p of PAGES) {
       const s = src(p);
+      // ID CHECK is a readout label; an 8-letter dock key value is cut ("DUCK O…", seen at 390 pt)
       for (const m of s.matchAll(/(?:valueLabel|\bk): [^,\n]*?'([^'$]+)'/g)) assert.ok(m[1].length <= 8 && (m[1].length <= 7 || m[1] === 'ID CHECK'), `${p}: "${m[1]}"`);
     }
   });

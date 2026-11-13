@@ -2,18 +2,23 @@
  * Page 9 — VARIATION AND LAYERS.
  *
  * Footsteps: with variation OFF the same take plays every time (the
- * machine-gun effect); with it ON the take changes and never repeats at
- * once; with AVOID REPEAT off a take may come twice. The strip of takes
- * shows it without sound: each tile is the take one step really played, read
- * from the instance (pages/data/chbScene `chbNoteTakes`).
+ * machine-gun effect); with it ON the take changes and never repeats
+ * immediately; with AVOID REPEAT off a take may play twice in a row. The
+ * strip of takes shows it without sound: each tile is the take one step
+ * really played, read from the instance (pages/data/chbScene
+ * `chbNoteTakes`). It keeps the same number of takes as the model's own
+ * record (GA_TAKES_MAX), so the strip in the lesson and the one on the
+ * display show the same steps.
  *
  * The door: ONE event, two layers (the door, and a second later the loose
  * latch). The log shows one line that reads EVENT Play_Door and two START
  * lines.
  *
- * Three keys: LEVEL (the lane), STEP (one foot contact, in place, so the
- * surface stays the same for the comparison) and the SETUP tray (the three
- * settings, and the door beside its layer setting).
+ * Four keys: LEVEL (the lane), STEP (one foot contact, in place, so the
+ * surface stays the same for the comparison), the door (its own key, as on
+ * pages 2 and 6, so its log lines are read in the lesson with no tray in the
+ * way) and the SETUP tray: three settings, one row each, and nothing else
+ * (a tray covers the well and has little room: lead's decision 15).
  *
  * Common mistake taught against: unlimited randomness, or secondary details
  * that bury the action.
@@ -24,17 +29,16 @@ import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { colors } from '../../../../theme/tokens';
 import { GaRack, masterKey } from '../GaLab';
-import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
+import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
-import type { GaOptions } from '../model/gaModel';
+import { GA_TAKES_MAX, type GaOptions } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
-import { SURFACE_NAME } from '../model/gaWorld';
-import { TakeStrip, TrayBox, TrayChip, TrayLog, TrayNote, TrayRow, useCountWhen } from './chbBits';
+import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen } from './chbBits';
 import { CHB_FOOTSTEP_ASSETS, CHB_SURFACES, chbDoorLayers, chbNoteTakes, chbSteps, type ChbTake } from './data/chbScene';
 import { G09 } from './guides/p09';
-import { useSince } from './shared';
+import { doorKey, useSince } from './shared';
 
-const ASSETS: readonly string[] = [...CHB_FOOTSTEP_ASSETS, 'door', 'door_rattle'];
+const ASSETS: readonly string[] = [...CHB_FOOTSTEP_ASSETS, 'door', 'door_close', 'door_rattle'];
 const TERMS = gaTerms('Sound variation', 'Random container', 'Sequence container', 'Avoid-repeat setting', 'Machine-gun effect', 'Pitch randomization');
 
 /** Change one setting, only if it really changes (the model counts each one). */
@@ -45,29 +49,24 @@ function setOption<K extends 'variation' | 'avoidRepeat' | 'doorRattle'>(key: K,
   gaDispatch({ type: 'option', patch });
 }
 
-/** The SETUP tray: how a footstep chooses its take, and the door's layers. */
+/** The SETUP tray: how a footstep chooses its take, and the door's second
+ *  layer. Two rows of switch chips (each says ON or OFF in words), no note
+ *  and no log: about 138 pt, inside the tray's 196 (lead's decision 15).
+ *  What a press did is on the display: the VARIATION readout, LAST TAKE,
+ *  and the takes strip. */
 function SetupTray() {
   const s = useGa();
   const o = s.options;
   return (
     <TrayBox>
-      <TrayRow head="FOOTSTEP TAKES">
-        <TrayChip label={marked('VARIATION ON', o.variation)} selected={o.variation} onPress={() => setOption('variation', true)} />
-        <TrayChip label={marked('VARIATION OFF', !o.variation)} selected={!o.variation} onPress={() => setOption('variation', false)} />
+      {/* with variation off only the first take plays: the head says so */}
+      <TrayRow head={o.variation ? 'FOOTSTEP TAKES' : 'FOOTSTEP TAKES · ONLY TAKE 1 PLAYS'}>
+        <TrayChip label={onOff('VARIATION', o.variation)} selected={o.variation} onPress={() => setOption('variation', !o.variation)} />
+        <TrayChip label={onOff('AVOID REPEAT', o.avoidRepeat)} selected={o.avoidRepeat} onPress={() => setOption('avoidRepeat', !o.avoidRepeat)} />
       </TrayRow>
-      <TrayRow head="THE SAME TAKE TWICE IN A ROW">
-        <TrayChip label={marked('AVOID REPEAT ON', o.avoidRepeat)} selected={o.avoidRepeat} onPress={() => setOption('avoidRepeat', true)} />
-        <TrayChip label={marked('AVOID REPEAT OFF', !o.avoidRepeat)} selected={!o.avoidRepeat} onPress={() => setOption('avoidRepeat', false)} />
+      <TrayRow head="THE DOOR EVENT · ITS SECOND LAYER">
+        <TrayChip label={onOff('RATTLE', o.doorRattle)} selected={o.doorRattle} onPress={() => setOption('doorRattle', !o.doorRattle)} />
       </TrayRow>
-      {!o.variation ? <TrayNote>With variation off only the first take plays, so this setting changes nothing.</TrayNote> : null}
-      {/* short labels: the three chips keep one line on a phone */}
-      <TrayRow head="THE DOOR EVENT · ITS RATTLE LAYER">
-        <TrayChip label={marked('RATTLE ON', o.doorRattle)} selected={o.doorRattle} onPress={() => setOption('doorRattle', true)} />
-        <TrayChip label={marked('RATTLE OFF', !o.doorRattle)} selected={!o.doorRattle} onPress={() => setOption('doorRattle', false)} />
-        <TrayChip label={s.doorOpen ? 'CLOSE DOOR' : 'OPEN DOOR'} onPress={() => gaDispatch({ type: 'door' })} />
-      </TrayRow>
-      {/* four lines: the event's GAME line and its two STARTs stay in view after the "ended" line */}
-      <TrayLog state={s} lines={4} />
     </TrayBox>
   );
 }
@@ -75,12 +74,13 @@ function SetupTray() {
 function Page({ ctx }: { ctx: PageCtx }) {
   const s = useGa();
   const { since, kinds } = useSince(s);
-  const [check, setCheck] = useState(false);
+  const [layersCheck, setLayersCheck] = useState(false);
+  const [takesCheck, setTakesCheck] = useState(false);
   const o = s.options;
 
   // the takes that really played on this visit, read from each instance
   const takes = useRef<readonly ChbTake[]>([]);
-  takes.current = chbNoteTakes(takes.current, s);
+  takes.current = chbNoteTakes(takes.current, s, 'player', GA_TAKES_MAX);
   const last = takes.current[takes.current.length - 1];
 
   // steps the model took while variation was off
@@ -92,7 +92,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     { label: 'Take three steps with variation off', hit: plainSteps >= 3 },
     { label: 'Play three different takes on one surface', hit: mostTakes >= 3 },
     { label: 'Open the door: one event, two layers', hit: since('post:door_open') > 0 && chbDoorLayers(s) >= 2 },
-    { label: 'Pass the check', hit: check },
+    { label: 'Pass both checks', hit: layersCheck && takesCheck },
   ];
   const latched = useVisitGoals(ctx, goals);
 
@@ -115,31 +115,32 @@ function Page({ ctx }: { ctx: PageCtx }) {
   return (
     <GaRack
       spec={{
-        keys: [masterKey(s), stepHere, setupKey],
+        keys: [masterKey(s), stepHere, doorKey(s), setupKey],
         initialParam: 'master',
+        hud: 'takes',
         readouts: [
           { k: 'VARIATION', v: o.variation ? 'ON' : 'OFF' },
-          { k: 'LAST TAKE', v: last ? String(last.take) : '—', vA11y: last ? `the last footstep played take ${last.take}` : 'no footstep has played yet' },
+          { k: 'LAST TAKE', v: last ? String(last.take) : 'NONE', vA11y: last ? `the last footstep played take ${last.take}` : 'no footstep has played yet' },
         ],
         showNames: true,
+        show: { take: true },
         assets: ASSETS,
       }}
     >
       <Step n={1}>
-        <Look>You stand on the stone path, and each STEP makes one foot contact there. The strip below shows which take played, oldest on the left.</Look>
-        <P>The ear notices an exact repeat immediately. So a footstep event holds several takes. A take is one version of the same sound. The event picks one take each time and changes its level and pitch a little. In many engines a pitch change changes playback speed, so a higher step is also shorter.</P>
-        <P>A holder that picks at random is a random container. A holder that plays in a set order is a sequence container. Variation has a limit: every take still sounds like the same shoe on the same ground.</P>
+        <Look>Each STEP is one foot contact on the stone path. The strip under the picture shows the last eight takes.</Look>
+        <P>The ear notices an exact repeat immediately, so a footstep event holds several takes. A take is one version of the same sound. The event picks one take each time and changes its level and pitch a little.</P>
+        <P>A holder that picks at random is a random container. One that plays in a set order is a sequence container. These are Wwise’s names: page 20 has the others. Every take must still sound like the same shoe.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>In SETUP, choose VARIATION OFF. Close the tray and press STEP four times. Choose VARIATION ON and step again.</Do>
-        <P>With variation off, every START line reads take 1 of 4, and the strip shows one number. With it on, the takes change and none plays twice in a row. With AVOID REPEAT OFF, a take can come twice.</P>
-        <TakeStrip takes={takes.current} surfaceName={(su) => SURFACE_NAME[su]} />
+        <Do>In SETUP, switch VARIATION off. Close the tray and press STEP four times. Switch VARIATION on and step again.</Do>
+        <P>With variation off, every START line reads take 1 of 4, and the strip joins the takes as SAME TAKE. With it on, the takes change and none plays twice in a row, unless AVOID REPEAT is off.</P>
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>
-        <Do>In SETUP, with RATTLE ON, press OPEN DOOR in the same tray and read the log lines below. Choose RATTLE OFF and press CLOSE DOOR.</Do>
-        <P>The game posted one event. The audio side started two layers: the door, and one second later the loose latch. A layer is part of one event, not a second trigger from the game. With the layer off, one sound starts.</P>
+        <Do>Press OPEN DOOR and read the log. Then switch RATTLE off in SETUP and press CLOSE DOOR.</Do>
+        <P>The game posted one event. The audio side started two layers: the door, and one second later the loose latch. A layer is part of one event, not a second trigger from the game. With RATTLE off, only the door starts.</P>
         <Note tone="mistake">Unlimited randomness, or details that cover the action. Takes that differ too much stop sounding like one source, and a long, loud rattle hides the door.</Note>
       </Step>
       <Step n={4}>
@@ -148,7 +149,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={5}>
         <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
+          eyebrow="QUESTION 1"
           question="You open the door once. The log shows one line that reads EVENT Play_Door, and two START lines. What happened?"
           options={[
             'One event played two layers',
@@ -164,7 +165,26 @@ function Page({ ctx }: { ctx: PageCtx }) {
             'A sound that cannot start prints a FAULT line. Both of these lines say START.',
             'The scene has one door, and the log names one event. The two START lines are that event’s layers.',
           ]}
-          onCorrect={() => setCheck(true)}
+          onCorrect={() => setLayersCheck(true)}
+        />
+        <UnderstandingCheck
+          eyebrow="QUESTION 2"
+          question="A footstep event has four takes. VARIATION and AVOID REPEAT are on. Take 2 has just played. What can play next?"
+          options={[
+            'Take 1, 3 or 4, chosen at random',
+            'Any of the four takes, chosen at random',
+            'Take 3, because the takes play in order',
+            'Take 2 again, at a different pitch',
+          ]}
+          correct={0}
+          explain="AVOID REPEAT removes only the take that has just played. Any of the other three can be chosen."
+          wrong={[
+            undefined,
+            'That is AVOID REPEAT · OFF: take 2 could then play twice in a row.',
+            'A set order is a sequence container. This event picks at random.',
+            'The small pitch change is added to the take that is chosen. It does not let the same take play again.',
+          ]}
+          onCorrect={() => setTakesCheck(true)}
         />
       </Step>
     </GaRack>

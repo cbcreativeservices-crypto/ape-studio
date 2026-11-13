@@ -11,7 +11,8 @@
  *     sent for a sound the engine has not confirmed it holds);
  *   - commands sent before the transport is ready are QUEUED, in order;
  *   - the measured level of the mix and the live voice count, for the
- *     readouts and for the app's listening-exposure monitor.
+ *     readouts and for the app's listening-exposure monitor;
+ *   - whether the room reverb loaded on this device (`reverbOk`).
  *
  * It is a plain object with subscribe(), so the model's conductor and the
  * React layer both read it without a second copy of the truth.
@@ -41,6 +42,10 @@ export class GaEngine {
   sampleRate = 0;
   level: GaLevel = { rms: 0, peak: 0, l: 0, r: 0, voices: 0 };
   lastError: string | null = null;
+  /** The engine's answer to the last `reverb` command: true = the room
+   *  reverb is loaded, false = this device has none (the lab must say so),
+   *  null = not asked yet (audit 2, F1). */
+  reverbOk: boolean | null = null;
 
   private transport: GaTransport | null = null;
   private queue: GaCmd[] = [];
@@ -83,6 +88,7 @@ export class GaEngine {
     for (const w of this.bufferWaiters.values()) w(false);
     this.bufferWaiters.clear();
     this.level = { rms: 0, peak: 0, l: 0, r: 0, voices: 0 };
+    this.reverbOk = null;
     if (t) {
       try {
         t.dispose();
@@ -132,6 +138,10 @@ export class GaEngine {
       }
       case 'level':
         this.level = { rms: e.rms, peak: e.peak, l: e.l, r: e.r, voices: e.voices };
+        break;
+      case 'reverb':
+        this.reverbOk = e.ok;
+        if (!e.ok) this.lastError = `The room reverb could not be loaded${e.why ? `: ${e.why}` : ''}.`;
         break;
       case 'error':
         this.lastError = e.msg;

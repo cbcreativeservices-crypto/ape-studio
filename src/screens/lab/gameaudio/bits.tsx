@@ -22,10 +22,12 @@
  */
 import { useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import { colors, fonts } from '../../../theme/tokens';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import type { PageCtx } from '../kit/PagedLab';
 import { useMarkWhen } from '../tuning/components/primitives';
+import { gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime } from './bitsLogic';
 import type { GaLogEntry, GaLogKind, GaState } from './model/gaModel';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
@@ -74,31 +76,43 @@ export function Note({ children, tone = 'plain' }: { children: ReactNode; tone?:
 
 export type Goal = { label: string; hit: boolean };
 
+/** This visit's latched goals. `doneBefore` = the page was already finished
+ *  when this visit began (its credit stays; the chips start empty again). */
+export type VisitLatch = boolean[] & { doneBefore?: boolean };
+
 /** Latch each goal the first time it is met during this visit; when all are
  *  met the page marks itself done (earned credit is never removed: a later
  *  visit starts with empty chips and only ever marks). */
-export function useVisitGoals(ctx: PageCtx, goals: Goal[]): boolean[] {
+export function useVisitGoals(ctx: PageCtx, goals: Goal[]): VisitLatch {
   const seen = useRef<boolean[]>(goals.map(() => false));
+  const doneBefore = useRef(ctx.isDone);
   if (seen.current.length !== goals.length) seen.current = goals.map(() => false);
   seen.current = seen.current.map((was, i) => was || goals[i].hit);
   const all = seen.current.every(Boolean);
   useMarkWhen(all, () => {
     if (!ctx.isDone) ctx.markDone();
   });
-  return [...seen.current];
+  return Object.assign([...seen.current], { doneBefore: doneBefore.current });
 }
 
-export function GoalChips({ goals, latched }: { goals: Goal[]; latched: boolean[] }) {
+/** The goal chips. On a page that was finished on an earlier visit the
+ *  chips start empty again (a fresh practice run), so one line says the
+ *  credit is kept (audit 2, W2-20). */
+export function GoalChips({ goals, latched }: { goals: Goal[]; latched: VisitLatch }) {
+  const again = latched.doneBefore === true && !latched.every(Boolean);
   return (
-    <View style={styles.chips} accessibilityRole="list">
-      {goals.map((g, i) => (
-        <View key={g.label} style={[styles.chip, latched[i] && styles.chipDone]} accessible accessibilityLabel={`${g.label}: ${latched[i] ? 'done' : 'not yet'}`}>
-          <Text style={[styles.chipText, latched[i] && { color: colors.green }]}>
-            {latched[i] ? '✓ ' : '○ '}
-            {g.label}
-          </Text>
-        </View>
-      ))}
+    <View style={styles.goals}>
+      {again ? <Text style={styles.goalsNote}>You finished this page before, and that is kept. These marks are for this visit.</Text> : null}
+      <View style={styles.chips} accessibilityRole="list">
+        {goals.map((g, i) => (
+          <View key={g.label} style={[styles.chip, latched[i] && styles.chipDone]} accessible accessibilityLabel={`${g.label}: ${latched[i] ? 'done' : 'not yet'}`}>
+            <Text style={[styles.chipText, latched[i] && { color: colors.green }]}>
+              {latched[i] ? '✓ ' : '○ '}
+              {g.label}
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
@@ -115,7 +129,7 @@ export function Terms({ items }: { items: readonly Term[] }) {
   const t = items.find((x) => x.term === open);
   return (
     <View style={styles.terms}>
-      <Text style={styles.termsHead}>WORDS ON THIS SCREEN — TAP ONE</Text>
+      <Text style={styles.termsHead}>WORDS ON THIS SCREEN · TAP ONE</Text>
       <View style={styles.chips}>
         {items.map((x) => (
           <Pressable
@@ -147,19 +161,6 @@ export function Terms({ items }: { items: readonly Term[] }) {
 
 /* ── the activity log ───────────────────────────────────────────────────── */
 
-const KIND_WORD: Record<GaLogKind, string> = {
-  trigger: 'GAME',
-  start: 'START',
-  stop: 'STOP',
-  value: 'VALUE',
-  state: 'STATE',
-  refused: 'REFUSED',
-  failed: 'FAULT',
-  mix: 'MIX',
-  music: 'MUSIC',
-  net: 'NETWORK',
-  note: 'NOTE',
-};
 const KIND_COLOR: Record<GaLogKind, string> = {
   trigger: colors.amber,
   start: colors.greenBright,
@@ -175,20 +176,35 @@ const KIND_COLOR: Record<GaLogKind, string> = {
 };
 
 /** The newest lines of the activity log, newest first. Each line carries its
- *  KIND as a word (never colour alone) and the scene time it happened. */
-export function ActivityLog({ state, lines = 6, only }: { state: GaState; lines?: number; only?: readonly GaLogKind[] }) {
+ *  KIND as one word in its own column (never color alone, and never printed
+ *  a second time in the text: bitsLogic `gaLogRow`) and the scene time it
+ *  happened.
+ *    only   show only these kinds of line. An empty log then says which
+ *           kinds it shows, so it never claims "nothing has happened" while
+ *           other things have.
+ *    empty  a page's own words for its empty log (default: bitsLogic
+ *           `gaLogEmpty`). */
+export function ActivityLog({ state, lines = 6, only, empty }: { state: GaState; lines?: number; only?: readonly GaLogKind[]; empty?: string }) {
   const rows: GaLogEntry[] = (only ? state.log.filter((l) => only.includes(l.kind)) : state.log).slice(-lines).reverse();
+  const none = empty ?? gaLogEmpty(only, state.log.length);
   return (
-    <View style={styles.log} accessible accessibilityRole="summary" accessibilityLabel={`Activity log, newest first. ${rows.length ? rows.map((r) => `${KIND_WORD[r.kind]}: ${r.text}`).join('. ') : 'Nothing has happened yet.'}`}>
-      <Text style={styles.logHead}>ACTIVITY LOG — NEWEST FIRST</Text>
-      {rows.length === 0 ? <Text style={styles.logEmpty}>Nothing has happened yet. Use the controls at the bottom.</Text> : null}
-      {rows.map((r) => (
-        <View key={r.n} style={styles.logRow}>
-          <Text style={styles.logTime}>{r.t.toFixed(1)}s</Text>
-          <Text style={[styles.logKind, { color: KIND_COLOR[r.kind] }]}>{KIND_WORD[r.kind]}</Text>
-          <Text style={styles.logText}>{r.text}</Text>
-        </View>
-      ))}
+    <View style={styles.log} accessible accessibilityRole="summary" accessibilityLabel={`Activity log, newest first. ${rows.length ? rows.map((r) => gaLogSpoken(r.kind, r.text)).join('. ') : none}`}>
+      <Text style={styles.logHead}>ACTIVITY LOG · NEWEST FIRST</Text>
+      {rows.length === 0 ? <Text style={styles.logEmpty}>{none}</Text> : null}
+      {rows.map((r) => {
+        const row = gaLogRow(r.kind, r.text);
+        return (
+          <View key={r.n} style={styles.logRow}>
+            <Text style={styles.logTime} {...fitValue(11)}>
+              {gaLogTime(r.t - (state.tPage ?? 0))}
+            </Text>
+            <Text style={[styles.logKind, { color: KIND_COLOR[r.kind] }]} {...fitValue(10.5)}>
+              {row.word}
+            </Text>
+            <Text style={styles.logText}>{row.text}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -208,16 +224,21 @@ export function Caption({ state }: { state: GaState }) {
 
 /** TROUBLESHOOT: plant one wrong setting, let the learner find it with the
  *  log and the scene, and judge the fix from the scene's state. */
-export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why }: {
+export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, seen = true }: {
   title: string;
   symptom: string;
   /** The fault is planted right now. */
   armed: boolean;
-  /** The learner planted it and has since put it right. */
+  /** The learner planted it and has since corrected it. */
   fixed: boolean;
   onStart: () => void;
   hints: readonly string[];
   why: string;
+  /** A planted fault does not name itself (lead's decision 10): a page whose
+   *  readouts stay neutral until the learner has PRODUCED THE SYMPTOM once
+   *  passes `seen={false}` until then. The card then asks for the symptom
+   *  first, and only afterward for the cause. Default true: as before. */
+  seen?: boolean;
 }) {
   const [shown, setShown] = useState(0);
   return (
@@ -231,7 +252,11 @@ export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why }:
       ) : null}
       {armed ? (
         <>
-          <Text style={styles.do}>The fault is in. Find it with the activity log and the controls, then put it right.</Text>
+          <Text style={styles.do}>
+            {seen
+              ? 'The fault is now active. Find its cause with the activity log and the controls, then correct it.'
+              : 'The fault is now active. Nothing on this page names it yet. First make the symptom in the report happen.'}
+          </Text>
           {hints.slice(0, shown).map((h) => (
             <Text key={h} style={styles.noteText}>
               • {h}
@@ -270,24 +295,27 @@ const styles = StyleSheet.create({
   noteTry: { borderColor: 'rgba(111,168,255,0.45)', backgroundColor: 'rgba(111,168,255,0.06)' },
   noteHead: { color: colors.orange, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
   noteText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
+  goals: { gap: 6 },
+  goalsNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 9, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
   chipDone: { borderColor: colors.green, backgroundColor: '#0f2416' },
   chipText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 0.8 },
   terms: { gap: 8 },
   termsHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
-  termChip: { borderRadius: 14, borderWidth: 1, borderColor: '#34343c', paddingHorizontal: 10, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
+  termChip: { borderRadius: 14, borderWidth: 1, borderColor: '#34343c', paddingHorizontal: 12, paddingVertical: 6, minHeight: 44, justifyContent: 'center' },
   termChipOpen: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,0.08)' },
   termChipText: { color: colors.textSub, fontFamily: fonts.barlowMedium, fontSize: 13 },
   termDef: { borderRadius: 9, borderWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0d0d10', padding: 10, gap: 5 },
   termDefHead: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1 },
-  termLink: { alignSelf: 'flex-start', minHeight: 32, justifyContent: 'center' },
+  termLink: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
   termLinkText: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.2 },
   log: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#08090b', padding: 10, gap: 6 },
   logHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
   logEmpty: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 13 },
   logRow: { flexDirection: 'row', gap: 7, alignItems: 'flex-start' },
-  logTime: { width: 40, color: colors.textMutedDeep, fontFamily: fonts.mono, fontSize: 11, lineHeight: 17, textAlign: 'right' },
+  // the widest time is 7 characters of 11 pt mono (41.6 pt measured): one line, always
+  logTime: { width: 46, color: colors.textMutedDeep, fontFamily: fonts.mono, fontSize: 11, lineHeight: 17, textAlign: 'right' },
   logKind: { width: 56, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8, lineHeight: 17 },
   logText: { flex: 1, color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   caption: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(111,168,255,0.5)', backgroundColor: 'rgba(111,168,255,0.07)', padding: 10, gap: 3 },
@@ -295,7 +323,7 @@ const styles = StyleSheet.create({
   captionText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20 },
   fault: { borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,107,94,0.45)', backgroundColor: 'rgba(255,107,94,0.05)', padding: 12, gap: 8 },
   faultHead: { color: '#ff6b5e', fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.4 },
-  faultBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: colors.amber, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },
+  faultBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: colors.amber, paddingHorizontal: 12, minHeight: 44, justifyContent: 'center' },
   faultBtnText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.2 },
   faultWhy: { gap: 5 },
 });

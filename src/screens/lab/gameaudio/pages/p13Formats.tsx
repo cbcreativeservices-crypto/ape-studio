@@ -12,8 +12,16 @@
  *                  live; it needs headphones, and now front and back differ
  *   MONO           the `mono` action — the whole mix folded to one signal
  *
- * The 5.1 map in the well (chcSpeakerMap) is a PICTURE of a layout; the page
- * says so, and that the phone is not sending surround.
+ * The three outputs are PAIRED with the ideas behind them in the text (audit
+ * 2, L-15): STEREO and MONO are channel-based audio, HEADPHONE 3D is binaural
+ * rendering, and object-based audio is named as a third idea that is not
+ * played here. What an OUTPUT choice sends is chcSpace `outputActions`.
+ *
+ * The 5.1 map in the well (chcSpeakerMap) is a STILL PICTURE of a layout; the
+ * page says so, and that the phone is not sending surround.
+ *
+ * The log shows the OUTPUT choices (MIX lines) and ■ STOP; its empty text
+ * says so, and never "nothing has happened" while sounds play (W2-22).
  *
  * Common mistakes taught against: thinking headphones need a separate small
  * speaker for each direction; applying a second spatializer to a signal that is
@@ -24,50 +32,46 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
-import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaFact, gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { useRoseWhile } from './chcBits';
 import { ChcSpeakerMap } from './chcSpeakerMap';
-import { chcSpace, sideWord } from './data/chcSpace';
+import { chcSpace, outputActions, outputOf, p13Log, sideWord, type ChcOutput } from './data/chcSpace';
 import { G13 } from './guides/p13';
 import { facingKey, useSince } from './shared';
 
 const ASSETS = ['fountain', 'amb_room', 'amb_yard', 'gen_hum', 'gen_air', 'ir_room'] as const;
-const TERMS = gaTerms('Channel-based audio', 'Object-Based Audio', 'Binaural rendering', 'HRTF', 'Ambisonics', 'Downmix');
+const TERMS = gaTerms('Channel-based audio', 'Object-Based Audio', 'Binaural rendering', 'HRTF', 'Ambisonics', 'Head tracking', 'Downmix');
 
-type Output = 'stereo' | 'hrtf' | 'mono';
-const outputOf = (s: GaState): Output => (s.mono ? 'mono' : s.pan);
-const OUTPUT_WORD: Record<Output, string> = { stereo: 'STEREO', hrtf: '3D', mono: 'MONO' };
+const OUTPUT_WORD: Record<ChcOutput, string> = { stereo: 'STEREO', hrtf: '3D', mono: 'MONO' };
 
-/** Choose what the device sends. MONO folds whatever renderer is on; leaving
- *  MONO for one of the other two switches the fold off again. */
-function setOutput(o: Output): void {
-  const s = gaGet();
-  if (o === 'mono') {
-    if (!s.mono) gaDispatch({ type: 'mono', on: true });
-    return;
-  }
-  if (s.mono) gaDispatch({ type: 'mono', on: false });
-  gaDispatch({ type: 'pan', mode: o });
+/** Choose what the device sends (chcSpace `outputActions`). */
+function setOutput(o: ChcOutput): void {
+  for (const a of outputActions(gaGet(), o)) gaDispatch(a);
 }
 
-const outputKey = (s: GaState): DockParam => ({
-  kind: 'options',
-  id: 'output',
-  label: 'OUTPUT',
-  valueLabel: OUTPUT_WORD[outputOf(s)],
-  valueA11y: outputOf(s) === 'hrtf' ? 'headphone 3D' : outputOf(s),
-  sticky: true,
-  selectedId: outputOf(s),
-  onSelect: (id) => setOutput(id as Output),
-  options: [
-    { id: 'stereo', label: 'STEREO', blurb: 'Left and right pan only. A source in front of you and one behind you sound the same.' },
-    { id: 'hrtf', label: 'HEADPHONE 3D', blurb: 'Your device filters each sound for each ear, the way a head would. It needs headphones. Now front and back differ.' },
-    { id: 'mono', label: 'MONO', blurb: 'A downmix: both ears get the same signal. Distance still sets the level. Direction is gone.' },
-  ],
-});
+/** The OUTPUT tray stays open to compare, so the choice in force carries a
+ *  mark in its LABEL (a highlight alone is not a state: walk audit W2-24). */
+const outputKey = (s: GaState): DockParam => {
+  const out = outputOf(s);
+  return {
+    kind: 'options',
+    id: 'output',
+    label: 'OUTPUT',
+    valueLabel: OUTPUT_WORD[out],
+    valueA11y: out === 'hrtf' ? 'headphone 3D' : out,
+    sticky: true,
+    selectedId: out,
+    onSelect: (id) => setOutput(id as ChcOutput),
+    options: [
+      { id: 'stereo', label: marked('STEREO', out === 'stereo'), blurb: 'Left and right pan only. A source in front of you and one behind you sound the same.' },
+      { id: 'hrtf', label: marked('HEADPHONE 3D', out === 'hrtf'), blurb: 'Your device filters each sound for each ear, the way a head would. It needs headphones. Now front and back differ.' },
+      { id: 'mono', label: marked('MONO', out === 'mono'), blurb: 'A downmix: both ears get the same signal. Distance still sets the level. Direction is gone.' },
+    ],
+  };
+};
 
 const sceneKey = (s: GaState): DockParam => {
   const on = gaPlaying(s, 'fountain');
@@ -97,6 +101,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       spec={{
         keys: [facingKey(s), outputKey(s), sceneKey(s)],
         initialParam: 'facing',
+        hud: 'output',
         readouts: [
           { k: 'FOUNTAIN', v: sideWord(fountain.bearingDeg), vA11y: `the fountain is ${sideWord(fountain.bearingDeg).toLowerCase()}` },
           { k: 'OUTPUT', v: OUTPUT_WORD[out], vA11y: out === 'hrtf' ? 'headphone 3D' : out },
@@ -106,22 +111,23 @@ function Page({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>The rings and the dotted line mark the fountain, the source to listen to. The wedge shows which way you face.</Look>
-        <P>Three outputs can be heard on this page: stereo, headphone 3D and mono.</P>
-        <P>The ideas behind them are related, not the same. Channel-based audio mixes every sound into a fixed set of channels, one for each speaker of a known layout, such as stereo or 5.1. Object-based audio keeps each sound with its position; the device works out the speaker signals as it plays. Binaural rendering makes a headphone signal that seems to surround you.</P>
+        <Look>The rings and the dotted line mark the fountain. The strip under the picture shows your head and what reaches each ear.</Look>
+        <P>This page plays three outputs. STEREO and MONO are channel-based audio: each sound is mixed into fixed channels, one for each speaker of a known layout. HEADPHONE 3D is binaural rendering: a headphone signal that seems to surround you.</P>
+        <P>Object-based audio is a third idea, not played here. Each sound keeps its position, and a renderer works out the signals as it plays. Game platforms have their own renderers, such as Dolby Atmos, DTS:X, Windows Sonic and Tempest 3D AudioTech.</P>
         <ChcSpeakerMap />
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Switch SCENE on. Open OUTPUT and choose STEREO. Move FACING through a full turn.</Do>
-        <P>The fountain moves between left and right. Straight ahead and straight behind sound the same.</P>
+        <P>In the strip the fountain slides along the line between your ears. Ahead and behind land on the same point.</P>
       </Step>
       <Step n={3}>
         <Do>Put on headphones and choose HEADPHONE 3D. Turn again. Then choose MONO.</Do>
-        <P>Your device does HEADPHONE 3D live, with its own HRTF filters. Front and back now differ. The filters are made for one typical head, so they suit some ears better than others. In MONO both ears get the same signal: level remains, direction is gone. Folding stereo to mono is a downmix.</P>
-        <ActivityLog state={s} lines={3} only={['mix']} />
-        <P>Two more words you will meet. Ambisonics stores sound arriving from every direction at one point. Head tracking senses how your head turns, so sounds can stay still around you.</P>
-        <Note tone="mistake">Thinking headphones need a separate small speaker for each direction. Two are enough: the filtering happens before the sound reaches them. Another is adding a second 3D effect to a signal that is already binaural.</Note>
+        <P>For HEADPHONE 3D your device filters each sound the way a head and outer ears would. That filter is called an HRTF. In the strip the fountain now moves on a circle around your head: front and back differ. The filter suits some ears better than others.</P>
+        <P>In MONO both bars stay equal as you turn: direction is gone.</P>
+        <ActivityLog state={p13Log(s)} lines={3} empty="No output change yet. This log shows your OUTPUT choices." />
+        <Note tone="mistake">Thinking headphones need a small speaker for each direction. Two are enough: the filtering happens before the sound reaches them.</Note>
+        <Note>A binaural signal needs no second 3D effect: a second one damages it.</Note>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>
@@ -132,10 +138,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="Headphones have two small speakers, one for each ear. How can a sound seem to come from behind you?"
           options={[
-            'Each sound is filtered for each ear, the way a head would change it, before it reaches the two speakers',
+            'Each sound is filtered for each ear before it reaches the speakers',
             'Each ear cup holds several small speakers, one for each direction',
-            'The phone sends 5.1 channels to the headphones',
-            'The sound file was saved in a 3D format',
+            'The phone sends 5.1 channels to the headphones, one for each speaker',
+            'The sound file was saved in a 3D format that holds its direction',
           ]}
           correct={0}
           explain="Binaural rendering does its work before the speakers. It filters each sound for the left ear and for the right ear by direction, which is what the HRTF describes. The two speakers then play the result."

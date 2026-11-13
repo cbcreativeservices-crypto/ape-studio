@@ -7,12 +7,20 @@
  * DISTANCE and PAN, worked out from model/gaWorld by pages/data/chcSpace.
  *
  * The distance rule is the model's own (gaWorld.attenuationGain): full level
- * inside the minimum; level halved (−6 dB) per doubling beyond it; over the
- * last fifth of the range an extra fade, so it is silent at the maximum. In
- * this scene a loop that passes its maximum goes VIRTUAL (the model's log
- * line, and its `virtual` fact). The page opens on a clean scene (YOU on the
- * stone path, facing the closed door, nothing running), so every step says
- * what to switch on.
+ * inside the minimum; −6 dB per doubling beyond it; over the last fifth of
+ * the range an extra fade, so it is silent at the maximum. In this scene a
+ * loop that passes its maximum goes VIRTUAL (the model's log line, and its
+ * `virtual` fact) and is played again when the listener comes back. The page
+ * opens on a clean scene (YOU on the stone path, facing the closed door,
+ * nothing running), so every step says what to switch on.
+ *
+ * THE WALK TO VIRTUAL CANNOT GO WRONG (walk audit W1 F01). The generator's
+ * maximum is 12 m and the whole west edge of the courtyard is past it. Step 3
+ * tells the learner to turn until the card's DIRECTION says "straight behind"
+ * (the same test as the goal: chcSpace `isStraightBehind`) and then to press
+ * STEP: from anywhere in the courtyard that walk ends past the maximum. A
+ * STEP that cannot move logs a NOTE saying why, and this page's log shows
+ * NOTE lines as well as STATE lines (chcSpace `P11_LOG`).
  *
  * Said plainly, because it is the lesson: what is heard here is LEFT / RIGHT
  * PAN AND LEVEL only. A source straight ahead and one straight behind pan the
@@ -33,7 +41,7 @@ import { gaPlaying } from '../model/gaModel';
 import { gaDispatch, useGa } from '../model/gaStore';
 import { GA_ASSETS } from '../sounds/gaSoundBank';
 import { ReadCard, TrayChip, onOff, tray } from './chcBits';
-import { CHC_SOURCES, chcSpace, directionWord, levelWord, panShort, panWord, type ChcSource } from './data/chcSpace';
+import { CHC_SOURCES, P11_LOG, chcSpace, directionWord, isStraightBehind, levelWord, panShort, panWord, statusWord, type ChcSource } from './data/chcSpace';
 import { G11 } from './guides/p11';
 import { facingKey, stepKey, useSince } from './shared';
 
@@ -49,8 +57,8 @@ function SourcesTray({ src, setSrc }: { src: ChcSource; setSrc: (s: ChcSource) =
     <View style={tray.tray}>
       <Text style={tray.head}>SOURCE TO MEASURE</Text>
       <View style={tray.row}>
-        <TrayChip label={marked('GENERATOR', src === 'generator-1')} selected={src === 'generator-1'} onPress={() => setSrc('generator-1')} />
-        <TrayChip label={marked('FOUNTAIN', src === 'fountain')} selected={src === 'fountain'} onPress={() => setSrc('fountain')} />
+        <TrayChip label={marked(CHC_SOURCES['generator-1'].name, src === 'generator-1')} selected={src === 'generator-1'} onPress={() => setSrc('generator-1')} />
+        <TrayChip label={marked(CHC_SOURCES.fountain.name, src === 'fountain')} selected={src === 'fountain'} onPress={() => setSrc('fountain')} />
       </View>
       <Text style={tray.head}>SWITCH ON</Text>
       <View style={tray.row}>
@@ -74,8 +82,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const sceneOn = gaPlaying(s, 'fountain');
   const goals = [
     { label: 'Run the generator and the scene', hit: since('inst:generator') > 0 && genOn && sceneOn },
-    { label: 'Turn until the source is behind you', hit: since('turned') > 0 && Math.abs(r.bearingDeg) >= 170 },
-    { label: 'Walk until a sound goes VIRTUAL', hit: since('virtual') > 0 },
+    { label: 'Turn until the source is straight behind you, or almost', hit: since('turned') > 0 && isStraightBehind(r.bearingDeg) },
+    { label: 'Walk until a playing sound goes VIRTUAL', hit: since('virtual') > 0 },
     { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);
@@ -86,7 +94,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     id: 'sources',
     label: 'SOURCES',
     valueLabel: onWord,
-    valueA11y: `switched on: ${genOn && sceneOn ? 'the generator and the scene' : genOn ? 'the generator' : sceneOn ? 'the scene' : 'nothing'}; measuring the ${name.toLowerCase()}`,
+    valueA11y: `switched on: ${genOn && sceneOn ? 'generator 1 and the scene' : genOn ? 'generator 1' : sceneOn ? 'the scene' : 'nothing'}; measuring ${name.toLowerCase()}`,
     render: () => <SourcesTray src={src} setSrc={setSrc} />,
   };
 
@@ -96,7 +104,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         keys: [facingKey(s), stepKey(), sourcesKey],
         initialParam: 'facing',
         readouts: [
-          { k: 'DISTANCE', v: `${r.distanceM.toFixed(1)} m`, vA11y: `the ${name.toLowerCase()} is ${r.distanceM.toFixed(1)} meters away` },
+          { k: 'DISTANCE', v: `${r.distanceM.toFixed(1)} m`, vA11y: `${name.toLowerCase()} is ${r.distanceM.toFixed(1)} meters away` },
           { k: 'PAN', v: panShort(r.pan), vA11y: `pan ${panWord(r.pan).toLowerCase()}` },
         ],
         select: src,
@@ -105,18 +113,17 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>Two dashed rings surround the source you chose: MIN, its minimum distance, and MAX, its maximum. A dotted line joins it to you.</Look>
-        <P>Every positioned sound has an emitter, the spot it comes from. The game compares it with the listener: where you stand and which way you face.</P>
-        <P>Inside the minimum the sound is at full level. Beyond it the level halves, a drop of 6 dB, each time the distance doubles. Over the last fifth of the way to the maximum it also fades, so it reaches silence at the maximum. A real game draws its own curve for each sound.</P>
-        <P>Some sources aim their sound, like a flashlight. That is cone attenuation. The sources on this page send sound equally in every direction.</P>
+        <P>Every positioned sound has an emitter, the spot it comes from. The game compares it with the listener: where you stand and the way you face.</P>
+        <P>Inside the minimum the sound is at full level. Beyond it the level drops 6 dB each time the distance doubles. Over the last fifth of the way to the maximum it also fades to silence. A real game draws its own curve for each sound.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
         <Do>Open SOURCES. Switch GENERATOR 1 and SCENE on, press OPEN DOOR, and choose a source. Then move FACING and press STEP.</Do>
         <P>DISTANCE follows where you stand. PAN follows the angle between your facing and the source.</P>
         <ReadCard
-          title={`THE ${name}, FROM WHERE YOU ARE`}
+          title={`${name} · FROM WHERE YOU ARE`}
           rows={[
-            { k: 'STATE', v: !r.playing ? 'Not switched on' : r.virtual ? 'VIRTUAL: tracked, not played' : 'Playing' },
+            { k: 'STATUS', v: statusWord(r) },
             { k: 'DISTANCE', v: `${r.distanceM.toFixed(1)} m (minimum ${r.atten.min} m, maximum ${r.atten.max} m)` },
             { k: 'LEVEL FROM DISTANCE', v: levelWord(r) },
             { k: 'DIRECTION', v: directionWord(r.bearingDeg) },
@@ -126,10 +133,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
         />
       </Step>
       <Step n={3}>
-        <Do>Choose GENERATOR. Turn until it is behind you. Then press STEP until STATE on the card reads VIRTUAL.</Do>
-        <P>Straight ahead and straight behind both pan to the center and sound the same. This page plays left and right pan and level, nothing more. The scene knows the source is behind you; this output cannot show it.</P>
-        <P>In this scene, a loop that passes its maximum distance becomes virtual: the game tracks it, plays nothing, and brings it back when you return.</P>
-        <ActivityLog state={s} lines={4} only={['state']} />
+        <Do>Stand in the courtyard with GENERATOR 1 on and chosen. The picture marks BEHIND YOU from a quarter turn. Keep turning with FACING until DIRECTION on the card says “straight behind” (“almost” counts). Then press STEP until STATUS reads VIRTUAL.</Do>
+        <P>Straight ahead and straight behind both pan to the center, so they sound the same here.</P>
+        <P>A loop past its maximum distance becomes virtual in this scene: tracked, not played, and played again when you return. If a step cannot move you, a NOTE in the log says why.</P>
+        <ActivityLog state={s} lines={4} only={P11_LOG} />
         <Note tone="mistake">Calling ordinary left and right panning complete 3D sound. Pan and level cannot tell front from back, or above from below.</Note>
       </Step>
       <Step n={4}>
@@ -139,10 +146,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={5}>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question="The generator is straight behind you, 4 m away. What does the output on this page do with it?"
+          question="The generator is straight behind you, inside its maximum distance. What does the output on this page do with it?"
           options={[
-            'Plays it at the center, the same as if it were straight ahead',
-            'Plays it in the left ear only',
+            'Plays it at the center, as if it were straight ahead',
+            'Plays it in the left ear only, because it is behind you',
             'Makes it silent, because you are not facing it',
             'Makes it sound as if it comes from behind you',
           ]}
@@ -151,8 +158,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
           wrong={[
             undefined,
             'A sound goes to one side only when it is on that side of where you face. Straight behind is neither left nor right.',
-            'Level follows distance here, not where you look. At 4 m the generator is well inside its maximum distance.',
-            'The scene knows it is behind you, but a left and right pan cannot show that. Front and back need a different way of rendering, such as the headphone 3D on the Output formats page.',
+            'Level follows distance here, not where you look. Inside its maximum distance the generator plays.',
+            'The scene knows it is behind you, but a left and right pan cannot show that. Front and back need a different output, such as the headphone 3D on the Output formats page.',
           ]}
           onCorrect={() => setCheck(true)}
         />

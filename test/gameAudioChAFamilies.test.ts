@@ -1,6 +1,6 @@
 /**
- * Game Audio lab, pages 1 and 5 — the sound families and the solo rule
- * (pages/data/gaFamilies.ts), and the model facts those two pages' text and
+ * Game Audio lab, pages 1, 2 and 5 — the sound families and the solo rule
+ * (pages/data/gaFamilies.ts), and the model facts those pages' text and
  * goals rest on. Proven on the pure model; no device.
  *
  * If one of the second half's tests fails, a sentence on page 1 or page 5 is
@@ -9,16 +9,21 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { GA_BUSES, type GaBus } from '../src/screens/lab/gameaudio/engine/gaEngineProtocol.ts';
-import { GA_EVENTS } from '../src/screens/lab/gameaudio/model/gaDefs.ts';
-import { busGain, gaFact, gaInitial, gaPlaying, gaReduce, gaVoiceCount, type GaAction, type GaState } from '../src/screens/lab/gameaudio/model/gaModel.ts';
-import { PLACES } from '../src/screens/lab/gameaudio/model/gaWorld.ts';
+import { readFileSync } from 'node:fs';
+import { GA_BUS_NAME, GA_DOOR_CLOSE_ASSET, GA_EVENTS } from '../src/screens/lab/gameaudio/model/gaDefs.ts';
+import { busGain, gaFact, gaInitial, gaPlaying, gaReduce, gaVoiceCount, gaVoiceOut, type GaAction, type GaState } from '../src/screens/lab/gameaudio/model/gaModel.ts';
+import { OBSTRUCTED, PLACES, START } from '../src/screens/lab/gameaudio/model/gaWorld.ts';
 import { gaAsset } from '../src/screens/lab/gameaudio/sounds/gaSoundBank.ts';
 import {
   GA_FAMILIES,
   GA_FAMILIES_TO_TRY,
   GA_FAMILY_FACTS,
+  CHA_RESULT_LINES,
+  GA_PLAY,
   GA_SOLO_CATEGORIES,
+  chaResultRows,
   gaFamiliesTried,
+  gaSoloKeyWord,
   gaSoloNow,
   gaSoloPlan,
 } from '../src/screens/lab/gameaudio/pages/data/gaFamilies.ts';
@@ -27,14 +32,17 @@ const run = (s: GaState, ...actions: GaAction[]): GaState => actions.reduce((st,
 const sinceOf = (s: GaState, base: GaState) => (k: string) => gaFact(s, k) - gaFact(base, k);
 const tail = (s: GaState, from: GaState) => s.log.slice(from.log.length).map((l) => `${l.kind}|${l.text}`);
 
-/** The page's PLAY tray, as actions. */
-const PLAY: Record<string, GaAction> = {
-  SCENE: { type: 'scene', on: true },
-  STEP: { type: 'step', who: 'player' },
-  'OPEN DOOR': { type: 'door' },
-  CRATE: { type: 'post', event: 'crate_impact', owner: 'crate' },
-  'GUIDE LINE': { type: 'post', event: 'vo_greeting', owner: 'guide' },
-  INTERFACE: { type: 'post', event: 'ui_confirm' },
+/** The page's PLAY tray, as the actions the page itself dispatches. */
+const PLAY = GA_PLAY;
+const PAGE5 = readFileSync(new URL('../src/screens/lab/gameaudio/pages/p05Sounds.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+/** The level the engine is given for one event's first voice: the model's
+ *  computed output (distance, wall, bus). */
+const levelOf = (s: GaState, event: string): { gain: number; lowpassHz: number } => {
+  const inst = s.inst.find((i) => i.event === event);
+  assert.ok(inst, `${event} is playing`);
+  const voice = s.voices.find((v) => v.inst === inst.id)!;
+  const o = gaVoiceOut(s, voice);
+  return { gain: o.gain, lowpassHz: o.lowpassHz };
 };
 
 describe('page 5: the families of game sound', () => {
@@ -88,15 +96,17 @@ describe('page 5: what the student reads in the log', () => {
     const base = gaInitial();
     assert.deepEqual(tail(run(base, PLAY['OPEN DOOR']), base), [
       'trigger|TRIGGER door opened',
-      'trigger|EVENT Play_Door posted by door',
-      'start|START (not heard: sound is off) Door · door → sfx bus',
-      'start|START (not heard: sound is off) Door · rattle, 1 s later → sfx bus',
+      'trigger|EVENT Play_Door posted by DOOR',
+      'start|Door · door · door_open.wav → EFFECTS bus (not heard: sound is off)',
+      'start|Door · rattle, 1 s later → EFFECTS bus (not heard: sound is off)',
     ]);
     assert.deepEqual(tail(run(base, PLAY.CRATE), base), [
-      'trigger|EVENT Play_Crate_Impact posted by crate',
-      'start|START (not heard: sound is off) Crate impact · impact → sfx bus',
-      'start|START (not heard: sound is off) Crate impact · debris, 0.22 s later → sfx bus',
+      'trigger|EVENT Play_Crate_Impact posted by CRATE',
+      'start|Crate impact · impact → EFFECTS bus (not heard: sound is off)',
+      'start|Crate impact · debris, 0.22 s later → EFFECTS bus (not heard: sound is off)',
     ]);
+    // the log speaks the categories' own names: the page has nothing to explain away
+    for (const line of [...tail(run(base, PLAY['OPEN DOOR']), base), ...tail(run(base, PLAY.INTERFACE), base)]) assert.ok(!/\b(sfx|ui)\b/.test(line), line);
     const door = run(base, PLAY['OPEN DOOR']);
     assert.equal(door.inst.length, 1, 'one instance');
     assert.equal(gaVoiceCount(door), 2, 'two voices');
@@ -104,6 +114,29 @@ describe('page 5: what the student reads in the log', () => {
   it('the guide’s line puts its words on screen', () => {
     const s = run(gaInitial(), PLAY['GUIDE LINE']);
     assert.equal(s.caption?.text, 'The generator is in the workshop. Follow the stone path.');
+  });
+  it('the PLAY tray shows the guide’s words and the newest log lines at its top (walk audit W1 F04)', () => {
+    const tray = PAGE5.slice(PAGE5.indexOf('function PlayTray'), PAGE5.indexOf('function Page('));
+    assert.match(tray, /<ChATrayResult state=\{s\} \/>/);
+    assert.ok(tray.indexOf('ChATrayResult') < tray.indexOf('ChATrayGrid'), 'the result is ABOVE the chips');
+    // every chip of the tray dispatches the action this test proves
+    for (const k of ['STEP', "'OPEN DOOR'", 'CRATE', "'GUIDE LINE'", 'INTERFACE']) assert.ok(tray.includes(`GA_PLAY${k.startsWith("'") ? `[${k}]` : `.${k}`}`), k);
+  });
+  it('after OPEN DOOR the tray’s result panel shows the door’s two parts, even when a footstep has just ended', () => {
+    let s = run(gaInitial(), PLAY.STEP);
+    const step = s.voices[s.voices.length - 1];
+    s = run(s, { type: 'expire', v: step.v });
+    assert.ok(s.log.some((l) => l.kind === 'stop'), 'the footstep’s end is in the log');
+    s = run(s, PLAY['OPEN DOOR']);
+    const rows = chaResultRows(s.log, CHA_RESULT_LINES).map((r) => r.text);
+    assert.deepEqual(rows, ['Door · rattle, 1 s later → EFFECTS bus (not heard: sound is off)', 'Door · door · door_open.wav → EFFECTS bus (not heard: sound is off)']);
+  });
+  it('STEP is a step in place: sixteen presses leave YOU where the page opened (walk audit W1 F08)', () => {
+    let s = run(gaInitial(), PLAY['OPEN DOOR']);
+    const before = gaFact(s, 'inst:footstep');
+    for (let k = 0; k < 16; k++) s = run(s, PLAY.STEP);
+    assert.deepEqual([s.chars.player.x, s.chars.player.y], [START.player.x, START.player.y]);
+    assert.equal(gaFact(s, 'inst:footstep') - before, 16, 'each press still plays a footstep');
   });
 });
 
@@ -113,12 +146,16 @@ describe('page 5: the categories and the alarm', () => {
     for (const f of GA_FAMILIES) if (f.event) assert.equal(GA_EVENTS[f.event].bus, busOfFamily[f.id], f.id);
     assert.deepEqual(GA_SOLO_CATEGORIES.map((c) => c.bus), ['ambience', 'sfx', 'dialogue', 'ui']);
     for (const c of GA_SOLO_CATEGORIES) assert.ok(GA_BUSES.includes(c.bus));
-    // the log's own names, where they differ from the label, are in the blurb
-    assert.match(GA_SOLO_CATEGORIES[1].blurb, /“sfx”/);
-    assert.match(GA_SOLO_CATEGORIES[3].blurb, /“ui”/);
-    // the dock key's value: a word of seven letters or fewer (eight are cut in the dock)
-    assert.deepEqual(GA_SOLO_CATEGORIES.map((c) => c.short), ['AMBIENT', 'EFFECTS', 'SPEECH', 'UI']);
-    for (const c of GA_SOLO_CATEGORIES) assert.ok(c.short.length <= 7, c.short);
+    // ONE name for each category: the chip, the readout and the log all say
+    // the model's bus name, and nothing apologizes for a developer word
+    for (const c of GA_SOLO_CATEGORIES) {
+      assert.equal(c.label, GA_BUS_NAME[c.bus]);
+      assert.ok(!/\b(sfx|ui)\b|“|the log (writes|calls)/i.test(c.blurb), c.blurb);
+    }
+    assert.deepEqual(GA_SOLO_CATEGORIES.map((c) => c.label), ['AMBIENCE', 'EFFECTS', 'DIALOGUE', 'INTERFACE']);
+    // the dock key says only whether a solo is on: never a second name
+    assert.equal(gaSoloKeyWord(null), 'OFF');
+    for (const c of GA_SOLO_CATEGORIES) assert.equal(gaSoloKeyWord(c.bus), 'ON');
   });
   it('the alarm comes from the generator and is filed with the EFFECTS, not the ambience', () => {
     assert.equal(GA_EVENTS.alarm.bus, 'sfx');
@@ -129,30 +166,23 @@ describe('page 5: the categories and the alarm', () => {
     assert.match(GA_SOLO_CATEGORIES[1].blurb, /alarm/);
     assert.ok(!/alarm/.test(GA_SOLO_CATEGORIES[0].blurb));
   });
-  it('with the door CLOSED the alarm is quieter than the fountain anywhere on the stone path; with it open and YOU near it, it is not', () => {
-    // the levels the engine is given, read from its commands (sound on)
-    const levels = (steps: number, closeDoor: boolean): { alarm: number; fountain: number } => {
-      let s = run(gaInitial(), { type: 'sound', on: true }, { type: 'scene', on: true }, { type: 'alarm', on: true }, { type: 'door' });
-      for (let k = 0; k < steps; k++) s = run(s, { type: 'step', who: 'player' });
-      assert.equal(s.doorOpen, true);
-      // the last change re-places every positioned voice: read that
-      const r = closeDoor ? gaReduce(s, { type: 'door' }, s.t + 1) : gaReduce(s, { type: 'face', who: 'player', facing: s.chars.player.facing }, s.t + 1);
-      const gain = (event: 'alarm' | 'fountain'): number => {
-        const inst = r.state.inst.find((i) => i.event === event)!;
-        const voice = r.state.voices.find((v) => v.inst === inst.id)!;
-        const cmd = [...r.cmds].reverse().find((c) => c.t === 'set' && c.v === voice.v);
-        assert.ok(cmd && cmd.t === 'set' && typeof cmd.gain === 'number', `${event}: the engine was given a level`);
-        return cmd.gain as number;
-      };
-      return { alarm: gain('alarm'), fountain: gain('fountain') };
-    };
-    for (const steps of [0, 1, 2, 3, 4]) {
-      const closed = levels(steps, true);
-      assert.ok(closed.alarm < closed.fountain, `door closed, ${steps} steps east: alarm ${closed.alarm.toFixed(3)}, fountain ${closed.fountain.toFixed(3)}`);
-    }
-    // why step 3 says "press CLOSE DOOR if the door is open"
-    const open = levels(4, false);
-    assert.ok(open.alarm > open.fountain, `door open, 4 steps east: alarm ${open.alarm.toFixed(3)}, fountain ${open.fountain.toFixed(3)}`);
+  it('step 3: where YOU stand the alarm is quieter than the fountain, door open or closed; closed, it is also dull', () => {
+    // YOU never move on this page (STEP is in place), so "where you stand" is the start
+    let s = run(gaInitial(), PLAY.SCENE, PLAY.ALARM);
+    for (let k = 0; k < 4; k++) s = run(s, PLAY.STEP);
+    assert.deepEqual([s.chars.player.x, s.chars.player.y], [START.player.x, START.player.y]);
+    const closed = { alarm: levelOf(s, 'alarm'), fountain: levelOf(s, 'fountain') };
+    const opened = run(s, PLAY['OPEN DOOR']);
+    const open = { alarm: levelOf(opened, 'alarm'), fountain: levelOf(opened, 'fountain') };
+    assert.ok(closed.alarm.gain < closed.fountain.gain, `door closed: alarm ${closed.alarm.gain.toFixed(3)}, fountain ${closed.fountain.gain.toFixed(3)}`);
+    assert.ok(open.alarm.gain < open.fountain.gain, `door open: alarm ${open.alarm.gain.toFixed(3)}, fountain ${open.fountain.gain.toFixed(3)}`);
+    // "With the door closed it is also dull": the wall's level change and its low-pass
+    assert.equal(closed.alarm.lowpassHz, OBSTRUCTED.lowpassHz);
+    assert.equal(open.alarm.lowpassHz, 20000);
+    assert.ok(Math.abs(20 * Math.log10(closed.alarm.gain / open.alarm.gain) + 9) < 0.01, 'the closed door is 9 dB lower');
+    // the page no longer sends the learner to CLOSE DOOR for a reason that is gone
+    assert.ok(!/press CLOSE DOOR if/.test(PAGE5));
+    assert.match(PAGE5, /Where you stand, the alarm is quieter than the fountain\. With the door closed it is also dull\./);
   });
   it('and it is the most important sound the page plays (the model protects it)', () => {
     assert.equal(GA_EVENTS.alarm.protected, true);
@@ -216,6 +246,8 @@ describe('page 5: the solo rule', () => {
   });
 });
 
+const PAGE1 = readFileSync(new URL('../src/screens/lab/gameaudio/pages/p01Welcome.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+
 describe('page 1: what the student reads when the scene starts', () => {
   it('SCENE on starts three sounds, with a GAME line and a START line each', () => {
     const base = gaInitial();
@@ -225,8 +257,30 @@ describe('page 1: what the student reads when the scene starts', () => {
     assert.equal(gaFact(s, 'sceneOn'), 1);
     const lines = tail(s, base);
     assert.equal(lines.filter((l) => l.startsWith('trigger|EVENT ')).length, 3);
-    assert.equal(lines.filter((l) => l.startsWith('start|START (not heard: sound is off) ')).length, 3);
+    assert.equal(lines.filter((l) => l.startsWith('start|') && l.endsWith(' (not heard: sound is off)')).length, 3);
     assert.deepEqual(s.inst.map((i) => GA_EVENTS[i.event].label), ['Room tone', 'Courtyard wind', 'Fountain']);
+  });
+  it('"When a bird calls, it shows 4 for a moment": a bird is a one-shot that adds one instance and one voice', () => {
+    let s = run(gaInitial(), { type: 'scene', on: true });
+    const t0 = s.t;
+    let seen: GaState | null = null;
+    for (let t = t0; t < t0 + 12 && !seen; t += 0.1) {
+      s = gaReduce(s, { type: 'tick', t }).state;
+      if (s.inst.some((i) => i.event === 'bird')) seen = s;
+    }
+    assert.ok(seen, 'a bird called within 12 s');
+    assert.equal(seen.inst.length, 4);
+    assert.equal(gaVoiceCount(seen), 4);
+    assert.equal(GA_EVENTS.bird.kind, 'one-shot', 'so it ends and PLAYING drops back to 3');
+    const bird = seen.voices.find((v) => seen!.inst.find((i) => i.id === v.inst)?.event === 'bird')!;
+    const after = run(seen, { type: 'expire', v: bird.v });
+    assert.equal(after.inst.length, 3);
+  });
+  it('the welcome page does not teach instances and voices before page 7 does (learning audit L-12)', () => {
+    assert.doesNotMatch(PAGE1, /PLAYING counts instances|One instance can use several voices/);
+    assert.match(PAGE1, /PLAYING and VOICES count what is sounding now\. Page 7 explains them\./);
+    // and it says this scene's simplification about the silent room tone (decision 5)
+    assert.match(PAGE1, /This scene counts it anyway\. A real engine usually does not\./);
   });
   it('the room tone waits at zero level while the listener is outside', () => {
     const { cmds } = gaReduce(run(gaInitial(), { type: 'sound', on: true }), { type: 'scene', on: true }, 1);
@@ -254,5 +308,48 @@ describe('page 1: what the student reads when the scene starts', () => {
   it('LEVEL is the lab’s own level: it starts at 70% and holds what it is given', () => {
     assert.equal(gaInitial().master, 0.7);
     assert.equal(run(gaInitial(), { type: 'master', value: 0.4 }).master, 0.4);
+  });
+});
+
+const PAGE2 = readFileSync(new URL('../src/screens/lab/gameaudio/pages/p02Reacts.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+
+describe('page 2: what the student reads when a sound reacts', () => {
+  const on = run(gaInitial(), { type: 'machine', id: 'generator-1', on: true });
+  it('one SPEED drag is ONE VALUE line that counts the changes, and no START (walk audit W1 F07)', () => {
+    let s = on;
+    for (const v of [0.45, 0.5, 0.6, 0.7, 0.8]) s = run(s, { type: 'speed', id: 'generator-1', value: v });
+    const lines = tail(s, on);
+    assert.deepEqual(lines.map((l) => l.split('|')[0]), ['value']);
+    assert.match(lines[0], /^value\|PARAMETER speed = 80% on GENERATOR 1: the SAME instance i\d+ changes, nothing restarts · 5 changes$/);
+    assert.equal(gaFact(s, 'speedWhilePlaying') - gaFact(on, 'speedWhilePlaying'), 5);
+    assert.deepEqual(s.inst.map((i) => i.id), on.inst.map((i) => i.id), 'the same instance');
+    assert.match(PAGE2, /The log prints one VALUE line that counts the changes, and no new START\./);
+  });
+  it('the speed value is kept on the generator, and the playing instance follows it (decision 6, accuracy audit A4)', () => {
+    const off = run(on, { type: 'machine', id: 'generator-1', on: false }, { type: 'speed', id: 'generator-1', value: 0.2 });
+    assert.equal(off.inst.length, 0, 'nothing playing');
+    assert.equal(off.machines[0].speed, 0.2, 'the value is kept on the machine');
+    const again = run(off, { type: 'machine', id: 'generator-1', on: true });
+    assert.equal(again.machines[0].speed, 0.2, 'the new instance starts at the machine’s value');
+    assert.match(PAGE2, /The speed value is kept on the generator, and the instance follows it\./);
+    assert.doesNotMatch(PAGE2, /speed value on the instance/);
+  });
+  it('the door’s one event plays an opening take and a closing take', () => {
+    const open = run(gaInitial(), { type: 'door' });
+    const closed = run(open, { type: 'door' });
+    assert.equal(open.inst[0].chose[0], 'door');
+    assert.equal(closed.inst[closed.inst.length - 1].chose[0], GA_DOOR_CLOSE_ASSET);
+    assert.equal(GA_EVENTS.door_open.name, 'Play_Door');
+    assert.match(PAGE2, /The door’s one event plays an opening take or a closing take\./);
+  });
+  it('the rings are described as the picture draws them: they leave more often, they do not travel faster', () => {
+    assert.match(PAGE2, /They leave more often as SPEED rises\./);
+    assert.doesNotMatch(PAGE2, /spread faster/);
+  });
+  it('the check’s correct option is not the longest (learning audit L-16)', () => {
+    const block = PAGE2.slice(PAGE2.indexOf('options={['), PAGE2.indexOf(']}', PAGE2.indexOf('options={[')));
+    const opts = [...block.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    assert.equal(opts.length, 4);
+    assert.ok(opts[0].length < Math.max(...opts.slice(1).map((o) => o.length)), opts.map((o) => o.length).join('/'));
   });
 });

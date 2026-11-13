@@ -18,13 +18,25 @@
  *
  * No web view in this binary → the engine is marked unavailable and the lab
  * says so in words; nothing pretends to play.
+ *
+ * IF THE WEB VIEW DIES OR RELOADS (audit 2, F18). iOS ends a web view's
+ * process under memory pressure, and Android can lose its renderer. The page
+ * and every sound it held are gone, so the engine is DETACHED (its status
+ * falls to off, and the lab's SOUND readout with it: never "on" in silence)
+ * and a fresh web view is mounted for the next SOUND press. A page that
+ * reloads in place says hello again; that is treated the same way.
+ *
+ * LEAVING THE LAB. The stop and the dispose are sent from a LAYOUT-effect
+ * cleanup: it runs while the web view's ref is still set. (An ordinary
+ * effect cleanup runs after the ref is cleared, so those commands were
+ * dropped and silence depended on the system destroying the web view.)
  */
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { optionalModule } from '../../../../features/tools/capture/optionalModule';
 import type { GaEngine, GaTransport } from './gaEngine';
 import type { GaCmd, GaEvt } from './gaEngineProtocol';
-import { GA_ENGINE_JS, gaEngineHtml } from './gaEngineSource';
+import { GA_CLOSING_JS, GA_ENGINE_JS, GA_ENGINE_VERSION, gaEngineHtml, gaIsPageHello } from './gaEngineSource';
 
 type WebViewLib = { WebView: (props: Record<string, unknown>) => ReactNode };
 type EngineFactory = (o: { post: (m: GaEvt) => void; AudioContext: unknown }) => { handle: (m: GaCmd) => void };
@@ -34,7 +46,8 @@ function createWebTransport(post: (m: GaEvt) => void): GaTransport | null {
   const w = globalThis as unknown as Record<string, unknown>;
   const AC = w.AudioContext ?? w.webkitAudioContext;
   if (!AC) return null;
-  if (typeof w.__gaCreateEngine !== 'function') {
+  // an engine left in the page by an older build of this text is replaced
+  if (typeof w.__gaCreateEngine !== 'function' || w.__gaEngineVersion !== GA_ENGINE_VERSION) {
     // eslint-disable-next-line no-new-func
     new Function('window', GA_ENGINE_JS)(w);
   }
@@ -64,6 +77,8 @@ function PhoneHost({ engine }: { engine: GaEngine }) {
   const ref = useRef<{ injectJavaScript: (js: string) => void } | null>(null);
   const attached = useRef(false);
   const html = useMemo(() => gaEngineHtml(), []);
+  /** A new number mounts a NEW web view: the old page died. */
+  const [life, setLife] = useState(0);
 
   useEffect(() => {
     if (!WebView) engine.markUnavailable('This app build has no web view for the sound engine.');
@@ -73,6 +88,25 @@ function PhoneHost({ engine }: { engine: GaEngine }) {
     };
   }, [WebView, engine]);
 
+  // The closing commands, while the ref is still set (see the header).
+  useLayoutEffect(
+    () => () => {
+      try {
+        ref.current?.injectJavaScript(GA_CLOSING_JS);
+      } catch {
+        /* the web view is already gone, and its sound with it */
+      }
+    },
+    [],
+  );
+
+  /** The page's process ended: everything it held is gone. */
+  const died = useCallback(() => {
+    attached.current = false;
+    engine.detach();
+    setLife((n) => n + 1);
+  }, [engine]);
+
   if (!WebView) return null;
 
   const onMessage = (ev: { nativeEvent: { data: string } }) => {
@@ -81,6 +115,11 @@ function PhoneHost({ engine }: { engine: GaEngine }) {
       msg = JSON.parse(ev.nativeEvent.data) as GaEvt;
     } catch {
       return;
+    }
+    if (attached.current && gaIsPageHello(msg)) {
+      // the page RELOADED under us: its engine is new and holds nothing
+      attached.current = false;
+      engine.detach();
     }
     if (!attached.current) {
       // the page's first message means its bridge is up: attach now
@@ -98,6 +137,7 @@ function PhoneHost({ engine }: { engine: GaEngine }) {
   return (
     <View style={styles.hidden} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <WebView
+        key={life}
         ref={ref}
         source={{ html }}
         originWhitelist={['*']}
@@ -107,6 +147,8 @@ function PhoneHost({ engine }: { engine: GaEngine }) {
         allowsInlineMediaPlayback
         onMessage={onMessage}
         onError={() => engine.markUnavailable('The sound engine page could not load.')}
+        onContentProcessDidTerminate={died}
+        onRenderProcessGone={died}
         style={styles.page}
       />
     </View>

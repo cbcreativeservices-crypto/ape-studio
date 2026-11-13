@@ -3,15 +3,20 @@
  *
  * Every sound feeds a category bus; a bus has its own fader, mute and solo;
  * the mix changes while the game runs. The learner fills the scene, plays
- * the guide's line and reads DUCK on / DUCK off in the log, compares with
- * the duck switched off, moves one bus, and gives the overheat alarm a
- * visual equivalent.
+ * the guide's line and watches the DUCK readout go to DUCKING and back,
+ * compares with the duck switched off, moves one bus, and gives the
+ * overheat alarm a visual equivalent.
  *
  * Said plainly here: this duck is EVENT-DRIVEN (it starts when a line starts
  * and ends when the last line ends); it does not listen to the audio level,
  * which would be sidechain detection. The SIGNAL PATH card draws the audio
  * path and the control path differently: a duck is a control change and
  * carries no audio.
+ *
+ * ONE NAME FOR EACH BUS: the model's (data/gaMix, `GA_BUS_NAME`), on the
+ * chooser, the MIX tray and in the log. THE TRAYS FIT (chdKit): two rows of
+ * chips each, and what a press did is read on the DUCK and bus readouts
+ * above them, which a tray does not cover.
  *
  * Common mistake taught against: solving every audibility problem by
  * raising the master.
@@ -28,7 +33,7 @@ import type { GaBus } from '../engine/gaEngineProtocol';
 import { gaTerms } from '../gaTerms';
 import { gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
-import { InfoCard, Tray, TrayChip, TrayGrid, TrayLast, onOff } from './chdKit';
+import { InfoCard, Tray, TrayChip, TrayGrid, onOff, speaking } from './chdKit';
 import { BUS_LANE_HOME, MIX_BUSES, SIGNAL_PATH, busNowSpoken, busNowWord, dbToLane, duckWords, fmtDb, laneToDb, lineSpeaking, mixBus, signalPathSpoken } from './data/gaMix';
 import { G16 } from './guides/p16';
 import { useSince } from './shared';
@@ -40,9 +45,13 @@ const DUCK_WORDS = duckWords();
 const sceneOn = (s: GaState): boolean => gaPlaying(s, 'bed_room') || gaPlaying(s, 'bed_yard') || gaPlaying(s, 'fountain');
 const alarmOn = (s: GaState): boolean => gaPlaying(s, 'alarm');
 
-/** SCENE tray: everything that makes the scene busy, the two spoken lines,
- *  and the alarm with its visual cue. */
-function SceneTray() {
+/** SOUNDS tray: everything that makes the scene busy, then the two spoken
+ *  lines and the alarm with its visual cue. Two rows (chdKit: a tray is
+ *  designed for 200 points). Nothing appears in the tray while a line
+ *  speaks: a caption there grew the tray upward and moved every chip under
+ *  the learner's finger (seen at 390 x 844). The chip says SPEAKING, DUCK
+ *  says DUCKING, and the caption is in the well. */
+function SoundsTray() {
   const s = useGa();
   const gen = !!s.machines[0]?.on;
   return (
@@ -52,30 +61,29 @@ function SceneTray() {
         <TrayChip label={onOff('GENERATOR 1', gen)} selected={gen} onPress={() => gaDispatch({ type: 'machine', id: 'generator-1', on: !gaGet().machines[0]?.on })} />
         <TrayChip label={onOff('MUSIC', s.music.on)} selected={s.music.on} onPress={() => gaDispatch({ type: gaGet().music.on ? 'musicStop' : 'musicStart' })} />
       </TrayGrid>
-      <TrayGrid head="SPEECH" cols={3}>
-        <TrayChip label="GUIDE LINE" selected={gaPlaying(s, 'vo_greeting')} onPress={() => gaDispatch({ type: 'post', event: 'vo_greeting', owner: 'guide' })} />
-        <TrayChip label="CHAT LINE" selected={gaPlaying(s, 'chat')} onPress={() => gaDispatch({ type: 'post', event: 'chat' })} />
-      </TrayGrid>
-      <TrayGrid head="AN IMPORTANT SOUND" cols={3}>
+      <TrayGrid head="SPEECH · AN IMPORTANT SOUND" cols={4}>
+        <TrayChip label={speaking('GUIDE LINE', gaPlaying(s, 'vo_greeting'))} selected={gaPlaying(s, 'vo_greeting')} onPress={() => gaDispatch({ type: 'post', event: 'vo_greeting', owner: 'guide' })} />
+        <TrayChip label={speaking('CHAT LINE', gaPlaying(s, 'chat'))} selected={gaPlaying(s, 'chat')} onPress={() => gaDispatch({ type: 'post', event: 'chat' })} />
         <TrayChip label={onOff('ALARM', alarmOn(s))} selected={alarmOn(s)} onPress={() => gaDispatch({ type: 'alarm', on: !alarmOn(gaGet()) })} />
         <TrayChip label={onOff('VISUAL CUE', s.options.visualCue)} selected={s.options.visualCue} onPress={() => gaDispatch({ type: 'option', patch: { visualCue: !gaGet().options.visualCue } })} />
       </TrayGrid>
-      <TrayLast lines={2} caption />
     </Tray>
   );
 }
 
 /** MIX tray: the duck's switch, and MUTE and SOLO for every bus (two rows
- *  of three buses, each with its own two chips). */
+ *  of three buses, each with its own two chips). The one heading is the
+ *  page's explanation of MUTE and SOLO. No log strip: the DUCK readout and
+ *  the bus readout above the tray answer every press. */
 function MixTray() {
   const s = useGa();
   return (
     <Tray>
-      <TrayGrid head="DUCK UNDER SPEECH" cols={2}>
+      <TrayGrid cols={2}>
         <TrayChip label={marked('DUCK ON', s.options.duck)} selected={s.options.duck} onPress={() => gaDispatch({ type: 'option', patch: { duck: true } })} />
         <TrayChip label={marked('DUCK OFF', !s.options.duck)} selected={!s.options.duck} onPress={() => gaDispatch({ type: 'option', patch: { duck: false } })} />
       </TrayGrid>
-      <TrayGrid head="EACH BUS: MUTE SILENCES IT · SOLO SILENCES THE OTHERS" cols={3}>
+      <TrayGrid head="MUTE SILENCES A BUS · SOLO SILENCES THE OTHERS" cols={3}>
         {MIX_BUSES.map((b) => {
           const st = s.bus[b.id];
           const name = b.label.toLowerCase();
@@ -94,7 +102,6 @@ function MixTray() {
           );
         })}
       </TrayGrid>
-      <TrayLast lines={2} />
     </Tray>
   );
 }
@@ -135,7 +142,7 @@ function SignalPath() {
           </View>
         </View>
       </View>
-      <Text style={styles.pathNote}>The solid row is sound. The dashed row is the game telling that path what to do: it carries no audio.</Text>
+      <Text style={styles.pathNote}>The solid row is sound. The dashed row is the game telling that path what to do: it carries no audio. A duck travels on the dashed row.</Text>
     </InfoCard>
   );
 }
@@ -168,7 +175,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
       const db = laneToDb(v);
       if (db !== Math.round(gaGet().bus[sel].db)) gaDispatch({ type: 'bus', bus: sel, db });
     },
-    format: (v) => `${bus.label} BUS ${fmtDb(laneToDb(v))}`,
+    // the lane prints the level alone: a longer text ("MUSIC BUS 0 dB") lay
+    // on the knob at 0 dB, where the knob rests (walk audit W2-25). Which bus
+    // it is stands in the readout above and in the chooser.
+    format: (v) => fmtDb(laneToDb(v)),
     formatShort: (v) => fmtDb(laneToDb(v)),
     chooser: {
       title: 'BUS FADER: CHOOSE A BUS',
@@ -177,18 +187,21 @@ function Page({ ctx }: { ctx: PageCtx }) {
       onSelect: (id) => setSel(id as GaBus),
     },
   };
-  const sceneKey: DockParam = {
+  // SOUNDS, as on page 17: the tray holds a chip named SCENE, so the key
+  // itself is not called SCENE (learning audit, one name for each thing)
+  const soundsKey: DockParam = {
     kind: 'group',
-    id: 'scene',
-    label: 'SCENE',
+    id: 'sounds',
+    label: 'SOUNDS',
     valueLabel: running ? `${running} ON` : 'QUIET',
-    valueA11y: running ? `${running} sound sources switched on` : 'nothing switched on',
-    render: () => <SceneTray />,
+    valueA11y: running ? `${running} sound ${running === 1 ? 'source' : 'sources'} switched on` : 'nothing switched on',
+    render: () => <SoundsTray />,
   };
   const mixKey: DockParam = {
     kind: 'group',
     id: 'mix',
     label: 'MIX',
+    // seven letters: 'DUCK OFF' was cut to "DUCK O…" on the key at 390 pt
     valueLabel: s.options.duck ? 'DUCK ON' : 'NO DUCK',
     valueA11y: s.options.duck ? 'the duck under speech is switched on' : 'the duck under speech is switched off',
     render: () => <MixTray />,
@@ -197,40 +210,44 @@ function Page({ ctx }: { ctx: PageCtx }) {
   return (
     <GaRack
       spec={{
-        keys: [busKey, sceneKey, mixKey],
+        keys: [busKey, soundsKey, mixKey],
         initialParam: 'bus',
+        hud: 'mix',
+        // the strip marks the bus the BUS key has chosen (scene/hud cMix)
+        hudArg: sel,
         readouts: [
           { k: 'DUCK', v: !s.options.duck ? 'OFF' : lineSpeaking(s) ? 'DUCKING' : 'READY', vA11y: !s.options.duck ? 'the duck is switched off' : lineSpeaking(s) ? 'a line is speaking and the mix is ducked' : 'the duck is ready and no line is speaking' },
-          { k: bus.code, v: busNowWord(s, sel), vA11y: busNowSpoken(s, sel) },
+          { k: bus.readout, v: busNowWord(s, sel), vA11y: busNowSpoken(s, sel) },
         ],
         showNames: true,
         assets: ASSETS,
       }}
     >
       <Step n={1}>
-        <Look>The picture is the scene. On this page you fill it with sound. The DUCK readout under the picture shows whether the mix is turning other sounds down for speech.</Look>
-        <P>Every sound is sent to a bus. A bus is a group channel. This scene has six: ambience, effects, dialogue, music, interface and chat. The chat bus carries a stand-in voice for other players. Each sound has its own level, each bus has a fader, and the master comes last.</P>
-        <P>A mix that changes during play is called dynamic mixing. A set of bus levels the game can recall by name is a snapshot. Headroom is the space between the usual level and the loudest level that still plays cleanly.</P>
-        <P>Audio travels one way: source, bus, master, output. Control travels another way: the game’s requests and values tell that path what to do. A duck is a control change. It carries no audio.</P>
+        <Look>On this page you fill the scene with sound. DUCK, under the picture, shows whether the mix is turning other sounds down for speech.</Look>
+        <P>Every sound is sent to a bus: a group channel. This scene has six: ambience, effects, dialogue, music, interface and chat. Each sound has its own level, each bus has a fader, and the master comes last.</P>
+        <P>Headroom is the space between the usual level and the loudest level that still plays cleanly.</P>
         <SignalPath />
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open SCENE and switch on SCENE, GENERATOR 1 and MUSIC. Press GUIDE LINE. After DUCK off, press CHAT LINE.</Do>
-        <P>The log prints DUCK on when the guide’s line starts and DUCK off when the last line ends. The mix turns down {DUCK_WORDS}, and the rings in the picture show the lower level. The chat line is not on the dialogue bus, so it ducks nothing.</P>
-        <P>This duck is event-driven: it follows the line. It does not listen to the audio level; that would be sidechain detection.</P>
+        <Do>Open SOUNDS and switch on SCENE, GENERATOR 1 and MUSIC. Press GUIDE LINE and watch DUCK: DUCKING, then READY. Then press CHAT LINE.</Do>
+        <P>While the guide speaks, the mix turns down {DUCK_WORDS}. The log prints DUCK on and DUCK off. The chat line is not on the dialogue bus, so it ducks nothing.</P>
+        <P>This duck is event-driven: it starts and ends with the line, not with the audio level.</P>
         <Caption state={s} />
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>
-        <Do>In MIX, choose DUCK OFF. Open SCENE and press GUIDE LINE again. Then tap BUS, choose a bus and move its fader. Try MUTE and SOLO.</Do>
-        <P>The log prints a SETTING line. When the line plays, no DUCK on follows and nothing turns down. A bus fader changes only its own group, and a silenced source keeps one still, dashed ring in the picture. In the log, sfx means effects and ui means interface.</P>
-        <Do>In SCENE, switch ALARM on, then VISUAL CUE.</Do>
-        <P>A warning sign appears by the generator: the warning no longer depends on hearing.</P>
+        <Do>In MIX, choose DUCK OFF. In SOUNDS, press GUIDE LINE again.</Do>
+        <P>DUCK reads OFF, and nothing turns down.</P>
+        <Do>Tap BUS, choose a bus and move its fader. In MIX, try MUTE and SOLO.</Do>
+        <P>A bus fader changes only its own group. A quiet bus still plays. A silenced source keeps one still, dashed ring.</P>
+        <Do>In SOUNDS, switch ALARM on, then VISUAL CUE.</Do>
+        <P>A warning sign appears by the generator: it does not depend on hearing.</P>
         <Note tone="mistake">Solving every audibility problem by raising the master. That raises everything equally, so the balance stays and the headroom shrinks. Often, turning other things down is better.</Note>
       </Step>
       <Step n={4}>
-        <P>Each one is marked done when it really happens in the scene.</P>
+        <P>Each goal is marked done when it really happens in the scene.</P>
         <GoalChips goals={goals} latched={latched} />
       </Step>
       <Step n={5}>
@@ -238,8 +255,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="The guide’s line is hard to hear over the music and the machines. Which change makes the line clear and keeps the headroom?"
           options={[
-            'Turn the music, ambience and effects buses down while the line plays',
-            'Raise the master level',
+            'Turn the other buses down during the line',
+            'Raise the master level until the line is clear',
             'Raise the dialogue bus as far as it goes',
             'Solo the dialogue bus for the rest of the game',
           ]}
@@ -259,8 +276,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
 }
 
 const styles = StyleSheet.create({
-  busCell: { gap: 3 },
-  busName: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1, textAlign: 'center' },
+  busCell: { gap: 2 },
+  busName: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 10.5, lineHeight: 12, letterSpacing: 1, textAlign: 'center' },
   busPair: { flexDirection: 'row', gap: 4 },
   busHalf: { flex: 1 },
   pathRow: { gap: 4 },

@@ -13,8 +13,13 @@
  *     zero after CLEAN SCENE (a reset), never reading negative; the clean
  *     scene every page opens on (`enterPage`) keeps the fact counts, counts
  *     as nothing the student did, and every requirement can be met from it;
- *   - the summary is plain text, says what was wired and one test for each
- *     choice, and calls itself a practice record, not a qualification.
+ *   - the summary is plain text, says what was connected and one test for
+ *     each choice, and calls itself a practice record, not a qualification;
+ *   - the page is a BRIEF (audit 2, L-04): a goal chip names a result, never
+ *     a key; each goal has one hint that names the page's keys, and the
+ *     hints followed in order meet all seven from the clean scene;
+ *   - the two sticky trays say the truth about the slider (W2-01), and the
+ *     shared FACING lane never reaches 360° (W1 F19, W2-08).
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -28,6 +33,7 @@ import {
   GA_LISTENING_TEST,
   GA_SUMMARY_FOOT,
   gaCapstoneMet,
+  gaCapstoneNextHint,
   gaCapstoneSummary,
   gaCapstoneSummaryLines,
   gaListeningTest,
@@ -75,7 +81,7 @@ const REFERENCE: GaAction[] = [
 ];
 
 describe('capstone: the seven requirements are facts', () => {
-  it('seven requirements, each with an instruction for its chip, a label for the summary and a why line', () => {
+  it('seven requirements: a RESULT for its chip, one hint, a label for the summary and a why line', () => {
     assert.deepEqual(
       GA_CAPSTONE.map((r) => r.id),
       ['steps', 'speed', 'zone', 'rattle', 'duck', 'music', 'cue'],
@@ -83,14 +89,52 @@ describe('capstone: the seven requirements are facts', () => {
     for (const r of GA_CAPSTONE) {
       assert.ok(r.label.length > 10 && r.label.length <= 46, `${r.id}: a summary label (${r.label.length})`);
       assert.ok(r.chip.length > 10 && r.chip.length <= 46, `${r.id}: a chip (${r.chip.length})`);
-      assert.match(r.chip, /^(Walk|Run|Cross|Play|Make) /, `${r.id}: the chip is an instruction`);
+      // a brief, not a script (audit 2, L-04): the chip is the result, in plain words, and names no key
+      assert.ok(!/\b[A-Z]{3,}\b/.test(r.chip), `${r.id}: "${r.chip}" names no key`);
+      assert.ok(!/^(Walk|Run|Cross|Play|Make|Press|Open|Switch) /.test(r.chip), `${r.id}: "${r.chip}" is a result, not an instruction`);
+      assert.ok(r.hint.length > 30 && /\.$/.test(r.hint), `${r.id}: a hint sentence`);
       assert.ok(r.why.length > 40 && /\.$/.test(r.why), `${r.id}: a why sentence`);
-      assert.ok(!/\b(must|always|never|you will|master|at once)\b/i.test(`${r.label} ${r.chip} ${r.why}`), `${r.id}: house wording`);
+      assert.ok(!/\b(must|always|never|you will|master|at once|cross-fade|wired?)\b/i.test(`${r.label} ${r.chip} ${r.why} ${r.hint}`), `${r.id}: house wording`);
     }
     assert.equal(new Set(GA_CAPSTONE.map((r) => r.label)).size, 7);
-    // the chips name controls that are on page 22
+    assert.equal(new Set(GA_CAPSTONE.map((r) => r.chip)).size, 7);
+    // decision 6: the speed is kept on the generator, and the playing instance follows it
+    assert.match(GA_CAPSTONE.find((r) => r.id === 'speed')!.why, /kept on the generator/);
+    // every key a hint names is a label on page 22 (or the shared rack's)
     const page = readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages/p22Capstone.tsx'), 'utf8').replace(/\r\n/g, '\n');
-    for (const r of GA_CAPSTONE) for (const m of r.chip.matchAll(/\b[A-Z]{3,}(?: [A-Z]{3,})*\b/g)) assert.ok(page.includes(`'${m[0]}'`) || page.includes(`('${m[0]}'`) || page.includes(`"${m[0]}"`) || page.includes(`${m[0]} ·`) || m[0] === 'SPEED', `${r.id}: ${m[0]} is a control on the page`);
+    const shared = readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages/shared.tsx'), 'utf8');
+    for (const r of GA_CAPSTONE) {
+      for (const m of r.hint.matchAll(/\b[A-Z][A-Z0-9]{1,}(?::? [A-Z0-9]{2,})*\b/g)) {
+        const word = m[0];
+        // DUCK is a log word the hint quotes, not a key
+        const known = word === 'DUCK' || [page, shared].some((src) => src.includes(`'${word}'`) || src.includes(`"${word}"`) || src.includes(`'${word} `) || src.includes(`'${word}:`) || src.includes(`('${word}'`));
+        assert.ok(known, `${r.id}: the hint names "${word}", which is not a label on page 22`);
+      }
+    }
+  });
+
+  it('SHOW A HINT gives the first goal not met yet, and nothing once all seven are met', () => {
+    assert.equal(gaCapstoneNextHint([false, false, false, false, false, false, false])!.id, 'steps');
+    assert.equal(gaCapstoneNextHint([true, true, false, true, false, false, false])!.id, 'zone');
+    assert.equal(gaCapstoneNextHint([true, true, true, true, true, true, true]), null);
+  });
+
+  it('the hints, followed in order from the clean scene, meet all seven (sound off)', () => {
+    let r = play(open(), { type: 'enterPage' });
+    // 1 steps: two steps on the stone path, GO: GRAVEL, one more step
+    r = play(r, step, step, { type: 'move', who: 'player', x: 6.0, y: 2.6 }, step);
+    // 2 speed: GENERATOR 1 on, then the slider
+    r = play(r, { type: 'machine', id: 'generator-1', on: true }, { type: 'speed', id: 'generator-1', value: 0.8 });
+    // 3 zone: SCENE on, OPEN DOOR, GO: WORKSHOP (to the doorway, through it, to the place)
+    r = play(r, { type: 'scene', on: true }, { type: 'door' }, { type: 'move', who: 'player', x: 8.1, y: 5 }, { type: 'move', who: 'player', x: 9.9, y: 5 }, { type: 'move', who: 'player', x: 11, y: 5 });
+    // 4 rattle: the door already played it; 5 duck: GUIDE LINE
+    r = play(r, { type: 'post', event: 'vo_greeting', owner: 'guide' });
+    // 6 music: MUSIC on, ALERT, and the bar arrives
+    r = play(r, { type: 'musicStart' }, { type: 'mood', mood: 'alert' });
+    r = play(r, applied(r));
+    // 7 cue: VISUAL CUE on, then ALARM on
+    r = play(r, { type: 'option', patch: { visualCue: true } }, { type: 'alarm', on: true });
+    assert.deepEqual(metIds(r), ['steps', 'speed', 'zone', 'rattle', 'duck', 'music', 'cue']);
   });
 
   it('a fresh scene satisfies none of them', () => {
@@ -158,7 +202,8 @@ describe('capstone: each requirement refuses its near miss', () => {
     assert.equal(gaVisitSince(r.v, r.s).zoneCross, 1);
     assert.equal(gaVisitSince(r.v, r.s).zoneCrossFade, undefined, 'the model counted no cross-fade');
     assert.ok(!metIds(r).includes('zone'), 'crossed, but no beds');
-    assert.match(r.s.log.at(-1)!.text, /no ambience bed is playing, so nothing fades/);
+    // the model's line since audit 2 (REPORT_M section 3): a capital, no dash
+    assert.match(r.s.log.at(-1)!.text, /^ZONE: the listener entered the workshop\. No ambience bed is playing, so nothing fades$/);
     // starting the scene afterwards does not turn that old crossing into one
     r = play(r, { type: 'scene', on: true });
     assert.ok(!metIds(r).includes('zone'));
@@ -296,7 +341,7 @@ describe('capstone: the learning summary', () => {
     assert.match(text, /^Game Audio Lab: learning summary\n/);
     assert.match(text, /PLATFORM\n- not chosen yet/);
     assert.match(text, /LISTENING SETUP\n- not chosen yet/);
-    assert.match(text, /WIRED IN THE SCENE\n- Nothing yet\./);
+    assert.match(text, /CONNECTED IN THE SCENE\n- Nothing yet\./);
     assert.ok(!/One test:/.test(text));
   });
 
@@ -307,7 +352,7 @@ describe('capstone: the learning summary', () => {
     assert.match(text, /LISTENING SETUP\n- TV speakers\n {2}One test: Listen from across a room/);
     assert.match(text, /- Done: Footsteps on two surfaces, two takes on one\n {2}One footstep event served every surface\./);
     assert.match(text, /- Done: A guide line that ducked the mix/);
-    assert.match(text, /STILL TO WIRE\n- Generator running/);
+    assert.match(text, /STILL TO CONNECT\n- Generator running/);
     assert.ok(!/Done: One music change/.test(text));
   });
 
@@ -316,10 +361,62 @@ describe('capstone: the learning summary', () => {
     assert.ok(all.endsWith(GA_SUMMARY_FOOT));
     assert.match(GA_SUMMARY_FOOT, /not a qualification/);
     assert.ok(!/certificate|exam|passed|score|grade/i.test(all));
-    assert.ok(!/STILL TO WIRE/.test(all));
+    assert.ok(!/STILL TO CONNECT/.test(all));
+    assert.ok(!/wire/i.test(all), 'the summary says connect, not wire (audit 2, L-32)');
     assert.ok(!/[<>{}*_#]/.test(all), 'no markup');
     const lines = gaCapstoneSummaryLines('mobile', 'headphones', GA_CAPSTONE.map(() => true));
     assert.equal(lines.filter((l) => l.kind === 'item' && l.text.startsWith('Done: ')).length, 7);
     assert.equal(lines.at(-1)!.kind, 'foot');
+  });
+});
+
+describe('capstone: the page says the truth about its controls', () => {
+  const page = readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages/p22Capstone.tsx'), 'utf8').replace(/\r\n/g, '\n');
+  const body = page.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  it('the two sticky trays say the slider changes only when the tray closes (W2-01), and each title is short enough not to be cut', () => {
+    const titles = [...body.matchAll(/export const P22_(MOVE|SOUNDS)_TITLE = '([^']+)'/g)].map((m) => m[2]);
+    assert.equal(titles.length, 2);
+    for (const t of titles) {
+      assert.match(t, /CLOSE THIS: THE SLIDER /, t);
+      assert.ok(t.length <= 40, `"${t}" is ${t.length} characters`);
+    }
+    assert.ok(!/SLIDER = /.test(body), 'the old titles, which said the slider was already bound, are gone');
+    assert.match(body, /The slider changes to their control only when you close the tray\./);
+  });
+  it('step 2 is a brief: it names the trays, not the keys inside them', () => {
+    const step2 = body.slice(body.indexOf('<Step n={2}>'), body.indexOf('<Step n={3}>'));
+    const doLine = step2.match(/<Do>([\s\S]*?)<\/Do>/)![1];
+    for (const key of ['OPEN DOOR', 'STEP FORWARD', 'GUIDE LINE', 'GENERATOR 1', 'ALERT', 'VISUAL CUE', 'ALARM', 'SCENE']) assert.ok(!doLine.includes(key), `step 2 does not script ${key}`);
+    assert.match(doLine, /seven goals/);
+    assert.ok(!/<Do>/.test(body.slice(body.indexOf('<Step n={3}>'), body.indexOf('<Step n={4}>'))), 'step 3 has no Do line');
+  });
+  it('the Wwise word is not used as the general one (A1), and the old names are gone', () => {
+    assert.ok(!/Game Syncs change them/.test(body));
+    assert.ok(!/'Game Syncs'/.test(body), 'not a chip on the capstone');
+    assert.ok(!/'WORLD'|'SETUP'|WORLD ·|Wired in/.test(body), 'WORLD is SOUNDS, SETUP is REPORT');
+    assert.ok(!/LabChip/.test(body), 'the trays use the 44 pt TrayChip');
+  });
+  it('the REPORT tray puts SHARE SUMMARY first and leaves the tests to the summary card (W2-03)', () => {
+    const tray = body.slice(body.indexOf('function SummaryTray'), body.indexOf('function HintLine'));
+    assert.ok(tray.indexOf('SHARE SUMMARY') < tray.indexOf('PLATFORM'), 'SHARE first');
+    assert.ok(!/One test/.test(tray), 'the one-test lines are in the summary card only');
+  });
+});
+
+describe('the shared FACING lane (pages/shared.tsx)', () => {
+  const src = readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages/shared.tsx'), 'utf8');
+  const m = src.match(/export const facingFromLane = \(v: number\): number => ([^;]+);/);
+  it('the right end is 355°, never 360° (which the model keeps as 0°, so the knob jumped left: W1 F19, W2-08)', () => {
+    assert.ok(m, 'facingFromLane is in shared.tsx');
+    const f = new Function('v', `return ${m![1]};`) as (v: number) => number;
+    assert.equal(f(0), 0);
+    assert.equal(f(0.5), 180);
+    assert.equal(f(1), 355);
+    assert.equal(f(1.2), 355);
+    assert.equal(f(-0.1), 0);
+    for (let i = 0; i <= 100; i++) assert.equal(f(i / 100) % 5, 0, 'steps of 5°');
+    // the lane, its readout and its key all use it
+    const key = src.slice(src.indexOf('export const facingKey'));
+    assert.equal((key.match(/facingFromLane\(v\)/g) ?? []).length, 3);
   });
 });

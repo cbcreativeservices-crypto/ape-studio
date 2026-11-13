@@ -3,46 +3,100 @@
  * courtyard and a workshop from above. What is drawn is the model, not a
  * picture of one: every object sits at its world position, the door leaf is
  * open or closed as the state says, and the SOUND you see is the sound the
- * model has playing.
+ * model has playing. The rules are in scene/gaSceneLogic.ts (pure, tested);
+ * this file only draws what that file decides.
  *
  *   ground     gravel, a stone path to the door, the workshop's wood floor —
  *              the three surfaces a footstep switches between
  *   objects    the generator(s), the fountain, the crate, the door in the wall
+ *              (and a bird, drawn where it calls, only while it calls)
  *   people     the player and the guide: the house top-view figure
  *              (miking/lessons/shared/players), turned to face where the
- *              model says they face
+ *              model says they face. A figure GLIDES to a new place and turns
+ *              (a short tween); the door leaf swings
  *   the        a wedge in front of the listener (where the ears point), or
- *   listener   a camera over the middle in the overhead view
- *   sound      rings spreading from each object that has a voice playing,
- *              coloured on the house level ramp by how loud it is AT THE
- *              LISTENER after distance, the wall AND the mix (blue = faint …
- *              red = loud). A generator's rings spread faster as its speed
- *              rises. The alarm has its own, broken rings. A source that is
- *              tracked but not rendered (virtual), or that the mix has
- *              silenced (mute, another bus soloed), keeps one dashed grey
- *              ring. A speech mark stands by the guide while a line plays.
- *   selection  the selected source's minimum and maximum distance, dashed
+ *   listener   a labeled camera over the middle in the overhead view
+ *   sound      a LOOP is a train of rings spreading from its object; a
+ *              generator's rings leave more often, and sit closer, as its
+ *              SPEED rises. A ONE-SHOT is one ring per sounding voice that
+ *              leaves when the voice starts and fades over the sound's own
+ *              length (a layer that starts late has no ring until then).
+ *              Rings are colored on the house level ramp by how loud the
+ *              source is AT THE LISTENER after distance, the wall AND the mix
+ *              (blue = faint … red = loud); a quiet source keeps rings a
+ *              learner can see. The alarm has its own, broken rings. A source
+ *              heard THROUGH THE CLOSED DOOR has rings that stop at the wall
+ *              and go on beyond it thin and dashed. A source that is tracked
+ *              but not rendered (virtual, or its voice was stolen), or that
+ *              the mix has silenced, keeps one still, dashed grey ring. A
+ *              speech mark stands by the guide while a line plays.
+ *   selection  the selected source's minimum and maximum distance, dashed,
+ *              each with its number, always whole inside the picture
+ *   on request (`show`, off by default) a page can ask for: instance ids by a
+ *              generator's rings, the MOOD state across the picture, a
+ *              listener wedge on the guide, the surface or the take by the
+ *              foot that stepped, and a mark for each ambience bed
+ *
+ * MOTION. Every moving thing is driven from the model's state. With motion
+ * reduced (useDecorativeMotion) nothing moves and nothing is lost: rings
+ * stand still at the spacing their pace gives, figures and the door are
+ * drawn where they are, a bed's mark shows its level.
  *
  * Objects and people are drawn LARGER than life (a 0.5 m person would be
  * 10 pt wide on a phone); positions and distances are true. The lab says
  * this once, on its first page.
  *
- * Units: world metres inside one scaled Group. Text goes through SceneText
- * (dj/art), which refuses anything that would render under 9 pt.
+ * Units: world meters inside one scaled Group. Text is drawn at a size given
+ * in points on the glass (useLabelMm) and is refused under 9 pt.
  */
-import { memo, useEffect, useMemo } from 'react';
+import { createContext, memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, rect, vec } from '@shopify/react-native-skia';
-import { cancelAnimation, Easing, useDerivedValue, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
+import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, Text, rect, vec, type SkFont, type SkRect } from '@shopify/react-native-skia';
+import { cancelAnimation, Easing, useDerivedValue, useFrameCallback, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 import { useDecorativeMotion } from '../../../../features/settings/decorativeMotion';
+import { useSafeSkiaFont } from '../../../../lib/skiaSafeAssets';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
-import { SceneFontsProvider, SceneText, useLabelMm } from '../../dj/art/sceneText';
+import { MIN_TEXT_PT, SceneFontsContext, SceneFontsProvider, useLabelMm } from '../../dj/art/sceneText';
 import { PlayerBehind, PlayerInFront } from '../../miking/lessons/shared/players/PlayerFigure';
 import { SINGER_TOP } from '../../miking/lessons/shared/voice/voicePose';
 import { useStageTextScale } from '../../rack/stageAspect';
 import { GA_EVENTS } from '../model/gaDefs';
-import { gaListenDistance, gaVoiceLevel, listenerOf, type GaState } from '../model/gaModel';
-import { DOOR_Y0, DOOR_Y1, PLACES, WALL_X, WORLD_H, WORLD_W, attenuationGain, gainDb, obstruction, type GaPoint } from '../model/gaWorld';
+import { listenerOf, type GaState } from '../model/gaModel';
+import { gaNow } from '../model/gaStore';
+import { DOOR_Y0, DOOR_Y1, PLACES, WALL_X, WORLD_H, WORLD_W, zoneAt, type GaPoint } from '../model/gaWorld';
+import {
+  GA_ALARM_GAP,
+  GA_RING_DB_MAX,
+  GA_RING_DB_MIN,
+  GA_RING_SPEED,
+  gaBedFadeSeconds,
+  gaBedMarks,
+  gaClampLabelX,
+  gaFootMarks,
+  gaFootText,
+  gaHeard,
+  gaNextRingChange,
+  gaOtherZone,
+  gaPersonLabel,
+  gaRangeLabels,
+  gaRingGap,
+  gaRingLook,
+  gaSceneSummary,
+  gaSelected,
+  gaSelectedBehind,
+  gaSoundingOf,
+  gaTextBox,
+  gaBoxesHit,
+  gaWallCrossing,
+  gaWallPieceOwner,
+  gaZoneRect,
+  type GaBox,
+  type GaSceneSelect,
+  type GaShotRing,
+  type GaSounding,
+} from './gaSceneLogic';
+
+export { gaSceneSummary, type GaSceneSelect };
 
 export const GA_SCENE_ASPECT = WORLD_W / WORLD_H;
 const WORLD_CLIP = rect(0, 0, WORLD_W, WORLD_H);
@@ -51,51 +105,140 @@ const WORLD_CLIP = rect(0, 0, WORLD_W, WORLD_H);
 const PERSON_K = 2.5;
 const WALL_T = 0.34;
 
-export type GaSceneSelect = 'generator-1' | 'generator-2' | 'fountain' | 'door' | 'crate' | 'guide' | null;
-
-type Sounding = {
-  key: string;
-  /** What it is, in words (the screen reader's list). */
-  name: string;
-  at: GaPoint;
-  db: number;
-  virtual: boolean;
-  /** The mix has silenced it: its bus is muted, or another bus is soloed. */
-  muted: boolean;
-  muffled: boolean;
-  /** How fast the rings spread: 1, 2 or 3 (a generator's speed). */
-  pace: 1 | 2 | 3;
-  alarm: boolean;
+/** What a page may ask the picture to show as well. Every field is OFF
+ *  unless the page's rack spec turns it on (GaRackSpec.show), so no page
+ *  changes until its own fixer asks. */
+export type GaSceneShow = {
+  /** Page 7: print the INSTANCE id by each generator's rings ("two
+   *  instances" read on the glass; an orphan loop shows its id with no
+   *  machine under it). */
+  ids?: boolean;
+  /** Page 8: the game's MOOD state, the one thing that changes everywhere
+   *  at once: the words MOOD · CALM / MOOD · ALERT, and while it is ALERT a
+   *  border around the whole picture (a shape and words, never color alone). */
+  mood?: boolean;
+  /** Page 18: the GUIDE is the other player: draw a second, blue listener
+   *  wedge on the guide ("the other player's ears"). */
+  guideListens?: boolean;
+  /** Page 8: for a moment after a footstep, name the SURFACE the sound was
+   *  chosen for, by the foot that stepped (GRAVEL, STONE PATH, WOOD FLOOR). */
+  surface?: boolean;
+  /** Page 9: for a moment after a footstep, print the TAKE that played
+   *  (TAKE 3), by the foot that stepped. */
+  take?: boolean;
+  /** Pages 1 and 10: a soft, slow mark over each zone while its ambience
+   *  bed plays (courtyard wind, workshop room tone), dimmer as its level
+   *  falls, with the words · WIND / · ROOM TONE beside the zone's name. */
+  beds?: boolean;
 };
 
-const SOURCE_NAME: Record<string, string> = { 'generator-1': 'generator 1', 'generator-2': 'generator 2', fountain: 'the fountain', crate: 'the crate', door: 'the door', player: 'your footsteps', guide: 'the guide' };
+/* ── motion: glide from the old value to the new ────────────────────────── */
 
-/** Every object with a positioned voice, and its level at the listener:
- *  distance, the wall, and the mix (the bus fader, mute, solo, the duck).
- *  The alarm is listed apart from the generator it sits on. */
-function soundingOf(s: GaState): Sounding[] {
-  const L = listenerOf(s);
-  const out = new Map<string, Sounding>();
-  for (const i of s.inst) {
-    const def = GA_EVENTS[i.event];
-    if (!def.spatial || !i.pos || !def.atten) continue;
-    const vs = s.voices.filter((v) => v.inst === i.id);
-    if (!vs.length) continue;
-    const ob = obstruction(L, i.pos, s.doorOpen);
-    let mix = 0;
-    for (const v of vs) mix = Math.max(mix, gaVoiceLevel(s, v));
-    const g = attenuationGain(gaListenDistance(L, i.pos), def.atten) * ob.gain * mix;
-    const alarm = i.event === 'alarm';
-    const key = `${alarm ? 'alarm' : i.owner}:${Math.round(i.pos.x * 10)}:${Math.round(i.pos.y * 10)}`;
-    const virtual = vs.every((v) => v.state === 'virtual');
-    const muted = mix <= 0;
-    const db = muted ? -120 : gainDb(g);
-    const speed = i.event === 'generator' ? (s.machines.find((m) => m.id === i.owner)?.speed ?? 0.4) : 0;
-    const pace: 1 | 2 | 3 = speed >= 0.67 ? 3 : speed >= 0.34 ? 2 : 1;
-    const prev = out.get(key);
-    if (!prev || db > prev.db) out.set(key, { key, name: alarm ? 'the alarm' : (SOURCE_NAME[i.owner] ?? i.owner), at: i.pos, db, virtual, muted, muffled: ob.obstructed, pace, alarm });
+/** A number that follows `target`: a short tween, or at once when motion is
+ *  reduced. */
+function useGlide(target: number, ms: number, on: boolean, linear = false): SharedValue<number> {
+  const v = useSharedValue(target);
+  useEffect(() => {
+    if (!on) {
+      cancelAnimation(v);
+      v.value = target;
+      return;
+    }
+    v.value = withTiming(target, { duration: ms, easing: linear ? Easing.linear : Easing.out(Easing.cubic) });
+  }, [target, ms, on, linear, v]);
+  return v;
+}
+
+type Glided = { x: SharedValue<number>; y: SharedValue<number>; facing: SharedValue<number> };
+
+/** A figure's place and facing as it is DRAWN: it walks to a new place (the
+ *  farther, the longer, 0.16 … 0.62 s) and turns the short way round. */
+function useGlidedChar(c: { x: number; y: number; facing: number }, on: boolean): Glided {
+  const x = useSharedValue(c.x);
+  const y = useSharedValue(c.y);
+  const facing = useSharedValue(c.facing);
+  const last = useRef({ x: c.x, y: c.y, turn: c.facing });
+  useEffect(() => {
+    const d = Math.hypot(c.x - last.current.x, c.y - last.current.y);
+    // the short way round: 350° → 10° is +20°, not −340°
+    const delta = ((((c.facing - last.current.turn) % 360) + 540) % 360) - 180;
+    const turn = last.current.turn + delta;
+    last.current = { x: c.x, y: c.y, turn };
+    if (!on) {
+      cancelAnimation(x);
+      cancelAnimation(y);
+      cancelAnimation(facing);
+      x.value = c.x;
+      y.value = c.y;
+      facing.value = turn;
+      return;
+    }
+    if (d > 1e-4) {
+      const ms = Math.max(160, Math.min(620, 110 + d * 110));
+      x.value = withTiming(c.x, { duration: ms, easing: Easing.out(Easing.cubic) });
+      y.value = withTiming(c.y, { duration: ms, easing: Easing.out(Easing.cubic) });
+    }
+    if (Math.abs(delta) > 1e-4) facing.value = withTiming(turn, { duration: 140, easing: Easing.out(Easing.cubic) });
+  }, [c.x, c.y, c.facing, on, x, y, facing]);
+  return { x, y, facing };
+}
+
+/* ── text ───────────────────────────────────────────────────────────────── */
+
+/** The label face at 100 units. The lab's shared scene font (dj/art
+ *  sceneText) is 10 units; drawn through a scale, its letter widths are
+ *  rounded to whole units and a gap opens after some letters ("FOUNT AIN",
+ *  audit 2 W1 F23). This is the SAME typeface file at ten times the size, so
+ *  the spacing is ten times finer; sizes on the glass and the 9 pt floor are
+ *  unchanged. Loaded once for the scene through the house's guarded loader;
+ *  until it arrives the shared font draws the words, as before. */
+const LABEL_TTF = require('@expo-google-fonts/oswald/600SemiBold/Oswald_600SemiBold.ttf');
+const NOMINAL = 100;
+type Fine = { font: SkFont; nominal: number };
+const FineFontContext = createContext<SkFont | null>(null);
+/** Kept for the lab's whole visit: every scene after the first has it on
+ *  its first frame, so the words never shift when a page opens. */
+let fineKept: SkFont | null = null;
+function useFineFont(): SkFont | null {
+  const loaded = useSafeSkiaFont(LABEL_TTF, NOMINAL);
+  if (loaded && loaded !== fineKept) {
+    try {
+      loaded.setSubpixel(true);
+      loaded.setLinearMetrics(true);
+    } catch {
+      // a Skia without these setters draws the same face, a little less exactly
+    }
+    fineKept = loaded;
   }
-  return [...out.values()];
+  return loaded ?? fineKept;
+}
+function useFine(): Fine | null {
+  const f = useContext(SceneFontsContext);
+  const fine = useContext(FineFontContext);
+  return useMemo(() => (fine ? { font: fine, nominal: NOMINAL } : f.label ? { font: f.label, nominal: 10 } : null), [fine, f.label]);
+}
+
+/** A text's width in meters at `size`. Before the font loads: an estimate. */
+function useMeasure(): (text: string, size: number) => number {
+  const ff = useFine();
+  return useMemo(() => (text: string, size: number) => (ff ? (ff.font.getTextWidth(text) * size) / ff.nominal : text.length * size * 0.5), [ff]);
+}
+
+/** Label text at (x, y) (meters; y = baseline), `size` meters tall. Refuses
+ *  to draw anything that would render under 9 pt (the house floor), exactly
+ *  as the shared SceneText does. */
+function GaText({ x, y, size, text, color, align = 'left', opacity }: { x: number; y: number; size: number; text: string; color: string; align?: 'left' | 'center' | 'right'; opacity?: number }) {
+  const f = useContext(SceneFontsContext);
+  const ff = useFine();
+  if (!ff || size * f.s < MIN_TEXT_PT - 1e-3) return null;
+  const k = size / ff.nominal;
+  const w = align === 'left' ? 0 : ff.font.getTextWidth(text);
+  const dx = align === 'center' ? -w / 2 : align === 'right' ? -w : 0;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { scale: k }]} opacity={opacity}>
+      <Text x={dx} y={0} text={text} font={ff.font} color={color} />
+    </Group>
+  );
 }
 
 /* ── ground ─────────────────────────────────────────────────────────────── */
@@ -192,7 +335,7 @@ const Ground = memo(function Ground() {
 
 /* ── walls and the door ─────────────────────────────────────────────────── */
 
-const Walls = memo(function Walls({ doorOpen }: { doorOpen: boolean }) {
+const Walls = memo(function Walls({ doorOpen, moving }: { doorOpen: boolean; moving: boolean }) {
   const wall = useMemo(() => {
     const p = Skia.Path.Make();
     const t = WALL_T;
@@ -204,8 +347,10 @@ const Walls = memo(function Walls({ doorOpen }: { doorOpen: boolean }) {
     rect(WORLD_W - t, 0, t, WORLD_H); // east
     return p;
   }, []);
-  // the leaf hangs on the north jamb and swings into the room
-  const a = doorOpen ? (-80 * Math.PI) / 180 : 0;
+  // the leaf hangs on the north jamb and SWINGS into the room (a quarter of
+  // a second; at once when motion is reduced)
+  const a = useGlide(doorOpen ? (-80 * Math.PI) / 180 : 0, 260, moving);
+  const leaf = useDerivedValue(() => [{ rotate: a.value }]);
   const leafLen = DOOR_Y1 - DOOR_Y0;
   return (
     <Group>
@@ -225,7 +370,7 @@ const Walls = memo(function Walls({ doorOpen }: { doorOpen: boolean }) {
       >
         <DashPathEffect intervals={[0.16, 0.14]} />
       </Path>
-      <Group origin={vec(WALL_X, DOOR_Y0)} transform={[{ rotate: a }]}>
+      <Group origin={vec(WALL_X, DOOR_Y0)} transform={leaf}>
         <RoundedRect x={WALL_X - 0.09 + 0.02} y={DOOR_Y0 + 0.04} width={0.2} height={leafLen} r={0.05} color="rgba(0,0,0,0.5)" />
         <RoundedRect x={WALL_X - 0.09} y={DOOR_Y0} width={0.18} height={leafLen} r={0.05}>
           <LinearGradient start={vec(WALL_X - 0.09, 0)} end={vec(WALL_X + 0.09, 0)} colors={['#c98a4a', '#8c5a2a', '#5e3a18']} />
@@ -371,20 +516,25 @@ const Crate = memo(function Crate({ at }: { at: GaPoint }) {
 });
 
 /** The house top-view person, at world position, facing a compass bearing.
- *  The figure's own frame has its chest toward +x, in millimetres. */
-function Person({ at, facing, ring, second = false }: { at: GaPoint; facing: number; ring: string; second?: boolean }) {
+ *  The figure's own frame has its chest toward +x, in millimeters. `ears` =
+ *  this figure is a listener now (a figure that is not keeps a broken ring). */
+function Person({ g, ring, second = false, ears = true }: { g: Glided; ring: string; second?: boolean; ears?: boolean }) {
   const k = 0.001 * PERSON_K;
+  const at = useDerivedValue(() => [{ translateX: g.x.value }, { translateY: g.y.value }]);
+  const turn = useDerivedValue(() => [{ rotate: ((g.facing.value - 90) * Math.PI) / 180 }, { scale: k }]);
   return (
-    <Group>
-      <Circle cx={at.x + 0.06} cy={at.y + 0.1} r={0.52} color="rgba(0,0,0,0.42)" />
-      <Circle cx={at.x} cy={at.y} r={0.74} style="stroke" strokeWidth={0.05} color={ring} opacity={0.9} />
+    <Group transform={at}>
+      <Circle cx={0.06} cy={0.1} r={0.52} color="rgba(0,0,0,0.42)" />
+      <Circle cx={0} cy={0} r={0.74} style="stroke" strokeWidth={0.05} color={ears ? ring : '#a9abb3'} opacity={0.9}>
+        {ears ? null : <DashPathEffect intervals={[0.2, 0.16]} />}
+      </Circle>
       {/* the guide is told from YOU by shape as well as color: a second, broken ring */}
       {second ? (
-        <Circle cx={at.x} cy={at.y} r={0.9} style="stroke" strokeWidth={0.04} color={ring} opacity={0.8}>
+        <Circle cx={0} cy={0} r={0.9} style="stroke" strokeWidth={0.04} color={ring} opacity={0.8}>
           <DashPathEffect intervals={[0.12, 0.16]} />
         </Circle>
       ) : null}
-      <Group transform={[{ translateX: at.x }, { translateY: at.y }, { rotate: ((facing - 90) * Math.PI) / 180 }, { scale: k }]}>
+      <Group transform={turn}>
         <PlayerBehind pose={SINGER_TOP} />
         <PlayerInFront pose={SINGER_TOP} hands={false} />
       </Group>
@@ -392,36 +542,68 @@ function Person({ at, facing, ring, second = false }: { at: GaPoint; facing: num
   );
 }
 
-/** Where the listener's ears point: a soft wedge ahead of the player. */
-function ListenerWedge({ at, facing }: { at: GaPoint; facing: number }) {
-  const path = useMemo(() => {
-    const p = Skia.Path.Make();
-    const R = 2.2;
-    const half = (50 * Math.PI) / 180;
-    p.moveTo(0, 0);
-    for (let i = 0; i <= 16; i++) {
-      const a = -half + (2 * half * i) / 16;
-      p.lineTo(R * Math.sin(a), -R * Math.cos(a));
-    }
-    p.close();
-    return p;
-  }, []);
+const WEDGE_R = 2.2;
+function wedgePath(R: number, halfDeg: number): ReturnType<typeof Skia.Path.Make> {
+  const p = Skia.Path.Make();
+  const half = (halfDeg * Math.PI) / 180;
+  p.moveTo(0, 0);
+  for (let i = 0; i <= 16; i++) {
+    const a = -half + (2 * half * i) / 16;
+    p.lineTo(R * Math.sin(a), -R * Math.cos(a));
+  }
+  p.close();
+  return p;
+}
+
+/** Where a listener's ears point: a soft wedge ahead of the figure. Amber
+ *  for YOU; blue for the guide when a page shows the other player's ears.
+ *  `behind` adds the BACK of the head: a grey, broken wedge the other way,
+ *  drawn when the selected source is behind the ears. */
+function ListenerWedge({ g, tone, behind = false }: { g: Glided; tone: 'you' | 'guide'; behind?: boolean }) {
+  const path = useMemo(() => wedgePath(WEDGE_R, 50), []);
+  const back = useMemo(() => wedgePath(1.55, 50), []);
+  const t = useDerivedValue(() => [{ translateX: g.x.value }, { translateY: g.y.value }, { rotate: (g.facing.value * Math.PI) / 180 }]);
+  const rgb = tone === 'you' ? '255,198,77' : '111,168,255';
   return (
-    <Group transform={[{ translateX: at.x }, { translateY: at.y }, { rotate: (facing * Math.PI) / 180 }]}>
+    <Group transform={t}>
       <Path path={path}>
-        <RadialGradient c={vec(0, 0)} r={2.2} colors={['rgba(255,198,77,0.26)', 'rgba(255,198,77,0.02)']} />
+        <RadialGradient c={vec(0, 0)} r={WEDGE_R} colors={[`rgba(${rgb},0.26)`, `rgba(${rgb},0.02)`]} />
       </Path>
-      <Path path={path} style="stroke" strokeWidth={0.025} color="rgba(255,198,77,0.34)" />
+      <Path path={path} style="stroke" strokeWidth={0.025} color={`rgba(${rgb},0.34)`} />
+      {behind ? (
+        <Group transform={[{ rotate: Math.PI }]}>
+          <Path path={back} color="rgba(200,204,212,0.16)" />
+          <Path path={back} style="stroke" strokeWidth={0.045} color="rgba(226,229,235,0.85)">
+            <DashPathEffect intervals={[0.16, 0.13]} />
+          </Path>
+        </Group>
+      ) : null}
     </Group>
   );
 }
 
-/** The overhead listener: a camera above the middle of the scene. */
+/** The overhead listener: a camera above the middle of the scene, with the
+ *  start of its view toward each corner (it looks down on the whole picture). */
 const CameraMark = memo(function CameraMark() {
   const cx = WORLD_W / 2;
   const cy = WORLD_H / 2;
   return (
     <Group>
+      {[
+        [0, 0],
+        [WORLD_W, 0],
+        [0, WORLD_H],
+        [WORLD_W, WORLD_H],
+      ].map(([tx, ty], i) => {
+        const d = Math.hypot(tx - cx, ty - cy);
+        const ux = (tx - cx) / d;
+        const uy = (ty - cy) / d;
+        return (
+          <Line key={i} p1={vec(cx + ux * 0.92, cy + uy * 0.92)} p2={vec(cx + ux * 1.55, cy + uy * 1.55)} color="rgba(255,198,77,0.6)" strokeWidth={0.04}>
+            <DashPathEffect intervals={[0.14, 0.12]} />
+          </Line>
+        );
+      })}
       {/* kept inside 0.8 m, so it stands clear of the door (1 m east) and its label */}
       <Circle cx={cx} cy={cy} r={0.8} style="stroke" strokeWidth={0.05} color="rgba(255,198,77,0.8)">
         <DashPathEffect intervals={[0.2, 0.14]} />
@@ -439,7 +621,7 @@ const CameraMark = memo(function CameraMark() {
 });
 
 /** The alarm's VISUAL equivalent (an accessibility option): a warning sign
- *  over the generator — a shape and a word, never colour alone. */
+ *  over the generator — a shape and a word, never color alone. */
 function AlarmSign({ at }: { at: GaPoint }) {
   const size = useLabelMm(10);
   const tri = useMemo(() => {
@@ -456,47 +638,251 @@ function AlarmSign({ at }: { at: GaPoint }) {
       <Path path={tri} style="stroke" strokeWidth={0.12} strokeJoin="round" color="#ffc64d" />
       <Line p1={vec(0, -0.26)} p2={vec(0, 0.12)} color="#ffc64d" strokeWidth={0.12} strokeCap="round" />
       <Circle cx={0} cy={0.28} r={0.07} color="#ffc64d" />
-      <SceneText x={0} y={-0.82} size={size} text="OVERHEAT" color="#ffc64d" face="label" align="center" />
+      <GaText x={0} y={-0.82} size={size} text="OVERHEAT" color="#ffc64d" align="center" />
     </Group>
   );
 }
 
 /* ── sound ──────────────────────────────────────────────────────────────── */
 
-/** One spreading ring. `pace` (a whole number, so the loop has no jump) is
- *  how many times it spreads per cycle. The alarm's rings are wider, start
- *  further out and are BROKEN into segments: told apart by shape, since the
- *  color is the level on the house ramp for every source. */
-function Ring({ at, k, phase, color, strength, moving, pace, alarm }: { at: GaPoint; k: number; phase: SharedValue<number>; color: string; strength: number; moving: boolean; pace: number; alarm: boolean }) {
-  const frac = useDerivedValue(() => (moving ? (phase.value * pace + k / 3) % 1 : (k + 1) / 3.4));
-  const r = useDerivedValue(() => (alarm ? 1.05 + frac.value * 1.85 : 0.75 + frac.value * 1.5));
-  const o = useDerivedValue(() => strength * (moving ? 1 - frac.value : 0.85 - k * 0.25));
+const toRect = (b: GaBox): SkRect => rect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0);
+
+/** Where a loop's rings begin and how far they are drawn, in meters. */
+const TRAIN = { r0: 0.75, span: 1.5 };
+const ALARM_TRAIN = { r0: 1.05, span: 1.85 };
+/** A one-shot's ring travels this far over the sound's own length. */
+const SHOT = { r0: 0.75, span: 1.6 };
+/** Ring slots: enough to fill the span at the smallest gap. The phase runs
+ *  to a common multiple, so neither set jumps when it wraps. */
+const SLOTS = 7;
+const WALL_SLOTS = 8;
+const PHASE_WRAP = SLOTS * WALL_SLOTS;
+/** Beyond the wall the sound is duller: its rings are thinner and dashed. */
+const DULL_STROKE = 0.6;
+const DULL_DASH = [0.2, 0.18];
+const ALARM_DASH = [0.42, 0.26];
+/** The wall's own piece of a far source's rings: from this far before the
+ *  wall to this far beyond it. */
+const WALL_BEFORE = 0.7;
+const WALL_WINDOW = 1.8;
+const WALL_HALF = 0.95;
+const UNDER = 'rgba(0,0,0,0.6)';
+
+/** How a muffled source's rings meet the wall (see gaSceneLogic). */
+type Muffle = {
+  /** The source's side of the wall: its rings stop there. */
+  src: SkRect;
+  /** The listener's side: the rings go on, thin and dashed. */
+  lis: SkRect;
+  /** The source is too far for its own rings to reach the wall: the piece at
+   *  the wall is drawn apart, `d` meters from the source. */
+  far: { d: number; src: SkRect; lis: SkRect } | null;
+};
+
+function muffleOf(x: GaSounding, L: GaPoint, reach: number, wallPiece: boolean): Muffle | null {
+  if (!x.muffled) return null;
+  const zone = zoneAt(x.at);
+  const cross = gaWallCrossing(x.at, L);
+  const srcBox = gaZoneRect(zone);
+  const lisBox = gaZoneRect(gaOtherZone(zone));
+  if (cross.d <= reach || !wallPiece) return { src: toRect(srcBox), lis: toRect(lisBox), far: null };
+  // a short piece of the ring, so two sources' pieces do not cross at the wall
+  const y0 = Math.max(0, cross.at.y - WALL_HALF);
+  const y1 = Math.min(WORLD_H, cross.at.y + WALL_HALF);
+  const win = (b: GaBox): SkRect => toRect({ x0: Math.max(b.x0, WALL_X - 2), x1: Math.min(b.x1, WALL_X + 2), y0, y1 });
+  return { src: toRect(srcBox), lis: toRect(lisBox), far: { d: cross.d, src: win(srcBox), lis: win(lisBox) } };
+}
+
+/** One ring of a loop's train. `phi` counts rings that have left; this slot
+ *  is `j` rings behind. `bell` = fade in and out (the piece at the wall). */
+function TrainRing({ at, j, n, phi, gap, base, span, bell = false, color, stroke, opacity, dash }: { at: GaPoint; j: number; n: number; phi: SharedValue<number>; gap: SharedValue<number>; base: number; span: number; bell?: boolean; color: string; stroke: number; opacity: number; dash?: number[] }) {
+  const r = useDerivedValue(() => base + Math.min(((phi.value + j) % n) * gap.value, span));
+  const o = useDerivedValue(() => {
+    const k = (((phi.value + j) % n) * gap.value) / span;
+    if (k >= 1) return 0;
+    return opacity * (bell ? Math.pow(Math.sin(Math.PI * k), 0.6) : 1 - Math.pow(k, 1.7));
+  });
   return (
-    <Circle cx={at.x} cy={at.y} r={r} style="stroke" strokeWidth={alarm ? 0.1 : 0.07} color={color} opacity={o}>
-      {alarm ? <DashPathEffect intervals={[0.42, 0.26]} /> : null}
-    </Circle>
+    <Group opacity={o}>
+      <Circle cx={at.x} cy={at.y} r={r} style="stroke" strokeWidth={stroke + 0.06} color={UNDER}>
+        {dash ? <DashPathEffect intervals={dash} /> : null}
+      </Circle>
+      <Circle cx={at.x} cy={at.y} r={r} style="stroke" strokeWidth={stroke} color={color}>
+        {dash ? <DashPathEffect intervals={dash} /> : null}
+      </Circle>
+    </Group>
   );
 }
 
-function SoundRings({ s, phase, moving }: { s: Sounding; phase: SharedValue<number>; moving: boolean }) {
-  // tracked but not played, or silenced by the mix: one still, dashed ring
-  if (s.virtual || s.muted) {
-    return (
-      <Circle cx={s.at.x} cy={s.at.y} r={s.alarm ? 1.45 : 1.15} style="stroke" strokeWidth={0.05} color="#8a8b93">
-        <DashPathEffect intervals={s.alarm ? [0.42, 0.26] : [0.14, 0.14]} />
-      </Circle>
-    );
-  }
-  const color = levelColorForDb(s.db, -36, 0);
-  const strength = 0.35 + 0.65 * Math.max(0, Math.min(1, (s.db + 36) / 36));
+const slots = (n: number) => Array.from({ length: n }, (_, j) => j);
+
+/** A LOOP: a train of rings. They travel at one speed; `gapM` (from the
+ *  model's SPEED) sets how often one leaves and so how close they sit. With
+ *  motion reduced the train stands still at that same spacing. */
+function LoopRings({ x, L, moving, wallPiece }: { x: GaSounding; L: GaPoint; moving: boolean; wallPiece: boolean }) {
+  const shape = x.alarm ? ALARM_TRAIN : TRAIN;
+  const gapM = x.alarm ? GA_ALARM_GAP : gaRingGap(x.speed);
+  const phi = useSharedValue(0.5);
+  const gap = useSharedValue(gapM);
+  useEffect(() => {
+    gap.value = gapM;
+  }, [gapM, gap]);
+  const frame = useFrameCallback((info) => {
+    const dt = Math.min(info.timeSincePreviousFrame ?? 0, 64) / 1000;
+    phi.value = (phi.value + (dt * GA_RING_SPEED) / gap.value) % PHASE_WRAP;
+  }, false);
+  useEffect(() => {
+    frame.setActive(moving);
+    if (!moving) phi.value = 0.5;
+    return () => frame.setActive(false);
+  }, [moving, frame, phi]);
+
+  const color = levelColorForDb(x.db, GA_RING_DB_MIN, GA_RING_DB_MAX);
+  const look = gaRingLook(x.db);
+  const stroke = look.stroke + (x.alarm ? 0.02 : 0);
+  const m = muffleOf(x, L, shape.r0 + shape.span, wallPiece);
+  const train = (dull: boolean) =>
+    slots(SLOTS).map((j) => (
+      <TrainRing key={j} at={x.at} j={j} n={SLOTS} phi={phi} gap={gap} base={shape.r0} span={shape.span} color={color} stroke={dull ? stroke * DULL_STROKE : stroke} opacity={look.opacity} dash={dull ? DULL_DASH : x.alarm ? ALARM_DASH : undefined} />
+    ));
+  if (!m) return <Group>{train(false)}</Group>;
+  const atWall = (dull: boolean) =>
+    slots(WALL_SLOTS).map((j) => (
+      <TrainRing key={j} at={x.at} j={j} n={WALL_SLOTS} phi={phi} gap={gap} base={(m.far?.d ?? 0) - WALL_BEFORE} span={WALL_WINDOW} bell color={color} stroke={dull ? stroke * DULL_STROKE : stroke} opacity={look.opacity} dash={dull ? DULL_DASH : x.alarm ? ALARM_DASH : undefined} />
+    ));
   return (
     <Group>
-      {[0, 1, 2].map((k) => (
-        <Ring key={k} at={s.at} k={k} phase={phase} color={color} strength={strength} moving={moving} pace={s.pace} alarm={s.alarm} />
+      <Group clip={m.src}>{train(false)}</Group>
+      {m.far ? (
+        <>
+          <Group clip={m.far.src}>{atWall(false)}</Group>
+          <Group clip={m.far.lis}>{atWall(true)}</Group>
+        </>
+      ) : (
+        <Group clip={m.lis}>{train(true)}</Group>
+      )}
+    </Group>
+  );
+}
+
+function ShotCircle({ at, p, base, moving, color, stroke, opacity, dash }: { at: GaPoint; p: SharedValue<number>; base: number; moving: boolean; color: string; stroke: number; opacity: number; dash?: number[] }) {
+  const r = useDerivedValue(() => Math.max(0.05, base + p.value * SHOT.span));
+  const o = useDerivedValue(() => (moving ? opacity * (1 - p.value * p.value) : opacity));
+  return (
+    <Group opacity={o}>
+      <Circle cx={at.x} cy={at.y} r={r} style="stroke" strokeWidth={stroke + 0.06} color={UNDER}>
+        {dash ? <DashPathEffect intervals={dash} /> : null}
+      </Circle>
+      <Circle cx={at.x} cy={at.y} r={r} style="stroke" strokeWidth={stroke} color={color}>
+        {dash ? <DashPathEffect intervals={dash} /> : null}
+      </Circle>
+    </Group>
+  );
+}
+
+/** A ONE-SHOT voice: one ring that leaves when the voice starts and fades
+ *  over the sound's own length. With motion reduced: one still ring for as
+ *  long as the voice sounds. */
+function ShotRing({ x, ring, L, moving, wallPiece }: { x: GaSounding; ring: GaShotRing; L: GaPoint; moving: boolean; wallPiece: boolean }) {
+  const p = useSharedValue(0.5);
+  useEffect(() => {
+    if (!moving) {
+      cancelAnimation(p);
+      p.value = 0.5;
+      return;
+    }
+    const p0 = Math.max(0, Math.min(1, (gaNow() - ring.start) / ring.len));
+    p.value = p0;
+    p.value = withTiming(1, { duration: Math.max(0, 1 - p0) * ring.len * 1000, easing: Easing.linear });
+    return () => cancelAnimation(p);
+  }, [moving, ring.start, ring.len, p]);
+  const color = levelColorForDb(ring.db, GA_RING_DB_MIN, GA_RING_DB_MAX);
+  const look = gaRingLook(ring.db);
+  const m = muffleOf(x, L, SHOT.r0 + SHOT.span, wallPiece);
+  if (!m) return <ShotCircle at={x.at} p={p} base={SHOT.r0} moving={moving} color={color} stroke={look.stroke} opacity={look.opacity} />;
+  return (
+    <Group>
+      <Group clip={m.src}>
+        <ShotCircle at={x.at} p={p} base={SHOT.r0} moving={moving} color={color} stroke={look.stroke} opacity={look.opacity} />
+      </Group>
+      <Group clip={m.far ? m.far.lis : m.lis}>
+        <ShotCircle at={x.at} p={p} base={m.far ? m.far.d - 0.4 : SHOT.r0} moving={moving} color={color} stroke={look.stroke * DULL_STROKE} opacity={look.opacity} dash={DULL_DASH} />
+      </Group>
+    </Group>
+  );
+}
+
+/** `wallPiece`: this source draws the piece of its rings AT the wall (where
+ *  two sources share one place, the alarm on its generator, only the louder
+ *  one does, so the wall shows one clear piece). */
+function SoundRings({ x, L, moving, wallPiece }: { x: GaSounding; L: GaPoint; moving: boolean; wallPiece: boolean }) {
+  // tracked but not played, or silenced by the mix: one still, dashed ring
+  if (!gaHeard(x)) {
+    return (
+      <Group>
+        <Circle cx={x.at.x} cy={x.at.y} r={x.alarm ? 1.45 : 1.15} style="stroke" strokeWidth={0.11} color={UNDER}>
+          <DashPathEffect intervals={x.alarm ? ALARM_DASH : [0.14, 0.14]} />
+        </Circle>
+        <Circle cx={x.at.x} cy={x.at.y} r={x.alarm ? 1.45 : 1.15} style="stroke" strokeWidth={0.06} color="#a9abb3">
+          <DashPathEffect intervals={x.alarm ? ALARM_DASH : [0.14, 0.14]} />
+        </Circle>
+      </Group>
+    );
+  }
+  if (x.kind === 'loop') return <LoopRings x={x} L={L} moving={moving} wallPiece={wallPiece} />;
+  // the newest few: a burst of twelve impacts is twelve voices, not twelve
+  // pictures on one spot
+  return (
+    <Group>
+      {x.rings.slice(-6).map((r) => (
+        <ShotRing key={r.id} x={x} ring={r} L={L} moving={moving} wallPiece={wallPiece} />
       ))}
     </Group>
   );
 }
+
+/** A bird that is calling, from above: the courtyard's spot sound has a
+ *  place (the model picks one for each call), so its ring needs a source to
+ *  come from. Drawn only while the call sounds. */
+const BirdMark = memo(function BirdMark({ at }: { at: GaPoint }) {
+  const wings = useMemo(() => {
+    const p = Skia.Path.Make();
+    // two swept wings, tips back
+    p.moveTo(0.06, -0.05);
+    p.quadTo(0.02, -0.3, -0.2, -0.42);
+    p.quadTo(-0.1, -0.2, -0.12, -0.04);
+    p.close();
+    p.moveTo(0.06, 0.05);
+    p.quadTo(0.02, 0.3, -0.2, 0.42);
+    p.quadTo(-0.1, 0.2, -0.12, 0.04);
+    p.close();
+    // the tail, a narrow fan
+    p.moveTo(-0.16, -0.035);
+    p.lineTo(-0.36, -0.09);
+    p.lineTo(-0.36, 0.09);
+    p.lineTo(-0.16, 0.035);
+    p.close();
+    return p;
+  }, []);
+  const beak = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(0.27, -0.03);
+    p.lineTo(0.36, 0);
+    p.lineTo(0.27, 0.03);
+    p.close();
+    return p;
+  }, []);
+  return (
+    <Group transform={[{ translateX: at.x }, { translateY: at.y }, { rotate: -0.6 }]}>
+      <Path path={wings} color="rgba(0,0,0,0.45)" transform={[{ translateX: 0.05 }, { translateY: 0.07 }]} />
+      <Path path={wings} color="#6b4a2f" />
+      <Path path={wings} style="stroke" strokeWidth={0.02} color="#d8b98a" />
+      <RoundedRect x={-0.18} y={-0.085} width={0.4} height={0.17} r={0.085} color="#8a6240" />
+      <Circle cx={0.2} cy={0} r={0.085} color="#3b2a1c" />
+      <Path path={beak} color="#e6b34a" />
+    </Group>
+  );
+});
 
 /** The guide is speaking a line: a speech mark beside the figure (a spoken
  *  line has no position in this scene, so it has no rings). */
@@ -523,99 +909,225 @@ function Speaking({ at }: { at: GaPoint }) {
   );
 }
 
-/* ── labels ─────────────────────────────────────────────────────────────── */
+/* ── the beds ───────────────────────────────────────────────────────────── */
 
-/** A label's place: its centre, baseline and text (for keeping labels off
- *  each other). */
-type Placed = { x: number; y: number; text: string };
+const YARD_CLIP = rect(0, 0, WALL_X - WALL_T / 2, WORLD_H);
+const WIND_PERIOD = 4;
 
-function Labels({ s, select, showNames }: { s: GaState; select: GaSceneSelect; showNames: boolean }) {
-  const zone = useLabelMm(10);
-  const tag = useLabelMm(9.5);
-  const p = s.chars.player;
-  const g = s.chars.guide;
-  const shown = (key: Exclude<GaSceneSelect, null>) => showNames || select === key;
-  // the labels that never move (x = centre)
-  const letter = tag * 0.66;
-  const doorText = s.doorOpen ? 'DOOR OPEN' : 'DOOR CLOSED';
-  const doorRight = WALL_X - 0.42; // right-aligned: it ends before the wall
-  const fixed: (Placed & { key: Exclude<GaSceneSelect, null> })[] = [];
-  if (shown('generator-1')) fixed.push({ key: 'generator-1', x: PLACES.generator.x, y: PLACES.generator.y + 1.45, text: s.machines.length > 1 ? 'GENERATOR 1' : 'GENERATOR' });
-  if (s.machines.length > 1 && shown('generator-2')) fixed.push({ key: 'generator-2', x: PLACES.generator2.x, y: PLACES.generator2.y - 0.95, text: 'GENERATOR 2' });
-  if (shown('fountain')) fixed.push({ key: 'fountain', x: PLACES.fountain.x, y: PLACES.fountain.y + 1.85, text: 'FOUNTAIN' });
-  if (shown('crate')) fixed.push({ key: 'crate', x: PLACES.crate.x, y: PLACES.crate.y - 0.85, text: 'CRATE' });
-  const door: Placed | null = shown('door') ? { x: doorRight - (doorText.length * letter) / 2, y: DOOR_Y0 - 0.3, text: doorText } : null;
-  const hits = (a: Placed, b: Placed) => Math.abs(a.x - b.x) < ((a.text.length + b.text.length) * letter) / 2 + 0.2 && Math.abs(a.y - b.y) < tag * 1.15;
-  // a person's label sits under the figure; where that would land on
-  // another label or leave the picture, it goes above the figure instead
-  const beside = (c: GaPoint, text: string, others: Placed[]): Placed => {
-    const below = { x: c.x, y: c.y + 1.45, text };
-    const above = { x: c.x, y: c.y - 0.98, text };
-    const bad = (q: Placed) => q.y > WORLD_H - 0.25 || q.y < tag + 0.2 || others.some((o) => hits(q, o));
-    return bad(below) && !bad(above) ? above : below;
-  };
-  const still: Placed[] = [...fixed, ...(door ? [door] : [])];
-  const you = beside(p, 'YOU', still);
-  const guide = beside(g, 'GUIDE', [...still, you]);
+/** The two ambience beds have no place in the scene, so each gets a mark
+ *  over its whole zone while its voice plays: slow streaks drifting across
+ *  the courtyard for the wind, a soft band inside the workshop's walls for
+ *  the room tone. Each is as strong as that bed's level now (the model's
+ *  cross-fade at the doorway: one fades down as the other comes up). */
+function BedMarks({ yard, room, fadeS, clock, moving }: { yard: { playing: boolean; level: number }; room: { playing: boolean; level: number }; fadeS: number; clock: SharedValue<number>; moving: boolean }) {
+  const wind = useMemo(() => {
+    const p = Skia.Path.Make();
+    const rows = [0.75, 2.9, 3.55, 6.6, 7.45, 9.2];
+    rows.forEach((y, k) => {
+      const from = -WIND_PERIOD + (k % 3) * 0.9;
+      p.moveTo(from, y);
+      for (let x = from; x <= WALL_X + WIND_PERIOD; x += 0.25) p.lineTo(x, y + 0.13 * Math.sin(((x + k * 1.3) * 2 * Math.PI) / WIND_PERIOD));
+    });
+    return p;
+  }, []);
+  const yardLevel = useGlide(yard.playing ? yard.level : 0, fadeS * 1000, moving, true);
+  const roomLevel = useGlide(room.playing ? room.level : 0, fadeS * 1000, moving, true);
+  const drift = useDerivedValue(() => [{ translateX: (clock.value * 0.45) % WIND_PERIOD }]);
+  // a bed that plays at zero level (the other zone's) keeps a faint trace
+  const yardO = useDerivedValue(() => 0.07 + 0.36 * yardLevel.value);
+  const roomO = useDerivedValue(() => (0.06 + 0.3 * roomLevel.value) * (0.86 + 0.14 * Math.sin((clock.value * 2 * Math.PI) / 5)));
+  const rx = WALL_X + WALL_T / 2;
+  const rw = WORLD_W - WALL_T - rx;
+  const rh = WORLD_H - 2 * WALL_T;
   return (
     <Group>
-      <SceneText x={0.35} y={WORLD_H - 0.35} size={zone} text="COURTYARD" color="rgba(244,246,248,0.62)" face="label" />
-      {/* in the room's north-west corner: clear of both generators' rings and of the guide */}
-      <SceneText x={WALL_X + 0.45} y={0.98} size={zone} text="WORKSHOP" color="rgba(244,246,248,0.62)" face="label" />
-      <SceneText x={you.x} y={you.y} size={tag} text="YOU" color="#ffc64d" face="label" align="center" />
-      <SceneText x={guide.x} y={guide.y} size={tag} text="GUIDE" color="#9fd0ff" face="label" align="center" />
-      {fixed.map((f) => (
-        <SceneText key={f.key} x={f.x} y={f.y} size={tag} text={f.text} color="#f4f6f8" face="label" align="center" />
-      ))}
-      {door ? <SceneText x={doorRight} y={door.y} size={tag} text={door.text} color="#f4f6f8" face="label" align="right" /> : null}
+      {yard.playing ? (
+        <Group clip={YARD_CLIP} opacity={yardO}>
+          <Group transform={drift}>
+            <Path path={wind} style="stroke" strokeWidth={0.07} strokeCap="round" color="#e4f1ff">
+              <DashPathEffect intervals={[1.5, 0.9]} />
+            </Path>
+          </Group>
+        </Group>
+      ) : null}
+      {room.playing ? (
+        <Group opacity={roomO}>
+          {[0.2, 0.5, 0.8].map((inset, k) => (
+            <RoundedRect key={k} x={rx + inset} y={WALL_T + inset} width={rw - inset * 2} height={rh - inset * 2} r={0.3} style="stroke" strokeWidth={0.22} color="#ffe2b0" opacity={1 - k * 0.3} />
+          ))}
+        </Group>
+      ) : null}
     </Group>
   );
 }
 
-function Range({ s, select }: { s: GaState; select: GaSceneSelect }) {
-  const size = useLabelMm(9);
-  if (!select || select === 'guide') return null;
-  const at = select === 'generator-1' ? PLACES.generator : select === 'generator-2' ? PLACES.generator2 : select === 'fountain' ? PLACES.fountain : select === 'crate' ? PLACES.crate : PLACES.door;
-  const def = GA_EVENTS[select === 'fountain' ? 'fountain' : select === 'crate' ? 'crate_impact' : select === 'door' ? 'door_open' : 'generator'];
-  if (!def.atten) return null;
-  const L = listenerOf(s);
+/* ── the mood ───────────────────────────────────────────────────────────── */
+
+const MOOD_ALERT = '#ff8a1e';
+
+/** MOOD is a STATE: one value for the whole game. While it is ALERT the
+ *  whole picture wears a border (the words are printed by Labels). */
+function MoodFrame() {
   return (
     <Group>
-      <Circle cx={at.x} cy={at.y} r={def.atten.min} style="stroke" strokeWidth={0.05} color="#5bff85">
+      <Rect x={0.3} y={0.3} width={WORLD_W - 0.6} height={WORLD_H - 0.6} style="stroke" strokeWidth={0.6} color={MOOD_ALERT} opacity={0.16} />
+      <Rect x={0.09} y={0.09} width={WORLD_W - 0.18} height={WORLD_H - 0.18} style="stroke" strokeWidth={0.18} color={MOOD_ALERT} />
+    </Group>
+  );
+}
+
+/* ── labels ─────────────────────────────────────────────────────────────── */
+
+type FootNote = { who: 'player' | 'guide'; text: string };
+
+/** Every word in the picture, placed so that none lands on another and none
+ *  leaves the picture. Returned boxes are in world meters. */
+function Labels({ s, select, showNames, show, sounding, you, guide, foot }: { s: GaState; select: GaSceneSelect; showNames: boolean; show: GaSceneShow; sounding: GaSounding[]; you: Glided; guide: Glided; foot: FootNote[] }) {
+  const zone = useLabelMm(10);
+  const tag = useLabelMm(9.5);
+  const small = useLabelMm(9);
+  const measure = useMeasure();
+  const p = s.chars.player;
+  const g = s.chars.guide;
+  const L = listenerOf(s);
+  const shown = (key: Exclude<GaSceneSelect, null>) => showNames || select === key;
+  const beds = show.beds ? gaBedMarks(s) : null;
+
+  type Line = { key: string; x: number; y: number; text: string; color: string; size: number; align: 'left' | 'center' | 'right'; opacity?: number };
+  const lines: Line[] = [];
+  const still: GaBox[] = [];
+  const boxOf = (l: { x: number; y: number; text: string; size: number; align: 'left' | 'center' | 'right' }): GaBox => {
+    const w = measure(l.text, l.size);
+    const cx = l.align === 'left' ? l.x + w / 2 : l.align === 'right' ? l.x - w / 2 : l.x;
+    return gaTextBox(cx, l.y, w, l.size);
+  };
+  const put = (l: Line) => {
+    lines.push(l);
+    still.push(boxOf(l));
+  };
+
+  // the two zones; a bed that plays adds its name, as bright as its level
+  const zoneColor = 'rgba(244,246,248,0.62)';
+  put({ key: 'yard', x: 0.35, y: WORLD_H - 0.35, text: 'COURTYARD', color: zoneColor, size: zone, align: 'left' });
+  if (beds?.yard.playing) put({ key: 'yard-bed', x: 0.35 + measure('COURTYARD ', zone), y: WORLD_H - 0.35, text: '· WIND', color: '#e4f1ff', size: zone, align: 'left', opacity: 0.45 + 0.55 * beds.yard.level });
+  // in the room's north-west corner: clear of both generators' rings and of the guide
+  put({ key: 'room', x: WALL_X + 0.45, y: 0.98, text: 'WORKSHOP', color: zoneColor, size: zone, align: 'left' });
+  if (beds?.room.playing) put({ key: 'room-bed', x: WALL_X + 0.45 + measure('WORKSHOP ', zone), y: 0.98, text: '· ROOM TONE', color: '#ffe2b0', size: zone, align: 'left', opacity: 0.45 + 0.55 * beds.room.level });
+  if (show.mood) put({ key: 'mood', x: 0.4, y: 0.4 + zone * 0.8, text: s.mood === 'alert' ? 'MOOD · ALERT' : 'MOOD · CALM', color: s.mood === 'alert' ? MOOD_ALERT : zoneColor, size: zone, align: 'left' });
+
+  // the names of things (centered on the thing)
+  const white = '#f4f6f8';
+  if (shown('generator-1')) put({ key: 'generator-1', x: PLACES.generator.x, y: PLACES.generator.y + 1.45, text: 'GENERATOR 1', color: white, size: tag, align: 'center' });
+  if (s.machines.length > 1 && shown('generator-2')) put({ key: 'generator-2', x: PLACES.generator2.x, y: PLACES.generator2.y - 0.95, text: 'GENERATOR 2', color: white, size: tag, align: 'center' });
+  if (shown('fountain')) put({ key: 'fountain', x: PLACES.fountain.x, y: PLACES.fountain.y + 1.85, text: 'FOUNTAIN', color: white, size: tag, align: 'center' });
+  if (shown('crate')) put({ key: 'crate', x: PLACES.crate.x, y: PLACES.crate.y - 0.85, text: 'CRATE', color: white, size: tag, align: 'center' });
+  // right-aligned: it ends before the wall
+  if (shown('door')) put({ key: 'door', x: WALL_X - 0.42, y: DOOR_Y0 - 0.3, text: s.doorOpen ? 'DOOR OPEN' : 'DOOR CLOSED', color: white, size: tag, align: 'right' });
+  if (s.listenerMode === 'camera') put({ key: 'camera', x: WALL_X - 0.42, y: WORLD_H / 2 + 0.95 + tag, text: 'CAMERA · LISTENER', color: '#ffc64d', size: tag, align: 'right' });
+
+  // a bird is named while it calls (it is in the picture only then)
+  for (const x of sounding) {
+    if (x.owner !== 'bird') continue;
+    const w = measure('BIRD', small);
+    const cx = gaClampLabelX(x.at.x, w);
+    const y = x.at.y + 0.62 + small > WORLD_H - 0.1 ? x.at.y - 0.6 : x.at.y + 0.62 + small * 0.75;
+    put({ key: `bird-${x.key}`, x: cx, y, text: 'BIRD', color: white, size: small, align: 'center' });
+  }
+
+  // page 7: which INSTANCE each generator's rings are (under the name in the
+  // top half of the room, over it in the bottom half)
+  if (show.ids) {
+    for (const x of sounding) {
+      if (x.kind !== 'loop' || x.alarm || x.speed == null) continue;
+      const text = `INSTANCE ${x.ids.join(' + ')}`;
+      const y = x.at.y < WORLD_H / 2 ? x.at.y + 1.45 + small * 1.2 : x.at.y - 0.95 - tag * 1.2;
+      put({ key: `id-${x.key}`, x: gaClampLabelX(x.at.x, measure(text, small)), y, text, color: '#5bff85', size: small, align: 'center' });
+    }
+  }
+
+  // the selected source's distances, whole inside the picture
+  const sel = gaSelected(select);
+  const atten = sel ? GA_EVENTS[sel.event].atten : undefined;
+  if (sel && atten) {
+    const body = (c: GaPoint, rx: number, ry: number): GaBox => ({ x0: c.x - rx, x1: c.x + rx, y0: c.y - ry, y1: c.y + ry });
+    const bodies: GaBox[] = [body(PLACES.fountain, 1.2, 1.2), body(PLACES.crate, 0.66, 0.66), body(p, 0.95, 0.95), body(g, 0.95, 0.95), ...s.machines.map((m) => ({ x0: m.x - 1.1, x1: m.x + 1.35, y0: m.y - 0.75, y1: m.y + 0.75 }))];
+    if (s.listenerMode === 'camera') bodies.push(body({ x: WORLD_W / 2, y: WORLD_H / 2 }, 0.9, 0.9));
+    for (const r of gaRangeLabels({ at: sel.at, min: atten.min, max: atten.max, listener: L, size: small, measure: (t) => measure(t, small), avoid: [...still, ...bodies] })) {
+      lines.push({ key: `range-${r.tone}`, x: r.cx, y: r.baseline, text: r.text, color: r.tone === 'min' ? '#5bff85' : '#8fbcff', size: small, align: 'center' });
+      still.push(r.box);
+    }
+  }
+
+  // YOU and the GUIDE: under the figure, or above where that is taken; the
+  // words by the foot that stepped sit one line further out
+  const person = (c: GaPoint, name: string, color: string, who: 'player' | 'guide') => {
+    const note = foot.find((f) => f.who === who);
+    const at = gaPersonLabel(c, measure(name, tag), tag, still, note ? { w: measure(note.text, small), size: small } : undefined);
+    still.push(at.box);
+    const out: Line[] = [{ key: who, x: at.cx, y: at.baseline, text: name, color, size: tag, align: 'center' }];
+    if (note && at.note) {
+      still.push(at.note.box);
+      out.push({ key: `${who}-foot`, x: at.note.cx, y: at.note.baseline, text: note.text, color: white, size: small, align: 'center' });
+    }
+    return out;
+  };
+  const youLines = person(p, 'YOU', '#ffc64d', 'player');
+  const guideLines = person(g, 'GUIDE', '#9fd0ff', 'guide');
+  // a person's words walk with the figure
+  const youAt = useDerivedValue(() => [{ translateX: you.x.value - p.x }, { translateY: you.y.value - p.y }]);
+  const guideAt = useDerivedValue(() => [{ translateX: guide.x.value - g.x }, { translateY: guide.y.value - g.y }]);
+
+  // page 11: the selected source is behind the ears
+  const behind = gaSelectedBehind(s, select);
+  let behindLine: Line | null = null;
+  if (behind) {
+    const a = (p.facing * Math.PI) / 180;
+    const text = 'BEHIND YOU';
+    const w = measure(text, small);
+    // behind the listener, as near as the words fit clear of every other
+    // label (YOUR name sits there at some facings: audit 2, page 11)
+    const spot = (d: number) => {
+      const bx = gaClampLabelX(p.x - Math.sin(a) * d, w);
+      const by = Math.max(small + 0.12, Math.min(WORLD_H - 0.14, p.y + Math.cos(a) * d + small * 0.35));
+      return { bx, by, box: gaTextBox(bx, by, w, small) };
+    };
+    const tries = [1.95, 2.5, 3.1, 3.7].map(spot);
+    const youBox = gaTextBox(youLines[0].x, youLines[0].y, measure('YOU', tag), tag);
+    const pick = tries.find((t) => !gaBoxesHit(t.box, youBox) && !still.some((b) => gaBoxesHit(b, t.box))) ?? tries.find((t) => !gaBoxesHit(t.box, youBox)) ?? tries[0];
+    behindLine = { key: 'behind', x: pick.bx, y: pick.by, text, color: '#e2e5eb', size: small, align: 'center' };
+  }
+
+  const draw = (l: Line) => <GaText key={l.key} x={l.x} y={l.y} size={l.size} text={l.text} color={l.color} align={l.align} opacity={l.opacity} />;
+  return (
+    <Group>
+      {lines.map(draw)}
+      {behindLine ? draw(behindLine) : null}
+      <Group transform={youAt}>{youLines.map(draw)}</Group>
+      <Group transform={guideAt}>{guideLines.map(draw)}</Group>
+    </Group>
+  );
+}
+
+/** The selected source's two distances and the line to the listener. The
+ *  numbers are printed by Labels. */
+function Range({ s, select, you }: { s: GaState; select: GaSceneSelect; you: Glided }) {
+  const sel = gaSelected(select);
+  const camera = s.listenerMode === 'camera';
+  const from = useDerivedValue(() => (camera ? { x: WORLD_W / 2, y: WORLD_H / 2 } : { x: you.x.value, y: you.y.value }));
+  const atten = sel ? GA_EVENTS[sel.event].atten : undefined;
+  if (!sel || !atten) return null;
+  const at = sel.at;
+  return (
+    <Group>
+      <Circle cx={at.x} cy={at.y} r={atten.min} style="stroke" strokeWidth={0.05} color="#5bff85">
         <DashPathEffect intervals={[0.2, 0.14]} />
       </Circle>
-      <Circle cx={at.x} cy={at.y} r={def.atten.max} style="stroke" strokeWidth={0.05} color="#6fa8ff">
+      <Circle cx={at.x} cy={at.y} r={atten.max} style="stroke" strokeWidth={0.05} color="#6fa8ff">
         <DashPathEffect intervals={[0.34, 0.2]} />
       </Circle>
-      <Line p1={vec(L.x, L.y)} p2={vec(at.x, at.y)} color="rgba(244,246,248,0.7)" strokeWidth={0.04}>
+      <Line p1={from} p2={vec(at.x, at.y)} color="rgba(244,246,248,0.7)" strokeWidth={0.04}>
         <DashPathEffect intervals={[0.1, 0.12]} />
       </Line>
-      {/* above its ring; where the picture's edge leaves no room there, beside
-          the ring (never under it: the object's own name is printed there) */}
-      {at.y - def.atten.min - 0.12 < 0.7 ? (
-        <SceneText x={at.x + def.atten.min + 0.18} y={at.y + size * 0.35} size={size} text={`MIN ${def.atten.min} m`} color="#5bff85" face="label" />
-      ) : (
-        <SceneText x={at.x} y={at.y - def.atten.min - 0.12} size={size} text={`MIN ${def.atten.min} m`} color="#5bff85" face="label" align="center" />
-      )}
-      {/* the maximum's label sits on its ring: at the point nearest the
-          listener that is still clear of the listener's figure and label */}
-      {(() => {
-        let best: GaPoint | null = null;
-        let bestScore = -1;
-        for (let n = 0; n < 60; n++) {
-          const a = (n / 60) * Math.PI * 2;
-          const mx = at.x + Math.cos(a) * def.atten.max;
-          const my = at.y + Math.sin(a) * def.atten.max;
-          if (mx < 1.3 || mx > WORLD_W - 1.3 || my < 0.9 || my > WORLD_H - 0.5) continue;
-          const d = Math.hypot(mx - L.x, my - L.y);
-          const score = d >= 2.1 ? 100 - d : d;
-          if (score > bestScore) {
-            bestScore = score;
-            best = { x: mx, y: my };
-          }
-        }
-        return best ? <SceneText x={best.x} y={best.y - 0.15} size={size} text={`MAX ${def.atten.max} m`} color="#6fa8ff" face="label" align="center" /> : null;
-      })()}
     </Group>
   );
 }
@@ -629,74 +1141,109 @@ export type GaSceneProps = {
   select?: GaSceneSelect;
   /** Print every object's name (first pages); otherwise only the selected. */
   showNames?: boolean;
+  /** What else this page asks the picture to show (all off by default). */
+  show?: GaSceneShow;
 };
 
-/** In words, for a screen reader: what is where and what is sounding. */
-export function gaSceneSummary(s: GaState): string {
-  const L = listenerOf(s);
-  const p = s.chars.player;
-  const where = p.x >= WALL_X ? 'in the workshop' : 'in the courtyard';
-  const all = soundingOf(s);
-  const heard = all.filter((x) => !x.virtual && !x.muted).map((x) => x.name);
-  const silenced = all.filter((x) => !x.virtual && x.muted).map((x) => x.name);
-  const speaking = s.inst.some((i) => i.event === 'vo_greeting' || i.event === 'vo_warning');
-  return (
-    `A courtyard on the left and a workshop on the right, seen from above. You are ${where}, facing ${Math.round(p.facing)} degrees. ` +
-    `The door is ${s.doorOpen ? 'open' : 'closed'}. The listener is ${s.listenerMode === 'camera' ? 'an overhead camera' : 'the player'} at ${L.x.toFixed(1)}, ${L.y.toFixed(1)} metres. ` +
-    (heard.length ? `Sounding now: ${[...new Set(heard)].join(', ')}.` : 'Nothing positioned is sounding.') +
-    (silenced.length ? ` Silenced by the mix: ${[...new Set(silenced)].join(', ')}.` : '') +
-    (speaking ? ' The guide is speaking a line.' : '')
-  );
-}
+const NO_SHOW: GaSceneShow = {};
+/** How long the words by a foot stay after the step, in seconds (the step
+ *  itself is 0.4 s: too short to read). */
+const FOOT_NOTE_S = 1.6;
 
-export function GaScene({ w, h, state: s, select = null, showNames = false }: GaSceneProps) {
+export function GaScene({ w, h, state: s, select = null, showNames = false, show = NO_SHOW }: GaSceneProps) {
   const k = Math.min(w / WORLD_W, h / WORLD_H);
   const ox = (w - WORLD_W * k) / 2;
   const oy = (h - WORLD_H * k) / 2;
   const textScale = useStageTextScale();
   const decorative = useDecorativeMotion();
-  const phase = useSharedValue(0);
-  const sounding = useMemo(() => soundingOf(s), [s]);
-  const anyMoving = sounding.some((x) => !x.virtual && !x.muted) || s.inst.some((i) => i.event === 'alarm');
-  useEffect(() => {
-    if (!anyMoving || !decorative) {
-      cancelAnimation(phase);
-      return;
+  const fineFont = useFineFont();
+
+  // The picture is drawn again when the model changes, AND when a late
+  // layer begins to sound or a foot's words expire (nothing is dispatched
+  // then, so the scene asks for that one redraw itself).
+  const [, redraw] = useState(0);
+  const now = gaNow();
+  const sounding = gaSoundingOf(s, now);
+
+  const feet = useRef(new Map<string, { inst: string; text: string; until: number }>());
+  const wantFeet = !!(show.surface || show.take);
+  if (wantFeet) {
+    for (const m of gaFootMarks(s)) {
+      if (feet.current.get(m.who)?.inst !== m.inst) feet.current.set(m.who, { inst: m.inst, text: gaFootText(m, show), until: now + FOOT_NOTE_S });
     }
-    phase.value = 0;
-    phase.value = withRepeat(withTiming(1, { duration: 1700, easing: Easing.linear }), -1, false);
-    return () => cancelAnimation(phase);
-  }, [anyMoving, decorative, phase]);
+  } else if (feet.current.size) feet.current.clear();
+  const foot: FootNote[] = [];
+  let nextFoot: number | null = null;
+  for (const [who, f] of feet.current) {
+    if (f.until <= now || !f.text) continue;
+    foot.push({ who: who as 'player' | 'guide', text: f.text });
+    nextFoot = nextFoot === null ? f.until : Math.min(nextFoot, f.until);
+  }
+  const nextRing = gaNextRingChange(s, now);
+  const next = nextRing === null ? nextFoot : nextFoot === null ? nextRing : Math.min(nextRing, nextFoot);
+  useEffect(() => {
+    if (next === null) return;
+    const id = setTimeout(() => redraw((n) => n + 1), Math.max(0, (next - gaNow()) * 1000) + 20);
+    return () => clearTimeout(id);
+  }, [next]);
 
   const p = s.chars.player;
   const g = s.chars.guide;
+  const L = listenerOf(s);
   const alarm = s.inst.some((i) => i.event === 'alarm');
   const fountainOn = s.inst.some((i) => i.event === 'fountain');
   const guideSpeaks = s.inst.some((i) => i.event === 'vo_greeting' || i.event === 'vo_warning');
+  const beds = show.beds ? gaBedMarks(s) : null;
+  const bedPlays = !!beds && (beds.yard.playing || beds.room.playing);
+
+  // one clock for what repeats in the picture (ripples, the alarm lamp, the
+  // beds' marks); each loop's rings keep their own count
+  const clock = useSharedValue(0);
+  const tick = useFrameCallback((info) => {
+    clock.value += Math.min(info.timeSincePreviousFrame ?? 0, 64) / 1000;
+  }, false);
+  const anyMoving = fountainOn || alarm || bedPlays;
+  useEffect(() => {
+    tick.setActive(anyMoving && decorative);
+    return () => tick.setActive(false);
+  }, [anyMoving, decorative, tick]);
+  const phase = useDerivedValue(() => (clock.value / 1.7) % 1);
+
+  const you = useGlidedChar(p, decorative);
+  const guide = useGlidedChar(g, decorative);
+  const camera = s.listenerMode === 'camera';
+  const behind = gaSelectedBehind(s, select) === true;
+
   return (
-    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={gaSceneSummary(s)}>
+    <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={gaSceneSummary(s, now)}>
       <Canvas style={{ width: w, height: h }}>
         <SceneFontsProvider s={k} textScale={textScale}>
+          <FineFontContext.Provider value={fineFont}>
           <Group transform={[{ translateX: ox }, { translateY: oy }, { scale: k }]} clip={WORLD_CLIP}>
             <Ground />
+            {beds ? <BedMarks yard={beds.yard} room={beds.room} fadeS={gaBedFadeSeconds(s)} clock={clock} moving={decorative} /> : null}
             <Fountain at={PLACES.fountain} running={fountainOn && decorative} phase={phase} />
             <Crate at={PLACES.crate} />
-            <Walls doorOpen={s.doorOpen} />
+            <Walls doorOpen={s.doorOpen} moving={decorative} />
             {s.machines.map((m) => (
               <Generator key={m.id} at={m} on={m.on} alarm={alarm && m.id === 'generator-1'} pulse={phase} />
             ))}
-            {s.listenerMode === 'player' ? <ListenerWedge at={p} facing={p.facing} /> : null}
-            <Range s={s} select={select} />
+            {camera ? null : <ListenerWedge g={you} tone="you" behind={behind} />}
+            {show.guideListens ? <ListenerWedge g={guide} tone="guide" /> : null}
+            <Range s={s} select={select} you={you} />
+            {sounding.map((x) => (x.owner === 'bird' ? <BirdMark key={`bird-${x.key}`} at={x.at} /> : null))}
             {sounding.map((x) => (
-              <SoundRings key={x.key} s={x} phase={phase} moving={decorative} />
+              <SoundRings key={x.key} x={x} L={L} moving={decorative} wallPiece={gaWallPieceOwner(sounding, x)} />
             ))}
-            <Person at={g} facing={g.facing} ring="#6fa8ff" second />
-            <Person at={p} facing={p.facing} ring="#ffc64d" />
+            <Person g={guide} ring="#6fa8ff" second />
+            <Person g={you} ring="#ffc64d" ears={!camera} />
             {guideSpeaks ? <Speaking at={g} /> : null}
-            {s.listenerMode === 'camera' ? <CameraMark /> : null}
+            {camera ? <CameraMark /> : null}
             {alarm && s.options.visualCue ? <AlarmSign at={PLACES.generator} /> : null}
-            <Labels s={s} select={select} showNames={showNames} />
+            {show.mood && s.mood === 'alert' ? <MoodFrame /> : null}
+            <Labels s={s} select={select} showNames={showNames} show={show} sounding={sounding} you={you} guide={guide} foot={foot} />
           </Group>
+          </FineFontContext.Provider>
         </SceneFontsProvider>
       </Canvas>
     </View>

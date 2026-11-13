@@ -10,6 +10,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { gaInitial, gaReduce, gaFact } from '../src/screens/lab/gameaudio/model/gaModel.ts';
 import {
   GA_BUDGETS,
@@ -18,13 +19,18 @@ import {
   GA_LISTENING,
   GA_PLATFORMS,
   GA_PLATFORM_CORE,
+  GA_PLATFORM_TEST_CHECK,
   gaBudgetAt,
   gaBudgetLane,
   gaBudgetOf,
   gaComparedCore,
   gaListening,
   gaPlatform,
+  gaPlatformBlurb,
+  gaSeenWord,
 } from '../src/screens/lab/gameaudio/pages/data/gaPlatforms.ts';
+
+const PAGE3 = readFileSync(new URL('../src/screens/lab/gameaudio/pages/p03Platforms.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 const cardText = (p: (typeof GA_PLATFORMS)[number]): string => [p.name, p.example, ...p.compare, p.same, p.change, p.test].join('\n');
 const ALL_TEXT = [...GA_PLATFORMS.map(cardText), ...GA_LISTENING.map((l) => l.blurb)].join('\n');
@@ -45,7 +51,8 @@ describe('page 3: the seven platform cards', () => {
       assert.equal(new Set(p.compare).size, p.compare.length, `${p.id}: no repeated decision`);
       // one test = something to do, then what to confirm
       assert.equal((p.test.match(/\bConfirm\b/g) ?? []).length, 1, `${p.id}: one test, with one thing to confirm`);
-      assert.ok(p.short.length <= 7 && /^[A-Z]+$/.test(p.short), `${p.id}: the dock value "${p.short}" is a word of seven letters or fewer`);
+      // ONE name for each card: the CARD readout says the card's own label (HANDHELD, never HYBRID)
+      assert.equal(p.short, p.label, `${p.id}: the readout says the card's own name`);
     }
   });
   it('no two cards share a line (each card is its own comparison)', () => {
@@ -69,7 +76,9 @@ describe('page 3: the seven platform cards', () => {
     assert.match(consoleCard.same + gaPlatform('browser')!.change, /game engine/);
     assert.match(gaPlatform('cloud')!.change, /a way to deliver a game, not a kind of device/);
     assert.match(gaPlatform('handheld')!.change, /overlaps mobile, desktop and console/);
-    assert.equal(gaListening('headphones')!.short, 'PHONES');
+    // one name for each thing: headphones are never "PHONES" on a page about phones (L-07)
+    assert.equal(gaListening('headphones')!.short, 'HEADPHONES');
+    assert.equal(gaPlatform('handheld')!.short, 'HANDHELD');
   });
   it('the first goal asks for mobile, desktop, console and browser, in any order, and nothing less', () => {
     assert.deepEqual([...GA_PLATFORM_CORE], ['mobile', 'desktop', 'console', 'browser']);
@@ -90,9 +99,11 @@ describe('page 3: listening is a separate choice', () => {
     assert.deepEqual(GA_LISTENING.map((l) => l.id), ['speaker', 'headphones', 'tv', 'soundbar', 'headset']);
     for (const l of GA_LISTENING) {
       assert.ok(l.blurb.length >= 40 && l.blurb.length <= 160, `${l.id}: ${l.blurb.length} characters`);
-      assert.ok(l.short.length <= 7 && /^[A-Z]+$/.test(l.short), `${l.id}: the dock value "${l.short}" is a word of seven letters or fewer`);
+      assert.ok(l.short.length <= 10 && /^[A-Z]+$/.test(l.short), `${l.id}: the readout value "${l.short}" is one word`);
+      assert.ok(l.label.split(' ').includes(l.short), `${l.id}: "${l.short}" is a word of its own name "${l.label}"`);
     }
     assert.equal(new Set(GA_LISTENING.map((l) => l.short)).size, 5);
+    assert.ok(!GA_LISTENING.some((l) => l.short === 'PHONES'));
   });
   it('no setup is tied to a platform: the data has no link from one to the other', () => {
     for (const p of GA_PLATFORMS) assert.ok(!('listening' in p) && !('budget' in p), `${p.id} carries no listening setup and no budget`);
@@ -139,9 +150,51 @@ describe('page 3: the budget is the scene’s voice limit, and belongs to no pla
     s = gaReduce(s, { type: 'voiceLimit', limit: GA_BUDGETS.compact }, 1).state;
     assert.equal(s.voiceLimit, 8);
     assert.equal(gaFact(s, `limit:${GA_BUDGETS.compact}`), 1);
-    assert.match(s.log[s.log.length - 1].text, /^BUDGET: at most 8 voices may sound at once$/);
+    assert.match(s.log[s.log.length - 1].text, /^BUDGET: at most 8 voices may sound at the same time$/);
     assert.equal(s.log[s.log.length - 1].kind, 'mix');
     s = gaReduce(s, { type: 'voiceLimit', limit: GA_BUDGETS.expanded }, 2).state;
     assert.equal(gaFact(s, `limit:${GA_BUDGETS.expanded}`), 1);
+  });
+});
+
+describe('page 3: every control changes something the learner can read (walk audit W1)', () => {
+  it('PLATFORM: the key counts the cards seen (never a second name), and its tray keeps the chosen card’s name and test in view', () => {
+    assert.equal(gaSeenWord(0), 'PICK');
+    assert.equal(gaSeenWord(3), '3 SEEN');
+    assert.doesNotMatch(gaSeenWord(3), /\bof\b|\//, 'no "N of total"');
+    for (const p of GA_PLATFORMS) {
+      const b = gaPlatformBlurb(p);
+      assert.ok(b.startsWith('One test: ') && b.endsWith(p.test), p.id);
+    }
+    assert.match(PAGE3, /valueLabel: gaSeenWord\(seen\.length\)/);
+    assert.match(PAGE3, /blurb: gaPlatformBlurb\(p\)/);
+  });
+  it('■ STOP is never silent here: its STOP ALL line (a GAME line) is in the page’s log (F27)', () => {
+    const s = gaReduce(gaInitial(), { type: 'stopAll' }, 1).state;
+    assert.equal(s.log[s.log.length - 1].kind, 'trigger');
+    assert.match(PAGE3, /only=\{\['mix', 'trigger'\]\}/);
+  });
+});
+
+describe('page 3: the second check needs the cards (learning audit L-21)', () => {
+  it('each option is one card’s test in fewer words; the browser’s is asked for', () => {
+    assert.equal(GA_PLATFORM_TEST_CHECK.ask, 'browser');
+    const ofs = GA_PLATFORM_TEST_CHECK.options.map((o) => o.of);
+    assert.equal(new Set(ofs).size, 4);
+    assert.ok(ofs.includes('browser'));
+    const key: Record<string, RegExp> = { browser: /tab.*first tap/, console: /Suspend.*resume/, handheld: /Dock and undock/, cloud: /stream/ };
+    for (const o of GA_PLATFORM_TEST_CHECK.options) {
+      assert.match(o.text, key[o.of], o.of);
+      assert.match(gaPlatform(o.of)!.test, key[o.of], `${o.of}: the option is that card's own test`);
+    }
+  });
+  it('the correct option is not the longest, on either check (L-16)', () => {
+    const right = GA_PLATFORM_TEST_CHECK.options.find((o) => o.of === GA_PLATFORM_TEST_CHECK.ask)!.text;
+    assert.ok(right.length < Math.max(...GA_PLATFORM_TEST_CHECK.options.map((o) => o.text.length)));
+    const block = PAGE3.slice(PAGE3.indexOf('options={['), PAGE3.indexOf(']}', PAGE3.indexOf('options={[')));
+    const opts = [...block.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    assert.equal(opts.length, 4);
+    assert.ok(opts[0].length < Math.max(...opts.slice(1).map((o) => o.length)), opts.map((o) => o.length).join('/'));
+    assert.match(PAGE3, /label: 'Pass both checks', hit: check && check2/);
   });
 });
