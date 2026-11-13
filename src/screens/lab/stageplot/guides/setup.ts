@@ -22,7 +22,7 @@ export const SP_GUIDE_SETUP: ScreenGuide = {
     'The switch beside each contact field chooses whether the venue sees that detail in the packet.',
     'Under Status, choose Draft or Ready to advance. Ready is refused while something must be corrected.',
     'ADD A PERFORMER adds a performer to your band. REMOVE lists what that performer is linked to before anything is removed.',
-    'The guided task is optional. Each step has a GO button that opens the area where that step is done.',
+    'The guided task is optional. All five steps done on one stage plot complete this lab. Each step has a GO button that opens the area where it is done.',
   ],
   changes: [
     'The band name, the venue and the date print at the top of the packet.',

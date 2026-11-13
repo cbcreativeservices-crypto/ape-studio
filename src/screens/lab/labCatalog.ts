@@ -327,6 +327,26 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // (those are the af_* labs); its completion key is tr_dj, found by this
       // route in trainingLabKeys.ts (added 2026-10-27).
       { name: 'DJ Systems Lab', blurb: 'Connect, cue, mix and troubleshoot a two-deck DJ booth — safe listening, the gear, cables and levels, building the system, gain and meters, headphone cue, faders, EQ and filters, beatmatching, grids and sync, cues, loops and samples.', route: 'DJSystemsLab', member: true },
+      // Stage Plot and Channel Designer (owner GO 2026-11-12, listed 2026-11-13
+      // [MD:D60] (n)): a working tool — a band's stage, its channel list, its
+      // monitors and the packet for the venue. Members only. Credit: its
+      // guided task (all five steps done on one stage plot), key tr_stage_plot
+      // in trainingLabKeys.ts, found by this route.
+      { name: 'Stage Plot and Channel Designer', blurb: 'Draw a band’s stage, connect each performer and instrument to a channel list, plan the monitor mixes, answer the review, and make the packet a venue’s sound engineer works from.', route: 'StagePlotLab', member: true },
+    ],
+  },
+  // Game Audio (owner plan 2026-11-12, listed 2026-11-13 [MD:D60] (e)): a
+  // subject of its own. Members only. Credit: every page done, key
+  // tr_game_audio in trainingLabKeys.ts, found by this route.
+  {
+    id: 'gameaudio',
+    glyph: '🎮',
+    name: 'Game Audio',
+    description: 'How a game asks for sound, and how the audio side answers — events, game information, space, music, voice and the mix.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      { name: 'Game Audio Lab', blurb: 'How a game asks for sound, and how the audio side answers — events and game information, variation and loops, distance and walls, music and dialogue, the mix and its budgets, testing, and the real tools.', route: 'GameAudioLab', member: true },
     ],
   },
   {

@@ -160,11 +160,11 @@ import { OnboardingLandingScreen } from '../screens/onboarding/OnboardingLanding
 // Also the sibling the landing's SEE MEMBERSHIP PLANS opens inside the harness.
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 // Game Audio lab (2026-11-12, must-do D60): `#labpreview/GameAudioEngineCheck` is
-// the sound engine's proof screen. The lab is not in the Labs menu yet.
+// the sound engine's proof screen. The lab is in the Labs menu since 2026-11-13 (Game Audio subject, members only).
 import { GameAudioEngineCheckScreen } from './GameAudioEngineCheckScreen';
 import { GameAudioToolsStageCheck } from './GameAudioToolsStageCheck'; // dev check for the mix / voices / net strips and page 20's tool-window stage: `#labpreview/GameAudioToolsStageCheck`
 import { GameAudioLabScreen } from '../screens/lab/gameaudio/GameAudioLabScreen';
-import { StagePlotLabScreen } from '../screens/lab/stageplot/StagePlotLabScreen'; // 2026-11-12, must-do D60: `#labpreview/StagePlotLab`; not in the Labs menu yet
+import { StagePlotLabScreen } from '../screens/lab/stageplot/StagePlotLabScreen'; // 2026-11-12, must-do D60: `#labpreview/StagePlotLab`; in the Labs menu since 2026-11-13 (Live Sound Reinforcement, members only)
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   OnboardingLanding: OnboardingLandingScreen as ComponentType,

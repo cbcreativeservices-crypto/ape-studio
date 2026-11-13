@@ -38,7 +38,7 @@ export function GuidedTask() {
   // Worked out only while the steps are on screen.
   const steps = useMemo(() => (open ? spGuidedSteps(ed.project, ed.exported) : []), [open, ed.project, ed.exported]);
   return (
-    <Section title="GUIDED TASK (OPTIONAL)" hint="Five steps from an empty stage to a packet. Working on a real gig? Skip this and build what you need.">
+    <Section title="GUIDED TASK (OPTIONAL)" hint="Five steps from an empty stage to a packet. All five done on one stage plot complete this lab. Working on a real gig? Skip this and build what you need.">
       <Button label={open ? 'HIDE THE STEPS' : 'SHOW THE STEPS'} onPress={() => setOpen((o) => !o)} a11yLabel={open ? 'Hide the guided task steps' : 'Show the guided task steps'} />
       {open
         ? steps.map((s) => {

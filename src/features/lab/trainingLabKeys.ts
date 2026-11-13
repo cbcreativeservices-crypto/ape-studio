@@ -55,6 +55,19 @@ export const TRAINING_LABS: readonly TrainingLab[] = [
   // the backfill. Added 2026-10-27; its server `labs` row and requirement rows
   // are Comp A's (Downloads\2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql, safe order).
   { route: 'DJSystemsLab', key: 'tr_dj', completion: 'all-modules' },
+  // Game Audio Lab [MD:D60] (listed 2026-11-13): complete when every one of
+  // its 22 pages is done — PagedLab's own "lab done" rule, reported through
+  // `labDoneKey`. No backfill: the lab was never on a phone before this key.
+  // Its server `labs` row and requirement rows are Comp A's, AFTER the update
+  // that reports it is on phones (D60 (f)); until then the server answers
+  // lab_not_found and the device keeps the credit unsent and retries it.
+  { route: 'GameAudioLab', key: 'tr_game_audio', completion: 'all-modules' },
+  // Stage Plot and Channel Designer [MD:D60] (listed 2026-11-13): its GUIDED
+  // TASK is the credit — all five steps done on one stage plot (spGuidedSteps:
+  // every performer placed, every source listed, every performer's monitor
+  // answered, every review question answered, the packet made). Reported by
+  // StagePlotLabScreen's editor. Server rows as for tr_game_audio.
+  { route: 'StagePlotLab', key: 'tr_stage_plot', completion: 'project' },
   // EQ (2026-10-13): the EQ Lab banks NO per-module credit — its modules are
   // only VISITED (labVisits 'eq', "progress, never credit"), and opening a
   // screen must never earn a certificate. So it completes like the practice

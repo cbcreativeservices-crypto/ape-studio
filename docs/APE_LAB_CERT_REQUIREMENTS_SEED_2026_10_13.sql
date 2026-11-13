@@ -8,6 +8,9 @@
 -- ⛔ 2026-10-27 [MD:R3]: this file now also lists tr_dj (DJ Systems Lab) and its two DJ requirement rows.
 --   Do NOT re-run this whole seed to add them: apply Downloads\2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql in its
 --   SAFE ORDER (the labs row at once; the requirement rows only after the OTA that reports tr_dj is on phones).
+-- ⛔ 2026-11-13 [MD:D60]: this file now also lists tr_game_audio (Game Audio Lab, 3 requirement rows) and
+--   tr_stage_plot (Stage Plot and Channel Designer, 6 requirement rows). Do NOT run this seed for them: their
+--   SQL is written for Comp A separately, only after the update that reports them is on phones (D60 (f)).
 --
 -- Assumes (Comp A creates them):
 --   labs(id uuid primary key default gen_random_uuid(), key text unique not null, name text not null, area text not null)
@@ -16,7 +19,7 @@
 -- Idempotent: labs are inserted ON CONFLICT (key) DO NOTHING; requirements are upserted, and any
 -- requirement row NOT in this file is deleted — the map is the whole truth.
 -- Aborts (nothing written) if any slug or lab key fails to resolve.
--- 213 labs rows, 542 requirement rows, 120 credentials.
+-- 215 labs rows, 551 requirement rows, 123 credentials.
 
 BEGIN;
 
@@ -37,6 +40,7 @@ INSERT INTO labs (key, name, area) VALUES
   ('tr_eq', 'EQ Lab', 'training'),
   ('tr_flanger', 'Flanger Lab', 'training'),
   ('tr_fm', 'FM Synthesis Lab', 'training'),
+  ('tr_game_audio', 'Game Audio Lab', 'training'),
   ('tr_gate', 'Gate / Expander Lab', 'training'),
   ('tr_harmonic', 'Harmonics Lab', 'training'),
   ('tr_harmonograph', 'Harmonograph', 'training'),
@@ -54,6 +58,7 @@ INSERT INTO labs (key, name, area) VALUES
   ('tr_smart_processors', 'Smart Processors Lab', 'training'),
   ('tr_sound_systems', 'Sound Systems Lab', 'training'),
   ('tr_speech', 'Speech & Voice Lab', 'training'),
+  ('tr_stage_plot', 'Stage Plot and Channel Designer', 'training'),
   ('tr_stereo', 'Stereo Imaging Lab', 'training'),
   ('tr_tube', 'Vacuum Tube Fundamentals', 'training'),
   ('tr_tuning', 'Tuning & Temperament Lab', 'training'),
@@ -353,6 +358,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-foh-engineering-v3', 'tr_compression', 'Holding a live vocal and a live kit in place is compression work.'),
   ('certificate', 'cert-foh-engineering-v3', 'mxb_terms', 'Inserts, sends, returns, buses, groups and auxes are the six words every routing conversation uses.'),
   ('certificate', 'cert-foh-engineering-v3', 'mxb_sends', 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.'),
+  ('certificate', 'cert-foh-engineering-v3', 'tr_stage_plot', 'Advancing a show, with the stage plot, the input list and who brings what, is front-of-house work.'),
   ('certificate', 'cert-foley-performance-and-recording-v3', 'tr_postprod', 'Foley is recorded to picture and delivered into a post session to a specification.'),
   ('certificate', 'cert-foley-performance-and-recording-v3', 'mk_F01', 'Footsteps are the backbone of a Foley track, and their microphone distance sets the perspective for everything else.'),
   ('certificate', 'cert-foley-performance-and-recording-v3', 'mk_F02', 'Clothing and movement passes are quiet and constant, and the microphone has to stay outside the whole gesture.'),
@@ -366,6 +372,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-gain-staging-and-signal-flow-v3', 'mxb_sends', 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.'),
   ('certificate', 'cert-gain-staging-and-signal-flow-v3', 'ear_clipping', 'Clipping is what bad gain staging sounds like, and you have to catch it by ear.'),
   ('certificate', 'cert-game-audio-v3', 'tr_binaural', 'Game audio places sound objects around the player. On headphones, they are heard through binaural rendering.'),
+  ('certificate', 'cert-game-audio-v3', 'tr_game_audio', 'Game audio work is events, game information, variation, voice budgets and adaptive music, set up inside the real tools.'),
   ('certificate', 'cert-guitar-tone-and-recording-v3', 'tr_mic_select', 'Guitar tone on a record is largely the microphone in front of the cabinet.'),
   ('certificate', 'cert-guitar-tone-and-recording-v3', 'tr_distortion', 'The tone itself is harmonic distortion — you should be able to hear which kind.'),
   ('certificate', 'cert-guitar-tone-and-recording-v3', 'mk_C01', 'Acoustic guitar is one of the most-recorded sources there is, and small moves along the body change it completely.'),
@@ -381,6 +388,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-instrument-recognition-winds-and-brass-v3', 'tr_harmonic', 'Much of what separates an oboe from a trumpet is its harmonic spectrum.'),
   ('certificate', 'cert-instrument-sound-identification-v3', 'tr_harmonic', 'Timbre is largely harmonic content, and this is where you see it.'),
   ('certificate', 'cert-instrument-sound-identification-v3', 'tr_envelope', 'Two instruments with a similar spectrum are still told apart by their envelopes.'),
+  ('certificate', 'cert-interactive-and-game-music-v3', 'tr_game_audio', 'Interactive music is delivered into middleware as states, layers and changes timed to the bar.'),
   ('certificate', 'cert-live-mixing-specialist-v3', 'tr_eq', 'Live mixing is frequency decisions made in real time.'),
   ('certificate', 'cert-live-mixing-specialist-v3', 'tr_compression', 'Live sources are held in place with compression, not with the fader alone.'),
   ('certificate', 'cert-live-mixing-specialist-v3', 'ear_frequency', 'Finding a feeding-back or ringing frequency by ear, fast, is a live mixer’s daily job.'),
@@ -445,6 +453,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-monitor-engineering-iem-and-wedges-v3', 'tr_eq', 'Ringing out a wedge is narrow, fast, deliberate filtering.'),
   ('certificate', 'cert-monitor-engineering-iem-and-wedges-v3', 'ear_frequency', 'Ringing out means naming the feeding-back frequency by ear before the band hears it.'),
   ('certificate', 'cert-monitor-engineering-iem-and-wedges-v3', 'mxb_sends', 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.'),
+  ('certificate', 'cert-monitor-engineering-iem-and-wedges-v3', 'tr_stage_plot', 'Planning each performer’s mix, wedges and in-ears is the monitor engineer’s job.'),
   ('certificate', 'cert-nearfield-acoustic-holography-v3', 'tr_cymatics', 'Chladni plates and cymatic patterns are the hands-on half of this certificate’s sound-field visualization topic.'),
   ('certificate', 'cert-nearfield-acoustic-holography-v3', 'mk_F11', 'A measurement is only as good as its microphone and its calibration, checked before and after.'),
   ('certificate', 'cert-nearfield-acoustic-holography-v3', 'mk_F16', 'Scientific arrays depend on a marked origin, one shared clock and the right spacing, or they report positions that are not real.'),
@@ -494,6 +503,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-sound-visualization-and-imaging-v3', 'tr_cymatics', 'Chladni plates and cymatic patterns are the hands-on half of this credential’s sound-field visualization topic.'),
   ('certificate', 'cert-source-separation-and-restoration-v3', 'ear_defect', 'Restoration starts by hearing and naming the defect you are about to remove.'),
   ('certificate', 'cert-speech-and-voice-science-v3', 'tr_speech', 'Anatomy, voicing, vowels and formants are the subject of this certificate.'),
+  ('certificate', 'cert-stage-patch-and-signal-distribution-v3', 'tr_stage_plot', 'The input list, the channel order, the DI boxes and the splits are the patch.'),
   ('certificate', 'cert-streaming-mastering-and-loudness-v3', 'tr_mastering', 'Mastering for a streaming destination — loudness at matched level and its current spec — is this certificate.'),
   ('certificate', 'cert-streaming-mastering-and-loudness-v3', 'tr_limiter', 'Streaming delivery is a true-peak ceiling and a loudness target.'),
   ('certificate', 'cert-streaming-mastering-and-loudness-v3', 'tr_compression', 'Hitting that target without crushing the music is a compression decision.'),
@@ -551,6 +561,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-time-based-and-creative-fx-v3', 'tr_phaser', 'Phasing uses all-pass stages instead of delay, and the difference matters in a mix.'),
   ('certificate', 'cert-time-based-and-creative-fx-v3', 'ear_delay', 'Setting a delay to the song means hearing its time, not reading it.'),
   ('certificate', 'cert-time-based-and-creative-fx-v3', 'ear_reverb', 'Telling a room from a plate from a hall by ear is what choosing a reverb depends on.'),
+  ('certificate', 'cert-touring-and-road-crew-v3', 'tr_stage_plot', 'Sending each venue the advance packet, and setting the stage from it, is touring work.'),
   ('certificate', 'cert-tube-amp-building-v3', 'tr_tube', 'How a tube amplifies by controlling electron flow is the thing you are building.'),
   ('certificate', 'cert-tube-amp-building-v3', 'tr_amp', 'The amplifier around the tube — classes, loading, transformers — has to be understood too.'),
   ('certificate', 'cert-tube-audio-equipment-specialist-v3', 'tr_tube', 'Tube behavior is the specialism.'),
@@ -621,6 +632,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('program', 'prog-concert-and-festival-production-v3', 'ear_frequency', 'Finding a feeding-back frequency by ear, fast, is daily work on a show.'),
   ('program', 'prog-concert-and-festival-production-v3', 'mxb_sends', 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.'),
   ('program', 'prog-concert-and-festival-production-v3', 'mk_E09', 'A band starts as a stage plot — the fewest microphones that do the job, with every open microphone counted.'),
+  ('program', 'prog-concert-and-festival-production-v3', 'tr_stage_plot', 'Every act on a festival bill arrives as a stage plot and an input list, and the changeovers are planned from them.'),
   ('program', 'prog-dj-and-club-audio-v3', 'tr_dj', 'Building, running and troubleshooting the DJ booth and its feed to the venue is the core of this program.'),
   ('program', 'prog-dj-and-club-audio-v3', 'tr_eq', 'Club mixing and club system tuning are both frequency work.'),
   ('program', 'prog-dj-and-club-audio-v3', 'ear_band', 'DJ mixing moves whole bands in and out, and you have to hear which one you just moved.'),
@@ -649,6 +661,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('program', 'prog-game-and-interactive-audio-v3', 'tr_binaural', 'Interactive audio places objects around the player’s head.'),
   ('program', 'prog-game-and-interactive-audio-v3', 'tr_reverb', 'Game spaces are sold to the player with reverb.'),
   ('program', 'prog-game-and-interactive-audio-v3', 'tr_postprod', 'Assets are still delivered to a specification with an archive behind them.'),
+  ('program', 'prog-game-and-interactive-audio-v3', 'tr_game_audio', 'This program is how a game asks for sound and how the audio side answers, from events and game information to the mix and the real tools.'),
   ('program', 'prog-hearing-science-and-psychoacoustics-v3', 'tr_speech', 'Speech perception is central to this program.'),
   ('program', 'prog-hearing-science-and-psychoacoustics-v3', 'tr_envelope', 'Attack, decay and resonance identification is one of its named topics.'),
   ('program', 'prog-hearing-science-and-psychoacoustics-v3', 'tr_harmonic', 'Instrument recognition is one of its topics, and timbre is largely harmonic content.'),
@@ -668,6 +681,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('program', 'prog-live-sound-engineering-v3', 'mk_E01', 'The lead vocal is the most important microphone in most sessions and shows, and distance from the lips decides its sound.'),
   ('program', 'prog-live-sound-engineering-v3', 'mk_E09', 'A band starts as a stage plot — the fewest microphones that do the job, with every open microphone counted.'),
   ('program', 'prog-live-sound-engineering-v3', 'mk_B05', 'Lavaliers and headsets are fitted, hidden and positioned on the wearer, and a few centimeters change the voice completely.'),
+  ('program', 'prog-live-sound-engineering-v3', 'tr_stage_plot', 'A live show starts with the stage plot, the input list and the monitor plan the engineer works from.'),
   ('program', 'prog-medical-and-clinical-acoustics-v3', 'tr_speech', 'Clinical audio work is dominated by speech and the voice.'),
   ('program', 'prog-mixing-and-mastering-engineering-v3', 'mxb_mix', 'Knowing what a mix is for — and what it cannot fix — comes before any fader moves.'),
   ('program', 'prog-mixing-and-mastering-engineering-v3', 'mxb_prep', 'A prepared session is named, cleaned, phase-checked and saved before a single decision is made.'),

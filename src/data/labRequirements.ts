@@ -330,6 +330,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_eq', why: 'Front of house is frequency decisions made fast, on a live console.' },
     { key: 'tr_compression', why: 'Holding a live vocal and a live kit in place is compression work.' },
     ...beg('mxb_terms', 'mxb_sends'),
+    // Stage Plot and Channel Designer (owner 2026-11-13 [MD:D60]): required by
+    // the four live-show certificates and two programs below. Server rows:
+    // Comp A, only after the update that reports tr_stage_plot is on phones.
+    { key: 'tr_stage_plot', why: 'Advancing a show, with the stage plot, the input list and who brings what, is front-of-house work.' },
   ],
   'cert-foley-performance-and-recording-v3': [
     { key: 'tr_postprod', why: 'Foley is recorded to picture and delivered into a post session to a specification.' },
@@ -346,6 +350,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-game-audio-v3': [
     { key: 'tr_binaural', why: 'Game audio places sound objects around the player. On headphones, they are heard through binaural rendering.' },
+    // Game Audio Lab (owner 2026-11-13 [MD:D60] (e)/(f)): required by the two
+    // game credentials and the interactive music certificate. Server rows:
+    // Comp A, only after the update that reports tr_game_audio is on phones.
+    { key: 'tr_game_audio', why: 'Game audio work is events, game information, variation, voice budgets and adaptive music, set up inside the real tools.' },
   ],
   'cert-guitar-tone-and-recording-v3': [
     { key: 'tr_mic_select', why: 'Guitar tone on a record is largely the microphone in front of the cabinet.' },
@@ -370,6 +378,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-instrument-sound-identification-v3': [
     { key: 'tr_harmonic', why: 'Timbre is largely harmonic content, and this is where you see it.' },
     { key: 'tr_envelope', why: 'Two instruments with a similar spectrum are still told apart by their envelopes.' },
+  ],
+  'cert-interactive-and-game-music-v3': [
+    { key: 'tr_game_audio', why: 'Interactive music is delivered into middleware as states, layers and changes timed to the bar.' },
   ],
   'cert-live-mixing-specialist-v3': [
     { key: 'tr_eq', why: 'Live mixing is frequency decisions made in real time.' },
@@ -434,6 +445,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_eq', why: 'Ringing out a wedge is narrow, fast, deliberate filtering.' },
     { key: 'ear_frequency', why: 'Ringing out means naming the feeding-back frequency by ear before the band hears it.' },
     ...beg('mxb_sends'),
+    { key: 'tr_stage_plot', why: 'Planning each performer’s mix, wedges and in-ears is the monitor engineer’s job.' },
   ],
   'cert-nearfield-acoustic-holography-v3': [
     { key: 'tr_cymatics', why: 'Chladni plates and cymatic patterns are the hands-on half of this certificate’s sound-field visualization topic.' },
@@ -511,6 +523,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-speech-and-voice-science-v3': [
     { key: 'tr_speech', why: 'Anatomy, voicing, vowels and formants are the subject of this certificate.' },
   ],
+  'cert-stage-patch-and-signal-distribution-v3': [
+    { key: 'tr_stage_plot', why: 'The input list, the channel order, the DI boxes and the splits are the patch.' },
+  ],
   'cert-streaming-mastering-and-loudness-v3': [
     { key: 'tr_mastering', why: 'Mastering for a streaming destination — loudness at matched level and its current spec — is this certificate.' },
     { key: 'tr_limiter', why: 'Streaming delivery is a true-peak ceiling and a loudness target.' },
@@ -551,6 +566,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_phaser', why: 'Phasing uses all-pass stages instead of delay, and the difference matters in a mix.' },
     { key: 'ear_delay', why: 'Setting a delay to the song means hearing its time, not reading it.' },
     { key: 'ear_reverb', why: 'Telling a room from a plate from a hall by ear is what choosing a reverb depends on.' },
+  ],
+  'cert-touring-and-road-crew-v3': [
+    { key: 'tr_stage_plot', why: 'Sending each venue the advance packet, and setting the stage from it, is touring work.' },
   ],
   'cert-tube-amp-building-v3': [
     { key: 'tr_tube', why: 'How a tube amplifies by controlling electron flow is the thing you are building.' },
@@ -653,6 +671,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_frequency', why: 'Finding a feeding-back frequency by ear, fast, is daily work on a show.' },
     ...beg('mxb_sends'),
     ...mk('E09'),
+    { key: 'tr_stage_plot', why: 'Every act on a festival bill arrives as a stage plot and an input list, and the changeovers are planned from them.' },
   ],
   'prog-dj-and-club-audio-v3': [
     { key: 'tr_dj', why: 'Building, running and troubleshooting the DJ booth and its feed to the venue is the core of this program.' },
@@ -687,6 +706,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_binaural', why: 'Interactive audio places objects around the player’s head.' },
     { key: 'tr_reverb', why: 'Game spaces are sold to the player with reverb.' },
     { key: 'tr_postprod', why: 'Assets are still delivered to a specification with an archive behind them.' },
+    { key: 'tr_game_audio', why: 'This program is how a game asks for sound and how the audio side answers, from events and game information to the mix and the real tools.' },
   ],
   'prog-hearing-science-and-psychoacoustics-v3': [
     { key: 'tr_speech', why: 'Speech perception is central to this program.' },
@@ -709,6 +729,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_frequency', why: 'Finding a feeding-back frequency by ear, fast, is daily work on a show.' },
     ...beg('mxb_terms', 'mxb_sends'),
     ...mk('E01', 'E09', 'B05'),
+    { key: 'tr_stage_plot', why: 'A live show starts with the stage plot, the input list and the monitor plan the engineer works from.' },
   ],
   'prog-medical-and-clinical-acoustics-v3': [
     { key: 'tr_speech', why: 'Clinical audio work is dominated by speech and the voice.' },

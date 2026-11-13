@@ -267,6 +267,11 @@ const MemberGated = {
   // Live Sound Reinforcement category — nothing in it is free for a guest
   // (owner). One route.
   DJSystemsLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/dj/DJSystemsLabScreen').DJSystemsLabScreen)),
+  // Game Audio Lab and Stage Plot and Channel Designer (listed 2026-11-13
+  // [MD:D60]): members-only via their catalog leaves (Game Audio; Live Sound
+  // Reinforcement) — nothing in either is free for a guest. One route each.
+  GameAudioLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/gameaudio/GameAudioLabScreen').GameAudioLabScreen)),
+  StagePlotLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/stageplot/StagePlotLabScreen').StagePlotLabScreen)),
   // Miking Labs (2026-10-04): the hub is the catalog row (Instruments &
   // Recording, training); the lesson host is a child route the catalog
   // cannot name (MEMBER_ONLY_EXTRA_ROUTES). Both gated, both lazy.
@@ -595,6 +600,8 @@ export function RootNavigator() {
       <Stack.Screen name="MasteringLab" getComponent={MemberGated.MasteringLab} />
       <Stack.Screen name="DrumTuningLab" getComponent={MemberGated.DrumTuningLab} />
       <Stack.Screen name="DJSystemsLab" getComponent={MemberGated.DJSystemsLab} />
+      <Stack.Screen name="GameAudioLab" getComponent={MemberGated.GameAudioLab} />
+      <Stack.Screen name="StagePlotLab" getComponent={MemberGated.StagePlotLab} />
       <Stack.Screen name="MikingHub" getComponent={MemberGated.MikingHub} />
       <Stack.Screen name="MikingLesson" getComponent={MemberGated.MikingLesson} />
       <Stack.Screen name="MixingGuides" getComponent={MemberGated.MixingGuides} options={swipe} />

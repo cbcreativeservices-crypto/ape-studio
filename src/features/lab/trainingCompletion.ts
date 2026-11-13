@@ -19,6 +19,10 @@
  *   tr_sound_systems the hub's COMPLETE rule              SoundSystemsLabScreen (soundsystems/labComplete)
  *   tr_dj         every REQUIRED screen done (16–18 are   DJSystemsLabScreen → PagedLab labDoneKey
  *                 optional; dj/pages/registry djLabComplete)  [MD:R3], 2026-10-27
+ *   tr_game_audio every one of its 22 pages done          GameAudioLabScreen → PagedLab labDoneKey
+ *                 (no backfill: never on a phone before)     [MD:D60], 2026-11-13
+ *   tr_stage_plot the guided task: all five steps done     StagePlotLabScreen (Editor, spGuidedSteps)
+ *                 on one stage plot (no backfill, as above)   [MD:D60], 2026-11-13
  *   tr_<practice> the lab's understanding check passed    passUnderstandingCheck (PagedLab, LabShell,
  *                 (incl. tr_eq — see trainingLabKeys)     SsPagedLab, LabUnderstandingBlock)
  *   ear_<module>  mastered ≥ REQUIRED_EAR_LEVEL           EarModuleScreen

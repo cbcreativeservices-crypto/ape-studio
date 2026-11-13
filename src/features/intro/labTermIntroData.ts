@@ -537,6 +537,13 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "A DJ mixer sits in the middle of the setup and blends two or more music sources. It has the faders, EQ, crossfader, and a headphone preview you use to mix one track into the next.",
     glossaryId: "ab13a9ab-8847-4d93-94ca-b8488dae0f96",
   },
+  // The two labs listed 2026-11-13 [MD:D60]: HOLD — no popup until a live
+  // glossary row is read and copied VERBATIM with its id (nobody read the
+  // live glossary for them; nothing here is a paraphrase). "Game audio" is a
+  // live glossary entry by its exact name (gaTerms.ts, checked 2026-11-12);
+  // the Stage Plot candidates have not been checked against the glossary.
+  GameAudioLab: { status: 'hold', lab: "Game Audio Lab", candidates: ["Game audio", "Interactive audio", "Audio Middleware"], suggested: "Game audio" },
+  StagePlotLab: { status: 'hold', lab: "Stage Plot and Channel Designer", candidates: ["Stage plot", "Input list", "Channel list"], suggested: null },
   // Owner 2026-10-19: the Calculator lab gets NO glossary popup.
   CalcLab: { status: 'none', lab: "Audio Calculator Laboratory", reason: "owner 2026-10-19: no glossary popup for the calculator lab" },
 };

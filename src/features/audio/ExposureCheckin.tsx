@@ -60,7 +60,7 @@ const AUDIO_ROUTES = new Set<string>([
   // Tuning, Ear Training, Cymatics — while the monitor went on counting.
   // test/toolsEvening1_20261002 fails when a new *Lab route is left out.
   'AdvancedMixingLab', 'BeginningMixingLab', 'MasteringLab', 'DrumTuningLab',
-  'DJSystemsLab',
+  'DJSystemsLab', 'GameAudioLab', 'StagePlotLab',
   'TuningLab', 'EarTrainingLab', 'EarModule', 'AmpLab', 'AmpModule',
   'DeEsserLab', 'EnvelopeLab', 'SpeechLab', 'SmartProcessorsLab',
   'CymaticsLab', 'CymaticsModule', 'CymaticsGallery', 'CymaticsPlateStudio',

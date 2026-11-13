@@ -28,22 +28,37 @@
  * Android BACK in the editor returns to the library; the header ‹ always
  * leaves the lab, and both save first.
  *
- * NOT LISTED YET [MD:D60]: this screen is reachable only from the web
- * preview (`#labpreview/StagePlotLab`). Putting it in the Labs menu is a
- * change to the navigator, the lab catalog and their tests, done in one pass
- * for the whole lab.
+ * LISTED 2026-11-13 [MD:D60] (owner: "Yes, register both"): in the Labs menu
+ * under Live Sound Reinforcement (labCatalog), with its tile art. MEMBERS
+ * ONLY — the gate is RootNavigator's MemberGated.StagePlotLab (its preview
+ * wrapper → useMemberGate), reading `member: true` on the catalog leaf; this
+ * screen itself never speaks of plans or payment (test/stagePlotStore). The web preview (`#labpreview/StagePlotLab`) still opens it.
+ *
+ * CERTIFICATE CREDIT = THE GUIDED TASK (handoff section 7). The key is
+ * tr_stage_plot (trainingLabKeys, by this route). The editor reports it the
+ * moment one stage plot has all five guided steps done (spGuidedSteps, the
+ * same rule the GUIDED TASK list shows, judged from the project, whether or
+ * not the steps are open on screen): the last step, "Make the packet", is
+ * only done once every earlier one is. The steps are never required to use
+ * the tool, nothing is locked, and credit is never removed (a later edit that
+ * reopens a step takes nothing back; another plot can always be made). It is
+ * required by four live-show certificates and two programs (labRequirements);
+ * the server rows are Comp A's, after this is on phones (D60 (f)).
  *
  * Each work area is hosted in a box that fills the rest of the screen, with
  * no padding and no scrolling of the host's own: an area owns its layout
  * (Stage is a Rack Unit; the others scroll themselves).
  */
-import { Component, useCallback, useMemo, useState, type ErrorInfo, type ReactNode } from 'react';
+import { Component, useCallback, useEffect, useMemo, useState, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { holdAllowed, persistAllowed } from '../../../features/commercial/tier';
 import { useTier } from '../../../features/commercial/useTier';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
+import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
+import { spGuidedSteps } from '../../../features/stageplot/spReview';
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 import { setSpSaveMode, spProjectName, type SpSaveMode } from '../../../features/stageplot/spStore';
@@ -195,6 +210,15 @@ export function StagePlotLabScreen() {
 function Editor({ onClose }: { onClose: () => void }) {
   const ed = useSpEditor();
   const area = ed.area;
+
+  // THE CREDIT: the guided task, all five steps done on this plot. Worked out
+  // only once the packet is made (the last step needs it), so ordinary edits
+  // never pay for it. Reported once per time it becomes true; the report is
+  // idempotent and nothing ever takes it back.
+  const guidedDone = useMemo(() => ed.exported && spGuidedSteps(ed.project, true).every((s) => s.done), [ed.exported, ed.project]);
+  useEffect(() => {
+    if (guidedDone) reportTrainingComplete(trainingKeyFor('StagePlotLab'));
+  }, [guidedDone]);
 
   // A tab is marked while the review has a question there. "To be confirmed"
   // items are not questions: they are kept and printed as they are.

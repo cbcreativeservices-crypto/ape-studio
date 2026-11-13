@@ -11,12 +11,25 @@
  * ONE sound session serves every page (GaLabProvider). Each page opens on a
  * clean copy of the same scene, as each DJ Systems Lab screen does.
  *
- * NOT LISTED YET [MD:D60]: this screen is reachable only from the web
- * preview (`#labpreview/GameAudioLab`). It joins the Labs menu, and gets its
- * certificate credit key, after the owner's phone checks, a tile image and
- * approval.
+ * LISTED 2026-11-13 [MD:D60] (owner: "Yes, register both"): in the Labs menu
+ * under its own subject, Game Audio (labCatalog), with its tile art. MEMBERS
+ * ONLY — nothing here is free for a guest. The gate is RootNavigator's
+ * MemberGated.GameAudioLab (withMembershipPreview → useMemberGate), reading
+ * `member: true` on this lab's catalog leaf. The web preview
+ * (`#labpreview/GameAudioLab`) still opens it for the owner.
+ *
+ * CERTIFICATE CREDIT: the key is tr_game_audio (trainingLabKeys, by this
+ * route). PagedLab reports it once every page is done (`labDoneKey`), on the
+ * FINISH that completes the set and on any later visit. Credit is never
+ * removed; START OVER (PRACTICE) clears only this device's page marks, and
+ * NEXT always moves on (a lab never blocks navigation). It is required by
+ * cert-game-audio-v3, cert-interactive-and-game-music-v3 and
+ * prog-game-and-interactive-audio-v3 (labRequirements); the server rows for
+ * the key and those requirements are Comp A's, after this is on phones
+ * (D60 (f)).
  */
 import { PagedLab } from '../kit/PagedLab';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { GaLabProvider } from './GaLab';
 import { GA_PAGES } from './pages';
 import { GA_END_GUIDE } from './pages/guides/end';
@@ -43,7 +56,7 @@ const pageDetail = (i: number): string | undefined => PAGE_DETAIL[i];
 export function GameAudioLabScreen() {
   return (
     <GaLabProvider>
-      <PagedLab labId={GA_LAB_ID} title={GA_LAB_TITLE} subtitle="How a game asks for sound, and how the audio side answers." pages={GA_PAGES} handsOnDetail={HANDS_ON} pageDetail={pageDetail} accuracy={false} endGuide={GA_END_GUIDE} />
+      <PagedLab labId={GA_LAB_ID} title={GA_LAB_TITLE} subtitle="How a game asks for sound, and how the audio side answers." pages={GA_PAGES} handsOnDetail={HANDS_ON} pageDetail={pageDetail} accuracy={false} endGuide={GA_END_GUIDE} labDoneKey={trainingKeyFor('GameAudioLab')} />
     </GaLabProvider>
   );
 }

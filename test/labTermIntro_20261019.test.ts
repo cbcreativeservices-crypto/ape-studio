@@ -108,10 +108,12 @@ describe('1. every catalog lab is mapped (wired, HOLD or none) — and nothing e
     const stale = Object.keys(L.LAB_TERM_ENTRIES).filter((k) => !keys.has(k));
     assert.deepEqual(stale, []);
   });
-  it('after the owner’s rulings (2026-10-19): 62 wired, none pending, the calculator lab has NO popup', () => {
+  it('after the owner’s rulings (2026-10-19): 62 wired, the two labs listed 2026-11-13 on HOLD, the calculator lab has NO popup', () => {
     const all = Object.entries(L.LAB_TERM_ENTRIES);
     assert.equal(all.filter(([, e]) => e.status === 'wired').length, 63); // + DJ Systems Lab (merged from dj-lab 2026-10-21)
-    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), []);
+    // [MD:D60] 2026-11-13: no live glossary row has been read for them yet, so
+    // no popup until one is copied verbatim with its id.
+    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), ['GameAudioLab', 'StagePlotLab']);
     assert.deepEqual(all.filter(([, e]) => e.status === 'none').map(([k]) => k), ['CalcLab']);
     assert.equal(L.wiredLabTerm(L.labTermKey('CalcLab')), null);
   });
