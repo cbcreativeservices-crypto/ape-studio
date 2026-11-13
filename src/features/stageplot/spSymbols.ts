@@ -135,6 +135,104 @@ export const spSymbol = (kind: SpObjectKind): SpSymbol => SYMBOLS[kind];
  *  own width and depth. */
 export const spIsSized = (kind: SpObjectKind): boolean => kind === 'riser' || kind === 'generic';
 
+/* ── the key ────────────────────────────────────────────────────────────── */
+
+/** THE KEY (owner 2026-11-12: "the key explaining what drawn objects are
+ *  needs to always be there in the drawing to understand it"). Every drawing
+ *  of a stage, on the screen and on paper, carries a key: each KIND of symbol
+ *  that is on THIS plot, drawn small, with its name beside it. It is part of
+ *  the drawing, never a popup and never behind a switch.
+ *
+ *  One entry per different-looking symbol: a vocal microphone and any other
+ *  microphone on a stand are the same symbol, so they share one entry. */
+export type SpKeyEntry = {
+  /** The kind whose symbol (or on-screen art) is drawn for this entry. */
+  kind: SpObjectKind;
+  /** What it is, in words: "Performer", "Wedge monitor", "Drum kit". */
+  name: string;
+};
+
+const KEY_NAME: Record<SpObjectKind, string> = {
+  performer: 'Performer',
+  'vocal-mic': 'Microphone on a stand',
+  'mic-stand': 'Microphone on a stand',
+  'drum-kit': 'Drum kit',
+  percussion: 'Percussion',
+  congas: 'Congas',
+  timbales: 'Timbales',
+  bongo: 'Bongó',
+  'guitar-amp': 'Guitar amplifier',
+  'bass-amp': 'Bass amplifier',
+  keyboard: 'Keyboard',
+  piano: 'Piano',
+  'acoustic-guitar': 'Acoustic instrument',
+  horn: 'Horn',
+  playback: 'Playback rig',
+  di: 'DI',
+  wedge: 'Wedge monitor (wide side faces the performer)',
+  iem: 'In-ear monitor equipment',
+  'drum-fill': 'Drum fill',
+  sidefill: 'Sidefill',
+  rack: 'Equipment rack',
+  'stage-box': 'Stage box',
+  power: 'Power location requested',
+  chair: 'Chair',
+  'music-stand': 'Music stand',
+  riser: 'Riser (dashed outline)',
+  generic: 'Other object (named on the plot)',
+};
+
+/** The order the key is read in: people, what they play, how it is captured,
+ *  monitors, then the stage itself. */
+const KEY_ORDER: readonly SpObjectKind[] = [
+  'performer',
+  'drum-kit',
+  'percussion',
+  'congas',
+  'timbales',
+  'bongo',
+  'guitar-amp',
+  'bass-amp',
+  'keyboard',
+  'piano',
+  'acoustic-guitar',
+  'horn',
+  'playback',
+  'mic-stand',
+  'di',
+  'wedge',
+  'iem',
+  'drum-fill',
+  'sidefill',
+  'rack',
+  'stage-box',
+  'power',
+  'chair',
+  'music-stand',
+  'riser',
+  'generic',
+];
+
+/** The key for a set of stage objects: one entry for each kind of symbol
+ *  that is drawn, in reading order. Empty only when the stage is empty. */
+export function spPlotKey(objects: readonly { kind: SpObjectKind }[]): SpKeyEntry[] {
+  const used = new Set<SpObjectKind>();
+  for (const o of objects) used.add(o.kind === 'vocal-mic' ? 'mic-stand' : o.kind);
+  return KEY_ORDER.filter((k) => used.has(k)).map((kind) => ({ kind, name: KEY_NAME[kind] }));
+}
+
+/** A kind's print symbol for a key cell: its shapes in meters around 0,0,
+ *  facing the audience, with its footprint. A sized kind (riser, labeled
+ *  object) is given a small sample box so it has a shape to show. */
+export function spKeySymbol(kind: SpObjectKind): SpSymbol {
+  const sym = SYMBOLS[kind];
+  if (!spIsSized(kind)) return sym;
+  const w = 0.9;
+  const h = 0.6;
+  const shapes: SpShape[] = sym.shapes.map((x) => (x.t === 'rect' ? { ...x, x: x.x * w, y: x.y * h, w: x.w * w, h: x.h * h } : x));
+  return { w, h, tag: sym.tag, shapes };
+}
+
 /** The stage size used to draw, in meters. Real dimensions when the band
  *  gave them. Otherwise an ASSUMED stage, only so the symbols have a sensible
  *  size against it, and the plot is labeled "Not to scale": a usual club

@@ -22,6 +22,7 @@
  * Types only.
  */
 import type { SpShape } from './spSymbols.ts';
+import type { SpObjectKind } from './spTypes.ts';
 import type { SpId, SpPaper } from './spTypes.ts';
 
 /** One thing drawn on the plot, already placed (meters; 0,0 = the upstage,
@@ -60,6 +61,24 @@ export type SpDocPlot = {
   viewNote: string;
   /** What the references on the plot mean, in words. */
   legend: string[];
+  /** THE KEY: each kind of symbol that is on this plot, with its name. It is
+   *  part of the drawing (owner 2026-11-12): every renderer prints it WITH
+   *  the plot, in every packet kind, and never leaves an entry out. A
+   *  renderer scales each symbol into its own small cell. */
+  key: SpDocKeyItem[];
+};
+
+/** One entry of the plot's key: a symbol, drawn small, and what it is. */
+export type SpDocKeyItem = {
+  kind: SpObjectKind;
+  /** "Performer", "Wedge monitor (wide side faces the performer)". */
+  name: string;
+  /** The symbol's footprint in meters, and its shapes around 0,0. */
+  w: number;
+  h: number;
+  shapes: SpShape[];
+  /** A short word printed inside the symbol ("DI", "IEM", "AC"), or ''. */
+  tag: string;
 };
 
 export type SpDocColumn = {

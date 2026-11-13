@@ -11,10 +11,11 @@ export const SP_GUIDE_STAGE: ScreenGuide = {
     start: 'Tap ADD and choose Performer. Drag the figure to where that person stands, then add what they play. Tap an object to select it; OBJECT opens its details.',
   },
   seeing: [
-    'The drawing looks down on your stage from the audience. UPSTAGE is at the top and AUDIENCE / DOWNSTAGE is at the bottom.',
-    'STAGE RIGHT is on the left of the drawing and STAGE LEFT is on the right. The drawing cannot be flipped.',
+    'The drawing looks down on your stage. UPSTAGE is at the top and AUDIENCE / DOWNSTAGE is at the bottom.',
+    'STAGE RIGHT is on the left and STAGE LEFT is on the right. The drawing cannot be flipped.',
     'A number in a square box is an input channel. A code in a round box, such as M1, is a monitor mix.',
-    'A dashed ring with corner marks is around the selected object.',
+    'A dashed ring with corner marks shows the selected object.',
+    'The KEY under the stage names each kind of object drawn.',
   ],
   control: [
     'Drag an object to move it. With snap on, it lands on the nearest grid step.',

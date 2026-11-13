@@ -59,7 +59,7 @@ export function PlotView({ plot, width }: { plot: SpDocPlot; width: number }) {
   const scrolls = sceneW > width + 0.5;
   const count = plot.items.length;
   const drawing = (
-    <View accessible accessibilityRole="image" accessibilityLabel={`Stage plot drawing, seen from the audience: ${count} ${count === 1 ? 'object' : 'objects'}. ${plot.sizeNote}. Every object is also listed in the text view of the packet.`}>
+    <View accessible accessibilityRole="image" accessibilityLabel={`Stage plot drawing, seen from the audience: ${count} ${count === 1 ? 'object' : 'objects'}. ${plot.sizeNote}. A key under the stage names each kind of symbol. Every object is also listed in the text view of the packet.`}>
       {Platform.OS === 'web' ? (
         // a browser's <svg> does not know the two native props: it is hidden with aria-hidden
         <Svg aria-hidden width={scene.w} height={scene.h} viewBox={`0 0 ${scene.w} ${scene.h}`}>

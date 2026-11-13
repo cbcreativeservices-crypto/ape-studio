@@ -15,7 +15,9 @@
  *     margin boxes, and the same words are also printed in the flow at the
  *     top of the document, for an engine that does not draw margin boxes;
  *   • the plot is inline SVG drawn from `SpDocPlot`: the audience at the
- *     bottom, the four direction words, and the size note, always.
+ *     bottom, the four direction words, THE KEY (each kind of symbol on the
+ *     plot, small, with its name: inside the same drawing, so a page break
+ *     cannot part it from the plot), and the size note, always.
  *
  * `spPlotScene` is the plot as a short list of lines, boxes and words in
  * points. The HTML's SVG and the on-screen preview both draw that list, so
@@ -24,8 +26,8 @@
  * Pure: strings in, strings out. Every word from the project is escaped.
  */
 import type { SpDoc, SpDocBlock, SpDocPlot, SpDocTable } from './spDocTypes.ts';
-import { SP_PLOT_TYPE, spBadgeW, spLabelBlock, spPlotScale } from './spPacket.ts';
-import type { SpFill } from './spSymbols.ts';
+import { SP_KEY_CELL, SP_PLOT_SIDE, SP_PLOT_TYPE, spBadgeW, spKeyLayout, spLabelBlock, spPlotScale } from './spPacket.ts';
+import type { SpFill, SpShape } from './spSymbols.ts';
 import type { SpPaper } from './spTypes.ts';
 
 /** Page sizes in points (72 per inch): what expo-print is given. */
@@ -57,7 +59,9 @@ export type SpSceneOp =
   /** `y` is the baseline. `rotate` turns the words about (x, y), in degrees. */
   | { t: 'text'; x: number; y: number; text: string; size: number; bold: boolean; anchor: 'start' | 'middle' | 'end'; rotate: number };
 
-export type SpPlotScene = { w: number; h: number; ops: SpSceneOp[] };
+/** `key` = which of the `ops` draw the key ([from, to)); null when the plot
+ *  has nothing on it and so no key. */
+export type SpPlotScene = { w: number; h: number; ops: SpSceneOp[]; key: { from: number; to: number } | null };
 
 export const SP_INK = '#111111';
 export const SP_PAPER = '#ffffff';
@@ -150,11 +154,69 @@ export function spPlotScene(plot: SpDocPlot, width: number): SpPlotScene {
   ops.push({ t: 'text', x: left - 4, y: midY, text: 'STAGE RIGHT', size: T.direction, bold: true, anchor: 'middle', rotate: -90 });
   ops.push({ t: 'text', x: left + drawW + 4, y: midY, text: 'STAGE LEFT', size: T.direction, bold: true, anchor: 'middle', rotate: 90 });
 
+  // THE KEY: under the stage, part of the same drawing. One cell for each
+  // kind of symbol on this plot: the symbol small, then its name.
+  const keyTop = TOP + drawH + BOTTOM;
+  const layout = spKeyLayout(plot.key, width - SP_PLOT_SIDE * 2);
+  const keyFrom = ops.length;
+  if (layout.cells.length) {
+    const K = SP_KEY_CELL;
+    ops.push({ t: 'text', x: SP_PLOT_SIDE, y: keyTop + K.headPt, text: 'KEY', size: K.headPt, bold: true, anchor: 'start', rotate: 0 });
+    layout.cells.forEach((cell, n) => {
+      const item = plot.key[n];
+      const x0 = SP_PLOT_SIDE + cell.x;
+      const y0 = keyTop + cell.y;
+      // the symbol, scaled to fit its box with its own shape kept
+      const b = boxOf(item.shapes);
+      const s = Math.min(K.symbolW / Math.max(b.x1 - b.x0, 1e-6), K.symbolH / Math.max(b.y1 - b.y0, 1e-6));
+      const kx = (x: number) => x0 + K.symbolW / 2 + (x - (b.x0 + b.x1) / 2) * s;
+      const ky = (y: number) => y0 + K.symbolH / 2 + (y - (b.y0 + b.y1) / 2) * s;
+      for (const sh of item.shapes) {
+        if (sh.t === 'circle') ops.push({ t: 'circle', cx: kx(sh.cx), cy: ky(sh.cy), r: sh.r * s, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+        else if (sh.t === 'line') ops.push({ t: 'line', x1: kx(sh.x1), y1: ky(sh.y1), x2: kx(sh.x2), y2: ky(sh.y2), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+        else if (sh.t === 'poly') ops.push({ t: 'poly', pts: sh.pts.map((v, i) => (i % 2 ? ky(v) : kx(v))), closed: !!sh.closed, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+        else ops.push({ t: 'poly', pts: [kx(sh.x), ky(sh.y), kx(sh.x + sh.w), ky(sh.y), kx(sh.x + sh.w), ky(sh.y + sh.h), kx(sh.x), ky(sh.y + sh.h)], closed: true, fill: fillOf(sh.fill), stroke: SP_INK, sw: 0.8, dash: !!sh.dash });
+      }
+      if (item.tag) ops.push({ t: 'text', x: kx(0), y: ky(0) + K.textPt * 0.35, text: item.tag, size: K.textPt, bold: true, anchor: 'middle', rotate: 0 });
+      // its name, in lines that fit the cell: never cut
+      const textH = cell.lines.length * K.lineH;
+      const top = y0 + Math.max(0, (K.symbolH - textH) / 2);
+      cell.lines.forEach((line, i) => ops.push({ t: 'text', x: x0 + K.symbolW + K.gap, y: top + K.textPt * 0.9 + i * K.lineH, text: line, size: K.textPt, bold: false, anchor: 'start', rotate: 0 }));
+    });
+  }
+  const key = layout.cells.length ? { from: keyFrom, to: ops.length } : null;
+
   // the size note: always printed
-  const h = TOP + drawH + BOTTOM + NOTE;
+  const h = TOP + drawH + BOTTOM + layout.h + NOTE;
   ops.push({ t: 'text', x: left, y: h - 4, text: plot.toScale ? `Stage size: ${plot.sizeNote}` : plot.sizeNote.toUpperCase(), size: T.direction, bold: !plot.toScale, anchor: 'start', rotate: 0 });
 
-  return { w: width, h, ops };
+  return { w: width, h, ops, key };
+}
+
+/** The box around a symbol's shapes (the symbol's own units). */
+function boxOf(shapes: readonly SpShape[]): { x0: number; y0: number; x1: number; y1: number } {
+  const b = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+  const add = (x: number, y: number) => {
+    b.x0 = Math.min(b.x0, x);
+    b.x1 = Math.max(b.x1, x);
+    b.y0 = Math.min(b.y0, y);
+    b.y1 = Math.max(b.y1, y);
+  };
+  for (const s of shapes) {
+    if (s.t === 'circle') {
+      add(s.cx - s.r, s.cy - s.r);
+      add(s.cx + s.r, s.cy + s.r);
+    } else if (s.t === 'line') {
+      add(s.x1, s.y1);
+      add(s.x2, s.y2);
+    } else if (s.t === 'poly') {
+      for (let k = 0; k + 1 < s.pts.length; k += 2) add(s.pts[k], s.pts[k + 1]);
+    } else {
+      add(s.x, s.y);
+      add(s.x + s.w, s.y + s.h);
+    }
+  }
+  return Number.isFinite(b.x0) ? b : { x0: -0.5, y0: -0.5, x1: 0.5, y1: 0.5 };
 }
 
 const n2 = (v: number): string => String(Math.round(v * 100) / 100);
@@ -165,13 +227,16 @@ export function spPlotSvg(scene: SpPlotScene, label: string): string {
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n2(scene.w)} ${n2(scene.h)}" width="100%" role="img" aria-label="${esc(label)}" font-family="-apple-system, Helvetica, Arial, sans-serif">`,
     `<title>${esc(label)}</title>`,
   ];
-  for (const o of scene.ops) {
+  scene.ops.forEach((o, n) => {
+    // the key is one group, so it reads (and is found) as one thing
+    if (scene.key && n === scene.key.from) out.push('<g class="key">');
     if (o.t === 'rect') out.push(`<rect x="${n2(o.x)}" y="${n2(o.y)}" width="${n2(o.w)}" height="${n2(o.h)}"${o.r ? ` rx="${n2(o.r)}"` : ''} fill="${o.fill}" stroke="${o.stroke}" stroke-width="${o.sw}"/>`);
     else if (o.t === 'circle') out.push(`<circle cx="${n2(o.cx)}" cy="${n2(o.cy)}" r="${n2(o.r)}" fill="${o.fill}" stroke="${o.stroke}" stroke-width="${o.sw}"${o.dash ? ` stroke-dasharray="${SP_DASH}"` : ''}/>`);
     else if (o.t === 'line') out.push(`<line x1="${n2(o.x1)}" y1="${n2(o.y1)}" x2="${n2(o.x2)}" y2="${n2(o.y2)}" stroke="${o.stroke}" stroke-width="${o.sw}"${o.dash ? ` stroke-dasharray="${SP_DASH}"` : ''}/>`);
     else if (o.t === 'poly') out.push(`<${o.closed ? 'polygon' : 'polyline'} points="${o.pts.map(n2).join(' ')}" fill="${o.closed ? o.fill : 'none'}" stroke="${o.stroke}" stroke-width="${o.sw}" stroke-linejoin="round"${o.dash ? ` stroke-dasharray="${SP_DASH}"` : ''}/>`);
     else out.push(`<text x="${n2(o.x)}" y="${n2(o.y)}" font-size="${o.size}"${o.bold ? ' font-weight="700"' : ''} text-anchor="${o.anchor}" fill="${SP_INK}"${o.rotate ? ` transform="rotate(${o.rotate} ${n2(o.x)} ${n2(o.y)})"` : ''}>${esc(o.text)}</text>`);
-  }
+    if (scene.key && n === scene.key.to - 1) out.push('</g>');
+  });
   out.push('</svg>');
   return out.join('');
 }

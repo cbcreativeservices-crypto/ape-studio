@@ -681,6 +681,39 @@ describe('review round 1: one answer for each thing, and a question for each gap
   });
 });
 
+describe('the key of a stage drawing (owner 2026-11-12)', () => {
+  it('names every kind of symbol that is on the plot, once each, and nothing that is not', async () => {
+    const { spPlotKey, spKeySymbol } = await import('../src/features/stageplot/spSymbols.ts');
+    for (const t of SP_TEMPLATES) {
+      const p = spFromTemplate(t.id, { id: `k-${t.id}`, now: NOW });
+      const key = spPlotKey(p.objects);
+      if (t.id === 'blank') {
+        assert.deepEqual(key, []);
+        continue;
+      }
+      const kinds = key.map((k) => k.kind);
+      assert.equal(new Set(kinds).size, kinds.length, `${t.id}: an entry twice`);
+      for (const o of p.objects) {
+        const k = o.kind === 'vocal-mic' ? 'mic-stand' : o.kind;
+        assert.ok(kinds.includes(k), `${t.id}: ${o.kind} is drawn and is not in the key`);
+      }
+      for (const k of key) {
+        assert.ok(p.objects.some((o) => (o.kind === 'vocal-mic' ? 'mic-stand' : o.kind) === k.kind), `${t.id}: ${k.kind} is in the key and not on the plot`);
+        assert.ok(k.name.length >= 2);
+        const sym = spKeySymbol(k.kind);
+        assert.ok(sym.shapes.length > 0 && sym.w > 0 && sym.h > 0, `${k.kind} has a symbol to show`);
+      }
+      assert.equal(kinds[0], 'performer', 'people are read first');
+    }
+  });
+  it('one entry for one look: a vocal microphone and a microphone on a stand share the entry', async () => {
+    const { spPlotKey } = await import('../src/features/stageplot/spSymbols.ts');
+    const key = spPlotKey([{ kind: 'vocal-mic' }, { kind: 'mic-stand' }, { kind: 'wedge' }]);
+    assert.deepEqual(key.map((k) => k.kind), ['mic-stand', 'wedge']);
+    assert.match(key[1].name, /wide side faces the performer/);
+  });
+});
+
 describe('the catalog', () => {
   it('every package states what it assumes, names no brand, and pairs its stereo rows', () => {
     for (const pkg of SP_PACKAGES) {

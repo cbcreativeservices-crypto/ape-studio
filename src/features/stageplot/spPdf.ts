@@ -35,7 +35,7 @@
  * `Y`, and nothing else in this file knows about it. The footers are added
  * after the last page exists, when the page count is known.
  */
-import type { SpDoc, SpDocBlock, SpDocPlot, SpDocPlotItem, SpDocTable } from './spDocTypes.ts';
+import type { SpDoc, SpDocBlock, SpDocKeyItem, SpDocPlot, SpDocTable } from './spDocTypes.ts';
 import { SP_PDF_MARKS, spPdfCodeWidth, spPdfEncode, spPdfIsMark, spPdfWidth, type SpPdfText } from './spPdfFonts.ts';
 import type { SpFill, SpShape } from './spSymbols.ts';
 import type { SpPaper } from './spTypes.ts';
@@ -50,7 +50,7 @@ export const SP_PDF_MARGIN = 43.2;
 /** Table text size. A table is never printed smaller than this. */
 export const SP_PDF_TABLE_PT = 10;
 /** The fixed words on the plot (the performer's left and right, facing the audience). */
-export const SP_PDF_PLOT_WORDS = { up: 'UPSTAGE', down: 'AUDIENCE / DOWNSTAGE', right: 'STAGE RIGHT', left: 'STAGE LEFT' } as const;
+export const SP_PDF_PLOT_WORDS = { up: 'UPSTAGE', down: 'AUDIENCE / DOWNSTAGE', right: 'STAGE RIGHT', left: 'STAGE LEFT', key: 'KEY' } as const;
 
 // ───────────────────────── sizes (points) ─────────────────────────
 const PT = { title: 16, running: 9, stamp: 11, section: 13, h1: 12, h2: 11, body: 10, footer: 9, legend: 9 } as const;
@@ -407,14 +407,30 @@ export const SP_PDF_PLOT = {
   note: 16,
 } as const;
 
-type PlotLayout = { height: number; draw: (pen: Pen, x0: number, y0: number) => void };
+/**
+ * THE KEY (owner 2026-11-12: "the key explaining what drawn objects are needs
+ * to always be there in the drawing to understand it"). Under the stage
+ * drawing, on the same page: the heading, then one cell for each kind of
+ * symbol on the plot: the symbol drawn small in a box of `symbolW` ×
+ * `symbolH` points (its own shape kept, centered), then its name, wrapped
+ * and never cut. Cells are `colW` wide and fill rows from the left, inside
+ * the plot's side room; a row is as tall as its tallest cell.
+ *
+ * The first nine numbers MIRROR `SP_KEY_CELL` in spPacket.ts and the places
+ * follow `spKeyLayout` and the key part of `spPlotScene` (spPacketHtml.ts),
+ * so the PDF's key is the HTML sheet's key; the test pins them. `right` is
+ * the room kept at the right of a name, `stroke` the line of a key symbol.
+ */
+export const SP_PDF_KEY = { symbolW: 26, symbolH: 20, textPt: 9, gap: 6, colW: 120, lineH: 11, rowGap: 6, headPt: 9.5, headH: 16, right: 8, stroke: 0.8 } as const;
+
+type PlotLayout = { height: number; drawH: number; draw: (pen: Pen, x0: number, y0: number) => void };
 type Box = { x0: number; y0: number; x1: number; y1: number };
 
 const fin = (v: number, or = 0): number => (Number.isFinite(v) ? v : or);
 const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
 
 /** The box around an item's shapes, in meters (null when it has no shapes). */
-function itemBox(item: SpDocPlotItem): Box | null {
+function itemBox(item: { shapes: SpShape[] }): Box | null {
   let b: Box | null = null;
   const add = (x: number, y: number): void => {
     if (!Number.isFinite(x) || !Number.isFinite(y)) return;
@@ -465,6 +481,54 @@ function plotMargin(plot: SpDocPlot, widthM: number, depthM: number): number {
     if (b) m = Math.max(m, -b.x0 + 0.05, b.x1 - widthM + 0.05, -b.y0 + 0.05, b.y1 - depthM + 0.05);
   }
   return m;
+}
+
+/** The key of a plot `W` points wide: its height (0 for an empty key, which
+ *  prints nothing, not even the heading) and how to draw it with its top at y0. */
+function layoutKey(items: SpDocKeyItem[], W: number): { height: number; draw: (pen: Pen, x0: number, y0: number) => void } {
+  const K = SP_PDF_KEY;
+  const entries = (items ?? []).filter((it) => it);
+  if (!entries.length) return { height: 0, draw: () => undefined };
+  const side = SP_PDF_PLOT.side;
+  const columns = Math.max(1, Math.floor((W - 2 * side) / K.colW));
+  const nameW = K.colW - K.symbolW - K.gap - K.right;
+  type Op = (pen: Pen, ox: number, oy: number) => void;
+  const ops: Op[] = [];
+  const heading = E(SP_PDF_PLOT_WORDS.key);
+  ops.push((pen, ox, oy) => pen.text(ox + side, oy + K.headPt, heading, K.headPt, true));
+  let y = K.headH;
+  for (let r = 0; r * columns < entries.length; r++) {
+    const row = entries.slice(r * columns, (r + 1) * columns).map((it) => ({ it, lines: spPdfWrap(E(it.name ?? ''), K.textPt, false, nameW) }));
+    const rowH = Math.max(K.symbolH, ...row.map((c) => c.lines.length * K.lineH));
+    const top = y;
+    row.forEach((c, n) => {
+      const x = side + n * K.colW;
+      // the symbol: its own shape, as large as its box allows, in the middle of the box
+      const box = itemBox(c.it);
+      if (box) {
+        const k = Math.min(K.symbolW / Math.max(box.x1 - box.x0, 1e-6), K.symbolH / Math.max(box.y1 - box.y0, 1e-6));
+        const kx = (v: number): number => x + K.symbolW / 2 + (v - (box.x0 + box.x1) / 2) * k;
+        const ky = (v: number): number => top + K.symbolH / 2 + (v - (box.y0 + box.y1) / 2) * k;
+        for (const s of c.it.shapes ?? []) {
+          const placed = placeShape(s, kx, ky, k);
+          ops.push((pen, ox, oy) => pen.shape(placeShape(placed, (v) => v + ox, (v) => v + oy, 1), K.stroke));
+        }
+        // the short word inside the symbol sits where it sits on the plot: at the symbol's own center
+        const tag = E(c.it.tag ?? '');
+        if (tag) ops.push((pen, ox, oy) => pen.text(ox + kx(0) - spPdfWidth(tag, K.textPt, true) / 2, oy + ky(0) + K.textPt * 0.35, tag, K.textPt, true));
+      }
+      // its name, wrapped inside the cell, level with the middle of the symbol
+      const nameTop = top + Math.max(0, (K.symbolH - c.lines.length * K.lineH) / 2);
+      c.lines.forEach((l, i) => ops.push((pen, ox, oy) => pen.text(ox + x + K.symbolW + K.gap, oy + nameTop + K.textPt * 0.9 + i * K.lineH, l, K.textPt, false)));
+    });
+    y += rowH + K.rowGap;
+  }
+  return {
+    height: y,
+    draw: (pen, x0, y0) => {
+      for (const op of ops) op(pen, x0, y0);
+    },
+  };
 }
 
 /** The plot, `W` points wide. `shrink` (1 = the usual size) makes the drawing
@@ -581,28 +645,37 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number): PlotLayout {
     pen.textDown(ox + left + drawW + 4, oy + midY - dw(dir.left) / 2, dir.left, P.direction, true);
   });
 
+  // THE KEY: directly under the drawing, above the size note
+  const key = layoutKey(plot.key ?? [], W);
+  const keyTop = P.top + drawH + under + P.bottom;
+  if (key.height) ops.push((pen, ox, oy) => key.draw(pen, ox, oy + keyTop));
+
   // the size note: always printed
   const noteBold = !plot.toScale;
   const noteText = E(plot.toScale ? `Stage size: ${plot.sizeNote ?? ''}` : String(plot.sizeNote ?? '').toUpperCase());
   const noteLines = noteText ? spPdfWrap(noteText, P.direction, noteBold, W) : [];
   const noteLead = P.direction + 2.5;
   const noteX = clamp(left, 0, Math.max(0, W - Math.max(0, ...noteLines.map((l) => spPdfWidth(l, P.direction, noteBold)))));
-  const noteTop = P.top + drawH + under + P.bottom;
+  const noteTop = keyTop + key.height;
   noteLines.forEach((l, i) => ops.push((pen, ox, oy) => pen.text(ox + noteX, oy + noteTop + P.note - 4 + i * noteLead, l, P.direction, noteBold)));
   return {
     height: noteTop + (noteLines.length ? P.note + (noteLines.length - 1) * noteLead : 0),
+    drawH,
     draw: (pen, x0, y0) => {
       for (const op of ops) op(pen, x0, y0);
     },
   };
 }
 
-/** The plot at its usual size, or smaller when it must be no taller than `maxH`. */
+/** The plot at its usual size, or with a smaller DRAWING when the whole
+ *  block (drawing, key, size note) must be no taller than `maxH`: the key and
+ *  every word keep their size. */
 function layoutPlot(plot: SpDocPlot, W: number, maxH: number): PlotLayout {
   let shrink = 1;
   let lay = buildPlot(plot, W, shrink);
-  for (let n = 0; n < 12 && lay.height > maxH; n++) {
-    shrink *= Math.max(0.4, (maxH / lay.height) * 0.985);
+  for (let n = 0; n < 6 && lay.height > maxH + 0.01 && shrink > 0.2; n++) {
+    const wanted = lay.drawH - (lay.height - maxH);
+    shrink = Math.max(0.2, shrink * Math.min(0.985, (wanted / lay.drawH) * 0.995));
     lay = buildPlot(plot, W, shrink);
   }
   return lay;
@@ -803,26 +876,35 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     return p;
   };
   /** The least height a plot accepts on a page that already has something on it. */
-  const plotLeast = (natural: number): number => Math.min(natural, Math.max(natural * 0.6, 200));
+  const plotLeast = (lay: PlotLayout): number => lay.height - 0.4 * lay.drawH;
 
   const drawPlot = (plot: SpDocPlot): void => {
     const { natural, notes } = plotInfo(plot);
     const notesH = notes.length * BODY_LEAD + 4;
-    let room = bottom - y - notesH;
-    let lay = natural;
-    if (natural.height > room) {
-      if (!fresh() && room < plotLeast(natural.height)) {
-        newPage();
-        room = bottom - y - notesH;
-      }
-      if (natural.height > room) lay = layoutPlot(plot, W, room);
+    const legend = (plot.legend ?? []).map(E).filter((l) => l).map((l) => spPdfWrap(l, PT.legend, false, W - 12));
+    const LEGEND_LEAD = 11;
+    const legendH = legend.reduce((n, lines) => n + lines.length * LEGEND_LEAD, 0) + (legend.length ? 3 : 0);
+    // The drawing, its key, its size note and its view note are ONE unit on
+    // one page. The lines of the legend belong under them: when they do not
+    // fit, the drawing gives way a little (at most 15%) before the legend is
+    // allowed to run on to the next page.
+    const fit = (): PlotLayout | null => {
+      const room = bottom - y - notesH;
+      if (natural.height + legendH <= room) return natural;
+      if (natural.height + legendH - room <= 0.15 * natural.drawH) return layoutPlot(plot, W, room - legendH);
+      return natural.height <= room ? natural : null;
+    };
+    let lay = fit();
+    if (!lay && !fresh() && bottom - y - notesH < plotLeast(natural)) {
+      newPage();
+      lay = fit();
     }
+    if (!lay) lay = layoutPlot(plot, W, bottom - y - notesH);
     lay.draw(pen, left, y);
     y += lay.height + 4;
     flow(notes, { size: PT.body, lead: BODY_LEAD });
-    const legend = (plot.legend ?? []).map(E).filter((l) => l);
     if (legend.length) y += 3;
-    for (const item of legend) flow(spPdfWrap(item, PT.legend, false, W - 12), { size: PT.legend, lead: 11, x: left + 12, keep: true, bullet: E('•') });
+    for (const lines of legend) flow(lines, { size: PT.legend, lead: LEGEND_LEAD, x: left + 12, keep: true, bullet: E('•') });
     y += AFTER.plot;
   };
 
@@ -909,7 +991,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       if (b.t === 'table') return { h: h + (b.table.columns.length ? prepared(b.table).headH + firstPiece(prepared(b.table)) : BODY_LEAD), table: true };
       if (b.t === 'plot') {
         const info = plotInfo(b.plot);
-        return { h: h + plotLeast(info.natural.height) + info.notes.length * BODY_LEAD + 4, table: false };
+        return { h: h + plotLeast(info.natural) + info.notes.length * BODY_LEAD + 4, table: false };
       }
       if (b.t === 'facts') return { h: h + BODY_LEAD, table: false };
       if (b.t === 'list') return { h: h + 2 * BODY_LEAD, table: false };

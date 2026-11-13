@@ -18,10 +18,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { SpDoc, SpDocColumn, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection } from '../src/features/stageplot/spDocTypes.ts';
-import { SP_PDF_MARGIN, SP_PDF_PAPER, SP_PDF_PLOT, SP_PDF_PLOT_WORDS, SP_PDF_TABLE_PT, spPdfBytes, spPdfWrap } from '../src/features/stageplot/spPdf.ts';
+import type { SpDoc, SpDocColumn, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection } from '../src/features/stageplot/spDocTypes.ts';
+import { SP_PDF_KEY, SP_PDF_MARGIN, SP_PDF_PAPER, SP_PDF_PLOT, SP_PDF_PLOT_WORDS, SP_PDF_TABLE_PT, spPdfBytes, spPdfWrap } from '../src/features/stageplot/spPdf.ts';
 import { SP_PDF_HELVETICA, SP_PDF_HELVETICA_BOLD, SP_PDF_MARKS, spPdfEncode, spPdfWidth } from '../src/features/stageplot/spPdfFonts.ts';
-import { spSymbol, type SpShape } from '../src/features/stageplot/spSymbols.ts';
+import { spKeySymbol, spSymbol, type SpShape } from '../src/features/stageplot/spSymbols.ts';
 import type { SpObjectKind, SpPaper } from '../src/features/stageplot/spTypes.ts';
 
 // ───────────────────────── a reader for the file ─────────────────────────
@@ -217,6 +217,7 @@ function plot30(grid = 0.5): SpDocPlot {
     items,
     viewNote: 'Overhead microphones: left and right as the audience sees the kit.',
     legend: ['A number in a box is an input channel on the input list.', 'M and a number in a box is a monitor mix.', 'AC is a place where the band asks for power.'],
+    key: [],
   };
 }
 
@@ -972,6 +973,177 @@ describe('stage plot PDF: the plot', () => {
     assert.equal(numberIn(htmlSrc, /\nconst TOP = ([\d.]+);/), SP_PDF_PLOT.top, moved);
     assert.equal(numberIn(htmlSrc, /\nconst BOTTOM = ([\d.]+);/), SP_PDF_PLOT.bottom, moved);
     assert.equal(numberIn(htmlSrc, /\nconst NOTE = ([\d.]+);/), SP_PDF_PLOT.note, moved);
+    // the key: the cell sizes, the room kept at the right of a name, and the number of cells across
+    const cell = /export const SP_KEY_CELL = \{([^}]*)\} as const;/.exec(packetSrc)?.[1] ?? '';
+    for (const key of ['symbolW', 'symbolH', 'textPt', 'gap', 'colW', 'lineH', 'rowGap', 'headPt', 'headH'] as const) {
+      assert.equal(numberIn(cell, new RegExp(`\\b${key}: ([\\d.]+)`)), SP_PDF_KEY[key], `${key}: ${moved}`);
+    }
+    assert.equal(numberIn(packetSrc, /const room = K\.colW - K\.symbolW - K\.gap - ([\d.]+);/), SP_PDF_KEY.right, moved);
+    assert.match(packetSrc, /const cols = Math\.max\(1, Math\.floor\(width \/ K\.colW\)\);/, moved);
+    assert.match(htmlSrc, /spKeyLayout\(plot\.key, width - SP_PLOT_SIDE \* 2\)/, moved);
+  });
+});
+
+// ───────────────────────── the key of the plot ─────────────────────────
+describe('stage plot PDF: the key (what each drawn symbol is)', () => {
+  const NINE: [SpObjectKind, string][] = [
+    ['performer', 'Performer'],
+    ['vocal-mic', 'Microphone on a stand'],
+    ['drum-kit', 'Drum kit, as the audience sees it'],
+    ['guitar-amp', 'Amplifier'],
+    ['keyboard', 'Keyboard'],
+    ['di', 'DI = direct box'],
+    ['wedge', 'Wedge monitor (wide side faces the performer)'],
+    ['power', 'Power wanted here'],
+    ['riser', 'Riser (dashed outline)'],
+  ];
+  const ALL_KINDS: SpObjectKind[] = [
+    'performer', 'vocal-mic', 'mic-stand', 'drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar',
+    'horn', 'playback', 'di', 'wedge', 'iem', 'drum-fill', 'sidefill', 'rack', 'stage-box', 'power', 'chair', 'music-stand', 'riser',
+  ];
+  const keyOf = (pairs: [SpObjectKind, string][]): SpDocKeyItem[] =>
+    pairs.map(([kind, name]) => {
+      // the key's own symbol (a riser is given a small sample box)
+      const sym = spKeySymbol(kind);
+      return { kind, name, w: sym.w, h: sym.h, shapes: sym.shapes, tag: sym.tag };
+    });
+  /** A small plot whose own labels are not words of the key. */
+  const keyPlot = (key: SpDocKeyItem[], people = 2, depthM = 4.5): SpDocPlot => ({
+    widthM: 7.2,
+    depthM,
+    toScale: true,
+    sizeNote: '24 ft × 15 ft (estimated)',
+    marginM: 0.6,
+    gridM: 0,
+    items: [...Array.from({ length: people }, (_, i) => item(`p${i}`, 'performer', 2 + i * 1.2, 2.5, ['Alex', 'Billie', 'Casey', 'Devon', 'Eli'][i], [`M${i + 1}`], true)), item('w', 'wedge', 2, 4, 'Front left', ['M1'])],
+    viewNote: 'Left and right are as the audience sees them.',
+    legend: ['A number in a box is an input channel.'],
+    key,
+  });
+  const docOf = (plot: SpDocPlot, paper: SpPaper = 'letter', filler = 0): SpDoc => ({
+    ...packet({ paper }),
+    sections: [
+      {
+        id: 'plot',
+        title: 'Stage plot',
+        breakBefore: 'none',
+        blocks: [...Array.from({ length: filler }, (_, i) => ({ t: 'para' as const, text: `Filler line <${pad(i + 1)}>.` })), { t: 'facts', rows: [['Venue', 'The Blue Room'], ['Date', 'December 5, 2026']] }, { t: 'plot', plot }],
+      },
+    ],
+  });
+  const times = (hay: string, needle: string): number => hay.split(needle).length - 1;
+  const insideMargins = (pg: Page, paper: SpPaper): void => {
+    const { w, h } = SP_PDF_PAPER[paper];
+    for (const r of pg.runs) {
+      if (r.up || r.down) continue;
+      assert.ok(r.x >= SP_PDF_MARGIN - 0.5 && r.x + spPdfWidth(spPdfEncode(r.text), r.size, r.bold) <= w - SP_PDF_MARGIN + 0.5, `"${r.text}" is inside the side margins`);
+      assert.ok(r.y >= SP_PDF_MARGIN - 0.5 && r.y <= h - SP_PDF_MARGIN + 0.5, `"${r.text}" is inside the top and bottom margins`);
+    }
+    for (const m of pg.stream.matchAll(/(-?[\d.]+) (-?[\d.]+) (m|l)( |\n)/g)) {
+      assert.ok(Number(m[1]) >= SP_PDF_MARGIN - 1 && Number(m[1]) <= w - SP_PDF_MARGIN + 1, `x ${m[1]}`);
+      assert.ok(Number(m[2]) >= SP_PDF_MARGIN - 1 && Number(m[2]) <= h - SP_PDF_MARGIN + 1, `y ${m[2]}`);
+    }
+  };
+
+  it('prints the heading and every name of a 9-entry key once, on the page of the stage, with each symbol drawn', () => {
+    for (const paper of PAPERS) {
+      const p = parsePdf(spPdfBytes(docOf(keyPlot(keyOf(NINE)), paper)));
+      save(`sp_key9_${paper}.pdf`, spPdfBytes(docOf(keyPlot(keyOf(NINE)), paper)));
+      assert.equal(p.pages.length, 1);
+      const pg = p.pages[0];
+      const heads = pg.runs.filter((r) => r.text === SP_PDF_PLOT_WORDS.key);
+      assert.equal(heads.length, 1, 'the heading KEY, once');
+      assert.ok(heads[0].bold && heads[0].size === SP_PDF_KEY.headPt);
+      assert.ok(pg.runs.some((r) => r.text === SP_PDF_PLOT_WORDS.up), 'the same page as the stage');
+      for (const [, name] of NINE) assert.equal(times(pg.flat, squash(name)), 1, `${paper}: "${name}" is printed once`);
+      // a name is 9 pt, not bold; the short words inside the symbols are there too ("DI", "AC")
+      const name = pg.runs.find((r) => r.text === 'Keyboard');
+      assert.ok(name && !name.bold && name.size === SP_PDF_KEY.textPt);
+      for (const tag of ['DI', 'AC']) assert.equal(pg.runs.filter((r) => r.text === tag && r.bold).length, 1, `the tag ${tag} inside its symbol`);
+      // the symbols are drawn, with their own dashes: the riser's outline and the kit's two cymbals
+      assert.equal((pg.stream.match(/\[4 3\] 0 d/g) ?? []).length, 3);
+      // as many cells across as fit the drawing's width (its side room left free), each `colW` wide
+      const across = Math.floor((SP_PDF_PAPER[paper].w - 2 * SP_PDF_MARGIN - 2 * SP_PDF_PLOT.side) / SP_PDF_KEY.colW);
+      assert.equal(across, paper === 'letter' ? 4 : 3, `${paper}: ${across} cells across`);
+      const first = (n: string): Run | undefined => pg.runs.find((r) => squash(n).startsWith(squash(r.text)) && r.text.length >= 4 && r.size === SP_PDF_KEY.textPt && !r.bold);
+      const row = NINE.slice(0, across).map(([, n]) => first(n));
+      assert.ok(row.every((r) => r));
+      const xs = row.map((r) => (r ? r.x : 0));
+      assert.ok(Math.abs(xs[0] - (SP_PDF_MARGIN + SP_PDF_PLOT.side + SP_PDF_KEY.symbolW + SP_PDF_KEY.gap)) < 0.01, 'the first name starts after its symbol and the gap');
+      for (let i = 1; i < across; i++) assert.ok(Math.abs(xs[i] - xs[i - 1] - SP_PDF_KEY.colW) < 0.01, 'columns of equal width');
+      const next = first(NINE[across][1]);
+      assert.ok(next && Math.abs(next.x - xs[0]) < 0.01 && next.y < Math.min(...row.map((r) => r?.y ?? 0)), 'the next entry starts the second row');
+      insideMargins(pg, paper);
+    }
+  });
+
+  it('puts the key under the drawing and above the size note, the view note and the legend', () => {
+    const pg = parsePdf(spPdfBytes(docOf(keyPlot(keyOf(NINE))))).pages[0];
+    const at = (text: string): Run => {
+      const r = pg.runs.find((x) => x.text === text);
+      assert.ok(r, text);
+      return r;
+    };
+    const order = [SP_PDF_PLOT_WORDS.up, SP_PDF_PLOT_WORDS.down, SP_PDF_PLOT_WORDS.key, 'Performer', 'Power wanted here', 'Stage size: 24 ft × 15 ft (estimated)', 'Left and right are as the audience sees them.', 'A number in a box is an input channel.'];
+    // PDF's y grows upward: each of these is lower on the sheet than the one before
+    for (let i = 1; i < order.length; i++) assert.ok(at(order[i]).y < at(order[i - 1]).y, `"${order[i]}" is under "${order[i - 1]}"`);
+  });
+
+  it('wraps a name that is longer than its cell, and prints every word of it', () => {
+    const long = 'Wedge monitor on the floor: the wide side of the drawing is the side that faces the performer who listens to it, and the narrow side faces the audience';
+    for (const paper of PAPERS) {
+      const key = keyOf([['wedge', long], ['performer', 'Performer'], ['di', 'DI = direct box'], ['power', 'Power wanted here'], ['riser', 'Riser']]);
+      const pg = parsePdf(spPdfBytes(docOf(keyPlot(key), paper))).pages[0];
+      assert.equal(times(pg.flat, squash(long)), 1);
+      const lines = pg.runs.filter((r) => r.size === SP_PDF_KEY.textPt && !r.bold && squash(long).includes(squash(r.text)) && r.text.length > 8);
+      assert.ok(lines.length >= 7, `the long name runs to ${lines.length} lines`);
+      const room = SP_PDF_KEY.colW - SP_PDF_KEY.symbolW - SP_PDF_KEY.gap - SP_PDF_KEY.right;
+      assert.equal(room, 80);
+      for (const l of lines) assert.ok(spPdfWidth(spPdfEncode(l.text), l.size, false) <= room + 0.01, `"${l.text}" stays in its cell`);
+      // the cells of its row share its height: the second row starts under the last line of the long name
+      const riser = pg.runs.find((r) => r.text === 'Riser');
+      assert.ok(riser && riser.y < Math.min(...lines.map((l) => l.y)));
+      insideMargins(pg, paper);
+    }
+  });
+
+  it('prints no heading and takes no room for an empty key', () => {
+    const none = parsePdf(spPdfBytes(docOf(keyPlot([])))).pages[0];
+    const some = parsePdf(spPdfBytes(docOf(keyPlot(keyOf(NINE))))).pages[0];
+    assert.ok(!none.runs.some((r) => r.text === SP_PDF_PLOT_WORDS.key));
+    const noteY = (pg: Page): number => pg.runs.find((r) => r.text.startsWith('Stage size:'))?.y ?? 0;
+    const downY = (pg: Page): number => pg.runs.find((r) => r.text === SP_PDF_PLOT_WORDS.down)?.y ?? 0;
+    assert.ok(Math.abs(downY(none) - downY(some)) < 0.01, 'the drawing is the same');
+    assert.ok(downY(none) - noteY(none) < 30, 'with no key the size note is right under the drawing');
+    assert.ok(noteY(none) - noteY(some) > SP_PDF_KEY.headH + 3 * SP_PDF_KEY.symbolH, 'with a key the note is under the key');
+  });
+
+  it('keeps the drawing, its key and its notes on one page, inside the margins, however long the key is', () => {
+    const all = keyOf(ALL_KINDS.map((k): [SpObjectKind, string] => [k, `${k.replace(/-/g, ' ')} (in the key)`]));
+    assert.equal(all.length, 26);
+    for (const paper of PAPERS) {
+      // a small act (the 240 pt drawing), a full band, a deep stage; alone on the page and after other text
+      for (const [people, depth] of [[1, 4.5], [5, 4.5], [5, 14]] as const) {
+        for (const filler of [0, 8, 16, 24, 32, 40]) {
+          const p = parsePdf(spPdfBytes(docOf(keyPlot(all, people, depth), paper, filler)));
+          const where = `${paper}, ${people} people, ${depth} m deep, ${filler} lines above`;
+          const page = pagesWith(p, SP_PDF_PLOT_WORDS.up);
+          assert.equal(page.length, 1, where);
+          const pg = p.pages[page[0]];
+          for (const word of [SP_PDF_PLOT_WORDS.down, SP_PDF_PLOT_WORDS.right, SP_PDF_PLOT_WORDS.left, 'Alex', 'Front left', 'Stage size: 24 ft × 15 ft (estimated)', 'Left and right are as the audience sees them.']) {
+            assert.ok(pg.runs.some((r) => r.text === word), `${where}: "${word}" is on the page of the drawing`);
+          }
+          assert.equal(pg.runs.filter((r) => r.text === SP_PDF_PLOT_WORDS.key).length, 1, `${where}: the key is on the page of the drawing`);
+          for (const k of all) assert.equal(times(pg.flat, squash(k.name)), 1, `${where}: "${k.name}"`);
+          for (const other of p.pages) if (other !== pg) assert.ok(!other.runs.some((r) => r.text === SP_PDF_PLOT_WORDS.key));
+          insideMargins(pg, paper);
+          // the words keep their size when the drawing has to give way
+          assert.equal(pg.runs.find((r) => r.text === 'Alex')?.size, SP_PDF_PLOT.person);
+          assert.equal(pg.runs.find((r) => r.text.startsWith('performer (in'))?.size, SP_PDF_KEY.textPt);
+        }
+      }
+    }
+    save('sp_key26_letter.pdf', spPdfBytes(docOf(keyPlot(all, 1), 'letter', 8)));
   });
 });
 

@@ -28,7 +28,7 @@ import { spHistoryApply, spHistoryStart, spHistoryUndo } from '../src/features/s
 import { spAddObject, spGridStep, spGroup, spInputLocation, spMoveObject, spNewProject, spObject, spRemoveObjects, spUpdateObject } from '../src/features/stageplot/spModel.ts';
 import { spmAddDevice } from '../src/screens/lab/stageplot/monitors/monitorPlan.ts';
 import { spReview } from '../src/features/stageplot/spReview.ts';
-import { spPlacedShapes } from '../src/features/stageplot/spSymbols.ts';
+import { spKeySymbol, spPlacedShapes, spPlotKey } from '../src/features/stageplot/spSymbols.ts';
 import { spFromTemplate, type SpTemplateId } from '../src/features/stageplot/spTemplates.ts';
 import type { SpProject } from '../src/features/stageplot/spTypes.ts';
 import { touchToGlass } from '../src/screens/lab/roomdesign/planGeom.ts';
@@ -36,6 +36,10 @@ import { SP_GUIDE_STAGE } from '../src/screens/lab/stageplot/guides/stage.ts';
 import {
   STAGE_BADGE_FS,
   STAGE_FRAME,
+  STAGE_KEY_ART,
+  STAGE_KEY_CHAR_W,
+  STAGE_KEY_EMPTY,
+  STAGE_KEY_FS,
   STAGE_MIN_REACH,
   STAGE_NAME_FS,
   STAGE_PERSON_FS,
@@ -49,8 +53,12 @@ import {
   stageFacingShort,
   stageFacingWord,
   stageFrameBoxes,
+  stageGlassWidthGuess,
   stageGridLines,
   stageHit,
+  stageKeyLayout,
+  stageKeyScale,
+  stageKeyWords,
   stageLabelClash,
   stageLabelLeader,
   stageLabels,
@@ -59,13 +67,13 @@ import {
   stageObjectBox,
   stagePan,
   stagePosFraction,
-  stagePosShort,
   stagePosUnit,
   stagePosValue,
   stagePosWords,
   stageRegion,
   stageResizeHandle,
   stageResizeTo,
+  stageScaleNote,
   stageSizeFraction,
   stageSnapPoint,
   stageSymbolScale,
@@ -972,14 +980,11 @@ describe('the Stage screen', () => {
     assert.equal(stageAxisWords(ft, 'y', 1 + 2 / 16), '2 ft in front of the downstage edge');
     assert.equal(stageAxisWords(ft, 'x', -3 / 24), '3 ft past the stage right edge');
     assert.equal(stageAxisWords(ft, 'x', 1 + 3 / 24), '3 ft past the stage left edge');
-    assert.equal(stagePosShort(ft, 'y', -3 / 16), '3 ft OFF');
-    assert.equal(stagePosShort(ft, 'x', 0.5), '12 ft');
     const none = blank();
-    assert.equal(stagePosShort(none, 'x', 0.5), '50%');
+    assert.equal(stagePosWords(none, { x: 0.5, y: 1.1 }), '50% of the way across from stage right, 10% of the stage depth in front of the downstage edge');
     for (const p of [ft, none, blank({ width: 8, depth: 5, unit: 'm' })])
       for (const at of [{ x: -0.2, y: -0.2 }, { x: 1.2, y: 1.2 }, { x: 0.3, y: 0.3 }]) {
         assert.doesNotMatch(stagePosWords(p, at), /-\d/);
-        assert.doesNotMatch(`${stagePosShort(p, 'x', at.x)} ${stagePosShort(p, 'y', at.y)}`, /-\d/);
       }
   });
 
@@ -991,7 +996,7 @@ describe('the Stage screen', () => {
     assert.match(shown, /label="PLACE ON THE STAGE"/);
     assert.match(shown, /MONITOR ONLY: kept out of the audience mix/);
     assert.match(shown, /label="Who plays or sings it"/);
-    assert.match(shown, /NOT THE REAL SIZE OF THE EQUIPMENT/);
+    assert.match(shown, /Symbols are drawings, not the real size of the equipment\./);
     // removing asks in place first, as the Inputs area does
     assert.match(shown, /<RemoveStep\s/);
   });
@@ -1002,6 +1007,177 @@ describe('the Stage screen', () => {
     assert.doesNotMatch(all, /colour|centre|grey|metre|labell/);
     // every edit goes through the model: no file here changes a project by hand
     assert.doesNotMatch(all, /\.objects\.push\(|\.objects\.splice\(|objects\[\w+\]\s*=/);
+  });
+});
+
+describe('the key under the stage (owner: it is always there, in the drawing)', () => {
+  const KEY_TEMPLATES: SpTemplateId[] = ['blank', ...TEMPLATES];
+  const WIDTHS = [366, 320, 250, 700];
+
+  it('every kind of symbol on the stage has ONE cell, in the model’s order and with the model’s names', () => {
+    for (const id of KEY_TEMPLATES) {
+      const p = tpl(id);
+      const entries = spPlotKey(p.objects);
+      for (const gw of WIDTHS) {
+        const L = stageKeyLayout(entries, gw);
+        assert.deepEqual(L.cells.map((c) => c.kind), entries.map((e) => e.kind), `${id} at ${gw}`);
+        assert.deepEqual(L.cells.map((c) => c.name), entries.map((e) => e.name));
+        // a name is never cut: its lines, joined, are the name
+        for (const c of L.cells) assert.equal(c.lines.map((l) => l.text).join(' '), c.name);
+      }
+      // every kind that is drawn is in the key (a vocal microphone under "Microphone on a stand")
+      for (const o of p.objects) assert.ok(entries.some((e) => e.kind === (o.kind === 'vocal-mic' ? 'mic-stand' : o.kind)), `${id}: ${o.kind}`);
+    }
+    assert.ok(spPlotKey(tpl('four-piece').objects).length >= 8);
+  });
+
+  it('no cell is wider than the glass, no two cells share a place, and nothing runs off any edge', () => {
+    for (const id of KEY_TEMPLATES)
+      for (const gw of WIDTHS) {
+        const L = stageKeyLayout(spPlotKey(tpl(id).objects), gw);
+        for (const c of L.cells) {
+          assert.ok(c.x >= 0 && c.x + c.w <= gw + 1e-6, `${id} ${gw}: ${c.name} is inside the glass`);
+          assert.ok(c.y >= 0 && c.y + c.h <= L.height + 1e-6, `${id} ${gw}: ${c.name} is inside the strip`);
+          // the art box and every line of the name are inside the cell
+          assert.ok(c.artCx - STAGE_KEY_ART.w / 2 >= c.x - 1e-6 && c.artCy - STAGE_KEY_ART.h / 2 >= c.y - 1e-6 && c.artCy + STAGE_KEY_ART.h / 2 <= c.y + c.h + 1e-6);
+          for (const l of c.lines) {
+            assert.ok(l.x >= c.x + STAGE_KEY_ART.w, 'the name starts after the art');
+            assert.ok(l.x + l.text.length * STAGE_KEY_FS * STAGE_KEY_CHAR_W <= gw + 1e-6, `${id} ${gw}: “${l.text}” ends inside the glass`);
+            assert.ok(l.y > c.y && l.y < c.y + c.h, 'the baseline is inside the cell');
+          }
+        }
+        for (let i = 0; i < L.cells.length; i++)
+          for (let j = i + 1; j < L.cells.length; j++) {
+            const a = L.cells[i];
+            const b = L.cells[j];
+            const apart = a.x + a.w <= b.x + 1e-6 || b.x + b.w <= a.x + 1e-6 || a.y + a.h <= b.y + 1e-6 || b.y + b.h <= a.y + 1e-6;
+            assert.ok(apart, `${id} ${gw}: ${a.name} and ${b.name}`);
+          }
+        // the heading KEY stands alone at the left of the first row
+        for (const c of L.cells.filter((x) => x.row === 0)) assert.ok(c.x >= L.heading.x + 'KEY'.length * STAGE_KEY_FS * 0.7, 'clear of the heading');
+      }
+  });
+
+  it('the text is at least 9 points, and the art keeps its shape inside its box', () => {
+    assert.ok(STAGE_KEY_FS >= 9);
+    const key = code(`${SP}/stage/StageKey.tsx`);
+    for (const m of key.matchAll(/fontSize=\{([^}]+)\}/g)) assert.equal(m[1], 'STAGE_KEY_FS');
+    for (const it of SP_PALETTE) {
+      const sym = spKeySymbol(it.kind);
+      const u = stageKeyScale(sym.w, sym.h);
+      assert.ok(sym.w * u <= STAGE_KEY_ART.w + 1e-6 && sym.h * u <= STAGE_KEY_ART.h + 1e-6, it.kind);
+      assert.ok(Math.abs(sym.w * u - STAGE_KEY_ART.w) < 1e-6 || Math.abs(sym.h * u - STAGE_KEY_ART.h) < 1e-6, `${it.kind} fills one side of the box`);
+    }
+  });
+
+  it('the salsa band’s key fits a 390-wide phone in at most four rows; the small examples in fewer', () => {
+    const rows = (id: SpTemplateId) => stageKeyLayout(spPlotKey(tpl(id).objects), stageGlassWidthGuess(390)).rows;
+    assert.equal(stageGlassWidthGuess(390), 366);
+    assert.ok(rows('salsa') <= 4, `salsa: ${rows('salsa')} rows`);
+    assert.ok(rows('four-piece') <= 4, `four-piece: ${rows('four-piece')} rows`);
+    assert.ok(rows('solo') <= 2, `solo: ${rows('solo')} rows`);
+    for (const id of TEMPLATES) assert.ok(stageKeyLayout(spPlotKey(tpl(id).objects), 366).height <= 90, `${id}: the key is ${stageKeyLayout(spPlotKey(tpl(id).objects), 366).height} tall`);
+    // a wider glass never needs more rows
+    for (const id of TEMPLATES) assert.ok(stageKeyLayout(spPlotKey(tpl(id).objects), 700).rows <= rows(id));
+  });
+
+  it('an empty stage still shows the heading and says so, so the place of the key is learned', () => {
+    const L = stageKeyLayout([], 366);
+    assert.equal(L.rows, 1);
+    assert.equal(L.cells.length, 0);
+    assert.equal(L.empty?.text, 'Nothing is on the stage yet.');
+    assert.equal(STAGE_KEY_EMPTY, 'Nothing is on the stage yet.');
+    assert.ok(L.height >= 24);
+    assert.equal(L.heading.text, 'KEY');
+    assert.equal(stageKeyWords([]), 'Key: nothing is on the stage yet.');
+  });
+
+  it('the strip’s height is what the rack is told, and what the drawing takes from the stage', () => {
+    const p = tpl('salsa');
+    const L = stageKeyLayout(spPlotKey(p.objects), 366);
+    // the height is the rows it drew: the last cell's bottom, plus the foot
+    const bottom = Math.max(...L.cells.map((c) => c.y + c.h));
+    assert.ok(L.height > bottom && L.height - bottom <= 6);
+    assert.ok(stageKeyLayout([], 366).height < L.height, 'one row is a shorter strip than three');
+    assert.ok(stageKeyLayout(spPlotKey(p.objects), 250).height > L.height, 'a narrower glass needs more rows, and says so in its height');
+    assert.deepEqual(stageKeyLayout(spPlotKey(p.objects), 366), L, 'the same every time');
+    const area = code(`${SP}/StageArea.tsx`);
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    // the area tells the rack: the usual display height PLUS the key's height
+    assert.match(area, /const keyHeight = Math\.ceil\(stageKeyLayout\(spPlotKey\(p\.objects\), stageGlassWidthGuess\(winW\), scaleNote\)\.height\);/);
+    assert.match(area, /const phoneHeight = [^;]+ \+ keyHeight;/);
+    // …and nothing else: no readout row and no line under the glass, so the
+    // rack gives their height to the glass, and the key does not cost the stage
+    assert.match(area, /stage=\{\{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true \}\}/);
+    assert.doesNotMatch(area, /\bbezel\b|\bbadge\b|BezelItem/);
+    // the drawing lays the same key out for its real width, and the stage takes the height above it
+    assert.match(plan, /const keyEntries = useMemo\(\(\) => spPlotKey\(p\.objects\), \[p\.objects\]\);/);
+    assert.match(plan, /const keyLayout = useMemo\(\(\) => stageKeyLayout\(keyEntries, gw, scaleNote\), \[keyEntries, gw, scaleNote\]\);/);
+    assert.match(plan, /const gh = Math\.max\(ghAll \/ 3, ghAll - keyLayout\.height\);/);
+  });
+
+  it('the scale words are in the key’s heading row, at its right end, inside the drawing', () => {
+    assert.equal(stageScaleNote(blank()), 'NOT TO SCALE');
+    assert.equal(stageScaleNote(blank({ width: 24, depth: 16, unit: 'ft', dims: 'estimated' })), '24 × 16 ft · ESTIMATED');
+    assert.equal(stageScaleNote(blank({ width: 8, depth: 5, unit: 'm', dims: 'confirmed' })), '8 × 5 m · CONFIRMED');
+    assert.equal(stageScaleNote(blank({ width: 24, depth: null })), 'NOT TO SCALE', 'half a size is no size');
+    for (const id of KEY_TEMPLATES)
+      for (const gw of WIDTHS)
+        for (const note of ['NOT TO SCALE', '24 × 16 ft · ESTIMATED']) {
+          const L = stageKeyLayout(spPlotKey(tpl(id).objects), gw, note);
+          assert.equal(L.note?.text, note);
+          // right-aligned at the strip's right edge, on the heading's own line
+          assert.ok((L.note?.x ?? 0) <= gw && (L.note?.x ?? 0) >= gw - 8);
+          assert.equal(L.note?.y, L.heading.y);
+          // the first row's cells stop before the words begin (0.62 of the size per letter is their bound)
+          const noteLeft = (L.note?.x ?? 0) - note.length * STAGE_KEY_FS * 0.62;
+          for (const c of L.cells.filter((x) => x.row === 0)) assert.ok(c.x + c.w <= noteLeft + 1e-6 || gw < 300, `${id} ${gw}: ${c.name} is clear of “${note}”`);
+          // every entry is still there, once
+          assert.equal(L.cells.length, spPlotKey(tpl(id).objects).length);
+        }
+    assert.equal(stageKeyLayout([], 366).note, null);
+    const key = code(`${SP}/stage/StageKey.tsx`);
+    assert.match(key, /\{layout\.note\.text\}/);
+    assert.match(key, /textAnchor="end"/);
+    // the well keeps the sentence the line under the glass used to carry
+    const area = code(`${SP}/StageArea.tsx`);
+    assert.equal((area.match(/Symbols are drawings, not the real size of the equipment\./g) ?? []).length, 2);
+    assert.match(area, /NOT TO SCALE: no stage width and depth are set in Setup/);
+  });
+
+  it('with no readout row, the selection is still named: on the drawing, in the well, and on the OBJECT button where it has a value line', () => {
+    const area = code(`${SP}/StageArea.tsx`);
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    assert.match(area, /opener\('object', 'OBJECT', sel \? selName\.toUpperCase\(\) : 'NOTHING',/);
+    assert.match(area, /objects`\} on the stage\. \$\{sel \? `Selected: \$\{selName\}, /);
+    // the selected object's label is drawn even when it has no name, or names are switched off
+    assert.match(plan, /text: o\.id === selectedId \? stageListName\(p, o\) : showNames \? stageName\(p, o\) : '',/);
+    assert.match(plan, /fill=\{isSel \? AMBER : '#f1f2f5'\}/);
+  });
+
+  it('is part of the drawing: always drawn, not touchable, one sentence for a screen reader', () => {
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    const key = code(`${SP}/stage/StageKey.tsx`);
+    const area = code(`${SP}/StageArea.tsx`);
+    // drawn every time, by the drawing itself (so it is in FULL SCREEN too), with no condition round it
+    assert.match(plan, /<\/View>\s*(?:\{\}\s*)?<StageKey project=\{p\} entries=\{keyEntries\} layout=\{keyLayout\} w=\{w\} gw=\{gw\} \/>\s*<\/View>\s*\);/);
+    assert.equal((plan.match(/<StageKey\b/g) ?? []).length, 1);
+    // not a popup, not behind a switch
+    assert.doesNotMatch(key, /\bSheet\b|\bModal\b|\bSwitch\b|useState|Pressable|panHandlers|onPress/);
+    assert.doesNotMatch(area, /showKey|Key on the drawing/);
+    // it is a box of its own UNDER the box that takes the drags
+    assert.ok(plan.indexOf('.panHandlers') < plan.indexOf('<StageKey'), 'the key comes after the drag surface');
+    assert.match(plan, /\{\.\.\.pan\.panHandlers\} accessible accessibilityLabel=\{a11y\}>\s*(?:\{\}\s*)?<GestureExclusionZone maxHeightDp=\{STAGE_BAND_DP\} \/>/);
+    assert.match(key, /<View pointerEvents="none">\s*<Svg aria-hidden \{\.\.\.SVG_HIDDEN_NATIVE\}/);
+    // one labeled element: "Key: Performer, Drum kit, …"
+    assert.match(key, /accessible accessibilityRole="text" accessibilityLabel=\{layout\.note \? `\$\{stageKeyWords\(entries\)\} \$\{scaleWords\(layout\.note\.text\)\}` : stageKeyWords\(entries\)\}/);
+    const words = stageKeyWords(spPlotKey(tpl('four-piece').objects));
+    assert.match(words, /^Key: Performer, Drum kit, /);
+    assert.match(words, /Wedge monitor \(wide side faces the performer\)/);
+    // the SAME art as the stage, and the model's key symbol for its size
+    assert.match(key, /<StageObjectArt\b/);
+    assert.match(key, /spKeySymbol\(c\.kind\)/);
+    assert.match(key, />\s*KEY\s*<\/SvgText>/);
   });
 });
 
@@ -1042,7 +1218,7 @@ describe('the Stage screen guide', () => {
   });
 
   it('names only controls the screen really has', () => {
-    const src = [code(`${SP}/StageArea.tsx`), code(`${SP}/stage/StagePlanView.tsx`)].join('\n');
+    const src = [code(`${SP}/StageArea.tsx`), code(`${SP}/stage/StagePlanView.tsx`), code(`${SP}/stage/StageKey.tsx`)].join('\n');
     const caps = new Set<string>();
     for (const line of [...g.control, ...g.seeing, g.intro?.start ?? '']) for (const m of line.matchAll(/\b[A-Z]{3,}(?: \/ [A-Z]{3,}| [A-Z]{3,})*\b/g)) caps.add(m[0]);
     assert.ok(caps.size >= 6, [...caps].join(', '));

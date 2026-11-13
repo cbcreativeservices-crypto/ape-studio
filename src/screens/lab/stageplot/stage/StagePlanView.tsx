@@ -23,6 +23,14 @@
  *     brackets and a pointer on the side it faces. Its group wears a dotted
  *     ring. Color only repeats it.
  *
+ * THE KEY (owner 2026-11-12) is part of this drawing, always: a strip
+ * directly under the stage frame that names each kind of object on the
+ * stage, drawn with the stage's own art (StageKey). The stage is laid out in
+ * the height that is left above it. The key is a separate box UNDER the box
+ * that takes the drags, so it takes no touches; in FULL SCREEN it is the same
+ * strip under the stage, so it stays in view at every step of the dock's
+ * ZOOM (which zooms inside the frame).
+ *
  * A DRAG IS ONE EDIT. While the finger is down the moving position lives in
  * this view's own state (the project is not touched, so the transform cannot
  * re-fit under the finger); on release `onMove` is called ONCE, and the model
@@ -34,12 +42,14 @@ import { PanResponder, Platform, View, type ViewStyle } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../modules/ape-gesture-exclusion';
 import { spStageAspect } from '../../../../features/stageplot/spModel';
+import { spPlotKey } from '../../../../features/stageplot/spSymbols';
 import type { SpId, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { StageDeck } from '../../cableinstall/scenes/floorArt';
 import { StageInFullScreen, useStageTextScale } from '../../rack/stageAspect';
 import { fingerAt, fingerOffset, touchToGlass, type Finger } from '../../roomdesign/planGeom';
 import { STAGE_INK, StageObjectArt } from './stageArt';
+import { StageKey } from './StageKey';
 import {
   STAGE_BADGE_FS,
   STAGE_FRAME,
@@ -51,6 +61,8 @@ import {
   stageFrameBoxes,
   stageGridLines,
   stageHit,
+  stageKeyLayout,
+  stageScaleNote,
   stageLabelLeader,
   stageLabels,
   stageLivePositions,
@@ -160,7 +172,14 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const p = project;
   const s = useStageTextScale();
   const gw = w / s;
-  const gh = h / s;
+  // THE KEY takes its rows at the bottom of the glass; the stage is laid out
+  // in the height above it (never under a third of the glass).
+  const keyEntries = useMemo(() => spPlotKey(p.objects), [p.objects]);
+  const scaleNote = stageScaleNote(p);
+  const keyLayout = useMemo(() => stageKeyLayout(keyEntries, gw, scaleNote), [keyEntries, gw, scaleNote]);
+  const ghAll = h / s;
+  const gh = Math.max(ghAll / 3, ghAll - keyLayout.height);
+  const stageH = gh * s;
   const inFull = useContext(StageInFullScreen);
 
   /** The object under the finger, as it moves: where it would be let go. */
@@ -205,16 +224,18 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // ── names and numbers ─────────────────────────────────────────────────────
   const frame = useMemo(() => stageFrameBoxes(gw, gh), [gw, gh]);
   const labels = useMemo(() => {
-    if (!showNames && !showNumbers) return [];
+    if (!showNames && !showNumbers && !selectedId) return [];
     const items: StageLabelIn[] = order.map((o, i) => ({
       id: o.id,
-      text: showNames ? stageName(p, o) : '',
+      // the selected object is always named on the drawing (there is no
+      // readout row): its own name, or what it is when it has none
+      text: o.id === selectedId ? stageListName(p, o) : showNames ? stageName(p, o) : '',
       badges: showNumbers ? stageBadges(p, o, livePos?.get(o.id) ?? o) : [],
       box: boxes[i],
       person: o.kind === 'performer',
     }));
     return stageLabels(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right]);
-  }, [order, boxes, p, livePos, showNames, showNumbers, gw, gh, frame]);
+  }, [order, boxes, p, livePos, showNames, showNumbers, selectedId, gw, gh, frame]);
 
   const grid = useMemo(() => (p.stage.grid ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T]);
 
@@ -321,14 +342,15 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const handle = selBox?.sized ? stageResizeHandle(selBox) : null;
 
   return (
-    <View style={[{ width: w, height: h }, NO_SELECT]} {...pan.panHandlers} accessible accessibilityLabel={a11y}>
+    <View style={{ width: w, height: h, overflow: 'hidden' }}>
+    <View style={[{ width: w, height: stageH }, NO_SELECT]} {...pan.panHandlers} accessible accessibilityLabel={a11y}>
       {/* Android gesture navigation: a drag that starts at the screen edge must
           not start the system back gesture (modules/ape-gesture-exclusion). */}
       <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
       {/* The drawing takes no touches of its own: every touch lands on the
           view above, so its place is measured from this box on every platform. */}
       <View pointerEvents="none">
-        <Svg aria-hidden {...SVG_HIDDEN_NATIVE} width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
+        <Svg aria-hidden {...SVG_HIDDEN_NATIVE} width={w} height={stageH} viewBox={`0 0 ${gw} ${gh}`}>
           <Rect x={0} y={0} width={gw} height={gh} fill={GLASS} />
           <Deck x={deck.x} y={deck.y} w={T.kx} h={T.ky} xs={grid.xs} ys={grid.ys} />
 
@@ -439,6 +461,10 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
           </SvgText>
         </Svg>
       </View>
+    </View>
+      {/* THE KEY: always there, directly under the stage frame, part of the
+          drawing. Its own box, under the one that takes the drags. */}
+      <StageKey project={p} entries={keyEntries} layout={keyLayout} w={w} gw={gw} />
     </View>
   );
 }

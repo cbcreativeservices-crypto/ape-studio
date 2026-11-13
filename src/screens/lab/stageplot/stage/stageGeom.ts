@@ -661,15 +661,6 @@ export function stagePosWords(p: SpProject, at: Pt): string {
   return `${stageAxisWords(p, 'x', at.x)}, ${stageAxisWords(p, 'y', at.y)}`;
 }
 
-/** A position for a small readout: "12 ft", "50%", or "3 ft OFF" when it is
- *  past an edge (never a negative number). */
-export function stagePosShort(p: SpProject, axis: 'x' | 'y', frac: number): string {
-  const unit = stagePosUnit(p);
-  const d = stageEdgeDistance(p, axis, frac);
-  const n = unit === '%' ? `${d.value}%` : `${d.value} ${unit}`;
-  return d.side === 'on' ? n : `${n} OFF`;
-}
-
 /** "24 ft × 16 ft (estimated)" or "" when the size is not known. */
 export function stageSizeWords(p: SpProject): string {
   const { width, depth, unit, dims } = p.stage;
@@ -699,4 +690,214 @@ export function stageSizeFraction(p: SpProject, axis: 'x' | 'y', value: number |
   const span = unit === '%' ? 100 : axis === 'x' ? (p.stage.width as number) : (p.stage.depth as number);
   if (!(span > 0)) return null;
   return clamp(value / span, STAGE_SIZE_MIN, STAGE_SIZE_MAX);
+}
+
+/* ── the key under the stage ────────────────────────────────────────────── */
+
+/**
+ * THE KEY (owner 2026-11-12: "the key explaining what drawn objects are needs
+ * to always be there in the drawing to understand it"). A strip directly
+ * under the stage frame, part of the drawing: each KIND of object on this
+ * stage, drawn small with the stage's own art, and its name beside it. Never
+ * a popup, never behind a switch, never scrolled away.
+ *
+ * This is its layout, in glass units: the heading KEY at the left, then the
+ * cells, wrapping to as many rows as they need. A cell is the art box and the
+ * name; a name too long for a whole row goes on two or more lines (it is
+ * never cut). The strip's height is what the Stage area adds to the display.
+ */
+export const STAGE_KEY_FS = 9.5;
+/** Advance per character of the key's names, as a fraction of the font size.
+ *  The names are the model's fixed list (spPlotKey); set in the condensed
+ *  face, the widest of them measures 0.498, so this is an upper bound. */
+export const STAGE_KEY_CHAR_W = 0.52;
+export const STAGE_KEY_ART = { w: 22, h: 16 } as const;
+const KEY_PAD_X = 6;
+const KEY_PAD_TOP = 3;
+const KEY_PAD_BOTTOM = 3;
+const KEY_ROW_H = 18;
+const KEY_ROW_GAP = 2;
+const KEY_ART_GAP = 4;
+const KEY_CELL_GAP = 10;
+const KEY_HEADING_W = 28;
+const KEY_LINE_H = STAGE_KEY_FS + 1.5;
+/** The scale words at the right end of the heading row are set in capitals,
+ *  a little spaced: this many glass units per letter is an upper bound. */
+const KEY_NOTE_CHAR_W = STAGE_KEY_FS * 0.62;
+export const STAGE_KEY_EMPTY = 'Nothing is on the stage yet.';
+
+export type StageKeyCell<K extends string = string> = {
+  kind: K;
+  name: string;
+  row: number;
+  /** The cell's box. */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** The center of the art box. */
+  artCx: number;
+  artCy: number;
+  /** The name, one line or more: the LEFT edge and the baseline of each. */
+  lines: { text: string; x: number; y: number }[];
+};
+
+export type StageKeyLayout<K extends string = string> = {
+  /** The whole strip's height: what the display grows by. */
+  height: number;
+  rows: number;
+  /** The heading's left edge and baseline. */
+  heading: { text: 'KEY'; x: number; y: number };
+  cells: StageKeyCell<K>[];
+  /** Said in place of the cells when the stage is empty (its left edge and
+   *  baseline), so the place of the key is learned from the start. */
+  empty: { text: string; x: number; y: number } | null;
+  /** The scale words ("NOT TO SCALE", or the stage's size) at the RIGHT end
+   *  of the heading row: its right edge and its baseline. Null when none. */
+  note: { text: string; x: number; y: number } | null;
+};
+
+const keyTextW = (text: string): number => text.length * STAGE_KEY_FS * STAGE_KEY_CHAR_W;
+
+/** A name on as few lines as fit `maxW`, broken at spaces (never cut). A
+ *  name longer than `wrapAt` letters is first split in two near its middle,
+ *  so a long name makes a narrow, two-line cell. */
+function keyNameLines(name: string, maxW: number, wrapAt: number): string[] {
+  const fit = (text: string): string[] => {
+    if (keyTextW(text) <= maxW) return [text];
+    const out: string[] = [];
+    let line = '';
+    for (const word of text.split(' ')) {
+      const next = line ? `${line} ${word}` : word;
+      if (line && keyTextW(next) > maxW) {
+        out.push(line);
+        line = word;
+      } else line = next;
+    }
+    if (line) out.push(line);
+    return out;
+  };
+  if (name.length > wrapAt && name.includes(' ')) {
+    const mid = name.length / 2;
+    let best = -1;
+    for (let i = 0; i < name.length; i++) if (name[i] === ' ' && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
+    return [...fit(name.slice(0, best)), ...fit(name.slice(best + 1))];
+  }
+  return fit(name);
+}
+
+function keyLayoutWith<K extends string>(entries: readonly { kind: K; name: string }[], gw: number, wrapAt: number, note: string): StageKeyLayout<K> {
+  // the heading KEY stands at the left of the first row; the rows under it
+  // use the whole width
+  const first = KEY_PAD_X + KEY_HEADING_W;
+  const right = Math.max(first + 60, gw - KEY_PAD_X);
+  const leftOf = (row: number): number => (row === 0 ? first : KEY_PAD_X);
+  // the heading row gives its right end to the scale words
+  const noteW = note ? Math.min((right - first) / 2, note.length * KEY_NOTE_CHAR_W + KEY_CELL_GAP) : 0;
+  const rightOf = (row: number): number => (row === 0 ? right - noteW : right);
+  const baseline = (top: number, h: number, n: number, k: number): number => top + (h - n * KEY_LINE_H) / 2 + k * KEY_LINE_H + STAGE_KEY_FS * 0.82;
+  // measure every cell against the narrowest row, then fill rows from the left
+  const narrow = right - first;
+  const measured = entries.map((e) => {
+    const lines = keyNameLines(e.name, narrow - STAGE_KEY_ART.w - KEY_ART_GAP, wrapAt);
+    const textW = Math.max(...lines.map(keyTextW));
+    return { e, lines, w: Math.min(narrow, STAGE_KEY_ART.w + KEY_ART_GAP + textW), h: Math.max(KEY_ROW_H, lines.length * KEY_LINE_H + 3) };
+  });
+  const rows: (typeof measured)[] = [];
+  let used = 0;
+  for (const m of measured) {
+    const row = rows[rows.length - 1];
+    const at = Math.max(0, rows.length - 1);
+    const room = rightOf(at) - leftOf(at);
+    if (!row || used + KEY_CELL_GAP + m.w > room + 1e-6) {
+      rows.push([m]);
+      used = m.w;
+    } else {
+      row.push(m);
+      used += KEY_CELL_GAP + m.w;
+    }
+  }
+  const cells: StageKeyCell<K>[] = [];
+  let y = KEY_PAD_TOP;
+  let headingY = 0;
+  rows.forEach((row, r) => {
+    const h = Math.max(...row.map((m) => m.h));
+    if (r === 0) headingY = baseline(y, h, 1, 0);
+    let x = leftOf(r);
+    for (const m of row) {
+      const textX = x + STAGE_KEY_ART.w + KEY_ART_GAP;
+      cells.push({
+        kind: m.e.kind,
+        name: m.e.name,
+        row: r,
+        x,
+        y,
+        w: m.w,
+        h,
+        artCx: x + STAGE_KEY_ART.w / 2,
+        artCy: y + h / 2,
+        lines: m.lines.map((text, k) => ({ text, x: textX, y: baseline(y, h, m.lines.length, k) })),
+      });
+      x += m.w + KEY_CELL_GAP;
+    }
+    y += h + (r < rows.length - 1 ? KEY_ROW_GAP : 0);
+  });
+  return { height: y + KEY_PAD_BOTTOM, rows: rows.length, heading: { text: 'KEY', x: KEY_PAD_X, y: headingY }, cells, empty: null, note: note ? { text: note, x: right, y: headingY } : null };
+}
+
+/** Ways to set the names, tried in this order: each on one line where it
+ *  fits; names longer than 18 letters on two lines ("Wedge monitor (wide
+ *  side / faces the performer)"); names longer than 13 on two lines. */
+const KEY_WRAPS: readonly number[] = [Number.POSITIVE_INFINITY, 18, 13];
+
+/** `note`: the scale words printed at the right end of the heading row
+ *  ("NOT TO SCALE", or the stage's size): see stageScaleNote. */
+export function stageKeyLayout<K extends string>(entries: readonly { kind: K; name: string }[], gw: number, note = ''): StageKeyLayout<K> {
+  if (!entries.length) {
+    const y = KEY_PAD_TOP + (KEY_ROW_H - KEY_LINE_H) / 2 + STAGE_KEY_FS * 0.82;
+    const right = Math.max(KEY_PAD_X + KEY_HEADING_W + 60, gw - KEY_PAD_X);
+    return {
+      height: KEY_PAD_TOP + KEY_ROW_H + KEY_PAD_BOTTOM,
+      rows: 1,
+      heading: { text: 'KEY', x: KEY_PAD_X, y },
+      cells: [],
+      empty: { text: STAGE_KEY_EMPTY, x: KEY_PAD_X + KEY_HEADING_W, y },
+      note: note ? { text: note, x: right, y } : null,
+    };
+  }
+  // The shortest strip wins (the earlier way, on a tie): the key takes its
+  // height from the stage's display, so every row it saves goes to the stage.
+  let best = keyLayoutWith(entries, gw, KEY_WRAPS[0], note);
+  for (const wrapAt of KEY_WRAPS.slice(1)) {
+    const tryIt = keyLayoutWith(entries, gw, wrapAt, note);
+    if (tryIt.height < best.height - 1e-6) best = tryIt;
+  }
+  return best;
+}
+
+/** The scale words for the key's heading row: "NOT TO SCALE" when the stage
+ *  has no width and depth, otherwise its size and whether that is confirmed
+ *  ("24 × 16 ft · ESTIMATED"). Always one or the other: a plot never passes
+ *  for a scale drawing by saying nothing. */
+export function stageScaleNote(p: SpProject): string {
+  const { width, depth, unit, dims } = p.stage;
+  if (!width || !depth) return 'NOT TO SCALE';
+  return `${width} × ${depth} ${unit} · ${dims.toUpperCase()}`;
+}
+
+/** The glass width the Stage area expects before the rack has measured it:
+ *  the window less the rack's side padding. Only for telling the rack how
+ *  tall the display should be; the drawing lays the key out again for the
+ *  width it is really given. */
+export const stageGlassWidthGuess = (windowWidth: number): number => Math.max(240, windowWidth - 24);
+
+/** One sentence for a screen reader: "Key: Performer, Drum kit, …". */
+export function stageKeyWords(entries: readonly { name: string }[]): string {
+  return entries.length ? `Key: ${entries.map((e) => e.name).join(', ')}.` : `Key: ${STAGE_KEY_EMPTY.toLowerCase()}`;
+}
+
+/** The scale (glass units per meter) that fits a symbol of w × h meters in
+ *  the key's art box, its shape kept. */
+export function stageKeyScale(wM: number, hM: number): number {
+  return Math.min(STAGE_KEY_ART.w / Math.max(0.05, wM), STAGE_KEY_ART.h / Math.max(0.05, hM));
 }

@@ -28,6 +28,8 @@ import {
   spDocText,
   spEmailText,
   spFileName,
+  spKeyLayout,
+  spKeyLines,
   spLabelBlock,
   spPdfPageCount,
   spPlotDoc,
@@ -35,12 +37,14 @@ import {
   spPlotScale,
   spStamp,
   spUnresolved,
+  SP_KEY_CELL,
   SP_PLOT_MAX_H,
   SP_PLOT_NOMINAL_W,
   SP_PLOT_SMALL_H,
   SP_PLOT_SMALL_PEOPLE,
 } from '../src/features/stageplot/spPacket.ts';
 import { SP_PAGES, spIsInputBadge, spPacketHtml, spPlotScene } from '../src/features/stageplot/spPacketHtml.ts';
+import { spKeySymbol, spPlotKey } from '../src/features/stageplot/spSymbols.ts';
 import { spPdfBytes } from '../src/features/stageplot/spPdf.ts';
 import { spReview } from '../src/features/stageplot/spReview.ts';
 import { spFromTemplate, type SpTemplateId } from '../src/features/stageplot/spTemplates.ts';
@@ -482,7 +486,7 @@ describe('how long the packet is: pages counted with the app’s own PDF writer'
       if (t !== 'solo' || f > 2) assert.ok(c < f, `${t}: compact ${c} is not shorter than full ${f}`);
     }
     assert.ok(pagesOf(example('four-piece'), COMPACT) <= 3);
-    assert.ok(pagesOf(example('salsa'), COMPACT) <= 3);
+    assert.ok(pagesOf(example('salsa'), COMPACT) <= 4);
     assert.ok(pagesOf(example('duo'), COMPACT) <= 2);
   });
   it('the stage plot alone is one page for every example, the 12-performer band included', () => {
@@ -531,7 +535,11 @@ describe('the plot', () => {
     for (const o of added) assert.equal(o.label, '');
     const d = docOf(q);
     for (const o of added) assert.equal(plotOf(d).items.find((i) => i.id === o.id)?.label, '');
-    assert.ok(!/Chair|Music stand/.test(spPacketHtml(d)), 'no kind name is made up for it');
+    // the KEY says what the two shapes are; nothing beside the objects themselves does
+    const html = spPacketHtml(d);
+    const outsideKey = html.replace(/<g class="key">[\s\S]*?<\/g>/, '');
+    assert.ok(!/Chair|Music stand/.test(outsideKey), 'no kind name is made up beside the object');
+    assert.ok(html.includes('>Chair</text>') && html.includes('>Music stand</text>'), 'the key names the two kinds');
     assert.ok(spDocText(d).includes('- An object with no name: Downstage'));
   });
   it('prints the performers’ names, as people', () => {
@@ -674,6 +682,152 @@ describe('the plot', () => {
     const plot2 = spPlotDoc(rack);
     assert.ok(plot2.marginM >= 0.2 * plot2.widthM, 'the margin grows to show it');
     assert.ok(plot2.legend.some((l) => /off the stage/.test(l)));
+  });
+});
+
+describe('the KEY is part of every drawing of a stage (owner 2026-11-12)', () => {
+  const EXAMPLES = ['solo', 'duo', 'four-piece', 'playback', 'salsa'] as const;
+  const KINDS = ['full', 'compact', 'plot'] as const;
+  /** The words of the key group in one SVG, in order. */
+  const keyWords = (html: string): string[] | null => {
+    const figure = /<figure class="plot">([\s\S]*?)<\/figure>/.exec(html)?.[1] ?? '';
+    const group = /<g class="key">([\s\S]*?)<\/g>/.exec(figure)?.[1];
+    return group == null ? null : [...group.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1].replace(/&amp;/g, '&'));
+  };
+  it('the key of each example’s plot is the key of its objects: every kind of symbol that is drawn, once', () => {
+    for (const t of EXAMPLES) {
+      const p = example(t);
+      const plot = spPlotDoc(p);
+      assert.deepEqual(plot.key.map((k) => ({ kind: k.kind, name: k.name })), spPlotKey(p.objects), t);
+      assert.ok(plot.key.length >= 3, `${t} has a key`);
+      for (const k of plot.key) {
+        const sym = spKeySymbol(k.kind);
+        assert.deepEqual([k.w, k.h, k.tag, k.shapes], [sym.w, sym.h, sym.tag, sym.shapes]);
+        assert.ok(k.shapes.length > 0 && k.name.length > 0);
+      }
+      assert.equal(new Set(plot.key.map((k) => k.name)).size, plot.key.length, 'no name twice');
+      // a vocal microphone and a microphone on a stand are one symbol: one entry
+      assert.ok(plot.key.filter((k) => k.name === 'Microphone on a stand').length <= 1);
+    }
+  });
+  it('every packet kind carries it inside the plot’s own figure: the heading, then each name once, each with its symbol', () => {
+    for (const t of EXAMPLES) {
+      const p = example(t);
+      for (const packet of KINDS) {
+        const d = docOf(p, { paper: 'letter', packet });
+        const plot = plotOf(d);
+        const html = spPacketHtml(d);
+        const words = keyWords(html);
+        assert.ok(words, `${t} ${packet}: the key is in the figure`);
+        // "KEY", then for each entry its tag (when it has one) and its name in lines
+        const want = ['KEY', ...plot.key.flatMap((k) => [...(k.tag ? [k.tag] : []), ...spKeyLines(k.name)])];
+        assert.deepEqual(words, want, `${t} ${packet}`);
+        assert.equal((html.match(/<g class="key">/g) ?? []).length, 1);
+        // a symbol for each: the key group holds at least one shape for every entry
+        const group = /<g class="key">([\s\S]*?)<\/g>/.exec(html)?.[1] ?? '';
+        assert.ok((group.match(/<(circle|line|polygon|polyline) /g) ?? []).length >= plot.key.length);
+        assert.ok(spDocText(d).includes(`Key: ${plot.key.map((k) => k.name).join('; ')}.`), 'the text view lists the key');
+      }
+    }
+  });
+  it('each symbol is drawn inside its own small box, with the fills and dashes it has on the plot, and its name is whole', () => {
+    const plot = spPlotDoc(four());
+    const scene = spPlotScene(plot, 526);
+    assert.ok(scene.key);
+    const K = SP_KEY_CELL;
+    const layout = spKeyLayout(plot.key, 526 - 32);
+    assert.equal(layout.cells.length, plot.key.length);
+    assert.equal(layout.cols, 4);
+    const ops = scene.ops.slice(scene.key.from, scene.key.to);
+    const head = ops[0];
+    assert.ok(head.t === 'text' && head.text === 'KEY' && head.bold);
+    const keyTop = head.t === 'text' ? head.y - K.headPt : 0;
+    // walk the ops cell by cell: shapes, an optional tag, then the name's lines
+    let n = 1;
+    layout.cells.forEach((cell, i) => {
+      const x0 = 16 + cell.x;
+      const y0 = keyTop + cell.y;
+      let shapes = 0;
+      while (ops[n] && ops[n].t !== 'text') {
+        const o = ops[n];
+        const xs = o.t === 'circle' ? [o.cx - o.r, o.cx + o.r] : o.t === 'line' ? [o.x1, o.x2] : o.t === 'poly' ? o.pts.filter((_, k) => k % 2 === 0) : [];
+        const ys = o.t === 'circle' ? [o.cy - o.r, o.cy + o.r] : o.t === 'line' ? [o.y1, o.y2] : o.t === 'poly' ? o.pts.filter((_, k) => k % 2 === 1) : [];
+        for (const x of xs) assert.ok(x >= x0 - 0.01 && x <= x0 + K.symbolW + 0.01, `${cell.name}: a shape leaves its box sideways`);
+        for (const y of ys) assert.ok(y >= y0 - 0.01 && y <= y0 + K.symbolH + 0.01, `${cell.name}: a shape leaves its box`);
+        shapes += 1;
+        n += 1;
+      }
+      assert.ok(shapes >= 1, `${cell.name} has a symbol`);
+      if (plot.key[i].tag) {
+        const tag = ops[n];
+        assert.ok(tag.t === 'text' && tag.text === plot.key[i].tag && tag.size >= 9);
+        n += 1;
+      }
+      const lines: string[] = [];
+      for (let k = 0; k < cell.lines.length; k += 1) {
+        const o = ops[n + k];
+        assert.ok(o.t === 'text' && o.size >= 9 && o.x === x0 + K.symbolW + K.gap);
+        if (o.t === 'text') lines.push(o.text);
+      }
+      n += cell.lines.length;
+      assert.equal(lines.join(' '), cell.name, 'the name is whole: wrapped between words, never cut');
+    });
+    assert.equal(n, ops.length, 'nothing else is in the key');
+    // the riser keeps its dashed outline; the performer its gray fill
+    const riserAt = layout.cells.findIndex((c) => c.kind === 'riser');
+    assert.ok(riserAt >= 0);
+    assert.ok(ops.some((o) => o.t === 'poly' && o.dash), 'a dashed symbol stays dashed in the key');
+    assert.ok(ops.some((o) => o.t === 'circle' && o.fill === '#d2d2d2'), 'the gray of a performer is in the key');
+  });
+  it('the key sits under the stage and above the size note, in the same drawing', () => {
+    const scene = spPlotScene(spPlotDoc(four()), 526);
+    const y = (text: string) => {
+      const o = scene.ops.find((x) => x.t === 'text' && x.text === text);
+      assert.ok(o && o.t === 'text', text);
+      return o.y;
+    };
+    assert.ok(y('AUDIENCE / DOWNSTAGE') < y('KEY'));
+    assert.ok(y('KEY') < y('NOT TO SCALE'));
+    const last = Math.max(...scene.ops.map((o) => (o.t === 'text' ? o.y : 0)));
+    assert.equal(last, y('NOT TO SCALE'));
+    assert.ok(scene.h >= last);
+    // one SVG holds the plot and its key: a page break cannot come between them
+    const html = spPacketHtml(docOf(four()));
+    assert.equal((html.match(/<svg /g) ?? []).length, 1);
+    assert.match(html, /figure\.plot \{[^}]*break-inside: avoid;/);
+  });
+  it('a long name wraps inside its cell and no word is lost; the numbers the PDF writer mirrors are these', () => {
+    assert.deepEqual(SP_KEY_CELL, { symbolW: 26, symbolH: 20, textPt: 9, gap: 6, colW: 120, lineH: 11, rowGap: 6, headPt: 9.5, headH: 16 });
+    const lines = spKeyLines('Wedge monitor (wide side faces the performer)');
+    assert.ok(lines.length >= 2);
+    assert.equal(lines.join(' '), 'Wedge monitor (wide side faces the performer)');
+    assert.deepEqual(spKeyLines('Performer'), ['Performer']);
+    assert.deepEqual(spKeyLines('Supercalifragilisticexpialidocious thing'), ['Supercalifragilisticexpialidocious', 'thing'], 'a word too long for the cell keeps its own line, whole');
+    // a row is as tall as its tallest cell
+    const layout = spKeyLayout(spPlotDoc(four()).key, 494);
+    const wedge = layout.cells.find((c) => c.kind === 'wedge');
+    assert.ok(wedge && wedge.h === wedge.lines.length * SP_KEY_CELL.lineH && wedge.h > SP_KEY_CELL.symbolH);
+    for (const c of layout.cells) assert.ok(c.h >= c.lines.length * SP_KEY_CELL.lineH && c.x + SP_KEY_CELL.colW <= 494 + 1e-6);
+  });
+  it('a blank stage has an empty key and prints no KEY heading', () => {
+    const empty = spNewProject({ id: 'p-empty', now: NOW });
+    const plot = spPlotDoc(empty);
+    assert.deepEqual(plot.key, []);
+    assert.equal(spPlotScene(plot, 526).key, null);
+    for (const packet of KINDS) {
+      const d = docOf(empty, { paper: 'letter', packet });
+      const html = spPacketHtml(d);
+      assert.ok(!html.includes('class="key"'));
+      assert.ok(!html.includes('>KEY</text>'));
+      assert.ok(!spDocText(d).includes('Key:'));
+    }
+    assert.deepEqual(spKeyLayout([], 494), { h: 0, cols: 0, cells: [] });
+  });
+  it('the on-screen plot draws the same list, so the preview has the same key', () => {
+    const src = readFileSync(new URL('../src/screens/lab/stageplot/export/PlotView.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+    assert.match(src, /const scene = spPlotScene\(plot, sceneW\);/);
+    assert.match(src, /\{scene\.ops\.map\(op\)\}/);
+    assert.match(src, /export const SP_PLOT_MIN_W = 520;/, 'drawn at its printed size on a phone: key text stays 9 pt');
   });
 });
 

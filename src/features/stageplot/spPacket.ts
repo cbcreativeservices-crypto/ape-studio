@@ -40,10 +40,10 @@ import {
   SP_VENUE_FEED_WORD,
 } from './spCatalog.ts';
 import { spAllInputsInOrder, spBadge, spDeviceCountWord, spInputSupplier, spMixesOf, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
-import type { SpDoc, SpDocBlock, SpDocColumn, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
+import type { SpDoc, SpDocBlock, SpDocColumn, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
 import { spEdit, spFreeze, spInputLocation, spLocationWord, spMix, spObjectOfInput, spPerformer } from './spModel.ts';
 import { spReview, type SpIssue } from './spReview.ts';
-import { spIsSized, spObjectBoxM, spPlacedShapes, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
+import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
 import type { SpDeviceType, SpExportOptions, SpId, SpInput, SpMix, SpMixNeed, SpObject, SpPacketKind, SpProject, SpSnapshot } from './spTypes.ts';
 
 /* ── small words ────────────────────────────────────────────────────────── */
@@ -238,6 +238,59 @@ export const SP_PLOT_SMALL_PEOPLE = 2;
 export function spPlotMaxH(plot: { items?: readonly { person: boolean }[] }): number {
   if (!plot.items) return SP_PLOT_MAX_H;
   return plot.items.filter((i) => i.person).length <= SP_PLOT_SMALL_PEOPLE ? SP_PLOT_SMALL_H : SP_PLOT_MAX_H;
+}
+
+/** THE KEY's sizes, in points (owner 2026-11-12: the key is part of the
+ *  drawing, always). One cell for each kind of symbol on the plot: the
+ *  symbol scaled to fit a box `symbolW` × `symbolH` (its own shape kept),
+ *  then `gap`, then its name in `textPt` type, wrapped to the cell and never
+ *  cut. Cells are `colW` wide and fill rows from the left; a row is as tall
+ *  as its tallest cell, and rows are `rowGap` apart. The heading "KEY" is
+ *  `headPt` type on a line `headH` high. Every renderer uses these numbers
+ *  (spPdf.ts mirrors them). */
+export const SP_KEY_CELL = { symbolW: 26, symbolH: 20, textPt: 9, gap: 6, colW: 120, lineH: 11, rowGap: 6, headPt: 9.5, headH: 16 } as const;
+
+/** One key name as lines that fit a cell: broken between words only, and a
+ *  word that is too long for the cell keeps a line to itself, whole. */
+export function spKeyLines(name: string): string[] {
+  const K = SP_KEY_CELL;
+  const room = K.colW - K.symbolW - K.gap - 8;
+  const lines: string[] = [];
+  let line = '';
+  for (const word of name.split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && spTextW(next, K.textPt) > room) {
+      lines.push(line);
+      line = word;
+    } else line = next;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+export type SpKeyLayout = {
+  /** The height of the whole key, heading included; 0 when the key is empty. */
+  h: number;
+  cols: number;
+  /** Each cell's top-left corner (from the key's own top-left) and its name in lines. */
+  cells: { kind: SpDocKeyItem['kind']; name: string; x: number; y: number; h: number; lines: string[] }[];
+};
+
+/** Where each cell of the key goes, for a key `width` points wide. An empty
+ *  key takes no room and prints no heading. */
+export function spKeyLayout(key: readonly Pick<SpDocKeyItem, 'kind' | 'name'>[], width: number): SpKeyLayout {
+  const K = SP_KEY_CELL;
+  if (!key.length) return { h: 0, cols: 0, cells: [] };
+  const cols = Math.max(1, Math.floor(width / K.colW));
+  const cells: SpKeyLayout['cells'] = [];
+  let y = K.headH;
+  for (let n = 0; n < key.length; n += cols) {
+    const row = key.slice(n, n + cols).map((k) => ({ k, lines: spKeyLines(k.name) }));
+    const h = Math.max(K.symbolH, ...row.map((c) => c.lines.length * K.lineH));
+    row.forEach((c, i) => cells.push({ kind: c.k.kind, name: c.k.name, x: i * K.colW, y, h, lines: c.lines }));
+    y += h + K.rowGap;
+  }
+  return { h: y, cols, cells };
 }
 
 export const spTextW = (text: string, size: number, bold = false): number => text.length * size * (bold ? SP_PLOT_TYPE.charWBold : SP_PLOT_TYPE.charW);
@@ -534,7 +587,14 @@ export function spPlotDoc(p: SpProject, brief = false): SpDocPlot {
   if (offstage) legend.push('Anything drawn outside the stage outline is off the stage.');
   const said = brief ? [legend.join(' ')] : legend;
 
-  return { widthM: st.width, depthM: st.depth, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said };
+  // THE KEY: each kind of symbol that is drawn on THIS plot, with its name.
+  // Part of the drawing in every packet kind; nothing switches it off.
+  const key: SpDocKeyItem[] = spPlotKey(p.objects).map((e) => {
+    const sym = spKeySymbol(e.kind);
+    return { kind: e.kind, name: e.name, w: sym.w, h: sym.h, shapes: sym.shapes, tag: sym.tag };
+  });
+
+  return { widthM: st.width, depthM: st.depth, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, key };
 }
 
 /* ── tables ─────────────────────────────────────────────────────────────── */
@@ -1079,6 +1139,7 @@ function plotText(plot: SpDocPlot): string[] {
     const where = spLocationWord({ x: i.at.x / plot.widthM, y: i.at.y / plot.depthM });
     out.push(`- ${i.label || (i.tag ? `${i.tag} symbol` : 'An object with no name')}: ${where}${i.badges.length ? `. References: ${i.badges.join(', ')}` : ''}`);
   }
+  if (plot.key.length) out.push(`Key: ${plot.key.map((k) => k.name).join('; ')}.`);
   if (plot.viewNote) out.push(`Viewpoint: ${plot.viewNote}`);
   out.push(...plot.legend);
   return out;

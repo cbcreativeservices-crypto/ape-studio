@@ -6,7 +6,11 @@
  *          audience is at the bottom; the four direction words never move.
  *          FULL SCREEN is on: the drawing is laid out in glass units, so the
  *          same drags work at every size.
- *   BEZEL  read-only: what is selected, where it stands, how it is turned.
+ *          THE KEY is a strip under the stage, inside the display, always:
+ *          each kind of object on this stage, drawn small, with its name.
+ *          Its heading row carries the scale words (NOT TO SCALE, or the
+ *          stage's size). There is no readout row and no line under the
+ *          glass: their height is the key's.
  *   DOCK   every control (owner rule: controls in the bottom dock):
  *            ZOOM    the lane: the whole stage … 4×. Zoomed in, a finger on
  *                    the bare stage slides the drawing.
@@ -38,10 +42,11 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { spEdit, spGridStep, spMoveObject, spObject, spToScale, spUpdateObject } from '../../../features/stageplot/spModel';
+import { spPlotKey } from '../../../features/stageplot/spSymbols';
 import type { SpId, SpProject } from '../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../theme/tokens';
 import { RackUnit } from '../rack/RackUnit';
-import type { BezelItem, DockParam } from '../rack/rackTypes';
+import type { DockParam } from '../rack/rackTypes';
 import { useSpEditor } from './spContext';
 import { Button, HelpTip, IssueList, Note, Sheet, Switch } from './spForm';
 import { goToIssue, runIssueAction } from './spIssueActions';
@@ -50,7 +55,7 @@ import { StageObjectList } from './stage/StageObjectList';
 import { StagePalette } from './stage/StagePalette';
 import { StagePlanView } from './stage/StagePlanView';
 import { StageStepScroll, stageSheetScrollHeight, stageTrayScrollHeight } from './stage/StageStepScroll';
-import { STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageAxisWords, stageFacingShort, stageFacingWord, stagePosShort, stagePosWords, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
+import { STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageFacingShort, stageFacingWord, stageGlassWidthGuess, stageKeyLayout, stagePosWords, stageScaleNote, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
 import { STAGE_NEW_SPOT, stageFreeSpot, stageListName, stageListOrder, stagePlace, stageSelectedObjectId, stageSelectionName, stageUnplaced, type StageAdded } from './stage/stageLinks';
 
 /** The TURN lane moves in 5° steps (0…355). */
@@ -68,7 +73,7 @@ type Panel = 'add' | 'object' | 'view';
 export function StageArea() {
   const ed = useSpEditor();
   const p = ed.project;
-  const { height: winH } = useWindowDimensions();
+  const { height: winH, width: winW } = useWindowDimensions();
 
   const [view, setView] = useState<StageView>(STAGE_VIEW_FIT);
   const [names, setNames] = useState(true);
@@ -144,20 +149,15 @@ export function StageArea() {
   );
 
   const shownRot = sel ? (turn && turn.id === sel.id ? turn.rot : sel.rot) : 0;
-  const bezel: BezelItem[] = sel
-    ? [
-        { k: 'SELECTED', v: selName.toUpperCase(), vA11y: selName, flex: 1.7 },
-        { k: 'ACROSS', v: stagePosShort(p, 'x', sel.x), vA11y: stageAxisWords(p, 'x', sel.x) },
-        { k: 'DEPTH', v: stagePosShort(p, 'y', sel.y), vA11y: stageAxisWords(p, 'y', sel.y) },
-        { k: 'TURN', v: `${shownRot}°`, vA11y: `${shownRot} degrees, ${stageFacingWord(shownRot)}` },
-      ]
-    : [
-        { k: 'SELECTED', v: 'NOTHING', vA11y: 'Nothing is selected', flex: 1.7 },
-        { k: 'ON STAGE', v: String(p.objects.length), vA11y: `${p.objects.length} objects on the stage` },
-        { k: 'ZOOM', v: `${view.zoom.toFixed(1)}×`, vA11y: `Zoom ${view.zoom.toFixed(1)} times` },
-      ];
   const size = stageSizeWords(p);
-  const badge = spToScale(p) ? `${size.toUpperCase()} · SYMBOLS ARE DRAWINGS, NOT THE REAL SIZE OF THE EQUIPMENT` : 'NOT TO SCALE · SYMBOLS ARE DRAWINGS, NOT THE REAL SIZE OF THE EQUIPMENT';
+  // NO READOUT ROW AND NO LINE UNDER THE GLASS (lead, 2026-11-12). The key
+  // under the stage needs its height, and the rack gives the glass only what
+  // its own strips leave. So what they said is said elsewhere: the selected
+  // object's name is drawn on the stage (in the selection's own color, with
+  // its ring) and in the well's first lines; ZOOM and TURN are on their own
+  // dock buttons; the count of objects is the well's first line; and the scale
+  // words are in the key's heading row, inside the drawing.
+  const scaleNote = stageScaleNote(p);
 
   // ── what ADD, OBJECT and VIEW show (in the popup, or in the tray) ─────────
   const sheetH = stageSheetScrollHeight(winH);
@@ -249,7 +249,8 @@ export function StageArea() {
       locked: sel ? undefined : 'nothing is selected. Tap an object on the stage first',
     },
     opener('add', 'ADD', 'NEW', 'the palette of objects', () => paletteBody(trayH, add)),
-    opener('object', 'OBJECT', sel ? 'EDIT' : 'NONE', sel ? `edit ${selName}` : 'nothing is selected', () => objectBody(trayH)),
+    // where the button has a value line (the tray button, in FULL SCREEN) it names the selection
+    opener('object', 'OBJECT', sel ? selName.toUpperCase() : 'NOTHING', sel ? `${selName} is selected` : 'nothing is selected', () => objectBody(trayH)),
     opener('view', 'VIEW', p.stage.snap ? 'SNAP' : p.stage.grid ? 'GRID' : 'PLAIN', `grid ${p.stage.grid ? 'on' : 'off'}, snap ${p.stage.snap ? 'on' : 'off'}`, () => viewBody),
   ];
 
@@ -258,7 +259,11 @@ export function StageArea() {
   const stageIssues = ed.issues.filter((i) => i.area === 'stage');
   // a taller glass where the phone has the room (the rack still protects the
   // dock and the well)
-  const phoneHeight = Math.max(250, Math.min(320, Math.round(winH * 0.36)));
+  // THE KEY under the stage is part of the display, so the display grows by
+  // the key's height: the stage keeps its room, and the well keeps its
+  // minimum (the rack still clamps the glass for the dock and the well).
+  const keyHeight = Math.ceil(stageKeyLayout(spPlotKey(p.objects), stageGlassWidthGuess(winW), scaleNote).height);
+  const phoneHeight = Math.max(250, Math.min(320, Math.round(winH * 0.36))) + keyHeight;
   // On a tall window (a tablet) the well keeps about a third of the height:
   // the list of objects under the drawing is the way to work without a drag,
   // and it was read through a 165-point slot there (visual review).
@@ -272,8 +277,11 @@ export function StageArea() {
 
   return (
     <>
-      <RackUnit stage={{ render: stage, size: 'L', phoneHeight, minWell, badge, bezel, hideDragTag: true, fullScreen: true }} params={params} initialParam="zoom">
+      <RackUnit stage={{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true }} params={params} initialParam="zoom">
         <View style={styles.well}>
+          <Text style={styles.status} accessibilityLiveRegion="polite">
+            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName}, ${stagePosWords(p, sel)}, ${stageFacingWord(sel.rot)}.` : 'Nothing is selected.'}`}
+          </Text>
           {crowded ? <Note>{`This stage has ${p.objects.length} objects. At this size some names sit close together. Press ZOOM IN, or open FULL SCREEN, to read every name.`}</Note> : null}
           <Text style={styles.body}>Drag an object to move it; tap it to select it. ADD opens the palette, OBJECT edits what is selected, and TURN faces it another way. You are looking from the audience: stage right is on your left.</Text>
           <Text style={styles.caption}>A performer, their instrument, their microphone and their wedge are separate objects. Group them in OBJECT to move them together.</Text>
@@ -285,7 +293,6 @@ export function StageArea() {
             </Note>
           ) : null}
 
-          {sel ? <Text style={styles.caption}>{`Selected: ${selName}, ${stagePosWords(p, sel)}, ${stageFacingWord(sel.rot)}.`}</Text> : null}
 
           {unplaced.length ? (
             <View style={styles.block}>
@@ -322,8 +329,8 @@ export function StageArea() {
             {p.viewNote.trim() ? <Note>{`Your viewpoint note (from Setup, printed under the plot): ${p.viewNote.trim()}`}</Note> : null}
             <Note>
               {spToScale(p)
-                ? `The stage is drawn to scale: ${size}. The symbols are not. They show what kind of thing stands there, not the real size of your equipment. The plot does not prove that anything fits.`
-                : 'This plot is NOT TO SCALE: no stage width and depth are set in Setup. The symbols show what kind of thing stands there, not the real size of your equipment.'}
+                ? `The stage is drawn to scale: ${size}. Symbols are drawings, not the real size of the equipment. The plot does not prove that anything fits.`
+                : 'This plot is NOT TO SCALE: no stage width and depth are set in Setup. Symbols are drawings, not the real size of the equipment.'}
             </Note>
             <HelpTip
               title="Stage right, stage left, upstage, downstage"
@@ -357,6 +364,7 @@ const styles = StyleSheet.create({
   tray: { gap: 12 },
   buttons: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 8, rowGap: 8, alignItems: 'flex-start' },
   heading: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.amberLabel },
+  status: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.textSub },
   noteText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
