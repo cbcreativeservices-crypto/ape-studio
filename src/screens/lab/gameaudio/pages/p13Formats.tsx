@@ -68,7 +68,7 @@ const outputKey = (s: GaState): DockParam => {
     options: [
       { id: 'stereo', label: marked('STEREO', out === 'stereo'), blurb: 'Left and right pan only. A source in front of you and one behind you sound the same.' },
       { id: 'hrtf', label: marked('HEADPHONE 3D', out === 'hrtf'), blurb: 'Your device filters each sound for each ear, the way a head would. It needs headphones. Now front and back differ.' },
-      { id: 'mono', label: marked('MONO', out === 'mono'), blurb: 'A downmix: both ears get the same signal. Distance still sets the level. Direction is gone.' },
+      { id: 'mono', label: marked('MONO', out === 'mono'), blurb: 'A downmix: both ears get the same signal. Distance still sets the level. Direction is gone: a sound to one side folds up to 3 dB quieter than one ahead (the pan law).' },
     ],
   };
 };
@@ -103,8 +103,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         initialParam: 'facing',
         hud: 'output',
         readouts: [
-          { k: 'FOUNTAIN', v: sideWord(fountain.bearingDeg), vA11y: `the fountain is ${sideWord(fountain.bearingDeg).toLowerCase()}` },
-          { k: 'OUTPUT', v: OUTPUT_WORD[out], vA11y: out === 'hrtf' ? 'headphone 3D' : out },
+          { k: 'FOUNTAIN', kNarrow: 'SOURCE', v: sideWord(fountain.bearingDeg), vA11y: `the fountain is ${sideWord(fountain.bearingDeg).toLowerCase()}` },
+          { k: 'OUTPUT', kNarrow: 'OUT', v: OUTPUT_WORD[out], vA11y: out === 'hrtf' ? 'headphone 3D' : out },
         ],
         select: 'fountain',
         assets: ASSETS,
@@ -112,7 +112,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>The rings and the dotted line mark the fountain. The strip under the picture shows your head and what reaches each ear.</Look>
-        <P>This page plays three outputs. STEREO and MONO are channel-based audio: each sound is mixed into fixed channels, one for each speaker of a known layout. HEADPHONE 3D is binaural rendering: a headphone signal that seems to surround you.</P>
+        <P>STEREO and MONO are channel-based audio: each sound is mixed into fixed channels, one for each speaker of a known layout. HEADPHONE 3D is binaural rendering: a headphone signal that seems to surround you.</P>
         <P>Object-based audio is a third idea, not played here. Each sound keeps its position, and a renderer works out the signals as it plays. Game platforms have their own renderers, such as Dolby Atmos, DTS:X, Windows Sonic and Tempest 3D AudioTech.</P>
         <ChcSpeakerMap />
         <Terms items={TERMS} />
@@ -124,7 +124,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <Do>Put on headphones and choose HEADPHONE 3D. Turn again. Then choose MONO.</Do>
         <P>For HEADPHONE 3D your device filters each sound the way a head and outer ears would. That filter is called an HRTF. In the strip the fountain now moves on a circle around your head: front and back differ. The filter suits some ears better than others.</P>
-        <P>In MONO both bars stay equal as you turn: direction is gone.</P>
+        <P>In MONO both bars stay equal; to one side, both fold up to 3 dB quieter (the pan law).</P>
         <ActivityLog state={p13Log(s)} lines={3} empty="No output change yet. This log shows your OUTPUT choices." />
         <Note tone="mistake">Thinking headphones need a small speaker for each direction. Two are enough: the filtering happens before the sound reaches them.</Note>
         <Note>A binaural signal needs no second 3D effect: a second one damages it.</Note>

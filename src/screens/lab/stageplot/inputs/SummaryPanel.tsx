@@ -19,7 +19,7 @@ import { SP_SUPPLIER_WORD } from '../../../../features/stageplot/spCatalog';
 import { spAddExtra, spRemoveExtra, spUpdateExtra } from '../../../../features/stageplot/spModel';
 import type { SpExtra, SpId, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, Count, HelpTip, Note, NumberField, RowCard, Section, TextField } from '../spForm';
+import { Button, Choice, Count, FocusMark, HelpTip, Note, NumberField, RowCard, Section, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
 import type { SpIssue } from '../../../../features/stageplot/spReview';
 import { SP_EXTRAS_HINT, SP_EXTRA_HINT, SP_EXTRA_WORD, SP_SUPPLIERS, spEquipmentGroups, spExtraLine, spOpenIssues, spOpenLine, spResponsibility, spSummaryCounts } from './inputsLogic';
@@ -120,7 +120,9 @@ export function ExtraEditor({ extraId, onClose }: { extraId: SpId; onClose: () =
       <Choice<SpExtra['kind']> label="What it is" value={e.kind} options={KIND} onChange={(kind) => (kind === e.kind ? undefined : set({ kind }))} />
       <TextField label="Name" value={e.label} onCommit={(t) => (t === e.label ? undefined : set({ label: t }))} placeholder={SP_EXTRA_WORD[e.kind]} />
       <NumberField label="How many" value={e.qty} onCommit={(n) => (n == null || n === e.qty ? undefined : set({ qty: n }))} min={1} max={99} width="half" />
-      <Choice<SpSupplier> label="Who brings it" value={e.supplier} options={SUPPLIER} onChange={(supplier) => (supplier === e.supplier ? undefined : set({ supplier }))} />
+      <FocusMark k="supplier">
+        <Choice<SpSupplier> label="Who brings it" value={e.supplier} options={SUPPLIER} onChange={(supplier) => (supplier === e.supplier ? undefined : set({ supplier }))} />
+      </FocusMark>
       <TextField label="Note" value={e.note} onCommit={(t) => (t === e.note ? undefined : set({ note: t }))} multiline hint={SP_EXTRA_HINT[e.kind]} />
       {e.kind === 'power' ? <Note>A power location is a request. The tool does not calculate what a circuit can carry, and a request here is not the venue’s electrical approval.</Note> : null}
       {e.kind === 'split' ? <Note>The tool does not decide that a split suits both systems. In this version the facts about a split are one note, not separate fields. What is not confirmed is printed as a question for the venue.</Note> : null}

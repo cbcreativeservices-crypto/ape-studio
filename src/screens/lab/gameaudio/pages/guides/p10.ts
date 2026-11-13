@@ -18,13 +18,13 @@ export const G10: ScreenGuide = {
   control: [
     'FACING turns you, from 0° to 360°; 0° is toward the top of the picture. STEP walks one step the way you face.',
     'SOUNDS opens a tray. Its SCENE chip switches the two beds and the fountain on or off. OPEN DOOR is beside it.',
-    'In the same tray, ONCE, WITH THE SCENE and ON EVERY UPDATE choose when a bed starts. A ✓ marks the rule in use.',
+    'In the same tray, ONCE, WITH THE SCENE and ON EVERY UPDATE choose when a bed starts. A ✓ marks the rule in use. While a fault you started has not shown itself, the row reads ? instead.',
     'WIND FILE chooses the courtyard wind: PREPARED LOOP or RAW CUT.',
   ],
   changes: [
     'With the scene running, a crossing prints one ZONE line: the wind fades down while the room tone fades up, over 1.5 seconds.',
     'RAW CUT prints a MIX line. The courtyard bed starts again with that file, and its level jumps at the join every 10 seconds. The strip under the picture counts JUMPS.',
-    'With ON EVERY UPDATE, each step inside a zone starts that zone’s bed again, so BEDS, PLAYING and VOICES climb.',
+    'If a bed starts again as you step inside one zone, BEDS, PLAYING and VOICES climb, and a FAULT line counts copies.',
   ],
   teaches: [
     'A loop repeats, so its join has to be prepared. A fade does not repair a join that was cut badly.',

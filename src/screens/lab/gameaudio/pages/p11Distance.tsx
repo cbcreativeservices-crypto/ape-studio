@@ -104,8 +104,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         keys: [facingKey(s), stepKey(), sourcesKey],
         initialParam: 'facing',
         readouts: [
-          { k: 'DISTANCE', v: `${r.distanceM.toFixed(1)} m`, vA11y: `${name.toLowerCase()} is ${r.distanceM.toFixed(1)} meters away` },
-          { k: 'PAN', v: panShort(r.pan), vA11y: `pan ${panWord(r.pan).toLowerCase()}` },
+          { k: 'DISTANCE', kNarrow: 'DIST.', v: `${r.distanceM.toFixed(1)} m`, vA11y: `${name.toLowerCase()} is ${r.distanceM.toFixed(1)} meters away` },
+          { k: 'PAN', v: r.virtual ? '—' : panShort(r.pan), vA11y: r.virtual ? 'no pan: the source is virtual, not played' : `pan ${panWord(r.pan).toLowerCase()}` },
         ],
         select: src,
         assets: ASSETS,
@@ -126,8 +126,9 @@ function Page({ ctx }: { ctx: PageCtx }) {
             { k: 'STATUS', v: statusWord(r) },
             { k: 'DISTANCE', v: `${r.distanceM.toFixed(1)} m (minimum ${r.atten.min} m, maximum ${r.atten.max} m)` },
             { k: 'LEVEL FROM DISTANCE', v: levelWord(r) },
-            { k: 'DIRECTION', v: directionWord(r.bearingDeg) },
-            { k: 'PAN', v: panWord(r.pan) },
+            { k: 'DIRECTION', v: directionWord(r.bearingDeg, r.pan) },
+            // a VIRTUAL source is not played, so nothing is panned (bug test B-S3-09)
+            { k: 'PAN', v: r.virtual ? 'none: not played (VIRTUAL)' : panWord(r.pan) },
           ]}
           note={r.obstructed ? 'The closed door is in the way, so this source is also turned down and filtered. The next page is about that.' : undefined}
         />
@@ -145,7 +146,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={5}>
         <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
+          // the step is already headed CHECK YOURSELF (bug test B-S3-07): one word, as on pages 6–10
+          eyebrow="QUESTION"
           question="The generator is straight behind you, inside its maximum distance. What does the output on this page do with it?"
           options={[
             'Plays it at the center, as if it were straight ahead',

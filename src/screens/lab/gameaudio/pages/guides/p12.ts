@@ -10,15 +10,15 @@ export const G12: ScreenGuide = {
     start: 'Open ROOM and switch GENERATOR 1 on. From the courtyard, press the door key and watch GEN 1 change between MUFFLED and CLEAR. Then drag WALK into the workshop and compare REVERB with DRY.',
   },
   seeing: [
-    'You are looking down on the wall between the courtyard and the workshop, with its door. The generator is inside.',
+    'You look down on the wall, with its door, between the courtyard and the workshop.',
     'The strip under the picture draws the door’s treatment as a curve: a drop of 9 dB, and a low-pass bend above 900 Hz. Beside it, the room’s reverb tail.',
-    'DOOR shows OPEN or CLOSED. GEN 1 shows MUFFLED when the closed door is between you and the generator, and CLEAR when it is not.',
+    'DOOR shows OPEN or CLOSED. GEN 1 shows MUFFLED behind the closed door, CLEAR when nothing is in the way, OFF when stopped, and VIRTUAL past its maximum distance.',
   ],
   control: [
     'WALK moves you along the stone path and through the doorway. With the door closed you stop at the wall. The two STEP keys under the slider walk one step, with a footstep.',
     'OPEN DOOR opens the door; the key then shows CLOSE DOOR.',
     'ROOM holds GENERATOR 1, which starts and stops the generator, and the choice between REVERB and DRY for sounds made in the workshop. A note under them says what is sent now.',
-    'On the WALK key, COURTYARD or WORKSHOP tells you which side of the wall you are on.',
+    'On the WALK key, YARD (the courtyard) or SHOP (the workshop) tells you which side of the wall you are on.',
   ],
   changes: [
     'With the closed door between you and the generator, the scene turns it down by 9 dB, and a low-pass filter at about 900 Hz turns down its high part. Opening the door removes both.',

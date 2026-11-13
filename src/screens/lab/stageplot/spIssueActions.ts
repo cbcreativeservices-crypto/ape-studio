@@ -23,7 +23,7 @@
  *
  * Pure apart from the editor it is handed (tests pass a small stand-in).
  */
-import { spPairRestore, spPairToMono, spRenumber, spUpdateDevice, spUpdateInput, spUpdateObject, spUpdatePerformer, spUpdateSource } from '../../../features/stageplot/spModel.ts';
+import { spPairRestore, spPairToMono, spPatch, spRenumber, spSetReserved, spUpdateDevice, spUpdateInput, spUpdateObject, spUpdatePerformer, spUpdateSource } from '../../../features/stageplot/spModel.ts';
 import type { SpIssue, SpIssueAction } from '../../../features/stageplot/spReview.ts';
 import type { SpProject } from '../../../features/stageplot/spTypes.ts';
 import type { SpEditor, SpSelection } from './spContext.tsx';
@@ -116,6 +116,8 @@ export function spIssueActionLabel(action: SpIssueAction, issue?: SpIssue): stri
       return 'IT IS OFF THE STAGE ON PURPOSE';
     case 'renumber':
       return 'RENUMBER THIS LIST';
+    case 'unreserve':
+      return 'STOP KEEPING THIS CHANNEL FREE';
     case 'cue-audience-ok':
       return 'THE AUDIENCE IS MEANT TO HEAR IT';
     case 'edit':
@@ -197,6 +199,15 @@ export function runIssueAction(ed: SpIssueEditor, issue: SpIssue, action: SpIssu
       // routing is not changed; the question is answered.
       if (kind === 'input' && id) ed.apply((p) => spUpdateInput(p, id, { cueAudienceOk: true }));
       return;
+    case 'unreserve': {
+      // The band no longer keeps this input's channel free: that number
+      // leaves the reserved list. The input keeps its number.
+      const patchId = issue.target.patchId ?? 'house';
+      const patch = spPatch(ed.project, patchId);
+      const n = patch && id ? patch.numbers[id] : null;
+      if (patch && n != null) ed.apply((p) => spSetReserved(p, patchId, patch.reserved.filter((r) => r !== n)));
+      return;
+    }
     case 'renumber': {
       const patchId = issue.target.patchId ?? 'house';
       // Numbered again in the list's own order; reserved channels stay free.

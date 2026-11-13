@@ -37,6 +37,7 @@
 import { SP_DELIVERY_WORD, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_MIX_INSTRUCTIONS, SP_NEED_WORD, SP_PROVIDER_WORD, SP_SUPPLIER_WORD, SP_VENUE_FEED_WORD } from '../../../../features/stageplot/spCatalog.ts';
 import { spAllInputsInOrder, spBadge, spDeviceCountWord, spMixChannels, spMonitorTotals, type SpBySupplier, type SpMixTotals, type SpMonitorTotals } from '../../../../features/stageplot/spDerive.ts';
 import { spAddDevice, spAddMix, spLocationWord } from '../../../../features/stageplot/spModel.ts';
+import { spOwnClashes } from '../../../../features/stageplot/spReview.ts';
 import type {
   SpDelivery,
   SpDevice,
@@ -98,7 +99,7 @@ export const SPM_PROVIDER_HINT = 'House console: the venue’s mixer. Band monit
 /** Under "How it is delivered". */
 export const SPM_DELIVERY_HINT = 'Wedge: a loudspeaker on the floor, aimed at the performer. In-ear: earphones. Drum fill: a loudspeaker for the drummer. Sidefill: loudspeakers at the sides of the stage.';
 
-/** Under "What the venue provides for it": one line for each choice. */
+/** Under "What is requested from the venue": one line for each choice. */
 export const SPM_FEED_HINT =
   'An input split: a copy of every stage input for the mixer that makes this mix.\n' +
   'Feeds from the house console: mixes or groups sent from the house console to the mixer that makes this mix.\n' +
@@ -108,8 +109,8 @@ export const SPM_FEED_HINT =
 /** Why the question is asked, by who creates the mix. */
 export const spmFeedWhy = (provider: SpMixProvider): string =>
   provider === 'personal-mixer'
-    ? 'This mix is made on a personal mixer system, so it is not requested from the house console. Say what the venue provides for it.'
-    : `Your band creates this mix on its band monitor console, so it is not requested from the house console. Say what the venue provides for it. ${SPM_BAND_RIG_MEANS}`;
+    ? 'This mix is made on a personal mixer system, so it is not requested from the house console. Say what is requested from the venue for it.'
+    : `Your band creates this mix on its band monitor console, so it is not requested from the house console. Say what is requested from the venue for it. ${SPM_BAND_RIG_MEANS}`;
 
 /** Above the click, cue and talkback inputs. */
 export const SPM_CUE_MEANS = 'A click is a metronome sound for the performers. A cue or talkback is a voice that only the performers hear.';
@@ -267,7 +268,8 @@ export function spmVenueFeedLines(p: SpProject, only: (m: SpMix) => boolean = sp
   for (const feed of FEED_ORDER) {
     const codes = mixes.filter((m) => m.venueFeed === feed).map((m) => m.code);
     if (!codes.length) continue;
-    out.push(feed === 'tbc' ? `For ${spmList(codes)}, what the venue provides is to be confirmed.` : `For ${spmList(codes)}, the venue provides: ${lowerFirst(SP_VENUE_FEED_WORD[feed])}.`);
+    // a request to the venue, never a statement of what it has agreed to
+    out.push(feed === 'tbc' ? `For ${spmList(codes)}, what is requested from the venue is to be confirmed.` : feed === 'none' ? `For ${spmList(codes)}, nothing is requested from the venue: no monitor feeds.` : `For ${spmList(codes)}, requested from the venue: ${lowerFirst(SP_VENUE_FEED_WORD[feed])}.`);
   }
   return out;
 }
@@ -381,7 +383,9 @@ export function spmSuggestName(p: SpProject, recipients: readonly SpId[], delive
   if (!recipients.length) return delivery === 'drum-fill' ? 'Drum fill' : delivery === 'sidefill' ? 'Sidefill' : '';
   const roles = recipients.map((id) => p.performers.find((x) => x.id === id)?.role.trim() ?? '');
   if (roles.some((r) => !r)) return '';
-  const who = spmList(roles);
+  // a role that has its own "and" ("Guitar and lead vocal") is set apart by
+  // semicolons, so two roles never read as four ("…vocal and Bass and…")
+  const who = roles.length > 1 && roles.some((r) => /\band\b|,/.test(r)) ? roles.join('; ') : spmList(roles);
   return delivery === 'wired-iem' || delivery === 'wireless-iem' ? `${who}, in-ear` : who;
 }
 
@@ -516,15 +520,16 @@ const WHO_BRINGS: Record<SpSupplier, string> = { band: 'the band', venue: 'the v
 
 /** Who brings the devices of one kind, with no zero count and no bare
  *  category word: "The venue brings all 9.", "The band brings it.", "Who
- *  brings it: to be confirmed.", "Who brings them: the band 2 and the venue 1." */
+ *  brings it: to be confirmed.", "The band brings 2 and the venue brings 1." */
 export function spmBringsLine(b: SpBySupplier, n: number): string {
   const kinds = (['band', 'venue', 'other', 'tbc'] as const).filter((k) => b[k] > 0);
   if (kinds.length === 1) {
     const k = kinds[0];
-    if (k === 'tbc') return n === 1 ? 'Who brings it: to be confirmed.' : `Who brings them: to be confirmed for all ${n}.`;
-    return n === 1 ? `${upperFirst(WHO_BRINGS[k])} brings it.` : `${upperFirst(WHO_BRINGS[k])} brings all ${n}.`;
+    // "both" for two: "brings all 2" reads as a slip (bug test, S3 17)
+    if (k === 'tbc') return n === 1 ? 'Who brings it: to be confirmed.' : `Who brings them: to be confirmed for ${n === 2 ? 'both' : `all ${n}`}.`;
+    return n === 1 ? `${upperFirst(WHO_BRINGS[k])} brings it.` : `${upperFirst(WHO_BRINGS[k])} brings ${n === 2 ? 'both' : `all ${n}`}.`;
   }
-  return `Who brings them: ${spmList(kinds.map((k) => (k === 'tbc' ? `${b[k]} to be confirmed` : `${WHO_BRINGS[k]} ${b[k]}`)))}.`;
+  return `${upperFirst(spmList(kinds.map((k) => (k === 'tbc' ? `${b[k]} ${b[k] === 1 ? 'is' : 'are'} still to be confirmed` : `${WHO_BRINGS[k]} brings ${b[k]}`))))}.`;
 }
 
 /** The device list by kind, each with its own count and who brings them. */
@@ -711,6 +716,8 @@ export function spmClickNotes(p: SpProject, m: SpMix): string[] {
     const heard = cues.filter((i) => m.needs[i.id] === 'primary' || m.needs[i.id] === 'supporting');
     if (heard.length) out.push(`This mix says “No click”, and ${spmList(heard.map((i) => i.label))} is set to be heard in it. Change one of the two so they agree.`);
   }
+  // the same kind of disagreement about the performer's own vocal or instrument
+  for (const c of spOwnClashes(p, m)) out.push(`This mix says “${c.instruction}”, and ${spmList(c.labels)} is kept out of what it hears. Change one of the two so they agree.`);
   return out;
 }
 

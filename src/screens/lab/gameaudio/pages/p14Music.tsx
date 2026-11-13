@@ -185,7 +185,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         hud: 'music',
         readouts: [
           { k: 'MUSIC', v: s.music.on ? 'RUNNING' : 'STOPPED', vA11y: `the music is ${s.music.on ? 'running' : 'stopped'}` },
-          { k: 'PENDING', v: pendingShort(s, t), vA11y: `pending: ${pendingLine(s, t)}` },
+          { k: 'PENDING', kNarrow: 'WAIT', v: pendingShort(s, t), vA11y: `pending: ${pendingLine(s, t)}` },
         ],
         assets: ASSETS,
       }}

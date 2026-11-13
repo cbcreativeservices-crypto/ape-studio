@@ -22,7 +22,7 @@
  * Laid out in glass units by stageGeom's `stageKeyLayout` (node-tested) and
  * painted through one viewBox, so it grows with FULL SCREEN like the stage.
  */
-import { Platform, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { spKeyRot, spKeySymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols';
 import type { SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
@@ -66,45 +66,91 @@ const sample = (kind: SpObjectKind): SpObject => ({
   note: '',
 });
 
-export function StageKey({ project, entries, layout, w, gw }: { project: SpProject; entries: readonly SpKeyEntry[]; layout: StageKeyLayout<SpObjectKind>; /** The strip's width on the screen. */ w: number; /** Its width in glass units. */ gw: number }) {
+export function StageKey({
+  project,
+  entries,
+  layout,
+  w,
+  gw,
+  shownH,
+}: {
+  project: SpProject;
+  entries: readonly SpKeyEntry[];
+  layout: StageKeyLayout<SpObjectKind>;
+  /** The strip's width on the screen. */ w: number;
+  /** Its width in glass units. */ gw: number;
+  /** The height the display can give the key (on the screen), when it is
+   *  less than the key needs: the strip then scrolls inside the display,
+   *  every row still there (stageKeySplit). */
+  shownH?: number;
+}) {
   const h = (layout.height * w) / Math.max(1, gw);
-  return (
-    <View style={{ width: w, height: h }} accessible accessibilityRole="text" accessibilityLabel={layout.note ? `${stageKeyWords(entries)} ${scaleWords(layout.note.text)}` : stageKeyWords(entries)}>
-      <View pointerEvents="none">
-        <Svg aria-hidden {...SVG_HIDDEN_NATIVE} width={w} height={h} viewBox={`0 0 ${gw} ${layout.height}`}>
-          <Rect x={0} y={0} width={gw} height={layout.height} fill={GLASS} />
-          <Line x1={0} y1={0.5} x2={gw} y2={0.5} stroke="#26262d" strokeWidth={1} />
-          <SvgText x={layout.heading.x} y={layout.heading.y} fill={colors.amber} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold} letterSpacing={1.2}>
-            KEY
-          </SvgText>
-          {layout.note ? (
-            <SvgText x={layout.note.x} y={layout.note.y} fill={NOTE_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold} textAnchor="end" letterSpacing={0.6}>
-              {layout.note.text}
-            </SvgText>
-          ) : null}
-          {layout.empty ? (
-            <SvgText x={layout.empty.x} y={layout.empty.y} fill={NAME_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold}>
-              {layout.empty.text}
-            </SvgText>
-          ) : null}
-          {layout.cells.map((c) => {
-            // the same art as on the stage, at the scale that fits the art box
-            const sym = spKeySymbol(c.kind);
-            const u = stageKeyScale(sym.w, sym.h);
-            return <StageObjectArt key={`a${c.kind}`} p={project} o={sample(c.kind)} cx={c.artCx} cy={c.artCy} hw={(sym.w * u) / 2} hh={(sym.h * u) / 2} rot={spKeyRot(c.kind)} u={u} />;
-          })}
-          {layout.cells.map((c) =>
-            c.lines.map((ln, k) => (
-              <SvgText key={`t${c.kind}${k}`} x={ln.x} y={ln.y} fill={NAME_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold}>
-                {ln.text}
-              </SvgText>
-            )),
-          )}
-        </Svg>
+  const label = layout.note ? `${stageKeyWords(entries)} ${scaleWords(layout.note.text)}` : stageKeyWords(entries);
+  if (shownH != null && shownH < h - 0.5) {
+    // A LONG KEY ON A SHORT PHONE: its own scroller, inside the display. The
+    // last line says that more of the key is below, so nothing reads as cut.
+    return (
+      <View style={{ width: w, height: shownH }} accessible accessibilityRole="text" accessibilityLabel={label}>
+        <ScrollView style={{ width: w, height: shownH }} nestedScrollEnabled showsVerticalScrollIndicator persistentScrollbar>
+          <View pointerEvents="none">{keyArt(project, layout, w, h, gw)}</View>
+          {/* room under the last row, so the tag below never covers a name */}
+          <Text style={keyStyles.more}>END OF THE KEY</Text>
+        </ScrollView>
+        <View pointerEvents="none" style={keyStyles.tag}>
+          <Text style={keyStyles.tagText}>▼ MORE</Text>
+        </View>
       </View>
+    );
+  }
+  return (
+    <View style={{ width: w, height: h }} accessible accessibilityRole="text" accessibilityLabel={label}>
+      <View pointerEvents="none">{keyArt(project, layout, w, h, gw)}</View>
     </View>
   );
 }
+
+/** The key's picture: the heading, the scale words and every kind with its
+ *  name, through one viewBox (glass units). */
+function keyArt(project: SpProject, layout: StageKeyLayout<SpObjectKind>, w: number, h: number, gw: number) {
+  return (
+    <Svg aria-hidden {...SVG_HIDDEN_NATIVE} width={w} height={h} viewBox={`0 0 ${gw} ${layout.height}`}>
+      <Rect x={0} y={0} width={gw} height={layout.height} fill={GLASS} />
+      <Line x1={0} y1={0.5} x2={gw} y2={0.5} stroke="#26262d" strokeWidth={1} />
+      <SvgText x={layout.heading.x} y={layout.heading.y} fill={colors.amber} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold} letterSpacing={1.2}>
+        KEY
+      </SvgText>
+      {layout.note ? (
+        <SvgText x={layout.note.x} y={layout.note.y} fill={NOTE_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold} textAnchor="end" letterSpacing={0.6}>
+          {layout.note.text}
+        </SvgText>
+      ) : null}
+      {layout.empty ? (
+        <SvgText x={layout.empty.x} y={layout.empty.y} fill={NAME_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold}>
+          {layout.empty.text}
+        </SvgText>
+      ) : null}
+      {layout.cells.map((c) => {
+        // the same art as on the stage, at the scale that fits the art box
+        const sym = spKeySymbol(c.kind);
+        const u = stageKeyScale(sym.w, sym.h);
+        return <StageObjectArt key={`a${c.kind}`} p={project} o={sample(c.kind)} cx={c.artCx} cy={c.artCy} hw={(sym.w * u) / 2} hh={(sym.h * u) / 2} rot={spKeyRot(c.kind)} u={u} />;
+      })}
+      {layout.cells.map((c) =>
+        c.lines.map((ln, k) => (
+          <SvgText key={`t${c.kind}${k}`} x={ln.x} y={ln.y} fill={NAME_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold}>
+            {ln.text}
+          </SvgText>
+        )),
+      )}
+    </Svg>
+  );
+}
+
+const keyStyles = StyleSheet.create({
+  more: { height: 18, paddingLeft: 6, paddingTop: 2, fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: '#6e7280', backgroundColor: GLASS },
+  tag: { position: 'absolute', right: 0, bottom: 0, paddingHorizontal: 6, paddingVertical: 1, backgroundColor: 'rgba(12,12,16,0.92)', borderTopLeftRadius: 4 },
+  tagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.amber },
+});
 
 /** One kind's art alone, at the key's size: the picture on a palette button,
  *  so a kind is SEEN before it is placed. Hidden from a screen reader (the

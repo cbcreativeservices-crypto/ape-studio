@@ -270,7 +270,15 @@ export type SpSummary = {
 };
 
 /** One open question and the row to open to answer it. */
-export type SpOpenItem = { text: string; kind: 'input' | 'di' | 'mix' | 'device' | 'extra'; id: SpId };
+export type SpOpenItem = {
+  text: string;
+  kind: 'input' | 'di' | 'mix' | 'device' | 'extra';
+  id: SpId;
+  /** The FIRST field to answer in that row (the screens scroll to it). */
+  field: SpOpenField;
+};
+/** The fields an open question is answered in. */
+export type SpOpenField = 'supplier' | 'standSupplier' | 'phantom' | 'audience' | 'di' | 'destination' | 'kind' | 'provider' | 'venueFeed' | 'outputs';
 
 /** Every "to be confirmed" still open, each with the row it is about. */
 export function spOpenItems(p: SpProject): SpOpenItem[] {
@@ -286,40 +294,43 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
   const splitUnknown: SpInput[] = [];
   for (const i of p.inputs) {
     const what: string[] = [];
+    const fields: SpOpenField[] = [];
     const onDevice = i.capture === 'di' && !!i.diDeviceId && p.diDevices.some((d) => d.id === i.diDeviceId);
     const supplier = spInputSupplier(p, i);
-    if (!onDevice && supplier === 'tbc') what.push(`who supplies the ${SP_CAPTURE_THING[i.capture]}`);
-    if (i.stand !== 'none' && i.standSupplier === 'tbc') what.push('who supplies the stand');
-    if (!onDevice && supplier !== 'venue' && i.phantom === 'unknown' && (i.capture === 'mic' || i.capture === 'di')) what.push('phantom power');
-    if (i.audience === 'tbc') what.push('audience mix or monitor only');
-    if (i.capture === 'di' && !i.diDeviceId) what.push('which DI device');
+    if (!onDevice && supplier === 'tbc') what.push(`who supplies the ${SP_CAPTURE_THING[i.capture]}`), fields.push('supplier');
+    if (i.stand !== 'none' && i.standSupplier === 'tbc') what.push('who supplies the stand'), fields.push('standSupplier');
+    if (!onDevice && supplier !== 'venue' && i.phantom === 'unknown' && (i.capture === 'mic' || i.capture === 'di')) what.push('phantom power'), fields.push('phantom');
+    if (i.audience === 'tbc') what.push('audience mix or monitor only'), fields.push('audience');
+    if (i.capture === 'di' && !i.diDeviceId) what.push('which DI device'), fields.push('di');
     if (i.destination === 'both' && !i.splitNote.trim()) splitUnknown.push(i);
-    if (what.length) open.push({ text: `${i.label}: ${what.join('; ')}`, kind: 'input', id: i.id });
+    if (what.length) open.push({ text: `${i.label}: ${what.join('; ')}`, kind: 'input', id: i.id, field: fields[0] });
   }
-  if (splitUnknown.length) open.push({ text: `How the split is made: ${splitUnknown.length} input${splitUnknown.length === 1 ? '' : 's'} (${splitUnknown.map((x) => x.label).join(', ')})`, kind: 'input', id: splitUnknown[0].id });
+  if (splitUnknown.length) open.push({ text: `How the split is made: ${splitUnknown.length} input${splitUnknown.length === 1 ? '' : 's'} (${splitUnknown.map((x) => x.label).join(', ')})`, kind: 'input', id: splitUnknown[0].id, field: 'destination' });
   for (const d of p.diDevices) {
     const what: string[] = [];
-    if (d.supplier === 'tbc') what.push('who supplies it');
+    const fields: SpOpenField[] = [];
+    if (d.supplier === 'tbc') what.push('who supplies it'), fields.push('supplier');
     if (d.supplier !== 'venue') {
-      if (d.kind === 'unknown') what.push('passive or active');
+      if (d.kind === 'unknown') what.push('passive or active'), fields.push('kind');
       const on = p.inputs.filter((i) => i.capture === 'di' && i.diDeviceId === d.id);
-      if (on.length && on.every((i) => i.phantom === 'unknown')) what.push('phantom power');
+      if (on.length && on.every((i) => i.phantom === 'unknown')) what.push('phantom power'), fields.push('phantom');
     }
-    if (what.length) open.push({ text: `${d.label}: ${what.join('; ')}`, kind: 'di', id: d.id });
+    if (what.length) open.push({ text: `${d.label}: ${what.join('; ')}`, kind: 'di', id: d.id, field: fields[0] });
   }
   for (const m of p.mixes) {
     const what: string[] = [];
-    if (m.provider === 'tbc') what.push('who creates this mix');
-    if ((m.provider === 'band-console' || m.provider === 'personal-mixer') && m.venueFeed === 'tbc') what.push('what the venue provides for it');
+    const fields: SpOpenField[] = [];
+    if (m.provider === 'tbc') what.push('who creates this mix'), fields.push('provider');
+    if ((m.provider === 'band-console' || m.provider === 'personal-mixer') && m.venueFeed === 'tbc') what.push('what is requested from the venue for it'), fields.push('venueFeed');
     if (m.provider === 'house' && !m.outputs.trim()) {
       const byType = new Map<SpDeviceType, number>();
       for (const d of p.devices) if (d.mixId === m.id) byType.set(d.type, (byType.get(d.type) ?? 0) + 1);
-      for (const [type, n] of byType) if (n >= 2) what.push(`how its ${n} ${SP_DEVICE_PLURAL[type]} are fed (linked from one output, or one output each)`);
+      for (const [type, n] of byType) if (n >= 2) what.push(`how its ${n} ${SP_DEVICE_PLURAL[type]} are fed (linked from one output, or one output each)`), fields.push('outputs');
     }
-    if (what.length) open.push({ text: `${m.code}${m.name ? ` ${m.name}` : ''}: ${what.join('; ')}`, kind: 'mix', id: m.id });
+    if (what.length) open.push({ text: `${m.code}${m.name ? ` ${m.name}` : ''}: ${what.join('; ')}`, kind: 'mix', id: m.id, field: fields[0] });
   }
-  for (const d of p.devices) if (d.supplier === 'tbc') open.push({ text: `${d.label || SP_DEVICE_WORD[d.type]}: who supplies it`, kind: 'device', id: d.id });
-  for (const e of p.extras) if (e.supplier === 'tbc') open.push({ text: `${e.label.trim() || SP_EXTRA_KIND_WORD[e.kind]}: who supplies it`, kind: 'extra', id: e.id });
+  for (const d of p.devices) if (d.supplier === 'tbc') open.push({ text: `${d.label || SP_DEVICE_WORD[d.type]}: who supplies it`, kind: 'device', id: d.id, field: 'supplier' });
+  for (const e of p.extras) if (e.supplier === 'tbc') open.push({ text: `${e.label.trim() || SP_EXTRA_KIND_WORD[e.kind]}: who supplies it`, kind: 'extra', id: e.id, field: 'supplier' });
   return open;
 }
 
@@ -416,7 +427,10 @@ export function spTextSummary(p: SpProject): string {
   if (s.wirelessInputs) lines.push(`Wireless receiver outputs: ${s.wirelessInputs} (radio frequency coordination needed).`);
   lines.push(`Monitor mixes: ${m.all.mixes}${m.all.mixes ? ` (${spMonoStereoWord(m.all.mono, m.all.stereo)})` : ''}.`);
   lines.push(`Requested from the house console: ${m.house.mixes} mix${m.house.mixes === 1 ? '' : 'es'}, ${m.house.channels} audio channel${m.house.channels === 1 ? '' : 's'}.`);
-  if (m.bandOwned.mixes) lines.push(`Created in the band monitor rig, and not requested from the house console: ${m.bandOwned.mixes} mix${m.bandOwned.mixes === 1 ? '' : 'es'}.`);
+  const rig = m.byProvider['band-console'].mixes;
+  const personal = m.byProvider['personal-mixer'].mixes;
+  if (rig) lines.push(`Created in the band monitor rig, and not requested from the house console: ${rig} mix${rig === 1 ? '' : 'es'}.`);
+  if (personal) lines.push(`Made on a personal mixer system, and not mixed on the house console: ${personal} mix${personal === 1 ? '' : 'es'}.`);
   if (m.byProvider.tbc.mixes) lines.push(`Who creates ${count(m.byProvider.tbc.mixes, 'mix', 'mixes')} is to be confirmed.`);
   if (m.wirelessDevices) lines.push(`Wireless monitor devices: ${m.wirelessDevices} (radio frequency coordination needed).`);
   const dev = (Object.keys(m.devices) as SpDeviceType[]).filter((t) => m.devices[t] > 0).map((t) => spDeviceCountWord(t, m.devices[t]));

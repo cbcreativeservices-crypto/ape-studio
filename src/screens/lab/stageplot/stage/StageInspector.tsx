@@ -21,7 +21,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SP_DEVICE_WORD } from '../../../../features/stageplot/spCatalog';
 import { spMixesOf } from '../../../../features/stageplot/spDerive';
-import { spDevice, spDuplicateObject, spGroup, spInput, spLocationWord, spMix, spObject, spOnStage, spPerformer, spRemoveObjects, spSource, spUngroup, spUpdateObject } from '../../../../features/stageplot/spModel';
+import { spDevice, spDuplicateObject, spGroup, spInput, spLocationWord, spMix, spObject, spOnStage, spPerformer, spRemoveObjects, spSource, spUngroup, spUpdateDevice, spUpdateObject } from '../../../../features/stageplot/spModel';
 import { spIsSized } from '../../../../features/stageplot/spSymbols';
 import type { SpId, SpObject, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -30,7 +30,7 @@ import { RemoveStep } from '../inputs/bits';
 import { useSpEditor } from '../spContext';
 import { Button, MoreDetails, Note, Switch, TextField } from '../spForm';
 import { StageMovePad } from './StageMovePad';
-import { stageFacingWord, stagePosFraction, stagePosUnit, stagePosValue, stageSizeFraction } from './stageGeom';
+import { stageFacingWord, stagePosFraction, stagePosUnit, stagePosValue, stageSizeFraction, stageTypedWords } from './stageGeom';
 import { stageDeviceChoices, stageInputBadges, stageInputChoices, stageKindName, stageLinkMode, stageListName, stageMoveExact, stageObjectKindName, stagePerformerChoices, stageSourceChoices } from './stageLinks';
 
 /** Short labels, so the two boxes sit at one height; the long words are in
@@ -56,16 +56,26 @@ export function StageInspector({
   const p = ed.project;
   const o = spObject(p, id);
   const [groupPick, setGroupPick] = useState<SpId[]>([]);
+  /** What happened to the last typed position or size, when it was not taken as typed. */
+  const [typedSaid, setTypedSaid] = useState<{ part: 'position' | 'size'; text: string } | null>(null);
   if (!o) return null;
 
   const name = stageListName(p, o);
   const set = (patch: Partial<Omit<SpObject, 'id' | 'groupId'>>) => ed.apply((q) => spUpdateObject(q, id, patch));
+  // A typed number that is not taken as typed says so in words, under the
+  // fields (bug test S2-09, S3-03): never a silent change, never a silent nothing.
   const typed = (axis: 'x' | 'y') => (text: string) => {
-    const f = stagePosFraction(p, axis, parseRoomNumber(text));
+    const n = parseRoomNumber(text);
+    const f = stagePosFraction(p, axis, n);
+    const said = stageTypedWords(p, axis, 'position', n, f);
+    setTypedSaid(said ? { part: 'position', text: said } : null);
     if (f != null) ed.apply((q) => stageMoveExact(q, id, axis === 'x' ? { x: f } : { y: f }));
   };
   const sizeTyped = (axis: 'x' | 'y') => (text: string) => {
-    const f = stageSizeFraction(p, axis, parseRoomNumber(text));
+    const n = parseRoomNumber(text);
+    const f = stageSizeFraction(p, axis, n);
+    const said = stageTypedWords(p, axis, 'size', n, f);
+    setTypedSaid(said ? { part: 'size', text: said } : null);
     if (f != null) set(axis === 'x' ? { w: f } : { h: f });
   };
   const unit = stagePosUnit(p);
@@ -82,6 +92,11 @@ export function StageInspector({
   const deviceMix = spMix(p, device?.mixId ?? null);
   const mixes = o.kind === 'performer' && o.performerId ? spMixesOf(p, o.performerId) : [];
   const badges = stageInputBadges(p, o);
+  // A symbol that stands for a SOURCE or an INPUT may carry a short name on
+  // the plot ("Drums" for "Drum kit"); when the two differ, both are said, so
+  // nobody thinks they are two things.
+  const listName = (source ? source.label : input ? input.label : '').trim();
+  const listNote = listName && o.label.trim() && o.label.trim().toLowerCase() !== listName.toLowerCase() ? `In the input list this is “${listName}”. The plot prints “${o.label.trim()}” beside its symbol.` : '';
 
   const linkChoices = mode === 'performer' ? stagePerformerChoices(p).filter((c) => !c.placed) : mode === 'sound' ? stageSourceChoices(p, o.kind) : mode === 'capture' ? stageInputChoices(p, o.kind) : mode === 'monitor' ? stageDeviceChoices(p, o.kind) : [];
   const linkTo = (cid: SpId) => set(mode === 'performer' ? { performerId: cid } : mode === 'sound' ? { sourceId: cid, visualOnly: false } : mode === 'capture' ? { inputId: cid, visualOnly: false } : { deviceId: cid, visualOnly: false });
@@ -101,7 +116,20 @@ export function StageInspector({
       {o.kind === 'performer' && performer ? (
         <Note>{`The plot prints this performer’s name from Setup: ${performer.name || 'not named yet'}.`}</Note>
       ) : (
-        <TextField label="Name on the plot" value={o.label} onCommit={(t) => set({ label: t })} placeholder={stageKindName(o.kind)} hint="Leave it empty to print no name beside this object." />
+        <>
+          <TextField
+            label="Name on the plot"
+            value={o.label}
+            onCommit={(t) =>
+              // A MONITOR DEVICE HAS ONE NAME: the plot and the monitor plan
+              // print the same words (bug test S2-08), in one edit
+              device && t.trim() ? ed.apply((q) => spUpdateDevice(spUpdateObject(q, id, { label: t }), device.id, { label: t.trim() })) : set({ label: t })
+            }
+            placeholder={stageKindName(o.kind)}
+            hint={device ? 'Leave it empty to print no name beside this object. A name typed here is also the device’s name in the monitor plan.' : 'Leave it empty to print no name beside this object.'}
+          />
+          {listNote ? <Note>{listNote}</Note> : null}
+        </>
       )}
 
       {/* ── position and turn: only where the drawing is in view ── */}
@@ -115,6 +143,7 @@ export function StageInspector({
             <TextField label={posLabel(p, 'x')} value={String(stagePosValue(p, 'x', o.x))} onCommit={typed('x')} keyboard="numeric" width="half" />
             <TextField label={posLabel(p, 'y')} value={String(stagePosValue(p, 'y', o.y))} onCommit={typed('y')} keyboard="numeric" width="half" />
           </View>
+          {typedSaid?.part === 'position' ? <Note tone="warning">{typedSaid.text}</Note> : null}
           <Text style={styles.hint}>Type a position to place it exactly. Across is measured from the stage right edge (the left of the drawing). Depth is measured from the upstage edge (the top).</Text>
         </>
       ) : null}
@@ -135,6 +164,7 @@ export function StageInspector({
             <TextField label={unit === '%' ? 'Width (% of the stage width)' : `Width (${unit})`} value={String(stagePosValue(p, 'x', o.w ?? 0))} onCommit={sizeTyped('x')} keyboard="numeric" width="half" />
             <TextField label={unit === '%' ? 'Depth (% of the stage depth)' : `Depth (${unit})`} value={String(stagePosValue(p, 'y', o.h ?? 0))} onCommit={sizeTyped('y')} keyboard="numeric" width="half" />
           </View>
+          {typedSaid?.part === 'size' ? <Note tone="warning">{typedSaid.text}</Note> : null}
           <TextField label="Height or size note" value={o.sizeNote} onCommit={(t) => set({ sizeNote: t })} placeholder={o.kind === 'riser' ? 'For example: 12 in high' : 'In your own words'} />
           <Text style={styles.hint}>On the drawing, drag the round handle at its corner to size it.</Text>
         </>

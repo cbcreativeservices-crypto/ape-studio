@@ -11,19 +11,19 @@ export const G06: ScreenGuide = {
   },
   seeing: [
     'The door stands in the wall between the courtyard and the workshop. It is the one sound this page follows.',
-    'Three cards show its chain: ASSET RECORD, EVENT and SCENE CONNECTION. The log under RESULT is the fourth stage.',
+    'The strip under the picture follows the chain: the EVENT posted, each LAYER and its FILE, the VOICE. RATTLE starts 1 s after DOOR. Cards in the lesson spell it out.',
     'DOOR shows OPEN or CLOSED. DOOR FILE shows FOUND or MISSING, and a question mark while a fault you started has not been found yet.',
   ],
   control: [
     'OPEN DOOR posts the door event. After a press the key reads CLOSE DOOR, and it posts the same event.',
-    'DOOR FILE sets which file name the door layer asks for: door_open.wav, which is in the build, or door_open_v2.wav, which is not. It stays locked until you have pressed the door key once with the fault in.',
-    'On the TROUBLESHOOT card, START THE FAULT sets DOOR FILE to the missing name for you.',
+    'DOOR FILE sets which file name the door layer asks for. It stays locked until you have pressed the door key once with the fault in.',
+    'On the TROUBLESHOOT card, START THE FAULT plants one wrong setting. Nothing on the screen names it until you have made the problem happen.',
     'LEVEL sets how loud the lab plays the door, from 0 to 100%. The slider controls it when the page opens.',
   ],
   changes: [
     'Each press of the door key adds two GAME lines, the trigger and then the event. Then START lines follow: the door layer names its file.',
     'Opening plays door_open.wav. Closing posts the same event, and the door layer plays door_close.wav. Card 1 shows the file of the last move.',
-    'With the fault in, the event is still posted, but a FAULT line names the missing file, and only the rattle starts.',
+    'With the fault in, press the door key: the event is still posted, but only the rattle starts, and a FAULT line says why.',
   ],
   teaches: [
     'An imported file is an asset. It plays in the game only when an event uses it and the scene posts that event.',

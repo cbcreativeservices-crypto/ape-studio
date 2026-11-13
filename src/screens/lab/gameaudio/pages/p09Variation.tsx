@@ -119,8 +119,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         initialParam: 'master',
         hud: 'takes',
         readouts: [
-          { k: 'VARIATION', v: o.variation ? 'ON' : 'OFF' },
-          { k: 'LAST TAKE', v: last ? String(last.take) : 'NONE', vA11y: last ? `the last footstep played take ${last.take}` : 'no footstep has played yet' },
+          { k: 'VARIATION', kNarrow: 'VARY', v: o.variation ? 'ON' : 'OFF' },
+          { k: 'LAST TAKE', kNarrow: 'TAKE', v: last ? String(last.take) : 'NONE', vA11y: last ? `the last footstep played take ${last.take}` : 'no footstep has played yet' },
         ],
         showNames: true,
         show: { take: true },

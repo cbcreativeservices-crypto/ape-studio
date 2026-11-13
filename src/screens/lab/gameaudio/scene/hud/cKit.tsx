@@ -48,8 +48,8 @@ export const C_FACE = {
 } as const;
 
 /** Type sizes for a strip: 9 pt is the floor on a phone; FULL SCREEN grows. */
-export type CType = { label: number; value: number; line: number; full: boolean };
-export const cType = (h: number): CType => (h >= 64 ? { label: 11.5, value: 11, line: 15, full: true } : { label: 9.5, value: 9, line: 12, full: false });
+export type CType = { label: number; size: number; line: number; full: boolean };
+export const cType = (h: number): CType => (h >= 64 ? { label: 11.5, size: 11, line: 15, full: true } : { label: 9.5, size: 9, line: 12, full: false });
 
 /** The strip's ground: a recessed band with a lit upper edge, the same light
  *  as the tool-window figure (from the upper left). */

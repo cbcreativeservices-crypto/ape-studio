@@ -241,7 +241,10 @@ describe('capstone: each requirement refuses its near miss', () => {
     // a bar request that is WITHDRAWN by a "now" change proves nothing about the bar
     let w = play(open(), { type: 'musicStart' }, { type: 'mood', mood: 'alert' }, { type: 'option', patch: { musicBoundary: 'now' } }, { type: 'mood', mood: 'calm' });
     assert.equal(w.s.music.pending, null);
-    assert.ok((gaVisitSince(w.v, w.s).musicWithdrawn ?? 0) > 0 && (gaVisitSince(w.v, w.s).musicApplied ?? 0) > 0);
+    // GF1 B-14: CALM is what sounds, so nothing is applied: the model counts it as no change
+    assert.ok((gaVisitSince(w.v, w.s).musicWithdrawn ?? 0) > 0);
+    assert.equal(gaVisitSince(w.v, w.s).musicApplied ?? 0, 0);
+    assert.equal(gaVisitSince(w.v, w.s).musicNoChange ?? 0, 1);
     assert.ok(!metIds(w).includes('music'), 'the bar request never landed');
     // and a late report for the withdrawn request changes nothing
     w = play(w, { type: 'engine', evt: { e: 'music', what: 'applied', req: 'm-gone', at: 0 } });

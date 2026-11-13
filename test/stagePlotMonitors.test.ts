@@ -257,7 +257,7 @@ describe('requested from the house console, apart from what the band creates its
     assert.equal(spmHouseSentence(t), 'Nothing is requested from the house console: no mix on this list is created there.');
     assert.equal(spmHouseOutputNote(t), '');
     assert.equal(spmBandSentence(t), 'Your band creates 4 mixes in the band monitor rig (all stereo). That is 8 audio channels that are not requested from the house console.');
-    assert.deepEqual(spmVenueFeedLines(p), ['For M1, M2, M3 and M4, the venue provides: an input split.']);
+    assert.deepEqual(spmVenueFeedLines(p), ['For M1, M2, M3 and M4, requested from the venue: an input split.']);
     const groups = spmMixGroups(p);
     assert.deepEqual(
       groups.map((g) => [g.key, g.mixes.length]),
@@ -285,10 +285,10 @@ describe('requested from the house console, apart from what the band creates its
     const p = make('playback');
     const q = spUpdateMix(spUpdateMix(spUpdateMix(p, mixByCode(p, 'M2').id, { venueFeed: 'tbc' }), mixByCode(p, 'M4').id, { venueFeed: 'none' }), mixByCode(p, 'M3').id, { venueFeed: 'returns' });
     assert.deepEqual(spmVenueFeedLines(q), [
-      'For M1, the venue provides: an input split.',
-      'For M3, the venue provides: return lines from the house position to the stage.',
-      'For M4, the venue provides: no monitor feeds.',
-      'For M2, what the venue provides is to be confirmed.',
+      'For M1, requested from the venue: an input split.',
+      'For M3, requested from the venue: return lines from the house position to the stage.',
+      'For M4, nothing is requested from the venue: no monitor feeds.',
+      'For M2, what is requested from the venue is to be confirmed.',
     ]);
     // a house mix is never in these lines
     assert.deepEqual(spmVenueFeedLines(make('four-piece')), []);
@@ -548,7 +548,10 @@ describe('the usual devices for a delivery: a proposal, shown before it is added
     const p = make('salsa');
     const [a, b] = p.performers;
     assert.ok(a.role && b.role);
-    assert.equal(spmSuggestName(p, [a.id, b.id], 'wedge'), `${a.role} and ${b.role}`);
+    // a role with its own "and" is set apart by a semicolon (bug test 2026-11-13, S3 17)
+    const joined = /\band\b|,/.test(a.role + b.role) ? `${a.role}; ${b.role}` : `${a.role} and ${b.role}`;
+    assert.equal(spmSuggestName(p, [a.id, b.id], 'wedge'), joined);
+    assert.equal(spmSuggestName(spUpdatePerformer(spUpdatePerformer(p, a.id, { role: 'Drums' }), b.id, { role: 'Bass' }), [a.id, b.id], 'wedge'), 'Drums and Bass');
     assert.equal(spmSuggestName(p, [a.id], 'wired-iem'), `${a.role}, in-ear`);
     assert.equal(spmSuggestName(p, [], 'wedge'), '');
     assert.equal(spmSuggestName(p, [], 'sidefill'), 'Sidefill');
@@ -681,7 +684,7 @@ describe('devices and performers', () => {
     assert.deepEqual(
       spmDeviceGroups(p).map((g) => [g.heading, g.brings]),
       [
-        ['2 wedges', 'The venue brings all 2.'],
+        ['2 wedges', 'The venue brings both.'],
         ['1 wireless in-ear transmitter', 'The band brings it.'],
         ['1 in-ear receiver pack', 'The band brings it.'],
         ['1 wired headphone amplifier', 'The band brings it.'],
@@ -690,8 +693,10 @@ describe('devices and performers', () => {
     // no zero count and no bare category word, whatever the split
     assert.equal(spmBringsLine({ band: 0, venue: 0, other: 0, tbc: 1 }, 1), 'Who brings it: to be confirmed.');
     assert.equal(spmBringsLine({ band: 0, venue: 0, other: 0, tbc: 3 }, 3), 'Who brings them: to be confirmed for all 3.');
-    assert.equal(spmBringsLine({ band: 2, venue: 1, other: 0, tbc: 1 }, 4), 'Who brings them: the band 2, the venue 1 and 1 to be confirmed.');
-    assert.equal(spmBringsLine({ band: 0, venue: 0, other: 2, tbc: 0 }, 2), 'Another provider brings all 2.');
+    // bug test 2026-11-13 (S3 17): two are "both", never "all 2"
+    assert.equal(spmBringsLine({ band: 0, venue: 0, other: 0, tbc: 2 }, 2), 'Who brings them: to be confirmed for both.');
+    assert.equal(spmBringsLine({ band: 2, venue: 1, other: 0, tbc: 1 }, 4), 'The band brings 2, the venue brings 1 and 1 is still to be confirmed.');
+    assert.equal(spmBringsLine({ band: 0, venue: 0, other: 2, tbc: 0 }, 2), 'Another provider brings both.');
     for (const g of [...spmDeviceGroups(p), ...spmDeviceGroups(make('playback')), ...spmDeviceGroups(make('salsa'))]) assert.ok(!/\b0\b|\d (Band|Venue|To be confirmed)/.test(g.brings), g.brings);
     // a device's own tag is the Inputs area's wording for the same fact, by its function
     assert.deepEqual(spmDeviceTags(wedge), [spBringsWord('venue')]);
@@ -839,7 +844,7 @@ describe('the area’s own words and wiring', () => {
     assert.match(area, /spmShareOpen\(p, mix\) \? `\$\{share\} \$\{SPM_SHARE_WHERE_CARD\}` : share/);
     const mixPopup = strip(read(`${AREA}/monitors/MixSheets.tsx`));
     assert.match(mixPopup, /shareOpen \? `\$\{share\} \$\{SPM_SHARE_WHERE_POPUP\}` : share/);
-    assert.match(mixPopup, /<MoreDetails initiallyOpen=\{shareOpen\}>/);
+    assert.match(mixPopup, /<MoreDetails initiallyOpen=\{shareOpen\} focusKeys=\{\['outputs'\]\}>/);
     // a worn pack: the card and the popup take the line and the button from one place
     assert.match(area, /<Button label=\{stage\.button\}/);
     assert.match(strip(read(`${AREA}/monitors/DeviceSheets.tsx`)), /<Button label=\{stage\.button\}/);

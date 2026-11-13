@@ -698,7 +698,7 @@ describe('the shell is wired as the builders’ contract says', () => {
     assert.match(screen, /Revision \{p\.revision\} · \{statusWord\}/, 'the revision and status are on screen in every area');
     assert.match(screen, /const statusWord = p\.status === 'ready' \? 'Ready' : 'Draft';/, 'one word in the bar, so it is never cut at 390 pt');
     assert.doesNotMatch(screen, /style=\{styles\.rev\} \{\.\.\.fitValue/, 'the status line wraps; a browser would cut a one-line text with "…"');
-    assert.match(screen, /\$\{p\.kind === 'gig' \? ' · gig copy' : ''\}/, 'a gig copy says so in the header');
+    assert.match(screen, /\$\{p\.kind === 'gig' \? ' · gig copy' : \/\\\(copy\\\)\$\/i\.test\(p\.title\.trim\(\)\) \? ' · copy' : ''\}/, 'a gig copy, and a duplicate, say so in the header (bug test S3-05)');
     assert.match(screen, /if \(i\.rule === 'empty'\) continue;/, 'a new blank stage plot opens with no tab mark');
     assert.match(screen, /aria-selected=\{on\}/, 'the chosen tab is said on the web too');
     assert.match(screen, /setSpIssueAsk\(\(title, body, yesText, yes\) => confirmDialog\(title, body, yesText, yes\)\);/);
@@ -838,7 +838,8 @@ describe('the shell is wired as the builders’ contract says', () => {
     // …and Setup takes it when it opens, and shows the question at the field
     const setup = read('src/screens/lab/stageplot/SetupArea.tsx');
     assert.match(setup, /const field = spSetupField\(takeSpSetupAsk\(\)\);/);
-    assert.match(setup, /\{exampleTitle \? <Note tone="warning">\{exampleTitle\.text\}<\/Note> : null\}/);
+    // in Setup itself the note does not send the user to Setup (bug test S3-04)
+    assert.match(setup, /\{exampleTitle \? <Note tone="warning">The title still says “\(example\)”\. Change it or clear it above\.<\/Note> : null\}/);
     assert.ok(setup.indexOf('label="Title of this stage plot"') < setup.indexOf('{exampleTitle ? <Note'));
   });
 

@@ -56,6 +56,7 @@ import {
 } from '../../../features/stageplot/spExport';
 import { SP_PACKET_WORD, SP_PAPER_WORD, spAfterExport, spBuildDoc, spBuildSnapshot, spDocText, spEmailText, spEquipmentSplit, spShownContact } from '../../../features/stageplot/spPacket';
 import { SP_PAGES, spPacketHtml } from '../../../features/stageplot/spPacketHtml';
+import { spPdfPageCount } from '../../../features/stageplot/spPdf';
 import { spCanExport } from '../../../features/stageplot/spReview';
 import type { SpDeviceType, SpPacketKind, SpPaper, SpSnapshot } from '../../../features/stageplot/spTypes';
 import { useInFlightLatch, useLatchedPress } from '../../../lib/latch';
@@ -154,6 +155,16 @@ export function ExportArea() {
       return null;
     }
   }, [project, paper, packet]);
+  /** How many pages that PDF has on the chosen paper: the paper choice is
+   *  seen to do something before anything is downloaded (bug test 8). */
+  const pages = useMemo(() => {
+    if (!shown) return 0;
+    try {
+      return spPdfPageCount(shown.doc);
+    } catch {
+      return 0;
+    }
+  }, [shown]);
   const shownRef = useRef(shown);
   shownRef.current = shown;
   const summary = useMemo(() => spSummary(project), [project]);
@@ -369,7 +380,7 @@ export function ExportArea() {
         <Section title="WHAT TO MAKE" hint="These two choices are for the packet you make now. They are not saved in your stage plot.">
           <Choice label="Packet" value={packet} options={PACKETS} onChange={(v) => patch({ packet: v })} hint="The compact packet leaves out what the plot and the other tables already say, and forces no page break. The text is never made smaller." />
           <Choice label="Paper" value={paper} options={PAPERS} onChange={(v) => patch({ paper: v })} />
-          {shown ? <Note>{`File name: ${shown.doc.fileName}`}</Note> : null}
+          {shown ? <Note>{`${pages ? `The PDF has ${plural(pages, 'page')} on ${SP_PAPER_WORD[paper]}. ` : ''}File name: ${shown.doc.fileName}`}</Note> : null}
           <Note>{`Contact shown in the packet: ${contactShown.join(', ') || 'none'}. Change it in SETUP.`}</Note>
           <Button label="GO TO SETUP" onPress={() => ed.goTo('setup')} a11yLabel="Go to Setup to choose which contact details the packet shows" />
         </Section>
@@ -388,7 +399,7 @@ export function ExportArea() {
               {h.channels ? <Text style={styles.noteText}>{`Inputs to the house system: ${routingWords(h)}.${summary.band ? ` The band monitor rig takes ${plural(summary.band.channels, 'input channel')}.` : ''}`}</Text> : null}
               <Text style={styles.noteText}>{summary.di.summary}</Text>
               {m.all.mixes ? (
-                <Text style={styles.noteText}>{`${m.house.mixes ? `Requested from the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.` : 'Nothing is requested from the house console.'}${m.bandOwned.mixes ? ` Your band creates ${plural(m.bandOwned.mixes, 'mix', 'mixes')} in the band monitor rig.` : ''}${m.byProvider.tbc.mixes ? ` For ${plural(m.byProvider.tbc.mixes, 'mix', 'mixes')}, who creates the mix is to be confirmed.` : ''}`}</Text>
+                <Text style={styles.noteText}>{`${m.house.mixes ? `Requested from the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.` : 'Nothing is requested from the house console.'}${m.byProvider['band-console'].mixes ? ` Your band creates ${plural(m.byProvider['band-console'].mixes, 'mix', 'mixes')} in the band monitor rig.` : ''}${m.byProvider['personal-mixer'].mixes ? ` ${plural(m.byProvider['personal-mixer'].mixes, 'mix is', 'mixes are')} made on a personal mixer system, not on the house console.` : ''}${m.byProvider.tbc.mixes ? ` For ${plural(m.byProvider.tbc.mixes, 'mix', 'mixes')}, who creates the mix is to be confirmed.` : ''}`}</Text>
               ) : null}
               {devices.length ? <Text style={styles.noteText}>{`Monitor devices: ${devices.join(', ')}.`}</Text> : null}
               <Text style={styles.noteText}>{equipment.length ? equipment.join(' ') : 'No equipment is listed yet.'}</Text>

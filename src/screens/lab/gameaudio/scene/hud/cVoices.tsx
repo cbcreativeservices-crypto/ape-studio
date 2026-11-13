@@ -18,6 +18,10 @@
  *                the next change when motion is reduced)
  *   WAITING      loops whose voice was taken: tracked, silent, outside the
  *                slots. They come back when a slot is free
+ *   NO OWNER     a generator's loop whose generator was removed (page 19's
+ *                fault 5, GA2 B-10): its slot is rimmed orange, a two-line
+ *                slot says ORPHAN instead of its priority, and the head
+ *                names it after NO OWNER
  *   REFUSED      sounds that found no voice to take, counted on this visit
  *   FREE         a slot of the budget with no voice in it
  *   ┆  ┆         a slot the budget does not have (lower BUDGET: more of these)
@@ -57,7 +61,7 @@ const Slot = memo(function Slot({ slot, taken, kind, box, type, flash }: { slot:
   if (!slot) {
     return (
       <View style={[styles.free, { width: box.w, height: box.h }]}>
-        <Text style={[styles.freeText, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
+        <Text style={[styles.freeText, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
           FREE
         </Text>
       </View>
@@ -71,12 +75,12 @@ const Slot = memo(function Slot({ slot, taken, kind, box, type, flash }: { slot:
     </Text>
   );
   const pri = (
-    <Text style={[styles.pri, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
-      {box.compact ? String(slot.priority) : `PRI ${slot.priority}`}
+    <Text style={[styles.pri, { fontSize: type.size, lineHeight: type.line }, slot.orphan && !box.compact && styles.priOrphan]} allowFontScaling={false} {...fitValue(type.size)}>
+      {slot.orphan && !box.compact ? 'ORPHAN' : box.compact ? String(slot.priority) : `PRI ${slot.priority}`}
     </Text>
   );
   return (
-    <View style={[styles.slot, { width: box.w, height: box.h }, box.compact && styles.slotTight, slot.protected && styles.slotProtected, slot.state === 'requested' && styles.slotAsked]}>
+    <View style={[styles.slot, { width: box.w, height: box.h }, box.compact && styles.slotTight, slot.protected && styles.slotProtected, slot.orphan && styles.slotOrphan, slot.state === 'requested' && styles.slotAsked]}>
       {box.compact ? (
         <View style={styles.lineRow}>
           <View style={styles.grow}>{name}</View>
@@ -98,7 +102,7 @@ const Slot = memo(function Slot({ slot, taken, kind, box, type, flash }: { slot:
       </View>
       {taken ? (
         <Animated.View style={[styles.takenBox, !box.compact && styles.takenLower, flash]}>
-          <Text style={[styles.takenText, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
+          <Text style={[styles.takenText, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
             STOLEN
           </Text>
         </Animated.View>
@@ -165,8 +169,12 @@ export function VoicesStrip({ w, h, state }: GaHudProps) {
   const cells = Array.from({ length: drawn }, (_, k) => k);
   const rows = compact ? [cells.slice(0, COLS), cells.slice(COLS)] : [cells];
 
-  // the loops that wait, as many names as the line has room for
-  const waitRoom = Math.max(0, Math.floor((w - 2 * padX - (type.full ? 300 : 210)) / (type.full ? 50 : 36)));
+  // the loops that wait, as many names as the line has room for; an orphan
+  // (a removed generator's loop, GA2 B-10) is named first, after NO OWNER
+  const room = Math.max(0, Math.floor((w - 2 * padX - (type.full ? 300 : 210)) / (type.full ? 50 : 36)));
+  const orphans = board.seats.filter((x): x is CSlot => x != null && x.orphan);
+  const orphanShown = orphans.slice(0, Math.max(0, room - (orphans.length ? 1 : 0)));
+  const waitRoom = Math.max(0, room - (orphans.length ? orphanShown.length + 1 : 0));
   const waitShown = board.waiting.slice(0, waitRoom);
   const waitMore = board.waiting.length - waitShown.length;
 
@@ -180,20 +188,34 @@ export function VoicesStrip({ w, h, state }: GaHudProps) {
             {seating.over ? ` · +${seating.over} MORE` : ''}
           </Text>
           <View style={styles.waitRow}>
+            {orphans.length ? (
+              <>
+                <Text style={[styles.orphanWord, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
+                  NO OWNER
+                </Text>
+                {orphanShown.map((x) => (
+                  <View key={x.v} style={[styles.waitChip, styles.orphanChip]}>
+                    <Text style={[styles.waitName, { fontSize: type.size, lineHeight: type.line - 1 }]} allowFontScaling={false} {...fitValue(type.size)}>
+                      {x.short}
+                    </Text>
+                  </View>
+                ))}
+              </>
+            ) : null}
             {board.waiting.length ? (
               <>
-                <Text style={[styles.waitWord, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
+                <Text style={[styles.waitWord, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
                   WAITING
                 </Text>
                 {waitShown.map((x) => (
                   <View key={x.v} style={styles.waitChip}>
-                    <Text style={[styles.waitName, { fontSize: type.value, lineHeight: type.line - 1 }]} allowFontScaling={false} {...fitValue(type.value)}>
+                    <Text style={[styles.waitName, { fontSize: type.size, lineHeight: type.line - 1 }]} allowFontScaling={false} {...fitValue(type.size)}>
                       {x.short}
                     </Text>
                   </View>
                 ))}
                 {waitMore > 0 ? (
-                  <Text style={[styles.waitWord, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
+                  <Text style={[styles.waitWord, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
                     +{waitMore}
                   </Text>
                 ) : null}
@@ -202,7 +224,7 @@ export function VoicesStrip({ w, h, state }: GaHudProps) {
           </View>
           <View style={styles.refused}>
             <Animated.View style={[styles.refusedGlow, refusedGlow]} />
-            <Text style={[styles.refusedText, { fontSize: type.value, lineHeight: type.line, color: refused ? C_FACE.refuse : C_FACE.mute }]} allowFontScaling={false} {...fitValue(type.value)}>
+            <Text style={[styles.refusedText, { fontSize: type.size, lineHeight: type.line, color: refused ? C_FACE.refuse : C_FACE.mute }]} allowFontScaling={false} {...fitValue(type.size)}>
               ✕ REFUSED {refused}
             </Text>
           </View>
@@ -234,10 +256,15 @@ const styles = StyleSheet.create({
   slotTight: { paddingHorizontal: 2 },
   slotProtected: { borderTopColor: C_FACE.amber, borderLeftColor: C_FACE.amber, borderRightColor: '#a87f22', borderBottomColor: '#a87f22' },
   slotAsked: { borderStyle: 'dashed' },
+  slotOrphan: { borderTopColor: C_FACE.steal, borderLeftColor: C_FACE.steal, borderRightColor: C_FACE.steal, borderBottomColor: C_FACE.steal },
+  priOrphan: { color: C_FACE.steal, fontFamily: fonts.oswaldMedium },
+  orphanWord: { color: C_FACE.steal, fontFamily: fonts.oswaldMedium, letterSpacing: 0.4 },
+  orphanChip: { borderStyle: 'solid' },
   free: { borderRadius: 3, borderWidth: 1, borderColor: C_FACE.wellRim, backgroundColor: C_FACE.well, alignItems: 'center', justifyContent: 'center' },
   freeText: { color: '#6f717b', fontFamily: fonts.oswaldMedium, letterSpacing: 0.8 },
   absent: { borderRadius: 3, borderWidth: 1, borderStyle: 'dashed', borderColor: '#24262d' },
-  lineRow: { flexDirection: 'row', alignItems: 'center', gap: 1 },
+  // 3 pt between a name and its priority: "HUM 2" and "40" read as one word at 1 pt (GA2 B-10)
+  lineRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   grow: { flex: 1 },
   // a protected voice's padlock sits in the slot's upper right corner, clear of a five-letter name
   lockCorner: { position: 'absolute', top: 3, right: 2 },

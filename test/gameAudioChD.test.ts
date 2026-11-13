@@ -100,7 +100,7 @@ describe('page 16 — the bus lane and the words for a bus', () => {
       assert.ok(!/calls it|\bsfx\b|\bui\b/.test(b.carries), `${b.id}: ${b.carries}`);
     }
     const s = run(gaInitial(), { type: 'bus', bus: 'sfx', db: -6 }, { type: 'bus', bus: 'ui', mute: true });
-    assert.ok(texts(s).includes('BUS EFFECTS: -6 dB'));
+    assert.ok(texts(s).includes('BUS EFFECTS: −6 dB'), 'a true minus, as every other number in the lab (GA2 B-15)');
     assert.ok(texts(s).some((t) => t.startsWith('BUS INTERFACE:') && t.includes('MUTED')));
     assert.ok(!texts(s).some((t) => /\b(sfx|ui)\b/.test(t)));
   });

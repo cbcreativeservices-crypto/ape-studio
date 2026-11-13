@@ -32,6 +32,6 @@ export const G04: ScreenGuide = {
   tryThis: [
     'As YOUR EARS, move FACING to 0° and read GEN PAN: far to the right. Choose OVERHEAD CAMERA and it moves toward the center.',
     'With OVERHEAD CAMERA chosen, move FACING from end to end. YOU turn in the picture and GEN PAN does not move.',
-    'In GAMES pick STRATEGY: the camera becomes the listener. Then pick RACING: the generator keeps playing while its SPEED rises, as an engine would.',
+    'In GAMES pick STRATEGY: the camera becomes the listener. Then pick RACING: the generator starts, then runs faster without starting again, as an engine would.',
   ],
 };

@@ -107,6 +107,15 @@ export const SIGNAL_PATH = {
 export const signalPathSpoken = (): string =>
   `Signal path. Audio: ${SIGNAL_PATH.audio.join(', then ')}. Control: the ${SIGNAL_PATH.controlFrom} sends a ${SIGNAL_PATH.control.slice(0, -1).join(', a ')} or a ${SIGNAL_PATH.control[SIGNAL_PATH.control.length - 1]}. Control tells the audio path what to do and carries no audio.`;
 
+/** What 0 dB is on the strip's meters (bug test GA2 B-09, 2026-11-13: three
+ *  music layers read "+2 dB" in the loudness ramp's red, which a learner
+ *  takes for clipping). The meters are the model's COMPUTED gains
+ *  (gaBusMeter: each sounding voice's gain, power-summed per bus), not a
+ *  measured signal, so a sum above 0 dB is not an overload. Said once, on
+ *  page 16's SIGNAL PATH card, which the meters are computed from. */
+export const METER_ZERO =
+  'The meters in the strip are computed from this path, not measured. 0 dB is one sound at its file’s own level, with its bus fader at 0 dB and LEVEL at 100%. Sounds on one bus add up, so the music at ALERT can read above 0 dB: a sum of gains, not an overload.';
+
 /** The duck's amounts as a phrase, from the model's table:
  *  "music by 10 dB, ambience by 8 dB and effects by 5 dB". */
 export function duckWords(): string {

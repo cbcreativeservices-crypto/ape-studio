@@ -1028,7 +1028,7 @@ describe('the Inputs screens keep the house rules', () => {
     assert.match(src, /label=\{object \? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'\}/);
     assert.match(src, /ed\.goTo\('stage'/);
     assert.match(src, /No sound system connection needed/);
-    assert.match(src, /<MoreDetails title="More details">/);
+    assert.match(src, /<MoreDetails title="More details"/);
   });
 
   it('the tool documents and never prescribes', () => {

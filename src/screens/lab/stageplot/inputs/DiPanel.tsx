@@ -14,7 +14,7 @@ import { spDiTotals } from '../../../../features/stageplot/spDerive';
 import { spAddDiDevice, spRemoveDiDevice, spUpdateDiDevice } from '../../../../features/stageplot/spModel';
 import type { SpDiDevice, SpId, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, Count, Note, RowCard, Section, TextField } from '../spForm';
+import { Button, Choice, Count, FocusMark, Note, RowCard, Section, TextField } from '../spForm';
 import { RemoveStep, SheetBody, Small, SubTitle, TickRow, bitStyles } from './bits';
 import { SP_DI_KIND_WORD, SP_SUPPLIERS, SP_TBC_PRINTED, spDiChannelRows, spDiDeviceLine, spDiToggle } from './inputsLogic';
 
@@ -87,8 +87,12 @@ export function DiEditor({ deviceId, onClose }: { deviceId: SpId; onClose: () =>
     <SheetBody>
       <TextField label="Name of this DI device" value={d.label} onCommit={(t) => (t && t !== d.label ? set({ label: t }) : undefined)} placeholder="Bass DI, Keys stereo DI" />
       <Choice<Channels> label="Mono or stereo" value={d.channels === 2 ? '2' : '1'} options={CHANNELS} onChange={(v) => (Number(v) === d.channels ? undefined : set({ channels: v === '2' ? 2 : 1 }))} hint="A mono device carries one DI channel. A stereo device carries two." />
-      <Choice<SpDiDevice['kind']> label="Passive or active" value={d.kind} options={KIND} onChange={(kind) => (kind === d.kind ? undefined : set({ kind }))} hint={`To be confirmed is a real answer, never guessed. ${SP_TBC_PRINTED}`} />
-      <Choice<SpSupplier> label="Who brings it" value={d.supplier} options={SUPPLIER} onChange={(supplier) => (supplier === d.supplier ? undefined : set({ supplier }))} hint="This is also the answer for every DI channel on this device." />
+      <FocusMark k="kind">
+        <Choice<SpDiDevice['kind']> label="Passive or active" value={d.kind} options={KIND} onChange={(kind) => (kind === d.kind ? undefined : set({ kind }))} hint={`To be confirmed is a real answer, never guessed. ${SP_TBC_PRINTED}`} />
+      </FocusMark>
+      <FocusMark k="supplier">
+        <Choice<SpSupplier> label="Who brings it" value={d.supplier} options={SUPPLIER} onChange={(supplier) => (supplier === d.supplier ? undefined : set({ supplier }))} hint="This is also the answer for every DI channel on this device." />
+      </FocusMark>
       <TextField label="Model, if it matters" value={d.model} onCommit={(t) => (t === d.model ? undefined : set({ model: t }))} hint="Type it yourself. Leave it empty for any suitable DI." />
 
       <View style={bitStyles.gap}>

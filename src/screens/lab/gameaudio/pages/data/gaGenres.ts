@@ -138,7 +138,9 @@ export const GA_GENRES: readonly GaGenreCard[] = [
     emphasis: ['An engine sound that keeps playing', 'Speed and load as changing values', 'Loops', 'Pitch that shifts as a vehicle passes'],
     demo: {
       actions: [{ type: 'machine', id: 'generator-1', on: true }, { type: 'speed', id: 'generator-1', value: GA_DEMO_SPEED }],
-      line: 'One sound keeps playing while its SPEED rises to 90%. In a racing game, SPEED follows the car.',
+      // the page has no SPEED readout, and one dispatch is a jump, not a rise
+      // (bug test 2026-11-13, B-S2-03): the line says what the picture shows
+      line: 'The generator starts, then runs faster: its rings crowd closer. One sound, changed without starting again.',
     },
   },
   {
@@ -149,7 +151,8 @@ export const GA_GENRES: readonly GaGenreCard[] = [
     emphasis: ['Impacts', 'Crowds', 'Commentary', 'Changes between views and situations'],
     demo: {
       actions: [{ type: 'post', event: 'crate_impact', owner: 'crate' }, { type: 'post', event: 'vo_greeting', owner: 'guide' }],
-      line: 'An impact, then a voice that reacts to it. In a sports game that voice is the commentary.',
+      // both start at the same moment (bug test B-S3-06): no "then"
+      line: 'An impact, and a voice that reacts to it. In a sports game that voice is the commentary.',
     },
   },
   {
@@ -159,8 +162,11 @@ export const GA_GENRES: readonly GaGenreCard[] = [
     why: 'The player acts in time with the music, so the delay between the game and the speaker matters.',
     emphasis: ['Exact timing of each sound', 'Musical time', 'The delay before a sound reaches the ear'],
     demo: {
-      actions: [{ type: 'musicStart' }],
-      line: 'Music starts on its own clock of beats and bars. The picture has no place for music: page 14 shows the clock.',
+      // music alone moved nothing on the screen (bug test 2026-11-13, B-S2-02):
+      // a hit asked for at once waits for the next bar line, and PLAYING
+      // shows the moment it lands (heard or not, on the same line)
+      actions: [{ type: 'musicStart' }, { type: 'stinger' }],
+      line: 'Music runs on a clock of bars. A hit asked for now waits for the next bar line: PLAYING reads 1 when it lands.',
     },
   },
   {

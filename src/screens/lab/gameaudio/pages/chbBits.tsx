@@ -53,6 +53,18 @@ export function TrayRow({ head, children }: { head: string; children: ReactNode 
 export function TrayNote({ children }: { children: ReactNode }) {
   return <Text style={styles.trayNote}>{children}</Text>;
 }
+/** A rule row while a planted fault is still unnamed (lead's decision 10;
+ *  bug test 2026-11-13, B-S1-01 / B-S3-11): the ✓ on the wrong rule would be
+ *  the answer before the symptom, so the row says "?" and what to do first,
+ *  the way page 6 locks DOOR FILE and page 8 locks SCOPE. */
+export function TrayLocked({ head, note }: { head: string; note: string }) {
+  return (
+    <View style={styles.trayGroup} accessible accessibilityLabel={`${head}: not tested since the fault began. ${note}`}>
+      <Text style={styles.trayHead}>{`${head} · ?`}</Text>
+      <Text style={styles.trayNote}>{note}</Text>
+    </View>
+  );
+}
 
 /** `LABEL · ON` / `LABEL · OFF`: a switch chip says its state as a word. */
 export const onOff = (label: string, on: boolean): string => `${label} · ${on ? 'ON' : 'OFF'}`;

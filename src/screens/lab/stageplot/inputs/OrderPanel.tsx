@@ -18,11 +18,20 @@ import { Button, Note, Section, Switch, TextField } from '../spForm';
 import { Small, bitStyles } from './bits';
 import { SP_MAX_CHANNEL, spInSentence, spParseReserved, spReservedText, spSharedNotice } from './inputsLogic';
 
+/** "Keep reserved channels free" is a choice of this screen, not of the
+ *  document: it is remembered while the app is open, so a visit to another
+ *  area does not turn it back on. */
+const keepReservedChoice: Partial<Record<SpPatchId, boolean>> = {};
+
 export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
   const ed = useSpEditor();
   const p = ed.project;
   const patch = spPatch(p, patchId);
-  const [keepReserved, setKeepReserved] = useState(true);
+  const [keepReserved, setKeepReservedState] = useState(keepReservedChoice[patchId] ?? true);
+  const setKeepReserved = (on: boolean) => {
+    keepReservedChoice[patchId] = on;
+    setKeepReservedState(on);
+  };
   const [rejected, setRejected] = useState<string[]>([]);
   if (!patch || !patch.order.length) return null;
 
@@ -64,7 +73,7 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
           label="Keep reserved channels free"
           value={keepReserved}
           onChange={setKeepReserved}
-          hint={!patch.reserved.length ? 'No channel is reserved yet.' : keepReserved ? `SORT IN THE USUAL ORDER and RENUMBER skip ${reserved}.` : `Reserved: ${reserved}. They are not kept free while this is off.`}
+          hint={!patch.reserved.length ? 'No channel is reserved yet.' : keepReserved ? `SORT IN THE USUAL ORDER and RENUMBER skip ${reserved}.` : `Reserved: ${reserved}. They are not kept free while this is off. An input given one of them is a review question, to settle before Ready to advance.`}
         />
       </View>
       <TextField

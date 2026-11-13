@@ -23,7 +23,7 @@
  *
  * No text under 9 pt. No "…": a label wraps, a value shrinks (fitValue).
  */
-import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Children, createContext, isValidElement, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { AppState, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal, useAfterModalsClose } from '../../../components/DimModal';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
@@ -297,8 +297,8 @@ export function Switch(p: { label: string; value: boolean; onChange: (v: boolean
 }
 
 /** "More details": closed by default; remembers nothing. */
-export function MoreDetails(p: { title?: string; children: ReactNode; initiallyOpen?: boolean }) {
-  const [open, setOpen] = useState(p.initiallyOpen ?? false);
+export function MoreDetails(p: { title?: string; children: ReactNode; initiallyOpen?: boolean; /** Fields inside: GO TO one of them opens this. */ focusKeys?: readonly string[] }) {
+  const [open, setOpen] = useState(() => (p.initiallyOpen ?? false) || !!p.focusKeys?.some(focusAsked));
   const title = p.title ?? 'More details';
   return (
     <View style={styles.more}>
@@ -404,7 +404,57 @@ export function Count(p: { value: string | number; label: string }) {
 /** A bottom sheet / centered popup for picking or editing (popups, never pulldowns).
  *  `scroll={false}` (an addition): the popup's body does not scroll, for content that
  *  brings its own scroller, so a popup never shows two scroll bars. */
+/* ── GO TO a FIELD (bug test, 2026-11-13) ───────────────────────────────
+ * A review question names a field ("Kick in: who supplies the microphone").
+ * GO TO opened the right popup at its top, with the field below the fold or
+ * inside a closed MORE DETAILS. Now GO TO asks for the field
+ * (askSheetFocus), the popup that opens next scrolls to it (FocusMark), and
+ * a MORE DETAILS that holds it opens (its `focusKeys`). The ask is taken
+ * once, and only for a moment, so a popup opened later never jumps. */
+let pendingFocus: { field: string; at: number } | null = null;
+const FOCUS_FRESH_MS = 3000;
+export function askSheetFocus(field: string | null | undefined): void {
+  pendingFocus = field ? { field, at: Date.now() } : null;
+}
+const focusAsked = (k: string): boolean => !!pendingFocus && pendingFocus.field === k && Date.now() - pendingFocus.at < FOCUS_FRESH_MS;
+type SheetScroller = { scrollToMark: (mark: View) => void };
+const SheetScroll = createContext<SheetScroller | null>(null);
+
+/** A field a review question can point at. Inside a popup that opens for
+ *  that question, the popup scrolls so the field is at the top. */
+export function FocusMark(p: { k: string; children: ReactNode }) {
+  const ctx = useContext(SheetScroll);
+  const ref = useRef<View>(null);
+  useEffect(() => {
+    if (!ctx || !focusAsked(p.k)) return undefined;
+    pendingFocus = null;
+    // after the popup has laid out (it fades in): measure, then scroll
+    const t = setTimeout(() => {
+      if (ref.current) ctx.scrollToMark(ref.current);
+    }, 160);
+    return () => clearTimeout(t);
+    // asked once, when the field first appears
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <View ref={ref} collapsable={false}>
+      {p.children}
+    </View>
+  );
+}
+
 export function Sheet(p: { visible: boolean; title: string; onClose: () => void; children: ReactNode; scroll?: boolean }) {
+  const scrollRef = useRef<ScrollView>(null);
+  const contentRef = useRef<View>(null);
+  const scroller = useRef<SheetScroller>({
+    scrollToMark: (mark) => {
+      const content = contentRef.current;
+      if (!content) return;
+      content.measureInWindow((_cx, cy) => {
+        mark.measureInWindow((_mx, my) => scrollRef.current?.scrollTo({ y: Math.max(0, my - cy - 12), animated: false }));
+      });
+    },
+  }).current;
   // WHILE IT CLOSES, a popup keeps the title and the body it had. The caller
   // has usually let go of the row by then ("Remove Maya?" became "Remove this
   // performer?" during the fade-out, and a menu's title went blank).
@@ -428,8 +478,10 @@ export function Sheet(p: { visible: boolean; title: string; onClose: () => void;
           ) : (
             // "handled": with the keyboard up, the first tap on a button must
             // press the button, not only put the keyboard away.
-            <ScrollView contentContainerStyle={styles.sheetBody} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
-              {children}
+            <ScrollView ref={scrollRef} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
+              <View ref={contentRef} collapsable={false} style={styles.sheetBody}>
+                <SheetScroll.Provider value={scroller}>{children}</SheetScroll.Provider>
+              </View>
             </ScrollView>
           )}
         </Pressable>
@@ -486,13 +538,28 @@ export function IssueList(p: { issues: SpIssue[]; onGoTo: (i: SpIssue) => void; 
             <Text style={[styles.issueLevel, issue.level === 'block' && styles.issueLevelBlock, issue.level === 'open' && styles.issueLevelOpen]}>{LEVEL_WORD[issue.level]}</Text>
             <Text style={styles.issueText}>{issue.text}</Text>
             <View style={styles.issueActions}>
-              <Pressable onPress={() => p.onGoTo(issue)} style={styles.issueBtn} accessibilityRole="button" accessibilityLabel={`Go to it: ${issue.text}`}>
+              <Pressable
+                onPress={() => {
+                  // the popup that opens shows the field that answers it
+                  askSheetFocus(issue.field);
+                  p.onGoTo(issue);
+                }}
+                style={styles.issueBtn}
+                accessibilityRole="button"
+                accessibilityLabel={`Go to it: ${issue.text}`}
+              >
                 <Text style={styles.issueBtnText}>GO TO ›</Text>
               </Pressable>
               {answers.map((a) => {
                 const label = spIssueActionLabel(a, issue);
                 return (
-                  <Pressable key={a} onPress={() => p.onAction(issue, a)} style={[styles.issueBtn, styles.issueAnswer]} accessibilityRole="button" accessibilityLabel={`${label}. ${issue.text}`}>
+                  <Pressable
+                    key={a}
+                    onPress={() => p.onAction(issue, a)}
+                    style={[styles.issueBtn, styles.issueAnswer]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${label}. ${issue.text}`}
+                  >
                     <Text style={[styles.issueBtnText, styles.issueAnswerText]}>{label}</Text>
                   </Pressable>
                 );

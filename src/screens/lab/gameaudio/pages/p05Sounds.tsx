@@ -40,7 +40,8 @@ import { GaRack, masterKey } from '../GaLab';
 import { ActivityLog, Caption, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaPlaying, type GaState } from '../model/gaModel';
-import { gaDispatch, gaGet, useGa } from '../model/gaStore';
+import { gaDispatch, gaGet, gaNow, useGa } from '../model/gaStore';
+import { aAlarm } from '../scene/hud/aModel';
 import { ChACard, ChARow, ChATray, ChATrayGrid, ChATrayResult } from './chAViews';
 import { GA_FAMILIES, GA_FAMILIES_TO_TRY, GA_PLAY, GA_SOLO_CATEGORIES, GA_SOLO_OFF, gaFamiliesTried, gaSoloKeyWord, gaSoloNow, gaSoloPlan } from './data/gaFamilies';
 import { G05 } from './guides/p05';
@@ -95,6 +96,15 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const solo = gaSoloNow(s.bus);
   const soloDef = GA_SOLO_CATEGORIES.find((c) => c.bus === solo);
   const soloWord = solo === null ? 'OFF' : (soloDef?.label ?? solo.toUpperCase());
+  const alarmNow = aAlarm(s, gaNow(), true);
+  const alarmA11y =
+    alarmNow.state === 'off'
+      ? 'the overheat alarm is off'
+      : alarmNow.state === 'silent'
+        ? 'the overheat alarm is running, and the solo lets none of it through'
+        : alarmNow.state === 'muted'
+          ? 'the overheat alarm is running, and its category is muted'
+          : `the overheat alarm is running, at ${alarmNow.word} where you stand`;
 
   const goals = [
     { label: 'Play six kinds of sound', hit: tried >= GA_FAMILIES_TO_TRY },
@@ -136,14 +146,18 @@ function Page({ ctx }: { ctx: PageCtx }) {
         hud: 'cats',
         readouts: [
           { k: 'SOLO', v: soloWord, vA11y: solo === null ? 'no category is soloed' : `only ${soloWord.toLowerCase()} is playing`, flex: 1.4 },
-          { k: 'ALARM', v: alarm ? 'ON' : 'OFF', vA11y: alarm ? 'the overheat alarm is running' : 'the overheat alarm is off', tint: alarm ? colors.red : colors.textSub },
+          // the alarm ALONE: its own computed level, or SILENT / MUTED while the
+          // mix shuts it out (bug test 2026-11-13, B-S2-04 / B-S2-05: on the strip
+          // it shares the LOCAL cell with the far louder fountain). A wider cell,
+          // so "−21 dB" keeps its key at 390 wide.
+          { k: 'ALARM', v: alarmNow.word, vA11y: alarmA11y, tint: alarmNow.state === 'sounding' || alarmNow.state === 'zero' ? colors.red : colors.textSub, flex: 1.3 },
         ],
         showNames: true,
         assets: ASSETS,
       }}
     >
       <Step n={1}>
-        <Look>One scene holds many kinds of sound. The strip under the picture lights each kind while it plays.</Look>
+        <Look>One scene holds many kinds of sound. The strip under the picture lights each kind while it plays. The ALARM readout follows the alarm alone.</Look>
         <P>Game sounds are grouped into families by the job each one does.</P>
         <ChACard eyebrow="SOUND FAMILIES" title="WHAT EACH ONE IS FOR">
           {GA_FAMILIES.map((f) => (
@@ -163,7 +177,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <Do>In PLAY, switch ALARM on. Then open SOLO and pick AMBIENCE, then EFFECTS.</Do>
-        <P>SOLO plays one category alone: AMBIENCE, EFFECTS, DIALOGUE or INTERFACE. A category is also called a bus. On the strip, SOLO marks the other kinds SILENT.</P>
+        <P>SOLO plays one category alone: AMBIENCE, EFFECTS, DIALOGUE or INTERFACE. A category is also called a bus. On the strip, a kind the solo shuts out entirely reads SILENT. The ALARM readout shows the alarm’s own level, and SILENT when the solo shuts it out.</P>
         <P>With AMBIENCE alone, the wind and the fountain stay and the alarm is gone. The alarm comes from one object, the generator, so it is in EFFECTS.</P>
         <P>Where you stand, the alarm is quieter than the fountain. With the door closed it is also dull. Yet its message matters most: the generator is overheating. Importance comes from what a sound tells the player, not from its loudness or its family.</P>
         <Note tone="mistake">Calling every environmental sound unimportant background. A quiet sound from the world can be the one the player most needs to hear.</Note>

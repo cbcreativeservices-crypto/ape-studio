@@ -315,9 +315,24 @@ export function bReverbWord(t: BTreatment): string | null {
   return t.send > 0 ? null : 'NOT IN THE ROOM';
 }
 
+/** The three windows' left edges and widths, in units. On a wide strip the
+ *  response takes 0.385 of it and the reverb starts at 0.7; on a narrow one
+ *  (320 wide, W ≈ 298) the readout and the reverb windows keep the room their
+ *  words need and the response plot gives it up (bug test GA2 B-07: the title
+ *  ran 30 units into the reverb, "900 Hz" touched ROOM REVERB, and ROOM
+ *  REVERB touched "1.5 s"). `readNeed` and `revNeed` are measured words. */
+export function bWallLayout(W: number, readNeed: number, revNeed: number): { ax0: number; apw: number; rx: number; bx0: number; bpw: number; colW: number } {
+  const ax0 = 8;
+  const bx0 = Math.min(Math.round(W * 0.7), Math.round(W - 8 - revNeed));
+  const apw = Math.max(64, Math.min(Math.round(W * 0.385), Math.round(bx0 - 9 - readNeed - 9 - ax0)));
+  const rx = ax0 + apw + 9;
+  return { ax0, apw, rx, bx0, bpw: W - 8 - bx0, colW: bx0 - 9 - 4 - rx };
+}
+
 export function bWallSummary(t: BTreatment): string {
-  const name = t.name.toLowerCase();
-  const state = t.playing ? `the ${name} is playing` : t.virtual ? `the ${name} is tracked but not played, so this is what it would get` : `the ${name} is not playing, so this is what it would get`;
+  // "generator 1" is a name: no article (GA2 B-17c: "the generator 1 is playing")
+  const name = /\d$/.test(t.name) ? t.name.replace(/^(\w)(.*)$/, (_m, a: string, b: string) => a + b.toLowerCase()) : `the ${t.name.toLowerCase()}`;
+  const state = t.playing ? `${name} is playing` : t.virtual ? `${name} is tracked but not played, so this is what it would get` : `${name} is not playing, so this is what it would get`;
   const wall = t.obstructed ? `Through the closed door: ${Math.abs(Math.round(t.wallDb))} dB lower, and a low-pass filter at ${bHzWord(t.lowpassHz)}, 12 dB per octave.` : 'Nothing is in the way: no level change and no filter.';
   const none = bReverbWord(t);
   const rev = none ? `Room reverb: ${none.toLowerCase()}.` : `Room reverb: sent ${Math.abs(Math.round(t.sendDb))} dB below the direct sound, heard from ${t.listenerInside ? 'inside' : 'outside'}. The tail drawn is the room’s impulse response, ${bIrSeconds().toFixed(1)} seconds long.`;
@@ -551,6 +566,15 @@ export function bTrack(m: BMemo, prev: GaState, next: GaState): BMemo {
     }
   }
   return out;
+}
+
+/** The start of the beat `now` is in, on the MUSIC's clock (beats count from
+ *  `t0`, when the music started), never on the scene's: flooring absolute
+ *  scene time put the spoken beat up to one beat behind the play line, and
+ *  read "bar 4, beat 4" just after START (bug test GA2 B-11). */
+export function bBeatFloor(now: number, t0: number, beatS: number = B_BEAT_S): number {
+  if (!(now > t0)) return now;
+  return t0 + Math.floor((now - t0) / beatS + 1e-9) * beatS;
 }
 
 export function bMusicSummary(s: GaState, tNow: number): string {

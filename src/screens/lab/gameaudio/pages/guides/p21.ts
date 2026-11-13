@@ -17,11 +17,11 @@ export const G21: ScreenGuide = {
   ],
   control: [
     'TOPIC opens RULES, SPACE, MUSIC, ACCESS, TEST and AI. Each one stops what plays and sets the scene up again.',
-    'SPEED changes the generator’s speed. The third key is the topic’s own action, such as BURST or GUIDE LINE. AI has none.',
+    'The next key is the topic’s own action, such as BURST or GUIDE LINE. AI has none. SPEED is there only on RULES, SPACE and TEST, where the generator runs.',
     'Tap an answer in each CHECK YOURSELF card. After a wrong answer you can try again.',
   ],
   changes: [
-    'RULES: SPEED moves the hum’s pitch and level. It is a fixed loop: nothing in this lab is procedural.',
+    'RULES: SPEED moves the hum’s pitch and level, and its rings close up in the picture. It is a fixed loop: nothing in this lab is procedural.',
     'SPACE shows the wall’s treatment, MUSIC the bars and a waiting change, ACCESS a sign and a caption, TEST the voices stolen in a burst.',
     'AI shows nothing, because the lab has no AI. Every sound here is a file made ahead of time.',
   ],

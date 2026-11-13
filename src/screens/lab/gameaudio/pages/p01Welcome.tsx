@@ -44,7 +44,8 @@ import { gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, useGa } from '../model/gaStore';
 import type { DockParam } from '../../rack/rackTypes';
 import { G01 } from './guides/p01';
-import { pct, useSince } from './shared';
+import { useCountWhen } from './chbBits';
+import { gaFact, pct, useSince } from './shared';
 
 const ASSETS = ['amb_room', 'amb_yard', 'fountain'] as const;
 const TERMS = gaTerms('Game audio', 'Interactive audio', 'Audio listener');
@@ -70,9 +71,14 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const [check, setCheck] = useState(false);
   // the level as it was when the page opened: the goal asks for a MOVE
   const levelAtOpen = useRef(s.master);
+  // THE SAFE ORDER IS THE GOAL (bug test 2026-11-13, B-S2-01): the scene
+  // counts as started only if LEVEL was already low at the moment it started
+  // (the model's own `sceneOn` count, judged with the level of that moment).
+  // Starting at 70% and lowering afterward is the page's common mistake.
+  const startedLow = useCountWhen(gaFact(s, 'sceneOn'), Math.round(s.master * 100) <= LOW_LEVEL_PCT) > 0;
   const goals = [
     { label: 'Set LEVEL low: move it to 40% or lower', hit: s.master !== levelAtOpen.current && Math.round(s.master * 100) <= LOW_LEVEL_PCT },
-    { label: 'Start the scene', hit: since('sceneOn') > 0 },
+    { label: 'Then start the scene, with LEVEL already low', hit: startedLow },
     // counted only when ■ STOP (or SOUND off) really stopped something
     { label: 'Stop the scene with ■ STOP', hit: since('stoppedSomething') > 0 },
     { label: 'Pass the check', hit: check },

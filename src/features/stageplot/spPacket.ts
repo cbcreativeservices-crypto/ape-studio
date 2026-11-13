@@ -457,7 +457,16 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
 
   // `parts` = the box of each shape of the symbol: a name may stand between
   // the drums of a kit, never on one of them
-  type Draft = SpDocPlotItem & { box: Box; parts: Box[]; sized: boolean; onStage: boolean; placed: boolean; full: string };
+  type Draft = SpDocPlotItem & { box: Box; parts: Box[]; sized: boolean; onStage: boolean; placed: boolean; full: string; who: SpId | null };
+  /** The performer an object belongs to: their figure, or what they play,
+   *  sing into or hear. */
+  const whoOf = (o: SpObject): SpId | null => {
+    if (o.performerId) return o.performerId;
+    const src = o.sourceId ?? (o.inputId ? (p.inputs.find((i) => i.id === o.inputId)?.sourceId ?? null) : null);
+    if (src) return p.sources.find((x) => x.id === src)?.performerId ?? null;
+    if (o.deviceId) return p.devices.find((x) => x.id === o.deviceId)?.performerId ?? null;
+    return null;
+  };
   // sized kinds (risers, labeled boxes) first: they are drawn under the rest
   // then the equipment, then the PEOPLE, so a performer's circle is drawn over
   // the stool of the kit they sit at
@@ -476,7 +485,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       if (m) mixCodes.push(m.code);
     }
     for (const c of mixCodes) if (c && !badges.includes(c)) badges.push(c);
-    return { id: o.id, shapes, tag: spSymbol(o.kind).tag, at, label: objectLabel(p, o), labelAt: at, badges, person: o.kind === 'performer', box: shapesBox(shapes, at), parts: shapes.map((s) => shapesBox([s], shapeAt(s))), sized: spIsSized(o.kind), onStage: o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1, placed: true, full: '' };
+    return { id: o.id, shapes, tag: spSymbol(o.kind).tag, at, label: objectLabel(p, o), labelAt: at, badges, person: o.kind === 'performer', box: shapesBox(shapes, at), parts: shapes.map((s) => shapesBox([s], shapeAt(s))), sized: spIsSized(o.kind), onStage: o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1, placed: true, full: '', who: whoOf(o) };
   });
 
   // WHERE EACH NAME GOES (review 2: a name on the wrong object sends a
@@ -497,6 +506,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const PAD = 1.5; // points kept clear around a name
   const EDGE = 4; // points between a name and the stage outline
   const NEAR = 0.5; // points by which a name is nearer to its own symbol than to any other
+  const NEAR_RATIO = 1.6; // how many times farther any other symbol must be
   let symbolOver = 0;
   for (const d of drafts) symbolOver = Math.max(symbolOver, -d.box.x0, d.box.x1 - st.width, -d.box.y0, d.box.y1 - st.depth);
   const symbolMargin = Math.max(0.6, Math.round((symbolOver + 0.15) * 100) / 100);
@@ -547,9 +557,14 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       }
       if (beside && !d.sized) {
         // nearer to its own symbol than to any other, edge to edge, and by
-        // a clear step (NEAR points), so the eye cannot give it to a neighbor
+        // a clear step (NEAR points), so the eye cannot give it to a neighbor.
+        // Equipment's numbers keep CLEARLY away from ANOTHER performer (not
+        // the one who plays or uses it): that performer is at least
+        // NEAR_RATIO times as far ("3–5", the timbales' channels, stood
+        // midway between the timbales and the conga player and read as his:
+        // bug test, 2026-11-13).
         const own = away(box, d);
-        for (const o of solid) if (o !== d && away(box, o) < own + NEAR / k) return false;
+        for (const o of solid) if (o !== d && away(box, o) < (o.person && !d.person && o.who !== d.who ? own * NEAR_RATIO : own) + NEAR / k) return false;
       }
       return true;
     };
@@ -963,7 +978,7 @@ function mixTableCompact(p: SpProject): SpDocTable {
         mix: [m.code, m.name.trim()].filter(Boolean).join(' '),
         who,
         format: `${m.format === 'stereo' ? 'Stereo' : 'Mono'}, ${lower(SP_DELIVERY_WORD[m.delivery])}`,
-        by: own ? `${SP_PROVIDER_WORD[m.provider]}. The venue provides: ${lower(SP_VENUE_FEED_WORD[m.venueFeed])}` : SP_PROVIDER_WORD[m.provider],
+        by: own ? `${SP_PROVIDER_WORD[m.provider]}. Requested from the venue: ${lower(SP_VENUE_FEED_WORD[m.venueFeed])}` : SP_PROVIDER_WORD[m.provider],
         devices: [devices.join('; '), m.outputs.trim() ? `Requested outputs: ${m.outputs.trim()}` : ''].filter(Boolean).join('. '),
       },
     };
@@ -981,7 +996,8 @@ function mixTable(p: SpProject): SpDocTable {
     const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody in particular');
     const devices = p.devices.filter((d) => d.mixId === m.id).map((d) => `${d.label.trim() || SP_DEVICE_WORD[d.type]} (${SP_SUPPLIER_WORD[d.supplier]})`);
     const delivery = [SP_DELIVERY_WORD[m.delivery], devices.join('; '), m.outputs.trim() ? `Requested outputs: ${m.outputs.trim()}` : ''].filter(Boolean).join('. ');
-    const feed = `The venue provides: ${lower(SP_VENUE_FEED_WORD[m.venueFeed])}`;
+    // a REQUEST to the venue, never a statement of what it has agreed to
+    const feed = `Requested from the venue: ${lower(SP_VENUE_FEED_WORD[m.venueFeed])}`;
     const by =
       m.provider === 'band-console'
         ? `${SP_PROVIDER_WORD[m.provider]}. ${feed}`
@@ -1113,7 +1129,10 @@ function equipmentTable(rows: EquipRow[]): SpDocTable {
   return {
     columns,
     rows: rows.map((r) => {
-      const row: SpDocRow = { cells: { item: r.item, qty: r.qtyText ?? String(r.qty), ...supplierCells(r.by), notes: r.notes } };
+      // a row with no one quantity ("–") says WHO in words, never a count of 1
+      const who = supplierCells(r.by);
+      if (r.qtyText === DASH) for (const k of Object.keys(who)) if (who[k]) who[k] = 'Yes';
+      const row: SpDocRow = { cells: { item: r.item, qty: r.qtyText ?? String(r.qty), ...who, notes: r.notes } };
       if (r.strong) row.strong = true;
       return row;
     }),
@@ -1135,7 +1154,7 @@ const noteBlocks = (text: string): SpDocBlock[] =>
 
 type Break = SpDocSection['breakBefore'];
 
-function plotSection(p: SpProject, stamp: string, kind: SpPacketKind): SpDocSection {
+function plotSection(p: SpProject, stamp: string, kind: SpPacketKind, generatedAt: number): SpDocSection {
   const compact = kind !== 'full';
   const facts: [string, string][] = [['Band', bandName(p) || NO_BAND]];
   if (p.title.trim()) facts.push(['Title', p.title.trim()]);
@@ -1151,6 +1170,9 @@ function plotSection(p: SpProject, stamp: string, kind: SpPacketKind): SpDocSect
       : 'Draft'
     : `Ready to advance: prepared for discussion with the venue${p.venueConfirmed ? '. The band recorded that the venue confirmed this revision' : ''}`;
   facts.push(['Revision', `${p.revision} · ${status}${p.modifiedAt > 0 ? ` · changed ${spDayWords(p.modifiedAt)}` : ''}`]);
+  // what this document is (it used to close the packet, alone on a last sheet)
+  const made = spMomentWords(generatedAt);
+  facts.push(['This packet', `The band’s request, for discussion: not a confirmation by the venue.${made ? ` Made ${made}.` : ''}`]);
 
   const blocks: SpDocBlock[] = [{ t: 'facts', rows: facts }, { t: 'plot', plot: spPlotDoc(p, { brief: kind === 'compact', roomy: kind === 'plot' }) }];
 
@@ -1220,7 +1242,11 @@ function inputsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact: 
       if (p.patches.length > 1) blocks.push(h2(`${patch.name}: ${plural(n, 'input channel')}`));
       blocks.push({ t: 'table', table: inputTable(p, patch.id, compact) });
     }
-    if (patch.reserved.length) blocks.push(para(`${patch.name}: channels kept free on purpose: ${patch.reserved.join(', ')}.`, 'muted'));
+    // Only a channel that IS free is printed as kept free: a reserved number
+    // an input sits on is a review question, never "free" on paper.
+    const used = new Set(patch.order.map((id) => patch.numbers[id]).filter((x): x is number => x != null));
+    const free = patch.reserved.filter((x) => !used.has(x));
+    if (free.length) blocks.push(para(`${patch.name}: channels kept free on purpose: ${free.join(', ')}.`, 'muted'));
   }
   const acoustic = p.sources.filter((x) => x.connection === 'none');
   if (acoustic.length) {
@@ -1247,7 +1273,12 @@ function monitorsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact
   const asked = m.house.mixes ? `Requested from the house console: ${plural(m.house.mixes, 'mix', 'mixes')}, ${plural(m.house.channels, 'audio channel')}.` : 'Nothing is requested from the house console.';
   const head = `${plural(m.all.mixes, 'monitor mix', 'monitor mixes')} (${spMonoStereoWord(m.all.mono, m.all.stereo)}). ${asked}`;
   const apart: string[] = [];
-  if (m.bandOwned.mixes) apart.push(`Created in the band monitor rig, and not requested from the house console: ${plural(m.bandOwned.mixes, 'mix', 'mixes')} (${plural(m.bandOwned.channels, 'audio channel')} inside that rig).`);
+  // The band monitor rig and a personal mixer system are said apart: a
+  // venue may own the personal mixer system (as the Monitors screen says).
+  const rig = m.byProvider['band-console'];
+  const personal = m.byProvider['personal-mixer'];
+  if (rig.mixes) apart.push(`Created in the band monitor rig, and not requested from the house console: ${plural(rig.mixes, 'mix', 'mixes')} (${plural(rig.channels, 'audio channel')} inside that rig).`);
+  if (personal.mixes) apart.push(`Made on a personal mixer system, and not mixed on the house console: ${plural(personal.mixes, 'mix', 'mixes')} (${plural(personal.channels, 'audio channel')}).`);
   if (m.byProvider.tbc.mixes) apart.push(`For ${plural(m.byProvider.tbc.mixes, 'mix', 'mixes')}, who creates the mix is to be confirmed.`);
   if (compact) {
     // ONE line of totals, then the table: no explaining paragraphs
@@ -1323,7 +1354,7 @@ function equipmentSection(p: SpProject, s: SpSummary, breakBefore: Break, compac
 /** The most open questions the last section may hold and still run on. */
 export const SP_SHORT_NOTES = 4;
 
-function notesSection(p: SpProject, issues: SpIssue[], generatedAt: number, breakBefore: Break): SpDocSection {
+function notesSection(p: SpProject, issues: SpIssue[], breakBefore: Break): SpDocSection {
   const blocks: SpDocBlock[] = [];
   if (p.notes.trim()) blocks.push(h2('Notes'), ...noteBlocks(p.notes));
   if (p.accessNotes.trim()) blocks.push(h2('Access and setup'), ...noteBlocks(p.accessNotes));
@@ -1335,8 +1366,9 @@ function notesSection(p: SpProject, issues: SpIssue[], generatedAt: number, brea
   if (!alone) blocks.push(h2('Unresolved: to be confirmed'));
   if (open.length) blocks.push({ t: 'list', items: open });
   else blocks.push(para('No open question is recorded in this revision.'));
-  const made = spMomentWords(generatedAt);
-  blocks.push(para(`This packet records what the band is requesting, for discussion with the venue. It is not a confirmation by the venue.${made ? ` Made ${made}.` : ''}`, 'muted'));
+  // What the packet is, and when it was made, is said on the FIRST page
+  // (plotSection): as the last lines here it sent a compact packet onto a
+  // sheet of its own (bug test, 2026-11-13).
   // A last section of a few lines runs on under the equipment table: it is
   // not sent to a page of its own while the page before it has room (a
   // renderer still keeps the heading with its first lines).
@@ -1360,11 +1392,11 @@ export function spBuildDoc(s: SpSnapshot): SpDoc {
   const issues = spReview(p);
   const stamp = spStamp(p, issues);
   const band = bandName(p);
-  const sections: SpDocSection[] = [plotSection(p, stamp, kind)];
+  const sections: SpDocSection[] = [plotSection(p, stamp, kind, s.generatedAt)];
   if (kind !== 'plot') {
     const summary = spSummary(p);
     const br: Break = compact ? 'none' : 'auto';
-    sections.push(inputsSection(p, summary, br, compact), monitorsSection(p, summary, br, compact), equipmentSection(p, summary, br, compact), notesSection(p, issues, s.generatedAt, br));
+    sections.push(inputsSection(p, summary, br, compact), monitorsSection(p, summary, br, compact), equipmentSection(p, summary, br, compact), notesSection(p, issues, br));
   }
   return {
     // the header names everything the packet holds; with no band name it

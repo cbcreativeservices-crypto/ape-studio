@@ -1212,6 +1212,13 @@ function fileId(body: string): string {
   return h.map((v) => pad(v.toString(16).toUpperCase(), 8)).join('');
 }
 
+/** How many pages the PDF of this packet has on its paper: the same layout
+ *  the file is made with, so the Export screen can say "4 pages on US
+ *  Letter" before anything is downloaded (bug test 2026-11-13, 8). */
+export function spPdfPageCount(d: SpDoc): number {
+  return layoutDoc(d, SP_PDF_PAPER[d.paper] ?? SP_PDF_PAPER.letter).pages.length;
+}
+
 /**
  * One packet → the bytes of its PDF file. The same `SpDoc` always gives the
  * same bytes (the date in the file is `doc.generatedAt`, not the clock).

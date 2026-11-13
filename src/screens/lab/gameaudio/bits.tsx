@@ -27,7 +27,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import type { PageCtx } from '../kit/PagedLab';
 import { useMarkWhen } from '../tuning/components/primitives';
-import { gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime } from './bitsLogic';
+import { gaFaultHints, gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime } from './bitsLogic';
 import type { GaLogEntry, GaLogKind, GaState } from './model/gaModel';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
@@ -224,7 +224,7 @@ export function Caption({ state }: { state: GaState }) {
 
 /** TROUBLESHOOT: plant one wrong setting, let the learner find it with the
  *  log and the scene, and judge the fix from the scene's state. */
-export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, seen = true }: {
+export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, seen = true, firstHint }: {
   title: string;
   symptom: string;
   /** The fault is planted right now. */
@@ -232,15 +232,22 @@ export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, s
   /** The learner planted it and has since corrected it. */
   fixed: boolean;
   onStart: () => void;
+  /** The hints toward the CAUSE: shown only once `seen` is true. */
   hints: readonly string[];
   why: string;
   /** A planted fault does not name itself (lead's decision 10): a page whose
    *  readouts stay neutral until the learner has PRODUCED THE SYMPTOM once
    *  passes `seen={false}` until then. The card then asks for the symptom
-   *  first, and only afterward for the cause. Default true: as before. */
+   *  first, and only afterward for the cause: before it, SHOW A HINT gives
+   *  only `firstHint` ("first make the problem happen: …"; bitsLogic
+   *  `gaFaultHints`, bug test 2026-11-13 B-S1-03). Default true: as before. */
   seen?: boolean;
+  /** The one hint allowed before the symptom, in the page's words. */
+  firstHint?: string;
 }) {
-  const [shown, setShown] = useState(0);
+  const [shownBefore, setShownBefore] = useState(0);
+  const [shownAfter, setShownAfter] = useState(0);
+  const now = gaFaultHints(hints, seen, firstHint, shownBefore, shownAfter);
   return (
     <View style={styles.fault}>
       <Text style={styles.faultHead}>TROUBLESHOOT · {title}</Text>
@@ -257,13 +264,13 @@ export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, s
               ? 'The fault is now active. Find its cause with the activity log and the controls, then correct it.'
               : 'The fault is now active. Nothing on this page names it yet. First make the symptom in the report happen.'}
           </Text>
-          {hints.slice(0, shown).map((h) => (
+          {now.shown.map((h) => (
             <Text key={h} style={styles.noteText}>
               • {h}
             </Text>
           ))}
-          {shown < hints.length ? (
-            <Pressable style={styles.faultBtn} onPress={() => setShown((n) => n + 1)} accessibilityRole="button" accessibilityLabel="Show a hint">
+          {now.more ? (
+            <Pressable style={styles.faultBtn} onPress={() => (seen ? setShownAfter : setShownBefore)((n) => n + 1)} accessibilityRole="button" accessibilityLabel="Show a hint">
               <Text style={styles.faultBtnText}>SHOW A HINT</Text>
             </Pressable>
           ) : null}

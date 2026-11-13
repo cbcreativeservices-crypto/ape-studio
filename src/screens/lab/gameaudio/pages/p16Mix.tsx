@@ -34,7 +34,7 @@ import { gaTerms } from '../gaTerms';
 import { gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { InfoCard, Tray, TrayChip, TrayGrid, onOff, speaking } from './chdKit';
-import { BUS_LANE_HOME, MIX_BUSES, SIGNAL_PATH, busNowSpoken, busNowWord, dbToLane, duckWords, fmtDb, laneToDb, lineSpeaking, mixBus, signalPathSpoken } from './data/gaMix';
+import { BUS_LANE_HOME, METER_ZERO, MIX_BUSES, SIGNAL_PATH, busNowSpoken, busNowWord, dbToLane, duckWords, fmtDb, laneToDb, lineSpeaking, mixBus, signalPathSpoken } from './data/gaMix';
 import { G16 } from './guides/p16';
 import { useSince } from './shared';
 
@@ -111,7 +111,7 @@ function MixTray() {
  *  line) and named in words. Read-only. */
 function SignalPath() {
   return (
-    <InfoCard head="SIGNAL PATH" a11y={signalPathSpoken()}>
+    <InfoCard head="SIGNAL PATH" a11y={`${signalPathSpoken()} ${METER_ZERO}`}>
       <View style={styles.pathRow}>
         <Text style={styles.pathName}>AUDIO</Text>
         <View style={styles.pathFlow}>
@@ -143,6 +143,8 @@ function SignalPath() {
         </View>
       </View>
       <Text style={styles.pathNote}>The solid row is sound. The dashed row is the game telling that path what to do: it carries no audio. A duck travels on the dashed row.</Text>
+      {/* GA2 B-09: the music bus read "+2 dB" in red at ALERT; say once what 0 dB is on the strip's computed meters */}
+      <Text style={styles.pathNote}>{METER_ZERO}</Text>
     </InfoCard>
   );
 }

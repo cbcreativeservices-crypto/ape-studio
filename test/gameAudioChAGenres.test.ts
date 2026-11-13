@@ -168,16 +168,25 @@ describe('page 4: GAMES moves the scene, and each line says only what is true', 
     assert.equal(s.machines[0].speed, GA_DEMO_SPEED);
     assert.equal(gaInitial().machines[0].speed, 0.4);
     assert.equal(gaFact(s, 'speedWhilePlaying') - gaFact(run(gaInitial()), 'speedWhilePlaying'), 1);
-    assert.match(gaGenre('racing')!.demo.line, /SPEED rises to 90%/);
+    // the page has no SPEED readout: the line names what the picture shows (bug test B-S2-03)
+    assert.doesNotMatch(gaGenre('racing')!.demo.line, /SPEED/);
+    assert.match(gaGenre('racing')!.demo.line, /rings crowd closer.*without starting again/);
   });
   it('SPORTS: an impact, then a voice', () => {
     const s = demo('sports');
     assert.ok(gaPlaying(s, 'crate_impact') && gaPlaying(s, 'vo_greeting'));
   });
-  it('RHYTHM: the music starts on its own clock (and the picture has no place for it: the line says so)', () => {
+  it('RHYTHM: the music starts on its clock, and a hit asked for now lands on the next bar line: PLAYING reads 1 then (bug test B-S2-02)', () => {
     const s = demo('rhythm');
     assert.equal(s.music.on, true);
-    assert.match(gaGenre('rhythm')!.demo.line, /The picture has no place for music/);
+    assert.equal(s.inst.length, 0, 'nothing is counted before the bar line');
+    assert.ok(s.music.stinger && s.music.stinger.boundary === 'bar', 'the hit waits for the next bar');
+    assert.ok((s.music.stinger.inS ?? 0) > 0.3, 'the wait is long enough to be seen');
+    // unheard, the store moves the clock to the line and reports it applied (gaStore)
+    const landed = run(s, { type: 'engine', evt: { e: 'music', what: 'applied', req: s.music.stinger.req, at: 0 } });
+    assert.equal(landed.inst.length, 1, 'PLAYING reads 1 when it lands');
+    assert.equal(landed.inst[0].event, 'stinger');
+    assert.match(gaGenre('rhythm')!.demo.line, /PLAYING reads 1 when it lands/);
   });
   it('HORROR: the generator runs out of sight, behind the closed door, and nothing else plays', () => {
     const s = demo('horror');

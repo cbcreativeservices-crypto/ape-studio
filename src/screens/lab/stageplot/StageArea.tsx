@@ -27,10 +27,11 @@
  *          stage yet, the review's stage questions, and every object as a
  *          row that opens its position buttons and its typed position.
  *
- * ADD AND VIEW OPEN AS POPUPS; OBJECT OPENS UNDER THE DRAWING (fix rounds
- * 2026-11-12). On a 390 × 844 phone the rack's tray had a 94-point window
- * for 900 points of palette, so outside FULL SCREEN the ADD and VIEW buttons
- * open the kit's centered popup (`Sheet`, with this area's own scroller in
+ * ADD OPENS AS A POPUP; OBJECT AND VIEW OPEN UNDER THE DRAWING (fix rounds
+ * 2026-11-12; VIEW became a short tray in the bug test of 2026-11-13, S2-12:
+ * its switches change the drawing, so the drawing stays in sight). On a
+ * 390 × 844 phone the rack's tray had a 94-point window for 900 points of
+ * palette, so outside FULL SCREEN the ADD button opens the kit's centered popup (`Sheet`, with this area's own scroller in
  * it: one scroll bar). In FULL SCREEN a popup cannot be presented over the
  * full-screen view (iOS refuses it), so there the same buttons open the dock
  * tray, with the fader strip folded away (`hideLane`).
@@ -55,7 +56,7 @@
  */
 import { useCallback, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { spEdit, spGridStep, spMoveObject, spObject, spToScale, spUpdateObject } from '../../../features/stageplot/spModel';
+import { spGridStep, spMoveObject, spObject, spSetStageView, spToScale, spUpdateObject } from '../../../features/stageplot/spModel';
 import type { SpId, SpProject } from '../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../theme/tokens';
 import { RackUnit } from '../rack/RackUnit';
@@ -69,7 +70,7 @@ import { StageObjectList } from './stage/StageObjectList';
 import { StagePalette } from './stage/StagePalette';
 import { StagePlanView } from './stage/StagePlanView';
 import { StageStepScroll, stageSheetScrollHeight, stageTrayScrollHeight } from './stage/StageStepScroll';
-import { STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageFacingShort, stageFacingWord, stageGlassWidthGuess, stageKeyLayout, stageScaleNote, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
+import { STAGE_KEY_SHARE, STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageFacingShort, stageFacingWord, stageGlassWidthGuess, stageKeyLayout, stageScaleNote, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
 import { STAGE_NEW_SPOT, stageKeyEntries, stageListName, stageListOrder, stagePlace, stageSelectedObjectId, stageSelectionName, stageUnplaced, stageWhere, type StageAdded } from './stage/stageLinks';
 
 /** The TURN lane moves in 5° steps (0…355). */
@@ -82,7 +83,14 @@ const gridWords = (p: SpProject): string => {
   return `One step is 1/${n} of the stage width.`;
 };
 
-type Panel = 'add' | 'object' | 'view';
+type Panel = 'add' | 'object';
+
+/** VIEW's two screen-only switches, remembered while the app is open: a
+ *  visit to another area does not turn them back on (bug test S3-07). */
+const drawingShows = { names: true, numbers: true };
+
+/** A name short enough for the second line of a dock button. */
+const dockName = (name: string): string => (name.length > 12 ? `${name.slice(0, 11).trimEnd()}…` : name);
 
 export function StageArea() {
   const ed = useSpEditor();
@@ -90,8 +98,17 @@ export function StageArea() {
   const { height: winH, width: winW } = useWindowDimensions();
 
   const [view, setView] = useState<StageView>(STAGE_VIEW_FIT);
-  const [names, setNames] = useState(true);
-  const [numbers, setNumbers] = useState(true);
+  // screen preferences, remembered while the app is open (S3-07)
+  const [names, setNamesState] = useState(drawingShows.names);
+  const [numbers, setNumbersState] = useState(drawingShows.numbers);
+  const setNames = (on: boolean) => {
+    drawingShows.names = on;
+    setNamesState(on);
+  };
+  const setNumbers = (on: boolean) => {
+    drawingShows.numbers = on;
+    setNumbersState(on);
+  };
   /** The TURN lane's preview while the finger rides it. */
   const [turn, setTurn] = useState<{ id: SpId; rot: number } | null>(null);
   /** The popup that is open (outside FULL SCREEN). */
@@ -100,6 +117,8 @@ export function StageArea() {
   const [inFull, setInFull] = useState(false);
   /** How many names the drawing leaves out at its present size. */
   const [leftOut, setLeftOut] = useState(0);
+  /** How many performers are named without their mix code at this size. */
+  const [codesOut, setCodesOut] = useState(0);
   /** FULL SCREEN: the object whose details are open in the OBJECT tray. */
   const [detailsFor, setDetailsFor] = useState<SpId | null>(null);
 
@@ -138,13 +157,9 @@ export function StageArea() {
     const o = id ? spObject(p, id) : undefined;
     if (o && view.zoom > 1) setView({ zoom: view.zoom, cx: o.x, cy: o.y });
   };
-  const setStage = (patch: { grid?: boolean; snap?: boolean }) =>
-    ed.apply((q) =>
-      spEdit(q, (d) => {
-        if (patch.grid != null) d.stage.grid = patch.grid;
-        if (patch.snap != null) d.stage.snap = patch.snap;
-      }),
-    );
+  // Snap (never printed) and an unprinted grid are screen preferences: they
+  // do not start a new revision of a Ready plot (spSetStageView).
+  const setStage = (patch: { grid?: boolean; snap?: boolean }) => ed.apply((q) => spSetStageView(q, patch));
   const fit = () => setView(STAGE_VIEW_FIT);
   const zoomBy = (by: number) => setView((cur) => stageZoomTo(cur, cur.zoom + by, sel ?? null));
 
@@ -164,10 +179,15 @@ export function StageArea() {
       onMove={(id, to) => ed.apply((q) => spMoveObject(q, id, to))}
       onResize={(id, size) => ed.apply((q) => spUpdateObject(q, id, { w: size.w, h: size.h }))}
       onFullScreen={setInFull}
-      onNamesLeftOut={setLeftOut}
+      onNamesLeftOut={(n, codes) => {
+        setLeftOut(n);
+        setCodesOut(codes);
+      }}
     />
   );
 
+  /** A phone too narrow for the four ZOOM words in one row. */
+  const narrow = winW < 360;
   const shownRot = sel ? (turn && turn.id === sel.id ? turn.rot : sel.rot) : 0;
   const size = stageSizeWords(p);
   // NO READOUT ROW AND NO LINE UNDER THE GLASS (lead, 2026-11-12). The key
@@ -242,17 +262,26 @@ export function StageArea() {
   );
   /** The VIEW popup holds the four switches and nothing else: FIT STAGE is
    *  under the ZOOM fader, UNDO and REDO are in the bar at the top. */
-  const viewBody: ReactNode = <View style={styles.tray}>{viewSwitches}</View>;
+  const viewBody: ReactNode = (
+    <StageStepScroll stepKey="view" maxHeight={Math.max(110, Math.round(winH * 0.2))}>
+      <View style={styles.tray}>{viewSwitches}</View>
+    </StageStepScroll>
+  );
   /** In FULL SCREEN the bar at the top is not there, so UNDO and REDO are
    *  in the tray. */
+  // a SHORT scroller: in FULL SCREEN the stage stands at the top and the
+  // tray stays in the dark glass under it, so the switches are seen to work
+  // on the drawing (bug test S2-12)
   const viewTray: ReactNode = (
-    <View style={styles.tray}>
-      {viewSwitches}
-      <View style={styles.buttons}>
-        <Button label="UNDO" onPress={ed.undo} disabled={!ed.canUndo} disabledReason="Nothing to undo." a11yLabel="Undo the last change" />
-        <Button label="REDO" onPress={ed.redo} disabled={!ed.canRedo} disabledReason="Nothing to redo." a11yLabel="Redo the change that was undone" />
+    <StageStepScroll stepKey="view" maxHeight={Math.max(110, Math.round(winH * 0.2))}>
+      <View style={styles.tray}>
+        {viewSwitches}
+        <View style={styles.buttons}>
+          <Button label="UNDO" onPress={ed.undo} disabled={!ed.canUndo} disabledReason="Nothing to undo." a11yLabel="Undo the last change" />
+          <Button label="REDO" onPress={ed.redo} disabled={!ed.canRedo} disabledReason="Nothing to redo." a11yLabel="Redo the change that was undone" />
+        </View>
       </View>
-    </View>
+    </StageStepScroll>
   );
 
   // ── the dock ──────────────────────────────────────────────────────────────
@@ -275,11 +304,15 @@ export function StageArea() {
       format: (v) => (zoomOf(v) <= 1.02 ? '1.0× · the whole stage' : `${zoomOf(v).toFixed(1)}× · drag the stage to slide`),
       formatShort: (v) => `${zoomOf(v).toFixed(1)}×`,
       home: 0,
+      // on a narrow phone (320 wide) four buttons did not fit the row and
+      // ZOOM OUT went off the screen (bug test S1-01). FIND OBJECT is left
+      // out there: ZOOM IN from the whole stage already centers on the
+      // selected object (stageZoomTo)
       nudges: [
         { label: 'ZOOM OUT', onPress: () => zoomBy(-0.5), a11y: 'Zoom out by half a step' },
         { label: 'ZOOM IN', onPress: () => zoomBy(0.5), a11y: 'Zoom in by half a step' },
         { label: 'FIT STAGE', onPress: fit, a11y: 'Show the whole stage in the drawing' },
-        ...(sel ? [{ label: 'FIND OBJECT', onPress: () => setView((cur) => ({ zoom: Math.max(2, cur.zoom), cx: sel.x, cy: sel.y })), a11y: `Zoom in on ${selName}` }] : []),
+        ...(sel && !narrow ? [{ label: 'FIND OBJECT', onPress: () => setView((cur) => ({ zoom: Math.max(2, cur.zoom), cx: sel.x, cy: sel.y })), a11y: `Zoom in on ${selName}` }] : []),
       ],
     },
     {
@@ -306,8 +339,12 @@ export function StageArea() {
     },
     opener('add', 'ADD', 'NEW', 'the palette of objects', () => paletteBody(trayH, add)),
     // OBJECT: a tray on both screens, under the drawing; its second line is the selection's name
-    { kind: 'group', id: 'object', label: 'OBJECT', valueLabel: sel ? selName.toUpperCase() : 'NOTHING', valueA11y: sel ? `${selName} is selected` : 'nothing is selected', hideLane: true, render: objectTray },
-    opener('view', 'VIEW', p.stage.snap ? 'SNAP' : p.stage.grid ? 'GRID' : 'PLAIN', `grid ${p.stage.grid ? 'on' : 'off'}, snap ${p.stage.snap ? 'on' : 'off'}`, () => viewTray),
+    // the button's second line is cut short (the whole name is said to a
+    // screen reader): a long name reflowed the dock and shrank the stage
+    { kind: 'group', id: 'object', label: 'OBJECT', valueLabel: sel ? dockName(selName).toUpperCase() : 'NOTHING', valueA11y: sel ? `${selName} is selected` : 'nothing is selected', hideLane: true, render: objectTray },
+    // VIEW is a TRAY under the drawing on both screens (bug test S2-12): its
+    // switches change the drawing, so the drawing stays in sight
+    { kind: 'group', id: 'view', label: 'VIEW', valueLabel: p.stage.snap ? 'SNAP' : p.stage.grid ? 'GRID' : 'PLAIN', valueA11y: `grid ${p.stage.grid ? 'on' : 'off'}, snap ${p.stage.snap ? 'on' : 'off'}`, hideLane: true, render: () => (inFull ? viewTray : viewBody) },
   ];
 
   // ── the well ──────────────────────────────────────────────────────────────
@@ -322,11 +359,17 @@ export function StageArea() {
   // the key's height: the stage keeps its room, and the well keeps its
   // minimum (the rack still clamps the glass for the dock and the well).
   const keyHeight = Math.ceil(stageKeyLayout(stageKeyEntries(p.objects), stageGlassWidthGuess(winW), scaleNote).height);
-  const phoneHeight = Math.max(250, Math.min(320, Math.round(winH * 0.36))) + keyHeight;
+  // the key asks for no more than its share: past it, it scrolls inside the
+  // display (stageKeySplit), so a long key never takes the stage's room
+  const stageBase = Math.max(250, Math.min(320, Math.round(winH * 0.36)));
+  const phoneHeight = stageBase + Math.min(keyHeight, Math.round((stageBase * STAGE_KEY_SHARE) / (1 - STAGE_KEY_SHARE)));
   // On a tall window (a tablet) the well keeps about a third of the height:
   // the list of objects under the drawing is the way to work without a drag,
-  // and it was read through a 165-point slot there (visual review).
-  const minWell = winH >= 900 ? Math.round(winH * 0.3) : 110;
+  // and it was read through a 165-point slot there (visual review). On a
+  // SHORT phone (375 × 667, 320 × 640) the stage needs the room more: the
+  // well keeps two lines and scrolls, and HIDE DISPLAY gives it the whole
+  // screen (bug test S1-01: a 110-point well left the stage a 45-point strip).
+  const minWell = winH >= 900 ? Math.round(winH * 0.3) : winH < 760 ? 48 : 110;
   const placeName = toPlace ? stageSelectionName(p, toPlace) : '';
   // A popup shows only outside FULL SCREEN (there the same button opens the tray).
   const shown = inFull ? null : panel;
@@ -338,8 +381,16 @@ export function StageArea() {
           <Text style={styles.status} accessibilityLiveRegion="polite">
             {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel)}, ${stageFacingWord(sel.rot)}).` : 'Nothing is selected.'}`}
           </Text>
-          {leftOut > 0 ? (
-            <Note>{`At this size ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} not shown, to keep the names apart. The equipment keeps its channel numbers and mix codes, and every performer is named. Press ZOOM IN to see every name. In FULL SCREEN, turn the phone sideways for a larger stage.`}</Note>
+          {leftOut > 0 || codesOut > 0 ? (
+            <Note>
+              {[
+                leftOut > 0 ? `At this size ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} not shown, to keep the names apart. The equipment keeps its channel numbers and mix codes, and every performer is named.` : '',
+                codesOut > 0 ? `${codesOut === 1 ? '1 performer is' : `${codesOut} performers are`} named without ${codesOut === 1 ? 'their mix code' : 'their mix codes'} at this size. Each code is still on that performer’s monitor.` : '',
+                'Press ZOOM IN to see every name. In FULL SCREEN, turn the phone sideways for a larger stage.',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            </Note>
           ) : null}
           <Text style={styles.body}>Drag an object to move it; tap it to select it. ADD opens the palette, OBJECT moves and turns what is selected, and NAME, LINKS AND MORE opens the rest. You are looking down on the stage, with the audience at the bottom: stage right is on your left.</Text>
           <Text style={styles.caption}>A performer, their instrument, their microphone and their wedge are separate objects. Group them in OBJECT to move them together.</Text>
@@ -387,7 +438,7 @@ export function StageArea() {
             <Note>
               {spToScale(p)
                 ? `The stage is drawn to scale: ${size}. Symbols are drawings, not the real size of the equipment. The plot does not prove that anything fits.`
-                : 'This plot is NOT TO SCALE: no stage width and depth are set in Setup. Symbols are drawings, not the real size of the equipment.'}
+                : 'This plot is NOT TO SCALE: the stage width and depth are not both set in Setup. Symbols are drawings, not the real size of the equipment.'}
             </Note>
             <HelpTip
               title="Stage right, stage left, upstage, downstage"
@@ -407,9 +458,6 @@ export function StageArea() {
       </Sheet>
       <Sheet visible={shown === 'object'} title={sel ? selName : 'Choose an object'} onClose={closePanel} scroll={false}>
         {objectSheet}
-      </Sheet>
-      <Sheet visible={shown === 'view'} title="View" onClose={closePanel}>
-        {viewBody}
       </Sheet>
     </>
   );

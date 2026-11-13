@@ -1034,7 +1034,7 @@ describe('an empty draft, a band with its own monitor rig, and the message', () 
     assert.ok(!/monitor feed audio channels/.test(text), '"feed" would read as something the house sends');
     assert.ok(!/If each audio channel/.test(text), 'nothing is asked of the house: no output sentence');
     assert.ok(text.includes('4 wireless monitor devices: radio frequency coordination needed. This packet lists no radio frequencies.'));
-    assert.equal(tablesOf(d, 'monitors')[0].rows[0].cells.by, 'Band monitor console. The venue provides: an input split');
+    assert.equal(tablesOf(d, 'monitors')[0].rows[0].cells.by, 'Band monitor console. Requested from the venue: an input split');
     // said ONCE above the device table, not in all eight rows
     const once = 'All eight devices are part of the band monitor rig: nothing is requested from the venue’s monitor system.';
     assert.equal(text.split(once).length - 1, 1);
@@ -1355,7 +1355,9 @@ describe('names on the plot keep the hard rules (review 2, visuals A1)', () => {
     duo: { leaders: 0, short: 1 },
     'four-piece': { leaders: 1, short: 4 },
     playback: { leaders: 0, short: 0 },
-    salsa: { leaders: 5, short: 12 },
+    // 6: the timbales' channels now stand on a leader to their own symbol,
+    // never beside the conga player (bug test 2026-11-13, 3)
+    salsa: { leaders: 6, short: 12 },
   };
   for (const t of EXAMPLES) {
     it(`${t}: no name over a symbol or a name, every name nearest its own symbol, inside the outline, off the riser's edge`, () => {
@@ -1535,7 +1537,8 @@ describe('the words of review 2 in the packet', () => {
   it('the equipment table: a backline row says what it is and has no made-up quantity; a DI device says what it carries', () => {
     const [eq] = tablesOf(docOf(four()), 'equipment');
     const backline = eq.rows.find((r) => r.cells.item.startsWith('Backline'));
-    assert.deepEqual([backline?.cells.item, backline?.cells.qty, backline?.cells.band], ['Backline: drum kit, bass amplifier, guitar amplifier, keyboard', '–', '1']);
+    // bug test 2026-11-13 (S3 14): a row with no one quantity says WHO in words, never "Qty – · Band 1"
+    assert.deepEqual([backline?.cells.item, backline?.cells.qty, backline?.cells.band], ['Backline: drum kit, bass amplifier, guitar amplifier, keyboard', '–', 'Yes']);
     assert.equal(eq.rows.find((r) => r.cells.item === 'DI device: Bass DI')?.cells.notes, 'Mono: 1 DI channel · passive · Carries: Bass DI (channel 7)');
     assert.equal(eq.rows.find((r) => r.cells.item === 'DI device: Keys stereo DI')?.cells.notes, 'Stereo: 2 DI channels · Carries: Keys L (channel 9), Keys R (channel 10)');
     // one thing, counted: its quantity is printed
@@ -1567,7 +1570,8 @@ describe('the words of review 2 in the packet', () => {
     for (const t of EXAMPLES) {
       const p = example(t);
       const [eq] = tablesOf(docOf(p), 'equipment');
-      const sum = (key: string) => eq.rows.reduce((a, r) => a + (Number(r.cells[key]) || 0), 0);
+      // a "Yes" (a row with no one quantity) is one listed item
+      const sum = (key: string) => eq.rows.reduce((a, r) => a + (r.cells[key] === 'Yes' ? 1 : Number(r.cells[key]) || 0), 0);
       assert.deepEqual(spEquipmentSplit(p), { band: sum('band'), venue: sum('venue'), other: sum('other'), tbc: sum('tbc') }, t);
     }
     // review 2: a hand-built plot with a microphone, a stand, a DI channel with no device and a wedge, all to be confirmed

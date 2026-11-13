@@ -248,9 +248,10 @@ function SummaryTray({ platform, listening, onPlatform, onListening, onShare, sh
       <TrayGrid cols={1}>
         <TrayChip label="SHARE SUMMARY · AS PLAIN TEXT" onPress={() => (leaveFull ? leaveFull(onShare) : onShare())} />
       </TrayGrid>
+      {/* NarrowChip here too: at 320 wide the house chip cut HANDHELD to "HANDHEL" (GA2 B-06) */}
       <TrayGrid head="PLATFORM, THEN LISTENING · CHANGE NO SOUND" cols={4}>
         {GA_PLATFORMS.map((p) => (
-          <TrayChip key={p.id} label={marked(p.label, platform === p.id)} selected={platform === p.id} onPress={() => onPlatform(p.id)} />
+          <NarrowChip key={p.id} label={marked(p.label, platform === p.id)} selected={platform === p.id} onPress={() => onPlatform(p.id)} />
         ))}
       </TrayGrid>
       {/* the house chip's 12 pt text broke HEADPHONES and SOUNDBAR in a

@@ -17,15 +17,24 @@ import { Button, Section } from './spForm';
 
 const WHERE: Record<SpGuidedStep['id'], { area: SpAreaId; go: string; how: string }> = {
   performers: { area: 'stage', go: 'Stage', how: 'Add each performer in Setup, then put them on the stage in Stage.' },
-  sources: { area: 'inputs', go: 'Inputs', how: 'In Inputs, add what each performer plays or sings.' },
+  sources: { area: 'inputs', go: 'Inputs', how: 'In Inputs, add what each performer plays or sings. For someone who plays nothing that reaches the sound system, add a source with no sound system connection.' },
   monitors: { area: 'monitors', go: 'Monitors', how: 'In Monitors, put each performer on a mix, or say they need none.' },
   review: { area: 'export', go: 'Export', how: 'The tab bar marks each area that has a question. Export lists them all.' },
   export: { area: 'export', go: 'Export', how: 'In Export, print or share the packet.' },
 };
 
+/** Open or closed, remembered while the app is open: a visit to another
+ *  area (often through a step's GO) does not close the steps (S3-07). */
+let stepsOpen = false;
+
 export function GuidedTask() {
   const ed = useSpEditor();
-  const [open, setOpen] = useState(false);
+  const [open, setOpenState] = useState(stepsOpen);
+  const setOpen = (next: (o: boolean) => boolean) =>
+    setOpenState((o) => {
+      stepsOpen = next(o);
+      return stepsOpen;
+    });
   // Worked out only while the steps are on screen.
   const steps = useMemo(() => (open ? spGuidedSteps(ed.project, ed.exported) : []), [open, ed.project, ed.exported]);
   return (

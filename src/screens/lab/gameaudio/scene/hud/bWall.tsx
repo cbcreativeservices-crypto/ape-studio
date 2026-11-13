@@ -27,10 +27,11 @@ import { useMemo, useRef } from 'react';
 import { DashPathEffect, Group, Line, LinearGradient, Path, Skia, rect, vec } from '@shopify/react-native-skia';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../../../features/tools/levelColor';
 import type { GaHudProps } from './gaHudTypes';
-import { B, BGlass, BText } from './bKit';
+import { useTextWidthMm } from '../../../dj/art/sceneText';
+import { B, BGlass, BText, B_TEXT } from './bKit';
 import { gaNow } from '../../model/gaStore';
 import { useBNow } from './bClock';
-import { B_F_TICKS, bCurveY, bCurveYRaw, bFreqAt, bFreqX, bHzWord, bIrEnvelope, bReverbWord, bTreatment, bTreatmentDb, bWallSource, bWallSummary } from './bModel';
+import { B_F_TICKS, bCurveY, bWallLayout, bCurveYRaw, bFreqAt, bFreqX, bHzWord, bIrEnvelope, bReverbWord, bTreatment, bTreatmentDb, bWallSource, bWallSummary } from './bModel';
 
 /** Seconds the curve takes to reach a new treatment (the model's door ramp). */
 const MOVE_S = 0.25;
@@ -86,11 +87,23 @@ export function BWallHud({ w, h, state, arg }: GaHudProps) {
 }
 
 function WallStrip({ W, t, cur }: { W: number; t: ReturnType<typeof bTreatment>; cur: Shape }) {
-  const ax0 = 8;
-  const apw = Math.round(W * 0.385);
-  const rx = ax0 + apw + 9;
-  const bx0 = Math.round(W * 0.7);
-  const bpw = W - 8 - bx0;
+  const acting0 = t.obstructed;
+  const would0 = !t.playing;
+  // the readout's words, measured: the title (a shorter one if the full one
+  // does not fit), and the widest value line
+  const shortName = t.name.replace(/^GENERATOR /, 'GEN ');
+  const fullTitle = would0 ? `IF ${t.name} PLAYED` : `${t.name} · PLAYING`;
+  const shortTitle = would0 ? `IF ${shortName} PLAYED` : `${shortName} · PLAYING`;
+  const fullW = useTextWidthMm(fullTitle, B_TEXT);
+  const shortW = useTextWidthMm(shortTitle, B_TEXT);
+  const levelW = useTextWidthMm(acting0 ? `−${Math.abs(Math.round(t.wallDb))} dB` : 'NO CHANGE', B_TEXT, acting0 ? 'mono' : 'label');
+  const filterW = useTextWidthMm(acting0 ? bHzWord(t.lowpassHz) : 'NONE', B_TEXT, acting0 ? 'mono' : 'label');
+  const roomW = useTextWidthMm('ROOM REVERB', B_TEXT);
+  const secW = useTextWidthMm('0.0 s', B_TEXT, 'mono');
+  const readNeed = Math.max(shortW, 32 + levelW, (acting0 ? 46 : 32) + filterW) + 6;
+  const revNeed = roomW + secW + 8;
+  const { ax0, apw, rx, bx0, bpw, colW } = bWallLayout(W, readNeed, revNeed);
+  const title = fullW <= colW ? fullTitle : shortTitle;
   const line = curveD(cur, ax0, apw, false);
   const fill = curveD(cur, ax0, apw, true);
 
@@ -142,7 +155,7 @@ function WallStrip({ W, t, cur }: { W: number; t: ReturnType<typeof bTreatment>;
       </Group>
 
       {/* READOUT */}
-      <BText x={rx} y={13} text={would ? `IF ${t.name} PLAYED` : `${t.name} · PLAYING`} color={would ? B.amber : B.ink} />
+      <BText x={rx} y={13} text={title} color={would ? B.amber : B.ink} />
       <BText x={rx} y={28.5} text="LEVEL" />
       <BText x={rx + 32} y={28.5} text={acting ? `−${Math.abs(Math.round(t.wallDb))} dB` : 'NO CHANGE'} face={acting ? 'mono' : 'label'} color={B.ink} />
       <BText x={rx} y={43} text={acting ? 'LOW-PASS' : 'FILTER'} />

@@ -17,9 +17,10 @@
  * A PLANTED FAULT DOES NOT NAME ITSELF (lead's decision 10). From START THE
  * FAULT until the learner has produced the symptom (the model has logged the
  * missing file on a door press since then), nothing announces it: the DOOR
- * FILE readout reads "?", the DOOR FILE key is locked, and the chain carries
- * no mark and no verdict (it still shows the true file name the event asks
- * for, as a real tool would). After the first FAULT line they name it.
+ * FILE readout reads "?", the DOOR FILE key is locked, the chain's door layer
+ * reads "?" too, with no mark and no verdict, the screen guide does not name
+ * the wrong file, and SHOW A HINT gives only "first make it happen" (bug test
+ * 2026-11-13, B-S1-02 / B-S1-03). After the first FAULT line they name it.
  *
  * Common mistake taught against: confusing importing a sound with
  * implementing its behavior.
@@ -113,7 +114,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         hud: 'chain',
         readouts: [
           { k: 'DOOR', v: doorWord(s) },
-          { k: 'DOOR FILE', v: fileWord, tint: missing && !unnamed ? colors.red : undefined, vA11y: fileA11y },
+          { k: 'DOOR FILE', kNarrow: 'FILE', v: fileWord, tint: missing && !unnamed ? colors.red : undefined, vA11y: fileA11y },
         ],
         showNames: true,
         assets: ASSETS,
@@ -146,6 +147,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
           armed={armed}
           fixed={fixed}
           seen={seenSinceStart}
+          firstHint="First make the problem happen: press the door key (it reads OPEN DOOR or CLOSE DOOR), then read the newest lines of the log."
           onStart={() => {
             setStartedAt(missedCount);
             setMissing(true);

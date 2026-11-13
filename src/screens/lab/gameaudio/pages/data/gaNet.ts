@@ -80,23 +80,47 @@ export const netCheckAtArrival = (a: NetArrival): boolean | null => (a.again ? a
 export const netFlightKey = (f: { n: number; sent: number }): string => `${f.n}@${f.sent}`;
 
 /** The page's record for this visit: every delivery that has landed (by
- *  `netFlightKey`), and which way each door action moved the door. */
-export type NetMemory = { landed: Readonly<Record<string, NetArrival>>; door: Readonly<Record<string, 'opened' | 'closed'>> };
+ *  `netFlightKey`), which way each door action moved the door, and every
+ *  delivery that was DROPPED on its way (bug test GA2 B-02, 2026-11-13).
+ *
+ *  DROPPED: ■ STOP (the model's stopAll) withdraws an action still on its
+ *  way, and the model then simply removes it from `netFlights`: it never
+ *  lands, so without this record the card read "ON ITS WAY" forever. A
+ *  delivery that was pending in `prev` and is GONE from `next` (not landed)
+ *  was dropped. */
+export type NetMemory = {
+  landed: Readonly<Record<string, NetArrival>>;
+  door: Readonly<Record<string, 'opened' | 'closed'>>;
+  dropped: Readonly<Record<string, true>>;
+};
 
-export const netMemoryStart = (_s?: GaState): NetMemory => ({ landed: {}, door: {} });
+export const netMemoryStart = (_s?: GaState): NetMemory => ({ landed: {}, door: {}, dropped: {} });
 
-/** Take in whatever has landed by `next` (pages/chdKit `useWatch` calls this
- *  once per change of the scene). Returns `m` itself when nothing is new. */
-export function netMemoryAdvance(m: NetMemory, _prev: GaState, next: GaState): NetMemory {
+/** Take in whatever has landed by `next`, and whatever was dropped between
+ *  `prev` and `next` (pages/chdKit `useWatch` calls this once per change of
+ *  the scene). Returns `m` itself when nothing is new. */
+export function netMemoryAdvance(m: NetMemory, prev: GaState, next: GaState): NetMemory {
   let out = m;
+  const nextKeys = new Set((next.netFlights ?? []).map(netFlightKey));
+  for (const f of prev.netFlights ?? []) {
+    const key = netFlightKey(f);
+    if (f.result !== 'pending' || nextKeys.has(key) || out.dropped[key] || out.landed[key]) continue;
+    out = { ...out, dropped: { ...out.dropped, [key]: true } };
+  }
   for (const f of next.netFlights ?? []) {
     const key = netFlightKey(f);
     if (f.result === 'pending' || out.landed[key]) continue;
     const arrival: NetArrival = { result: f.result, again: !!f.again, door: f.door };
-    out = { landed: { ...out.landed, [key]: arrival }, door: f.door ? { ...out.door, [f.id]: f.door } : out.door };
+    out = { ...out, landed: { ...out.landed, [key]: arrival }, door: f.door ? { ...out.door, [f.id]: f.door } : out.door };
   }
   return out;
 }
+
+/** What the card and the strip say about a dropped delivery, on a machine it
+ *  was travelling to. */
+export const NET_DROPPED_WORD = '✕ DROPPED · ■ STOP';
+export const netDroppedWords = (send: NetSend): string =>
+  `Never arrives: ■ STOP dropped action ${send.id} on its way. Nothing plays${send.what === 'door' ? ' and the door does not move' : ''}.`;
 
 /** The model's flight number of the delivery that was sent last (the page
  *  reads it straight after it dispatches a `net` action). */

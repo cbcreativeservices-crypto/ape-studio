@@ -166,6 +166,20 @@ export function stageFillZoom(aspect: number, gw: number, gh: number, region: St
   return z > 1.12 ? Math.min(STAGE_ZOOM_MAX, Math.round(z * 20) / 20) : 1;
 }
 
+/** The glass height (glass units) that the WHOLE stage needs at 1× when the
+ *  width is what limits it: the frame and the stage at its own shape. FULL
+ *  SCREEN with the phone upright lays the stage out at this height, at the
+ *  top, with the key right under it; the glass below is left for the dock's
+ *  trays (bug test S2-10 and S2-12: a fill zoom cut performers off the
+ *  sides, and an open tray covered the stage in the middle of the glass). */
+export function stageNaturalHeight(aspect: number, gw: number, region: StageRegion): number {
+  const a = aspect > 0 && Number.isFinite(aspect) ? aspect : 1.6;
+  const innerW = Math.max(20, gw - STAGE_FRAME.side * 2);
+  const rx = Math.max(0.2, region.x1 - region.x0);
+  const ry = Math.max(0.2, region.y1 - region.y0);
+  return STAGE_FRAME.top + STAGE_FRAME.bottom + (innerW * ry) / (rx * a);
+}
+
 /** Change the zoom. Coming up from the whole stage, the picture centers on
  *  `focus` (the selected object) when there is one; already zoomed, it keeps
  *  the place the user is looking at. */
@@ -347,7 +361,9 @@ export function stageResizeHandle(b: StageObjBox): Pt {
 }
 
 export const STAGE_SIZE_MIN = 0.04;
-export const STAGE_SIZE_MAX = 1.5;
+/** A platform is never larger than the stage it stands on (bug test S2-09:
+ *  a riser 150 % of the stage was drawn past both edges). */
+export const STAGE_SIZE_MAX = 1;
 
 /** The width and depth (stage fractions) of a box whose corner handle is
  *  dragged to a glass point. The center stays where it is; with snap on, the
@@ -521,6 +537,12 @@ const LABEL_STEPS: readonly number[] = [0, 5, 11, 18, 26, 35];
 /** A label this close to its symbol stands AGAINST it: no leader is drawn
  *  (stageLabelLeader's `near`), and it is read with the symbol it touches. */
 const LABEL_AGAINST = 8;
+/** A performer's NAME ALONE (its mix code left out) and every other label
+ *  keep at least twice this apart (glass units; each box is grown by it): a
+ *  code set just after a name reads as that name's own ("Marisol M6" was
+ *  Marisol beside Wedge 9's code, bug test S2-03). Other labels keep the
+ *  usual 1 (2 apart). */
+const LABEL_APART_BARE = 4;
 
 type Spot = { x0: number; y0: number; box: Box };
 
@@ -573,8 +595,7 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
   const shown = items.filter((it) => shared(stageBoxBounds(it.box), glass, 0) > 0);
   // every symbol's art (a platform is not art a name must keep off: a name
   // may sit on a riser's deck)
-  const art = shown.filter((it) => !it.box.sized).map((it) => ({ id: it.id, box: stageBoxBounds(it.box) }));
-  const placed: { id: SpId; box: Box }[] = [];
+  const art = shown.filter((it) => !it.box.sized).map((it) => ({ id: it.id, box: stageBoxBounds(it.box) }));  const placed: { id: SpId; box: Box }[] = [];
   const leaders: Box[] = [];
   const out = new Map<SpId, StageLabelOut>();
   const dropped: SpId[] = [];
@@ -619,10 +640,10 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
 
   /** What a place breaks: 0 = it keeps every rule. `nearest: false` leaves
    *  rule 2 out (a performer's name in a crowd). */
-  const faults = (it: StageLabelIn, box: Box, nearest = true): number => {
+  const faults = (it: StageLabelIn, box: Box, nearest = true, apart = false): number => {
     let cost = 0;
     for (const k of keepOut) cost += shared(box, k, 0) * 6;
-    for (const pl of placed) if (pl.id !== it.id) cost += shared(box, pl.box, 1) * 6;
+    for (const pl of placed) if (pl.id !== it.id) cost += shared(box, pl.box, apart || bare.includes(pl.id) ? LABEL_APART_BARE : 1) * 6;
     for (const l of leaders) cost += shared(box, l, 0) * 2;
     const own = art.find((a) => a.id === it.id);
     const ownGap = own ? centerGap(box, own.box) : 0;
@@ -650,8 +671,8 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     return cost;
   };
 
-  const first = (it: StageLabelIn, spots: readonly Spot[], nearest = true): Spot | null => {
-    for (const sp of spots) if (faults(it, sp.box, nearest) === 0) return sp;
+  const first = (it: StageLabelIn, spots: readonly Spot[], nearest = true, apart = false): Spot | null => {
+    for (const sp of spots) if (faults(it, sp.box, nearest, apart) === 0) return sp;
     return null;
   };
   /** The place that breaks the rules least (the earliest, on a tie). */
@@ -715,7 +736,8 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
       if (it.badges.length && it.text.trim()) {
         const nameOnly = measure({ ...it, badges: [] });
         const nameSpots = spotsFor(it, nameOnly);
-        const alone = first(it, nameSpots) ?? first(it, against(it, nameSpots), false);
+        // the name alone keeps clear of every other label (LABEL_APART_BARE)
+        const alone = first(it, nameSpots, true, true) ?? first(it, against(it, nameSpots), false, true) ?? first(it, nameSpots) ?? first(it, against(it, nameSpots), false);
         const far = alone ? null : first(it, spots, false);
         if (far) {
           put(it, full, far, it.badges);
@@ -733,8 +755,13 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     const numSpots = spotsFor(it, nums);
     // …beside the symbol when a place keeps the rules, otherwise ON it
     const onIt = hold(it.box.cx - nums.w / 2, it.box.cy - nums.h / 2, nums);
-    const onItClear = !placed.some((pl) => shared(onIt.box, pl.box, 0) > 0) && !art.some((a) => a.id !== it.id && shared(onIt.box, a.box, 0) > 0);
-    put(it, nums, first(it, numSpots) ?? first(it, against(it, numSpots), false) ?? (onItClear ? onIt : (first(it, numSpots, false) ?? leastBad(it, [onIt, ...numSpots]))), it.badges);
+    const offArt = !art.some((a) => a.id !== it.id && shared(onIt.box, a.box, 0) > 0);
+    // on its own symbol, clear of every label and well clear of a name shown
+    // alone (S2-03); then any place that keeps the hard rules; then on its
+    // own symbol touching nothing; only then the least bad place
+    const onItApart = offArt && !placed.some((pl) => shared(onIt.box, pl.box, bare.includes(pl.id) ? LABEL_APART_BARE : 0) > 0);
+    const onItClear = offArt && !placed.some((pl) => shared(onIt.box, pl.box, 0) > 0);
+    put(it, nums, first(it, numSpots) ?? first(it, against(it, numSpots), false) ?? (onItApart ? onIt : (first(it, numSpots, false) ?? (onItClear ? onIt : leastBad(it, [onIt, ...numSpots])))), it.badges);
   }
   return { labels: items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x), dropped, bare };
 }
@@ -800,9 +827,23 @@ export function stagePosUnit(p: SpProject): 'ft' | 'm' | '%' {
 export function stagePosValue(p: SpProject, axis: 'x' | 'y', frac: number): number {
   const unit = stagePosUnit(p);
   const span = unit === '%' ? 100 : axis === 'x' ? (p.stage.width as number) : (p.stage.depth as number);
-  const digits = unit === '%' ? 0 : 1;
-  const k = 10 ** digits;
+  // one decimal in every unit: a typed 45.5 % reads back as 45.5, as the
+  // field's hint promises ("kept exactly as typed")
+  const k = 10;
   return Math.round(frac * span * k) / k;
+}
+
+/** What happened to a typed position or size, in words, when it was not
+ *  taken as typed ('' when it was). `taken` is the fraction the edit uses. */
+export function stageTypedWords(p: SpProject, axis: 'x' | 'y', what: 'position' | 'size', typed: number | null, taken: number | null): string {
+  const unit = stagePosUnit(p);
+  const unitWord = unit === '%' ? ` % of the stage ${axis === 'x' ? 'width' : 'depth'}` : ` ${unit}`;
+  if (typed == null || !Number.isFinite(typed)) return what === 'size' ? 'Not read as a size, so nothing changed. Type a number above 0, like 20.' : 'Not read as a number, so nothing changed. Type a number, like 40.';
+  if (taken == null) return what === 'size' ? 'A size must be above 0, so nothing changed.' : 'Not read as a number, so nothing changed.';
+  const back = stagePosValue(p, axis, taken);
+  if (Math.abs(back - typed) < 0.051) return '';
+  if (what === 'size') return `A platform cannot be larger than the stage, so it was set to ${back}${unitWord}, the stage’s full ${axis === 'x' ? 'width' : 'depth'}.`;
+  return `An object can stand at most a quarter of the stage off it, so it was set to ${back}${unitWord}.`;
 }
 
 /** A typed number back to a stage fraction, held inside the model's reach.
@@ -1078,6 +1119,27 @@ export function stageKeyLayout<K extends string>(entries: readonly { kind: K; na
     if (tryIt.height < best.height - 1e-6) best = tryIt;
   }
   return best;
+}
+
+/** THE STAGE KEEPS ITS ROOM (bug test S1-01, 2026-11-13). The key is part
+ *  of the drawing, always, but it may take at most this share of the
+ *  display's height: on a short phone with many kinds on the stage it took
+ *  two thirds of it and left the stage a strip. Past the share, the key's
+ *  strip SCROLLS inside the display (it is never cut, never a popup). */
+export const STAGE_KEY_SHARE = 0.3;
+/** …and never less than this (glass units): its heading row and one row of
+ *  kinds, so it can always be read and scrolled. */
+export const STAGE_KEY_MIN_SHOWN = 2 * KEY_ROW_H + KEY_ROW_GAP + KEY_PAD_TOP + KEY_PAD_BOTTOM;
+
+/** Split the display (glass units) between the stage and its key: the key
+ *  its whole height when that fits in its share, otherwise its share, and
+ *  then it scrolls. */
+export function stageKeySplit(displayH: number, keyH: number): { stage: number; key: number; scrolls: boolean } {
+  const cap = Math.max(STAGE_KEY_MIN_SHOWN, displayH * STAGE_KEY_SHARE);
+  // a key only a little over its share is shown whole: a strip that scrolls
+  // by a few points only hides a line behind its own "more" tag
+  const key = keyH <= cap * 1.12 ? keyH : cap;
+  return { stage: Math.max(0, displayH - key), key, scrolls: keyH > key + 0.5 };
 }
 
 /** The scale words for the key's heading row: "NOT TO SCALE" when the stage

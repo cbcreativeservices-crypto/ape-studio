@@ -14,6 +14,11 @@
  *   landed       the packet parks at the machine with what became of it:
  *                ▶ PLAYED · ✕ IGNORED (a duplicate, ID CHECK on) · ▶▶ the
  *                same id PLAYED AGAIN, a DOUBLE (ID CHECK off)
+ *   dropped      ■ STOP withdrew it on its way (bug test GA2 B-02): it
+ *                stops at the NETWORK with ✕, and each machine it was
+ *                travelling to reads DROPPED · ■ STOP. The model removes
+ *                such an action without a record, so the strip knows it
+ *                from the packet's disappearance (cModel `cNetDropped`)
  *   the line     under each machine: the newest result there, in words
  *
  * The model plays YOUR machine only. The right-hand end applies the same
@@ -34,14 +39,15 @@ import type { GaHudProps } from './gaHudTypes';
 import { C_FACE, StripFace, cType, useSceneClock, type CType } from './cKit';
 import { cNetBoard, cNetKeep, cNetRemember, cNetSpoken, type CNetEnd, type CPacket } from './cModel';
 
-const END_MARK: Record<CNetEnd, string> = { pending: '', plays: '▶', ignored: '✕', nothing: '' };
-const END_COLOR: Record<CNetEnd, string> = { pending: C_FACE.sub, plays: C_FACE.ok, ignored: C_FACE.steal, nothing: C_FACE.mute };
+const END_MARK: Record<CNetEnd, string> = { pending: '', plays: '▶', ignored: '✕', nothing: '', dropped: '✕' };
+const END_COLOR: Record<CNetEnd, string> = { pending: C_FACE.sub, plays: C_FACE.ok, ignored: C_FACE.steal, nothing: C_FACE.mute, dropped: C_FACE.steal };
 
 /** What one end reads under its name. */
 function endLine(p: CPacket | undefined, side: 'here' | 'there'): { text: string; color: string } {
   if (!p) return { text: 'NOTHING SENT YET', color: C_FACE.mute };
   const e = side === 'here' ? p.here : p.there;
   if (e === 'pending') return { text: `${p.id} · ${p.what} · ON ITS WAY`, color: C_FACE.sub };
+  if (e === 'dropped') return { text: `${p.id} ✕ DROPPED · ■ STOP`, color: C_FACE.steal };
   if (e === 'nothing') return { text: `${p.id} ○ NOT FOR ${side === 'here' ? 'YOU' : 'THEM'} · SILENT`, color: C_FACE.mute };
   if (e === 'ignored') return { text: `${p.id} ✕ IGNORED · DUPLICATE`, color: C_FACE.steal };
   if (side === 'here' ? p.double : p.doubleThere) return { text: `${p.id} ▶▶ PLAYED AGAIN · DOUBLE`, color: C_FACE.refuse };
@@ -62,7 +68,7 @@ const Flying = memo(function Flying({ p, clock, from, to, y, pill, type }: { p: 
   });
   return (
     <Animated.View style={[styles.pill, styles.pillFlying, { top: y - pill.h / 2, width: pill.w, height: pill.h }, move]}>
-      <Text style={[styles.pillText, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
+      <Text style={[styles.pillText, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
         {p.id}
       </Text>
     </Animated.View>
@@ -74,7 +80,7 @@ const Parked = memo(function Parked({ p, end, pill, type, double }: { p: CPacket
   const color = double ? C_FACE.refuse : END_COLOR[end];
   return (
     <View style={[styles.pill, { width: pill.w + parkExtra(type), height: pill.h, borderColor: color }]}>
-      <Text style={[styles.pillText, { fontSize: type.value, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.value)}>
+      <Text style={[styles.pillText, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
         {p.id}
         <Text style={{ color }}> {double ? `${END_MARK[end]}${END_MARK[end]}` : END_MARK[end]}</Text>
       </Text>
@@ -108,16 +114,22 @@ export function NetStrip({ w, h, state }: GaHudProps) {
   const xC = w / 2;
   const xL = padX + dockW + pill.w / 2 + 2;
   const xR = w - xL;
-  // what landed stays on screen after the model has let it go
+  // what landed stays on screen after the model has let it go; an action
+  // that was on its way and is gone without landing was dropped by ■ STOP
+  // (the model keeps no record of it: GA2 B-02)
   const kept = useRef<readonly CPacket[]>([]);
-  kept.current = cNetKeep(kept.current, board);
+  const wasFlying = useRef<readonly CPacket[]>([]);
+  kept.current = cNetKeep(kept.current, board, wasFlying.current);
+  wasFlying.current = flying;
   const landed = kept.current;
-  const hereParked = landed.filter((p) => p.toYou).slice(-2);
-  const thereParked = landed.filter((p) => p.toOther).slice(-2);
+  const hereParked = landed.filter((p) => p.toYou && !p.dropped).slice(-2);
+  const thereParked = landed.filter((p) => p.toOther && !p.dropped).slice(-2);
   const newest = flying.length ? flying[flying.length - 1] : landed[landed.length - 1];
+  // the newest action, if dropped, stays at the NETWORK where it stopped
+  const droppedAtNode = !flying.length && newest?.dropped ? newest : null;
   const left = endLine(newest, 'here');
   const right = endLine(newest, 'there');
-  const text = { fontSize: type.value, lineHeight: rowH };
+  const text = { fontSize: type.size, lineHeight: rowH };
   const sideW = (w - 2 * padX) / 2 - (type.full ? 44 : 30);
 
   return (
@@ -154,6 +166,15 @@ export function NetStrip({ w, h, state }: GaHudProps) {
         ))}
       </View>
 
+      {droppedAtNode ? (
+        <View pointerEvents="none" style={[styles.pill, styles.pillDropped, { left: xC - (pill.w + parkExtra(type)) / 2, top: wireY - pill.h / 2, width: pill.w + parkExtra(type), height: pill.h }]}>
+          <Text style={[styles.pillText, { fontSize: type.size, lineHeight: type.line }]} allowFontScaling={false} {...fitValue(type.size)}>
+            {droppedAtNode.id}
+            <Text style={{ color: C_FACE.steal }}> ✕</Text>
+          </Text>
+        </View>
+      ) : null}
+
       {/* packets on their way */}
       {flying.map((p) => (
         <View key={p.key} pointerEvents="none" style={StyleSheet.absoluteFill}>
@@ -164,13 +185,13 @@ export function NetStrip({ w, h, state }: GaHudProps) {
 
       {/* what became of the newest action at each machine; the delay between */}
       <View style={[styles.rowAbs, { bottom: type.full ? 5 : 2, left: padX, right: padX, height: rowH }]}>
-        <Text style={[styles.result, text, { width: sideW, color: left.color }]} allowFontScaling={false} {...fitValue(type.value)}>
+        <Text style={[styles.result, text, { width: sideW, color: left.color }]} allowFontScaling={false} {...fitValue(type.size)}>
           {board.known ? left.text : 'NO MESSAGE RECORD YET'}
         </Text>
-        <Text style={[styles.result, styles.center, text, { color: C_FACE.sub }]} allowFontScaling={false} {...fitValue(type.value)}>
+        <Text style={[styles.result, styles.center, text, { color: C_FACE.sub }]} allowFontScaling={false} {...fitValue(type.size)}>
           {newest ? `${Math.max(0, newest.due - newest.sent).toFixed(2)} s` : ''}
         </Text>
-        <Text style={[styles.result, styles.right, text, { width: sideW, color: right.color }]} allowFontScaling={false} {...fitValue(type.value)}>
+        <Text style={[styles.result, styles.right, text, { width: sideW, color: right.color }]} allowFontScaling={false} {...fitValue(type.size)}>
           {board.known ? right.text : ''}
         </Text>
       </View>
@@ -191,5 +212,6 @@ const styles = StyleSheet.create({
   dock: { position: 'absolute', flexDirection: 'row', alignItems: 'center' },
   pill: { borderRadius: 3, borderWidth: 1, borderColor: '#5a5d68', backgroundColor: '#1b1d24', alignItems: 'center', justifyContent: 'center' },
   pillFlying: { position: 'absolute', left: 0, borderColor: C_FACE.amber, backgroundColor: '#2a2208' },
+  pillDropped: { position: 'absolute', borderColor: C_FACE.steal },
   pillText: { color: C_FACE.ink, fontFamily: fonts.mono },
 });

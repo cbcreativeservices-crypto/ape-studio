@@ -62,6 +62,14 @@ export const HUD = {
   lampRim: '#3d3e47',
 } as const;
 
+/** `HUD.value` for an INLINE style. The Reanimated babel plugin reads any
+ *  `style={{ prop: x.value }}` as a shared value read in render and wraps it
+ *  in a console.warn that runs on EVERY render: the strips redraw each frame,
+ *  so thousands of warnings were buffered (bug test 2026-11-13, B-S2-08 /
+ *  B-S3-19). An inline style names this constant, never `HUD.value`
+ *  (test/gameAudioHudA.test.ts pins it). */
+export const HUD_VALUE: string = HUD.value;
+
 /** The strip's scale: 1 on the glass, larger in FULL SCREEN. */
 export const hudK = (h: number): number => Math.max(1, (Number.isFinite(h) && h > 0 ? h : GA_HUD_H) / GA_HUD_H);
 

@@ -30,7 +30,7 @@ import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, mark
 import { gaTerms } from '../gaTerms';
 import { gaCopies, type GaMachine } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
-import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen } from './chbBits';
+import { TrayBox, TrayChip, TrayLocked, TrayRow, onOff, useCountWhen } from './chbBits';
 import { chbOrphans } from './data/chbScene';
 import { G07 } from './guides/p07';
 import { gaFact, pct, speedKey, useSince } from './shared';
@@ -50,7 +50,7 @@ const setOrphanRule = (on: boolean) => {
  *  lines: about 188 pt in all. No note says that an instance has lost its
  *  owner: that is the planted fault's symptom, read from PLAYING and the
  *  log (lead's decision 10). */
-function GeneratorsTray() {
+function GeneratorsTray({ unnamed }: { unnamed: boolean }) {
   const s = useGa();
   const m1 = s.machines.find((m) => m.id === G1);
   const m2 = s.machines.find((m) => m.id === G2);
@@ -61,10 +61,15 @@ function GeneratorsTray() {
         {m2 ? <TrayChip label={onOff('GENERATOR 2', m2.on)} selected={m2.on} onPress={() => gaDispatch({ type: 'machine', id: G2, on: !m2.on })} /> : null}
         {m2 ? <TrayChip label="REMOVE GENERATOR 2" onPress={() => gaDispatch({ type: 'removeMachine', id: G2 })} /> : <TrayChip label="ADD GENERATOR 2" onPress={() => gaDispatch({ type: 'addMachine' })} />}
       </TrayRow>
-      <TrayRow head="WHEN A GENERATOR IS REMOVED">
-        <TrayChip label={marked('STOP ITS LOOP', !s.faults.orphanLoop)} selected={!s.faults.orphanLoop} onPress={() => setOrphanRule(false)} />
-        <TrayChip label={marked('LEAVE IT PLAYING', s.faults.orphanLoop)} selected={s.faults.orphanLoop} onPress={() => setOrphanRule(true)} />
-      </TrayRow>
+      {unnamed ? (
+        // the fault is planted and its symptom not yet met: the ✓ on the wrong rule would name it (bug test B-S3-11)
+        <TrayLocked head="WHEN A GENERATOR IS REMOVED" note="Remove a running generator 2 first and watch PLAYING. Then this rule opens." />
+      ) : (
+        <TrayRow head="WHEN A GENERATOR IS REMOVED">
+          <TrayChip label={marked('STOP ITS LOOP', !s.faults.orphanLoop)} selected={!s.faults.orphanLoop} onPress={() => setOrphanRule(false)} />
+          <TrayChip label={marked('LEAVE IT PLAYING', s.faults.orphanLoop)} selected={s.faults.orphanLoop} onPress={() => setOrphanRule(true)} />
+        </TrayRow>
+      )}
     </TrayBox>
   );
 }
@@ -88,9 +93,19 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const stoppedOne = useCountWhen(gaFact(s, 'machineStopped'), copies >= 1) > 0;
 
   // the planted fault's symptom happened on this visit: a removal left a loop with no owner
-  const orphanSeen = since('orphan') > 0;
-  // the card is active while the rule is wrong, and afterward while the orphan loop still plays
-  const faultArmed = s.faults.orphanLoop || (orphanSeen && orphans > 0);
+  const orphanCount = since('orphan');
+  const orphanSeen = orphanCount > 0;
+  // THE CARD (bug test 2026-11-13, B-S3-10 / B-S3-11). `startedAt` = how many
+  // orphan lines the visit had when START THE FAULT was pressed; until one
+  // more happens the rule row is locked and names nothing. FIXED needs a
+  // removal that really stopped its loop AFTER the rule was corrected, not
+  // only the rule flipped back (page 6 likewise needs the door to play again).
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const unnamed = startedAt !== null && s.faults.orphanLoop && orphanCount <= startedAt;
+  const repaired = useCountWhen(gaFact(s, 'cleanRemove'), orphanSeen && !s.faults.orphanLoop) > 0;
+  const fixed = orphanSeen && !s.faults.orphanLoop && orphans === 0 && repaired;
+  // the card is active while the rule is wrong, and afterward until a removal proves the repair
+  const faultArmed = s.faults.orphanLoop || (orphanSeen && !fixed);
 
   const goals = [
     { label: 'Run two generators from one event', hit: copies >= 2 && since('inst:generator') > 0 },
@@ -107,7 +122,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     label: 'GENERATORS',
     valueLabel: `${running} ON`,
     valueA11y: `${genA11y(1, m1)}; ${genA11y(2, m2)}`,
-    render: () => <GeneratorsTray />,
+    render: () => <GeneratorsTray unnamed={unnamed} />,
   };
 
   return (
@@ -149,13 +164,17 @@ function Page({ ctx }: { ctx: PageCtx }) {
           symptom="Start the fault. Add generator 2, switch it on, then remove it. The generator leaves the picture, but its instance is still playing, and no control for it exists any more."
           // still active after the rule is corrected, while the orphan loop plays on
           armed={faultArmed}
-          fixed={orphanSeen && !s.faults.orphanLoop && orphans === 0}
-          seen={orphanSeen}
-          onStart={() => setOrphanRule(true)}
+          fixed={fixed}
+          seen={!unnamed && orphanSeen}
+          firstHint="First make the problem happen: open GENERATORS, add generator 2, switch it on, then remove it, and watch PLAYING."
+          onStart={() => {
+            setStartedAt(orphanCount);
+            setOrphanRule(true);
+          }}
           hints={[
             'Watch PLAYING in the readouts when you remove generator 2. It does not go down.',
             'The FAULT line in the log says ORPHAN and gives an instance. No object owns that instance now.',
-            '■ STOP silences it. Then open GENERATORS and read the rule under WHEN A GENERATOR IS REMOVED.',
+            '■ STOP silences it. Then open GENERATORS and read the rule under WHEN A GENERATOR IS REMOVED. Then add generator 2, switch it on and remove it again: PLAYING must go down.',
           ]}
           why="The loop was started for an object. When the object was removed, nothing told its instance to stop, so the sound played on with no owner. Stopping an object’s sounds is part of removing the object."
         />

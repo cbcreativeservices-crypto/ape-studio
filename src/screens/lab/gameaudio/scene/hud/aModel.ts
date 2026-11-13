@@ -68,6 +68,14 @@ export function aLevelSpoken(g: number): string {
   const r = Math.round(db);
   return `${r < 0 ? 'minus ' : r > 0 ? 'plus ' : ''}${Math.abs(r)} decibels`;
 }
+/** The width of one legend letter at k = 1, on the safe side (the label
+ *  face, 9.5 pt, spaced; measured at 320 wide: "NONE SENT YET" 59.8 px,
+ *  "ROOM TONE" 46.5, "COURTYARD WIND" 72.0: at most 5.17 a letter). */
+export const A_LBL_CH = 5.2;
+/** A legend that fits `w`, or its short form (a label may shorten; a number
+ *  never: decision 4 of the 2026-11-13 bug test). */
+export const aLegendFit = (long: string, short: string, w: number, k: number): string => (long.length * A_LBL_CH * k <= w ? long : short);
+
 /** A 0 … 1 setting as a whole percent (LEVEL and SPEED read in percent). */
 export const aPct = (x: number): string => `${Math.round(Math.max(0, x) * 100)}%`;
 
@@ -243,6 +251,24 @@ export function aCats(s: GaState, now: number, still = false): ACat[] {
     if (why.every((x) => x != null)) return cell(why.includes('solo') ? 'silent' : 'muted', 0);
     return cell(level > 0 ? 'sounding' : 'zero', level, why.some((x) => x != null));
   });
+}
+
+/** THE ALARM ALONE (bug test 2026-11-13, B-S2-04 / B-S2-05). The alarm is a
+ *  LOCAL sound, so the strip's LOCAL cell holds it together with the
+ *  fountain, which is far louder where YOU stand: switching the page's key
+ *  sound on moved no lamp, and a solo that shut it out said no word. Page 5's
+ *  ALARM readout prints this instead: OFF; its own computed level while it
+ *  sounds; SILENT or MUTED while the mix lets none of it through. */
+export type AAlarm = { state: 'off' | 'sounding' | 'zero' | 'muted' | 'silent'; level: number; word: string };
+export function aAlarm(s: GaState, now: number, still = false): AAlarm {
+  const ids = new Set(s.inst.filter((i) => i.event === 'alarm').map((i) => i.id));
+  const vs = s.voices.filter((v) => ids.has(v.inst));
+  if (!vs.length) return { state: 'off', level: 0, word: 'OFF' };
+  const meters = gaBusMeter(s, now);
+  const why = vs.map((v) => meters.find((m) => m.bus === v.bus)?.silenced ?? null);
+  if (why.every((x) => x != null)) return why.includes('solo') ? { state: 'silent', level: 0, word: 'SILENT' } : { state: 'muted', level: 0, word: 'MUTED' };
+  const level = aSumLevels(vs.map((v) => aVoiceHeard(s, v, now, still)));
+  return { state: level > 0 ? 'sounding' : 'zero', level, word: aLevelWord(level) };
 }
 
 export function aCatsSummary(cats: readonly ACat[]): string {

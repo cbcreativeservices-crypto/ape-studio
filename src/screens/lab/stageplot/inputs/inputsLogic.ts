@@ -31,7 +31,7 @@ import {
   type SpPackageRow,
 } from '../../../../features/stageplot/spCatalog.ts';
 import { spInputSupplier, spPatchRows, spSummary, type SpBySupplier, type SpEquipLine, type SpInputTotals, type SpPatchRow } from '../../../../features/stageplot/spDerive.ts';
-import { spAssignDi, spInputLocation, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
+import { spAssignDi, spInputLocation, spMonoLabel, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
 import type { SpIssue } from '../../../../features/stageplot/spReview.ts';
 import type { SpDeviceType, SpDiDevice, SpExtra, SpId, SpInput, SpPatch, SpPatchId, SpProject, SpSupplier } from '../../../../features/stageplot/spTypes.ts';
 
@@ -469,12 +469,12 @@ export function spMonoChoice(p: SpProject, pairId: SpId): SpMonoChoice | null {
   if (pair.length < 2) return null;
   const sides = pair.map((i) => ({ side: i.side as 'L' | 'R', label: i.label })).sort((a, b) => a.side.localeCompare(b.side));
   const dev = p.diDevices.find((d) => pair.some((i) => i.diDeviceId === d.id));
-  const strip = (label: string) => label.replace(/\s+(L|R|left|right)$/i, '').trim() || label;
   return {
     pairId,
     sides,
     di: dev ? { id: dev.id, label: dev.label, channels: dev.channels } : null,
-    monoLabel: (keep) => strip(sides.find((s) => s.side === keep)?.label ?? sides[0].label),
+    // the model's own rule, so the preview names what the edit will name
+    monoLabel: (keep) => spMonoLabel(p, (pair.find((i) => i.side === keep) ?? pair[0]).id),
     says: `This removes one of the two inputs. The list then has one input fewer${pair.some((i) => i.capture === 'di') ? ', and one DI channel fewer' : ''}.`,
   };
 }
@@ -588,7 +588,7 @@ export function spWhoBrings(by: SpBySupplier): string {
   if (ks.length === 1) {
     const k = ks[0];
     if (k === 'tbc') return total === 1 ? 'Who brings it: to be confirmed.' : 'Who brings them: to be confirmed.';
-    return total === 1 ? `${capital(WHO[k])} brings it.` : `${capital(WHO[k])} brings all ${total}.`;
+    return total === 1 ? `${capital(WHO[k])} brings it.` : `${capital(WHO[k])} brings ${total === 2 ? 'both' : `all ${total}`}.`;
   }
   return `${capital(spListWords(ks.map((k) => (k === 'tbc' ? `${by[k]} ${by[k] === 1 ? 'is' : 'are'} to be confirmed` : `${WHO[k]} brings ${by[k]}`))))}.`;
 }

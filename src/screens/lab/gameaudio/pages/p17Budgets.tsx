@@ -42,7 +42,7 @@ import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { footstepId, gaAsset, gaSound } from '../sounds/gaSoundBank';
 import { FOOTSTEP_TAKES, GA_SURFACES } from '../sounds/gaSynth';
 import { InfoCard, Tray, TrayChip, TrayGrid, onOff, speaking } from './chdKit';
-import { BURST_COUNT, MEMORY_IDS, budgetHeld, budgetShort, budgetStep, budgetToLane, budgetWords, burstSpoken, burstTheftWords, fmtInt, laneToBudget, lastBurst, memoryRow, memoryRowSpoken, type MemoryRow } from './data/gaBudget';
+import { BURST_COUNT, MEMORY_IDS, P17_LOG_KINDS, budgetHeld, budgetLaneWords, budgetShort, budgetStep, budgetToLane, burstSpoken, burstTheftWords, fmtInt, laneToBudget, lastBurst, memoryRow, memoryRowSpoken, protectedSounding, type MemoryRow } from './data/gaBudget';
 import { G17 } from './guides/p17';
 import { useSince } from './shared';
 
@@ -197,7 +197,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
     label: 'BUDGET',
     value: budgetToLane(s.voiceLimit),
     onChange: (v) => ask(laneToBudget(v)),
-    format: (v) => budgetWords(laneToBudget(v)),
+    // GA2 B-05: at the protected floor ‹ FEWER changes nothing, and the lane says why
+    format: (v) => budgetLaneWords(laneToBudget(v), s.voiceLimit, asked.current, protectedSounding(s)),
     formatShort: (v) => budgetShort(laneToBudget(v)),
     nudges: [
       { label: '‹ FEWER', onPress: () => ask(budgetStep(gaGet().voiceLimit, -1), true), a11y: 'One step fewer voices' },
@@ -241,7 +242,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <P>A stolen one-shot stops. A stolen loop becomes virtual: tracked and silent until a voice is free. GENERATOR 1 and SCENE stay on: their sounds return when the impacts end.</P>
         <LastBurstCard s={s} />
         <Note>This scene counts a silent loop as a voice and leaves the music out. A real engine counts the music and usually makes a silent loop virtual.</Note>
-        <ActivityLog state={s} lines={6} only={['stop', 'refused', 'state']} />
+        {/* 'mix' lets the model's BUDGET lines through, among them the one that says why the budget stays up (GA2 B-05) */}
+        <ActivityLog state={s} lines={6} only={P17_LOG_KINDS} />
       </Step>
       <Step n={3}>
         <Do>With BUDGET at 8, switch ALARM on in SOUNDS and press BURST. Then lower BUDGET to 1 and press BURST again.</Do>

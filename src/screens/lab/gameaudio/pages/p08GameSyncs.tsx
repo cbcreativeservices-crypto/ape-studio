@@ -137,6 +137,11 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const unnamed = startedAt !== null && global && wrongSteps <= startedAt;
   const guideShown = chbGuideSurfaceShown(s, !unnamed);
+  // FIXED needs a guide step AFTER the scope was corrected, not only the
+  // setting flipped back (bug test 2026-11-13, B-S3-10; page 6 likewise needs
+  // the door to play again)
+  const repaired = useCountWhen(guideSteps, wrongSeen && !global) > 0;
+  const fixed = wrongSeen && !global && repaired;
 
   const goals = [
     { label: 'Step as you and as the guide', hit: kinds('step:player:') > 0 && kinds('step:guide:') > 0 },
@@ -201,8 +206,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         hud: 'sync',
         readouts: [
           // wider cells: at an even width the labels were cut to "YOUR FL…" (seen at 390 wide)
-          { k: 'YOUR FLOOR', v: SURFACE_KEY[youRead], vA11y: `your surface switch reads ${SURFACE_NAME[youRead].toLowerCase()}`, flex: 1.65 },
-          { k: 'GUIDE FLOOR', v: SURFACE_KEY[guideShown], vA11y: `the guide’s surface switch reads ${SURFACE_NAME[guideShown].toLowerCase()}`, flex: 1.65 },
+          { k: 'YOUR FLOOR', kNarrow: 'YOU', v: SURFACE_KEY[youRead], vA11y: `your surface switch reads ${SURFACE_NAME[youRead].toLowerCase()}`, flex: 1.65 },
+          { k: 'GUIDE FLOOR', kNarrow: 'GUIDE', v: SURFACE_KEY[guideShown], vA11y: `the guide’s surface switch reads ${SURFACE_NAME[guideShown].toLowerCase()}`, flex: 1.65 },
         ],
         showNames: true,
         show: { mood: true, surface: true },
@@ -232,9 +237,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <FaultCard
           title="EVERYONE WALKS ON YOUR GROUND"
           symptom="Start the fault. Stand on GRAVEL and press STEP: GUIDE. The guide stands on the wood floor, but its footstep is the sound of the ground under you."
-          armed={global}
-          fixed={wrongSeen && !global}
+          armed={global || (wrongSeen && !fixed)}
+          fixed={fixed}
           seen={!unnamed}
+          firstHint="First make the problem happen: open STEP, choose GRAVEL, press STEP: GUIDE, then read the newest GAME lines of the log."
           onStart={() => {
             setStartedAt(wrongSteps);
             setGlobalSurface(true);
@@ -242,11 +248,11 @@ function Page({ ctx }: { ctx: PageCtx }) {
           hints={[
             'After STEP: GUIDE, read the SWITCH value in the newest GAME lines of the log.',
             'The guide has not moved. Its switch is following your position, and the table marks that row.',
-            'Open SCOPE in the dock. It shows how the surface switch is set.',
+            'Open SCOPE in the dock. It shows how the surface switch is set. Then press STEP: GUIDE again and read the log.',
           ]}
           why="A switch belongs to one game object. Here it was set once for everyone, so every character used the surface under you. Set for each character, the footstep event reads the surface under the feet that stepped."
         />
-        {global ? <ActivityLog state={s} lines={4} only={CHB_P08_LOG} /> : null}
+        {global || (wrongSeen && !fixed) ? <ActivityLog state={s} lines={4} only={CHB_P08_LOG} /> : null}
       </Step>
       <Step n={5}>
         <UnderstandingCheck

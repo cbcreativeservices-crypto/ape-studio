@@ -11,7 +11,7 @@ export const G05: ScreenGuide = {
   },
   seeing: [
     'Rings around each source show its sound where you stand: bluer when faint, toward red when loud.',
-    'SOLO names the category that is playing alone, and ALARM says whether the overheat alarm is running. The strip under the picture lights each kind of sound while it plays.',
+    'SOLO names the category that is playing alone. ALARM shows the overheat alarm’s own level, OFF, or SILENT while a solo shuts it out. The strip under the picture lights each kind of sound while it plays.',
     'When the guide speaks, the words appear at the top of the PLAY tray and in a caption above the activity log.',
   ],
   control: [

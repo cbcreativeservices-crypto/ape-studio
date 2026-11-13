@@ -302,7 +302,9 @@ describe('VOICES strip — the budget as slots', () => {
     assert.equal(b.seats[room]!.short, 'UI', 'the new sound sits in the slot it took');
     assert.deepEqual(b.waiting.map((x) => x.short), ['ROOM'], 'a stolen LOOP waits outside the slots');
     assert.equal(b.used, 5);
-    assert.match(cVoicesSpoken(next, 0), /Waiting for a voice after theirs was stolen: the room tone\./);
+    assert.match(cVoicesSpoken(next, 0), /Waiting for a voice: the room tone\./);
+    // GA2 B-08: the label never claims a theft (a loop also waits when BUDGET is lowered)
+    assert.doesNotMatch(cVoicesSpoken(next, 0), /stolen/);
   });
 
   it('a stolen loop comes back when a slot is free, and the mark goes with the slot', () => {
@@ -689,7 +691,8 @@ describe('the strips and the stage are read-only displays', () => {
     for (const f of drawn) {
       for (const m of code(f).matchAll(/fontSize:\s*(\d+(?:\.\d+)?)\b(?!\s*\*)/g)) assert.ok(Number(m[1]) >= 9, `${f}: fontSize ${m[1]}`);
     }
-    const type = code('cKit.tsx').match(/label: (\d+(?:\.\d+)?), value: (\d+(?:\.\d+)?), line: \d+, full: false/);
+    // `size` (was `value`: GA2 B-13, a style's `fontSize: type.value` made the worklets plugin warn on every render)
+    const type = code('cKit.tsx').match(/label: (\d+(?:\.\d+)?), size: (\d+(?:\.\d+)?), line: \d+, full: false/);
     assert.ok(type && Number(type[1]) >= 9 && Number(type[2]) >= 9, 'a 48 pt strip sets its words at 9 pt or more');
     assert.match(code('cToolsStage.tsx'), /const u = Math\.max\(1,/, 'the stage never scales its type below its authored size');
     assert.match(code('cToolsStage.tsx'), /small: 9 \* u/);

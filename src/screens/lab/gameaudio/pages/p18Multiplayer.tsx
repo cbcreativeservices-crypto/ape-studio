@@ -40,7 +40,7 @@ import { gaTerms } from '../gaTerms';
 import { gaPlaying } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { InfoCard, Tray, TrayChip, TrayGrid, TrayNote, useWatch } from './chdKit';
-import { NET_DELAY_S, netArrivalOutcome, netCheckAtArrival, netEffectWords, netFlightKey, netMemoryAdvance, netMemoryStart, netMessageWords, newestFlight, nextNetId, type NetArrival, type NetEffect, type NetSend } from './data/gaNet';
+import { NET_DELAY_S, NET_DROPPED_WORD, netArrivalOutcome, netDroppedWords, netCheckAtArrival, netEffectWords, netFlightKey, netMemoryAdvance, netMemoryStart, netMessageWords, newestFlight, nextNetId, type NetArrival, type NetEffect, type NetSend } from './data/gaNet';
 import { G18 } from './guides/p18';
 import { useSince } from './shared';
 
@@ -82,25 +82,44 @@ function SendTray({ last, onSend }: { last: Sent | null; onSend: (send: NetSend)
   );
 }
 
-function Machine({ title, listener, effect, words, side, second = false, pending = false }: { title: string; listener: string; effect: NetEffect; words: string; side: 'here' | 'there'; second?: boolean; pending?: boolean }) {
+function Machine({ title, listener, effect, words, side, second = false, pending = false, dropped = false }: { title: string; listener: string; effect: NetEffect; words: string; side: 'here' | 'there'; second?: boolean; pending?: boolean; dropped?: boolean }) {
   return (
     <View style={styles.machine}>
       <Text style={styles.machineTitle}>{title}</Text>
       <Text style={styles.machineSub}>{listener}</Text>
-      <Text style={[styles.machineEffect, { color: pending ? colors.textSub : second && effect === 'plays' ? DOUBLE_COLOR : EFFECT_COLOR[effect] }]}>{pending ? '… ON ITS WAY' : effectWord(effect, second, side)}</Text>
+      <Text style={[styles.machineEffect, { color: dropped ? colors.orange : pending ? colors.textSub : second && effect === 'plays' ? DOUBLE_COLOR : EFFECT_COLOR[effect] }]}>{dropped ? NET_DROPPED_WORD : pending ? '… ON ITS WAY' : effectWord(effect, second, side)}</Text>
       <Text style={styles.machineWords}>{words}</Text>
     </View>
   );
 }
 
 /** The last delivery, seen from both machines. While it travels both read
- *  ON ITS WAY; when it lands, each shows what the model says it did there.
- *  Read-only. */
-function TwoMachines({ last, arrival }: { last: Sent | null; arrival: NetArrival | null }) {
+ *  ON ITS WAY; when it lands, each shows what the model says it did there;
+ *  if ■ STOP dropped it on its way, both say so (bug test GA2 B-02: the card
+ *  read ON ITS WAY forever). Read-only. */
+function TwoMachines({ last, arrival, dropped }: { last: Sent | null; arrival: NetArrival | null; dropped: boolean }) {
   if (!last) {
     return (
       <InfoCard head="ONE MESSAGE, TWO MACHINES" a11y="One message, two machines. Nothing has been sent yet.">
         <Text style={styles.cardNote}>Nothing has been sent yet. Open SEND at the bottom.</Text>
+      </InfoCard>
+    );
+  }
+  if (!arrival && dropped) {
+    const message = netMessageWords(last.send);
+    const words = netDroppedWords(last.send);
+    // an alert travels only to the player it is for: the other machine never expected it
+    const here = last.send.to !== 'them';
+    const there = last.send.to !== 'me';
+    const away = 'Nothing was coming here.';
+    return (
+      <InfoCard head="ONE MESSAGE, TWO MACHINES" a11y={`One message, two machines. The message: ${message}. It was dropped: ${words}`}>
+        <Text style={styles.message}>{message} · dropped</Text>
+        <View style={styles.machines}>
+          <Machine title="YOUR MACHINE" listener="Listener: you" effect="nothing" words={here ? words : away} side="here" dropped={here} />
+          <Machine title="THE OTHER MACHINE" listener="Listener: the guide" effect="nothing" words={there ? words : away} side="there" dropped={there} />
+        </View>
+        <Text style={styles.cardNote}>■ STOP drops every action still on its way: it never arrives, so neither machine plays it.</Text>
       </InfoCard>
     );
   }
@@ -144,6 +163,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
   // what has landed on this visit, as the model recorded it at arrival
   const memory = useWatch(s, netMemoryStart, netMemoryAdvance);
   const arrival = last?.key != null ? (memory.landed[last.key] ?? null) : null;
+  const dropped = last?.key != null && !!memory.dropped[last.key];
 
   const onSend = (send: NetSend) => {
     gaDispatch({ type: 'net', id: send.id, what: send.what, to: send.to });
@@ -185,7 +205,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         // the guide's ears: the other player's listener (W2-05)
         show: { guideListens: true },
         readouts: [
-          { k: 'ID CHECK', v: s.options.dedupe ? 'ON' : 'OFF', vA11y: s.options.dedupe ? 'an action that arrives again with the same ID is ignored' : 'an action that arrives again with the same ID is handled again' },
+          { k: 'ID CHECK', kNarrow: 'CHECK', v: s.options.dedupe ? 'ON' : 'OFF', vA11y: s.options.dedupe ? 'an action that arrives again with the same ID is ignored' : 'an action that arrives again with the same ID is handled again' },
           { k: 'LAST ID', v: last ? last.send.id : '—', vA11y: last ? `last action ID ${last.send.id}` : 'no action sent yet' },
         ],
         showNames: true,
@@ -202,7 +222,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Do>Open SEND and press DOOR · NEW ID. Then press the AGAIN chip.</Do>
         <P>A message takes time to travel: here, 0.25 s. On a real network the delay changes from moment to moment and between players.</P>
         <P>When the action arrives, the door moves and its sound plays. A network sometimes delivers a message twice. With ID CHECK on, the copy is ignored: one action, one sound.</P>
-        <TwoMachines last={last} arrival={arrival} />
+        <TwoMachines last={last} arrival={arrival} dropped={dropped} />
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>

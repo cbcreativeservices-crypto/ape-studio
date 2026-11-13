@@ -88,11 +88,10 @@ export function pendingLine(s: GaState, t: number = s.t): string {
   const out: string[] = [];
   const p = s.music.pending;
   if (p) {
-    // a request that asks for the layers already sounding (ALERT again after
-    // a withdrawn CALM) changes nothing when it lands: say so, rather than
-    // "add PULSE and DRIVE" over two layers that already play
-    const same = MUSIC_LAYERS.every((l) => s.music.layers[l] === (s.music.applied ?? s.music.layers)[l]);
-    const what = same ? `${cap(p.what)} (that is what plays now, so nothing changes)` : cap(p.what);
+    // (a request for the layers already sounding is never queued: the model
+    // withdraws the waiting one and logs "… that is what plays now, so
+    // nothing is queued", GA2 B-14)
+    const what = cap(p.what);
     if (p.boundary === 'now') out.push(`${what}: being applied now.`);
     else {
       const k = left(p.due, t);

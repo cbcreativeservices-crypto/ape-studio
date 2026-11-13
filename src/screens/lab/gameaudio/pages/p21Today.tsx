@@ -38,8 +38,15 @@
  *   TEST    a budget of 8 voices and a burst of 12 crates: the VOICES strip,
  *           and the log as a profiler
  *   AI      NOTHING: the lab has no AI, and the page says so. No demo.
- * The third key is that topic's one action (or none, for AI). SPEED is the
- * page's slider. Two checks; the page counts once both are passed. The two tool names on it are glossary
+ * The next key is that topic's one action (or none, for AI).
+ *
+ * SPEED (bug test GA2 B-01, 2026-11-13: the page opened on a SPEED slider
+ * that moved only its own number, on no topic, AI, MUSIC and ACCESS). The
+ * page now opens on TOPIC, with no slider. SPEED is in the dock only on the
+ * topics where the generator runs (RULES, SPACE, TEST: P21_SPEED_TOPICS),
+ * where it closes up the generator's rings in the picture (and on RULES
+ * moves the EFFECTS bar); with the generator stopped it is LOCKED and says
+ * why. Two checks; the page counts once both are passed. The two tool names on it are glossary
  * terms of this page (MetaSounds, Steam Audio), given as examples of what a
  * tool can do. In each check every option is a real approach or a real use
  * (audit 2, L-20: "a sound bank" and "a musical stinger" were not ways to
@@ -130,6 +137,24 @@ export const P21_TOPICS: readonly { id: P21Topic; label: string; hud: GaHudId; s
   },
 ];
 
+/** The topics where the generator runs, so SPEED changes what is seen
+ *  (GA2 B-01). Every other topic has no slider. */
+export const P21_SPEED_TOPICS: readonly P21Topic[] = ['rules', 'space', 'test'];
+
+/** The SPEED key on this topic: absent where the generator does not run;
+ *  locked, with the reason, while it is stopped (RULES can stop it). */
+export function p21SpeedKey(topic: P21Topic | null, s: ReturnType<typeof gaGet>): DockParam | null {
+  if (!topic || !P21_SPEED_TOPICS.includes(topic)) return null;
+  const key = speedKey(s);
+  const running = !!s.machines.find((m) => m.id === 'generator-1')?.on;
+  return running || key.kind !== 'fader' ? key : { ...key, locked: p21SpeedOff(topic) };
+}
+
+/** Why SPEED is locked: only RULES has a GEN 1 key; on SPACE and TEST the
+ *  generator stops only with ■ STOP, and choosing the topic again runs it. */
+export const p21SpeedOff = (topic: P21Topic): string =>
+  topic === 'rules' ? 'GEN 1 is off: switch it on, and SPEED moves its rings and its level' : 'Generator 1 was stopped: choose this TOPIC again to run it, and SPEED moves it';
+
 /** The topic's one action key, or none (AI: nothing to run). */
 function topicAction(topic: P21Topic | null, s: ReturnType<typeof gaGet>): DockParam | null {
   if (topic === 'rules') return machineKey(s);
@@ -166,18 +191,21 @@ function Page({ ctx }: { ctx: PageCtx }) {
     onSelect: (id) => choose(id as P21Topic),
   };
   const action = topicAction(topic, s);
+  const speed = p21SpeedKey(topic, s);
 
   return (
     <GaRack
       spec={{
-        keys: [topicKey, speedKey(s), ...(action ? [action] : [])],
+        // the page opens on TOPIC: no slider until a topic gives it something to move
+        keys: [topicKey, ...(action ? [action] : []), ...(speed ? [speed] : [])],
         initialParam: 'speed-generator-1',
         assets: ASSETS,
         hud: t ? t.hud : 'mix',
       }}
     >
     <View style={styles.page}>
-      <Note>{t ? t.says : 'Choose a TOPIC under the picture. The scene then shows what this lab really has of it.'}</Note>
+      {/* with the generator stopped, the topic's sentence would claim it runs */}
+      <Note>{!t ? 'Choose a TOPIC under the picture. The scene then shows what this lab really has of it.' : speed?.kind === 'fader' && speed.locked ? `${speed.locked}.` : t.says}</Note>
       <Caption state={s} />
       {topic === 'test' ? <ActivityLog state={s} lines={5} only={['stop', 'refused']} /> : null}
 

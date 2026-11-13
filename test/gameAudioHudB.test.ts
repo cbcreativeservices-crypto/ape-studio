@@ -424,7 +424,7 @@ describe('hudB music: the play line and the marker', () => {
     near(bGhostAt(now.s, T0 + 4.4), T0 + 4.4); // the hollow marker rides the play line
   });
 
-  it('a change of mind: the first marker is kept as WITHDRAWN, the new one takes the line', () => {
+  it('a change of mind back to what sounds: the first marker is kept as WITHDRAWN, and nothing new waits', () => {
     const { s, m } = started([
       [T0 + 0.5, { type: 'option', patch: { musicBoundary: 'phrase' } }],
       [T0 + 1, { type: 'mood', mood: 'alert' }],
@@ -434,10 +434,10 @@ describe('hudB music: the play line and the marker', () => {
     assert.ok(m.withdrawn);
     near(m.withdrawn.landAt, T0 + MUSIC_LOOP_S); // where the first one WOULD have landed
     near(m.withdrawn.at, T0 + 4);
-    const c = bChange(s, T0 + 4);
-    assert.ok(c);
-    near(c.landAt, T0 + 5); // the new one, on the boundary chosen since
-    // what waits now asks for nothing new: no lane is dashed
+    // GF1 B-14: CALM is what sounds, so the model queues nothing: no marker on the line
+    assert.equal(bChange(s, T0 + 4), null);
+    assert.equal(s.music.pending, null);
+    // and no lane is dashed
     assert.ok(bLanes(s).every((l) => l.waiting === null));
   });
 

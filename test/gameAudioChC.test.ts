@@ -460,7 +460,8 @@ describe('page 13 — output formats', () => {
     assert.match(src, /Object-based audio is a third idea, not played here/);
     assert.match(src, /That filter is called an HRTF/, 'HRTF is explained where it is used');
     assert.match(src, /strip the fountain slides along the line between your ears/, 'the output strip is named for STEREO');
-    assert.match(src, /In MONO both bars stay equal as you turn/);
+    // GA2 B-04: equal, but not level: the fold's pan law is said
+    assert.match(src, /In MONO both bars stay equal; to one side, both fold up to 3 dB quieter \(the pan law\)\./);
     assert.match(G13.seeing.join(' '), /still map/);
   });
 
@@ -576,16 +577,22 @@ describe('page 14 — music (chcMusicVoice)', () => {
     assert.equal(gaFact(s, 'musicWithdrawn'), 1);
     assert.ok(s.log.some((l) => l.text === 'The waiting change (add PULSE and DRIVE) is WITHDRAWN: a newer one replaces it'));
     assert.deepEqual(musicRows(s).map((r) => r.state), ['heard', 'zero', 'zero']);
-    assert.equal(pendingLine(s), 'Back to CALM only (that is what plays now, so nothing changes): lands at the end of the phrase.');
+    // GF1 B-14 (2026-11-13): a request equal to what sounds queues nothing, and the log says so
+    assert.equal(s.music.pending, null);
+    assert.equal(pendingLine(s), 'Nothing is waiting.');
+    assert.ok(s.log.some((l) => l.text === 'Back to CALM only: that is what plays now, so nothing is queued'));
   });
 
-  it('step 3 on screen: ALERT sounding, CALM then ALERT again — the waiting request is named as changing nothing', () => {
+  it('step 3 on screen: ALERT sounding, CALM then ALERT again — nothing is left waiting, and the log says why', () => {
     let s = run(gaInitial(), { type: 'musicStart' }, { type: 'mood', mood: 'alert' });
     s = run(s, { type: 'engine', evt: { e: 'music', what: 'applied', req: s.music.pending!.req, at: 0 } });
     s = run(s, { type: 'option', patch: { musicBoundary: 'phrase' } }, { type: 'mood', mood: 'calm' });
     assert.match(pendingLine(s), /^Back to CALM only: lands at the end of the phrase in \d+\.\d s\.$/);
     s = run(s, { type: 'mood', mood: 'alert' });
-    assert.match(pendingLine(s), /^Add PULSE and DRIVE \(that is what plays now, so nothing changes\): lands at the end of the phrase/);
+    // GF1 B-14: asking for what already sounds withdraws the waiting change and queues nothing
+    assert.equal(s.music.pending, null);
+    assert.equal(pendingLine(s), 'Nothing is waiting.');
+    assert.ok(s.log.some((l) => l.text === 'Add PULSE and DRIVE: that is what plays now, so nothing is queued'));
     assert.deepEqual(musicRows(s).map((r) => r.state), ['heard', 'heard', 'heard']);
   });
 

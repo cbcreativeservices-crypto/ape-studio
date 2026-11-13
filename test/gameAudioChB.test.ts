@@ -97,13 +97,14 @@ describe('page 6: the door’s chain is read from the lab’s own records', () =
     const f = run(fresh(), { type: 'fault', patch: { missingDoor: true } }, { type: 'door' }, { type: 'door' });
     assert.equal(f.log.filter((l) => l.kind === 'failed' && l.text.includes(`"${CHB_MISSING_FILE}"`)).length, 2);
   });
-  it('a planted fault does not name itself: unnamed, the chain shows the true file name with no mark and no verdict (decision 10)', () => {
+  it('a planted fault does not name itself: unnamed, the chain names no file, with no mark and no verdict (decision 10; bug test B-S1-02)', () => {
     const c = doorChain(true, { named: false });
     assert.equal(c.missing, true);
     assert.equal(c.broken, false);
     assert.ok(!c.cards.some((x) => x.rows.some((r) => r.bad)), 'no red row');
     assert.ok(!c.links.some((l) => /BROKEN|not in the build/i.test(l)));
-    assert.ok(c.cards[1].rows.some((r) => r.v.includes(CHB_MISSING_FILE)), 'what the event asks for is still shown, as a tool would');
+    assert.ok(!c.cards.some((x) => x.rows.some((r) => r.v.includes(CHB_MISSING_FILE))), 'the wrong file name is not shown before the symptom');
+    assert.ok(c.cards[1].rows.some((r) => /^door asks for \?/.test(r.v)), 'the door layer reads "?", as DOOR FILE does');
     assert.ok(!c.cards.some((x) => x.rows.some((r) => /not in the build/.test(r.v))));
     const said = doorChainSummary(c);
     assert.ok(!/broken|in place/i.test(said), said);

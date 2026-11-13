@@ -30,7 +30,7 @@ import type { GaState } from '../../model/gaModel';
 import type { GaHudProps } from './gaHudTypes';
 import { B, BGlass, BText } from './bKit';
 import { useBMemo, useBNow } from './bClock';
-import { B_BARS, B_BEATS, B_BEAT_S, B_WITHDRAWN_SHOW_S, bBeatStep01, bChange, bGhostAt, bLand01, bLanes, bMusicSummary, bPlay01, bStingers, type BMemo } from './bModel';
+import { B_BARS, B_BEATS, B_WITHDRAWN_SHOW_S, bBeatFloor, bBeatStep01, bChange, bGhostAt, bLand01, bLanes, bMusicSummary, bPlay01, bStingers, type BMemo } from './bModel';
 
 const LANE_Y = [19.5, 30, 40.5] as const;
 const LANE_H = 7;
@@ -91,7 +91,7 @@ export function BMusicHud({ w, h, state }: GaHudProps) {
   const keep = state.music.on || (!!m.withdrawn && at - m.withdrawn.at < B_WITHDRAWN_SHOW_S);
   const [now, smooth] = useBNow(keep, 0.1);
   // the words change at most once a beat, not once a frame
-  const label = bMusicSummary(state, Math.floor(now / B_BEAT_S) * B_BEAT_S);
+  const label = bMusicSummary(state, bBeatFloor(now, state.music.t0));
   return (
     <BGlass w={w} h={h} label={label}>
       {(W) => <MusicStrip W={W} s={state} m={m} now={now} smooth={smooth} />}

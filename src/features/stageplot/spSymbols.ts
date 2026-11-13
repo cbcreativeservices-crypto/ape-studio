@@ -119,7 +119,9 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // wedge at the stage edge is turned 180° so the wide side faces the
   // performer; the line inside is the grille's edge
   wedge: { w: 0.7, h: 0.45, tag: '', shapes: [poly([-0.24, -0.22, 0.24, -0.22, 0.35, 0.22, -0.35, 0.22]), line(-0.3, 0.12, 0.3, 0.12)] },
-  iem: { w: 0.5, h: 0.3, tag: 'IEM', shapes: [box(0.5, 0.3, { r: 0.14 })] },
+  // square corners like every other box: a rounded box is the legend's mark
+  // for a monitor mix code (M1), so an IEM must never read as one
+  iem: { w: 0.5, h: 0.3, tag: 'IEM', shapes: [box(0.5, 0.3, { r: 0.03 })] },
   // a drum fill and a sidefill, from above: a cabinet with a heavy bar on
   // the side it faces (a front view with its drivers showing would be the
   // only symbol not seen from above)

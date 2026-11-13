@@ -112,13 +112,19 @@ export const CHC_BEHIND_DEG = 170;
 export const isStraightBehind = (deg: number): boolean => Math.abs(deg) >= CHC_BEHIND_DEG;
 
 /** Where the source is from the listener's point of view. The words
- *  "straight behind" appear exactly when `isStraightBehind` is true. */
-export function directionWord(deg: number): string {
+ *  "straight behind" appear exactly when `isStraightBehind` is true.
+ *  `pan` (optional): the PAN printed beside it. A card never says "straight
+ *  behind" (or ahead) beside a PAN that is not CENTER: at 178° the pan reads
+ *  LEFT 4% (bug test 2026-11-13, B-S3-09), so that is "almost straight
+ *  behind". */
+export function directionWord(deg: number, pan?: number): string {
   const a = Math.abs(deg);
-  if (a <= 2.5) return 'straight ahead';
-  if (a >= 177.5) return 'straight behind';
+  const centered = pan == null || panShort(pan) === 'CENTER';
+  if (a <= 2.5 && centered) return 'straight ahead';
+  if (a >= 177.5 && centered) return 'straight behind';
   const n = Math.round(a);
   const side = deg > 0 ? 'right' : 'left';
+  if (a <= 2.5) return `almost straight ahead (${n}° to your ${side})`;
   if (a >= CHC_BEHIND_DEG) return `almost straight behind (${n}° to your ${side})`;
   return `${n}° to your ${side}, ${n < 90 ? 'in front' : n > 90 ? 'behind you' : 'at your side'}`;
 }

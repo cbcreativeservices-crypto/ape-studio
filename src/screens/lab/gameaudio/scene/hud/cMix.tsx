@@ -77,7 +77,7 @@ const BusRow = memo(function BusRow({ m, box, type, selected, moving, following 
   const silent = m.silenced != null;
   return (
     <View style={[styles.row, { width: box.w, height: box.h }, selected && styles.rowSel]}>
-      <Text style={[styles.mark, { width: box.markW, fontSize: type.value, lineHeight: type.line, color: selected ? C_FACE.amber : 'transparent' }]} allowFontScaling={false}>
+      <Text style={[styles.mark, { width: box.markW, fontSize: type.size, lineHeight: type.line, color: selected ? C_FACE.amber : 'transparent' }]} allowFontScaling={false}>
         ▸
       </Text>
       <Text
@@ -92,7 +92,7 @@ const BusRow = memo(function BusRow({ m, box, type, selected, moving, following 
         <Animated.View style={[styles.duck, { top: 2, height: box.barH }, band]} />
         <View style={[styles.fader, { left: Math.max(0, Math.min(box.barW - 2, faderX - 1)), height: box.barH + 4 }, silent && styles.faderDim]} />
       </View>
-      <Text style={[styles.value, { width: box.valueW, fontSize: type.value, lineHeight: type.line, color: value.color }]} allowFontScaling={false} {...fitValue(type.value)}>
+      <Text style={[styles.value, { width: box.valueW, fontSize: type.size, lineHeight: type.line, color: value.color }]} allowFontScaling={false} {...fitValue(type.size)}>
         {value.text}
       </Text>
     </View>

@@ -64,6 +64,13 @@ function stepAlong(dx: number): void {
   gaDispatch({ type: 'step', who: 'player', dx, dy: 0 });
 }
 
+/** The WALK key's short word (bug test GA2 B-03: "WORKSHOP" was cut to
+ *  "WORKSH…" in a key that holds about six letters at 390 wide, fewer at
+ *  320). The place keeps its full name on the lane's line above the keys
+ *  (`walkLine`: COURTYARD · … / WORKSHOP · …); the key says the same place
+ *  in four letters. */
+export const WALK_KEY_WORD: Record<ReturnType<typeof walkPlace>, string> = { COURTYARD: 'YARD', WORKSHOP: 'SHOP' };
+
 /** WALK: your place along the stone path, west to east. The model keeps you
  *  out of the wall and stops you at a closed door, so the lane shows where
  *  you really are, not where the finger asked to go. */
@@ -81,7 +88,7 @@ const walkKey = (s: GaState): DockParam => ({
     gaDispatch({ type: 'move', who: 'player', x, y: WALK_Y });
   },
   format: () => walkLine(gaGet()),
-  formatShort: () => walkPlace(gaGet()),
+  formatShort: () => WALK_KEY_WORD[walkPlace(gaGet())],
   nudges: [
     { label: '‹ STEP WEST', onPress: () => stepAlong(-STEP_M), a11y: 'Walk one step west, toward the courtyard' },
     { label: 'STEP EAST ›', onPress: () => stepAlong(STEP_M), a11y: 'Walk one step east, toward the workshop' },
@@ -184,7 +191,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
             { k: 'DOOR', v: s.doorOpen ? 'Open' : 'Closed' },
             { k: 'LEVEL CHANGE', v: wall.level },
             { k: 'FILTER', v: wall.filter },
-            { k: 'WORKSHOP REVERB', v: !s.options.reverb ? 'Off (dry)' : !reverbOk ? 'Not available on this device' : inside ? 'On, and you are inside' : 'On, heard from outside' },
+            // outside, the only workshop sound is the generator: with it off or virtual nothing reaches the reverb (GA2 B-17b)
+            { k: 'WORKSHOP REVERB', v: !s.options.reverb ? 'Off (dry)' : !reverbOk ? 'Not available on this device' : inside ? 'On, and you are inside' : gen.playing && !gen.virtual ? 'On, heard from outside' : 'On, but nothing in the workshop plays now' },
           ]}
           note={cardNote}
         />

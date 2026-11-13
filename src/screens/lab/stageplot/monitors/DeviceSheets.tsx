@@ -22,7 +22,7 @@ import { spRemoveDevice, spUpdateDevice } from '../../../../features/stageplot/s
 import type { SpDevice, SpDeviceType, SpId } from '../../../../features/stageplot/spTypes';
 import { RemoveStep } from '../inputs/bits';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, MoreDetails, Note, Switch, TextField } from '../spForm';
+import { Button, Choice, FocusMark, MoreDetails, Note, Switch, TextField } from '../spForm';
 import { ButtonRow, Line, SubHeading } from './bits';
 import { SPM_DEVICE_OPTIONS, SPM_PACK_NOTE, SPM_SUPPLIER_OPTIONS, SPM_WIRELESS_NOTE, spmAddDevice, spmDeviceStage, spmDeviceTitle, spmMixTitle, spmNewDeviceLabel, spmPerformerName } from './monitorPlan';
 
@@ -93,7 +93,9 @@ export function DeviceBody({ device, onDone, onLocate }: { device: SpDevice; onD
       <Switch label="Part of the band monitor rig" value={device.selfContained} onChange={(selfContained) => set({ selfContained })} hint="On: it needs nothing from the house system." />
       {!device.mixId && !device.selfContained ? <Note tone="warning">This device is not on any mix. Choose a mix, or mark it as part of the band monitor rig.</Note> : null}
       <Choice label="Who uses it" value={device.performerId ?? ''} options={people} onChange={(v) => set({ performerId: v || null })} hint="For a pack or a headphone amplifier that one person wears or uses." />
-      <Choice label="Who brings it" value={device.supplier} options={SPM_SUPPLIER_OPTIONS} onChange={(supplier) => set({ supplier })} />
+      <FocusMark k="supplier">
+        <Choice label="Who brings it" value={device.supplier} options={SPM_SUPPLIER_OPTIONS} onChange={(supplier) => set({ supplier })} />
+      </FocusMark>
       {radio ? wireless : null}
 
       <View style={styles.block}>

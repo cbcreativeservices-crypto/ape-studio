@@ -24,7 +24,7 @@ export const G13: ScreenGuide = {
   changes: [
     'In STEREO the fountain moves only between left and right, so ahead and behind sound the same.',
     'In HEADPHONE 3D your device filters each sound for each ear, as a head would. On headphones, ahead and behind now differ.',
-    'In MONO both ears get the same signal. Distance still sets the level; direction is gone. The log prints each OUTPUT change.',
+    'In MONO both ears get the same signal. Distance still sets the level; left and right are gone, and a sound to one side folds up to 3 dB quieter (the pan law). The log prints each OUTPUT change.',
   ],
   teaches: [
     'STEREO and MONO are channel-based. HEADPHONE 3D is binaural. Object-based audio keeps each sound with its position, and a renderer works out the signals.',
@@ -35,6 +35,6 @@ export const G13: ScreenGuide = {
   tryThis: [
     'With STEREO chosen, face the fountain, then turn your back to it, and listen for a difference. Repeat with HEADPHONE 3D on headphones.',
     'Choose HEADPHONE 3D and listen on the phone’s speaker, then on headphones. The effect needs one signal for each ear.',
-    'Choose MONO and turn all the way around. You can no longer tell where the fountain is.',
+    'Choose MONO and turn all the way around. Both bars stay equal: you cannot tell left from right, only a small dip when the fountain is to one side.',
   ],
 };

@@ -443,7 +443,10 @@ export type GaAction =
   | { type: 'enterPage' }
   | { type: 'engine'; evt: GaEvt }
   | { type: 'expire'; v: string }
-  | { type: 'stopAll' }
+  /** ■ STOP, or SOUND switched off. `why: 'app'` = the APP stopped every
+   *  sound (the learner left the app: the app-wide safety stop), not the
+   *  learner (bug test 2026-11-13, B-S3-01). */
+  | { type: 'stopAll'; why?: 'app' }
   | { type: 'clearLog' }
   | { type: 'reset' }
   /** The clock moved. Anything due by now happens (a network action lands,
@@ -527,6 +530,8 @@ function log(c: Ctx, kind: GaLogKind, text: string, more: Partial<GaLogEntry> = 
   c.s.log.push({ n: ++c.s.logN, t: round(c.s.t, 2), kind, text, ...more });
   if (c.s.log.length > GA_LOG_MAX) c.s.log.splice(0, c.s.log.length - GA_LOG_MAX);
 }
+/** The log line when the APP stops every sound (the learner left the app). */
+export const GA_APP_STOP_TEXT = 'ALL SOUND, by the app: you left the app (or the app muted itself for safety). Every instance is stopped and every waiting change is withdrawn';
 /** The same thing said twice running is said once. */
 function logOnce(c: Ctx, kind: GaLogKind, text: string, more: Partial<GaLogEntry> = {}): void {
   const last = c.s.log[c.s.log.length - 1];
@@ -1164,17 +1169,35 @@ const musicUnit = (boundary: GaMusicBoundary): number => {
 };
 /** Ask the music to move to the current layer set, on the chosen boundary.
  *  A request still waiting is WITHDRAWN first: the latest wish wins. */
-function requestMusic(c: Ctx, what: string, cause: 'mood' | 'layer'): void {
+function requestMusic(c: Ctx, asked: string, cause: 'mood' | 'layer'): void {
+  let what = asked;
   const m = c.s.music;
   if (!m.on) {
     // nothing is playing: the next START simply begins with these layers
     m.applied = { ...m.layers };
     return;
   }
+  // WHAT REALLY CHANGES (bug test 2026-11-13, pages 12–22 B-14): a request
+  // is measured against what SOUNDS now (`applied`), not against the mood's
+  // full list. With DRIVE already sounding, ALERT reads "add PULSE"; a
+  // request equal to what sounds withdraws the waiting change and queues
+  // nothing.
+  const added = MUSIC_LAYERS.filter((l) => m.layers[l] && !m.applied[l]);
+  const removed = MUSIC_LAYERS.filter((l) => !m.layers[l] && m.applied[l]);
+  const and = (ls: readonly string[]) => { const u = ls.map((l) => l.toUpperCase()); return u.length <= 1 ? u.join('') : `${u.slice(0, -1).join(', ')} and ${u[u.length - 1]}`; };
+  if (cause === 'mood' && added.length && !removed.length) what = `add ${and(added)}`;
+  else if (cause === 'mood' && removed.length && !added.length && !MUSIC_LAYERS.some((l) => l !== 'calm' && m.layers[l])) what = 'back to CALM only';
+  else if (cause === 'mood' && removed.length && !added.length) what = `remove ${and(removed)}`;
   if (m.pending) {
     log(c, 'music', `The waiting change (${m.pending.what}) is WITHDRAWN: a newer one replaces it`, { bus: 'music' });
     fact(c, 'musicWithdrawn');
     if (c.s.soundOn) c.cmds.push({ t: 'music', op: 'cancel', req: m.pending.req });
+    m.pending = null;
+  }
+  if (!added.length && !removed.length) {
+    log(c, 'music', `${cap(what)}: that is what plays now, so nothing is queued`, { bus: 'music' });
+    fact(c, 'musicNoChange');
+    return;
   }
   const req = nextId(c, 'm');
   const boundary = c.s.options.musicBoundary;
@@ -1565,7 +1588,8 @@ export function gaReduce(prev: GaState, a: GaAction, now?: number): { state: GaS
       if (a.db != null) b.db = Math.max(-60, Math.min(6, a.db));
       if (a.mute != null) b.mute = a.mute;
       if (a.solo != null) b.solo = a.solo;
-      const text = `BUS ${GA_BUS_NAME[a.bus]}: ${round(b.db, 1)} dB${b.mute ? ', MUTED' : ''}${b.solo ? ', SOLO' : ''}`;
+      // a true minus sign (bug test 2026-11-13, pages 12–22 B-15)
+      const text = `BUS ${GA_BUS_NAME[a.bus]}: ${String(round(b.db, 1)).replace('-', '−')} dB${b.mute ? ', MUTED' : ''}${b.solo ? ', SOLO' : ''}`;
       // one fader drag is one line, updated
       const last = s.log[s.log.length - 1];
       if (a.db != null && a.mute == null && a.solo == null && last && last.kind === 'mix' && last.bus === a.bus && last.count != null) {
@@ -1739,9 +1763,18 @@ export function gaReduce(prev: GaState, a: GaAction, now?: number): { state: GaS
     }
 
     case 'stopAll':
-      log(c, 'trigger', 'STOP ALL: every instance is stopped and every waiting change is withdrawn', {});
-      fact(c, 'stopAll');
-      if (s.inst.length > 0 || s.music.on) fact(c, 'stoppedSomething');
+      if (a.why === 'app') {
+        // NOT a GAME line and not the learner's ■ STOP: the app stopped every
+        // sound because the learner left it. The app-wide stop can arrive
+        // twice for one leave (two listeners): said once (logOnce), and it
+        // counts toward no goal (no `stopAll` / `stoppedSomething` fact).
+        logOnce(c, 'stop', GA_APP_STOP_TEXT, {});
+        fact(c, 'appStop');
+      } else {
+        log(c, 'trigger', 'STOP ALL: every instance is stopped and every waiting change is withdrawn', {});
+        fact(c, 'stopAll');
+        if (s.inst.length > 0 || s.music.on) fact(c, 'stoppedSomething');
+      }
       withdrawWaiting(c, 'everything was stopped');
       s.voices = [];
       s.inst = [];
@@ -1754,6 +1787,10 @@ export function gaReduce(prev: GaState, a: GaAction, now?: number): { state: GaS
       // may start to sound after ■ STOP. It was never handled, so its id is
       // not a known one.
       for (const f of s.netFlights ?? []) if (f.result === 'pending' && !f.again) s.netSeen = s.netSeen.filter((id) => id !== f.id);
+      // one NET line for each action dropped on its way (bug test 2026-11-13,
+      // pages 12–22 B-02: page 18's log said nothing). The flight itself
+      // leaves `netFlights`: the page shows DROPPED from its disappearance.
+      for (const f of s.netFlights ?? []) if (f.result === 'pending') log(c, 'net', `Action ${f.id} (${f.what}) DROPPED by STOP ALL: it never arrives`, {});
       s.netFlights = (s.netFlights ?? []).filter((f) => f.result !== 'pending');
       for (const m of s.machines) m.on = false;
       if (s.soundOn) c.cmds.push({ t: 'stopAll', fade: 0.04 });

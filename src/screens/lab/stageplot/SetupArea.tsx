@@ -39,7 +39,7 @@ import {
   spUpdatePerformer,
 } from '../../../features/stageplot/spModel';
 import { spCanMarkReady } from '../../../features/stageplot/spReview';
-import { spDateWords, spDayFromText, spProjectName, useSpProjects } from '../../../features/stageplot/spStore';
+import { spDateWords, spDayFromText, spLooksLikeTime as looksLikeTime, spProjectName, spStageSizeFromText as sizeFromText, useSpProjects } from '../../../features/stageplot/spStore';
 import { SP_TEMPLATES } from '../../../features/stageplot/spTemplates';
 import type { SpContact, SpPerformer, SpProject, SpStatus } from '../../../features/stageplot/spTypes';
 import { notify } from '../../../lib/confirm';
@@ -71,15 +71,11 @@ const DIMS_OPTIONS = [
   { value: 'confirmed', label: 'Confirmed' },
 ] as const;
 
-/** A stage size as typed: a number above zero, with a period or a comma.
- *  '' = no size. null = not understood. */
-function sizeFromText(text: string): number | null | undefined {
-  const t = text.trim();
-  if (!t) return null;
-  if (!/^\d+([.,]\d+)?$/.test(t)) return undefined;
-  const n = Number(t.replace(',', '.'));
-  return Number.isFinite(n) && n > 0 && n <= 1000 ? Math.round(n * 100) / 100 : undefined;
-}
+const SIZE_SAID = {
+  unread: 'That size was not understood, so it was not changed. Type a number, like 24 or 7.5.',
+  zero: 'A stage size must be more than 0, so it was not changed.',
+  big: 'A stage size above 1000 is not taken, so it was not changed. Check the number and the unit.',
+} as const;
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -139,8 +135,10 @@ export function SetupArea() {
     }
   }, []);
   const [removing, setRemoving] = useState<string | null>(null);
-  const [dateNote, setDateNote] = useState(false);
-  const [sizeNote, setSizeNote] = useState(false);
+  /** A date that was not read: KEPT in the field with the note, so the user
+   *  corrects it instead of typing it again (bug test S3-08). */
+  const [dateRefused, setDateRefused] = useState<string | null>(null);
+  const [sizeSaid, setSizeSaid] = useState<string | null>(null);
 
   /** One edit of the project's own fields. */
   const set = (change: (d: SpProject) => void) => ed.apply((q) => spEdit(q, change));
@@ -160,6 +158,7 @@ export function SetupArea() {
   const exampleTitle = ed.issues.find((i) => i.rule === 'example-title');
   const noContact = ed.issues.find((i) => i.rule === 'no-contact');
   const email = p.contact.email.trim();
+  const unreadTimes = (['loadIn', 'soundcheck', 'performance'] as const).filter((k) => !looksLikeTime(p[k])).map((k) => `“${p[k].trim()}”`);
 
   const setStatus = (next: SpStatus) => {
     if (next === 'draft') {
@@ -178,14 +177,17 @@ export function SetupArea() {
   const commitDate = (text: string, how?: SpCommitHow) => {
     const day = spDayFromText(text);
     if (day === null && how === 'paused') return;
-    setDateNote(day === null);
+    setDateRefused(day === null ? text : null);
     if (day !== null && day !== p.eventDate) set((d) => (d.eventDate = day));
   };
   const commitSize = (key: 'width' | 'depth', text: string, how?: SpCommitHow) => {
     const n = sizeFromText(text);
-    if (n === undefined && how === 'paused') return;
-    setSizeNote(n === undefined);
-    if (n !== undefined && n !== p.stage[key]) set((d) => (d.stage[key] = n));
+    if (typeof n === 'string') {
+      if (how !== 'paused') setSizeSaid(SIZE_SAID[n]);
+      return;
+    }
+    setSizeSaid(null);
+    if (n !== p.stage[key]) set((d) => (d.stage[key] = n));
   };
 
   // RENAMING A PERFORMER RENAMES WHAT WAS NAMED AFTER THEM, in the same edit:
@@ -263,7 +265,7 @@ export function SetupArea() {
             <TextField label="Band or artist name" value={p.band} onCommit={(band) => set((d) => (d.band = band))} />
             {noBandName ? <Note tone="warning">{noBandName.text} Type it above.</Note> : null}
             <TextField label="Title of this stage plot" value={p.title} onCommit={(title) => set((d) => (d.title = title))} hint="Optional. For example: Club set, Festival set." />
-            {exampleTitle ? <Note tone="warning">{exampleTitle.text}</Note> : null}
+            {exampleTitle ? <Note tone="warning">The title still says “(example)”. Change it or clear it above.</Note> : null}
             {template ? (
               <Note>
                 Started from the example “{template.name}”. It assumed: {template.assumes} Change anything that is not true for your band.
@@ -306,7 +308,12 @@ export function SetupArea() {
                       <View style={styles.buttons}>
                         <Button
                           label={placed ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'}
-                          onPress={() => ed.goTo('stage', { kind: 'performer', id: pf.id })}
+                          // a placed performer is selected by their FIGURE: coming
+                          // back to Setup then does not reopen this row (S3-09)
+                          onPress={() => {
+                            const fig = p.objects.find((x) => x.performerId === pf.id && x.kind === 'performer') ?? p.objects.find((x) => x.performerId === pf.id);
+                            ed.goTo('stage', fig ? { kind: 'object', id: fig.id } : { kind: 'performer', id: pf.id });
+                          }}
                           a11yLabel={placed ? `Locate ${name} on the stage` : `Go to the Stage area to place ${name}`}
                         />
                         <Button label="REMOVE" tone="danger" onPress={() => setRemoving(pf.id)} a11yLabel={`Remove ${name}. You are shown what they are linked to first.`} />
@@ -322,14 +329,15 @@ export function SetupArea() {
 
           <Section title="THE GIG" hint="All optional. Type what you know now. You can add the rest later.">
             <TextField label="Venue" value={p.venue} onCommit={(venue) => set((d) => (d.venue = venue))} />
-            <TextField label="Event date" value={p.eventDate} onCommit={commitDate} placeholder="2026-12-05" hint="Year first, or the month as a word: 2026-12-05, or Dec 5, 2026. It is also used in the packet’s file name." />
-            {p.eventDate && !dateNote ? <Text style={styles.quiet}>Read as {spDateWords(p.eventDate)}.</Text> : null}
-            {dateNote ? <Note tone="warning">That date was not read, so it was not changed. {DATE_HOW}</Note> : null}
+            <TextField label="Event date" value={dateRefused ?? p.eventDate} onCommit={commitDate} placeholder="2026-12-05" hint="Year first, or the month as a word: 2026-12-05, or Dec 5, 2026. It is also used in the packet’s file name." />
+            {p.eventDate && dateRefused == null ? <Text style={styles.quiet}>Read as {spDateWords(p.eventDate)}.</Text> : null}
+            {dateRefused != null ? <Note tone="warning">That date was not read, so it was not changed{p.eventDate ? ` (it is still ${spDateWords(p.eventDate)})` : ''}. {DATE_HOW}</Note> : null}
             <Fields>
               <TextField label="Load-in" value={p.loadIn} onCommit={(loadIn) => set((d) => (d.loadIn = loadIn))} placeholder="3:00 PM" width="half" />
               <TextField label="Soundcheck" value={p.soundcheck} onCommit={(soundcheck) => set((d) => (d.soundcheck = soundcheck))} placeholder="5:00 PM" width="half" />
               <TextField label="Performance" value={p.performance} onCommit={(performance) => set((d) => (d.performance = performance))} placeholder="9:00 PM" width="half" />
             </Fields>
+            {unreadTimes.length ? <Text style={styles.quiet}>{`Not read as a time: ${unreadTimes.join(', ')}. It is printed as typed. A time reads best as 3:00 PM or 15:00.`}</Text> : null}
           </Section>
 
           <View
@@ -393,13 +401,13 @@ export function SetupArea() {
               <TextField label="Width" value={p.stage.width == null ? '' : String(p.stage.width)} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('width', t, how)} hint="Side to side." />
               <TextField label="Depth" value={p.stage.depth == null ? '' : String(p.stage.depth)} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('depth', t, how)} hint="Front to back." />
             </Fields>
-            {sizeNote ? <Note tone="warning">That size was not understood, so it was not changed. Type a number, like 24 or 7.5.</Note> : null}
+            {sizeSaid ? <Note tone="warning">{sizeSaid}</Note> : null}
             <Choice label="Measured in" value={p.stage.unit} options={UNIT_OPTIONS} onChange={(unit) => set((d) => (d.stage.unit = unit))} hint="Changing the unit does not convert the numbers." />
             <Choice label="These numbers are" value={p.stage.dims} options={DIMS_OPTIONS} onChange={(dims) => set((d) => (d.stage.dims = dims))} />
             <Note>
               {spToScale(p)
                 ? 'The stage is drawn to scale. The symbols on it are not: they show what stands there, not the real size of your equipment. The drawing does not prove that everything fits.'
-                : 'With no width and depth, the stage is drawn in a usual shape and the packet says “Not to scale”.'}
+                : 'Until both the width and the depth are set, the stage is drawn in a usual shape and the packet says “Not to scale”.'}
             </Note>
             <HelpTip
               title="Stage right, stage left, upstage, downstage"

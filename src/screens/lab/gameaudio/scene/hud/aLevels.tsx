@@ -19,8 +19,8 @@ import type { GaState } from '../../model/gaModel';
 import { gaNow } from '../../model/gaStore';
 import type { GaHudProps } from './gaHudTypes';
 import { A_LOOP_SHAPES, aJoinStep } from './aLoopShapes';
-import { A_SYNC_MARK_S, aBeds, aRamping, aBedsSummary, aCats, aCatsSummary, aLevelRows, aLevelSummary, aLevelWord, aNextStart, aPct, type ABed, type ACat } from './aModel';
-import { Bar, HUD, HudFrame, Lamp, Lbl, Rule, Val, barX, hudK, levelTint, useHudNow, type LampState } from './aParts';
+import { A_SYNC_MARK_S, aBeds, aRamping, aBedsSummary, aCats, aCatsSummary, aLevelRows, aLevelSummary, aLevelWord, aNextStart, aPct, type ABed, type ACat, aLegendFit } from './aModel';
+import { Bar, HUD, HUD_VALUE, HudFrame, Lamp, Lbl, Rule, Val, barX, hudK, levelTint, useHudNow, type LampState } from './aParts';
 
 /** The clock for a strip that shows the beds: it runs while they crossfade
  *  (and while `run`), and wakes when a late layer starts. */
@@ -49,7 +49,7 @@ function LevelHud({ w, h, state: s }: GaHudProps) {
       {/* the lab LEVEL: the line it draws across the three bars is named here */}
       <View style={{ width: headW, justifyContent: 'center' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 * k }}>
-          <View style={{ width: 1.5 * k, height: 9 * k, backgroundColor: HUD.value }} />
+          <View style={{ width: 1.5 * k, height: 9 * k, backgroundColor: HUD_VALUE }} />
           <Lbl k={k}>LEVEL</Lbl>
         </View>
         <Val k={k} size={13}>
@@ -73,7 +73,7 @@ function LevelHud({ w, h, state: s }: GaHudProps) {
           </View>
         ))}
         {/* LEVEL, as one line over the three bars: no single sound passes it */}
-        <View style={{ position: 'absolute', left: nameW + Math.round(barX(master, barW)) - 0.75 * k, top: 2 * k, bottom: 2 * k, width: 1.5 * k, backgroundColor: HUD.value }} />
+        <View style={{ position: 'absolute', left: nameW + Math.round(barX(master, barW)) - 0.75 * k, top: 2 * k, bottom: 2 * k, width: 1.5 * k, backgroundColor: HUD_VALUE }} />
       </View>
     </HudFrame>
   );
@@ -151,6 +151,9 @@ const LoopShape = memo(function LoopShape({ asset, w, h }: { asset: string; w: n
     </View>
   );
 });
+
+/** A bed's short name, for a narrow strip (a label may shorten). */
+const A_BED_SHORT: Record<ABed['event'], string> = { bed_yard: 'WIND', bed_room: 'ROOM TONE' };
 
 type BedCols = { name: number; bar: number; val: number; loop: number; join: number; copies: number; gap: number };
 
@@ -236,6 +239,11 @@ function BedsHud({ w, h, state: s }: GaHudProps) {
   const pad = 8 * k;
   const gap = 6 * k;
   const cols: BedCols = { name: 80 * k, bar: 40 * k, val: 36 * k, loop: 0, join: 62 * k, copies: 22 * k, gap };
+  // a narrow phone: the bed names take their short form, so the row fits and
+  // no legend is cut (at 320 wide "COURTYARD WIND" and "LOOP · POSITION" were:
+  // bug test 2026-11-13, B-S2-06)
+  const narrow = w - 2 * pad - cols.name - cols.bar - cols.val - cols.join - cols.copies - 2 * gap < 90 * k;
+  if (narrow) cols.name = 48 * k;
   cols.loop = Math.max(60, w - 2 * pad - cols.name - cols.bar - cols.val - cols.join - cols.copies - 2 * gap);
   const headH = 12 * k;
   const rowH = (h - 2 - headH - 2 * k) / list.length;
@@ -249,7 +257,7 @@ function BedsHud({ w, h, state: s }: GaHudProps) {
           LEVEL
         </Lbl>
         <Lbl k={k} style={{ width: cols.loop, marginLeft: gap }}>
-          LOOP · POSITION
+          {aLegendFit('LOOP · POSITION', 'LOOP', cols.loop, k)}
         </Lbl>
         <Lbl k={k} style={{ marginLeft: gap }}>JOIN</Lbl>
         {/* the last legend is wider than its column: it sits against the right edge */}
@@ -258,7 +266,7 @@ function BedsHud({ w, h, state: s }: GaHudProps) {
         </View>
       </View>
       {list.map((b) => (
-        <BedRow key={b.event} k={k} b={b} cols={cols} h={rowH} />
+        <BedRow key={b.event} k={k} b={narrow ? { ...b, name: A_BED_SHORT[b.event] } : b} cols={cols} h={rowH} />
       ))}
     </HudFrame>
   );

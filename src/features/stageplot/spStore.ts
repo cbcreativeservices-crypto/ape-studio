@@ -129,7 +129,24 @@ export function spProjectName(p: Pick<SpProject, 'band' | 'title'>): string {
   return band || title || 'Untitled stage plot';
 }
 
-const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+/** The words read as a month: the full name or its usual short form (a
+ *  period after it is allowed). Nothing else: "Junk 5 2026" is not June 5. */
+const MONTH_WORDS_READ: readonly (readonly string[])[] = [
+  ['jan', 'january'],
+  ['feb', 'february'],
+  ['mar', 'march'],
+  ['apr', 'april'],
+  ['may'],
+  ['jun', 'june'],
+  ['jul', 'july'],
+  ['aug', 'august'],
+  ['sep', 'sept', 'september'],
+  ['oct', 'october'],
+  ['nov', 'november'],
+  ['dec', 'december'],
+];
+/** 1…12, or 0 when the word is not a month. */
+const monthOf = (word: string): number => MONTH_WORDS_READ.findIndex((names) => names.includes(word)) + 1;
 
 /**
  * An event date as typed → the stored form, an ISO day (YYYY-MM-DD).
@@ -151,13 +168,40 @@ export function spDayFromText(text: string): string | null {
   let d = 0;
   let hit: RegExpExecArray | null;
   if ((hit = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(t))) [y, m, d] = [Number(hit[1]), Number(hit[2]), Number(hit[3])];
-  else if ((hit = /^([a-z]{3,9})\.? (\d{1,2})(?:st|nd|rd|th)? (\d{4})$/.exec(t))) [m, d, y] = [MONTH_NAMES.indexOf(hit[1].slice(0, 3)) + 1, Number(hit[2]), Number(hit[3])];
-  else if ((hit = /^(\d{1,2})(?:st|nd|rd|th)? ([a-z]{3,9})\.? (\d{4})$/.exec(t))) [d, m, y] = [Number(hit[1]), MONTH_NAMES.indexOf(hit[2].slice(0, 3)) + 1, Number(hit[3])];
+  else if ((hit = /^([a-z]{3,9})\.? (\d{1,2})(?:st|nd|rd|th)? (\d{4})$/.exec(t))) [m, d, y] = [monthOf(hit[1]), Number(hit[2]), Number(hit[3])];
+  else if ((hit = /^(\d{1,2})(?:st|nd|rd|th)? ([a-z]{3,9})\.? (\d{4})$/.exec(t))) [d, m, y] = [Number(hit[1]), monthOf(hit[2]), Number(hit[3])];
   else return null;
   if (m < 1 || m > 12 || d < 1 || y < 1900 || y > 2200) return null;
   const real = new Date(Date.UTC(y, m - 1, d));
   if (real.getUTCFullYear() !== y || real.getUTCMonth() !== m - 1 || real.getUTCDate() !== d) return null;
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
+/** A stage size as typed: a number above zero, with a period or a comma.
+ *  '' = no size (null). 'unread' = not a number; 'zero' and 'big' = a
+ *  number out of range, each said in its own words. */
+export function spStageSizeFromText(text: string): number | null | 'unread' | 'zero' | 'big' {
+  const t = text.trim();
+  if (!t) return null;
+  if (!/^\d+([.,]\d+)?$/.test(t)) return 'unread';
+  const n = Number(t.replace(',', '.'));
+  if (!Number.isFinite(n)) return 'unread';
+  if (n <= 0) return 'zero';
+  if (n > 1000) return 'big';
+  return Math.round(n * 100) / 100;
+}
+/** A time as most people type one: "9", "9 PM", "9:30", "21:30", "9:30 p.m.".
+ *  Anything else is kept as typed (a time can be "after the opener"), and
+ *  the field says it was not read as a time. */
+export function spLooksLikeTime(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  if (!t) return true;
+  const hit = /^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?$/.exec(t);
+  if (!hit) return false;
+  const h = Number(hit[1]);
+  const m = hit[2] == null ? 0 : Number(hit[2]);
+  if (m > 59) return false;
+  return hit[3] ? h >= 1 && h <= 12 : h <= 23;
 }
 
 const MONTH_WORDS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

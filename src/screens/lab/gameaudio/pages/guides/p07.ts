@@ -18,7 +18,7 @@ export const G07: ScreenGuide = {
     'SPEED 1 and SPEED 2 each set one generator’s speed, from 0 to 100%. SPEED 2 is locked until a second generator is in the scene.',
     'GENERATORS opens a tray. GENERATOR 1 and GENERATOR 2 each switch one generator on or off; the chip shows ON or OFF.',
     'ADD GENERATOR 2 places the second generator. REMOVE GENERATOR 2 takes it out of the scene.',
-    'Under WHEN A GENERATOR IS REMOVED, choose STOP ITS LOOP or LEAVE IT PLAYING. A ✓ marks the rule in use.',
+    'Under WHEN A GENERATOR IS REMOVED, choose STOP ITS LOOP or LEAVE IT PLAYING. A ✓ marks the rule in use. While a fault you started has not shown itself, the row reads ? instead.',
   ],
   changes: [
     'Each start prints the same event name in the log again and adds 1 to PLAYING.',

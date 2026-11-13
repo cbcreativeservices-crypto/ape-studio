@@ -220,7 +220,9 @@ function Editor({ onClose }: { onClose: () => void }) {
   // The header has two lines at most, so it carries the band's name only; the
   // title is in Setup. With no band name yet, whatever name the plot has.
   // A gig copy says so in the header, in every area: it is not the master.
-  const headerName = `${p.band.trim() || spProjectName(p)}${p.kind === 'gig' ? ' · gig copy' : ''}`;
+  // A DUPLICATE says so too (its title ends "(copy)"), so it is not taken
+  // for the plot it was copied from (bug test S3-05).
+  const headerName = `${p.band.trim() || spProjectName(p)}${p.kind === 'gig' ? ' · gig copy' : /\(copy\)$/i.test(p.title.trim()) ? ' · copy' : ''}`;
   // One word in the bar, so it is never cut at a phone's width; the full
   // words ("Ready to advance") are under Status in Setup and are what a
   // screen reader hears.

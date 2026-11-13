@@ -52,8 +52,9 @@ import {
   type AChainLane,
   type ASync,
   type ATake,
+  aLegendFit,
 } from './aModel';
-import { Bar, Gauge, HUD, HudFrame, Lamp, Lbl, Rule, Val, barX, hudK, useHudNow, type LampState } from './aParts';
+import { Bar, Gauge, HUD, HUD_VALUE, HudFrame, Lamp, Lbl, Rule, Val, barX, hudK, useHudNow, type LampState } from './aParts';
 
 /* ── chain (page 6) ─────────────────────────────────────────────────────── */
 
@@ -86,7 +87,7 @@ function VoiceLane({ k, w, h, lane, held }: { k: number; w: number; h: number; l
               width: Math.max(1.5 * k, x(lane.delayS + lane.playedS) - x(lane.delayS)),
               backgroundColor: v === 'playing' && !held ? HUD.value : 'transparent',
               borderWidth: v === 'playing' && !held ? 0 : 1,
-              borderColor: HUD.value,
+              borderColor: HUD_VALUE,
             }}
           />
         ) : null}
@@ -226,14 +227,14 @@ function ChainHud({ w, h, state: s }: GaHudProps) {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View>
               <Bar w={outBar} h={6 * k} level={c?.out ?? 0} />
-              <View style={{ position: 'absolute', left: Math.round(barX(master, outBar)) - 0.75 * k, top: -2 * k, bottom: -2 * k, width: 1.5 * k, backgroundColor: HUD.value }} />
+              <View style={{ position: 'absolute', left: Math.round(barX(master, outBar)) - 0.75 * k, top: -2 * k, bottom: -2 * k, width: 1.5 * k, backgroundColor: HUD_VALUE }} />
             </View>
             <Val k={k} color={live ? HUD.value : HUD.idle} style={{ width: 36 * k, textAlign: 'right' }}>
               {live ? aLevelWord(c?.out ?? 0) : held ? 'ENDED' : 'OFF'}
             </Val>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 * k }}>
-            <View style={{ width: 1.5 * k, height: 8 * k, backgroundColor: HUD.value }} />
+            <View style={{ width: 1.5 * k, height: 8 * k, backgroundColor: HUD_VALUE }} />
             <Lbl k={k}>{`LEVEL ${aPct(master)}`}</Lbl>
           </View>
         </View>
@@ -285,6 +286,10 @@ function SyncHud({ w, h, state: s }: GaHudProps) {
   const gap = 7 * k;
   const cellW = Math.floor((w - 2 * pad - 3 * (2 * gap + 1)) / 4);
   const t = y.trigger;
+  // a legend that would be cut in a narrow cell takes its short form (at
+  // 320 wide "GENERATOR 1 · OFF" was cut: bug test 2026-11-13, B-S2-06; the
+  // lab's short name GEN 1 is the dock key's own)
+  const fit = (long: string, short: string): string => aLegendFit(long, short, cellW, k);
   const who = (name: string) => (
     <Lbl k={k} style={{ width: 34 * k }}>
       {name}
@@ -293,7 +298,7 @@ function SyncHud({ w, h, state: s }: GaHudProps) {
   return (
     <HudFrame w={w} h={h} label={aSyncSummary(y)} style={{ flexDirection: 'row', alignItems: 'stretch', paddingHorizontal: pad }}>
       <SyncCell k={k} w={cellW} kind="TRIGGER" mark={mark(t?.t)}>
-        <Lbl k={k}>{t ? `FROM ${t.from}` : 'NONE SENT YET'}</Lbl>
+        <Lbl k={k}>{t ? `FROM ${t.from}` : fit('NONE SENT YET', 'NONE YET')}</Lbl>
         <Val k={k} color={t ? HUD.value : HUD.idle}>
           {t ? t.what : '—'}
         </Val>
@@ -311,7 +316,7 @@ function SyncHud({ w, h, state: s }: GaHudProps) {
       </SyncCell>
       <Rule k={k} style={{ marginHorizontal: gap }} />
       <SyncCell k={k} w={cellW} kind="PARAMETER" mark={mark(y.speedAt)}>
-        <Lbl k={k}>{y.running ? 'GENERATOR 1' : 'GENERATOR 1 · OFF'}</Lbl>
+        <Lbl k={k}>{y.running ? fit('GENERATOR 1', 'GEN 1') : fit('GENERATOR 1 · OFF', 'GEN 1 · OFF')}</Lbl>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 * k }}>
           {/* a speed is not a level: one flat color, never the loudness ramp */}
           <Gauge w={cellW - 30 * k} h={6 * k} value={y.speed} color={y.running ? HUD.value : HUD.idle} hollow={!y.running} />

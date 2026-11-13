@@ -27,7 +27,7 @@ import { spRemoveMix, spUpdateMix } from '../../../../features/stageplot/spModel
 import type { SpId, SpMix } from '../../../../features/stageplot/spTypes';
 import { RemoveStep } from '../inputs/bits';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, MoreDetails, Note, TextField } from '../spForm';
+import { Button, Choice, FocusMark, MoreDetails, Note, TextField } from '../spForm';
 import { ButtonRow, ChipRow, FieldLabel, Line, SubHeading, ToggleChip } from './bits';
 import {
   SPM_DELIVERY_HINT,
@@ -145,7 +145,7 @@ export function NewMixBody({ recipients, onClose, onAdded }: { recipients: SpId[
       <Choice label="How it is delivered" value={draft.delivery} options={SPM_DELIVERY_OPTIONS} onChange={(delivery) => setDraft((d) => ({ ...d, delivery }))} hint={SPM_DELIVERY_HINT} />
       <Choice label="Who creates this mix" value={draft.provider} options={SPM_PROVIDER_OPTIONS} onChange={(provider) => setDraft((d) => ({ ...d, provider }))} hint={SPM_PROVIDER_HINT} />
       {spmOffHouse(draft) ? (
-        <Choice label="What the venue provides for it" value={draft.venueFeed} options={SPM_FEED_OPTIONS} onChange={(venueFeed) => setDraft((d) => ({ ...d, venueFeed }))} hint={`${spmFeedWhy(draft.provider)}\n${SPM_FEED_HINT}`} />
+        <Choice label="What is requested from the venue" value={draft.venueFeed} options={SPM_FEED_OPTIONS} onChange={(venueFeed) => setDraft((d) => ({ ...d, venueFeed }))} hint={`${spmFeedWhy(draft.provider)}\n${SPM_FEED_HINT}`} />
       ) : null}
       {draft.provider === 'personal-mixer' ? <Note>{SPM_PERSONAL_MIXER_NOTE}</Note> : null}
 
@@ -222,8 +222,14 @@ export function MixBody({
         }}
       />
       <Choice label="Mono or stereo" value={mix.format} options={SPM_FORMAT_OPTIONS} onChange={(format) => set({ format })} />
-      <Choice label="Who creates this mix" value={mix.provider} options={SPM_PROVIDER_OPTIONS} onChange={(provider) => set({ provider })} hint={SPM_PROVIDER_HINT} />
-      {spmOffHouse(mix) ? <Choice label="What the venue provides for it" value={mix.venueFeed} options={SPM_FEED_OPTIONS} onChange={(venueFeed) => set({ venueFeed })} hint={`${spmFeedWhy(mix.provider)}\n${SPM_FEED_HINT}`} /> : null}
+      <FocusMark k="provider">
+        <Choice label="Who creates this mix" value={mix.provider} options={SPM_PROVIDER_OPTIONS} onChange={(provider) => set({ provider })} hint={SPM_PROVIDER_HINT} />
+      </FocusMark>
+      {spmOffHouse(mix) ? (
+        <FocusMark k="venueFeed">
+          <Choice label="What is requested from the venue" value={mix.venueFeed} options={SPM_FEED_OPTIONS} onChange={(venueFeed) => set({ venueFeed })} hint={`${spmFeedWhy(mix.provider)}\n${SPM_FEED_HINT}`} />
+        </FocusMark>
+      ) : null}
       {mix.provider === 'personal-mixer' ? <Note>{SPM_PERSONAL_MIXER_NOTE}</Note> : null}
       <Choice label="How it is delivered" value={mix.delivery} options={SPM_DELIVERY_OPTIONS} onChange={(delivery) => set({ delivery })} hint={SPM_DELIVERY_HINT} />
 
@@ -262,14 +268,16 @@ export function MixBody({
       ))}
       <Button label="WHAT THIS MIX NEEDS TO HEAR" onPress={() => onNeeds(id)} a11yLabel={`Choose what ${title} needs to hear`} />
 
-      <MoreDetails initiallyOpen={shareOpen}>
-        <TextField
-          label="Requested output channels or sockets"
-          value={mix.outputs}
-          onCommit={(outputs) => set({ outputs })}
-          placeholder="Only if you know them"
-          hint="In your own words. This is separate from the mix label. It is also where you say how the feed reaches several devices."
-        />
+      <MoreDetails initiallyOpen={shareOpen} focusKeys={['outputs']}>
+        <FocusMark k="outputs">
+          <TextField
+            label="Requested output channels or sockets"
+            value={mix.outputs}
+            onCommit={(outputs) => set({ outputs })}
+            placeholder="Only if you know them"
+            hint="In your own words. This is separate from the mix label. It is also where you say how the feed reaches several devices."
+          />
+        </FocusMark>
         <View style={styles.field}>
           <FieldLabel>Short instructions</FieldLabel>
           <ChipRow>

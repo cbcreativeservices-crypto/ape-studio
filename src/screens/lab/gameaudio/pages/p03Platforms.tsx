@@ -74,7 +74,9 @@ function setBudget(id: GaBudgetId): void {
   if (gaGet().voiceLimit !== GA_BUDGETS[id]) gaDispatch({ type: 'voiceLimit', limit: GA_BUDGETS[id] });
 }
 
-const budgetText = (id: GaBudgetId): string => `${GA_BUDGET_WORD[id]} BUDGET · ${GA_BUDGETS[id]} VOICES AT MOST`;
+// the lane's caption: at 320 wide "EXPANDED BUDGET · 16 VOICES AT MOST" was cut
+// (bug test 2026-11-13, B-S2-06); the key above it already says BUDGET
+const budgetText = (id: GaBudgetId): string => `${GA_BUDGET_WORD[id]} · ${GA_BUDGETS[id]} VOICES AT MOST`;
 
 /** BUDGET: a slider with two positions. COMPACT is its left half, EXPANDED
  *  its right half. It is this page's teaching control: it moves by itself,

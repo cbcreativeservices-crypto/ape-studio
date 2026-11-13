@@ -256,7 +256,7 @@ export function ProjectLibrary({ onOpen }: { onOpen: (project: SpProject, saveSt
               </Text>
               <View style={styles.rowButtons}>
                 <Button label="OPEN" tone="primary" onPress={() => onOpen(p, state)} a11yLabel={`Open ${spProjectName(p)}`} />
-                <Button label="MORE" onPress={() => openMenu(p)} a11yLabel={`More for ${spProjectName(p)}: rename, duplicate, delete`} />
+                <Button label="MORE" onPress={() => openMenu(p)} a11yLabel={`More for ${spProjectName(p)}${p.kind === 'gig' ? ' (gig copy)' : ''}: rename, duplicate, delete`} />
               </View>
             </RowCard>
           );

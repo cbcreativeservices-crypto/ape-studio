@@ -50,7 +50,7 @@ import {
 } from '../../../../features/stageplot/spModel';
 import type { SpAudience, SpCapture, SpDestination, SpId, SpInput, SpPatchId, SpPhantom, SpPriority, SpStand, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, Fields, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
+import { Button, Choice, Fields, FocusMark, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
 import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber } from './inputsLogic';
 
@@ -230,6 +230,7 @@ export function InputEditor({
       />
       <Choice label="Stand or mount" value={input.stand} options={STAND} onChange={(stand) => (stand === input.stand ? undefined : set({ stand }))} />
       {input.stand === 'custom' ? <TextField label="Describe the stand or mount" value={input.standNote} onCommit={text('standNote')} /> : null}
+      <FocusMark k="supplier">
       {diDevice ? (
         <View style={bitStyles.gap}>
           <SubTitle>Who brings it</SubTitle>
@@ -247,7 +248,10 @@ export function InputEditor({
           hint="The microphone, DI or receiver for this input. The stand can have its own answer under MORE DETAILS."
         />
       )}
-      <Choice label="Who hears it" value={input.audience} options={AUDIENCE} onChange={(audience) => (audience === input.audience ? undefined : set({ audience }))} />
+      </FocusMark>
+      <FocusMark k="audience">
+        <Choice label="Who hears it" value={input.audience} options={AUDIENCE} onChange={(audience) => (audience === input.audience ? undefined : set({ audience }))} />
+      </FocusMark>
 
       <View style={bitStyles.gap}>
         <SubTitle>On the stage</SubTitle>
@@ -295,11 +299,12 @@ export function InputEditor({
         </View>
       ) : null}
 
-      <MoreDetails title="More details">
+      <MoreDetails title="More details" focusKeys={['di', 'standSupplier', 'phantom', 'destination']}>
         <Choice label="How firm is the equipment choice" value={input.priority} options={PRIORITY} onChange={(priority) => (priority === input.priority ? undefined : set({ priority }))} hint="Preferred: you would like it. Required: the show needs it. Flexible: anything suitable." />
         <TextField label="Acceptable alternatives" value={input.alternatives} onCommit={text('alternatives')} hint="In your own words. An alternative is not counted as extra equipment, and the tool does not claim two models are the same." />
         {input.capture === 'di' ? (
           p.diDevices.length ? (
+            <FocusMark k="di">
             <Choice
               label="DI device for this input"
               value={input.diDeviceId ?? ''}
@@ -307,8 +312,11 @@ export function InputEditor({
               onChange={(v) => (v === (input.diDeviceId ?? '') ? undefined : ed.apply((q) => spAssignDi(q, inputId, v || null)))}
               hint="A DI channel is one input. A DI device carries it: a mono device carries one DI channel, a stereo device two."
             />
+            </FocusMark>
           ) : (
+            <FocusMark k="di">
             <Note>No DI device (DI box) is listed yet. Add one under DI DEVICES, or leave it: the packet then says this DI channel has no DI device yet.</Note>
+            </FocusMark>
           )
         ) : null}
         <Fields>
@@ -317,10 +325,15 @@ export function InputEditor({
         </Fields>
         <TextField label="Adapter or interface note" value={input.adapterNote} onCommit={text('adapterNote')} />
         {input.stand !== 'none' ? (
-          <Choice label="Who brings the stand" value={input.standSupplier} options={SUPPLIER} onChange={(standSupplier) => (standSupplier === input.standSupplier ? undefined : set({ standSupplier }))} />
+          <FocusMark k="standSupplier">
+            <Choice label="Who brings the stand" value={input.standSupplier} options={SUPPLIER} onChange={(standSupplier) => (standSupplier === input.standSupplier ? undefined : set({ standSupplier }))} />
+          </FocusMark>
         ) : null}
         {input.stand !== 'none' && input.stand !== 'custom' ? <TextField label="Stand note" value={input.standNote} onCommit={text('standNote')} /> : null}
-        <Choice label="Phantom power for this device" value={input.phantom} options={PHANTOM} onChange={(phantom) => (phantom === input.phantom ? undefined : set({ phantom }))} hint={SP_PHANTOM_HINT} />
+        <FocusMark k="phantom">
+          <Choice label="Phantom power for this device" value={input.phantom} options={PHANTOM} onChange={(phantom) => (phantom === input.phantom ? undefined : set({ phantom }))} hint={SP_PHANTOM_HINT} />
+        </FocusMark>
+        <FocusMark k="destination">
         <Choice
           label="Where it goes"
           value={input.destination}
@@ -328,6 +341,7 @@ export function InputEditor({
           onChange={(destination) => (destination === input.destination ? undefined : set({ destination }))}
           hint="An input that also feeds the band monitor rig gets a second channel number in that list."
         />
+        </FocusMark>
         {input.destination === 'both' || input.destination === 'custom' ? (
           <TextField
             label={input.destination === 'both' ? 'How the split is made' : 'Describe where it goes'}

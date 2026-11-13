@@ -18,12 +18,12 @@
  *
  * Pure.
  */
-import { SP_DEVICE_WORD } from './spCatalog.ts';
+import { SP_DEVICE_WORD, SP_NEED_WORD } from './spCatalog.ts';
 import { spDiTotals, spSummary } from './spDerive.ts';
 import { spBrokenRefs, spObjectOfSource, spOnStage, spPartner, spPatch } from './spModel.ts';
 
 const hasText = (s: string): boolean => s.trim().length > 0;
-import type { SpId, SpObjectKind, SpPatchId, SpProject } from './spTypes.ts';
+import type { SpId, SpMix, SpObjectKind, SpPatchId, SpProject } from './spTypes.ts';
 
 export type SpIssueLevel = 'block' | 'ask' | 'open';
 export type SpArea = 'setup' | 'stage' | 'inputs' | 'monitors' | 'export';
@@ -46,6 +46,7 @@ export type SpIssueAction =
   | 'mark-no-monitor'
   | 'object-offstage-ok'
   | 'renumber'
+  | 'unreserve'
   | 'cue-audience-ok'
   | 'edit';
 
@@ -62,12 +63,37 @@ export type SpIssue = {
   area: SpArea;
   target: { kind: 'input' | 'source' | 'performer' | 'mix' | 'device' | 'object' | 'di' | 'extra' | 'patch' | 'project'; id: SpId | null; patchId?: SpPatchId };
   actions: SpIssueAction[];
+  /** The field that answers it, when it is one field of the row (GO TO
+   *  scrolls the popup to it). */
+  field?: string;
 };
 
 /** Icons that stand for something that normally makes sound. */
 const SOUND_KINDS: readonly SpObjectKind[] = ['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'vocal-mic'];
 /** Icons that stand for a monitor device. */
 const MONITOR_KINDS: readonly SpObjectKind[] = ['wedge', 'iem', 'drum-fill', 'sidefill'];
+
+/** "Own vocal prominent" / "Own instrument prominent", and the mix's own
+ *  list of what it needs keeps those inputs OUT (Must exclude or Not needed,
+ *  with none of them asked for). The inputs are the recipients' own: their
+ *  vocals, or the rest of what they play. Pure; the Monitors card and the
+ *  review both read it. */
+export function spOwnClashes(p: SpProject, m: SpMix): { instruction: string; labels: string[] }[] {
+  const out: { instruction: string; labels: string[] }[] = [];
+  const own = (vocal: boolean) =>
+    p.inputs.filter((i) => {
+      const s = p.sources.find((x) => x.id === i.sourceId);
+      return !!s && !!s.performerId && m.recipients.includes(s.performerId) && (s.category === 'vocals') === vocal && !i.cue;
+    });
+  for (const [instruction, vocal] of [['Own vocal prominent', true], ['Own instrument prominent', false]] as const) {
+    if (!m.instructions.includes(instruction)) continue;
+    const mine = own(vocal);
+    const kept = mine.filter((i) => m.needs[i.id] === 'exclude' || m.needs[i.id] === 'not-needed');
+    const wanted = mine.some((i) => m.needs[i.id] === 'primary' || m.needs[i.id] === 'supporting');
+    if (kept.length && !wanted) out.push({ instruction, labels: kept.map((i) => `${i.label} (${SP_NEED_WORD[m.needs[i.id]]})`) });
+  }
+  return out;
+}
 
 export function spReview(p: SpProject): SpIssue[] {
   const out: SpIssue[] = [];
@@ -106,7 +132,9 @@ export function spReview(p: SpProject): SpIssue[] {
   {
     const c = p.contact;
     const named = c.show.name && hasText(c.name);
-    const reachable = (c.show.phone && hasText(c.phone)) || (c.show.email && hasText(c.email));
+    // an email counts only when it looks like one (the same test as the
+    // Setup field's warning): "ana-at-example" reaches nobody
+    const reachable = (c.show.phone && hasText(c.phone)) || (c.show.email && c.email.trim().includes('@'));
     if ((p.performers.length || p.inputs.length) && (!named || !reachable)) {
       add({ key: 'contact', rule: 'no-contact', level: 'ask', text: 'The packet shows no technical contact with a phone number or an email. The venue’s engineer has nobody to ask.', packetText: 'No technical contact is listed for this band.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
     }
@@ -125,6 +153,14 @@ export function spReview(p: SpProject): SpIssue[] {
       if (ids.length < 2) continue;
       const names = ids.map((id) => p.inputs.find((i) => i.id === id)?.label ?? '?').join(' and ');
       add({ key: `dup:${patch.id}:${n}`, rule: 'duplicate-channel', level: 'block', text: `${patch.name}: channel ${n} is given to ${names}. Give each its own number.`, area: 'inputs', target: { kind: 'patch', id: ids[0], patchId: patch.id }, actions: ['renumber', 'edit'] });
+    }
+    // an input on a channel the band keeps free: the packet cannot say both,
+    // so it must be settled before "Ready to advance" (like a duplicate)
+    for (const id of patch.order) {
+      const n = patch.numbers[id];
+      if (n == null || !patch.reserved.includes(n)) continue;
+      const name = p.inputs.find((i) => i.id === id)?.label ?? 'An input';
+      add({ key: `reserved:${patch.id}:${id}`, rule: 'reserved-channel-used', level: 'block', text: `${patch.name}: channel ${n} is kept free on purpose, and ${name} is on it. Give ${name} another number, or stop keeping channel ${n} free.`, area: 'inputs', target: { kind: 'input', id, patchId: patch.id }, actions: ['renumber', 'unreserve', 'edit'] });
     }
     // the same venue channel or socket written for two inputs of one system
     const byVenue = new Map<string, SpId[]>();
@@ -212,6 +248,14 @@ export function spReview(p: SpProject): SpIssue[] {
     }
   }
 
+  // a mix that asks for its own vocal or instrument and keeps it out
+  for (const m of p.mixes) {
+    const name = m.code + (m.name ? ' ' + m.name : '');
+    for (const c of spOwnClashes(p, m)) {
+      add({ key: `own:${m.id}:${c.instruction}`, rule: 'own-clash', level: 'ask', text: `${name} says “${c.instruction}”, and its list of what it needs keeps ${c.labels.join(', ')} out. Which is right?`, area: 'monitors', target: { kind: 'mix', id: m.id }, actions: ['edit'] });
+    }
+  }
+
   for (const d of p.devices) {
     if (d.mixId || d.selfContained) continue;
     add({ key: `devmix:${d.id}`, rule: 'device-no-mix', level: 'ask', text: `${d.label || SP_DEVICE_WORD[d.type]} is not on any mix.`, area: 'monitors', target: { kind: 'device', id: d.id }, actions: ['assign-mix', 'mark-self-contained-device'] });
@@ -249,7 +293,7 @@ export function spReview(p: SpProject): SpIssue[] {
   // every "to be confirmed": kept, and printed as unresolved
   for (const o of spSummary(p).openItems) {
     const area: SpArea = o.kind === 'mix' || o.kind === 'device' ? 'monitors' : 'inputs';
-    add({ key: `open:${o.kind}:${o.id}:${o.text}`, rule: 'to-be-confirmed', level: 'open', text: `${o.text}.`, area, target: { kind: o.kind, id: o.id }, actions: ['edit'] });
+    add({ key: `open:${o.kind}:${o.id}:${o.text}`, rule: 'to-be-confirmed', level: 'open', text: `${o.text}.`, area, target: { kind: o.kind, id: o.id }, actions: ['edit'], field: o.field });
   }
   return out;
 }
@@ -293,7 +337,12 @@ export type SpGuidedStep = { id: 'performers' | 'sources' | 'monitors' | 'review
 export function spGuidedSteps(p: SpProject, exported: boolean): SpGuidedStep[] {
   const issues = spReview(p);
   const placed = p.performers.length > 0 && p.performers.every((pf) => p.objects.some((o) => o.performerId === pf.id));
-  const sources = p.inputs.length > 0 && p.sources.every((s) => s.connection === 'none' || p.inputs.some((i) => i.sourceId === s.id));
+  // every source has its inputs, AND every performer has something listed
+  // (a source with no sound system connection is an answer: acoustic)
+  const sources =
+    p.inputs.length > 0 &&
+    p.sources.every((s) => s.connection === 'none' || p.inputs.some((i) => i.sourceId === s.id)) &&
+    p.performers.every((pf) => p.sources.some((s) => s.performerId === pf.id));
   const monitors = p.performers.length > 0 && p.performers.every((pf) => pf.noMonitor === true || p.mixes.some((m) => m.recipients.includes(pf.id)) || p.devices.some((d) => d.performerId === pf.id && d.selfContained));
   const reviewed = placed && sources && monitors && !issues.some((i) => i.level !== 'open');
   return [

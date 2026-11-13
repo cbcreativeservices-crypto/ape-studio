@@ -524,10 +524,21 @@ describe('G — music requests', () => {
     const first = (r.cmds.find((c) => c.t === 'music' && c.op === 'layers') as { req: string }).req;
     r = run(r.s, { type: 'mood', mood: 'calm' });
     assert.ok(r.cmds.some((c) => c.t === 'music' && c.op === 'cancel' && c.req === first));
-    const second = (r.cmds.find((c) => c.t === 'music' && c.op === 'layers') as { req: string }).req;
+    // CALM is what sounds now: the waiting change is withdrawn and nothing new
+    // is queued (bug test 2026-11-13, pages 12–22 B-14)
+    assert.ok(!r.cmds.some((c) => c.t === 'music' && c.op === 'layers'));
+    assert.equal(r.s.music.pending, null);
+    assert.equal(gaFact(r.s, 'musicNoChange'), 1);
     r = run(r.s, { type: 'engine', evt: { e: 'music', what: 'applied', req: first, at: 1 } });
     assert.equal(gaFact(r.s, 'musicApplied'), 0, 'a late report for the withdrawn request changes nothing');
-    assert.equal(r.s.music.pending?.req, second);
+    assert.equal(r.s.music.pending, null);
+  });
+  it('B-14: a request is worded by what really changes: with DRIVE sounding, ALERT adds PULSE only', () => {
+    let s = run(playing().s, { type: 'musicLayer', layer: 'drive', on: true }).s;
+    s = run(s, { type: 'engine', evt: { e: 'music', what: 'applied', req: s.music.pending!.req, at: 1 } }).s;
+    s = run(s, { type: 'mood', mood: 'alert' }).s;
+    assert.equal(s.music.pending!.what, 'add PULSE');
+    assert.ok(texts(s).some((t) => t === 'Add PULSE: QUEUED for the next bar'), texts(s).join(' | '));
   });
   it('with sound off a request still WAITS for its bar in scene time, can be withdrawn, and is applied unheard', () => {
     let s = gaReduce(gaInitial(), { type: 'musicStart' }, 100).state;
@@ -538,11 +549,13 @@ describe('G — music requests', () => {
     const first = r.state.music.pending!.req;
     r = gaReduce(r.state, { type: 'mood', mood: 'calm' }, 103.6);
     assert.equal(gaFact(r.state, 'musicWithdrawn'), 1);
-    const second = r.state.music.pending!.req;
-    assert.notEqual(second, first);
+    assert.equal(r.state.music.pending, null, 'CALM is what sounds: nothing new waits (B-14)');
     s = gaReduce(r.state, { type: 'engine', evt: { e: 'music', what: 'applied', req: first, at: 0 } }, 105).state;
     assert.equal(gaFact(s, 'musicApplied'), 0, 'the withdrawn request is never applied');
-    s = gaReduce(s, { type: 'engine', evt: { e: 'music', what: 'applied', req: second, at: 0 } }, 105).state;
+    s = gaReduce(s, { type: 'mood', mood: 'alert' }, 105.2).state;
+    const second = s.music.pending!.req;
+    assert.notEqual(second, first);
+    s = gaReduce(s, { type: 'engine', evt: { e: 'music', what: 'applied', req: second, at: 0 } }, 106).state;
     assert.equal(gaFact(s, 'musicApplied'), 1);
     assert.ok(texts(s).some((t) => t.includes('APPLIED exactly on the bar line (not heard: sound is off)')));
     // asked for "now", nothing waits
@@ -1013,7 +1026,7 @@ describe('audit 2 — the log is the instrument (L-02, L-03, L-25, W1 F07, F20)'
     has(/^Generator · hum → EFFECTS bus$/);
     has(/^Interface: not allowed · cue → INTERFACE bus$/);
     has(/^MOOD = ALERT \(a global state/);
-    has(/^BUS EFFECTS: -6 dB$/);
+    has(/^BUS EFFECTS: −6 dB$/);
     has(/^BUS INTERFACE: 0 dB, MUTED$/);
     has(/^BUDGET: at most 4 voices may sound at the same time$/);
     has(/^SETTING courtyard wind file: RAW CUT$/);
@@ -1044,7 +1057,7 @@ describe('audit 2 — the log is the instrument (L-02, L-03, L-25, W1 F07, F20)'
     // and a bus fader drag is one line too
     let m = on();
     for (let k = 1; k <= 8; k++) m = run(m, { type: 'bus', bus: 'music', db: -k }).s;
-    assert.deepEqual(texts(m), ['BUS MUSIC: -8 dB']);
+    assert.deepEqual(texts(m), ['BUS MUSIC: −8 dB']);
     m = run(m, { type: 'bus', bus: 'music', mute: true }).s;
     assert.equal(m.log.length, 2, 'a MUTE is its own line');
   });

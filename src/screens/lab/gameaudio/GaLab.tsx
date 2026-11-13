@@ -31,7 +31,7 @@ import { GaEngineHost } from './engine/GaEngineHost';
 import { useGaSound, type GaSoundState } from './engine/useGaSound';
 import { gaVoiceCount, type GaState } from './model/gaModel';
 import { gaBindEngine, gaCloseScene, gaDispatch, useGa } from './model/gaStore';
-import { gaCount } from './bitsLogic';
+import { gaCount, gaFitReadouts, type GaReadout } from './bitsLogic';
 import { GA_SCENE_ASPECT, GaScene, type GaSceneSelect, type GaSceneShow } from './scene/GaScene';
 import { GA_GLASS_PAD, GA_SPLIT_ASPECT, gaGlassSplit } from './scene/gaSceneLogic';
 import { GA_HUDS, GA_HUD_H, type GaHudId } from './scene/hud';
@@ -65,8 +65,30 @@ export function useGaLab(): GaLabApi {
 export const GA_CORE_ASSETS = ['door', 'door_rattle', 'gen_hum', 'gen_air', 'ir_room'] as const;
 
 export function GaLabProvider({ children }: { children: ReactNode }) {
-  const session = useGaSound(() => gaDispatch({ type: 'stopAll' }));
-  const { engine, ensure, enable, stopAll, disable, sound } = session;
+  // The session calls back for THREE stops: ■ STOP / SOUND off asked HERE
+  // (`own` is set around those calls), and the app-wide safety stop when the
+  // learner leaves the app. The last one is the app's, not the game's: the
+  // log says so, once (bug test 2026-11-13, B-S3-01: "GAME · STOP ALL"
+  // printed twice when the app was hidden).
+  const own = useRef(false);
+  const session = useGaSound(() => gaDispatch(own.current ? { type: 'stopAll' } : { type: 'stopAll', why: 'app' }));
+  const { engine, ensure, enable, stopAll: sessionStop, disable: sessionDisable, sound } = session;
+  const stopAll = useCallback(() => {
+    own.current = true;
+    try {
+      sessionStop();
+    } finally {
+      own.current = false;
+    }
+  }, [sessionStop]);
+  const disable = useCallback(() => {
+    own.current = true;
+    try {
+      sessionDisable();
+    } finally {
+      own.current = false;
+    }
+  }, [sessionDisable]);
 
   useEffect(() => gaBindEngine(engine, ensure), [engine, ensure]);
   useEffect(() => {
@@ -129,8 +151,9 @@ export type GaRackSpec = {
   keys: DockParam[];
   /** The fader the lane binds when the page opens: its teaching control. */
   initialParam: string;
-  /** Up to two page readouts, shown before the standard three. */
-  readouts?: BezelItem[];
+  /** Up to two page readouts, shown before the standard three. A readout
+   *  may name a shorter key for a narrow phone (bitsLogic `gaFitReadouts`). */
+  readouts?: (BezelItem & Pick<GaReadout, 'kNarrow'>)[];
   /** The source whose MIN and MAX distance rings (and their numbers) the
    *  scene draws, with a line from the listener to it. */
   select?: GaSceneSelect;
@@ -215,7 +238,7 @@ export function useGaCleanScene(): void {
 export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNode }) {
   const s = useGa();
   const lab = useGaLab();
-  const { height: winH } = useWindowDimensions();
+  const { height: winH, width: winW } = useWindowDimensions();
   const assets = spec.assets;
   const { sound, enableSound, disableSound, preload } = lab;
 
@@ -239,12 +262,17 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
   const stopKey: DockParam = { kind: 'action', id: 'stop', label: '■ STOP', onPress: () => gaDispatch({ type: 'stopAll' }), tint: colors.red };
 
   const voices = gaVoiceCount(s);
-  const bezel: BezelItem[] = [
-    ...(spec.readouts ?? []),
-    { k: 'PLAYING', v: String(s.inst.length), vA11y: `${gaCount(s.inst.length, 'instance')} playing` },
-    { k: 'VOICES', v: s.voiceLimit ? `${voices}/${s.voiceLimit}` : String(voices), vA11y: s.voiceLimit ? `${voices} of ${gaCount(s.voiceLimit, 'voice')}` : gaCount(voices, 'voice') },
-    { k: 'SOUND', v: GA_SOUND_WORD[sound], tint: sound === 'on' ? colors.green : sound === 'failed' || sound === 'unavailable' ? colors.red : colors.textSub },
-  ];
+  // on a narrow phone each cell's share follows its words: at 320 wide five
+  // even cells cut "PLAYING" to "PLAYI…" (bug test B-S2-06)
+  const bezel: BezelItem[] = gaFitReadouts(
+    [
+      ...(spec.readouts ?? []),
+      { k: 'PLAYING', v: String(s.inst.length), vA11y: `${gaCount(s.inst.length, 'instance')} playing` },
+      { k: 'VOICES', v: s.voiceLimit ? `${voices}/${s.voiceLimit}` : String(voices), vA11y: s.voiceLimit ? `${voices} of ${gaCount(s.voiceLimit, 'voice')}` : gaCount(voices, 'voice') },
+      { k: 'SOUND', v: GA_SOUND_WORD[sound], tint: sound === 'on' ? colors.green : sound === 'failed' || sound === 'unavailable' ? colors.red : colors.textSub },
+    ],
+    winW,
+  );
 
   return (
     <RackUnit

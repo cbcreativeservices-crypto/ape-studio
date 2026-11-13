@@ -204,6 +204,10 @@ export type CSlot = CVoiceName & {
   state: 'playing' | 'requested';
   /** Its computed level now, in dB; null = silent (and still a voice). */
   db: number | null;
+  /** A generator's loop whose generator was REMOVED and nothing stopped it
+   *  (page 19's fault 5): it plays with no owner. GA2 B-10: the strip that
+   *  is meant to show the orphan said nothing about it. */
+  orphan: boolean;
 };
 export type CWaiting = CVoiceName & { v: string; priority: number };
 export type CVoiceBoard = {
@@ -226,6 +230,7 @@ export type CVoiceBoard = {
 export function cVoiceBoard(s: GaState, t: number = s.t): CVoiceBoard {
   const b = gaVoiceSlots(s);
   const byId = new Map(s.voices.map((v) => [v.v, v]));
+  const owners = new Set(s.machines.map((m) => m.id));
   const seats = b.slots.map((x): CSlot | null => {
     if (!x) return null;
     const v = byId.get(x.v);
@@ -238,6 +243,7 @@ export function cVoiceBoard(s: GaState, t: number = s.t): CVoiceBoard {
       protected: x.protected,
       state: x.state === 'requested' ? 'requested' : 'playing',
       db: v ? cVoiceDb(s, v, t) : null,
+      orphan: cOrphan(x.event, x.owner, owners),
     };
   });
   const waiting: CWaiting[] = [];
@@ -252,6 +258,10 @@ export function cVoiceBoard(s: GaState, t: number = s.t): CVoiceBoard {
   }
   return { limit: b.limit, seats, used: b.used, waiting, far };
 }
+
+/** A generator's sound whose generator is no longer in the scene (the model
+ *  logs it as an ORPHAN, "still playing with no owner"). */
+export const cOrphan = (event: string, owner: string | undefined, machines: ReadonlySet<string>): boolean => event === 'generator' && owner != null && !machines.has(owner);
 
 /** How many slots the strip can draw: the budget's largest stop. */
 export const C_SLOTS_MAX = 16;
@@ -321,11 +331,12 @@ export function cSeatStep(prev: { state: GaState; seating: CSeating } | null, ne
 /** The strip in words, for a screen reader. */
 export function cVoicesSpoken(s: GaState, refused: number): string {
   const b = cVoiceBoard(s);
-  const held = b.seats.filter((x): x is CSlot => x != null).map((x) => `${x.spoken}, priority ${x.priority}${x.protected ? ', protected' : ''}`);
+  const held = b.seats.filter((x): x is CSlot => x != null).map((x) => `${x.spoken}, priority ${x.priority}${x.protected ? ', protected' : ''}${x.orphan ? ', an orphan with no owner: its generator was removed' : ''}`);
   const budget = b.limit ? `The budget is ${b.limit} ${b.limit === 1 ? 'voice' : 'voices'}` : 'There is no voice limit';
   return (
     `Voice slots. ${budget}; ${b.used} ${b.used === 1 ? 'is' : 'are'} in use${held.length ? `: ${held.join('; ')}` : ''}.` +
-    (b.waiting.length ? ` Waiting for a voice after theirs was stolen: ${b.waiting.map((w) => w.spoken).join(', ')}.` : '') +
+    // GA2 B-08: a loop also waits when BUDGET was lowered, which is not a theft, so the cause is not claimed
+    (b.waiting.length ? ` Waiting for a voice: ${b.waiting.map((w) => w.spoken).join(', ')}.` : '') +
     ` Refused on this visit: ${refused}.`
   );
 }
@@ -334,8 +345,9 @@ export function cVoicesSpoken(s: GaState, refused: number): string {
 
 /** What one machine did with an action: pending = still on its way; plays =
  *  it played the sound for its own listener; ignored = the id was already
- *  handled; nothing = the action is not for this machine's player. */
-export type CNetEnd = 'pending' | 'plays' | 'ignored' | 'nothing';
+ *  handled; nothing = the action is not for this machine's player; dropped =
+ *  ■ STOP withdrew it on its way, so it never arrived (bug test GA2 B-02). */
+export type CNetEnd = 'pending' | 'plays' | 'ignored' | 'nothing' | 'dropped';
 
 export type CPacket = {
   key: string;
@@ -357,6 +369,10 @@ export type CPacket = {
   double: boolean;
   /** The same on the other machine (the same rule, from its side). */
   doubleThere: boolean;
+  /** It was on its way and the model let it go without it landing: ■ STOP
+   *  dropped it (the model removes a withdrawn action from its list and
+   *  writes no record of it, so only the strip's memory knows). */
+  dropped: boolean;
 };
 
 export type CNetBoard = {
@@ -407,7 +423,7 @@ export function cNetBoard(s: GaState, first: ReadonlyMap<string, number> = new M
       const there: CNetEnd = !toOther ? 'nothing' : !landed ? 'pending' : f.result === 'ignored' ? 'ignored' : 'plays';
       const firstSent = known.get(f.id);
       const again = firstSent != null && firstSent < f.sent;
-      return { key: netFlightKey(f), id: f.id, what: String(f.what).toUpperCase(), to: f.to, sent: f.sent, due: f.due, landed, toYou, toOther, here, there, double: again && here === 'plays', doubleThere: again && there === 'plays' };
+      return { key: netFlightKey(f), id: f.id, what: String(f.what).toUpperCase(), to: f.to, sent: f.sent, due: f.due, landed, toYou, toOther, here, there, double: again && here === 'plays', doubleThere: again && there === 'plays', dropped: false };
     });
   const last = packets[packets.length - 1];
   return { known: true, packets, delayS: last ? Math.max(0, last.due - last.sent) : null, idCheck: s.options.dedupe };
@@ -423,11 +439,17 @@ export const C_NET_KEEP = 4;
  * empties), so the result stays on screen until the next action replaces it.
  * Returns `prev` itself when nothing changed.
  */
-export function cNetKeep(prev: readonly CPacket[], board: CNetBoard): readonly CPacket[] {
+export function cNetKeep(prev: readonly CPacket[], board: CNetBoard, wasFlying: readonly CPacket[] = []): readonly CPacket[] {
   const landed = board.packets.filter((p) => p.landed);
-  if (!landed.length) return prev;
+  const dropped = cNetDropped(wasFlying, board);
+  if (!landed.length && !dropped.length) return prev;
   const byKey = new Map(prev.map((p) => [p.key, p]));
   let changed = false;
+  for (const p of dropped) {
+    if (byKey.get(p.key)?.dropped) continue;
+    byKey.set(p.key, p);
+    changed = true;
+  }
   for (const p of landed) {
     const was = byKey.get(p.key);
     if (was && was.here === p.here && was.there === p.there && was.double === p.double && was.doubleThere === p.doubleThere) continue;
@@ -438,6 +460,17 @@ export function cNetKeep(prev: readonly CPacket[], board: CNetBoard): readonly C
   return [...byKey.values()].sort((a, b) => a.sent - b.sent).slice(-C_NET_KEEP);
 }
 
+/** The packets that were on their way (`wasFlying`, the strip's last
+ *  board) and are gone from `board` without landing: dropped by ■ STOP. Each
+ *  reads DROPPED at the machine it was travelling to. */
+export function cNetDropped(wasFlying: readonly CPacket[], board: CNetBoard): CPacket[] {
+  if (!wasFlying.length) return [];
+  const now = new Set(board.packets.map((p) => p.key));
+  return wasFlying
+    .filter((p) => !p.landed && !p.dropped && !now.has(p.key))
+    .map((p) => ({ ...p, dropped: true, here: p.toYou ? 'dropped' : 'nothing', there: p.toOther ? 'dropped' : 'nothing', double: false, doubleThere: false }));
+}
+
 /** Where a packet is on the wire: 0 at `sent`, 1 at `due`. */
 export function cPacketAt(p: { sent: number; due: number }, now: number): number {
   const span = p.due - p.sent;
@@ -445,16 +478,18 @@ export function cPacketAt(p: { sent: number; due: number }, now: number): number
   return clamp01((now - p.sent) / span);
 }
 
-export const C_NET_WORD: Record<CNetEnd, string> = { pending: 'ON ITS WAY', plays: 'PLAYED', ignored: 'IGNORED', nothing: 'NOT SENT HERE' };
+export const C_NET_WORD: Record<CNetEnd, string> = { pending: 'ON ITS WAY', plays: 'PLAYED', ignored: 'IGNORED', nothing: 'NOT SENT HERE', dropped: 'DROPPED' };
 
 /** The strip in words, for a screen reader. */
 export function cNetSpoken(s: GaState, kept: readonly CPacket[] = [], first?: ReadonlyMap<string, number>): string {
   const board = cNetBoard(s, first);
   // what the strip still shows after the model has let a landed action go
-  const b = { ...board, packets: board.packets.length ? board.packets : [...kept] };
+  // ... and an action ■ STOP dropped on its way, which the model no longer lists at all
+  const droppedKept = kept.filter((p) => p.dropped && !board.packets.some((q) => q.key === p.key));
+  const b = { ...board, packets: board.packets.length ? [...board.packets, ...droppedKept].sort((x, y) => x.sent - y.sent) : [...kept] };
   const check = `The I D check is ${b.idCheck ? 'on' : 'off'}.`;
   if (!b.packets.length) return `Network: your machine, the network, the other machine. No action has been sent yet. ${check}`;
-  const say = (e: CNetEnd) => (e === 'pending' ? 'on its way' : e === 'plays' ? 'played' : e === 'ignored' ? 'ignored as a duplicate' : 'not sent there');
+  const say = (e: CNetEnd) => (e === 'pending' ? 'on its way' : e === 'plays' ? 'played' : e === 'ignored' ? 'ignored as a duplicate' : e === 'dropped' ? 'dropped by stop before it arrived, so nothing played' : 'not sent there');
   const lines = b.packets.slice(-3).map((p) => `Action ${p.id}, ${p.what.toLowerCase()}: your machine, ${say(p.here)}${p.double ? ' a second time, a double' : ''}; the other machine, ${say(p.there)}${p.doubleThere ? ' a second time, a double' : ''}`);
   const delay = b.delayS ?? (b.packets.length ? Math.max(0, b.packets[b.packets.length - 1].due - b.packets[b.packets.length - 1].sent) : null);
   return `Network: your machine, the network, the other machine. ${lines.join('. ')}.${delay != null ? ` A message takes ${delay.toFixed(2)} seconds to arrive.` : ''} ${check}`;
@@ -554,12 +589,19 @@ export type CToolsLive = {
   selected: { name: string; label: string; priority: number; protected: boolean; bus: string; min: number | null; max: number | null } | null;
   /** The newest log line. */
   log: GaLogEntry | null;
+  /** When it happened, in seconds since this page opened (the page's own
+   *  log counts the same way). The model's `t` is the lab's running clock:
+   *  printed raw it read "MIX 1096.7 s" after 18 minutes (GA2 B-12). */
+  logAt: number | null;
   voices: number;
   music: { on: boolean; layers: Record<GaMusicLayer, boolean> };
 };
 
 const EVENT_ROWS: readonly GaEventId[] = ['door_open', 'generator', 'footstep', 'crate_impact', 'vo_greeting'];
 const EVENT_BY_NAME = new Map(Object.values(GA_EVENTS).map((d) => [d.name, d.id]));
+
+/** Seconds since the page opened, as the page's activity log counts. */
+export const cSincePage = (t: number, tPage: number | undefined): number => Math.max(0, t - (tPage ?? 0));
 
 /** The event the game posted last, read from the model's own log line. */
 export function cLastPosted(s: GaState): GaEventId | null {
@@ -609,6 +651,7 @@ export function cToolsLive(s: GaState, rows = 5): CToolsLive {
         }
       : null,
     log: s.log.length ? s.log[s.log.length - 1] : null,
+    logAt: s.log.length ? cSincePage(s.log[s.log.length - 1].t, s.tPage) : null,
     voices: gaVoiceSlots(s).used,
     music: { on: s.music.on, layers: { ...(s.music.applied ?? s.music.layers) } },
   };

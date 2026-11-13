@@ -180,7 +180,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         keys: [facingKey(s), listenerKey, gamesKey],
         initialParam: 'facing',
         readouts: [
-          { k: 'LISTENER', v: camera ? 'CAMERA' : 'YOU', vA11y: camera ? 'the overhead camera is listening' : 'you, the player, are listening', flex: 1.2 },
+          { k: 'LISTENER', kNarrow: 'EARS', v: camera ? 'CAMERA' : 'YOU', vA11y: camera ? 'the overhead camera is listening' : 'you, the player, are listening', flex: 1.2 },
           { k: 'GEN PAN', v: pan.v, vA11y: pan.a11y, flex: 1.2 },
         ],
         showNames: true,

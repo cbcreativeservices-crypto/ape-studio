@@ -54,6 +54,7 @@ import {
   stageFacingShort,
   stageFacingWord,
   stageFillZoom,
+  stageNaturalHeight,
   stageFrameBoxes,
   stageGlassWidthGuess,
   stageGridLines,
@@ -779,9 +780,13 @@ describe('names and numbers on the stage', () => {
     const plan = code(`${SP}/stage/StagePlanView.tsx`);
     const area = code(`${SP}/StageArea.tsx`);
     assert.match(plan, /const leftOut = showNames \? plan\.dropped\.length : 0;/);
-    assert.match(plan, /leftOutRef\.current\?\.\(leftOut\);/);
-    assert.match(area, /onNamesLeftOut=\{setLeftOut\}/);
-    assert.match(area, /\{leftOut > 0 \? \(\s*<Note>\{`At this size \$\{leftOut === 1 \? '1 equipment name is' : `\$\{leftOut\} equipment names are`\} not shown, to keep the names apart\. The equipment keeps its channel numbers and mix codes, and every performer is named\. Press ZOOM IN to see every name\. In FULL SCREEN, turn the phone sideways for a larger stage\.`\}<\/Note>/);
+    // …and how many performers are named WITHOUT their mix code (bug test S2-03)
+    assert.match(plan, /const codesOut = showNumbers \? plan\.bare\.length : 0;/);
+    assert.match(plan, /leftOutRef\.current\?\.\(leftOut, codesOut\);/);
+    assert.match(area, /setLeftOut\(n\);\s*setCodesOut\(codes\);/);
+    assert.match(area, /leftOut > 0 \? `At this size \$\{leftOut === 1 \? '1 equipment name is' : `\$\{leftOut\} equipment names are`\} not shown, to keep the names apart\. The equipment keeps its channel numbers and mix codes, and every performer is named\.`/);
+    assert.match(area, /performers are`\} named without \$\{codesOut === 1 \? 'their mix code' : 'their mix codes'\} at this size\. Each code is still on that performer’s monitor\./);
+    assert.match(area, /'Press ZOOM IN to see every name\. In FULL SCREEN, turn the phone sideways for a larger stage\.'/);
     assert.doesNotMatch(area, /some names sit close together|to read every name/);
   });
 
@@ -800,7 +805,31 @@ describe('names and numbers on the stage', () => {
     assert.match(plan, /const ringCorners = selBox \? stageBoxCorners\(selBox, 3\) : null;/);
   });
 
-  it('FULL SCREEN in portrait opens at the zoom that fills the glass height (B4)', () => {
+  it('FULL SCREEN opens on the WHOLE stage, laid out at the top at its own height (bug test S2-10, S2-12)', () => {
+    for (const id of TEMPLATES) {
+      const p = tpl(id);
+      const aspect = spStageAspect(p);
+      const region = stageRegion(p.objects);
+      // the natural height is exactly the height at which the WIDTH limits the stage at 1×
+      const gw = 366;
+      const nat = stageNaturalHeight(aspect, gw, region);
+      const T = stageTransform(aspect, gw, nat, region);
+      const innerW = gw - STAGE_FRAME.side * 2;
+      near((region.x1 - region.x0) * T.kx, innerW, 1e-6);
+      near((region.y1 - region.y0) * T.ky, nat - STAGE_FRAME.top - STAGE_FRAME.bottom, 1e-6);
+      // in a taller glass the whole stage still shows: nothing is off the sides at 1×
+      const tall = stageTransform(aspect, gw, nat * 2, region);
+      assert.ok((region.x1 - region.x0) * tall.kx <= innerW + 1e-6, `${id}: the whole width shows`);
+    }
+    const plan = code(`${SP}/stage/StagePlanView.tsx`);
+    assert.match(plan, /const gh = inFull \? Math\.min\(split\.stage, stageNaturalHeight\(aspect, gw, region\)\) : split\.stage;/);
+    // no zoom is forced on entering; the zoom from before is put back on leaving
+    assert.doesNotMatch(plan, /const fill = stageFillZoom/);
+    assert.match(plan, /if \(!auto\.current\) auto\.current = \{ before: ref\.current\.view \};/);
+    assert.match(plan, /auto\.current = null;/);
+  });
+
+  it('the fill zoom (no longer forced on FULL SCREEN) still measures the height (B4)', () => {
     for (const id of TEMPLATES) {
       const p = tpl(id);
       const aspect = spStageAspect(p);
@@ -819,11 +848,6 @@ describe('names and numbers on the stage', () => {
       // turned sideways the stage fills the height already: no zoom is forced
       assert.equal(stageFillZoom(aspect, 800, 330, region), 1, `${id} sideways`);
     }
-    const plan = code(`${SP}/stage/StagePlanView.tsx`);
-    assert.match(plan, /const fill = stageFillZoom\(aspect, gw, gh, region\);/);
-    // only on entering FULL SCREEN, only while the user has not chosen a zoom, and put back on leaving
-    assert.match(plan, /if \(st\.view\.zoom !== auto\.current\.applied\) return undefined;/);
-    assert.match(plan, /auto\.current = null;/);
   });
 
   it('placing the labels is the same every time (no label jumps when nothing moved)', () => {
@@ -1227,15 +1251,19 @@ describe('the Stage screen', () => {
     assert.match(plan, /stageFacingPoint\(selBox/);
   });
 
-  it('ADD and VIEW open as the kit’s popup; in FULL SCREEN they are trays with the fader strip folded', () => {
-    for (const id of ['add', 'object', 'view']) assert.match(area, new RegExp(`<Sheet visible=\\{shown === '${id}'\\}`), `${id} has its popup`);
+  it('ADD opens as the kit’s popup (a tray in FULL SCREEN); VIEW is a tray under the drawing on both screens (bug test S2-12)', () => {
+    for (const id of ['add', 'object']) assert.match(area, new RegExp(`<Sheet visible=\\{shown === '${id}'\\}`), `${id} has its popup`);
+    // VIEW's switches change the drawing, so the drawing stays in sight: a tray, never a popup over it
+    assert.doesNotMatch(area, /<Sheet visible=\{shown === 'view'\}/);
+    assert.match(area, /\{ kind: 'group', id: 'view', label: 'VIEW', [\s\S]*?hideLane: true, render: \(\) => \(inFull \? viewTray : viewBody\) \}/);
     // one opener for the two: a button that opens the popup, or (in FULL
     // SCREEN, where a popup cannot be presented) a tray that folds the lane
     assert.match(area, /inFull \? \{ kind: 'group', id, label, valueLabel, valueA11y, hideLane: true, render \} : \{ kind: 'action', id, label, onPress: \(\) => setPanel\(id\) \}/);
     assert.match(area, /const shown = inFull \? null : panel;/);
     assert.match(area, /onFullScreen=\{setInFull\}/);
     assert.match(plan, /fullRef\.current\?\.\(true\);\s*return \(\) => fullRef\.current\?\.\(false\);/);
-    for (const id of ['add', 'view']) assert.match(area, new RegExp(`opener\\('${id}'`));
+    assert.match(area, /opener\('add'/);
+    assert.doesNotMatch(area, /opener\('view'/);
     // one scroll bar in a popup: the popup's own scroller is off where this area brings its own
     assert.match(area, /<Sheet visible=\{shown === 'add'\} title="Add to the stage" onClose=\{closePanel\} scroll=\{false\}>/);
     assert.match(area, /<Sheet visible=\{shown === 'object'\} title=\{sel \? selName : 'Choose an object'\} onClose=\{closePanel\} scroll=\{false\}>/);
@@ -1243,7 +1271,9 @@ describe('the Stage screen', () => {
 
   it('OBJECT opens UNDER the drawing on both screens: the position and turn buttons are seen to work (B10)', () => {
     // a tray (the drawing stays pinned above it), never a popup over the stage
-    assert.match(area, /\{ kind: 'group', id: 'object', label: 'OBJECT', valueLabel: sel \? selName\.toUpperCase\(\) : 'NOTHING', valueA11y: sel \? `\$\{selName\} is selected` : 'nothing is selected', hideLane: true, render: objectTray \}/);
+    // the second line is cut short (dockName); the whole name is said to a screen reader (bug test S2-13)
+    assert.match(area, /\{ kind: 'group', id: 'object', label: 'OBJECT', valueLabel: sel \? dockName\(selName\)\.toUpperCase\(\) : 'NOTHING', valueA11y: sel \? `\$\{selName\} is selected` : 'nothing is selected', hideLane: true, render: objectTray \}/);
+    assert.match(area, /const dockName = \(name: string\): string => \(name\.length > 12 \? `\$\{name\.slice\(0, 11\)\.trimEnd\(\)\}…` : name\);/);
     assert.doesNotMatch(area, /opener\('object'/);
     const tray = area.slice(area.indexOf('const objectTray = '), area.indexOf('const objectSheet = '));
     assert.match(tray, /<StageMovePad id=\{sel\.id\} \/>/);
@@ -1278,7 +1308,8 @@ describe('the Stage screen', () => {
     const switches = area.slice(area.indexOf('const viewSwitches = ('), area.indexOf('const viewBody'));
     assert.equal((switches.match(/<Switch /g) ?? []).length, 4);
     assert.doesNotMatch(switches, /<Button /);
-    assert.match(area, /const viewBody: ReactNode = <View style=\{styles\.tray\}>\{viewSwitches\}<\/View>;/);
+    // a SHORT scroller, so the tray leaves the drawing in sight (bug test S2-12)
+    assert.match(area, /const viewBody: ReactNode = \(\s*<StageStepScroll stepKey="view" maxHeight=\{Math\.max\(110, Math\.round\(winH \* 0\.2\)\)\}>\s*<View style=\{styles\.tray\}>\{viewSwitches\}<\/View>\s*<\/StageStepScroll>\s*\);/);
     const tray = area.slice(area.indexOf('const viewTray'), area.indexOf('const commitTurn'));
     assert.match(tray, /label="UNDO"/);
     assert.match(tray, /label="REDO"/);
@@ -1523,7 +1554,8 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     const plan = code(`${SP}/stage/StagePlanView.tsx`);
     // the area tells the rack: the usual display height PLUS the key's height
     assert.match(area, /const keyHeight = Math\.ceil\(stageKeyLayout\(stageKeyEntries\(p\.objects\), stageGlassWidthGuess\(winW\), scaleNote\)\.height\);/);
-    assert.match(area, /const phoneHeight = [^;]+ \+ keyHeight;/);
+    // the key asks the rack for no more than its share (bug test S1-01)
+    assert.match(area, /const phoneHeight = stageBase \+ Math\.min\(keyHeight, Math\.round\(\(stageBase \* STAGE_KEY_SHARE\) \/ \(1 - STAGE_KEY_SHARE\)\)\);/);
     // …and nothing else: no readout row and no line under the glass, so the
     // rack gives their height to the glass, and the key does not cost the stage
     assert.match(area, /stage=\{\{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true \}\}/);
@@ -1531,7 +1563,7 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     // the drawing lays the same key out for its real width, and the stage takes the height above it
     assert.match(plan, /const keyEntries = useMemo\(\(\) => stageKeyEntries\(p\.objects\), \[p\.objects\]\);/);
     assert.match(plan, /const keyLayout = useMemo\(\(\) => stageKeyLayout\(keyEntries, gw, scaleNote\), \[keyEntries, gw, scaleNote\]\);/);
-    assert.match(plan, /const gh = Math\.max\(ghAll \/ 3, ghAll - keyLayout\.height\);/);
+    assert.match(plan, /const split = stageKeySplit\(ghAll, keyLayout\.height\);/);
   });
 
   it('the scale words are in the key’s heading row, at its right end, inside the drawing', () => {
@@ -1560,13 +1592,13 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     // the well keeps the sentence the line under the glass used to carry
     const area = code(`${SP}/StageArea.tsx`);
     assert.equal((area.match(/Symbols are drawings, not the real size of the equipment\./g) ?? []).length, 2);
-    assert.match(area, /NOT TO SCALE: no stage width and depth are set in Setup/);
+    assert.match(area, /NOT TO SCALE: the stage width and depth are not both set in Setup/);
   });
 
   it('with no readout row, the selection is still named: on the drawing, in the well, and on the OBJECT button’s second line (on both screens)', () => {
     const area = code(`${SP}/StageArea.tsx`);
     const plan = code(`${SP}/stage/StagePlanView.tsx`);
-    assert.match(area, /id: 'object', label: 'OBJECT', valueLabel: sel \? selName\.toUpperCase\(\) : 'NOTHING',/);
+    assert.match(area, /id: 'object', label: 'OBJECT', valueLabel: sel \? dockName\(selName\)\.toUpperCase\(\) : 'NOTHING',/);
     assert.match(area, /objects`\} on the stage\. \$\{sel \? `Selected: \$\{selName\} \(/);
     // the selected object's name is kept even on a crowded stage (stageLabelPlan's `selected`)
     assert.match(plan, /selected: o\.id === selectedId,/);
@@ -1580,7 +1612,7 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     const key = code(`${SP}/stage/StageKey.tsx`);
     const area = code(`${SP}/StageArea.tsx`);
     // drawn every time, by the drawing itself (so it is in FULL SCREEN too), with no condition round it
-    assert.match(plan, /<\/View>\s*(?:\{\}\s*)?<StageKey project=\{p\} entries=\{keyEntries\} layout=\{keyLayout\} w=\{w\} gw=\{gw\} \/>\s*<\/View>\s*\);/);
+    assert.match(plan, /<\/View>\s*(?:\{\}\s*)?<StageKey project=\{p\} entries=\{keyEntries\} layout=\{keyLayout\} w=\{w\} gw=\{gw\} shownH=\{split\.scrolls \? split\.key \* s : undefined\} \/>\s*<\/View>\s*\);/);
     assert.equal((plan.match(/<StageKey\b/g) ?? []).length, 1);
     // not a popup, not behind a switch
     assert.doesNotMatch(key, /\bSheet\b|\bModal\b|\bSwitch\b|useState|Pressable|panHandlers|onPress/);
@@ -1590,7 +1622,11 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     assert.match(plan, /\{\.\.\.pan\.panHandlers\} accessible accessibilityLabel=\{a11y\}>\s*(?:\{\}\s*)?<GestureExclusionZone maxHeightDp=\{STAGE_BAND_DP\} \/>/);
     assert.match(key, /<View pointerEvents="none">\s*<Svg aria-hidden \{\.\.\.SVG_HIDDEN_NATIVE\}/);
     // one labeled element: "Key: Performer, Drum kit, …"
-    assert.match(key, /accessible accessibilityRole="text" accessibilityLabel=\{layout\.note \? `\$\{stageKeyWords\(entries\)\} \$\{scaleWords\(layout\.note\.text\)\}` : stageKeyWords\(entries\)\}/);
+    assert.match(key, /const label = layout\.note \? `\$\{stageKeyWords\(entries\)\} \$\{scaleWords\(layout\.note\.text\)\}` : stageKeyWords\(entries\);/);
+    assert.equal((key.match(/accessible accessibilityRole="text" accessibilityLabel=\{label\}/g) ?? []).length, 2, 'one sentence, whether the strip scrolls or not');
+    // a long key on a short phone SCROLLS inside the display (bug test S1-01): never cut, never a popup
+    assert.match(key, /if \(shownH != null && shownH < h - 0\.5\) \{/);
+    assert.match(key, /<ScrollView style=\{\{ width: w, height: shownH \}\} nestedScrollEnabled showsVerticalScrollIndicator persistentScrollbar>/);
     const words = stageKeyWords(stageKeyEntries(tpl('four-piece').objects));
     assert.match(words, /^Key: Performer, Drum kit, /);
     assert.match(words, /Wedge monitor \(speaker side faces the performer\)/);

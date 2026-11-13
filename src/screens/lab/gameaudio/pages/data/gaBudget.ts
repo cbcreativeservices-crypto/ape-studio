@@ -10,7 +10,7 @@
  * cost this page prints, because it is exact. It prints no processing
  * figure: the lab does not measure one.
  */
-import type { GaLogEntry, GaState } from '../../model/gaModel.ts';
+import type { GaLogEntry, GaLogKind, GaState } from '../../model/gaModel.ts';
 
 /* ── the BUDGET lane ────────────────────────────────────────────────────── */
 
@@ -90,6 +90,24 @@ export const memoryRowSpoken = (r: MemoryRow): string =>
 export const protectedSounding = (s: GaState): number => s.voices.filter((v) => v.protected && v.state !== 'virtual').length;
 /** Would the model refuse to go this low right now? */
 export const budgetHeld = (s: GaState, limit: number): boolean => limit !== 0 && limit < protectedSounding(s);
+
+/** The BUDGET lane's line (bug test GA2 B-05, 2026-11-13: at the protected
+ *  floor ‹ FEWER did nothing and nothing on screen said why). `lane` is the
+ *  stop the lane shows, `limit` the model's budget, `asked` the budget the
+ *  learner asked for last, `guarded` the protected voices sounding. When the
+ *  learner asked for less than the budget and the protected voices hold it
+ *  up, the line says so; the model's own BUDGET line in the log says it in
+ *  full. */
+export function budgetLaneWords(lane: number, limit: number, asked: number | null, guarded: number): string {
+  const words = budgetWords(lane);
+  const heldUp = lane === limit && limit !== 0 && asked != null && asked !== 0 && asked < limit && guarded >= limit;
+  return heldUp ? `${words} · HELD: ${guarded} PROTECTED` : words;
+}
+
+/** The kinds of log line page 17 shows: what was taken (STOP), refused, the
+ *  loops' state, and MIX, which carries the model's BUDGET lines (among them
+ *  "BUDGET: 1 asked, but 2 protected voices are sounding…", GA2 B-05). */
+export const P17_LOG_KINDS: readonly GaLogKind[] = ['stop', 'refused', 'state', 'mix'];
 
 /* ── what the last burst cost ───────────────────────────────────────────── */
 

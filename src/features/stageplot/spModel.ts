@@ -451,14 +451,27 @@ export const spRemoveInput = (p: SpProject, id: SpId): SpProject =>
 
 const stripSide = (label: string): string => label.replace(/\s+(L|R|left|right)$/i, '').trim() || label;
 
+/** The name one side of a stereo pair takes when it becomes mono: its name
+ *  without the side, made unique among the OTHER inputs ("Keys" is taken, so
+ *  "Keys 2"). Two inputs never share one name in a packet. */
+export function spMonoLabel(p: SpProject, inputId: SpId): string {
+  const x = p.inputs.find((i) => i.id === inputId);
+  if (!x) return '';
+  const base = stripSide(x.label);
+  const others = p.inputs.filter((i) => i.id !== x.id && !(x.pairId && i.pairId === x.pairId)).map((i) => i.label.trim().toLowerCase());
+  if (!others.includes(base.toLowerCase())) return base;
+  for (let n = 2; n < 100; n += 1) if (!others.includes(`${base} ${n}`.toLowerCase())) return `${base} ${n}`;
+  return base;
+}
+
 /** A stereo pair lost one side: make the request mono, in the open. */
 export const spPairToMono = (p: SpProject, remainingId: SpId): SpProject =>
   spEdit(p, (d) => {
     const x = d.inputs.find((y) => y.id === remainingId);
     if (!x) return;
+    x.label = spMonoLabel(d, x.id);
     x.side = null;
     x.pairId = null;
-    x.label = stripSide(x.label);
   });
 
 /** A stereo pair lost one side: put the missing side back, as a copy of the
@@ -472,6 +485,19 @@ export function spPairRestore(p: SpProject, remainingId: SpId): { p: SpProject; 
     const side = x.side === 'L' ? 'R' : 'L';
     d.inputs.push({ ...clone(x), id, side, label: `${stripSide(x.label)} ${side}` });
     for (const m of d.mixes) if (m.needs[x.id] !== undefined) m.needs[id] = m.needs[x.id];
+    // The side comes back BESIDE its partner, on the number next to it when
+    // that number is free (L just below, R just above); otherwise on the
+    // next free number. Never at the end of the list with a gap left behind.
+    for (const pid of spPatchesOf(x)) {
+      const patch = spPatch(d, pid);
+      const at = patch ? patch.order.indexOf(x.id) : -1;
+      if (!patch || at < 0) continue;
+      patch.order.splice(side === 'L' ? at : at + 1, 0, id);
+      const mine = patch.numbers[x.id];
+      const want = mine == null ? null : side === 'L' ? mine - 1 : mine + 1;
+      const used = new Set(Object.values(patch.numbers));
+      patch.numbers[id] = want != null && want > 0 && !used.has(want) && !patch.reserved.includes(want) ? want : nextNumber(patch);
+    }
   });
   return { p: q, id };
 }
@@ -486,9 +512,9 @@ export const spStereoToMono = (p: SpProject, pairId: SpId, opts: { keep: 'L' | '
     if (!keep) return;
     const drop = pair.filter((i) => i.id !== keep.id).map((i) => i.id);
     d.inputs = d.inputs.filter((i) => !drop.includes(i.id));
+    keep.label = spMonoLabel(d, keep.id);
     keep.side = null;
     keep.pairId = null;
-    keep.label = stripSide(keep.label);
     if (opts.di === 'release' && keep.diDeviceId) {
       const dev = keep.diDeviceId;
       keep.diDeviceId = null;
@@ -835,10 +861,21 @@ export function spDuplicateObject(p: SpProject, id: SpId): { p: SpProject; ids: 
     const members = spGroupOf(d, id);
     if (!members.length) return;
     const groupId = members.length > 1 ? newId(d, 'gr') : null;
+    // a little to one side, and UPSTAGE when the copy would land across the
+    // front edge (the audience side) or past stage left
+    const maxX = Math.max(...members.map((m) => m.x));
+    const maxY = Math.max(...members.map((m) => m.y));
+    const dx = maxX + 0.06 > 0.97 ? -0.06 : 0.06;
+    const dy = maxY + 0.06 > 0.9 ? -0.06 : 0.06;
     for (const m of members) {
       const nid = newId(d, 'ob');
       ids.push(nid);
-      d.objects.push({ ...clone(m), id: nid, x: m.x + 0.06, y: m.y + 0.06, performerId: null, sourceId: null, inputId: null, deviceId: null, groupId, label: m.label });
+      // A copy of a LINKED object is only a drawing, so it must not carry the
+      // name of the thing in the lists ("Wedge 1" twice, one in no monitor
+      // plan): it is named as a copy.
+      const linked = !!(m.performerId || m.sourceId || m.inputId || m.deviceId);
+      const base = m.label.trim() || (m.kind === 'performer' ? spPerformer(d, m.performerId)?.name.trim() ?? '' : '') || spPaletteItem(m.kind).name;
+      d.objects.push({ ...clone(m), id: nid, x: m.x + dx, y: m.y + dy, performerId: null, sourceId: null, inputId: null, deviceId: null, groupId, label: linked ? `${base} (copy)` : m.label });
     }
   });
   return { p: q, ids };
@@ -862,6 +899,25 @@ export const spUngroup = (p: SpProject, id: SpId): SpProject =>
     for (const m of d.objects) if (m.groupId === g) m.groupId = null;
   });
 
+/** Grid and Snap from the Stage's VIEW switches. SNAP IS NEVER PRINTED, and
+ *  the grid is printed only on a plot drawn to scale: a switch that changes
+ *  nothing on paper is a screen preference, so it does not move a shared
+ *  revision on or put a Ready plot back to Draft (it is not an edit). The
+ *  grid of a plot to scale IS printed, so turning it is an ordinary edit. */
+export function spSetStageView(p: SpProject, patch: { grid?: boolean; snap?: boolean }): SpProject {
+  const gridPrinted = patch.grid != null && patch.grid !== p.stage.grid && spToScale(p);
+  if (gridPrinted) {
+    return spEdit(p, (d) => {
+      if (patch.grid != null) d.stage.grid = patch.grid;
+      if (patch.snap != null) d.stage.snap = patch.snap;
+    });
+  }
+  const q = clone(p);
+  if (patch.grid != null) q.stage.grid = patch.grid;
+  if (patch.snap != null) q.stage.snap = patch.snap;
+  return q;
+}
+
 export const spOnStage = (o: { x: number; y: number }): boolean => o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1;
 
 /** Where a point is, in stage words. Stage right is the viewer's LEFT: the
@@ -875,8 +931,21 @@ export function spLocationWord(at: { x: number; y: number }): string {
   return `${row === 'up' ? 'Upstage' : 'Downstage'} ${col}`;
 }
 
+/** A source its performer CARRIES (a voice, a horn, anything on a wireless
+ *  pack): the performer's figure can stand for it on the plot. A drum kit,
+ *  an amplifier, a keyboard or a percussion setup stands on the floor and
+ *  needs its own symbol, or the plot sent to the venue does not show it. */
+export function spSourceIsCarried(p: SpProject, sourceId: SpId): boolean {
+  const s = spSource(p, sourceId);
+  if (!s) return false;
+  if (s.category === 'vocals' || s.category === 'horns') return true;
+  const inputs = p.inputs.filter((i) => i.sourceId === sourceId);
+  return inputs.length > 0 && inputs.every((i) => i.capture === 'wireless');
+}
+
 /** The stage object that stands for a source: its own icon, else the icon of
- *  one of its inputs, else its performer's figure. */
+ *  one of its inputs, else (for a source the performer carries) its
+ *  performer's figure. */
 export function spObjectOfSource(p: SpProject, sourceId: SpId): SpObject | undefined {
   const own = p.objects.find((o) => o.sourceId === sourceId);
   if (own) return own;
@@ -884,7 +953,7 @@ export function spObjectOfSource(p: SpProject, sourceId: SpId): SpObject | undef
   const viaInput = p.objects.find((o) => o.inputId && inputIds.has(o.inputId));
   if (viaInput) return viaInput;
   const s = spSource(p, sourceId);
-  return s?.performerId ? p.objects.find((o) => o.performerId === s.performerId && o.kind === 'performer') : undefined;
+  return s?.performerId && spSourceIsCarried(p, sourceId) ? p.objects.find((o) => o.performerId === s.performerId && o.kind === 'performer') : undefined;
 }
 /** The stage object to show for an input ("locate on stage"). */
 export function spObjectOfInput(p: SpProject, inputId: SpId): SpObject | undefined {

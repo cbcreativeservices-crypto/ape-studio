@@ -68,5 +68,46 @@ export function gaLogEmpty(only: readonly GaLogKind[] | undefined, total: number
   return `Nothing has happened yet. This log shows only ${kinds} lines.`;
 }
 
+/** The hints a TROUBLESHOOT card may give NOW (bug test 2026-11-13,
+ *  B-S1-03: SHOW A HINT gave the cause while the fault was still unnamed).
+ *  Before the learner has met the symptom (`seen` false) the only hint is
+ *  "first make the problem happen", in the page's own words when it gives
+ *  them (`before`); the page's cause hints come only after the symptom.
+ *  `shownBefore` / `shownAfter` are how many of each list have been asked
+ *  for: a hint asked for before the symptom never reveals a cause hint later. */
+export const GA_FAULT_FIRST_HINT = 'First make the problem happen: do what the report above says, then watch the readouts and the newest lines of the log.';
+export function gaFaultHints(hints: readonly string[], seen: boolean, before: string | undefined, shownBefore: number, shownAfter: number): { shown: string[]; more: boolean } {
+  const list = seen ? hints : [before ?? GA_FAULT_FIRST_HINT];
+  const n = seen ? shownAfter : shownBefore;
+  return { shown: list.slice(0, n), more: n < list.length };
+}
+
+/** A readout under the scene: the frame's cell, plus what it becomes on a
+ *  NARROW phone (window under GA_NARROW_W wide). At 320 wide five even cells
+ *  cut "PLAYING" to "PLAYI…" and "YOUR FLOOR" to "YOUR FL…" (bug test
+ *  2026-11-13, B-S2-06). House rule (decision 4): a label may SHORTEN, a
+ *  number never. On a narrow phone each cell's share is what its words need
+ *  (its key or its value, whichever is wider, in the frame's own type), so
+ *  a short value gives its room to a long key; a value still too wide drops
+ *  its key and shrinks, never under 9 pt (rack/BezelReadouts).
+ *    kNarrow     the shorter key on a narrow phone */
+export type GaReadout = { k: string; v: string; flex?: number; kNarrow?: string };
+export const GA_NARROW_W = 360;
+/** The frame's type, measured: a key letter (Oswald 12, spaced) and a value
+ *  letter (mono 13.5), and a cell's padding and rule, in points. */
+export const GA_KEY_CH = 6.7;
+export const GA_VAL_CH = 8.1;
+export const GA_CELL_PAD = 17;
+/** The width a cell needs to show its whole key and its whole value. */
+export const gaReadoutNeed = (k: string, v: string): number => Math.max(k.length * GA_KEY_CH, v.length * GA_VAL_CH) + GA_CELL_PAD;
+export function gaFitReadouts<T extends GaReadout>(items: readonly T[], winW: number): Omit<T, 'kNarrow'>[] {
+  const narrow = Number.isFinite(winW) && winW > 0 && winW < GA_NARROW_W;
+  return items.map(({ kNarrow, ...it }) => {
+    if (!narrow) return it;
+    const k = kNarrow ?? it.k;
+    return { ...it, k, flex: Math.round(gaReadoutNeed(k, it.v)) / 50 };
+  });
+}
+
 /** "1 instance", "2 instances": a count with the right word. */
 export const gaCount = (n: number, one: string, many: string = `${one}s`): string => `${n} ${n === 1 ? one : many}`;

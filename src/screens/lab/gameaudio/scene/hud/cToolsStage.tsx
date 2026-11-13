@@ -488,7 +488,10 @@ function ProfilerBody(b: Body) {
   const lit = b.mode === 'lit';
   const n = allot(linesOf(b), [ideaWant('word', profiler, b), { key: 'log', want: lit ? 4 : 1 }, { key: 'voices', want: 1 }]);
   // the lit window prints the newest line; a small one says what kind it is and when
-  const line = !log ? 'the log is empty' : lit ? `${GA_LOG_KIND_WORD[log.kind]} · ${log.t.toFixed(1)} s · ${log.text}` : `${GA_LOG_KIND_WORD[log.kind]} ${log.t.toFixed(1)} s`;
+  // the time is seconds since this page opened, as the page's log counts (GA2 B-12)
+  const at = (b.live.logAt ?? 0).toFixed(1);
+  // 'log empty': 'the log is empty' was cut to "the log is emp…" in a small window at 320 wide (GA2 B-16)
+  const line = !log ? 'log empty' : lit ? `${GA_LOG_KIND_WORD[log.kind]} · ${at} s · ${log.text}` : `${GA_LOG_KIND_WORD[log.kind]} ${at} s`;
   return (
     <View style={styles.col}>
       {profiler ? <Idea x={profiler} lines={n.word} b={b} /> : null}

@@ -179,8 +179,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         initialParam: 'master',
         hud: 'lines',
         readouts: [
-          { k: 'SPEAKING', v: now ? (LINE_WORD[now.event] ?? 'A LINE') : 'QUIET', vA11y: now ? `speaking: ${now.label}` : 'quiet: nobody is speaking' },
-          { k: 'PRIORITY', v: now ? String(now.priority) : '—', vA11y: now ? `priority ${now.priority}` : 'no line, no priority' },
+          { k: 'SPEAKING', kNarrow: 'LINE', v: now ? (LINE_WORD[now.event] ?? 'A LINE') : 'QUIET', vA11y: now ? `speaking: ${now.label}` : 'quiet: nobody is speaking' },
+          { k: 'PRIORITY', kNarrow: 'PRI.', v: now ? String(now.priority) : '—', vA11y: now ? `priority ${now.priority}` : 'no line, no priority' },
         ],
         select: 'guide',
         assets: ASSETS,

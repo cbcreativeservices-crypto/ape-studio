@@ -13,10 +13,10 @@
  *   • Everything is laid out in GLASS UNITS (box ÷ StageTextScale) and painted
  *     through one viewBox, so FULL SCREEN is the same picture, larger, and a
  *     touch divided by the same scale lands under the finger (stageGeom.ts).
- *   • FULL SCREEN with the phone upright opens at the zoom that fills the
- *     glass height (the stage would otherwise be a narrow band with dark
- *     above and below it); the drawing then slides sideways, and FIT STAGE
- *     shows all of it again. Leaving FULL SCREEN puts the zoom back.
+ *   • FULL SCREEN opens on the WHOLE stage (1×). With the phone upright the
+ *     stage stands at the top at its own height, the key under it, and the
+ *     dark glass below takes the dock's trays, so an open tray never covers
+ *     the stage it changes. Leaving FULL SCREEN puts the zoom back.
  *   • FULL SCREEN is given NO fixed shape: the drawing takes the whole body
  *     and fits the stage into it, so 1× always shows the whole stage and the
  *     shared full-screen view has no FIT step that could cut the stage's
@@ -33,7 +33,9 @@
  * THE KEY (owner 2026-11-12) is part of this drawing, always: a strip
  * directly under the stage frame that names each kind of object on the
  * stage, drawn with the stage's own art (StageKey). The stage is laid out in
- * the height that is left above it. The key is a separate box UNDER the box
+ * the height that is left above it. The key takes at most its share of the
+ * display (stageKeySplit); a longer key scrolls inside its own strip, so the
+ * stage is never pressed into a strip on a short phone. The key is a separate box UNDER the box
  * that takes the drags, so it takes no touches; in FULL SCREEN it is the same
  * strip under the stage, so it stays in view at every step of the dock's
  * ZOOM (which zooms inside the frame).
@@ -68,11 +70,12 @@ import {
   stageGridLines,
   stageHit,
   stageKeyLayout,
+  stageKeySplit,
   stageScaleNote,
-  stageFillZoom,
   stageLabelLeader,
   stageLabelPlan,
   stageLivePositions,
+  stageNaturalHeight,
   stageObjectBox,
   stagePan,
   stageRegion,
@@ -126,9 +129,10 @@ export type StagePlanProps = {
    *  draws a second copy there), and false when that copy goes away. */
   onFullScreen?: (on: boolean) => void;
   /** How many names are not shown at this size (equipment that shows its
-   *  numbers alone, or nothing): told when the count changes, so the screen
-   *  can say so in words. */
-  onNamesLeftOut?: (count: number) => void;
+   *  numbers alone, or nothing), and how many performers are named without
+   *  their mix code: told when a count changes, so the screen can say so in
+   *  words. */
+  onNamesLeftOut?: (count: number, codesLeftOut: number) => void;
 };
 
 type Drag = {
@@ -187,18 +191,23 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const scaleNote = stageScaleNote(p);
   const keyLayout = useMemo(() => stageKeyLayout(keyEntries, gw, scaleNote), [keyEntries, gw, scaleNote]);
   const ghAll = h / s;
-  const gh = Math.max(ghAll / 3, ghAll - keyLayout.height);
-  const stageH = gh * s;
+  // the key takes its share of the display at most, and scrolls past it:
+  // the stage keeps the rest (stageKeySplit)
+  const split = stageKeySplit(ghAll, keyLayout.height);
   const inFull = useContext(StageInFullScreen);
+  const aspect = spStageAspect(p);
+  // The region follows the SAVED objects only. A drag does not touch the
+  // project, so the picture cannot re-fit (and run away) under the finger.
+  const region = useMemo(() => stageRegion(p.objects), [p.objects]);
+  // FULL SCREEN with the phone upright: the whole stage at its own height, at
+  // the TOP, the key under it; the dark glass below takes the dock's trays
+  const gh = inFull ? Math.min(split.stage, stageNaturalHeight(aspect, gw, region)) : split.stage;
+  const stageH = gh * s;
 
   /** The object under the finger, as it moves: where it would be let go. */
   const [live, setLive] = useState<{ id: SpId; to: Pt } | null>(null);
   const [liveSize, setLiveSize] = useState<{ id: SpId; w: number; h: number } | null>(null);
 
-  const aspect = spStageAspect(p);
-  // The region follows the SAVED objects only. A drag does not touch the
-  // project, so the picture cannot re-fit (and run away) under the finger.
-  const region = useMemo(() => stageRegion(p.objects), [p.objects]);
   const T = useMemo(() => stageTransform(aspect, gw, gh, region, view), [aspect, gw, gh, region, view]);
   const u = stageSymbolScale(p, T);
 
@@ -212,27 +221,18 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
     return () => fullRef.current?.(false);
   }, [inFull]);
 
-  // FULL SCREEN WITH THE PHONE UPRIGHT: the glass is much taller than the
-  // stage, so the whole-stage zoom leaves the stage the size it has on the
-  // normal screen, with dark above and below (visual review 2, B4). The
-  // full-screen copy opens at the zoom that fills the height. It does so only
-  // while the zoom is still the one this effect set: once the user chooses a
-  // zoom, theirs stands. Leaving FULL SCREEN puts back the zoom from before.
-  const auto = useRef<{ applied: number; before: StageView } | null>(null);
+  // FULL SCREEN OPENS ON THE WHOLE STAGE (bug test S2-10, 2026-11-13). It
+  // used to open at the zoom that filled the height of an upright phone,
+  // which cut performers off both sides on the first look, while the
+  // display's own size chip said 1×. Now the stage stands at the top at its
+  // own height (stageNaturalHeight), every performer in view, and ZOOM IN is
+  // one press away. Leaving FULL SCREEN puts back the zoom from before.
+  const auto = useRef<{ before: StageView } | null>(null);
   useEffect(() => {
     if (!inFull) return undefined;
-    const st = ref.current;
-    if (!auto.current) auto.current = { applied: st.view.zoom, before: st.view };
-    if (st.view.zoom !== auto.current.applied) return undefined;
-    const fill = stageFillZoom(aspect, gw, gh, region);
-    if (fill !== st.view.zoom) {
-      auto.current.applied = fill;
-      const sel = st.selectedId ? st.p.objects.find((o) => o.id === st.selectedId) : undefined;
-      st.onView({ zoom: fill, cx: sel?.x ?? 0.5, cy: sel?.y ?? 0.5 });
-    }
+    if (!auto.current) auto.current = { before: ref.current.view };
     return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inFull, gw, gh, aspect, region]);
+  }, [inFull]);
   useEffect(() => {
     if (!inFull) return undefined;
     return () => {
@@ -281,12 +281,14 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // names left out because the stage is crowded at this size (not because the
   // user switched names off): the area says so under the drawing
   const leftOut = showNames ? plan.dropped.length : 0;
+  // performers named without their mix code (the code is on their monitor)
+  const codesOut = showNumbers ? plan.bare.length : 0;
   const leftOutRef = useRef(onNamesLeftOut);
   leftOutRef.current = onNamesLeftOut;
   useEffect(() => {
     // the copy that is on screen reports: the glass, or the FULL SCREEN one
-    leftOutRef.current?.(leftOut);
-  }, [leftOut, inFull]);
+    leftOutRef.current?.(leftOut, codesOut);
+  }, [leftOut, codesOut, inFull]);
 
   const grid = useMemo(() => (p.stage.grid ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T]);
 
@@ -516,7 +518,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
     </View>
       {/* THE KEY: always there, directly under the stage frame, part of the
           drawing. Its own box, under the one that takes the drags. */}
-      <StageKey project={p} entries={keyEntries} layout={keyLayout} w={w} gw={gw} />
+      <StageKey project={p} entries={keyEntries} layout={keyLayout} w={w} gw={gw} shownH={split.scrolls ? split.key * s : undefined} />
     </View>
   );
 }

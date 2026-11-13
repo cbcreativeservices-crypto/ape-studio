@@ -15,10 +15,11 @@
  * file the build does not contain; the name below is the one the reducer
  * prints in its FAULT line (the test pins the two together). A planted fault
  * does not name itself (lead's decision 10): until the learner has produced
- * the symptom, the chain is drawn `named: false`. It then still shows the
- * TRUE file name the event asks for (as a real tool would), but with no mark,
- * no red and no verdict. The mark and the words BROKEN LINK come only with
- * `named: true`.
+ * the symptom, the chain is drawn `named: false`: the door layer's file reads
+ * "?" (as the DOOR FILE readout does), with no mark, no red and no verdict
+ * (bug test 2026-11-13, B-S1-02: the wrong name printed there was the answer
+ * before the symptom). The name, the mark and the words BROKEN LINK come only
+ * with `named: true`.
  *
  * The EVENT card names only what the lab has taught by page 6: the event's
  * name, the files its layers ask for, and the bus it is sent to (the name on
@@ -88,6 +89,10 @@ export function doorChain(missing: boolean, view: ChbChainView = {}): ChbChain {
     const late = l.delayS ? `, ${l.delayS} s later` : '';
     if (!isDoor) return { k: i === 0 ? 'LAYERS' : '', v: `${l.id} asks for ${gaAsset(id)?.file ?? id}${late}` };
     // the door layer: one file for each way the door moves
+    // planted and not yet met: the card names no file (bug test 2026-11-13,
+    // B-S1-02: the wrong name beside card 1's file let the learner compare
+    // them before the symptom). It reads "?", as DOOR FILE does.
+    if (missing && !named) return { k: i === 0 ? 'LAYERS' : '', v: `${l.id} asks for ? (not tested since the fault began: press the door key)` };
     const which = missing ? '' : closing ? ' (when the door closes)' : ' (when the door opens)';
     return { k: i === 0 ? 'LAYERS' : '', v: `${l.id} asks for ${asksFor}${which}${flagged ? ': not in the build' : ''}`, bad: flagged };
   });

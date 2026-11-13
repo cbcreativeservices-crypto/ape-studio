@@ -37,7 +37,7 @@ import { gaTerms } from '../gaTerms';
 import { gaPlaying, listenerOf } from '../model/gaModel';
 import { gaDispatch, gaGet, gaNow, useGa } from '../model/gaStore';
 import { zoneAt } from '../model/gaWorld';
-import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen } from './chbBits';
+import { TrayBox, TrayChip, TrayLocked, TrayRow, onOff, useCountWhen } from './chbBits';
 import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbJoinsPassed, chbLoops, chbRawBed } from './data/chbScene';
 import { G10 } from './guides/p10';
 import { facingKey, gaFact, stepKey, useSince } from './shared';
@@ -54,7 +54,7 @@ const setPileUp = (on: boolean) => {
 
 /** The SOUNDS tray: the background and the door, and the rule for when a
  *  bed starts. Two one-line rows and nothing else. */
-function SoundsTray() {
+function SoundsTray({ unnamed }: { unnamed: boolean }) {
   const s = useGa();
   const beds = chbBeds(s);
   const sceneOn = beds.room + beds.yard > 0 || gaPlaying(s, 'fountain');
@@ -64,10 +64,15 @@ function SoundsTray() {
         <TrayChip label={onOff('SCENE', sceneOn)} selected={sceneOn} onPress={() => gaDispatch({ type: 'scene', on: !sceneOn })} />
         <TrayChip label={s.doorOpen ? 'CLOSE DOOR' : 'OPEN DOOR'} onPress={() => gaDispatch({ type: 'door' })} />
       </TrayRow>
-      <TrayRow head="A BED STARTS">
-        <TrayChip label={marked('ONCE, WITH THE SCENE', !s.faults.bedPileUp)} selected={!s.faults.bedPileUp} onPress={() => setPileUp(false)} />
-        <TrayChip label={marked('ON EVERY UPDATE', s.faults.bedPileUp)} selected={s.faults.bedPileUp} onPress={() => setPileUp(true)} />
-      </TrayRow>
+      {unnamed ? (
+        // the fault is planted and its symptom not yet met: the ✓ on the wrong rule would name it (bug test B-S1-01)
+        <TrayLocked head="A BED STARTS" note="Switch SCENE on and take a few steps without crossing the doorway first. Then this rule opens." />
+      ) : (
+        <TrayRow head="A BED STARTS">
+          <TrayChip label={marked('ONCE, WITH THE SCENE', !s.faults.bedPileUp)} selected={!s.faults.bedPileUp} onPress={() => setPileUp(false)} />
+          <TrayChip label={marked('ON EVERY UPDATE', s.faults.bedPileUp)} selected={s.faults.bedPileUp} onPress={() => setPileUp(true)} />
+        </TrayRow>
+      )}
     </TrayBox>
   );
 }
@@ -120,7 +125,13 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const silenced = useCountWhen(gaFact(s, 'stopAll'), loopsBefore.current > 0 && loops === 0) > 0;
   loopsBefore.current = loops;
   // the planted fault's symptom happened on this visit: an update started a bed again
-  const pileSeen = since('bedPileUp') > 0;
+  const pileCount = since('bedPileUp');
+  const pileSeen = pileCount > 0;
+  // `startedAt` = how many pile-up lines the visit had when START THE FAULT
+  // was pressed; until one more happens, the rule row names nothing (bug
+  // test 2026-11-13, B-S1-01: the tray showed "✓ ON EVERY UPDATE")
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const unnamed = startedAt !== null && s.faults.bedPileUp && pileCount <= startedAt;
   // the card is active while the rule is wrong, and afterward while the stacked copies still play
   const faultArmed = s.faults.bedPileUp || (pileSeen && (beds.room > 1 || beds.yard > 1));
 
@@ -140,7 +151,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     // key's own label, SOUNDS, says what is on
     valueLabel: sceneOn ? 'ON' : 'OFF',
     valueA11y: `the scene’s background is ${sceneOn ? 'on' : 'off'}; the door is ${s.doorOpen ? 'open' : 'closed'}`,
-    render: () => <SoundsTray />,
+    render: () => <SoundsTray unnamed={unnamed} />,
   };
   const windKey: DockParam = {
     kind: 'options',
@@ -198,8 +209,12 @@ function Page({ ctx }: { ctx: PageCtx }) {
           // still active after the rule is corrected, while the stacked copies play on
           armed={faultArmed}
           fixed={pileSeen && !s.faults.bedPileUp && beds.room <= 1 && beds.yard <= 1}
-          seen={pileSeen}
-          onStart={() => setPileUp(true)}
+          seen={pileSeen && !unnamed}
+          firstHint="First make the problem happen: open SOUNDS, switch SCENE on, close the tray, then take several steps without crossing the doorway. Watch BEDS and PLAYING."
+          onStart={() => {
+            setStartedAt(pileCount);
+            setPileUp(true);
+          }}
           hints={[
             'With SCENE on, take several steps without crossing the doorway. Watch BEDS and PLAYING in the readouts.',
             'The FAULT lines in the log say a bed was STARTED AGAIN by a position update, and count the copies.',

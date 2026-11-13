@@ -41,9 +41,16 @@ export const spCanRedo = (h: SpHistory): boolean => h.future.length > 0;
 /** What a project SAYS, apart from what it is called: everything except the
  *  revision, what was shared, the status and the time stamp. */
 function contentKey(p: SpProject): string {
-  const named: SpProject = { ...p, revision: 0, frozenRevision: 0, status: 'draft', venueConfirmed: false, modifiedAt: 0 };
+  // Snap is never printed, and the grid only on a plot drawn to scale: they
+  // are screen preferences there, not what the document says.
+  const toScale = !!(p.stage.width && p.stage.depth);
+  const stage = { ...p.stage, snap: true, grid: toScale ? p.stage.grid : true };
+  const named: SpProject = { ...p, stage, revision: 0, frozenRevision: 0, status: 'draft', venueConfirmed: false, modifiedAt: 0 };
   return JSON.stringify(named);
 }
+
+/** The screen preferences kept in the project (see contentKey). */
+const sameView = (a: SpProject, b: SpProject): boolean => a.stage.snap === b.stage.snap && a.stage.grid === b.stage.grid;
 
 /** True when two states say the same thing (they may differ in revision,
  *  status and time). */
@@ -72,7 +79,8 @@ export function spHistoryApply(h: SpHistory, next: SpProject): SpHistory {
   // shared, so `frozenRevision` stands still, and that is what is refused.)
   if (next.revision !== h.present.revision && next.frozenRevision === h.present.frozenRevision) return h;
   // …and sharing / status is kept, but is not something UNDO steps over.
-  const same = next.frozenRevision === h.present.frozenRevision && next.status === h.present.status && next.venueConfirmed === h.present.venueConfirmed;
+  // (A switch of Snap, or of an unprinted grid, is kept the same way.)
+  const same = next.frozenRevision === h.present.frozenRevision && next.status === h.present.status && next.venueConfirmed === h.present.venueConfirmed && sameView(next, h.present);
   return same ? h : spHistoryReplace(h, next);
 }
 
@@ -85,15 +93,24 @@ export function spCarryShared(target: SpProject, current: SpProject): SpProject 
   return { ...target, frozenRevision: frozen, revision: Math.max(target.revision, frozen + 1), status: 'draft', venueConfirmed: false };
 }
 
+/** A state from history keeps the screen preferences set NOW (Snap, and an
+ *  unprinted grid): UNDO reverses edits, not a switch that is not one. */
+function keepView(target: SpProject, now: SpProject): SpProject {
+  const toScale = !!(target.stage.width && target.stage.depth);
+  const grid = toScale ? target.stage.grid : now.stage.grid;
+  if (target.stage.snap === now.stage.snap && target.stage.grid === grid) return target;
+  return { ...target, stage: { ...target.stage, snap: now.stage.snap, grid } };
+}
+
 export function spHistoryUndo(h: SpHistory): SpHistory {
   if (!h.past.length) return h;
   const past = h.past.slice(0, -1);
   const target = h.past[h.past.length - 1];
-  return { past, present: spCarryShared(target, h.present), future: [h.present, ...h.future] };
+  return { past, present: keepView(spCarryShared(target, h.present), h.present), future: [h.present, ...h.future] };
 }
 
 export function spHistoryRedo(h: SpHistory): SpHistory {
   if (!h.future.length) return h;
   const [target, ...future] = h.future;
-  return { past: [...h.past, h.present], present: spCarryShared(target, h.present), future };
+  return { past: [...h.past, h.present], present: keepView(spCarryShared(target, h.present), h.present), future };
 }

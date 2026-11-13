@@ -127,7 +127,14 @@ export function InputsArea() {
     // `selKey` is the selection: the effect runs when the selected row changes.
   }, [selKey]);
 
-  const move = (id: SpId, by: -1 | 1) => ed.apply((q) => spMoveRow(q, patchId, id, by));
+  // A row move renumbers too, so on a revision that may have been sent it
+  // asks first, as RENUMBER and SORT do (bug test S3 12)
+  const move = (id: SpId, by: -1 | 1) => {
+    const run = () => ed.apply((q) => spMoveRow(q, patchId, id, by));
+    const shared = spSharedNotice(p);
+    if (shared) confirmDialog('Move a row in a stage plot that may have been sent?', shared, 'Move it', run);
+    else run();
+  };
 
   /** PLACE ON THE STAGE for a row that is not drawn yet tells the stage which
    *  row it is about, and remembers that this area sent it. */
