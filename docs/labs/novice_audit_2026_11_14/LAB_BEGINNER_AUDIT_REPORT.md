@@ -38,6 +38,15 @@ First-pass entries: 837 (sum of the column). Follow-up entries: 113 (10 + 50 + 3
 
 ---
 
+### Late addition: G8 Part E (Miking Placement Studio, reached the files after this report was merged)
+G8 used the Placement Studio ZONE key through all its zones in every Miking lesson (detail: G8_MikingLesson.md, "Part E").
+- **A zone pick does not always count.** On Foley Footsteps (checked by hand), picking a ZONE moves the mic, but the words and the activity count ignore the new zone. The automated pass showed signs of the same in 7 more lessons. Overlapping zones seem to be the cause. *(Possible bug: verify before fixing.)*
+- **Counts that cannot be right.** The activity count can read "7 of 2", and the dock and the display show two different numbers for the same mic position. *(Possible bug. Note that progress should never show "N of total" in any case.)*
+- **No ZONE key at all** in the 13 group lessons and the 6 sport-action lessons, so a beginner has no quick jump there.
+- **Suggestion:** a ZONE pick must land inside that zone and count. Give the group and sport lessons a ZONE jump too, or count the zone they start in. Size S/M; it lives in the shared Miking engine.
+
+---
+
 ## 2. The cross-lab patterns, ranked
 
 Ranked by how much each one hurts a beginner, times how many labs it touches. "SHARED" means one change in the shared frame fixes many labs at once.

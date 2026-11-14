@@ -66,6 +66,8 @@ It opens with the lesson's own ABOUT THESE STARTING POINTS note (good: "a 22 × 
 14. **Blank display while the drawing loads:** on Placement steps the display stayed an empty black box for 2–9 s in the web preview while readouts were already filled; show a "drawing loading…" line or outline. Check on a phone. (S, SHARED)
 15. **Six-key docks truncate at 390 wide** ("POSITI…", "SIDE…", "SETUP SMALL…") on Placement steps; shorter labels or a second row. (S, SHARED)
 16. **Words name the wrong key** in places: "STEP through the stages" with a "STAGE ▸" key (M11 Channel plans). Quote the key exactly. (S, copy)
+18. **A ZONE pick must land in that zone** (Part E, confirmed by hand on F01): overlapping zones make the words and the activity ignore the zone the learner just chose; and give the 13 group lessons and the sport lessons a ZONE jump too, or count the zone they start in. (S/M, SHARED engine)
+19. **One activity wording** ("so far" / "done:" / "7 of 2" today). (S, SHARED copy)
 17. **Size the lesson for the learner** (from Part C): ~30 steps / ~7,000 words each; say so on Start here and offer the "foundations" stopping point after module 2. (S, SHARED)
 
 **Hobbyist (shared layout):** The setups-on-a-drawing and the Placement Studio are exactly what a home recordist wants; "I already mic kicks" + quick check respects them. They will still trip on SETUP/SETUPS, STEP as a tray, ZONE, and the double ⓘ, and may skip module 6's maths.
@@ -489,3 +491,35 @@ Operated by hand with real taps and drags, 390 x 844, fresh opens by link:
 
 **First 30 seconds (rewrite suggestion)**
 On the family hub: "New to miking? Start with Lead Vocal (or Kick Drum / Acoustic Guitar). Each lesson is silent and drawn; modules 1–2 (about 10 minutes) give you the foundation." In a lesson, the title reads the INSTRUMENT ("KICK DRUM"), the Start-here step adds "About 30 short steps. Modules 1–2 are the foundation; 3–8 go deeper — come back any time", and the first drawing appears with a label pointing at the part to tap first.
+
+---
+
+## Part E · The Placement Studio of EVERY lesson operated (ZONE key, all zones)
+
+**How:** for each of the 128 lessons, opened fresh from the hub, went to Module 4 · Step 2 (PLACE · Place the mic, or the lesson's own placement page), tapped the dock's ZONE key and picked every zone in its chooser in turn (up to 7), reading after each pick the NOW line (where the mic is and which zone the app thinks it is in) and the Activity line (what finishes the module). Then left by WHAT'S LEFT › DONE · BACK TO LABS. Taps were real pointer events on the on-screen keys; four suspicious results were then re-done by hand with the mouse (Triangle, Wurlitzer, Foley Footsteps, String Quartet) and two false alarms were dropped (see "checked and cleared").
+
+### E1 · What a beginner gets, by family
+| Family | ZONE key present | Zones per lesson | Activity finishes by tapping ZONE twice? |
+|---|---|---|---|
+| Membranophones (17) | 15 of 17 (none on Drum Room Mics; M11 has Channel plans instead) | 2–7 | yes in all 15 |
+| Idiophones (24) | 23 of 24 (none on Splash Cymbal) | 2–7 | yes in all 23 |
+| Aerophones (18) | 17 of 18 (none on French Horn) | 2–4 | yes in 17; Accordion counted 3 of its 4 zones |
+| Chordophones (20) | 20 of 20 | 2–8 | yes in 20; Sitar counted 3 of its 4 zones |
+| Voice & Ensemble (16) | 2 of 16 — only E01 Lead Vocal and E03 Rap. E07 Singer with Guitar/Piano has none (activity stays "1 so far"); the 13 group lessons have NO ZONE key: the array is moved with MOVE (pick an axis, then a fader) and "let go to rest it" (opened by hand on E11) | E01: 4, E03: 2 | E01, E03 yes. The 13 group lessons start AT a suggested starting point yet read "Activity: zones rested in, clear of the players: 0. Goal: 2." — resting where the lesson put you does not count; the learner must drag a fader into two zones. |
+| Foley, Field & Scientific (16) | 11 of 16 (none on F03 Props, F05 Perspective, F07 Wildlife, F09 Location Speech, F10 Spatial; F10 has no activity line at all) | 2–5 | **F01 Foley Footsteps: no** (see E2); F06 Ambience and F08 Pass-bys counted one zone fewer than picked; the measurement lessons F11–F16 yes |
+| Sports & Broadcast (17) | 8 of 17 (none on B08 Audience, B10 Sideline, B11 Athletes, B12–B17 sport action) | 2–3 | B01, B06, B09, B03 yes; **B07 Voiceover, B05 Lavalier and B02 News Anchors: no** (stayed at 1); B04 Boom counted 2 of 3. The sport-action lessons (B12–B17) open at "0 of 2" with no ZONE key. |
+
+### E2 · Confirmed by hand — a ZONE pick that the lesson does not recognise
+**F01 Foley Footsteps and Surfaces, 4.2:** ZONE ▸ → "Farther back, more of the room". The mic visibly moves (bezel 1.4 m → 1.75 m, drawing shows it in the FARTHER BACK fan), but the bezel still reads ZONE "IN · start here", the NOW line still says "Zone: In front, a little to one side", and "Activity: … 1 so far" does not move. The two blue zones overlap and the first one wins. A beginner taps the zone the lesson offers, sees no change in the words, and cannot finish the module that way. The same pattern (a picked zone not counted) showed in B07, B05, B02, F06, F08, B04, Accordion and Sitar in the automated pass. (S/M, SHARED engine — the zone a ZONE pick lands in should be the zone the words and the activity report.)
+Screenshot: `tool-results/mcp-Claude_Browser-blob-1794658778350-18neiy.jpg` (this session).
+
+### E3 · Two numbers for the same thing
+On F01 4.2 the bezel reads AIM "≈ 0°" while the dock's AIM key reads "≈ -40°", and the bezel reads "≈ 1.75 m" while the POSITION slider's label reads "≈ 1.4 m out toward the mics". They may measure from different references, but nothing says so; a beginner sees two answers to "where is my mic?". (S, SHARED — label the reference on the dock, or show one number.)
+
+### E4 · Activity wording differs between lessons
+Three forms for the same thing: "1 so far" (most), "done: 1" (Tonbak, Tabla, the hanging-metal lessons, Harmonica, Accordion, Pipe Organ) and "1 of 2" which then reads **"6 of 2"** or **"7 of 2"** after more zones (Congas, Bongos, Timbales, Djembe, SPK, Rhodes, Wurlitzer, Electric Guitar, Pedal Steel, Electric Bass, and "0 of 2" on the sport lessons). "7 of 2" looks like an error to a beginner, and it is an "N of total" form the owner avoids. One wording everywhere, e.g. "Rested in 2 zones ✓" once the goal is met. (S, SHARED copy)
+
+### E5 · Checked and cleared (not problems)
+- Triangle / Finger Cymbals / Bar Chimes / Gong / Tonbak / Tabla: the automated read cut off the "done: N" part of the line; re-done by hand on Triangle — "done: 2 (In front, a little to one side; A little farther back)". Counting works.
+- Wurlitzer and others flagged "no change": the zones differ only later in the NOW line (off-axis distance); re-done by hand — every zone moves the mic.
+- Kick Drum's ZONE that did nothing in Part A: it happens when the Placement Studio starts from the TWO MICS setup (boundary plate, a single zone); started from ONE MIC, Kick has 4 working zones. Part A's finding stands only for that start; the fix is to show "one zone for this mic" instead of a key that does nothing.
