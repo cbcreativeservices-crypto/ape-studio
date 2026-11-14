@@ -717,8 +717,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-14 04:21 · ccode · 0423bc53
 changed: docs: beginner audit — G8 Part E (Miking zones) + report addendum [MD:D62]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. docs only: G8's late Miking zone pass and a report addendum.
+needs: [MD:D62] nothing from Comp A.
 
 
 ### 2026-11-14 04:09 · ccode · b0424169
