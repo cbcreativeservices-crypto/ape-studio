@@ -507,8 +507,10 @@ describe('shaped stages: the on-screen Stage drawing (phone 390, 375, 320 wide)'
           for (const it of items) if (it.id !== pieces[i].id && !it.box.sized && hit(pieces[i].box, G.stageBoxBounds(it.box))) bad.push(`"${pieces[i].what}" over the symbol of ${it.text || it.id}`);
         }
         assert.deepEqual(bad, [], `${name} · ${phone}`);
-        // every performer is still named
-        for (const it of items.filter((x) => x.person)) assert.ok(plan.labels.some((l) => l.id === it.id && l.lines.length), `${name} · ${phone}: ${it.text} named`);
+        // every performer is still named, by initials, or counted out (owner
+        // 2026-11-13: build the remaining held items: a performer's name never
+        // lies over a neighbor's drawing)
+        for (const it of items.filter((x) => x.person)) assert.ok(plan.labels.some((l) => l.id === it.id && l.lines.length) || plan.peopleOut.includes(it.id), `${name} · ${phone}: ${it.text} named`);
       }
     });
   }

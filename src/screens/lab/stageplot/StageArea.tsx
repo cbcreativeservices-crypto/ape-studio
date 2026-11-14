@@ -65,6 +65,7 @@ import type { DockParam } from '../rack/rackTypes';
 import { useSpEditor } from './spContext';
 import { Button, HelpTip, IssueList, Note, Sheet, Switch } from './spForm';
 import { goToIssue, runIssueAction } from './spIssueActions';
+import { InsideOffer } from './InsideOffer';
 import { StageInspector } from './stage/StageInspector';
 import { StageMovePad } from './stage/StageMovePad';
 import { StageObjectList } from './stage/StageObjectList';
@@ -133,6 +134,9 @@ export function StageArea() {
   /** Performers whose name is left out at this size, so no name touches
    *  another or crosses the edge of the stage (2026-11-13 R2). */
   const [peopleOut, setPeopleOut] = useState(0);
+  /** Performers shown by their initials at this size, and who is who
+   *  (owner 2026-11-13: build the remaining held items). */
+  const [shortNames, setShortNames] = useState<{ count: number; words: string }>({ count: 0, words: '' });
   /** FULL SCREEN: the object whose details are open in the OBJECT tray. */
   const [detailsFor, setDetailsFor] = useState<SpId | null>(null);
 
@@ -200,6 +204,7 @@ export function StageArea() {
         setNumbersOut(nums);
         setPeopleOut(people);
       }}
+      onShortNames={(count, words) => setShortNames((cur) => (cur.count === count && cur.words === words ? cur : { count, words }))}
     />
   );
 
@@ -399,13 +404,16 @@ export function StageArea() {
           <Text style={styles.status} accessibilityLiveRegion="polite">
             {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel, p.stage)}, ${stageFacingWord(sel.rot, p.stage)}).` : 'Nothing is selected.'}`}
           </Text>
-          {leftOut > 0 || codesOut > 0 || crowded > 0 || numbersOut > 0 || peopleOut > 0 ? (
+          {leftOut > 0 || codesOut > 0 || crowded > 0 || numbersOut > 0 || peopleOut > 0 || shortNames.count > 0 ? (
             <Note>
               {[
-                // "every performer is named" only while no name is covered (R2-SP1-02)
-                leftOut > 0 ? `At this size ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} not shown, to keep the names apart.${numbersOut > 0 ? '' : ' The equipment keeps its channel numbers and mix codes.'}${crowded > 0 || peopleOut > 0 ? '' : ' Every performer is named.'}` : '',
-                peopleOut > 0 ? `${peopleOut === 1 ? '1 performer’s name is' : `${peopleOut} performers’ names are`} not shown at this size, so no name touches another or crosses the edge of the stage.` : '',
-                numbersOut > 0 ? `${numbersOut === 1 ? '1 piece of equipment is' : `${numbersOut} pieces of equipment are`} shown without ${numbersOut === 1 ? 'its' : 'their'} channel numbers or mix codes at this size, so nothing is covered and nothing crosses the edge of the stage.` : '',
+                // what each count means, in words that are true of the drawing
+                // (owner 2026-11-13: build the remaining held items). "Every
+                // performer is named" only while every whole name is shown.
+                leftOut > 0 ? `At this size, ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} hidden so that no name covers another name or drawing.${numbersOut > 0 ? '' : ' The equipment keeps its channel numbers and mix codes.'}${crowded > 0 || peopleOut > 0 || shortNames.count > 0 ? '' : ' Every performer is named.'}` : '',
+                shortNames.count > 0 ? `${shortNames.count === 1 ? '1 performer’s name is' : `${shortNames.count} performers’ names are`} shortened at this size: ${shortNames.words}.` : '',
+                peopleOut > 0 ? `At this size, ${peopleOut === 1 ? '1 performer’s name is' : `${peopleOut} performers’ names are`} hidden so that no name covers another name or drawing, or runs past the edge of the stage.` : '',
+                numbersOut > 0 ? `At this size, ${numbersOut === 1 ? '1 piece of equipment shows' : `${numbersOut} pieces of equipment show`} no channel number or mix code: there is no clear spot beside ${numbersOut === 1 ? 'its' : 'their'} own symbol, inside the stage.` : '',
                 crowded > 0 ? `${crowded === 1 ? '1 performer’s name touches' : `${crowded} performers’ names touch`} another label at this size.` : '',
                 codesOut > 0 ? `${codesOut === 1 ? '1 performer is' : `${codesOut} performers are`} named without ${codesOut === 1 ? 'their mix code' : 'their mix codes'} at this size. Each code is still on that performer’s monitor.` : '',
                 'Press ZOOM IN to see every name and number. In FULL SCREEN, turn the phone sideways for a larger stage.',
@@ -414,6 +422,8 @@ export function StageArea() {
                 .join(' ')}
             </Note>
           ) : null}
+          {/* objects a change of shape left across the stage's edge (owner 2026-11-13: build the remaining held items) */}
+          <InsideOffer />
           <Text style={styles.body}>Drag an object to move it; tap it to select it. ADD opens the palette, OBJECT moves and turns what is selected, and NAME, LINKS AND MORE opens the rest. You are looking down on the stage, with the audience at the bottom: stage right is on your left.</Text>
           <Text style={styles.caption}>A performer, their instrument, their microphone and their wedge are separate objects. Group them in OBJECT to move them together.</Text>
 

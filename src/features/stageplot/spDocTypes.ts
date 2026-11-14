@@ -48,7 +48,10 @@ export type SpDocPlotItem = {
    *  label could not be placed right beside the symbol without sitting on
    *  another object (review 2, 2026-11-12). A renderer draws it as a hairline
    *  in the muted gray, under the symbols. Absent = no line. */
-  leader?: { from: { x: number; y: number }; to: { x: number; y: number } };
+  /** `via`: a leader with one bend (owner 2026-11-13: build the remaining
+   *  held items), drawn from → via → to, where every straight line would
+   *  run behind another name. */
+  leader?: { from: { x: number; y: number }; to: { x: number; y: number }; via?: { x: number; y: number } };
 };
 
 export type SpDocPlot = {
@@ -103,7 +106,7 @@ export type SpDocDeck = {
   mainW: number;
   mainD: number;
   /** The shape fields the words are said from. */
-  stage: { shape: 'rect' | 'thrust' | 'round'; wings: boolean; thrustWidth: number | null; thrustDepth: number | null; wingWidth: number | null; roundForm: 'circle' | 'square'; roundRef: string; width: number | null; depth: number | null };
+  stage: { shape: 'rect' | 'thrust' | 'round'; wings: boolean; thrustWidth: number | null; thrustDepth: number | null; wingWidth: number | null; roundForm: 'circle' | 'square'; roundRef: string; width: number | null; depth: number | null; roundSides?: 'clock' | 'numbered' };
 };
 
 /** One entry of the plot's key: a symbol, drawn small, and what it is. */

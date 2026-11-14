@@ -33,6 +33,7 @@ import { useSpEditor } from '../spContext';
 import { Button, MoreDetails, Note, Switch, TextField } from '../spForm';
 import { ChoirSize } from './ChoirSize';
 import { StageMovePad } from './StageMovePad';
+import { TimpaniSetup } from './TimpaniSetup';
 import { stageFacingWord, stagePosFraction, stagePosUnit, stagePosValue, stageSizeFraction, stageTypedWords } from './stageGeom';
 import { stageDeviceChoices, stageInputBadges, stageInputChoices, stageKindName, stageLinkMode, stageListName, stageMoveExact, stageObjectKindName, stagePerformerChoices, stageSourceChoices } from './stageLinks';
 
@@ -192,6 +193,17 @@ export function StageInspector({
             CHOIR SIZE
           </Text>
           <ChoirSize value={spChoirOf(o)} onChange={(c) => set({ choir: spChoirClean(c) })} mics={o.sourceId ? p.inputs.filter((i) => i.sourceId === o.sourceId && (i.capture === 'mic' || i.capture === 'wireless')).length : undefined} />
+        </>
+      ) : null}
+
+      {/* ── a set of timpani's setup (round 3): the drawing and the printed
+          symbol follow it ── */}
+      {o.kind === 'timpani' ? (
+        <>
+          <Text style={styles.heading} accessibilityRole="header">
+            TIMPANI SETUP
+          </Text>
+          <TimpaniSetup value={o.timpaniSetup === 'german' ? 'german' : 'american'} onChange={(s) => set({ timpaniSetup: s })} />
         </>
       ) : null}
 

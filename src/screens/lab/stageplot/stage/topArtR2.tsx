@@ -14,17 +14,19 @@
  *     in two rows (naturals nearest the player, the low C at the player's
  *     LEFT, +x), the cord through each row at the bars' nodes;
  *   • timpani (32, 29, 26 and 23 in, American setup: the largest at the
- *     timpanist's left): each drum's copper bowl, its chrome counterhoop, the
- *     head, the tuning handles round the hoop, the tuning gauge and the pedal
- *     on the player's side; the timpanist's stool in the middle;
+ *     timpanist's left; or, round 3, the German setup, the largest at the
+ *     right, from its own layout): each drum's chrome counterhoop (the bowl
+ *     is under it), the head, the tuning handles round the hoop, the tuning
+ *     gauge and the pedal on the player's side; the timpanist's stool;
  *   • flute (a concert flute, 0.67 m, held to the player's right): the
  *     crown, the lip plate and embouchure hole, the head joint, the body
  *     with its key cups, the foot joint with its rollers. The tube is drawn
  *     about 1.3 × its real 19 mm so it reads at phone size;
- *   • hand harmonium (3¼ octaves, 39 keys, 0.60 × 0.30 m) on the rug the
- *     player sits on: the wooden case, the 23 white and 16 black keys toward
- *     the player, the row of stop and drone knobs behind the keys, the top
- *     cover with its grille, the bellows on the back panel, hinged at the
+ *   • hand harmonium (the Bina No. 23B, 3¼ octaves, 39 keys, 0.546 ×
+ *     0.305 m: round 3) on the rug the player sits on: the wooden case, the
+ *     23 white and 16 black keys toward the player, the four stop knobs and
+ *     two smaller drone knobs behind the keys, the plain top cover with its
+ *     catches, the bellows on the back panel, hinged at the
  *     player's right end and opened at the left end by the left hand;
  *   • harmonica: the player's dynamic microphone on a straight stand (the
  *     round cast base, the clip, the microphone toward the player, its cable
@@ -34,7 +36,7 @@
  * Pure drawings: no state, no text, no image file.
  */
 import { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
-import { SP_FLUTE, SP_HARMONICA, SP_HARMONICA_HARPS, SP_HARMONIUM, SP_MARIMBA, SP_MARIMBA_ACC, SP_TIMPANI, spMarimbaFar, spMarimbaNear, spMarimbaW, spMarimbaX } from '../../../../features/stageplot/spSymbols';
+import { SP_FLUTE, SP_HARMONICA, SP_HARMONICA_HARPS, SP_HARMONIUM, SP_HARMONIUM_KNOBS, SP_MARIMBA, SP_MARIMBA_ACC, SP_TIMPANI, spMarimbaFar, spMarimbaNear, spMarimbaW, spMarimbaX, spTimpaniLayout, spTimpaniPedalDeg, type SpTimpaniSetup } from '../../../../features/stageplot/spSymbols';
 import type { TopArtMap } from './topArtTypes';
 
 /** Floor units to the meter. */
@@ -127,26 +129,29 @@ function MarimbaTop() {
  *  the small ones. */
 const handles = (size: number): number => (size >= 29 ? 8 : 6);
 
-function Drum({ d }: { d: (typeof SP_TIMPANI.drums)[number] }) {
+function Drum({ d, stool }: { d: (typeof SP_TIMPANI.drums)[number]; stool: { x: number; y: number } }) {
   const cx = m(d.x);
   const cy = m(d.y);
   const rb = m(d.bowl);
   const rh = m(d.head);
   // toward the timpanist's stool: the gauge and the pedal are on that side
-  const vx = SP_TIMPANI.stool.x - d.x;
-  const vy = SP_TIMPANI.stool.y - d.y;
+  const vx = stool.x - d.x;
+  const vy = stool.y - d.y;
   const l = Math.hypot(vx, vy);
   const ux = vx / l;
   const uy = vy / l;
   const deg = (Math.atan2(uy, ux) * 180) / Math.PI;
+  // the pedal reaches about 15 cm past the bowl toward the player's feet, a
+  // little downstage of the stool (visual review, round 3)
+  const pa = spTimpaniPedalDeg(d, stool);
   const n = handles(d.size);
   return (
     <G>
       {/* the pedal, under the bowl on the player's side */}
-      <G transform={`translate(${cx} ${cy}) rotate(${deg})`}>
-        <Rect x={rb - 0.8} y={-2.2} width={4.0} height={4.4} rx={0.6} fill="#2a2c31" stroke={OUTLINE} strokeWidth={0.25} />
-        <Rect x={rb + 0.2} y={-1.7} width={2.6} height={3.4} rx={0.4} fill="#4a4e56" />
-        <Path d={`M${rb + 0.6} -1.2 h1.8 M${rb + 0.6} 0 h1.8 M${rb + 0.6} 1.2 h1.8`} stroke="#2a2c31" strokeWidth={0.25} />
+      <G transform={`translate(${cx} ${cy}) rotate(${pa.toFixed(2)})`}>
+        <Rect x={rb - 0.8} y={-2.2} width={5.6} height={4.4} rx={0.6} fill="#2a2c31" stroke={OUTLINE} strokeWidth={0.25} />
+        <Rect x={rb + 0.2} y={-1.7} width={4.2} height={3.4} rx={0.4} fill="#4a4e56" />
+        <Path d={`M${rb + 0.6} -1.2 h3.4 M${rb + 0.6} 0 h3.4 M${rb + 0.6} 1.2 h3.4`} stroke="#2a2c31" strokeWidth={0.25} />
       </G>
       {/* from above the chrome counterhoop is the outermost ring: the copper
           bowl is under it. Its band, its shine, then the head */}
@@ -170,11 +175,16 @@ function Drum({ d }: { d: (typeof SP_TIMPANI.drums)[number] }) {
   );
 }
 
-function TimpaniTop() {
-  const s = SP_TIMPANI.stool;
+/** A set of timpani in either setup (round 3, 2026-11-13): the American
+ *  (the largest drum at the timpanist's left) or the German (at the right),
+ *  each drawn from its own layout in spSymbols (spTimpaniLayout), the one
+ *  the print symbol uses. The shadow still falls down and to the right. */
+export function TimpaniSetTop({ setup }: { setup: SpTimpaniSetup }) {
+  const T = spTimpaniLayout(setup);
+  const s = T.stool;
   return (
     <G>
-      {SP_TIMPANI.drums.map((d) => (
+      {T.drums.map((d) => (
         <Circle key={`s${d.size}`} cx={m(d.x) + 0.8} cy={m(d.y) + 1.2} r={m(d.bowl)} fill={SHADOW} />
       ))}
       <Circle cx={m(s.x) + 0.6} cy={m(s.y) + 0.9} r={m(s.r)} fill={SHADOW} />
@@ -182,11 +192,16 @@ function TimpaniTop() {
       <Circle cx={m(s.x)} cy={m(s.y)} r={m(s.r)} fill="none" stroke={CHROME_DK} strokeWidth={0.45} />
       <Circle cx={m(s.x)} cy={m(s.y)} r={m(s.r) * 0.72} fill="#1b1c20" stroke={OUTLINE} strokeWidth={0.3} />
       <Circle cx={m(s.x)} cy={m(s.y)} r={m(s.r) * 0.45} fill="none" stroke="#2e3036" strokeWidth={0.25} />
-      {SP_TIMPANI.drums.map((d) => (
-        <Drum key={d.size} d={d} />
+      {T.drums.map((d) => (
+        <Drum key={d.size} d={d} stool={s} />
       ))}
     </G>
   );
+}
+
+/** The kind's drawing (the American setup, the default). */
+function TimpaniTop() {
+  return <TimpaniSetTop setup="american" />;
 }
 
 /* ── flute ── */
@@ -273,7 +288,8 @@ function HarmoniumTop() {
       <Rect x={-R + 2.8} y={-R + 2.8} width={2 * R - 5.6} height={2 * R - 5.6} fill="#4a1818" stroke="#6a2a22" strokeWidth={0.3} />
       {/* the harmonium's shadow, then the bellows on its back panel: the
           folds, and the outer board opened at the left-hand end */}
-      <Rect x={x0 + 0.6} y={y0 + 0.9} width={x1 - x0} height={y1 - y0 + m(H.bellowsOpen)} rx={0.4} fill={SHADOW} />
+      {/* (its outline: the case, and the bellows' wedge, shallow at the hinge) */}
+      <Path d={`M${x0 + 0.6} ${y0 + 0.9} L${x1 + 0.6} ${y0 + 0.9} L${x1 + 0.6} ${(y1 + m(H.bellowsOpen) + 0.9).toFixed(2)} L${x0 + 0.6} ${(y1 + m(H.bellowsHinge) + 0.9).toFixed(2)} Z`} fill={SHADOW} />
       <Path d={bellows} fill={LEATHER} stroke={OUTLINE} strokeWidth={0.3} strokeLinejoin="round" />
       {[0.25, 0.5, 0.75].map((f) => (
         <Line key={f} x1={x0 + 0.6} y1={y1 + m(H.bellowsHinge) * f} x2={x1 - 0.4} y2={y1 + m(H.bellowsOpen) * f} stroke="#5a5048" strokeWidth={0.18} />
@@ -305,12 +321,16 @@ function HarmoniumTop() {
       {/* the stop and drone knobs in a row behind the keys: they pull out
           toward the player, so from above each is a short stem with its
           round cap seen side-on */}
-      {[-0.18, -0.12, -0.06, 0, 0.06, 0.12, 0.18].map((x) => (
-        <G key={`k${x}`}>
-          <Rect x={m(x) - 0.14} y={m(H.stopsY) - 0.35} width={0.28} height={0.9} fill="#3a2414" />
-          <Rect x={m(x) - 0.32} y={m(H.stopsY) - 0.75} width={0.64} height={0.42} rx={0.18} fill={TEAK_LT} stroke={TEAK_DK} strokeWidth={0.1} />
-        </G>
-      ))}
+      {/* (the Bina 23B: four stops, and the two smaller drone knobs at the ends) */}
+      {SP_HARMONIUM_KNOBS.map(({ x, drone }) => {
+        const k = drone ? 0.75 : 1;
+        return (
+          <G key={`k${x}`}>
+            <Rect x={m(x) - 0.14 * k} y={m(H.stopsY) - 0.35} width={0.28 * k} height={0.9} fill="#3a2414" />
+            <Rect x={m(x) - 0.32 * k} y={m(H.stopsY) - 0.35 - 0.42 * k} width={0.64 * k} height={0.42 * k} rx={0.18 * k} fill={TEAK_LT} stroke={TEAK_DK} strokeWidth={0.1} />
+          </G>
+        );
+      })}
     </G>
   );
 }

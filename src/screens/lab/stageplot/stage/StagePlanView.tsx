@@ -85,6 +85,8 @@ import {
   stageResizeHandle,
   stageResizeTo,
   stageRoundFrameWords,
+  stageRoundSideWords,
+  stageReadoutWords,
   stageScreenLabelOpts,
   stageSymbolScale,
   stageTransform,
@@ -138,6 +140,10 @@ export type StagePlanProps = {
    *  their mix code: told when a count changes, so the screen can say so in
    *  words. */
   onNamesLeftOut?: (count: number, codesLeftOut: number, crowded?: number, numbersOut?: number, peopleOut?: number) => void;
+  /** The performers shown by their initials at this size, in words ("Iv =
+   *  Iván, Ma = Marisol"; '' when none): told when it changes (owner
+   *  2026-11-13: build the remaining held items). */
+  onShortNames?: (count: number, words: string) => void;
 };
 
 type Drag = {
@@ -252,7 +258,7 @@ function Halo({ x, y, text, fs, anchor, fill, family }: { x: number; y: number; 
   );
 }
 
-export function StagePlanView({ w, h, project, selectedId, view, onView, showNames, showNumbers, turn, onSelect, onMove, onResize, onFullScreen, onNamesLeftOut }: StagePlanProps) {
+export function StagePlanView({ w, h, project, selectedId, view, onView, showNames, showNumbers, turn, onSelect, onMove, onResize, onFullScreen, onNamesLeftOut, onShortNames }: StagePlanProps) {
   const p = project;
   const s = useStageTextScale();
   const gw = w / s;
@@ -336,7 +342,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // ── names and numbers ─────────────────────────────────────────────────────
   const frame = useMemo(() => stageFrameBoxes(gw, gh), [gw, gh]);
   const plan = useMemo(() => {
-    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [], numbersOut: [], crowded: [], peopleOut: [] };
+    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [], numbersOut: [], crowded: [], peopleOut: [], short: [], readout: null };
     const items: StageLabelIn[] = order.map((o, i) => ({
       id: o.id,
       // the selected object is always named on the drawing (there is no
@@ -371,6 +377,14 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
     // the copy that is on screen reports: the glass, or the FULL SCREEN one
     leftOutRef.current?.(leftOut, codesOut, crowded, numbersOut, peopleOut);
   }, [leftOut, codesOut, crowded, numbersOut, peopleOut, inFull]);
+  // performers shown by their initials, said in words under the drawing
+  const shortWords = showNames ? plan.short.map((x) => `${x.text} = ${x.name}`).join(', ') : '';
+  const shortCount = showNames ? plan.short.length : 0;
+  const shortRef = useRef(onShortNames);
+  shortRef.current = onShortNames;
+  useEffect(() => {
+    shortRef.current?.(shortCount, shortWords);
+  }, [shortCount, shortWords, inFull]);
 
   const shaped = spIsShaped(p.stage);
   const grid = useMemo(() => (p.stage.grid && !shaped ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T, shaped]);
@@ -378,6 +392,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const words = spShapeDirections(p.stage);
   const round = spShapeOf(p.stage) === 'round';
   const roundWords = stageRoundFrameWords(p.stage);
+  const sideWords = stageRoundSideWords(p.stage);
 
   // ── touch ─────────────────────────────────────────────────────────────────
   const ref = useRef({ p, boxes, T, s, gw, gh, view, selectedId, inFull, onSelect, onMove, onResize, onView });
@@ -476,7 +491,12 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const midX = gw / 2;
   const midY = (STAGE_FRAME.top + gh - STAGE_FRAME.bottom) / 2;
   const selName = selected ? stageListName(p, selected) : '';
-  const seen = round ? `Stage plot, seen from above, in the round: the audience is on every side, and the ${words.down.replace(' (AUDIENCE)', '').toLowerCase()} is at the bottom: stage right is on the left.` : 'Stage plot, seen from above, with the audience at the bottom: stage right is on the left.';
+  // THE SELECTION'S NAME IN THE FRAME (owner 2026-11-13: build the remaining
+  // held items): when it has no clean place on the drawing at this size, it
+  // is said in the band above the drawing, in the selection's color, in place
+  // of the upstage words for as long as it is selected
+  const readout = plan.readout && selected && plan.readout === selected.id ? stageReadoutWords(selName, gw) : null;
+  const seen = round && sideWords ? `Stage plot, seen from above, in the round: the audience is on every side. ${roundWords.near.toLowerCase().replace('foh', 'FOH')} is at the bottom of the drawing, and ${sideWords.right.toLowerCase()} on its left.` : round ? `Stage plot, seen from above, in the round: the audience is on every side, and the ${words.down.replace(' (AUDIENCE)', '').toLowerCase()} is at the bottom: stage right is on the left.` : 'Stage plot, seen from above, with the audience at the bottom: stage right is on the left.';
   const a11y = `${seen} ${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`}. ${selected ? `${selName} is selected.` : 'Nothing is selected.'} The list of objects under the drawing moves each one without dragging.`;
   // the frame is the drawn art's own box, 3 units clear of it
   const ringCorners = selBox ? stageBoxCorners(selBox, 3) : null;
@@ -584,9 +604,14 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
           <Rect x={0} y={0} width={STAGE_FRAME.side} height={gh} fill={GLASS} />
           <Rect x={gw - STAGE_FRAME.side} y={0} width={STAGE_FRAME.side} height={gh} fill={GLASS} />
           <Rect x={STAGE_FRAME.side} y={STAGE_FRAME.top} width={Math.max(0, gw - STAGE_FRAME.side * 2)} height={Math.max(0, gh - STAGE_FRAME.top - STAGE_FRAME.bottom)} fill="none" stroke="#26262d" strokeWidth={0.8} />
+          {readout ? (
+            <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={AMBER} fontSize={readout.fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={readout.spacing}>
+              {readout.text}
+            </SvgText>
+          ) : null}
           {/* THE WINGS' NAMES, in the frame over each wing (the whole stage
               only: zoomed in, a wing slides away under the fixed frame) */}
-          {T.zoom <= 1
+          {!readout && T.zoom <= 1
             ? spWingRects(p.stage).map((w) => {
                 const cx = T.toGlass({ x: (w.r.x0 + w.r.x1) / 2, y: 0 }).x;
                 return (
@@ -602,7 +627,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
               reference side (stageRoundFrameWords) */}
           {round ? (
             <>
-              <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
+              <SvgText opacity={readout ? 0 : 1} x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
                 <TSpan fill={WORD}>{roundWords.far}</TSpan>
                 <TSpan fill={AMBER}>{roundWords.all}</TSpan>
               </SvgText>
@@ -612,7 +637,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
             </>
           ) : (
             <>
-              <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
+              <SvgText opacity={readout ? 0 : 1} x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
                 UPSTAGE
               </SvgText>
               <SvgText x={midX} y={gh - 5} fill={AMBER} fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
@@ -626,12 +651,27 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
             const ay = gh - STAGE_FRAME.bottom / 2;
             return <Path key={`a${side}`} d={`M${ax - 5} ${ay - 3.5} L${ax} ${ay + 3.5} L${ax + 5} ${ay - 3.5} Z`} fill={AMBER} />;
           })}
-          <SvgText x={STAGE_FRAME.side - 4.5} y={midY} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4} transform={`rotate(-90 ${STAGE_FRAME.side - 4.5} ${midY})`}>
-            STAGE RIGHT
-          </SvgText>
-          <SvgText x={gw - STAGE_FRAME.side + 4.5} y={midY} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4} transform={`rotate(90 ${gw - STAGE_FRAME.side + 4.5} ${midY})`}>
-            STAGE LEFT
-          </SvgText>
+          {/* in the round with clock positions or numbered sides, the side bands
+              say those (owner 2026-11-13: build the remaining held items) */}
+          {sideWords ? (
+            <>
+              <SvgText x={STAGE_FRAME.side - 4.5} y={midY} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4} transform={`rotate(-90 ${STAGE_FRAME.side - 4.5} ${midY})`}>
+                {sideWords.right}
+              </SvgText>
+              <SvgText x={gw - STAGE_FRAME.side + 4.5} y={midY} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4} transform={`rotate(90 ${gw - STAGE_FRAME.side + 4.5} ${midY})`}>
+                {sideWords.left}
+              </SvgText>
+            </>
+          ) : (
+            <>
+              <SvgText x={STAGE_FRAME.side - 4.5} y={midY} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4} transform={`rotate(-90 ${STAGE_FRAME.side - 4.5} ${midY})`}>
+                STAGE RIGHT
+              </SvgText>
+              <SvgText x={gw - STAGE_FRAME.side + 4.5} y={midY} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4} transform={`rotate(90 ${gw - STAGE_FRAME.side + 4.5} ${midY})`}>
+                STAGE LEFT
+              </SvgText>
+            </>
+          )}
         </Svg>
       </View>
     </View>

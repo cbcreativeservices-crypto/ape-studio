@@ -373,7 +373,7 @@ export function MonitorsArea() {
                 </View>
               ))}
               <Button label="AUTO-ASSIGN RETURNS" tone="primary" onPress={autoReturns} a11yLabel="Give every mix requested from the house console, with no return yet, the next unused return on the stage box nearest its devices. Returns you chose by hand are not moved." />
-              <Line tone="dim">AUTO-ASSIGN RETURNS gives each mix with no return the next unused return on the box nearest its wedges or other stage speakers (two side by side for a stereo mix). Returns you chose yourself, and mixes set to come from the console, are left alone. UNDO puts every return back.</Line>
+              <Line tone="dim">AUTO-ASSIGN RETURNS gives each mix with no return the next unused return on the box nearest its wedges or speakers. A stereo mix gets two side by side. Returns you chose yourself, and mixes set to come from the console, are left alone. UNDO puts every return back.</Line>
               {retSaid ? <Note>{retSaid}</Note> : null}
             </Section>
           ) : null}

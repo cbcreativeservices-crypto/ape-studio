@@ -6,7 +6,7 @@
  * multicore cable (a snake). Each box has a name (SB1, SB2…), a number of
  * input sockets as sold, optional returns, and a place on the stage drawing.
  *
- *   • AUTO-ASSIGN fills sockets in channel order on the box nearest each
+ *   • AUTO-ASSIGN SOCKETS fills sockets in channel order on the box nearest each
  *     source (spAutoAssignBoxes). It never moves a socket chosen by hand, and
  *     one UNDO puts every socket back.
  *   • THE PATCH SUMMARY: each box with its sockets used and free.
@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { SP_SUPPLIER_WORD } from '../../../../features/stageplot/spCatalog';
 import { spBoxLine, spBoxSizeWords, spBoxUse, spBoxUseWords } from '../../../../features/stageplot/spDerive';
-import { SP_BOX_MAX, SP_BOX_SIZES, spAddBox, spAutoAssignBoxes, spBox, spBoxFeedWords, spBoxName, spBoxObject, spBoxes, spFeedTargets, spLocationWord, spRemoveBox, spSetBoxFeed, spUpdateBox } from '../../../../features/stageplot/spModel';
+import { SP_BOX_MAX, SP_BOX_SIZES, spAddBox, spAutoAssignBoxes, spBox, spBoxFeedWords, spBoxName, spBoxObject, spBoxes, spFeedTargets, spLocationWord, spRemoveBox, spSetBoxFeed, spSetBoxReturnFeed, spUpdateBox } from '../../../../features/stageplot/spModel';
 import type { SpId, SpStageBox, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { spmBoxReturnLines } from '../monitors/monitorPlan';
 import { useSpEditor } from '../spContext';
@@ -35,8 +35,9 @@ const KIND: { value: SpStageBox['kind']; label: string }[] = [
 // (a size not sold as one of these is typed in the field under them: no chip is lit then)
 const SIZES: { value: string; label: string }[] = SP_BOX_SIZES.map((n) => ({ value: String(n), label: `${n} inputs` }));
 
+// (round 3, learner point 21) shortened to what a student needs
 export const SP_BOX_HELP =
-  'A stage box is where the cables from your microphones and DI devices plug in on the stage. A digital stage box has the microphone preamplifiers inside it: the engineer sets their gain from the console, and the box sends every input over a network cable (often two, for safety). It works only with a console that speaks the same format. An analog box is the end of a snake (a multicore cable) with one pair of wires for each channel. Both kinds often have returns: outputs that bring monitor mixes back to wedges or amplifiers. Boxes are sold by their number of input sockets: 16 x 8 means 16 inputs and 8 returns. A small box by the drums that plugs into the main box is a sub-snake: it keeps cables short. Say so in its editor, under “Where this box plugs in”, and the input list shows both sockets: SB2 · 3 (via SB1 · 11).';
+  'A stage box is where your microphone and DI cables plug in. A digital box has the microphone preamplifiers inside and sends every input to the console over a network cable, so it works only with a console that uses the same network type. An analog box is the end of a snake: a multicore cable to the console, often through a splitter that also feeds a monitor console. Most boxes also have returns: lines back to the stage for monitor mixes, and often for the PA amplifiers. A 16/8 box (also written 16 x 8) has 16 inputs and 8 returns. A small box that plugs into a main box, for example by the drums, is a sub-snake.';
 
 /** (round 2) Help for the "Connects to" field of a digital box. */
 export const SP_CONNECTS_HINT =
@@ -44,13 +45,17 @@ export const SP_CONNECTS_HINT =
 
 /** (round 2) Help for a sub-snake. */
 export const SP_SUB_HINT =
-  'Most boxes go straight to the console: a digital box by a network cable, an analog one by its multicore. A sub-snake is a small analog box, for example by the drums, whose own cable plugs into sockets of a main box. Each socket of the sub-snake then arrives on one socket of the main box. If the sub-snake has returns, they are fed from returns of the main box: give each mix the main box’s return. Boxes that already plug into this box are not in the list.';
+  'Most boxes go straight to the console: a digital box by a network cable, an analog one by its multicore. A sub-snake is a small analog box, for example by the drums, whose own cable plugs into sockets of a main box. Each socket of the sub-snake then arrives on one socket of the main box. If the sub-snake has returns, they come through returns of the main box: say which ones under “Where its returns come from”. Boxes that already plug into this box are not in the list.';
+
+/** (round 3) Help for a sub-snake's returns. */
+export const SP_SUB_RETURNS_HINT =
+  'The sub-snake’s cable also brings monitor mixes out to it from the main box. Each return of the sub-snake is wired to one return of the main box, so those main-box returns cannot carry another mix.';
 
 export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOpen: (boxId: SpId) => void }) {
   const ed = useSpEditor();
   const p = ed.project;
   const uses = spBoxUse(p);
-  /** What the last AUTO-ASSIGN did, said in words under it. */
+  /** What the last AUTO-ASSIGN SOCKETS did, said in words under it. */
   const [said, setSaid] = useState<string | null>(null);
 
   const add = () => {
@@ -64,7 +69,7 @@ export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOp
     ed.apply((q) => spAutoAssignBoxes(q).p);
     setSaid(
       [
-        `${r.placed === 1 ? '1 input has' : `${r.placed} inputs have`} a socket chosen by AUTO-ASSIGN.${uses.length > 1 ? ' Each input goes to the box nearest it, so the list can move between boxes.' : ''}`,
+        `${r.placed === 1 ? '1 input has' : `${r.placed} inputs have`} a socket chosen by AUTO-ASSIGN SOCKETS.${uses.length > 1 ? ' Each input goes to the box nearest it, so the list can move between boxes.' : ''}`,
         r.left ? `${r.left === 1 ? '1 input still has' : `${r.left} inputs still have`} no socket: every box is full. Add a box, or choose a box with more sockets.` : '',
         r.wireless ? `${r.wireless === 1 ? '1 wireless input was' : `${r.wireless} wireless inputs were`} left for you: a receiver plugs in where its rack is, not where the singer stands. Choose the box by the rack in the input’s editor, or Console direct when the receivers are at FOH.` : '',
         'UNDO puts every socket back.',
@@ -95,8 +100,8 @@ export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOp
           <RowCard
             key={u.box.id}
             title={spBoxName(u.box)}
-            subtitle={`${spBoxSizeWords(u.box)} · ${spBoxUseWords(u)}${u.fedBy.map((f) => ` · sockets ${f.first}–${f.last} take ${spBoxName(f.box)}`).join('')}${u.box.feed ? ` · ${spBoxFeedWords(p, u.box)}` : ''} · ${where}`}
-            badges={u.doubled.length || u.over.length || u.feedClash.length || u.feedPast.length || u.feedShort.length || u.returnsDoubled.length || u.returnsOver.length ? ['NEEDS A CORRECTION'] : undefined}
+            subtitle={`${spBoxSizeWords(u.box)} · ${spBoxUseWords(u)}${u.fedBy.map((f) => ` · sockets ${f.first}–${f.last} from ${spBoxName(f.box)}`).join('')}${u.retFedBy.map((f) => ` · returns ${f.first === f.last ? f.first : `${f.first}–${f.last}`} to ${spBoxName(f.box)}`).join('')}${u.box.feed ? ` · ${spBoxFeedWords(p, u.box)}` : ''} · ${where}`}
+            badges={u.doubled.length || u.over.length || u.feedClash.length || u.feedPast.length || u.feedShort.length || u.returnsDoubled.length || u.returnsOver.length || u.retFeedClash.length || u.retFeedPast.length || u.retFeedShort.length ? ['NEEDS A CORRECTION'] : undefined}
             selected={selectedId === u.box.id}
             onPress={() => onOpen(u.box.id)}
             a11yLabel={`${spBoxLine(u, p)}. ${where}. Opens this stage box to edit it.`}
@@ -140,7 +145,10 @@ export function BoxEditor({ boxId, onClose, onLeaveForStage }: { boxId: SpId; on
   const main = b.feed ? spBox(p, b.feed.boxId) : undefined;
   const carries = b.feed ? b.feed.last - b.feed.first + 1 : b.inputs;
   const clash = main ? uses.find((x) => x.box.id === main.id)?.feedClash.find((c) => c.sub.id === boxId) : undefined;
-  const retLines = u?.returnsUsed.length ? spmBoxReturnLines(p, boxId) : [];
+  const retLines = u?.returnsUsed.length || u?.retFedBy.length || b.retFeed ? spmBoxReturnLines(p, boxId) : [];
+  // (round 3) a sub-snake's returns through returns of its main box
+  const retCarries = b.retFeed ? b.retFeed.last - b.retFeed.first + 1 : (b.returns ?? 0);
+  const retClash = main ? uses.find((x) => x.box.id === main.id)?.retFeedClash.find((c) => c.sub.id === boxId) : undefined;
 
   return (
     <SheetBody>
@@ -162,7 +170,7 @@ export function BoxEditor({ boxId, onClose, onLeaveForStage }: { boxId: SpId; on
           {!b.connectsTo.trim() ? <Switch label="Console not known yet (to be confirmed)" value={b.connectsTbc} onChange={(v) => set({ connectsTbc: v })} hint="Turn this on if you do not know yet. The packet then lists it as to be confirmed." /> : null}
         </FocusMark>
       ) : null}
-      <TextField label="Note" value={b.note} onCommit={(t) => (t === b.note ? undefined : set({ note: t }))} multiline placeholder="Upstage right, by the drum riser" />
+      <TextField label="Note" value={b.note} onCommit={(t) => (t === b.note ? undefined : set({ note: t }))} multiline placeholder="Shared with the support act" />
 
       {/* (round 2) A SUB-SNAKE: this box plugs into sockets of another box */}
       {spBoxes(p).length > 1 && b.kind === 'digital' ? <Small>{`${spBoxName(b)} is digital: it joins another box or the console over the network, never through a box’s sockets. If it joins another box, say how in the note.`}</Small> : null}
@@ -197,7 +205,7 @@ export function BoxEditor({ boxId, onClose, onLeaveForStage }: { boxId: SpId; on
                   onCommit={(n) => (n == null || !b.feed || n === b.feed.last ? undefined : ed.apply((q) => spSetBoxFeed(q, boxId, { boxId: main.id, first: b.feed?.first ?? 1, last: n })))}
                   hint={`${carries === 1 ? '1 socket' : `${carries} sockets`} of ${spBoxName(main)} carry ${spBoxName(b)}.`}
                 />
-                <Small>{`In the input list, socket 1 of ${spBoxName(b)} reads “${spBoxName(b)} · 1 (via ${spBoxName(main)} · ${b.feed.first})”.`}</Small>
+                <Small>{`In the input list, socket 1 of ${spBoxName(b)} reads “${spBoxName(b)} · 1, via ${spBoxName(main)} · ${b.feed.first}”.`}</Small>
                 {u?.feedPast.length ? <Note tone="warning">{`${spBoxName(main)} has ${main.inputs} input sockets, so sockets ${u.feedPast[0]}${u.feedPast.length > 1 ? `–${u.feedPast[u.feedPast.length - 1]}` : ''} do not exist. Choose sockets it has.`}</Note> : null}
                 {u?.feedShort.length ? <Note tone="warning">{`The cable of ${spBoxName(b)} carries its sockets 1–${carries} only, and an input is on socket ${u.feedShort.join(', ')}. Plug ${spBoxName(b)} into more sockets of ${spBoxName(main)}, or move that input.`}</Note> : null}
                 {clash ? <Note tone="warning">{`${spBoxName(main)} sockets ${clash.sockets.join(', ')} are also given to ${clash.with.join(', ')}. One socket takes one cable: move them, or choose other sockets.`}</Note> : null}
@@ -207,8 +215,61 @@ export function BoxEditor({ boxId, onClose, onLeaveForStage }: { boxId: SpId; on
         </FocusMark>
       ) : null}
 
+      {/* (round 3) A SUB-SNAKE'S RETURNS come through returns of its main box */}
+      {b.feed && main ? (
+        <FocusMark k="retFeed">
+          <View style={bitStyles.gap}>
+            <SubTitle>Where its returns come from</SubTitle>
+            {(b.returns ?? 0) > 0 ? (
+              <>
+                <Choice
+                  label={`${spBoxName(b)}’s returns come from`}
+                  value={b.retFeed ? 'main' : ''}
+                  options={[
+                    { value: '', label: 'Not chosen yet' },
+                    { value: 'main', label: `Returns of ${spBoxName(main)}` },
+                  ]}
+                  onChange={(v) => (v === (b.retFeed ? 'main' : '') ? undefined : ed.apply((q) => spSetBoxReturnFeed(q, boxId, v ? {} : null)))}
+                  hint={SP_SUB_RETURNS_HINT}
+                />
+                {b.retFeed ? (
+                  <>
+                    <NumberField
+                      label={`First return on ${spBoxName(main)}`}
+                      value={b.retFeed.first}
+                      min={1}
+                      max={SP_BOX_MAX}
+                      width="half"
+                      onCommit={(n) => (n == null || !b.retFeed || n === b.retFeed.first ? undefined : ed.apply((q) => spSetBoxReturnFeed(q, boxId, { first: n, last: n + retCarries - 1 })))}
+                      hint={`Where return 1 of ${spBoxName(b)} comes from.`}
+                    />
+                    <NumberField
+                      label={`Last return on ${spBoxName(main)}`}
+                      value={b.retFeed.last}
+                      min={1}
+                      max={(b.retFeed?.first ?? 1) + Math.max(1, b.returns ?? 1) - 1}
+                      width="half"
+                      onCommit={(n) => (n == null || !b.retFeed || n === b.retFeed.last ? undefined : ed.apply((q) => spSetBoxReturnFeed(q, boxId, { first: b.retFeed?.first ?? 1, last: n })))}
+                      hint={`${retCarries === 1 ? '1 return' : `${retCarries} returns`} of ${spBoxName(main)} carry ${spBoxName(b)}’s returns.`}
+                    />
+                    <Small>{`A mix on return 1 of ${spBoxName(b)} reads “${spBoxName(b)} · return 1, via ${spBoxName(main)} · return ${b.retFeed.first}”.`}</Small>
+                    {u?.retFeedPast.length ? <Note tone="warning">{`${spBoxName(main)} has ${main.returns ? `${main.returns} returns` : 'no returns given'}, so return${u.retFeedPast.length === 1 ? '' : 's'} ${u.retFeedPast[0]}${u.retFeedPast.length > 1 ? `–${u.retFeedPast[u.retFeedPast.length - 1]}` : ''} ${u.retFeedPast.length === 1 ? 'does' : 'do'} not exist. Choose returns it has.`}</Note> : null}
+                    {u?.retFeedShort.length ? <Note tone="warning">{`Returns ${b.retFeed.first}–${b.retFeed.last} of ${spBoxName(main)} carry returns 1–${retCarries} of ${spBoxName(b)} only, and something is on ${spBoxName(b)} · return ${u.retFeedShort.join(', ')}. Use more returns of ${spBoxName(main)}, or give it another return.`}</Note> : null}
+                    {retClash ? <Note tone="warning">{`${spBoxName(main)} return${retClash.rets.length === 1 ? '' : 's'} ${retClash.rets.join(', ')} ${retClash.rets.length === 1 ? 'is' : 'are'} also given to ${retClash.with.join(', ')}. One return carries one thing: give ${retClash.with.length === 1 ? 'it' : 'them'} other returns, or choose other returns here.`}</Note> : null}
+                  </>
+                ) : (
+                  <Small>{`Until you choose them, no mix can be given a return of ${spBoxName(b)}.`}</Small>
+                )}
+              </>
+            ) : (
+              <Small>{`If ${spBoxName(b)} has returns, type how many under Returns above. They then come through returns of ${spBoxName(main)}.`}</Small>
+            )}
+          </View>
+        </FocusMark>
+      ) : null}
+
       {/* (round 2) its returns, as the monitor plan gives them */}
-      {(b.returns ?? 0) > 0 || u?.returnsUsed.length ? (
+      {(b.returns ?? 0) > 0 || u?.returnsUsed.length || u?.retFedBy.length ? (
         <View style={bitStyles.gap}>
           <SubTitle>{`Returns of ${spBoxName(b)}`}</SubTitle>
           {retLines.length ? <Lines lines={retLines} /> : <Small>No monitor mix is on a return yet.</Small>}
@@ -231,7 +292,7 @@ export function BoxEditor({ boxId, onClose, onLeaveForStage }: { boxId: SpId; on
 
       <View style={bitStyles.gap}>
         <SubTitle>On the stage</SubTitle>
-        <Small>{o ? spLocationWord(o, p.stage) : 'Not on the stage yet. Place it where the box really stands, so AUTO-ASSIGN can choose the nearest box.'}</Small>
+        <Small>{o ? spLocationWord(o, p.stage) : 'Not on the stage yet. Place it where the box really stands, so AUTO-ASSIGN SOCKETS and AUTO-ASSIGN RETURNS can choose the nearest box.'}</Small>
         <Button
           label={o ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'}
           onPress={() => {

@@ -150,7 +150,9 @@ describe('monitor returns tied to mixes', () => {
     p = M.spAssignReturn(p, mix(p, 'M3').id, { boxId: sb1, ret: 5 });
     assert.equal(mix(p, 'M3').format, 'stereo');
     assert.deepEqual(M.spReturnRange(mix(p, 'M3')), [5, 6]);
-    assert.equal(M.spReturnWords(p, mix(p, 'M3')), 'SB1 · returns 5–6');
+    // (changed on purpose, round 3 2026-11-13: owner "build the remaining held items" —
+    // a stereo mix's return cell marks its L and R)
+    assert.equal(M.spReturnWords(p, mix(p, 'M3')), 'SB1 · returns 5 (L) – 6 (R)');
     p = M.spSetFromConsole(p, mix(p, 'M3').id, true);
     assert.equal(mix(p, 'M3').ret, null);
     assert.equal(M.spReturnWords(p, mix(p, 'M3')), 'From the console');
@@ -358,14 +360,16 @@ describe('a sub-snake that feeds another box', () => {
     assert.deepEqual([box(q, 'SB2').feed?.first, box(q, 'SB2').feed?.last], [2, 9]);
   });
 
-  it('its inputs read "SB2 · 3 (via SB1 · 11)" in the input list, on the row and in the Box · socket column', () => {
+  it('its inputs read "SB2 · 3, via SB1 · 11" in the input list, on the row and in the Box · socket column', () => {
     let { p, sb2 } = withSub();
     p = M.spAssignBox(p, input(p, 'Kick').id, { boxId: sb2, socket: 3 });
-    assert.equal(M.spBoxPatchWords(p, input(p, 'Kick')), 'SB2 · 3 (via SB1 · 11)');
-    assert.equal(spRowBoxWords(p, input(p, 'Kick')), 'SB2 · 3 (via SB1 · 11)');
+    // (changed on purpose, owner 2026-11-13: build the remaining held items — the
+    // learner review's form, no brackets inside brackets)
+    assert.equal(M.spBoxPatchWords(p, input(p, 'Kick')), 'SB2 · 3, via SB1 · 11');
+    assert.equal(spRowBoxWords(p, input(p, 'Kick')), 'SB2 · 3, via SB1 · 11');
     const t = tables(p, 'inputs')[0];
     const row = t.rows.find((r) => r.cells.input === 'Kick');
-    assert.equal(row?.cells.box, 'SB2 · 3 (via SB1 · 11)');
+    assert.equal(row?.cells.box, 'SB2 · 3, via SB1 · 11');
   });
 
   it('a chain reads through every box; a socket past what the feed carries says so', () => {
@@ -373,7 +377,7 @@ describe('a sub-snake that feeds another box', () => {
     const c = M.spAddBox(p, { name: 'SB3', inputs: 4 });
     p = M.spSetBoxFeed(c.p, c.id, { boxId: sb2, first: 5, last: 8 });
     p = M.spAssignBox(p, input(p, 'Kick').id, { boxId: c.id, socket: 2 });
-    assert.equal(M.spBoxPatchWords(p, input(p, 'Kick')), 'SB3 · 2 (via SB2 · 6, SB1 · 14)');
+    assert.equal(M.spBoxPatchWords(p, input(p, 'Kick')), 'SB3 · 2, via SB2 · 6, then SB1 · 14');
     p = M.spSetBoxFeed(p, c.id, { boxId: sb2, first: 5, last: 5 });
     assert.equal(M.spBoxPatchWords(p, input(p, 'Kick')), 'SB3 · 2 (past its feed to SB2)');
   });
@@ -401,7 +405,9 @@ describe('a sub-snake that feeds another box', () => {
   it('the main box’s socket lines name the sub-snake, and its free count leaves those sockets out', () => {
     const { p, sb1 } = withSub();
     const lines = spBoxSocketLines(p, sb1);
-    assert.ok(lines.includes('9–16 · SB2 plugs in here (a sub-snake)'), lines.join(' | '));
+    // (changed on purpose, owner 2026-11-13: build the remaining held items — which
+    // sockets of the sub-snake arrive here, engineer review)
+    assert.ok(lines.includes('9–16 · from SB2 sockets 1–8 (sub-snake)'), lines.join(' | '));
     assert.ok(lines.includes('Free: 1–8'));
     assert.equal(spBoxUse(p).find((u) => u.box.id === sb1)?.free, 8);
   });
@@ -448,7 +454,8 @@ describe('a sub-snake that feeds another box', () => {
     let { p, sb1 } = withSub();
     p = M.spAutoAssignBoxes(p).p;
     const items = listItems(p, 'inputs');
-    assert.ok(items.find((x) => x.startsWith('SB1'))?.includes('sockets 9–16: SB2 (sub-snake)'));
+    // (changed on purpose, owner 2026-11-13: build the remaining held items — engineer review)
+    assert.ok(items.find((x) => x.startsWith('SB1'))?.includes('sockets 9–16 from SB2 sockets 1–8 (sub-snake)'));
     assert.ok(items.find((x) => x.startsWith('SB2'))?.includes('a sub-snake, plugs into SB1 sockets 9–16'));
     assert.match(spTextSummary(p), /SB2 \(8 inputs, analog\): .*plugs into SB1 sockets 9–16/);
     const q = M.spRemoveBox(p, sb1);
@@ -515,7 +522,9 @@ describe('a band’s own digital box: which console?', () => {
     const { p, id } = bandBox();
     const noted = M.spUpdateBox(p, id, { note: 'by the drum riser' });
     const line = listItems(noted, 'inputs').find((x) => x.startsWith('SB1')) ?? '';
-    assert.ok(/Supplied by the band[^.]*\. By the drum riser\.$/.test(line), line);
+    // (changed on purpose, round 3 2026-11-13: the note is labelled "Note:", so the crew
+    // reads it as the band's own words; learner review)
+    assert.ok(/Supplied by the band[^.]*\. Note: By the drum riser\.$/.test(line), line);
     assert.ok(!line.includes('; By') && !line.includes('; by the drum'), line);
     const ended = M.spUpdateBox(p, id, { note: 'Next to the riser!' });
     assert.ok((listItems(ended, 'inputs').find((x) => x.startsWith('SB1')) ?? '').endsWith('Next to the riser!'));

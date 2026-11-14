@@ -490,7 +490,10 @@ describe('round 2: the print symbol of every new kind (what the PDF draws)', () 
     const fl = SY.SP_FLUTE;
     assert.ok(Math.abs(Math.hypot(fl.crown.x - fl.foot.x, fl.crown.y - fl.foot.y) - 0.67) < 0.01, 'flute 0.67 m');
     const H = SY.SP_HARMONIUM;
-    assert.ok(Math.abs(H.x1 - H.x0 - 0.6) < 1e-9 && Math.abs(H.y1 - H.y0 - 0.3) < 1e-9, 'harmonium 0.60 × 0.30 m');
+    // owner 2026-11-13: build the remaining held items — the harmonium is now
+    // the Bina No. 23B, 3¼ octave, "21 1/2 by 12" in (0.546 × 0.305 m; it was
+    // 0.60 × 0.30 m); test/stagePlotSymbolsR3_20261113.test.ts holds it
+    assert.ok(Math.abs(H.x1 - H.x0 - 0.546) < 1e-9 && Math.abs(H.y1 - H.y0 - 0.305) < 1e-9, 'harmonium 0.546 × 0.305 m (Bina No. 23B)');
   });
 
   it('a plot with all five prints each one whole, lists them in the key, and makes a PDF', () => {

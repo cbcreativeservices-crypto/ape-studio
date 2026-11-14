@@ -36,7 +36,7 @@
  */
 import { SP_DELIVERY_WORD, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_MIX_INSTRUCTIONS, SP_NEED_WORD, SP_PROVIDER_WORD, SP_SUPPLIER_WORD, SP_VENUE_FEED_WORD } from '../../../../features/stageplot/spCatalog.ts';
 import { spAllInputsInOrder, spBadge, spDeviceCountWord, spMixChannels, spMonitorTotals, spSocketRuns, type SpBySupplier, type SpMixTotals, type SpMonitorTotals } from '../../../../features/stageplot/spDerive.ts';
-import { spAddDevice, spAddMix, spBox, spBoxName, spLocationWord, spMixWantsReturn, spReturnBoxes, spReturnRange, spReturnWords } from '../../../../features/stageplot/spModel.ts';
+import { spAddDevice, spAddMix, spBox, spBoxName, spBoxes, spLocationWord, spMixReturnSpots, spMixReturnsOn, spMixSplit, spMixWantsReturn, spReturnBoxes, spReturnFeedWords, spReturnsUsable, spReturnVia, spReturnViaWords, spReturnWords, type SpRackFallback } from '../../../../features/stageplot/spModel.ts';
 import { spOwnClashes } from '../../../../features/stageplot/spReview.ts';
 import type {
   SpDelivery,
@@ -102,8 +102,9 @@ export const SPM_DELIVERY_HINT = 'Wedge: a loudspeaker on the floor, aimed at th
 /** Under "What is requested from the venue": one line for each choice. */
 export const SPM_FEED_HINT =
   'An input split: a copy of every stage input for the mixer that makes this mix.\n' +
+  'An input split and return lines: both, as when your band’s monitor console stands at the monitor position and its mixes go back to the stage through the venue’s snake.\n' +
   'Feeds from the house console: mixes or groups sent from the house console to the mixer that makes this mix.\n' +
-  'Return lines: cables in the venue’s snake (its multi-channel stage cable). They carry signals from the mixing position back to the stage.\n' +
+  'Return lines: cables in the venue’s snake (its multi-channel stage cable). They carry signals from the mixing position back to the stage: from FOH (the desk in the audience) or a monitor position.\n' +
   'No monitor feeds: nothing is needed from the house console for this mix.';
 
 /** Why the question is asked, by who creates the mix. */
@@ -126,7 +127,7 @@ export const SPM_FORMAT_OPTIONS: readonly Option<SpMixFormat>[] = [
 ];
 export const SPM_PROVIDER_OPTIONS = options<SpMixProvider>(['house', 'band-console', 'personal-mixer', 'tbc'], SP_PROVIDER_WORD);
 export const SPM_DELIVERY_OPTIONS = options<SpDelivery>(['wedge', 'wired-iem', 'wireless-iem', 'drum-fill', 'sidefill', 'custom'], SP_DELIVERY_WORD);
-export const SPM_FEED_OPTIONS = options<SpVenueFeed>(['split', 'feeds', 'returns', 'none', 'tbc'], SP_VENUE_FEED_WORD);
+export const SPM_FEED_OPTIONS = options<SpVenueFeed>(['split', 'split-returns', 'feeds', 'returns', 'none', 'tbc'], SP_VENUE_FEED_WORD);
 export const SPM_SUPPLIER_OPTIONS = options<SpSupplier>(['band', 'venue', 'other', 'tbc'], SP_SUPPLIER_WORD);
 export const SPM_DEVICE_OPTIONS = options<SpDeviceType>(SPM_DEVICE_TYPES, SP_DEVICE_WORD);
 
@@ -257,7 +258,7 @@ export function spmTbcSentence(t: SpMonitorTotals): string {
     : `For ${n} mixes, who creates them is to be confirmed. They are not counted for the house console or for the band monitor rig.`;
 }
 
-const FEED_ORDER: readonly SpVenueFeed[] = ['split', 'feeds', 'returns', 'none', 'tbc'];
+const FEED_ORDER: readonly SpVenueFeed[] = ['split', 'split-returns', 'feeds', 'returns', 'none', 'tbc'];
 
 /** For the mixes the house console does not create: what the venue provides,
  *  one line for each answer, naming the mixes it is about. `only` narrows it
@@ -750,6 +751,10 @@ export const SPM_IEM_RETURN_HELP =
 /** The hint under the return choice. */
 export const SPM_RETURN_HINT = 'The stage box return that brings this mix back to the stage. A stereo mix uses two returns side by side. From the console: cabled straight from a console beside the stage, not through a stage box.';
 
+/** (round 3) The hint under a stereo mix's R (right) return. */
+export const SPM_RETURN_R_HINT =
+  'Usually R takes the return right after L. Choose another box only when the two speakers stand far apart, as a stereo sidefill’s can: L (the stage-left speaker, the performers’ left) from the box near it, R from the box near the stage-right one.';
+
 /** True when the Monitors area shows returns: a stage box has returns. */
 export const spmShowsReturns = (p: SpProject): boolean => spReturnBoxes(p).length > 0;
 
@@ -768,13 +773,26 @@ export function spmFreeReturn(p: SpProject, boxId: SpId, n: number, except?: SpI
   const b = spBox(p, boxId);
   if (!b) return null;
   const used = new Set<number>();
-  for (const m of p.mixes) if (m.id !== except && m.ret?.boxId === boxId) for (const r of spReturnRange(m)) used.add(r);
+  // (round 3) every return a mix takes (its R on this box too), and the
+  // returns that carry a sub-snake's returns
+  for (const m of p.mixes) if (m.id !== except) for (const r of spMixReturnsOn(m, boxId)) used.add(r);
+  for (const s of spBoxes(p)) if (s.feed?.boxId === boxId && s.retFeed) for (let r = s.retFeed.first; r <= s.retFeed.last; r++) used.add(r);
   // a stereo pair starts on an odd return (1–2, 3–4) when it can
+  // (round 3) a sub-snake's return: oddness by the main box's number, and
+  // only a return that reaches the console (engineer review)
+  const mainNo = (s: number): number => {
+    const v = spReturnVia(p, boxId, s);
+    return v.steps.length ? v.steps[v.steps.length - 1].ret : s;
+  };
+  const reaches = (s: number): boolean => {
+    const v = spReturnVia(p, boxId, s);
+    return !v.past && !v.cut;
+  };
   for (const odd of n === 2 ? [true, false] : [false]) {
-    for (let s = 1; s + n - 1 <= (b.returns ?? 0); s++) {
-      if (odd && s % 2 === 0) continue;
+    for (let s = 1; s + n - 1 <= spReturnsUsable(b); s++) {
+      if (odd && mainNo(s) % 2 === 0) continue;
       let ok = true;
-      for (let j = 0; j < n; j++) if (used.has(s + j)) ok = false;
+      for (let j = 0; j < n; j++) if (used.has(s + j) || !reaches(s + j)) ok = false;
       if (ok) return s;
     }
   }
@@ -785,9 +803,18 @@ export function spmFreeReturn(p: SpProject, boxId: SpId, n: number, except?: SpI
 export function spmSameReturn(p: SpProject, mixId: SpId): SpMix[] {
   const me = p.mixes.find((m) => m.id === mixId);
   if (!me?.ret) return [];
-  const mine = spReturnRange(me);
-  const at = me.ret.boxId;
-  return p.mixes.filter((m) => m.id !== mixId && m.ret?.boxId === at && spReturnRange(m).some((r) => mine.includes(r)));
+  // (round 3) any return of this mix, on any box (a stereo mix's R may be on another)
+  const mine = spMixReturnSpots(me);
+  return p.mixes.filter((m) => m.id !== mixId && spMixReturnSpots(m).some((s) => mine.some((x) => x.boxId === s.boxId && x.ret === s.ret)));
+}
+
+/** (round 3) The returns this mix shares with `other`, on one box, in words:
+ *  "SB1 return 3" ('' when none). */
+export function spmSharedWords(p: SpProject, mix: SpMix, other: SpMix): string {
+  const mine = spMixReturnSpots(mix);
+  const both = spMixReturnSpots(other).filter((s) => mine.some((x) => x.boxId === s.boxId && x.ret === s.ret));
+  const box = both[0] ? spBox(p, both[0].boxId) : undefined;
+  return box ? `${spBoxName(box)} return ${both.map((s) => s.ret).join(' and ')}` : '';
 }
 
 /** What sits on each return of a box: "3–4 · M3 Drums, in-ear (stereo)",
@@ -798,27 +825,62 @@ export function spmBoxReturnLines(p: SpProject, boxId: SpId): string[] {
   const n = b.returns ?? 0;
   const out: string[] = [];
   const taken = new Set<number>();
-  const on = p.mixes.filter((m) => m.ret?.boxId === boxId).sort((x, y) => (x.ret?.ret ?? 0) - (y.ret?.ret ?? 0));
+  // (round 3) where a sub-snake's returns come from
+  const via = spReturnFeedWords(p, b);
+  if (b.feed && via) out.push(`Its returns come through ${via}.`);
+  const firstOn = (m: SpMix) => Math.min(...spMixReturnsOn(m, boxId));
+  const on = p.mixes.filter((m) => spMixReturnsOn(m, boxId).length).sort((x, y) => firstOn(x) - firstOn(y));
+  const rows: { first: number; text: string }[] = [];
   for (const m of on) {
-    const r = spReturnRange(m);
+    const r = spMixReturnsOn(m, boxId);
     for (const x of r) taken.add(x);
     const past = r.some((x) => x > n);
-    const shared = on.some((o) => o.id !== m.id && spReturnRange(o).some((x) => r.includes(x)));
-    out.push(`${r.length === 2 ? `${r[0]}–${r[1]}` : r[0]} · ${spmMixTitle(m)}${r.length === 2 ? ' (stereo)' : ''}${past ? ` (${spBoxName(b)} has ${n ? `${n} returns` : 'no returns given'})` : ''}${shared ? ' (shares a return with another mix: give each its own)' : ''}`);
+    const shared = on.some((o) => o.id !== m.id && spMixReturnsOn(o, boxId).some((x) => r.includes(x)));
+    // a stereo mix placed at two boxes says where its other side is
+    const side = spMixSplit(m) ? (m.ret?.boxId === boxId ? 'L' : 'R') : null;
+    const other = side ? spBox(p, side === 'L' ? m.retR?.boxId : m.ret?.boxId) : undefined;
+    const otherRet = side === 'L' ? m.retR?.ret : m.ret?.ret;
+    const stereo = r.length === 2 ? ' (stereo)' : side && other ? ` (stereo ${side}, stage ${side === 'L' ? 'left' : 'right'}; ${side === 'L' ? 'R' : 'L'} on ${spBoxName(other)} · return ${otherRet})` : '';
+    const viaWords = b.feed ? spReturnViaWords(p, boxId, r) : '';
+    rows.push({ first: r[0], text: `${r.length === 2 ? `${r[0]}–${r[1]}` : r[0]} · ${spmMixTitle(m)}${stereo}${viaWords}${past ? ` (${spBoxName(b)} has ${n ? `${n} returns` : 'no returns given'})` : ''}${shared ? ' (shares a return with another mix: give each its own)' : ''}` });
   }
+  // (round 3) the returns that carry a sub-snake's returns
+  for (const s of spBoxes(p)) {
+    if (s.feed?.boxId !== boxId || !s.retFeed) continue;
+    for (let x = s.retFeed.first; x <= s.retFeed.last; x++) taken.add(x);
+    rows.push({ first: s.retFeed.first, text: `${s.retFeed.first === s.retFeed.last ? s.retFeed.first : `${s.retFeed.first}–${s.retFeed.last}`} · to ${spBoxName(s)} return${s.retFeed.first === s.retFeed.last ? ' 1' : `s 1–${s.retFeed.last - s.retFeed.first + 1}`} (sub-snake)` });
+  }
+  rows.sort((x, y) => x.first - y.first);
+  out.push(...rows.map((x) => x.text));
+  // (round 3) a sub-snake's returns its feed does not carry are not free (engineer review)
+  const usable = b.feed && b.retFeed ? spReturnsUsable(b) : n;
   const unused: number[] = [];
-  for (let s = 1; s <= n; s++) if (!taken.has(s)) unused.push(s);
+  for (let s = 1; s <= usable; s++) if (!taken.has(s)) unused.push(s);
   if (unused.length) out.push(`Not used yet: ${spSocketRuns(unused)}`);
+  if (usable < n) out.push(`Not carried to ${spBoxName(spBox(p, b.feed?.boxId) ?? b)}: ${usable + 1 === n ? n : `${usable + 1}–${n}`}`);
   return out;
 }
 
 /** What AUTO-ASSIGN RETURNS did, in words. */
-export function spmAutoReturnSaid(r: { placed: number; left: number; iem: number }): string {
+const RACK_WHY: Record<SpRackFallback['why'], string> = {
+  only: 'the only rack drawn',
+  transmitters: 'it holds other transmitters',
+  named: 'its name says in-ears or radio',
+  performer: 'the rack nearest its performer',
+  devices: 'the rack nearest its other devices',
+  first: 'the first rack: its performer is not drawn',
+};
+
+export function spmAutoReturnSaid(r: { placed: number; left: number; iem: number; viaRack?: SpRackFallback[]; split?: string[] }): string {
   return [
-    `${r.placed === 1 ? '1 mix has' : `${r.placed} mixes have`} a return chosen by AUTO-ASSIGN, on the box nearest their devices.`,
+    `${r.placed === 1 ? '1 mix has' : `${r.placed} mixes have`} a return chosen by AUTO-ASSIGN RETURNS, on the box nearest their devices.`,
+    // (round 3) which rack stood in for a transmitter that is not drawn
+    ...(r.viaRack ?? []).map((v) => `${v.code}: its transmitter is not on the plot, so AUTO-ASSIGN RETURNS used ${v.rack} at ${v.at} (${RACK_WHY[v.why]}) and gave ${v.code} a return on ${v.box}, the box nearest that rack. If the transmitter stands somewhere else, draw it, or choose ${v.code}’s return yourself.`),
+    // (round 3) a stereo sidefill placed at two boxes
+    ...(r.split ?? []).map((c) => `${c} (a stereo sidefill) has its L return on the box nearest its stage-left speaker and its R return on the box nearest its stage-right speaker. L and R are named as the performers see the stage.`),
     r.left ? `${r.left === 1 ? '1 mix still has' : `${r.left} mixes still have`} no return: the boxes do not have enough returns. Set a mix to come from the console, or, if a box has more returns than you typed, correct its number.` : '',
     r.iem
-      ? `${r.iem === 1 ? '1 in-ear mix was' : `${r.iem} in-ear mixes were`} left for you: its transmitter is not drawn on the stage. A transmitter usually sits with a monitor console or in a rack at the side of the stage. Choose “From the console”, or the return of the box nearest the transmitter.`
+      ? `${r.iem === 1 ? '1 in-ear mix was' : `${r.iem} in-ear mixes were`} left for you: its transmitter is not drawn on the stage, and no rack is drawn either. A transmitter usually sits with a monitor console or in a rack at the side of the stage. Choose “From the console”, or the return of the box nearest the transmitter.`
       : '',
     'UNDO puts every return back.',
   ]

@@ -286,17 +286,21 @@ describe('requested from the house console, apart from what the band creates its
     const q = spUpdateMix(spUpdateMix(spUpdateMix(p, mixByCode(p, 'M2').id, { venueFeed: 'tbc' }), mixByCode(p, 'M4').id, { venueFeed: 'none' }), mixByCode(p, 'M3').id, { venueFeed: 'returns' });
     assert.deepEqual(spmVenueFeedLines(q), [
       'For M1, requested from the venue: an input split.',
-      'For M3, requested from the venue: return lines from the house position to the stage.',
+      // (changed on purpose, owner 2026-11-13: build the remaining held items — the
+      // engineer review renamed "return lines from the house position")
+      'For M3, requested from the venue: return lines to the stage (from FOH or the monitor position).',
       'For M4, nothing is requested from the venue: no monitor feeds.',
       'For M2, what is requested from the venue is to be confirmed.',
     ]);
     // a house mix is never in these lines
     assert.deepEqual(spmVenueFeedLines(make('four-piece')), []);
     // each choice is explained in one line, and the band's own rig is explained where it is chosen
-    assert.equal(SPM_FEED_HINT.split('\n').length, 4);
+    // (changed on purpose, owner 2026-11-13: build the remaining held items — one line
+    // more, for "An input split and return lines")
+    assert.equal(SPM_FEED_HINT.split('\n').length, 5);
     assert.match(SPM_FEED_HINT, /^An input split: a copy of every stage input for the mixer that makes this mix\./);
     // a return line runs from the mixing position BACK to the stage (review 2)
-    assert.match(SPM_FEED_HINT, /\nReturn lines: cables in the venue’s snake \([^)]+\)\. They carry signals from the mixing position back to the stage\.\n/);
+    assert.match(SPM_FEED_HINT, /\nReturn lines: cables in the venue’s snake \([^)]+\)\. They carry signals from the mixing position back to the stage: from FOH \(the desk in the audience\) or a monitor position\.\n/);
     assert.ok(spmFeedWhy('band-console').includes(SPM_BAND_RIG_MEANS));
     assert.match(spmFeedWhy('band-console'), /it is not requested from the house console/);
     assert.ok(!/your band creates/i.test(spmFeedWhy('personal-mixer')), 'a personal mixer system is not called the band’s');

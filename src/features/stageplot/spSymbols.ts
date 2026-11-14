@@ -21,7 +21,8 @@
  * fills to white, black and one light gray.
  */
 import { SP_CHOIR_LEGACY, spChoirLayout, spChoirOf } from './spChoir.ts';
-import type { SpChoir, SpObject, SpObjectKind, SpProject } from './spTypes.ts';
+import type { SpChoir, SpObject, SpObjectKind, SpProject, SpTimpaniSetup } from './spTypes.ts';
+export type { SpTimpaniSetup } from './spTypes.ts';
 
 /** paper = white, ink = black, tone = one light gray, none = outline only. */
 export type SpFill = 'none' | 'paper' | 'ink' | 'tone';
@@ -120,17 +121,62 @@ export const SP_TIMPANI = (() => {
   };
 })();
 
+/** The GERMAN setup (round 3, 2026-11-13, owner: "build the remaining held
+ *  items too"): the largest drum at the timpanist's RIGHT (−x), so from the
+ *  player's left the drums read 23, 26, 29, 32 in. Its own layout, not a
+ *  turned or reflected picture (TURN only turns): every drum and the stool
+ *  stand on the other side of the center line, at the same 0.55 m rim reach,
+ *  so the set's box is the American one (live-sound review, round 3: the
+ *  sizes must not be swapped into the American slots, as the bowls differ). */
+export const SP_TIMPANI_GERMAN: typeof SP_TIMPANI = {
+  stool: { ...SP_TIMPANI.stool, x: -SP_TIMPANI.stool.x },
+  drums: SP_TIMPANI.drums.map((d) => ({ ...d, x: -d.x, deg: -d.deg })),
+};
+
+/** Which way a drum's pedal points, degrees (0 = +x): toward the player's
+ *  feet, 0.15 m downstage of the stool's center (visual review, round 3:
+ *  the feet are a little in front of the seat). */
+export const SP_TIMPANI_FEET = 0.15;
+export const spTimpaniPedalDeg = (d: { x: number; y: number }, stool: { x: number; y: number }): number => (Math.atan2(stool.y + SP_TIMPANI_FEET - d.y, stool.x - d.x) * 180) / Math.PI;
+
+/** The timpani layout an object draws: its own setup, American unless it
+ *  says German. */
+export const spTimpaniLayout = (setup: SpTimpaniSetup | null | undefined): typeof SP_TIMPANI => (setup === 'german' ? SP_TIMPANI_GERMAN : SP_TIMPANI);
+
 /** Flute (a concert flute, 0.67 m): held to the player's RIGHT (−x), the
  *  foot a little forward; the crown end at the player's left, the lip plate
  *  near it. */
 export const SP_FLUTE = { crown: { x: 0.3265, y: -0.07 }, foot: { x: -0.3265, y: 0.08 }, lip: 0.075 } as const;
 
-/** Hand harmonium (3¼ octaves, 39 keys, 0.60 × 0.30 m) in front of the
- *  player on the rug the player sits on (0.96 m square, as the tabla's): the
- *  keys toward the player, the stop and drone knobs in a row behind the
- *  keys, the bellows on the back panel, hinged at the player's right end
- *  (−x) and opened at the left end (+x) by the left hand. */
-export const SP_HARMONIUM = { rug: 0.48, x0: -0.3, x1: 0.3, y0: 0.0, y1: 0.3, keysTo: 0.11, stopsY: 0.145, bellowsHinge: 0.035, bellowsOpen: 0.11 } as const;
+/** Hand harmonium in front of the player on the rug the player sits on
+ *  (0.96 m square, as the tabla's): the keys toward the player, the stop and
+ *  drone knobs in a row behind the keys, the bellows on the back panel,
+ *  hinged at the player's right end (−x) and opened at the left end (+x) by
+ *  the left hand.
+ *  THE MODEL (round 3, 2026-11-13, owner: "build the remaining held items
+ *  too"): the Bina No. 23B, 3¼ octave, a typical kirtan harmonium. Musician's
+ *  Mall USA (musiciansmallusa.com/bina-23b-kirtan-harmonium): "3 1/4 octave
+ *  keyboard, an octave coupler, 3 fold bellows, 4 stops and 2 drones", reeds
+ *  "voiced B/M" (bass and male), "21 1/2 by 12 by 13 inches" open. So the
+ *  case is 0.546 × 0.305 m (it was 0.60 × 0.30 m), 39 keys C to D (23 white,
+ *  16 black, the low end at the player's left), and SIX knobs: four stops
+ *  and two smaller drone knobs (Bina's manual: the drones are the smaller
+ *  knobs; their order on a 23B is not published, so they are drawn one at
+ *  each end, claiming no order). The octave coupler the listing names is
+ *  left out on purpose: where its control sits on a 23B is not published
+ *  (one Bina manual, model not named, puts it to the right of and slightly
+ *  above the stops), and it changes nothing a venue reads off a plot. */
+export const SP_HARMONIUM = { rug: 0.48, x0: -0.273, x1: 0.273, y0: 0.0, y1: 0.305, keysTo: 0.11, stopsY: 0.145, bellowsHinge: 0.035, bellowsOpen: 0.11 } as const;
+/** The harmonium's knobs behind the keys, x in meters: the four stops, and
+ *  the two smaller drone knobs at the ends. */
+export const SP_HARMONIUM_KNOBS: readonly { x: number; drone: boolean }[] = [
+  { x: -0.165, drone: true },
+  { x: -0.09, drone: false },
+  { x: -0.03, drone: false },
+  { x: 0.03, drone: false },
+  { x: 0.09, drone: false },
+  { x: 0.165, drone: true },
+];
 
 /** Harmonica: the player's microphone on a straight stand (round base 0.26 m
  *  across), the microphone toward the player, and the case of harmonicas in
@@ -280,9 +326,36 @@ function choirSymbolOf(c: SpChoir): SpSymbol {
   return { w: lay.w, h: lay.h, tag: '', shapes };
 }
 
+/** A set of timpani's print symbol, for one setup's layout: the stool, then
+ *  each drum's pedal (toward the player), its bowl and its head. The
+ *  footprint is the drums and the stool, 2.6 × 1.52 m, in either setup (the
+ *  timpanist is the performer symbol on the stool; live-sound review,
+ *  round 3). */
+function timpaniSymbolOf(T: typeof SP_TIMPANI): SpSymbol {
+  const pedal = (d: { x: number; y: number; bowl: number }): SpShape => {
+    const r = (spTimpaniPedalDeg(d, T.stool) * Math.PI) / 180;
+    const ux = Math.cos(r);
+    const uy = Math.sin(r);
+    const px = -uy;
+    const py = ux;
+    const a = d.bowl - 0.02;
+    // about 15 cm past the bowl (visual review, round 3)
+    const b = d.bowl + 0.15;
+    return poly([d.x + ux * a + px * 0.07, d.y + uy * a + py * 0.07, d.x + ux * b + px * 0.06, d.y + uy * b + py * 0.06, d.x + ux * b - px * 0.06, d.y + uy * b - py * 0.06, d.x + ux * a - px * 0.07, d.y + uy * a - py * 0.07]);
+  };
+  // the stool is DASHED, so it never reads as a fifth drum (visual review,
+  // round 3); the timpanist's own circle sits on it
+  return { w: 2.6, h: 1.52, tag: '', shapes: [circle(T.stool.x, T.stool.y, T.stool.r, { fill: 'paper', dash: true }), ...T.drums.flatMap((d) => [pedal(d), circle(d.x, d.y, d.bowl, { fill: 'paper' }), circle(d.x, d.y, d.head)])] };
+}
+let timpaniGerman: SpSymbol | null = null;
+/** The German setup's print symbol (round 3). */
+export const spTimpaniGermanSymbol = (): SpSymbol => (timpaniGerman ??= timpaniSymbolOf(SP_TIMPANI_GERMAN));
+
 /** The print symbol ONE object draws: its kind's, except a choir, which is
- *  drawn for its own number of singers and rows. */
-export const spObjectSymbol = (o: Pick<SpObject, 'kind' | 'choir'>): SpSymbol => (o.kind === 'choir' ? spChoirSymbol(spChoirOf(o)) : SYMBOLS[o.kind]);
+ *  drawn for its own number of singers and rows, and a set of timpani in the
+ *  German setup (round 3). */
+export const spObjectSymbol = (o: Pick<SpObject, 'kind' | 'choir'> & { timpaniSetup?: SpTimpaniSetup | null }): SpSymbol =>
+  o.kind === 'choir' ? spChoirSymbol(spChoirOf(o)) : o.kind === 'timpani' && o.timpaniSetup === 'german' ? spTimpaniGermanSymbol() : SYMBOLS[o.kind];
 
 /** Round 2 of the added kinds (owner 2026-11-13: "Yes, build them all"). */
 export type SpR2Kind = 'marimba' | 'timpani' | 'flute' | 'harmonium' | 'harmonica';
@@ -299,21 +372,6 @@ function R2_SYMBOLS(): Record<SpR2Kind, SpSymbol> {
     const x = (spMarimbaX(n) + spMarimbaX(n + 1)) / 2;
     marimbaBars.push(line(x, 0.03, x, 0.03 + m.len(m.t(x)) - 0.02));
   }
-  const T = SP_TIMPANI;
-  const toward = (d: { x: number; y: number; bowl: number }) => {
-    const vx = T.stool.x - d.x;
-    const vy = T.stool.y - d.y;
-    const l = Math.hypot(vx, vy);
-    return { ux: vx / l, uy: vy / l };
-  };
-  const pedal = (d: { x: number; y: number; bowl: number }): SpShape => {
-    const { ux, uy } = toward(d);
-    const px = -uy;
-    const py = ux;
-    const a = d.bowl - 0.02;
-    const b = d.bowl + 0.1;
-    return poly([d.x + ux * a + px * 0.07, d.y + uy * a + py * 0.07, d.x + ux * b + px * 0.06, d.y + uy * b + py * 0.06, d.x + ux * b - px * 0.06, d.y + uy * b - py * 0.06, d.x + ux * a - px * 0.07, d.y + uy * a - py * 0.07]);
-  };
   const F = SP_FLUTE;
   const fl = Math.hypot(F.crown.x - F.foot.x, F.crown.y - F.foot.y);
   const fu = { x: (F.foot.x - F.crown.x) / fl, y: (F.foot.y - F.crown.y) / fl };
@@ -332,13 +390,9 @@ function R2_SYMBOLS(): Record<SpR2Kind, SpSymbol> {
       shapes: [poly([-m.frameX, spMarimbaNear(-m.frameX), m.frameX, spMarimbaNear(m.frameX), m.frameX, spMarimbaFar(m.frameX), -m.frameX, spMarimbaFar(-m.frameX)]), ...marimbaBars],
     },
     // timpani, a set of four in an arc round the timpanist's stool: each
-    // bowl, its head, and its pedal on the player's side
-    timpani: {
-      w: 2.6,
-      h: 1.52,
-      tag: '',
-      shapes: [circle(T.stool.x, T.stool.y, T.stool.r, { fill: 'paper' }), ...T.drums.flatMap((d) => [pedal(d), circle(d.x, d.y, d.bowl, { fill: 'paper' }), circle(d.x, d.y, d.head)])],
-    },
+    // bowl, its head, and its pedal on the player's side (American setup;
+    // the German setup is timpaniSymbolOf(SP_TIMPANI_GERMAN))
+    timpani: timpaniSymbolOf(SP_TIMPANI),
     // a flute as it is held: the tube to the player's right, the lip plate
     // near the crown end at the player's mouth, the key cups along it
     flute: {
@@ -360,7 +414,7 @@ function R2_SYMBOLS(): Record<SpR2Kind, SpSymbol> {
         rect(H.x0, H.y0, H.x1 - H.x0, H.y1 - H.y0, { fill: 'paper', r: 0.01 }),
         rect(H.x0 + 0.05, H.y0 + 0.005, H.x1 - H.x0 - 0.1, H.keysTo - 0.005, { fill: 'paper' }),
         ...ticks(22, H.x0 + 0.05, H.x1 - 0.05, H.y0 + 0.005, H.keysTo),
-        ...[-0.18, -0.12, -0.06, 0, 0.06, 0.12, 0.18].map((x) => circle(x, H.stopsY, 0.012, { fill: 'ink' })),
+        ...SP_HARMONIUM_KNOBS.map((k) => circle(k.x, H.stopsY, k.drone ? 0.009 : 0.012, { fill: 'ink' })),
       ],
     },
     // a harmonica player's microphone on its stand, the microphone toward

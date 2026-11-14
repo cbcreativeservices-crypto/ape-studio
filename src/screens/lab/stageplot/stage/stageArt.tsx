@@ -45,7 +45,7 @@ import { TOP_ART_GEAR } from './topArtGear';
 import { TOP_ART_INSTRUMENTS } from './topArtInstruments';
 import { TOP_ART_STRINGS_KEYS } from './topArtStringsKeys';
 import type { TopArtMap } from './topArtTypes';
-import { TOP_ART_R2 } from './topArtR2';
+import { TimpaniSetTop, TOP_ART_R2 } from './topArtR2';
 import { ChoirTop, TOP_ART_WORLD } from './topArtWorld';
 
 /** This lab's own top-view art, by kind (the contract: topArtTypes.ts).
@@ -166,6 +166,15 @@ function Art({ p, o, cx, cy, hw, hh, rot, u, dim }: StageObjectArtProps) {
       return (
         <G transform={`${at} rotate(${rot}) scale(${k})`} opacity={opacity}>
           <ChoirTop layout={spChoirLayout(spChoirOf(o))} />
+        </G>
+      );
+    case 'timpani':
+      // a set of timpani in its own setup (round 3): American, or German
+      // with the largest drum at the timpanist's right, the layout the
+      // packet prints
+      return (
+        <G transform={`${at} rotate(${rot}) scale(${k})`} opacity={opacity}>
+          <TimpaniSetTop setup={o.timpaniSetup === 'german' ? 'german' : 'american'} />
         </G>
       );
     case 'riser':

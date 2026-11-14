@@ -323,7 +323,8 @@ export function spBoxSocketLines(p: SpProject, boxId: SpId): string[] {
   }
   // (round 2) the sockets a sub-snake plugs into
   const subs = spSubsOn(p, boxId);
-  for (const f of subs) out.push(`${f.first === f.last ? f.first : `${f.first}–${f.last}`} · ${spBoxName(f.box)} plugs in here (a sub-snake)`);
+  // (round 3b, owner 2026-11-13: build the remaining held items) which sockets of the sub-snake arrive here
+  for (const f of subs) out.push(`${f.first === f.last ? f.first : `${f.first}–${f.last}`} · from ${spBoxName(f.box)} socket${f.first === f.last ? ' 1' : `s 1–${f.last - f.first + 1}`} (sub-snake)`);
   const free: number[] = [];
   for (let s = 1; s <= box.inputs; s++) if (!bySocket.has(s) && !subs.some((f) => s >= f.first && s <= f.last)) free.push(s);
   if (free.length) out.push(`Free: ${spSocketRunsWords(free)}`);

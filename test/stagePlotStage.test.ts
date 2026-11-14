@@ -789,9 +789,12 @@ describe('names and numbers on the stage', () => {
     assert.match(plan, /const peopleOut = showNames \? plan\.peopleOut\.length : 0;/);
     assert.match(area, /setLeftOut\(n\);\s*setCodesOut\(codes\);/);
     // "every performer is named" only while no name is covered (R2-SP1-02)
-    assert.match(area, /leftOut > 0 \? `At this size \$\{leftOut === 1 \? '1 equipment name is' : `\$\{leftOut\} equipment names are`\} not shown, to keep the names apart\.\$\{numbersOut > 0 \? '' : ' The equipment keeps its channel numbers and mix codes\.'\}\$\{crowded > 0 \|\| peopleOut > 0 \? '' : ' Every performer is named\.'\}`/);
-    // owner 2026-11-13: build them all — names stay inside the stage
-    assert.match(area, /peopleOut > 0 \? `\$\{peopleOut === 1 \? '1 performer’s name is' : `\$\{peopleOut\} performers’ names are`\} not shown at this size, so no name touches another or crosses the edge of the stage\.` : ''/);
+    // owner 2026-11-13: build the remaining held items: the words say why,
+    // truly (names are kept clear of other names AND drawings), and the
+    // performers shown by initials are counted and named
+    assert.match(area, /leftOut > 0 \? `At this size, \$\{leftOut === 1 \? '1 equipment name is' : `\$\{leftOut\} equipment names are`\} hidden so that no name covers another name or drawing\.\$\{numbersOut > 0 \? '' : ' The equipment keeps its channel numbers and mix codes\.'\}\$\{crowded > 0 \|\| peopleOut > 0 \|\| shortNames\.count > 0 \? '' : ' Every performer is named\.'\}`/);
+    assert.match(area, /peopleOut > 0 \? `At this size, \$\{peopleOut === 1 \? '1 performer’s name is' : `\$\{peopleOut\} performers’ names are`\} hidden so that no name covers another name or drawing, or runs past the edge of the stage\.` : ''/);
+    assert.match(area, /shortened at this size: \$\{shortNames\.words\}\./);
     assert.match(area, /performers are`\} named without \$\{codesOut === 1 \? 'their mix code' : 'their mix codes'\} at this size\. Each code is still on that performer’s monitor\./);
     // owner 2026-11-13: build them all — names stay inside the stage: numbers are left out at small sizes too
     assert.match(area, /'Press ZOOM IN to see every name and number\. In FULL SCREEN, turn the phone sideways for a larger stage\.'/);

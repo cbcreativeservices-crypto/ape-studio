@@ -147,10 +147,18 @@ export type SpStageBox = {
   connectsTo: string;
   /** The band said: which console it connects to is to be confirmed. */
   connectsTbc: boolean;
+  /** (round 3, optional: absent = not given) A sub-snake's RETURNS come
+   *  through returns `first`…`last` of the box it plugs into (`feed`): its
+   *  return 1 is the main box's return `first`. Only kept while `feed` is. */
+  retFeed?: SpReturnFeed | null;
 };
 
 /** Where a sub-snake plugs in: "SB2 → SB1 sockets 9–16". */
 export type SpBoxFeed = { boxId: SpId; first: number; last: number };
+
+/** (round 3) The returns of a main box that carry a sub-snake's returns:
+ *  "SB2 returns ← SB1 returns 7–8" (the main box is the sub-snake's feed). */
+export type SpReturnFeed = { first: number; last: number };
 
 /** The stage box return a monitor mix comes back to the stage on: "SB1 ·
  *  return 3". A stereo mix takes `ret` and the next one. `byHand` = the band
@@ -193,7 +201,10 @@ export type SpDelivery = 'wedge' | 'wired-iem' | 'wireless-iem' | 'drum-fill' | 
  *  not a fader value. */
 export type SpMixNeed = 'primary' | 'supporting' | 'not-needed' | 'exclude';
 /** What the venue must provide for a rig the band mixes itself. */
-export type SpVenueFeed = 'split' | 'feeds' | 'returns' | 'none' | 'tbc';
+/** (round 3b, owner 2026-11-13: build the remaining held items) 'split-returns'
+ *  = an input split AND return lines (a band monitor console at the monitor
+ *  position). An added value: a plot saved before it never has it. */
+export type SpVenueFeed = 'split' | 'split-returns' | 'feeds' | 'returns' | 'none' | 'tbc';
 
 export type SpMix = {
   id: SpId;
@@ -217,6 +228,15 @@ export type SpMix = {
   /** The stage box return this mix comes back on (2026-11-13, round 2), or
    *  null (none chosen yet). */
   ret: SpReturnPatch | null;
+  /** (round 3, optional: absent = none) A STEREO mix whose two sides come
+   *  back on two returns that are not side by side, often on two boxes (a
+   *  stereo sidefill whose speakers stand by different boxes): `ret` is then
+   *  its L (left) return only, and this its R (right). */
+  retR?: SpReturnPatch | null;
+  /** (round 3, optional: absent = not said) The band said: this mix, made on
+   *  its own rig, still uses its stage box return (the venue's return lines
+   *  carry it to the stage). */
+  retKeep?: boolean;
   /** The band said: this mix comes from the console itself, not a stage box
    *  return (an in-ear transmitter at the monitor console, a wedge cabled
    *  from it). */
@@ -348,7 +368,16 @@ export type SpObject = {
    *  rows, the drawing it always had (spMigrate). No schema change: a
    *  reader that does not know the field keeps it and draws the old choir. */
   choir?: SpChoir | null;
+  /** Timpani only (2026-11-13, round 3, owner: "build the remaining held
+   *  items too"): the American setup (the largest drum at the timpanist's
+   *  left) or the German (at the right). Absent = American, the drawing a
+   *  plot saved before always had. No schema change. */
+  timpaniSetup?: SpTimpaniSetup | null;
 };
+
+/** How a set of timpani is arranged: 'american' = the largest drum at the
+ *  timpanist's left; 'german' = at the right. */
+export type SpTimpaniSetup = 'american' | 'german';
 
 /** How many singers a choir has (4 to 60) and how many rows (1 to 4, or
  *  'auto'): spChoir.ts lays it out. */
@@ -395,7 +424,15 @@ export type SpStage = {
   /** In the round: the name of the side drawn at the bottom (the reference
    *  side, usually where the mix position is): "FOH". */
   roundRef: string;
+  /** In the round: how the sides are named (owner 2026-11-13: build the
+   *  remaining held items). Absent or 'ref' = the reference side and the far
+   *  side, with stage right and stage left (as before); 'clock' = clock
+   *  positions, 12 o'clock at the reference side; 'numbered' = sides 1 to 4,
+   *  side 1 at the reference side, numbered clockwise as seen from above. */
+  roundSides?: SpRoundSides;
 };
+
+export type SpRoundSides = 'ref' | 'clock' | 'numbered';
 
 export type SpStatus = 'draft' | 'ready';
 

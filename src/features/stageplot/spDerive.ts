@@ -22,7 +22,7 @@
  * Pure. US spelling.
  */
 import { SP_CATEGORY_ORDER, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_EXTRA_KIND_WORD, SP_STAND_WORD, SP_SUPPLIER_WORD } from './spCatalog.ts';
-import { spBox, spBoxFeedWords, spBoxName, spBoxObject, spBoxes, spPartner, spPatch, spReturnRange } from './spModel.ts';
+import { spBox, spBoxFeedWords, spBoxName, spBoxObject, spBoxes, spMixReturnSpots, spMixSplit, spPartner, spPatch, spReturnFeedWords } from './spModel.ts';
 import type { SpCapture, SpCategory, SpDeviceType, SpId, SpInput, SpMix, SpMixProvider, SpPatchId, SpProject, SpStageBox, SpStand, SpSupplier } from './spTypes.ts';
 
 export type SpBySupplier = Record<SpSupplier, number>;
@@ -325,7 +325,8 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
     if (m.provider === 'house' && !m.outputs.trim()) {
       const byType = new Map<SpDeviceType, number>();
       for (const d of p.devices) if (d.mixId === m.id) byType.set(d.type, (byType.get(d.type) ?? 0) + 1);
-      for (const [type, n] of byType) if (n >= 2) what.push(`how its ${n} ${SP_DEVICE_PLURAL[type]} are fed (linked from one output, or one output each)`), fields.push('outputs');
+      // (round 3) a stereo mix with two devices is one output per side already (engineer review)
+      for (const [type, n] of byType) if (n >= 2 && !(m.format === 'stereo' && n === 2)) what.push(`how its ${n} ${SP_DEVICE_PLURAL[type]} are fed (linked from one output, or one output each)`), fields.push('outputs');
     }
     if (what.length) open.push({ text: `${m.code}${m.name ? ` ${m.name}` : ''}: ${what.join('; ')}`, kind: 'mix', id: m.id, field: fields[0] });
   }
@@ -363,8 +364,19 @@ export type SpBoxUse = {
   feedPast: number[];
   /** As a sub-snake: the sockets in use that its feed does not carry. */
   feedShort: number[];
-  /** Monitor mixes on its returns, return by return. */
-  returnsUsed: { ret: number; mix: SpMix }[];
+  /** Monitor mixes on its returns, return by return (`side`: L or R of a
+   *  stereo mix, null for mono). */
+  returnsUsed: { ret: number; mix: SpMix; side?: 'L' | 'R' | null }[];
+  /** (round 3) Sub-snakes whose returns come through its returns. */
+  retFedBy: { box: SpStageBox; first: number; last: number }[];
+  /** (round 3) Its returns that two things want: a mix and a sub-snake, or
+   *  two sub-snakes (named on the later sub-snake). */
+  retFeedClash: { sub: SpStageBox; rets: number[]; with: string[] }[];
+  /** (round 3) As a sub-snake: its return feed past the main box's returns. */
+  retFeedPast: number[];
+  /** (round 3) As a sub-snake: its returns given to mixes that its return
+   *  feed does not carry. */
+  retFeedShort: number[];
   /** Returns given to two mixes or more. */
   returnsDoubled: { ret: number; mixes: SpMix[] }[];
   /** Mixes on a return the box does not have. */
@@ -414,10 +426,43 @@ export function spBoxUse(p: SpProject): SpBoxUse[] {
     }
     // returns: what each monitor mix comes back on
     const returnsUsed: SpBoxUse['returnsUsed'] = [];
-    for (const m of p.mixes) if (m.ret?.boxId === box.id) for (const r of spReturnRange(m)) returnsUsed.push({ ret: r, mix: m });
+    // (round 3) every return a mix takes, its R on another box included
+    for (const m of p.mixes) for (const s of spMixReturnSpots(m)) if (s.boxId === box.id) returnsUsed.push({ ret: s.ret, mix: m, side: s.side });
     returnsUsed.sort((a, b) => a.ret - b.ret);
     const byRet = new Map<number, SpMix[]>();
     for (const x of returnsUsed) byRet.set(x.ret, [...(byRet.get(x.ret) ?? []), x.mix]);
+    // (round 3) sub-snakes whose returns come through this box's returns
+    const retFedBy = spBoxes(p)
+      .filter((b) => b.id !== box.id && b.feed?.boxId === box.id && b.retFeed)
+      .map((b) => ({ box: b, first: (b.retFeed as { first: number }).first, last: (b.retFeed as { last: number }).last }))
+      .sort((a, b) => a.first - b.first);
+    const retFeedClash: SpBoxUse['retFeedClash'] = [];
+    retFedBy.forEach((f, k) => {
+      const rets: number[] = [];
+      const withWhat: string[] = [];
+      for (let r = f.first; r <= f.last; r++) {
+        for (const m of byRet.get(r) ?? []) {
+          if (!rets.includes(r)) rets.push(r);
+          if (!withWhat.includes(m.code)) withWhat.push(m.code);
+        }
+        for (const g of retFedBy.slice(0, k)) {
+          if (r < g.first || r > g.last) continue;
+          if (!rets.includes(r)) rets.push(r);
+          if (!withWhat.includes(spBoxName(g.box))) withWhat.push(spBoxName(g.box));
+        }
+      }
+      if (rets.length) retFeedClash.push({ sub: f.box, rets, with: withWhat });
+    });
+    const retFeedPast: number[] = [];
+    const retFeedShort: number[] = [];
+    if (box.feed && box.retFeed && main) {
+      for (let r = box.retFeed.first; r <= box.retFeed.last; r++) if (r > (main.returns ?? 0)) retFeedPast.push(r);
+      const carries = box.retFeed.last - box.retFeed.first + 1;
+      for (const r of new Set(returnsUsed.map((x) => x.ret))) if (r > carries && r <= (box.returns ?? 0)) retFeedShort.push(r);
+      // …and the returns a sub-snake below it takes (a chain: engineer review)
+      for (const f of retFedBy) for (let r = f.first; r <= f.last; r++) if (r > carries && r <= (box.returns ?? 0) && !retFeedShort.includes(r)) retFeedShort.push(r);
+      retFeedShort.sort((a, b) => a - b);
+    }
     return {
       box,
       plugged,
@@ -434,6 +479,10 @@ export function spBoxUse(p: SpProject): SpBoxUse[] {
       returnsUsed,
       returnsDoubled: [...byRet.entries()].filter(([, list]) => list.length > 1).map(([ret, mixes]) => ({ ret, mixes })),
       returnsOver: returnsUsed.filter((x) => x.ret > (box.returns ?? 0)),
+      retFedBy,
+      retFeedClash,
+      retFeedPast,
+      retFeedShort,
     };
   });
 }
@@ -486,19 +535,38 @@ export function spMixCodeRuns(codes: readonly string[]): string {
  *  console it connects to. Empty for a box with none of these. */
 export function spBoxMoreWords(p: SpProject, u: SpBoxUse): string[] {
   const out: string[] = [];
-  for (const f of u.fedBy) out.push(`socket${f.first === f.last ? ` ${f.first}` : `s ${f.first}–${f.last}`}: ${spBoxName(f.box)} (sub-snake)`);
+  // (round 3b, owner 2026-11-13: build the remaining held items) which socket of
+  // the sub-snake each socket carries, as the crew patches it (engineer review)
+  for (const f of u.fedBy) out.push(`socket${f.first === f.last ? ` ${f.first}` : `s ${f.first}–${f.last}`} from ${spBoxName(f.box)} socket${f.first === f.last ? ' 1' : `s 1–${f.last - f.first + 1}`} (sub-snake)`);
   if (u.box.feed) out.push(`a sub-snake, plugs into ${spBoxFeedWords(p, u.box).slice(2)}`);
+  // (round 3) a sub-snake's returns come through returns of its main box
+  const via = spReturnFeedWords(p, u.box);
+  if (via) out.push(`its returns come through ${via}`);
   const inside = u.returnsUsed.filter((x) => x.ret <= (u.box.returns ?? 0));
-  if (inside.length) {
+  const reserved = u.retFedBy.map((f) => ({ ...f, last: Math.min(f.last, u.box.returns ?? 0) })).filter((f) => f.first <= f.last);
+  if (inside.length || reserved.length) {
     // return by return, as the crew patches at the box: "1 M1, 3–4 M3"
-    const byMix: { mix: SpMix; rets: number[] }[] = [];
+    const byMix: { mix: SpMix; rets: number[]; side: 'L' | 'R' | null }[] = [];
     for (const x of inside) {
       const row = byMix.find((r) => r.mix === x.mix);
       if (row) row.rets.push(x.ret);
-      else byMix.push({ mix: x.mix, rets: [x.ret] });
+      else byMix.push({ mix: x.mix, rets: [x.ret], side: x.side ?? null });
     }
-    const free = Math.max(0, (u.box.returns ?? 0) - new Set(inside.map((x) => x.ret)).size);
-    out.push(`returns ${byMix.map((r) => `${spSocketRuns(r.rets)} ${r.mix.code}`).join(', ')}${free ? `, ${free} free` : ''}`);
+    const entries = byMix.map((r) => {
+      // (round 3) a stereo mix placed at two boxes says where its other side is
+      const other = spMixSplit(r.mix) && r.rets.length === 1 ? spBox(p, r.side === 'L' ? r.mix.retR?.boxId : r.mix.ret?.boxId) : undefined;
+      return { first: r.rets[0], text: `${spSocketRuns(r.rets)} ${r.mix.code}${other ? ` (${r.side}, stage ${r.side === 'L' ? 'left' : 'right'}; ${r.side === 'L' ? 'R' : 'L'} on ${spBoxName(other)})` : ''}` };
+    });
+    // what each carrying return of a main box goes to, as the crew patches it
+    for (const f of reserved) entries.push({ first: f.first, text: `${f.first === f.last ? f.first : `${f.first}–${f.last}`} to ${spBoxName(f.box)} return${f.first === f.last ? ' 1' : `s 1–${f.last - f.first + 1}`} (sub-snake)` });
+    entries.sort((a, b) => a.first - b.first);
+    const taken = new Set(inside.map((x) => x.ret));
+    for (const f of reserved) for (let r = f.first; r <= f.last; r++) taken.add(r);
+    // a sub-snake's returns its feed does not carry are not free (engineer review)
+    const usable = u.box.feed && u.box.retFeed ? Math.min(u.box.returns ?? 0, u.box.retFeed.last - u.box.retFeed.first + 1) : (u.box.returns ?? 0);
+    const free = Math.max(0, usable - [...taken].filter((r) => r <= usable).length);
+    const notCarried = u.box.feed && u.box.retFeed && usable < (u.box.returns ?? 0) ? `, ${usable + 1 === u.box.returns ? `return ${u.box.returns}` : `returns ${usable + 1}–${u.box.returns}`} not carried to ${spBoxName(spBox(p, u.box.feed.boxId) ?? u.box)}` : '';
+    out.push(`${u.box.feed && u.box.retFeed ? 'its own returns:' : 'returns'} ${entries.map((e) => e.text).join(', ')}${free ? `, ${free} free` : ''}${notCarried}`);
   }
   if (u.box.connectsTo.trim()) out.push(`connects to ${u.box.connectsTo.trim()}`);
   else if (u.box.connectsTbc) out.push('which console it connects to is to be confirmed');

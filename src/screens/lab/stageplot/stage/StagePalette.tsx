@@ -29,13 +29,14 @@ import { SP_DEVICE_WORD, SP_PALETTE, type SpPackage, type SpPaletteItem } from '
 import { SP_CHOIR_DEFAULT, spChoirClean } from '../../../../features/stageplot/spChoir';
 import { spAddBox, spUpdateObject } from '../../../../features/stageplot/spModel';
 import { spHasWings } from '../../../../features/stageplot/spShape';
-import type { SpChoir, SpDeviceType, SpId, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
+import type { SpChoir, SpDeviceType, SpId, SpObjectKind, SpProject, SpTimpaniSetup } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { spPackagePreview, spPackageToggle } from '../inputs/inputsLogic';
 import { Button, Choice, Note, Switch, TextField } from '../spForm';
 import { ChoirSize } from './ChoirSize';
 import { StageKindIcon } from './StageKey';
 import { StageStepScroll } from './StageStepScroll';
+import { TimpaniSetup } from './TimpaniSetup';
 import {
   stageAddDrawing,
   stageAddLinked,
@@ -50,6 +51,7 @@ import {
   stagePackagesFor,
   stagePerformerChoices,
   stageSourceChoices,
+  stageTimpaniPackagesFor,
   type StageAdded,
   type StageChoice,
 } from './stageLinks';
@@ -98,13 +100,18 @@ export function StagePalette({
   const [everySource, setEverySource] = useState(false);
   /** A new choir's size, set before its package (round 2). */
   const [choir, setChoir] = useState<SpChoir>({ ...SP_CHOIR_DEFAULT });
+  /** A new set of timpani's setup, set before its package (round 3). */
+  const [timpani, setTimpani] = useState<SpTimpaniSetup>('american');
 
   const done = (kind: SpObjectKind, name: string, place: (q: SpProject, at: Pt) => StageAdded) => {
     // a choir is placed at the size set here, in a place free for its own
-    // riser (round 2)
+    // riser (round 2); a German timpani set keeps its setup (round 3)
     const make = kind === 'choir' ? (q: SpProject, at: Pt): StageAdded => {
       const r = place(q, stageFreeSpot(q, at, kind, choir));
       return { p: spUpdateObject(r.p, r.id, { choir: spChoirClean(choir) }), id: r.id };
+    } : kind === 'timpani' && timpani === 'german' ? (q: SpProject, at: Pt): StageAdded => {
+      const r = place(q, at);
+      return { p: spUpdateObject(r.p, r.id, { timpaniSetup: 'german' }), id: r.id };
     } : place;
     // a free place for THIS kind's own box, near where the user is looking
     onAdd((q, near) => make(q, stageFreeSpot(q, near, kind)));
@@ -131,6 +138,7 @@ export function StagePalette({
       return;
     }
     if (item.kind === 'choir') setChoir({ ...SP_CHOIR_DEFAULT });
+    if (item.kind === 'timpani') setTimpani('american');
     setEverySource(false);
     setStep({ at: 'link', item });
   };
@@ -305,7 +313,8 @@ export function StagePalette({
     );
   }
 
-  const packages = stagePackagesFor(kind, choir);
+  // (a set of timpani: the package words follow its setup, round 3)
+  const packages = kind === 'timpani' ? stageTimpaniPackagesFor(timpani) : stagePackagesFor(kind, choir);
   const capture = mode === 'capture';
   // sources of the symbol's own kind first; the rest behind one button, so a
   // drum kit is not offered three vocals before its own kit
@@ -321,6 +330,14 @@ export function StagePalette({
             HOW BIG IS THE CHOIR
           </Text>
           <ChoirSize value={choir} onChange={(c) => setChoir(spChoirClean(c))} />
+        </>
+      ) : null}
+      {kind === 'timpani' ? (
+        <>
+          <Text style={styles.heading} accessibilityRole="header">
+            HOW THE DRUMS STAND
+          </Text>
+          <TimpaniSetup value={timpani} onChange={setTimpani} />
         </>
       ) : null}
       <Text style={styles.heading} accessibilityRole="header">

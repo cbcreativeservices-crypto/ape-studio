@@ -89,8 +89,11 @@ export const SP_DELIVERY_WORD: Record<SpDelivery, string> = {
 export const SP_NEED_WORD: Record<SpMixNeed, string> = { primary: 'Primary', supporting: 'Supporting', 'not-needed': 'Not needed', exclude: 'Must exclude' };
 export const SP_VENUE_FEED_WORD: Record<SpVenueFeed, string> = {
   split: 'An input split',
+  // (round 3b, engineer review) the band's monitor console at the monitor
+  // position needs both; return lines can come from FOH or the monitor position
+  'split-returns': 'An input split and return lines to the stage',
   feeds: 'Feeds from the house console',
-  returns: 'Return lines from the house position to the stage',
+  returns: 'Return lines to the stage (from FOH or the monitor position)',
   none: 'No monitor feeds',
   tbc: 'To be confirmed',
 };
@@ -689,31 +692,9 @@ export const SP_PACKAGES: readonly SpPackage[] = [
       mic('Marimba high', 'Small-diaphragm condenser microphone', 'tall-boom'),
     ],
   },
-  {
-    id: 'timpani-pair',
-    name: 'Timpani, a pair above',
-    category: 'percussion',
-    source: 'Timpani',
-    assumes: 'A pair of microphones 1 to 1.5 m above the drums, from the audience side. The drums are drawn in the American setup (the largest at the timpanist’s left); a German setup puts the largest drum at the timpanist’s right.',
-    stereo: true,
-    rows: [
-      { ...mic('Timpani L', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'L' },
-      { ...mic('Timpani R', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'R' },
-    ],
-  },
-  {
-    id: 'timpani-each',
-    name: 'Timpani, one microphone per drum',
-    category: 'percussion',
-    source: 'Timpani',
-    assumes: 'One microphone 0.3 to 0.5 m above each head, between the center and the edge on the side away from the player, out of the mallets’ path (the heads are about 0.8 m up, so the stands are tall).',
-    rows: [
-      mic('Timpani 32 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
-      mic('Timpani 29 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
-      mic('Timpani 26 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
-      mic('Timpani 23 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
-    ],
-  },
+  // timpani: the words follow the set's setup (round 3); the catalog holds
+  // the American wording, the stage asks spTimpaniPackages for the other
+  ...spTimpaniPackages('american'),
   {
     id: 'flute-stand',
     name: 'Flute, microphone on a stand',
@@ -775,6 +756,54 @@ export const SP_PACKAGES: readonly SpPackage[] = [
 /** The area-microphone packages of a choir, one to six microphones (ids
  *  choir-one … choir-six; choir-two and choir-three keep the ids they had).
  *  A choir's own size picks one (stageLinks, from spChoir). */
+/** How each timpani setup is said (round 3, 2026-11-13, owner: "build the
+ *  remaining held items too"). The timpanist faces the audience, so the
+ *  player's left is stage left. */
+export const SP_TIMPANI_SETUP_WORDS = {
+  american: 'American setup: the largest drum at the timpanist’s left (stage left), the smallest at the right.',
+  german: 'German setup: the largest drum at the timpanist’s right (stage right), the smallest at the left.',
+} as const;
+
+/** The timpani packages, worded for one setup (ids kept: the same two
+ *  packages whatever the setup). The per-drum list names each microphone by
+ *  its drum's size, largest first, in either setup; the pair says which
+ *  side of the house pair is over the low drums (live-sound review, round 3:
+ *  from the audience side the low drums are on the right in the American
+ *  setup, on the left in the German). */
+export function spTimpaniPackages(setup: 'american' | 'german'): SpPackage[] {
+  const am = setup === 'american';
+  const drawn = am
+    ? 'The drums are drawn in the American setup (the largest at the timpanist’s left); a German setup puts the largest drum at the timpanist’s right.'
+    : 'The drums are drawn in the German setup (the largest at the timpanist’s right); an American setup puts the largest drum at the timpanist’s left.';
+  return [
+    {
+      id: 'timpani-pair',
+      name: 'Timpani, a pair above',
+      category: 'percussion',
+      source: 'Timpani',
+      assumes: `A pair of microphones 1 to 1.5 m above the drums, from the audience side. ${drawn} ${am ? 'Timpani R' : 'Timpani L'} is over the 32 and 29 in drums.`,
+      stereo: true,
+      rows: [
+        { ...mic('Timpani L', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'L' },
+        { ...mic('Timpani R', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'R' },
+      ],
+    },
+    {
+      id: 'timpani-each',
+      name: 'Timpani, one microphone per drum',
+      category: 'percussion',
+      source: 'Timpani',
+      assumes: `One microphone 0.3 to 0.5 m above each head, between the center and the edge on the side away from the player, out of the mallets’ path (the heads are about 0.8 m up, so the stands are tall). Named by drum size, largest first. ${drawn}`,
+      rows: [
+        mic('Timpani 32 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+        mic('Timpani 29 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+        mic('Timpani 26 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+        mic('Timpani 23 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+      ],
+    },
+  ];
+}
+
 function choirPackages(): SpPackage[] {
   const ids = ['choir-one', 'choir-two', 'choir-three', 'choir-four', 'choir-five', 'choir-six'];
   const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six'];

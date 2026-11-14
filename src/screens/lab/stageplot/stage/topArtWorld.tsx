@@ -10,7 +10,8 @@
  * makers' published dimensions; the lab's notes name them):
  *   • choir on a riser: a three-step choral riser (1.85 × 1.4 m, the back
  *     step highest) with eleven singers in window spacing, the same figure
- *     from above that the stage draws for a performer;
+ *     from above that the stage draws for a performer, in its narrow build
+ *     (400 mm across, round 3) so close neighbours do not overlap;
  *   • electronic drum kit: the rack's black tubes and clamps round mesh-head
  *     pads, the kick tower with its pedal, the hi-hat pad over its
  *     controller pedal, rubber cymbal pads with their bells, the module on
@@ -117,12 +118,14 @@ export function ChoirTop({ layout }: { layout?: ChoirArtLayout } = {}) {
   const riser = layout ? (layout.riser ? { hw: ((layout.riser.x1 - layout.riser.x0) * M) / 2, steps: layout.riser.steps.map((y) => y * M), joins: layout.riser.joins.map((x) => x * M) } : null) : { hw: RISER_HW, steps: STEPS, joins: [] as number[] };
   const singers: [number, number][] = layout ? layout.at.map((a) => [a.x * M, a.y * M]) : SINGERS;
   const rows = riser ? riser.steps.length - 1 : 0;
-  // one row on the floor: the singers' shadow on the deck, then the singers
-  const floor = !riser && singers.length ? { x0: Math.min(...singers.map((s) => s[0])) - 7.6, x1: Math.max(...singers.map((s) => s[0])) + 7.6 } : null;
+  // one row on the floor: each singer's own soft shadow on the deck, then
+  // the singers (one band behind them all read as a bench: visual review,
+  // round 3; the narrow build is 400 mm across, 6.4 floor units each side)
+  const floor = !riser && singers.length > 0;
   return (
     <G>
       {riser ? <Rect x={-riser.hw + 0.8} y={riser.steps[0]! + 1.2} width={riser.hw * 2} height={riser.steps[rows]! - riser.steps[0]!} rx={0.6} fill={SHADOW} /> : null}
-      {floor ? <Rect x={floor.x0 + 0.8} y={-3.2} width={floor.x1 - floor.x0} height={6.4} rx={3.2} fill={SHADOW} /> : null}
+      {floor ? singers.map(([x, y]) => <Ellipse key={`f${x.toFixed(2)}`} cx={x + 0.8} cy={y + 1.2} rx={6.4} ry={3.6} fill="rgba(0,0,0,0.3)" />) : null}
       {/* carpeted decks, the back one highest, each with its metal nosing,
           and the higher deck's shadow on the one in front */}
       {riser
@@ -141,8 +144,11 @@ export function ChoirTop({ layout }: { layout?: ChoirArtLayout } = {}) {
           <Line x1={x + 0.35} y1={riser.steps[0]! + 0.3} x2={x + 0.35} y2={riser.steps[rows]! - 0.3} stroke="#5a5e66" strokeWidth={0.2} />
         </G>
       ))}
+      {/* the singers: the house figure in its narrow build (400 mm across;
+          owner 2026-11-13, "build the remaining held items too"), so
+          neighbours at 0.44 m stand clear of each other */}
       {singers.map(([x, y]) => (
-        <FigureAboveSvg key={`${x.toFixed(2)},${y.toFixed(2)}`} x={x} y={y} pxPerMm={0.032} facingDeg={0} halo="#c3cde2" />
+        <FigureAboveSvg key={`${x.toFixed(2)},${y.toFixed(2)}`} x={x} y={y} pxPerMm={0.032} facingDeg={0} halo="#c3cde2" build="narrow" />
       ))}
     </G>
   );

@@ -6,12 +6,25 @@
  *
  * WHERE THE NUMBERS COME FROM
  *   • The riser is drawn as SOLD choral riser units: 6 ft (1.83 m) wide with
- *     18 in (0.46 m) steps. Wenger's layout sheet for its 6 ft, 3-step, 18 in
- *     riser lists 12 to 16 standing performers per unit (16 = shoulder to
- *     shoulder) on a stage area of about 6 ft × 4 ft 10 in. A venue gives
- *     floor by riser units, so the plot counts units (live-sound review,
- *     2026-11-13). The tool uses the 12-performer figure: 4 singers a row on
- *     one unit, about 0.44 m each.
+ *     18 in (0.46 m) steps. A venue gives floor by riser units, so the plot
+ *     counts units (live-sound review, 2026-11-13). The tool stands 4
+ *     singers a row on one unit, about 0.44 m each.
+ *   • THE SOURCE (round 3, checked word for word, 2026-11-13): Wenger
+ *     Choral Risers brochure LT0024 (wengercorp.com/Lit/Wenger_Choral
+ *     Risers_BRO_LT0024.pdf), "Signature Choral Riser Sets", 3-step
+ *     098H053: GROUP CAPACITY "12-16", UNITS NEEDED 1, SPACE REQUIRED
+ *     "6'w x 4'10"d"; steps "18" (457 mm) deep"; the riser "6' (1829 mm)
+ *     wide at back of third step". Its footnote: "First number indicates how
+ *     many high school students will fit on a riser set if all students
+ *     stand shoulder to shoulder. Second number indicates how many students
+ *     will fit on a riser set if they are all facing center with shoulders
+ *     overlapping. Numbers include a row of students standing on the floor.
+ *     Adult groups should use lower number." (The round-2 note had the two
+ *     numbers the wrong way round.) So 16 (4 rows of 4, counting a floor
+ *     row) is 4 a row with shoulders overlapping: the spacing drawn here,
+ *     close but common in practice. The live-sound review (round 3) kept 4 a
+ *     row (old plots keep their riser units) and had the packet say so: an
+ *     adult choir that wants shoulder room stands 3 a row (spChoirRiserNote).
  *   • WINDOW SPACING: rows are counted across the whole riser. From the back,
  *     a full row holds 4 × units, the next (standing in the gaps of the row
  *     behind) 4 × units − 1, and so on. One unit is 4 + 3 + 4 = 11 singers:
@@ -193,6 +206,27 @@ export function spChoirWords(c: SpChoir): string {
   const count = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][lay.units - 1] ?? String(lay.units);
   const units = lay.units === 1 ? `one 6 ft ${step} riser unit` : `${count} 6 ft ${step} riser units side by side`;
   return `${who}, on ${units} (${num(lay.w)} m wide, ${num(lay.h)} m deep)`;
+}
+
+/** A choir's size as the packet prints it after its name (round 3,
+ *  2026-11-13, owner: "build the remaining held items too"): "24 singers,
+ *  3 rows", "8 singers, 1 row". */
+export function spChoirCountWords(c: SpChoir): string {
+  const lay = spChoirLayout(c);
+  return `${lay.singers} singers, ${lay.rows} ${lay.rows === 1 ? 'row' : 'rows'}`;
+}
+
+/** The riser units a choir needs, for the packet's stage notes (round 3,
+ *  live-sound review: venues and rental companies supply risers from that
+ *  list), and how close the drawing stands the singers. '' for a choir of
+ *  one row on the floor. */
+export function spChoirRiserNote(c: SpChoir): string {
+  const lay = spChoirLayout(c);
+  if (!lay.riser) return '';
+  const step = ['', 'one-step', 'two-step', 'three-step', 'four-step'][lay.rows] ?? `${lay.rows}-step`;
+  // shoulder room: 3 a row on a unit, the rows in the gaps one fewer
+  const roomy = 3 * lay.rows - Math.floor(lay.rows / 2);
+  return `Choral risers: ${lay.units} × 6 ft (1.83 m) ${step} riser ${lay.units === 1 ? 'unit' : 'units'}, ${lay.rows} rows. Drawn at about 4 singers a row on each unit (about 0.45 m, 18 in, a singer, staggered). An adult choir that wants shoulder room needs 3 a row: about one riser unit for every ${roomy} singers.`;
 }
 
 /** The placement words every area-microphone package prints. */

@@ -393,13 +393,17 @@ describe('on the phone, a name never crosses the stage’s edge (owner 2026-11-1
       for (const [phone, gw, H] of PHONES) {
         const gh = glassOf(p, gw, H);
         assert.deepEqual(breaks(p, gw, gh), [], `${name} · ${phone}`);
-        // every performer is named at every phone size (nothing about a name is cut)
+        // owner 2026-11-13: build the remaining held items: a performer's name
+        // never lies over a neighbor's drawing, so on a crowded phone it is
+        // whole, or the performer's initials (counted and said in words), or
+        // left out and counted; never cut, never crowded
         const { items, plan } = screenPlan(p, gw, gh);
         for (const it of items.filter((x) => x.person)) {
           const l = plan.labels.find((x) => x.id === it.id);
-          assert.ok(l && l.lines.map((x) => x.text).join(' ') === it.text, `${name} · ${phone}: ${it.text} is named whole`);
+          const said = l ? l.lines.map((x) => x.text).join(' ') : '';
+          const short = plan.short.find((x) => x.id === it.id);
+          assert.ok(said === it.text || (short && said === short.text && short.name === it.text) || (!l && plan.peopleOut.includes(it.id)), `${name} · ${phone}: ${it.text} is named whole, by initials, or counted out`);
         }
-        assert.deepEqual(plan.peopleOut, [], `${name} · ${phone}`);
         assert.deepEqual(plan.crowded, [], `${name} · ${phone}`);
       }
     });
@@ -412,7 +416,9 @@ describe('on the phone, a name never crosses the stage’s edge (owner 2026-11-1
         for (const o of p.objects) {
           assert.deepEqual(breaks(p, gw, gh, o.id), [], `${name} · ${phone} · ${o.label || o.kind} selected`);
           const { plan } = screenPlan(p, gw, gh, o.id);
-          assert.ok(plan.labels.some((l) => l.id === o.id && l.lines.length), `${name} · ${phone}: the selection is named`);
+          // owner 2026-11-13: build the remaining held items: on the drawing,
+          // or (no clean place there) in the frame above it
+          assert.ok(plan.labels.some((l) => l.id === o.id && l.lines.length) || plan.readout === o.id, `${name} · ${phone}: the selection is named`);
         }
       }
     }
@@ -496,8 +502,10 @@ describe('on the phone, a name never crosses the stage’s edge (owner 2026-11-1
     const area = read('src/screens/lab/stageplot/StageArea.tsx');
     assert.match(area, /onNamesLeftOut=\{\(n, codes, crowd = 0, nums = 0, people = 0\) => \{/);
     assert.match(area, /setPeopleOut\(people\);/);
-    assert.match(area, /\{leftOut > 0 \|\| codesOut > 0 \|\| crowded > 0 \|\| numbersOut > 0 \|\| peopleOut > 0 \? \(/);
-    assert.match(area, /so nothing is covered and nothing crosses the edge of the stage\./);
+    // owner 2026-11-13: build the remaining held items: performers shown by
+    // initials are counted too, and the words say why, truly
+    assert.match(area, /\{leftOut > 0 \|\| codesOut > 0 \|\| crowded > 0 \|\| numbersOut > 0 \|\| peopleOut > 0 \|\| shortNames\.count > 0 \? \(/);
+    assert.match(area, /no channel number or mix code: there is no clear spot beside \$\{numbersOut === 1 \? 'its' : 'their'\} own symbol, inside the stage\./);
   });
 });
 

@@ -28,7 +28,7 @@
  *
  * Pure: no React. Types only from spTypes.
  */
-import type { SpStage, SpStageShape } from './spTypes.ts';
+import type { SpRoundSides, SpStage, SpStageShape } from './spTypes.ts';
 
 export type SpFracPt = { x: number; y: number };
 /** A box in stage fractions. */
@@ -59,7 +59,7 @@ export const SP_THRUST_MAX = { w: 1, d: 1.5 } as const;
 export const SP_WING_USUAL = 0.18;
 export const SP_WING_MAX = 0.5;
 
-type StageLike = Partial<Pick<SpStage, 'width' | 'depth' | 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'wings' | 'roundForm' | 'roundRef'>> | null | undefined;
+type StageLike = Partial<Pick<SpStage, 'width' | 'depth' | 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'wings' | 'roundForm' | 'roundRef' | 'roundSides'>> | null | undefined;
 
 /** The shape: a rectangle, a thrust or in the round. The morning's "wings"
  *  shape reads as the rectangle it was drawn on (its wings: spHasWings). */
@@ -85,6 +85,48 @@ export const SP_ROUND_REF_MAX = 12;
 
 /** The reference side's name in the round ("FOH" when none is typed). */
 export const spRoundRef = (s: StageLike): string => (s?.roundRef ?? '').trim() || 'FOH';
+
+/* ── naming the sides in the round (owner 2026-11-13: build the remaining
+   held items) ──────────────────────────────────────────────────────────── */
+
+/** How the round's sides are named: the reference side and the far side
+ *  (with stage right and stage left; absent = this), clock positions (12
+ *  o'clock at the reference side), or numbered sides (side 1 at the
+ *  reference side). Clock positions and side numbers run CLOCKWISE AS SEEN
+ *  FROM ABOVE: with the reference side at the bottom of the drawing, 3
+ *  o'clock and side 2 are on its left (stage right, as a performer facing
+ *  the reference side sees it), 6 o'clock and side 3 at the top, 9 o'clock
+ *  and side 4 on its right. */
+export const spRoundSides = (s: StageLike): SpRoundSides => (s?.roundSides === 'clock' || s?.roundSides === 'numbered' ? s.roundSides : 'ref');
+export const SP_ROUND_SIDES: readonly SpRoundSides[] = ['ref', 'clock', 'numbered'];
+/** The choice's words (Setup), for the reference side's name `ref`. */
+export const spRoundSidesWord = (v: SpRoundSides, ref = 'FOH'): string => (v === 'clock' ? `Clock positions (12 o’clock at ${ref})` : v === 'numbered' ? `Numbered sides (side 1 at ${ref})` : `${ref} side and far side`);
+/** The clock hour (1–12) a direction points to, from the center of the
+ *  drawing: dx to the right of the drawing, dy toward its bottom. */
+const hourOf = (dx: number, dy: number): number => {
+  const a = (Math.atan2(-dx, dy) * 180) / Math.PI;
+  const h = Math.round((((a % 360) + 360) % 360) / 30) % 12;
+  return h === 0 ? 12 : h;
+};
+const OCLOCK = 'o’clock';
+
+/** The overhead viewpoint note of the example bands (spTemplates), and the
+ *  same note for a stage in the round, where "as the audience sees the kit"
+ *  is no one viewpoint: it is said from the reference side (or 12 o'clock,
+ *  or side 1). */
+export const SP_OVERHEAD_NOTE = 'Overhead L and R are named as the audience sees the kit.';
+export function spOverheadNote(s: StageLike): string {
+  if (spShapeOf(s) !== 'round') return SP_OVERHEAD_NOTE;
+  const ref = spRoundRef(s);
+  const sides = spRoundSides(s);
+  const from = sides === 'clock' ? `12 ${OCLOCK} (the ${ref} side)` : sides === 'numbered' ? `side 1 (the ${ref} side)` : `the ${ref} side`;
+  return `Overhead L and R are named as the kit is seen from ${from}.`;
+}
+/** Is this note one of the overhead notes the lab writes (any shape)? */
+export function spIsOverheadNote(note: string): boolean {
+  const t = note.trim();
+  return t === SP_OVERHEAD_NOTE || /^Overhead L and R are named as the kit is seen from (12 o’clock \(the .{1,12} side\)|side 1 \(the .{1,12} side\)|the .{1,12} side)\.$/.test(t);
+}
 
 const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
 
@@ -173,6 +215,15 @@ export function spShapeLocationWord(at: SpFracPt, s?: StageLike): string {
   if (shape === 'round') {
     const row = at.y < 1 / 3 ? 'far' : at.y < 2 / 3 ? 'mid' : 'near';
     const col = at.x < 1 / 3 ? 'stage right' : at.x < 2 / 3 ? 'center' : 'stage left';
+    const sides = spRoundSides(s);
+    if (sides === 'clock') return row === 'mid' && col === 'center' ? 'Center' : `Toward ${hourOf(at.x - 0.5, at.y - 0.5)} ${OCLOCK}`;
+    if (sides === 'numbered') {
+      const r = row === 'far' ? 3 : row === 'near' ? 1 : 0;
+      const c = col === 'stage right' ? 2 : col === 'stage left' ? 4 : 0;
+      if (!r && !c) return 'Center';
+      if (!r || !c) return `Toward side ${r || c}`;
+      return `Between sides ${Math.min(r, c)} and ${Math.max(r, c)}`;
+    }
     if (row === 'mid') return col === 'center' ? 'Center' : col.charAt(0).toUpperCase() + col.slice(1);
     // "The FOH side…": a sentence that lowers its first letter keeps "FOH"
     return `${row === 'far' ? 'The far side' : `The ${spRoundRef(s)} side`}, ${col}`;
@@ -194,6 +245,23 @@ export function spShapeFacingWords(rot: number, s?: StageLike): { full: string; 
   if (spShapeOf(s) !== 'round') return null;
   const ref = `the ${spRoundRef(s)} side`;
   const r = ((Math.round(rot) % 360) + 360) % 360;
+  const sides = spRoundSides(s);
+  if (sides === 'clock') {
+    // 0° faces the reference side (12 o'clock), turning clockwise as seen from above
+    const lo = Math.floor(r / 30) % 12 || 12;
+    const hi = (Math.floor(r / 30) + 1) % 12 || 12;
+    if (r % 30 === 0) return { full: `facing ${lo} ${OCLOCK}`, short: `faces ${lo} ${OCLOCK}` };
+    return { full: `facing between ${lo} and ${hi} ${OCLOCK}`, short: `faces ${lo}–${hi} ${OCLOCK}` };
+  }
+  if (sides === 'numbered') {
+    const q = Math.floor(r / 90);
+    const a = q + 1;
+    const b = ((q + 1) % 4) + 1;
+    if (r % 90 === 0) return { full: `facing side ${a}`, short: `facing side ${a}` };
+    const near = r % 90 < 45 ? a : b;
+    const other = near === a ? b : a;
+    return { full: `facing side ${near}, turned toward side ${other}`, short: `faces side ${near}, to side ${other}` };
+  }
   if (r === 0) return { full: `facing ${ref}`, short: `facing ${ref}` };
   if (r === 90) return { full: 'facing stage right', short: 'facing stage right' };
   if (r === 180) return { full: 'facing the far side', short: 'facing the far side' };
@@ -208,7 +276,14 @@ export function spShapeFacingWords(rot: number, s?: StageLike): { full: string; 
 /** The four words round the drawing. */
 export function spShapeDirections(s?: StageLike): { up: string; down: string; right: string; left: string } {
   // every side is audience in the round: all four words say so
-  if (spShapeOf(s) === 'round') return { up: 'FAR SIDE (AUDIENCE)', down: `${spRoundRef(s).toUpperCase()} SIDE (AUDIENCE)`, right: 'STAGE RIGHT (AUDIENCE)', left: 'STAGE LEFT (AUDIENCE)' };
+  if (spShapeOf(s) === 'round') {
+    const ref = spRoundRef(s).toUpperCase();
+    const sides = spRoundSides(s);
+    const C = OCLOCK.toUpperCase();
+    if (sides === 'clock') return { up: `6 ${C} (AUDIENCE)`, down: `12 ${C} · ${ref} SIDE (AUDIENCE)`, right: `3 ${C} (AUDIENCE)`, left: `9 ${C} (AUDIENCE)` };
+    if (sides === 'numbered') return { up: 'SIDE 3 (AUDIENCE)', down: `SIDE 1 · ${ref} (AUDIENCE)`, right: 'SIDE 2 (AUDIENCE)', left: 'SIDE 4 (AUDIENCE)' };
+    return { up: 'FAR SIDE (AUDIENCE)', down: `${ref} SIDE (AUDIENCE)`, right: 'STAGE RIGHT (AUDIENCE)', left: 'STAGE LEFT (AUDIENCE)' };
+  }
   return { up: 'UPSTAGE', down: 'AUDIENCE / DOWNSTAGE', right: 'STAGE RIGHT', left: 'STAGE LEFT' };
 }
 
@@ -300,7 +375,11 @@ export function spShapeWords(s: StageLike, unit: 'ft' | 'm' = 'ft'): string {
   if (spHasWings(s)) return wingWords();
   if (shape === 'round') {
     const ref = spRoundRef(s);
-    return `In the round${spIsCircle(s) ? ' (a circular stage)' : ' (a square stage)'}: the audience is on every side. The bottom of this drawing is the ${ref} side. Stage right and stage left are as a performer facing the ${ref} side sees them, so stage right is on the left of this drawing.`;
+    const head = `In the round${spIsCircle(s) ? ' (a circular stage)' : ' (a square stage)'}: the audience is on every side.`;
+    const sides = spRoundSides(s);
+    if (sides === 'clock') return `${head} Positions are clock positions seen from above, with 12 ${OCLOCK} at the ${ref} side, at the bottom of this drawing: 3 ${OCLOCK} is on the drawing’s left, 6 ${OCLOCK} at the top and 9 ${OCLOCK} on the drawing’s right.`;
+    if (sides === 'numbered') return `${head} The sides are numbered clockwise as seen from above: side 1 is the ${ref} side, at the bottom of this drawing; side 2 is on the drawing’s left, side 3 at the top and side 4 on the drawing’s right.`;
+    return `${head} The bottom of this drawing is the ${ref} side. Stage right and stage left are as a performer facing the ${ref} side sees them, so stage right is on the left of this drawing.`;
   }
   return '';
 }

@@ -128,7 +128,12 @@ export function spPlotScene(plot: SpDocPlot, width: number, how: { key?: boolean
   // a leader ties a name that had to go farther out to its own symbol: a
   // thin gray line, under the symbols
   for (const item of plot.items) {
-    if (item.leader) ops.push({ t: 'line', x1: X(item.leader.from.x), y1: Y(item.leader.from.y), x2: X(item.leader.to.x), y2: Y(item.leader.to.y), stroke: LEADER, sw: 0.5, dash: false });
+    // (one with a bend goes through `via`: owner 2026-11-13, build the remaining held items)
+    const l = item.leader;
+    if (l && l.via) {
+      ops.push({ t: 'line', x1: X(l.from.x), y1: Y(l.from.y), x2: X(l.via.x), y2: Y(l.via.y), stroke: LEADER, sw: 0.5, dash: false });
+      ops.push({ t: 'line', x1: X(l.via.x), y1: Y(l.via.y), x2: X(l.to.x), y2: Y(l.to.y), stroke: LEADER, sw: 0.5, dash: false });
+    } else if (item.leader) ops.push({ t: 'line', x1: X(item.leader.from.x), y1: Y(item.leader.from.y), x2: X(item.leader.to.x), y2: Y(item.leader.to.y), stroke: LEADER, sw: 0.5, dash: false });
   }
 
   // the symbols: people last, so a drummer's circle covers the kit's stool

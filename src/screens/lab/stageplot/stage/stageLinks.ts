@@ -14,7 +14,7 @@
  *
  * Pure: no React, no native modules.
  */
-import { SP_DEVICE_WORD, SP_PACKAGES, spPaletteItem, type SpPackage } from '../../../../features/stageplot/spCatalog.ts';
+import { SP_DEVICE_WORD, SP_PACKAGES, spPaletteItem, spTimpaniPackages, type SpPackage } from '../../../../features/stageplot/spCatalog.ts';
 import { spBadge, spMixesOf, spPatchRows } from '../../../../features/stageplot/spDerive.ts';
 import {
   spAddObject,
@@ -23,6 +23,7 @@ import {
   spBox,
   spBoxName,
   spBoxObject,
+  spBoxPlotLabel,
   spBoxes,
   spDevice,
   spGridStep,
@@ -39,7 +40,7 @@ import {
   spSource,
   spUpdateObject,
 } from '../../../../features/stageplot/spModel.ts';
-import type { SpCategory, SpChoir, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes.ts';
+import type { SpCategory, SpChoir, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject, SpTimpaniSetup } from '../../../../features/stageplot/spTypes.ts';
 import { spInPerformance } from '../../../../features/stageplot/spShape.ts';
 import { spIsSized, spObjectBoxM, spObjectSymbol, spPlotKey, spStageMeters, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
 import { SP_CHOIR_DEFAULT, spChoirLayout, spChoirMics, spChoirPackageId } from '../../../../features/stageplot/spChoir.ts';
@@ -70,15 +71,15 @@ export const stageWhere = (o: { x: number; y: number }, stage?: SpProject['stage
 };
 
 /** The name printed beside an object: a performer's own name, a stage box's
- *  own name ("SB2"), else the object's label, else '' (a bare chair or stand
- *  has no name to print). */
+ *  own name with its size ("SB2 16/8", round 3), else the object's label,
+ *  else '' (a bare chair or stand has no name to print). */
 export function stageName(p: SpProject, o: SpObject): string {
   if (o.kind === 'performer' && o.performerId) {
     const who = spPerformer(p, o.performerId);
     if (who?.name.trim()) return who.name.trim();
   }
   const box = spBox(p, o.boxId);
-  if (box) return spBoxName(box);
+  if (box) return spBoxPlotLabel(box);
   return o.label.trim();
 }
 
@@ -262,6 +263,14 @@ export const STAGE_PACKAGES: Partial<Record<SpObjectKind, readonly string[]>> = 
 export function stagePackagesFor(kind: SpObjectKind, choir: SpChoir = SP_CHOIR_DEFAULT): SpPackage[] {
   const ids = kind === 'choir' ? stageChoirPackageIds(choir) : (STAGE_PACKAGES[kind] ?? []);
   return ids.map((id) => SP_PACKAGES.find((x) => x.id === id)).filter((x): x is SpPackage => !!x);
+}
+
+/** A set of timpani's packages, worded for its setup (round 3): the same
+ *  two packages (the same ids, the same rows) in either setup; only the
+ *  words about the drawing and the pair's low side differ. */
+export function stageTimpaniPackagesFor(setup: SpTimpaniSetup): SpPackage[] {
+  const words = spTimpaniPackages(setup);
+  return (STAGE_PACKAGES.timpani ?? []).map((id) => words.find((x) => x.id === id)).filter((x): x is SpPackage => !!x);
 }
 
 /** A choir's packages follow its size (round 2): first the one with as many

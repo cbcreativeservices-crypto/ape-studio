@@ -23,11 +23,11 @@
 import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SP_MIX_INSTRUCTIONS } from '../../../../features/stageplot/spCatalog';
-import { spAssignReturn, spBox, spBoxName, spRemoveMix, spReturnBoxes, spReturnRange, spReturnWords, spSetFromConsole, spUpdateMix } from '../../../../features/stageplot/spModel';
+import { spAssignReturn, spAssignReturnR, spBox, spBoxName, spMixMaySplit, spMixReturnSpots, spSetReturnKeep, spRemoveMix, spReturnBoxes, spReturnWordsOn, spSetFromConsole, spUpdateMix } from '../../../../features/stageplot/spModel';
 import type { SpId, SpMix } from '../../../../features/stageplot/spTypes';
 import { RemoveStep } from '../inputs/bits';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, FocusMark, MoreDetails, Note, NumberField, TextField } from '../spForm';
+import { Button, Choice, FocusMark, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
 import { ButtonRow, ChipRow, FieldLabel, Line, SubHeading, ToggleChip } from './bits';
 import {
   SPM_DELIVERY_HINT,
@@ -35,8 +35,10 @@ import {
   SPM_FEED_HINT,
   SPM_FROM_CONSOLE,
   SPM_RETURN_HINT,
+  SPM_RETURN_R_HINT,
   spmFreeReturn,
   spmSameReturn,
+  spmSharedWords,
   SPM_FEED_OPTIONS,
   SPM_FORMAT_OPTIONS,
   SPM_PERSONAL_MIXER_NOTE,
@@ -202,7 +204,11 @@ export function MixBody({
   const retBox = mix.ret ? spBox(p, mix.ret.boxId) : undefined;
   const retChoices = retBox && !retBoxes.includes(retBox) ? [...retBoxes, retBox] : retBoxes;
   const sameRet = spmSameReturn(p, id);
-  const retPast = !!mix.ret && !!retBox && spReturnRange(mix).some((r) => r > (retBox.returns ?? 0));
+  // (round 3) every return it takes, on its own box (a stereo mix's R may be on another)
+  const pastSpots = spMixReturnSpots(mix).filter((s) => s.ret > (spBox(p, s.boxId)?.returns ?? 0));
+  const stereo = mix.format === 'stereo';
+  const rBox = mix.retR ? spBox(p, mix.retR.boxId) : undefined;
+  const rChoices = rBox && !retBoxes.includes(rBox) ? [...retBoxes, rBox] : retBoxes;
 
   // A mix with no device yet is offered the usual ones for its delivery.
   const [off, setOff] = useState<string[]>([]);
@@ -266,19 +272,50 @@ export function MixBody({
             {mix.ret && retBox ? (
               <>
                 <NumberField
-                  label={mix.format === 'stereo' ? `First of its two returns on ${spBoxName(retBox)}` : `Return on ${spBoxName(retBox)}`}
+                  label={stereo ? (mix.retR ? `L (left) return on ${spBoxName(retBox)}` : `First of its two returns on ${spBoxName(retBox)}`) : `Return on ${spBoxName(retBox)}`}
                   value={mix.ret.ret}
                   min={1}
-                  max={Math.max(1, (retBox.returns ?? 1) - (mix.format === 'stereo' ? 1 : 0))}
+                  max={Math.max(1, (retBox.returns ?? 1) - (stereo && !mix.retR ? 1 : 0))}
                   width="half"
                   onCommit={(n) => (n == null || n === mix.ret?.ret ? undefined : ed.apply((cur) => spAssignReturn(cur, id, { boxId: retBox.id, ret: n })))}
                   hint={`${spBoxName(retBox)} has ${retBox.returns ? `returns 1 to ${retBox.returns}` : 'no returns given'}.`}
                 />
-                <Line tone="dim">{`${mix.format === 'stereo' ? `This stereo mix takes ${spReturnWords(p, mix).replace(`${spBoxName(retBox)} · `, '')}. ` : ''}${mix.ret.byHand ? 'Chosen by you: AUTO-ASSIGN RETURNS never moves it.' : 'Chosen by AUTO-ASSIGN RETURNS. Type a return to choose it yourself.'}`}</Line>
-                {sameRet.length ? <Note tone="warning">{`${sameRet.map((m) => `${m.code} is also on ${spBoxName(retBox)} return ${spReturnRange(m).filter((r) => spReturnRange(mix).includes(r)).join(' and ')}`).join('; ')}. One return carries one mix: give each its own.`}</Note> : null}
-                {retPast ? <Note tone="warning">{`${spBoxName(retBox)} has ${retBox.returns ? `${retBox.returns} returns` : 'no returns given'}, so ${spReturnWords(p, mix).replace(`${spBoxName(retBox)} · `, '')} ${mix.format === 'stereo' ? 'do' : 'does'} not exist. Choose another return, or correct the box’s number of returns.`}</Note> : null}
+                {/* (round 3) a stereo mix's R (right) on its own return, on this box or another */}
+                {/* only where its speakers can stand apart, or to take a split back (engineer review) */}
+                {stereo && (spMixMaySplit(mix) || mix.retR) ? (
+                  <Choice
+                    label="R (right) side of this mix"
+                    value={mix.retR ? mix.retR.boxId : ''}
+                    options={[{ value: '', label: `Right after L (${spBoxName(retBox)} · return ${mix.ret.ret + 1})` }, ...rChoices.map((b) => ({ value: b.id, label: b.id === retBox.id ? `Another return on ${spBoxName(b)}` : `On ${spBoxName(b)}` }))]}
+                    onChange={(v) => {
+                      if (v === (mix.retR ? mix.retR.boxId : '')) return;
+                      if (!v) ed.apply((cur) => spAssignReturnR(cur, id, null));
+                      else {
+                        const s = spmFreeReturn(p, v, 1) ?? 1;
+                        ed.apply((cur) => spAssignReturnR(cur, id, { boxId: v, ret: s }));
+                      }
+                    }}
+                    hint={SPM_RETURN_R_HINT}
+                  />
+                ) : null}
+                {stereo && mix.retR && rBox ? (
+                  <NumberField
+                    label={`R (right) return on ${spBoxName(rBox)}`}
+                    value={mix.retR.ret}
+                    min={1}
+                    max={Math.max(1, rBox.returns ?? 1)}
+                    width="half"
+                    onCommit={(n) => (n == null || n === mix.retR?.ret ? undefined : ed.apply((cur) => spAssignReturnR(cur, id, { boxId: rBox.id, ret: n })))}
+                    hint={`${spBoxName(rBox)} has ${rBox.returns ? `returns 1 to ${rBox.returns}` : 'no returns given'}.`}
+                  />
+                ) : null}
+                <Line tone="dim">{`${stereo ? `This stereo mix takes ${spReturnWordsOn(p, mix)}. ` : ''}${mix.ret.byHand ? 'Chosen by you: AUTO-ASSIGN RETURNS never moves it.' : 'Chosen by AUTO-ASSIGN RETURNS. Type a return to choose it yourself.'}`}</Line>
+                {sameRet.length ? <Note tone="warning">{`${sameRet.map((m) => `${m.code} is also on ${spmSharedWords(p, mix, m)}`).join('; ')}. One return carries one mix: give each its own.`}</Note> : null}
+                {pastSpots.length ? <Note tone="warning">{`${pastSpots.map((s) => { const b = spBox(p, s.boxId); return `${b ? spBoxName(b) : 'The box'} has ${b?.returns ? `${b.returns} returns` : 'no returns given'}, so its return ${s.ret} does not exist`; }).join('; ')}. Choose another return, or correct the box’s number of returns.`}</Note> : null}
               </>
             ) : null}
+            {/* (round 3) a mix the band makes itself that keeps its return: the review's question answered */}
+            {spmOffHouse(mix) && mix.ret ? <Switch label="It still uses this return" value={mix.retKeep === true} onChange={(v) => ed.apply((cur) => spSetReturnKeep(cur, id, v))} hint="Turn this on when the venue’s return lines carry this mix from your band’s own mixer to the stage. If it does not need a return, choose No return yet above." /> : null}
             {mix.delivery === 'wireless-iem' && !mix.fromConsole && !mix.ret ? <Line tone="dim">An in-ear mix goes to its transmitter, not to the performer. If the transmitter sits with a monitor console beside the stage, choose From the console. If it is in a rack at the side of the stage, give it the return of the box nearest that rack.</Line> : null}
           </View>
         </FocusMark>

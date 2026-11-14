@@ -614,13 +614,17 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0, floor =
   for (const item of plot.items ?? []) {
     const l = item.leader;
     if (!l || !l.from || !l.to) continue;
-    const pts = [l.from.x, l.from.y, l.to.x, l.to.y];
-    if (!pts.every((v) => Number.isFinite(v))) continue;
-    const x1 = clamp(X(pts[0]), 0, W);
-    const y1 = clamp(Yp(pts[1]), P.top, P.top + drawH);
-    const x2 = clamp(X(pts[2]), 0, W);
-    const y2 = clamp(Yp(pts[3]), P.top, P.top + drawH);
-    ops.push((pen, ox, oy) => pen.line(ox + x1, oy + y1, ox + x2, oy + y2, P.leader, GRAY.leader));
+    // (a leader with a bend goes through `via`: owner 2026-11-13, build the remaining held items)
+    const legs = l.via ? [[l.from, l.via], [l.via, l.to]] : [[l.from, l.to]];
+    for (const [a, b] of legs) {
+      const pts = [a.x, a.y, b.x, b.y];
+      if (!pts.every((v) => Number.isFinite(v))) continue;
+      const x1 = clamp(X(pts[0]), 0, W);
+      const y1 = clamp(Yp(pts[1]), P.top, P.top + drawH);
+      const x2 = clamp(X(pts[2]), 0, W);
+      const y2 = clamp(Yp(pts[3]), P.top, P.top + drawH);
+      ops.push((pen, ox, oy) => pen.line(ox + x1, oy + y1, ox + x2, oy + y2, P.leader, GRAY.leader));
+    }
   }
   // the symbols (people last, so a drummer's circle covers the kit's stool
   // and reads as a person sitting on it), then the short word inside each

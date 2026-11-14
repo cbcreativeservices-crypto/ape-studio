@@ -42,9 +42,10 @@ import {
 } from './spCatalog.ts';
 import { spAllInputsInOrder, spBadge, spBoxMoreWords, spBoxSizeWords, spBoxUse, spBoxUseWords, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
 import type { SpDoc, SpDocBlock, SpDocColumn, SpDocDeck, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
-import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spMixWantsReturn, spObjectOfInput, spOnStage, spPerformer, spReturnBoxes, spReturnWords } from './spModel.ts';
+import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxPlotLabel, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spMixWantsReturn, spObjectOfInput, spOnStage, spPerformer, spReturnBoxes, spReturnWords, spVenueGivesReturns } from './spModel.ts';
 import { spPdfEncode, spPdfWidth } from './spPdfFonts.ts';
-import { spFrontEdges, spHasWings, spIsCircle, spIsShaped, spRoundRef, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
+import { spChoirCountWords, spChoirOf, spChoirRiserNote } from './spChoir.ts';
+import { spFrontEdges, spHasWings, spIsCircle, spIsShaped, spRoundRef, spRoundSides, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
 import { spReview, type SpIssue } from './spReview.ts';
 import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
 import type { SpDeviceType, SpExportOptions, SpId, SpInput, SpMix, SpMixNeed, SpObject, SpPacketKind, SpProject, SpSnapshot } from './spTypes.ts';
@@ -449,13 +450,15 @@ export function spBadgeRuns(badges: string[]): string[] {
 function objectLabel(p: SpProject, o: SpObject): string {
   let label = o.label.trim();
   if (o.kind === 'performer') label = spPerformer(p, o.performerId)?.name.trim() || label;
-  // a stage box prints its own name ("SB2")
-  else if (spBox(p, o.boxId)) label = spBoxName(spBox(p, o.boxId) as NonNullable<ReturnType<typeof spBox>>);
+  // a stage box prints its own name and size ("SB2 16/8", round 3)
+  else if (spBox(p, o.boxId)) label = spBoxPlotLabel(spBox(p, o.boxId) as NonNullable<ReturnType<typeof spBox>>);
   else if (!label && o.deviceId) {
     const d = p.devices.find((x) => x.id === o.deviceId);
     label = d ? d.label.trim() || SP_DEVICE_WORD[d.type] : '';
   }
-  const size = o.sizeNote.trim();
+  // a choir prints its size after its name (round 3, owner 2026-11-13:
+  // "build the remaining held items too"): "Choir (24 singers, 3 rows)"
+  const size = [o.kind === 'choir' ? spChoirCountWords(spChoirOf(o)) : '', o.sizeNote.trim()].filter(Boolean).join('; ');
   return label && size ? `${label} (${size})` : label || size;
 }
 
@@ -699,7 +702,9 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       for (const o of solid) if (o !== d && lies(clear, o)) return false;
       if (!d.sized && lies(clear, d)) return false;
       for (const r of platforms) {
-        if (r === d) continue;
+        // (a platform's own name never sits on its own dashed edge either:
+        // owner 2026-11-13, build the remaining held items)
+        if (r === d && !shaped) continue;
         if (overlap(clear, r.box) > 0 && !within(clear, r.box)) return false;
       }
       if (beside && !d.sized) {
@@ -736,7 +741,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     };
 
     /** The places beside a symbol, best first: each is the row's box. */
-    const beside = (d: Draft, w: number, h: number): Box[] => {
+    const beside = (d: Draft, w: number, h: number, deep = false): Box[] => {
       const b = d.box;
       const cx = d.at.x;
       const cy = d.at.y;
@@ -756,6 +761,22 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
           [b.x1 - w, b.y1 + gap + pad],
           [cx - w / 2, b.y0 - gap - pad - h],
         ];
+        // (owner 2026-11-13: build the remaining held items) …and when none
+        // of its corners has room (what stands on it fills them), every other
+        // place INSIDE it, along its upstage edge first, before any place
+        // outside it: "Drum riser" stood under its riser, level with the
+        // guitar amp. Only reached when no corner fits (jobFor).
+        if (deep) {
+          const ins: [number, number][] = [];
+          const sx = 3 / k;
+          // (its own dashed edge needs only the usual air: `pad`)
+          const x0 = b.x0 + pad;
+          const x1 = b.x1 - pad - w;
+          const y0 = b.y0 + pad;
+          const y1 = b.y1 - pad - h;
+          for (let y = y0; y <= y1 + 1e-9; y += sx / 2) for (let x = x0; x <= x1 + 1e-9; x += sx / 2) ins.push([x, y]);
+          spots.splice(6, 0, ...ins);
+        }
       } else {
         const g = gap + pad;
         spots = [
@@ -796,7 +817,20 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       const w = size.w / k;
       const h = size.h / k;
       const all = beside(d, w, h);
-      return { d, w, h, labelW: size.labelW / k, all, ok: all.filter((box) => fits(d, box, true)) };
+      const ok = all.filter((box) => fits(d, box, true));
+      // a platform's name sits ON its platform (owner 2026-11-13: build the
+      // remaining held items): when no corner has room, any place inside it;
+      // a place outside it only when no other symbol is within NEXT_TO (it
+      // then reads as the platform's, never as a neighbor's). With neither,
+      // its name is not printed on the plot: the key names the platform, and
+      // the legend says so (see `omit` below).
+      if (d.sized && !ok.some((box) => within(box, d.box))) {
+        const deep = beside(d, w, h, true);
+        const NEXT_TO = 12 / k;
+        const lone = (box: Box): boolean => within(box, d.box) || solid.every((o) => within(o.box, d.box) || away(box, o) >= NEXT_TO);
+        return { d, w, h, labelW: size.labelW / k, all: deep, ok: deep.filter((box) => fits(d, box, true) && lone(box)) };
+      }
+      return { d, w, h, labelW: size.labelW / k, all, ok };
     };
     const jobs: Job[] = [];
     for (const d of drafts) {
@@ -810,10 +844,47 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
      *  with that reference alone: the key says what the symbol is, and the
      *  input list or the monitor plan names it. */
     const canShorten = (d: Draft): boolean => !d.person && !d.sized && !!d.label && d.badges.length > 0;
+    /** Each name's box and its job, as placed (for moving a name off a leader). */
+    const placedAt = new Map<Draft, { j: Job; box: Box }>();
     const put = (j: Job, box: Box): void => {
       taken.push(box);
       if (j.d.person) takenPeople.push(box);
       j.d.labelAt = { x: box.x0 + j.labelW / 2, y: box.y0 };
+      placedAt.set(j.d, { j, box });
+    };
+    /** Move every name that lies across `legs` (a new leader for `d`, whose
+     *  name will take `box`) to another place beside its own symbol that
+     *  keeps every rule, is clear of `box` and lies on no leader. All or
+     *  nothing: false (and nothing moved) when one of them has no such place.
+     *  (owner 2026-11-13: build the remaining held items) */
+    const makeRoom = (d: Draft, box: Box, legs: Seg[]): boolean => {
+      const inWay = [...placedAt.entries()].filter(([o, v]) => o !== d && legs.some((s) => cuts(grow(v.box, pad), s)));
+      if (!inWay.length || inWay.some(([o]) => !!o.leader || !o.placed)) return false;
+      const unput = (o: Draft): void => {
+        const v = placedAt.get(o);
+        if (!v) return;
+        const a = taken.indexOf(v.box);
+        if (a >= 0) taken.splice(a, 1);
+        const b = takenPeople.indexOf(v.box);
+        if (b >= 0) takenPeople.splice(b, 1);
+      };
+      const moved: [Draft, { j: Job; box: Box }][] = [];
+      const lines = [...leads, ...legs];
+      for (const [o, v] of inWay) {
+        unput(o);
+        const to = v.j.all.find((b) => fits(o, b, true) && free(b) && overlap(grow(b, pad), box) <= 0 && !lines.some((s) => cuts(grow(b, pad), s)));
+        if (!to) {
+          put(v.j, v.box);
+          for (const [m, was] of moved.reverse()) {
+            unput(m);
+            put(was.j, was.box);
+          }
+          return false;
+        }
+        put(v.j, to);
+        moved.push([o, v]);
+      }
+      return true;
     };
     // Farther out, for a name with no place beside its symbol (it is placed
     // at once, in its turn, so a person's name is still placed before any
@@ -852,6 +923,31 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       let fallbackD = Infinity;
       let last: Box | null = null;
       let lastD = Infinity;
+      // LEADERS NEVER RUN BEHIND A NAME (owner 2026-11-13: build the remaining
+      // held items). Where every straight leader would, a leader with one
+      // bend (along the row's side, then straight to the symbol) is tried:
+      // the 22-symbol plot ran "Electronic drum kit"'s leader behind "Upright
+      // bass". Kept only when no straight leader is clear of every name.
+      type Bent = { box: Box; from: { x: number; y: number }; via: { x: number; y: number } };
+      const bends = (b: Box): Bent[] => {
+        const out: Bent[] = [];
+        const cy = (b.y0 + b.y1) / 2;
+        const cx = (b.x0 + b.x1) / 2;
+        const sx = d.at.x < b.x0 ? b.x0 : d.at.x > b.x1 ? b.x1 : null;
+        if (sx != null) out.push({ box: b, from: { x: sx, y: cy }, via: { x: d.at.x, y: cy } });
+        const sy = d.at.y < b.y0 ? b.y0 : d.at.y > b.y1 ? b.y1 : null;
+        if (sy != null) out.push({ box: b, from: { x: cx, y: sy }, via: { x: cx, y: d.at.y } });
+        return out;
+      };
+      const bentSegs = (e: Bent): Seg[] => [[e.from.x, e.from.y, e.via.x, e.via.y], [e.via.x, e.via.y, d.at.x, d.at.y]];
+      const bentThroughName = (e: Bent): boolean => bentSegs(e).some((s) => taken.some((x) => cuts(grow(x, pad), s)));
+      const bentThroughSymbol = (e: Bent): boolean => bentSegs(e).some((s) => solid.some((o) => o !== d && o.parts.some((part) => cuts(grow(part, pad), s))));
+      let bent: Bent | null = null;
+      let bentD = Infinity;
+      let bentAny: Bent | null = null;
+      let bentAnyD = Infinity;
+      /** Every free place whose straight leader runs through a name. */
+      const crossing: { box: Box; far: number }[] = [];
       for (let y = area.y0; y + h <= area.y1 + 1e-9; y += stepY) {
         for (let x = area.x0; x + w <= area.x1 + 1e-9; x += stepX) {
           const box: Box = { x0: x, y0: y, x1: x + w, y1: y + h };
@@ -865,6 +961,20 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
               lastD = far;
               last = box;
             }
+            crossing.push({ box, far });
+            if (far < bentAnyD) {
+              for (const e of bends(box)) {
+                if (bentThroughName(e)) continue;
+                if (far < bentAnyD) {
+                  bentAnyD = far;
+                  bentAny = e;
+                }
+                if (far < bentD && !bentThroughSymbol(e)) {
+                  bentD = far;
+                  bent = e;
+                }
+              }
+            }
             continue;
           }
           if (shaped && !clearLead(box)) {
@@ -876,6 +986,42 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
           }
           bestD = far;
           best = box;
+        }
+      }
+      const elbow = !best && !fallback ? (bent ?? bentAny) : null;
+      if (elbow) {
+        d.leader = { from: elbow.from, via: elbow.via, to: { x: d.at.x, y: d.at.y } };
+        leads.push(...bentSegs(elbow));
+        put(j, elbow.box);
+        return;
+      }
+      // …and where even a bend runs behind a name, the names in its way move
+      // to another place beside their own symbols, when each has one that
+      // keeps every rule and lies on no leader (the nearest such place wins)
+      if (shaped && !best && !fallback) {
+        crossing.sort((a, b) => a.far - b.far);
+        for (const c of crossing) {
+          const f = leadFrom(c.box);
+          const routes: { from: { x: number; y: number }; via?: { x: number; y: number }; legs: Seg[] }[] = [{ from: f, legs: [[f.x, f.y, d.at.x, d.at.y]] }, ...bends(c.box).map((e) => ({ from: e.from, via: e.via, legs: bentSegs(e) }))];
+          for (const r of routes) {
+            if (makeRoom(d, c.box, r.legs)) {
+              d.leader = r.via ? { from: r.from, via: r.via, to: { x: d.at.x, y: d.at.y } } : { from: r.from, to: { x: d.at.x, y: d.at.y } };
+              leads.push(...r.legs);
+              put(j, c.box);
+              return;
+            }
+          }
+        }
+        // a symbol whose name only says what the key says ("Steel pan") prints
+        // no name at all rather than a leader behind another name: the key
+        // names it, and the legend says so
+        const kind = p.objects.find((o) => o.id === d.id)?.kind;
+        const keyName = kind ? (spPlotKey(p.objects).find((e) => e.kind === kind)?.name ?? '').toLowerCase() : '';
+        const said = d.label.trim().toLowerCase();
+        if (!d.person && !d.badges.length && said && keyName && (keyName === said || keyName.startsWith(`${said} (`))) {
+          d.label = '';
+          d.labelAt = { x: d.at.x, y: d.box.y1 + gap };
+          return;
         }
       }
       best = best ?? fallback ?? last;
@@ -922,7 +1068,11 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
         if (later.has(j) && othersFirst(j)) continue;
         const left = j.ok.filter(free);
         j.ok = left;
-        const first = (j.d.person ? 0 : 1) - (pick?.d.person ? 0 : 1);
+        // (on a shaped stage a platform's name goes before everyone's: it has
+        // only its own platform, a performer's name has the whole stage.
+        // owner 2026-11-13: build the remaining held items)
+        const tier = (x: Job | null): number => (shaped && x?.d.sized ? -1 : x?.d.person ? 0 : 1);
+        const first = tier(j) - tier(pick);
         if (!pick || first < 0 || (first === 0 && (left.length < pickLeft.length || (left.length === pickLeft.length && (rank(j) < rank(pick) || (rank(j) === rank(pick) && j.w > pick.w)))))) {
           pick = j;
           pickLeft = left;
@@ -931,7 +1081,13 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       if (!pick) break;
       waiting = waiting.filter((j) => j !== pick);
       if (pickLeft.length) put(pick, pickLeft[0]);
-      else if (canShorten(pick.d)) {
+      else if (pick.d.sized && pick.d.label) {
+        // a platform with no room on it and none alone beside it: no name on
+        // the plot (owner 2026-11-13: build the remaining held items). It is
+        // never printed next to another object; the key names it.
+        pick.d.label = '';
+        pick.d.labelAt = { x: pick.d.at.x, y: pick.d.box.y1 + gap };
+      } else if (canShorten(pick.d)) {
         // no room for the name beside its symbol: the reference alone, which
         // is a few characters wide and nearly always has a place there
         pick.d.label = '';
@@ -940,6 +1096,81 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
         later.add(pick);
         waiting.push(pick);
       } else farOut(pick);
+    }
+    // NO NAME ON A LEADER (owner 2026-11-13: build the remaining held items).
+    // A name placed beside its symbol before a later name went far out can
+    // lie across that name's leader ("Hammond organ" on the steel pan's, on
+    // the 22-symbol plot): it moves to another place beside its own symbol
+    // that keeps every rule and lies on no leader. (A shaped stage only.)
+    if (shaped) {
+      const legsOf = (l: NonNullable<Draft['leader']>): Seg[] => (l.via ? [[l.from.x, l.from.y, l.via.x, l.via.y], [l.via.x, l.via.y, l.to.x, l.to.y]] : [[l.from.x, l.from.y, l.to.x, l.to.y]]);
+      const allLegs = (): Seg[] => drafts.flatMap((o) => (o.leader ? legsOf(o.leader) : []));
+      for (const d of drafts) {
+        const at = placedAt.get(d);
+        if (!at || d.leader || !d.placed) continue;
+        const onLead = (b: Box): boolean => drafts.some((o) => o !== d && o.leader && legsOf(o.leader).some((s) => cuts(grow(b, pad), s)));
+        if (!onLead(at.box)) continue;
+        // (its own box is taken out while the other places are tried)
+        const was = taken.indexOf(at.box);
+        if (was >= 0) taken.splice(was, 1);
+        const wasP = takenPeople.indexOf(at.box);
+        if (wasP >= 0) takenPeople.splice(wasP, 1);
+        const legs = allLegs();
+        const to = at.j.all.find((b) => fits(d, b, true) && free(b) && !legs.some((s) => cuts(grow(b, pad), s)));
+        put(at.j, to ?? at.box);
+      }
+    }
+    // A RECTANGLE'S NAMES AS THEY PRINT (owner 2026-11-13: build the remaining
+    // held items). A rectangle's names are placed with the estimate at the
+    // usual width; A4 draws the plot a little smaller, with Helvetica's own
+    // widths, and there "Nelson (M5)" touched the bass amp by about 1 pt. Each
+    // name is checked at the smallest size a rectangle is drawn without giving
+    // way (A4), as wide as it prints. One that touches a symbol or another
+    // name moves to the first place beside its symbol that keeps every rule
+    // at that size. A name that touches nothing is not moved, so those plots
+    // print exactly as before.
+    if (!shaped) {
+      const kC = Math.min(k, spPlotScale({ widthM: plotW, depthM: plotD, marginM, items: drafts, roomy }, SP_PLOT_SHAPED_K.width));
+      const printed = (d: Draft): Box | null => {
+        const s = spLabelBlockPrinted(d);
+        if (!s.h) return null;
+        const x0 = d.labelAt.x - s.labelW / 2 / kC;
+        return { x0, y0: d.labelAt.y, x1: x0 + s.w / kC, y1: d.labelAt.y + s.h / kC };
+      };
+      const hair = 0.3 / kC;
+      const touches = (d: Draft, box: Box, others: Box[]): boolean => {
+        const g = grow(box, hair);
+        if (!d.sized && lies(g, d)) return true;
+        for (const o of solid) if (o !== d && lies(g, o)) return true;
+        return others.some((x) => overlap(g, x) > 0);
+      };
+      for (const d of drafts) {
+        if (!d.placed) continue;
+        const mine = printed(d);
+        if (!mine) continue;
+        const others = drafts.filter((o) => o !== d).map(printed).filter((b): b is Box => !!b);
+        if (!touches(d, mine, others)) continue;
+        const s = spLabelBlockPrinted(d);
+        const clear = (box: Box, near: boolean): boolean => fits(d, box, near) && !touches(d, box, others) && others.every((x) => overlap(grow(box, pad), x) <= 0);
+        // beside its symbol (a name with no leader); else the nearest small
+        // nudge of where it is (up to 4 pt), its leader following it
+        let spot = d.leader ? undefined : beside(d, s.w / kC, s.h / kC).find((box) => clear(box, true));
+        if (!spot) {
+          const nudges: Box[] = [];
+          for (let dy = -4; dy <= 4; dy += 0.5) for (let dx = -4; dx <= 4; dx += 0.5) nudges.push({ x0: mine.x0 + dx / kC, y0: mine.y0 + dy / kC, x1: mine.x1 + dx / kC, y1: mine.y1 + dy / kC });
+          nudges.sort((a, b) => Math.hypot(a.x0 - mine.x0, a.y0 - mine.y0) - Math.hypot(b.x0 - mine.x0, b.y0 - mine.y0));
+          spot = nudges.find((box) => clear(box, !d.leader));
+        }
+        if (!spot) continue;
+        d.labelAt = { x: spot.x0 + s.labelW / 2 / kC, y: spot.y0 };
+        if (d.leader) {
+          // (from the row as it is placed: the estimate at the usual size)
+          const e = spLabelBlock(d);
+          const ex0 = d.labelAt.x - e.labelW / 2 / k;
+          d.leader = { ...d.leader, from: { x: Math.max(ex0, Math.min(ex0 + e.w / k, d.at.x)), y: Math.max(d.labelAt.y, Math.min(d.labelAt.y + e.h / k, d.at.y)) } };
+        }
+        taken.push(spot);
+      }
     }
     // room around the stage, so anything off the stage (and its name) shows
     let over = 0;
@@ -962,7 +1193,10 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   let sizeNote = st.toScale ? `${num(p.stage.width ?? 0)} ${unit} × ${num(p.stage.depth ?? 0)} ${unit} (${p.stage.dims})` : 'Not to scale';
   // the round's way of reading the drawing is printed with the size, so it is
   // on the plot's own page (expert review 2026-11-13)
-  if (shape === 'round') sizeNote = `${st.toScale ? (spIsCircle(p.stage) ? `${num(p.stage.width ?? 0)} ${unit} across (${p.stage.dims})` : sizeNote) : 'Not to scale'}, in the round: the ${spRoundRef(p.stage)} side is at the bottom`;
+  // (the round's sides may be clock positions or numbers: owner 2026-11-13, build the remaining held items)
+  const sides = spRoundSides(p.stage);
+  const atBottom = sides === 'clock' ? `12 o’clock (the ${spRoundRef(p.stage)} side) is at the bottom` : sides === 'numbered' ? `side 1 (the ${spRoundRef(p.stage)} side) is at the bottom` : `the ${spRoundRef(p.stage)} side is at the bottom`;
+  if (shape === 'round') sizeNote = `${st.toScale ? (spIsCircle(p.stage) ? `${num(p.stage.width ?? 0)} ${unit} across (${p.stage.dims})` : sizeNote) : 'Not to scale'}, in the round: ${atBottom}`;
   else if (shape === 'thrust' && !st.toScale) sizeNote = `Not to scale; a thrust reaches into the audience at the front${wings ? ', with wings at each side' : ''}`;
   else if (st.toScale && shape === 'thrust') sizeNote += spThrustFrac(p.stage).given ? `; thrust ${num(p.stage.thrustWidth ?? 0)} ${unit} × ${num(p.stage.thrustDepth ?? 0)} ${unit}` : '; thrust drawn at a usual size';
   // wings are an option of a rectangle or a thrust (2026-11-13 R2): "thrust
@@ -987,7 +1221,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       origin: { x: ox, y: oy },
       mainW: st.width,
       mainD: st.depth,
-      stage: { shape, wings, thrustWidth: p.stage.thrustWidth ?? null, thrustDepth: p.stage.thrustDepth ?? null, wingWidth: p.stage.wingWidth ?? null, roundForm: p.stage.roundForm === 'square' ? 'square' : 'circle', roundRef: spRoundRef(p.stage), width: p.stage.width, depth: p.stage.depth },
+      stage: { shape, wings, thrustWidth: p.stage.thrustWidth ?? null, thrustDepth: p.stage.thrustDepth ?? null, wingWidth: p.stage.wingWidth ?? null, roundForm: p.stage.roundForm === 'square' ? 'square' : 'circle', roundRef: spRoundRef(p.stage), width: p.stage.width, depth: p.stage.depth, ...(shape === 'round' && sides !== 'ref' ? { roundSides: sides } : {}) },
     };
   }
 
@@ -1003,7 +1237,8 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const legend: string[] = [];
   if (shape === 'round') {
     const ref = spRoundRef(p.stage);
-    legend.push(brief ? `Seen from above, in the round: the audience is on every side, and the ${ref} side is at the bottom. Stage right is on the left of this drawing.` : spShapeWords(p.stage, unit));
+    const briefSides = sides === 'clock' ? `Seen from above, in the round: the audience is on every side. 12 o’clock is the ${ref} side, at the bottom, and 3 o’clock is on the left of this drawing.` : sides === 'numbered' ? `Seen from above, in the round: the audience is on every side. Side 1 is the ${ref} side, at the bottom; sides 2, 3 and 4 follow clockwise.` : `Seen from above, in the round: the audience is on every side, and the ${ref} side is at the bottom. Stage right is on the left of this drawing.`;
+    legend.push(brief ? briefSides : spShapeWords(p.stage, unit));
   } else {
     legend.push(
       brief
@@ -1019,9 +1254,15 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     if (items.some((i) => !i.label && i.badges.length)) lines.push(brief ? 'A number or a code with no name beside it: the key shows what the symbol is.' : 'Where a number or a code has no name beside it, the key shows what the symbol is, and the input list or the monitor plan names it.');
     legend.push(lines.join(' '));
   }
+  // a crowded shaped stage: a symbol printed with no name, where its name
+  // would only repeat the key's (owner 2026-11-13: build the remaining held items)
+  if (items.some((i) => !i.label && !i.badges.length && PLOT_NAMES.get(i))) legend.push('A symbol with no name beside it is named in the key.');
   // an exclusion is visible on every export, the plot alone included
   if (quiet.length) legend.push(`${joinAnd(quiet)} ${quiet.length === 1 ? 'is' : 'are'} monitor only: kept out of the audience mix.`);
   if (tags.length) legend.push(`${tags.join('. ')}.`);
+  // (round 3) how to read a stage box's size on its label (only with a box drawn)
+  const sizedBox = spBoxes(p).find((b) => spBoxObject(p, b.id));
+  if (sizedBox) legend.push(`A stage box is named with its size: ${spBoxPlotLabel(sizedBox)} has ${sizedBox.inputs} input${sizedBox.inputs === 1 ? '' : 's'}${sizedBox.returns != null ? ` and ${sizedBox.returns} return${sizedBox.returns === 1 ? '' : 's'}` : ''}.`);
   legend.push(
     st.toScale
       ? `The stage outline is drawn to the size given${grid.stepM ? ` (each grid square is ${grid.words})` : ''}. A symbol shows a kind of equipment, not its real size: this plot does not show whether equipment fits.`
@@ -1151,7 +1392,8 @@ function whoCell(p: SpProject, i: SpInput, performerName: string, sourceLabel: s
     const atFigure = !!fig && Math.hypot(fig.x - o.x, fig.y - o.y) <= SP_MIC_AT_PERFORMER;
     const place = spLocationWord(atFigure && fig ? fig : o, p.stage);
     // a figure or a microphone needs no "at the…": its place says it
-    const thing = o.kind === 'performer' || o.kind === 'vocal-mic' || o.kind === 'mic-stand' ? '' : kindWords(o.kind);
+    // (a choir says its size: "at the choir (24 singers, 3 rows)", round 3)
+    const thing = o.kind === 'performer' || o.kind === 'vocal-mic' || o.kind === 'mic-stand' ? '' : o.kind === 'choir' ? `${kindWords(o.kind)} (${spChoirCountWords(spChoirOf(o))})` : kindWords(o.kind);
     where = thing ? `at the ${thing}, ${lower(place)}` : place;
   }
   return [who, where, note].filter(Boolean).join(' · ');
@@ -1176,7 +1418,7 @@ function inputTable(p: SpProject, patchId: 'house' | 'band', compact: boolean): 
   if (withVenue) columns.push(col('venue', 'Venue channel', 2));
   // the stage box socket each input plugs into: only when the plot has boxes
   const withBox = spBoxes(p).length > 0;
-  // (round 2: a sub-snake's socket reads "SB2 · 3 (via SB1 · 11)": a wider column then)
+  // (round 2: a sub-snake's socket reads "SB2 · 3, via SB1 · 11": a wider column then)
   if (withBox) columns.splice(1, 0, col('box', 'Box · socket', spBoxes(p).some((b) => b.feed) ? 2 : 1.35));
   const docRows: SpDocRow[] = rows.map((r) => {
     const i = r.input;
@@ -1238,7 +1480,15 @@ function mixNote(p: SpProject, m: SpMix): string {
  *  has returns. A mix asked of the house console with none reads "No return
  *  yet"; a mix the band makes on its own rig needs none. */
 const withReturns = (p: SpProject): boolean => spReturnBoxes(p).length > 0;
-const returnCell = (p: SpProject, m: SpMix): string => (m.fromConsole ? 'From the console, not a stage box' : spReturnWords(p, m) || (spMixWantsReturn(m) ? 'No return yet' : DASH));
+const returnCell = (p: SpProject, m: SpMix): string => {
+  if (m.fromConsole) return 'From the console, not a stage box';
+  const w = spReturnWords(p, m);
+  if (!w) return spMixWantsReturn(m) ? 'No return yet' : DASH;
+  // (round 3) a mix the band makes itself that still holds a return, while the
+  // band has not said it needs one (engineer review)
+  const open = (m.provider === 'band-console' || m.provider === 'personal-mixer') && !spVenueGivesReturns(m) && !m.retKeep;
+  return open ? `${w} (to be confirmed)` : w;
+};
 
 function mixTableCompact(p: SpProject): SpDocTable {
   const columns = [col('mix', 'Mix', 2.2), col('who', 'For', 1.8), col('format', 'Format and delivery', 2.9), col('by', 'Who creates it', 2.4), col('devices', 'Devices', 3.3)];
@@ -1461,6 +1711,9 @@ function plotSection(p: SpProject, stamp: string, kind: SpPacketKind, generatedA
   const blocks: SpDocBlock[] = [{ t: 'facts', rows: facts }, { t: 'plot', plot: spPlotDoc(p, { brief: kind === 'compact', roomy: kind === 'plot' }) }];
 
   const stageNotes = p.objects.filter((o) => o.note.trim()).map((o) => `${objectLabel(p, o) || 'An object with no name'}: ${o.note.trim()}`);
+  // each choir on risers: the riser units it needs, and how close the
+  // drawing stands the singers (round 3; venues supply risers from this)
+  for (const o of p.objects) if (o.kind === 'choir' && spChoirRiserNote(spChoirOf(o))) stageNotes.push(`${objectLabel(p, o) || 'Choir'}: ${spChoirRiserNote(spChoirOf(o))}`);
   if (stageNotes.length) blocks.push(h2('Notes on the stage'), { t: 'list', items: stageNotes });
 
   const rows = p.performers.map((pf) => {
@@ -1549,13 +1802,20 @@ function inputsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact: 
         // the student's own note is its own sentence ("…the band. By the drum riser."),
         // never glued on after a semicolon with its capital letter
         const typed = u.box.note.trim();
-        const note = typed ? ` ${typed.charAt(0).toUpperCase()}${typed.slice(1)}${/[.!?]$/.test(typed) ? '' : '.'}` : '';
+        // (round 3) labelled, so the crew reads it as the band's own note
+        const note = typed ? ` Note: ${typed.charAt(0).toUpperCase()}${typed.slice(1)}${/[.!?]$/.test(typed) ? '' : '.'}` : '';
         // (round 2) sub-snakes, its returns and its console, only when given
         const more = spBoxMoreWords(p, u);
         return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)})${where}${carries}${more.length ? `; ${more.join('; ')}` : ''}. ${extra.charAt(0).toUpperCase()}${extra.slice(1)}.${note}`;
       }),
     });
     blocks.push(para('Box and socket are the band’s suggestion. On the venue’s own stage boxes, the venue’s patch comes first.', 'muted'));
+    // (round 3) what a sub-snake and "via" mean, only when one is listed (learner review)
+    const sub = spBoxes(p).find((b) => b.feed && spBox(p, b.feed.boxId));
+    if (sub && sub.feed) {
+      const main = spBoxName(spBox(p, sub.feed.boxId) as NonNullable<ReturnType<typeof spBox>>);
+      blocks.push(para(`${spBoxName(sub)} is a sub-snake: a small box whose cable plugs into ${main}. “${spBoxName(sub)} · 1, via ${main} · ${sub.feed.first}” means socket 1 of ${spBoxName(sub)} arrives on ${main} socket ${sub.feed.first}${sub.retFeed ? `; its returns work the same way (${spBoxName(sub)} · return 1 comes from ${main} · return ${sub.retFeed.first})` : ''}.`, 'muted'));
+    }
     const direct = spAllInputsInOrder(p).filter((i) => i.direct).map((i) => i.label);
     if (direct.length) blocks.push(para(`Plugged in at the console directly, not through a stage box: ${joinAnd(direct)}.`, 'muted'));
   }
@@ -1761,7 +2021,13 @@ function badgeWords(badges: string[]): string {
 function plotText(plot: SpDocPlot): string[] {
   const out: string[] = [
     `Stage size: ${plot.sizeNote}.`,
-    plot.deck?.shape === 'round' ? `The drawing, in words (in the round: said from the ${plot.deck.stage.roundRef} side, at the bottom of the drawing):` : 'The drawing, in words (upstage is the back of the stage; downstage is the edge nearest the audience):',
+    plot.deck?.shape === 'round'
+      ? plot.deck.stage.roundSides === 'clock'
+        ? `The drawing, in words (in the round, in clock positions: 12 o’clock is the ${plot.deck.stage.roundRef} side, at the bottom of the drawing):`
+        : plot.deck.stage.roundSides === 'numbered'
+          ? `The drawing, in words (in the round, by numbered sides: side 1 is the ${plot.deck.stage.roundRef} side, at the bottom of the drawing):`
+          : `The drawing, in words (in the round: said from the ${plot.deck.stage.roundRef} side, at the bottom of the drawing):`
+      : 'The drawing, in words (upstage is the back of the stage; downstage is the edge nearest the audience):',
   ];
   if (!plot.items.length) out.push('Nothing is placed on the stage yet.');
   // (the drawing lists people last, so they are drawn over a stool; a reader hears them first)

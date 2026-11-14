@@ -20,10 +20,12 @@
  */
 import { SP_DEVICE_WORD, SP_NEED_WORD } from './spCatalog.ts';
 import { spBoxUse, spDiTotals, spSocketRuns, spSummary, type SpBoxUse } from './spDerive.ts';
-import { spBox, spBoxName, spBoxes, spBrokenRefs, spMixWantsReturn, spObjectOfSource, spOnStage, spPartner, spPatch, spReturnBoxes, spReturnWords } from './spModel.ts';
+import { spBox, spBoxName, spBoxes, spBrokenRefs, spMixMaySplit, spMixSplit, spMixWantsReturn, spVenueGivesReturns, spObjectOfSource, spOnStage, spPartner, spPatch, spReturnBoxes, spReturnWords } from './spModel.ts';
 
 /** "socket 9" / "sockets 9–16". */
 const socketsWord = (first: number, last: number): string => (first === last ? `socket ${first}` : `sockets ${first}–${last}`);
+/** (round 3) "return 7" / "returns 7–8". */
+const returnsWord = (first: number, last: number): string => (first === last ? `return ${first}` : `returns ${first}–${last}`);
 /** "A", "A and B", "A, B and C". */
 const joinAnd = (list: readonly string[]): string => (list.length <= 1 ? list.join('') : `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`);
 
@@ -286,7 +288,36 @@ export function spReview(p: SpProject): SpIssue[] {
       if (u.returnsOver.length) {
         const mixes = [...new Set(u.returnsOver.map((x) => x.mix))];
         const has = u.box.returns ? `has ${u.box.returns} return${u.box.returns === 1 ? '' : 's'}` : 'has no returns given';
-        add({ key: `retover:${u.box.id}`, rule: 'return-over', level: 'block', text: `${name} ${has}, and ${joinAnd(mixes.map((m) => `${m.code} is on ${spReturnWords(p, m).replace(`${name} · `, '')}`))}. Choose a return ${name} has, or correct its number of returns.`, area: 'monitors', target: { kind: 'mix', id: mixes[0].id }, actions: ['edit'], field: 'ret' });
+        // (round 3) the returns each mix takes on THIS box (a stereo mix's R
+        // may be on another box)
+        const on = (m: SpMix) => u.returnsUsed.filter((x) => x.mix === m).map((x) => x.ret);
+        add({ key: `retover:${u.box.id}`, rule: 'return-over', level: 'block', text: `${name} ${has}, and ${joinAnd(mixes.map((m) => `${m.code} is on return${on(m).length === 1 ? '' : 's'} ${spSocketRuns(on(m))}`))}. Choose a return ${name} has, or correct its number of returns.`, area: 'monitors', target: { kind: 'mix', id: mixes[0].id }, actions: ['edit'], field: 'ret' });
+      }
+      // (round 3) A SUB-SNAKE'S RETURNS come through returns of its main box,
+      // as its inputs come through sockets: one return carries one thing, it
+      // must be a return the main box has, and it must carry every return of
+      // the sub-snake a mix is on. Corrected before Ready.
+      for (const c of u.retFeedClash) {
+        const f = u.retFedBy.find((x) => x.box.id === c.sub.id) as SpBoxUse['retFedBy'][number];
+        const sub = spBoxName(c.sub);
+        const what = joinAnd(c.with);
+        const rets = c.rets.length === 1 ? `${name} · return ${c.rets[0]}` : `${name} · returns ${spSocketRuns(c.rets)}`;
+        add({ key: `retfeedclash:${c.sub.id}`, rule: 'box-ret-feed-overlap', level: 'block', text: `${sub}’s returns come through ${name} ${returnsWord(f.first, f.last)}, and ${rets} ${c.rets.length === 1 ? 'is' : 'are'} also given to ${what}. One return carries one thing: give ${what} ${c.rets.length === 1 && c.with.length === 1 ? 'another return' : 'other returns'}, or, in ${sub}’s editor, connect its returns to other returns of ${name}.`, area: 'inputs', target: { kind: 'box', id: c.sub.id }, actions: ['edit'], field: 'retFeed' });
+      }
+      if (u.box.feed && u.box.retFeed && main && u.retFeedPast.length) {
+        const mn = spBoxName(main);
+        add({ key: `retfeedpast:${u.box.id}`, rule: 'box-ret-feed-past', level: 'block', text: `${name}’s returns come through ${mn} ${returnsWord(u.box.retFeed.first, u.box.retFeed.last)}, and ${mn} ${main.returns ? `has ${main.returns} return${main.returns === 1 ? '' : 's'}` : 'has no returns given'}. In ${name}’s editor, choose returns ${mn} has, or correct the number of returns ${mn} has.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'], field: 'retFeed' });
+      }
+      if (u.box.feed && u.box.retFeed && main && u.retFeedShort.length) {
+        const carries = u.box.retFeed.last - u.box.retFeed.first + 1;
+        const mn = spBoxName(main);
+        // the mixes, and the sub-snakes below it, on returns its feed does not carry
+        const on = [...new Set([...u.returnsUsed.filter((x) => u.retFeedShort.includes(x.ret)).map((x) => x.mix.code), ...u.retFedBy.filter((g) => u.retFeedShort.some((r) => r >= g.first && r <= g.last)).map((g) => spBoxName(g.box))])];
+        add({ key: `retfeedshort:${u.box.id}`, rule: 'box-ret-feed-short', level: 'block', text: `${name}’s returns come through ${mn} ${returnsWord(u.box.retFeed.first, u.box.retFeed.last)}, which carry ${name} return${carries === 1 ? ' 1' : `s 1–${carries}`} only, and ${joinAnd(on)} ${on.length === 1 ? 'is' : 'are'} on ${name} · return${u.retFeedShort.length === 1 ? '' : 's'} ${spSocketRuns(u.retFeedShort)}. In ${name}’s editor, use more returns of ${mn}, or give ${joinAnd(on)} another return.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'], field: 'retFeed' });
+      }
+      if (u.box.feed && main && !u.box.retFeed && u.returnsUsed.length) {
+        const mixes = [...new Set(u.returnsUsed.map((x) => x.mix.code))];
+        add({ key: `retfeednone:${u.box.id}`, rule: 'box-ret-feed-none', level: 'ask', text: `${joinAnd(mixes)} ${mixes.length === 1 ? 'is' : 'are'} on a return of ${name}, a sub-snake, and you have not said which returns of ${spBoxName(main)} its returns come from. In ${name}’s editor, choose them under “Where its returns come from”.`, packetText: `Which returns of ${spBoxName(main)} carry the returns of ${name} (a sub-snake) is not said yet.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'], field: 'retFeed' });
       }
       // (round 2) a band's own digital box works only with a console that
       // speaks its format: asked once, answered in its "Connects to" field
@@ -339,6 +370,33 @@ export function spReview(p: SpProject): SpIssue[] {
           field: 'ret',
         });
       }
+    }
+    // (round 3) a mix the band now makes on its own rig that still holds a
+    // stage box return chosen earlier: it may not need one any more. Not
+    // asked when the band requests return lines from the house position
+    // (the return then really brings it to the stage).
+    for (const m of p.mixes) {
+      if (!m.ret || (m.provider !== 'band-console' && m.provider !== 'personal-mixer') || spVenueGivesReturns(m) || m.retKeep) continue;
+      const words = spReturnWords(p, m);
+      const rig = m.provider === 'band-console' ? 'monitor console' : 'personal mixers';
+      add({
+        key: `retbandrig:${m.id}`,
+        rule: 'return-band-rig',
+        level: 'ask',
+        text: `${m.code} is made on your band’s own ${rig}, but it still has ${words}. Does it still need that return? If the venue’s return lines carry it to the stage, turn on “It still uses this return” in the mix. If not, choose No return yet.`,
+        packetText: `${m.code} (made on the band’s ${rig}) is shown on ${words}: the band has not yet said whether it needs that return.`,
+        area: 'monitors',
+        target: { kind: 'mix', id: m.id },
+        actions: ['edit'],
+        field: 'ret',
+      });
+    }
+    // (round 3) a mix that goes to ONE place (an in-ear transmitter, a
+    // headphone amplifier, a wedge pair) takes its L and R at one box: a
+    // split cannot be cabled (engineer review)
+    for (const m of p.mixes) {
+      if (!spMixSplit(m) || spMixMaySplit(m)) continue;
+      add({ key: `retsplit:${m.id}`, rule: 'return-split-one-place', level: 'block', text: `${m.code} has its L and R on two stage boxes (${spReturnWords(p, m)}), and it goes to one place: ${m.delivery === 'wireless-iem' ? 'an in-ear transmitter takes L and R together' : m.delivery === 'wired-iem' ? 'a headphone amplifier takes L and R together' : 'its wedges stand together'}. Put both on one box: choose “Right after L” for its R.`, area: 'monitors', target: { kind: 'mix', id: m.id }, actions: ['edit'], field: 'ret' });
     }
   }
 

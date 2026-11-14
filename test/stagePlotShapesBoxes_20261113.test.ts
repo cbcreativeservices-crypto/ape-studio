@@ -265,8 +265,10 @@ describe('stage shapes: the model', () => {
   it('Setup offers the shape next to the size, with one plain line for each', () => {
     const setup = read('src/screens/lab/stageplot/SetupArea.tsx');
     assert.match(setup, /label="Shape of the stage"/);
-    assert.match(setup, /SP_SHAPES\.map\(\(s\) =>/);
-    assert.match(setup, /SP_SHAPE_HINT\[s\]/);
+    // owner 2026-11-13: build the remaining held items: the shapes' names
+    // are the choices, and only the chosen shape's line is shown, in full
+    assert.match(setup, /const SHAPE_OPTIONS[^\n]*SP_SHAPES\.map\(\(value\) =>/);
+    assert.match(setup, /<Text style=\{styles\.quiet\}>\{SP_SHAPE_HINT\[shape\]\}<\/Text>/);
     assert.match(setup, /label="Thrust width"/);
     assert.match(setup, /label="Width of each wing"/);
     assert.match(setup, /label="Name of the side at the bottom"/);
@@ -534,7 +536,9 @@ describe('stage boxes: where they show', () => {
   it('the stage drawing and the plot print each box’s name', () => {
     const r = M.spAddBox(four(), { name: 'SB1' });
     const plot = spPlotDoc(r.p);
-    assert.ok(plot.items.some((i) => i.label === 'SB1'));
+    // (changed on purpose, round 3 2026-11-13: the label carries the box size, "SB1 16/8";
+    // this box has 16 inputs and no returns given: "SB1 16 in")
+    assert.ok(plot.items.some((i) => i.label === 'SB1 16 in'));
     assert.ok(plot.key.some((k) => k.kind === 'stage-box'));
   });
 

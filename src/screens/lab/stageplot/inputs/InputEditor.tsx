@@ -297,7 +297,7 @@ export function InputEditor({
             {input.box && boxOf ? (
               <>
                 <NumberField label={`Socket on ${spBoxName(boxOf)}`} value={input.box.socket} min={1} max={boxOf.inputs} width="half" onCommit={(n) => (n == null || n === input.box?.socket ? undefined : ed.apply((q) => spAssignBox(q, inputId, { boxId: boxOf.id, socket: n })))} hint={`${spBoxName(boxOf)} has sockets 1 to ${boxOf.inputs}.`} />
-                <Small>{input.box.byHand ? 'Chosen by you: AUTO-ASSIGN never moves it.' : 'Chosen by AUTO-ASSIGN. Type a socket to choose it yourself.'}</Small>
+                <Small>{input.box.byHand ? 'Chosen by you: AUTO-ASSIGN SOCKETS never moves it.' : 'Chosen by AUTO-ASSIGN SOCKETS. Type a socket to choose it yourself.'}</Small>
                 {sameSocket.length ? <Note tone="warning">{`Socket ${input.box.socket} of ${spBoxName(boxOf)} is also given to ${spListWords(sameSocket)}. One socket takes one cable: give each its own.`}</Note> : null}
                 {input.box.socket > boxOf.inputs ? <Note tone="warning">{`${spBoxName(boxOf)} has ${boxOf.inputs} sockets, so there is no socket ${input.box.socket}. Choose another socket or box.`}</Note> : null}
                 {subHere ? <Note tone="warning">{`${spBoxName(subHere)} plugs into socket ${input.box.socket} of ${spBoxName(boxOf)}. One socket takes one cable: choose another socket.`}</Note> : null}

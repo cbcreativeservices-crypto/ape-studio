@@ -42,12 +42,14 @@ import {
 import { spCanMarkReady, spLooksLikePhone } from '../../../features/stageplot/spReview';
 import { spDateWords, spDayFromText, spLooksLikeTime as looksLikeTime, spProjectName, spStageSizeFromText as sizeFromText, useSpProjects } from '../../../features/stageplot/spStore';
 import { SP_TEMPLATES } from '../../../features/stageplot/spTemplates';
-import { SP_ROUND_REF_MAX, SP_SHAPES, SP_SHAPE_HINT, SP_SHAPE_WORD, SP_WINGS_HINT, spHasWings, spIsCircle, spRoundRef, spShapeOf, type SpStageForm } from '../../../features/stageplot/spShape';
-import type { SpContact, SpPerformer, SpProject, SpStatus } from '../../../features/stageplot/spTypes';
+import { SP_ROUND_REF_MAX, SP_ROUND_SIDES, SP_SHAPES, SP_SHAPE_HINT, SP_SHAPE_WORD, SP_WINGS_HINT, spHasWings, spIsCircle, spRoundRef, spRoundSides, spRoundSidesWord, spShapeOf, type SpStageForm } from '../../../features/stageplot/spShape';
+import { spDisplacedBy } from '../../../features/stageplot/spInside';
+import type { SpContact, SpPerformer, SpProject, SpRoundSides, SpStatus } from '../../../features/stageplot/spTypes';
 import { notify } from '../../../lib/confirm';
 import { cardColumn } from '../../../theme/readingColumn';
 import { colors, fonts } from '../../../theme/tokens';
 import { GuidedTask } from './GuidedTask';
+import { InsideOffer, noteDisplaced } from './InsideOffer';
 import { DATE_HOW, spWhen } from './ProjectLibrary';
 import { useSpEditor } from './spContext';
 import { spSetupField, takeSpSetupAsk } from './spIssueActions';
@@ -84,6 +86,19 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 /** The stage's typed sizes: the main stage, a thrust's tongue, a wing. */
 type SizeKey = 'width' | 'depth' | 'thrustWidth' | 'thrustDepth' | 'wingWidth';
 const SHAPE_OPTIONS: readonly { value: SpStageForm; label: string }[] = SP_SHAPES.map((value) => ({ value, label: SP_SHAPE_WORD[value] }));
+/** In the round: what each way of naming the sides means (owner 2026-11-13:
+ *  build the remaining held items). Used on the screen, in the position
+ *  words and in print. */
+const ROUND_SIDES_HINT: Record<SpRoundSides, (ref: string) => string> = {
+  ref: (ref) => `The ${ref} side is at the bottom of the drawing and the far side at the top. Stage right and stage left are as a performer facing the ${ref} side sees them.`,
+  clock: (ref) => `Like a clock face seen from above and turned upside down: 12 o’clock is the ${ref} side (the bottom of the drawing), 3 o’clock the drawing’s left, 6 o’clock the top, 9 o’clock the drawing’s right.`,
+  numbered: (ref) => `Side 1 is the ${ref} side (the bottom of the drawing). The others go clockwise as seen from above: side 2 on the drawing’s left, side 3 at the top, side 4 on the drawing’s right.`,
+};
+const ROUND_SIDES_NOTE: Record<SpRoundSides, (ref: string) => string> = {
+  ref: (ref) => `In the round there is no upstage or downstage: the drawing says the far side and the ${ref} side instead.`,
+  clock: () => 'In the round there is no upstage or downstage, so the drawing and the printed packet use clock positions instead.',
+  numbered: () => 'In the round there is no upstage or downstage, so the drawing and the printed packet use side numbers instead.',
+};
 const ROUND_OPTIONS = [
   { value: 'circle', label: 'A circle' },
   { value: 'square', label: 'A square' },
@@ -212,10 +227,10 @@ export function SetupArea() {
     setSizeSaid(null);
     // a circle has one size, its diameter: the width and the depth together
     if (circle && key === 'width') {
-      if (n !== p.stage.width || n !== p.stage.depth) set((d) => ((d.stage.width = n), (d.stage.depth = n)));
+      if (n !== p.stage.width || n !== p.stage.depth) setStageSize((d) => ((d.stage.width = n), (d.stage.depth = n)));
       return;
     }
-    if (n !== p.stage[key]) set((d) => (d.stage[key] = n));
+    if (n !== p.stage[key]) setStageSize((d) => (d.stage[key] = n));
   };
   const sizeShown = (key: 'width' | 'depth'): string => sizeRefused[key] ?? (p.stage[key] == null ? '' : String(p.stage[key]));
   /** The same for a shape's own sizes (a thrust's tongue, a wing). */
@@ -223,7 +238,17 @@ export function SetupArea() {
   const shape = spShapeOf(p.stage);
   // wings: an option of a rectangle or a thrust (owner 2026-11-13, "build them all")
   const wings = spHasWings(p.stage);
-  const setShape = (patch: Parameters<typeof spSetStageShape>[1]) => ed.apply((q) => spSetStageShape(q, patch));
+  // A CHANGE OF SHAPE OR SIZE NEVER MOVES ANYTHING (owner 2026-11-13: build
+  // the remaining held items): the objects it puts across the new outline,
+  // or outside it, are noted, and InsideOffer names them with MOVE THEM INSIDE
+  const reshape = (change: (q: SpProject) => SpProject) =>
+    ed.apply((q) => {
+      const next = change(q);
+      noteDisplaced(q.id, spDisplacedBy(q, next));
+      return next;
+    });
+  const setShape = (patch: Parameters<typeof spSetStageShape>[1]) => reshape((q) => spSetStageShape(q, patch));
+  const setStageSize = (change: (d: SpProject) => void) => reshape((q) => spEdit(q, change));
 
   // RENAMING A PERFORMER RENAMES WHAT WAS NAMED AFTER THEM, in the same edit:
   // their mixes ("Leo, wedge") and the monitor devices they use or that play
@@ -446,13 +471,10 @@ export function SetupArea() {
           <Section title="STAGE SIZE" hint="Optional. Choose the shape, and type the size if the venue told you or you measured it.">
             {/* THE SHAPE (2026-11-13), next to the size: one plain line for each */}
             <Choice<SpStageForm> label="Shape of the stage" value={shape} options={SHAPE_OPTIONS} onChange={(next) => (next === shape ? undefined : setShape({ shape: next }))} />
-            <View style={styles.shapeLines}>
-              {SP_SHAPES.map((s) => (
-                <Text key={s} style={[styles.quiet, s === shape ? styles.shapeOn : null]}>
-                  {`${s === shape ? '▸ ' : ''}${SP_SHAPE_HINT[s]}`}
-                </Text>
-              ))}
-            </View>
+            {/* the chosen shape's own line, in full (learner point 11; owner
+                2026-11-13: build the remaining held items): the names of
+                the others are the choices above */}
+            <Text style={styles.quiet}>{SP_SHAPE_HINT[shape]}</Text>
             {/* WINGS go with a rectangle or a thrust; a round stage has none */}
             {shape !== 'round' ? <Switch label="Wings at each side" value={wings} onChange={(on) => (on === wings ? undefined : setShape({ wings: on }))} hint={SP_WINGS_HINT} /> : null}
             {shape === 'round' ? (
@@ -465,9 +487,17 @@ export function SetupArea() {
                   onCommit={(t) => (t.trim().slice(0, SP_ROUND_REF_MAX) === (p.stage.roundRef ?? '') ? undefined : setShape({ roundRef: t.trim().slice(0, SP_ROUND_REF_MAX) }))}
                   hint={`Usually FOH: front of house, where the sound engineer mixes. Every position is said from this side: the opposite side is the far side, and stage right and stage left are as a performer facing this side sees them. Up to ${SP_ROUND_REF_MAX} letters.`}
                 />
-                <Note>In the round there is no upstage or downstage: the drawing says the far side and the {spRoundRef(p.stage)} side instead.</Note>
+                <Choice<SpRoundSides>
+                  label="Name the sides by"
+                  value={spRoundSides(p.stage)}
+                  options={SP_ROUND_SIDES.map((value) => ({ value, label: spRoundSidesWord(value, spRoundRef(p.stage)) }))}
+                  onChange={(roundSides) => (roundSides === spRoundSides(p.stage) ? undefined : setShape({ roundSides }))}
+                  hint={ROUND_SIDES_HINT[spRoundSides(p.stage)](spRoundRef(p.stage))}
+                />
+                <Note>{ROUND_SIDES_NOTE[spRoundSides(p.stage)](spRoundRef(p.stage))}</Note>
               </>
             ) : null}
+            <InsideOffer />
             <Fields>
               {circle ? (
                 // a circle has one size: the diameter writes the width and the depth
@@ -583,8 +613,6 @@ const styles = StyleSheet.create({
   counts: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quiet: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.textSub },
-  shapeLines: { gap: 4 },
-  shapeOn: { fontFamily: fonts.barlowSemiBold, color: colors.textSecondary },
   body: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 21, color: colors.textPrimary },
   noteText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
   links: { gap: 8 },
