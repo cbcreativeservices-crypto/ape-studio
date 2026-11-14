@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 12:17 · ccode · cb52560c
+changed: Lab fix round 1: beginner-audit bugs, shared frame, quick wins, Career Finder text [MD:D64] [MD:D63]
+affects other side: nothing on the server. App code only, on the OTA branch, not published.
+needs: [MD:D64] three small server edits for Comp A, to be packaged after the checker round (nothing run yet): the glossary rows for "Connector" (8538ff6d…) and "Cable dressing" (2cd72ce8…), reworded to agree with their labs (SQL in docs/labs/novice_audit_2026_11_14/fixes/S1_REPORT.md, SN6); and labs.name 'Miking: Bass clarinet' → 'Miking: Bass Clarinet' for key mk_A08b (F9_REPORT.md).
+
+
 ### 2026-11-14 04:21 · ccode · 0423bc53
 changed: docs: beginner audit — G8 Part E (Miking zones) + report addendum [MD:D62]
 affects other side: nothing on the server. docs only: G8's late Miking zone pass and a report addendum.
