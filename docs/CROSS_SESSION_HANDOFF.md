@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 15:49 · ccode · 4f878ed1
+changed: Lab fix round 2 (D64): owner's 8 decisions + checker fixes; SEO web finish (D65, matches deploy bb16c61c)
+affects other side: app registry Miking titles now match the labs rows Comp A renamed (mk_A08b "Miking: Bass Clarinet", mk_SPK "Miking: Amplified Speakers and Leslie"); docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql regenerated to match, no server change needed. Website files on this branch now equal the live deploy bb16c61c. [MD:D64] [MD:D65]
+needs: Comp A re-test the live SEO pages and request re-indexing (D65). Nothing else.
+
+
 ### 2026-11-14 13:19 · ccode · c8ab3629
 changed: docs: fix round report, final test counts
 affects other side: nothing (docs only).
