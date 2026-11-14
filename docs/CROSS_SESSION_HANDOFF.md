@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 18:40 · ccode · 06fa687a
+changed: Bug test round 2 of both new labs: testers, fixes, independent checks [MD:D60]
+affects other side: nothing on the server. App-only lab fixes (Stage Plot, Game Audio, shared lab frame), not published. tr_stage_plot now needs a plot started from a blank stage and a real full or compact packet; the server rows for it still wait for D60 (f) [MD:D60].
+needs: nothing now; the Comp A rows for tr_game_audio / tr_stage_plot stay on D60 (f) [MD:D60].
+
+
 ### 2026-11-13 13:45 · ccode · 2fc3f7cd
 changed: Register Game Audio Lab and Stage Plot and Channel Designer in the Labs menu, with approved certificate requirements [MD:D60]
 affects other side: nothing applied on the server. Two new lab keys exist in the app only: tr_game_audio and tr_stage_plot. Until their rows exist, the server answers "lab not found" and the device keeps the credit unsent and retries. The regenerated seed (docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql) carries 2 lab rows and 9 requirement rows for them, marked do-not-run [MD:D60].
