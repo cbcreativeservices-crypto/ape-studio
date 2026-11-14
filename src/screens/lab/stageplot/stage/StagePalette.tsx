@@ -26,11 +26,14 @@
 import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SP_DEVICE_WORD, SP_PALETTE, type SpPackage, type SpPaletteItem } from '../../../../features/stageplot/spCatalog';
-import { spAddBox } from '../../../../features/stageplot/spModel';
-import type { SpDeviceType, SpId, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
+import { SP_CHOIR_DEFAULT, spChoirClean } from '../../../../features/stageplot/spChoir';
+import { spAddBox, spUpdateObject } from '../../../../features/stageplot/spModel';
+import { spHasWings } from '../../../../features/stageplot/spShape';
+import type { SpChoir, SpDeviceType, SpId, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { spPackagePreview, spPackageToggle } from '../inputs/inputsLogic';
 import { Button, Choice, Note, Switch, TextField } from '../spForm';
+import { ChoirSize } from './ChoirSize';
 import { StageKindIcon } from './StageKey';
 import { StageStepScroll } from './StageStepScroll';
 import {
@@ -93,8 +96,16 @@ export function StagePalette({
   const [mixId, setMixId] = useState<string>(NO_MIX);
   /** Every source is listed (not only those of the symbol's own kind). */
   const [everySource, setEverySource] = useState(false);
+  /** A new choir's size, set before its package (round 2). */
+  const [choir, setChoir] = useState<SpChoir>({ ...SP_CHOIR_DEFAULT });
 
-  const done = (kind: SpObjectKind, name: string, make: (q: SpProject, at: Pt) => StageAdded) => {
+  const done = (kind: SpObjectKind, name: string, place: (q: SpProject, at: Pt) => StageAdded) => {
+    // a choir is placed at the size set here, in a place free for its own
+    // riser (round 2)
+    const make = kind === 'choir' ? (q: SpProject, at: Pt): StageAdded => {
+      const r = place(q, stageFreeSpot(q, at, kind, choir));
+      return { p: spUpdateObject(r.p, r.id, { choir: spChoirClean(choir) }), id: r.id };
+    } : place;
     // a free place for THIS kind's own box, near where the user is looking
     onAdd((q, near) => make(q, stageFreeSpot(q, near, kind)));
     setAdded((a) => ({ name, n: a.n + 1 }));
@@ -109,7 +120,7 @@ export function StagePalette({
     if (item.kind === 'stage-box') {
       done(item.kind, item.name, (q, at) => {
         // (the first box of a stage with wings goes in a wing, by monitor world)
-        const inWing = q.stage.shape === 'wings' && !q.objects.some((o) => o.kind === 'stage-box');
+        const inWing = spHasWings(q.stage) && !q.objects.some((o) => o.kind === 'stage-box');
         const r = spAddBox(q, inWing ? {} : { at });
         return { p: r.p, id: r.objectId };
       });
@@ -119,6 +130,7 @@ export function StagePalette({
       done(item.kind, item.name, (q, at) => stageAddDrawing(q, item.kind, at));
       return;
     }
+    if (item.kind === 'choir') setChoir({ ...SP_CHOIR_DEFAULT });
     setEverySource(false);
     setStep({ at: 'link', item });
   };
@@ -293,7 +305,7 @@ export function StagePalette({
     );
   }
 
-  const packages = stagePackagesFor(kind);
+  const packages = stagePackagesFor(kind, choir);
   const capture = mode === 'capture';
   // sources of the symbol's own kind first; the rest behind one button, so a
   // drum kit is not offered three vocals before its own kit
@@ -303,6 +315,14 @@ export function StagePalette({
   return wrap(
     <>
       <Text style={styles.title} accessibilityRole="header">{`${item.name}: what does this symbol stand for?`}</Text>
+      {kind === 'choir' ? (
+        <>
+          <Text style={styles.heading} accessibilityRole="header">
+            HOW BIG IS THE CHOIR
+          </Text>
+          <ChoirSize value={choir} onChange={(c) => setChoir(spChoirClean(c))} />
+        </>
+      ) : null}
       <Text style={styles.heading} accessibilityRole="header">
         {capture ? 'AN INPUT ALREADY IN YOUR INPUT LIST' : 'A SOURCE ALREADY IN YOUR INPUT LIST'}
       </Text>

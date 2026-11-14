@@ -509,9 +509,12 @@ describe('R2-SP1-02 (S2): on a short phone a channel number never covers a name,
   }
   it('the note says "Every performer is named" only while no name is covered', () => {
     const area = src(`${SP}/StageArea.tsx`);
-    assert.match(area, /\$\{crowded > 0 \? '' : ' Every performer is named\.'\}/);
+    // owner 2026-11-13: build them all — names stay inside the stage. A
+    // performer's name left out at this size (peopleOut) also takes the
+    // sentence away, and the view reports that count too.
+    assert.match(area, /\$\{crowded > 0 \|\| peopleOut > 0 \? '' : ' Every performer is named\.'\}/);
     assert.match(area, /performers’ names touch`\} another label at this size\./);
-    assert.match(src(`${SP}/stage/StagePlanView.tsx`), /leftOutRef\.current\?\.\(leftOut, codesOut, crowded, numbersOut\);/);
+    assert.match(src(`${SP}/stage/StagePlanView.tsx`), /leftOutRef\.current\?\.\(leftOut, codesOut, crowded, numbersOut, peopleOut\);/);
   });
 });
 

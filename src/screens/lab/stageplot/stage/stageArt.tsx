@@ -37,6 +37,7 @@ import { memo } from 'react';
 import { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { FigureAboveSvg, FIGURE_ABOVE_W_MM } from '../../../../features/lab/figureAboveSvg';
 import { spPlacedShapes, spSymbol, type SpFill, type SpShape } from '../../../../features/stageplot/spSymbols';
+import { spChoirLayout, spChoirOf } from '../../../../features/stageplot/spChoir';
 import type { SpObject, SpProject } from '../../../../features/stageplot/spTypes';
 import { fonts } from '../../../../theme/tokens';
 import { DiBoxTop, DrumKitTop, GtrAmpTop, KeysTop, MicStandTop, StageBoxTop, WedgeTop } from '../../cableinstall/scenes/floorArt';
@@ -44,12 +45,13 @@ import { TOP_ART_GEAR } from './topArtGear';
 import { TOP_ART_INSTRUMENTS } from './topArtInstruments';
 import { TOP_ART_STRINGS_KEYS } from './topArtStringsKeys';
 import type { TopArtMap } from './topArtTypes';
-import { TOP_ART_WORLD } from './topArtWorld';
+import { TOP_ART_R2 } from './topArtR2';
+import { ChoirTop, TOP_ART_WORLD } from './topArtWorld';
 
 /** This lab's own top-view art, by kind (the contract: topArtTypes.ts).
- *  The last two maps are the kinds added for more diverse music
- *  (2026-11-13). */
-export const STAGE_TOP_ART: TopArtMap = { ...TOP_ART_INSTRUMENTS, ...TOP_ART_GEAR, ...TOP_ART_STRINGS_KEYS, ...TOP_ART_WORLD };
+ *  The last three maps are the kinds added for more diverse music
+ *  (2026-11-13, and its round 2). */
+export const STAGE_TOP_ART: TopArtMap = { ...TOP_ART_INSTRUMENTS, ...TOP_ART_GEAR, ...TOP_ART_STRINGS_KEYS, ...TOP_ART_WORLD, ...TOP_ART_R2 };
 
 /** floorArt is drawn at 32 units to the meter. */
 const FLOOR_UNITS = 32;
@@ -156,6 +158,14 @@ function Art({ p, o, cx, cy, hw, hh, rot, u, dim }: StageObjectArtProps) {
       return (
         <G transform={`${at} rotate(${rot}) scale(${k * 0.95})`} opacity={opacity}>
           <StageBoxTop x={-9} y={-6} />
+        </G>
+      );
+    case 'choir':
+      // a choir of its own size (round 2): its riser units and its singers,
+      // laid out by spChoir, the same layout the packet prints
+      return (
+        <G transform={`${at} rotate(${rot}) scale(${k})`} opacity={opacity}>
+          <ChoirTop layout={spChoirLayout(spChoirOf(o))} />
         </G>
       );
     case 'riser':

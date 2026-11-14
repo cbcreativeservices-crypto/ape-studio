@@ -22,7 +22,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { SP_DEVICE_WORD } from '../../../../features/stageplot/spCatalog';
 import { spBoxLine, spBoxUse, spMixesOf } from '../../../../features/stageplot/spDerive';
 import { spAddBox, spBox, spBoxName, spBoxObject, spBoxes, spDevice, spDuplicateObject, spGroup, spInput, spLinkBoxObject, spLocationWord, spMix, spObject, spOnStage, spPerformer, spRemoveObjects, spSource, spUngroup, spUpdateBox, spUpdateDevice, spUpdateObject } from '../../../../features/stageplot/spModel';
-import { spShapeOf } from '../../../../features/stageplot/spShape';
+import { spIsShaped } from '../../../../features/stageplot/spShape';
+import { spChoirClean, spChoirOf } from '../../../../features/stageplot/spChoir';
 import { spIsSized } from '../../../../features/stageplot/spSymbols';
 import type { SpId, SpObject, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -30,6 +31,7 @@ import { parseRoomNumber } from '../../roomdesign/roomParse';
 import { RemoveStep } from '../inputs/bits';
 import { useSpEditor } from '../spContext';
 import { Button, MoreDetails, Note, Switch, TextField } from '../spForm';
+import { ChoirSize } from './ChoirSize';
 import { StageMovePad } from './StageMovePad';
 import { stageFacingWord, stagePosFraction, stagePosUnit, stagePosValue, stageSizeFraction, stageTypedWords } from './stageGeom';
 import { stageDeviceChoices, stageInputBadges, stageInputChoices, stageKindName, stageLinkMode, stageListName, stageMoveExact, stageObjectKindName, stagePerformerChoices, stageSourceChoices } from './stageLinks';
@@ -156,7 +158,7 @@ export function StageInspector({
             <TextField label={posLabel(p, 'y')} value={String(stagePosValue(p, 'y', o.y))} onCommit={typed('y')} keyboard="numeric" width="half" />
           </View>
           {typedSaid?.part === 'position' ? <Note tone="warning">{typedSaid.text}</Note> : null}
-          <Text style={styles.hint}>Type a position to place it exactly. Across is measured from the stage right edge (the left of the drawing). Depth is measured from the upstage edge (the top).{spShapeOf(p.stage) === 'rect' ? '' : ' These are measured on the main stage: a place in the stage right wing is past its stage right edge, and a place on a thrust is past its front edge. In the round, the top edge is the far side.'}</Text>
+          <Text style={styles.hint}>Type a position to place it exactly. Across is measured from the stage right edge (the left of the drawing). Depth is measured from the upstage edge (the top).{!spIsShaped(p.stage) ? '' : ' These are measured on the main stage: a place in the stage right wing is past its stage right edge, and a place on a thrust is past its front edge. In the round, the top edge is the far side.'}</Text>
         </>
       ) : null}
       {!spOnStage(o, p.stage) ? (
@@ -179,6 +181,17 @@ export function StageInspector({
           {typedSaid?.part === 'size' ? <Note tone="warning">{typedSaid.text}</Note> : null}
           <TextField label="Height or size note" value={o.sizeNote} onCommit={(t) => set({ sizeNote: t })} placeholder={o.kind === 'riser' ? 'For example: 12 in high' : 'In your own words'} />
           <Text style={styles.hint}>On the drawing, drag the round handle at its corner to size it.</Text>
+        </>
+      ) : null}
+
+      {/* ── a choir's size (round 2): the riser, the drawing and its area
+          microphones follow it ── */}
+      {o.kind === 'choir' ? (
+        <>
+          <Text style={styles.heading} accessibilityRole="header">
+            CHOIR SIZE
+          </Text>
+          <ChoirSize value={spChoirOf(o)} onChange={(c) => set({ choir: spChoirClean(c) })} mics={o.sourceId ? p.inputs.filter((i) => i.sourceId === o.sourceId && (i.capture === 'mic' || i.capture === 'wireless')).length : undefined} />
         </>
       ) : null}
 

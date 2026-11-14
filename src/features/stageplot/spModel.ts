@@ -24,10 +24,13 @@
  * Pure: no React, no storage, no clock (the caller passes `now`).
  */
 import { SP_CATEGORY_ORDER, spPackage, spPaletteItem, type SpPackage, type SpPackageRow } from './spCatalog.ts';
-import { SP_ROUND_REF_MAX, SP_SHAPE_DEFAULTS, spIsCircle, spMoveLimits, spOnShape, spShapeLocationWord, spShapeOf, spWingFrac } from './spShape.ts';
+import { SP_CHOIR_DEFAULT, SP_CHOIR_LEGACY, spChoirClean } from './spChoir.ts';
+import { SP_ROUND_REF_MAX, SP_SHAPE_DEFAULTS, spHasWings, spIsCircle, spMoveLimits, spOnShape, spShapeLocationWord, spWingFrac } from './spShape.ts';
 import {
   SP_SCHEMA,
+  type SpBoxFeed,
   type SpBoxPatch,
+  type SpReturnPatch,
   type SpStage,
   type SpStageBox,
   type SpCategory,
@@ -196,6 +199,18 @@ function scrub(p: SpProject): void {
     if (i.box && i.direct) i.direct = false;
   }
   for (const o of p.objects) if (o.boxId && !boxes.has(o.boxId)) o.boxId = null;
+  // (round 2) a return on a box that is gone is no return; a sub-snake that
+  // fed a box that is gone, or itself, connects to the console; a loop is
+  // never kept (the box that closes it connects to the console)
+  for (const m of p.mixes) {
+    if (m.ret && !boxes.has(m.ret.boxId)) m.ret = null;
+    if (m.ret && m.fromConsole) m.fromConsole = false;
+  }
+  for (const b of spBoxes(p)) if (b.feed && (b.feed.boxId === b.id || !boxes.has(b.feed.boxId))) b.feed = null;
+  for (const b of spBoxes(p)) if (b.feed && spFeedLoops(p, b.id, b.feed.boxId)) b.feed = null;
+  // a DIGITAL box never plugs into another box's sockets: it joins over the
+  // network (engineer review, round 2)
+  for (const b of spBoxes(p)) if (b.feed && b.kind === 'digital') b.feed = null;
   // a circle has one size: its depth is its width
   if (spIsCircle(p.stage) && p.stage.width && p.stage.depth !== p.stage.width) p.stage.depth = p.stage.width;
   const groups = new Map<SpId, number>();
@@ -226,6 +241,8 @@ export function spBrokenRefs(p: SpProject): string[] {
     if (!has(p.performers, o.performerId) || !has(p.sources, o.sourceId) || !has(p.inputs, o.inputId) || !has(p.devices, o.deviceId) || !has(spBoxes(p), o.boxId ?? null)) out.push(`stage object ${o.label || o.kind}: something it points at is missing`);
   }
   for (const i of p.inputs) if (i.box && !has(spBoxes(p), i.box.boxId)) out.push(`input ${i.label}: its stage box is missing`);
+  for (const m of p.mixes) if (m.ret && !has(spBoxes(p), m.ret.boxId)) out.push(`mix ${m.code}: its stage box return is missing`);
+  for (const b of spBoxes(p)) if (b.feed && !has(spBoxes(p), b.feed.boxId)) out.push(`stage box ${spBoxName(b)}: the box it feeds is missing`);
   for (const patch of p.patches) for (const id of patch.order) if (!has(p.inputs, id)) out.push(`${patch.name}: a listed input is missing`);
   return out;
 }
@@ -715,6 +732,8 @@ export function spAddMix(p: SpProject, f: Partial<Omit<SpMix, 'id' | 'code' | 'n
       needs,
       venueFeed: f.venueFeed ?? 'tbc',
       notes: f.notes ?? '',
+      ret: null,
+      fromConsole: false,
     });
   });
   return { p: q, id };
@@ -817,7 +836,7 @@ export function spGridStep(p: SpProject): { x: number; y: number } {
 }
 const snapTo = (v: number, step: number): number => Math.round(v / step) * step;
 
-type ObjectLink = Partial<Pick<SpObject, 'performerId' | 'sourceId' | 'inputId' | 'deviceId' | 'boxId' | 'label' | 'rot' | 'w' | 'h'>>;
+type ObjectLink = Partial<Pick<SpObject, 'performerId' | 'sourceId' | 'inputId' | 'deviceId' | 'boxId' | 'label' | 'rot' | 'w' | 'h' | 'choir'>>;
 
 /** A new object in a draft (inside an edit). */
 function pushObject(d: SpProject, kind: SpObjectKind, at: { x: number; y: number }, link: ObjectLink): SpId {
@@ -842,6 +861,8 @@ function pushObject(d: SpProject, kind: SpObjectKind, at: { x: number; y: number
     offstageOk: false,
     visualOnly: false,
     note: '',
+    // a choir has its own size (round 2): 11 singers, rows chosen for it
+    ...(kind === 'choir' ? { choir: link.choir ? spChoirClean(link.choir) : { ...SP_CHOIR_DEFAULT } } : {}),
   });
   return id;
 }
@@ -981,10 +1002,12 @@ export function spLocationWord(at: { x: number; y: number }, stage?: SpStage | n
 }
 
 /** Change the stage's shape fields in one edit. A circle has one size: its
- *  depth follows its width (scrub). */
-export const spSetStageShape = (p: SpProject, patch: Partial<Pick<SpStage, 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'roundForm' | 'roundRef'>>): SpProject =>
+ *  depth follows its width (scrub). Wings are an option of a rectangle or a
+ *  thrust (`wings`); the morning's `shape: 'wings'` still means a rectangle
+ *  with wings on, so an older caller gets what it asked for. */
+export const spSetStageShape = (p: SpProject, patch: Partial<Pick<SpStage, 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'wings' | 'roundForm' | 'roundRef'>>): SpProject =>
   spEdit(p, (d) => {
-    Object.assign(d.stage, patch);
+    Object.assign(d.stage, patch.shape === 'wings' ? { ...patch, shape: 'rect', wings: true } : patch);
     if (d.stage.roundRef != null) d.stage.roundRef = d.stage.roundRef.slice(0, SP_ROUND_REF_MAX);
   });
 
@@ -1003,7 +1026,224 @@ export const spBoxName = (b: Pick<SpStageBox, 'name'>): string => b.name.trim() 
 /** "SB2 · 7": where an input plugs in, in words ('' when nowhere). */
 export function spBoxPatchWords(p: SpProject, i: Pick<SpInput, 'box'>): string {
   const b = i.box ? spBox(p, i.box.boxId) : undefined;
-  return b && i.box ? `${spBoxName(b)} · ${i.box.socket}` : '';
+  return b && i.box ? `${spBoxName(b)} · ${i.box.socket}${spBoxViaWords(p, b.id, i.box.socket)}` : '';
+}
+
+/* ── sub-snakes, consoles and returns (2026-11-13, round 2) ─────────────── */
+
+/** The most letters of a box's "Connects to" field. */
+export const SP_CONNECTS_MAX = 40;
+
+/** True when `boxId` plugging into `toId` would close a loop (A feeds B
+ *  feeds A), or `toId` is the box itself. */
+export function spFeedLoops(p: Pick<SpProject, 'boxes'>, boxId: SpId, toId: SpId): boolean {
+  const seen = new Set<SpId>();
+  let at: SpId | null = toId;
+  while (at) {
+    if (at === boxId || seen.has(at)) return true;
+    seen.add(at);
+    at = spBox(p, at)?.feed?.boxId ?? null;
+  }
+  return false;
+}
+
+/** The boxes a box may plug into: every other box that does not lead back
+ *  to it (so a loop can never be chosen). */
+export const spFeedTargets = (p: Pick<SpProject, 'boxes'>, boxId: SpId): SpStageBox[] => spBoxes(p).filter((b) => b.id !== boxId && !spFeedLoops(p, boxId, b.id));
+
+/** Where socket `socket` of a box arrives, box after box, while the box is a
+ *  sub-snake: [{ SB1, 11 }]. `past` = the socket is past what its feed
+ *  carries (the review asks). */
+export function spBoxVia(p: Pick<SpProject, 'boxes'>, boxId: SpId, socket: number): { steps: { box: SpStageBox; socket: number }[]; past: SpStageBox | null } {
+  const steps: { box: SpStageBox; socket: number }[] = [];
+  const seen = new Set<SpId>([boxId]);
+  let b = spBox(p, boxId);
+  let s = socket;
+  while (b?.feed) {
+    const to = spBox(p, b.feed.boxId);
+    if (!to || seen.has(to.id)) break;
+    const n = b.feed.first + s - 1;
+    if (n > b.feed.last) return { steps, past: to };
+    steps.push({ box: to, socket: n });
+    seen.add(to.id);
+    b = to;
+    s = n;
+  }
+  return { steps, past: null };
+}
+
+/** " (via SB1 · 11)" for a socket of a sub-snake; '' for any other box. */
+export function spBoxViaWords(p: Pick<SpProject, 'boxes'>, boxId: SpId, socket: number): string {
+  const v = spBoxVia(p, boxId, socket);
+  if (v.past) return ` (past its feed to ${spBoxName(v.past)})`;
+  return v.steps.length ? ` (via ${v.steps.map((x) => `${spBoxName(x.box)} · ${x.socket}`).join(', ')})` : '';
+}
+
+/** "→ SB1 sockets 9–16", or "→ the console directly". */
+export function spBoxFeedWords(p: Pick<SpProject, 'boxes'>, b: SpStageBox): string {
+  const to = b.feed ? spBox(p, b.feed.boxId) : undefined;
+  if (!b.feed || !to) return '→ the console directly';
+  return `→ ${spBoxName(to)} socket${b.feed.first === b.feed.last ? ` ${b.feed.first}` : `s ${b.feed.first}–${b.feed.last}`}`;
+}
+
+/** A sub-snake: this box plugs into sockets of another box (`to`), or into
+ *  the console directly (null). Without a range it takes as many sockets as
+ *  it has, from the first run of the other box that nothing else uses. A
+ *  loop is refused: nothing changes. */
+export function spSetBoxFeed(p: SpProject, boxId: SpId, to: { boxId: SpId; first?: number; last?: number } | null): SpProject {
+  const b = spBox(p, boxId);
+  if (!b) return p;
+  if (!to) return b.feed ? spEdit(p, (d) => void ((spBox(d, boxId) as SpStageBox).feed = null)) : p;
+  const main = spBox(p, to.boxId);
+  if (!main || spFeedLoops(p, boxId, main.id) || b.kind === 'digital') return p;
+  return spEdit(p, (d) => {
+    const me = spBox(d, boxId) as SpStageBox;
+    const count = me.feed && me.feed.boxId === main.id ? me.feed.last - me.feed.first + 1 : me.inputs;
+    let first = to.first != null && Number.isFinite(to.first) ? wholeIn(to.first, 1, SP_BOX_MAX * 2) : 0;
+    if (!first) {
+      // the first run of `count` sockets on the main box that nothing uses
+      const taken = new Set<number>();
+      for (const i of d.inputs) if (i.box?.boxId === main.id) taken.add(i.box.socket);
+      for (const o of spBoxes(d)) if (o.id !== boxId && o.feed?.boxId === main.id) for (let s = o.feed.first; s <= o.feed.last; s++) taken.add(s);
+      for (let s = 1; s + count - 1 <= main.inputs && !first; s++) {
+        let ok = true;
+        for (let j = 0; j < count; j++) if (taken.has(s + j)) ok = false;
+        if (ok) first = s;
+      }
+      if (!first) first = Math.min(main.inputs, Math.max(0, ...taken) + 1);
+    }
+    const last = to.last != null && Number.isFinite(to.last) ? Math.max(first, wholeIn(to.last, 1, SP_BOX_MAX * 2)) : Math.min(Math.max(first, main.inputs), first + count - 1);
+    me.feed = { boxId: main.id, first, last };
+  });
+}
+
+/** Boxes that have returns to give (a number of returns above 0). */
+export const spReturnBoxes = (p: Pick<SpProject, 'boxes'>): SpStageBox[] => spBoxes(p).filter((b) => (b.returns ?? 0) > 0 && !b.feed);
+// (a sub-snake's returns are fed from returns of its main box: a mix is
+// given the MAIN box's return; engineer review, round 2)
+
+/** The returns a mix takes: one for mono, two neighbouring ones for stereo. */
+export function spReturnRange(m: Pick<SpMix, 'ret' | 'format'>): number[] {
+  if (!m.ret) return [];
+  return m.format === 'stereo' ? [m.ret.ret, m.ret.ret + 1] : [m.ret.ret];
+}
+
+/** A mix that is asked of the house console, so it comes back to the stage
+ *  somehow (a mix the band makes on its own rig or personal mixers does not
+ *  use the venue's returns), and the band has not said "from the console". */
+export const spMixWantsReturn = (m: Pick<SpMix, 'provider' | 'fromConsole'>): boolean => (m.provider === 'house' || m.provider === 'tbc') && !m.fromConsole;
+
+/** "SB1 · return 3", "SB1 · returns 3–4", "From the console", or '' (none). */
+export function spReturnWords(p: Pick<SpProject, 'boxes'>, m: Pick<SpMix, 'ret' | 'format' | 'fromConsole'>): string {
+  if (m.fromConsole) return 'From the console';
+  const b = m.ret ? spBox(p, m.ret.boxId) : undefined;
+  if (!b || !m.ret) return '';
+  const r = spReturnRange(m);
+  return `${spBoxName(b)} · ${r.length === 2 ? `returns ${r[0]}–${r[1]}` : `return ${r[0]}`}`;
+}
+
+/** Give a mix a return by hand (AUTO-ASSIGN RETURNS never moves it), or take
+ *  it off (null). Two mixes on one return are allowed while editing, and the
+ *  review asks about them. */
+export const spAssignReturn = (p: SpProject, mixId: SpId, to: { boxId: SpId; ret: number } | null): SpProject =>
+  spEdit(p, (d) => {
+    const m = d.mixes.find((x) => x.id === mixId);
+    if (!m) return;
+    if (!to || !spBoxes(d).some((b) => b.id === to.boxId) || !Number.isFinite(to.ret)) {
+      m.ret = null;
+      return;
+    }
+    m.ret = { boxId: to.boxId, ret: wholeIn(to.ret, 1, SP_BOX_MAX * 2), byHand: true };
+    m.fromConsole = false;
+  });
+
+/** "This mix comes from the console itself, not a stage box return". */
+export const spSetFromConsole = (p: SpProject, mixId: SpId, on: boolean): SpProject =>
+  spEdit(p, (d) => {
+    const m = d.mixes.find((x) => x.id === mixId);
+    if (!m) return;
+    m.fromConsole = on;
+    if (on) m.ret = null;
+  });
+
+/**
+ * AUTO-ASSIGN RETURNS: give every mix that is asked of the house console,
+ * and has no return, the lowest free return (two neighbouring ones for a
+ * stereo mix) on the box NEAREST to where its devices stand. A wireless
+ * in-ear mix goes to its TRANSMITTER, not to the performer: the box nearest
+ * a drawn transmitter (or rack); with neither drawn it is left for the band
+ * (`iem`), as the transmitter usually sits at the monitor console or a rack
+ * at the side. It never moves a return chosen by hand, and skips a mix "from
+ * the console". One edit: UNDO puts every return back. `left` = mixes still
+ * with no return (the boxes have too few).
+ */
+export function spAutoAssignReturns(p: SpProject): { p: SpProject; placed: number; left: number; iem: number } {
+  let placed = 0;
+  let left = 0;
+  let iem = 0;
+  const q = spEdit(p, (d) => {
+    // a sub-snake's returns reach it through its main box: AUTO-ASSIGN uses
+    // the boxes that connect to the console (a sub-snake's return can still
+    // be chosen by hand)
+    const boxes = spReturnBoxes(d);
+    if (!boxes.length) return;
+    for (const m of d.mixes) if (m.ret && !m.ret.byHand) m.ret = null;
+    const used = new Map<SpId, Set<number>>(spBoxes(d).map((b) => [b.id, new Set<number>()]));
+    for (const m of d.mixes) for (const r of spReturnRange(m)) if (m.ret) used.get(m.ret.boxId)?.add(r);
+    const kx = d.stage.width && d.stage.depth ? d.stage.width : spStageAspect(d);
+    const ky = d.stage.width && d.stage.depth ? d.stage.depth : 1;
+    const drawnOf = (pred: (dev: SpDevice) => boolean) => d.objects.filter((o) => o.deviceId && pred(d.devices.find((x) => x.id === o.deviceId) as SpDevice));
+    const mean = (os: SpObject[]) => (os.length ? { x: os.reduce((n, o) => n + o.x, 0) / os.length, y: os.reduce((n, o) => n + o.y, 0) / os.length } : null);
+    const racks = d.objects.filter((o) => o.kind === 'rack');
+    const where = (m: SpMix): { x: number; y: number } | null | 'iem' => {
+      if (m.delivery === 'wireless-iem') {
+        const tx = drawnOf((dev) => !!dev && dev.mixId === m.id && dev.type === 'iem-tx');
+        if (tx.length) return mean(tx);
+        if (racks.length) return { x: racks[0].x, y: racks[0].y };
+        return 'iem';
+      }
+      return mean(drawnOf((dev) => !!dev && dev.mixId === m.id));
+    };
+    const free = (b: SpStageBox, n: number): number | null => {
+      const u = used.get(b.id) as Set<number>;
+      // a stereo pair starts on an odd return (1–2, 3–4), as consoles link
+      // their outputs; only when none is left, any two side by side
+      for (const odd of n === 2 ? [true, false] : [false]) {
+        for (let s = 1; s + n - 1 <= (b.returns ?? 0); s++) {
+          if (odd && s % 2 === 0) continue;
+          let ok = true;
+          for (let j = 0; j < n; j++) if (u.has(s + j)) ok = false;
+          if (ok) return s;
+        }
+      }
+      return null;
+    };
+    for (const m of d.mixes) {
+      if (m.ret || !spMixWantsReturn(m)) continue;
+      const at = where(m);
+      if (at === 'iem') {
+        iem += 1;
+        continue;
+      }
+      const ranked = boxes
+        .map((b, k) => {
+          const o = spBoxObject(d, b.id);
+          return { b, k, far: at && o ? Math.hypot((at.x - o.x) * kx, (at.y - o.y) * ky) : Number.POSITIVE_INFINITY };
+        })
+        .sort((x, y) => x.far - y.far || x.k - y.k);
+      const n = m.format === 'stereo' ? 2 : 1;
+      const pick = ranked.find((x) => free(x.b, n) != null);
+      if (!pick) {
+        left += 1;
+        continue;
+      }
+      const s = free(pick.b, n) as number;
+      m.ret = { boxId: pick.b.id, ret: s, byHand: false };
+      for (let j = 0; j < n; j++) (used.get(pick.b.id) as Set<number>).add(s + j);
+      placed += 1;
+    }
+  });
+  return { p: q, placed, left, iem };
 }
 /** The drawing of a box on the stage, if it has one. */
 export const spBoxObject = (p: SpProject, boxId: SpId): SpObject | undefined => p.objects.find((o) => o.boxId === boxId);
@@ -1023,9 +1263,9 @@ function nextBoxName(p: SpProject): string {
  *  backline, where a sub-snake goes; the first place no other box stands at.
  *  It is a starting place: the box editor says to move it where it really is. */
 function newBoxSpot(p: SpProject): { x: number; y: number } {
-  const shape = spShapeOf(p.stage);
   const w = spWingFrac(p.stage).w;
-  const firstInWing = shape === 'wings' && !p.objects.some((o) => o.kind === 'stage-box');
+  // (wings on a rectangle or a thrust: spHasWings, 2026-11-13 R2)
+  const firstInWing = spHasWings(p.stage) && !p.objects.some((o) => o.kind === 'stage-box');
   const spots = firstInWing
     ? [{ x: 1 + w / 2, y: 0.15 }]
     : spIsCircle(p.stage)
@@ -1053,19 +1293,28 @@ export function spAddBox(p: SpProject, f: Partial<Omit<SpStageBox, 'id'>> & { pl
       kind: f.kind ?? 'unknown',
       supplier: f.supplier ?? 'tbc',
       note: f.note ?? '',
+      feed: null,
+      connectsTo: (f.connectsTo ?? '').slice(0, SP_CONNECTS_MAX),
+      connectsTbc: f.connectsTbc === true,
     });
     if (f.place !== false) objectId = pushObject(d, 'stage-box', f.at ?? newBoxSpot(d), { boxId: id, label: name });
   });
   return { p: q, id, objectId };
 }
 
-export const spUpdateBox = (p: SpProject, id: SpId, patch: Partial<Omit<SpStageBox, 'id'>>): SpProject =>
+export const spUpdateBox = (p: SpProject, id: SpId, patch: Partial<Omit<SpStageBox, 'id' | 'feed'>>): SpProject =>
   spEdit(p, (d) => {
     const b = spBoxes(d).find((x) => x.id === id);
     if (!b) return;
+    // (the feed has its own edit, spSetBoxFeed, which refuses a loop)
+    const feed = b.feed;
     Object.assign(b, patch);
+    b.feed = feed;
     b.inputs = wholeIn(Number.isFinite(b.inputs) ? b.inputs : 16, 1, SP_BOX_MAX);
     if (b.returns != null) b.returns = Number.isFinite(b.returns) ? wholeIn(b.returns, 0, SP_BOX_MAX) : null;
+    if (typeof b.connectsTo === 'string') b.connectsTo = b.connectsTo.slice(0, SP_CONNECTS_MAX);
+    // a console named answers "to be confirmed"
+    if (patch.connectsTo?.trim()) b.connectsTbc = false;
     // the drawing prints the box's own name
     if (patch.name != null) for (const o of d.objects) if (o.boxId === id) o.label = spBoxName(b);
   });
@@ -1159,6 +1408,8 @@ export function spAutoAssignBoxes(p: SpProject): { p: SpProject; placed: number;
     for (const i of d.inputs) if (i.box && !i.box.byHand) i.box = null;
     const used = new Map<SpId, Set<number>>(boxes.map((b) => [b.id, new Set<number>()]));
     for (const i of d.inputs) if (i.box) used.get(i.box.boxId)?.add(i.box.socket);
+    // (round 2) the sockets a sub-snake plugs into are taken: never offered
+    for (const b of boxes) if (b.feed) for (let s = b.feed.first; s <= b.feed.last; s++) used.get(b.feed.boxId)?.add(s);
     // distances as the stage really is: meters when the size is known, else
     // the drawing's own shape
     const kx = d.stage.width && d.stage.depth ? d.stage.width : spStageAspect(d);
@@ -1198,7 +1449,9 @@ export function spAutoAssignBoxes(p: SpProject): { p: SpProject; placed: number;
     };
     const freeRun = (b: SpStageBox, n: number): number | null => {
       const u = used.get(b.id) as Set<number>;
-      for (let s = 1; s + n - 1 <= b.inputs; s++) {
+      // (round 2) a sub-snake only has the sockets its cable carries
+      const top = b.feed ? Math.min(b.inputs, b.feed.last - b.feed.first + 1) : b.inputs;
+      for (let s = 1; s + n - 1 <= top; s++) {
         let ok = true;
         for (let j = 0; j < n; j++) if (u.has(s + j)) ok = false;
         if (ok) return s;
@@ -1333,6 +1586,13 @@ export function spDuplicateProject(p: SpProject, opts: { id: SpId; kind: 'master
   for (const m of q.mixes) {
     m.recipients = m.recipients.map((id) => map.get(id)).filter(Boolean) as SpId[];
     m.needs = rekey(m.needs);
+    // (round 2) the copy keeps its returns and sub-snakes, on its own boxes
+    const retBox = m.ret ? to(m.ret.boxId) : null;
+    m.ret = m.ret && retBox ? { ...m.ret, boxId: retBox } : null;
+  }
+  for (const b of q.boxes) {
+    const feedBox = b.feed ? to(b.feed.boxId) : null;
+    b.feed = b.feed && feedBox ? { ...b.feed, boxId: feedBox } : null;
   }
   for (const d of q.devices) {
     d.mixId = to(d.mixId);
@@ -1367,6 +1627,15 @@ export function spDuplicateProject(p: SpProject, opts: { id: SpId; kind: 'master
  *  it is not a project at all. Unknown fields are kept out; missing ones get
  *  their blank value; links are checked. Add a step here for every schema
  *  change, so a band's saved setup survives a release. */
+/** A saved sub-snake feed, or null when it is not one (junk falls back to
+ *  "connects to the console directly"). */
+function feedOf(f: unknown): SpBoxFeed | null {
+  const x = f as Partial<SpBoxFeed> | null | undefined;
+  if (!x || typeof x !== 'object' || typeof x.boxId !== 'string' || typeof x.first !== 'number' || typeof x.last !== 'number' || !Number.isFinite(x.first) || !Number.isFinite(x.last)) return null;
+  const first = wholeIn(x.first, 1, SP_BOX_MAX * 2);
+  return { boxId: x.boxId, first, last: Math.max(first, wholeIn(x.last, 1, SP_BOX_MAX * 2)) };
+}
+
 export function spMigrate(raw: unknown): SpProject | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Partial<SpProject>;
@@ -1378,7 +1647,12 @@ export function spMigrate(raw: unknown): SpProject | null {
   // schema 1 → 2 (2026-11-13): a plot from before stage shapes is a
   // RECTANGLE; a field that is not one of the shape's own values is the default
   const st = q.stage;
-  if (!['rect', 'thrust', 'round', 'wings'].includes(st.shape)) st.shape = 'rect';
+  // …and (owner 2026-11-13, "build them all") wings became an option of a
+  // rectangle or a thrust: the morning's "wings" shape is a rectangle with
+  // wings on, drawn exactly as before. A junk `wings` is off (absent).
+  if (st.shape === 'wings') Object.assign(st, { shape: 'rect', wings: true });
+  if (typeof st.wings !== 'boolean') delete st.wings;
+  if (!['rect', 'thrust', 'round'].includes(st.shape)) st.shape = 'rect';
   const size = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) && v > 0 && v <= 1000 ? v : null);
   st.thrustWidth = size(st.thrustWidth);
   st.thrustDepth = size(st.thrustDepth);
@@ -1397,7 +1671,18 @@ export function spMigrate(raw: unknown): SpProject | null {
       kind: b.kind === 'digital' || b.kind === 'analog' ? b.kind : 'unknown',
       supplier: (['band', 'venue', 'other', 'tbc'] as const).includes(b.supplier) ? b.supplier : 'tbc',
       note: typeof b.note === 'string' ? b.note : '',
+      // (round 2, no schema change: a plot saved before these fields has no
+      // sub-snake, names no console and has no returns given to mixes)
+      feed: feedOf(b.feed),
+      connectsTo: typeof b.connectsTo === 'string' ? b.connectsTo.slice(0, SP_CONNECTS_MAX) : '',
+      connectsTbc: b.connectsTbc === true,
     }));
+  for (const m of q.mixes) {
+    if (!m || typeof m !== 'object') continue;
+    const r = m.ret as Partial<SpReturnPatch> | null | undefined;
+    m.ret = r && typeof r.boxId === 'string' && typeof r.ret === 'number' && Number.isFinite(r.ret) && r.ret >= 1 ? { boxId: r.boxId, ret: Math.round(r.ret), byHand: r.byHand === true } : null;
+    if (typeof m.fromConsole !== 'boolean') m.fromConsole = false;
+  }
   for (const i of q.inputs) {
     const bx = i.box as Partial<SpBoxPatch> | null | undefined;
     i.box = bx && typeof bx.boxId === 'string' && typeof bx.socket === 'number' && Number.isFinite(bx.socket) && bx.socket >= 1 ? { boxId: bx.boxId, socket: Math.round(bx.socket), byHand: bx.byHand === true } : null;
@@ -1424,6 +1709,11 @@ export function spMigrate(raw: unknown): SpProject | null {
   for (const o of q.objects) {
     if (typeof o.visualOnly !== 'boolean') o.visualOnly = false;
     if (typeof o.offstageOk !== 'boolean') o.offstageOk = false;
+    // round 2 (no schema change): a choir saved before it had a size is the
+    // choir it always was, 11 singers in 3 rows; a damaged size is read the
+    // same way. Only a choir keeps the field.
+    if (o.kind === 'choir') o.choir = o.choir ? spChoirClean(o.choir) : { ...SP_CHOIR_LEGACY };
+    else if ('choir' in o) delete o.choir;
   }
   scrub(q);
   return q;

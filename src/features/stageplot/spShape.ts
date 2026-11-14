@@ -16,10 +16,12 @@
  *           so one side is the REFERENCE (drawn at the bottom; usually the
  *           side where the mix position is, "FOH"): position words and
  *           "facing" are said from it.
- *   wings   the main stage plus an offstage area at each side (x below 0,
- *           x above 1). What stands in a wing is off the performance area
- *           and still on the plot: monitor world, stage boxes, racks,
- *           sidefills. It is not asked about as "outside the stage".
+ * WINGS are an on/off option of a rectangle or a thrust (owner 2026-11-13,
+ * "build them all"; that morning they were a fourth shape): an offstage area
+ * at each side (x below 0, x above 1). What stands in a wing is off the
+ * performance area and still on the plot: monitor world, stage boxes, racks,
+ * sidefills. It is not asked about as "outside the stage". A stage in the
+ * round has no wings (the audience is on every side).
  *
  * A shape's own sizes are in the stage's unit. When a size is not given the
  * part is drawn at a usual size and the plot says so.
@@ -32,17 +34,22 @@ export type SpFracPt = { x: number; y: number };
 /** A box in stage fractions. */
 export type SpFracRect = { x0: number; y0: number; x1: number; y1: number };
 
-export const SP_SHAPES: readonly SpStageShape[] = ['rect', 'thrust', 'round', 'wings'];
-export const SP_SHAPE_WORD: Record<SpStageShape, string> = { rect: 'Rectangle', thrust: 'Thrust', round: 'In the round', wings: 'With wings' };
+/** The shapes a stage can be chosen as. Wings are not one of them: they are
+ *  an option of a rectangle or a thrust (spHasWings). */
+export type SpStageForm = Exclude<SpStageShape, 'wings'>;
+export const SP_SHAPES: readonly SpStageForm[] = ['rect', 'thrust', 'round'];
+export const SP_SHAPE_WORD: Record<SpStageForm, string> = { rect: 'Rectangle', thrust: 'Thrust', round: 'In the round' };
 /** One plain line for each shape (Setup). */
-export const SP_SHAPE_HINT: Record<SpStageShape, string> = {
+export const SP_SHAPE_HINT: Record<SpStageForm, string> = {
   rect: 'A rectangle: the audience is in front of the stage.',
   thrust: 'A thrust: a tongue of stage reaches into the audience, so people watch from three sides.',
   round: 'In the round: the audience is on every side. The side drawn at the bottom is usually front of house (FOH), where the engineer mixes.',
-  wings: 'With wings: room at each side, out of the audience’s sight. It is not the performance area, but it is on your plot.',
 };
+/** The one plain line for the wings option (Setup). */
+export const SP_WINGS_HINT = 'Wings: room at each side of the stage, usually out of the audience’s sight. It is not the performance area, but it is on your plot.';
 
-/** The shape fields a plot saved before 2026-11-13 reads as. */
+/** The shape fields a plot saved before 2026-11-13 reads as (`wings`
+ *  absent = off). */
 export const SP_SHAPE_DEFAULTS: Pick<SpStage, 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'roundForm' | 'roundRef'> = { shape: 'rect', thrustWidth: null, thrustDepth: null, wingWidth: null, roundForm: 'circle', roundRef: 'FOH' };
 
 /** The usual size of a part whose size was not given (fractions of the main
@@ -52,12 +59,24 @@ export const SP_THRUST_MAX = { w: 1, d: 1.5 } as const;
 export const SP_WING_USUAL = 0.18;
 export const SP_WING_MAX = 0.5;
 
-type StageLike = Partial<Pick<SpStage, 'width' | 'depth' | 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'roundForm' | 'roundRef'>> | null | undefined;
+type StageLike = Partial<Pick<SpStage, 'width' | 'depth' | 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'wings' | 'roundForm' | 'roundRef'>> | null | undefined;
 
-export const spShapeOf = (s: StageLike): SpStageShape => {
+/** The shape: a rectangle, a thrust or in the round. The morning's "wings"
+ *  shape reads as the rectangle it was drawn on (its wings: spHasWings). */
+export const spShapeOf = (s: StageLike): SpStageForm => {
   const v = s?.shape;
-  return v === 'thrust' || v === 'round' || v === 'wings' ? v : 'rect';
+  return v === 'thrust' || v === 'round' ? v : 'rect';
 };
+/** Wings at each side: on a rectangle or a thrust when switched on (or a plot
+ *  saved with the morning's "wings" shape). Never in the round. */
+export const spHasWings = (s: StageLike): boolean => {
+  const v = s?.shape;
+  if (v === 'round') return false;
+  return v === 'wings' || s?.wings === true;
+};
+/** Anything but a plain rectangle: a thrust, the round, or wings. A plain
+ *  rectangle runs the code it always ran (its layouts are pinned). */
+export const spIsShaped = (s: StageLike): boolean => spShapeOf(s) !== 'rect' || spHasWings(s);
 export const spIsCircle = (s: StageLike): boolean => spShapeOf(s) === 'round' && s?.roundForm !== 'square';
 
 /** The longest name the reference side may have (it is said in short
@@ -97,7 +116,7 @@ export function spThrustRect(s: StageLike): SpFracRect | null {
 
 /** The two wings, in stage fractions (empty for another shape). */
 export function spWingRects(s: StageLike): { side: 'right' | 'left'; r: SpFracRect }[] {
-  if (spShapeOf(s) !== 'wings') return [];
+  if (!spHasWings(s)) return [];
   const w = spWingFrac(s).w;
   return [
     { side: 'right', r: { x0: -w, y0: 0, x1: 0, y1: 1 } },
@@ -107,13 +126,10 @@ export function spWingRects(s: StageLike): { side: 'right' | 'left'; r: SpFracRe
 
 /** Everything the plot draws as stage floor, in stage fractions. */
 export function spShapeBounds(s: StageLike): SpFracRect {
-  const shape = spShapeOf(s);
-  if (shape === 'thrust') return { x0: 0, y0: 0, x1: 1, y1: 1 + spThrustFrac(s).d };
-  if (shape === 'wings') {
-    const w = spWingFrac(s).w;
-    return { x0: -w, y0: 0, x1: 1 + w, y1: 1 };
-  }
-  return { x0: 0, y0: 0, x1: 1, y1: 1 };
+  // (a thrust with wings: the tongue below the main stage, a wing each side)
+  const y1 = spShapeOf(s) === 'thrust' ? 1 + spThrustFrac(s).d : 1;
+  const w = spHasWings(s) ? spWingFrac(s).w : 0;
+  return { x0: -w, y0: 0, x1: 1 + w, y1 };
 }
 
 const inRect = (at: SpFracPt, r: SpFracRect, e = 1e-9): boolean => at.x >= r.x0 - e && at.x <= r.x1 + e && at.y >= r.y0 - e && at.y <= r.y1 + e;
@@ -270,15 +286,18 @@ export function spMoveLimits(s?: StageLike): SpFracRect {
 export function spShapeWords(s: StageLike, unit: 'ft' | 'm' = 'ft'): string {
   const shape = spShapeOf(s);
   const n = (v: number) => String(Math.round(v * 100) / 100);
+  const wingWords = (): string => {
+    const w = spWingFrac(s);
+    return `The wings${w.given ? ` (${n(s?.wingWidth ?? 0)} ${unit} wide each)` : ''} are drawn dashed at each side. What stands there is out of the audience’s sight, off the performance area, and still on the plot.${w.given ? '' : ' Their width is not given: they are drawn at a usual width.'}`;
+  };
   if (shape === 'thrust') {
     const t = spThrustFrac(s);
     const size = t.given ? ` ${n(s?.thrustWidth ?? 0)} ${unit} wide and ${n(s?.thrustDepth ?? 0)} ${unit} deep` : '';
-    return `Thrust stage: a tongue${size} reaches into the audience from the middle of the front edge, so the audience is on three sides of it.${t.given ? '' : ' Its size is not given: it is drawn at a usual size.'}`;
+    const thrust = `Thrust stage: a tongue${size} reaches into the audience from the middle of the front edge, so the audience is on three sides of it.${t.given ? '' : ' Its size is not given: it is drawn at a usual size.'}`;
+    // a thrust with wings says both, the tongue first
+    return spHasWings(s) ? `${thrust} ${wingWords()}` : thrust;
   }
-  if (shape === 'wings') {
-    const w = spWingFrac(s);
-    return `The wings${w.given ? ` (${n(s?.wingWidth ?? 0)} ${unit} wide each)` : ''} are drawn dashed at each side. What stands there is out of the audience’s sight, off the performance area, and still on the plot.${w.given ? '' : ' Their width is not given: they are drawn at a usual width.'}`;
-  }
+  if (spHasWings(s)) return wingWords();
   if (shape === 'round') {
     const ref = spRoundRef(s);
     return `In the round${spIsCircle(s) ? ' (a circular stage)' : ' (a square stage)'}: the audience is on every side. The bottom of this drawing is the ${ref} side. Stage right and stage left are as a performer facing the ${ref} side sees them, so stage right is on the left of this drawing.`;

@@ -84,6 +84,8 @@ export type SpDocPlot = {
 };
 
 export type SpDocDeck = {
+  /** 'wings' = a rectangle with wings. A thrust WITH wings is 'thrust', its
+   *  wings in `areas` (2026-11-13 R2: wings are an option). */
   shape: 'thrust' | 'round' | 'wings';
   /** The performance area's outline: a closed polygon [x, y…] or a circle. */
   outline: { t: 'poly'; pts: number[] } | { t: 'circle'; cx: number; cy: number; r: number };
@@ -101,7 +103,7 @@ export type SpDocDeck = {
   mainW: number;
   mainD: number;
   /** The shape fields the words are said from. */
-  stage: { shape: 'thrust' | 'round' | 'wings'; thrustWidth: number | null; thrustDepth: number | null; wingWidth: number | null; roundForm: 'circle' | 'square'; roundRef: string; width: number | null; depth: number | null };
+  stage: { shape: 'rect' | 'thrust' | 'round'; wings: boolean; thrustWidth: number | null; thrustDepth: number | null; wingWidth: number | null; roundForm: 'circle' | 'square'; roundRef: string; width: number | null; depth: number | null };
 };
 
 /** One entry of the plot's key: a symbol, drawn small, and what it is. */

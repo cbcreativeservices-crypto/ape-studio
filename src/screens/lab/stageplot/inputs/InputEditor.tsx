@@ -35,6 +35,7 @@ import {
   spAssignDi,
   spBox,
   spBoxName,
+  spBoxVia,
   spBoxes,
   spSetDirect,
   spInput,
@@ -57,7 +58,7 @@ import type { SpAudience, SpCapture, SpDestination, SpId, SpInput, SpPatchId, Sp
 import { useSpEditor } from '../spContext';
 import { Button, Choice, Fields, FocusMark, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
-import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBoxFreeSocket, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber, spSameSocket } from './inputsLogic';
+import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBoxFreeSocket, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber, spSameSocket, spSocketSub } from './inputsLogic';
 
 /** The stage box choice that means "plugs into the console itself". */
 const DIRECT = '__direct';
@@ -146,6 +147,9 @@ export function InputEditor({
   const boxes = spBoxes(p);
   const boxOf = input.box ? spBox(p, input.box.boxId) : undefined;
   const sameSocket = spSameSocket(p, inputId);
+  // (round 2) a sub-snake plugged into this socket, and where a sub-snake's socket arrives
+  const subHere = spSocketSub(p, inputId);
+  const via = input.box ? spBoxVia(p, input.box.boxId, input.box.socket) : null;
 
   const set = (patch: Partial<Omit<SpInput, 'id' | 'sourceId' | 'pairId' | 'side'>>) => ed.apply((q) => spUpdateInput(q, inputId, patch));
   const text = (key: TextKey, keepIfEmpty = false) => (t: string) => {
@@ -296,6 +300,9 @@ export function InputEditor({
                 <Small>{input.box.byHand ? 'Chosen by you: AUTO-ASSIGN never moves it.' : 'Chosen by AUTO-ASSIGN. Type a socket to choose it yourself.'}</Small>
                 {sameSocket.length ? <Note tone="warning">{`Socket ${input.box.socket} of ${spBoxName(boxOf)} is also given to ${spListWords(sameSocket)}. One socket takes one cable: give each its own.`}</Note> : null}
                 {input.box.socket > boxOf.inputs ? <Note tone="warning">{`${spBoxName(boxOf)} has ${boxOf.inputs} sockets, so there is no socket ${input.box.socket}. Choose another socket or box.`}</Note> : null}
+                {subHere ? <Note tone="warning">{`${spBoxName(subHere)} plugs into socket ${input.box.socket} of ${spBoxName(boxOf)}. One socket takes one cable: choose another socket.`}</Note> : null}
+                {via?.steps.length && !via.past ? <Small>{`${spBoxName(boxOf)} is a sub-snake: this socket arrives at ${via.steps.map((x) => `${spBoxName(x.box)} · ${x.socket}`).join(', then ')}.`}</Small> : null}
+                {via?.past ? <Note tone="warning">{`${spBoxName(boxOf)} is a sub-snake, and its cable to ${spBoxName(via.past)} does not carry socket ${input.box.socket}. Choose a lower socket, or give the sub-snake more sockets of ${spBoxName(via.past)} in its stage box editor.`}</Note> : null}
               </>
             ) : null}
           </View>

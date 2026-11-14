@@ -20,7 +20,8 @@
  * Pure data and pure functions. No colors here: a renderer maps the three
  * fills to white, black and one light gray.
  */
-import type { SpObject, SpObjectKind, SpProject } from './spTypes.ts';
+import { SP_CHOIR_LEGACY, spChoirLayout, spChoirOf } from './spChoir.ts';
+import type { SpChoir, SpObject, SpObjectKind, SpProject } from './spTypes.ts';
 
 /** paper = white, ink = black, tone = one light gray, none = outline only. */
 export type SpFill = 'none' | 'paper' | 'ink' | 'tone';
@@ -48,6 +49,105 @@ const poly = (pts: number[], closed = true, fill: SpFill = 'paper'): SpShape => 
 
 /** A box centered on 0,0. */
 const box = (w: number, h: number, more: Partial<Extract<SpShape, { t: 'rect' }>> = {}): SpShape => rect(-w / 2, -h / 2, w, h, { fill: 'paper', ...more });
+
+/* ── round 2 geometry, shared with the on-screen art (topArtR2.tsx) ── */
+
+/** Marimba (5 octaves, C2–C7, 2.6 × 1.05 m: Yamaha publishes 261 × 103 cm
+ *  for its YM-5100A). 36 natural bars, the low C at the player's LEFT (+x),
+ *  as on a piano and the vibraphone; naturals nearest the player. */
+export const SP_MARIMBA = {
+  x0: -1.22,
+  x1: 1.22,
+  naturals: 36,
+  /** A natural bar's length at t (0 = the high end, 1 = the low end). */
+  len: (t: number) => 0.2 + 0.26 * t,
+  /** t of a bar at x. */
+  t: (x: number) => Math.min(1, Math.max(0, (x + 1.22) / 2.44)),
+  frameX: 1.29,
+} as const;
+/** A bar's width at t (1 = the low end): 42 mm to 62 mm. */
+export const spMarimbaW = (t: number): number => 0.042 + 0.02 * t;
+/** The gap between two bars: the same all along, as on a real marimba
+ *  (visual review, round 2). */
+export const SP_MARIMBA_GAP = 0.016;
+/** The naturals' centers, from the low C at +x: each bar its own width, an
+ *  even gap between them, the whole row centered on the frame. */
+const MARIMBA_NAT_X: readonly number[] = (() => {
+  const n = SP_MARIMBA.naturals;
+  const w = Array.from({ length: n }, (_, i) => spMarimbaW(1 - i / (n - 1)));
+  const total = w.reduce((a, b) => a + b, 0) + (n - 1) * SP_MARIMBA_GAP;
+  const out: number[] = [];
+  let x = total / 2;
+  for (const wi of w) {
+    out.push(x - wi / 2);
+    x -= wi + SP_MARIMBA_GAP;
+  }
+  return out;
+})();
+/** x of natural bar n (0 = the low C at +x). */
+export const spMarimbaX = (n: number): number => MARIMBA_NAT_X[n]!;
+/** The natural bars with an accidental beyond them, by the natural's index
+ *  (none after E and B). 25 for 5 octaves. */
+export const SP_MARIMBA_ACC: readonly number[] = Array.from({ length: SP_MARIMBA.naturals - 1 }, (_, n) => n).filter((n) => !'EB'.includes('CDEFGAB'[n % 7]!));
+export const spMarimbaNear = (x: number): number => -(0.03 + SP_MARIMBA.len(SP_MARIMBA.t(x)) + 0.025);
+export const spMarimbaFar = (x: number): number => SP_MARIMBA.len(SP_MARIMBA.t(x)) + 0.045;
+
+/** Timpani: a set of four (32, 29, 26 and 23 in heads), American setup: the
+ *  largest at the timpanist's LEFT (+x), in an arc round the stool. Centers
+ *  and radii in meters (head, and bowl with its counterhoop); the stool. */
+export const SP_TIMPANI = (() => {
+  // each rim at the same reach from the stool, 0.55 m (timpanists set the
+  // rims, not the centers, at an even reach: visual review, round 2); `bowl`
+  // is the counterhoop's outer edge, the widest thing seen from above
+  const REACH = 0.55;
+  const raw = [
+    { size: 32, head: 0.406, bowl: 0.44, deg: 80 },
+    { size: 29, head: 0.368, bowl: 0.4, deg: 28 },
+    { size: 26, head: 0.33, bowl: 0.36, deg: -22 },
+    { size: 23, head: 0.292, bowl: 0.32, deg: -70 },
+  ].map((d) => ({ ...d, x: (REACH + d.bowl) * Math.sin((d.deg * Math.PI) / 180), y: (REACH + d.bowl) * Math.cos((d.deg * Math.PI) / 180) }));
+  // the set's box (the stool and the four drums), centered
+  const STOOL = 0.19;
+  const x0 = Math.min(-STOOL, ...raw.map((d) => d.x - d.bowl));
+  const x1 = Math.max(STOOL, ...raw.map((d) => d.x + d.bowl));
+  const y0 = Math.min(-STOOL, ...raw.map((d) => d.y - d.bowl));
+  const y1 = Math.max(STOOL, ...raw.map((d) => d.y + d.bowl));
+  const dx = (x0 + x1) / 2;
+  const dy = (y0 + y1) / 2;
+  return {
+    stool: { x: -dx, y: -dy, r: STOOL },
+    drums: raw.map((d) => ({ ...d, x: d.x - dx, y: d.y - dy })),
+  };
+})();
+
+/** Flute (a concert flute, 0.67 m): held to the player's RIGHT (−x), the
+ *  foot a little forward; the crown end at the player's left, the lip plate
+ *  near it. */
+export const SP_FLUTE = { crown: { x: 0.3265, y: -0.07 }, foot: { x: -0.3265, y: 0.08 }, lip: 0.075 } as const;
+
+/** Hand harmonium (3¼ octaves, 39 keys, 0.60 × 0.30 m) in front of the
+ *  player on the rug the player sits on (0.96 m square, as the tabla's): the
+ *  keys toward the player, the stop and drone knobs in a row behind the
+ *  keys, the bellows on the back panel, hinged at the player's right end
+ *  (−x) and opened at the left end (+x) by the left hand. */
+export const SP_HARMONIUM = { rug: 0.48, x0: -0.3, x1: 0.3, y0: 0.0, y1: 0.3, keysTo: 0.11, stopsY: 0.145, bellowsHinge: 0.035, bellowsOpen: 0.11 } as const;
+
+/** Harmonica: the player's microphone on a straight stand (round base 0.26 m
+ *  across), the microphone toward the player, and the case of harmonicas in
+ *  several keys open on a small table beside it, at the player's right. */
+export const SP_HARMONICA = {
+  // the stand's round base; the pole stands at its center, the microphone's
+  // clip on top of the pole, the microphone's tail 6 cm upstage of it
+  base: { x: 0.2, y: 0.03, r: 0.13 },
+  mic: { y0: -0.03, y1: -0.21 },
+  cableEnd: { x: 0.15, y: 0.215 },
+  // the small table (0.38 × 0.34 m) and the open case on it (0.28 × 0.23 m)
+  table: { x0: -0.35, x1: 0.03, y0: -0.17, y1: 0.17 },
+  case: { x0: -0.3, x1: -0.02, y0: -0.115, y1: 0.115 },
+} as const;
+/** The twelve harmonicas in the case, each 102 × 22 mm as it stands in its
+ *  slot with its ten holes up: two columns of six. */
+export const SP_HARMONICA_HARPS: readonly { x: number; y: number }[] = [0, 1].flatMap((col) => Array.from({ length: 6 }, (_, i) => ({ x: SP_HARMONICA.case.x0 + 0.02 + col * 0.12, y: SP_HARMONICA.case.y0 + 0.025 + i * 0.031 })));
 
 const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // a person: a circle, with a short mark on the side they face
@@ -115,6 +215,10 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // audience's side
   playback: { w: 0.5, h: 0.4, tag: '', shapes: [box(0.5, 0.4, { r: 0.03 }), line(-0.25, 0.1, 0.25, 0.1), rect(-0.09, -0.12, 0.18, 0.1, { fill: 'none' })] },
   ...MORE_SYMBOLS(),
+  ...R2_SYMBOLS(),
+  // the choir of before: 11 singers in 3 rows, drawn by the same layout as
+  // a choir of any size (round 2)
+  choir: choirSymbolOf(SP_CHOIR_LEGACY),
   di: { w: 0.3, h: 0.3, tag: 'DI', shapes: [box(0.3, 0.3, { r: 0.03 })] },
   // a wedge: its FRONT (the grille, the wide side) is the side it faces. A
   // wedge at the stage edge is turned 180° so the wide side faces the
@@ -148,6 +252,135 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
 };
 
 export const spSymbol = (kind: SpObjectKind): SpSymbol => SYMBOLS[kind];
+
+/** A choir's print symbol, for its own size (round 2, 2026-11-13): the
+ *  riser units with their steps and joins, and one circle a singer, in the
+ *  window spacing spChoir lays out. One row stands on the floor: circles
+ *  only. 11 singers in 3 rows is the symbol of before. */
+const choirCache = new Map<string, SpSymbol>();
+export function spChoirSymbol(c: SpChoir): SpSymbol {
+  const key = `${c.singers}:${c.rows}`;
+  const hit = choirCache.get(key);
+  if (hit) return hit;
+  const sym = choirSymbolOf(c);
+  choirCache.set(key, sym);
+  return sym;
+}
+function choirSymbolOf(c: SpChoir): SpSymbol {
+  const lay = spChoirLayout(c);
+  const shapes: SpShape[] = [];
+  if (lay.riser) {
+    const r = lay.riser;
+    const s = r.steps;
+    shapes.push(rect(r.x0, s[0]!, r.x1 - r.x0, s[s.length - 1]! - s[0]!, { fill: 'paper' }));
+    for (const y of s.slice(1, -1)) shapes.push(line(r.x0, y, r.x1, y));
+    for (const x of r.joins) shapes.push(line(x, s[0]!, x, s[s.length - 1]!));
+  }
+  for (const a of lay.at) shapes.push(circle(a.x, a.y, 0.13, { fill: 'tone' }));
+  return { w: lay.w, h: lay.h, tag: '', shapes };
+}
+
+/** The print symbol ONE object draws: its kind's, except a choir, which is
+ *  drawn for its own number of singers and rows. */
+export const spObjectSymbol = (o: Pick<SpObject, 'kind' | 'choir'>): SpSymbol => (o.kind === 'choir' ? spChoirSymbol(spChoirOf(o)) : SYMBOLS[o.kind]);
+
+/** Round 2 of the added kinds (owner 2026-11-13: "Yes, build them all"). */
+export type SpR2Kind = 'marimba' | 'timpani' | 'flute' | 'harmonium' | 'harmonica';
+export const SP_R2_KINDS: readonly SpR2Kind[] = ['marimba', 'timpani', 'flute', 'harmonium', 'harmonica'];
+
+function R2_SYMBOLS(): Record<SpR2Kind, SpSymbol> {
+  const m = SP_MARIMBA;
+  const marimbaBars: SpShape[] = [];
+  for (let n = 0; n < m.naturals; n++) {
+    const x = spMarimbaX(n);
+    marimbaBars.push(line(x, -0.03, x, -0.03 - m.len(m.t(x))));
+  }
+  for (const n of SP_MARIMBA_ACC) {
+    const x = (spMarimbaX(n) + spMarimbaX(n + 1)) / 2;
+    marimbaBars.push(line(x, 0.03, x, 0.03 + m.len(m.t(x)) - 0.02));
+  }
+  const T = SP_TIMPANI;
+  const toward = (d: { x: number; y: number; bowl: number }) => {
+    const vx = T.stool.x - d.x;
+    const vy = T.stool.y - d.y;
+    const l = Math.hypot(vx, vy);
+    return { ux: vx / l, uy: vy / l };
+  };
+  const pedal = (d: { x: number; y: number; bowl: number }): SpShape => {
+    const { ux, uy } = toward(d);
+    const px = -uy;
+    const py = ux;
+    const a = d.bowl - 0.02;
+    const b = d.bowl + 0.1;
+    return poly([d.x + ux * a + px * 0.07, d.y + uy * a + py * 0.07, d.x + ux * b + px * 0.06, d.y + uy * b + py * 0.06, d.x + ux * b - px * 0.06, d.y + uy * b - py * 0.06, d.x + ux * a - px * 0.07, d.y + uy * a - py * 0.07]);
+  };
+  const F = SP_FLUTE;
+  const fl = Math.hypot(F.crown.x - F.foot.x, F.crown.y - F.foot.y);
+  const fu = { x: (F.foot.x - F.crown.x) / fl, y: (F.foot.y - F.crown.y) / fl };
+  const fAt = (s: number) => ({ x: F.crown.x + fu.x * s, y: F.crown.y + fu.y * s });
+  const fn = { x: -fu.y, y: fu.x };
+  const tube = (half: number): number[] => [F.crown.x + fn.x * half, F.crown.y + fn.y * half, F.foot.x + fn.x * half, F.foot.y + fn.y * half, F.foot.x - fn.x * half, F.foot.y - fn.y * half, F.crown.x - fn.x * half, F.crown.y - fn.y * half];
+  const H = SP_HARMONIUM;
+  const A = SP_HARMONICA;
+  return {
+    // a 5-octave marimba: the tapered frame, the bars in two rows, the
+    // naturals nearest the player, the low end at the player's left (+x)
+    marimba: {
+      w: 2.6,
+      h: 1.05,
+      tag: '',
+      shapes: [poly([-m.frameX, spMarimbaNear(-m.frameX), m.frameX, spMarimbaNear(m.frameX), m.frameX, spMarimbaFar(m.frameX), -m.frameX, spMarimbaFar(-m.frameX)]), ...marimbaBars],
+    },
+    // timpani, a set of four in an arc round the timpanist's stool: each
+    // bowl, its head, and its pedal on the player's side
+    timpani: {
+      w: 2.6,
+      h: 1.52,
+      tag: '',
+      shapes: [circle(T.stool.x, T.stool.y, T.stool.r, { fill: 'paper' }), ...T.drums.flatMap((d) => [pedal(d), circle(d.x, d.y, d.bowl, { fill: 'paper' }), circle(d.x, d.y, d.head)])],
+    },
+    // a flute as it is held: the tube to the player's right, the lip plate
+    // near the crown end at the player's mouth, the key cups along it
+    flute: {
+      w: 0.72,
+      h: 0.24,
+      tag: '',
+      shapes: [poly(tube(0.013)), circle(fAt(F.lip).x + fn.x * -0.005, fAt(F.lip).y + fn.y * -0.005, 0.02, { fill: 'paper' }), ...[0.3, 0.38, 0.46, 0.54].map((s) => circle(fAt(s).x, fAt(s).y, 0.011, { fill: 'ink' }))],
+    },
+    // a hand harmonium on the floor rug: the box, its keys toward the
+    // player, the stop knobs behind them, the bellows on the back panel
+    harmonium: {
+      w: 1.0,
+      h: 1.0,
+      tag: '',
+      shapes: [
+        rect(-H.rug, -H.rug, 2 * H.rug, 2 * H.rug, { fill: 'tone' }),
+        rect(-H.rug + 0.05, -H.rug + 0.05, 2 * H.rug - 0.1, 2 * H.rug - 0.1, { fill: 'none' }),
+        poly([H.x0, H.y1, H.x1, H.y1, H.x1, H.y1 + H.bellowsOpen, H.x0, H.y1 + H.bellowsHinge]),
+        rect(H.x0, H.y0, H.x1 - H.x0, H.y1 - H.y0, { fill: 'paper', r: 0.01 }),
+        rect(H.x0 + 0.05, H.y0 + 0.005, H.x1 - H.x0 - 0.1, H.keysTo - 0.005, { fill: 'paper' }),
+        ...ticks(22, H.x0 + 0.05, H.x1 - 0.05, H.y0 + 0.005, H.keysTo),
+        ...[-0.18, -0.12, -0.06, 0, 0.06, 0.12, 0.18].map((x) => circle(x, H.stopsY, 0.012, { fill: 'ink' })),
+      ],
+    },
+    // a harmonica player's microphone on its stand, the microphone toward
+    // the player, and the case of harmonicas open on a small table
+    harmonica: {
+      w: 0.72,
+      h: 0.5,
+      tag: '',
+      shapes: [
+        circle(A.base.x, A.base.y, A.base.r, { fill: 'paper' }),
+        line(A.base.x, A.mic.y0, A.base.x, A.mic.y1 + 0.03),
+        circle(A.base.x, A.mic.y1 + 0.025, 0.028, { fill: 'ink' }),
+        line(A.base.x, A.base.y + A.base.r, A.cableEnd.x, A.cableEnd.y),
+        rect(A.table.x0, A.table.y0, A.table.x1 - A.table.x0, A.table.y1 - A.table.y0, { fill: 'paper', r: 0.02 }),
+        rect(A.case.x0, A.case.y0, A.case.x1 - A.case.x0, A.case.y1 - A.case.y0, { fill: 'none' }),
+        ...SP_HARMONICA_HARPS.map((q) => rect(q.x, q.y, 0.102, 0.022, { fill: 'tone' })),
+      ],
+    },
+  };
+}
 
 /** The kinds added for more diverse music (owner 2026-11-13: "We also need
  *  more symbols for more diverse music"), in the palette's order. */
@@ -382,13 +615,15 @@ function MORE_SYMBOLS(): Record<SpMoreKind, SpSymbol> {
         line(-0.58, 0.24, 0.58, 0.24),
       ],
     },
-    // a Leslie speaker: its cabinet from above, the cable at the back
-    // (the box is a little deeper than the 0.52 m cabinet: its leads)
+    // a Leslie speaker: its cabinet from above, the cable at the back. The
+    // cabinet is the maker's: Hammond prints 29 1/4 in wide × 20 5/8 in deep
+    // (0.743 × 0.524 m) for the Leslie 122A, 147A and 122XB, one cabinet
+    // (round 2, 2026-11-13). The box is a little deeper: its lead.
     leslie: {
-      w: 0.74,
+      w: 0.75,
       h: 0.6,
       tag: '',
-      shapes: [rect(-0.37, -0.24, 0.74, 0.52, { fill: 'paper', r: 0.03 }), rect(-0.33, -0.2, 0.66, 0.44, { fill: 'none' }), line(0.1, -0.24, 0.21, -0.29), line(0.2, -0.24, 0.33, -0.28)],
+      shapes: [rect(-0.3715, -0.24, 0.743, 0.524, { fill: 'paper', r: 0.03 }), rect(-0.3315, -0.2, 0.663, 0.444, { fill: 'none' }), line(0.1, -0.24, 0.23, -0.29)],
     },
     // a violin or viola, held level from the player's left shoulder, its
     // scroll forward and to the player's left (+x)
@@ -578,7 +813,7 @@ const KEY_NAME: Record<SpObjectKind, string> = {
   'acoustic-guitar': 'Acoustic instrument',
   horn: 'Horn',
   playback: 'Playback rig',
-  choir: 'Choir on a riser',
+  choir: 'Choir (a circle for each singer)',
   'e-drums': 'Electronic drum kit',
   cajon: 'Cajón',
   djembe: 'Djembe',
@@ -600,6 +835,11 @@ const KEY_NAME: Record<SpObjectKind, string> = {
   saxophone: 'Saxophone',
   trombone: 'Trombone',
   dj: 'DJ table',
+  marimba: 'Marimba (5-octave)',
+  timpani: 'Timpani (set of four)',
+  flute: 'Flute',
+  harmonium: 'Hand harmonium (on a floor rug)',
+  harmonica: 'Harmonica (its microphone and harmonica case)',
   di: 'DI',
   wedge: 'Wedge monitor (wide side faces the performer)',
   iem: 'In-ear monitor equipment',
@@ -630,6 +870,8 @@ const KEY_ORDER: readonly SpObjectKind[] = [
   'tabla',
   'steel-pan',
   'vibraphone',
+  'marimba',
+  'timpani',
   'guitar-amp',
   'bass-amp',
   'upright-bass',
@@ -640,6 +882,7 @@ const KEY_ORDER: readonly SpObjectKind[] = [
   'keyboard-rig',
   'organ',
   'leslie',
+  'harmonium',
   'acoustic-guitar',
   'violin',
   'cello',
@@ -650,6 +893,8 @@ const KEY_ORDER: readonly SpObjectKind[] = [
   'horn',
   'saxophone',
   'trombone',
+  'flute',
+  'harmonica',
   'playback',
   'dj',
   'mic-stand',
@@ -744,7 +989,7 @@ export function spStageMeters(p: SpProject): { width: number; depth: number; toS
  *  its symbol is. A sized object uses the band's own width and depth. */
 export function spObjectBoxM(p: SpProject, o: SpObject): { cx: number; cy: number; w: number; h: number; rot: number } {
   const st = spStageMeters(p);
-  const sym = spSymbol(o.kind);
+  const sym = spObjectSymbol(o);
   const w = spIsSized(o.kind) && o.w ? o.w * st.width : sym.w;
   const h = spIsSized(o.kind) && o.h ? o.h * st.depth : sym.h;
   return { cx: o.x * st.width, cy: o.y * st.depth, w, h, rot: o.rot };
@@ -768,7 +1013,7 @@ export function spPlacedShapes(p: SpProject, o: SpObject): SpShape[] {
     return [b.cx + X * cos - Y * sin, b.cy + X * sin + Y * cos];
   };
   const out: SpShape[] = [];
-  for (const s of spSymbol(o.kind).shapes) {
+  for (const s of spObjectSymbol(o).shapes) {
     if (s.t === 'circle') {
       const [cx, cy] = pt(s.cx, s.cy);
       out.push({ ...s, cx, cy });

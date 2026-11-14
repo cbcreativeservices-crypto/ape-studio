@@ -31,9 +31,9 @@ import {
   type SpPackageRow,
 } from '../../../../features/stageplot/spCatalog.ts';
 import { spInputSupplier, spPatchRows, spSummary, type SpBySupplier, type SpEquipLine, type SpInputTotals, type SpPatchRow } from '../../../../features/stageplot/spDerive.ts';
-import { spAssignDi, spBoxPatchWords, spBoxes, spInputLocation, spMonoLabel, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
+import { spAssignDi, spBoxName, spBoxPatchWords, spBoxes, spInputLocation, spMonoLabel, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
 import type { SpIssue } from '../../../../features/stageplot/spReview.ts';
-import type { SpDeviceType, SpDiDevice, SpExtra, SpId, SpInput, SpPatch, SpPatchId, SpProject, SpSupplier } from '../../../../features/stageplot/spTypes.ts';
+import type { SpDeviceType, SpDiDevice, SpExtra, SpId, SpInput, SpPatch, SpPatchId, SpProject, SpStageBox, SpSupplier } from '../../../../features/stageplot/spTypes.ts';
 
 /* ── words ──────────────────────────────────────────────────────────────── */
 
@@ -321,8 +321,11 @@ export function spBoxSocketLines(p: SpProject, boxId: SpId): string[] {
     const names = bySocket.get(s) as string[];
     out.push(`${s} · ${spListWords(names)}${names.length > 1 ? ' (more than one input on one socket: give each its own)' : ''}`);
   }
+  // (round 2) the sockets a sub-snake plugs into
+  const subs = spSubsOn(p, boxId);
+  for (const f of subs) out.push(`${f.first === f.last ? f.first : `${f.first}–${f.last}`} · ${spBoxName(f.box)} plugs in here (a sub-snake)`);
   const free: number[] = [];
-  for (let s = 1; s <= box.inputs; s++) if (!bySocket.has(s)) free.push(s);
+  for (let s = 1; s <= box.inputs; s++) if (!bySocket.has(s) && !subs.some((f) => s >= f.first && s <= f.last)) free.push(s);
   if (free.length) out.push(`Free: ${spSocketRunsWords(free)}`);
   for (const s of [...bySocket.keys()].filter((n) => n > box.inputs).sort((a, b) => a - b)) out.push(`${s} · ${spListWords(bySocket.get(s) as string[])} (this box has no socket ${s})`);
   return out;
@@ -346,8 +349,27 @@ export function spBoxFreeSocket(p: SpProject, boxId: SpId, except?: SpId): numbe
   const box = spBoxes(p).find((b) => b.id === boxId);
   if (!box) return null;
   const used = new Set(p.inputs.filter((i) => i.id !== except && i.box?.boxId === boxId).map((i) => (i.box as { socket: number }).socket));
+  // (round 2) a socket a sub-snake plugs into is not free
+  for (const f of spSubsOn(p, boxId)) for (let s = f.first; s <= f.last; s++) used.add(s);
   for (let s = 1; s <= box.inputs; s++) if (!used.has(s)) return s;
   return null;
+}
+
+/** (round 2) The sub-snakes plugged into a box, with their sockets. */
+export function spSubsOn(p: SpProject, boxId: SpId): { box: SpStageBox; first: number; last: number }[] {
+  return spBoxes(p)
+    .filter((b) => b.id !== boxId && b.feed?.boxId === boxId)
+    .map((b) => ({ box: b, first: (b.feed as { first: number }).first, last: (b.feed as { last: number }).last }))
+    .sort((a, b) => a.first - b.first);
+}
+
+/** (round 2) The sub-snake that plugs into this input's socket, if one does
+ *  (two cables on one socket: the input's editor warns). */
+export function spSocketSub(p: SpProject, inputId: SpId): SpStageBox | undefined {
+  const me = p.inputs.find((i) => i.id === inputId);
+  if (!me?.box) return undefined;
+  const at = me.box;
+  return spSubsOn(p, at.boxId).find((f) => at.socket >= f.first && at.socket <= f.last)?.box;
 }
 
 /** The other inputs on the same socket of the same box. */

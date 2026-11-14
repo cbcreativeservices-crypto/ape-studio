@@ -163,7 +163,7 @@ export const SP_PALETTE: readonly SpPaletteItem[] = [
   { kind: 'playback', name: 'Playback rig', group: 'instruments', label: 'Playback', sized: false },
   // more symbols for more diverse music (owner 2026-11-13): strings, keys,
   // world percussion, folk, electronic, brass and reeds, a choir
-  { kind: 'choir', name: 'Choir on a riser', group: 'people', label: 'Choir', sized: false },
+  { kind: 'choir', name: 'Choir', group: 'people', label: 'Choir', sized: false },
   { kind: 'e-drums', name: 'Electronic drum kit', group: 'instruments', label: 'E-drums', sized: false },
   { kind: 'cajon', name: 'Cajón', group: 'instruments', label: 'Cajón', sized: false },
   { kind: 'djembe', name: 'Djembe', group: 'instruments', label: 'Djembe', sized: false },
@@ -185,6 +185,12 @@ export const SP_PALETTE: readonly SpPaletteItem[] = [
   { kind: 'saxophone', name: 'Saxophone', group: 'instruments', label: 'Sax', sized: false },
   { kind: 'trombone', name: 'Trombone', group: 'instruments', label: 'Trombone', sized: false },
   { kind: 'dj', name: 'DJ table', group: 'instruments', label: 'DJ', sized: false },
+  // round 2 (owner 2026-11-13, "Yes, build them all")
+  { kind: 'marimba', name: 'Marimba (5-octave)', group: 'instruments', label: 'Marimba', sized: false },
+  { kind: 'timpani', name: 'Timpani (four drums)', group: 'instruments', label: 'Timpani', sized: false },
+  { kind: 'flute', name: 'Flute', group: 'instruments', label: 'Flute', sized: false },
+  { kind: 'harmonium', name: 'Hand harmonium', group: 'instruments', label: 'Harmonium', sized: false },
+  { kind: 'harmonica', name: 'Harmonica', group: 'instruments', label: 'Harmonica', sized: false },
   { kind: 'mic-stand', name: 'Microphone on a stand', group: 'capture', label: '', sized: false },
   { kind: 'di', name: 'DI', group: 'capture', label: 'DI', sized: false },
   { kind: 'wedge', name: 'Wedge monitor', group: 'monitors', label: '', sized: false },
@@ -643,23 +649,148 @@ export const SP_PACKAGES: readonly SpPackage[] = [
     assumes: 'One microphone on a tall boom stand, in front of the bell and to the side of the slide, so the slide clears it. For one trombone.',
     rows: [mic('Trombone', 'Dynamic instrument microphone', 'tall-boom')],
   },
+  // A CHOIR OF ANY SIZE (round 2): the package that matches the choir's
+  // width is offered first (spChoir: about one microphone for every 2.5 m),
+  // the left and right pair second. The ids stay, so a plot that used one
+  // still reads it.
+  ...choirPackages(),
   {
-    id: 'choir-three',
-    name: 'Choir, three microphones',
-    category: 'vocals',
-    source: 'Choir',
-    assumes: 'Three microphones on tall stands, left, center and right: about one for every 2 to 3 m of choir width, about 1 m in front of the front row and above head height, aimed at the back row. As few as cover the choir: every open microphone adds feedback.',
-    rows: [mic('Choir L', 'Small-diaphragm condenser microphone', 'tall-boom'), mic('Choir C', 'Small-diaphragm condenser microphone', 'tall-boom'), mic('Choir R', 'Small-diaphragm condenser microphone', 'tall-boom')],
+    id: 'sax-flute',
+    name: 'Saxophone, with a flute double',
+    category: 'horns',
+    source: 'Saxophone',
+    assumes: 'The player doubles on flute. The clip-on stays on the sax; the flute is played into its own stand microphone at mouth height.',
+    rows: [mic('Sax', 'Clip-on condenser microphone', 'clamp'), mic('Sax flute', 'Small-diaphragm condenser microphone', 'tall-boom')],
+  },
+
+  /* ── round 2 of the added symbols (owner 2026-11-13). Common practice,
+   * checked by a live-sound reviewer. */
+  {
+    id: 'marimba-two',
+    name: 'Marimba, two microphones',
+    category: 'percussion',
+    source: 'Marimba',
+    assumes: 'A pair about 0.5 m above the bars, one over each half, on booms reaching in from the audience side above the mallets. (A 4.3-octave marimba is about 2.0 × 0.9 m.)',
+    stereo: true,
+    rows: [
+      { ...mic('Marimba low', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'L' },
+      { ...mic('Marimba high', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'R' },
+    ],
   },
   {
-    id: 'choir-two',
-    name: 'Choir, two microphones',
-    category: 'vocals',
-    source: 'Choir',
-    assumes: 'A small choir: two condenser microphones on tall stands in front of it, left and right.',
-    rows: [mic('Choir L', 'Small-diaphragm condenser microphone', 'tall-boom'), mic('Choir R', 'Small-diaphragm condenser microphone', 'tall-boom')],
+    id: 'marimba-three',
+    name: 'Marimba, three microphones',
+    category: 'percussion',
+    source: 'Marimba',
+    assumes: 'For a 5-octave marimba: one microphone over each third of the bars, 0.4 to 0.5 m above them.',
+    rows: [
+      mic('Marimba low', 'Small-diaphragm condenser microphone', 'tall-boom'),
+      mic('Marimba mid', 'Small-diaphragm condenser microphone', 'tall-boom'),
+      mic('Marimba high', 'Small-diaphragm condenser microphone', 'tall-boom'),
+    ],
+  },
+  {
+    id: 'timpani-pair',
+    name: 'Timpani, a pair above',
+    category: 'percussion',
+    source: 'Timpani',
+    assumes: 'A pair of microphones 1 to 1.5 m above the drums, from the audience side. The drums are drawn in the American setup (the largest at the timpanist’s left); a German setup puts the largest drum at the timpanist’s right.',
+    stereo: true,
+    rows: [
+      { ...mic('Timpani L', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'L' },
+      { ...mic('Timpani R', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'R' },
+    ],
+  },
+  {
+    id: 'timpani-each',
+    name: 'Timpani, one microphone per drum',
+    category: 'percussion',
+    source: 'Timpani',
+    assumes: 'One microphone 0.3 to 0.5 m above each head, between the center and the edge on the side away from the player, out of the mallets’ path (the heads are about 0.8 m up, so the stands are tall).',
+    rows: [
+      mic('Timpani 32 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+      mic('Timpani 29 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+      mic('Timpani 26 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+      mic('Timpani 23 in', 'Small-diaphragm condenser microphone', 'tall-boom'),
+    ],
+  },
+  {
+    id: 'flute-stand',
+    name: 'Flute, microphone on a stand',
+    category: 'horns',
+    source: 'Flute',
+    assumes: 'About 15 cm from the lip plate and slightly above, aimed between the lip plate and the first keys, never into the air stream, with a windscreen; the boom comes in from the player’s left, clear of the flute. On a loud stage a dynamic vocal microphone feeds back less. The flute is the quietest thing on the stage: it needs a strong monitor, with the wedge off the microphone’s front.',
+    rows: [mic('Flute', 'Small-diaphragm condenser microphone', 'tall-boom')],
+  },
+  {
+    id: 'flute-clip',
+    name: 'Flute, clip-on microphone',
+    category: 'horns',
+    source: 'Flute',
+    assumes: 'A clip-on microphone on the headjoint, its gooseneck above the embouchure hole, so the player can move.',
+    rows: [mic('Flute', 'Clip-on condenser microphone', 'clamp')],
+  },
+  {
+    id: 'harmonium-mic',
+    name: 'Harmonium, one microphone',
+    category: 'keys',
+    source: 'Harmonium',
+    assumes: 'One microphone on a low boom, 20 to 30 cm from the reed openings behind the keys, clear of the bellows hand: the player sits on the floor (qawwali parties often sit on a low platform).',
+    rows: [mic('Harmonium', 'Small-diaphragm condenser microphone', 'short-boom')],
+  },
+  {
+    id: 'harmonium-vocal',
+    name: 'Harmonium with the player’s vocal',
+    category: 'keys',
+    source: 'Harmonium',
+    assumes: 'In kirtan and qawwali the lead singer plays the harmonium: one microphone at the reed openings, and the vocal microphone on a low boom for a seated singer.',
+    rows: [mic('Harmonium', 'Small-diaphragm condenser microphone', 'short-boom'), mic('Harmonium vocal', 'Dynamic vocal microphone', 'short-boom')],
+  },
+  {
+    id: 'harmonica-mic',
+    name: 'Harmonica on a vocal-style microphone',
+    category: 'other',
+    source: 'Harmonica',
+    assumes: 'The player cups the microphone with the harmonica. Most harmonica players also sing: add a vocal microphone.',
+    rows: [mic('Harmonica', 'Dynamic vocal microphone', 'straight')],
+  },
+  {
+    id: 'harmonica-amp',
+    name: 'Harmonica through its own amplifier',
+    category: 'other',
+    source: 'Harmonica',
+    assumes: 'The player’s own bullet microphone goes into the player’s amplifier, and the amplifier’s speaker is miked (place an amplifier symbol and name it “Harp amp”). The amplifier needs power. Most harmonica players also sing: add a vocal microphone.',
+    rows: [mic('Harmonica amp', 'Dynamic instrument microphone', 'short-boom')],
+  },
+  {
+    id: 'harmonica-di',
+    name: 'Harmonica, line out',
+    category: 'other',
+    source: 'Harmonica',
+    assumes: 'From the player’s harmonica preamp or pedals, often unbalanced: a DI with a high-impedance input. Most harmonica players also sing: add a vocal microphone.',
+    rows: [di('Harmonica DI', 'DI with a high-impedance input')],
   },
 ];
+
+/** The area-microphone packages of a choir, one to six microphones (ids
+ *  choir-one … choir-six; choir-two and choir-three keep the ids they had).
+ *  A choir's own size picks one (stageLinks, from spChoir). */
+function choirPackages(): SpPackage[] {
+  const ids = ['choir-one', 'choir-two', 'choir-three', 'choir-four', 'choir-five', 'choir-six'];
+  const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six'];
+  const label = (n: number, i: number): string => (n === 1 ? 'Choir' : n === 2 ? ['Choir L', 'Choir R'][i]! : n === 3 ? ['Choir L', 'Choir C', 'Choir R'][i]! : `Choir ${i + 1}`);
+  return ids.map((id, k) => {
+    const n = k + 1;
+    return {
+      id,
+      name: n === 1 ? 'Choir, one microphone' : `Choir, ${words[k]!.toLowerCase()} microphones`,
+      category: 'vocals' as const,
+      source: 'Choir',
+      assumes: `${words[k]} small-diaphragm condenser microphone${n === 1 ? '' : 's'} on tall stands in front of the choir${n === 2 ? ', left and right' : n === 3 ? ', left, center and right' : ''}: about one for every 2.5 m of choir width, as few as cover it, because every open microphone adds feedback.`,
+      rows: Array.from({ length: n }, (_, i) => mic(label(n, i), 'Small-diaphragm condenser microphone', 'tall-boom')),
+    };
+  });
+}
 
 /** One DI row. */
 function di(label: string, equipment: string): SpPackageRow {

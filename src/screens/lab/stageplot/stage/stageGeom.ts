@@ -28,8 +28,8 @@
  * Pure: no React, no native modules.
  */
 import { spGridStep, spGroupOf, spStageAspect } from '../../../../features/stageplot/spModel.ts';
-import { spMoveLimits, spShapeBounds, spShapeFacingWords, spShapeGridSegments, spShapeOf } from '../../../../features/stageplot/spShape.ts';
-import { spIsSized, spStageMeters, spSymbol } from '../../../../features/stageplot/spSymbols.ts';
+import { spFrontEdges, spIsShaped, spMoveLimits, spRoundRef, spShapeBounds, spShapeFacingWords, spShapeGridSegments, spShapeOf, spShapeOutline, spWingRects } from '../../../../features/stageplot/spShape.ts';
+import { spIsSized, spObjectSymbol, spStageMeters } from '../../../../features/stageplot/spSymbols.ts';
 import type { SpId, SpObject, SpProject } from '../../../../features/stageplot/spTypes.ts';
 import { overlapArea, type Box } from '../../roomdesign/planLabels.ts';
 
@@ -214,8 +214,9 @@ const ART_SIZE: Partial<Record<SpObject['kind'], { w: number; h: number }>> = {
   'vocal-mic': { w: 0.5, h: 0.74 },
   'mic-stand': { w: 0.5, h: 0.74 },
 };
-export function stageArtSize(kind: SpObject['kind']): { w: number; h: number } {
-  const sym = spSymbol(kind);
+export function stageArtSize(kind: SpObject['kind'], o?: Pick<SpObject, 'choir'>): { w: number; h: number } {
+  // (a choir is drawn for its own number of singers and rows: round 2)
+  const sym = spObjectSymbol({ kind, choir: o?.choir ?? null });
   return ART_SIZE[kind] ?? { w: sym.w, h: sym.h };
 }
 
@@ -235,7 +236,7 @@ export function stageObjectBox(p: SpProject, o: SpObject, T: StageTransform, liv
     const h = live.size?.h ?? o.h ?? 0.1;
     return { id: o.id, cx: c.x, cy: c.y, hw: (w * T.kx) / 2, hh: (h * T.ky) / 2, rot, sized };
   }
-  const size = stageArtSize(o.kind);
+  const size = stageArtSize(o.kind, o);
   const u = stageSymbolScale(p, T);
   return { id: o.id, cx: c.x, cy: c.y, hw: (size.w * u) / 2, hh: (size.h * u) / 2, rot, sized };
 }
@@ -245,6 +246,9 @@ const INSTRUMENT_KINDS: readonly SpObject['kind'][] = [
   // the kinds added for more diverse music (2026-11-13): under the performers,
   // so a cellist is seen on the chair and a drummer at the e-kit
   ...(['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'] as const),
+  // round 2 (2026-11-13). The harmonica is not here: it is the player's
+  // microphone, drawn over the performer like every microphone
+  ...(['marimba', 'timpani', 'flute', 'harmonium'] as const),
 ];
 
 /** The order things are painted in: platforms first (a riser lies UNDER what
@@ -420,7 +424,7 @@ export function stageGridLines(p: SpProject, T: StageTransform, minGap = 9): { x
  *  circle), never closer than `minGap` glass units. '' for a rectangle (its
  *  grid is stageGridLines). */
 export function stageShapeGridPath(p: SpProject, T: StageTransform, minGap = 9): string {
-  if (spShapeOf(p.stage) === 'rect') return '';
+  if (!spIsShaped(p.stage)) return '';
   const step = spGridStep(p);
   const gap = Math.min(step.x * T.kx, step.y * T.ky);
   if (!(gap > 0)) return '';
@@ -460,6 +464,9 @@ export type StageLabelIn = {
   /** The selected object: its name is never left out either, and it stands
    *  clear of the selection frame. */
   selected?: boolean;
+  /** It stands on the stage's floor (spOnStage). With `opts.floor` on a
+   *  shaped stage, its name stands on the floor too. */
+  onStage?: boolean;
 };
 
 export type StageBadgeOut = { text: string; x: number; y: number; w: number; h: number };
@@ -567,10 +574,17 @@ export type StageLabelPlan = {
    *  this size: the screen never says "every performer is named" while one
    *  is (R2-SP1-02). */
   crowded: SpId[];
+  /** Performers whose NAME is left out at this size (`opts.peopleApart`,
+   *  2026-11-13 R2): no place kept it off every other label and inside the
+   *  stage's lines. Never the selected object. The names come back on ZOOM. */
+  peopleOut: SpId[];
 };
 
 /** How far from its symbol a label may stand, nearest first (glass units). */
 const LABEL_STEPS: readonly number[] = [0, 5, 11, 18, 26, 35];
+/** Farther still, for a performer's name with no place nearer (it has a
+ *  leader): only with `peopleApart` (2026-11-13 R2). */
+const LABEL_STEPS_FAR: readonly number[] = [45, 56, 68];
 /** A label this close to its symbol stands AGAINST it: no leader is drawn
  *  (stageLabelLeader's `near`), and it is read with the symbol it touches. */
 const LABEL_AGAINST = 8;
@@ -580,6 +594,147 @@ const LABEL_AGAINST = 8;
  *  Marisol beside Wedge 9's code, bug test S2-03). Other labels keep the
  *  usual 1 (2 apart). */
 const LABEL_APART_BARE = 4;
+/** With `peopleApart`, a performer's name and any other label keep this apart
+ *  (each box grown by it: 8 units). The `crowded` list counts closer than 4
+ *  as touching; the names' dark halos (3.2 units) still met at 4 on a phone
+ *  ("Luisito" over "Yolanda" at 375 wide), so a performer's name keeps 8. */
+const LABEL_PEOPLE_APART = 4;
+
+/* ── names stay inside the stage (owner 2026-11-13, "build them all") ───── */
+
+/** A line of the DRAWN stage no name may lie across: its outline, the bright
+ *  lip the audience sees, a thrust's walls, a wing's dashed edge. On the
+ *  glass, with half its drawn thickness. */
+export type StageFloorLine = { x1: number; y1: number; x2: number; y2: number; half: number };
+export type StageFloor = {
+  lines: StageFloorLine[];
+  /** The rim of a round stage. */
+  ring: { cx: number; cy: number; r: number; half: number } | null;
+  /** A shaped stage's floor (inside its outline, a wing, the circle): an
+   *  on-stage object's name stands on it. null on a rectangle, where the
+   *  strip round the deck is open glass and a name may stand in it whole. */
+  floorAt: ((x: number, y: number) => boolean) | null;
+};
+/** Air kept between a name and a line of the stage (glass units). */
+export const STAGE_LINE_AIR = 1.5;
+
+/** The lines of the stage as StagePlanView draws them (Deck, ShapeDeck), on
+ *  the glass. */
+export function stageFloorOf(p: SpProject, T: StageTransform): StageFloor {
+  const g = (x: number, y: number): Pt => T.toGlass({ x, y });
+  const lines: StageFloorLine[] = [];
+  const seg = (a: Pt, b: Pt, half: number) => lines.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, half });
+  if (!spIsShaped(p.stage)) {
+    // the Deck: a 1-unit outline, and the lip from 1 unit inside the front
+    // edge to 3.5 units past it
+    const a = g(0, 0);
+    const b = g(1, 1);
+    seg(a, { x: b.x, y: a.y }, 0.5);
+    seg({ x: b.x, y: a.y }, b, 0.5);
+    seg({ x: a.x, y: b.y }, a, 0.5);
+    seg({ x: a.x, y: b.y + 1.25 }, { x: b.x, y: b.y + 1.25 }, 2.25);
+    return { lines, ring: null, floorAt: null };
+  }
+  const ol = spShapeOutline(p.stage);
+  const poly: Pt[] = [];
+  let ring: StageFloor['ring'] = null;
+  if (ol.t === 'circle') {
+    const c = g(ol.cx, ol.cy);
+    // (ShapeDeck: the lip is a 3.6-unit stroke on the rim)
+    ring = { cx: c.x, cy: c.y, r: ol.r * T.kx, half: 1.8 };
+  } else {
+    for (let n = 0; n + 1 < ol.pts.length; n += 2) poly.push(g(ol.pts[n], ol.pts[n + 1]));
+    poly.forEach((a, k) => seg(a, poly[(k + 1) % poly.length], 0.5));
+  }
+  // the front edges: a 4-unit lip
+  for (const [x1, y1, x2, y2] of spFrontEdges(p.stage).lines) seg(g(x1, y1), g(x2, y2), 2);
+  const wings = spWingRects(p.stage).map((w) => ({ a: g(w.r.x0, w.r.y0), b: g(w.r.x1, w.r.y1) }));
+  for (const { a, b } of wings) {
+    seg(a, { x: b.x, y: a.y }, 0.5);
+    seg({ x: b.x, y: a.y }, b, 0.5);
+    seg(b, { x: a.x, y: b.y }, 0.5);
+    seg({ x: a.x, y: b.y }, a, 0.5);
+  }
+  const floorAt = (x: number, y: number): boolean => {
+    if (ring) return Math.hypot(x - ring.cx, y - ring.cy) <= ring.r;
+    if (wings.some(({ a, b }) => x >= a.x && x <= b.x && y >= a.y && y <= b.y)) return true;
+    let inPoly = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i, i += 1) {
+      const pa = poly[i];
+      const pb = poly[j];
+      if (pa.y > y !== pb.y > y && x < ((pb.x - pa.x) * (y - pa.y)) / (pb.y - pa.y) + pa.x) inPoly = !inPoly;
+    }
+    return inPoly;
+  };
+  return { lines, ring, floorAt };
+}
+
+/** Does a box (grown by `air` and the line's own half thickness) lie across
+ *  a line of the stage? */
+export function stageCrossesFloor(b: Box, f: StageFloor, air: number = STAGE_LINE_AIR): boolean {
+  for (const l of f.lines) {
+    const e = air + l.half;
+    const q: Box = { x0: b.x0 - e, y0: b.y0 - e, x1: b.x1 + e, y1: b.y1 + e };
+    // Liang–Barsky: does the segment enter the box?
+    let t0 = 0;
+    let t1 = 1;
+    const dx = l.x2 - l.x1;
+    const dy = l.y2 - l.y1;
+    let hit = true;
+    for (const [u, v] of [[-dx, l.x1 - q.x0], [dx, q.x1 - l.x1], [-dy, l.y1 - q.y0], [dy, q.y1 - l.y1]] as [number, number][]) {
+      if (Math.abs(u) < 1e-12) {
+        if (v < 0) hit = false;
+      } else {
+        const t = v / u;
+        if (u < 0) t0 = Math.max(t0, t);
+        else t1 = Math.min(t1, t);
+      }
+      if (!hit || t0 > t1) {
+        hit = false;
+        break;
+      }
+    }
+    if (hit) return true;
+  }
+  const r = f.ring;
+  if (r) {
+    const e = air + r.half;
+    const q: Box = { x0: b.x0 - e, y0: b.y0 - e, x1: b.x1 + e, y1: b.y1 + e };
+    const near = Math.hypot(Math.max(0, q.x0 - r.cx, r.cx - q.x1), Math.max(0, q.y0 - r.cy, r.cy - q.y1));
+    const far = Math.hypot(Math.max(Math.abs(q.x0 - r.cx), Math.abs(q.x1 - r.cx)), Math.max(Math.abs(q.y0 - r.cy), Math.abs(q.y1 - r.cy)));
+    if (near <= r.r && r.r <= far) return true;
+  }
+  return false;
+}
+
+export type StageLabelOpts = { numbersClear?: boolean; floor?: StageFloor; peopleApart?: boolean };
+
+/** What the Stage screen asks of its names, on EVERY plot (owner 2026-11-13,
+ *  "build them all — names stay inside the stage"): numbers that have no
+ *  clear place are left out and counted, no label lies across a line of the
+ *  stage, and a performer's name never touches another label. */
+export function stageScreenLabelOpts(p: SpProject, T: StageTransform): StageLabelOpts {
+  return { numbersClear: true, floor: stageFloorOf(p, T), peopleApart: true };
+}
+
+/* ── the round's frame words on the screen ──────────────────────────────── */
+
+/** The size of the direction words in the frame (glass units), and their
+ *  letter spacing. */
+export const STAGE_DIR_FS = 10;
+export const STAGE_DIR_SPACING = 1.4;
+/** How wide a frame word is drawn (an upper bound: STAGE_CHAR_W per letter
+ *  plus the letter spacing). */
+export const stageFrameWordW = (text: string, fs: number = STAGE_DIR_FS, spacing: number = STAGE_DIR_SPACING): number => text.length * fs * STAGE_CHAR_W + Math.max(0, text.length - 1) * spacing;
+/** IN THE ROUND every side of the drawing is audience (2026-11-13 R2: the
+ *  packet says "(AUDIENCE)" on all four sides). The screen's side bands are
+ *  too short on a phone for "STAGE RIGHT (AUDIENCE)", so the top band says it
+ *  once for all four: "FAR SIDE · AUDIENCE ON ALL SIDES" (the audience words
+ *  in the audience color), the bottom names the reference side, and the
+ *  side bands keep STAGE RIGHT and STAGE LEFT. */
+export function stageRoundFrameWords(stage: SpProject['stage']): { far: string; all: string; near: string } {
+  return { far: 'FAR SIDE · ', all: 'AUDIENCE ON ALL SIDES', near: `${spRoundRef(stage).toUpperCase()} SIDE` };
+}
 
 type Spot = { x0: number; y0: number; box: Box };
 
@@ -628,8 +783,22 @@ type Spot = { x0: number; y0: number; box: Box };
  * `keepOut`: more boxes no label may sit on. `opts.numbersClear` (a shaped
  * stage): numbers printed on their own symbol as the last resort never cover
  * another label either; they are left out and counted instead.
+ *
+ * NAMES STAY INSIDE THE STAGE (owner 2026-11-13, "build them all"; the
+ * Stage screen asks for this on every plot, a rectangle too, through
+ * stageScreenLabelOpts). `opts.floor`: no name, number or mix code lies
+ * across a line of the drawn stage (its outline, its bright front lip, a
+ * thrust's walls, a wing's dashed edge, a round stage's rim), and on a
+ * shaped stage an on-stage object's name stands on the floor. Equipment
+ * whose numbers have no such place has them left out and counted
+ * (`numbersOut`). `opts.peopleApart`: a performer's name never touches
+ * another label (the "crowded" distance). The selected object is placed
+ * first. A performer whose name has no place that keeps both rules has the
+ * name left out and counted (`peopleOut`); it comes back on ZOOM IN. The
+ * selected object always keeps its name. With neither option, the plan is
+ * exactly what it always was.
  */
-export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = [], opts: { numbersClear?: boolean } = {}): StageLabelPlan {
+export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = [], opts: StageLabelOpts = {}): StageLabelPlan {
   const glass: Box = { x0: STAGE_FRAME.side, y0: STAGE_FRAME.top, x1: Math.max(STAGE_FRAME.side + 1, gw - STAGE_FRAME.side), y1: Math.max(STAGE_FRAME.top + 1, gh - STAGE_FRAME.bottom) };
   const shown = items.filter((it) => shared(stageBoxBounds(it.box), glass, 0) > 0);
   // every symbol's art (a platform is not art a name must keep off: a name
@@ -640,8 +809,17 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
   const dropped: SpId[] = [];
   const bare: SpId[] = [];
   const numbersOut: SpId[] = [];
+  const peopleOut: SpId[] = [];
+  // names stay inside the stage (2026-11-13 R2): see above
+  const floor = opts.floor ?? null;
+  const across = (b: Box): boolean => !!floor && stageCrossesFloor(b, floor);
+  const offFloor = (it: StageLabelIn, b: Box): boolean => !!floor?.floorAt && it.onStage === true && !floor.floorAt((b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2);
+  const namedAlways = new Set(items.filter((i) => i.person || !!i.selected).map((i) => i.id));
+  /** The air two labels keep: a performer's name and any other label keep
+   *  the "crowded" distance apart when `peopleApart`. */
+  const apartFrom = (it: StageLabelIn, otherId: SpId, base: number): number => (opts.peopleApart && (namedAlways.has(it.id) || namedAlways.has(otherId)) ? Math.max(base, LABEL_PEOPLE_APART) : base);
 
-  const hold = (x0: number, y0: number, m: Block): Spot => {
+  const hold =(x0: number, y0: number, m: Block): Spot => {
     // a place that hangs off the picture is first slid back onto it
     const x = clamp(x0, glass.x0 + 1, Math.max(glass.x0 + 1, glass.x1 - m.w - 1));
     const y = clamp(y0, glass.y0 + 1, Math.max(glass.y0 + 1, glass.y1 - m.h - 1));
@@ -649,7 +827,7 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
   };
 
   /** Every place a block of this size may be offered, nearest first. */
-  const spotsFor = (it: StageLabelIn, m: Block): Spot[] => {
+  const spotsFor = (it: StageLabelIn, m: Block, steps: readonly number[] = LABEL_STEPS): Spot[] => {
     const bb = stageBoxBounds(it.box, it.selected ? 5 : 0);
     const cx = it.box.cx;
     const cy = it.box.cy;
@@ -662,7 +840,7 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
       for (const y0 of [own.y0 + g, own.y1 - m.h - g, cy - m.h / 2]) for (const x0 of [own.x0 + g, own.x1 - m.w - g, cx - m.w / 2]) raw.push([x0, y0]);
       for (const x0 of [cx - m.w / 2, own.x0, own.x1 - m.w]) raw.push([x0, bb.y1 + g]);
     } else {
-      for (const d of LABEL_STEPS) {
+      for (const d of steps) {
         const g = 3 + d;
         const under = bb.y1 + g;
         const over = bb.y0 - m.h - g;
@@ -683,7 +861,8 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
   const faults = (it: StageLabelIn, box: Box, nearest = true, apart = false): number => {
     let cost = 0;
     for (const k of keepOut) cost += shared(box, k, 0) * 6;
-    for (const pl of placed) if (pl.id !== it.id) cost += shared(box, pl.box, apart || bare.includes(pl.id) ? LABEL_APART_BARE : 1) * 6;
+    for (const pl of placed) if (pl.id !== it.id) cost += shared(box, pl.box, apartFrom(it, pl.id, apart || bare.includes(pl.id) ? LABEL_APART_BARE : 1)) * 6;
+    if (across(box) || offFloor(it, box)) cost += 40;
     for (const l of leaders) cost += shared(box, l, 0) * 2;
     const own = art.find((a) => a.id === it.id);
     const ownGap = own ? centerGap(box, own.box) : 0;
@@ -753,7 +932,33 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     const b = stageBoxBounds(it.box);
     return shared(b, glass, 0) >= (b.x1 - b.x0) * (b.y1 - b.y0) * 0.3;
   };
-  const order = [...shown.filter(keeps), ...shown.filter((i) => !keeps(i))].filter((it) => (it.text.trim() || it.badges.length) && inView(it));
+  // (with `peopleApart` the selected object is placed first: it always keeps
+  // its name, so it takes its place before anyone it might crowd)
+  const firsts = opts.peopleApart ? [...shown.filter((i) => i.selected), ...shown.filter((i) => keeps(i) && !i.selected)] : shown.filter(keeps);
+  const order = [...firsts, ...shown.filter((i) => !keeps(i))].filter((it) => (it.text.trim() || it.badges.length) && inView(it));
+  /** A place that breaks a hard rule: on another label (or too near a
+   *  performer's), across a line of the stage, or off its floor. */
+  const inTheWay = (it: StageLabelIn, box: Box): boolean => keepOut.some((k) => shared(box, k, 0) > 0) || across(box) || placed.some((pl) => pl.id !== it.id && shared(box, pl.box, LABEL_PEOPLE_APART) > 0);
+  const breaksHard = (it: StageLabelIn, box: Box): boolean => inTheWay(it, box) || offFloor(it, box);
+  /** A performer's (or the selection's) last place: the one that breaks the
+   *  rules least. With `peopleApart`, only among the places that keep the
+   *  hard rules (it may still stand over a neighbor's art, as it always
+   *  could), then farther out with a leader, then off its floor (beside a
+   *  thrust, in a round stage's corner), never across a line or touching
+   *  another label; none = a performer's name is left out. The selected
+   *  object's name never is (it is placed first): with no such place it
+   *  takes the least bad one. */
+  const lastPlace = (it: StageLabelIn, m: Block, spots: readonly Spot[]): Spot | null => {
+    if (!opts.peopleApart) return leastBad(it, spots);
+    const ok = spots.filter((sp) => !breaksHard(it, sp.box));
+    if (ok.length) return leastBad(it, ok);
+    const farSpots = spotsFor(it, m, LABEL_STEPS_FAR);
+    const far = farSpots.filter((sp) => !breaksHard(it, sp.box));
+    if (far.length) return leastBad(it, far);
+    const open = [...spots, ...farSpots].filter((sp) => !inTheWay(it, sp.box));
+    if (open.length) return leastBad(it, open);
+    return it.selected ? leastBad(it, spots) : null;
+  };
   /** The places that stand against the symbol itself (a platform's places
    *  are all its own). */
   const against = (it: StageLabelIn, spots: readonly Spot[]): Spot[] => {
@@ -783,9 +988,18 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
           put(it, full, far, it.badges);
           continue;
         }
+        const sp = alone ?? first(it, nameSpots, false) ?? lastPlace(it, nameOnly, nameSpots);
+        if (!sp) {
+          peopleOut.push(it.id);
+          continue;
+        }
         bare.push(it.id);
-        put(it, nameOnly, alone ?? first(it, nameSpots, false) ?? leastBad(it, nameSpots), []);
-      } else put(it, full, first(it, spots, false) ?? leastBad(it, spots), it.badges);
+        put(it, nameOnly, sp, []);
+      } else {
+        const sp = first(it, spots, false) ?? lastPlace(it, full, spots);
+        if (sp) put(it, full, sp, it.badges);
+        else peopleOut.push(it.id);
+      }
       continue;
     }
     // equipment: the NAME goes, the numbers stay
@@ -795,12 +1009,13 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     const numSpots = spotsFor(it, nums);
     // …beside the symbol when a place keeps the rules, otherwise ON it
     const onIt = hold(it.box.cx - nums.w / 2, it.box.cy - nums.h / 2, nums);
-    const offArt = !art.some((a) => a.id !== it.id && shared(onIt.box, a.box, 0) > 0);
+    // (never across a line of the stage: `opts.floor`)
+    const offArt = !art.some((a) => a.id !== it.id && shared(onIt.box, a.box, 0) > 0) && !across(onIt.box);
     // on its own symbol, clear of every label and well clear of a name shown
     // alone (S2-03); then any place that keeps the hard rules; then on its
     // own symbol touching nothing; only then the least bad place
-    const onItApart = offArt && !placed.some((pl) => shared(onIt.box, pl.box, bare.includes(pl.id) ? LABEL_APART_BARE : 0) > 0);
-    const onItClear = offArt && !placed.some((pl) => shared(onIt.box, pl.box, 0) > 0);
+    const onItApart = offArt && !placed.some((pl) => shared(onIt.box, pl.box, apartFrom(it, pl.id, bare.includes(pl.id) ? LABEL_APART_BARE : 0)) > 0);
+    const onItClear = offArt && !placed.some((pl) => shared(onIt.box, pl.box, apartFrom(it, pl.id, 0)) > 0);
     const spot = first(it, numSpots) ?? first(it, against(it, numSpots), false) ?? (onItApart ? onIt : (first(it, numSpots, false) ?? (onItClear ? onIt : null)));
     if (spot) {
       put(it, nums, spot, it.badges);
@@ -815,7 +1030,7 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     // printed "12" on Wedge 2's "M2" and "14" on the headphone amplifier's
     // "M4"). They come back as the user zooms in.
     const people = new Set(order.filter(keeps).map((x) => x.id));
-    if (!opts.numbersClear && !placed.some((pl) => people.has(pl.id) && shared(onIt.box, pl.box, 0) > 0)) put(it, nums, onIt, it.badges);
+    if (!opts.numbersClear && !placed.some((pl) => people.has(pl.id) && shared(onIt.box, pl.box, 0) > 0) && !across(onIt.box)) put(it, nums, onIt, it.badges);
     else numbersOut.push(it.id);
   }
   const labels = items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x);
@@ -823,7 +1038,7 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
   // (closer than 4 units counts: the drawn letters reach a little past the
   // measured box, and two names that close read as touching on a phone)
   const crowded = labels.filter((l) => keepIds.has(l.id) && labels.some((o) => o.id !== l.id && shared(l.box, o.box, 2) > 0)).map((l) => l.id);
-  return { labels, dropped, bare, numbersOut, crowded };
+  return { labels, dropped, bare, numbersOut, crowded, peopleOut };
 }
 
 /** The labels alone (see stageLabelPlan). */

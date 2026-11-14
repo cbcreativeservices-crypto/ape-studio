@@ -35,8 +35,8 @@
  * Pure: no React, no native modules. US spelling.
  */
 import { SP_DELIVERY_WORD, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_MIX_INSTRUCTIONS, SP_NEED_WORD, SP_PROVIDER_WORD, SP_SUPPLIER_WORD, SP_VENUE_FEED_WORD } from '../../../../features/stageplot/spCatalog.ts';
-import { spAllInputsInOrder, spBadge, spDeviceCountWord, spMixChannels, spMonitorTotals, type SpBySupplier, type SpMixTotals, type SpMonitorTotals } from '../../../../features/stageplot/spDerive.ts';
-import { spAddDevice, spAddMix, spLocationWord } from '../../../../features/stageplot/spModel.ts';
+import { spAllInputsInOrder, spBadge, spDeviceCountWord, spMixChannels, spMonitorTotals, spSocketRuns, type SpBySupplier, type SpMixTotals, type SpMonitorTotals } from '../../../../features/stageplot/spDerive.ts';
+import { spAddDevice, spAddMix, spBox, spBoxName, spLocationWord, spMixWantsReturn, spReturnBoxes, spReturnRange, spReturnWords } from '../../../../features/stageplot/spModel.ts';
 import { spOwnClashes } from '../../../../features/stageplot/spReview.ts';
 import type {
   SpDelivery,
@@ -732,3 +732,96 @@ export const spmUnmonitored = (p: SpProject): SpPerformer[] => p.performers.filt
 
 /** Performers the band said need no monitor, and who are on no mix. */
 export const spmNoMonitorByChoice = (p: SpProject): SpPerformer[] => p.performers.filter((pf) => pf.noMonitor === true && !hasMonitor(p, pf.id));
+
+/* ── stage box returns (2026-11-13, round 2) ────────────────────────────── */
+
+/** The choice in a mix's editor that means "from the console itself". */
+export const SPM_FROM_CONSOLE = '__console__';
+
+/** What a return is, for the help popup (the student's voice). */
+export const SPM_RETURNS_HELP =
+  'A return is an output on a stage box. It brings a signal from the console back to the stage. A wedge mix uses one return: a cable runs from the return to the wedge, or to the amplifier that drives it. A stereo mix uses two returns side by side, such as 1 and 2. ' +
+  'A mix your band makes on its own mixer does not use the venue’s returns. Your choice of return is a suggestion: on the venue’s own boxes, the venue decides which return each mix uses.';
+
+/** In-ear mixes and returns, for their own help popup. */
+export const SPM_IEM_RETURN_HELP =
+  'An in-ear mix goes to its transmitter, not to the performer. Where a monitor console stands beside the stage, the transmitter usually sits with it and is cabled straight from that console: choose “From the console”. Where one console at the back of the room makes every mix, the transmitter rack at the side of the stage is fed from a stage box return, like a wedge.';
+
+/** The hint under the return choice. */
+export const SPM_RETURN_HINT = 'The stage box return that brings this mix back to the stage. A stereo mix uses two returns side by side. From the console: cabled straight from a console beside the stage, not through a stage box.';
+
+/** True when the Monitors area shows returns: a stage box has returns. */
+export const spmShowsReturns = (p: SpProject): boolean => spReturnBoxes(p).length > 0;
+
+/** "Box return: SB1 · return 3" for a mix card ('' when no box has returns
+ *  and the mix has none). */
+export function spmReturnLine(p: SpProject, m: SpMix): string {
+  const words = spReturnWords(p, m);
+  if (!spmShowsReturns(p) && !words) return '';
+  if (words) return `Stage box return: ${words}`;
+  return spMixWantsReturn(m) ? 'Stage box return: none yet. Choose one in EDIT MIX, or tap AUTO-ASSIGN RETURNS.' : 'Stage box return: not needed (your band makes this mix itself)';
+}
+
+/** The lowest run of `n` unused returns on a box (`except`: a mix whose
+ *  own returns count as unused), or null. */
+export function spmFreeReturn(p: SpProject, boxId: SpId, n: number, except?: SpId): number | null {
+  const b = spBox(p, boxId);
+  if (!b) return null;
+  const used = new Set<number>();
+  for (const m of p.mixes) if (m.id !== except && m.ret?.boxId === boxId) for (const r of spReturnRange(m)) used.add(r);
+  // a stereo pair starts on an odd return (1–2, 3–4) when it can
+  for (const odd of n === 2 ? [true, false] : [false]) {
+    for (let s = 1; s + n - 1 <= (b.returns ?? 0); s++) {
+      if (odd && s % 2 === 0) continue;
+      let ok = true;
+      for (let j = 0; j < n; j++) if (used.has(s + j)) ok = false;
+      if (ok) return s;
+    }
+  }
+  return null;
+}
+
+/** The other mixes on a return this mix takes. */
+export function spmSameReturn(p: SpProject, mixId: SpId): SpMix[] {
+  const me = p.mixes.find((m) => m.id === mixId);
+  if (!me?.ret) return [];
+  const mine = spReturnRange(me);
+  const at = me.ret.boxId;
+  return p.mixes.filter((m) => m.id !== mixId && m.ret?.boxId === at && spReturnRange(m).some((r) => mine.includes(r)));
+}
+
+/** What sits on each return of a box: "3–4 · M3 Drums, in-ear (stereo)",
+ *  "Not used yet: 6–8", and a mix on a return the box does not have. */
+export function spmBoxReturnLines(p: SpProject, boxId: SpId): string[] {
+  const b = spBox(p, boxId);
+  if (!b) return [];
+  const n = b.returns ?? 0;
+  const out: string[] = [];
+  const taken = new Set<number>();
+  const on = p.mixes.filter((m) => m.ret?.boxId === boxId).sort((x, y) => (x.ret?.ret ?? 0) - (y.ret?.ret ?? 0));
+  for (const m of on) {
+    const r = spReturnRange(m);
+    for (const x of r) taken.add(x);
+    const past = r.some((x) => x > n);
+    const shared = on.some((o) => o.id !== m.id && spReturnRange(o).some((x) => r.includes(x)));
+    out.push(`${r.length === 2 ? `${r[0]}–${r[1]}` : r[0]} · ${spmMixTitle(m)}${r.length === 2 ? ' (stereo)' : ''}${past ? ` (${spBoxName(b)} has ${n ? `${n} returns` : 'no returns given'})` : ''}${shared ? ' (shares a return with another mix: give each its own)' : ''}`);
+  }
+  const unused: number[] = [];
+  for (let s = 1; s <= n; s++) if (!taken.has(s)) unused.push(s);
+  if (unused.length) out.push(`Not used yet: ${spSocketRuns(unused)}`);
+  return out;
+}
+
+/** What AUTO-ASSIGN RETURNS did, in words. */
+export function spmAutoReturnSaid(r: { placed: number; left: number; iem: number }): string {
+  return [
+    `${r.placed === 1 ? '1 mix has' : `${r.placed} mixes have`} a return chosen by AUTO-ASSIGN, on the box nearest their devices.`,
+    r.left ? `${r.left === 1 ? '1 mix still has' : `${r.left} mixes still have`} no return: the boxes do not have enough returns. Set a mix to come from the console, or, if a box has more returns than you typed, correct its number.` : '',
+    r.iem
+      ? `${r.iem === 1 ? '1 in-ear mix was' : `${r.iem} in-ear mixes were`} left for you: its transmitter is not drawn on the stage. A transmitter usually sits with a monitor console or in a rack at the side of the stage. Choose “From the console”, or the return of the box nearest the transmitter.`
+      : '',
+    'UNDO puts every return back.',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}

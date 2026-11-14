@@ -40,11 +40,11 @@ import {
   SP_SUPPLIER_WORD,
   SP_VENUE_FEED_WORD,
 } from './spCatalog.ts';
-import { spAllInputsInOrder, spBadge, spBoxSizeWords, spBoxUse, spBoxUseWords, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
+import { spAllInputsInOrder, spBadge, spBoxMoreWords, spBoxSizeWords, spBoxUse, spBoxUseWords, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
 import type { SpDoc, SpDocBlock, SpDocColumn, SpDocDeck, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
-import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spObjectOfInput, spOnStage, spPerformer } from './spModel.ts';
+import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spMixWantsReturn, spObjectOfInput, spOnStage, spPerformer, spReturnBoxes, spReturnWords } from './spModel.ts';
 import { spPdfEncode, spPdfWidth } from './spPdfFonts.ts';
-import { spFrontEdges, spIsCircle, spRoundRef, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
+import { spFrontEdges, spHasWings, spIsCircle, spIsShaped, spRoundRef, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
 import { spReview, type SpIssue } from './spReview.ts';
 import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
 import type { SpDeviceType, SpExportOptions, SpId, SpInput, SpMix, SpMixNeed, SpObject, SpPacketKind, SpProject, SpSnapshot } from './spTypes.ts';
@@ -605,7 +605,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   // makes (`SP_PLOT_SHAPED_K`), each word as wide as the PDF prints it. Drawn
   // larger, a name's box only shrinks toward its own anchor, so a place that
   // was clear stays clear. A rectangle keeps its rule (its layouts are pinned).
-  const shaped = spShapeOf(p.stage) !== 'rect';
+  const shaped = spIsShaped(p.stage);
   // …and a shaped stage's own lines (its outline, the thrust's walls, the
   // wings' dashed edges) are not inside a plain box, so a name keeps off them
   // too: "Keys" ended on the wing wall with its "9–10" in the wing, and
@@ -958,22 +958,27 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const grid = printedGrid(p, st.width, st.toScale);
   const unit = p.stage.unit;
   const shape = spShapeOf(p.stage);
+  const wings = spHasWings(p.stage);
   let sizeNote = st.toScale ? `${num(p.stage.width ?? 0)} ${unit} × ${num(p.stage.depth ?? 0)} ${unit} (${p.stage.dims})` : 'Not to scale';
   // the round's way of reading the drawing is printed with the size, so it is
   // on the plot's own page (expert review 2026-11-13)
   if (shape === 'round') sizeNote = `${st.toScale ? (spIsCircle(p.stage) ? `${num(p.stage.width ?? 0)} ${unit} across (${p.stage.dims})` : sizeNote) : 'Not to scale'}, in the round: the ${spRoundRef(p.stage)} side is at the bottom`;
-  else if (shape === 'thrust' && !st.toScale) sizeNote = 'Not to scale; a thrust reaches into the audience at the front';
+  else if (shape === 'thrust' && !st.toScale) sizeNote = `Not to scale; a thrust reaches into the audience at the front${wings ? ', with wings at each side' : ''}`;
   else if (st.toScale && shape === 'thrust') sizeNote += spThrustFrac(p.stage).given ? `; thrust ${num(p.stage.thrustWidth ?? 0)} ${unit} × ${num(p.stage.thrustDepth ?? 0)} ${unit}` : '; thrust drawn at a usual size';
-  else if (st.toScale && shape === 'wings') sizeNote += spWingFrac(p.stage).given ? `; wings ${num(p.stage.wingWidth ?? 0)} ${unit} each` : '; wings drawn at a usual width';
+  // wings are an option of a rectangle or a thrust (2026-11-13 R2): "thrust
+  // 10 ft × 8 ft; wings 6 ft each"
+  if (st.toScale && wings) sizeNote += spWingFrac(p.stage).given ? `; wings ${num(p.stage.wingWidth ?? 0)} ${unit} each` : '; wings drawn at a usual width';
   // the shape's own drawing, in the plot's space (absent for a rectangle)
   let deck: SpDocDeck | undefined;
-  if (shape !== 'rect') {
+  if (spIsShaped(p.stage)) {
     const mx = (fx: number): number => fx * st.width + ox;
     const my = (fy: number): number => fy * st.depth + oy;
     const ol = spShapeOutline(p.stage);
     const front = spFrontEdges(p.stage);
     deck = {
-      shape,
+      // ('wings' = a rectangle with wings; a thrust with wings is a 'thrust'
+      // whose `areas` are its wings)
+      shape: shape === 'rect' ? 'wings' : shape,
       outline: ol.t === 'circle' ? { t: 'circle', cx: mx(ol.cx), cy: my(ol.cy), r: ol.r * st.width } : { t: 'poly', pts: ol.pts.map((v, k) => (k % 2 ? my(v) : mx(v))) },
       front: { all: front.all, lines: front.lines.map(([a, b, c, d]) => [mx(a), my(b), mx(c), my(d)] as [number, number, number, number]) },
       areas: spWingRects(p.stage).map((w) => ({ x: mx(w.r.x0), y: my(w.r.y0), w: (w.r.x1 - w.r.x0) * st.width, h: (w.r.y1 - w.r.y0) * st.depth, name: w.side === 'right' ? 'SR WING' : 'SL WING' })),
@@ -982,7 +987,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       origin: { x: ox, y: oy },
       mainW: st.width,
       mainD: st.depth,
-      stage: { shape, thrustWidth: p.stage.thrustWidth ?? null, thrustDepth: p.stage.thrustDepth ?? null, wingWidth: p.stage.wingWidth ?? null, roundForm: p.stage.roundForm === 'square' ? 'square' : 'circle', roundRef: spRoundRef(p.stage), width: p.stage.width, depth: p.stage.depth },
+      stage: { shape, wings, thrustWidth: p.stage.thrustWidth ?? null, thrustDepth: p.stage.thrustDepth ?? null, wingWidth: p.stage.wingWidth ?? null, roundForm: p.stage.roundForm === 'square' ? 'square' : 'circle', roundRef: spRoundRef(p.stage), width: p.stage.width, depth: p.stage.depth },
     };
   }
 
@@ -1005,7 +1010,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
         ? 'Seen from above, with the audience at the bottom: stage right is on the left of this drawing.'
         : 'Seen from above, with the audience at the bottom. Stage right and stage left are the performers’ own right and left, so stage right is on the left of this drawing.',
     );
-    if (shape !== 'rect') legend.push(spShapeWords(p.stage, unit));
+    if (spIsShaped(p.stage)) legend.push(spShapeWords(p.stage, unit));
   }
   if (badges.length) {
     const lines = [brief ? 'A number in a box is an input channel. A code in a rounded box, such as M1, is a monitor mix.' : 'A number in a box is an input channel in the input list. A code in a rounded box, such as M1, is a monitor mix.'];
@@ -1171,7 +1176,8 @@ function inputTable(p: SpProject, patchId: 'house' | 'band', compact: boolean): 
   if (withVenue) columns.push(col('venue', 'Venue channel', 2));
   // the stage box socket each input plugs into: only when the plot has boxes
   const withBox = spBoxes(p).length > 0;
-  if (withBox) columns.splice(1, 0, col('box', 'Box · socket', 1.35));
+  // (round 2: a sub-snake's socket reads "SB2 · 3 (via SB1 · 11)": a wider column then)
+  if (withBox) columns.splice(1, 0, col('box', 'Box · socket', spBoxes(p).some((b) => b.feed) ? 2 : 1.35));
   const docRows: SpDocRow[] = rows.map((r) => {
     const i = r.input;
     const cells: Record<string, string> = {
@@ -1228,8 +1234,16 @@ function mixNote(p: SpProject, m: SpMix): string {
 
 /** The compact packet's monitor plan: ONE table. What a mix is asked to hear
  *  goes on the line under its row, so nothing the band asked for is lost. */
+/** (round 2) A monitor plan's "Box return" column: only when a stage box
+ *  has returns. A mix asked of the house console with none reads "No return
+ *  yet"; a mix the band makes on its own rig needs none. */
+const withReturns = (p: SpProject): boolean => spReturnBoxes(p).length > 0;
+const returnCell = (p: SpProject, m: SpMix): string => (m.fromConsole ? 'From the console, not a stage box' : spReturnWords(p, m) || (spMixWantsReturn(m) ? 'No return yet' : DASH));
+
 function mixTableCompact(p: SpProject): SpDocTable {
   const columns = [col('mix', 'Mix', 2.2), col('who', 'For', 1.8), col('format', 'Format and delivery', 2.9), col('by', 'Who creates it', 2.4), col('devices', 'Devices', 3.3)];
+  const rets = withReturns(p);
+  if (rets) columns.push(col('ret', 'Stage box return', 1.6));
   const rows: SpDocRow[] = p.mixes.map((m) => {
     const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody in particular');
     const devices = p.devices.filter((d) => d.mixId === m.id).map((d) => `${d.label.trim() || SP_DEVICE_WORD[d.type]} (${SP_SUPPLIER_WORD[d.supplier]})`);
@@ -1243,6 +1257,7 @@ function mixTableCompact(p: SpProject): SpDocTable {
         devices: [devices.join('; '), m.outputs.trim() ? `Requested outputs: ${m.outputs.trim()}` : ''].filter(Boolean).join('. '),
       },
     };
+    if (rets) row.cells.ret = returnCell(p, m);
     const note = [m.instructions.length ? `Asked to hear: ${m.instructions.join('; ')}` : '', mixNote(p, m)].filter(Boolean).join(' · ');
     if (note) row.note = note;
     return row;
@@ -1253,6 +1268,13 @@ function mixTableCompact(p: SpProject): SpDocTable {
 function mixTable(p: SpProject): SpDocTable {
   // widths as review 2 measured them on the playback example (percent of the table)
   const columns = [col('mix', 'Mix', 14), col('who', 'For', 10), col('format', 'Format', 8), col('by', 'Who creates it', 30), col('delivery', 'Delivery and devices', 22), col('asks', 'Asked to hear', 16)];
+  const rets = withReturns(p);
+  // (the return column takes its room from the two widest)
+  if (rets) {
+    columns[3].width = 23;
+    columns[4].width = 19;
+    columns.splice(5, 0, col('ret', 'Stage box return', 14));
+  }
   const rows: SpDocRow[] = p.mixes.map((m) => {
     const who = m.recipients.map((id) => spPerformer(p, id)?.name.trim() || UNNAMED).join(', ') || (m.delivery === 'drum-fill' || m.delivery === 'sidefill' ? 'The stage' : 'Nobody in particular');
     const devices = p.devices.filter((d) => d.mixId === m.id).map((d) => `${d.label.trim() || SP_DEVICE_WORD[d.type]} (${SP_SUPPLIER_WORD[d.supplier]})`);
@@ -1275,6 +1297,7 @@ function mixTable(p: SpProject): SpDocTable {
         asks: m.instructions.join('; '),
       },
     };
+    if (rets) row.cells.ret = returnCell(p, m);
     const note = mixNote(p, m);
     if (note) row.note = note;
     return row;
@@ -1522,8 +1545,14 @@ function inputsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact: 
         const where = o ? `, ${lower(spLocationWord(o, p.stage))}` : '';
         const chans = spBadgeRuns(u.plugged.map((x) => spBadge(p, x.input.id)));
         const carries = chans.length ? `: channel${u.plugged.length === 1 ? '' : 's'} ${chans.join(', ')} on ${spBoxUseWords(u)}` : `: ${spBoxUseWords(u)}`;
-        const extra = [by, u.drawn ? '' : 'not placed on the plot yet', u.box.note.trim()].filter(Boolean).join('; ');
-        return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)})${where}${carries}. ${extra.charAt(0).toUpperCase()}${extra.slice(1)}.`;
+        const extra = [by, u.drawn ? '' : 'not placed on the plot yet'].filter(Boolean).join('; ');
+        // the student's own note is its own sentence ("…the band. By the drum riser."),
+        // never glued on after a semicolon with its capital letter
+        const typed = u.box.note.trim();
+        const note = typed ? ` ${typed.charAt(0).toUpperCase()}${typed.slice(1)}${/[.!?]$/.test(typed) ? '' : '.'}` : '';
+        // (round 2) sub-snakes, its returns and its console, only when given
+        const more = spBoxMoreWords(p, u);
+        return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)})${where}${carries}${more.length ? `; ${more.join('; ')}` : ''}. ${extra.charAt(0).toUpperCase()}${extra.slice(1)}.${note}`;
       }),
     });
     blocks.push(para('Box and socket are the band’s suggestion. On the venue’s own stage boxes, the venue’s patch comes first.', 'muted'));
@@ -1595,6 +1624,8 @@ function monitorsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact
   }
 
   blocks.push({ t: 'table', table: compact ? mixTableCompact(p) : mixTable(p) });
+  // (round 2) returns given to mixes are a suggestion, as sockets are
+  if (withReturns(p) && p.mixes.some((x) => x.ret)) blocks.push(para('Stage box returns are the band’s suggestion. On the venue’s own boxes, the venue decides which return each mix uses.', 'muted'));
   if (p.mixes.length) {
     const under = compact ? [] : ['A mono mix is 1 audio channel and a stereo mix is 2.'];
     if (p.mixes.some((x) => Object.keys(x.needs).length)) under.push('“Primary”, “Supporting”, “Not needed” and “Must exclude” are preferences the band gives before the show, not fader values. The engineer builds the real mix at soundcheck.');

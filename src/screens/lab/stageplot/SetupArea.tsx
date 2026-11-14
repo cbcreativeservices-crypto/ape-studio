@@ -42,8 +42,8 @@ import {
 import { spCanMarkReady, spLooksLikePhone } from '../../../features/stageplot/spReview';
 import { spDateWords, spDayFromText, spLooksLikeTime as looksLikeTime, spProjectName, spStageSizeFromText as sizeFromText, useSpProjects } from '../../../features/stageplot/spStore';
 import { SP_TEMPLATES } from '../../../features/stageplot/spTemplates';
-import { SP_ROUND_REF_MAX, SP_SHAPES, SP_SHAPE_HINT, SP_SHAPE_WORD, spIsCircle, spRoundRef, spShapeOf } from '../../../features/stageplot/spShape';
-import type { SpContact, SpPerformer, SpProject, SpStageShape, SpStatus } from '../../../features/stageplot/spTypes';
+import { SP_ROUND_REF_MAX, SP_SHAPES, SP_SHAPE_HINT, SP_SHAPE_WORD, SP_WINGS_HINT, spHasWings, spIsCircle, spRoundRef, spShapeOf, type SpStageForm } from '../../../features/stageplot/spShape';
+import type { SpContact, SpPerformer, SpProject, SpStatus } from '../../../features/stageplot/spTypes';
 import { notify } from '../../../lib/confirm';
 import { cardColumn } from '../../../theme/readingColumn';
 import { colors, fonts } from '../../../theme/tokens';
@@ -83,7 +83,7 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 
 /** The stage's typed sizes: the main stage, a thrust's tongue, a wing. */
 type SizeKey = 'width' | 'depth' | 'thrustWidth' | 'thrustDepth' | 'wingWidth';
-const SHAPE_OPTIONS: readonly { value: SpStageShape; label: string }[] = SP_SHAPES.map((value) => ({ value, label: SP_SHAPE_WORD[value] }));
+const SHAPE_OPTIONS: readonly { value: SpStageForm; label: string }[] = SP_SHAPES.map((value) => ({ value, label: SP_SHAPE_WORD[value] }));
 const ROUND_OPTIONS = [
   { value: 'circle', label: 'A circle' },
   { value: 'square', label: 'A square' },
@@ -221,6 +221,8 @@ export function SetupArea() {
   /** The same for a shape's own sizes (a thrust's tongue, a wing). */
   const partShown = (key: SizeKey): string => sizeRefused[key] ?? (p.stage[key] == null ? '' : String(p.stage[key]));
   const shape = spShapeOf(p.stage);
+  // wings: an option of a rectangle or a thrust (owner 2026-11-13, "build them all")
+  const wings = spHasWings(p.stage);
   const setShape = (patch: Parameters<typeof spSetStageShape>[1]) => ed.apply((q) => spSetStageShape(q, patch));
 
   // RENAMING A PERFORMER RENAMES WHAT WAS NAMED AFTER THEM, in the same edit:
@@ -443,7 +445,7 @@ export function SetupArea() {
 
           <Section title="STAGE SIZE" hint="Optional. Choose the shape, and type the size if the venue told you or you measured it.">
             {/* THE SHAPE (2026-11-13), next to the size: one plain line for each */}
-            <Choice<SpStageShape> label="Shape of the stage" value={shape} options={SHAPE_OPTIONS} onChange={(next) => (next === shape ? undefined : setShape({ shape: next }))} />
+            <Choice<SpStageForm> label="Shape of the stage" value={shape} options={SHAPE_OPTIONS} onChange={(next) => (next === shape ? undefined : setShape({ shape: next }))} />
             <View style={styles.shapeLines}>
               {SP_SHAPES.map((s) => (
                 <Text key={s} style={[styles.quiet, s === shape ? styles.shapeOn : null]}>
@@ -451,6 +453,8 @@ export function SetupArea() {
                 </Text>
               ))}
             </View>
+            {/* WINGS go with a rectangle or a thrust; a round stage has none */}
+            {shape !== 'round' ? <Switch label="Wings at each side" value={wings} onChange={(on) => (on === wings ? undefined : setShape({ wings: on }))} hint={SP_WINGS_HINT} /> : null}
             {shape === 'round' ? (
               <>
                 <Choice label="In the round, the stage is" value={p.stage.roundForm === 'square' ? 'square' : 'circle'} options={ROUND_OPTIONS} onChange={(roundForm) => (roundForm === p.stage.roundForm ? undefined : setShape({ roundForm }))} hint="A circle has one size: its diameter." />
@@ -480,11 +484,11 @@ export function SetupArea() {
                   <TextField label="Thrust depth" value={partShown('thrustDepth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('thrustDepth', t, how)} hint="How far it reaches into the audience." />
                 </>
               ) : null}
-              {shape === 'wings' ? <TextField label="Width of each wing" value={partShown('wingWidth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('wingWidth', t, how)} hint="Offstage, beside the stage." /> : null}
+              {wings ? <TextField label="Width of each wing" value={partShown('wingWidth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('wingWidth', t, how)} hint="How far each wing reaches out from the side of the stage." /> : null}
             </Fields>
             {sizeSaid ? <Note tone="warning">{sizeSaid}</Note> : null}
             {shape === 'thrust' && !(p.stage.thrustWidth && p.stage.thrustDepth && spToScale(p)) ? <Note>Until the stage and the thrust both have their sizes, the thrust is drawn at a usual size.</Note> : null}
-            {shape === 'wings' && !(p.stage.wingWidth && spToScale(p)) ? <Note>Until the stage and the wings both have their sizes, the wings are drawn at a usual width.</Note> : null}
+            {wings && !(p.stage.wingWidth && spToScale(p)) ? <Note>Until the stage and the wings both have their sizes, the wings are drawn at a usual width.</Note> : null}
             <HelpTip
               title="Thrust, in the round, wings: what changes for sound"
               body="On a thrust, the performers stand out in the audience. A wedge at the tip points at the performer and at the people behind them. The main loudspeakers (the mains) may be behind the performer, so the vocal microphone faces them and feeds back sooner: close technique, a tight pickup pattern and lower monitor levels help. In the round there is no back wall and no single front. A wedge fires across the stage at the audience on the other side, so in-ear monitors are much more common, and the backline (the band’s amplifiers and drums) and risers stay low so nobody’s view is blocked. Wings give you room close to the performers and out of sight: for monitor world (where the monitor engineer mixes), the main stage box and equipment racks."

@@ -138,7 +138,24 @@ export type SpStageBox = {
   kind: 'digital' | 'analog' | 'unknown';
   supplier: SpSupplier;
   note: string;
+  /** A SUB-SNAKE (2026-11-13, round 2): this box plugs into sockets
+   *  `first`…`last` of another box (its socket 1 arrives on `first`); null =
+   *  it connects to the console directly (the usual). Never a loop. */
+  feed: SpBoxFeed | null;
+  /** The console a digital box connects to, in the band's words ("Yamaha
+   *  CL5, Dante"); '' = not said. */
+  connectsTo: string;
+  /** The band said: which console it connects to is to be confirmed. */
+  connectsTbc: boolean;
 };
+
+/** Where a sub-snake plugs in: "SB2 → SB1 sockets 9–16". */
+export type SpBoxFeed = { boxId: SpId; first: number; last: number };
+
+/** The stage box return a monitor mix comes back to the stage on: "SB1 ·
+ *  return 3". A stereo mix takes `ret` and the next one. `byHand` = the band
+ *  chose it; AUTO-ASSIGN RETURNS never moves it. */
+export type SpReturnPatch = { boxId: SpId; ret: number; byHand: boolean };
 
 /** An actual DI device: one mono box carries 1 channel, a stereo box 2. */
 export type SpDiDevice = {
@@ -197,6 +214,13 @@ export type SpMix = {
   /** For a rig the band mixes itself: what the venue provides. */
   venueFeed: SpVenueFeed;
   notes: string;
+  /** The stage box return this mix comes back on (2026-11-13, round 2), or
+   *  null (none chosen yet). */
+  ret: SpReturnPatch | null;
+  /** The band said: this mix comes from the console itself, not a stage box
+   *  return (an in-ear transmitter at the monitor console, a wedge cabled
+   *  from it). */
+  fromConsole: boolean;
 };
 
 export type SpDeviceType = 'wedge' | 'iem-tx' | 'iem-pack' | 'hp-amp' | 'drum-fill' | 'sidefill' | 'personal-mixer' | 'custom';
@@ -270,6 +294,12 @@ export type SpObjectKind =
   | 'saxophone'
   | 'trombone'
   | 'choir'
+  // round 2 of the added symbols (owner 2026-11-13, "Yes, build them all")
+  | 'marimba'
+  | 'timpani'
+  | 'flute'
+  | 'harmonium'
+  | 'harmonica'
   | 'mic-stand'
   | 'di'
   | 'wedge'
@@ -313,7 +343,16 @@ export type SpObject = {
   /** True when the user said "this is only a drawing: it needs no input". */
   visualOnly: boolean;
   note: string;
+  /** A choir's size (2026-11-13, round 2): singers and rows. Only a choir
+   *  has it. Absent on a plot saved before: that choir is 11 singers in 3
+   *  rows, the drawing it always had (spMigrate). No schema change: a
+   *  reader that does not know the field keeps it and draws the old choir. */
+  choir?: SpChoir | null;
 };
+
+/** How many singers a choir has (4 to 60) and how many rows (1 to 4, or
+ *  'auto'): spChoir.ts lays it out. */
+export type SpChoir = { singers: number; rows: number | 'auto' };
 
 export type SpContact = {
   name: string;
@@ -327,7 +366,10 @@ export type SpContact = {
 /** The shape of the stage (2026-11-13). Positions stay fractions of the MAIN
  *  stage (width × depth): a thrust's tongue lies past y = 1 (into the
  *  audience), a wing past x = 0 or x = 1. In the round, the stage is the
- *  width × depth square, or the circle inside it (depth = width). */
+ *  width × depth square, or the circle inside it (depth = width).
+ *  'wings' is only ever READ: a plot saved on the morning of 2026-11-13 had
+ *  wings as a shape of its own. It is a rectangle with `wings` on (spMigrate
+ *  rewrites it; spShapeOf and spHasWings read it so either way). */
 export type SpStageShape = 'rect' | 'thrust' | 'round' | 'wings';
 
 export type SpStage = {
@@ -344,6 +386,10 @@ export type SpStage = {
   thrustDepth: number | null;
   /** With wings: the width of each wing, in `unit` (null = not given). */
   wingWidth: number | null;
+  /** Wings at each side, on a rectangle or a thrust (owner 2026-11-13: "build
+   *  them all"). Absent = off. Kept while the stage is in the round, where it
+   *  is not drawn (a round stage has audience on every side, so no wings). */
+  wings?: boolean;
   /** In the round: a circle or a square. */
   roundForm: 'circle' | 'square';
   /** In the round: the name of the side drawn at the bottom (the reference

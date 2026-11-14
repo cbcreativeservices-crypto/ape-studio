@@ -22,7 +22,7 @@
  * Pure. US spelling.
  */
 import { SP_CATEGORY_ORDER, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_EXTRA_KIND_WORD, SP_STAND_WORD, SP_SUPPLIER_WORD } from './spCatalog.ts';
-import { spBoxName, spBoxObject, spBoxes, spPartner, spPatch } from './spModel.ts';
+import { spBox, spBoxFeedWords, spBoxName, spBoxObject, spBoxes, spPartner, spPatch, spReturnRange } from './spModel.ts';
 import type { SpCapture, SpCategory, SpDeviceType, SpId, SpInput, SpMix, SpMixProvider, SpPatchId, SpProject, SpStageBox, SpStand, SpSupplier } from './spTypes.ts';
 
 export type SpBySupplier = Record<SpSupplier, number>;
@@ -278,7 +278,7 @@ export type SpOpenItem = {
   field: SpOpenField;
 };
 /** The fields an open question is answered in. */
-export type SpOpenField = 'supplier' | 'standSupplier' | 'phantom' | 'audience' | 'di' | 'destination' | 'kind' | 'provider' | 'venueFeed' | 'outputs';
+export type SpOpenField = 'supplier' | 'standSupplier' | 'phantom' | 'audience' | 'di' | 'destination' | 'kind' | 'provider' | 'venueFeed' | 'outputs' | 'connectsTo';
 
 /** Every "to be confirmed" still open, each with the row it is about. */
 export function spOpenItems(p: SpProject): SpOpenItem[] {
@@ -331,7 +331,11 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
   }
   for (const d of p.devices) if (d.supplier === 'tbc') open.push({ text: `${d.label || SP_DEVICE_WORD[d.type]}: who supplies it`, kind: 'device', id: d.id, field: 'supplier' });
   for (const e of p.extras) if (e.supplier === 'tbc') open.push({ text: `${e.label.trim() || SP_EXTRA_KIND_WORD[e.kind]}: who supplies it`, kind: 'extra', id: e.id, field: 'supplier' });
-  for (const b of spBoxes(p)) if (b.supplier === 'tbc') open.push({ text: `Stage box ${spBoxName(b)}: who supplies it`, kind: 'box', id: b.id, field: 'supplier' });
+  for (const b of spBoxes(p)) {
+    // (round 2) the band said which console a box connects to is to be confirmed
+    const what = [b.supplier === 'tbc' ? 'who supplies it' : '', b.connectsTbc && !b.connectsTo.trim() ? 'which console it connects to' : ''].filter(Boolean);
+    if (what.length) open.push({ text: `Stage box ${spBoxName(b)}: ${what.join('; ')}`, kind: 'box', id: b.id, field: b.supplier === 'tbc' ? 'supplier' : 'connectsTo' });
+  }
   return open;
 }
 
@@ -350,6 +354,21 @@ export type SpBoxUse = {
   doubled: { socket: number; inputs: SpInput[] }[];
   /** It has a drawing on the stage. */
   drawn: boolean;
+  /** (round 2) Sub-snakes plugged into it, with the sockets each takes. */
+  fedBy: { box: SpStageBox; first: number; last: number }[];
+  /** Sockets of it that two things want: an input and a sub-snake, or two
+   *  sub-snakes (each clash named once, on the later sub-snake). */
+  feedClash: { sub: SpStageBox; sockets: number[]; with: string[] }[];
+  /** As a sub-snake: the sockets of its feed past its main box's size. */
+  feedPast: number[];
+  /** As a sub-snake: the sockets in use that its feed does not carry. */
+  feedShort: number[];
+  /** Monitor mixes on its returns, return by return. */
+  returnsUsed: { ret: number; mix: SpMix }[];
+  /** Returns given to two mixes or more. */
+  returnsDoubled: { ret: number; mixes: SpMix[] }[];
+  /** Mixes on a return the box does not have. */
+  returnsOver: { ret: number; mix: SpMix }[];
 };
 
 /** What each stage box carries: sockets used and free, and what does not
@@ -361,14 +380,60 @@ export function spBoxUse(p: SpProject): SpBoxUse[] {
     const bySocket = new Map<number, SpInput[]>();
     for (const x of plugged) bySocket.set(x.socket, [...(bySocket.get(x.socket) ?? []), x.input]);
     const used = [...bySocket.keys()].filter((s) => s <= box.inputs).sort((a, b) => a - b);
+    // (round 2) sub-snakes plugged into it, and what clashes with them
+    const fedBy = spBoxes(p)
+      .filter((b) => b.id !== box.id && b.feed?.boxId === box.id)
+      .map((b) => ({ box: b, first: (b.feed as { first: number }).first, last: (b.feed as { last: number }).last }))
+      .sort((a, b) => a.first - b.first);
+    const taken = new Set(used);
+    for (const f of fedBy) for (let s = f.first; s <= Math.min(f.last, box.inputs); s++) taken.add(s);
+    const feedClash: SpBoxUse['feedClash'] = [];
+    fedBy.forEach((f, k) => {
+      const sockets: number[] = [];
+      const withWhat: string[] = [];
+      for (let s = f.first; s <= f.last; s++) {
+        for (const i of bySocket.get(s) ?? []) {
+          if (!sockets.includes(s)) sockets.push(s);
+          if (!withWhat.includes(i.label)) withWhat.push(i.label);
+        }
+        for (const g of fedBy.slice(0, k)) {
+          if (s < g.first || s > g.last) continue;
+          if (!sockets.includes(s)) sockets.push(s);
+          if (!withWhat.includes(spBoxName(g.box))) withWhat.push(spBoxName(g.box));
+        }
+      }
+      if (sockets.length) feedClash.push({ sub: f.box, sockets, with: withWhat });
+    });
+    const main = box.feed ? spBox(p, box.feed.boxId) : undefined;
+    const feedPast: number[] = [];
+    const feedShort: number[] = [];
+    if (box.feed && main) {
+      for (let s = box.feed.first; s <= box.feed.last; s++) if (s > main.inputs) feedPast.push(s);
+      const carries = box.feed.last - box.feed.first + 1;
+      for (const s of used) if (s > carries) feedShort.push(s);
+    }
+    // returns: what each monitor mix comes back on
+    const returnsUsed: SpBoxUse['returnsUsed'] = [];
+    for (const m of p.mixes) if (m.ret?.boxId === box.id) for (const r of spReturnRange(m)) returnsUsed.push({ ret: r, mix: m });
+    returnsUsed.sort((a, b) => a.ret - b.ret);
+    const byRet = new Map<number, SpMix[]>();
+    for (const x of returnsUsed) byRet.set(x.ret, [...(byRet.get(x.ret) ?? []), x.mix]);
     return {
       box,
       plugged,
       used,
-      free: Math.max(0, box.inputs - used.length),
+      // a sub-snake only has the sockets its cable carries (engineer review)
+      free: Math.max(0, (box.feed ? Math.min(box.inputs, box.feed.last - box.feed.first + 1) : box.inputs) - [...taken].filter((s) => !box.feed || s <= box.feed.last - box.feed.first + 1).length),
       over: plugged.filter((x) => x.socket > box.inputs),
       doubled: [...bySocket.entries()].filter(([, list]) => list.length > 1).map(([socket, inputs]) => ({ socket, inputs })),
       drawn: !!spBoxObject(p, box.id),
+      fedBy,
+      feedClash,
+      feedPast,
+      feedShort,
+      returnsUsed,
+      returnsDoubled: [...byRet.entries()].filter(([, list]) => list.length > 1).map(([ret, mixes]) => ({ ret, mixes })),
+      returnsOver: returnsUsed.filter((x) => x.ret > (box.returns ?? 0)),
     };
   });
 }
@@ -396,8 +461,48 @@ export function spBoxSizeWords(b: SpStageBox): string {
 
 /** The patch summary line of one box: "SB1 (16 inputs): sockets 1–12 used,
  *  4 free". */
-export function spBoxLine(u: SpBoxUse): string {
-  return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)}): ${spBoxUseWords(u)}`;
+export function spBoxLine(u: SpBoxUse, p?: SpProject): string {
+  const more = p ? spBoxMoreWords(p, u) : [];
+  return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)}): ${spBoxUseWords(u)}${more.length ? `; ${more.join('; ')}` : ''}`;
+}
+
+/** "M1–M3, M5": mix codes as runs (a code that is not "M" and a number is
+ *  listed as it is). */
+export function spMixCodeRuns(codes: readonly string[]): string {
+  const nums: number[] = [];
+  const other: string[] = [];
+  for (const c of codes) {
+    const m = /^M(\d+)$/.exec(c);
+    if (m) {
+      if (!nums.includes(Number(m[1]))) nums.push(Number(m[1]));
+    } else if (!other.includes(c)) other.push(c);
+  }
+  const runs = nums.length ? spSocketRuns(nums).split(', ').map((r) => r.split('–').map((n) => `M${n}`).join('–')) : [];
+  return [...runs, ...other].join(', ');
+}
+
+/** (round 2) What else a box line says, only when it is so: the sub-snakes
+ *  plugged into it, where it plugs in itself, its returns in use and the
+ *  console it connects to. Empty for a box with none of these. */
+export function spBoxMoreWords(p: SpProject, u: SpBoxUse): string[] {
+  const out: string[] = [];
+  for (const f of u.fedBy) out.push(`socket${f.first === f.last ? ` ${f.first}` : `s ${f.first}–${f.last}`}: ${spBoxName(f.box)} (sub-snake)`);
+  if (u.box.feed) out.push(`a sub-snake, plugs into ${spBoxFeedWords(p, u.box).slice(2)}`);
+  const inside = u.returnsUsed.filter((x) => x.ret <= (u.box.returns ?? 0));
+  if (inside.length) {
+    // return by return, as the crew patches at the box: "1 M1, 3–4 M3"
+    const byMix: { mix: SpMix; rets: number[] }[] = [];
+    for (const x of inside) {
+      const row = byMix.find((r) => r.mix === x.mix);
+      if (row) row.rets.push(x.ret);
+      else byMix.push({ mix: x.mix, rets: [x.ret] });
+    }
+    const free = Math.max(0, (u.box.returns ?? 0) - new Set(inside.map((x) => x.ret)).size);
+    out.push(`returns ${byMix.map((r) => `${spSocketRuns(r.rets)} ${r.mix.code}`).join(', ')}${free ? `, ${free} free` : ''}`);
+  }
+  if (u.box.connectsTo.trim()) out.push(`connects to ${u.box.connectsTo.trim()}`);
+  else if (u.box.connectsTbc) out.push('which console it connects to is to be confirmed');
+  return out;
 }
 
 /** "sockets 1–12 used, 4 free" (and what does not fit). */
@@ -509,7 +614,7 @@ export function spTextSummary(p: SpProject): string {
   const dev = (Object.keys(m.devices) as SpDeviceType[]).filter((t) => m.devices[t] > 0).map((t) => spDeviceCountWord(t, m.devices[t]));
   if (dev.length) lines.push(`Monitor equipment: ${dev.join(', ')}.`);
   const boxes = spBoxUse(p);
-  if (boxes.length) lines.push(`Stage boxes: ${boxes.map(spBoxLine).join('; ')}.`);
+  if (boxes.length) lines.push(`Stage boxes: ${boxes.map((u) => spBoxLine(u, p)).join('; ')}.`);
   if (s.open.length) lines.push(`To be confirmed: ${s.open.length} item${s.open.length === 1 ? '' : 's'} (listed in the packet).`);
   const c = p.contact;
   const who = [c.show.name ? c.name : '', c.show.role ? c.role : '', c.show.email ? c.email : '', c.show.phone ? c.phone : ''].filter(Boolean).join(', ');

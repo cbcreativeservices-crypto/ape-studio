@@ -48,10 +48,10 @@
  */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Platform, View, type ViewStyle } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Rect, TSpan, Text as SvgText } from 'react-native-svg';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../modules/ape-gesture-exclusion';
 import { spOnStage, spStageAspect } from '../../../../features/stageplot/spModel';
-import { spFrontEdges, spIsCircle, spShapeDirections, spShapeOf, spThrustRect, spWingRects } from '../../../../features/stageplot/spShape';
+import { spFrontEdges, spIsCircle, spIsShaped, spShapeDirections, spShapeOf, spThrustRect, spWingRects } from '../../../../features/stageplot/spShape';
 import type { SpId, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { StageDeck } from '../../cableinstall/scenes/floorArt';
@@ -84,6 +84,8 @@ import {
   stageShapeGridPath,
   stageResizeHandle,
   stageResizeTo,
+  stageRoundFrameWords,
+  stageScreenLabelOpts,
   stageSymbolScale,
   stageTransform,
   type Pt,
@@ -135,7 +137,7 @@ export type StagePlanProps = {
    *  numbers alone, or nothing), and how many performers are named without
    *  their mix code: told when a count changes, so the screen can say so in
    *  words. */
-  onNamesLeftOut?: (count: number, codesLeftOut: number, crowded?: number, numbersOut?: number) => void;
+  onNamesLeftOut?: (count: number, codesLeftOut: number, crowded?: number, numbersOut?: number, peopleOut?: number) => void;
 };
 
 type Drag = {
@@ -334,7 +336,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // ── names and numbers ─────────────────────────────────────────────────────
   const frame = useMemo(() => stageFrameBoxes(gw, gh), [gw, gh]);
   const plan = useMemo(() => {
-    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [], numbersOut: [], crowded: [] };
+    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [], numbersOut: [], crowded: [], peopleOut: [] };
     const items: StageLabelIn[] = order.map((o, i) => ({
       id: o.id,
       // the selected object is always named on the drawing (there is no
@@ -344,10 +346,14 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
       box: boxes[i],
       person: o.kind === 'performer',
       selected: o.id === selectedId,
+      onStage: spOnStage(livePos?.get(o.id) ?? o, p.stage),
     }));
-    // a shaped stage: a number never covers another label (fix 2026-11-13)
-    return stageLabelPlan(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right], { numbersClear: spShapeOf(p.stage) !== 'rect' });
-  }, [order, boxes, p, livePos, showNames, showNumbers, selectedId, gw, gh, frame]);
+    // EVERY plot, a rectangle too (owner 2026-11-13, "build them all —
+    // names stay inside the stage"): no name, number or mix code lies across
+    // a line of the stage, a performer's name never touches another label,
+    // and what has no such place is left out and counted
+    return stageLabelPlan(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right], stageScreenLabelOpts(p, T));
+  }, [order, boxes, p, T, livePos, showNames, showNumbers, selectedId, gw, gh, frame]);
   const labels = plan.labels;
   // names left out because the stage is crowded at this size (not because the
   // user switched names off): the area says so under the drawing
@@ -357,18 +363,21 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // names that touch another label, and numbers left out (R2-SP1-02)
   const crowded = plan.crowded.length;
   const numbersOut = showNumbers ? plan.numbersOut.length : 0;
+  // performers whose names are left out at this size (2026-11-13 R2)
+  const peopleOut = showNames ? plan.peopleOut.length : 0;
   const leftOutRef = useRef(onNamesLeftOut);
   leftOutRef.current = onNamesLeftOut;
   useEffect(() => {
     // the copy that is on screen reports: the glass, or the FULL SCREEN one
-    leftOutRef.current?.(leftOut, codesOut, crowded, numbersOut);
-  }, [leftOut, codesOut, crowded, numbersOut, inFull]);
+    leftOutRef.current?.(leftOut, codesOut, crowded, numbersOut, peopleOut);
+  }, [leftOut, codesOut, crowded, numbersOut, peopleOut, inFull]);
 
-  const shaped = spShapeOf(p.stage) !== 'rect';
+  const shaped = spIsShaped(p.stage);
   const grid = useMemo(() => (p.stage.grid && !shaped ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T, shaped]);
   const shapeGrid = useMemo(() => (p.stage.grid && shaped ? stageShapeGridPath(p, T) : ''), [p, T, shaped]);
   const words = spShapeDirections(p.stage);
   const round = spShapeOf(p.stage) === 'round';
+  const roundWords = stageRoundFrameWords(p.stage);
 
   // ── touch ─────────────────────────────────────────────────────────────────
   const ref = useRef({ p, boxes, T, s, gw, gh, view, selectedId, inFull, onSelect, onMove, onResize, onView });
@@ -587,15 +596,18 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
                 );
               })
             : null}
-          {/* in the round there is no upstage: the far side and the
-              reference side (spShapeDirections) */}
+          {/* in the round there is no upstage, and EVERY side is audience
+              (2026-11-13 R2): the top band says so once for all four, the
+              audience words in the audience color; the bottom names the
+              reference side (stageRoundFrameWords) */}
           {round ? (
             <>
               <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
-                {words.up}
+                <TSpan fill={WORD}>{roundWords.far}</TSpan>
+                <TSpan fill={AMBER}>{roundWords.all}</TSpan>
               </SvgText>
               <SvgText x={midX} y={gh - 5} fill={AMBER} fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
-                {words.down}
+                {roundWords.near}
               </SvgText>
             </>
           ) : (

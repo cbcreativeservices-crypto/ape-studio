@@ -179,8 +179,10 @@ describe('every added kind offers its inputs, as they are really done', () => {
     ];
     for (const [label, cat, kind] of cases) assert.equal(stageKindForSource(label, cat as never), kind, label);
     // a blues "harp" is a harmonica, into a microphone; a double bass drum is a drum kit
-    assert.equal(stageKindForSource('Blues harp', 'other'), 'vocal-mic');
-    assert.equal(stageKindForSource('Harmonica', 'other'), 'vocal-mic');
+    // (round 2, 2026-11-13: the harmonica has its own symbol now, its
+    // microphone and harmonica case, on the live-sound reviewer's advice)
+    assert.equal(stageKindForSource('Blues harp', 'other'), 'harmonica');
+    assert.equal(stageKindForSource('Harmonica', 'other'), 'harmonica');
     assert.notEqual(stageKindForSource('Double bass drum', 'drums'), 'upright-bass');
     assert.notEqual(stageKindForSource('Kettledrums', 'percussion'), 'e-drums');
     assert.equal(stageKindForSource('Grand piano', 'keys'), 'grand-piano');

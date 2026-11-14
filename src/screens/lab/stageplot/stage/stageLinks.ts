@@ -39,9 +39,10 @@ import {
   spSource,
   spUpdateObject,
 } from '../../../../features/stageplot/spModel.ts';
-import type { SpCategory, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes.ts';
+import type { SpCategory, SpChoir, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes.ts';
 import { spInPerformance } from '../../../../features/stageplot/spShape.ts';
-import { spIsSized, spObjectBoxM, spPlotKey, spStageMeters, spSymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
+import { spIsSized, spObjectBoxM, spObjectSymbol, spPlotKey, spStageMeters, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
+import { SP_CHOIR_DEFAULT, spChoirLayout, spChoirMics, spChoirPackageId } from '../../../../features/stageplot/spChoir.ts';
 import { spPackagePreview, spUniqueLabel } from '../inputs/inputsLogic.ts';
 import { spmAddDevice } from '../monitors/monitorPlan.ts';
 import { stageNudgeStep, type Pt } from './stageGeom.ts';
@@ -192,6 +193,8 @@ const SOUND: readonly SpObjectKind[] = [
   ...(['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback'] as const),
   // more symbols for more diverse music (2026-11-13)
   ...(['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'] as const),
+  // round 2 (2026-11-13)
+  ...(['marimba', 'timpani', 'flute', 'harmonium', 'harmonica'] as const),
 ];
 const CAPTURE: readonly SpObjectKind[] = ['vocal-mic', 'mic-stand', 'di'];
 const MONITOR: readonly SpObjectKind[] = ['wedge', 'iem', 'drum-fill', 'sidefill'];
@@ -222,7 +225,9 @@ export const STAGE_PACKAGES: Partial<Record<SpObjectKind, readonly string[]>> = 
   playback: ['playback-stereo', 'click'],
   'vocal-mic': ['vocal', 'vocal-wireless'],
   // more symbols for more diverse music (2026-11-13)
-  choir: ['choir-three', 'choir-two'],
+  // a choir: the package for its own width first (stagePackagesFor), then
+  // the left and right pair
+  choir: ['choir-one', 'choir-two'],
   'e-drums': ['e-drums-stereo', 'e-drums-kick'],
   cajon: ['cajon-mics', 'cajon-mic'],
   djembe: ['djembe-mics', 'percussion-mic'],
@@ -242,14 +247,29 @@ export const STAGE_PACKAGES: Partial<Record<SpObjectKind, readonly string[]>> = 
   banjo: ['banjo-mic', 'banjo-pickup'],
   mandolin: ['mandolin-mic', 'mandolin-pickup'],
   accordion: ['accordion-mics', 'accordion-di'],
-  saxophone: ['sax-mic', 'horn-mic'],
+  saxophone: ['sax-mic', 'sax-flute', 'horn-mic'],
   trombone: ['trombone-mic', 'horn-mic'],
   // a DJ usually needs a talk microphone too
   dj: ['dj-stereo', 'vocal'],
+  // round 2 (2026-11-13)
+  marimba: ['marimba-two', 'marimba-three'],
+  timpani: ['timpani-pair', 'timpani-each'],
+  flute: ['flute-stand', 'flute-clip'],
+  harmonium: ['harmonium-mic', 'harmonium-vocal'],
+  harmonica: ['harmonica-mic', 'harmonica-amp', 'harmonica-di'],
 };
 
-export function stagePackagesFor(kind: SpObjectKind): SpPackage[] {
-  return (STAGE_PACKAGES[kind] ?? []).map((id) => SP_PACKAGES.find((x) => x.id === id)).filter((x): x is SpPackage => !!x);
+export function stagePackagesFor(kind: SpObjectKind, choir: SpChoir = SP_CHOIR_DEFAULT): SpPackage[] {
+  const ids = kind === 'choir' ? stageChoirPackageIds(choir) : (STAGE_PACKAGES[kind] ?? []);
+  return ids.map((id) => SP_PACKAGES.find((x) => x.id === id)).filter((x): x is SpPackage => !!x);
+}
+
+/** A choir's packages follow its size (round 2): first the one with as many
+ *  area microphones as its width wants (about one for every 2.5 m), then
+ *  the left and right pair when that is not the same one. */
+export function stageChoirPackageIds(choir: SpChoir): string[] {
+  const first = spChoirPackageId(spChoirMics(spChoirLayout(choir)));
+  return first === 'choir-two' ? [first] : [first, 'choir-two'];
 }
 
 export type StageChoice = { id: SpId; label: string; detail: string; placed: boolean; /** Of the symbol's own kind (sources): shown first; the rest are behind SHOW EVERY SOURCE. */ match?: boolean };
@@ -296,6 +316,11 @@ const CATEGORY_OF: Partial<Record<SpObjectKind, readonly SpCategory[]>> = {
   saxophone: ['horns'],
   trombone: ['horns'],
   dj: ['playback'],
+  marimba: ['percussion'],
+  timpani: ['percussion'],
+  flute: ['horns', 'other'],
+  harmonium: ['keys', 'other'],
+  harmonica: ['other', 'vocals'],
 };
 
 const channelWords = (p: SpProject, sourceId: SpId): string => {
@@ -400,8 +425,10 @@ const KIND_WORDS: readonly (readonly [RegExp, SpObjectKind])[] = [
   [/leslie|rotary/i, 'leslie'],
   [/violin|viola|fiddle/i, 'violin'],
   [/cello/i, 'cello'],
-  // in blues and folk a "harp" is a harmonica, played into a microphone
-  [/harmonica|blues ?harp|harp mic/i, 'vocal-mic'],
+  // in blues and folk a "harp" is a harmonica, played into a microphone:
+  // round 2 draws it with its own symbol (its microphone and harmonica case)
+  [/harmonica|blues ?harp|harp mic|harp amp/i, 'harmonica'],
+  [/harmonium/i, 'harmonium'],
   [/\bharp\b/i, 'harp'],
   [/banjo/i, 'banjo'],
   [/mandolin/i, 'mandolin'],
@@ -411,6 +438,9 @@ const KIND_WORDS: readonly (readonly [RegExp, SpObjectKind])[] = [
   [/tabla/i, 'tabla'],
   [/steel ?pan|steel ?drum/i, 'steel-pan'],
   [/vibes|vibraphone/i, 'vibraphone'],
+  [/marimba/i, 'marimba'],
+  [/timpani|timp\b|kettle ?drum/i, 'timpani'],
+  [/flute|piccolo/i, 'flute'],
   [/\be-?drums\b|electronic drum|\be-kit\b/i, 'e-drums'],
   [/\bdj\b|turntable/i, 'dj'],
   [/sax/i, 'saxophone'],
@@ -445,10 +475,11 @@ export const STAGE_NEW_SPOT: Pt = { x: 0.5, y: 0.7 };
 /** A kind's box in METERS as a new object of it would be drawn (a platform
  *  or a labeled box at the size a new one gets), upright as it will stand:
  *  a sidefill is placed a quarter turn round, so its sides are swapped. */
-function newBoxM(p: SpProject, kind: SpObjectKind, at: Pt): { w: number; h: number } {
+function newBoxM(p: SpProject, kind: SpObjectKind, at: Pt, choir?: SpChoir): { w: number; h: number } {
   const st = spStageMeters(p);
   if (spIsSized(kind)) return kind === 'riser' ? { w: 0.3 * st.width, h: 0.25 * st.depth } : { w: 0.12 * st.width, h: 0.1 * st.depth };
-  const sym = spSymbol(kind);
+  // (a choir of the size the student set: its own riser's box)
+  const sym = spObjectSymbol({ kind, choir: kind === 'choir' ? (choir ?? null) : null });
   const turned = Math.abs(Math.sin((stageDefaultRot(kind, at) * Math.PI) / 180)) > 0.7;
   return turned ? { w: sym.h, h: sym.w } : { w: sym.w, h: sym.h };
 }
@@ -460,11 +491,11 @@ function newBoxM(p: SpProject, kind: SpObjectKind, at: Pt): { w: number; h: numb
  *  place is a point of the grid, so the typed position reads as a whole
  *  step. The nearest free place is taken; a platform or a labeled box under
  *  the new object does not count (things stand on a riser). */
-export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generic'): Pt {
+export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generic', choir?: SpChoir): Pt {
   const snap = p.stage.snap;
   const step = snap ? spGridStep(p) : { x: 0.02, y: 0.02 };
   const st = spStageMeters(p);
-  const mine = newBoxM(p, kind, at);
+  const mine = newBoxM(p, kind, at, choir);
   const air = 0.1;
   // every other object's box, upright (a quarter turn swaps its sides)
   const others = p.objects

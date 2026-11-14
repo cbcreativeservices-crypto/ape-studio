@@ -37,7 +37,7 @@ import { ScrollView, StyleSheet, View, type LayoutChangeEvent } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SP_DELIVERY_WORD } from '../../../features/stageplot/spCatalog';
 import { spMonitorTotals } from '../../../features/stageplot/spDerive';
-import { spRenumberMixes, spUpdatePerformer } from '../../../features/stageplot/spModel';
+import { spAutoAssignReturns, spBoxName, spRenumberMixes, spReturnBoxes, spUpdatePerformer } from '../../../features/stageplot/spModel';
 import type { SpIssue, SpIssueAction } from '../../../features/stageplot/spReview';
 import type { SpDevice, SpId, SpMix } from '../../../features/stageplot/spTypes';
 import { runSoon, type SoonHandle } from '../../../lib/afterInteractions';
@@ -51,6 +51,12 @@ import { MixBody, NewMixBody } from './monitors/MixSheets';
 import { NeedsPanel } from './monitors/NeedsPanel';
 import {
   SPM_CUE_MEANS,
+  SPM_IEM_RETURN_HELP,
+  SPM_RETURNS_HELP,
+  spmAutoReturnSaid,
+  spmBoxReturnLines,
+  spmReturnLine,
+  spmShowsReturns,
   SPM_FEED_RULE,
   SPM_SHARE_WHERE_CARD,
   spmChannelWord,
@@ -106,6 +112,7 @@ function MixCard({ mix, selected, onEdit, onNeeds }: { mix: SpMix; selected: boo
       {mix.instructions.length ? <Line tone="dim">{`Instructions: ${mix.instructions.join(' · ')}`}</Line> : null}
       {mix.outputs.trim() ? <Line tone="dim">{`Requested outputs: ${mix.outputs.trim()}`}</Line> : null}
       {mix.notes.trim() ? <Line tone="dim">{`Notes: ${mix.notes.trim()}`}</Line> : null}
+      {spmReturnLine(p, mix) ? <Line tone="dim">{spmReturnLine(p, mix)}</Line> : null}
       {spmClickNotes(p, mix).map((text) => (
         <Note key={text} tone="warning">
           {text}
@@ -156,6 +163,13 @@ export function MonitorsArea() {
   const [needsMix, setNeedsMix] = useState<SpId | null>(null);
   /** The row last opened, so it stays marked after its popup closes. */
   const [marked, setMarked] = useState('');
+  /** What the last AUTO-ASSIGN RETURNS did, said in words under it. */
+  const [retSaid, setRetSaid] = useState<string | null>(null);
+  const autoReturns = () => {
+    const r = spAutoAssignReturns(p);
+    ed.apply((cur) => spAutoAssignReturns(cur).p);
+    setRetSaid(spmAutoReturnSaid(r));
+  };
 
   const scrollRef = useRef<ScrollView>(null);
   const needsY = useRef(0);
@@ -342,6 +356,27 @@ export function MonitorsArea() {
               </View>
             )}
           </Section>
+
+          {/* (round 2) the stage box returns each mix comes back on */}
+          {spmShowsReturns(p) && p.mixes.length ? (
+            <Section title="RETURNS ON THE STAGE BOXES" hint="Which stage box return brings each mix back to the stage.">
+              <HelpTip title="Returns and wedges" body={SPM_RETURNS_HELP} />
+              <HelpTip title="In-ear mixes and returns" body={SPM_IEM_RETURN_HELP} />
+              {spReturnBoxes(p).map((b) => (
+                <View key={b.id} style={styles.group}>
+                  <GroupHeading>{`${spBoxName(b).toUpperCase()} · ${b.returns} RETURN${b.returns === 1 ? '' : 'S'}`}</GroupHeading>
+                  {spmBoxReturnLines(p, b.id).map((text) => (
+                    <Line key={text} tone="dim">
+                      {text}
+                    </Line>
+                  ))}
+                </View>
+              ))}
+              <Button label="AUTO-ASSIGN RETURNS" tone="primary" onPress={autoReturns} a11yLabel="Give every mix requested from the house console, with no return yet, the next unused return on the stage box nearest its devices. Returns you chose by hand are not moved." />
+              <Line tone="dim">AUTO-ASSIGN RETURNS gives each mix with no return the next unused return on the box nearest its wedges or other stage speakers (two side by side for a stereo mix). Returns you chose yourself, and mixes set to come from the console, are left alone. UNDO puts every return back.</Line>
+              {retSaid ? <Note>{retSaid}</Note> : null}
+            </Section>
+          ) : null}
 
           <Section
             title="MONITOR DEVICES"

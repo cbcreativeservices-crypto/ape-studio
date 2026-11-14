@@ -478,13 +478,16 @@ describe('shaped stages: the on-screen Stage drawing (phone 390, 375, 320 wide)'
     ['375 × 667', 353, 139],
     ['320 × 640', 298, 117.6],
   ];
-  /** The plan exactly as StagePlanView makes it (names and numbers on, nothing selected). */
+  /** The plan exactly as StagePlanView makes it (names and numbers on, nothing selected).
+   *  owner 2026-11-13: build them all — names stay inside the stage: the view
+   *  now asks every plot for stageScreenLabelOpts, and says which objects
+   *  stand on the stage (a rectangle with wings is shape 'rect' + wings). */
   const screenPlan = (p: SpProject, gw: number, gh: number) => {
     const T = G.stageTransformFor(p, gw, gh);
     const order = G.stageDrawOrder(p.objects);
-    const items: G.StageLabelIn[] = order.map((o) => ({ id: o.id, text: L.stageName(p, o), badges: L.stageBadges(p, o), box: G.stageObjectBox(p, o, T), person: o.kind === 'performer', selected: false }));
+    const items: G.StageLabelIn[] = order.map((o) => ({ id: o.id, text: L.stageName(p, o), badges: L.stageBadges(p, o), box: G.stageObjectBox(p, o, T), person: o.kind === 'performer', selected: false, onStage: M.spOnStage(o, p.stage) }));
     const f = G.stageFrameBoxes(gw, gh);
-    return { items, plan: G.stageLabelPlan(items, gw, gh, [f.top, f.bottom, f.left, f.right], { numbersClear: p.stage.shape !== 'rect' }) };
+    return { items, plan: G.stageLabelPlan(items, gw, gh, [f.top, f.bottom, f.left, f.right], G.stageScreenLabelOpts(p, T)) };
   };
   const four = Object.entries(PLOTS).filter(([n]) => n.startsWith('four-piece'));
   for (const [name, p] of four) {
@@ -509,10 +512,14 @@ describe('shaped stages: the on-screen Stage drawing (phone 390, 375, 320 wide)'
       }
     });
   }
-  it('the view asks for it on a shaped stage only; a rectangle keeps its last resort', () => {
+  it('the view asks for it on every plot (a rectangle too); with no options the plan keeps its last resort', () => {
     const view = readFileSync(join(import.meta.dirname, '..', 'src/screens/lab/stageplot/stage/StagePlanView.tsx'), 'utf8').replace(/\r\n/g, '\n');
-    assert.match(view, /stageLabelPlan\(items, gw, gh, \[frame\.top, frame\.bottom, frame\.left, frame\.right\], \{ numbersClear: spShapeOf\(p\.stage\) !== 'rect' \}\)/);
-    // a crowded rectangle on a small phone still prints numbers on their own symbol (unchanged)
+    // owner 2026-11-13: build them all — names stay inside the stage: the
+    // screen asks every plot, not only a shaped one (stageScreenLabelOpts:
+    // numbersClear, the stage's lines, performers apart)
+    assert.match(view, /stageLabelPlan\(items, gw, gh, \[frame\.top, frame\.bottom, frame\.left, frame\.right\], stageScreenLabelOpts\(p, T\)\)/);
+    assert.deepEqual(Object.keys(G.stageScreenLabelOpts(salsa('p-o'), G.stageTransformFor(salsa('p-o'), 298, 117.6))).sort(), ['floor', 'numbersClear', 'peopleApart']);
+    // with no options a crowded rectangle on a small phone still prints numbers on their own symbol (unchanged)
     const sal = salsa('p-rect-salsa');
     const T = G.stageTransformFor(sal, 298, 117.6);
     const order = G.stageDrawOrder(sal.objects);

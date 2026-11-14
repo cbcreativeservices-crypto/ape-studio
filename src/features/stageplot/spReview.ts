@@ -19,14 +19,20 @@
  * Pure.
  */
 import { SP_DEVICE_WORD, SP_NEED_WORD } from './spCatalog.ts';
-import { spBoxUse, spDiTotals, spSummary } from './spDerive.ts';
-import { spBoxName, spBoxes, spBrokenRefs, spObjectOfSource, spOnStage, spPartner, spPatch } from './spModel.ts';
+import { spBoxUse, spDiTotals, spSocketRuns, spSummary, type SpBoxUse } from './spDerive.ts';
+import { spBox, spBoxName, spBoxes, spBrokenRefs, spMixWantsReturn, spObjectOfSource, spOnStage, spPartner, spPatch, spReturnBoxes, spReturnWords } from './spModel.ts';
+
+/** "socket 9" / "sockets 9–16". */
+const socketsWord = (first: number, last: number): string => (first === last ? `socket ${first}` : `sockets ${first}–${last}`);
+/** "A", "A and B", "A, B and C". */
+const joinAnd = (list: readonly string[]): string => (list.length <= 1 ? list.join('') : `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`);
 
 const hasText = (s: string): boolean => s.trim().length > 0;
 /** A phone number has at least five digits (the Setup field's warning uses
  *  the same test). */
 export const spLooksLikePhone = (s: string): boolean => (s.match(/\d/g) ?? []).length >= 5;
 import type { SpId, SpMix, SpObjectKind, SpPatchId, SpProject } from './spTypes.ts';
+import { spChoirLayout, spChoirMics, spChoirOf, spChoirWords } from './spChoir.ts';
 
 export type SpIssueLevel = 'block' | 'ask' | 'open';
 export type SpArea = 'setup' | 'stage' | 'inputs' | 'monitors' | 'export';
@@ -77,6 +83,8 @@ const SOUND_KINDS: readonly SpObjectKind[] = [
   ...(['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'vocal-mic'] as const),
   // more symbols for more diverse music (2026-11-13): every one makes sound
   ...(['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'] as const),
+  // round 2 (2026-11-13)
+  ...(['marimba', 'timpani', 'flute', 'harmonium', 'harmonica'] as const),
 ];
 /** Icons that stand for a monitor device. */
 const MONITOR_KINDS: readonly SpObjectKind[] = ['wedge', 'iem', 'drum-fill', 'sidefill'];
@@ -253,7 +261,41 @@ export function spReview(p: SpProject): SpIssue[] {
         const list = u.over.map((x) => `${x.input.label} on ${x.socket}`).join(', ');
         add({ key: `boxover:${u.box.id}`, rule: 'box-over-capacity', level: 'block', text: `${name} has ${u.box.inputs} input socket${u.box.inputs === 1 ? '' : 's'}, and ${u.over.length === 1 ? 'an input is' : `${u.over.length} inputs are`} on a socket past ${u.box.inputs} (${list}). Move ${u.over.length === 1 ? 'it' : 'them'} to another box or socket, or correct the size of ${name}.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'] });
       }
-      if (!u.plugged.length) {
+      // (round 2) SUB-SNAKES: what a box plugs into must have room for it.
+      // Two cables on one socket, a socket the main box does not have, or a
+      // socket in use that the feed does not carry: corrected before Ready.
+      for (const c of u.feedClash) {
+        const f = u.fedBy.find((x) => x.box.id === c.sub.id) as SpBoxUse['fedBy'][number];
+        const many = c.with.length > 1 || c.sockets.length > 1;
+        add({ key: `feedclash:${c.sub.id}`, rule: 'box-feed-overlap', level: 'block', text: `${spBoxName(c.sub)} plugs into ${name} ${socketsWord(f.first, f.last)}, and ${c.sockets.length === 1 ? `socket ${c.sockets[0]}` : `sockets ${spSocketRuns(c.sockets)}`} of ${name} ${c.sockets.length === 1 ? 'is' : 'are'} also given to ${joinAnd(c.with)}. One socket takes one cable: move ${many ? 'them' : 'it'} to other sockets, or plug ${spBoxName(c.sub)} into other sockets of ${name}.`, area: 'inputs', target: { kind: 'box', id: c.sub.id }, actions: ['edit'], field: 'feed' });
+      }
+      const main = u.box.feed ? spBox(p, u.box.feed.boxId) : undefined;
+      if (u.box.feed && main && u.feedPast.length) {
+        add({ key: `feedpast:${u.box.id}`, rule: 'box-feed-past', level: 'block', text: `${name} plugs into ${spBoxName(main)} ${socketsWord(u.box.feed.first, u.box.feed.last)}, and ${spBoxName(main)} has ${main.inputs} input socket${main.inputs === 1 ? '' : 's'}. Choose sockets ${spBoxName(main)} has, or correct the size of ${spBoxName(main)}.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'], field: 'feed' });
+      }
+      if (u.box.feed && main && u.feedShort.length) {
+        const carries = u.box.feed.last - u.box.feed.first + 1;
+        const on = u.plugged.filter((x) => u.feedShort.includes(x.socket)).map((x) => x.input.label);
+        add({ key: `feedshort:${u.box.id}`, rule: 'box-feed-short', level: 'block', text: `${name} plugs into ${spBoxName(main)} ${socketsWord(u.box.feed.first, u.box.feed.last)}: that carries sockets 1–${carries} of ${name} only, and ${on.length === 1 ? `${on[0]} is` : `${joinAnd(on)} are`} on socket${u.feedShort.length === 1 ? '' : 's'} ${spSocketRuns(u.feedShort)}. Plug ${name} into more sockets of ${spBoxName(main)}, or move ${on.length === 1 ? 'it' : 'them'}.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'], field: 'feed' });
+      }
+      // (round 2) RETURNS: one return carries one mix, and only a return the
+      // box has can carry it
+      for (const d of u.returnsDoubled) {
+        add({ key: `retdup:${u.box.id}:${d.ret}`, rule: 'return-twice', level: 'block', text: `${name} return ${d.ret} is given to ${joinAnd(d.mixes.map((m) => m.code))}. One return carries one mix: give each its own return, or set one to come from the console.`, area: 'monitors', target: { kind: 'mix', id: d.mixes[1].id }, actions: ['edit'], field: 'ret' });
+      }
+      if (u.returnsOver.length) {
+        const mixes = [...new Set(u.returnsOver.map((x) => x.mix))];
+        const has = u.box.returns ? `has ${u.box.returns} return${u.box.returns === 1 ? '' : 's'}` : 'has no returns given';
+        add({ key: `retover:${u.box.id}`, rule: 'return-over', level: 'block', text: `${name} ${has}, and ${joinAnd(mixes.map((m) => `${m.code} is on ${spReturnWords(p, m).replace(`${name} · `, '')}`))}. Choose a return ${name} has, or correct its number of returns.`, area: 'monitors', target: { kind: 'mix', id: mixes[0].id }, actions: ['edit'], field: 'ret' });
+      }
+      // (round 2) a band's own digital box works only with a console that
+      // speaks its format: asked once, answered in its "Connects to" field
+      if (u.box.kind === 'digital' && u.box.supplier === 'band' && !u.box.feed && !u.box.connectsTo.trim() && !u.box.connectsTbc) {
+        add({ key: `boxconsole:${u.box.id}`, rule: 'box-console', level: 'ask', text: `Which console does ${name} connect to? A digital stage box only works with a console that speaks its format. Type the console under Connects to, or mark it to be confirmed.`, packetText: `Which console ${name}, the band’s digital stage box, connects to is not said yet.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'], field: 'connectsTo' });
+      }
+      // a box that only carries a sub-snake is not empty
+      const carriesSub = u.fedBy.some((f) => p.inputs.some((i) => i.box?.boxId === f.box.id));
+      if (!u.plugged.length && !carriesSub) {
         add({ key: `boxempty:${u.box.id}`, rule: 'box-empty', level: 'ask', text: `${name} has nothing plugged into it. Choose ${name} in an input’s editor, or remove ${name} if the stage does not need it.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'] });
       }
     }
@@ -273,6 +315,30 @@ export function spReview(p: SpProject): SpIssue[] {
         actions: ['box-auto', 'edit'],
         field: 'box',
       });
+    }
+    // (round 2) more returns asked for than the boxes have: a question (a
+    // mix can come from the console itself, or another box can bring more)
+    const retBoxes = spReturnBoxes(p);
+    if (retBoxes.length) {
+      const wanting = p.mixes.filter(spMixWantsReturn);
+      const need = wanting.reduce((n, m) => n + (m.format === 'stereo' ? 2 : 1), 0);
+      // (a sub-snake's returns reach it through its main box: not counted twice)
+      const have = retBoxes.filter((b) => !b.feed).reduce((n, b) => n + (b.returns ?? 0), 0);
+      if (need > have) {
+        const first = wanting.find((m) => !m.ret) ?? wanting[0];
+        const stereo = wanting.some((m) => m.format === 'stereo') ? ' (a stereo mix takes two)' : '';
+        add({
+          key: 'returns-short',
+          rule: 'returns-short',
+          level: 'ask',
+          text: `${wanting.length} mixes need ${need} returns${stereo}, and the stage boxes have ${have}. Set some mixes to come from the console (for example, an in-ear transmitter at a monitor console beside the stage), or add a box with more returns.`,
+          packetText: `${wanting.length} mixes need ${need} returns${stereo}, and the stage boxes listed have ${have}.`,
+          area: 'monitors',
+          target: { kind: 'mix', id: first.id },
+          actions: ['edit'],
+          field: 'ret',
+        });
+      }
     }
   }
 
@@ -347,6 +413,18 @@ export function spReview(p: SpProject): SpIssue[] {
     }
     if (SOUND_KINDS.includes(o.kind) && !o.sourceId && !o.inputId && !o.visualOnly) {
       add({ key: `visual:${o.id}`, rule: 'icon-no-input', level: 'ask', text: `${o.label || 'An instrument'} is drawn on the stage with no input behind it. Is it only a drawing (acoustic, or self-contained), or does it belong to a source?`, area: 'stage', target: { kind: 'object', id: o.id }, actions: ['mark-visual', 'link-source'] });
+    }
+    // a choir's area microphones follow its size (round 2, live-sound
+    // review): about one for every 2.5 m of its width. Asked when its source
+    // has fewer, or more than one extra (each open microphone adds feedback)
+    if (o.kind === 'choir' && o.sourceId) {
+      const mics = p.inputs.filter((i) => i.sourceId === o.sourceId && (i.capture === 'mic' || i.capture === 'wireless')).length;
+      const lay = spChoirLayout(spChoirOf(o));
+      const want = spChoirMics(lay);
+      const name = o.label.trim() || 'The choir';
+      const m = `${mics} area microphone${mics === 1 ? '' : 's'}`;
+      if (mics && mics < want) add({ key: `choirmics:${o.id}`, rule: 'choir-mics', level: 'ask', text: `${name} (${spChoirWords(spChoirOf(o))}) has ${m}. A choir this wide usually needs about ${want}, one for every 2.5 m of its width. Add ${want - mics === 1 ? 'one' : 'more'} in Inputs, or check the choir's size on the stage.`, area: 'inputs', target: { kind: 'source', id: o.sourceId }, actions: ['edit'] });
+      else if (mics > want + 1) add({ key: `choirmics:${o.id}`, rule: 'choir-mics', level: 'ask', text: `${name} has ${m}: more than its width needs (about ${want}, one for every 2.5 m). Each extra open microphone adds feedback and a hollow sound. Are they all needed?`, area: 'inputs', target: { kind: 'source', id: o.sourceId }, actions: ['edit'] });
     }
     if (MONITOR_KINDS.includes(o.kind) && !o.deviceId && !o.visualOnly) {
       add({ key: `mondraw:${o.id}`, rule: 'icon-no-device', level: 'ask', text: `${o.label || 'A monitor'} is drawn on the stage but is not in the monitor plan.`, area: 'stage', target: { kind: 'object', id: o.id }, actions: ['mark-visual', 'edit'] });

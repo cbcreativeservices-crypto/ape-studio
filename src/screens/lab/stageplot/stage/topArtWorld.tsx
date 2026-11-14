@@ -100,21 +100,49 @@ const SINGERS: [number, number][] = [
   ...[-21.1, -7.0, 7.0, 21.1].map((x) => [x, 15.0] as [number, number]),
 ];
 
-function ChoirTop() {
+/** A choir of any size (round 2, 2026-11-13), as spChoir lays it out, in
+ *  METERS: the riser's edges, its steps and the joins between its units
+ *  (none for one row on the floor), and where each singer stands. Without
+ *  it, the choir of before: 11 singers on one three-step unit. */
+export type ChoirArtLayout = {
+  riser: { x0: number; x1: number; steps: readonly number[]; joins: readonly number[] } | null;
+  at: readonly { x: number; y: number }[];
+};
+
+/** The deck colors, the back (highest) step lightest. */
+const DECK = ['#3d4048', '#33363d', '#2a2c32', '#24262b'];
+const M = 32;
+
+export function ChoirTop({ layout }: { layout?: ChoirArtLayout } = {}) {
+  const riser = layout ? (layout.riser ? { hw: ((layout.riser.x1 - layout.riser.x0) * M) / 2, steps: layout.riser.steps.map((y) => y * M), joins: layout.riser.joins.map((x) => x * M) } : null) : { hw: RISER_HW, steps: STEPS, joins: [] as number[] };
+  const singers: [number, number][] = layout ? layout.at.map((a) => [a.x * M, a.y * M]) : SINGERS;
+  const rows = riser ? riser.steps.length - 1 : 0;
+  // one row on the floor: the singers' shadow on the deck, then the singers
+  const floor = !riser && singers.length ? { x0: Math.min(...singers.map((s) => s[0])) - 7.6, x1: Math.max(...singers.map((s) => s[0])) + 7.6 } : null;
   return (
     <G>
-      <Rect x={-RISER_HW + 0.8} y={STEPS[0]! + 1.2} width={RISER_HW * 2} height={STEPS[3]! - STEPS[0]!} rx={0.6} fill={SHADOW} />
-      {/* three carpeted decks, the back one highest, each with its metal
-          nosing, and the higher deck's shadow on the one in front */}
-      {[0, 1, 2].map((i) => (
-        <G key={i}>
-          <Rect x={-RISER_HW} y={STEPS[i]!} width={RISER_HW * 2} height={STEPS[i + 1]! - STEPS[i]!} rx={0.5} fill={['#3d4048', '#33363d', '#2a2c32'][i]} stroke={OUTLINE} strokeWidth={0.4} />
-          <Rect x={-RISER_HW + 0.3} y={STEPS[i + 1]! - 0.9} width={RISER_HW * 2 - 0.6} height={0.7} fill="#8d9199" />
-          {i > 0 ? <Rect x={-RISER_HW + 0.3} y={STEPS[i]! + 0.1} width={RISER_HW * 2 - 0.6} height={1.2} fill="rgba(0,0,0,0.35)" /> : null}
+      {riser ? <Rect x={-riser.hw + 0.8} y={riser.steps[0]! + 1.2} width={riser.hw * 2} height={riser.steps[rows]! - riser.steps[0]!} rx={0.6} fill={SHADOW} /> : null}
+      {floor ? <Rect x={floor.x0 + 0.8} y={-3.2} width={floor.x1 - floor.x0} height={6.4} rx={3.2} fill={SHADOW} /> : null}
+      {/* carpeted decks, the back one highest, each with its metal nosing,
+          and the higher deck's shadow on the one in front */}
+      {riser
+        ? Array.from({ length: rows }, (_, i) => (
+            <G key={i}>
+              <Rect x={-riser.hw} y={riser.steps[i]!} width={riser.hw * 2} height={riser.steps[i + 1]! - riser.steps[i]!} rx={0.5} fill={DECK[i] ?? DECK[0]} stroke={OUTLINE} strokeWidth={0.4} />
+              <Rect x={-riser.hw + 0.3} y={riser.steps[i + 1]! - 0.9} width={riser.hw * 2 - 0.6} height={0.7} fill="#8d9199" />
+              {i > 0 ? <Rect x={-riser.hw + 0.3} y={riser.steps[i]! + 0.1} width={riser.hw * 2 - 0.6} height={1.2} fill="rgba(0,0,0,0.35)" /> : null}
+            </G>
+          ))
+        : null}
+      {/* where one riser unit meets the next: the two end frames side by side */}
+      {riser?.joins.map((x) => (
+        <G key={`j${x}`}>
+          <Line x1={x} y1={riser.steps[0]! + 0.3} x2={x} y2={riser.steps[rows]! - 0.3} stroke={OUTLINE} strokeWidth={0.45} />
+          <Line x1={x + 0.35} y1={riser.steps[0]! + 0.3} x2={x + 0.35} y2={riser.steps[rows]! - 0.3} stroke="#5a5e66" strokeWidth={0.2} />
         </G>
       ))}
-      {SINGERS.map(([x, y]) => (
-        <FigureAboveSvg key={`${x},${y}`} x={x} y={y} pxPerMm={0.032} facingDeg={0} halo="#c3cde2" />
+      {singers.map(([x, y]) => (
+        <FigureAboveSvg key={`${x.toFixed(2)},${y.toFixed(2)}`} x={x} y={y} pxPerMm={0.032} facingDeg={0} halo="#c3cde2" />
       ))}
     </G>
   );
