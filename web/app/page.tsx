@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { LaunchOverlay } from "@/components/LaunchOverlay";
+import { StoreBadges } from "@/components/GetTheApp";
 import { TAGLINE, SUBLINE, KNOWLEDGE } from "@/lib/brand";
 import { AppScreen } from "@/components/AppScreen";
 import { AppScreenMarquee } from "@/components/AppScreenMarquee";
@@ -10,6 +12,38 @@ import {
   HERO_SCREEN_IDS,
   getAppScreen,
 } from "@/lib/app-screens";
+
+// Home title + description (SEO part A, owner-approved 2026-10-21, option A).
+// 171 = active topics on the live server (checked 2026-11-14).
+const HOME_TITLE = "Pro Audio Training Academy: Audio Engineering Training App";
+const HOME_DESCRIPTION =
+  "The audio engineering training app for live sound, studio, broadcast and install pros. 171 topics, hands-on labs, quizzes and credentials you can verify.";
+const HOME_OG_IMAGE = {
+  url: "/og/og-home.png",
+  width: 1200,
+  height: 630,
+  alt: "Pro Audio Training Academy app: the whole craft of audio, right in your pocket",
+};
+
+export const metadata: Metadata = {
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Pro Audio Training Academy",
+    url: "/",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [HOME_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [HOME_OG_IMAGE.url],
+  },
+};
 
 function HomeContent() {
   return (
@@ -52,6 +86,8 @@ function HomeContent() {
               Explore the Academy
             </Link>
           </div>
+          {/* Store badges up front (owner 2026-10-19; SEO part E). */}
+          <StoreBadges className="mt-4 justify-center" />
         </div>
         <AppScreenMarquee ids={HERO_SCREEN_IDS} />
       </section>

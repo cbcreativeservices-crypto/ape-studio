@@ -30,12 +30,16 @@ export function AppScreenMarquee({
         <div className="app-screen-marquee-track flex w-max">
           {[0, 1].map((copy) => (
             <div key={copy} className="flex gap-4 pr-4 sm:gap-5 sm:pr-5">
-              {ids.map((id) => (
+              {ids.map((id, i) => (
                 <AppScreen
                   key={`${copy}-${id}`}
                   screen={getAppScreen(id)}
                   size="marquee"
                   decorative
+                  // The first clip is on screen at first paint: load it at once
+                  // (SEO part C4). Every other clip loads metadata only and
+                  // plays only while on screen (AppScreen's IntersectionObserver).
+                  eager={copy === 0 && i === 0}
                 />
               ))}
             </div>

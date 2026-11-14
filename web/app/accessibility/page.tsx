@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, List } from "@/components/content";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/accessibility",
   title: "Accessibility",
   description:
     "Pro Audio Training Academy is committed to making audio education usable by everyone. Learn how we design for accessibility and how to get help.",
-};
+});
 
 const EMAIL = "info@proaudiotrainingacademy.com";
 const ACCESS_MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Accessibility")}`;

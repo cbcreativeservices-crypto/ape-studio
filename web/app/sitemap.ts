@@ -26,11 +26,15 @@ const PATHS = [
   "/delete-account",
 ];
 
+// Every path above also sets alternates.canonical to itself (SEO 2026-11-14).
+// lastModified = build time; changeFrequency/priority are left out because
+// Google ignores them.
+const BUILT_AT = new Date();
+
 export default function sitemap(): MetadataRoute.Sitemap {
   if (GATE_ENABLED) return [];
   return PATHS.map((path) => ({
     url: `${SITE}${path === "/" ? "" : path}`,
-    changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : 0.6,
+    lastModified: BUILT_AT,
   }));
 }

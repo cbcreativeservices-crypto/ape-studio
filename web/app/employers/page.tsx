@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, List, CTARow } from "@/components/content";
 import VerifyForm from "@/components/VerifyForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/employers",
   title: "For Employers & Instructors",
   description:
     "Employers and audio instructors: verify a Pro Audio Training Academy credential and see what it represents. Enter a credential code to confirm it is genuine and current.",
-};
+  image: "/og/og-employers.png",
+});
 
 export default function Page() {
   return (

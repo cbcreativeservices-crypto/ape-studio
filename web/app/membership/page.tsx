@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero, Section, CTARow } from "@/components/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/membership",
   title: "Membership",
   description:
     "One membership for Pro Audio Training Academy: education, tools, assessments, and eligible credentials — available in the mobile app.",
-};
+  image: "/og/og-membership.png",
+});
 
 export default function Page() {
   return (

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, List, CTARow } from "@/components/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/ai",
   title: "How we use AI",
   description:
     "How Pro Audio Training Academy uses artificial intelligence today: internal drafting only, human review before publish, and no learner personal information sent to generative AI systems.",
-};
+});
 
 const EMAIL = "info@proaudiotrainingacademy.com";
 
