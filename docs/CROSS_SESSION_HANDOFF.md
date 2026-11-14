@@ -717,8 +717,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-11-14 04:09 · ccode · b0424169
 changed: docs: beginner orientation audit of every lab (overnight, audit only) + must-do D61 brief sent, D62 [MD:D62]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. docs only: audit files + report in docs/labs/novice_audit_2026_11_14/, must-do D61/D62, live-server snapshot date (0 changes since 11-12).
+needs: [MD:D62] nothing from Comp A; the owner reads the report and picks what to build.
 
 
 ### 2026-11-14 00:49 · ccode · bcffb8a7
