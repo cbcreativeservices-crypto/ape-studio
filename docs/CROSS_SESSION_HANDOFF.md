@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 00:49 · ccode · bcffb8a7
+changed: docs: rule 32 copy (HELD needs a real blocker); lessons 2026-11-13/14; Stage Plot SOURCES section 11 (shapes, boxes, symbols, sources, owner decisions) [MD:D60]
+affects other side: nothing on the server. docs only: PROTOCOL rule 32 copy (HELD needs a real blocker), lessons, Stage Plot SOURCES [MD:D60].
+needs: nothing now; the Comp A rows for tr_game_audio / tr_stage_plot stay on D60 (f) [MD:D60].
+
+
 ### 2026-11-14 00:19 · ccode · 35fa9911
 changed: must-do D60: owner accepts 320-wide hidden names; riser already sizable; phone update tomorrow [MD:D60]
 affects other side: nothing on the server. must-do list only: owner decisions on D60 [MD:D60].
