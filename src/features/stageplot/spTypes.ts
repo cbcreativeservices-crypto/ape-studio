@@ -27,7 +27,9 @@
  * node with type stripping (explicit `.ts` specifiers, no enums).
  */
 
-export const SP_SCHEMA = 1;
+/** 2 (2026-11-13): stage shapes and numbered stage boxes. A plot saved at 1
+ *  reads as a RECTANGLE with no stage boxes (spMigrate). */
+export const SP_SCHEMA = 2;
 
 export type SpId = string;
 
@@ -109,6 +111,33 @@ export type SpInput = {
    *  Cleared whenever its routing changes, so the answer is never stale. */
   cueAudienceOk: boolean;
   notes: string;
+  /** The stage box socket this input plugs into, or null (none chosen yet).
+   *  `byHand` = the band chose it; AUTO-ASSIGN never moves such a socket. */
+  box: SpBoxPatch | null;
+  /** True when the band said: this input goes to the console directly, not
+   *  through a stage box (the review stops asking about it). */
+  direct: boolean;
+};
+
+/** Where an input plugs in on a stage box: "SB2 · 7". */
+export type SpBoxPatch = { boxId: SpId; socket: number; byHand: boolean };
+
+/** A real stage box: the box on the stage the input cables plug into. A
+ *  digital stage box sends its inputs to the console over one network cable;
+ *  an analog box is the end of a multicore cable (a "snake" or "multi"). Its
+ *  size is its number of input sockets, as sold (8, 12, 16, 24, 32, 48). */
+export type SpStageBox = {
+  id: SpId;
+  /** "SB1", or the band's own name. */
+  name: string;
+  /** Input sockets (XLR inputs). */
+  inputs: number;
+  /** Returns (outputs back to the stage, for wedges or amplifiers); null =
+   *  not given. */
+  returns: number | null;
+  kind: 'digital' | 'analog' | 'unknown';
+  supplier: SpSupplier;
+  note: string;
 };
 
 /** An actual DI device: one mono box carries 1 channel, a stereo box 2. */
@@ -218,6 +247,29 @@ export type SpObjectKind =
   | 'acoustic-guitar'
   | 'horn'
   | 'playback'
+  // more symbols for more diverse music (owner 2026-11-13; builder B)
+  | 'upright-bass'
+  | 'cello'
+  | 'violin'
+  | 'harp'
+  | 'grand-piano'
+  | 'organ'
+  | 'leslie'
+  | 'electric-piano'
+  | 'keyboard-rig'
+  | 'accordion'
+  | 'banjo'
+  | 'mandolin'
+  | 'cajon'
+  | 'djembe'
+  | 'tabla'
+  | 'steel-pan'
+  | 'vibraphone'
+  | 'e-drums'
+  | 'dj'
+  | 'saxophone'
+  | 'trombone'
+  | 'choir'
   | 'mic-stand'
   | 'di'
   | 'wedge'
@@ -252,6 +304,8 @@ export type SpObject = {
   sourceId: SpId | null;
   inputId: SpId | null;
   deviceId: SpId | null;
+  /** A stage box's drawing points at its box (its name is printed beside it). */
+  boxId: SpId | null;
   /** Objects with the same group id move, duplicate and delete together. */
   groupId: SpId | null;
   /** True when the user said "this is off the stage on purpose". */
@@ -270,6 +324,12 @@ export type SpContact = {
   show: { name: boolean; role: boolean; email: boolean; phone: boolean };
 };
 
+/** The shape of the stage (2026-11-13). Positions stay fractions of the MAIN
+ *  stage (width × depth): a thrust's tongue lies past y = 1 (into the
+ *  audience), a wing past x = 0 or x = 1. In the round, the stage is the
+ *  width × depth square, or the circle inside it (depth = width). */
+export type SpStageShape = 'rect' | 'thrust' | 'round' | 'wings';
+
 export type SpStage = {
   /** null = not given; the export then says "Not to scale". */
   width: number | null;
@@ -278,6 +338,17 @@ export type SpStage = {
   dims: 'confirmed' | 'estimated';
   grid: boolean;
   snap: boolean;
+  shape: SpStageShape;
+  /** Thrust: the tongue's width and depth, in `unit` (null = not given). */
+  thrustWidth: number | null;
+  thrustDepth: number | null;
+  /** With wings: the width of each wing, in `unit` (null = not given). */
+  wingWidth: number | null;
+  /** In the round: a circle or a square. */
+  roundForm: 'circle' | 'square';
+  /** In the round: the name of the side drawn at the bottom (the reference
+   *  side, usually where the mix position is): "FOH". */
+  roundRef: string;
 };
 
 export type SpStatus = 'draft' | 'ready';
@@ -327,6 +398,8 @@ export type SpProject = {
   mixes: SpMix[];
   devices: SpDevice[];
   extras: SpExtra[];
+  /** Numbered stage boxes (2026-11-13). */
+  boxes: SpStageBox[];
   objects: SpObject[];
   /** The next number used to make an id in this project. */
   seq: number;

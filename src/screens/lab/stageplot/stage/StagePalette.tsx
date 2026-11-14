@@ -26,6 +26,7 @@
 import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SP_DEVICE_WORD, SP_PALETTE, type SpPackage, type SpPaletteItem } from '../../../../features/stageplot/spCatalog';
+import { spAddBox } from '../../../../features/stageplot/spModel';
 import type { SpDeviceType, SpId, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { spPackagePreview, spPackageToggle } from '../inputs/inputsLogic';
@@ -103,6 +104,17 @@ export function StagePalette({
   const back = () => setStep({ at: 'pick' });
 
   const pick = (item: SpPaletteItem) => {
+    // a stage box is a NUMBERED box with sockets (SB1, SB2…), placed here;
+    // its sockets are given in Inputs (2026-11-13)
+    if (item.kind === 'stage-box') {
+      done(item.kind, item.name, (q, at) => {
+        // (the first box of a stage with wings goes in a wing, by monitor world)
+        const inWing = q.stage.shape === 'wings' && !q.objects.some((o) => o.kind === 'stage-box');
+        const r = spAddBox(q, inWing ? {} : { at });
+        return { p: r.p, id: r.objectId };
+      });
+      return;
+    }
     if (stageLinkMode(item.kind) === 'none') {
       done(item.kind, item.name, (q, at) => stageAddDrawing(q, item.kind, at));
       return;

@@ -32,10 +32,10 @@ export function StageObjectList({ project, selectedId, onSelect }: { project: Sp
       {stageListOrder(p.objects).map((o) => {
         const on = o.id === selectedId;
         const name = stageListName(p, o);
-        const where = spLocationWord(o);
+        const where = spLocationWord(o, p.stage);
         const badges = stageBadges(p, o);
         const grouped = o.groupId ? 'in a group' : '';
-        const flag = !spOnStage(o) && !o.offstageOk ? 'the review asks about it' : '';
+        const flag = !spOnStage(o, p.stage) && !o.offstageOk ? 'the review asks about it' : '';
         // the kind is said only when it is not the name already ("Congas · Congas")
         const kind = stageObjectKindName(o.kind);
         const sub = [kind.toLowerCase() === name.toLowerCase() ? '' : kind, where, grouped, flag].filter(Boolean).join(' · ');

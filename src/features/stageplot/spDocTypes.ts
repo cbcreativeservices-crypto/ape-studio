@@ -76,6 +76,32 @@ export type SpDocPlot = {
    *  the plot, in every packet kind, and never leaves an entry out. A
    *  renderer scales each symbol into its own small cell. */
   key: SpDocKeyItem[];
+  /** A stage that is not a rectangle (2026-11-13): a renderer draws THIS in
+   *  place of the plain rectangle, its grid and its front edge. Absent = the
+   *  rectangle, 0…widthM × 0…depthM, as always. In meters, in the plot's own
+   *  space (0,0 = the top left of everything the stage floor covers). */
+  deck?: SpDocDeck;
+};
+
+export type SpDocDeck = {
+  shape: 'thrust' | 'round' | 'wings';
+  /** The performance area's outline: a closed polygon [x, y…] or a circle. */
+  outline: { t: 'poly'; pts: number[] } | { t: 'circle'; cx: number; cy: number; r: number };
+  /** The edges the audience sees, drawn heavier. `all`: the whole outline. */
+  front: { all: boolean; lines: [number, number, number, number][] };
+  /** Offstage floor drawn on the plot (the wings): a dashed box with a name. */
+  areas: { x: number; y: number; w: number; h: number; name: string }[];
+  /** Grid lines inside the shape (empty when no grid is printed). */
+  grid: [number, number, number, number][];
+  /** The four words round the drawing. */
+  words: { up: string; down: string; right: string; left: string };
+  /** Where the MAIN stage's upstage, stage-right corner is, and its size, so
+   *  a point can be said in stage words again (the text view). */
+  origin: { x: number; y: number };
+  mainW: number;
+  mainD: number;
+  /** The shape fields the words are said from. */
+  stage: { shape: 'thrust' | 'round' | 'wings'; thrustWidth: number | null; thrustDepth: number | null; wingWidth: number | null; roundForm: 'circle' | 'square'; roundRef: string; width: number | null; depth: number | null };
 };
 
 /** One entry of the plot's key: a symbol, drawn small, and what it is. */

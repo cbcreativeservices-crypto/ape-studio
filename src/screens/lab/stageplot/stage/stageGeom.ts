@@ -28,6 +28,7 @@
  * Pure: no React, no native modules.
  */
 import { spGridStep, spGroupOf, spStageAspect } from '../../../../features/stageplot/spModel.ts';
+import { spMoveLimits, spShapeBounds, spShapeFacingWords, spShapeGridSegments, spShapeOf } from '../../../../features/stageplot/spShape.ts';
 import { spIsSized, spStageMeters, spSymbol } from '../../../../features/stageplot/spSymbols.ts';
 import type { SpId, SpObject, SpProject } from '../../../../features/stageplot/spTypes.ts';
 import { overlapArea, type Box } from '../../roomdesign/planLabels.ts';
@@ -53,11 +54,12 @@ export type StageRegion = { x0: number; y0: number; x1: number; y1: number };
 
 /** The stage with a small margin, grown to take in anything that stands off
  *  it (the wings, front of house), so an offstage object is never lost. */
-export function stageRegion(objects: readonly Pt[], margin = 0.05): StageRegion {
-  let x0 = -margin;
-  let y0 = -margin;
-  let x1 = 1 + margin;
-  let y1 = 1 + margin;
+export function stageRegion(objects: readonly Pt[], margin = 0.05, floor: StageRegion = { x0: 0, y0: 0, x1: 1, y1: 1 }): StageRegion {
+  // `floor`: the shape's own floor (a thrust's tongue, the wings: spShapeBounds)
+  let x0 = floor.x0 - margin;
+  let y0 = floor.y0 - margin;
+  let x1 = floor.x1 + margin;
+  let y1 = floor.y1 + margin;
   const pad = 0.08;
   const lim = OFF_MAX + pad;
   for (const o of objects) {
@@ -67,8 +69,11 @@ export function stageRegion(objects: readonly Pt[], margin = 0.05): StageRegion 
     y0 = Math.min(y0, o.y - pad);
     y1 = Math.max(y1, o.y + pad);
   }
-  return { x0: Math.max(-lim, x0), y0: Math.max(-lim, y0), x1: Math.min(1 + lim, x1), y1: Math.min(1 + lim, y1) };
+  return { x0: Math.max(floor.x0 - lim, x0), y0: Math.max(floor.y0 - lim, y0), x1: Math.min(floor.x1 + lim, x1), y1: Math.min(floor.y1 + lim, y1) };
 }
+
+/** The region for a project: its shape's floor and what stands off it. */
+export const stageRegionFor = (p: SpProject, objects: readonly Pt[] = p.objects): StageRegion => stageRegion(objects, 0.05, spShapeBounds(p.stage));
 
 /** What the user looks at: 1 = the whole stage; above 1 the picture is
  *  centered on (cx, cy), in stage fractions. Never saved: zoom and screen
@@ -142,7 +147,7 @@ export function stageTransform(aspect: number, gw: number, gh: number, region: S
 }
 
 /** The transform for a project on a glass. */
-export function stageTransformFor(p: SpProject, gw: number, gh: number, view: StageView = STAGE_VIEW_FIT, region: StageRegion = stageRegion(p.objects)): StageTransform {
+export function stageTransformFor(p: SpProject, gw: number, gh: number, view: StageView = STAGE_VIEW_FIT, region: StageRegion = stageRegionFor(p)): StageTransform {
   return stageTransform(spStageAspect(p), gw, gh, region, view);
 }
 
@@ -235,7 +240,12 @@ export function stageObjectBox(p: SpProject, o: SpObject, T: StageTransform, liv
   return { id: o.id, cx: c.x, cy: c.y, hw: (size.w * u) / 2, hh: (size.h * u) / 2, rot, sized };
 }
 
-const INSTRUMENT_KINDS: readonly SpObject['kind'][] = ['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'rack', 'stage-box', 'power', 'chair', 'music-stand'];
+const INSTRUMENT_KINDS: readonly SpObject['kind'][] = [
+  ...(['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'rack', 'stage-box', 'power', 'chair', 'music-stand'] as const),
+  // the kinds added for more diverse music (2026-11-13): under the performers,
+  // so a cellist is seen on the chair and a drummer at the e-kit
+  ...(['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'] as const),
+];
 
 /** The order things are painted in: platforms first (a riser lies UNDER what
  *  stands on it), then labeled boxes, then instruments and furniture, then
@@ -339,7 +349,8 @@ export function stageSnapPoint(p: SpProject, to: Pt, snap: boolean = p.stage.sna
   const step = spGridStep(p);
   const x = snap ? Math.round(to.x / step.x) * step.x : to.x;
   const y = snap ? Math.round(to.y / step.y) * step.y : to.y;
-  return { x: clamp(x, -OFF_MAX, 1 + OFF_MAX), y: clamp(y, -OFF_MAX, 1 + OFF_MAX) };
+  const lim = spMoveLimits(p.stage);
+  return { x: clamp(x, lim.x0, lim.x1), y: clamp(y, lim.y0, lim.y1) };
 }
 
 /** While `id` is dragged to `to`: where it and everything grouped with it is
@@ -402,6 +413,25 @@ export function stageGridLines(p: SpProject, T: StageTransform, minGap = 9): { x
   for (let k = every; k * step.x < 1 - 1e-9; k += every) xs.push(T.ox + k * step.x * T.kx);
   for (let k = every; k * step.y < 1 - 1e-9; k += every) ys.push(T.oy + k * step.y * T.ky);
   return { xs, ys, every };
+}
+
+/** The grid of a stage that is not a rectangle, as one SVG path on the glass:
+ *  the snap grid's lines inside the shape (the tongue, the wings, inside the
+ *  circle), never closer than `minGap` glass units. '' for a rectangle (its
+ *  grid is stageGridLines). */
+export function stageShapeGridPath(p: SpProject, T: StageTransform, minGap = 9): string {
+  if (spShapeOf(p.stage) === 'rect') return '';
+  const step = spGridStep(p);
+  const gap = Math.min(step.x * T.kx, step.y * T.ky);
+  if (!(gap > 0)) return '';
+  const every = Math.max(1, Math.ceil(minGap / gap));
+  return spShapeGridSegments(p.stage, step, every)
+    .map(([x1, y1, x2, y2]) => {
+      const a = T.toGlass({ x: x1, y: y1 });
+      const b = T.toGlass({ x: x2, y: y2 });
+      return `M${a.x.toFixed(2)} ${a.y.toFixed(2)}L${b.x.toFixed(2)} ${b.y.toFixed(2)}`;
+    })
+    .join('');
 }
 
 /* ── names and numbers on the stage ─────────────────────────────────────── */
@@ -813,7 +843,10 @@ export function stageFrameBoxes(gw: number, gh: number): { top: Box; bottom: Box
 
 /** Which way an object faces, in stage words (0° = toward the audience;
  *  degrees run clockwise as the plot is seen). */
-export function stageFacingWord(rot: number): string {
+export function stageFacingWord(rot: number, stage?: SpProject['stage']): string {
+  // in the round there is no single audience side: said from the reference
+  const round = spShapeFacingWords(rot, stage);
+  if (round) return round.full;
   const r = ((Math.round(rot) % 360) + 360) % 360;
   if (r === 0) return 'facing the audience';
   if (r === 90) return 'facing stage right';
@@ -827,7 +860,9 @@ export function stageFacingWord(rot: number): string {
 
 /** The same in few words, for a readout that has one short line ("185° ·
  *  upstage, toward stage left"): never cut with "…". */
-export function stageFacingShort(rot: number): string {
+export function stageFacingShort(rot: number, stage?: SpProject['stage']): string {
+  const round = spShapeFacingWords(rot, stage);
+  if (round) return round.short;
   const r = ((Math.round(rot) % 360) + 360) % 360;
   if (r === 0) return 'facing the audience';
   if (r === 90) return 'facing stage right';
@@ -876,7 +911,8 @@ export function stagePosFraction(p: SpProject, axis: 'x' | 'y', value: number | 
   const unit = stagePosUnit(p);
   const span = unit === '%' ? 100 : axis === 'x' ? (p.stage.width as number) : (p.stage.depth as number);
   if (!(span > 0)) return null;
-  return clamp(value / span, -OFF_MAX, 1 + OFF_MAX);
+  const lim = spMoveLimits(p.stage);
+  return clamp(value / span, axis === 'x' ? lim.x0 : lim.y0, axis === 'x' ? lim.x1 : lim.y1);
 }
 
 /** How far a position is from the stage's edges along one axis, WITHOUT a

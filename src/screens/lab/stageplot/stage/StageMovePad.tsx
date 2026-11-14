@@ -16,13 +16,17 @@
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { spObject, spUpdateObject } from '../../../../features/stageplot/spModel';
+import { spRoundRef, spShapeOf } from '../../../../features/stageplot/spShape';
 import type { SpId } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { useSpEditor } from '../spContext';
 import { stageFacingWord, stagePosWords } from './stageGeom';
 import { stageListName, stageNudge } from './stageLinks';
 
-function PadButton({ glyph, word, a11y, onPress }: { glyph?: string; word: string; a11y: string; onPress: () => void }) {
+function PadButton({ glyph, word: rectWord, a11y: rectA11y, round, onPress }: { glyph?: string; word: string; a11y: string; round?: { word: string; a11y: string } | null; onPress: () => void }) {
+  // in the round, the same button is said from the reference side
+  const word = round?.word ?? rectWord;
+  const a11y = round?.a11y ?? rectA11y;
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.button, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel={a11y}>
       {glyph ? <Text style={styles.glyph}>{glyph}</Text> : null}
@@ -40,22 +44,25 @@ export function StageMovePad({ id }: { id: SpId }) {
   const nudge = (dx: number, dy: number) => ed.apply((q) => stageNudge(q, id, dx, dy));
   const turn = (rot: number) => ed.apply((q) => spUpdateObject(q, id, { rot }));
   const grouped = !!o.groupId;
+  // in the round there is no upstage: the two sides are said from the reference side
+  const round = spShapeOf(p.stage) === 'round';
+  const ref = spRoundRef(p.stage);
   return (
     <View style={styles.pad}>
-      <Text style={styles.line} accessibilityLiveRegion="polite">{`${stagePosWords(p, o)}. ${o.rot}°, ${stageFacingWord(o.rot)}.`}</Text>
+      <Text style={styles.line} accessibilityLiveRegion="polite">{`${stagePosWords(p, o)}. ${o.rot}°, ${stageFacingWord(o.rot, p.stage)}.`}</Text>
       <Text style={styles.caption}>{`MOVE ONE ${p.stage.snap ? 'GRID STEP' : 'SMALL STEP'}${grouped ? ' (ITS GROUP MOVES WITH IT)' : ''}`}</Text>
       <View style={styles.row}>
         <PadButton glyph="◀" word="STAGE RIGHT" a11y={`Move ${name} one step toward stage right`} onPress={() => nudge(-1, 0)} />
-        <PadButton glyph="▲" word="UPSTAGE" a11y={`Move ${name} one step upstage`} onPress={() => nudge(0, -1)} />
-        <PadButton glyph="▼" word="DOWNSTAGE" a11y={`Move ${name} one step downstage, toward the audience`} onPress={() => nudge(0, 1)} />
+        <PadButton glyph="▲" word="UPSTAGE" a11y={`Move ${name} one step upstage`} round={round ? { word: 'FAR SIDE', a11y: `Move ${name} one step toward the far side` } : null} onPress={() => nudge(0, -1)} />
+        <PadButton glyph="▼" word="DOWNSTAGE" a11y={`Move ${name} one step downstage, toward the audience`} round={round ? { word: `${ref.toUpperCase()} SIDE`, a11y: `Move ${name} one step toward the ${ref} side` } : null} onPress={() => nudge(0, 1)} />
         <PadButton glyph="▶" word="STAGE LEFT" a11y={`Move ${name} one step toward stage left`} onPress={() => nudge(1, 0)} />
       </View>
       <Text style={styles.caption}>TURN</Text>
       <View style={styles.row}>
         <PadButton glyph="↺" word="15°" a11y={`Turn ${name} 15 degrees counterclockwise`} onPress={() => turn(o.rot - 15)} />
         <PadButton glyph="↻" word="15°" a11y={`Turn ${name} 15 degrees clockwise`} onPress={() => turn(o.rot + 15)} />
-        <PadButton word="FACE THE AUDIENCE" a11y={`Turn ${name} to face the audience`} onPress={() => turn(0)} />
-        <PadButton word="FACE UPSTAGE" a11y={`Turn ${name} to face upstage`} onPress={() => turn(180)} />
+        <PadButton word="FACE THE AUDIENCE" a11y={`Turn ${name} to face the audience`} round={round ? { word: `FACE THE ${ref.toUpperCase()} SIDE`, a11y: `Turn ${name} to face the ${ref} side` } : null} onPress={() => turn(0)} />
+        <PadButton word="FACE UPSTAGE" a11y={`Turn ${name} to face upstage`} round={round ? { word: 'FACE THE FAR SIDE', a11y: `Turn ${name} to face the far side` } : null} onPress={() => turn(180)} />
       </View>
     </View>
   );

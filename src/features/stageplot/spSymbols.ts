@@ -114,6 +114,7 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
   // player: the trackpad on the operator's side, the screen edge on the
   // audience's side
   playback: { w: 0.5, h: 0.4, tag: '', shapes: [box(0.5, 0.4, { r: 0.03 }), line(-0.25, 0.1, 0.25, 0.1), rect(-0.09, -0.12, 0.18, 0.1, { fill: 'none' })] },
+  ...MORE_SYMBOLS(),
   di: { w: 0.3, h: 0.3, tag: 'DI', shapes: [box(0.3, 0.3, { r: 0.03 })] },
   // a wedge: its FRONT (the grille, the wide side) is the side it faces. A
   // wedge at the stage edge is turned 180° so the wide side faces the
@@ -147,6 +148,396 @@ const SYMBOLS: Record<SpObjectKind, SpSymbol> = {
 };
 
 export const spSymbol = (kind: SpObjectKind): SpSymbol => SYMBOLS[kind];
+
+/** The kinds added for more diverse music (owner 2026-11-13: "We also need
+ *  more symbols for more diverse music"), in the palette's order. */
+export type SpMoreKind =
+  | 'choir'
+  | 'e-drums'
+  | 'cajon'
+  | 'djembe'
+  | 'tabla'
+  | 'steel-pan'
+  | 'vibraphone'
+  | 'upright-bass'
+  | 'grand-piano'
+  | 'electric-piano'
+  | 'keyboard-rig'
+  | 'organ'
+  | 'leslie'
+  | 'violin'
+  | 'cello'
+  | 'harp'
+  | 'banjo'
+  | 'mandolin'
+  | 'accordion'
+  | 'saxophone'
+  | 'trombone'
+  | 'dj';
+export const SP_MORE_KINDS: readonly SpMoreKind[] = ['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'];
+
+/** A closed outline from one half (x ≥ 0, top to bottom), mirrored. */
+function mirrored(half: number[], fill: SpFill = 'paper'): SpShape {
+  const pts = [...half];
+  for (let k = half.length - 4; k >= 2; k -= 2) pts.push(-half[k], half[k + 1]);
+  return { t: 'poly', pts, closed: true, fill };
+}
+
+/** Shapes turned by `deg` about 0,0 (clockwise on the page), then moved. */
+function turnedShapes(shapes: SpShape[], deg: number, dx = 0, dy = 0): SpShape[] {
+  const a = (deg * Math.PI) / 180;
+  const c = Math.cos(a);
+  const s = Math.sin(a);
+  const pt = (x: number, y: number): [number, number] => [x * c - y * s + dx, x * s + y * c + dy];
+  return shapes.map((sh): SpShape => {
+    if (sh.t === 'circle') {
+      const [cx, cy] = pt(sh.cx, sh.cy);
+      return { ...sh, cx, cy };
+    }
+    if (sh.t === 'line') {
+      const [x1, y1] = pt(sh.x1, sh.y1);
+      const [x2, y2] = pt(sh.x2, sh.y2);
+      return { ...sh, x1, y1, x2, y2 };
+    }
+    if (sh.t === 'poly') {
+      const pts: number[] = [];
+      for (let k = 0; k + 1 < sh.pts.length; k += 2) pts.push(...pt(sh.pts[k], sh.pts[k + 1]));
+      return { ...sh, pts };
+    }
+    const q = [pt(sh.x, sh.y), pt(sh.x + sh.w, sh.y), pt(sh.x + sh.w, sh.y + sh.h), pt(sh.x, sh.y + sh.h)];
+    return { t: 'poly', pts: q.flat(), closed: true, fill: sh.fill ?? 'none' };
+  });
+}
+
+/** Lines across a strip, `n` of them, evenly from x0 to x1 (piano keys,
+ *  pads of a pedalboard, bars of a vibraphone). */
+function ticks(n: number, x0: number, x1: number, y0: number, y1: number): SpShape[] {
+  return Array.from({ length: n }, (_, i) => line(x0 + ((x1 - x0) * (i + 1)) / (n + 1), y0, x0 + ((x1 - x0) * (i + 1)) / (n + 1), y1));
+}
+
+/** The print symbols of the added kinds. Like every print symbol: seen from
+ *  above, the player upstage (−y) facing the audience (+y), drawn in black
+ *  line on white, told apart by shape and by the printed label. The sizes
+ *  are the instrument as it stands on a stage (a live-sound reviewer's
+ *  figures, 2026-11-13). */
+function MORE_SYMBOLS(): Record<SpMoreKind, SpSymbol> {
+  // a vibraphone: the low end (long bars) at the player's LEFT hand, which
+  // is +x, as on a piano; naturals nearest the player, accidentals beyond
+  const vibeBars: SpShape[] = [];
+  // (the on-screen art's bars, in meters: 0.175 m to 0.315 m long)
+  const vibeLen = (x: number) => 0.175 + 0.14 * Math.min(1, Math.max(0, (x + 0.634) / 1.268));
+  for (let i = 0; i < 22; i++) {
+    const x = -0.634 + (1.268 * i) / 21;
+    vibeBars.push(line(x, -0.025, x, -0.025 - vibeLen(x)));
+  }
+  // accidentals: in twos and threes over the gaps (F# G# A#, C# D#, …), low F at +x
+  for (let i = 0; i < 21; i++) {
+    if ('BE'.includes('FGABCDE'[i % 7]!)) continue;
+    const x = 0.634 - (1.268 * (i + 0.5)) / 21;
+    vibeBars.push(line(x, 0.025, x, 0.025 + vibeLen(x) - 0.016));
+  }
+  const vibeHalf = (t: number) => 0.025 + (0.175 + 0.14 * t) + 0.028;
+  /** The case of a 5 ft 8 in grand piano from above, in concert placement
+   *  (the keyboard end at −x, the straight spine upstage, the tail at +x):
+   *  the on-screen art's outline (topArtStringsKeys), in meters. */
+  const GRAND_CASE = [-0.53, -0.74, 1.06, -0.74, 1.16, -0.69, 1.19, -0.56, 1.16, -0.41, 1.05, -0.21, 0.88, -0.02, 0.66, 0.18, 0.41, 0.38, 0.16, 0.55, -0.09, 0.69, -0.31, 0.74, -0.53, 0.74];
+  return {
+    // a choir on a three-step riser: the singers in rows, the back row highest (upstage)
+    choir: {
+      w: 1.85,
+      h: 1.4,
+      tag: '',
+      shapes: [
+        rect(-0.925, -0.7, 1.85, 1.4, { fill: 'paper' }),
+        line(-0.925, -0.233, 0.925, -0.233),
+        line(-0.925, 0.233, 0.925, 0.233),
+        ...[-0.62, -0.31, 0, 0.31, 0.62].map((x) => circle(x, -0.47, 0.13, { fill: 'tone' })),
+        ...[-0.775, -0.465, -0.155, 0.155, 0.465, 0.775].map((x) => circle(x, 0, 0.13, { fill: 'tone' })),
+        ...[-0.62, -0.31, 0, 0.31, 0.62].map((x) => circle(x, 0.47, 0.13, { fill: 'tone' })),
+      ],
+    },
+    // an electronic kit: the rack's bars round the pads, the throne upstage;
+    // the drummer's left (snare, hi-hat) is the viewer's right, as on the kit
+    'e-drums': {
+      // (the on-screen art's layout, in meters)
+      w: 1.5,
+      h: 1.1,
+      tag: '',
+      shapes: [
+        circle(0, -0.378, 0.156, { fill: 'paper' }),
+        { t: 'poly', pts: [-0.5625, -0.259, -0.5625, 0.409, 0.5625, 0.409, 0.5625, -0.259], closed: false, fill: 'none' },
+        rect(-0.125, 0.147, 0.25, 0.119, { fill: 'paper' }),
+        circle(-0.419, -0.016, 0.1375, { fill: 'tone' }),
+        circle(-0.144, 0.259, 0.106, { fill: 'tone' }),
+        circle(0.15, 0.259, 0.106, { fill: 'tone' }),
+        circle(0.2375, 0.047, 0.144, { fill: 'tone' }),
+        circle(0.494, 0.091, 0.1375, { fill: 'tone' }),
+        circle(-0.516, 0.247, 0.2, { fill: 'tone' }),
+        circle(0.375, 0.372, 0.169, { fill: 'tone' }),
+        rect(0.55, -0.309, 0.181, 0.119, { fill: 'ink' }),
+      ],
+    },
+    // a cajón: the square seat, the front plate (tapa) along the audience's side
+    cajon: { w: 0.4, h: 0.4, tag: '', shapes: [box(0.375, 0.375, { r: 0.01 }), rect(-0.1875, 0.155, 0.375, 0.032, { fill: 'ink' }), circle(-0.15, 0.12, 0.012, { fill: 'ink' }), circle(0.15, 0.12, 0.012, { fill: 'ink' })] },
+    // a djembe: the head inside its rope ring
+    djembe: { w: 0.45, h: 0.45, tag: '', shapes: [circle(0, 0, 0.215, { fill: 'paper' }), circle(0, 0, 0.18, { fill: 'paper' }), ...Array.from({ length: 12 }, (_, i) => circle(Math.cos((i * Math.PI) / 6) * 0.198, Math.sin((i * Math.PI) / 6) * 0.198, 0.012, { fill: 'ink' }))] },
+    // tabla: the two drums in front of the player, on the floor rug the
+    // player sits on; the small dayan at the right hand (−x), the bayan left
+    tabla: {
+      w: 1.0,
+      h: 1.0,
+      tag: '',
+      shapes: [
+        rect(-0.48, -0.48, 0.96, 0.96, { fill: 'tone' }),
+        rect(-0.43, -0.43, 0.86, 0.86, { fill: 'none' }),
+        circle(-0.15, 0.2, 0.1, { fill: 'paper' }),
+        circle(-0.15, 0.2, 0.035, { fill: 'ink' }),
+        circle(0.16, 0.2, 0.15, { fill: 'paper' }),
+        circle(0.16, 0.2, 0.12, { fill: 'paper' }),
+        circle(0.16, 0.235, 0.04, { fill: 'ink' }),
+      ],
+    },
+    // a steel pan: the rim and the rings of note areas
+    'steel-pan': { w: 0.65, h: 0.65, tag: '', shapes: [circle(0, 0, 0.3, { fill: 'paper' }), circle(0, 0, 0.27), circle(0, 0, 0.17), circle(0, 0, 0.08)] },
+    // a vibraphone: the tapered frame, the bars in two rows
+    vibraphone: {
+      w: 1.42,
+      h: 0.76,
+      tag: '',
+      shapes: [poly([-0.71, -vibeHalf(0), 0.71, -vibeHalf(1), 0.71, vibeHalf(1), -0.71, vibeHalf(0)]), line(-0.71, 0, 0.71, 0), ...vibeBars],
+    },
+    // an upright bass leaning back toward its player: the face shortened,
+    // the fingerboard running up to the scroll on the player's side, the
+    // endpin toward the audience
+    'upright-bass': {
+      w: 0.7,
+      h: 0.75,
+      tag: '',
+      shapes: [
+        mirrored([0, -0.19, 0.16, -0.18, 0.25, -0.11, 0.2, -0.03, 0.17, 0.02, 0.22, 0.08, 0.32, 0.16, 0.28, 0.24, 0.12, 0.27, 0, 0.275]),
+        line(0, 0.275, 0, 0.36),
+        rect(-0.03, -0.33, 0.06, 0.37, { fill: 'ink' }),
+        circle(0, -0.34, 0.035, { fill: 'paper' }),
+        line(-0.08, 0.1, 0.08, 0.1),
+        line(-0.1, 0.02, -0.11, 0.14),
+        line(0.1, 0.02, 0.11, 0.14),
+        poly([-0.04, 0.13, 0.04, 0.13, 0.02, 0.24, -0.02, 0.24]),
+      ],
+    },
+    // a grand piano in concert placement: the keyboard and bench at stage
+    // right (−x), the straight side upstage, the curved side and the open
+    // lid toward the audience (the lid in gray)
+    'grand-piano': {
+      w: 2.4,
+      h: 1.5,
+      tag: '',
+      shapes: [
+        poly(GRAND_CASE),
+        // the raised lid, from behind the music desk to the tail
+        poly(GRAND_CASE.map((v, i) => (i % 2 ? -0.74 + 0.62 * (v + 0.74) : Math.max(v, -0.25))), true, 'tone'),
+        line(0.3, 0.42, 0.3, 0.02),
+        rect(-0.544, -0.61, 0.15, 1.22, { fill: 'paper' }),
+        ...Array.from({ length: 13 }, (_, i) => line(-0.544, -0.61 + (1.22 * (i + 1)) / 14, -0.47, -0.61 + (1.22 * (i + 1)) / 14)),
+        rect(-1.2, -0.42, 0.33, 0.84, { fill: 'paper' }),
+      ],
+    },
+    // an electric piano: the case, its keys on the player's side, the two
+    // knobs at the left end of the keys
+    'electric-piano': {
+      w: 1.15,
+      h: 0.56,
+      tag: '',
+      shapes: [box(1.15, 0.56, { r: 0.04 }), line(-0.5, -0.08, 0.42, -0.08), ...ticks(11, -0.5, 0.42, -0.08, -0.25), line(-0.56, 0.02, 0.56, 0.02), circle(0.48, -0.2, 0.025), circle(0.48, -0.12, 0.025)],
+    },
+    // a two-tier keyboard rig: the lower board nearest the player, the upper
+    // one higher and set back, the stand's two ends
+    'keyboard-rig': {
+      w: 1.4,
+      h: 0.7,
+      tag: '',
+      shapes: [
+        line(-0.62, -0.32, -0.62, 0.32),
+        line(0.62, -0.32, 0.62, 0.32),
+        rect(-0.66, -0.34, 1.32, 0.3, { fill: 'paper', r: 0.03 }),
+        line(-0.6, -0.2, 0.6, -0.2),
+        ...ticks(13, -0.6, 0.6, -0.2, -0.33),
+        rect(-0.5, -0.04, 1.0, 0.3, { fill: 'paper', r: 0.03 }),
+        line(-0.45, 0.07, 0.45, 0.07),
+        ...ticks(9, -0.45, 0.45, 0.07, -0.03),
+      ],
+    },
+    // a Hammond-type organ: the console, its two manuals and drawbars on the
+    // player's side, the pedalboard and the bench upstage
+    organ: {
+      w: 1.24,
+      h: 1.32,
+      tag: '',
+      shapes: [
+        rect(-0.47, -0.66, 0.94, 0.38, { fill: 'paper', r: 0.02 }),
+        ...ticks(9, -0.4, 0.4, -0.27, -0.1),
+        rect(-0.62, -0.08, 1.24, 0.74, { fill: 'paper', r: 0.02 }),
+        rect(-0.43, -0.08, 0.86, 0.1, { fill: 'none' }),
+        rect(-0.43, 0.04, 0.86, 0.09, { fill: 'none' }),
+        rect(-0.2, 0.15, 0.4, 0.05, { fill: 'tone' }),
+        line(-0.58, 0.24, 0.58, 0.24),
+      ],
+    },
+    // a Leslie speaker: its cabinet from above, the cable at the back
+    // (the box is a little deeper than the 0.52 m cabinet: its leads)
+    leslie: {
+      w: 0.74,
+      h: 0.6,
+      tag: '',
+      shapes: [rect(-0.37, -0.24, 0.74, 0.52, { fill: 'paper', r: 0.03 }), rect(-0.33, -0.2, 0.66, 0.44, { fill: 'none' }), line(0.1, -0.24, 0.21, -0.29), line(0.2, -0.24, 0.33, -0.28)],
+    },
+    // a violin or viola, held level from the player's left shoulder, its
+    // scroll forward and to the player's left (+x)
+    violin: {
+      w: 0.45,
+      h: 0.55,
+      tag: '',
+      shapes: turnedShapes(
+        [
+          mirrored([0, -0.27, 0.07, -0.265, 0.105, -0.2, 0.095, -0.13, 0.06, -0.09, 0.055, -0.06, 0.07, -0.02, 0.085, 0.03, 0.07, 0.08, 0, 0.09]),
+          rect(-0.015, -0.05, 0.03, 0.26, { fill: 'ink' }),
+          circle(0, 0.25, 0.025, { fill: 'paper' }),
+          line(-0.04, -0.13, 0.04, -0.13),
+        ],
+        -35,
+        0.015,
+        0,
+      ),
+    },
+    // a cello with its chair: the player sits on the chair, the cello in
+    // front, leaning back, the endpin toward the audience
+    cello: {
+      w: 0.5,
+      h: 1.0,
+      tag: '',
+      shapes: [
+        rect(-0.225, -0.5, 0.45, 0.42, { fill: 'paper', r: 0.04 }),
+        line(-0.2, -0.44, 0.2, -0.44),
+        mirrored([0, -0.1, 0.12, -0.09, 0.17, -0.04, 0.13, 0.02, 0.12, 0.06, 0.16, 0.11, 0.22, 0.17, 0.19, 0.24, 0.08, 0.28, 0, 0.285]),
+        line(0, 0.285, 0, 0.47),
+        rect(-0.022, -0.3, 0.044, 0.33, { fill: 'ink' }),
+        circle(0, -0.31, 0.03, { fill: 'paper' }),
+        line(-0.06, 0.13, 0.06, 0.13),
+      ],
+    },
+    // a pedal harp and the harpist's stool: the harp leans back onto the
+    // player's right shoulder, so it is turned a little; the column and its
+    // crown toward the audience, the body widening down to the base
+    harp: {
+      w: 0.6,
+      h: 1.24,
+      tag: '',
+      shapes: [
+        rect(-0.219, -0.609, 0.438, 0.328, { fill: 'paper', r: 0.04 }),
+        ...turnedShapes(
+          [
+            rect(-0.2125, 0.1125, 0.425, 0.366, { fill: 'paper', r: 0.03 }),
+            poly([-0.078, -0.484, 0.078, -0.484, 0.27, 0.256, 0.21, 0.34, -0.21, 0.34, -0.27, 0.256]),
+            line(0, 0.41, 0, -0.475),
+            circle(0, 0.419, 0.085, { fill: 'ink' }),
+          ],
+          -10,
+          -0.041,
+          0.094,
+        ),
+      ],
+    },
+    // a banjo laid face up, neck upstage (as the acoustic instrument is drawn)
+    banjo: {
+      w: 0.4,
+      h: 0.95,
+      tag: '',
+      shapes: [
+        rect(-0.025, -0.43, 0.05, 0.5, { fill: 'paper' }),
+        poly([-0.04, -0.475, 0.04, -0.475, 0.035, -0.4, -0.035, -0.4]),
+        circle(-0.04, -0.12, 0.014, { fill: 'ink' }),
+        circle(0, 0.25, 0.185, { fill: 'paper' }),
+        circle(0, 0.25, 0.15, { fill: 'paper' }),
+        line(-0.05, 0.31, 0.05, 0.31),
+        line(0, 0.31, 0, 0.42),
+      ],
+    },
+    // a mandolin laid face up, neck upstage
+    mandolin: {
+      w: 0.3,
+      h: 0.66,
+      tag: '',
+      shapes: [
+        rect(-0.018, -0.203, 0.036, 0.18, { fill: 'paper' }),
+        poly([-0.042, -0.31, 0.042, -0.31, 0.02, -0.203, -0.02, -0.203]),
+        mirrored([0, -0.028, 0.06, -0.01, 0.11, 0.08, 0.135, 0.16, 0.125, 0.24, 0.08, 0.295, 0, 0.31]),
+        circle(0, 0.08, 0.045),
+        line(-0.045, 0.147, 0.045, 0.147),
+        rect(-0.03, 0.237, 0.06, 0.06, { fill: 'none' }),
+      ],
+    },
+    // an accordion on the player's chest: the treble keyboard on the
+    // player's right (−x), the bellows, the bass buttons on the left
+    accordion: {
+      w: 0.5,
+      h: 0.3,
+      tag: '',
+      shapes: [
+        rect(-0.11, -0.095, 0.23, 0.19, { fill: 'paper' }),
+        ...ticks(5, -0.11, 0.12, -0.095, 0.095),
+        rect(-0.25, -0.11, 0.14, 0.22, { fill: 'paper', r: 0.015 }),
+        rect(-0.25, -0.11, 0.035, 0.22, { fill: 'tone' }),
+        rect(0.12, -0.09, 0.12, 0.18, { fill: 'paper', r: 0.015 }),
+        line(-0.15, -0.11, -0.12, -0.15),
+        line(0.17, -0.09, 0.14, -0.15),
+      ],
+    },
+    // a saxophone as it is held: the mouthpiece at the player, the body
+    // down and forward to the player's right, the bell opening up and forward
+    saxophone: {
+      w: 0.35,
+      h: 0.43,
+      tag: '',
+      shapes: [
+        line(0.081, -0.21, 0.081, -0.156),
+        line(0.081, -0.156, 0.059, -0.069),
+        poly([0.04, -0.069, 0.078, -0.069, 0.03, 0.125, -0.046, 0.125]),
+        circle(-0.025, 0.15, 0.062, { fill: 'paper' }),
+        circle(-0.025, 0.15, 0.042),
+      ],
+    },
+    // a trombone as it is held: the slide reaching toward the audience, the
+    // bell on the player's left (+x) facing the audience, the tuning slide
+    // back over the player's shoulder
+    trombone: {
+      // (the bell rim 0.5 m ahead of the mouthpiece, the tuning crook 0.22 m
+      // behind it, the slide's end 0.94 m ahead: a tenor, slide closed)
+      w: 0.36,
+      h: 1.23,
+      tag: '',
+      shapes: [
+        { t: 'poly', pts: [-0.125, -0.33, -0.125, 0.575, -0.056, 0.575, -0.056, -0.27], closed: false, fill: 'none' },
+        { t: 'poly', pts: [-0.056, -0.27, -0.01, -0.27, -0.01, -0.6, 0.056, -0.6, 0.056, -0.044], closed: false, fill: 'none' },
+        poly([0.046, -0.044, 0.066, -0.044, 0.162, 0.156, -0.05, 0.156]),
+        line(-0.125, -0.33, -0.125, -0.38),
+      ],
+    },
+    // a DJ table: two media players either side of the mixer; the DJ is
+    // upstage, so the jog wheels and the faders are on the DJ's side
+    dj: {
+      w: 1.8,
+      h: 0.75,
+      tag: '',
+      shapes: [
+        box(1.8, 0.75, { r: 0.02 }),
+        ...[-0.63, 0.63].flatMap((cx) => [rect(cx - 0.17, -0.25, 0.34, 0.44, { fill: 'paper', r: 0.02 }), circle(cx, -0.07, 0.12), rect(cx - 0.1, 0.08, 0.2, 0.07, { fill: 'tone' })]),
+        rect(-0.17, -0.25, 0.34, 0.44, { fill: 'paper', r: 0.02 }),
+        ...ticks(4, -0.17, 0.17, -0.2, -0.1),
+        line(-0.08, -0.22, 0.08, -0.22),
+      ],
+    },
+  };
+}
+
 
 /** Kinds whose shapes are a UNIT box (−0.5…0.5), stretched to the object's
  *  own width and depth. */
@@ -183,10 +574,32 @@ const KEY_NAME: Record<SpObjectKind, string> = {
   'guitar-amp': 'Amplifier (guitar or bass)',
   'bass-amp': 'Amplifier (guitar or bass)',
   keyboard: 'Keyboard',
-  piano: 'Piano',
+  piano: 'Upright piano',
   'acoustic-guitar': 'Acoustic instrument',
   horn: 'Horn',
   playback: 'Playback rig',
+  choir: 'Choir on a riser',
+  'e-drums': 'Electronic drum kit',
+  cajon: 'Cajón',
+  djembe: 'Djembe',
+  tabla: 'Tabla (on a floor rug)',
+  'steel-pan': 'Steel pan',
+  vibraphone: 'Vibraphone',
+  'upright-bass': 'Upright bass',
+  'grand-piano': 'Grand piano',
+  'electric-piano': 'Electric piano',
+  'keyboard-rig': 'Two-tier keyboard rig',
+  organ: 'Hammond organ',
+  leslie: 'Leslie speaker',
+  violin: 'Violin or viola',
+  cello: 'Cello (with its chair)',
+  harp: 'Harp',
+  banjo: 'Banjo',
+  mandolin: 'Mandolin',
+  accordion: 'Accordion',
+  saxophone: 'Saxophone',
+  trombone: 'Trombone',
+  dj: 'DJ table',
   di: 'DI',
   wedge: 'Wedge monitor (wide side faces the performer)',
   iem: 'In-ear monitor equipment',
@@ -205,18 +618,40 @@ const KEY_NAME: Record<SpObjectKind, string> = {
  *  monitors, then the stage itself. */
 const KEY_ORDER: readonly SpObjectKind[] = [
   'performer',
+  'choir',
   'drum-kit',
+  'e-drums',
   'percussion',
   'congas',
   'timbales',
   'bongo',
+  'cajon',
+  'djembe',
+  'tabla',
+  'steel-pan',
+  'vibraphone',
   'guitar-amp',
   'bass-amp',
+  'upright-bass',
   'keyboard',
   'piano',
+  'grand-piano',
+  'electric-piano',
+  'keyboard-rig',
+  'organ',
+  'leslie',
   'acoustic-guitar',
+  'violin',
+  'cello',
+  'harp',
+  'banjo',
+  'mandolin',
+  'accordion',
   'horn',
+  'saxophone',
+  'trombone',
   'playback',
+  'dj',
   'mic-stand',
   'di',
   'wedge',
@@ -299,7 +734,10 @@ export function spStageMeters(p: SpProject): { width: number; depth: number; toS
     const k = unit === 'ft' ? 0.3048 : 1;
     return { width: width * k, depth: depth * k, toScale: true };
   }
-  return { ...spAssumedStageM(p.performers.length), toScale: false };
+  const assumed = spAssumedStageM(p.performers.length);
+  // a circular stage in the round is as deep as it is wide (2026-11-13)
+  if (p.stage.shape === 'round' && p.stage.roundForm !== 'square') return { width: assumed.width * 0.8, depth: assumed.width * 0.8, toScale: false };
+  return { ...assumed, toScale: false };
 }
 
 /** An object's box in METERS on the drawing: where its center is and how big

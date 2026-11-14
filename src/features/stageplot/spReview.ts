@@ -19,8 +19,8 @@
  * Pure.
  */
 import { SP_DEVICE_WORD, SP_NEED_WORD } from './spCatalog.ts';
-import { spDiTotals, spSummary } from './spDerive.ts';
-import { spBrokenRefs, spObjectOfSource, spOnStage, spPartner, spPatch } from './spModel.ts';
+import { spBoxUse, spDiTotals, spSummary } from './spDerive.ts';
+import { spBoxName, spBoxes, spBrokenRefs, spObjectOfSource, spOnStage, spPartner, spPatch } from './spModel.ts';
 
 const hasText = (s: string): boolean => s.trim().length > 0;
 /** A phone number has at least five digits (the Setup field's warning uses
@@ -51,6 +51,7 @@ export type SpIssueAction =
   | 'renumber'
   | 'unreserve'
   | 'cue-audience-ok'
+  | 'box-auto'
   | 'edit';
 
 export type SpIssue = {
@@ -64,7 +65,7 @@ export type SpIssue = {
   packetText?: string;
   /** Where to go to fix it, and which row. */
   area: SpArea;
-  target: { kind: 'input' | 'source' | 'performer' | 'mix' | 'device' | 'object' | 'di' | 'extra' | 'patch' | 'project'; id: SpId | null; patchId?: SpPatchId };
+  target: { kind: 'input' | 'source' | 'performer' | 'mix' | 'device' | 'object' | 'di' | 'extra' | 'box' | 'patch' | 'project'; id: SpId | null; patchId?: SpPatchId };
   actions: SpIssueAction[];
   /** The field that answers it, when it is one field of the row (GO TO
    *  scrolls the popup to it). */
@@ -72,7 +73,11 @@ export type SpIssue = {
 };
 
 /** Icons that stand for something that normally makes sound. */
-const SOUND_KINDS: readonly SpObjectKind[] = ['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'vocal-mic'];
+const SOUND_KINDS: readonly SpObjectKind[] = [
+  ...(['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback', 'vocal-mic'] as const),
+  // more symbols for more diverse music (2026-11-13): every one makes sound
+  ...(['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'] as const),
+];
 /** Icons that stand for a monitor device. */
 const MONITOR_KINDS: readonly SpObjectKind[] = ['wedge', 'iem', 'drum-fill', 'sidefill'];
 
@@ -232,6 +237,45 @@ export function spReview(p: SpProject): SpIssue[] {
     }
   }
 
+  // STAGE BOXES (2026-11-13). A socket given to two inputs, and an input on a
+  // socket the box does not have, cannot both be plugged in: corrected
+  // before Ready, as a duplicate channel is. An input with no socket is a
+  // QUESTION (some inputs go to the console directly), asked once for all of
+  // them; a box with nothing plugged in is a question too.
+  if (spBoxes(p).length) {
+    for (const u of spBoxUse(p)) {
+      const name = spBoxName(u.box);
+      for (const d of u.doubled) {
+        const names = d.inputs.map((i) => i.label).join(' and ');
+        add({ key: `boxdup:${u.box.id}:${d.socket}`, rule: 'box-socket-twice', level: 'block', text: `${name} socket ${d.socket} is given to ${names}. One socket takes one cable: give each its own socket.`, area: 'inputs', target: { kind: 'input', id: d.inputs[1].id }, actions: ['edit'], field: 'box' });
+      }
+      if (u.over.length) {
+        const list = u.over.map((x) => `${x.input.label} on ${x.socket}`).join(', ');
+        add({ key: `boxover:${u.box.id}`, rule: 'box-over-capacity', level: 'block', text: `${name} has ${u.box.inputs} input socket${u.box.inputs === 1 ? '' : 's'}, and ${u.over.length === 1 ? 'an input is' : `${u.over.length} inputs are`} on a socket past ${u.box.inputs} (${list}). Move ${u.over.length === 1 ? 'it' : 'them'} to another box or socket, or correct the size of ${name}.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'] });
+      }
+      if (!u.plugged.length) {
+        add({ key: `boxempty:${u.box.id}`, rule: 'box-empty', level: 'ask', text: `${name} has nothing plugged into it. Choose ${name} in an input’s editor, or remove ${name} if the stage does not need it.`, area: 'inputs', target: { kind: 'box', id: u.box.id }, actions: ['edit'] });
+      }
+    }
+    const loose = p.inputs.filter((i) => !i.box && !i.direct);
+    if (loose.length) {
+      // a long list is cut to six names and a count, so it reads on a phone
+      const names = loose.length > 7 ? [...loose.slice(0, 6).map((i) => i.label), `${loose.length - 6} more`] : loose.map((i) => i.label);
+      const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
+      add({
+        key: 'boxnone',
+        rule: 'box-none',
+        level: 'ask',
+        text: `${loose.length === 1 ? `${list} has` : `${loose.length} inputs have`} no stage box socket${loose.length === 1 ? '' : ` (${list})`}. Does ${loose.length === 1 ? 'it' : 'each'} plug into a stage box, or go to the console directly?`,
+        packetText: `${loose.length === 1 ? `${list} has` : `${loose.length} inputs have`} no stage box socket yet${loose.length === 1 ? '' : ` (${list})`}.`,
+        area: 'inputs',
+        target: { kind: 'input', id: loose[0].id },
+        actions: ['box-auto', 'edit'],
+        field: 'box',
+      });
+    }
+  }
+
   // a riser drawn on the stage that nobody is asked for
   if (p.objects.some((o) => o.kind === 'riser') && !p.extras.some((e) => e.kind === 'riser')) {
     const o = p.objects.find((x) => x.kind === 'riser');
@@ -293,7 +337,12 @@ export function spReview(p: SpProject): SpIssue[] {
     add({ key: `pfplace:${pf.id}`, rule: 'performer-unplaced', level: 'ask', text: `${pf.name || 'A performer'} is not on the stage yet.`, area: 'stage', target: { kind: 'performer', id: pf.id }, actions: ['locate'] });
   }
   for (const o of p.objects) {
-    if (!spOnStage(o) && !o.offstageOk) {
+    // per shape: a thrust's tongue and a wing are on the stage (spShape). A
+    // stage box or an equipment rack beside the stage is where such things
+    // stand (monitor world, a box on the floor by the stage): not a question
+    // (expert review 2026-11-13)
+    const rackGear = o.kind === 'stage-box' || o.kind === 'rack' || (o.kind === 'iem' && p.devices.find((d) => d.id === o.deviceId)?.type === 'iem-tx');
+    if (!spOnStage(o, p.stage) && !o.offstageOk && !rackGear) {
       add({ key: `off:${o.id}`, rule: 'object-offstage', level: 'ask', text: `${o.label || 'An object'} is outside the stage.`, area: 'stage', target: { kind: 'object', id: o.id }, actions: ['locate', 'object-offstage-ok'] });
     }
     if (SOUND_KINDS.includes(o.kind) && !o.sourceId && !o.inputId && !o.visualOnly) {

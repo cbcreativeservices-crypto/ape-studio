@@ -20,8 +20,9 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SP_DEVICE_WORD } from '../../../../features/stageplot/spCatalog';
-import { spMixesOf } from '../../../../features/stageplot/spDerive';
-import { spDevice, spDuplicateObject, spGroup, spInput, spLocationWord, spMix, spObject, spOnStage, spPerformer, spRemoveObjects, spSource, spUngroup, spUpdateDevice, spUpdateObject } from '../../../../features/stageplot/spModel';
+import { spBoxLine, spBoxUse, spMixesOf } from '../../../../features/stageplot/spDerive';
+import { spAddBox, spBox, spBoxName, spBoxObject, spBoxes, spDevice, spDuplicateObject, spGroup, spInput, spLinkBoxObject, spLocationWord, spMix, spObject, spOnStage, spPerformer, spRemoveObjects, spSource, spUngroup, spUpdateBox, spUpdateDevice, spUpdateObject } from '../../../../features/stageplot/spModel';
+import { spShapeOf } from '../../../../features/stageplot/spShape';
 import { spIsSized } from '../../../../features/stageplot/spSymbols';
 import type { SpId, SpObject, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -90,6 +91,9 @@ export function StageInspector({
   const input = o.inputId ? spInput(p, o.inputId) : undefined;
   const device = spDevice(p, o.deviceId);
   const deviceMix = spMix(p, device?.mixId ?? null);
+  const box = o.kind === 'stage-box' ? spBox(p, o.boxId) : undefined;
+  const boxUse = box ? spBoxUse(p).find((u) => u.box.id === box.id) : undefined;
+  const looseBoxes = o.kind === 'stage-box' && !box ? spBoxes(p).filter((b) => !spBoxObject(p, b.id)) : [];
   const mixes = o.kind === 'performer' && o.performerId ? spMixesOf(p, o.performerId) : [];
   const badges = stageInputBadges(p, o);
   // A symbol that stands for a SOURCE or an INPUT may carry a short name on
@@ -109,12 +113,20 @@ export function StageInspector({
             {name}
           </Text>
         ) : null}
-        <Text style={styles.sub}>{[stageObjectKindName(o.kind).toLowerCase() === name.toLowerCase() ? '' : stageObjectKindName(o.kind), spLocationWord(o), stageFacingWord(o.rot)].filter(Boolean).join(' · ')}</Text>
+        <Text style={styles.sub}>{[stageObjectKindName(o.kind).toLowerCase() === name.toLowerCase() ? '' : stageObjectKindName(o.kind), spLocationWord(o, p.stage), stageFacingWord(o.rot, p.stage)].filter(Boolean).join(' · ')}</Text>
       </View>
 
       {/* ── name ── */}
       {o.kind === 'performer' && performer ? (
         <Note>{`The plot prints this performer’s name from Setup: ${performer.name || 'not named yet'}.`}</Note>
+      ) : box ? (
+        <TextField
+          label="Name of this stage box"
+          value={box.name}
+          onCommit={(t) => (t.trim() && t.trim() !== box.name ? ed.apply((q) => spUpdateBox(q, box.id, { name: t.trim() })) : undefined)}
+          placeholder="SB1"
+          hint="The plot prints it beside the box, and the input list says it with each socket (SB1 · 7)."
+        />
       ) : (
         <>
           <TextField
@@ -144,10 +156,10 @@ export function StageInspector({
             <TextField label={posLabel(p, 'y')} value={String(stagePosValue(p, 'y', o.y))} onCommit={typed('y')} keyboard="numeric" width="half" />
           </View>
           {typedSaid?.part === 'position' ? <Note tone="warning">{typedSaid.text}</Note> : null}
-          <Text style={styles.hint}>Type a position to place it exactly. Across is measured from the stage right edge (the left of the drawing). Depth is measured from the upstage edge (the top).</Text>
+          <Text style={styles.hint}>Type a position to place it exactly. Across is measured from the stage right edge (the left of the drawing). Depth is measured from the upstage edge (the top).{spShapeOf(p.stage) === 'rect' ? '' : ' These are measured on the main stage: a place in the stage right wing is past its stage right edge, and a place on a thrust is past its front edge. In the round, the top edge is the far side.'}</Text>
         </>
       ) : null}
-      {!spOnStage(o) ? (
+      {!spOnStage(o, p.stage) ? (
         <>
           <Note tone="warning">{`${name} is outside the stage. That is allowed: the plot shows it there, marked OFF STAGE.`}</Note>
           <Switch label="It is off the stage on purpose" value={o.offstageOk} onChange={(v) => set({ offstageOk: v })} hint="Turn this on and the review stops asking about it." />
@@ -167,6 +179,43 @@ export function StageInspector({
           {typedSaid?.part === 'size' ? <Note tone="warning">{typedSaid.text}</Note> : null}
           <TextField label="Height or size note" value={o.sizeNote} onCommit={(t) => set({ sizeNote: t })} placeholder={o.kind === 'riser' ? 'For example: 12 in high' : 'In your own words'} />
           <Text style={styles.hint}>On the drawing, drag the round handle at its corner to size it.</Text>
+        </>
+      ) : null}
+
+      {/* ── a stage box: its sockets, or making it a numbered box ── */}
+      {o.kind === 'stage-box' ? (
+        <>
+          <Text style={styles.heading} accessibilityRole="header">
+            STAGE BOX
+          </Text>
+          {box && boxUse ? (
+            <>
+              <Text style={styles.line}>{spBoxLine(boxUse)}.</Text>
+              <View style={styles.row}>
+                <Button label="GO TO ITS SOCKETS ›" a11yLabel={`Go to stage box ${spBoxName(box)} in Inputs`} onPress={() => ed.goTo('inputs', { kind: 'box', id: box.id })} />
+                <Button label={`UNLINK FROM ${spBoxName(box).toUpperCase()}`} tone="plain" a11yLabel={`Unlink this symbol from stage box ${spBoxName(box)}. The symbol stays on the drawing. ${spBoxName(box)} stays in your list, with no place on the stage.`} onPress={() => ed.apply((q) => spLinkBoxObject(q, id, null))} />
+              </View>
+              <Text style={styles.hint}>{`Unlinking leaves the symbol on the drawing. ${spBoxName(box)} stays in your list, with no place on the stage.`}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.hint}>{`This symbol has no number and no sockets yet. Make it a numbered stage box, then plug inputs into it in Inputs.${looseBoxes.length ? ' Or, if it is a box you already listed in Inputs, tap its name.' : ''}`}</Text>
+              <Button
+                tone="primary"
+                label="MAKE IT A NUMBERED STAGE BOX"
+                a11yLabel="Make this symbol a numbered stage box with 16 input sockets"
+                onPress={() =>
+                  ed.apply((q) => {
+                    const r = spAddBox(q, { place: false });
+                    return spLinkBoxObject(r.p, id, r.id);
+                  })
+                }
+              />
+              {looseBoxes.map((b) => (
+                <Button key={b.id} label={`THIS IS ${spBoxName(b).toUpperCase()}`} a11yLabel={`This symbol is stage box ${spBoxName(b)}, which has no place on the stage yet`} onPress={() => ed.apply((q) => spLinkBoxObject(q, id, b.id))} />
+              ))}
+            </>
+          )}
         </>
       ) : null}
 
@@ -248,7 +297,7 @@ export function StageInspector({
         <MoreDetails title="Group it with other objects">
           <Text style={styles.hint}>A group moves, duplicates and is removed together: a drummer, the kit and the riser under them, for example.</Text>
           {others.map((x) => (
-            <Switch key={x.id} label={stageListName(p, x)} hint={`${stageObjectKindName(x.kind)} · ${spLocationWord(x)}`} value={groupPick.includes(x.id)} onChange={(on) => setGroupPick((cur) => (on ? [...cur.filter((c) => c !== x.id), x.id] : cur.filter((c) => c !== x.id)))} />
+            <Switch key={x.id} label={stageListName(p, x)} hint={`${stageObjectKindName(x.kind)} · ${spLocationWord(x, p.stage)}`} value={groupPick.includes(x.id)} onChange={(on) => setGroupPick((cur) => (on ? [...cur.filter((c) => c !== x.id), x.id] : cur.filter((c) => c !== x.id)))} />
           ))}
           <Button
             tone="primary"

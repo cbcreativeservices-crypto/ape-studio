@@ -48,12 +48,14 @@
  */
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Platform, View, type ViewStyle } from 'react-native';
-import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../modules/ape-gesture-exclusion';
-import { spStageAspect } from '../../../../features/stageplot/spModel';
+import { spOnStage, spStageAspect } from '../../../../features/stageplot/spModel';
+import { spFrontEdges, spIsCircle, spShapeDirections, spShapeOf, spThrustRect, spWingRects } from '../../../../features/stageplot/spShape';
 import type { SpId, SpProject } from '../../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../../theme/tokens';
 import { StageDeck } from '../../cableinstall/scenes/floorArt';
+import { useUid } from '../../cableinstall/svgArt';
 import { StageInFullScreen, useStageTextScale } from '../../rack/stageAspect';
 import { fingerAt, fingerOffset, touchToGlass, type Finger } from '../../roomdesign/planGeom';
 import { STAGE_INK, StageObjectArt } from './stageArt';
@@ -78,7 +80,8 @@ import {
   stageNaturalHeight,
   stageObjectBox,
   stagePan,
-  stageRegion,
+  stageRegionFor,
+  stageShapeGridPath,
   stageResizeHandle,
   stageResizeTo,
   stageSymbolScale,
@@ -167,6 +170,72 @@ const Deck = memo(function Deck({ x, y, w, h, xs, ys }: { x: number; y: number; 
   );
 });
 
+const LIP = '#8a7450';
+const LIP_LIGHT = '#e7d3a4';
+const EDGE = '#5d5142';
+
+/** A STAGE THAT IS NOT A RECTANGLE (2026-11-13): a thrust's tongue, the
+ *  circle or square of a stage in the round, the wings at each side. The
+ *  same timber deck and the same bright lip on every edge the audience sees;
+ *  a wing is offstage floor, darker, with a dashed edge and its name. */
+function ShapeDeck({ p, T, grid }: { p: SpProject; T: StageTransform; grid: string }) {
+  const uid = useUid();
+  const g = (x: number, y: number) => T.toGlass({ x, y });
+  const main = g(0, 0);
+  const front = spFrontEdges(p.stage);
+  const tongue = spThrustRect(p.stage);
+  const wings = spWingRects(p.stage);
+  const circle = spIsCircle(p.stage);
+  const c = g(0.5, 0.5);
+  const r = T.kx / 2;
+  const tg = tongue ? { a: g(tongue.x0, tongue.y0), b: g(tongue.x1, tongue.y1) } : null;
+  const outline = tg ? `M${main.x} ${main.y}H${main.x + T.kx}V${main.y + T.ky}H${tg.b.x}V${tg.b.y}H${tg.a.x}V${main.y + T.ky}H${main.x}Z` : `M${main.x} ${main.y}h${T.kx}v${T.ky}h${-T.kx}Z`;
+  return (
+    <G>
+      {wings.map((w) => {
+        const a = g(w.r.x0, w.r.y0);
+        const b = g(w.r.x1, w.r.y1);
+        const ww = b.x - a.x;
+        // (its name is printed in the frame above it, clear of what stands in it)
+        return <Rect key={w.side} x={a.x} y={a.y} width={ww} height={b.y - a.y} fill="#18161a" stroke={EDGE} strokeWidth={1} strokeDasharray="4 3" />;
+      })}
+      {circle ? (
+        <>
+          <Defs>
+            <ClipPath id={`${uid}c`}>
+              <Circle cx={c.x} cy={c.y} r={r} />
+            </ClipPath>
+          </Defs>
+          <G clipPath={`url(#${uid}c)`}>
+            <StageDeck x={main.x} y={main.y} w={T.kx} h={T.ky} />
+            {grid ? <Path d={grid} stroke="rgba(255,255,255,0.13)" strokeWidth={0.6} /> : null}
+          </G>
+          {/* every side faces the audience: the lip all round */}
+          <Circle cx={c.x} cy={c.y} r={r} fill="none" stroke={LIP} strokeWidth={3.6} />
+          <Circle cx={c.x} cy={c.y} r={r - 0.4} fill="none" stroke={LIP_LIGHT} strokeWidth={1.1} />
+        </>
+      ) : (
+        <>
+          <StageDeck x={main.x} y={main.y} w={T.kx} h={T.ky} />
+          {tg ? <StageDeck x={tg.a.x} y={tg.a.y} w={tg.b.x - tg.a.x} h={tg.b.y - tg.a.y} /> : null}
+          {grid ? <Path d={grid} stroke="rgba(255,255,255,0.13)" strokeWidth={0.6} /> : null}
+          <Path d={outline} fill="none" stroke={EDGE} strokeWidth={1} />
+          {front.lines.map(([x1, y1, x2, y2], k) => {
+            const a = g(x1, y1);
+            const b = g(x2, y2);
+            return (
+              <G key={k}>
+                <Line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={LIP} strokeWidth={4} strokeLinecap="round" />
+                <Line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={LIP_LIGHT} strokeWidth={1.2} strokeLinecap="round" />
+              </G>
+            );
+          })}
+        </>
+      )}
+    </G>
+  );
+}
+
 /** A word with a dark halo behind it, so it reads on the deck. */
 function Halo({ x, y, text, fs, anchor, fill, family }: { x: number; y: number; text: string; fs: number; anchor: 'start' | 'middle' | 'end'; fill: string; family: string }) {
   return (
@@ -198,7 +267,8 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const aspect = spStageAspect(p);
   // The region follows the SAVED objects only. A drag does not touch the
   // project, so the picture cannot re-fit (and run away) under the finger.
-  const region = useMemo(() => stageRegion(p.objects), [p.objects]);
+  // (the shape's floor too: a thrust's tongue, the wings)
+  const region = useMemo(() => stageRegionFor(p), [p.objects, p.stage]);
   // FULL SCREEN with the phone upright: the whole stage at its own height, at
   // the TOP, the key under it; the dark glass below takes the dock's trays
   const gh = inFull ? Math.min(split.stage, stageNaturalHeight(aspect, gw, region)) : split.stage;
@@ -293,7 +363,11 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
     leftOutRef.current?.(leftOut, codesOut, crowded, numbersOut);
   }, [leftOut, codesOut, crowded, numbersOut, inFull]);
 
-  const grid = useMemo(() => (p.stage.grid ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T]);
+  const shaped = spShapeOf(p.stage) !== 'rect';
+  const grid = useMemo(() => (p.stage.grid && !shaped ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T, shaped]);
+  const shapeGrid = useMemo(() => (p.stage.grid && shaped ? stageShapeGridPath(p, T) : ''), [p, T, shaped]);
+  const words = spShapeDirections(p.stage);
+  const round = spShapeOf(p.stage) === 'round';
 
   // ── touch ─────────────────────────────────────────────────────────────────
   const ref = useRef({ p, boxes, T, s, gw, gh, view, selectedId, inFull, onSelect, onMove, onResize, onView });
@@ -392,7 +466,8 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const midX = gw / 2;
   const midY = (STAGE_FRAME.top + gh - STAGE_FRAME.bottom) / 2;
   const selName = selected ? stageListName(p, selected) : '';
-  const a11y = `Stage plot, seen from above, with the audience at the bottom: stage right is on the left. ${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`}. ${selected ? `${selName} is selected.` : 'Nothing is selected.'} The list of objects under the drawing moves each one without dragging.`;
+  const seen = round ? `Stage plot, seen from above, in the round: the audience is on every side, and the ${words.down.replace(' (AUDIENCE)', '').toLowerCase()} is at the bottom: stage right is on the left.` : 'Stage plot, seen from above, with the audience at the bottom: stage right is on the left.';
+  const a11y = `${seen} ${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`}. ${selected ? `${selName} is selected.` : 'Nothing is selected.'} The list of objects under the drawing moves each one without dragging.`;
   // the frame is the drawn art's own box, 3 units clear of it
   const ringCorners = selBox ? stageBoxCorners(selBox, 3) : null;
   const facing = selBox && !selBox.sized ? stageFacingPoint(selBox, 9) : null;
@@ -409,12 +484,13 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
       <View pointerEvents="none">
         <Svg aria-hidden {...SVG_HIDDEN_NATIVE} width={w} height={stageH} viewBox={`0 0 ${gw} ${gh}`}>
           <Rect x={0} y={0} width={gw} height={gh} fill={GLASS} />
-          <Deck x={deck.x} y={deck.y} w={T.kx} h={T.ky} xs={grid.xs} ys={grid.ys} />
+          {shaped ? <ShapeDeck p={p} T={T} grid={shapeGrid} /> : <Deck x={deck.x} y={deck.y} w={T.kx} h={T.ky} xs={grid.xs} ys={grid.ys} />}
 
           {order.map((o, i) => {
             const b = boxes[i];
             const at = livePos?.get(o.id) ?? o;
-            const off = at.x < 0 || at.x > 1 || at.y < 0 || at.y > 1;
+            // off the stage's floor, for its shape (a wing and a tongue are on it)
+            const off = !spOnStage(at, p.stage);
             return <StageObjectArt key={o.id} p={p} o={o} cx={b.cx} cy={b.cy} hw={b.hw} hh={b.hh} rot={b.rot} u={u} dim={off} />;
           })}
 
@@ -498,12 +574,39 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
           <Rect x={0} y={0} width={STAGE_FRAME.side} height={gh} fill={GLASS} />
           <Rect x={gw - STAGE_FRAME.side} y={0} width={STAGE_FRAME.side} height={gh} fill={GLASS} />
           <Rect x={STAGE_FRAME.side} y={STAGE_FRAME.top} width={Math.max(0, gw - STAGE_FRAME.side * 2)} height={Math.max(0, gh - STAGE_FRAME.top - STAGE_FRAME.bottom)} fill="none" stroke="#26262d" strokeWidth={0.8} />
-          <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
-            UPSTAGE
-          </SvgText>
-          <SvgText x={midX} y={gh - 5} fill={AMBER} fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
-            AUDIENCE / DOWNSTAGE
-          </SvgText>
+          {/* THE WINGS' NAMES, in the frame over each wing (the whole stage
+              only: zoomed in, a wing slides away under the fixed frame) */}
+          {T.zoom <= 1
+            ? spWingRects(p.stage).map((w) => {
+                const cx = T.toGlass({ x: (w.r.x0 + w.r.x1) / 2, y: 0 }).x;
+                return (
+                  <SvgText key={`wn${w.side}`} x={Math.max(STAGE_FRAME.side + 18, Math.min(gw - STAGE_FRAME.side - 18, cx))} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={9.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1}>
+                    {w.side === 'right' ? 'SR WING' : 'SL WING'}
+                  </SvgText>
+                );
+              })
+            : null}
+          {/* in the round there is no upstage: the far side and the
+              reference side (spShapeDirections) */}
+          {round ? (
+            <>
+              <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
+                {words.up}
+              </SvgText>
+              <SvgText x={midX} y={gh - 5} fill={AMBER} fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
+                {words.down}
+              </SvgText>
+            </>
+          ) : (
+            <>
+              <SvgText x={midX} y={STAGE_FRAME.top - 4.5} fill={WORD} fontSize={10} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
+                UPSTAGE
+              </SvgText>
+              <SvgText x={midX} y={gh - 5} fill={AMBER} fontSize={10.5} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1.4}>
+                AUDIENCE / DOWNSTAGE
+              </SvgText>
+            </>
+          )}
           {/* arrows that point at the audience, either side of the words */}
           {[-1, 1].map((side) => {
             const ax = midX + side * Math.min(gw / 2 - 24, 96);

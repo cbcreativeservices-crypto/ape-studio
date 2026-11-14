@@ -1367,7 +1367,9 @@ describe('the Stage screen', () => {
     for (let r = 0; r < 360; r += 5) assert.ok(`${r}° · ${stageFacingShort(r)}`.length <= 36, `${r}: ${stageFacingShort(r)}`);
     assert.equal(stageFacingShort(185), 'upstage, toward stage left');
     assert.match(area, /drag the stage to slide`/);
-    assert.match(area, /format: \(v\) => `\$\{turnOf\(v\)\}° · \$\{stageFacingShort\(turnOf\(v\)\)\}`/);
+    // (2026-11-13, on purpose: the stage is passed, so a stage in the round
+    // says the turn from its reference side; the wording is still one function)
+    assert.match(area, /format: \(v\) => `\$\{turnOf\(v\)\}° · \$\{stageFacingShort\(turnOf\(v\), p\.stage\)\}`/);
     const ft = blank({ width: 24, depth: 16, unit: 'ft' });
     assert.equal(stagePosWords(ft, { x: 0.5, y: 0.25 }), '12 ft from the stage right edge, 4 ft from the upstage edge');
     assert.equal(stageAxisWords(ft, 'y', -3 / 16), '3 ft behind the upstage edge');
@@ -1410,7 +1412,8 @@ describe('the Stage screen', () => {
     const list = code(`${SP}/stage/StageObjectList.tsx`);
     assert.match(list, /kind\.toLowerCase\(\) === name\.toLowerCase\(\) \? '' : kind/);
     // a short status line
-    assert.match(shown, /\$\{sel \? `Selected: \$\{selName\} \(\$\{stageWhere\(sel\)\}, \$\{stageFacingWord\(sel\.rot\)\}\)\.` : 'Nothing is selected\.'\}/);
+    // (2026-11-13, on purpose: the stage is passed, so the words follow its shape)
+    assert.match(shown, /\$\{sel \? `Selected: \$\{selName\} \(\$\{stageWhere\(sel, p\.stage\)\}, \$\{stageFacingWord\(sel\.rot, p\.stage\)\}\)\.` : 'Nothing is selected\.'\}/);
     // removing asks in place first, as the Inputs area does
     assert.match(shown, /<RemoveStep\s/);
   });

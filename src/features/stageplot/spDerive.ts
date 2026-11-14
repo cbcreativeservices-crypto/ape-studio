@@ -22,8 +22,8 @@
  * Pure. US spelling.
  */
 import { SP_CATEGORY_ORDER, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_EXTRA_KIND_WORD, SP_STAND_WORD, SP_SUPPLIER_WORD } from './spCatalog.ts';
-import { spPartner, spPatch } from './spModel.ts';
-import type { SpCapture, SpCategory, SpDeviceType, SpId, SpInput, SpMix, SpMixProvider, SpPatchId, SpProject, SpStand, SpSupplier } from './spTypes.ts';
+import { spBoxName, spBoxObject, spBoxes, spPartner, spPatch } from './spModel.ts';
+import type { SpCapture, SpCategory, SpDeviceType, SpId, SpInput, SpMix, SpMixProvider, SpPatchId, SpProject, SpStageBox, SpStand, SpSupplier } from './spTypes.ts';
 
 export type SpBySupplier = Record<SpSupplier, number>;
 const noSupplier = (): SpBySupplier => ({ band: 0, venue: 0, other: 0, tbc: 0 });
@@ -272,7 +272,7 @@ export type SpSummary = {
 /** One open question and the row to open to answer it. */
 export type SpOpenItem = {
   text: string;
-  kind: 'input' | 'di' | 'mix' | 'device' | 'extra';
+  kind: 'input' | 'di' | 'mix' | 'device' | 'extra' | 'box';
   id: SpId;
   /** The FIRST field to answer in that row (the screens scroll to it). */
   field: SpOpenField;
@@ -331,7 +331,80 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
   }
   for (const d of p.devices) if (d.supplier === 'tbc') open.push({ text: `${d.label || SP_DEVICE_WORD[d.type]}: who supplies it`, kind: 'device', id: d.id, field: 'supplier' });
   for (const e of p.extras) if (e.supplier === 'tbc') open.push({ text: `${e.label.trim() || SP_EXTRA_KIND_WORD[e.kind]}: who supplies it`, kind: 'extra', id: e.id, field: 'supplier' });
+  for (const b of spBoxes(p)) if (b.supplier === 'tbc') open.push({ text: `Stage box ${spBoxName(b)}: who supplies it`, kind: 'box', id: b.id, field: 'supplier' });
   return open;
+}
+
+/* ── stage boxes ────────────────────────────────────────────────────────── */
+
+export type SpBoxUse = {
+  box: SpStageBox;
+  /** Every input plugged into it, by socket. */
+  plugged: { input: SpInput; socket: number }[];
+  /** Sockets in use (inside the box's size). */
+  used: number[];
+  free: number;
+  /** Inputs on a socket number the box does not have. */
+  over: { input: SpInput; socket: number }[];
+  /** Sockets given to two inputs or more. */
+  doubled: { socket: number; inputs: SpInput[] }[];
+  /** It has a drawing on the stage. */
+  drawn: boolean;
+};
+
+/** What each stage box carries: sockets used and free, and what does not
+ *  fit (the review and the patch summary read this). */
+export function spBoxUse(p: SpProject): SpBoxUse[] {
+  return spBoxes(p).map((box) => {
+    const plugged = p.inputs.filter((i) => i.box?.boxId === box.id).map((input) => ({ input, socket: (input.box as { socket: number }).socket }));
+    plugged.sort((a, b) => a.socket - b.socket);
+    const bySocket = new Map<number, SpInput[]>();
+    for (const x of plugged) bySocket.set(x.socket, [...(bySocket.get(x.socket) ?? []), x.input]);
+    const used = [...bySocket.keys()].filter((s) => s <= box.inputs).sort((a, b) => a - b);
+    return {
+      box,
+      plugged,
+      used,
+      free: Math.max(0, box.inputs - used.length),
+      over: plugged.filter((x) => x.socket > box.inputs),
+      doubled: [...bySocket.entries()].filter(([, list]) => list.length > 1).map(([socket, inputs]) => ({ socket, inputs })),
+      drawn: !!spBoxObject(p, box.id),
+    };
+  });
+}
+
+/** "1–6, 9, 11–12": socket numbers as runs. */
+export function spSocketRuns(sockets: readonly number[]): string {
+  const list = [...new Set(sockets)].sort((a, b) => a - b);
+  const out: string[] = [];
+  for (let k = 0; k < list.length; ) {
+    let j = k;
+    while (j + 1 < list.length && list[j + 1] === list[j] + 1) j += 1;
+    out.push(j === k ? String(list[k]) : `${list[k]}–${list[j]}`);
+    k = j + 1;
+  }
+  return out.join(', ');
+}
+
+/** What a stage box is, in a few words: "16 inputs, 4 returns, digital". */
+export function spBoxSizeWords(b: SpStageBox): string {
+  const parts = [`${b.inputs} input${b.inputs === 1 ? '' : 's'}`];
+  if (b.returns != null) parts.push(`${b.returns} return${b.returns === 1 ? '' : 's'}`);
+  if (b.kind !== 'unknown') parts.push(b.kind === 'digital' ? 'digital' : 'analog');
+  return parts.join(', ');
+}
+
+/** The patch summary line of one box: "SB1 (16 inputs): sockets 1–12 used,
+ *  4 free". */
+export function spBoxLine(u: SpBoxUse): string {
+  return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)}): ${spBoxUseWords(u)}`;
+}
+
+/** "sockets 1–12 used, 4 free" (and what does not fit). */
+export function spBoxUseWords(u: SpBoxUse): string {
+  const used = u.used.length ? `socket${u.used.length === 1 ? '' : 's'} ${spSocketRuns(u.used)} used, ${u.free} free` : `nothing plugged in yet, ${u.free} free`;
+  const over = u.over.length ? `; ${u.over.length} input${u.over.length === 1 ? '' : 's'} on a socket it does not have` : '';
+  return `${used}${over}`;
 }
 
 export function spSummary(p: SpProject): SpSummary {
@@ -435,6 +508,8 @@ export function spTextSummary(p: SpProject): string {
   if (m.wirelessDevices) lines.push(`Wireless monitor devices: ${m.wirelessDevices} (radio frequency coordination needed).`);
   const dev = (Object.keys(m.devices) as SpDeviceType[]).filter((t) => m.devices[t] > 0).map((t) => spDeviceCountWord(t, m.devices[t]));
   if (dev.length) lines.push(`Monitor equipment: ${dev.join(', ')}.`);
+  const boxes = spBoxUse(p);
+  if (boxes.length) lines.push(`Stage boxes: ${boxes.map(spBoxLine).join('; ')}.`);
   if (s.open.length) lines.push(`To be confirmed: ${s.open.length} item${s.open.length === 1 ? '' : 's'} (listed in the packet).`);
   const c = p.contact;
   const who = [c.show.name ? c.name : '', c.show.role ? c.role : '', c.show.email ? c.email : '', c.show.phone ? c.phone : ''].filter(Boolean).join(', ');

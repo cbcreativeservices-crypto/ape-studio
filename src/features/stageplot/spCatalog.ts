@@ -157,10 +157,34 @@ export const SP_PALETTE: readonly SpPaletteItem[] = [
   { kind: 'guitar-amp', name: 'Guitar amplifier', group: 'instruments', label: 'Guitar amp', sized: false },
   { kind: 'bass-amp', name: 'Bass amplifier', group: 'instruments', label: 'Bass amp', sized: false },
   { kind: 'keyboard', name: 'Keyboard', group: 'instruments', label: 'Keys', sized: false },
-  { kind: 'piano', name: 'Piano', group: 'instruments', label: 'Piano', sized: false },
+  { kind: 'piano', name: 'Upright piano', group: 'instruments', label: 'Piano', sized: false },
   { kind: 'acoustic-guitar', name: 'Acoustic instrument', group: 'instruments', label: 'Acoustic', sized: false },
   { kind: 'horn', name: 'Horn', group: 'instruments', label: 'Horn', sized: false },
   { kind: 'playback', name: 'Playback rig', group: 'instruments', label: 'Playback', sized: false },
+  // more symbols for more diverse music (owner 2026-11-13): strings, keys,
+  // world percussion, folk, electronic, brass and reeds, a choir
+  { kind: 'choir', name: 'Choir on a riser', group: 'people', label: 'Choir', sized: false },
+  { kind: 'e-drums', name: 'Electronic drum kit', group: 'instruments', label: 'E-drums', sized: false },
+  { kind: 'cajon', name: 'Cajón', group: 'instruments', label: 'Cajón', sized: false },
+  { kind: 'djembe', name: 'Djembe', group: 'instruments', label: 'Djembe', sized: false },
+  { kind: 'tabla', name: 'Tabla', group: 'instruments', label: 'Tabla', sized: false },
+  { kind: 'steel-pan', name: 'Steel pan', group: 'instruments', label: 'Steel pan', sized: false },
+  { kind: 'vibraphone', name: 'Vibraphone', group: 'instruments', label: 'Vibes', sized: false },
+  { kind: 'upright-bass', name: 'Upright bass', group: 'instruments', label: 'Upright bass', sized: false },
+  { kind: 'grand-piano', name: 'Grand piano', group: 'instruments', label: 'Grand piano', sized: false },
+  { kind: 'electric-piano', name: 'Electric piano', group: 'instruments', label: 'Electric piano', sized: false },
+  { kind: 'keyboard-rig', name: 'Two-tier keyboard rig', group: 'instruments', label: 'Keys rig', sized: false },
+  { kind: 'organ', name: 'Hammond organ', group: 'instruments', label: 'Organ', sized: false },
+  { kind: 'leslie', name: 'Leslie speaker', group: 'instruments', label: 'Leslie', sized: false },
+  { kind: 'violin', name: 'Violin or viola', group: 'instruments', label: 'Violin', sized: false },
+  { kind: 'cello', name: 'Cello', group: 'instruments', label: 'Cello', sized: false },
+  { kind: 'harp', name: 'Harp', group: 'instruments', label: 'Harp', sized: false },
+  { kind: 'banjo', name: 'Banjo', group: 'instruments', label: 'Banjo', sized: false },
+  { kind: 'mandolin', name: 'Mandolin', group: 'instruments', label: 'Mandolin', sized: false },
+  { kind: 'accordion', name: 'Accordion', group: 'instruments', label: 'Accordion', sized: false },
+  { kind: 'saxophone', name: 'Saxophone', group: 'instruments', label: 'Sax', sized: false },
+  { kind: 'trombone', name: 'Trombone', group: 'instruments', label: 'Trombone', sized: false },
+  { kind: 'dj', name: 'DJ table', group: 'instruments', label: 'DJ', sized: false },
   { kind: 'mic-stand', name: 'Microphone on a stand', group: 'capture', label: '', sized: false },
   { kind: 'di', name: 'DI', group: 'capture', label: 'DI', sized: false },
   { kind: 'wedge', name: 'Wedge monitor', group: 'monitors', label: '', sized: false },
@@ -383,6 +407,292 @@ export const SP_PACKAGES: readonly SpPackage[] = [
     assumes: 'One microphone for a small percussion setup.',
     rows: [mic('Percussion', 'Condenser microphone', 'tall-boom')],
   },
+
+  /* ── more symbols for more diverse music (owner 2026-11-13) ──
+   * Common practice, checked by a live-sound reviewer. A pickup on a string
+   * instrument is a piezo: it wants a DI with a high-impedance input (or the
+   * player's own preamp), so the row says so. A clip-on or condenser
+   * microphone needs phantom power, but which microphone it is stays the
+   * band's answer, so phantom power stays "to be confirmed" like every row. */
+  ...stringPackages(),
+  {
+    id: 'grand-piano-mics',
+    name: 'Grand piano, two microphones',
+    category: 'keys',
+    source: 'Grand piano',
+    assumes: 'Two microphones inside the piano, under the lid, one over the low strings and one over the high strings, on tall boom stands.',
+    stereo: true,
+    rows: [
+      { label: 'Piano low', side: 'L', capture: 'mic', equipment: 'Condenser microphone', stand: 'tall-boom', connector: 'XLR' },
+      { label: 'Piano high', side: 'R', capture: 'mic', equipment: 'Condenser microphone', stand: 'tall-boom', connector: 'XLR' },
+    ],
+  },
+  {
+    id: 'grand-piano-pickup',
+    name: 'Piano pickup',
+    category: 'keys',
+    source: 'Grand piano',
+    assumes: 'The piano has a pickup system fitted. Its output reaches the mixer through one DI channel.',
+    rows: [di('Piano pickup', 'DI')],
+  },
+  {
+    id: 'leslie-mics',
+    name: 'Leslie, three microphones',
+    category: 'keys',
+    source: 'Organ',
+    assumes: 'The organ plays through its Leslie speaker: two microphones at the upper louvres, left and right of the horn, and one at the bass rotor opening. The Leslie has its own amplifier, so there is no DI. Add this from the organ OR the Leslie, not both: link the other symbol to the same source.',
+    stereo: true,
+    rows: [
+      { ...mic('Leslie top L', 'Dynamic instrument microphone', 'short-boom'), side: 'L' },
+      { ...mic('Leslie top R', 'Dynamic instrument microphone', 'short-boom'), side: 'R' },
+      mic('Leslie bottom', 'Kick drum microphone', 'short-boom'),
+    ],
+  },
+  {
+    id: 'leslie-two',
+    name: 'Leslie, two microphones',
+    category: 'keys',
+    source: 'Organ',
+    assumes: 'The organ plays through its Leslie speaker: one microphone at the upper louvres and one at the bass rotor opening. The Leslie has its own amplifier, so there is no DI. Add this from the organ OR the Leslie, not both: link the other symbol to the same source.',
+    rows: [mic('Leslie top', 'Dynamic instrument microphone', 'short-boom'), mic('Leslie bottom', 'Kick drum microphone', 'short-boom')],
+  },
+  {
+    id: 'organ-line',
+    name: 'Organ, stereo line out',
+    category: 'keys',
+    source: 'Organ',
+    assumes: 'A modern organ with its own rotary speaker effect: two DI channels, left and right, and no Leslie to mike. (A single keyboard-style organ is better drawn as a keyboard or a keyboard rig.)',
+    stereo: true,
+    rows: [
+      { ...di('Organ L', 'DI'), side: 'L' },
+      { ...di('Organ R', 'DI'), side: 'R' },
+    ],
+  },
+  {
+    id: 'ep-di',
+    name: 'Electric piano DI',
+    category: 'keys',
+    source: 'Electric piano',
+    assumes: 'An electric piano with passive pickups and no amplifier of its own: one DI channel with a high-impedance input.',
+    rows: [di('Electric piano', 'DI with a high-impedance input')],
+  },
+  {
+    id: 'ep-stereo',
+    name: 'Electric piano, stereo',
+    category: 'keys',
+    source: 'Electric piano',
+    assumes: 'The electric piano runs a stereo effect (a stereo tremolo, or the player’s own pedals): two DI channels, left and right.',
+    stereo: true,
+    rows: [
+      { ...di('Electric piano L', 'DI'), side: 'L' },
+      { ...di('Electric piano R', 'DI'), side: 'R' },
+    ],
+  },
+  {
+    id: 'keys-rig-two',
+    name: 'Two stereo keyboards',
+    category: 'keys',
+    source: 'Keys',
+    assumes: 'Two keyboards on a two-tier stand, each in stereo: four DI channels, two left and right pairs.',
+    stereo: true,
+    rows: [
+      { ...di('Keys 1 L', 'DI'), side: 'L' },
+      { ...di('Keys 1 R', 'DI'), side: 'R' },
+      { ...di('Keys 2 L', 'DI'), side: 'L' },
+      { ...di('Keys 2 R', 'DI'), side: 'R' },
+    ],
+  },
+  {
+    id: 'keys-submix',
+    name: 'Keyboard submix, stereo',
+    category: 'keys',
+    source: 'Keys',
+    assumes: 'The player mixes the keyboards on a small mixer of their own and sends one stereo pair: two DI channels, left and right.',
+    stereo: true,
+    rows: [
+      { ...di('Keys submix L', 'DI'), side: 'L' },
+      { ...di('Keys submix R', 'DI'), side: 'R' },
+    ],
+  },
+  {
+    id: 'accordion-mics',
+    name: 'Accordion, two microphones',
+    category: 'other',
+    source: 'Accordion',
+    assumes: 'Two clip-on microphones, one on the treble side and one on the bass side, because the bellows move.',
+    rows: [mic('Accordion treble', 'Clip-on condenser microphone', 'clamp'), mic('Accordion bass', 'Clip-on condenser microphone', 'clamp')],
+  },
+  {
+    id: 'accordion-di',
+    name: 'Accordion, built-in microphones',
+    category: 'other',
+    source: 'Accordion',
+    assumes: 'The accordion has its own microphone system fitted inside. Its output reaches the mixer through one DI channel.',
+    rows: [di('Accordion', 'DI')],
+  },
+  {
+    id: 'cajon-mics',
+    name: 'Cajón, two microphones',
+    category: 'percussion',
+    source: 'Cajón',
+    assumes: 'Two microphones: one at the sound port in the back (the low end), one low at the front plate (the slap).',
+    rows: [mic('Cajón back', 'Kick drum microphone', 'short-boom'), mic('Cajón front', 'Dynamic instrument microphone', 'short-boom')],
+  },
+  {
+    id: 'cajon-mic',
+    name: 'Cajón, one microphone',
+    category: 'percussion',
+    source: 'Cajón',
+    assumes: 'One microphone at the sound port in the back of the cajón.',
+    rows: [mic('Cajón', 'Kick drum microphone', 'short-boom')],
+  },
+  {
+    id: 'djembe-mics',
+    name: 'Djembe, two microphones',
+    category: 'percussion',
+    source: 'Djembe',
+    assumes: 'Two microphones: one over the head, one at the opening at the bottom of the drum (the low end).',
+    rows: [mic('Djembe top', 'Dynamic instrument microphone', 'short-boom'), mic('Djembe bottom', 'Kick drum microphone', 'short-boom')],
+  },
+  {
+    id: 'tabla-mics',
+    name: 'Tabla, two microphones',
+    category: 'percussion',
+    source: 'Tabla',
+    assumes: 'One microphone over each drum, on low stands: the player sits on the floor.',
+    rows: [mic('Tabla dayan', 'Small-diaphragm condenser microphone', 'short-boom'), mic('Tabla bayan', 'Small-diaphragm condenser microphone', 'short-boom')],
+  },
+  {
+    id: 'steel-pan-mic',
+    name: 'Steel pan, one microphone',
+    category: 'percussion',
+    source: 'Steel pan',
+    assumes: 'One lead (tenor) pan with one microphone above it.',
+    rows: [mic('Steel pan', 'Small-diaphragm condenser microphone', 'tall-boom')],
+  },
+  {
+    id: 'steel-pan-pair',
+    name: 'Steel pans, stereo pair',
+    category: 'percussion',
+    source: 'Steel pans',
+    assumes: 'A set of two or more pans (double seconds or lower) with a pair of microphones above them, left and right.',
+    stereo: true,
+    rows: [
+      { ...mic('Pans L', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'L' },
+      { ...mic('Pans R', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'R' },
+    ],
+  },
+  {
+    id: 'vibes-mics',
+    name: 'Vibraphone, two microphones',
+    category: 'percussion',
+    source: 'Vibraphone',
+    assumes: 'A pair of microphones above the bars, one toward the low end and one toward the high end. The vibraphone’s fan motor needs power.',
+    stereo: true,
+    rows: [
+      { ...mic('Vibes low', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'L' },
+      { ...mic('Vibes high', 'Small-diaphragm condenser microphone', 'tall-boom'), side: 'R' },
+    ],
+  },
+  {
+    id: 'e-drums-stereo',
+    name: 'Electronic drums, stereo',
+    category: 'drums',
+    source: 'Electronic drums',
+    assumes: 'The stereo main output of the drum module: two DI channels, left and right (its outputs are often unbalanced jacks). The drummer hears almost nothing acoustically, so the kit needs a monitor mix.',
+    stereo: true,
+    rows: [
+      { ...di('E-drums L', 'DI'), side: 'L' },
+      { ...di('E-drums R', 'DI'), side: 'R' },
+    ],
+  },
+  {
+    id: 'e-drums-kick',
+    name: 'Electronic drums, stereo plus kick',
+    category: 'drums',
+    source: 'Electronic drums',
+    assumes: 'The module’s stereo output plus the kick on its own output: three DI channels.',
+    stereo: true,
+    rows: [di('E-drums kick', 'DI'), { ...di('E-drums L', 'DI'), side: 'L' }, { ...di('E-drums R', 'DI'), side: 'R' }],
+  },
+  {
+    id: 'dj-stereo',
+    name: 'DJ mixer, stereo',
+    category: 'playback',
+    source: 'DJ',
+    assumes: 'The DJ mixer’s main output, left and right, at line level. A mixer with only unbalanced outputs needs a stereo DI. The DJ’s booth monitor is an output of that mixer, not an input.',
+    stereo: true,
+    rows: [
+      { label: 'DJ L', side: 'L', capture: 'line', equipment: 'Balanced line output', stand: 'none' },
+      { label: 'DJ R', side: 'R', capture: 'line', equipment: 'Balanced line output', stand: 'none' },
+    ],
+  },
+  {
+    id: 'sax-mic',
+    name: 'Saxophone microphone',
+    category: 'horns',
+    source: 'Saxophone',
+    assumes: 'One clip-on microphone at the bell, for one saxophone. A player who doubles on flute or clarinet needs a second microphone on a stand.',
+    rows: [mic('Sax', 'Clip-on condenser microphone', 'clamp')],
+  },
+  {
+    id: 'trombone-mic',
+    name: 'Trombone microphone',
+    category: 'horns',
+    source: 'Trombone',
+    assumes: 'One microphone on a tall boom stand, in front of the bell and to the side of the slide, so the slide clears it. For one trombone.',
+    rows: [mic('Trombone', 'Dynamic instrument microphone', 'tall-boom')],
+  },
+  {
+    id: 'choir-three',
+    name: 'Choir, three microphones',
+    category: 'vocals',
+    source: 'Choir',
+    assumes: 'Three microphones on tall stands, left, center and right: about one for every 2 to 3 m of choir width, about 1 m in front of the front row and above head height, aimed at the back row. As few as cover the choir: every open microphone adds feedback.',
+    rows: [mic('Choir L', 'Small-diaphragm condenser microphone', 'tall-boom'), mic('Choir C', 'Small-diaphragm condenser microphone', 'tall-boom'), mic('Choir R', 'Small-diaphragm condenser microphone', 'tall-boom')],
+  },
+  {
+    id: 'choir-two',
+    name: 'Choir, two microphones',
+    category: 'vocals',
+    source: 'Choir',
+    assumes: 'A small choir: two condenser microphones on tall stands in front of it, left and right.',
+    rows: [mic('Choir L', 'Small-diaphragm condenser microphone', 'tall-boom'), mic('Choir R', 'Small-diaphragm condenser microphone', 'tall-boom')],
+  },
 ];
+
+/** One DI row. */
+function di(label: string, equipment: string): SpPackageRow {
+  return { label, capture: 'di', equipment, stand: 'none', connector: 'XLR' };
+}
+
+/** The acoustic string instruments: each has a microphone package and a
+ *  pickup package (a piezo pickup into a DI with a high-impedance input). */
+function stringPackages(): SpPackage[] {
+  const PICKUP = 'DI with a high-impedance input';
+  const list: { id: string; source: string; category: SpCategory; micEq: string; stand: SpStand; micWhere: string }[] = [
+    { id: 'upright-bass', source: 'Upright bass', category: 'bass', micEq: 'Clip-on condenser microphone', stand: 'clamp', micWhere: 'a clip-on microphone near the bridge or the f-hole (on a quiet stage, a microphone on a short stand works too)' },
+    { id: 'cello', source: 'Cello', category: 'other', micEq: 'Clip-on condenser microphone', stand: 'clamp', micWhere: 'a clip-on microphone on the instrument' },
+    { id: 'violin', source: 'Violin', category: 'other', micEq: 'Clip-on condenser microphone', stand: 'clamp', micWhere: 'a clip-on microphone on the instrument (the player moves)' },
+    { id: 'harp', source: 'Harp', category: 'other', micEq: 'Small-diaphragm condenser microphone', stand: 'short-boom', micWhere: 'a microphone on the player’s side, aimed at the soundboard' },
+    { id: 'banjo', source: 'Banjo', category: 'guitars', micEq: 'Small-diaphragm condenser microphone', stand: 'short-boom', micWhere: 'a microphone aimed at the head' },
+    { id: 'mandolin', source: 'Mandolin', category: 'guitars', micEq: 'Small-diaphragm condenser microphone', stand: 'short-boom', micWhere: 'a microphone aimed at the top, near the sound hole' },
+  ];
+  const out: SpPackage[] = [];
+  for (const s of list) {
+    out.push({ id: `${s.id}-mic`, name: `${s.source} microphone`, category: s.category, source: s.source, assumes: `One input: ${s.micWhere}.`, rows: [mic(`${s.source} mic`, s.micEq, s.stand)] });
+    out.push({ id: `${s.id}-pickup`, name: `${s.source} pickup`, category: s.category, source: s.source, assumes: `The instrument’s pickup reaches the mixer through one DI channel with a high-impedance input (or the player’s own preamp).`, rows: [di(`${s.source} pickup`, PICKUP)] });
+  }
+  // the upright bass is usually both: the pickup for the low end, a microphone for its body
+  out.push({
+    id: 'upright-bass-both',
+    name: 'Upright bass, pickup and microphone',
+    category: 'bass',
+    source: 'Upright bass',
+    assumes: 'Two inputs from one bass: its pickup through a DI with a high-impedance input, and a clip-on microphone near the bridge or the f-hole for the body of the sound.',
+    rows: [di('Upright bass pickup', PICKUP), mic('Upright bass mic', 'Clip-on condenser microphone', 'clamp')],
+  });
+  return out;
+}
 
 export const spPackage = (id: string): SpPackage | undefined => SP_PACKAGES.find((p) => p.id === id);

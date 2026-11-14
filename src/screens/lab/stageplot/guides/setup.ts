@@ -28,11 +28,13 @@ export const SP_GUIDE_SETUP: ScreenGuide = {
     'The band name, the venue and the date print at the top of the packet.',
     'With a width and a depth, the stage is drawn to scale. Without them the packet says “Not to scale”.',
     'After a revision has been shared, your next change starts the next revision as a draft.',
+    'Under STAGE SIZE you choose the shape: a rectangle, a thrust, in the round, or with wings. The drawing and the packet take that shape.',
   ],
   teaches: [
     'Stage right and stage left are the performer’s right and left when facing the audience, so stage right is on the left of the drawing.',
     'Upstage is away from the audience, and downstage is toward it.',
     'A technical contact gives the engineer one person to ask about substitutions before show day.',
+    'On a thrust or in the round, a wedge aimed at a performer also aims at people behind them, so in-ears are common.',
   ],
   tryThis: [
     'Add a performer and watch the tab bar. Marks appear on Stage and on Monitors, because the review now asks where that performer stands and what they hear.',

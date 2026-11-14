@@ -24,8 +24,12 @@
  * Pure: no React, no storage, no clock (the caller passes `now`).
  */
 import { SP_CATEGORY_ORDER, spPackage, spPaletteItem, type SpPackage, type SpPackageRow } from './spCatalog.ts';
+import { SP_ROUND_REF_MAX, SP_SHAPE_DEFAULTS, spIsCircle, spMoveLimits, spOnShape, spShapeLocationWord, spShapeOf, spWingFrac } from './spShape.ts';
 import {
   SP_SCHEMA,
+  type SpBoxPatch,
+  type SpStage,
+  type SpStageBox,
   type SpCategory,
   type SpDevice,
   type SpDiDevice,
@@ -76,7 +80,7 @@ export function spNewProject(opts: { id: SpId; band?: string; title?: string; no
     venueConfirmed: false,
     modifiedAt: opts.now,
     createdAt: opts.now,
-    stage: { width: null, depth: null, unit: 'ft', dims: 'estimated', grid: true, snap: true },
+    stage: { width: null, depth: null, unit: 'ft', dims: 'estimated', grid: true, snap: true, ...SP_SHAPE_DEFAULTS },
     notes: '',
     accessNotes: '',
     viewNote: '',
@@ -88,6 +92,7 @@ export function spNewProject(opts: { id: SpId; band?: string; title?: string; no
     mixes: [],
     devices: [],
     extras: [],
+    boxes: [],
     objects: [],
     seq: 0,
     startedFrom: opts.startedFrom ?? '',
@@ -183,6 +188,16 @@ function scrub(p: SpProject): void {
     if (o.inputId && !inp.has(o.inputId)) o.inputId = null;
     if (o.deviceId && !devs.has(o.deviceId)) o.deviceId = null;
   }
+  // stage boxes: a socket on a box that is gone is no socket; a drawing of a
+  // box that is gone is a drawing
+  const boxes = new Set(spBoxes(p).map((b) => b.id));
+  for (const i of p.inputs) {
+    if (i.box && !boxes.has(i.box.boxId)) i.box = null;
+    if (i.box && i.direct) i.direct = false;
+  }
+  for (const o of p.objects) if (o.boxId && !boxes.has(o.boxId)) o.boxId = null;
+  // a circle has one size: its depth is its width
+  if (spIsCircle(p.stage) && p.stage.width && p.stage.depth !== p.stage.width) p.stage.depth = p.stage.width;
   const groups = new Map<SpId, number>();
   for (const o of p.objects) if (o.groupId) groups.set(o.groupId, (groups.get(o.groupId) ?? 0) + 1);
   for (const o of p.objects) if (o.groupId && (groups.get(o.groupId) ?? 0) < 2) o.groupId = null;
@@ -208,8 +223,9 @@ export function spBrokenRefs(p: SpProject): string[] {
     if (!has(p.performers, d.performerId)) out.push(`device ${d.label}: its performer is missing`);
   }
   for (const o of p.objects) {
-    if (!has(p.performers, o.performerId) || !has(p.sources, o.sourceId) || !has(p.inputs, o.inputId) || !has(p.devices, o.deviceId)) out.push(`stage object ${o.label || o.kind}: something it points at is missing`);
+    if (!has(p.performers, o.performerId) || !has(p.sources, o.sourceId) || !has(p.inputs, o.inputId) || !has(p.devices, o.deviceId) || !has(spBoxes(p), o.boxId ?? null)) out.push(`stage object ${o.label || o.kind}: something it points at is missing`);
   }
+  for (const i of p.inputs) if (i.box && !has(spBoxes(p), i.box.boxId)) out.push(`input ${i.label}: its stage box is missing`);
   for (const patch of p.patches) for (const id of patch.order) if (!has(p.inputs, id)) out.push(`${patch.name}: a listed input is missing`);
   return out;
 }
@@ -346,6 +362,8 @@ const blankInput = (id: SpId, sourceId: SpId, label: string): SpInput => ({
   cue: false,
   cueAudienceOk: false,
   notes: '',
+  box: null,
+  direct: false,
 });
 
 function pushInput(d: SpProject, sourceId: SpId, row: SpPackageRow, pairId: SpId | null): SpId {
@@ -495,7 +513,8 @@ export function spPairRestore(p: SpProject, remainingId: SpId): { p: SpProject; 
     // from the rows (the review, the packet's questions) says L before R
     // (R2-SP2-11)
     const xi = d.inputs.indexOf(x);
-    d.inputs.splice(side === 'L' ? xi : xi + 1, 0, { ...clone(x), id, side, label: `${stripSide(x.label)} ${side}` });
+    // (a stage box socket is never copied: two inputs on one socket)
+    d.inputs.splice(side === 'L' ? xi : xi + 1, 0, { ...clone(x), id, side, label: `${stripSide(x.label)} ${side}`, box: null });
     for (const m of d.mixes) if (m.needs[x.id] !== undefined) m.needs[id] = m.needs[x.id];
     // The side comes back BESIDE its partner, on the number next to it when
     // that number is free (L just below, R just above); otherwise on the
@@ -782,7 +801,8 @@ export const spRemoveExtra = (p: SpProject, id: SpId): SpProject =>
 /** The picture's width ÷ depth. Real dimensions when given; otherwise a
  *  usual club-stage shape, and the export says "Not to scale". */
 export const SP_DEFAULT_ASPECT = 1.6;
-export const spStageAspect = (p: SpProject): number => (p.stage.width && p.stage.depth ? Math.max(0.6, Math.min(4, p.stage.width / p.stage.depth)) : SP_DEFAULT_ASPECT);
+/** (A circular stage is as deep as it is wide, sized or not.) */
+export const spStageAspect = (p: SpProject): number => (spIsCircle(p.stage) ? 1 : p.stage.width && p.stage.depth ? Math.max(0.6, Math.min(4, p.stage.width / p.stage.depth)) : SP_DEFAULT_ASPECT);
 export const spToScale = (p: SpProject): boolean => !!(p.stage.width && p.stage.depth);
 
 /** One grid step, as a fraction of the stage width and of its depth: one
@@ -797,30 +817,39 @@ export function spGridStep(p: SpProject): { x: number; y: number } {
 }
 const snapTo = (v: number, step: number): number => Math.round(v / step) * step;
 
-export function spAddObject(p: SpProject, kind: SpObjectKind, at: { x: number; y: number }, link: Partial<Pick<SpObject, 'performerId' | 'sourceId' | 'inputId' | 'deviceId' | 'label' | 'rot' | 'w' | 'h'>> = {}): { p: SpProject; id: SpId } {
+type ObjectLink = Partial<Pick<SpObject, 'performerId' | 'sourceId' | 'inputId' | 'deviceId' | 'boxId' | 'label' | 'rot' | 'w' | 'h'>>;
+
+/** A new object in a draft (inside an edit). */
+function pushObject(d: SpProject, kind: SpObjectKind, at: { x: number; y: number }, link: ObjectLink): SpId {
+  const id = newId(d, 'ob');
+  const item = spPaletteItem(kind);
+  d.objects.push({
+    id,
+    kind,
+    x: at.x,
+    y: at.y,
+    rot: link.rot ?? 0,
+    label: link.label ?? item.label,
+    w: link.w ?? (item.sized ? (kind === 'riser' ? 0.3 : 0.12) : null),
+    h: link.h ?? (item.sized ? (kind === 'riser' ? 0.25 : 0.1) : null),
+    sizeNote: '',
+    performerId: link.performerId ?? null,
+    sourceId: link.sourceId ?? null,
+    inputId: link.inputId ?? null,
+    deviceId: link.deviceId ?? null,
+    boxId: link.boxId ?? null,
+    groupId: null,
+    offstageOk: false,
+    visualOnly: false,
+    note: '',
+  });
+  return id;
+}
+
+export function spAddObject(p: SpProject, kind: SpObjectKind, at: { x: number; y: number }, link: ObjectLink = {}): { p: SpProject; id: SpId } {
   let id = '';
   const q = spEdit(p, (d) => {
-    id = newId(d, 'ob');
-    const item = spPaletteItem(kind);
-    d.objects.push({
-      id,
-      kind,
-      x: at.x,
-      y: at.y,
-      rot: link.rot ?? 0,
-      label: link.label ?? item.label,
-      w: link.w ?? (item.sized ? (kind === 'riser' ? 0.3 : 0.12) : null),
-      h: link.h ?? (item.sized ? (kind === 'riser' ? 0.25 : 0.1) : null),
-      sizeNote: '',
-      performerId: link.performerId ?? null,
-      sourceId: link.sourceId ?? null,
-      inputId: link.inputId ?? null,
-      deviceId: link.deviceId ?? null,
-      groupId: null,
-      offstageOk: false,
-      visualOnly: false,
-      note: '',
-    });
+    id = pushObject(d, kind, at, link);
   });
   return { p: q, id };
 }
@@ -850,10 +879,12 @@ export const spMoveObject = (p: SpProject, id: SpId, to: { x: number; y: number 
     const step = spGridStep(d);
     const tx = snap ? snapTo(to.x, step.x) : to.x;
     const ty = snap ? snapTo(to.y, step.y) : to.y;
-    // an object can be dragged a little way off the stage (wings, front of
-    // house), never out of reach
-    const cx = Math.max(-0.25, Math.min(1.25, tx));
-    const cy = Math.max(-0.25, Math.min(1.25, ty));
+    // an object can be dragged a little way off the stage's floor (front of
+    // house, an aisle), never out of reach: a quarter of the stage past the
+    // shape's outer edges (a thrust's tongue, the wings: spMoveLimits)
+    const lim = spMoveLimits(d.stage);
+    const cx = Math.max(lim.x0, Math.min(lim.x1, tx));
+    const cy = Math.max(lim.y0, Math.min(lim.y1, ty));
     const dx = cx - o.x;
     const dy = cy - o.y;
     for (const m of o.groupId ? d.objects.filter((y) => y.groupId === o.groupId) : [o]) {
@@ -892,9 +923,9 @@ export function spDuplicateObject(p: SpProject, id: SpId): { p: SpProject; ids: 
       // A copy of a LINKED object is only a drawing, so it must not carry the
       // name of the thing in the lists ("Wedge 1" twice, one in no monitor
       // plan): it is named as a copy.
-      const linked = !!(m.performerId || m.sourceId || m.inputId || m.deviceId);
+      const linked = !!(m.performerId || m.sourceId || m.inputId || m.deviceId || m.boxId);
       const base = m.label.trim() || (m.kind === 'performer' ? spPerformer(d, m.performerId)?.name.trim() ?? '' : '') || spPaletteItem(m.kind).name;
-      d.objects.push({ ...clone(m), id: nid, x: m.x + dx, y: m.y + dy, performerId: null, sourceId: null, inputId: null, deviceId: null, groupId, label: linked ? `${base} (copy)` : m.label });
+      d.objects.push({ ...clone(m), id: nid, x: m.x + dx, y: m.y + dy, performerId: null, sourceId: null, inputId: null, deviceId: null, boxId: null, groupId, label: linked ? `${base} (copy)` : m.label });
     }
   });
   return { p: q, ids };
@@ -937,17 +968,278 @@ export function spSetStageView(p: SpProject, patch: { grid?: boolean; snap?: boo
   return q;
 }
 
-export const spOnStage = (o: { x: number; y: number }): boolean => o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1;
+/** On the stage's floor: the performance area, or a wing (spShape). With no
+ *  stage given, the rectangle. */
+export const spOnStage = (o: { x: number; y: number }, stage?: SpStage | null): boolean => spOnShape(o, stage);
 
 /** Where a point is, in stage words. Stage right is the viewer's LEFT: the
- *  words are the performer's, facing the audience. */
-export function spLocationWord(at: { x: number; y: number }): string {
-  if (!spOnStage(at)) return 'Off the stage';
-  const row = at.y < 1 / 3 ? 'up' : at.y < 2 / 3 ? 'mid' : 'down';
-  const col = at.x < 1 / 3 ? 'right' : at.x < 2 / 3 ? 'center' : 'left';
-  // "upstage right", "stage left", "center stage", "downstage center"
-  if (row === 'mid') return col === 'center' ? 'Center stage' : `Stage ${col}`;
-  return `${row === 'up' ? 'Upstage' : 'Downstage'} ${col}`;
+ *  words are the performer's, facing the audience ("upstage right", "stage
+ *  left", "center stage", "downstage center"). Pass the stage for its shape:
+ *  a thrust's tongue, a wing, the round said from its reference side. */
+export function spLocationWord(at: { x: number; y: number }, stage?: SpStage | null): string {
+  return spShapeLocationWord(at, stage);
+}
+
+/** Change the stage's shape fields in one edit. A circle has one size: its
+ *  depth follows its width (scrub). */
+export const spSetStageShape = (p: SpProject, patch: Partial<Pick<SpStage, 'shape' | 'thrustWidth' | 'thrustDepth' | 'wingWidth' | 'roundForm' | 'roundRef'>>): SpProject =>
+  spEdit(p, (d) => {
+    Object.assign(d.stage, patch);
+    if (d.stage.roundRef != null) d.stage.roundRef = d.stage.roundRef.slice(0, SP_ROUND_REF_MAX);
+  });
+
+/* ── stage boxes ────────────────────────────────────────────────────────── */
+
+/** Stage boxes as sold, by their number of input sockets. */
+export const SP_BOX_SIZES: readonly number[] = [8, 12, 16, 24, 32, 48];
+/** The most sockets one box may be given (a typed number). */
+export const SP_BOX_MAX = 96;
+
+/** The project's stage boxes (a plot saved before boxes existed has none). */
+export const spBoxes = (p: Pick<SpProject, 'boxes'>): SpStageBox[] => p.boxes ?? [];
+export const spBox = (p: Pick<SpProject, 'boxes'>, id: SpId | null | undefined): SpStageBox | undefined => (id ? spBoxes(p).find((b) => b.id === id) : undefined);
+/** A box's name, never empty. */
+export const spBoxName = (b: Pick<SpStageBox, 'name'>): string => b.name.trim() || 'Stage box';
+/** "SB2 · 7": where an input plugs in, in words ('' when nowhere). */
+export function spBoxPatchWords(p: SpProject, i: Pick<SpInput, 'box'>): string {
+  const b = i.box ? spBox(p, i.box.boxId) : undefined;
+  return b && i.box ? `${spBoxName(b)} · ${i.box.socket}` : '';
+}
+/** The drawing of a box on the stage, if it has one. */
+export const spBoxObject = (p: SpProject, boxId: SpId): SpObject | undefined => p.objects.find((o) => o.boxId === boxId);
+
+const wholeIn = (n: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, Math.round(n)));
+
+/** The next free "SB" number. */
+function nextBoxName(p: SpProject): string {
+  let n = 1;
+  while (spBoxes(p).some((b) => b.name.trim().toUpperCase() === `SB${n}`)) n += 1;
+  return `SB${n}`;
+}
+
+/** Where a new box's drawing goes: the FIRST box of a stage with wings in a
+ *  wing (the main box or split usually lives at monitor world, at the side);
+ *  every other box on the stage along the back and the sides, by the
+ *  backline, where a sub-snake goes; the first place no other box stands at.
+ *  It is a starting place: the box editor says to move it where it really is. */
+function newBoxSpot(p: SpProject): { x: number; y: number } {
+  const shape = spShapeOf(p.stage);
+  const w = spWingFrac(p.stage).w;
+  const firstInWing = shape === 'wings' && !p.objects.some((o) => o.kind === 'stage-box');
+  const spots = firstInWing
+    ? [{ x: 1 + w / 2, y: 0.15 }]
+    : spIsCircle(p.stage)
+        ? [{ x: 0.5, y: 0.1 }, { x: 0.12, y: 0.5 }, { x: 0.88, y: 0.5 }, { x: 0.5, y: 0.9 }]
+        : [{ x: 0.5, y: 0.06 }, { x: 0.08, y: 0.08 }, { x: 0.92, y: 0.08 }, { x: 0.05, y: 0.5 }, { x: 0.95, y: 0.5 }];
+  const taken = p.objects.filter((o) => o.kind === 'stage-box');
+  return spots.find((s) => !taken.some((o) => Math.hypot(o.x - s.x, o.y - s.y) < 0.06)) ?? spots[0];
+}
+
+/** Add a stage box: SB1, SB2… (or a name), 16 input sockets unless told,
+ *  and its drawing on the stage (`place: false` = no drawing; a drawing that
+ *  is already there is linked with spLinkBoxObject). */
+export function spAddBox(p: SpProject, f: Partial<Omit<SpStageBox, 'id'>> & { place?: boolean; at?: { x: number; y: number } } = {}): { p: SpProject; id: SpId; objectId: SpId } {
+  let id = '';
+  let objectId = '';
+  const q = spEdit(p, (d) => {
+    if (!d.boxes) d.boxes = [];
+    id = newId(d, 'sb');
+    const name = f.name?.trim() || nextBoxName(d);
+    d.boxes.push({
+      id,
+      name,
+      inputs: wholeIn(f.inputs ?? 16, 1, SP_BOX_MAX),
+      returns: f.returns == null ? null : wholeIn(f.returns, 0, SP_BOX_MAX),
+      kind: f.kind ?? 'unknown',
+      supplier: f.supplier ?? 'tbc',
+      note: f.note ?? '',
+    });
+    if (f.place !== false) objectId = pushObject(d, 'stage-box', f.at ?? newBoxSpot(d), { boxId: id, label: name });
+  });
+  return { p: q, id, objectId };
+}
+
+export const spUpdateBox = (p: SpProject, id: SpId, patch: Partial<Omit<SpStageBox, 'id'>>): SpProject =>
+  spEdit(p, (d) => {
+    const b = spBoxes(d).find((x) => x.id === id);
+    if (!b) return;
+    Object.assign(b, patch);
+    b.inputs = wholeIn(Number.isFinite(b.inputs) ? b.inputs : 16, 1, SP_BOX_MAX);
+    if (b.returns != null) b.returns = Number.isFinite(b.returns) ? wholeIn(b.returns, 0, SP_BOX_MAX) : null;
+    // the drawing prints the box's own name
+    if (patch.name != null) for (const o of d.objects) if (o.boxId === id) o.label = spBoxName(b);
+  });
+
+/** Remove a box: its drawing leaves the stage with it, and every input that
+ *  was plugged into it has no socket (the review then asks). */
+export const spRemoveBox = (p: SpProject, id: SpId): SpProject =>
+  spEdit(p, (d) => {
+    d.boxes = spBoxes(d).filter((b) => b.id !== id);
+    d.objects = d.objects.filter((o) => o.boxId !== id);
+  });
+
+/** A stage-box drawing stands for this box (null = only a drawing). One box
+ *  has one drawing: another drawing of the same box becomes a drawing. */
+export const spLinkBoxObject = (p: SpProject, objectId: SpId, boxId: SpId | null): SpProject =>
+  spEdit(p, (d) => {
+    const o = d.objects.find((x) => x.id === objectId);
+    if (!o) return;
+    const b = boxId ? spBoxes(d).find((x) => x.id === boxId) : undefined;
+    if (b) for (const x of d.objects) if (x.boxId === b.id && x.id !== objectId) x.boxId = null;
+    o.boxId = b ? b.id : null;
+    if (b) o.label = spBoxName(b);
+  });
+
+/** Plug one input into a socket by hand (AUTO-ASSIGN never moves it), or
+ *  take it off its box (null). Two inputs on one socket are allowed while
+ *  editing, and the review asks about them. */
+export const spAssignBox = (p: SpProject, inputId: SpId, to: { boxId: SpId; socket: number } | null): SpProject =>
+  spEdit(p, (d) => {
+    const i = d.inputs.find((x) => x.id === inputId);
+    if (!i) return;
+    if (!to || !spBoxes(d).some((b) => b.id === to.boxId) || !Number.isFinite(to.socket)) {
+      i.box = null;
+      return;
+    }
+    i.box = { boxId: to.boxId, socket: wholeIn(to.socket, 1, SP_BOX_MAX * 2), byHand: true };
+    i.direct = false;
+  });
+
+/** "This input goes to the console directly": no stage box socket, and the
+ *  review stops asking. */
+export const spSetDirect = (p: SpProject, inputId: SpId, on: boolean): SpProject =>
+  spEdit(p, (d) => {
+    const i = d.inputs.find((x) => x.id === inputId);
+    if (!i) return;
+    i.direct = on;
+    if (on) i.box = null;
+  });
+
+/** Inputs in channel order: the house list, then what feeds only the band's rig. */
+function channelOrder(p: SpProject): SpInput[] {
+  const seen = new Set<SpId>();
+  const out: SpInput[] = [];
+  for (const pid of ['house', 'band'] as const) {
+    for (const id of spPatch(p, pid)?.order ?? []) {
+      const i = p.inputs.find((x) => x.id === id);
+      if (i && !seen.has(id)) {
+        seen.add(id);
+        out.push(i);
+      }
+    }
+  }
+  for (const i of p.inputs) if (!seen.has(i.id)) out.push(i);
+  return out;
+}
+
+/**
+ * AUTO-ASSIGN: give every input with no socket the lowest free socket, in
+ * CHANNEL ORDER, on the box NEAREST to where its source stands on the stage
+ * (a box with no drawing, and an input with no place, come last: then the
+ * boxes in their list order). A stereo pair takes two neighboring sockets on
+ * one box, L first, when one box has them.
+ *
+ * It NEVER moves a socket the band chose by hand, and never plugs in an
+ * input the band said goes to the console directly. Sockets it chose before
+ * are chosen again (so moving a box and pressing it again re-balances). One
+ * edit: UNDO puts every socket back. `placed` = inputs it plugged in; `left`
+ * = inputs still with no socket (every box is full); `wireless` = wireless
+ * inputs it left for the band because no receiver rack is drawn (expert
+ * review 2026-11-13: a receiver plugs in at its rack, not at the singer).
+ * Where two boxes are about as near, a section stays on the box that already
+ * holds it.
+ */
+export function spAutoAssignBoxes(p: SpProject): { p: SpProject; placed: number; left: number; wireless: number } {
+  let placed = 0;
+  let left = 0;
+  let wireless = 0;
+  const q = spEdit(p, (d) => {
+    const boxes = spBoxes(d);
+    if (!boxes.length) return;
+    for (const i of d.inputs) if (i.box && !i.box.byHand) i.box = null;
+    const used = new Map<SpId, Set<number>>(boxes.map((b) => [b.id, new Set<number>()]));
+    for (const i of d.inputs) if (i.box) used.get(i.box.boxId)?.add(i.box.socket);
+    // distances as the stage really is: meters when the size is known, else
+    // the drawing's own shape
+    const kx = d.stage.width && d.stage.depth ? d.stage.width : spStageAspect(d);
+    const ky = d.stage.width && d.stage.depth ? d.stage.depth : 1;
+    const at = (o: SpObject | undefined) => (o ? { x: o.x, y: o.y } : null);
+    const boxAt = new Map(boxes.map((b) => [b.id, at(spBoxObject(d, b.id))] as const));
+    const catOf = (i: SpInput) => d.sources.find((s) => s.id === i.sourceId)?.category;
+    /** How much a box already holds of this input's section: its own source
+     *  counts most, then its category (drums, horns, vocals…). */
+    const kin = (b: SpStageBox, i: SpInput): number =>
+      d.inputs.reduce((n, x) => (x.id === i.id || x.box?.boxId !== b.id ? n : n + (x.sourceId === i.sourceId ? 10 : catOf(x) === catOf(i) ? 1 : 0)), 0);
+    // The nearest box; but where two boxes are about as near (within 20 %), the
+    // one that already holds this section, so a section stays on one box
+    // (simpler line check, labels and sub-snake runs)
+    const ranked = (from: { x: number; y: number } | null, i: SpInput): SpStageBox[] => {
+      const list = boxes
+        .map((b, k) => {
+          const bp = boxAt.get(b.id);
+          return { b, k, far: from && bp ? Math.hypot((from.x - bp.x) * kx, (from.y - bp.y) * ky) : Number.POSITIVE_INFINITY };
+        })
+        .sort((m, n) => m.far - n.far || m.k - n.k);
+      const best = list[0]?.far ?? Number.POSITIVE_INFINITY;
+      const near = Number.isFinite(best) ? list.filter((x) => x.far <= best * 1.2 + 1e-9) : [];
+      near.sort((m, n) => kin(n.b, i) - kin(m.b, i) || m.far - n.far || m.k - n.k);
+      return [...near, ...list.filter((x) => !near.includes(x))].map((x) => x.b);
+    };
+    // A wireless receiver plugs in where its RACK is, never where the singer
+    // stands: the nearest box to a drawn rack, or (no rack drawn) it is left
+    // for the band to choose: a box by the rack, or console direct
+    const racks = d.objects.filter((o) => o.kind === 'rack');
+    const whereOf = (i: SpInput, partner: SpInput | undefined): { x: number; y: number } | null => {
+      const own = at(spObjectOfInput(d, i.id)) ?? (partner ? at(spObjectOfInput(d, partner.id)) : null);
+      if (i.capture !== 'wireless') return own;
+      if (!racks.length) return null;
+      const from = own ?? { x: 0.5, y: 0.5 };
+      return at(racks.reduce((m, o) => (Math.hypot(o.x - from.x, o.y - from.y) < Math.hypot(m.x - from.x, m.y - from.y) ? o : m)));
+    };
+    const freeRun = (b: SpStageBox, n: number): number | null => {
+      const u = used.get(b.id) as Set<number>;
+      for (let s = 1; s + n - 1 <= b.inputs; s++) {
+        let ok = true;
+        for (let j = 0; j < n; j++) if (u.has(s + j)) ok = false;
+        if (ok) return s;
+      }
+      return null;
+    };
+    const plug = (i: SpInput, b: SpStageBox, s: number) => {
+      const at: SpBoxPatch = { boxId: b.id, socket: s, byHand: false };
+      i.box = at;
+      (used.get(b.id) as Set<number>).add(s);
+      placed += 1;
+    };
+    const done = new Set<SpId>();
+    for (const i of channelOrder(d)) {
+      if (done.has(i.id)) continue;
+      done.add(i.id);
+      if (i.box || i.direct) continue;
+      const partner = spPartner(d, i);
+      const where = whereOf(i, partner);
+      if (i.capture === 'wireless' && !where) {
+        wireless += 1;
+        continue;
+      }
+      const list = ranked(where, i);
+      if (partner && !partner.box && !partner.direct && !done.has(partner.id)) {
+        const b = list.find((x) => freeRun(x, 2) != null);
+        if (b) {
+          const s = freeRun(b, 2) as number;
+          const [first, second] = i.side === 'R' ? [partner, i] : [i, partner];
+          plug(first, b, s);
+          plug(second, b, s + 1);
+          done.add(partner.id);
+          continue;
+        }
+      }
+      const b = list.find((x) => freeRun(x, 1) != null);
+      if (b) plug(i, b, freeRun(b, 1) as number);
+    }
+    left = d.inputs.filter((i) => !i.box && !i.direct).length - wireless;
+  });
+  return { p: q, placed, left, wireless };
 }
 
 /** A source its performer CARRIES (a voice, a horn, anything on a wireless
@@ -984,7 +1276,7 @@ export function spObjectOfInput(p: SpProject, inputId: SpId): SpObject | undefin
 /** Where an input is, in stage words; '' when it is not on the stage yet. */
 export function spInputLocation(p: SpProject, inputId: SpId): string {
   const o = spObjectOfInput(p, inputId);
-  return o ? spLocationWord(o) : '';
+  return o ? spLocationWord(o, p.stage) : '';
 }
 
 /* ── whole projects ─────────────────────────────────────────────────────── */
@@ -1003,7 +1295,8 @@ export function spDuplicateProject(p: SpProject, opts: { id: SpId; kind: 'master
     map.set(old, id);
     return id;
   };
-  for (const list of [q.performers, q.sources, q.inputs, q.diDevices, q.mixes, q.devices, q.extras, q.objects] as { id: SpId }[][]) for (const row of list) row.id = fresh(row.id);
+  if (!q.boxes) q.boxes = [];
+  for (const list of [q.performers, q.sources, q.inputs, q.diDevices, q.mixes, q.devices, q.extras, q.boxes, q.objects] as { id: SpId }[][]) for (const row of list) row.id = fresh(row.id);
   const to = (id: SpId | null): SpId | null => (id == null ? null : (map.get(id) ?? null));
   const pairMap = new Map<SpId, SpId>();
   const groupMap = new Map<SpId, SpId>();
@@ -1020,6 +1313,9 @@ export function spDuplicateProject(p: SpProject, opts: { id: SpId; kind: 'master
     i.sourceId = to(i.sourceId) ?? '';
     i.diDeviceId = to(i.diDeviceId);
     i.pairId = mapped(pairMap, i.pairId, 'pr');
+    // the copy keeps its stage box sockets, on its own copies of the boxes
+    const boxId = i.box ? to(i.box.boxId) : null;
+    i.box = i.box && boxId ? { ...i.box, boxId } : null;
   }
   const rekey = <T>(rec: Record<SpId, T>): Record<SpId, T> => {
     const out: Record<SpId, T> = {};
@@ -1047,6 +1343,7 @@ export function spDuplicateProject(p: SpProject, opts: { id: SpId; kind: 'master
     o.sourceId = to(o.sourceId);
     o.inputId = to(o.inputId);
     o.deviceId = to(o.deviceId);
+    o.boxId = to(o.boxId ?? null);
     o.groupId = mapped(groupMap, o.groupId, 'gr');
   }
   q.seq = seq;
@@ -1078,7 +1375,35 @@ export function spMigrate(raw: unknown): SpProject | null {
   const q: SpProject = { ...base, ...clone(r), schema: SP_SCHEMA } as SpProject;
   q.contact = { ...base.contact, ...(r.contact ?? {}), show: { ...base.contact.show, ...(r.contact?.show ?? {}) } };
   q.stage = { ...base.stage, ...(r.stage ?? {}) };
-  for (const k of ['performers', 'sources', 'inputs', 'diDevices', 'patches', 'mixes', 'devices', 'extras', 'objects'] as const) if (!Array.isArray(q[k])) (q as Record<string, unknown>)[k] = [];
+  // schema 1 → 2 (2026-11-13): a plot from before stage shapes is a
+  // RECTANGLE; a field that is not one of the shape's own values is the default
+  const st = q.stage;
+  if (!['rect', 'thrust', 'round', 'wings'].includes(st.shape)) st.shape = 'rect';
+  const size = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) && v > 0 && v <= 1000 ? v : null);
+  st.thrustWidth = size(st.thrustWidth);
+  st.thrustDepth = size(st.thrustDepth);
+  st.wingWidth = size(st.wingWidth);
+  if (st.roundForm !== 'square') st.roundForm = 'circle';
+  st.roundRef = typeof st.roundRef === 'string' ? st.roundRef.slice(0, SP_ROUND_REF_MAX) : SP_SHAPE_DEFAULTS.roundRef;
+  for (const k of ['performers', 'sources', 'inputs', 'diDevices', 'patches', 'mixes', 'devices', 'extras', 'boxes', 'objects'] as const) if (!Array.isArray(q[k])) (q as Record<string, unknown>)[k] = [];
+  // …and has no stage boxes: every input has no socket and is not marked direct
+  q.boxes = q.boxes
+    .filter((b) => b && typeof b.id === 'string')
+    .map((b) => ({
+      id: b.id,
+      name: typeof b.name === 'string' ? b.name : '',
+      inputs: typeof b.inputs === 'number' && Number.isFinite(b.inputs) ? wholeIn(b.inputs, 1, SP_BOX_MAX) : 16,
+      returns: typeof b.returns === 'number' && Number.isFinite(b.returns) ? wholeIn(b.returns, 0, SP_BOX_MAX) : null,
+      kind: b.kind === 'digital' || b.kind === 'analog' ? b.kind : 'unknown',
+      supplier: (['band', 'venue', 'other', 'tbc'] as const).includes(b.supplier) ? b.supplier : 'tbc',
+      note: typeof b.note === 'string' ? b.note : '',
+    }));
+  for (const i of q.inputs) {
+    const bx = i.box as Partial<SpBoxPatch> | null | undefined;
+    i.box = bx && typeof bx.boxId === 'string' && typeof bx.socket === 'number' && Number.isFinite(bx.socket) && bx.socket >= 1 ? { boxId: bx.boxId, socket: Math.round(bx.socket), byHand: bx.byHand === true } : null;
+    if (typeof i.direct !== 'boolean') i.direct = false;
+  }
+  for (const o of q.objects) if (typeof o.boxId !== 'string') o.boxId = null;
   q.patches = q.patches.filter((x) => x && (x.id === 'house' || x.id === 'band')).map((x) => ({ ...emptyPatch(x.id), ...x }));
   if (typeof q.seq !== 'number') q.seq = 10000;
   // R2-SP1-01 / R2-SP1-04 (2026-11-13): a plot saved before these fields

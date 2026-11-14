@@ -24,7 +24,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { spPackage } from '../../../features/stageplot/spCatalog';
 import { spBadge } from '../../../features/stageplot/spDerive';
-import { spAddExtra, spInput, spPatch, spPatchesOf, spSource } from '../../../features/stageplot/spModel';
+import { spAddExtra, spBox, spBoxName, spInput, spPatch, spPatchesOf, spSource } from '../../../features/stageplot/spModel';
+import { BoxEditor, BoxPanel } from './inputs/BoxPanel';
 import type { SpIssue, SpIssueAction } from '../../../features/stageplot/spReview';
 import type { SpId, SpPatchId } from '../../../features/stageplot/spTypes';
 import { confirmDialog } from '../../../lib/confirm';
@@ -51,13 +52,14 @@ type Popup =
   | { k: 'single' }
   | { k: 'quiet' }
   | { k: 'di'; id: SpId }
+  | { k: 'box'; id: SpId }
   | { k: 'extra'; id: SpId }
   | { k: 'mono'; id: SpId }
   | { k: 'riser' }
   | null;
 
 /** The rows this area owns: a selection of one of these kinds opens here. */
-const MINE = ['input', 'source', 'di', 'extra'] as const;
+const MINE = ['input', 'source', 'di', 'extra', 'box'] as const;
 const isMine = (kind: string): kind is (typeof MINE)[number] => (MINE as readonly string[]).includes(kind);
 
 /** The row this area sent to the stage (PLACE ON THE STAGE for an input that
@@ -102,6 +104,10 @@ export function InputsArea() {
     setMarked(new Set([id]));
     setPopup({ k: 'extra', id });
   };
+  const openBox = (id: SpId) => {
+    setMarked(new Set([id]));
+    setPopup({ k: 'box', id });
+  };
   const close = () => {
     setPopup(null);
     // The row another area sent us to has been seen: coming back here later
@@ -122,6 +128,7 @@ export function InputsArea() {
     if (selKey === sentAway) return;
     if (selection.kind === 'input') openInput(selection.id);
     else if (selection.kind === 'source') openSource(selection.id);
+    else if (selection.kind === 'box') openBox(selection.id);
     else if (selection.kind === 'di') openDi(selection.id);
     else openExtra(selection.id);
     // `selKey` is the selection: the effect runs when the selected row changes.
@@ -154,6 +161,7 @@ export function InputsArea() {
     else if (t.kind === 'source' && t.id) openSource(t.id);
     else if (t.kind === 'di' && t.id) openDi(t.id);
     else if (t.kind === 'extra' && t.id) openExtra(t.id);
+    else if (t.kind === 'box' && t.id) openBox(t.id);
     else if (issue.rule === 'riser-not-listed') setPopup({ k: 'riser' });
   };
   const answer = (issue: SpIssue, action: SpIssueAction) => {
@@ -241,6 +249,10 @@ export function InputsArea() {
   } else if (popup?.k === 'di') {
     title = `DI device: ${p.diDevices.find((d) => d.id === popup.id)?.label ?? ''}`;
     body = <DiEditor key={`di:${popup.id}`} deviceId={popup.id} onClose={close} />;
+  } else if (popup?.k === 'box') {
+    const b = spBox(p, popup.id);
+    title = `Stage box: ${b ? spBoxName(b) : ''}`;
+    body = <BoxEditor key={`box:${popup.id}`} boxId={popup.id} onClose={close} onLeaveForStage={() => sentToStage(`box:${popup.id}`)} />;
   } else if (popup?.k === 'extra') {
     const extra = p.extras.find((e) => e.id === popup.id);
     title = extra ? extra.label.trim() || SP_EXTRA_WORD[extra.kind] : 'Listed item';
@@ -339,6 +351,7 @@ export function InputsArea() {
 
           <OrderPanel patchId={patchId} />
           <DiPanel selectedId={popup?.k === 'di' ? popup.id : ([...marked][0] ?? null)} onOpen={openDi} />
+          <BoxPanel selectedId={popup?.k === 'box' ? popup.id : ([...marked][0] ?? null)} onOpen={openBox} />
           <SummaryPanel onOpenIssue={goToIssue} />
           <ExtrasPanel onOpen={openExtra} />
         </View>

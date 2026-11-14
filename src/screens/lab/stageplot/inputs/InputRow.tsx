@@ -50,6 +50,8 @@ function RowBody({ view, selected, onOpen }: { view: SpRowView; selected: boolea
           {view.supplier}
           {view.venue ? ` · Venue channel: ${view.venue}` : ''}
         </Text>
+        {/* the stage box socket, when the plot has stage boxes */}
+        {view.box ? <Text style={view.box.includes(' · ') ? styles.boxOn : styles.how}>{view.box.includes(' · ') ? `Stage box: ${view.box}` : view.box}</Text> : null}
         <View style={styles.tags}>
           {view.sameNumberAs.length ? <Tag tone="warn" text="! SAME NUMBER" /> : null}
           {view.side ? <Tag tone="pair" text={view.side === 'L' ? 'L · LEFT' : 'R · RIGHT'} /> : null}
@@ -124,6 +126,7 @@ const styles = StyleSheet.create({
   label: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, lineHeight: 22, color: colors.textPrimary },
   who: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19, color: colors.textSecondary },
   how: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
+  boxOn: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 },
   moveCol: { justifyContent: 'center', gap: 6 },
   moveButton: { width: 44, minHeight: 44, flexGrow: 1, borderRadius: 8, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#1a1a1a', alignItems: 'center', justifyContent: 'center' },

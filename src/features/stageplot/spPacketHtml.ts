@@ -100,14 +100,30 @@ export function spPlotScene(plot: SpDocPlot, width: number, how: { key?: boolean
   const sh = plot.depthM * k;
   const ops: SpSceneOp[] = [];
 
-  // the stage: white, an optional grid, a dark outline, a heavier front edge
-  ops.push({ t: 'rect', x: sx, y: sy, w: sw, h: sh, r: 0, fill: SP_PAPER, stroke: NONE, sw: 0 });
-  if (plot.gridM > 0) {
-    for (let g = plot.gridM; g < plot.widthM - 1e-6; g += plot.gridM) ops.push({ t: 'line', x1: X(g), y1: sy, x2: X(g), y2: sy + sh, stroke: GRID, sw: 0.4, dash: false });
-    for (let g = plot.gridM; g < plot.depthM - 1e-6; g += plot.gridM) ops.push({ t: 'line', x1: sx, y1: Y(g), x2: sx + sw, y2: Y(g), stroke: GRID, sw: 0.4, dash: false });
+  const deck = plot.deck;
+  if (deck) {
+    // A STAGE THAT IS NOT A RECTANGLE (2026-11-13): the wings dashed with
+    // their names over them, the grid inside the shape, the outline, and a
+    // heavier line on every edge the audience sees
+    for (const a of deck.areas) {
+      ops.push({ t: 'poly', pts: [X(a.x), Y(a.y), X(a.x + a.w), Y(a.y), X(a.x + a.w), Y(a.y + a.h), X(a.x), Y(a.y + a.h)], closed: true, fill: NONE, stroke: SP_INK, sw: 0.9, dash: true });
+      ops.push({ t: 'text', x: X(a.x + a.w / 2), y: TOP - 6, text: a.name, size: T.label, bold: true, anchor: 'middle', rotate: 0 });
+    }
+    for (const [x1, y1, x2, y2] of deck.grid) ops.push({ t: 'line', x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), stroke: GRID, sw: 0.4, dash: false });
+    const heavy = deck.front.all ? 3 : 1.4;
+    if (deck.outline.t === 'circle') ops.push({ t: 'circle', cx: X(deck.outline.cx), cy: Y(deck.outline.cy), r: deck.outline.r * k, fill: NONE, stroke: SP_INK, sw: heavy, dash: false });
+    else ops.push({ t: 'poly', pts: deck.outline.pts.map((v, n) => (n % 2 ? Y(v) : X(v))), closed: true, fill: NONE, stroke: SP_INK, sw: heavy, dash: false });
+    for (const [x1, y1, x2, y2] of deck.front.lines) ops.push({ t: 'line', x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), stroke: SP_INK, sw: 3, dash: false });
+  } else {
+    // the stage: white, an optional grid, a dark outline, a heavier front edge
+    ops.push({ t: 'rect', x: sx, y: sy, w: sw, h: sh, r: 0, fill: SP_PAPER, stroke: NONE, sw: 0 });
+    if (plot.gridM > 0) {
+      for (let g = plot.gridM; g < plot.widthM - 1e-6; g += plot.gridM) ops.push({ t: 'line', x1: X(g), y1: sy, x2: X(g), y2: sy + sh, stroke: GRID, sw: 0.4, dash: false });
+      for (let g = plot.gridM; g < plot.depthM - 1e-6; g += plot.gridM) ops.push({ t: 'line', x1: sx, y1: Y(g), x2: sx + sw, y2: Y(g), stroke: GRID, sw: 0.4, dash: false });
+    }
+    ops.push({ t: 'rect', x: sx, y: sy, w: sw, h: sh, r: 0, fill: NONE, stroke: SP_INK, sw: 1.4 });
+    ops.push({ t: 'line', x1: sx, y1: sy + sh, x2: sx + sw, y2: sy + sh, stroke: SP_INK, sw: 3, dash: false });
   }
-  ops.push({ t: 'rect', x: sx, y: sy, w: sw, h: sh, r: 0, fill: NONE, stroke: SP_INK, sw: 1.4 });
-  ops.push({ t: 'line', x1: sx, y1: sy + sh, x2: sx + sw, y2: sy + sh, stroke: SP_INK, sw: 3, dash: false });
 
   // a leader ties a name that had to go farther out to its own symbol: a
   // thin gray line, under the symbols
@@ -159,10 +175,12 @@ export function spPlotScene(plot: SpDocPlot, width: number, how: { key?: boolean
 
   // the four direction words: fixed, never flipped
   const midY = TOP + drawH / 2;
-  ops.push({ t: 'text', x: width / 2, y: TOP - 6, text: 'UPSTAGE', size: T.direction, bold: true, anchor: 'middle', rotate: 0 });
-  ops.push({ t: 'text', x: width / 2, y: TOP + drawH + 14, text: 'AUDIENCE / DOWNSTAGE', size: T.direction, bold: true, anchor: 'middle', rotate: 0 });
-  ops.push({ t: 'text', x: left - 4, y: midY, text: 'STAGE RIGHT', size: T.direction, bold: true, anchor: 'middle', rotate: -90 });
-  ops.push({ t: 'text', x: left + drawW + 4, y: midY, text: 'STAGE LEFT', size: T.direction, bold: true, anchor: 'middle', rotate: 90 });
+  // (a shaped stage brings its own words: in the round, the reference side)
+  const dir = deck?.words ?? { up: 'UPSTAGE', down: 'AUDIENCE / DOWNSTAGE', right: 'STAGE RIGHT', left: 'STAGE LEFT' };
+  ops.push({ t: 'text', x: width / 2, y: TOP - 6, text: dir.up, size: T.direction, bold: true, anchor: 'middle', rotate: 0 });
+  ops.push({ t: 'text', x: width / 2, y: TOP + drawH + 14, text: dir.down, size: T.direction, bold: true, anchor: 'middle', rotate: 0 });
+  ops.push({ t: 'text', x: left - 4, y: midY, text: dir.right, size: T.direction, bold: true, anchor: 'middle', rotate: -90 });
+  ops.push({ t: 'text', x: left + drawW + 4, y: midY, text: dir.left, size: T.direction, bold: true, anchor: 'middle', rotate: 90 });
 
   // THE KEY: under the stage, part of the same drawing. One cell for each
   // kind of symbol on this plot: the symbol small, then its name. (A caller

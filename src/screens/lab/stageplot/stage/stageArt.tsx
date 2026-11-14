@@ -42,10 +42,14 @@ import { fonts } from '../../../../theme/tokens';
 import { DiBoxTop, DrumKitTop, GtrAmpTop, KeysTop, MicStandTop, StageBoxTop, WedgeTop } from '../../cableinstall/scenes/floorArt';
 import { TOP_ART_GEAR } from './topArtGear';
 import { TOP_ART_INSTRUMENTS } from './topArtInstruments';
+import { TOP_ART_STRINGS_KEYS } from './topArtStringsKeys';
 import type { TopArtMap } from './topArtTypes';
+import { TOP_ART_WORLD } from './topArtWorld';
 
-/** This lab's own top-view art, by kind (the contract: topArtTypes.ts). */
-export const STAGE_TOP_ART: TopArtMap = { ...TOP_ART_INSTRUMENTS, ...TOP_ART_GEAR };
+/** This lab's own top-view art, by kind (the contract: topArtTypes.ts).
+ *  The last two maps are the kinds added for more diverse music
+ *  (2026-11-13). */
+export const STAGE_TOP_ART: TopArtMap = { ...TOP_ART_INSTRUMENTS, ...TOP_ART_GEAR, ...TOP_ART_STRINGS_KEYS, ...TOP_ART_WORLD };
 
 /** floorArt is drawn at 32 units to the meter. */
 const FLOOR_UNITS = 32;

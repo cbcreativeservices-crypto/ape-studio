@@ -61,6 +61,7 @@ const sample = (kind: SpObjectKind): SpObject => ({
   sourceId: null,
   inputId: null,
   deviceId: null,
+  boxId: null,
   groupId: null,
   offstageOk: false,
   visualOnly: false,

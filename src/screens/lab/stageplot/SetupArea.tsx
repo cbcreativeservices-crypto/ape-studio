@@ -32,6 +32,7 @@ import {
   spMarkReady,
   spPerformerLinks,
   spRemovePerformer,
+  spSetStageShape,
   spSetVenueConfirmed,
   spToScale,
   spUpdateDevice,
@@ -41,7 +42,8 @@ import {
 import { spCanMarkReady, spLooksLikePhone } from '../../../features/stageplot/spReview';
 import { spDateWords, spDayFromText, spLooksLikeTime as looksLikeTime, spProjectName, spStageSizeFromText as sizeFromText, useSpProjects } from '../../../features/stageplot/spStore';
 import { SP_TEMPLATES } from '../../../features/stageplot/spTemplates';
-import type { SpContact, SpPerformer, SpProject, SpStatus } from '../../../features/stageplot/spTypes';
+import { SP_ROUND_REF_MAX, SP_SHAPES, SP_SHAPE_HINT, SP_SHAPE_WORD, spIsCircle, spRoundRef, spShapeOf } from '../../../features/stageplot/spShape';
+import type { SpContact, SpPerformer, SpProject, SpStageShape, SpStatus } from '../../../features/stageplot/spTypes';
 import { notify } from '../../../lib/confirm';
 import { cardColumn } from '../../../theme/readingColumn';
 import { colors, fonts } from '../../../theme/tokens';
@@ -78,6 +80,14 @@ const SIZE_SAID = {
 } as const;
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+/** The stage's typed sizes: the main stage, a thrust's tongue, a wing. */
+type SizeKey = 'width' | 'depth' | 'thrustWidth' | 'thrustDepth' | 'wingWidth';
+const SHAPE_OPTIONS: readonly { value: SpStageShape; label: string }[] = SP_SHAPES.map((value) => ({ value, label: SP_SHAPE_WORD[value] }));
+const ROUND_OPTIONS = [
+  { value: 'circle', label: 'A circle' },
+  { value: 'square', label: 'A square' },
+] as const;
 
 /** Put a new name where the old one stands as a whole word ("Leo’s pack",
  *  "Drums, Leo"), and nowhere inside another word ("Leonard"). */
@@ -146,7 +156,7 @@ export function SetupArea() {
   const [sizeSaid, setSizeSaid] = useState<string | null>(null);
   /** A refused stage size is KEPT in its field with the note, as a refused
    *  date is, so it is corrected and not typed again (R2-SP1-08). */
-  const [sizeRefused, setSizeRefused] = useState<{ width?: string; depth?: string }>({});
+  const [sizeRefused, setSizeRefused] = useState<Partial<Record<SizeKey, string>>>({});
 
   /** One edit of the project's own fields. */
   const set = (change: (d: SpProject) => void) => ed.apply((q) => spEdit(q, change));
@@ -188,7 +198,8 @@ export function SetupArea() {
     setDateRefused(day === null ? text : null);
     if (day !== null && day !== p.eventDate) set((d) => (d.eventDate = day));
   };
-  const commitSize = (key: 'width' | 'depth', text: string, how?: SpCommitHow) => {
+  const circle = spIsCircle(p.stage);
+  const commitSize = (key: SizeKey, text: string, how?: SpCommitHow) => {
     const n = sizeFromText(text);
     if (typeof n === 'string') {
       if (how !== 'paused') {
@@ -199,9 +210,18 @@ export function SetupArea() {
     }
     setSizeRefused((r) => ({ ...r, [key]: undefined }));
     setSizeSaid(null);
+    // a circle has one size, its diameter: the width and the depth together
+    if (circle && key === 'width') {
+      if (n !== p.stage.width || n !== p.stage.depth) set((d) => ((d.stage.width = n), (d.stage.depth = n)));
+      return;
+    }
     if (n !== p.stage[key]) set((d) => (d.stage[key] = n));
   };
   const sizeShown = (key: 'width' | 'depth'): string => sizeRefused[key] ?? (p.stage[key] == null ? '' : String(p.stage[key]));
+  /** The same for a shape's own sizes (a thrust's tongue, a wing). */
+  const partShown = (key: SizeKey): string => sizeRefused[key] ?? (p.stage[key] == null ? '' : String(p.stage[key]));
+  const shape = spShapeOf(p.stage);
+  const setShape = (patch: Parameters<typeof spSetStageShape>[1]) => ed.apply((q) => spSetStageShape(q, patch));
 
   // RENAMING A PERFORMER RENAMES WHAT WAS NAMED AFTER THEM, in the same edit:
   // their mixes ("Leo, wedge") and the monitor devices they use or that play
@@ -247,7 +267,7 @@ export function SetupArea() {
 
   const where = (pf: SpPerformer): string => {
     const o = p.objects.find((x) => x.performerId === pf.id);
-    return o ? spLocationWord(o) : 'Not on the stage yet';
+    return o ? spLocationWord(o, p.stage) : 'Not on the stage yet';
   };
 
   const leaving = removing ? p.performers.find((x) => x.id === removing) : undefined;
@@ -421,12 +441,54 @@ export function SetupArea() {
             ) : null}
           </Section>
 
-          <Section title="STAGE SIZE" hint="Optional. Type it if the venue told you, or if you measured it.">
+          <Section title="STAGE SIZE" hint="Optional. Choose the shape, and type the size if the venue told you or you measured it.">
+            {/* THE SHAPE (2026-11-13), next to the size: one plain line for each */}
+            <Choice<SpStageShape> label="Shape of the stage" value={shape} options={SHAPE_OPTIONS} onChange={(next) => (next === shape ? undefined : setShape({ shape: next }))} />
+            <View style={styles.shapeLines}>
+              {SP_SHAPES.map((s) => (
+                <Text key={s} style={[styles.quiet, s === shape ? styles.shapeOn : null]}>
+                  {`${s === shape ? '▸ ' : ''}${SP_SHAPE_HINT[s]}`}
+                </Text>
+              ))}
+            </View>
+            {shape === 'round' ? (
+              <>
+                <Choice label="In the round, the stage is" value={p.stage.roundForm === 'square' ? 'square' : 'circle'} options={ROUND_OPTIONS} onChange={(roundForm) => (roundForm === p.stage.roundForm ? undefined : setShape({ roundForm }))} hint="A circle has one size: its diameter." />
+                <TextField
+                  label="Name of the side at the bottom"
+                  value={p.stage.roundRef ?? ''}
+                  placeholder="FOH"
+                  onCommit={(t) => (t.trim().slice(0, SP_ROUND_REF_MAX) === (p.stage.roundRef ?? '') ? undefined : setShape({ roundRef: t.trim().slice(0, SP_ROUND_REF_MAX) }))}
+                  hint={`Usually FOH: front of house, where the sound engineer mixes. Every position is said from this side: the opposite side is the far side, and stage right and stage left are as a performer facing this side sees them. Up to ${SP_ROUND_REF_MAX} letters.`}
+                />
+                <Note>In the round there is no upstage or downstage: the drawing says the far side and the {spRoundRef(p.stage)} side instead.</Note>
+              </>
+            ) : null}
             <Fields>
-              <TextField label="Width" value={sizeShown('width')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('width', t, how)} hint="Side to side." />
-              <TextField label="Depth" value={sizeShown('depth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('depth', t, how)} hint="Front to back." />
+              {circle ? (
+                // a circle has one size: the diameter writes the width and the depth
+                <TextField label="Diameter" value={sizeShown('width')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('width', t, how)} hint="Across the circle." />
+              ) : (
+                <>
+                  <TextField label="Width" value={sizeShown('width')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('width', t, how)} hint="Side to side." />
+                  <TextField label="Depth" value={sizeShown('depth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('depth', t, how)} hint="Front to back." />
+                </>
+              )}
+              {shape === 'thrust' ? (
+                <>
+                  <TextField label="Thrust width" value={partShown('thrustWidth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('thrustWidth', t, how)} hint="Side to side, at the front edge." />
+                  <TextField label="Thrust depth" value={partShown('thrustDepth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('thrustDepth', t, how)} hint="How far it reaches into the audience." />
+                </>
+              ) : null}
+              {shape === 'wings' ? <TextField label="Width of each wing" value={partShown('wingWidth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('wingWidth', t, how)} hint="Offstage, beside the stage." /> : null}
             </Fields>
             {sizeSaid ? <Note tone="warning">{sizeSaid}</Note> : null}
+            {shape === 'thrust' && !(p.stage.thrustWidth && p.stage.thrustDepth && spToScale(p)) ? <Note>Until the stage and the thrust both have their sizes, the thrust is drawn at a usual size.</Note> : null}
+            {shape === 'wings' && !(p.stage.wingWidth && spToScale(p)) ? <Note>Until the stage and the wings both have their sizes, the wings are drawn at a usual width.</Note> : null}
+            <HelpTip
+              title="Thrust, in the round, wings: what changes for sound"
+              body="On a thrust, the performers stand out in the audience. A wedge at the tip points at the performer and at the people behind them. The main loudspeakers (the mains) may be behind the performer, so the vocal microphone faces them and feeds back sooner: close technique, a tight pickup pattern and lower monitor levels help. In the round there is no back wall and no single front. A wedge fires across the stage at the audience on the other side, so in-ear monitors are much more common, and the backline (the band’s amplifiers and drums) and risers stay low so nobody’s view is blocked. Wings give you room close to the performers and out of sight: for monitor world (where the monitor engineer mixes), the main stage box and equipment racks."
+            />
             <Choice label="Measured in" value={p.stage.unit} options={UNIT_OPTIONS} onChange={(unit) => set((d) => (d.stage.unit = unit))} hint="Changing the unit does not convert the numbers." />
             <Choice label="These numbers are" value={p.stage.dims} options={DIMS_OPTIONS} onChange={(dims) => set((d) => (d.stage.dims = dims))} />
             <Note>
@@ -517,6 +579,8 @@ const styles = StyleSheet.create({
   counts: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quiet: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.textSub },
+  shapeLines: { gap: 4 },
+  shapeOn: { fontFamily: fonts.barlowSemiBold, color: colors.textSecondary },
   body: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 21, color: colors.textPrimary },
   noteText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
   links: { gap: 8 },

@@ -567,17 +567,36 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0): PlotLa
   type Op = (pen: Pen, ox: number, oy: number) => void;
   const ops: Op[] = [];
 
-  // the grid, in light gray, under everything
-  const g = fin(plot.gridM);
-  if (g > 0 && widthM / g <= 200 && depthM / g <= 200) {
-    for (let x = g; x < widthM - 1e-6; x += g) ops.push((pen, ox, oy) => pen.line(ox + X(x), oy + Yp(0), ox + X(x), oy + Yp(depthM), 0.4, GRAY.grid));
-    for (let y = g; y < depthM - 1e-6; y += g) ops.push((pen, ox, oy) => pen.line(ox + X(0), oy + Yp(y), ox + X(widthM), oy + Yp(y), 0.4, GRAY.grid));
+  const deck = plot.deck;
+  if (deck) {
+    // A STAGE THAT IS NOT A RECTANGLE (2026-11-13): the wings dashed with
+    // their names, the grid inside the shape, the outline, and a heavier line
+    // on every edge the audience sees
+    for (const a of deck.areas ?? []) {
+      if (![a.x, a.y, a.w, a.h].every(Number.isFinite)) continue;
+      ops.push((pen, ox, oy) => pen.shape({ t: 'rect', x: ox + X(a.x), y: oy + Yp(a.y), w: a.w * k, h: a.h * k, dash: true }, 0.9));
+      const word = E(a.name ?? '');
+      if (word) ops.push((pen, ox, oy) => pen.text(ox + X(a.x + a.w / 2) - spPdfWidth(word, P.label, true) / 2, oy + P.top - 6, word, P.label, true));
+    }
+    for (const s of deck.grid ?? []) if (s.every(Number.isFinite)) ops.push((pen, ox, oy) => pen.line(ox + X(s[0]), oy + Yp(s[1]), ox + X(s[2]), oy + Yp(s[3]), 0.4, GRAY.grid));
+    const ol = deck.outline;
+    const heavy = deck.front?.all ? 3 : 1.4;
+    if (ol?.t === 'circle') ops.push((pen, ox, oy) => pen.shape({ t: 'circle', cx: ox + X(ol.cx), cy: oy + Yp(ol.cy), r: ol.r * k }, heavy));
+    else if (ol?.t === 'poly') ops.push((pen, ox, oy) => pen.shape({ t: 'poly', pts: ol.pts.map((v, n) => (n % 2 ? oy + Yp(v) : ox + X(v))), closed: true }, heavy));
+    for (const l of deck.front?.lines ?? []) if (l.every(Number.isFinite)) ops.push((pen, ox, oy) => pen.line(ox + X(l[0]), oy + Yp(l[1]), ox + X(l[2]), oy + Yp(l[3]), 3));
+  } else {
+    // the grid, in light gray, under everything
+    const g = fin(plot.gridM);
+    if (g > 0 && widthM / g <= 200 && depthM / g <= 200) {
+      for (let x = g; x < widthM - 1e-6; x += g) ops.push((pen, ox, oy) => pen.line(ox + X(x), oy + Yp(0), ox + X(x), oy + Yp(depthM), 0.4, GRAY.grid));
+      for (let y = g; y < depthM - 1e-6; y += g) ops.push((pen, ox, oy) => pen.line(ox + X(0), oy + Yp(y), ox + X(widthM), oy + Yp(y), 0.4, GRAY.grid));
+    }
+    // the stage, with a heavier front (downstage) edge
+    ops.push((pen, ox, oy) => {
+      pen.box(ox + X(0), oy + Yp(0), widthM * k, depthM * k, null, GRAY.ink, 1.4);
+      pen.line(ox + X(0), oy + Yp(depthM), ox + X(widthM), oy + Yp(depthM), 3);
+    });
   }
-  // the stage, with a heavier front (downstage) edge
-  ops.push((pen, ox, oy) => {
-    pen.box(ox + X(0), oy + Yp(0), widthM * k, depthM * k, null, GRAY.ink, 1.4);
-    pen.line(ox + X(0), oy + Yp(depthM), ox + X(widthM), oy + Yp(depthM), 3);
-  });
   // a leader: a hairline from a name to its own symbol, UNDER the symbols
   // (the packet sets one when the name could not stand right beside it)
   for (const item of plot.items ?? []) {
@@ -662,7 +681,9 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0): PlotLa
   ops.push(...whites, ...words);
 
   // the four direction words: fixed, never flipped
-  const dir = { up: E(SP_PDF_PLOT_WORDS.up), down: E(SP_PDF_PLOT_WORDS.down), right: E(SP_PDF_PLOT_WORDS.right), left: E(SP_PDF_PLOT_WORDS.left) };
+  // (a shaped stage brings its own: in the round, the reference side)
+  const dw0 = plot.deck?.words;
+  const dir = { up: E(dw0?.up ?? SP_PDF_PLOT_WORDS.up), down: E(dw0?.down ?? SP_PDF_PLOT_WORDS.down), right: E(dw0?.right ?? SP_PDF_PLOT_WORDS.right), left: E(dw0?.left ?? SP_PDF_PLOT_WORDS.left) };
   const dw = (t: SpPdfText): number => spPdfWidth(t, P.direction, true);
   const midY = P.top + drawH / 2;
   // a wrapped name under the drawing pushes the audience line and the size note down

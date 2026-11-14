@@ -31,7 +31,7 @@ import {
   type SpPackageRow,
 } from '../../../../features/stageplot/spCatalog.ts';
 import { spInputSupplier, spPatchRows, spSummary, type SpBySupplier, type SpEquipLine, type SpInputTotals, type SpPatchRow } from '../../../../features/stageplot/spDerive.ts';
-import { spAssignDi, spInputLocation, spMonoLabel, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
+import { spAssignDi, spBoxPatchWords, spBoxes, spInputLocation, spMonoLabel, spMoveInput, spPairToMono, spPartner, spPatch, spRemoveDiDevice, spSetNumber } from '../../../../features/stageplot/spModel.ts';
 import type { SpIssue } from '../../../../features/stageplot/spReview.ts';
 import type { SpDeviceType, SpDiDevice, SpExtra, SpId, SpInput, SpPatch, SpPatchId, SpProject, SpSupplier } from '../../../../features/stageplot/spTypes.ts';
 
@@ -300,9 +300,69 @@ export type SpRowView = {
   required: boolean;
   /** The venue's own channel or socket, when recorded. */
   venue: string;
+  /** Where it plugs in on a stage box ("SB2 · 7", "Console direct", "No
+   *  stage box socket yet"); '' when the plot has no stage box. */
+  box: string;
   /** Everything above as one sentence for a screen reader. */
   a11y: string;
 };
+
+/** What sits on each socket of one stage box, as lines for its editor:
+ *  "1 · Kick", "7 · Snare and Tom 1 (one socket, two inputs)", "Free: 9–16",
+ *  and the inputs on a socket the box does not have. */
+export function spBoxSocketLines(p: SpProject, boxId: SpId): string[] {
+  const box = spBoxes(p).find((b) => b.id === boxId);
+  if (!box) return [];
+  const on = p.inputs.filter((i) => i.box?.boxId === boxId);
+  const bySocket = new Map<number, string[]>();
+  for (const i of on) bySocket.set((i.box as { socket: number }).socket, [...(bySocket.get((i.box as { socket: number }).socket) ?? []), i.label]);
+  const out: string[] = [];
+  for (const s of [...bySocket.keys()].filter((n) => n <= box.inputs).sort((a, b) => a - b)) {
+    const names = bySocket.get(s) as string[];
+    out.push(`${s} · ${spListWords(names)}${names.length > 1 ? ' (more than one input on one socket: give each its own)' : ''}`);
+  }
+  const free: number[] = [];
+  for (let s = 1; s <= box.inputs; s++) if (!bySocket.has(s)) free.push(s);
+  if (free.length) out.push(`Free: ${spSocketRunsWords(free)}`);
+  for (const s of [...bySocket.keys()].filter((n) => n > box.inputs).sort((a, b) => a - b)) out.push(`${s} · ${spListWords(bySocket.get(s) as string[])} (this box has no socket ${s})`);
+  return out;
+}
+
+/** "1–6, 9": numbers as runs. */
+function spSocketRunsWords(list: readonly number[]): string {
+  const out: string[] = [];
+  for (let k = 0; k < list.length; ) {
+    let j = k;
+    while (j + 1 < list.length && list[j + 1] === list[j] + 1) j += 1;
+    out.push(j === k ? String(list[k]) : `${list[k]}–${list[j]}`);
+    k = j + 1;
+  }
+  return out.join(', ');
+}
+
+/** The lowest free socket of a box (`except`: an input whose own socket
+ *  counts as free), or null when every socket is taken. */
+export function spBoxFreeSocket(p: SpProject, boxId: SpId, except?: SpId): number | null {
+  const box = spBoxes(p).find((b) => b.id === boxId);
+  if (!box) return null;
+  const used = new Set(p.inputs.filter((i) => i.id !== except && i.box?.boxId === boxId).map((i) => (i.box as { socket: number }).socket));
+  for (let s = 1; s <= box.inputs; s++) if (!used.has(s)) return s;
+  return null;
+}
+
+/** The other inputs on the same socket of the same box. */
+export function spSameSocket(p: SpProject, inputId: SpId): string[] {
+  const me = p.inputs.find((i) => i.id === inputId);
+  if (!me?.box) return [];
+  const at = me.box;
+  return p.inputs.filter((i) => i.id !== inputId && i.box?.boxId === at.boxId && i.box.socket === at.socket).map((i) => i.label);
+}
+
+/** Where an input plugs in, in the row's words ('' when the plot has no box). */
+export function spRowBoxWords(p: SpProject, i: SpInput): string {
+  if (!spBoxes(p).length) return '';
+  return spBoxPatchWords(p, i) || (i.direct ? 'Console direct' : 'No stage box socket yet');
+}
 
 /** The other inputs that carry the same channel number as this one in one
  *  list. The same number in the other system's list is not a clash. */
@@ -339,6 +399,8 @@ export function spRowView(p: SpProject, row: SpPatchRow, patchId: SpPatchId = 'h
   ];
   if (i.priority === 'required') said.push('Required');
   if (row.venue) said.push(`Venue channel ${row.venue}`);
+  const box = spRowBoxWords(p, i);
+  if (box) said.push(box.includes(' · ') ? `Stage box ${box.replace(' · ', ', socket ')}` : box);
   if (sameNumberAs.length) said.push(`Same number as ${spListWords(sameNumberAs)}: each needs its own number`);
   if (i.cue && i.audience === 'audience') said.push(i.cueAudienceOk ? 'A click or cue that the audience is meant to hear' : 'A click or cue set to go to the audience mix');
   return {
@@ -361,6 +423,7 @@ export function spRowView(p: SpProject, row: SpPatchRow, patchId: SpPatchId = 'h
     audienceTbc: i.audience === 'tbc',
     required: i.priority === 'required',
     venue: row.venue,
+    box,
     // a screen reader reads a comma as a pause; the dot mark is for the eye
     a11y: `${said.join('. ').replace(/ · /g, ', ')}.`,
   };

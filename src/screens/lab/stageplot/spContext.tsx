@@ -25,7 +25,7 @@ import { getSpProject, getSpSaveMode, saveSpProject, spStoreGeneration, type SpS
 import type { SpProject } from '../../../features/stageplot/spTypes';
 
 export type SpAreaId = 'setup' | 'stage' | 'inputs' | 'monitors' | 'export';
-export type SpSelection = { kind: 'object' | 'input' | 'source' | 'performer' | 'mix' | 'device' | 'di' | 'extra'; id: string } | null;
+export type SpSelection = { kind: 'object' | 'input' | 'source' | 'performer' | 'mix' | 'device' | 'di' | 'extra' | 'box'; id: string } | null;
 export type SpSaveState = 'saved' | 'saving' | 'session-only' | 'failed';
 export type SpEditor = {
   project: SpProject;
@@ -93,6 +93,8 @@ function selectionAlive(p: SpProject, s: NonNullable<SpSelection>): boolean {
       return has(p.diDevices);
     case 'extra':
       return has(p.extras);
+    case 'box':
+      return has(p.boxes ?? []);
   }
 }
 

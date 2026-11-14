@@ -57,6 +57,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { spGridStep, spMoveObject, spObject, spSetStageView, spToScale, spUpdateObject } from '../../../features/stageplot/spModel';
+import { spShapeWords } from '../../../features/stageplot/spShape';
 import type { SpId, SpProject } from '../../../features/stageplot/spTypes';
 import { colors, fonts } from '../../../theme/tokens';
 import { RackUnit } from '../rack/RackUnit';
@@ -337,7 +338,7 @@ export function StageArea() {
         if (sel) setTurn({ id: sel.id, rot: turnOf(v) });
       },
       onCommit: (v) => commitTurn(turnOf(v)),
-      format: (v) => `${turnOf(v)}° · ${stageFacingShort(turnOf(v))}`,
+      format: (v) => `${turnOf(v)}° · ${stageFacingShort(turnOf(v), p.stage)}`,
       formatShort: (v) => `${turnOf(v)}°`,
       home: 0,
       nudges: sel
@@ -383,6 +384,7 @@ export function StageArea() {
   // screen (bug test S1-01: a 110-point well left the stage a 45-point strip).
   const minWell = winH >= 900 ? Math.round(winH * 0.3) : winH < 760 ? 48 : 110;
   const placeName = toPlace ? stageSelectionName(p, toPlace) : '';
+  const shapeWords = spShapeWords(p.stage, p.stage.unit);
   // A popup shows only outside FULL SCREEN (there the same button opens the tray).
   const shown = inFull ? null : panel;
 
@@ -391,7 +393,7 @@ export function StageArea() {
       <RackUnit stage={{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true }} params={params} initialParam="zoom">
         <View style={styles.well}>
           <Text style={styles.status} accessibilityLiveRegion="polite">
-            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel)}, ${stageFacingWord(sel.rot)}).` : 'Nothing is selected.'}`}
+            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel, p.stage)}, ${stageFacingWord(sel.rot, p.stage)}).` : 'Nothing is selected.'}`}
           </Text>
           {leftOut > 0 || codesOut > 0 || crowded > 0 || numbersOut > 0 ? (
             <Note>
@@ -450,6 +452,8 @@ export function StageArea() {
 
           <View style={styles.block}>
             {p.viewNote.trim() ? <Note>{`Your viewpoint note (from Setup, printed under the plot): ${p.viewNote.trim()}`}</Note> : null}
+            {/* the stage's shape, in words (Setup chooses it) */}
+            {shapeWords ? <Note>{`${shapeWords} You choose the shape in Setup, under STAGE SIZE.`}</Note> : null}
             <Note>
               {spToScale(p)
                 ? `The stage is drawn to scale: ${size}. Symbols are drawings, not the real size of the equipment. The plot does not prove that anything fits.`

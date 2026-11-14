@@ -20,8 +20,13 @@ import {
   spAddObject,
   spAddPackage,
   spAddPerformer,
+  spBox,
+  spBoxName,
+  spBoxObject,
+  spBoxes,
   spDevice,
   spGridStep,
+  spLinkBoxObject,
   spInput,
   spLocationWord,
   spMix,
@@ -35,6 +40,7 @@ import {
   spUpdateObject,
 } from '../../../../features/stageplot/spModel.ts';
 import type { SpCategory, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes.ts';
+import { spInPerformance } from '../../../../features/stageplot/spShape.ts';
 import { spIsSized, spObjectBoxM, spPlotKey, spStageMeters, spSymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
 import { spPackagePreview, spUniqueLabel } from '../inputs/inputsLogic.ts';
 import { spmAddDevice } from '../monitors/monitorPlan.ts';
@@ -42,7 +48,7 @@ import { stageNudgeStep, type Pt } from './stageGeom.ts';
 
 /** The editor's selection, as the Stage area reads it (the same shape as the
  *  shell's `SpSelection`; repeated here so this file stays pure). */
-export type StageSelection = { kind: 'object' | 'input' | 'source' | 'performer' | 'mix' | 'device' | 'di' | 'extra'; id: string } | null;
+export type StageSelection = { kind: 'object' | 'input' | 'source' | 'performer' | 'mix' | 'device' | 'di' | 'extra' | 'box'; id: string } | null;
 
 /* ── names and numbers ──────────────────────────────────────────────────── */
 
@@ -57,18 +63,21 @@ export const stageObjectKindName = (kind: SpObjectKind): string => (kind === 'vo
 
 /** "Sam (downstage center, facing the audience)" style words for where an
  *  object is: its place in stage words, in lower case. */
-export const stageWhere = (o: { x: number; y: number }): string => {
-  const w = spLocationWord(o);
+export const stageWhere = (o: { x: number; y: number }, stage?: SpProject['stage']): string => {
+  const w = spLocationWord(o, stage);
   return w.charAt(0).toLowerCase() + w.slice(1);
 };
 
-/** The name printed beside an object: a performer's own name, else the
- *  object's label, else '' (a bare chair or stand has no name to print). */
+/** The name printed beside an object: a performer's own name, a stage box's
+ *  own name ("SB2"), else the object's label, else '' (a bare chair or stand
+ *  has no name to print). */
 export function stageName(p: SpProject, o: SpObject): string {
   if (o.kind === 'performer' && o.performerId) {
     const who = spPerformer(p, o.performerId);
     if (who?.name.trim()) return who.name.trim();
   }
+  const box = spBox(p, o.boxId);
+  if (box) return spBoxName(box);
   return o.label.trim();
 }
 
@@ -125,7 +134,7 @@ export function stageMixBadges(p: SpProject, o: SpObject): string[] {
  *  stage says so in words (a flag is never a color alone). */
 export function stageBadges(p: SpProject, o: SpObject, at: Pt = o): string[] {
   const out = [...stageInputBadges(p, o), ...stageMixBadges(p, o)];
-  if (!spOnStage(at)) out.push('OFF STAGE');
+  if (!spOnStage(at, p.stage)) out.push('OFF STAGE');
   return out;
 }
 
@@ -149,6 +158,7 @@ export function stageSelectedObjectId(p: SpProject, sel: StageSelection): SpId |
   if (sel.kind === 'source') return spObjectOfSource(p, sel.id)?.id ?? null;
   if (sel.kind === 'performer') return p.objects.find((o) => o.performerId === sel.id && o.kind === 'performer')?.id ?? p.objects.find((o) => o.performerId === sel.id)?.id ?? null;
   if (sel.kind === 'device') return p.objects.find((o) => o.deviceId === sel.id)?.id ?? null;
+  if (sel.kind === 'box') return spBoxObject(p, sel.id)?.id ?? null;
   return null;
 }
 
@@ -166,6 +176,10 @@ export function stageSelectionName(p: SpProject, sel: StageSelection): string {
     const d = spDevice(p, sel.id);
     return d ? d.label || SP_DEVICE_WORD[d.type] : '';
   }
+  if (sel.kind === 'box') {
+    const b = spBox(p, sel.id);
+    return b ? `Stage box ${spBoxName(b)}` : '';
+  }
   return '';
 }
 
@@ -174,7 +188,11 @@ export function stageSelectionName(p: SpProject, sel: StageSelection): string {
 /** What the palette asks before it places a kind of object. */
 export type StageLinkMode = 'none' | 'performer' | 'sound' | 'capture' | 'monitor';
 
-const SOUND: readonly SpObjectKind[] = ['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback'];
+const SOUND: readonly SpObjectKind[] = [
+  ...(['drum-kit', 'percussion', 'congas', 'timbales', 'bongo', 'guitar-amp', 'bass-amp', 'keyboard', 'piano', 'acoustic-guitar', 'horn', 'playback'] as const),
+  // more symbols for more diverse music (2026-11-13)
+  ...(['choir', 'e-drums', 'cajon', 'djembe', 'tabla', 'steel-pan', 'vibraphone', 'upright-bass', 'grand-piano', 'electric-piano', 'keyboard-rig', 'organ', 'leslie', 'violin', 'cello', 'harp', 'banjo', 'mandolin', 'accordion', 'saxophone', 'trombone', 'dj'] as const),
+];
 const CAPTURE: readonly SpObjectKind[] = ['vocal-mic', 'mic-stand', 'di'];
 const MONITOR: readonly SpObjectKind[] = ['wedge', 'iem', 'drum-fill', 'sidefill'];
 
@@ -203,6 +221,31 @@ export const STAGE_PACKAGES: Partial<Record<SpObjectKind, readonly string[]>> = 
   horn: ['horn-mic'],
   playback: ['playback-stereo', 'click'],
   'vocal-mic': ['vocal', 'vocal-wireless'],
+  // more symbols for more diverse music (2026-11-13)
+  choir: ['choir-three', 'choir-two'],
+  'e-drums': ['e-drums-stereo', 'e-drums-kick'],
+  cajon: ['cajon-mics', 'cajon-mic'],
+  djembe: ['djembe-mics', 'percussion-mic'],
+  tabla: ['tabla-mics'],
+  'steel-pan': ['steel-pan-mic', 'steel-pan-pair'],
+  vibraphone: ['vibes-mics'],
+  'upright-bass': ['upright-bass-both', 'upright-bass-pickup', 'upright-bass-mic'],
+  'grand-piano': ['grand-piano-mics', 'grand-piano-pickup'],
+  'electric-piano': ['ep-di', 'ep-stereo'],
+  'keyboard-rig': ['keys-rig-two', 'keys-submix', 'keys-stereo'],
+  // a tonewheel organ is miked at its Leslie; a modern organ has a line out
+  organ: ['leslie-mics', 'leslie-two', 'organ-line'],
+  leslie: ['leslie-mics', 'leslie-two'],
+  violin: ['violin-mic', 'violin-pickup'],
+  cello: ['cello-mic', 'cello-pickup'],
+  harp: ['harp-mic', 'harp-pickup'],
+  banjo: ['banjo-mic', 'banjo-pickup'],
+  mandolin: ['mandolin-mic', 'mandolin-pickup'],
+  accordion: ['accordion-mics', 'accordion-di'],
+  saxophone: ['sax-mic', 'horn-mic'],
+  trombone: ['trombone-mic', 'horn-mic'],
+  // a DJ usually needs a talk microphone too
+  dj: ['dj-stereo', 'vocal'],
 };
 
 export function stagePackagesFor(kind: SpObjectKind): SpPackage[] {
@@ -231,6 +274,28 @@ const CATEGORY_OF: Partial<Record<SpObjectKind, readonly SpCategory[]>> = {
   'acoustic-guitar': ['guitars', 'other'],
   horn: ['horns', 'other'],
   playback: ['playback'],
+  choir: ['vocals'],
+  'e-drums': ['drums'],
+  cajon: ['percussion'],
+  djembe: ['percussion'],
+  tabla: ['percussion'],
+  'steel-pan': ['percussion'],
+  vibraphone: ['percussion'],
+  'upright-bass': ['bass'],
+  'grand-piano': ['keys'],
+  'electric-piano': ['keys'],
+  'keyboard-rig': ['keys'],
+  organ: ['keys'],
+  leslie: ['keys'],
+  violin: ['other'],
+  cello: ['other'],
+  harp: ['other'],
+  banjo: ['guitars', 'other'],
+  mandolin: ['guitars', 'other'],
+  accordion: ['other', 'keys'],
+  saxophone: ['horns'],
+  trombone: ['horns'],
+  dj: ['playback'],
 };
 
 const channelWords = (p: SpProject, sourceId: SpId): string => {
@@ -295,7 +360,7 @@ export function stageDeviceChoices(p: SpProject, kind: SpObjectKind): StageChoic
 
 /* ── things in the lists that are not on the stage ──────────────────────── */
 
-export type StageUnplaced = { kind: 'performer' | 'source' | 'device'; id: SpId; name: string; detail: string };
+export type StageUnplaced = { kind: 'performer' | 'source' | 'device' | 'box'; id: SpId; name: string; detail: string };
 
 /** Monitor devices that stand on the stage floor: a plot without them is
  *  missing something the venue must place. (A pack is worn, a transmitter
@@ -317,6 +382,8 @@ export function stageUnplaced(p: SpProject): StageUnplaced[] {
     const m = spMix(p, d.mixId);
     out.push({ kind: 'device', id: d.id, name: d.label.trim() || SP_DEVICE_WORD[d.type], detail: m ? `${SP_DEVICE_WORD[d.type]}, mix ${m.code}` : SP_DEVICE_WORD[d.type] });
   }
+  // a stage box the venue must place, with no drawing yet
+  for (const b of spBoxes(p)) if (!spBoxObject(p, b.id)) out.push({ kind: 'box', id: b.id, name: spBoxName(b), detail: `Stage box, ${b.inputs} inputs` });
   return out;
 }
 
@@ -324,6 +391,31 @@ const KIND_FOR_CATEGORY: Record<SpCategory, SpObjectKind> = { drums: 'drum-kit',
 /** Words in a source's own name that say which symbol it is. Checked before
  *  the category, so "Acoustic guitar" is not drawn as an amplifier. */
 const KIND_WORDS: readonly (readonly [RegExp, SpObjectKind])[] = [
+  // the added kinds first (2026-11-13), so "Upright bass" is not a bass
+  // amplifier and "Trombone" is not drawn as a trumpet
+  [/upright bass|double bass(?! ?(drum|pedal|kick))|contrabass|string bass/i, 'upright-bass'],
+  [/\bgrand\b/i, 'grand-piano'],
+  [/rhodes|wurlitzer|electric piano|e-piano/i, 'electric-piano'],
+  [/organ|hammond|\bb-?3\b/i, 'organ'],
+  [/leslie|rotary/i, 'leslie'],
+  [/violin|viola|fiddle/i, 'violin'],
+  [/cello/i, 'cello'],
+  // in blues and folk a "harp" is a harmonica, played into a microphone
+  [/harmonica|blues ?harp|harp mic/i, 'vocal-mic'],
+  [/\bharp\b/i, 'harp'],
+  [/banjo/i, 'banjo'],
+  [/mandolin/i, 'mandolin'],
+  [/accordion/i, 'accordion'],
+  [/caj[oó]n/i, 'cajon'],
+  [/djemb/i, 'djembe'],
+  [/tabla/i, 'tabla'],
+  [/steel ?pan|steel ?drum/i, 'steel-pan'],
+  [/vibes|vibraphone/i, 'vibraphone'],
+  [/\be-?drums\b|electronic drum|\be-kit\b/i, 'e-drums'],
+  [/\bdj\b|turntable/i, 'dj'],
+  [/sax/i, 'saxophone'],
+  [/trombone/i, 'trombone'],
+  [/choir|chorale/i, 'choir'],
   [/conga/i, 'congas'],
   [/timbal/i, 'timbales'],
   [/bong[oó]/i, 'bongo'],
@@ -399,6 +491,8 @@ export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generi
       const q = { x: i * step.x, y: j * step.y };
       k += 1;
       if (q.x < mx - 1e-9 || q.x > 1 - mx + 1e-9 || q.y < my - 1e-9 || q.y > 1 - my + 1e-9) continue;
+      // a round stage: inside the circle, its box as well as its center
+      if (!spInPerformance(q, p.stage) || !spInPerformance({ x: q.x + (q.x < 0.5 ? -mx : mx), y: q.y + (q.y < 0.5 ? -my : my) }, p.stage)) continue;
       // distances in meters, so "nearest" means the same across and deep
       tries.push({ q, d: Math.hypot((q.x - at.x) * st.width, (q.y - at.y) * st.depth), k });
     }
@@ -496,6 +590,13 @@ export function stagePlace(p: SpProject, sel: StageSelection, near: Pt): StageAd
   if (sel.kind === 'device') {
     const d = spDevice(p, sel.id);
     return d ? add(KIND_FOR_DEVICE[d.type], { deviceId: d.id }) : null;
+  }
+  if (sel.kind === 'box') {
+    // a stage box with no drawing: its drawing, linked (one edit)
+    const b = spBox(p, sel.id);
+    if (!b) return null;
+    const r = spAddObject(p, 'stage-box', stageFreeSpot(p, near, 'stage-box'), { label: spBoxName(b) });
+    return { p: spLinkBoxObject(r.p, r.id, b.id), id: r.id };
   }
   return null;
 }

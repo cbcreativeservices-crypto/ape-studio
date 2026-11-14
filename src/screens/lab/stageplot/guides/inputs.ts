@@ -15,7 +15,7 @@ export const SP_GUIDE_INPUTS: ScreenGuide = {
   seeing: [
     'Each card is one input. It shows the channel number, the name, who plays it, where it is on the stage, how it is captured, and its stand.',
     'A stereo pair is one block with an L row and an R row. MONITOR ONLY marks a click or cue that the audience does not hear.',
-    'Below the list you see your DI devices and a summary of who brings what.',
+    'Below the list you see your DI devices, your STAGE BOXES and a summary of who brings what.',
   ],
   control: [
     'ADD A SOURCE offers a ready-made package, a single input, or a source that needs no sound system connection.',
@@ -28,12 +28,14 @@ export const SP_GUIDE_INPUTS: ScreenGuide = {
     'A package adds only the rows you ticked. Each row is an ordinary row afterward, so you can change or remove it.',
     'A row that moves takes the channel number of its new place. The number beside it on the stage follows.',
     'The summary is counted from the rows each time, so its numbers change when a row does.',
+    'AUTO-ASSIGN SOCKETS gives each input a socket on the nearest stage box, in channel order.',
   ],
   teaches: [
     'A source is not an input. A drum kit can need six inputs. An acoustic instrument can need none.',
     'A stereo source needs two inputs, left and right, even when a console shows one strip.',
     'A DI channel and a DI device are counted apart: one stereo DI device carries two DI channels.',
     'A microphone model is a preference unless you mark it required.',
+    'A stage box near each group of instruments keeps cable runs short.',
   ],
   tryThis: [
     'Add the stereo keyboard package, then open one of its rows and choose MAKE IT MONO. The number of inputs and the number of DI channels each drop by one.',

@@ -31,7 +31,12 @@ import {
   SP_SUPPLIER_WORD,
 } from '../../../../features/stageplot/spCatalog';
 import {
+  spAssignBox,
   spAssignDi,
+  spBox,
+  spBoxName,
+  spBoxes,
+  spSetDirect,
   spInput,
   spInputLocation,
   spObjectOfInput,
@@ -52,7 +57,10 @@ import type { SpAudience, SpCapture, SpDestination, SpId, SpInput, SpPatchId, Sp
 import { useSpEditor } from '../spContext';
 import { Button, Choice, Fields, FocusMark, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
-import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber } from './inputsLogic';
+import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBoxFreeSocket, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber, spSameSocket } from './inputsLogic';
+
+/** The stage box choice that means "plugs into the console itself". */
+const DIRECT = '__direct';
 
 const opts = <T extends string>(words: Record<T, string>, order: readonly T[]): { value: T; label: string }[] => order.map((value) => ({ value, label: words[value] }));
 
@@ -135,6 +143,9 @@ export function InputEditor({
   const mono = input.pairId && partner ? spMonoChoice(p, input.pairId) : null;
   const diDevice = input.capture === 'di' && input.diDeviceId ? p.diDevices.find((d) => d.id === input.diDeviceId) : undefined;
   const cueToAudience = input.cue && input.audience === 'audience';
+  const boxes = spBoxes(p);
+  const boxOf = input.box ? spBox(p, input.box.boxId) : undefined;
+  const sameSocket = spSameSocket(p, inputId);
 
   const set = (patch: Partial<Omit<SpInput, 'id' | 'sourceId' | 'pairId' | 'side'>>) => ed.apply((q) => spUpdateInput(q, inputId, patch));
   const text = (key: TextKey, keepIfEmpty = false) => (t: string) => {
@@ -258,6 +269,38 @@ export function InputEditor({
       <FocusMark k="audience">
         <Choice label="Who hears it" value={input.audience} options={AUDIENCE} onChange={(audience) => (audience === input.audience ? undefined : set({ audience }))} />
       </FocusMark>
+
+      {/* THE STAGE BOX SOCKET (2026-11-13): only when the plot has boxes */}
+      {boxes.length ? (
+        <FocusMark k="box">
+          <View style={bitStyles.gap}>
+            <Choice
+              label="Stage box"
+              value={input.box ? input.box.boxId : input.direct ? DIRECT : ''}
+              options={[{ value: '', label: 'No stage box socket yet' }, ...boxes.map((b) => ({ value: b.id, label: `${spBoxName(b)} (${b.inputs} inputs)` })), { value: DIRECT, label: 'Console direct: no stage box' }]}
+              onChange={(v) => {
+                if (v === (input.box ? input.box.boxId : input.direct ? DIRECT : '')) return;
+                if (v === DIRECT) ed.apply((q) => spSetDirect(q, inputId, true));
+                else if (!v) ed.apply((q) => spSetDirect(spAssignBox(q, inputId, null), inputId, false));
+                else {
+                  // the lowest free socket of that box, chosen by hand
+                  const s = spBoxFreeSocket(p, v, inputId) ?? (boxes.find((b) => b.id === v)?.inputs ?? 1);
+                  ed.apply((q) => spAssignBox(q, inputId, { boxId: v, socket: s }));
+                }
+              }}
+              hint="Where this input’s cable plugs in on the stage. Console direct: it plugs into the console itself at front of house (FOH), such as a playback laptop, wireless receivers racked at FOH, a talkback microphone or an audience microphone. It still needs a console input."
+            />
+            {input.box && boxOf ? (
+              <>
+                <NumberField label={`Socket on ${spBoxName(boxOf)}`} value={input.box.socket} min={1} max={boxOf.inputs} width="half" onCommit={(n) => (n == null || n === input.box?.socket ? undefined : ed.apply((q) => spAssignBox(q, inputId, { boxId: boxOf.id, socket: n })))} hint={`${spBoxName(boxOf)} has sockets 1 to ${boxOf.inputs}.`} />
+                <Small>{input.box.byHand ? 'Chosen by you: AUTO-ASSIGN never moves it.' : 'Chosen by AUTO-ASSIGN. Type a socket to choose it yourself.'}</Small>
+                {sameSocket.length ? <Note tone="warning">{`Socket ${input.box.socket} of ${spBoxName(boxOf)} is also given to ${spListWords(sameSocket)}. One socket takes one cable: give each its own.`}</Note> : null}
+                {input.box.socket > boxOf.inputs ? <Note tone="warning">{`${spBoxName(boxOf)} has ${boxOf.inputs} sockets, so there is no socket ${input.box.socket}. Choose another socket or box.`}</Note> : null}
+              </>
+            ) : null}
+          </View>
+        </FocusMark>
+      ) : null}
 
       <View style={bitStyles.gap}>
         <SubTitle>On the stage</SubTitle>

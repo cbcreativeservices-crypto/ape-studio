@@ -591,7 +591,7 @@ export type SpmDeviceStage = {
  *  something still to place (review 2). */
 export function spmDeviceStage(p: SpProject, deviceId: SpId): SpmDeviceStage {
   const o = p.objects.find((x) => x.deviceId === deviceId);
-  if (o) return { objectId: o.id, line: `On the stage: ${spLocationWord(o)}`, button: 'LOCATE ON THE STAGE', worn: false };
+  if (o) return { objectId: o.id, line: `On the stage: ${spLocationWord(o, p.stage)}`, button: 'LOCATE ON THE STAGE', worn: false };
   const d = p.devices.find((x) => x.id === deviceId);
   if (d?.type === 'iem-pack') {
     const who = spmPerformerName(p.performers.find((x) => x.id === d.performerId));

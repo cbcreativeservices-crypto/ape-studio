@@ -661,7 +661,8 @@ describe('the shell is wired as the builders’ contract says', () => {
   it('spContext exports the editor contract, word for word', () => {
     for (const piece of [
       "export type SpAreaId = 'setup' | 'stage' | 'inputs' | 'monitors' | 'export';",
-      "export type SpSelection = { kind: 'object' | 'input' | 'source' | 'performer' | 'mix' | 'device' | 'di' | 'extra'; id: string } | null;",
+      // 'box' added on purpose 2026-11-13 (numbered stage boxes: GO TO a box)
+      "export type SpSelection = { kind: 'object' | 'input' | 'source' | 'performer' | 'mix' | 'device' | 'di' | 'extra' | 'box'; id: string } | null;",
       'flush: () => void;',
       "export type SpSaveState = 'saved' | 'saving' | 'session-only' | 'failed';",
       'apply: (change: (p: SpProject) => SpProject) => void;',

@@ -40,9 +40,10 @@ import {
   SP_SUPPLIER_WORD,
   SP_VENUE_FEED_WORD,
 } from './spCatalog.ts';
-import { spAllInputsInOrder, spBadge, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
-import type { SpDoc, SpDocBlock, SpDocColumn, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
-import { spEdit, spFreeze, spLocationWord, spMix, spObjectOfInput, spPerformer } from './spModel.ts';
+import { spAllInputsInOrder, spBadge, spBoxSizeWords, spBoxUse, spBoxUseWords, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
+import type { SpDoc, SpDocBlock, SpDocColumn, SpDocDeck, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
+import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spObjectOfInput, spOnStage, spPerformer } from './spModel.ts';
+import { spFrontEdges, spIsCircle, spRoundRef, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
 import { spReview, type SpIssue } from './spReview.ts';
 import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
 import type { SpDeviceType, SpExportOptions, SpId, SpInput, SpMix, SpMixNeed, SpObject, SpPacketKind, SpProject, SpSnapshot } from './spTypes.ts';
@@ -423,6 +424,8 @@ export function spBadgeRuns(badges: string[]): string[] {
 function objectLabel(p: SpProject, o: SpObject): string {
   let label = o.label.trim();
   if (o.kind === 'performer') label = spPerformer(p, o.performerId)?.name.trim() || label;
+  // a stage box prints its own name ("SB2")
+  else if (spBox(p, o.boxId)) label = spBoxName(spBox(p, o.boxId) as NonNullable<ReturnType<typeof spBox>>);
   else if (!label && o.deviceId) {
     const d = p.devices.find((x) => x.id === o.deviceId);
     label = d ? d.label.trim() || SP_DEVICE_WORD[d.type] : '';
@@ -463,6 +466,21 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   // a drawing that needs room: the plot alone, or a stage with many people
   const roomy = (typeof how === 'object' && how.roomy) || p.performers.length >= SP_PLOT_ROOMY_PEOPLE;
   const st = spStageMeters(p);
+  // THE SHAPE (2026-11-13): the plot's own space is everything the stage
+  // floor covers (a thrust's tongue, the wings), with 0,0 at its top left.
+  // For a rectangle that is the stage itself, as always.
+  const fb = spShapeBounds(p.stage);
+  const ox = -fb.x0 * st.width;
+  const oy = -fb.y0 * st.depth;
+  const plotW = (fb.x1 - fb.x0) * st.width;
+  const plotD = (fb.y1 - fb.y0) * st.depth;
+  const shiftShape = (s: SpShape): SpShape => {
+    if (!ox && !oy) return s;
+    if (s.t === 'circle') return { ...s, cx: s.cx + ox, cy: s.cy + oy };
+    if (s.t === 'line') return { ...s, x1: s.x1 + ox, y1: s.y1 + oy, x2: s.x2 + ox, y2: s.y2 + oy };
+    if (s.t === 'poly') return { ...s, pts: s.pts.map((v, k) => v + (k % 2 ? oy : ox)) };
+    return { ...s, x: s.x + ox, y: s.y + oy };
+  };
 
   // which symbol each input is shown at: the same answer "Locate on stage" gives
   const inputsAt = new Map<SpId, string[]>();
@@ -491,8 +509,8 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const objects = [...p.objects].sort((a, b) => drawRank(a) - drawRank(b));
   const drafts: Draft[] = objects.map((o) => {
     const b = spObjectBoxM(p, o);
-    const at = { x: b.cx, y: b.cy };
-    const shapes = spPlacedShapes(p, o);
+    const at = { x: b.cx + ox, y: b.cy + oy };
+    const shapes = spPlacedShapes(p, o).map(shiftShape);
     const badges = spBadgeRuns(inputsAt.get(o.id) ?? []);
     const mixCodes: string[] = [];
     if (o.performerId) for (const m of spMixesOf(p, o.performerId)) mixCodes.push(m.code);
@@ -502,7 +520,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       if (m) mixCodes.push(m.code);
     }
     for (const c of mixCodes) if (c && !badges.includes(c)) badges.push(c);
-    return { id: o.id, shapes, tag: spSymbol(o.kind).tag, at, label: objectLabel(p, o), labelAt: at, badges, person: o.kind === 'performer', box: shapesBox(shapes, at), parts: shapes.map((s) => shapesBox([s], shapeAt(s))), sized: spIsSized(o.kind), onStage: o.x >= 0 && o.x <= 1 && o.y >= 0 && o.y <= 1, placed: true, full: '', who: whoOf(o) };
+    return { id: o.id, shapes, tag: spSymbol(o.kind).tag, at, label: objectLabel(p, o), labelAt: at, badges, person: o.kind === 'performer', box: shapesBox(shapes, at), parts: shapes.map((s) => shapesBox([s], shapeAt(s))), sized: spIsSized(o.kind), onStage: spOnStage(o, p.stage), placed: true, full: '', who: whoOf(o) };
   });
 
   // WHERE EACH NAME GOES (review 2: a name on the wrong object sends a
@@ -526,10 +544,10 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const NEAR_RATIO = 1.6; // how many times farther any other symbol must be
   const PERSON_CLEAR = 6; // points kept clear around a performer's name (round 2)
   let symbolOver = 0;
-  for (const d of drafts) symbolOver = Math.max(symbolOver, -d.box.x0, d.box.x1 - st.width, -d.box.y0, d.box.y1 - st.depth);
+  for (const d of drafts) symbolOver = Math.max(symbolOver, -d.box.x0, d.box.x1 - plotW, -d.box.y0, d.box.y1 - plotD);
   const symbolMargin = Math.max(0.6, Math.round((symbolOver + 0.15) * 100) / 100);
   let marginM = symbolMargin;
-  const stageBox: Box = { x0: 0, y0: 0, x1: st.width, y1: st.depth };
+  const stageBox: Box = { x0: 0, y0: 0, x1: plotW, y1: plotD };
   const within = (a: Box, b: Box): boolean => a.x0 >= b.x0 - 1e-9 && a.x1 <= b.x1 + 1e-9 && a.y0 >= b.y0 - 1e-9 && a.y1 <= b.y1 + 1e-9;
   const grow = (a: Box, by: number): Box => ({ x0: a.x0 - by, y0: a.y0 - by, x1: a.x1 + by, y1: a.y1 + by });
   /** How far apart two boxes are (0 when they touch or overlap). */
@@ -554,13 +572,13 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const solid = drafts.filter((d) => !d.sized);
   const platforms = drafts.filter((d) => d.sized);
   for (let pass = 0; pass < 4; pass += 1) {
-    const k = spPlotScale({ widthM: st.width, depthM: st.depth, marginM, items: drafts, roomy }, SP_PLOT_NOMINAL_W);
+    const k = spPlotScale({ widthM: plotW, depthM: plotD, marginM, items: drafts, roomy }, SP_PLOT_NOMINAL_W);
     const gap = 3 / k;
     const pad = PAD / k;
     const taken: Box[] = [];
     /** The performers' names among them. */
     const takenPeople: Box[] = [];
-    const page: Box = { x0: -marginM, y0: -marginM, x1: st.width + marginM, y1: st.depth + marginM };
+    const page: Box = { x0: -marginM, y0: -marginM, x1: plotW + marginM, y1: plotD + marginM };
     const inside = grow(stageBox, -EDGE / k);
     for (const d of drafts) {
       delete d.leader;
@@ -770,7 +788,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     }
     // room around the stage, so anything off the stage (and its name) shows
     let over = 0;
-    for (const x of taken) over = Math.max(over, -x.x0, x.x1 - st.width, -x.y0, x.y1 - st.depth);
+    for (const x of taken) over = Math.max(over, -x.x0, x.x1 - plotW, -x.y0, x.y1 - plotD);
     const need = Math.min(symbolMargin + 0.6, Math.max(symbolMargin, Math.round((over + 0.05) * 100) / 100));
     if (need <= marginM + 0.01) break;
     marginM = need;
@@ -784,7 +802,34 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   });
   const grid = printedGrid(p, st.width, st.toScale);
   const unit = p.stage.unit;
-  const sizeNote = st.toScale ? `${num(p.stage.width ?? 0)} ${unit} × ${num(p.stage.depth ?? 0)} ${unit} (${p.stage.dims})` : 'Not to scale';
+  const shape = spShapeOf(p.stage);
+  let sizeNote = st.toScale ? `${num(p.stage.width ?? 0)} ${unit} × ${num(p.stage.depth ?? 0)} ${unit} (${p.stage.dims})` : 'Not to scale';
+  // the round's way of reading the drawing is printed with the size, so it is
+  // on the plot's own page (expert review 2026-11-13)
+  if (shape === 'round') sizeNote = `${st.toScale ? (spIsCircle(p.stage) ? `${num(p.stage.width ?? 0)} ${unit} across (${p.stage.dims})` : sizeNote) : 'Not to scale'}, in the round: the ${spRoundRef(p.stage)} side is at the bottom`;
+  else if (shape === 'thrust' && !st.toScale) sizeNote = 'Not to scale; a thrust reaches into the audience at the front';
+  else if (st.toScale && shape === 'thrust') sizeNote += spThrustFrac(p.stage).given ? `; thrust ${num(p.stage.thrustWidth ?? 0)} ${unit} × ${num(p.stage.thrustDepth ?? 0)} ${unit}` : '; thrust drawn at a usual size';
+  else if (st.toScale && shape === 'wings') sizeNote += spWingFrac(p.stage).given ? `; wings ${num(p.stage.wingWidth ?? 0)} ${unit} each` : '; wings drawn at a usual width';
+  // the shape's own drawing, in the plot's space (absent for a rectangle)
+  let deck: SpDocDeck | undefined;
+  if (shape !== 'rect') {
+    const mx = (fx: number): number => fx * st.width + ox;
+    const my = (fy: number): number => fy * st.depth + oy;
+    const ol = spShapeOutline(p.stage);
+    const front = spFrontEdges(p.stage);
+    deck = {
+      shape,
+      outline: ol.t === 'circle' ? { t: 'circle', cx: mx(ol.cx), cy: my(ol.cy), r: ol.r * st.width } : { t: 'poly', pts: ol.pts.map((v, k) => (k % 2 ? my(v) : mx(v))) },
+      front: { all: front.all, lines: front.lines.map(([a, b, c, d]) => [mx(a), my(b), mx(c), my(d)] as [number, number, number, number]) },
+      areas: spWingRects(p.stage).map((w) => ({ x: mx(w.r.x0), y: my(w.r.y0), w: (w.r.x1 - w.r.x0) * st.width, h: (w.r.y1 - w.r.y0) * st.depth, name: w.side === 'right' ? 'SR WING' : 'SL WING' })),
+      grid: grid.stepM ? spShapeGridSegments(p.stage, { x: grid.stepM / st.width, y: grid.stepM / st.depth }).map(([a, b, c, d]) => [mx(a), my(b), mx(c), my(d)] as [number, number, number, number]) : [],
+      words: spShapeDirections(p.stage),
+      origin: { x: ox, y: oy },
+      mainW: st.width,
+      mainD: st.depth,
+      stage: { shape, thrustWidth: p.stage.thrustWidth ?? null, thrustDepth: p.stage.thrustDepth ?? null, wingWidth: p.stage.wingWidth ?? null, roundForm: p.stage.roundForm === 'square' ? 'square' : 'circle', roundRef: spRoundRef(p.stage), width: p.stage.width, depth: p.stage.depth },
+    };
+  }
 
   // What the drawing means, in words. `brief` (the compact packet) says the
   // same things in fewer words and as one entry, to keep a small act's
@@ -794,13 +839,19 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     .filter((i) => i.audience === 'monitor-only')
     .map((i) => inputName(p, i.id));
   const tags = [...new Set(items.map((i) => i.tag).filter((x) => TAG_WORDS[x]))].map((x) => TAG_WORDS[x]);
-  const offstage = p.objects.some((o) => o.x < 0 || o.x > 1 || o.y < 0 || o.y > 1);
+  const offstage = p.objects.some((o) => !spOnStage(o, p.stage));
   const legend: string[] = [];
-  legend.push(
-    brief
-      ? 'Seen from above, with the audience at the bottom: stage right is on the left of this drawing.'
-      : 'Seen from above, with the audience at the bottom. Stage right and stage left are the performers’ own right and left, so stage right is on the left of this drawing.',
-  );
+  if (shape === 'round') {
+    const ref = spRoundRef(p.stage);
+    legend.push(brief ? `Seen from above, in the round: the audience is on every side, and the ${ref} side is at the bottom. Stage right is on the left of this drawing.` : spShapeWords(p.stage, unit));
+  } else {
+    legend.push(
+      brief
+        ? 'Seen from above, with the audience at the bottom: stage right is on the left of this drawing.'
+        : 'Seen from above, with the audience at the bottom. Stage right and stage left are the performers’ own right and left, so stage right is on the left of this drawing.',
+    );
+    if (shape !== 'rect') legend.push(spShapeWords(p.stage, unit));
+  }
   if (badges.length) {
     const lines = [brief ? 'A number in a box is an input channel. A code in a rounded box, such as M1, is a monitor mix.' : 'A number in a box is an input channel in the input list. A code in a rounded box, such as M1, is a monitor mix.'];
     if (badges.some((b) => /^B\d/.test(b))) lines.push('A number with B is a channel of the band monitor rig.');
@@ -828,7 +879,9 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     return { kind: e.kind, name: e.name, w: sym.w, h: sym.h, shapes: sym.shapes, tag: sym.tag };
   });
 
-  return { widthM: st.width, depthM: st.depth, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, roomy, key };
+  const out: SpDocPlot = { widthM: plotW, depthM: plotD, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, roomy, key };
+  if (deck) out.deck = deck;
+  return out;
 }
 
 /* ── tables ─────────────────────────────────────────────────────────────── */
@@ -934,7 +987,7 @@ function whoCell(p: SpProject, i: SpInput, performerName: string, sourceLabel: s
     // singer read "Downstage center" beside "Center stage", round-1 bug 15).
     const fig = pf && (o.kind === 'vocal-mic' || o.kind === 'mic-stand') ? p.objects.find((x) => x.kind === 'performer' && x.performerId === pf.id) : undefined;
     const atFigure = !!fig && Math.hypot(fig.x - o.x, fig.y - o.y) <= SP_MIC_AT_PERFORMER;
-    const place = spLocationWord(atFigure && fig ? fig : o);
+    const place = spLocationWord(atFigure && fig ? fig : o, p.stage);
     // a figure or a microphone needs no "at the…": its place says it
     const thing = o.kind === 'performer' || o.kind === 'vocal-mic' || o.kind === 'mic-stand' ? '' : kindWords(o.kind);
     where = thing ? `at the ${thing}, ${lower(place)}` : place;
@@ -959,6 +1012,9 @@ function inputTable(p: SpProject, patchId: 'house' | 'band', compact: boolean): 
     col('audience', 'Audience mix', 1.75),
   ];
   if (withVenue) columns.push(col('venue', 'Venue channel', 2));
+  // the stage box socket each input plugs into: only when the plot has boxes
+  const withBox = spBoxes(p).length > 0;
+  if (withBox) columns.splice(1, 0, col('box', 'Box · socket', 1.35));
   const docRows: SpDocRow[] = rows.map((r) => {
     const i = r.input;
     const cells: Record<string, string> = {
@@ -971,6 +1027,7 @@ function inputTable(p: SpProject, patchId: 'house' | 'band', compact: boolean): 
       audience: audienceCell(i),
     };
     if (withVenue) cells.venue = r.venue.trim();
+    if (withBox) cells.box = spBoxPatchWords(p, i) || (i.direct ? 'Console direct' : DASH);
     const row: SpDocRow = { cells };
     if (i.priority === 'required' || i.audience === 'monitor-only') row.strong = true;
     const note = inputNote(i);
@@ -993,7 +1050,7 @@ function bandTable(p: SpProject): SpDocTable {
     const n = house?.numbers[i.id];
     const own = inHouse
       ? [r.venue.trim() ? `Venue channel: ${r.venue.trim()}` : '', i.splitNote.trim() ? `Split: ${i.splitNote.trim()}` : '']
-      : [captureCell(p, i), i.stand === 'none' ? '' : standCell(i), `Supplied by: ${supplierCell(p, i)}`, i.audience === 'monitor-only' ? MONITOR_ONLY : '', r.venue.trim() ? `Venue channel: ${r.venue.trim()}` : '', inputNote(i)];
+      : [captureCell(p, i), i.stand === 'none' ? '' : standCell(i), `Supplied by: ${supplierCell(p, i)}`, i.audience === 'monitor-only' ? MONITOR_ONLY : '', r.venue.trim() ? `Venue channel: ${r.venue.trim()}` : '', spBoxPatchWords(p, i) ? `Stage box: ${spBoxPatchWords(p, i)}` : '', inputNote(i)];
     const row: SpDocRow = { cells: { ch: r.number != null ? String(r.number) : DASH, input: i.label, house: inHouse ? (n != null ? String(n) : DASH) : 'Band monitor rig only', notes: own.filter(Boolean).join(' · ') } };
     if (!inHouse && (i.priority === 'required' || i.audience === 'monitor-only')) row.strong = true;
     return row;
@@ -1233,7 +1290,7 @@ function plotSection(p: SpProject, stamp: string, kind: SpPacketKind, generatedA
     return {
       name: pf.name.trim() || UNNAMED,
       role: pf.role.trim(),
-      where: o ? spLocationWord(o) : 'Not placed on the stage yet',
+      where: o ? spLocationWord(o, p.stage) : 'Not placed on the stage yet',
       mix: mixes.length ? mixes.join(', ') : ownRig ? 'Band monitor rig' : pf.noMonitor === true ? 'None requested' : 'To be confirmed',
     };
   });
@@ -1294,6 +1351,27 @@ function inputsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact: 
     const used = new Set(patch.order.map((id) => patch.numbers[id]).filter((x): x is number => x != null));
     const free = patch.reserved.filter((x) => !used.has(x));
     if (free.length) blocks.push(para(`${patch.name}: channels kept free on purpose: ${free.join(', ')}.`, 'muted'));
+  }
+  // THE PATCH SUMMARY: each stage box, its sockets used and free
+  const boxes = spBoxUse(p);
+  if (boxes.length) {
+    blocks.push(h2('Stage boxes'));
+    blocks.push({
+      t: 'list',
+      items: boxes.map((u) => {
+        const by = { band: 'supplied by the band', venue: 'supplied by the venue', other: 'supplied by another provider', tbc: 'who supplies it is to be confirmed' }[u.box.supplier];
+        const o = spBoxObject(p, u.box.id);
+        // where it stands and which channels it carries: what the crew patches by
+        const where = o ? `, ${lower(spLocationWord(o, p.stage))}` : '';
+        const chans = spBadgeRuns(u.plugged.map((x) => spBadge(p, x.input.id)));
+        const carries = chans.length ? `: channel${u.plugged.length === 1 ? '' : 's'} ${chans.join(', ')} on ${spBoxUseWords(u)}` : `: ${spBoxUseWords(u)}`;
+        const extra = [by, u.drawn ? '' : 'not placed on the plot yet', u.box.note.trim()].filter(Boolean).join('; ');
+        return `${spBoxName(u.box)} (${spBoxSizeWords(u.box)})${where}${carries}. ${extra.charAt(0).toUpperCase()}${extra.slice(1)}.`;
+      }),
+    });
+    blocks.push(para('Box and socket are the band’s suggestion. On the venue’s own stage boxes, the venue’s patch comes first.', 'muted'));
+    const direct = spAllInputsInOrder(p).filter((i) => i.direct).map((i) => i.label);
+    if (direct.length) blocks.push(para(`Plugged in at the console directly, not through a stage box: ${joinAnd(direct)}.`, 'muted'));
   }
   const acoustic = p.sources.filter((x) => x.connection === 'none');
   if (acoustic.length) {
@@ -1493,11 +1571,16 @@ function badgeWords(badges: string[]): string {
 }
 
 function plotText(plot: SpDocPlot): string[] {
-  const out: string[] = [`Stage size: ${plot.sizeNote}.`, 'The drawing, in words (upstage is the back of the stage; downstage is the edge nearest the audience):'];
+  const out: string[] = [
+    `Stage size: ${plot.sizeNote}.`,
+    plot.deck?.shape === 'round' ? `The drawing, in words (in the round: said from the ${plot.deck.stage.roundRef} side, at the bottom of the drawing):` : 'The drawing, in words (upstage is the back of the stage; downstage is the edge nearest the audience):',
+  ];
   if (!plot.items.length) out.push('Nothing is placed on the stage yet.');
   // (the drawing lists people last, so they are drawn over a stool; a reader hears them first)
   for (const i of [...plot.items.filter((x) => x.person), ...plot.items.filter((x) => !x.person)]) {
-    const where = spLocationWord({ x: i.at.x / plot.widthM, y: i.at.y / plot.depthM });
+    // (a shaped plot's own space starts at its outer corner: back to the main stage)
+    const dk = plot.deck;
+    const where = dk ? spLocationWord({ x: (i.at.x - dk.origin.x) / dk.mainW, y: (i.at.y - dk.origin.y) / dk.mainD }, { ...dk.stage, unit: 'ft', dims: 'estimated', grid: false, snap: false }) : spLocationWord({ x: i.at.x / plot.widthM, y: i.at.y / plot.depthM });
     out.push(`- ${spPlotItemName(i) || (i.tag ? `${i.tag} symbol` : 'An object with no name')}: ${lower(where)}${badgeWords(i.badges)}`);
   }
   if (plot.key.length) out.push(`Key: ${plot.key.map((k) => k.name).join('; ')}.`);

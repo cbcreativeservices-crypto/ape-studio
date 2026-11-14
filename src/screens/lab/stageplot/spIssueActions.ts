@@ -23,7 +23,7 @@
  *
  * Pure apart from the editor it is handed (tests pass a small stand-in).
  */
-import { spPairRestore, spPairToMono, spPatch, spRenumber, spSetReserved, spUpdateDevice, spUpdateInput, spUpdateObject, spUpdatePerformer, spUpdateSource } from '../../../features/stageplot/spModel.ts';
+import { spAutoAssignBoxes, spPairRestore, spPairToMono, spPatch, spRenumber, spSetReserved, spUpdateDevice, spUpdateInput, spUpdateObject, spUpdatePerformer, spUpdateSource } from '../../../features/stageplot/spModel.ts';
 import type { SpIssue, SpIssueAction } from '../../../features/stageplot/spReview.ts';
 import type { SpProject } from '../../../features/stageplot/spTypes.ts';
 import type { SpEditor, SpSelection } from './spContext.tsx';
@@ -120,6 +120,8 @@ export function spIssueActionLabel(action: SpIssueAction, issue?: SpIssue): stri
       return 'STOP KEEPING THIS CHANNEL FREE';
     case 'cue-audience-ok':
       return 'THE AUDIENCE IS MEANT TO HEAR IT';
+    case 'box-auto':
+      return 'AUTO-ASSIGN SOCKETS';
     case 'edit':
       return 'GO TO IT';
   }
@@ -198,6 +200,11 @@ export function runIssueAction(ed: SpIssueEditor, issue: SpIssue, action: SpIssu
       // The band says the audience is meant to hear this click or cue. The
       // routing is not changed; the question is answered.
       if (kind === 'input' && id) ed.apply((p) => spUpdateInput(p, id, { cueAudienceOk: true }));
+      return;
+    case 'box-auto':
+      // In channel order, on the nearest box; a socket chosen by hand never
+      // moves, and one UNDO puts every socket back.
+      ed.apply((p) => spAutoAssignBoxes(p).p);
       return;
     case 'unreserve': {
       // The band no longer keeps this input's channel free: that number
