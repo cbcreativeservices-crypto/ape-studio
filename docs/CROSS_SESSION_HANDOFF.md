@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 19:50 · ccode · 8e84e3eb
+changed: Stage Plot: stage shapes (thrust, round, wings), numbered stage boxes with Box · socket, 22 new instrument symbols [MD:D60]
+affects other side: nothing on the server. App-only Stage Plot features (stage shapes, numbered stage boxes, 22 symbols), not published; saved plots move to schema 2 locally [MD:D60].
+needs: nothing now; the Comp A rows for tr_game_audio / tr_stage_plot stay on D60 (f) [MD:D60].
+
+
 ### 2026-11-13 18:40 · ccode · 06fa687a
 changed: Bug test round 2 of both new labs: testers, fixes, independent checks [MD:D60]
 affects other side: nothing on the server. App-only lab fixes (Stage Plot, Game Audio, shared lab frame), not published. tr_stage_plot now needs a plot started from a blank stage and a real full or compact packet; the server rows for it still wait for D60 (f) [MD:D60].
