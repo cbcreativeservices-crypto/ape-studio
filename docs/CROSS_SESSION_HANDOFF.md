@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 13:19 · ccode · b2fb526e
+changed: Lab fix round 1: checker fixes, last per-lab fills, Career Finder round 3 [MD:D64] [MD:D63]
+affects other side: nothing on the server. App code only, not published.
+needs: [MD:D64] Comp A runs Downloads/2026-11-14_FOR_COMP_A_LAB_FIX_SERVER_EDITS.zip: glossary Connector + Cable dressing reworded, and labs mk_A08b name → "Miking: Bass Clarinet". The old text was confirmed live, read-only, on 2026-11-14. After that, ccode updates the Miking registry title and regenerates the cert seed.
+
+
 ### 2026-11-14 12:17 · ccode · cb52560c
 changed: Lab fix round 1: beginner-audit bugs, shared frame, quick wins, Career Finder text [MD:D64] [MD:D63]
 affects other side: nothing on the server. App code only, on the OTA branch, not published.
