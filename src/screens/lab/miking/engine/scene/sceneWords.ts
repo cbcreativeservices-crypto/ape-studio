@@ -33,6 +33,15 @@ export function readoutWords(rig: Rig, slot: MicSlot): ReadoutWords {
   return { slot, ...refLabels(rig, slot), showAim: micType(m.typeId).mount !== 'surface' };
 }
 
+/** A zone's name with its description in brackets, in sentence flow: the
+ *  description's own full stop dropped, its first letter lowered unless it
+ *  starts an acronym ("LDC …"). Pure. */
+export function zoneWords(label: string, band: string): string {
+  const b = band.trim().replace(/[.\s]+$/, '');
+  const lowered = /^[A-Z][a-z]/.test(b) ? b[0].toLowerCase() + b.slice(1) : b;
+  return `${label} (${lowered})`;
+}
+
 export function micWords(rig: Rig, slot: MicSlot): MicDescription {
   const where = copyOf(rig.lesson).where;
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
@@ -50,7 +59,10 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     ...refLabels(rig, slot),
     // The band is a sentence ending in a full stop; the NOW line adds its own
     // ("resting on the cushioning..", fix round 2026-11-14, F9 item 4).
-    zoneLabel: z ? `${z.label}, ${z.band.replace(/[.\s]+$/, '')}` : null,
+    // "In front, a little to one side (start about 0.9–1.8 m …)": the name,
+    // then its description in brackets (checker C4: "…, Start about" ran the
+    // two together with a comma and a capital).
+    zoneLabel: z ? zoneWords(z.label, z.band) : null,
     showAim: t.mount !== 'surface',
     where: where ?? { inside: W.inside, outside: W.outside },
     axisWords: W.axis,

@@ -46,7 +46,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a phaser makes its swirl: all-pass stages shift phase without any delay, and mixing that with the dry sound cancels a few unevenly spaced dips.',
-      start: 'Tap ▶ and watch the amber dips sweep across OUT. Then open SWEEP, set DEPTH (SWEEP) to STATIC, and drag CENTER to move the dips by hand.',
+      start: 'Open SWEEP, set DEPTH (SWEEP) to STATIC, and drag CENTER to move the amber dips on OUT by hand. Then tap ▶ to hear them sweep.',
     },
     seeing: [
       'Left (IN ▸) is your source on a spectrum analyzer: PINK NOISE draws flat, WHITE NOISE rises to the right. Right, past the green PHASER bar (SPECTRUM (dB), to ▸ OUT), is the same noise after the phaser.',

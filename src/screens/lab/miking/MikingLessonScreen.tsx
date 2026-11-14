@@ -355,7 +355,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     goPage(0);
   };
   const confirmReset = () => {
-    const message = `Starts ${lesson.title} again from page 1. Pages you have already been credited for stay credited.`;
+    const message = `Starts ${lesson.title} again from module 1. Modules you have already been credited for stay credited.`;
     if (Platform.OS === 'web') {
       const c = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
       if (typeof c !== 'function' || c(`Start a fresh practice run? ${message}`)) doReset();
@@ -389,7 +389,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   const head = (
     <>
       <Text style={styles.objective}>
-        <Text style={styles.objectiveKey}>{`Page ${pageIdx + 1} goal: `}</Text>
+        <Text style={styles.objectiveKey}>{`Module ${pageIdx + 1} goal: `}</Text>
         {content.goal}
       </Text>
       {STANDARD_LINE_PAGES.includes(page) ? <StandardLine text={STANDARD_LINE} /> : null}
@@ -399,7 +399,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     <>
       <TakeawayCard>{content.takeaway}</TakeawayCard>
       {done ? (
-        <Text style={styles.requirement}>This page is credited. Review it any time — practicing never removes credit.</Text>
+        <Text style={styles.requirement}>This module is credited. Review it any time — practicing never removes credit.</Text>
       ) : (
         <Text style={styles.requirement}>{`TO EARN CREDIT · ${c.note}${standing ? ` — ${standing}.` : ''}`}</Text>
       )}
@@ -485,7 +485,8 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
             cleared={doneIds}
             unreadable={unreadable}
             mode="progress"
-            noun="page"
+            // One unit word, as the strip says (checker C4, 2026-11-14).
+            noun="module"
             onJump={(id) => goPage(PAGE_IDS.indexOf(id as PageId))}
             onPracticeAgain={doReset}
             onDone={() => safeGoBack(navigation)}

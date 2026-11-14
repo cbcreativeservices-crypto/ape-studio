@@ -27,7 +27,7 @@ import { NO_INSETS, laneDragValue, laneRawAt, laneValueAt } from '../rack/laneEd
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
 import { laneFingerAt, laneFingerDx, laneLandDx, type LaneFinger, type LaneLift } from '../rack/laneFinger';
-import { addMiss, checkWrongText, showRevealAfterMisses } from './checkWords';
+import { addMiss, checkWrongText, seededOrder, showRevealAfterMisses } from './checkWords';
 
 export type CheckSpec = {
   question: string;
@@ -58,14 +58,9 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
   // position, not the concept. The authored order stays authoritative; only the
   // presentation order is permuted, and correctness is checked by ORIGINAL
   // index so no spec ever needs re-authoring.
-  const [order] = useState<number[]>(() => {
-    const idx = spec.options.map((_, i) => i);
-    for (let i = idx.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [idx[i], idx[j]] = [idx[j], idx[i]];
-    }
-    return idx;
-  });
+  // SEEDED, not Math.random (checker C3 O-2, 2026-11-14): a remount must
+  // never reorder the options (checkWords.seededOrder).
+  const [order] = useState<number[]>(() => seededOrder(spec.question, spec.options));
   // Synchronous guard (QA night 2026-09-01): same-frame repeat taps all saw
   // solved===false and fired onSolved once EACH — one Cable final-check
   // question credited "3 OF 10 SOLVED", and a counter jumping past its ===

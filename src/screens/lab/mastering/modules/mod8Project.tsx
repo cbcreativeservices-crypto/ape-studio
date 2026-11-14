@@ -99,7 +99,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
         {
           key: 'problems', title: 'What can mastering address?', kind: 'PRACTICE', layout: 'read',
           body: (
-            <ScenarioDeck scenarios={PROJECT_TRACKS.map((t) => t.issue)} keepOrder onAnswered={onAnswered} intro="One question per track. Decide whether the next step is a mastering adjustment, a mix revision, or more information from the client." />
+            <ScenarioDeck scenarios={PROJECT_TRACKS.map((t) => t.issue)} keepOrder onAnswered={onAnswered} intro="One question per track. Decide whether the next step is a mastering adjustment, a mix revision, or asking the client first." />
           ),
         },
         {

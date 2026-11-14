@@ -97,3 +97,21 @@ Tests: test/labFixes_20261114_F2.test.ts now 106/106; with it, 464 + 291 more ac
 - `test/batch4_G4-learnB-rigs_20261105.test.ts` (5 failures): my phase-2 `useContext(PageMemoryKey)` in `useVisitGoals` (bits.tsx) and in CapstonePage broke that harness, which runs a page with state hooks only. Fixed in the code, not the test: the page's report scope now rides on its ctx (`SsPagedLab.tsx` adds `goalsScope`; `pageMemory.goalsScopeOf`), no context hook. 5/5 pass.
 - `R009992` (`test/auditR2_A_C_features_tools_20261023.test.ts`): my balanced polarity option had dropped the audit's "signal cable to one powered top". Restored it: "The signal cable to one powered top has pins 2 and 3 swapped" (only "— a polarity flip", the built-in explanation, is gone, which is the intended phase-2 change). Pin moved with the owner's words quoted.
 - Re-run: those two files + labFixes_20261114_F2 + soundSystemsEngine + G3, G8, screenGuide_soundsystems, consoleOutputs, factAuditR3_E, wiringFix_soundsystems: 571 pass, 0 fail. Parse check OK on every touched file; http://localhost:8142 page 200, bundle 200.
+
+## Checker C1 follow-up (2026-11-14)
+- **FAIL F3, fixed:** `src/screens/lab/soundsystems/pageMemory.ts` goalsLeftLine now ends with a full stop, so the end row reads "… source-forward walk. Opens it."
+- **OPERATE 1 and 5 STEP buttons gave the order away, fixed:** `src/features/soundsystems/operate.ts` button labels name the device only ("Amps and powered boxes", "Console", "Stage devices"); the full title and the reason, shown once a step is picked, still teach the order. Two guide lines and two name pins in `test/screenGuide_soundsystems_20261031.test.ts` moved with them (owner's words quoted).
+- **DJ 11 GRID tray stated the check's answer, fixed:** `p11Grid.tsx` now says loudness alone cannot tell you which beat is the one, and asks the learner to listen and decide.
+- **DJ 14 "1 semitones", fixed:** `p14Key.tsx` KEY key's spoken value uses the singular for ±1.
+- **Also fixed (checker note):** the TROUBLESHOOT step line follows the walk. After an unhealthy reading it reads "This reading is not healthy. Open FAULT…"; once solved it reads "Solved. Read WHY, THE FIX and THE WALK below." (`pagesTroubleshoot.tsx`).
+- **Left (checker note, shared pattern):** DJ "TRIM 1: TRIM 1 +9.0 dB" is the dock reading the key label and then the lane text, which repeats it. Changing the lane text changes what the lane shows, so I left it.
+- **FAIL F1 (DJ 10 tray fold):** this is S3's shared tray change (my phase-2 shared need). Not mine to fix in the lab.
+- Tests: F2 file plus both labs' screen-guide tests, soundSystemsEngine and two DJ suites: 406 pass, 0 fail. Parse check OK on every touched file; 8142 page 200, bundle 200.
+
+## DJ "TRIM 1: TRIM 1 +9.0 dB" (coordinator follow-up)
+- Cause: the shared rack builds the spoken label as `${label}: ${format(value)}` in two places, and the same `format` text is the readout printed on the lane. DJ's TRIM and TEMPO faders print their own name in that readout ("TRIM 1 +9.0 dB", "TEMPO B +0.00 %"; `src/screens/lab/dj/dock.tsx:90` and `:166`). There is no separate spoken-value field on a fader, so a lab-only fix would change the visible readout. Not done.
+- **SHARED NEED (S3), exact lines.** In both places, drop a leading repeat of the label from the spoken text only:
+  - `src/screens/lab/rack/RackUnit.tsx:603-604` (the dock key): replace `${p.format(p.value)}` with `${spokenValue(p.label, p.format(p.value))}`;
+  - `src/screens/lab/rack/ParamLane.tsx:445` (the lane): `accessibilityLabel={`${label}: ${spokenValue(label, readout)}`}`;
+  - helper (rack folder): `export const spokenValue = (label: string, text: string): string => (text.toUpperCase().startsWith(`${label.toUpperCase()} `) ? text.slice(label.length).trim() : text);`
+  - Result: "TRIM 1: +9.0 dB", "TEMPO B: +0.00 %"; the visible readout is unchanged, and every lab whose readout repeats its key name is fixed at once.

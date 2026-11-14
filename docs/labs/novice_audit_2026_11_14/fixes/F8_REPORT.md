@@ -83,6 +83,24 @@ Group F8: Oscillators, Noise, Harmonics, FM, Modular, Envelope, Autotune, Tuning
 | Cymatics | — | — | every studio and module readout (see "Phase 2 finish") | shared (S2) | check row + check drawn, `howItCounts` | yes | yes | phase 1: check on WHAT'S LEFT seen |
 | Ear Training | — | every drill question | — | answers-without-playing is OUT | already named per row | yes | — | not seen |
 
+## Checker fixes (C4 and C2)
+
+| Checker item | Cause (file:line) | Fix | Test | Seen on screen |
+|---|---|---|---|---|
+| C4 FAIL-3: Membrane title cut at 320 ("MEMBR / ANE & …") | SHARED: `kit/LabNavBar.tsx:126-145` + styles `:342-344`. Measured at 320: the header row is back 11 px, title 61 px, keys 201 px, so ANY title word longer than ~61 px breaks (OSCILLATOR, HARMONOGRAPH, LOUDSPEAKER…). No lab-local title can fix it | SHARED NEED 3 below. Tried in my tab by injecting the proposed styles: at 320 the keys wrap under the title, and the title fits on one line (271 px wide, 24 px tall); at 390 nothing changes (one row; title 131 px, 2 lines) | — (shared file) | yes, both widths, with the injected styles |
+| C4 FAIL-4: Speech "S and Z" card says "Put a finger on your throat" twice on a second miss | `speech/speechCheckWhy.ts:23-25`: the reasons repeated the explanation's advice | the three reasons now point elsewhere ("What is left that could differ?"). A new test found a second repeat ("An S has no pitch", sibilance) and it was fixed too | F8: no reason may share a 5-word run with its own explanation (Speech and Drum Tuning) | not seen |
+| C4 note: Drum Tuning ch 3 step 2 "YOU ARE LOOKING AT … color map hidden" after SHOW THE MAP | `drumtuning/modules/ch3Method.tsx:242` was fixed text | the line and its prompt follow `mapShown` ("…color map shown: each wedge is one lug’s pitch") | F8 | not seen |
+| C2 FAIL 1: the rack labs' own CHECK YOURSELF cards had no `why`, and the right answer was by far the longest | 13 cards in Autotune, Bass, FM, HarmonicsView, Modular, Noise and Oscillators (F5's shared `CheckQuestion`) | every wrong option has its own reason (≤ 30 words, names the real control, never the answer). Options were rewritten where the right one was long: Autotune 93 → 70 vs 58, Bass 97 → 76 vs 63, Harmonics 51 → 40 vs 38, Modular 40 vs 35. Every right answer is now ≤ 1.4 × the next longest, and the right answers are unchanged (`correctIdx` 0 everywhere) | F8: the cards are parsed with TypeScript (13 cards): reasons on every wrong option, none on the right one, ≤ 30 words, never quoting the answer, length ratio ≤ 1.4. The rack guide tests still pass | yes: Autotune at 320, a wrong pick shows its own reason |
+
+**SHARED NEED 3 (kit/LabNavBar.tsx, for the C4 FAIL-3 title cut at 320):**
+- In `styles.header` (line ~342), add `flexWrap: 'wrap'`.
+- In `styles.titleBlock` (line ~344), change `{ flexShrink: 1, flexGrow: 1 }` to `{ flexShrink: 1, flexGrow: 1, flexBasis: 0, minWidth: 110 }`.
+- Give the right-hand key cluster `marginLeft: 'auto'` (the `headerRight` style used at line ~141), so that once it wraps it stays right-aligned.
+- Effect, measured by injecting these exact styles in the preview:
+  - at 390 the header is unchanged (one row);
+  - at 320, when the title would get less than 110 px, the keys drop to a second row and the title gets the whole width.
+- It applies to every lab header, but only on narrow phones.
+
 ## Phase 2 finish: the two partial items (coordinator follow-up)
 
 - **Tuning chapter readouts:** every bezel readout in all 14 chapters now has a plain-word first-visit caption (S3 `BezelItem.caption`, ≤ 14 characters). This includes the template-key cells (`NOTE …`, `PYTH …` / `JUST …`, and the four E cells in chapter 14). Examples:

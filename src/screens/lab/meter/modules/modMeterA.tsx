@@ -352,11 +352,11 @@ export function WaveformModule(p: MeterModuleProps) {
   const dcPct = dcOf(clipped) * 100;
   const bezel: BezelItem[] = [
     { k: 'PEAK', v: fmtDbC(db(peakOf(clipped))), helpKey: 'waveform_read' },
-    { k: 'RMS', v: fmtDbC(db(rmsOf(clipped))), helpKey: 'waveform_read', caption: 'average level' },
-    { k: 'CREST', v: `${crestDb(clipped).toFixed(1)}dB`, helpKey: 'waveform_read', caption: 'peak vs avg' },
-    { k: 'DC', v: `${dcPct >= 0 ? '+' : ''}${dcPct.toFixed(1)}%`, helpKey: 'dc_offset', caption: 'off-center' },
+    { k: 'RMS', v: fmtDbC(db(rmsOf(clipped))), helpKey: 'waveform_read', caption: 'average' },
+    { k: 'CREST', v: `${crestDb(clipped).toFixed(1)}dB`, helpKey: 'waveform_read', caption: 'spiky?' },
+    { k: 'DC', v: `${dcPct >= 0 ? '+' : ''}${dcPct.toFixed(1)}%`, helpKey: 'dc_offset', caption: 'shift' },
     {
-      k: 'CLIP', caption: 'over the top?',
+      k: 'CLIP', caption: 'clipped?',
       // The word OVER on its own sub line keeps the CLIP key at 390 (beginner
       // audit 2026-11-14: "+5.4 OVER" lost its key).
       v: overSamples > 0 ? `+${overDriveDb.toFixed(1)}` : 'CLEAN',
@@ -527,7 +527,7 @@ export function PeakModule(p: MeterModuleProps) {
       helpKey: 'peak_meter',
     },
     {
-      k: 'PK HOLD', caption: 'highest yet',
+      k: 'PK HOLD', caption: 'max yet',
       v: peakHold === -Infinity ? '—' : peakHold >= 0 ? `+${peakHold.toFixed(1)}` : fmtDbC(peakHold),
       sub: peakHold >= 0 && peakHold !== -Infinity ? 'OVR' : undefined,
       tint: peakHold >= 0 ? RED : undefined,
@@ -535,9 +535,9 @@ export function PeakModule(p: MeterModuleProps) {
       // Read-only (owner rule 2026-10-10): the RESET HOLD dock key clears it.
       flex: 1.1,
     },
-    { k: 'OVERS', v: `${overs}`, tint: overs > 0 ? RED : undefined, helpKey: 'peak_meter', flex: 0.7, caption: 'times clipped' },
-    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak', caption: 'average level' },
-    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak', caption: 'peak vs avg' },
+    { k: 'OVERS', v: `${overs}`, tint: overs > 0 ? RED : undefined, helpKey: 'peak_meter', flex: 0.7, caption: 'clips' },
+    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak', caption: 'average' },
+    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak', caption: 'spiky?' },
   ];
 
   const params: DockParam[] = [
@@ -679,8 +679,8 @@ export function VuModule(p: MeterModuleProps) {
 
   const bezel: BezelItem[] = [
     { k: 'PEAK', v: fmtDbC(db(peakOf(proc))), helpKey: 'rms_vs_peak' },
-    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak', caption: 'average level' },
-    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak', caption: 'peak vs avg' },
+    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak', caption: 'average' },
+    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak', caption: 'spiky?' },
     { k: 'NDL MAX', v: fmtDbC(needleDb), helpKey: 'ballistics', flex: 1.1, caption: 'needle’s top' },
   ];
 
@@ -833,11 +833,11 @@ export function LoudnessModule(p: MeterModuleProps) {
   // neighbours dropped 4 of the 5 keys, TP GAP — the one the card names —
   // included). The number is never cut (D36).
   const bezel: BezelItem[] = [
-    { k: 'INTEGRATED', kNarrow: 'INTEG.', v: sim.integratedLufs.toFixed(1), sub: 'LUFS', helpKey: 'integrated', flex: 1.3, caption: 'whole program' },
-    { k: 'LRA', v: sim.lraLu.toFixed(1), sub: 'LU', helpKey: 'lra', flex: 0.8, caption: 'loud-soft span' },
-    { k: 'SAMPLE PK', kNarrow: 'SAMPLE', v: sim.samplePeakDbfs.toFixed(1), sub: 'dBFS', helpKey: 'true_peak_meter', flex: 1.2, caption: 'top sample' },
+    { k: 'INTEGRATED', kNarrow: 'INTEG.', v: sim.integratedLufs.toFixed(1), sub: 'LUFS', helpKey: 'integrated', flex: 1.3, caption: 'overall' },
+    { k: 'LRA', v: sim.lraLu.toFixed(1), sub: 'LU', helpKey: 'lra', flex: 0.8, caption: 'range' },
+    { k: 'SAMPLE PK', kNarrow: 'SAMPLE', v: sim.samplePeakDbfs.toFixed(1), sub: 'dBFS', helpKey: 'true_peak_meter', flex: 1.2, caption: 'highest' },
     {
-      k: 'TRUE PK', caption: 'top in between',
+      k: 'TRUE PK', caption: 'real top',
       v: `${sim.truePeakDbtp >= 0 ? '+' : ''}${sim.truePeakDbtp.toFixed(1)}`,
       sub: 'dBTP',
       tint: tpOver ? RED : undefined,
@@ -845,7 +845,7 @@ export function LoudnessModule(p: MeterModuleProps) {
       flex: 1.1,
     },
     {
-      k: 'TP GAP', caption: 'overshoot',
+      k: 'TP GAP', caption: 'extra',
       kNarrow: 'GAP',
       v: `+${(sim.truePeakDbtp - sim.samplePeakDbfs).toFixed(1)}`,
       sub: 'dB',

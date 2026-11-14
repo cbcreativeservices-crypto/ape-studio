@@ -47,7 +47,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How a flanger works: a copy delayed by a few milliseconds cancels the dry sound at evenly spaced notches, and sweeping that delay makes the jet sound.',
+      learning: 'How a flanger works: a copy delayed by a few milliseconds cancels the dry sound at notches evenly spaced in Hz, and sweeping that delay makes the jet sound.',
       start: 'Drag CENTER from 2.0 ms down to 0.50 ms and see the notches on OUT spread apart. Then tap ▶ to play PINK NOISE and hear them sweep: the jet.',
     },
     seeing: [
@@ -64,7 +64,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     changes: [
       'The flanger mixes in a copy of your sound 0.5–5 ms late. Where it lands half a cycle late, it cancels the dry sound: a notch. Notches repeat every 1 ÷ delay: every 500 Hz at 2.0 ms.',
-      'The Hz scale runs in octaves, so evenly spaced notches crowd right and fill a band up high.',
+      'The Hz scale runs in octaves, so notches evenly spaced in Hz crowd right, up high.',
       'The LFO (a slow wobble) moves the delay, so every notch slides at once: the jet. Positive FDBK lifts tall, narrow peaks between them.',
     ],
     teaches: [
@@ -100,7 +100,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'LFO Waveform and Stereo width are common on flangers; Through-Zero is a specialty. None has a key on this rack, and their entries say so (this rack’s left and right sweeps always sit a quarter cycle apart).',
     ],
     teaches: [
-      'The words for a flanger: comb filter (a row of evenly spaced notches), notch spacing, LFO (the slow wobble that moves the delay), feedback (regeneration), through-zero.',
+      'The words for a flanger: comb filter (a row of notches evenly spaced in Hz), notch spacing, LFO (the slow wobble that moves the delay), feedback (regeneration), through-zero.',
       'The formula: notches at odd multiples of 1 ÷ (2 × delay), spaced 1 ÷ delay apart.',
       'Why a sine tone, with energy at one frequency only, is a poor test source, and why 100% wet loses the comb.',
     ],

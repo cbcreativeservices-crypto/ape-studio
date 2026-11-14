@@ -178,7 +178,7 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Halfway through a dense mix you realize the drums, percussion and two loops all need the same treatment. The planning lesson:"
-        options={['Copy the same plugin to all nine tracks now', 'Bus architecture decided up front would have given them one shared path — build it now, carefully', 'Mix the nine tracks quieter to avoid the issue', 'Bounce everything and start a new session']}
+        options={['Copy the same plugin and settings onto all nine tracks now', 'Build one shared bus for them now — the plan should have had it', 'Mix the nine tracks quieter so the problem is less audible', 'Bounce everything to audio and start a new session']}
         correct={1}
         explain="Nine copies of one plugin is nine chances to drift apart. The shared-path decision belongs at the planning stage — and when you missed it, the fix is still routing, retrofitted deliberately."
         wrong={[
@@ -228,7 +228,7 @@ function PageSessionMgmt({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="EQ before the compressor, or after? The advanced answer:"
-        options={['Always EQ first — that is the professional standard', 'Always compressor first — it protects the EQ from peaks', 'It depends: EQ first changes what the compressor reacts to; after, it shapes the result', 'The insert order makes no audible difference at all']}
+        options={['Always EQ first — that is the professional standard', 'Always compressor first — it protects the EQ from peaks', 'It depends: EQ first changes what the compressor hears', 'The insert order makes no audible difference at all']}
         correct={2}
         explain="A cut before the compressor removes energy from its detector — the low rumble stops pumping it. The same cut after only reshapes the output. Both are legitimate; the ORDER is a decision, and knowing why is the advanced skill."
         wrong={[
@@ -304,7 +304,7 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="You pull a VCA down 6 dB versus pulling a drum subgroup’s fader down 6 dB. One difference that matters:"
-        options={['They are identical in every audible way', 'The VCA also drops each channel’s post-fader sends; the subgroup fader drops the summed path after its inserts', 'The subgroup version is always cleaner', 'The VCA version changes the drums’ tone']}
+        options={['Nothing: they are identical in every audible way', 'The VCA also lowers each channel’s post-fader sends', 'The subgroup version always sounds cleaner and tighter', 'The VCA version changes the tone of the drums']}
         correct={1}
         explain="A VCA turns the CHANNELS down — so everything post-fader on each channel, sends included, follows. A subgroup fader turns down the summed result AFTER the subgroup’s processing — the channels (and their sends) keep feeding as before."
         wrong={[
@@ -352,7 +352,7 @@ function PageAuxAdvanced({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="You solo the lead vocal and its lush reverb vanishes with everything else. The professional fix:"
-        options={['Mix with everything un-soloed forever', 'Mark the reverb RETURN solo-safe, so soloing the vocal keeps its space audible', 'Print the reverb onto the vocal track', 'Turn the reverb into an insert on the vocal']}
+        options={['Mix with everything un-soloed forever', 'Mark the reverb RETURN solo-safe', 'Print the reverb onto the vocal track', 'Turn the reverb into an insert on the vocal']}
         correct={1}
         explain="Solo-safe exempts the return from the solo cut — solo the vocal and you hear vocal + its space, which is the sound you are actually mixing."
         wrong={[

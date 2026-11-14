@@ -266,8 +266,8 @@ export function QuantModule(p: DigitalModuleProps) {
               ]
             : [
                 { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
-                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels', caption: 'how many steps' },
-                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth', caption: 'signal vs hiss' },
+                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels', caption: 'step count' },
+                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth', caption: 'over hiss' },
                 { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
               ],
         render: (w, h) =>

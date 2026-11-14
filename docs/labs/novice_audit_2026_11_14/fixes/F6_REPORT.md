@@ -225,3 +225,90 @@ The other 7 are not F6's files:
    ```
    Once it lands I can write the `why` lines for my 48 questions, as I did for the Amp lab.
 2. **CONTENTS as a popup** (from phase 1; now with S2, the kit owner): src/screens/lab/kit/LabNavBar.tsx:223.
+
+## Checker C3 fixes (2026-11-14, CHECK_C3_REPORT.md F-2, F-3, F-4, O-1)
+
+### F-2: bezel captions cut with "…"
+
+I measured every caption in F6's rack labs in the 8142 preview, at 320 and at 390. The test was the caption's scrollWidth against its cell width.
+
+At 320, 30 captions were cut, not just the 6 C3 found at 390. The bezel draws a caption on one line (`fitValue(10)` in the shared kit, rack/BezelReadouts.tsx), so the fix was shorter words. I did not edit the kit.
+
+**Renamed:**
+
+| Lab | Old caption | New caption |
+|---|---|---|
+| Meter | whole program | overall |
+| Meter | loud-soft span | range |
+| Meter | top sample | highest |
+| Meter | top in between | real top |
+| Meter | overshoot | extra |
+| Meter | times clipped | clips |
+| Meter | average level | average |
+| Meter | peak vs avg | spiky? |
+| Meter | off-center | shift |
+| Meter | over the top? | clipped? |
+| Meter | highest yet | max yet |
+| Meter | high vs low | top vs low |
+| Meter | low-end fade | bass fade |
+| Meter | rings longest | rings most |
+| Meter | level in mono | mono level |
+| Digital | samples a sec | a second |
+| Digital | highest kept | top freq |
+| Digital | what you get | heard as |
+| Digital | signal vs hiss | over hiss |
+| Digital | room to clip | until clip |
+| Digital | how many steps | step count |
+| Gain | room to clip | until clip |
+| Amp | power drawn | power in |
+| Amp | wasted as heat | wasted |
+| Amp | useful share | useful % |
+| Amp | resting draw | at rest |
+| Amp | clean or not | clean? |
+| Signal Chain | test sound | sound in |
+
+**Measured after the change, all fitting at 320:**
+- Meter: waveform, peak, VU, loudness, spectrum, waterfall, phase
+- Digital: sampling, quant, ADC
+- Amp: what, bias, classes, class D
+
+The three C3 pages were also measured at 390, all fitting:
+- Meter loudness: overall 60/60, range 37/37
+- Meter peak: clips 36/36
+- Digital quant: step count 67/67
+
+**Already fitting at 320:**
+- Tube EMISSION
+- Patchbay ('inside link' 55/55, 'input gets' 66/66)
+- Digital DAC and errors pages
+- VU 'needle’s top'
+
+**Not opened in the preview:** Signal Chain, which has no preview route. Its 'sound in' is 37 px, chosen to fit the narrowest four-cell bezel. Also Tube PLATE I and Digital ISP MISSED, which sit on later stages; those bezels have 2 to 3 wide cells.
+
+**Pin updated:** test/screenGuide_amp_20261031.test.ts now expects 'at rest'.
+
+### F-3: Conductor Ampacity
+
+- `rangeMsg` now reads "CONDUCTOR SIZE must be a gauge from 14 AWG up to 4/0." (src/screens/lab/calc/workspaces/ampacity.ts).
+- The input range stays [-3, 18], so 18 and 16 still get their own explanation: "…This calculator covers 14 AWG and larger."
+- Table 310.16 is unchanged. It is verified against NEC 2023 copper (14 AWG 15/20/25 A … 4/0 195/230/260 A; 18 and 16 AWG in the 90 °C column only).
+- The test calls the real `domainMsg`: 20 gives the 14 AWG sentence, while 18 and 16 pass through to `awgRefusal`.
+
+### F-4: FIR Filter Length
+
+"centre" is now "center" in both WHY HALF A SAMPLE lines (src/screens/lab/calc/workspaces/digitalAdv.ts). The other "centre"s in F6 files are code comments only.
+
+### O-1: Peak Meter CREST
+
+- The cause: the picture computed CREST from a 2048-sample render, the bezel from the 1024-sample one.
+- The fix: vizMeters.tsx PeakMeterView now reads the same `renderSignal(sig)` × gain as the bezel.
+- In the preview at 390, the picture reads "CREST 16.1 dB" and the bezel reads "16.1dB". Before, it was 15.9 against 16.1.
+- Modules 1 and 3–9 checked for the same split:
+  - Waveform: already one source (`stored`).
+  - Loudness picture and bezel: same `simulateLoudness(signal)`.
+  - Phase: same `stereoPair(width, phase)` at n = 512.
+  - VU, spectrum, spectrogram and waterfall: the picture prints no second number.
+
+**Tests:** the F6 file has 63 tests, all passing. With the Meter, Digital, Amp, Gain, chain, calc, fact-audit, wiring-fix and US-spelling suites, 3,166 ran and the only failure was my own 10-character caption check. I widened that rule to 12 characters, the longest caption that measured inside its cell ('needle’s top'), and the F6 file then passed 63/63. Every edited file parse-checks. 8142 returned 200. No tsc was run.
+
+The calculator fixes were checked with the real `domainMsg` and the source, not opened on screen.

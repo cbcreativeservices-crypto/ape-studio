@@ -91,7 +91,7 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Kick and bass blur into one woolly low end. The mix-context first move is:"
-        options={['Boost the kick’s low end so it wins the range', 'Pick one owner of the very bottom and carve the other around it', 'Turn both of them up so both stay audible', 'Add a sub-bass enhancer across the mix bus']}
+        options={['Boost the kick’s low end so it clearly wins the range', 'Give one of them the very bottom; carve the other around it', 'Turn both of them up so both stay audible', 'Add a sub-bass enhancer across the mix bus']}
         correct={1}
         explain="Two sounds cannot both own the same octave. Decide the owner (kick OR bass takes the very bottom), then clear the other out of that pocket — a cut, a filter, or level. Separation is a decision before it is a setting."
         wrong={[

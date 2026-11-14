@@ -65,7 +65,8 @@ describe('#16 every Mixing page is hands-on: it marks ITSELF, NEXT never does', 
     assert.match(shell, /leftPages\.some\(\(p\) => p\.manualDone\) \? handsOnDetail \?\? PAGE_TASK_RULE : null,/);
     assert.match(shell, /howItCounts=\{howItCounts\}/);
     const kit = read('src/screens/lab/mixing/kit.tsx');
-    assert.match(kit, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; checker C2): the rule says goals must be met in ONE visit.
+    assert.match(kit, /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
     for (const s of ['BeginningMixingLabScreen', 'AdvancedMixingLabScreen']) {
       assert.match(read(`src/screens/lab/mixing/${s}.tsx`), /pageCreditKeys=\{PAGE_KEYS\} handsOnDetail=\{HANDS_ON_DETAIL\} \/>/);
     }

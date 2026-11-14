@@ -78,16 +78,16 @@ export type Scenario = {
 };
 
 /** Module 1 — "Mix issue or mastering issue?" */
-export const TRIAGE_OPTIONS = ['Mastering adjustment', 'Mix revision', 'More information from the client'] as const;
+export const TRIAGE_OPTIONS = ['Mastering adjustment', 'Mix revision', 'Ask the client first'] as const;
 
 export const TRIAGE_SCENARIOS: readonly Scenario[] = [
   { id: 't1', moduleId: 'what', prompt: 'The whole mix sounds slightly dull next to the reference the client sent, on every system in the room.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'A broad, program-wide tonal shift is exactly what a mastering EQ addresses — gently, on the whole stereo file.' },
   { id: 't2', moduleId: 'what', prompt: 'The lead vocal sits 3 dB too low in the chorus only; everything else is right.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'A stereo master has no independent handle on the vocal. Anything that lifts it lifts what shares its range. Ask for a revised mix or a vocal-up version.' },
   { id: 't3', moduleId: 'what', prompt: 'Track 3 arrives 2 dB quieter than the rest of the set, but internally it is well balanced.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Consistency ACROSS tracks is a mastering job: level and tone between songs are balanced at this stage.' },
-  { id: 't4', moduleId: 'what', prompt: 'The file is labeled "final" but the version number is lower than the one in the email thread.', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Mastering the wrong version wastes everyone\'s time. Confirm the approved version before listening critically.' },
+  { id: 't4', moduleId: 'what', prompt: 'The file is labeled "final" but the version number is lower than the one in the email thread.', options: TRIAGE_OPTIONS, correct: 'Ask the client first', explain: 'Mastering the wrong version wastes everyone\'s time. Confirm the approved version before listening critically.' },
   { id: 't5', moduleId: 'what', prompt: 'A snare hit in bar 12 is distorted — the clipping is on the snare only, not the bus.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'Distortion baked into one element cannot be cleanly removed from a stereo file. The mixer can fix it at the source: lower the gain that clips, or repair or replace the hit.' },
   { id: 't6', moduleId: 'what', prompt: 'The ending fades too slowly for the client\'s taste; the recording itself is clean.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Fades, tops and tails (trimming the start and end) are routine mastering edits on the stereo program.' },
-  { id: 't7', moduleId: 'what', prompt: 'The mix peaks at −0.1 dBFS with a limiter already on the mix bus, and the client says "make it competitive".', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Ask both questions — this is a request for information: ask for the mix WITHOUT the bus limiter and ask what "competitive" means to them (a reference, a destination). Stacking limiting on limiting is how dynamics die.' },
+  { id: 't7', moduleId: 'what', prompt: 'The mix peaks at −0.1 dBFS with a limiter already on the mix bus, and the client says "make it competitive".', options: TRIAGE_OPTIONS, correct: 'Ask the client first', explain: 'Ask both questions — this is a request for information: ask for the mix WITHOUT the bus limiter and ask what "competitive" means to them (a reference, a destination). Stacking limiting on limiting is how dynamics die.' },
   { id: 't8', moduleId: 'what', prompt: 'The stereo image is a little narrow across the whole song and the client wants it wider.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Program-wide width can be adjusted in mastering — with a mono-compatibility check before and after.' },
 ];
 
@@ -165,11 +165,11 @@ export const INSPECTION_SHEET: readonly MixInspection[] = [
 ];
 
 export const WORKFLOW_SCENARIOS: readonly Scenario[] = [
-  { id: 'w1', moduleId: 'workflow', prompt: 'The delivered mix peaks at −0.1 dBFS and the mixer says a limiter is on the 2-bus (the mix bus). First move?', options: ['Master it as delivered', 'Ask for the mix without the bus limiter', 'Add a second limiter'], correct: 'Ask for the mix without the bus limiter', explain: 'Inspection comes before processing. A limited mix hides the dynamics you are being asked to shape.' },
+  { id: 'w1', moduleId: 'workflow', prompt: 'The delivered mix peaks at −0.1 dBFS and the mixer says a limiter is on the 2-bus (the mix bus). First move?', options: ['Master the file as delivered, limiter and all', 'Ask for the mix without the bus limiter', 'Add a second limiter after the one on the bus'], correct: 'Ask for the mix without the bus limiter', explain: 'Inspection comes before processing. A limited mix hides the dynamics you are being asked to shape.' },
   { id: 'w2', moduleId: 'workflow', prompt: 'When should the first full listen happen?', options: ['After a starting EQ is in place, so you hear the direction', 'Before any processing, on the whole mix', 'After loudness is set, so the level is representative'], correct: 'Before any processing, on the whole mix', explain: 'Listen first, note strengths and concerns, compare to the goals and references. Processing follows the listening, never the other way around.' },
   { id: 'w3', moduleId: 'workflow', prompt: 'You added a 1 dB high shelf and it sounds better. Before you keep it, you should…', options: ['Bypass it and compare at matched playback level', 'Add 1 dB more and see whether it keeps improving', 'Move on — it sounded better, and that is the test'], correct: 'Bypass it and compare at matched playback level', explain: 'A shelf changes level as well as tone; matched-level bypass is the only honest test of the tonal decision.' },
   { id: 'w4', moduleId: 'workflow', prompt: 'The exports are rendered. What is the last step before sending?', options: ['Nothing — the DAW rendered them from the approved session', 'Reopen and audition every exported file', 'Normalize them all to one loudness number'], correct: 'Reopen and audition every exported file', explain: 'Starts, ends, fades, channel count, naming, metadata, the requested limits. Quality control is on the files you actually send, not on the session that made them.' },
-  { id: 'w5', moduleId: 'workflow', prompt: 'A track in the set is clearly the strongest; the client wants it first. Where is that decided?', options: ['In the mix', 'In sequencing, with the client', 'By the distributor'], correct: 'In sequencing, with the client', explain: 'Order, spacing and fades are shaped at mastering — a decision made with the client, not for them.' },
+  { id: 'w5', moduleId: 'workflow', prompt: 'A track in the set is clearly the strongest; the client wants it first. Where is that decided?', options: ['In the mix, by the mix engineer', 'In sequencing, with the client', 'By the distributor, at upload'], correct: 'In sequencing, with the client', explain: 'Order, spacing and fades are shaped at mastering — a decision made with the client, not for them.' },
 ];
 
 /** Module 6 — loudness, dynamics, translation */
@@ -251,7 +251,7 @@ export type ProjectTrack = { id: string; title: string; seconds: number; lufsEst
 export const PROJECT_TRACKS: readonly ProjectTrack[] = [
   {
     id: 'p1', title: 'Night Signal', seconds: 232, lufsEstimate: -12.6, truePeakDb: -0.4, note: 'Dense, bright, confident. Peaks close to full scale.',
-    issue: { id: 'e1', moduleId: 'project', prompt: '"Night Signal": peaks at −0.4 dBTP with a limiter on the mixer\'s bus, and the brief says "we like the drive of the references". What do you ask for?', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Both: the bus-limiter-off export from the mixer AND what "drive" means to the client — information comes first. Inspection before processing.' },
+    issue: { id: 'e1', moduleId: 'project', prompt: '"Night Signal": peaks at −0.4 dBTP with a limiter on the mixer\'s bus, and the brief says "we like the drive of the references". What do you ask for?', options: TRIAGE_OPTIONS, correct: 'Ask the client first', explain: 'Both: the bus-limiter-off export from the mixer AND what "drive" means to the client — information comes first. Inspection before processing.' },
   },
   {
     id: 'p2', title: 'Tide Table', seconds: 301, lufsEstimate: -19.8, truePeakDb: -6.1, note: 'Piano and voice, wide dynamics, lots of headroom. The client wants it to stay quiet.',

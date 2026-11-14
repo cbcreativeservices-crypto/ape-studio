@@ -288,8 +288,13 @@ export function MixMantra() {
  * still moves on). The what's-left screen lists a page left that way with this
  * line. Already-banked credit is never removed (pinned by
  * test/mixingHandsOnCredit_20261014).
+ *
+ * Said ONCE above the what's-left list (HOW A PAGE COUNTS), so it speaks of
+ * "a page", and it says the one rule a learner could not guess (checker C2,
+ * 2026-11-14): the goal chips live only for one visit (useVisitGoals keeps
+ * them in a ref), so leaving a page before every chip is ✓ clears them.
  */
-export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met. NEXT moves on without counting it.';
+export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks. NEXT moves on without counting it.';
 
 /** Sticky exploration goals (patchbay pattern): each goal latches once its
  *  predicate has been true; all latched → the page marks itself done. */

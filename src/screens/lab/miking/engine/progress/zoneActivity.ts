@@ -15,6 +15,7 @@
 export function zoneActivityLine(labels: readonly string[], what = 'the mic', clear = 'clear of every part'): string {
   const n = labels.length;
   const list = n ? ` (${labels.join('; ')})` : '';
-  if (n >= 2) return `Activity: done ✓ — ${what} rested in ${n === 2 ? 'two' : n} different zones, ${clear}${list}.`;
+  // One wording whatever the count (checker C4: "two" here, "3" there).
+  if (n >= 2) return `Activity: done ✓ — ${what} rested in at least two different zones, ${clear}${list}.`;
   return `Activity: rest ${what} in two different blue zones, ${clear} — ${n === 0 ? 'none yet' : 'one so far'}${list}.`;
 }

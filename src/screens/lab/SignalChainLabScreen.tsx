@@ -481,7 +481,7 @@ export function SignalChainLabScreen() {
           soundOffLine: 'Sound off? Every step still works: build the chain, then tap ▶ for the GR numbers each unit would show.',
           onGuide: () => openLesson('display'),
           bezel: [
-            { k: 'SRC', v: SOURCES[sourceIdx].label, caption: 'test sound' },
+            { k: 'SRC', v: SOURCES[sourceIdx].label, caption: 'sound in' },
             { k: 'CHAIN', v: `${chainCount}/9`, helpKey: 'module_toggle', caption: 'units in' },
             { k: 'SCENE', v: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'), flex: 1.4, helpKey: 'chain_order', caption: 'scenario' },
             { k: 'OUT', v: running ? 'LIVE' : silent ? 'SILENT' : 'IDLE', tint: !running && silent ? '#ff8a7e' : undefined, helpKey: 'gain_staging', caption: 'playing?' },

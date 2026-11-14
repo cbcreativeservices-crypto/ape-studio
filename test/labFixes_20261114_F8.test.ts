@@ -8,6 +8,7 @@
  */
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
+import ts from 'typescript';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
@@ -376,6 +377,68 @@ describe('Phase 2 · silent learner and bezel captions (S3)', () => {
     assert.ok(seen > 70, `only ${seen} readouts found`);
     assert.match(read(`${LAB}/cymatics/modules/modNodes.tsx`), /k: 'RES',\n\s+caption: 'on a mode\?',/);
     assert.match(read(`${LAB}/cymatics/modules/modSystems.tsx`), /k: 'SYSTEM', [^\n]*caption: 'what vibrates'/);
+  });
+  it('checker C4: a reason never repeats a 5-word run of its own explanation (Speech, Drum Tuning)', () => {
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean);
+    const runs = (s: string) => { const w = norm(s); return w.slice(0, Math.max(0, w.length - 4)).map((_, i) => w.slice(i, i + 5).join(' ')); };
+    const flat = (s: string) => ` ${norm(s).join(' ')} `;
+    for (const c of SM.SPEECH_CHECKS) {
+      for (const r of Object.values(SW.SPEECH_CHECK_WHY[c.id] ?? {}) as string[]) {
+        for (const run of runs(r)) assert.ok(!flat(c.explain).includes(` ${run} `), `${c.id}: "${run}" is in the explanation too`);
+      }
+    }
+    for (const s of DC.ALL_DRUM_SCENARIOS) {
+      for (const r of Object.values(DC.DRUM_SCENARIO_WHY[s.id] ?? {}) as string[]) {
+        for (const run of runs(r)) assert.ok(!flat(s.explain).includes(` ${run} `), `${s.id}: "${run}" is in the explanation too`);
+      }
+    }
+  });
+  it('checker C2: the rack labs’ own CHECK YOURSELF cards — a reason per wrong option, balanced lengths, right answers kept', () => {
+    const FILES = ['AutotuneLabScreen.tsx', 'BassLabScreen.tsx', 'FmLabScreen.tsx', 'HarmonicsView.tsx', 'ModularLabScreen.tsx', 'NoiseLabScreen.tsx', 'OscillatorLabScreen.tsx'];
+    const strOf = (e: ts.Expression): string => (ts.isStringLiteral(e) || ts.isNoSubstitutionTemplateLiteral(e) ? e.text : '');
+    type Card = { file: string; question: string; options: string[]; correct: number; why: Record<number, string> | null };
+    const cards: Card[] = [];
+    for (const f of FILES) {
+      const sf = ts.createSourceFile(f, read(`${LAB}/${f}`), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+      const visit = (n: ts.Node) => {
+        if (ts.isObjectLiteralExpression(n)) {
+          const p: Record<string, ts.Expression> = {};
+          for (const pr of n.properties) if (ts.isPropertyAssignment(pr) && ts.isIdentifier(pr.name)) p[pr.name.text] = pr.initializer;
+          if (p.question && p.options && p.correctIdx && ts.isArrayLiteralExpression(p.options)) {
+            let why: Record<number, string> | null = null;
+            if (p.why && ts.isObjectLiteralExpression(p.why)) {
+              why = {};
+              for (const w of p.why.properties) if (ts.isPropertyAssignment(w)) why[Number(w.name.getText(sf))] = strOf(w.initializer);
+            }
+            cards.push({ file: f, question: strOf(p.question), options: p.options.elements.map(strOf), correct: Number(p.correctIdx.getText(sf)), why });
+          }
+        }
+        ts.forEachChild(n, visit);
+      };
+      visit(sf);
+    }
+    assert.equal(cards.length, 13);
+    const bad: string[] = [];
+    for (const c of cards) {
+      if (!c.why) { bad.push(`${c.file}: no why: ${c.question}`); continue; }
+      const lens = c.options.map((o) => o.length);
+      const next = Math.max(...lens.filter((_, i) => i !== c.correct));
+      if (lens[c.correct] > 1.4 * next) bad.push(`${c.file}: right answer ${lens[c.correct]} vs ${next}: ${c.question}`);
+      c.options.forEach((_o, i) => {
+        if (i === c.correct) { if (c.why![i] != null) bad.push(`why on the right answer: ${c.question}`); return; }
+        const t = c.why![i];
+        if (!t) { bad.push(`no reason for option ${i}: ${c.question}`); return; }
+        if (t.split(/\s+/).length > 30) bad.push(`over 30 words: ${t}`);
+        const right = c.options[c.correct].toLowerCase();
+        if (right.length > 3 && t.toLowerCase().includes(right)) bad.push(`quotes the answer: ${t}`);
+      });
+    }
+    assert.deepEqual(bad, []);
+    // the right answers stay the right ones (the authored index is 0 on every card)
+    assert.ok(cards.every((c) => c.correct === 0));
+  });
+  it('checker C4: Drum Tuning ch 3 step 2’s YOU ARE LOOKING AT line follows the map', () => {
+    assert.match(read(`${LAB}/drumtuning/modules/ch3Method.tsx`), /<Landing looking=\{mapShown \? 'an uneven head with its color map shown/);
   });
   it('NEEDS SOUND tags where credit needs listening: Drum Tuning ch 4, 6, 7; every Ear Training drill', () => {
     for (const f of ['ch4Whole', 'ch6Kit', 'ch7Trouble']) {

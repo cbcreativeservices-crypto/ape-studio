@@ -21,6 +21,7 @@ import { micBodyOf } from '../src/screens/lab/miking/engine/model/validate.ts';
 import { zoneActivityLine } from '../src/screens/lab/miking/engine/progress/zoneActivity.ts';
 import { articleFor, journeyIntro } from '../src/screens/lab/miking/engine/journey.ts';
 import { aimKeyShort } from '../src/screens/lab/miking/engine/scene/placementDock.ts';
+import { zoneWords } from '../src/screens/lab/miking/engine/scene/sceneWords.ts';
 import { aimWords } from '../src/screens/lab/miking/lessons/shared/sports/venuePlan.ts';
 import { JOB_FIT, JOB_GROUPS } from '../src/screens/lab/micselect/micSelectData.ts';
 import type { Lesson, MicType } from '../src/screens/lab/miking/engine/model/types.ts';
@@ -144,7 +145,10 @@ describe('F9-3 · a ZONE pick is the zone the words, the ZONE cell and the activ
   it('one activity wording: never "N of 2", never "7 of 2"; done is said in words', () => {
     assert.equal(zoneActivityLine([]), 'Activity: rest the mic in two different blue zones, clear of every part — none yet.');
     assert.equal(zoneActivityLine(['A']), 'Activity: rest the mic in two different blue zones, clear of every part — one so far (A).');
-    assert.match(zoneActivityLine(['A', 'B']), /^Activity: done ✓ — the mic rested in two different zones/);
+    assert.match(zoneActivityLine(['A', 'B']), /^Activity: done ✓ — the mic rested in at least two different zones/);
+    // One wording whatever the count (checker C4: "two" here, "3" there).
+    const strip = (x: string) => x.replace(/ \(.*\)\.$/, '');
+    assert.equal(strip(zoneActivityLine(['A', 'B', 'C'])), strip(zoneActivityLine(['A', 'B'])));
     const seven = zoneActivityLine(['1', '2', '3', '4', '5', '6', '7']);
     assert.doesNotMatch(seven, /of 2|\d+ of \d+/);
     for (const f of [`${M}/pages/PPlacement.tsx`, `${M}/lessons/shared/electric/ampPages.tsx`, `${M}/lessons/shared/ensemble/ensemblePages.tsx`, `${M}/lessons/shared/hand/handPages.tsx`, `${M}/lessons/shared/handdrums/pages/HPlacement.tsx`, `${M}/lessons/shared/sports/sportsPages.tsx`, `${M}/lessons/spk/pages.tsx`]) {
@@ -165,7 +169,9 @@ describe('F9-3 · a ZONE pick is the zone the words, the ZONE cell and the activ
 // ── 4 · Typos: double full stops, a/an, US spelling ─────────────────────────
 describe('F9-4 · typos', () => {
   it('the NOW line never prints "..": the zone band loses its own full stop', () => {
-    assert.match(code(`${M}/engine/scene/sceneWords.ts`), /zoneLabel: z \? `\$\{z\.label\}, \$\{z\.band\.replace\(\/\[\.\\s\]\+\$\/, ''\)\}` : null,/);
+    assert.match(code(`${M}/engine/scene/sceneWords.ts`), /zoneLabel: z \? zoneWords\(z\.label, z\.band\) : null,/);
+    assert.equal(zoneWords('In front, a little to one side', 'Start about 0.9–1.8 m from the steps.'), 'In front, a little to one side (start about 0.9–1.8 m from the steps)');
+    assert.equal(zoneWords('Close', 'LDC about 20 cm out.'), 'Close (LDC about 20 cm out)');
     // Every lesson: a band ends in a full stop (so the old line printed ".."),
     // and no zone label does (labels are followed by "." in several lines).
     let bandsWithStop = 0;
@@ -174,7 +180,9 @@ describe('F9-4 · typos', () => {
       for (const z of l.zones) {
         if (/\.\s*$/.test(z.band)) bandsWithStop++;
         assert.doesNotMatch(z.label, /\.\s*$/, `${meta.id} ${z.id} label`);
-        const line = `Zone: ${z.label}, ${z.band.replace(/[.\s]+$/, '')}.`;
+        const line = `Zone: ${zoneWords(z.label, z.band)}.`;
+        // Checker C4: never "…, Start about" (name and description run together).
+        assert.doesNotMatch(line, /, [A-Z][a-z]/, `${meta.id} ${z.id}: ${line.slice(0, 80)}`);
         assert.doesNotMatch(line, /[^.]\.\.(?!\.)/, `${meta.id} ${z.id}`);
       }
     }
@@ -395,5 +403,30 @@ describe('F9-P2-5 · end screens: each row names what it is missing; WHERE TO ST
 describe('F9-P2-6 · arrival: the screen the Miking Labs open on has an intro card', () => {
   it('the family hub guide carries an intro (the lab term rides on top of it)', () => {
     assert.match(code(`${M}/mikingScreenGuides.ts`), /export function mikingHubGuide\([^)]*\): ScreenGuide \{[\s\S]{0,400}intro: \{\s*learning: 'One silent, drawn lesson per instrument or source\./);
+  });
+});
+
+// ── Checker C4 (2026-11-14): one counting rule, one unit word ──────────────
+describe('F9-C4 · every Placement Studio counts the same way; one unit word', () => {
+  it('the pose a studio opens at (and a START pick) never counts; ZONE, drags and faders do', () => {
+    for (const f of [`${M}/lessons/shared/electric/ampPages.tsx`, `${M}/lessons/shared/hand/handPages.tsx`, `${M}/lessons/shared/handdrums/pages/HPlacement.tsx`, `${M}/lessons/spk/pages.tsx`]) {
+      assert.match(code(f), /const opening = lastVersion\.current < 0;\s*lastVersion\.current = rig\.version;\s*if \(opening\) return;/, f);
+    }
+    const P = code(`${M}/pages/PPlacement.tsx`);
+    assert.match(P, /const given = lastVersion\.current < 0 \|\| rig\.version <= givenVersion\.current;\s*lastVersion\.current = rig\.version;\s*if \(given\) return;/);
+    assert.equal((P.match(/givenVersion\.current = rig\.version \+ 1;/g) ?? []).length, 2, 'both moves of a START pick are given');
+    // The studios with their own state already followed this rule: a START pick resets `moved`.
+    for (const f of [`${M}/lessons/shared/ensemble/ensemblePages.tsx`, `${M}/lessons/shared/sports/sportsPages.tsx`, `${M}/lessons/f10SpatialField/pages.tsx`]) {
+      assert.match(code(f), /if \(moved && zone/, f);
+    }
+  });
+  it('module everywhere a learner reads about the parts of a lesson (strip, goal line, credit line, end screen, hub, quick check)', () => {
+    const S = code(`${M}/MikingLessonScreen.tsx`);
+    assert.match(S, /noun="module"/);
+    assert.doesNotMatch(S, /noun="page"|`Page \$\{pageIdx \+ 1\} goal|This page is credited|from page 1/);
+    assert.match(code(`${M}/MikingHubScreen.tsx`), /const pagesWord = known && n === 1 \? 'module' : 'modules';/);
+    const J = code(`${M}/engine/journeyKit.tsx`);
+    for (const m of J.matchAll(/(['`])((?:(?!\1).)*)\1/g)) if (!/pages\/|PageId/.test(m[2])) assert.doesNotMatch(m[2], /\bpages?\b/, m[2].slice(0, 80));
+    assert.match(MIKING_HOW_IT_COUNTS, /^A module counts/);
   });
 });

@@ -149,7 +149,11 @@ describe('2. each guide quotes its step’s real names', () => {
     'what:fits': ['IN THIS MODULE', 'RECORDING', 'EDITING', 'MIXING', 'MASTERING', 'RELEASE', 'STAGE', 'NAME', 'WORKS ON', 'TRACKS', 'STEREO', 'FILES', 'REC', 'EDIT', 'MIX', 'MASTER', '‹ PREV', 'NEXT ›', '⏮', 'HIDE DISPLAY', 'FULL SCREEN'],
     'what:can': ['WHAT MASTERING CAN ADDRESS', 'WHAT IT CANNOT DO', 'THE PURPOSE OF OBJECTIVITY'],
     'what:listen': ['INPUT', 'CEILING', 'RELEASE', 'GR', 'BYP', 'PEAK', 'TRUE PK', 'LUFS', 'PLR', 'MATCH dB', '▶ MIX', '▶ LOUDER', '■ STOP', 'MATCH LEVEL', 'THE MIX', 'LOUDER'],
-    'what:practice': ['Mastering adjustment', 'Mix revision', 'More information from the client', 'Your FIRST answer on each card is the one recorded', '‹ PREV CARD', 'NEXT CARD ›'],
+    // 'Ask the client first' was 'More information from the client' until 2026-11-14
+    // (owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report"; checker C2: the right
+    // answer was always the longest option).
+    'what:practice': ['Mastering adjustment', 'Mix revision', 'Ask the client first', 'Your FIRST answer on each card is the one recorded', '‹ PREV CARD', 'NEXT CARD ›'],
     'what:review': ['KEY IDEAS', 'KEY TERMS', 'Mastering', 'Stereo master', 'Mix revision', 'TAKEAWAY', 'START OVER (PRACTICE)'],
     'roles:table': ['IN THIS MODULE', 'MIXING ENGINEER', 'MASTERING ENGINEER', 'The roles can overlap', 'Mastering is not simply'],
     'roles:control': ['REQUEST', 'ADDRESSED BY', 'A CLIENT REQUEST', 'VOCAL', 'SNARE', 'FORMAT', 'WIDTH', 'BUS COMP', 'FADES', 'MIXING', 'MASTERING', 'EITHER'],

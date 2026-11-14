@@ -146,11 +146,11 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'How to sort a problem by its reach: does it touch the whole stereo program, one element inside it, or is something still unknown?',
-          start: 'Read the first card’s situation and ask what it touches. Then tap Mastering adjustment, Mix revision, or More information from the client, and read the explanation.',
+          start: 'Read the first card’s situation and ask what it touches. Then tap Mastering adjustment, Mix revision, or Ask the client first, and read the explanation.',
         },
         seeing: [
           'Each card describes a situation from a mastering job. A line shows your place in the deck.',
-          'Each card offers three next steps: Mastering adjustment, Mix revision, or More information from the client.',
+          'Each card offers three next steps: Mastering adjustment, Mix revision, or Ask the client first.',
         ],
         control: DECK_CONTROL,
         changes: [
@@ -1099,10 +1099,10 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'How to sort each track’s problem by its reach — the whole program, one element inside it, or something still unknown — with a real brief in hand.',
-          start: 'Read the first track’s card and recall its note from the previous step. Pick a mastering adjustment, a mix revision, or more information from the client, then read the explanation.',
+          start: 'Read the first track’s card and recall its note from the previous step. Pick a mastering adjustment, a mix revision, or asking the client first, then read the explanation.',
         },
         seeing: [
-          'One card per track of the EP. Each asks which next step fits: a mastering adjustment, a mix revision, or more information from the client.',
+          'One card per track of the EP. Each asks which next step fits: a mastering adjustment, a mix revision, or asking the client first.',
           'A line on the card shows your place in the deck.',
         ],
         control: DECK_CONTROL,

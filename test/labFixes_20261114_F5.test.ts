@@ -515,3 +515,34 @@ describe('Phase 2 · end screens', () => {
     for (const g of [fg.FOUNDATIONS_END_GUIDE, mg.MIC_END_GUIDE, mg.SPEAKER_END_GUIDE, rg.ROOM_END_GUIDE]) assert.equal(g.intro?.start, S);
   });
 });
+
+describe('Checker C3 F-1 · a name tag never covers text already on the room', () => {
+  it('the RING GAP plate, probe labels and module labels count as taken before any tag is placed', () => {
+    const v = code(`${W}vizWave.tsx`);
+    assert.match(v, /if \(ringGapWide\) placed\.push\(textBox\(geo\.x0 \+ 3 \* ts, geo\.y1 - 17 \* ts, 'RING GAP > λ'\)\);/);
+    assert.match(v, /for \(const pr of p\.probes \?\? \[\]\) placed\.push\(textBox\(/);
+    assert.match(v, /for \(const lb of p\.labels \?\? \[\]\) \{/);
+    // and they are pushed BEFORE the first tag is placed
+    assert.ok(v.indexOf('placed.push(textBox(geo.x0 + 3 * ts') < v.indexOf('const place = (xm: number'));
+  });
+});
+
+describe('Checker C3 O-2 · the check card never reorders itself', () => {
+  it('the order is seeded by the question: the same on every mount, different across questions, a full permutation', async () => {
+    const { seededOrder } = await import('../src/screens/lab/foundations/checkWords.ts');
+    const q = 'Two IDENTICAL waves meet at 180°. The result is…';
+    const o = ['Twice as loud', 'Silence', 'The pitch drops one octave'];
+    const a = seededOrder(q, o);
+    for (let i = 0; i < 20; i++) assert.deepEqual(seededOrder(q, o), a, 'a remount gives the same order');
+    assert.deepEqual([...a].sort(), [0, 1, 2]);
+    // across many questions the right answer is not parked in one slot
+    const slots = new Set<number>();
+    for (let i = 0; i < 40; i++) slots.add(seededOrder(`question ${i}`, ['a', 'b', 'c']).indexOf(1));
+    assert.equal(slots.size, 3);
+  });
+  it('CheckQuestion uses it, never Math.random', () => {
+    const bits = code(`${F}bits.tsx`);
+    assert.match(bits, /const \[order\] = useState<number\[\]>\(\(\) => seededOrder\(spec\.question, spec\.options\)\);/);
+    assert.doesNotMatch(bits, /Math\.random\(\)/);
+  });
+});

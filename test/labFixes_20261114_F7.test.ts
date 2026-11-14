@@ -54,10 +54,10 @@ describe('F7-2 · dynamics labs: the GR meter never prints 0.0 dB beside "— dB
     assert.doesNotMatch(fx, /<GrMeter\s+grDb=\{running \? grDb : 0\}/);
   });
   it('stopped, one sentence says which number is measured and which is drawn', () => {
-    assert.match(fx, /function grMeterCaption\(running: boolean, fxReady: boolean, kind: 'comp' \| 'gate' \| 'limiter', soundOff = false\)/);
+    assert.match(fx, /function grMeterCaption\(\s*running: boolean,\s*fxReady: boolean,\s*kind: 'comp' \| 'gate' \| 'limiter',\s*soundOff = false,/);
     assert.match(fx, /Stopped, GR reads — dB\./);
     assert.match(fx, /the GR PEAK in the drawing is worked out from your settings/);
-    assert.match(fx, /\{grMeterCaption\(running, fxReady, config\.pollGr, soundOff\)\}/);
+    assert.match(fx, /\{grMeterCaption\(running, fxReady, config\.pollGr, soundOff, grModelDb != null\)\}/);
   });
   it('no learner line tells anyone to update the app (effect labs, Binaural)', () => {
     for (const f of ['src/screens/lab/FxLabScreen.tsx', 'src/screens/lab/BinauralLabScreen.tsx']) {
@@ -342,5 +342,37 @@ describe('F7 phase 2b · every wrong option on my CHECK YOURSELF cards has its o
   });
   it('the shared card shows `why` before the hint (F5)', () => {
     assert.match(read('src/screens/lab/foundations/checkWords.ts'), /return spec\.why\?\.\[picked\] \?\? spec\.wrongHint \?\? 'Not quite — try again\.';/);
+  });
+});
+
+
+// ── Checker C4 fixes ─────────────────────────────────────────────────────────
+describe('F7 · checker C4 fixes', () => {
+  it('FAIL-1: the GAIN REDUCTION words follow what the GR cell shows (MODEL vs — dB) in every state', () => {
+    const fx = code('src/screens/lab/FxLabScreen.tsx');
+    // the caller tells the words whether the cell is showing MODEL…
+    assert.match(fx, /\{grMeterCaption\(running, fxReady, config\.pollGr, soundOff, grModelDb != null\)\}/);
+    // …and the cell shows it exactly when a model exists (BezelItem.silent, swapped in while sound is off)
+    assert.match(fx, /\.\.\.\(grModelDb != null \? \{ silent: \{ v: `\$\{grModelDb\.toFixed\(1\)\} dB`, sub: 'MODEL' \} \} : \{\}\)/);
+    const body = fx.slice(fx.indexOf('function grMeterCaption('), fx.indexOf('function labTitleWords('));
+    // sound off + model: no "— dB" in that branch; sound off without a model: "— dB" said
+    const modelBranch = body.slice(body.indexOf('if (soundOff && modelShown)'), body.indexOf('if (soundOff) {'));
+    assert.match(modelBranch, /the GR readout shows MODEL/);
+    assert.doesNotMatch(modelBranch, /— dB/);
+    // the sound-off branches come BEFORE the fxReady / web / device branches (no state falls through to "— dB" while MODEL shows)
+    assert.ok(body.indexOf('if (soundOff && modelShown)') < body.indexOf('if (fxReady) {'));
+    assert.ok(body.indexOf('if (soundOff) {') < body.indexOf("Platform.OS === 'web'\n    ? `On the web"));
+  });
+  it('FAIL-2: every flanger guide line that says "evenly spaced" says "in Hz"', () => {
+    const g = read('src/screens/lab/flangerScreenGuides.ts');
+    const lines = g.split('\n').filter((l) => /evenly spaced/.test(l));
+    assert.ok(lines.length >= 4);
+    for (const l of lines) assert.match(l, /evenly spaced in Hz/, l.trim());
+  });
+  it('Phaser WHERE TO START opens on a silent step, ▶ second', async () => {
+    const mod = (await import(new URL('src/screens/lab/phaserScreenGuides.ts', ROOT).href)) as Record<string, Record<string, { intro?: { start: string } }>>;
+    const start = mod.PHASER_SCREEN_GUIDES.explore.intro!.start;
+    assert.match(start, /^Open SWEEP, set DEPTH \(SWEEP\) to STATIC, and drag CENTER/);
+    assert.ok(start.indexOf('▶') > 0);
   });
 });

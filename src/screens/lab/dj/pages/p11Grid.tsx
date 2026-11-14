@@ -91,7 +91,7 @@ function GridTray({ onScenario, onLoop, loopMsg }: { onScenario: (g: GridMode) =
         <LabChip label={d.loop ? 'LOOP EXIT' : 'LOOP 4 BEATS'} selected={!!d.loop} onPress={onLoop} compact />
       </View>
       {loopMsg ? <Text style={styles.note}>{loopMsg}</Text> : null}
-      <Text style={styles.note}>Watch the waveform: a correct grid puts a thin line on every beat and a bold bar line on the “one” — where a crash or a new part lands, straight after a drum fill. In four-on-the-floor music every kick is equally strong, so the music’s structure finds the one, not the loudest kick.</Text>
+      <Text style={styles.note}>Watch the waveform: a correct grid puts a thin line on every beat and a bold bar line on the “one” — where a crash or a new part lands, straight after a drum fill. In four-on-the-floor music every kick is equally strong, so loudness alone cannot tell you which beat is the one: listen to the track and decide what marks it.</Text>
     </View>
   );
 }

@@ -452,7 +452,12 @@ function HandPlacement(spec: HandSpec) {
     const lastVersion = useRef(-1);
     useEffect(() => {
       if (rig.version === lastVersion.current) return;
+      const opening = lastVersion.current < 0;
       lastVersion.current = rig.version;
+      // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+      // the pose the studio opens at is GIVEN, never rested; only the learner's
+      // own moves (drag, fader, ZONE, SETUP) count.
+      if (opening) return;
       if (r0.zoneId && !r0.blocked) setVisited((prev) => (prev.has(r0.zoneId!) ? prev : new Set([...prev, r0.zoneId!])));
     }, [rig.version, r0.zoneId, r0.blocked]);
     useEffect(() => {

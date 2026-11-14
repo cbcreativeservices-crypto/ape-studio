@@ -546,8 +546,8 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
           : null,
       rack && s && s.bezel.length ? opt(`Watch ${s.bezel.join(', ')} in the readouts, the cells framing the display.`) : null,
       sameAsStage ? null : opt(`It is part of the journey’s ${stage.title.toUpperCase()} stage.`),
-      x.first ? opt(`At the top, “Page ${x.pageNum} goal:” says what this module asks.`) : null,
-      x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This page is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,
+      x.first ? opt(`At the top, “Module ${x.pageNum} goal:” says what this module asks.`) : null,
+      x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This module is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,
     ],
     SCREEN_GUIDE_BUDGET.low,
   );
@@ -715,7 +715,7 @@ export function mikingHubGuide(family?: { family: string }): ScreenGuide {
     },
     seeing: [
       `${where}. The line at the top says what the lessons cover.`,
-      'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done (the tile calls them pages). ✓ marks a finished lesson.',
+      'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done. ✓ marks a finished lesson.',
       'At the bottom, a reminder: these lessons suggest where to begin — starting points, not rules.',
     ],
     control: [

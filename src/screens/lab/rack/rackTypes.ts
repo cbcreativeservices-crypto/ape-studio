@@ -215,6 +215,10 @@ export type DockParam =
        *  "the slider didn't change anything". Never rebinds mid-drag: the
        *  switch waits for the finger to lift. */
       autoBind?: boolean;
+      /** ADDITIVE (2026-11-14, checker C4): how many positions the lane has
+       *  (a 12-fret FRET lane: 12). The lane's + / − keys then move exactly
+       *  one position per tap. Without it they step 5 % (laneStep.ts). */
+      steps?: number;
       helpKey?: string;
     }
   | {

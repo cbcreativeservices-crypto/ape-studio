@@ -239,7 +239,10 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="an uneven head with its color map hidden; ● is where the stick taps." prompt="▶ TAP each LUG and listen for the odd ones; then say which sounded highest and ◉ REVEAL MAP." />
+              {/* The line follows the map (checker C4: it still said "hidden" after SHOW THE MAP). */}
+              <Landing looking={mapShown ? 'an uneven head with its color map shown: each wedge is one lug’s pitch; ● is where the stick taps.' : 'an uneven head with its color map hidden; ● is where the stick taps.'}
+                prompt={mapShown ? 'Read the map: which lug is highest, which is lowest? ▶ TAP them back to back when you can listen.' : '▶ TAP each LUG and listen for the odd ones; then say which sounded highest and ◉ REVEAL MAP.'}
+              />
               <DrumStatus playing={hearTap.playing} pending={hearTap.pending} failed={hearTap.failed} rendering={hearTap.status === 'rendering'} idle="stopped · pick a LUG and press ▶ TAP; go around the head" label={`the tap at lug ${hearLug + 1}`} />
               {revealNote ? <Feedback tone={mapShown ? (guess == null || guess === hearHighest ? 'ok' : 'warn') : 'info'}>{revealNote}</Feedback> : null}
               {noSound && !mapShown && tapped.size < SPEC.lugs ? (

@@ -275,7 +275,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // credit is live.
       { name: 'Patchbay Signal Flow & Normalling', blurb: 'On most bays, top is the source and bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true, tileBlurb: 'How a patchbay connects things, and what a patch changes.' },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
-      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true },
+      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true, tileBlurb: 'Levels at every stage: headroom, noise floor and unity gain.' },
     ],
   },
 

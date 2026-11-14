@@ -179,8 +179,8 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
         onGuide: () => help('gain_staging'),
         bezel: [
           { k: 'PEAK', v: r.digitalOver ? '0.0 OVER' : `${r.recPeakDb.toFixed(1)} dBFS`, helpKey: 'gain_staging' },
-          { k: 'SNR', v: `${r.snrDb.toFixed(0)} dB`, helpKey: 'gain_staging', caption: 'signal vs hiss' },
-          { k: 'HEADROOM', v: r.digitalOver ? 'none' : `${r.headroomDb.toFixed(1)} dB`, helpKey: 'gain_staging', caption: 'room to clip' },
+          { k: 'SNR', v: `${r.snrDb.toFixed(0)} dB`, helpKey: 'gain_staging', caption: 'over hiss' },
+          { k: 'HEADROOM', v: r.digitalOver ? 'none' : `${r.headroomDb.toFixed(1)} dB`, helpKey: 'gain_staging', caption: 'until clip' },
           {
             k: 'ZONE',
             v: r.analogClip && r.digitalOver ? 'A+D CLIP' : r.analogClip ? 'AN. CLIP' : r.zone,

@@ -299,6 +299,14 @@ export function EarLabScreen({ navigation, route }: Props) {
   );
 }
 
+/** How many lines a lab tile's name and blurb may take at this window width
+ *  (2026-11-14, C1 FAIL 2). 390 and wider: 2 and 3, as before. Pure. */
+export function tileTextLines(winW: number): { name: number; blurb: number } {
+  if (winW >= 390) return { name: 2, blurb: 3 };
+  if (winW >= 360) return { name: 3, blurb: 4 };
+  return { name: 4, blurb: 5 };
+}
+
 /** The credit key a tile's ✓ reads: the Fundamentals lab's own key, else
  *  the training lab's (by route); '' (never done) for anything else, such as
  *  a Miking family tile, which holds many lessons. Pure. */
@@ -330,6 +338,11 @@ function LeafTile({
 }) {
   const dev = leaf.status === 'development';
   const done = useLabDone(tileDoneKey(leaf)) && !dev;
+  // NARROW PHONES (checker C1, FAIL 2: at 320 wide 9 names and 41 blurbs were
+  // cut). The tile is narrower there, so it takes the lines it needs: a name
+  // up to three, a blurb as tileTextLines says. Nothing changes at 390.
+  const { width: winW } = useWindowDimensions();
+  const lines = tileTextLines(winW);
   return (
     <GlassTile
       style={style}
@@ -339,8 +352,8 @@ function LeafTile({
       accessibilityLabel={`${leaf.startHere ? 'Start here. ' : ''}${leaf.name}${done ? ', done' : ''}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
     >
       {leaf.startHere ? <Text style={styles.startHere}>START HERE</Text> : null}
-      <Text style={styles.tileName} numberOfLines={2}>{leaf.name}</Text>
-      <Text style={styles.tileSub} numberOfLines={3}>{leaf.tileBlurb ?? leaf.blurb}</Text>
+      <Text style={styles.tileName} numberOfLines={lines.name}>{leaf.name}</Text>
+      <Text style={styles.tileSub} numberOfLines={lines.blurb}>{leaf.tileBlurb ?? leaf.blurb}</Text>
       {/* A count (the Miking family tiles' "17 Miking Lab
           Lessons"): never cut short — its words wrap,
           and it never shrinks under 9 pt. */}

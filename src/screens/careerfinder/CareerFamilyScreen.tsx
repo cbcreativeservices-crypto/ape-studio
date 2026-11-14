@@ -15,9 +15,9 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { RootStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
-import { officialTopicName } from '../../data/officialTopicNames';
+import { OFFICIAL_TOPIC_NAMES, officialTopicName } from '../../data/officialTopicNames';
 import { furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
-import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
+import { fetchV3CurriculumStrict, flattenV3 } from '../../data/v3Curriculum';
 import { isFreeEnrollGs, removeTopic, toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useEnrollGate } from '../../features/commercial/MembershipGate';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
@@ -60,12 +60,32 @@ export function CareerFamilyScreen() {
 
   // Live topic names (gs → official name, never "Topic gsN") + the enrollment
   // list for the + / ✓ affordance, exactly the Explore tree's gesture.
+  // STRICT read with a state (on-screen check 2026-11-14, follow-up to the owner's "assign an agent
+  // in the background to work on this"): with the lenient read a failed catalog fetch looked like
+  // "no names", and START HERE showed officialTopicName()'s last-resort "this topic" three times —
+  // a placeholder a learner could tap. A topic with no real name is now not drawn at all; one
+  // plain line says the names could not load and offers to try again.
   const [names, setNames] = useState<Map<number, string>>(new Map());
+  const [namesState, setNamesState] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [namesTry, setNamesTry] = useState(0);
   useEffect(() => {
     let alive = true;
-    void fetchV3Curriculum().then((fields) => { if (alive) setNames(new Map(flattenV3(fields).map((t) => [t.gs, t.name] as const))); });
+    setNamesState('loading');
+    fetchV3CurriculumStrict().then(
+      (fields) => {
+        if (!alive) return;
+        setNames(new Map(flattenV3(fields).map((t) => [t.gs, t.name] as const)));
+        setNamesState(fields.length ? 'ready' : 'failed');
+      },
+      () => { if (alive) setNamesState('failed'); },
+    );
     return () => { alive = false; };
-  }, []);
+  }, [namesTry]);
+  /** A real name for the row, or null: never the "this topic" stand-in. */
+  const topicRowName = (gs: number): string | null => {
+    const n = officialTopicName(gs, names.get(gs));
+    return n === 'this topic' && !OFFICIAL_TOPIC_NAMES[gs] ? null : n;
+  };
   const enrolled = useEnrollment();
   const enrolledGs = useMemo(() => new Set(enrolled.map((e) => e.gs)), [enrolled]);
   /**
@@ -216,7 +236,8 @@ export function CareerFamilyScreen() {
             <Text style={styles.startHere}>START HERE</Text>
             {topicsToShow.map((gs) => {
               const on = enrolledGs.has(gs);
-              const name = officialTopicName(gs, names.get(gs));
+              const name = topicRowName(gs);
+              if (!name) return null;
               return (
                 <Pressable key={gs} hitSlop={8} style={styles.topicRow} onPress={() => tapTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} aria-pressed={on} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
                   <Text style={[styles.topicCheck, on && { color: colors.green }]}>{on ? '✓' : '+'}</Text>
@@ -224,6 +245,16 @@ export function CareerFamilyScreen() {
                 </Pressable>
               );
             })}
+            {topicsToShow.some((gs) => !topicRowName(gs)) ? (
+              namesState === 'loading' ? (
+                <Text style={styles.topicNote} accessibilityLiveRegion="polite">Loading topic names…</Text>
+              ) : (
+                <>
+                  <Text style={styles.topicNote} accessibilityLiveRegion="polite">Some topic names couldn’t be loaded. Check your connection, then try again.</Text>
+                  <TextLink label="Try again" onPress={() => setNamesTry((n) => n + 1)} muted />
+                </>
+              )
+            ) : null}
             {fam.topicGs.length > START_HERE ? (
               <TextLink label={allTopics ? 'Show fewer' : `Show ${fam.topicGs.length - START_HERE} more topic${fam.topicGs.length - START_HERE === 1 ? '' : 's'}`} onPress={() => setAllTopics(!allTopics)} muted />
             ) : null}
@@ -363,6 +394,7 @@ const styles = StyleSheet.create({
   startHere: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.8, marginTop: 2 },
   topicRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 4, minHeight: 32 },
   topicCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 22, color: colors.textSub, width: 14, textAlign: 'center' },
+  topicNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   topicText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 22, color: colors.textPrimary },
   sources: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   careerCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 9, overflow: 'hidden' },

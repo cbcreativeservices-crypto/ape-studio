@@ -177,7 +177,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         badge: BADGE,
         bezel: [
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
-          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(nodes[6].level))} dB`, caption: 'room to clip' },
+          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(nodes[6].level))} dB`, caption: 'until clip' },
           { k: 'X-RAY', v: xray ? 'ON' : 'OFF', tint: xray ? '#7fd4ff' : '#7a7f8a' },
           { k: 'BALANCE', v: healthy ? '✓ OK' : '—', tint: healthy ? colors.green : '#7a7f8a' },
         ],

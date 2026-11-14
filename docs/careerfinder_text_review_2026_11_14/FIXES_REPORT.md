@@ -26,6 +26,25 @@
 - Both files were rebuilt and every column diffed (section 4).
 - Tests were updated and the career set rerun: 373 of 373 pass.
 
+**Round 3 (the on-screen checker's two notes, CHECK_C2_REPORT.md):**
+1. **"Typical preparation: Master's … typically required" (Music Librarian).** "Typical" was doubled, and "typically required" read soft next to "Where it says … required, it is required".
+   - **Checked against the sources first:**
+     - BLS: librarians "typically need a master's degree in library science (MLS)".
+     - ALA: "the vast majority of employers require an ALA-accredited master's degree for professional positions".
+   - **The 3 librarian lines (7 titles) now read "Master's in library and information science (MLS/MLIS) required by most employers for professional librarian posts; …"** This is stronger and explicit, and not overstated: some states mandate the degree, but not all employers.
+   - **Swept every preparation line for "typical".** Only one other line had it: the archivists' "Master's (e.g., …) typical" (8 titles). It now reads "Master's usually expected (e.g., …)". That is the same strength, and BLS says archivists "typically need a master's".
+   - **The DEGREE REQUIRED chip still shows on all 15 titles** (pinned in the test).
+   - Rebuilt and diffed against round 2:
+     - careerIndex.json: 1,896 records; only `preparation` changed, on **15 records** (8 + 2 + 1 + 4); the table stays at 44 lines.
+     - careerFamilies.json: unchanged, byte-identical.
+2. **START HERE showed "+ this topic" three times when the live catalog read failed.**
+   - **Fixed in `src/screens/careerfinder/CareerFamilyScreen.tsx`** (Career Finder only; `src/data/officialTopicNames.ts` is untouched).
+   - The screen now uses the strict curriculum read with a loading / ready / failed state. A topic with no real name (neither live nor in OFFICIAL_TOPIC_NAMES) is **not drawn**, so there is no tappable placeholder.
+   - In its place one plain line shows: "Loading topic names…" while loading, or "Some topic names couldn’t be loaded. Check your connection, then try again." with a "Try again" link that reruns the read.
+   - Topics with an official in-memory name (for example Workplace Skills) still show.
+   - **The shared fallback `'this topic'` (officialTopicNames.ts:33) is still used by other screens.** If you want it gone app-wide, the shared change is: make `officialTopicName()` return `null` when it has no real name, and have each caller hide the row. That touches every caller, so I did not make it.
+- **Tests:** the new test gained 3 tests (29 in all). The career set plus related ratchets: **376 of 376 pass**. The other tests that read the family screen (communityEvening1, communityEvening2, enrollMembersOnly): 16 of 16 pass. tsc was not run, as the coordinator asked.
+
 **Most important:**
 1. **"1 of 28 answers were …" is fixed** with a real one/many branch for the answers, the activities and the dashed bars (`unknownNote` in `src/features/careerfinder/scoring.ts:218`).
 2. **The three softened requirement lines now say "required"** (SLPA, audiologists, speech-language pathology and allied clinical titles). I checked them against BLS and ASHA first. The line under every expanded title now says a stated requirement *is* required.

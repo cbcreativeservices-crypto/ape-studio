@@ -237,8 +237,30 @@ describe('Calculator Lab', async () => {
   });
   it('the AWG refusals speak in gauges, not "-3 to 18"', () => {
     const a = read('src/screens/lab/calc/workspaces/ampacity.ts');
-    assert.match(a, /CONDUCTOR SIZE must be a gauge from 18 AWG up to 4\/0/);
+    // Names 14 AWG, as the title, help and the 18/16 refusal do (checker C3 F-3, 2026-11-14).
+    assert.match(a, /CONDUCTOR SIZE must be a gauge from 14 AWG up to 4\/0/);
+    assert.doesNotMatch(a, /from 18 AWG up to/);
     assert.match(read('src/screens/lab/calc/workspaces/powerElec.ts'), /WIRE GAUGE must be from 40 AWG up to 4\/0/);
+  });
+  it('C3 F-3: 20 AWG gets the 14 AWG range sentence; 18 and 16 still reach their own explanation; the table is untouched', () => {
+    const a = read('src/screens/lab/calc/workspaces/ampacity.ts');
+    const range = a.match(/key: 'awg',[\s\S]*?range: \[(-?\d+), (-?\d+)\]/)!;
+    assert.deepEqual([Number(range[1]), Number(range[2])], [-3, 18]);
+    const rangeMsg = a.match(/rangeMsg:\s*'([^']+)'/)![1];
+    const f = { name: 'CONDUCTOR SIZE (AWG)', integer: true, range: [-3, 18] as [number, number], rangeMsg };
+    assert.match(U.domainMsg(f, 20) ?? '', /from 14 AWG up to 4\/0/);
+    assert.equal(U.domainMsg(f, 18), null, '18 is in range, so awgRefusal explains it');
+    assert.equal(U.domainMsg(f, 16), null);
+    assert.match(a, /if \(g === 18 \|\| g === 16\) \{/);
+    assert.match(a, /'This calculator covers 14 AWG and larger\.'/);
+    // NEC 2023 Table 310.16 copper rows (hand-checked 2026-10-04, pinned in calcAmpacity_20261004).
+    assert.match(a, /\[18, \[null, null, 14\]\],\n\s*\[16, \[null, null, 18\]\],\n\s*\[14, \[15, 20, 25\]\],/);
+    assert.match(a, /\[-3, \[195, 230, 260\]\],/);
+  });
+  it('C3 F-4: the FIR half-sample line says "center"', () => {
+    const d = read('src/screens/lab/calc/workspaces/digitalAdv.ts');
+    assert.equal((d.match(/the filter’s center falls halfway between two taps/g) ?? []).length, 2);
+    assert.doesNotMatch(d, /centre/);
   });
   it('a workspace with empty boxes names them', () => {
     const w = read('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
@@ -494,5 +516,48 @@ describe('Phase 2 · recap + next-lab card (labEndContent.ts, S4) reach every F6
     assert.match(X, /complete \? 'UP NEXT' : 'AFTER THIS LAB'/);
     assert.match(read('src/screens/lab/cable/lessons/lesson12.tsx'), /<LabRecapNext labId="af_cables" complete=\{completion\.complete\} \/>/);
     assert.match(read('src/screens/lab/cableinstall/CableInstallLabScreen.tsx'), /<LabRecapNext labId="af_cable_install" complete=\{done\} \/>/);
+  });
+});
+
+describe('C3 F-2: first-visit bezel captions fit their cell at 390 and 320 (never cut with "…")', () => {
+  // Measured in the 8142 preview at 320 and 390 (2026-11-14): each caption's
+  // width at 10 px Barlow is no wider than its cell. The cut ones were renamed.
+  const NOW: Array<[string, string[]]> = [
+    ['src/screens/lab/meter/modules/modMeterA.tsx', ['overall', 'range', 'highest', 'real top', 'extra', 'clips', 'average', 'spiky?', 'shift', 'clipped?', 'max yet']],
+    ['src/screens/lab/meter/modules/modMeterB.tsx', ['top vs low', 'bass fade', 'rings most']],
+    ['src/screens/lab/meter/modules/modMeterC.tsx', ['mono level']],
+    ['src/screens/lab/digital/modules/modAnalog.tsx', ['a second', 'top freq', 'heard as']],
+    ['src/screens/lab/digital/modules/modChain.tsx', ['over hiss', 'until clip']],
+    ['src/screens/lab/digital/modules/modQuant.tsx', ['step count', 'over hiss']],
+    ['src/screens/lab/gain/modules/modLearn.tsx', ['until clip']],
+    ['src/screens/lab/amp/AmpRig.tsx', ['power in', 'wasted', 'useful %']],
+    ['src/screens/lab/amp/modules/mod4Classes.tsx', ['at rest', 'clean?']],
+    ['src/screens/lab/SignalChainLabScreen.tsx', ['sound in']],
+  ];
+  const CUT = ['whole program', 'loud-soft span', 'top in between', 'times clipped', 'average level', 'peak vs avg', 'off-center', 'over the top?', 'highest yet',
+    'high vs low', 'low-end fade', 'rings longest', 'level in mono', 'samples a sec', 'highest kept', 'what you get', 'signal vs hiss', 'room to clip', 'how many steps',
+    'power drawn', 'wasted as heat', 'useful share', 'resting draw', 'clean or not', 'test sound'];
+  it('the renamed captions are in place and the cut ones are gone from F6 labs', () => {
+    for (const [f, caps] of NOW) {
+      const s = read(f);
+      for (const c of caps) assert.ok(s.includes(`caption: '${c}'`), `${f}: ${c}`);
+      for (const c of CUT) assert.ok(!s.includes(`caption: '${c}'`), `${f}: ${c} is still there`);
+    }
+  });
+  it('every caption in the C3 pages is 12 characters or fewer (the longest that measured inside its cell at 320 is "needle’s top", 52 px in a 53 px cell)', () => {
+    for (const f of ['src/screens/lab/meter/modules/modMeterA.tsx', 'src/screens/lab/digital/modules/modQuant.tsx']) {
+      for (const [, c] of read(f).matchAll(/caption: '([^']+)'/g)) assert.ok(c.length <= 12, `${f}: ${c}`);
+    }
+  });
+});
+
+describe('C3 O-1: the Peak Meter picture and the bezel read CREST from the same render', () => {
+  it('both use the 1024-sample renderSignal(signal) scaled by the gain', () => {
+    const v = read('src/screens/lab/meter/vizMeters.tsx');
+    assert.match(v, /const crest = crestDb\(renderSignal\(sig\)\.map\(\(v\) => v \* gain\)\);/);
+    assert.doesNotMatch(v, /crestDb\(renderSignal\(sig, n, 1\)/);
+    const a = read('src/screens/lab/meter/modules/modMeterA.tsx');
+    assert.match(a, /const sig = useMemo\(\(\) => renderSignal\(signal\), \[signal\]\);\n\s*const proc = useMemo\(\(\) => processed\(sig, gainDb\), \[sig, gainDb\]\);/);
+    assert.match(a, /\{ k: 'CREST', v: `\$\{crestDb\(proc\)\.toFixed\(1\)\}dB`/);
   });
 });

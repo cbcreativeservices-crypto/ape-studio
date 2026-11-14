@@ -1215,7 +1215,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
       'Routing is checked with the amplifiers still off, so a wrong patch can’t reach the room.',
     ],
     tryThis: [
-      'Tap “Verify routing — amps OFF”, then “Amps and powered boxes — LAST”: ORDER reads WRONG. Read why, RESET, and go again.',
+      'Tap “Verify routing — amps OFF”, then “Amps and powered boxes”: ORDER reads WRONG. Read why, RESET, and go again.',
       'Before each tap, ask which device would be listening if this one thumped.',
     ],
   },
@@ -1329,7 +1329,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
       'Writing down the scene, preset, patch lists, loudspeaker positions and delay times lets you, or the next engineer, rebuild the same system and the same sound.',
     ],
     tryThis: [
-      'Start with “Console — save first”: ORDER reads WRONG. Read why, RESET and begin with “Mute the outputs”.',
+      'Start with “Console”: ORDER reads WRONG. Read why, RESET and begin with “Mute the outputs”.',
       'Open DOCUMENT and check all five before you leave.',
     ],
   },

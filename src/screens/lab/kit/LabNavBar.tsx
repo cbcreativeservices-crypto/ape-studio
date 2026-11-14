@@ -122,12 +122,14 @@ export function LabHeader({
     safeGoBack(navigation);
   };
   const key = guide ? <ScreenGuideKey title={guideTitle ?? title.toUpperCase()} guide={guide} /> : null;
+  // The title never breaks inside a word (checker C4, 2026-11-14): its floor is its longest word.
+  const titleFloor = { minWidth: titleMinWidth(title) };
   const header = (
     <View style={styles.header} ref={headerRef} onTouchStart={onTouchStart}>
       <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel={backLabel}>
         <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
       </Pressable>
-      <Pressable style={styles.titleBlock} onPress={onTitlePress} accessible={false} disabled={!onTitlePress}>
+      <Pressable style={[styles.titleBlock, titleFloor]} onPress={onTitlePress} accessible={false} disabled={!onTitlePress}>
         <Text style={styles.title} numberOfLines={2}>
           {title}
         </Text>
@@ -146,6 +148,20 @@ export function LabHeader({
     </View>
   );
   return guide ? <ScreenGuideHintAnchor>{header}</ScreenGuideHintAnchor> : header;
+}
+
+/**
+ * The title block's floor (lab fix round 2026-11-14, checker C4 / F8): the
+ * width of the title's longest word, so a narrow phone drops the header keys
+ * to a second row (header flexWrap) instead of breaking "MEMBR / ANE" or
+ * "HARMONOGRAP / H". Oswald SemiBold 16 with 1.2 tracking runs ≤ 10.7 px per
+ * capital (HARMONOGRAPH measured 126 px, 12 letters); floor 80, cap 128 so a
+ * long word never pushes the keys off a 390 row (Membrane's title there is
+ * 131 wide). Short titles (GATE LAB) keep one row even at 320.
+ */
+export function titleMinWidth(title: string): number {
+  const longest = title.split(/[\s/]+/).reduce((n, w) => Math.max(n, w.length), 0);
+  return Math.min(128, Math.max(80, Math.ceil(longest * 10.7)));
 }
 
 /** The strip + the CONTENTS popup (a centered card, never a pull-down). */
@@ -339,12 +355,17 @@ export function LabNextButton({ nav: navProp, label, onPress }: { nav?: LabNav; 
 
 const styles = StyleSheet.create({
   // Header — the Digital / Foundations header, unchanged in look.
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
+  // flexWrap + a 110 pt floor on the title (lab fix round 2026-11-14, checker C4 / F8): at 320 wide a
+  // long title word (MEMBRANE, OSCILLATOR, HARMONOGRAPH) broke mid-word; now the right-hand keys drop to
+  // a second row, right-aligned (marginLeft 'auto'), and the title keeps its words. 390: one row as before.
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  titleBlock: { flexShrink: 1, flexGrow: 1 },
+  // minWidth comes from titleMinWidth(title) (its longest word, 80–128): with F8's fixed 110 the keys
+  // stayed on row 1 at 320 and HARMONOGRAPH (126 px) broke ("HARMONOGRAP / H", measured 2026-11-14).
+  titleBlock: { flexShrink: 1, flexGrow: 1, flexBasis: 0 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 'auto' },
 
   // The strip. Every control is a 44 pt box; the row caps at the reading
   // column and centres on a tablet (RackUnit's dockInner).

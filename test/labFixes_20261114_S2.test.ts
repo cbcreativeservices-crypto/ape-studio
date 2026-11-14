@@ -351,3 +351,26 @@ describe('Mic Selection end check matches the lab’s own cards', () => {
     assert.ok(q.correct.length <= Math.max(...others));
   });
 });
+
+// Checker C4 / F8 (coordinator, 2026-11-14): lab titles broke mid-word in the shared header at 320
+// ("MEMBR / ANE & …", HARMONOGRAPH). The header wraps its keys to a second row instead.
+describe('shared lab header: a title word never breaks; narrow phones drop the keys to a second row', async () => {
+  const { titleMinWidth } = await import('../src/screens/lab/kit/LabNavBar.tsx').catch(() => ({ titleMinWidth: null as null | ((t: string) => number) }));
+  const B = code('src/screens/lab/kit/LabNavBar.tsx');
+  it('header wraps, keys align right on their own row, the title block floors at its longest word', () => {
+    assert.match(B, /header: \{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 \}/);
+    assert.match(B, /titleBlock: \{ flexShrink: 1, flexGrow: 1, flexBasis: 0 \}/);
+    assert.match(B, /headerRight: \{ flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 'auto' \}/);
+    assert.match(B, /<Pressable style=\{\[styles\.titleBlock, titleFloor\]\}/);
+  });
+  it('the floor: longest word × 10.7 px, between 80 and 128 (HARMONOGRAPH measured 126 px at 16 pt Oswald)', () => {
+    // Pure copy of the rule, so the numbers are pinned even without loading RN.
+    const rule = (t: string) => Math.min(128, Math.max(80, Math.ceil(t.split(/[\s/]+/).reduce((n, w) => Math.max(n, w.length), 0) * 10.7)));
+    assert.match(B, /return Math\.min\(128, Math\.max\(80, Math\.ceil\(longest \* 10\.7\)\)\);/);
+    assert.equal(rule('HARMONOGRAPH LAB'), 128);
+    assert.equal(rule('MEMBRANE & LOUDSPEAKER'), 118);
+    assert.equal(rule('OSCILLATOR LAB'), 107);
+    assert.equal(rule('GATE LAB'), 80);
+    if (titleMinWidth) assert.equal(titleMinWidth('HARMONOGRAPH LAB'), 128);
+  });
+});

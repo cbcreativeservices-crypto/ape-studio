@@ -19,7 +19,7 @@ type Why = Readonly<Record<string, string>>;
 
 const MASTER = 'Mastering adjustment';
 const MIX = 'Mix revision';
-const INFO = 'More information from the client';
+const INFO = 'Ask the client first';
 
 /**
  * Module 4's eight-option tool bank: what each tool is FOR, as a question the
@@ -146,8 +146,8 @@ export const SCENARIO_WHY: Readonly<Record<string, Why>> = {
 
   // ── Module 5 · Workflow decisions ────────────────────────────────────────
   w1: {
-    'Master it as delivered': 'The limiter already squashed the peaks. Whatever you do next starts from a file with less room to work.',
-    'Add a second limiter': 'Limiting on top of limiting squeezes the dynamics twice. Look at what is already on the bus.',
+    'Master the file as delivered, limiter and all': 'The limiter already squashed the peaks. Whatever you do next starts from a file with less room to work.',
+    'Add a second limiter after the one on the bus': 'Limiting on top of limiting squeezes the dynamics twice. Look at what is already on the bus.',
   },
   w2: {
     'After a starting EQ is in place, so you hear the direction': 'Then your first impression is of your own EQ, not of the mix you were given.',
@@ -162,8 +162,8 @@ export const SCENARIO_WHY: Readonly<Record<string, Why>> = {
     'Normalize them all to one loudness number': 'That undoes the level decisions made between songs, and it is still not a check of the files.',
   },
   w5: {
-    'In the mix': 'A mix is one song. Which song comes first is a decision about the whole set.',
-    'By the distributor': 'The distributor delivers what you send; the order is decided before.',
+    'In the mix, by the mix engineer': 'A mix is one song. Which song comes first is a decision about the whole set.',
+    'By the distributor, at upload': 'The distributor delivers what you send; the order is decided before.',
   },
 
   // ── Module 6 · Loudness decisions ────────────────────────────────────────

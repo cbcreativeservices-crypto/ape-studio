@@ -415,11 +415,16 @@ export function AutotuneLabScreen() {
         spec={{
           question: 'Why does FAST retune sound robotic?',
           options: [
-            'Pitch JUMPS to the grid faster than any natural voice can move — and vibrato flattens with it',
-            'It adds distortion to the voice',
-            'It corrects to the wrong notes',
+            'Pitch jumps to the grid faster than a voice moves, so vibrato flattens',
+            'It adds distortion to the voice, like an overdriven preamp',
+            'It corrects every note to the wrong line on the grid',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Correction moves pitch, not tone: nothing clips. Play the melody on FAST, then SLOW, and watch the curve shapes.',
+            2: 'Each note is still pulled to its nearest line; NOTE names it. Compare how the curves reach the line on FAST and SLOW.',
+          },
           reveal:
             'A ~25 ms snap is faster than any human pitch motion, so every scoop, slide and vibrato cycle gets ironed flat the instant it starts — that instant flatness IS the robotic sound.',
           wrongHint: 'Play the melody on FAST, then SLOW, and watch the curve shapes.',
@@ -429,11 +434,16 @@ export function AutotuneLabScreen() {
         spec={{
           question: '100% correction on SLOW still leaves a short note a few cents off. Why?',
           options: [
-            'The glide takes time — the note ends before the correction finishes',
-            'SLOW mode caps correction at 90%',
-            'The singer moved',
+            'The glide takes time, and the note ends before it finishes',
+            'SLOW mode caps the correction amount at 90 percent',
+            'The singer moved off the note after it was corrected',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'AMOUNT sets how far, and it is at 100%. Read ENDS with AMOUNT at 100%, then switch SPEED to FAST.',
+            2: 'The melody is fixed; nothing moves after correction. Watch a short note’s curve: where is it when the note stops?',
+          },
           reveal:
             'Retune speed is a time constant (τ): on SLOW, τ is ~400 ms, and each τ closes most of the remaining gap to the grid. A 1.1 s note ends mid-glide — read the ENDS cell, it does the τ math live. Transparent tuning trades precision for motion.',
           wrongHint: 'Set 100% + SLOW and read ENDS — then switch to FAST.',

@@ -88,7 +88,7 @@ export function MikingHubScreen() {
                 const n = creditedCount(lp.done);
                 const all = known && n === PAGE_IDS.length;
                 const count = known ? String(n) : '—';
-                const pagesWord = known && n === 1 ? 'page' : 'pages';
+                const pagesWord = known && n === 1 ? 'module' : 'modules';
                 return (
                   <GlassTile
                     key={ls.id}

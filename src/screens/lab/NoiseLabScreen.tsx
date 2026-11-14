@@ -388,6 +388,11 @@ export function NoiseLabScreen() {
           question: 'A hiss that RISES +3 dB per octave toward the top. Which color?',
           options: ['Blue', 'Pink', 'Brown'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Pink tilts down toward the bass, −3 dB per octave. Watch which end of the line lifts as you tap the colors.',
+            2: 'Brown tilts down even more steeply, toward rumble. Tap the colors and watch which end of the line lifts.',
+          },
           reveal:
             'Rising toward the treble = BLUE (+3 dB/oct; violet is steeper at +6). Pink and brown tilt the other way — down toward the bass.',
           wrongHint: 'Watch which end of the slope chart lifts as you tap the colors.',
@@ -398,6 +403,11 @@ export function NoiseLabScreen() {
           question: 'You want the reference noise that holds equal energy in every octave. Which color?',
           options: ['Pink', 'White', 'Violet'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'White holds equal energy per hertz, so the upper octaves get more. Read the line under the WHITE chip.',
+            2: 'Violet rises steeply toward the treble, so its octaves are far from equal. Read the line under each chip.',
+          },
           reveal:
             'PINK holds equal energy per OCTAVE — matching how hearing divides the spectrum — which is why it is the mixing and system-tuning reference. White is equal per Hz and reads bright.',
           wrongHint: 'The per-color line under the chips names each one\u2019s job.',

@@ -190,7 +190,7 @@ describe('row 8 · trays', () => {
     const r = code('screens/lab/rack/RackUnit.tsx');
     assert.match(r, /\{bound\.nudges\?\.length \? null : <LaneStepKey dir=\{-1\} param=\{bound\} \/>\}/);
     assert.match(r, /\{bound\.nudges\?\.length \? null : <LaneStepKey dir=\{1\} param=\{bound\} \/>\}/);
-    assert.match(r, /onLongPress=\{\(\) => set\(dir < 0 \? 0 : 1\)\}/);
+    assert.match(r, /set\(dir < 0 \? 0 : 1\);/);
     // A fine fader moves at least 2 % per tap.
     const fine = (v: number) => `${(v * 100).toFixed(1)} %`;
     assert.ok(Math.abs(lane.laneStepValue(0.5, 1, fine) - 0.52) < 1e-9);
@@ -205,8 +205,8 @@ describe('row 8 · trays', () => {
     assert.equal(lane.laneStepValue(1, 1, fine), 1);
     assert.equal(lane.laneStepValue(0, -1, fine), 0);
     assert.equal(lane.laneStepValue(0.99, 1, fine), 1);
-    // A format that throws still steps.
-    assert.ok(Math.abs(lane.laneStepValue(0.5, 1, () => { throw new Error('x'); }) - 0.52) < 1e-9);
+    // A format that throws still steps (the 5 % fallback).
+    assert.ok(Math.abs(lane.laneStepValue(0.5, 1, () => { throw new Error('x'); }) - 0.55) < 1e-9);
     assert.match(lane.laneStepA11y('TIME', -1), /^TIME: one step down\. Hold for the lowest setting\.$/);
   });
   it('a dock label is never cut to "…": hidden until measured, two lines at 9 pt when no size fits one', () => {
@@ -352,5 +352,97 @@ describe('F2 · an open tray on a tall display folds it (DJ screen 10 left one l
     assert.match(r, /style=\{\[styles\.peekClip, folded && \{ height: peekHeight\(glassH\) \}\]\}/);
     // minWell's chrome is read only with the whole display showing.
     assert.match(r, /if \(!stage\.minWell \|\| stageCollapsed \|\| folded\) return;/);
+  });
+});
+
+// ─────────────────────────────────────────────── 11. checker C1 FAIL 1
+describe('C1 FAIL 1 · the card never grows into the room a tray fold freed', () => {
+  it('while the tray fold holds, the card keeps its unfolded room and leaves TRAY_READ_MIN of lesson', () => {
+    const r = code('screens/lab/rack/RackUnit.tsx');
+    assert.match(r, /const trayCardRoom = trayFold\s*\? Math\.max\(TRAY_MIN, Math\.min\(trayRoom - \(glassH - peekHeight\(glassH\)\), rootH - bottom - dockH - 12 - \(wellTopY \+ TRAY_READ_MIN\)\)\)\s*: trayRoom;/);
+    assert.match(r, /maxHeight=\{rootH > 0 \? trayCardRoom : undefined\} active=\{active\} \/>/);
+    // Worked through for DJ 10 at 390 x 844 (rack 760, dock 130, glass 300,
+    // well top 470 unfolded, 290 folded): the card may take at most
+    // min(unfolded room, 760 - 130 - 12 - (290 + 120)) = 208, so 120 dp of lesson stay.
+    const gain = 300 - peek.peekHeight(300);
+    assert.equal(gain, 180);
+    assert.equal(Math.max(168, Math.min(400 - gain, 760 - 130 - 12 - (290 + 120))), 208);
+  });
+});
+
+// ─────────────────────────────────────────────── 12. checker C4 FAIL-5
+describe('C4 FAIL-5 · one tap on − / + is one step, never a jump to the end', () => {
+  /** A lab lane as labs write it: value = k / n, onChange rounds, and a
+   *  format that may IGNORE its argument (prints the current state). */
+  const labLane = (n: number, k0: number, constFormat: (k: number) => string) => {
+    let k = k0;
+    return {
+      get value() { return k / n; },
+      onChange: (v: number) => { k = Math.min(n, Math.max(0, Math.round(v * n))); },
+      format: () => constFormat(k),
+      get k() { return k; },
+    };
+  };
+  const cases: [string, number, (k: number) => string][] = [
+    // BassLabScreen.tsx:503 `format: () => (fret === 0 ? 'OPEN' : `${fret} of 12`)`
+    ['Bass FRET', 12, (k) => (k === 0 ? 'OPEN' : `${k} of 12`)],
+    // SeeingFrequency.tsx:338 `format: () => (hpfHz == null ? 'OFF' : `${hpfHz} Hz`)`
+    ['EQ M1 LOW CUT', 8, (k) => (k === 0 ? 'OFF' : `${[0, 40, 60, 80, 100, 120, 160, 200, 300][k]} Hz`)],
+    // Miking a11Accordion / a12Organ pages, Tuning ch7: `format: () => …`
+    ['a Miking lane', 10, (k) => `≈ ${k * 5} cm`],
+    ['Tuning ch7', 6, () => ''],
+    ['a 4-position lane (Digital, Wave stepped choosers)', 4, (k) => `POSITION ${k}`],
+    ['a 20-position lane', 20, (k) => `${k * 5} %`],
+  ];
+  for (const [name, n, f] of cases) {
+    /** One tap as LaneStepKey runs it: each try in turn until the lab moves. */
+    const tap = (l: ReturnType<typeof labLane>, dir: -1 | 1) => {
+      const from = l.value;
+      for (const v of lane.laneStepTries(from, dir, l.format)) {
+        assert.ok(v > 0 && v < 1 || from === 0 || from === 1 || Math.abs(v - from) <= lane.LANE_MAX_WALK, 'never an end from the middle');
+        l.onChange(v);
+        if (l.value !== from) return;
+      }
+    };
+    it(`${name}: + from the bottom moves one step; from the middle one step either way, never to an end`, () => {
+      const a = labLane(n, 0, f);
+      tap(a, 1);
+      assert.equal(a.k, 1, `${name}: + from the bottom lands on the first step (was the end)`);
+      tap(a, -1);
+      assert.equal(a.k, 0, `${name}: − goes back one step`);
+      const mid = Math.floor(n / 2);
+      for (const dir of [1, -1] as const) {
+        const m = labLane(n, mid, f);
+        for (const v of lane.laneStepTries(m.value, dir, m.format)) assert.ok(v > 0 && v < 1, `${name}: no try reaches an end from the middle`);
+        tap(m, dir);
+        assert.equal(Math.abs(m.k - mid), 1, `${name}: exactly one step`);
+      }
+    });
+  }
+  it('a fader that says how many positions it has moves exactly one per tap', () => {
+    assert.ok(Math.abs(lane.laneStepValue(0, 1, () => 'x', 12) - 1 / 12) < 1e-9);
+    assert.match(read('screens/lab/rack/rackTypes.ts'), /steps\?: number;/);
+    assert.match(code('screens/lab/rack/RackUnit.tsx'), /const tries = laneStepTries\(from, dir, param\.format, param\.steps\);/);
+    // The key tries the next step only while the lab's value has not moved.
+    assert.match(code('screens/lab/rack/RackUnit.tsx'), /if \(paramRef\.current\.value === from\) attempt\(i \+ 1\);/);
+  });
+});
+
+// ─────────────────────────────────────────────── 13. F2: a fader's name read twice
+describe('F2 · a readout that repeats its fader name is not read twice', async () => {
+  const { spokenValue } = await import('../src/screens/lab/rack/spokenValue.ts');
+  it('drops a leading repeat of the label from the spoken words only', () => {
+    assert.equal(spokenValue('TRIM 1', 'TRIM 1 +9.0 dB'), '+9.0 dB');
+    assert.equal(spokenValue('TEMPO B', 'tempo b +0.00 %'), '+0.00 %');
+    assert.equal(spokenValue('TRIM', 'TRIMMER 3'), 'TRIMMER 3', 'a word that only starts the same is kept');
+    assert.equal(spokenValue('FREQ', '1.00 kHz'), '1.00 kHz');
+    assert.equal(spokenValue('', 'x'), 'x');
+  });
+  it('the dock key and the lane use it; the visible readout is unchanged', () => {
+    const r = code('screens/lab/rack/RackUnit.tsx');
+    assert.match(r, /\$\{p\.label\}: \$\{spokenOf\(p\.label, p\.format\(p\.value\)\)\}\. Tap to adjust on the fader\./);
+    const l = code('screens/lab/rack/ParamLane.tsx');
+    assert.match(l, /accessibilityLabel=\{`\$\{label\}: \$\{spokenValue\(label, readout\)\}`\}/);
+    assert.match(l, /\{readout\}\s*<\/Text>/, 'the lane still prints the readout as is');
   });
 });

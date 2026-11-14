@@ -308,7 +308,7 @@ export function SpectrumModule(p: MeterModuleProps) {
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
           { k: 'PEAK', v: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
           { k: 'LEVEL', v: `${(Math.abs(scan.peakDb) < 0.05 ? 0 : scan.peakDb).toFixed(1)} dB rel`, helpKey: 'spectrum_read' },
-          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read', caption: 'high vs low' },
+          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read', caption: 'top vs low' },
         ],
         render: (w, h) =>
           viz ? (
@@ -816,10 +816,10 @@ export function WaterfallModule(p: MeterModuleProps) {
         badge: 'SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT',
         onGuide: () => p.help('waterfall_axes'),
         bezel: [
-          { k: 'RT·125', v: `${rt.r125.toFixed(2)} s`, helpKey: 'waterfall_decay', caption: 'low-end fade' },
+          { k: 'RT·125', v: `${rt.r125.toFixed(2)} s`, helpKey: 'waterfall_decay', caption: 'bass fade' },
           { k: 'RT·4k', v: `${rt.r4k.toFixed(2)} s`, helpKey: 'waterfall_decay', caption: 'treble fade' },
           {
-            k: 'RIDGE', caption: 'rings longest',
+            k: 'RIDGE', caption: 'rings most',
             v: ringing ? fmtHz(rt.f) : 'none',
             tint: ringing ? '#ff6b5e' : '#7a7f8a',
             helpKey: 'room_ring',
@@ -875,7 +875,7 @@ export function WaterfallModule(p: MeterModuleProps) {
             { k: 'RT60 · 250 Hz', v: `${rt.r250.toFixed(2)} s` },
             { k: 'RT60 · 1 kHz', v: `${rt.r1k.toFixed(2)} s` },
             { k: 'RT60 · 4 kHz', v: `${rt.r4k.toFixed(2)} s` },
-            { k: 'RIDGE', v: ringing ? fmtHz(rt.f) : 'none', caption: 'rings longest' },
+            { k: 'RIDGE', v: ringing ? fmtHz(rt.f) : 'none', caption: 'rings most' },
             { k: 'VS NEIGHBORS', v: ringing ? `${rt.ratio.toFixed(1)}× longer` : 'even decay', caption: 'how much more' },
           ]}
         />

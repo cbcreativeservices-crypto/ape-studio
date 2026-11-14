@@ -17,7 +17,9 @@ test('each category heading sits above a glass panel of lab tiles', () => {
   // and it shows the short tileBlurb where the full blurb was cut at 3 lines.
   assert.match(s, /<LeafTile[\s\S]{0,400}onPress=\{\(\) => openLeaf\(leaf, sec\.key\)\}/);
   assert.match(s, /function LeafTile\([\s\S]{0,900}<GlassTile[\s\S]{0,200}onPress=\{onPress\}/);
-  assert.match(s, /<Text style=\{styles\.tileSub\} numberOfLines=\{3\}>\{leaf\.tileBlurb \?\? leaf\.blurb\}<\/Text>/);
+  // C1 FAIL 2 (same day): on a narrower phone the tile takes the lines it needs.
+  assert.match(s, /<Text style=\{styles\.tileSub\} numberOfLines=\{lines\.blurb\}>\{leaf\.tileBlurb \?\? leaf\.blurb\}<\/Text>/);
+  assert.match(s, /if \(winW >= 390\) return \{ name: 2, blurb: 3 \};/);
   assert.match(s, /<GlassTile[\s\S]{0,300}onPress=\{\(\) => openHub\(cat\)\}/);
 });
 

@@ -169,7 +169,7 @@ export function InputGainModule(_p: GainModuleComponentProps) {
         badge: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(preNode.level), tint: stageTint(preNode) },
-          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB`, caption: 'room to clip' },
+          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB`, caption: 'until clip' },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           { k: 'STATUS', ...stageStatus(preNode) },
         ],

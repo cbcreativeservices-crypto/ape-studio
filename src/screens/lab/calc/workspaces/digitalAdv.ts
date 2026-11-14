@@ -446,8 +446,8 @@ const FIRLEN: Workspace = {
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
           // A half sample is real here, not a rounding slip (beginner audit
           // 2026-11-14: "654.5 samples" puzzled a learner who thinks samples are
-          // whole): an even tap count puts the filter's centre between two taps.
-          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s centre falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
+          // whole): an even tap count puts the filter's center between two taps.
+          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s center falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
         ];
       },
       steps: (v) => {
@@ -480,8 +480,8 @@ const FIRLEN: Workspace = {
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
           // A half sample is real here, not a rounding slip (beginner audit
           // 2026-11-14: "654.5 samples" puzzled a learner who thinks samples are
-          // whole): an even tap count puts the filter's centre between two taps.
-          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s centre falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
+          // whole): an even tap count puts the filter's center between two taps.
+          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s center falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
         ];
       },
       steps: (v) => {

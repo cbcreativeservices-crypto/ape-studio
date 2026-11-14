@@ -2139,11 +2139,16 @@ export function HarmonicsView({
         spec={{
           question: 'You mute every EVEN harmonic. Which classic wave family is left ringing?',
           options: [
-            'The odd-only family — square and clarinet territory',
-            'A pure sine',
-            'The full sawtooth series',
+            'The odd-only family: square and clarinet',
+            'A pure sine, with one harmonic left',
+            'The full sawtooth, with every harmonic',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'A sine has only harmonic 1. Tap MUTE EVEN and count the stems that stay lit.',
+            2: 'Muting the even ones takes half of the sawtooth away. Tap MUTE EVEN and read which stems stay lit.',
+          },
           reveal:
             'Odd harmonics only (1, 3, 5…) is the hollow square/clarinet family. The saw needs BOTH families; a sine is just harmonic 1 alone.',
           wrongHint: 'Tap MUTE EVEN and read which stems stay lit.',

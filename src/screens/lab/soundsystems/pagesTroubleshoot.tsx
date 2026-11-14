@@ -193,7 +193,9 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
         <Text style={styles.symptom}>{c.symptom}</Text>
         <Body>{c.setup}</Body>
       </Card>
-      <Prompt>{probes.length === 0 ? `The symptom clears everything before ${label(c.startAt).toUpperCase()}. Start there and walk forward.` : 'Keep walking forward until the reading changes — then name the fault.'}</Prompt>
+      {/* The step line follows the walk (checker C1): it went stale once a
+          reading had changed and after the case was solved. */}
+      <Prompt>{probes.length === 0 ? `The symptom clears everything before ${label(c.startAt).toUpperCase()}. Start there and walk forward.` : solved ? 'Solved. Read WHY, THE FIX and THE WALK below.' : reading && stateOf(reading) !== 'ok' ? 'This reading is not healthy. Open FAULT and name what you think changed here, or probe one more station to be sure.' : 'Keep walking forward until the reading changes — then name the fault.'}</Prompt>
       {backwards ? <VerdictLine ok={false} warn>You jumped backward. The bench still records the answer, but not as a forward walk.</VerdictLine> : null}
       {reading && last ? (
         <Card tone={stateOf(reading) === 'ok' ? 'ok' : 'warn'}>

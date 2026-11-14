@@ -52,8 +52,8 @@ import { useScreenGuideWork } from '../../../features/lab/screenGuide/introHold'
 // bezel captions (row 7), the lane's − / + keys (row 8).
 import { SoundOffLine, soundOffLineText } from './silentPath';
 import { captionsIdFor, markCaptionsSeen, useCaptionsUnseen } from './bezelFirstSight';
-import { laneStepA11y, laneStepValue } from './laneStep';
-import { peekHeight, shouldPeek, shouldTrayFold } from './peekRules';
+import { laneStepA11y, laneStepTries } from './laneStep';
+import { TRAY_READ_MIN, peekHeight, shouldPeek, shouldTrayFold } from './peekRules';
 
 /** Tablet glass height as a share of the window height, per declared size
  *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
@@ -492,6 +492,13 @@ export function RackUnit({
   // (`hideInFull`, owner 2026-10-06: "useless buttons should just be
   // hidden" — a view toggle over a full screen that shows both views).
   const shownIn = (inFull: boolean) => params.filter((p) => !(inFull && (p.kind === 'toggle' || p.kind === 'options') && p.hideInFull));
+  // A readout that repeats the key's name is read aloud without the repeat
+  // ("TRIM 1: TRIM 1 +9.0 dB"); the screen is unchanged. Same rule as
+  // spokenValue.ts, inline because the dock's code is also run from source.
+  const spokenOf = (label: string, text: string) => {
+    const l = label.trim();
+    return l && text.toLowerCase().startsWith(`${l.toLowerCase()} `) ? text.slice(l.length + 1).trimStart() : text;
+  };
   const dockFor = (inFull: boolean) => (
     <View style={styles.dock}>
       {/* Tablet (owner 2026-09-29): the faceplate stays full width but the
@@ -600,8 +607,8 @@ export function RackUnit({
                   onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={
                     p.chooser
-                      ? `${p.label}: ${p.format(p.value)}. Tap to choose, then adjust on the fader.`
-                      : `${p.label}: ${p.format(p.value)}. Tap to adjust on the fader.`
+                      ? `${p.label}: ${spokenOf(p.label, p.format(p.value))}. Tap to choose, then adjust on the fader.`
+                      : `${p.label}: ${spokenOf(p.label, p.format(p.value))}. Tap to adjust on the fader.`
                   }
                 />
               );
@@ -730,6 +737,15 @@ export function RackUnit({
   // everywhere else it starts at the stage block, as before.
   const trayTop = rootH > 0 ? Math.max(0, Math.min(stageBlockH, rootH - bottom - dockH - 12 - TRAY_MIN)) : stageBlockH;
   const trayRoom = rootH - trayTop - dockH - bottom - 12;
+  // A TRAY FOLD MUST LEAVE THE LESSON ITS ROOM (checker C1, FAIL 1, DJ screen
+  // 10): the fold freed the display's room and the card grew straight into it
+  // (DockTray holds its tallest height up to `maxHeight`), hiding every line
+  // again. While the tray fold holds, the card keeps at most the room it had
+  // UNFOLDED, and never so much that under TRAY_READ_MIN of lesson shows
+  // above it; never under TRAY_MIN (its title and two rows).
+  const trayCardRoom = trayFold
+    ? Math.max(TRAY_MIN, Math.min(trayRoom - (glassH - peekHeight(glassH)), rootH - bottom - dockH - 12 - (wellTopY + TRAY_READ_MIN)))
+    : trayRoom;
   // A tray chip's own long-press (a reference photo — LabPhotoLightbox, a
   // sibling Modal) leaves full screen first, like `help` above.
   const trayRouted = useMemo(
@@ -748,7 +764,7 @@ export function RackUnit({
   // well. The lesson stays readable and live around the card; a tap on the
   // well closes the tray (and still reaches what was tapped), and the well's
   // foot gets the card's height so any line can be scrolled above it.
-  const trayNode = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} passThrough onCardLayout={setInlineTrayH} maxHeight={rootH > 0 ? trayRoom : undefined} active={active} />;
+  const trayNode = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} passThrough onCardLayout={setInlineTrayH} maxHeight={rootH > 0 ? trayCardRoom : undefined} active={active} />;
   // In full screen the drawing is what sits behind the tray: no wash.
   // …and its card height is reported so the full-screen view can lift the
   // dock ABOVE the open tray: the learner keeps the lane and keys while
@@ -1006,18 +1022,45 @@ function mouseToo(down?: (e: { nativeEvent: { pageX: number; pageY: number } }) 
   return { onMouseDown: down, onMouseUp: up } as object;
 }
 
-/** One − / + key at the lane's end (row 8, laneStep.ts). */
+/** One − / + key at the lane's end (row 8, laneStep.ts). A tap tries the
+ *  steps laneStepTries gives, a beat apart, until the lab's value moves (a
+ *  stepped lab snaps a too-small step back): one position, never an end
+ *  (checker C4 FAIL-5). Hold = that end. */
 function LaneStepKey({ dir, param }: { dir: -1 | 1; param: Extract<DockParam, { kind: 'fader' }> }) {
+  const paramRef = useRef(param);
+  paramRef.current = param;
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
   const set = (v: number) => {
-    if (v === param.value) return;
+    const p = paramRef.current;
+    if (v === p.value) return;
+    p.onChange(v);
+    p.onCommit?.(v);
+  };
+  const tap = () => {
+    if (timer.current) clearTimeout(timer.current);
+    const from = param.value;
+    const tries = laneStepTries(from, dir, param.format, param.steps);
     if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
-    param.onChange(v);
-    param.onCommit?.(v);
+    const attempt = (i: number) => {
+      set(tries[i]);
+      if (i + 1 >= tries.length) return;
+      timer.current = setTimeout(() => {
+        timer.current = null;
+        if (paramRef.current.value === from) attempt(i + 1);
+      }, LANE_RETRY_MS);
+    };
+    attempt(0);
   };
   return (
     <Pressable
-      onPress={() => set(laneStepValue(param.value, dir, param.format))}
-      onLongPress={() => set(dir < 0 ? 0 : 1)}
+      onPress={tap}
+      onLongPress={() => {
+        if (timer.current) clearTimeout(timer.current);
+        set(dir < 0 ? 0 : 1);
+      }}
       delayLongPress={450}
       hitSlop={{ top: 4, bottom: 4 }}
       style={({ pressed }) => [styles.laneStep, pressed && styles.nudgePressed]}
@@ -1028,6 +1071,8 @@ function LaneStepKey({ dir, param }: { dir: -1 | 1; param: Extract<DockParam, { 
     </Pressable>
   );
 }
+/** How long a lane step waits for the lab to take a try before the next. */
+const LANE_RETRY_MS = 60;
 
 const styles = StyleSheet.create({
   root: { flex: 1 },

@@ -25,3 +25,35 @@ export function addMiss(misses: readonly number[], picked: number, correctIdx: n
 export function showRevealAfterMisses(misses: readonly number[]): boolean {
   return misses.length >= 2;
 }
+
+/**
+ * The card's presentation order, SEEDED by the question and its options
+ * (checker C3 O-2, 2026-11-14: on a first visit the options re-shuffled by
+ * themselves seconds after GOT IT, because a remount re-ran Math.random). The
+ * same question always shows the same order, so a remount can never reorder
+ * the options under a finger or wipe the sense of a pick; different questions
+ * still get different orders, so the right answer is not parked in one slot.
+ */
+export function seededOrder(question: string, options: readonly string[]): number[] {
+  let h = 2166136261 >>> 0; // FNV-1a over the question and its options
+  const text = `${question}\u0000${options.join('\u0000')}`;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  // mulberry32 from that seed
+  let a = h || 1;
+  const rnd = () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const idx = options.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx;
+}

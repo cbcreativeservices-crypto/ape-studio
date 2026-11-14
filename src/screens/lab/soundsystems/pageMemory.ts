@@ -84,5 +84,6 @@ export function goalsLeftLine(scope: string): string | undefined {
   const labels = liveMemory().get(`${scope}${LEFT}`) as readonly string[] | undefined;
   if (!labels || labels.length === 0) return undefined;
   const shown = labels.slice(0, 2).join(' · ');
-  return `Left: ${shown}${labels.length > 2 ? `, + ${labels.length - 2} more` : ''}`;
+  // Ends with a full stop: the end row reads its detail, then "Opens it." (checker C1).
+  return `Left: ${shown}${labels.length > 2 ? `, + ${labels.length - 2} more` : ''}.`;
 }

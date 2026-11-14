@@ -323,7 +323,8 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.ok(flags.every(Boolean), 'a page lost manualDone — NEXT would count it; update the END guide');
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     assert.match(KIT, /useMarkWhen\(all, \(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/);
-    assert.match(KIT, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; checker C2): the rule says goals must be met in ONE visit.
+    assert.match(KIT, /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
     // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs
     // found and do obvious (my decision is not required) fixes as you

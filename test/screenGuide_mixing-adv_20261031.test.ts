@@ -350,7 +350,8 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.equal(defs.length, 20);
     for (const d of defs) assert.match(d, /manualDone: true/, d);
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
-    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; checker C2): the rule says goals must be met in ONE visit.
+    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
     // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; lab fix round phase 2, F4): the rule is said once (HOW A PAGE COUNTS), each row has its own goals.
     assert.ok(ET.includes('with its own goals. HOW A PAGE COUNTS says once how a page is credited'));

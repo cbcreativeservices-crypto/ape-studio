@@ -2489,6 +2489,17 @@ export function RoomSceneView(p: RoomSceneProps) {
             const oy = geo.y0 + o.y * geo.pxPerM;
             return { l: ox - glyphR, t: oy - glyphR, r: ox + glyphR, b: oy + glyphR };
           });
+          // Text already drawn on the room counts as taken too (checker C3 F-1:
+          // "YOU (drag)" sat on "RING GAP > λ" in Room Builder): the RING GAP
+          // plate, the probe labels and the module's own object labels.
+          const textBox = (l: number, t: number, text: string) => ({ l, t, r: l + text.length * 10 * ts * 0.62 + 6 * ts, b: t + 15 * ts });
+          if (ringGapWide) placed.push(textBox(geo.x0 + 3 * ts, geo.y1 - 17 * ts, 'RING GAP > λ'));
+          for (const pr of p.probes ?? []) placed.push(textBox(geo.x0 + pr.x * geo.pxPerM + 9 * ts, geo.y0 + pr.y * geo.pxPerM - 7 * ts, pr.label));
+          for (const lb of p.labels ?? []) {
+            const lx = geo.x0 + lb.x * geo.pxPerM;
+            const ly = geo.y0 + lb.y * geo.pxPerM;
+            placed.push(lb.side === 'center' ? { l: lx - 60 * ts, t: ly - 7 * ts, r: lx + 60 * ts, b: ly + 8 * ts } : textBox(lx, ly - 7 * ts, lb.text));
+          }
           const place = (xm: number, ym: number, text: string, color: string, key: string) => {
             const gx = geo.x0 + xm * geo.pxPerM;
             const gy = geo.y0 + ym * geo.pxPerM;

@@ -83,7 +83,7 @@ export function PathChooser({ journey }: { journey: JourneyProps }) {
     <View style={{ gap: 8 }}>
       <Text style={styles.q}>How would you like to start?</Text>
       {opt('new', `New to miking ${articleFor(noun.one)} ${noun.one}`,'Start at the beginning: where the sound leaves, the starting setups, then the microphones.')}
-      {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. It shows where you stand; every page is open either way. Each page earns its credit when you answer all of its questions.')}
+      {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. It shows where you stand; every module is open either way. Each module earns its credit when you answer all of its questions.')}
     </View>
   );
 }
@@ -180,7 +180,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
   const graded = answered === items.length ? res ?? gradeQuickCheck(items, picks) : null;
   return (
     <View style={{ gap: 10 }}>
-      <Text style={styles.note}>{`QUICK CHECK · ${items.length} questions on the first two pages · your FIRST TRY is the one that counts · to pass: ${QUICK_CHECK_PASS} of ${items.length}, with the safety question right. It opens the activities; it does not credit any page.`}</Text>
+      <Text style={styles.note}>{`QUICK CHECK · ${items.length} questions on the first two modules · your FIRST TRY is the one that counts · to pass: ${QUICK_CHECK_PASS} of ${items.length}, with the safety question right. It opens the activities; it does not credit any module.`}</Text>
       {items.map((it, i) => (
         <QuickItem
           key={it.id}
@@ -200,7 +200,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
           }}
         />
       ))}
-      {graded ? <QuickResult res={graded} journey={journey} /> : <Text style={styles.small}>{`${answered} of ${items.length} answered${answered > 0 ? ' · this is your first try — leaving the page keeps your answers' : ''}.`}</Text>}
+      {graded ? <QuickResult res={graded} journey={journey} /> : <Text style={styles.small}>{`${answered} of ${items.length} answered${answered > 0 ? ' · this is your first try — leaving this module keeps your answers' : ''}.`}</Text>}
     </View>
   );
 }
@@ -213,7 +213,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
       </Text>
       {res.pass ? (
         <>
-          <Text style={styles.resultText}>Go to any page. The check alone does not count toward any page: each page earns its credit when you answer all of its questions.</Text>
+          <Text style={styles.resultText}>Go to any module. The check alone does not count toward any module: each module earns its credit when you answer all of its questions.</Text>
           <View style={styles.row}>
             <Go label={`GO TO ${journey.titleOf('microphone').toUpperCase()}`} onPress={() => journey.goPage('microphone')} />
             <Go label={`GO TO ${journey.titleOf('placement').toUpperCase()}`} onPress={() => journey.goPage('placement')} />
@@ -221,7 +221,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
         </>
       ) : (
         <>
-          <Text style={styles.resultText}>{`Every page is open. Worth a look first: ${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
+          <Text style={styles.resultText}>{`Every module is open. Worth a look first: ${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two modules'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
           <View style={styles.row}>
             {(res.misses.length ? res.misses : FOUNDATION_PAGES).map((p) => (
               <Go key={p} label={`OPEN ${journey.titleOf(p).toUpperCase()}`} onPress={() => journey.goPage(p, p === 'meet' ? 1 : 0)} />
@@ -246,7 +246,7 @@ export function FoundationsCard({ journey, pageTitle }: { journey: JourneyProps;
   return (
     <View style={{ gap: 12 }}>
       <Text style={styles.bridgeHead}>BUILT ON THE FIRST TWO PAGES</Text>
-      <Text style={styles.resultText}>{`“${pageTitle}” puts a microphone to work. It is built on what the first two pages show: where the sound leaves, and the starting setups. Its activity opens once those are done — or once you pass the quick check. NEXT and CONTENTS still go anywhere.`}</Text>
+      <Text style={styles.resultText}>{`“${pageTitle}” puts a microphone to work. It is built on what the first two modules show: where the sound leaves, and the starting setups. Its activity opens once those are done — or once you pass the quick check. NEXT and CONTENTS still go anywhere.`}</Text>
       {FOUNDATION_PAGES.map((p) => {
         const ok = journey.met.has(p);
         return (

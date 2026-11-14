@@ -605,11 +605,16 @@ export function BassLabScreen() {
         spec={{
           question: 'Fretting at the 7th fret and touching the node at 1/3 both raise the pitch. What\u2019s the difference?',
           options: [
-            'Fretting SHORTENS the string (new fundamental); the harmonic keeps full length but forces 3 lobes',
-            'Nothing — both make the same note the same way',
-            'The harmonic is just quieter',
+            'Fretting shortens the string; the touch keeps full length but forces 3 lobes',
+            'Nothing: both make the same note in the same way on the string',
+            'The harmonic is the same note, only quieter and a little duller',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Switch MODE between FRETTED and NATURAL HARMONICS and watch the string: the lobes are not the same.',
+            2: 'Loudness is not what the picture shows changing. Switch MODE and compare the vibrating length and the lobes.',
+          },
           reveal:
             'The fret moves the nut: a shorter string with its own full harmonic series. The node touch keeps the whole string ringing but kills every vibration mode (harmonic) WITHOUT a node there — only H3, H6, H9 survive. Same pitch class, different physics, different tone.',
           wrongHint: 'Switch MODE and watch the lobes: 1 big lobe vs 3 equal ones.',
@@ -619,11 +624,16 @@ export function BassLabScreen() {
         spec={{
           question: 'The 5th harmonic\u2019s readout shows \u2248G\u266F3 \u221214\u00A2. Why the \u2248?',
           options: [
-            '5 \u00D7 the fundamental lands 14 cents flat of the equal-tempered note',
-            'The string is out of tune',
-            'The display rounds badly',
+            '5 × the fundamental lands 14 cents flat of the tempered note',
+            'The string is slightly out of tune with the rest of the bass',
+            'The display rounds the frequency badly that high up',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'The model string is exactly in tune: its harmonics are exact multiples. Compare 5 × 41.2 Hz with the tempered G♯3.',
+            2: 'FREQ shows the exact value. Compare 5 × 41.2 = 206.0 Hz with the tempered G♯3 at 207.65 Hz.',
+          },
           reveal:
             'Harmonics are EXACT integer multiples — it is the piano\u2019s equal-tempered grid that bends notes to fit 12 keys. H5 (a pure major third) sits 14\u00A2 flat of the tempered third: the string is honest, the keyboard compromises.',
           wrongHint: 'Compare 5 \u00D7 41.2 = 206.0 Hz with the tempered G\u266F3 at 207.65 Hz.',

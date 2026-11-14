@@ -406,6 +406,11 @@ export function OscillatorLabScreen() {
           question: 'The display shows ONLY odd harmonics, dying away fast (1/n²). Which wave?',
           options: ['Triangle', 'Square', 'Sawtooth'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'The square is odd-only too, but its bars fall slowly (1/n). Compare the bar heights in the WAVE tray.',
+            2: 'The sawtooth has every harmonic, the even ones included. Look for the empty even bars.',
+          },
           reveal:
             'Odd harmonics + a steep 1/n² rolloff = TRIANGLE — smooth and flute-like. The square also skips the evens but its harmonics fall slowly (1/n), which is why it buzzes.',
           wrongHint: 'A/B TRIANGLE and SQUARE in the WAVE tray and compare how fast the bars shrink.',
@@ -416,6 +421,11 @@ export function OscillatorLabScreen() {
           question: 'Every harmonic present, each 1/n of the fundamental. Which wave?',
           options: ['Sawtooth', 'Sine', 'Triangle'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'A sine has exactly one bar. Tap SINE in the WAVE tray and count.',
+            2: 'The triangle skips the even harmonics. Look for gaps among the bars.',
+          },
           reveal:
             'The full harmonic series falling 1/n is the SAWTOOTH — the buzziest and brightest of the classics, and the favorite raw material for filters. A sine has exactly one bar.',
           wrongHint: 'Tap SAW and count the bars.',

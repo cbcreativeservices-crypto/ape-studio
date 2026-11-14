@@ -20,9 +20,11 @@ export const SPEECH_CHECK_WHY: Readonly<Record<string, Readonly<Record<string, s
     'Nothing changes until you raise the gain': 'Distance changes the level before any gain knob does. Watch the Direct voice bar on The Distance Effect at 12" and 6".',
   },
   voicing: {
-    'Z is louder because the breath pushes harder': 'Say S and Z at the same loudness and they still differ. Put a finger on your throat while you say each one.',
-    'Z moves the tongue further back toward the soft palate': 'The question says the tongue and lips do not change. Feel your throat as you say S, then Z.',
-    'Z rounds the lips slightly to lower the hiss': 'The lips stay the same for both. Put a finger on your throat and say each one.',
+    // The explanation says "Put a finger on your throat", so these point elsewhere (checker C4:
+    // a second miss printed the same advice twice, in the reason and in the explanation).
+    'Z is louder because the breath pushes harder': 'Say S and Z at the same loudness and they still sound different. What else could change?',
+    'Z moves the tongue further back toward the soft palate': 'The question says the tongue and lips stay the same. What is left that could differ?',
+    'Z rounds the lips slightly to lower the hiss': 'The lips stay the same for both, as the question says. What is left that could differ?',
   },
   vowel: {
     'The pitch — AH is always sung on a lower note than EE': 'Both singers hold the same note, so pitch cannot be the difference. Look at Vowels & Formants.',
@@ -40,7 +42,7 @@ export const SPEECH_CHECK_WHY: Readonly<Record<string, Readonly<Record<string, s
     'The jaw, by closing far enough to force the air upward': 'The jaw opens and closes the mouth; it does not steer air into the nose. Look at The Speech System.',
   },
   sibilance: {
-    'It captures the pitch of the S more accurately': 'An S has no pitch to capture: it is a hiss. Look at where its energy sits on Why Sibilance Exists.',
+    'It captures the pitch of the S more accurately': 'Say a long S: can you hum its note? Look at where its energy sits on Why Sibilance Exists.',
     'Condensers respond faster, so every S starts more sharply': 'Speed changes the edge of a sound, not how much hiss there is. Compare where an S lives with what the mic lifts.',
     'Its proximity effect boosts the S at close range': 'Proximity effect works on the lows, and an S lives far up the spectrum. Look at Why Sibilance Exists.',
   },

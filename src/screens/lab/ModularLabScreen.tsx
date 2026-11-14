@@ -680,6 +680,11 @@ export function ModularLabScreen() {
           question: 'The loudness pulses steadily but the pitch holds. Which routing is patched?',
           options: ['LFO → AMP (tremolo)', 'LFO → PITCH (vibrato)', 'ENV → CUTOFF'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Vibrato wobbles the pitch, and here the pitch holds. Which module sets the loudness?',
+            2: 'ENV → CUTOFF changes brightness once per note, not a steady pulse in loudness. Follow the blue LFO cable.',
+          },
           reveal:
             'A slow modulator into the AMPLIFIER wobbles volume — tremolo. Into PITCH it wobbles frequency — vibrato. Same LFO, different destination: the destination IS the effect.',
           wrongHint: 'Patch LFO → AMP and watch which cable lights.',
@@ -688,8 +693,13 @@ export function ModularLabScreen() {
       <CheckQuestion
         spec={{
           question: 'A note starts bright and mellows as it decays. What creates that?',
-          options: ['The envelope routed to the filter CUTOFF', 'A faster LFO', 'More resonance'],
+          options: ['The envelope routed to the filter CUTOFF', 'A faster LFO wobbling the filter', 'More resonance at the filter cutoff'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'An LFO repeats on its own clock; it does not follow each note’s decay. Look at the ENV cable in PLUCK.',
+            2: 'Resonance adds a peak at the cutoff but does not move it over time. Try MOD → PLUCK with ENV→VCF.',
+          },
           reveal:
             'ENV → CUTOFF sweeps the filter open at the attack and closes it through the decay — brightness that follows the note\u2019s shape. That one routing is most of what people mean by "synth bass".',
           wrongHint: 'In MOD pick PLUCK and ENV→VCF +100%, turn SEQ ON, then press ▶. Or tap the ACID BASS patch idea.',

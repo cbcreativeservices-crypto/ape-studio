@@ -169,7 +169,7 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
               setB((d) => ({ keyLock: !d.keyLock }));
             },
           },
-          { kind: 'group', id: 'key', label: 'KEY', valueLabel: `${(B.keyShift ?? 0) > 0 ? '+' : ''}${B.keyShift ?? 0} st`, valueA11y: `key shift ${B.keyShift ?? 0} semitones, tempo range ${range} percent`, render: () => <KeyTray onShift={() => (staged.current = keyStagedAfter(staged.current, 'shiftPick'))} /> },
+          { kind: 'group', id: 'key', label: 'KEY', valueLabel: `${(B.keyShift ?? 0) > 0 ? '+' : ''}${B.keyShift ?? 0} st`, valueA11y: `key shift ${B.keyShift ?? 0} ${Math.abs(B.keyShift ?? 0) === 1 ? 'semitone' : 'semitones'}, tempo range ${range} percent`, render: () => <KeyTray onShift={() => (staged.current = keyStagedAfter(staged.current, 'shiftPick'))} /> },
           boothKey(booth, tr, ['A', 'B'], () => (
             <ChipRow head="LISTEN TO DECK B ALONE?" chips={[{ label: 'CH1 DOWN', on: getBooth().ch[1].fader < 0.02, onPress: () => updateBooth((x) => ({ ...x, ch: { ...x.ch, 1: { ...x.ch[1], fader: 0 } } })) }, { label: 'CH1 UP', on: getBooth().ch[1].fader > 0.5, onPress: () => updateBooth((x) => ({ ...x, ch: { ...x.ch, 1: { ...x.ch[1], fader: 0.85 } } })) }]} />
           )),

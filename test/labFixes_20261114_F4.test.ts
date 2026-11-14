@@ -353,3 +353,44 @@ describe('Phase 2 · Mixing Guides end screen: the rule said once', () => {
     assert.match(s, /units=\{MIXING_GUIDE_INDEX\.map\(\(g\) => \(\{ id: g\.id, label: g\.title \}\)\)\}/);
   });
 });
+
+// ══ CHECKER C2 (2026-11-14): balanced options, and the one-visit rule ════════
+
+describe('Checker C2 · no right answer stands out by length', () => {
+  it('Beginning + Advanced Mixing checks: the right option is at most 1.4× the longest wrong one', () => {
+    let n = 0;
+    for (const f of ['pagesA', 'pagesB', 'pagesC', 'pagesD', 'pagesAdvA', 'pagesAdvB', 'pagesAdvC', 'pagesAdvD']) {
+      const s = read(`${MX}/${f}.tsx`);
+      for (const m of s.matchAll(/options=\{\[([\s\S]*?)\]\}\s*correct=\{(\d)\}/g)) {
+        n++;
+        const opts = [...m[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((x) => x[1]);
+        const c = Number(m[2]);
+        const other = Math.max(...opts.filter((_, i) => i !== c).map((o) => o.length));
+        assert.ok(opts[c].length <= 1.4 * other, `${f}: "${opts[c]}" (${opts[c].length}) vs ${other}`);
+      }
+    }
+    assert.equal(n, 34, 'every check was measured');
+  });
+
+  it('Mastering practice cards: the right option is at most 1.3× the longest wrong one', async () => {
+    const C = await import(`../${MA}/masteringContent.ts`);
+    for (const s of C.ALL_SCENARIOS as readonly { id: string; options: readonly string[]; correct: string }[]) {
+      const other = Math.max(...s.options.filter((o) => o !== s.correct).map((o) => o.length));
+      assert.ok(s.correct.length <= 1.3 * other, `${s.id}: "${s.correct}" vs ${other}`);
+    }
+  });
+
+  it('a recorded answer is keyed by card id (true/false), never by option text or index, so rewording an option keeps it', () => {
+    const p = code(`${MA}/masteringProgress.ts`);
+    assert.match(p, /answers: Record<string, boolean>;/);
+    assert.match(code(`${MA}/kit.tsx`), /const picked = pickedHere \?\? \(recorded === true \? s\.correct : null\);/);
+  });
+});
+
+describe('Checker C2 · HOW A PAGE COUNTS says goals are met in ONE visit', () => {
+  it('the mixing labs’ shared line names the one-visit rule', () => {
+    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
+    // …which is true: the chips live in a ref that a remount starts empty.
+    assert.match(code(`${MX}/kit.tsx`), /const seen = useRef<boolean\[\]>\(goals\.map\(\(\) => ctx\.isDone\)\);/);
+  });
+});

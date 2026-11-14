@@ -191,3 +191,32 @@ describe('5. round 2: the build hooks carry every fix, so a rebuild cannot undo 
     assert.ok(all.has('International Alliance of Theatrical Stage Employees (IATSE)'));
   });
 });
+
+describe('6. round 3: on-screen check follow-ups', () => {
+  // Coordinator follow-up 2026-11-14 (on-screen check C2) to the owner's "assign an agent in the
+  // background to work on this". Owner rule: "we must be clear when other education — degrees,
+  // certifications, etc. — is required for careers. always. every time."
+  const idx = JSON.parse(read('src/data/careerIndex.json')) as { enums: { preparation: string[] }; careers: { t: string; prep: number }[] };
+  const prep = (t: string) => idx.enums.preparation[idx.careers.find((c) => c.t === t)!.prep];
+
+  it('no preparation line repeats "typical" under the TYPICAL PREPARATION label', () => {
+    for (const p of idx.enums.preparation) assert.doesNotMatch(p, /\btypical(ly)?\b/i, p);
+  });
+  it('librarians: the master’s is stated as required by most employers (ALA), not "typically required"', () => {
+    for (const t of ['Music Librarian', 'Music Collections Librarian', 'Music Reference Librarian', 'Digital Music Librarian', 'Audio Cataloging Librarian', 'Audio Metadata Librarian', 'Music Metadata Librarian']) {
+      assert.match(prep(t), /^Master's in library and information science \((MLS\/)?MLIS\) required by most employers for /, t);
+    }
+    // the degree is still disclosed as a degree
+    assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: prep('Music Librarian') }), 'DEGREE REQUIRED');
+    assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: prep('Audio Archivist') }), 'DEGREE REQUIRED');
+  });
+  it('START HERE never draws the "this topic" stand-in; a missing name gets one plain line and a retry', () => {
+    const fam = read('src/screens/careerfinder/CareerFamilyScreen.tsx');
+    assert.match(fam, /const name = topicRowName\(gs\);\s*if \(!name\) return null;/);
+    assert.match(fam, /return n === 'this topic' && !OFFICIAL_TOPIC_NAMES\[gs\] \? null : n;/);
+    assert.match(fam, /fetchV3CurriculumStrict\(\)\.then\(/);
+    assert.doesNotMatch(fam, /fetchV3Curriculum\(\)/);
+    assert.match(fam, /Some topic names couldn’t be loaded\. Check your connection, then try again\./);
+    assert.match(fam, /<TextLink label="Try again" onPress=\{\(\) => setNamesTry\(\(n\) => n \+ 1\)\} muted \/>/);
+  });
+});

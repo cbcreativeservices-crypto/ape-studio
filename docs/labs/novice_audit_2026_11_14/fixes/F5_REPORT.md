@@ -137,3 +137,16 @@ None.
 - The Playground's sound-off line and its check reason (covered by tests).
 - The second-miss rule on a Wave or Mic card (it is the same component as the Foundations card I saw).
 - Captions on the 2nd visit, when they should hide (S3's mechanism).
+
+---
+
+# Checker C3 findings in my files (2026-11-14): both fixed
+
+| # | Finding | Cause (file:line) | Fix | Test | Seen on screen |
+|---|---|---|---|---|---|
+| F-1 | Wave 16: "YOU (drag)" over "RING GAP > λ" | vizWave.tsx tag placer: `placed` held only the object glyphs, not text already drawn on the room | Before any tag is placed, `placed` now also holds the RING GAP plate, every probe label and every module label (`textBox`) | labFixes_20261114_F5 "C3 F-1" | Yes, Wave 16 at 390x844, FREQ 500 Hz: YOU (drag) at y 231-242, RING GAP at y 269-280, apart |
+| O-2 | The CHECK YOURSELF options reordered by themselves 0.5-4 s after GOT IT (Gain M3, M5) | `foundations/bits.tsx` shuffled with `Math.random` in a `useState` initializer, so ANY remount reordered the options. I could not make the card remount on a fresh load (watched below), and nothing in the Gain host, ScreenGuideHost or RackUnit re-parents the well. The likely trigger is the dev server's hot reload: C3's run overlapped my phase-2 edits to this very file, and adding a `useState` (the `misses` list) makes React Fast Refresh reset the component's state and re-run the shuffle. That happens in the web preview only, never in a learner build | The order is now SEEDED by the question and its options (`checkWords.seededOrder`, FNV-1a + mulberry32): the same question always shows the same order, so no remount of any kind can reorder it. Different questions still get different orders (the right answer is not parked in one slot) | labFixes_20261114_F5 "C3 O-2" (same order on every mount; a full permutation; the right answer lands in all 3 slots across questions; no Math.random) | Yes, on my own tab with the intro-seen ids removed (below): Gain `follow` (M3) watched 48 s from load through GOT IT, and Gain `fadervsgain` (M5) 10 s after GOT IT. The card node never left the page, and the order "The clipping alrea… / You didn't pull th… / The fader is broke…" stayed the same |
+
+**Intro-seen ids I removed** (from `ape:intro:screenIntroCards` in localStorage on 8142): `iar6v34` (Gain "Follow the Signal") and `i167vqn8` (Gain "Gain vs. Fader"). localStorage is shared by every tab on 8142, so any agent opening those two modules in that window would also have seen their intro card. Both ids were written back when I tapped GOT IT (checked: present again, 202 entries as before).
+
+Parse-checked with esbuild; the 8142 bundle answers 200. F5 tests 100/100; F7 45/45. F6 57/58: its one failure is its own AWG refusal test (calc, F6's F-3), not my files. No tsc.

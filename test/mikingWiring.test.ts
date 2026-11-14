@@ -158,7 +158,9 @@ describe('the host and its pages', () => {
     assert.match(host, /useLabNav\(/);
     assert.match(host, /<LabEndScreen\b/);
     assert.match(host, /mode="progress"/);
-    assert.match(host, /noun="page"/);
+    // Changed on purpose (checker C4, lab fix round 2026-11-14): one unit word, as the strip says.
+    // Owner, 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.match(host, /noun="module"/);
     assert.match(host, /START OVER \(PRACTICE\)/);
     assert.match(host, /<ProgressUnreadableNote\b/);
     assert.match(host, /setMikingSaveBlocked\(!canSave\)/);

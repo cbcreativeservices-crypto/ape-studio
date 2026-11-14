@@ -636,7 +636,11 @@ export function PeakMeterView(p: {
       if (L.pk[i] >= -0.05 || R.pk[i] >= -0.05) ov = 1;
       over[i] = ov;
     }
-    const crest = crestDb(renderSignal(sig, n, 1).map((v) => v * gain));
+    // CREST reads the SAME 1024-sample render as the bezel's CREST cell
+    // (modMeterA PeakModule: crestDb(processed(renderSignal(signal), gainDb))),
+    // so the picture and the readout never disagree (C3 O-1 2026-11-14: the
+    // 2048-sample render read "CREST 15.9 dB" beside the bezel's 16.1).
+    const crest = crestDb(renderSignal(sig).map((v) => v * gain));
     return { envL: L.env, envR: R.env, holdL: L.hold, holdR: R.hold, over, crest };
   }, [sig, gain]);
 

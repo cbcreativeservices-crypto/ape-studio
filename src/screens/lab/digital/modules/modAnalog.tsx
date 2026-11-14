@@ -797,14 +797,14 @@ export function SamplingModule(p: DigitalModuleProps) {
           // RATE, never FS (beginner audit 2026-11-14): FS means FULL SCALE on
           // module 1 ("0.75 FS"); the sample rate is RATE, as on the dock key.
           {
-            k: 'RATE', caption: 'samples a sec',
+            k: 'RATE', caption: 'a second',
             ...hzCell(fs, rateMode.kind === 'abs' ? '' : ` (${rateMode.mult}×f)`),
             vA11y: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)`,
             helpKey: 'sample_rate',
           },
           { k: 'INPUT', ...hzCell(f), vA11y: fmtHz(f), helpKey: 'nyquist' },
-          { k: 'NYQUIST', ...hzCell(nyq), vA11y: fmtHz(nyq), helpKey: 'nyquist', caption: 'highest kept' },
-          { k: 'READS AS', ...hzCell(alias), vA11y: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing', caption: 'what you get' },
+          { k: 'NYQUIST', ...hzCell(nyq), vA11y: fmtHz(nyq), helpKey: 'nyquist', caption: 'top freq' },
+          { k: 'READS AS', ...hzCell(alias), vA11y: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing', caption: 'heard as' },
         ],
         render: (w, h) =>
           viz ? (

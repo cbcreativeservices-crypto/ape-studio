@@ -333,7 +333,9 @@ describe('2. every hand-written name is on the screen it describes', () => {
     const RACK = code('src/screens/lab/rack/RackUnit.tsx');
     for (const n of ['⤢  FULL SCREEN', '▴  HIDE DISPLAY', 'Shows the drawing at full size with zoom']) assert.ok(RACK.includes(n), n);
     const S = code(LESSON_SCREEN);
-    for (const n of ['`Page ${pageIdx + 1} goal: `', 'TO EARN CREDIT · ', 'This page is credited.']) assert.ok(S.includes(n), n);
+    // Changed on purpose (checker C4, lab fix round 2026-11-14): one unit word, module. Owner,
+    // 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    for (const n of ['`Module ${pageIdx + 1} goal: `', 'TO EARN CREDIT · ', 'This module is credited.']) assert.ok(S.includes(n), n);
     const J = code(`${MIKING}/engine/journeyKit.tsx`);
     for (const n of ['BUILT ON THE FIRST TWO PAGES', '`I ALREADY MIC ${journey.noun.many.toUpperCase()} · QUICK CHECK`', 'label="OPEN"', "journey.goPage('meet', 0)", "journey.choosePath('experienced')"]) assert.ok(J.includes(n), n);
     const E = code('src/screens/lab/kit/LabEndScreen.tsx') + code('src/screens/lab/kit/labEnd.ts');

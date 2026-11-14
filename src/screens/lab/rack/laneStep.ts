@@ -21,6 +21,12 @@
 
 /** The least a tap moves the lane (2 % of its travel). */
 export const LANE_MIN_STEP = 0.02;
+/** One tap when the readout cannot be trusted: 5 % of the travel, the same
+ *  step as the lane's own accessibility increment (ParamLane). */
+export const LANE_FALLBACK_STEP = 0.05;
+/** The farthest one tap may walk looking for the next readout value. A lane
+ *  whose readout does not change within this is treated as untrusted. */
+export const LANE_MAX_WALK = 0.34;
 /** How finely the walk looks for the next readout value. */
 const WALK = 0.005;
 
@@ -35,19 +41,58 @@ function said(format: ((v: number) => string) | undefined, v: number): string | 
   }
 }
 
-/** The lane position one step from `value` towards `dir` (−1 / +1). */
-export function laneStepValue(value: number, dir: -1 | 1, format?: (v: number) => string): number {
+/**
+ * ONE TAP IS ONE STEP, NEVER A JUMP TO THE END (checker C4, FAIL-5, 2026-11-14:
+ * Bass FRET went OPEN → "12 of 12" on one tap). Many labs' `format` ignores
+ * its argument and prints the CURRENT state (`format: () => …`), so walking
+ * "until the readout changes" never stopped before the end. Now:
+ *   • `steps` (the fader's own count of positions) wins: one tap = 1 / steps;
+ *   • a readout that reads the same at 0, ½, 1 and here is UNTRUSTED: one tap
+ *     = LANE_FALLBACK_STEP (a stepped lab with ≤ 20 positions still lands on
+ *     its next one);
+ *   • otherwise the walk looks for the next readout value no farther than
+ *     LANE_MAX_WALK; not found there = LANE_FALLBACK_STEP.
+ * Holding the key is what jumps to an end (RackUnit LaneStepKey).
+ */
+export function laneStepValue(value: number, dir: -1 | 1, format?: (v: number) => string, steps?: number): number {
   const cur = clamp01(value);
-  let next = clamp01(cur + dir * LANE_MIN_STEP);
+  if (steps && Number.isFinite(steps) && steps >= 1) return clamp01(cur + dir / steps);
   const now = said(format, cur);
-  if (now == null) return next;
-  // Walk on until the readout changes, or the end is reached.
-  for (let i = 0; i < 1 / WALK + 2; i++) {
+  const fallback = clamp01(cur + dir * LANE_FALLBACK_STEP);
+  if (now == null) return fallback;
+  const lo = said(format, 0);
+  const mid = said(format, 0.5);
+  const hi = said(format, 1);
+  if (lo === now && mid === now && hi === now) return fallback; // the format ignores its value
+  let next = clamp01(cur + dir * LANE_MIN_STEP);
+  while (Math.abs(next - cur) <= LANE_MAX_WALK + 1e-9) {
     if (said(format, next) !== now) return next;
-    if (next === 0 || next === 1) return next;
+    if (next === 0 || next === 1) break;
     next = clamp01(next + dir * WALK);
   }
-  return next;
+  return fallback;
+}
+/**
+ * The values one tap TRIES, in order (C4 FAIL-5). A stepped lab rounds the
+ * lane to its positions, so a small step can snap straight back (a 6-position
+ * lane ignores 5 %). The key applies the first; if the lab's value has not
+ * moved a beat later it applies the next, each twice as far, never farther
+ * than LANE_MAX_WALK from where the tap began: the smallest move the lab
+ * accepts, which is at most one of its positions. With `steps` there is one.
+ */
+export function laneStepTries(value: number, dir: -1 | 1, format?: (v: number) => string, steps?: number): number[] {
+  const cur = clamp01(value);
+  const first = laneStepValue(cur, dir, format, steps);
+  if (steps && Number.isFinite(steps) && steps >= 1) return [first];
+  const out = [first];
+  let d = Math.abs(first - cur);
+  while (d > 0 && d * 2 <= LANE_MAX_WALK + 1e-9) {
+    d *= 2;
+    const v = clamp01(cur + dir * d);
+    if (v === out[out.length - 1]) break;
+    out.push(v);
+  }
+  return out;
 }
 
 /** Spoken name of a step key. */

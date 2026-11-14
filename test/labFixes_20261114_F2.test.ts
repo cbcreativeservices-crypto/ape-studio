@@ -500,3 +500,26 @@ describe('Phase 2 · bezel captions, the silent learner, the accuracy chip', () 
     assert.match(read(`${DJ}/DJSystemsLabScreen.tsx`), /accuracyVariant="about"/);
   });
 });
+
+/* ══ checker C1 follow-up (2026-11-14) ═════════════════════════════════════ */
+
+describe('Checker C1 · small items', () => {
+  it('an end row’s "Left: …" line ends with a full stop (it is read before "Opens it.")', () => {
+    assert.match(read(`${SS}/pageMemory.ts`), /\$\{labels\.length > 2 \? `, \+ \$\{labels\.length - 2\} more` : ''\}\.`;/);
+  });
+  it('OPERATE: the STEP buttons name the device only, never FIRST / LAST / save first', async () => {
+    const op = await import('../src/features/soundsystems/operate.ts');
+    for (const s of [...op.POWER_UP, ...op.POWER_DOWN]) assert.doesNotMatch(s.short, /FIRST|LAST|first|last/, s.short);
+  });
+  it('DJ 11: the GRID tray no longer states the check’s answer', () => {
+    assert.ok(!read(`${DJ}/pages/p11Grid.tsx`).includes('the music’s structure finds the one, not the loudest kick'));
+  });
+  it('DJ 14: "1 semitone", not "1 semitones"', () => {
+    assert.match(read(`${DJ}/pages/p14Key.tsx`), /Math\.abs\(B\.keyShift \?\? 0\) === 1 \? 'semitone' : 'semitones'/);
+  });
+  it('TROUBLESHOOT: the step line follows the walk (changed reading, solved)', () => {
+    const t = read(`${SS}/pagesTroubleshoot.tsx`);
+    assert.ok(t.includes("solved ? 'Solved. Read WHY, THE FIX and THE WALK below.'"));
+    assert.ok(t.includes("stateOf(reading) !== 'ok' ? 'This reading is not healthy."));
+  });
+});

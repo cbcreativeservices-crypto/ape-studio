@@ -129,7 +129,7 @@ export function Mod3Bias() {
             rig: singlePic,
             bezel: [
               { k: 'REGION', v: single.region === 'cutoff' ? 'CUTOFF' : single.region === 'saturation' ? 'SATUR.' : 'LINEAR', tint: single.region === 'linear' ? colors.green : colors.gold },
-              { k: 'IDLE', v: `${Math.round(single.idleCurrent * 100)}%`, tint: AMP_COLORS.pos, caption: 'resting draw' },
+              { k: 'IDLE', v: `${Math.round(single.idleCurrent * 100)}%`, tint: AMP_COLORS.pos, caption: 'at rest' },
               ...rigStatusBezel(singlePic, ['supply', 'heat']),
             ],
             params: [faderParam({ id: 'bias', label: 'BIAS', value: bias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setBias })],
@@ -218,7 +218,7 @@ export function Mod3Bias() {
               // OVERBIAS, not HOT: the handoff IS clean there — the stage is
               // over-biased, and the HEAT cell beside it already says hot.
               { k: 'HANDOFF', v: taskSolved ? 'CLEAN' : tooHot ? 'OVERBIAS' : 'NOTCH', tint: taskSolved ? colors.green : tooHot ? colors.gold : colors.red },
-              { k: 'IDLE', v: `${idlePct}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos, caption: 'resting draw' },
+              { k: 'IDLE', v: `${idlePct}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos, caption: 'at rest' },
               ...rigStatusBezel(ppPic, ['supply', 'heat']),
             ],
             params: [faderParam({ id: 'ppbias', label: 'BIAS', value: ppBias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setPpBias })],

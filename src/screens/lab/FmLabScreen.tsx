@@ -413,6 +413,11 @@ export function FmLabScreen() {
             'The highest ratio available',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Whole-number ratios put the sidebands on a harmonic series, so the tone keeps a clear pitch. A/B RATIO 1 against 1.41 ✳.',
+            2: 'A high ratio spreads the sticks wide, but a whole number still lands them in tune. Watch where the sticks land.',
+          },
           reveal:
             'Integer ratios — and simple fractions like 0.5 or 3.5 — drop the sidebands ON a harmonic series, so the tone keeps a pitch. An irrational ratio like √2 drops them BETWEEN the harmonics: nothing lines up, and that inharmonic spray is the bell.',
           wrongHint: 'A/B ratio 1 against 1.41 ✳ and watch where the sticks land.',
@@ -423,6 +428,11 @@ export function FmLabScreen() {
           question: 'The sidebands sit at equal spacing around the carrier. What sets that spacing?',
           options: ['The modulator frequency', 'The index', 'The carrier frequency'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Ride the INDEX fader: the sticks multiply but never move. INDEX sets how many, not where.',
+            2: 'The carrier is the center the sidebands sit around, not the gap between them. Change RATIO and watch the gaps.',
+          },
           reveal:
             'Sidebands land at fc ± k·fm — the MODULATOR\u2019s frequency is the step size. The index decides how MANY are audible (how far the energy sprays), not where they sit.',
           wrongHint: 'Ride the INDEX fader: the sticks multiply but never move.',

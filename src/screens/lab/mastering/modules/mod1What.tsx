@@ -153,7 +153,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
         {
           key: 'practice', title: 'Mix issue or mastering issue?', kind: 'PRACTICE', layout: 'read',
           body: (
-            <ScenarioDeck scenarios={TRIAGE_SCENARIOS} keepOrder onAnswered={onAnswered} intro="Each situation has a likely next step: a mastering adjustment, a mix revision, or more information from the client. Decide, then read why." />
+            <ScenarioDeck scenarios={TRIAGE_SCENARIOS} keepOrder onAnswered={onAnswered} intro="Each situation has a likely next step: a mastering adjustment, a mix revision, or asking the client first. Decide, then read why." />
           ),
         },
         {

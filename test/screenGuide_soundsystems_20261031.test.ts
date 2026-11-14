@@ -204,11 +204,11 @@ describe('2. each guide quotes its screen’s real names', () => {
     'Mute groups, solo and direct outs': { exact: ['MAIN MIX — WHO IS STILL LIVE', 'BAND MUTE', 'MAIN HEARS', 'STILL LIVE', 'CHECK', 'ALL MICS', 'MC · PB'] },
     'Matrix outputs': { exact: ['MX 2 · FRONT FILLS', 'MX 3 · LOBBY', 'MX 4 · RECORDING', 'FILLS TAKE', 'LOBBY TAKES', 'REC TAKES', 'MC → AUX 7', 'MATRICES', 'CONSOLE', 'AUX 7', 'MAIN'] },
     'Output patching': { exact: ['SOCKET', 'BUS', 'FED FROM', 'PATCHED', 'THE STAGEBOX’S LINE OUTPUTS', 'Main L', 'Main R', 'Aux 1', 'Aux 2', 'Aux 6', 'Matrix 2', 'Matrix 3', 'Wedge 1 amplifier'] },
-    'Power-up sequence': { exact: ['STEP', 'RESET', 'STEPS', 'LAST', 'ORDER', 'LIT', 'WRONG', '● ON', 'YOUR ORDER', 'Verify routing — amps OFF', 'Amps and powered boxes — LAST'] },
+    'Power-up sequence': { exact: ['STEP', 'RESET', 'STEPS', 'LAST', 'ORDER', 'LIT', 'WRONG', '● ON', 'YOUR ORDER', 'Verify routing — amps OFF', 'Amps and powered boxes'] }, // checker C1 2026-11-14 (owner: "Begin fixing all bugs found and do obvious (my decision is not required) fixes"): the STEP buttons no longer say FIRST / LAST
     'Line check': { exact: ['LINE', 'PROBE', 'MARK OK', 'MARK FAULT', 'STAGEBOX LED', 'CH METER', 'MARKED', 'LIT', 'DARK', 'MOVING', 'FLAT', 'PROC OUT', 'RIGHT FEED', 'SIGNAL', 'NONE', 'YES', 'NO', 'OUTPUTS FIRST, THEN EVERY INPUT', 'Ch 5 · Keys DI', 'Ch 7 · Backing vocal', 'Read it again'] },
     'Establish gain structure': { exact: ['PREAMP', 'WHICH STAGE', 'FADER', 'MAIN', 'PROC IN', 'PROC OUT', 'AMP', 'AT SPEAKER', 'ABOVE NOISE', 'HEADROOM', 'VERDICT', 'CLIP'], upper: ['CLIPPING', 'OK'] },
     'Ring-out and soundcheck': { exact: ['WEDGE', 'SEND', 'POSITION', 'NOTCH', 'In the live angle', 'In the null', 'W1 SINGER', 'W2 GUITAR', 'W3 BASS', 'W4 DRUMS', 'Wedge 3 · Bass', 'Wedge 1 · Singer'] },
-    'Shutdown and documentation': { exact: ['STEP', 'DOCUMENT', 'RESET', 'STEPS', 'LAST', 'ORDER', 'DARK', '○ OFF', 'YOUR ORDER', 'Console — save first', 'Mute the outputs', 'WRONG'] },
+    'Shutdown and documentation': { exact: ['STEP', 'DOCUMENT', 'RESET', 'STEPS', 'LAST', 'ORDER', 'DARK', '○ OFF', 'YOUR ORDER', 'Console', 'Mute the outputs', 'WRONG'] },
     'How the bench works': { exact: ['NO SIGNAL', 'OK', '✓✓', 'NEXT'] },
   };
   for (const g of FAULT_GROUPS as readonly { title: string }[]) NAMES[g.title] = { exact: [g.title, 'CASE', 'PROBE', 'FAULT', 'RESET', 'BENCH', 'PROBED', 'READS', 'GRADE', '✓✓'] };

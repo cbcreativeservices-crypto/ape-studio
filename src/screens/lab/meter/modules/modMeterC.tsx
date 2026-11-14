@@ -214,7 +214,7 @@ export function PhaseModule(p: MeterModuleProps) {
     { k: 'CORR', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`, tint: zoneColor, helpKey: 'phase_meter', caption: 'L-R alike?' },
     { k: 'WIDTH', v: `${Math.round(widthV * 100)} %`, helpKey: 'stereo_width' },
     { k: 'PHASE', v: `${phaseDeg}°`, helpKey: 'phase_meter' },
-    { k: 'MONO FOLD', v: `${foldDb >= 0 ? '+' : ''}${foldDb.toFixed(1)} dB`, tint: zoneColor, helpKey: 'phase_meter', flex: 1.15, caption: 'level in mono' },
+    { k: 'MONO FOLD', v: `${foldDb >= 0 ? '+' : ''}${foldDb.toFixed(1)} dB`, tint: zoneColor, helpKey: 'phase_meter', flex: 1.15, caption: 'mono level' },
   ];
 
   return (

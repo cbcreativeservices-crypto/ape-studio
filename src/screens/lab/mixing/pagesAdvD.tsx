@@ -107,7 +107,7 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="A client demands the mix “hit −8 LUFS because streaming”. The professionally honest answer:"
-        options={['Comply — platform numbers are hard requirements for mixes', 'Explain that platforms normalize playback — deliver dynamics, plus a loud reference if they insist', 'Refuse to discuss loudness targets with clients at all', 'Quietly deliver whatever loudness you personally prefer']}
+        options={['Comply — platform numbers are hard requirements for mixes', 'Explain normalization: deliver dynamics, plus a loud reference', 'Refuse to discuss loudness targets with clients at all', 'Quietly deliver whatever loudness you personally prefer']}
         correct={1}
         explain="On normalized playback, streaming services turn masters down to their own loudness — a crushed −8 LUFS master plays at about the SAME volume as a dynamic one near the target, minus the life. Measurement informs; it does not conduct."
         wrong={[
@@ -160,7 +160,7 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="The label asks for “the stems”. Before bouncing anything, the professional question is:"
-        options={['Which DAW should the bounces come from', 'WHICH stem set — how many, split how, with or without the bus processing and FX?', 'What loudness the stems should each hit', 'Whether MP3 stems are acceptable']}
+        options={['Which DAW and which session the bounces should come from', 'WHICH stem set: how many, split how, with or without bus FX?', 'What loudness each of the stems should hit', 'Whether MP3 stems are acceptable for delivery']}
         correct={1}
         explain="“Stems” names a CATEGORY, not a list. Five music-video stems, eight remix stems, and a TV-mix split are all “stems” — bounce before agreeing on the set and you will bounce twice."
         wrong={[
@@ -298,7 +298,7 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Your stems sum back 1.5 dB louder and “thicker” than the approved mix. The most likely cause:"
-        options={['WAV files simply gain a little level when copied around', 'The mix-bus processing ran on each stem alone — each stem gets compressed less', 'Stems always sound a bit different; nobody expects a null', 'The sample rate silently changed during the stem bounce']}
+        options={['WAV files simply gain a little level when copied around', 'The mix-bus chain ran on each stem alone, compressing each one less', 'Stems always sound a bit different; nobody expects a null', 'The sample rate silently changed during the stem bounce']}
         correct={1}
         explain="Bounce each stem through the bus chain and every stem meets the compressor alone — less level across the same threshold, less gain reduction — so the stems sum hotter and denser than the mix that was compressed as a whole. Decide the policy, write it in the delivery notes."
         wrong={[
@@ -369,7 +369,7 @@ function PageDelivery({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="A year later: “small lyric change, can you recall the mix?” What decided, a year AGO, whether this is an hour or a disaster?"
-        options={['How good the mix itself was', 'The archive: session + samples + documented chain, stored complete', 'Which DAW version was fashionable', 'Whether the label paid on time']}
+        options={['How good the mix itself was, back when it was approved', 'A complete archive: session, samples and documented chain', 'Which DAW version was in fashion that year', 'Whether the label paid its invoice on time']}
         correct={1}
         explain="Recalls are won at delivery time. A complete archive — session, every sample it references, the notes that explain it — turns “a year later” into “open, change, bounce”."
         wrong={[

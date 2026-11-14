@@ -118,15 +118,20 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   // A START FROM pick: the type first (its body changes the collision), then
   // the setup's pose and its reference surface.
   const [fromId, setFromId] = useState<string | null>(null);
+  // The rig versions a START pick produces (its type change and its jump):
+  // given poses, never counted (see CREDIT below).
+  const givenVersion = useRef(-1);
   const wanted = fromId ? setups.find((s) => s.id === fromId) ?? null : null;
   useEffect(() => {
     if (!wanted) return;
     const m = wanted.mics[0];
     if (rig.mics[0].typeId !== m.typeId) {
+      givenVersion.current = rig.version + 1;
       rig.setType('A', m.typeId);
       return;
     }
     rig.setPattern('A', m.pattern);
+    givenVersion.current = rig.version + 1;
     rig.jumpTo('A', m.pose, m.zoneId ?? undefined);
     if (rig.surfaceId !== m.surfaceId) rig.setSurfaceId(m.surfaceId);
     setFromId(null);
@@ -238,7 +243,12 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const lastVersion = useRef(-1);
   useEffect(() => {
     if (rig.version === lastVersion.current) return;
+    const given = lastVersion.current < 0 || rig.version <= givenVersion.current;
     lastVersion.current = rig.version;
+    // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+    // the pose the studio opens at, and a START pick, are GIVEN, never rested;
+    // only the learner's own moves (drag, fader, ZONE, SETUP) count.
+    if (given) return;
     if (r.zoneId && !r.blocked) setVisited((prev) => (prev.has(r.zoneId!) ? prev : new Set([...prev, r.zoneId!])));
   }, [rig.version, r.zoneId, r.blocked]);
   useEffect(() => {

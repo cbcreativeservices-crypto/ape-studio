@@ -118,7 +118,12 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const lastVersion = useRef(-1);
   useEffect(() => {
     if (rig.version === lastVersion.current) return;
+    const opening = lastVersion.current < 0;
     lastVersion.current = rig.version;
+    // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+    // the pose the studio opens at is GIVEN, never rested; only the learner's
+    // own moves (drag, fader, ZONE, SETUP) count.
+    if (opening) return;
     if (r.zoneId && !r.blocked) setVisited((prev) => (prev.has(r.zoneId!) ? prev : new Set([...prev, r.zoneId!])));
   }, [rig.version, r.zoneId, r.blocked]);
   useEffect(() => {

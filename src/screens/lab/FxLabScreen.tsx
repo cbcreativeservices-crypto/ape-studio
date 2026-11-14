@@ -118,14 +118,30 @@ const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · N
  * drawn (the compressor drawing's GR PEAK, worked out from the settings). It
  * never tells a learner to "update the app" — the developer line it replaced.
  */
-function grMeterCaption(running: boolean, fxReady: boolean, kind: 'comp' | 'gate' | 'limiter', soundOff = false): string {
+function grMeterCaption(
+  running: boolean,
+  fxReady: boolean,
+  kind: 'comp' | 'gate' | 'limiter',
+  soundOff = false,
+  /** The GR cell is showing the MODEL value right now (sound off + a steady
+   *  source: BezelItem.silent swaps it in). The words must say the same. */
+  modelShown = false,
+): string {
   if (running) return 'Measured from the live audio — watch how fast it grabs and how it lets go.';
-  // Sound off (phase 2, S3): on a steady tone the GR readout shows the MODEL
-  // value the settings are designed to give, so say so.
-  if (soundOff && fxReady) {
-    return 'Sound is off, so nothing is measured. On a steady tone the GR readout shows MODEL: the reduction your settings are designed to give. With sound on, ▶ measures the real one here.';
-  }
   const drawn = kind === 'comp' ? ' On CLICK, the GR PEAK in the drawing is worked out from your settings, so it shows even while stopped.' : '';
+  const measure = fxReady
+    ? ' With sound on, ▶ measures the real one here.'
+    : Platform.OS === 'web'
+      ? ' In the phone app, with sound on, ▶ measures the real one.'
+      : '';
+  // Sound off (phase 2, S3; checker C4 FAIL-1): the words follow what the GR
+  // cell shows in EVERY state — MODEL on a steady tone, "— dB" otherwise.
+  if (soundOff && modelShown) {
+    return `Sound is off, so nothing is measured: on this steady tone the GR readout shows MODEL, the reduction your settings are designed to give.${measure}`;
+  }
+  if (soundOff) {
+    return `Sound is off, so nothing is measured and GR reads — dB: a click or noise has no steady level to model.${measure}${drawn}`;
+  }
   if (fxReady) {
     return `Tap ▶ to measure the real reduction: this meter and the GR readout on the display then follow the live audio. Stopped, GR reads — dB.${drawn}`;
   }
@@ -858,7 +874,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               label={config.pollGr === 'gate' ? 'GATE' : config.pollGr === 'limiter' ? 'LIMITER' : 'COMPRESSOR'}
             />
           ) : null}
-          <Text style={styles.caption}>{grMeterCaption(running, fxReady, config.pollGr, soundOff)}</Text>
+          <Text style={styles.caption}>{grMeterCaption(running, fxReady, config.pollGr, soundOff, grModelDb != null)}</Text>
         </View>
       ) : null}
 
