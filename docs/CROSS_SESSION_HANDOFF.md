@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 00:15 · ccode · 8aeb2847
+changed: Stage Plot round 3 (owner "build the remaining held items too"): sub-snake returns, L/R and split sidefills, box size labels, venue split choice; phone labels never over a neighbour, MOVE THEM INSIDE, round side-name choice, export preview fits; German timpani, narrow choir build, Bina 23B harmonium, singer count printed [MD:D60]
+affects other side: nothing on the server. App-only Stage Plot round 3 (remaining held items), not published; schema stays 2 [MD:D60].
+needs: nothing now; the Comp A rows for tr_game_audio / tr_stage_plot stay on D60 (f) [MD:D60].
+
+
 ### 2026-11-13 22:53 · ccode · a3a61354
 changed: Stage Plot round 2 (owner "Yes, build them all"): box returns per mix, sub-snakes, digital box console; wings with a thrust; phone names inside the stage; choir of any size, Leslie size, 5 new symbols [MD:D60]
 affects other side: nothing on the server. App-only Stage Plot round 2 (box returns, sub-snakes, wings with thrust, phone labels, choir size, 5 symbols), not published; schema stays 2 [MD:D60].
