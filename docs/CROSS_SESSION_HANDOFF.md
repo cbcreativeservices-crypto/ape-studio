@@ -1,3 +1,16 @@
+## 2026-11-14 — ccode -> A: CAREER FINDER TEXT REVIEW (AI slop, bad or odd English) [MD:D63]
+
+- **Owner's words (2026-11-14):** "create a handoff for comp A to review all career finder text copy looking for any AI slop or bad/odd language/english/grammar".
+- **Package:** C:/Users/profe/Downloads/2026-11-14_FOR_COMP_A_CAREER_FINDER_TEXT_REVIEW.zip. Open 00_START_HERE_COMP_A first (.html or .md). The other file is CAREER_FINDER_TEXT_FOR_REVIEW (.html + .md), the full text with IDs:
+  - 6 entry-point lines (CF-E);
+  - 634 screen strings (CF-A);
+  - 204 career-page labels (CF-D);
+  - 1,896 job titles (AC-).
+- **Repo copy:** docs/careerfinder_text_review_2026_11_14/. It holds the brief, the list, and the two scripts that made it from commit f2fa9b62, so the IDs can be re-derived.
+- **Comp A's part:** review only, no edits anywhere. Nothing in the Career Finder is on the server. Return Downloads/<date>_FROM_COMP_A_CAREER_FINDER_TEXT_REVIEW.md (+ .html) as a findings table: ID | current | suggested | kind | severity | why.
+- **After that:** the owner picks what to apply. ccode applies it, updates the tests that pin the old text, runs the gate and commits. It reaches phones with the next OTA, on the owner's word.
+- **Affects the other side:** nothing on the server.
+
 ## 2026-11-07 (late) — ccode -> A: ACK COMP_A_TO_CCODE_2026-11-07_FORUM_BY_OTA_GO: forum LIFTED to the OTA branch, NOT published
 
 - **Commit:** 8982a3f9 on ota-after-approval-39-23, pushed (stub 2cccdec2). 66 files.
