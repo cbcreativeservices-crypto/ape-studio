@@ -54,7 +54,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'M07a', labId: 'drums', title: 'Concert Bass Drum', subtitle: 'Orchestral bass drum on its stand: main pickup, one spot, never move the drum', status: 'ready' },
   { id: 'M07b', labId: 'drums', title: 'Concert Snare', subtitle: 'Orchestra and band snare: no spot, one spot, or a bottom mic', status: 'ready' },
   { id: 'M08', labId: 'drums', title: 'Headed Tambourine', subtitle: 'Head and jingles: held, shaken or mounted — one mic that covers the motion', status: 'ready' },
-  { id: 'SPK', labId: 'drums', title: 'Amplified speakers & Leslie', subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside', status: 'ready' },
+  { id: 'SPK', labId: 'drums', title: 'Amplified Speakers and Leslie', subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside', status: 'ready' },
   { id: 'M12', labId: 'drums', title: 'Tonbak', subtitle: 'The Persian goblet drum: one head, many strokes', status: 'ready' },
   { id: 'M13', labId: 'drums', title: 'Tabla', subtitle: 'Two drums, one instrument: the dayan and the bayan', status: 'ready' },
   // Lab 4 (strings), in catalogue order: C01, C02, C03, C04, C05A–C, C06a/b, C07, C08, C09a–c, C10, C11, C12, C13, C14, C15.
@@ -116,7 +116,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'A06', labId: 'winds', title: 'Flute', subtitle: 'Metal or wooden — identify the design, then close, behind the head, in front, or a headset', status: 'ready' },
   { id: 'A07', labId: 'winds', title: 'Piccolo', subtitle: 'Half a flute, an octave up: the flute’s starting points, the ensemble first, your ears protected', status: 'ready' },
   { id: 'A08a', labId: 'winds', title: 'Clarinet', subtitle: 'The B♭ clarinet: facing the holes a third up from the bell, farther back, or a clip', status: 'ready' },
-  { id: 'A08b', labId: 'winds', title: 'Bass clarinet', subtitle: 'Bell and holes together: in front, the body-and-bell blend, the bell to compare, or a clip', status: 'ready' },
+  { id: 'A08b', labId: 'winds', title: 'Bass Clarinet', subtitle: 'Bell and holes together: in front, the body-and-bell blend, the bell to compare, or a clip', status: 'ready' },
   { id: 'A09a', labId: 'winds', title: 'Oboe', subtitle: 'Facing the holes a third up from the bell, a foot away, near the bell, or a clip', status: 'ready' },
   { id: 'A09b', labId: 'winds', title: 'Bassoon', subtitle: 'A third of the way down from the bell, a foot from the holes, high on the right, or a clip', status: 'ready' },
   { id: 'A10', labId: 'winds', title: 'Harmonica', subtitle: 'Acoustic on a stand, cupped through an amp, or the amp’s speaker — three paths', status: 'ready' },

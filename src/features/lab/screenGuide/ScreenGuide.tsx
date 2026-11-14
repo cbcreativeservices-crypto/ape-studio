@@ -75,7 +75,7 @@ import {
   type MutableRefObject,
   type ReactNode,
 } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal, rootModalHoldMs, useModalHostOpen } from '../../../components/DimModal';
@@ -85,6 +85,7 @@ import { areOverlaysSuppressed, useOverlaysSuppressed } from '../../dev/popupSup
 import {
   finishCarriedLabTerm,
   labTermSignalId,
+  POPUP_ARM_MS,
   popupArming,
   setIntroCardOwed,
   setLabTermCarrier,
@@ -104,7 +105,7 @@ import {
   useScreenIntroSeen,
 } from './screenIntroCardStore';
 import { measureGuideRegion, measureView } from './guideRegions';
-import { IntroWorkContext, introWorkAction } from './introHold';
+import { IntroWorkContext, introPresentMode, introWorkAction } from './introHold';
 import { onScreen, placeGuideStep, placeIntroCard, unionRect, type GuideLayout } from './placement';
 import {
   SCREEN_GUIDE_HINT_TEXT,
@@ -401,6 +402,23 @@ function useArmGuard(): <A extends unknown[]>(fn: (...a: A) => void) => (...a: A
   );
 }
 
+/**
+ * LATE ARRIVALS LET TAPS THROUGH (checker K4, 2026-11-14: on Envelope's
+ * WHAT'S LEFT the end-guide card arrived after paint and took the first tap
+ * on a row). For its first POPUP_ARM_MS an in-screen card does not take
+ * touches at all (`pointerEvents="none"`): a tap the learner aimed at the
+ * page — or one already under way when the card appeared — reaches the page,
+ * not the card. Then the card is live.
+ */
+function useArmedTouches(): boolean {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setArmed(true), POPUP_ARM_MS);
+    return () => clearTimeout(t);
+  }, []);
+  return armed;
+}
+
 type IntroOffer = { owner: number; id: string; title: string; guide: ScreenGuide; intro: ScreenIntro };
 
 /**
@@ -604,7 +622,13 @@ export function ScreenGuideHost({
     if (lastReset.current === resetKey) return;
     lastReset.current = resetKey;
     setShown(null);
+    setInline(null);
   }, [resetKey]);
+  // STEP INTROS (phase 3, owner 2026-11-14; introHold.ts introPresentMode):
+  // the first card this host presents on a visit is the popup; every later
+  // step's card shows the same words INLINE (`inline`), never a popup again.
+  const poppedRef = useRef(false);
+  const [inline, setInline] = useState<{ id: string; title: string; guide: ScreenGuide; intro: ScreenIntro } | null>(null);
   const close = useCallback(() => {
     claimIntro(claimRef.current);
     const t = termRef.current;
@@ -640,6 +664,11 @@ export function ScreenGuideHost({
     if (workAction === 'close') close();
     else if (workAction === 'drop' && owedId) handle(owedId);
   }, [workAction, owedId, close, handle]);
+  // The inline note rides where a tray opens: work under way closes it (its
+  // words stay one tap away, under ⓘ › ‹ INTRO).
+  useEffect(() => {
+    if (working) setInline(null);
+  }, [working]);
   const introOf = shown?.mode === 'intro' ? shown.guide.intro : undefined;
   return (
     <IntroWorkContext.Provider value={reportWork}>
@@ -654,7 +683,27 @@ export function ScreenGuideHost({
           carry={backRef == null}
           onPresent={(term) => {
             handle(offer.id);
+            if (introPresentMode(poppedRef.current, term != null) === 'inline') {
+              // A later step: the same words, inline. Shown = read (the dev
+              // bypass writes nothing); the full card is under ⓘ › ‹ INTRO.
+              claimIntro(offer.id);
+              setInline({ id: offer.id, title: offer.title, guide: offer.guide, intro: offer.intro });
+              return;
+            }
+            poppedRef.current = true;
             setShown({ title: offer.title, guide: offer.guide, mode: 'intro', claim: offer.id, term: term ?? undefined });
+          }}
+        />
+      ) : null}
+      {inline && !shown && !screenHold && !working ? (
+        <ScreenIntroInline
+          key={inline.id}
+          intro={inline.intro}
+          onClose={() => setInline(null)}
+          onMore={() => {
+            void markScreenGuideHintSeen();
+            setInline(null);
+            setShown({ title: inline.title, guide: inline.guide, mode: 'intro' });
           }}
         />
       ) : null}
@@ -713,6 +762,7 @@ function ScreenIntroOverlay({
   // Never takes a tap in its first moment (POPUP_ARM_MS); BACK is not a
   // stray tap and closes at once.
   const guard = useArmGuard();
+  const armedTouches = useArmedTouches();
   const onClose = useMemo(() => guard(closeNow), [guard, closeNow]);
   const onExplain = useMemo(() => guard(explainNow), [guard, explainNow]);
   const insets = useSafeAreaInsets();
@@ -764,7 +814,14 @@ function ScreenIntroOverlay({
     />
   );
   return (
-    <View ref={rootRef} collapsable={false} style={styles.overlay} pointerEvents="box-none" onLayout={() => void measure()} accessibilityViewIsModal={!keep}>
+    <View
+      ref={rootRef}
+      collapsable={false}
+      style={styles.overlay}
+      pointerEvents={armedTouches ? 'box-none' : 'none'}
+      onLayout={() => void measure()}
+      accessibilityViewIsModal={!keep}
+    >
       {place
         ? keep
           ? [
@@ -785,6 +842,53 @@ function ScreenIntroOverlay({
           <IntroCard title={title} intro={intro} term={term} onClose={onClose} onExplain={onExplain} maxHeight={place.slot.height} />
         </View>
       ) : null}
+    </View>
+  );
+}
+
+/**
+ * A later step's intro, INLINE (phase 3, owner 2026-11-14: "intro popups on
+ * the first step only, then the same text inline"). The same two lines as the
+ * card, in a compact note IN THE SCREEN'S FLOW, below everything else the
+ * host holds: it takes its own room at the foot of the screen, so the page
+ * above (the well, its NEXT and GO DEEPER, the dock) shrinks to fit and
+ * nothing is ever covered or blocked (checkers K2 and K4, 2026-11-14: the
+ * first, absolute version covered the well's foot buttons). Never taller than
+ * INLINE_MAX_SHARE of the window; its text scrolls inside. ✕ hides it;
+ * ⓘ EXPLAIN THIS SCREEN opens the full card. It goes on a step change, when
+ * work starts, or while the host's `hold` is on.
+ */
+export const INLINE_MAX_SHARE = 0.3;
+function ScreenIntroInline({
+  intro,
+  onClose,
+  onMore,
+}: {
+  intro: ScreenIntro;
+  onClose: () => void;
+  onMore: () => void;
+}) {
+  const { height } = useWindowDimensions();
+  return (
+    <View
+      style={[styles.inlineWrap, { maxHeight: Math.round(height * INLINE_MAX_SHARE) }]}
+      accessibilityLabel={`${SCREEN_INTRO_TEXT.start}. ${intro.start}`}
+    >
+      <View style={styles.cardHead}>
+        <Text style={styles.stepLabel} accessibilityRole="header">
+          {SCREEN_INTRO_TEXT.start}
+        </Text>
+        <Pressable onPress={onMore} hitSlop={6} style={styles.inlineMore} accessibilityRole="button" accessibilityLabel={SCREEN_GUIDE_KEY_LABEL}>
+          <Text style={styles.navText}>ⓘ MORE</Text>
+        </Pressable>
+        <Pressable onPress={onClose} hitSlop={10} style={styles.closeX} accessibilityRole="button" accessibilityLabel="Hide this note">
+          <Text style={styles.closeXText}>✕</Text>
+        </Pressable>
+      </View>
+      <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.inlineBody} showsVerticalScrollIndicator nestedScrollEnabled>
+        <Text style={styles.inlineLearning}>{intro.learning}</Text>
+        <Text style={styles.inlineStart}>{intro.start}</Text>
+      </ScrollView>
     </View>
   );
 }
@@ -1331,6 +1435,24 @@ const styles = StyleSheet.create({
   hintText: { flexShrink: 1, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 17, color: colors.textPrimary },
   hintCloseBtn: { paddingHorizontal: 2 },
   hintClose: { fontFamily: fonts.barlowSemiBold, fontSize: 12, color: colors.textSub },
+  // ── a later step's intro, inline (phase 3, 2026-11-14) ──
+  inlineWrap: {
+    marginHorizontal: 8,
+    marginTop: 6,
+    marginBottom: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.45)',
+    backgroundColor: '#131209',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
+    gap: 6,
+  },
+  inlineBody: { gap: 4 },
+  inlineLearning: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
+  inlineStart: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textPrimary },
+  inlineMore: { alignSelf: 'flex-start', minHeight: 30, justifyContent: 'center', paddingHorizontal: 2 },
   // ── the carried lab term on the intro card (2026-11-14) ──
   termTitle: { fontFamily: fonts.oswaldMedium, fontSize: 20, lineHeight: 25, color: colors.textPrimary },
   termRule: { width: 36, height: 2, backgroundColor: colors.amber, borderRadius: 1, marginVertical: 2 },

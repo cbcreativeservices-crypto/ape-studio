@@ -9,7 +9,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_SETUP: ScreenGuide = {
   intro: {
     learning: 'What a venue needs to know first: who the band is, when and where the show is, whom to call, and how large the stage is.',
-    start: 'Type your band name, then add each performer under PERFORMERS. The venue, the date and the stage size are optional, and you can fill them in later. New here? GUIDED TASK, at the top, lists five steps.',
+    start: 'Type your band name, then add each performer under PERFORMERS. The venue, the date and the stage size are optional: each is folded until you open it. New here? GUIDED TASK, at the top, lists five steps.',
   },
   seeing: [
     'Setup is the first of five work areas. The tab bar above it opens the others in any order.',
@@ -18,11 +18,11 @@ export const SP_GUIDE_SETUP: ScreenGuide = {
     'The ‹ at the top leaves the lab. ALL PLOTS returns to your list.',
   ],
   control: [
-    'A field keeps what you typed when you leave it. UNDO and REDO step back and forward through your changes, in every area. A change of status is not one of them: choose Draft again.',
-    'The switch beside each contact field chooses whether the venue sees that detail in the packet.',
-    'Under Status, choose Draft or Ready to advance. Ready is refused while something must be corrected.',
-    'ADD A PERFORMER adds a performer to your band. REMOVE lists what that performer is linked to before anything is removed.',
-    'GUIDED TASK opens on a blank stage. All five steps on a plot started from a blank stage complete this lab. An example band is for practice. Each step has a GO button that opens the area where it is done.',
+    'A field keeps what you typed when you leave it. UNDO and REDO step through your changes, in every area; a change of status is not one of them.',
+    'GO DEEPER ▾ opens a folded part, such as the gig or the stage size. Its row says what it holds.',
+    'The switch beside each contact field chooses whether the venue sees that detail in the packet. Under Status, choose Draft or Ready to advance. Ready is refused while something must be corrected.',
+    'ADD A PERFORMER adds a performer. REMOVE first lists what that performer is linked to.',
+    'GUIDED TASK opens on a blank stage. All five steps on a plot started from a blank stage complete this lab. An example band is for practice. Each step’s GO opens its area.',
   ],
   changes: [
     'The band name, the venue and the date print at the top of the packet.',

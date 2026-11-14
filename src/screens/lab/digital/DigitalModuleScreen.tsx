@@ -16,7 +16,8 @@ import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { ScrollLockProvider } from '../LabShell';
-import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
+import { DIGITAL_MODULES, DIGITAL_MODULE_CHECKS, digitalLeftDetail, type DigitalModuleId } from './modules/registry';
+import { ModuleGoalProvider } from '../meter/moduleGoal';
 import { DIGITAL_END_GUIDE, DIGITAL_SCREEN_GUIDES } from './digitalScreenGuides';
 import { AnalogModule, SamplingModule } from './modules/modAnalog';
 import { QuantModule, BinaryModule } from './modules/modQuant';
@@ -70,11 +71,11 @@ export function DigitalModuleScreen() {
   const focused = useIsFocused();
   const meta = DIGITAL_MODULES.find((m) => m.id === route.params.id) ?? DIGITAL_MODULES[0];
   const Comp = COMPONENTS[meta.id];
-  // R6c: mark this module viewed → the Digital Audio Systems lab completes once
-  // every module has been seen (fires mark_lab_complete server-side).
-  useEffect(() => {
-    if (focused) markLabUnit('af_digital_audio', meta.id);
-  }, [focused, meta.id]);
+  // "Done = work done" (owner's decision 1, phase 3, 2026-11-14): a module
+  // counts once every CHECK YOURSELF on it is answered right, never on
+  // opening (it used to be marked here on focus). Credit already banked stays.
+  // The lab still completes once every module counts (mark_lab_complete).
+  const onGoalMet = () => markLabUnit('af_digital_audio', meta.id);
   const [width, setWidth] = useState(0);
   // Modules lock the ScrollView during their drags via the lockScroll prop
   // (owner 2026-07-29 drag-vs-scroll fix).
@@ -125,9 +126,9 @@ export function DigitalModuleScreen() {
       // The recap and next-lab card (labEndContent.ts, S4).
       labId="af_digital_audio"
       labTitle="Digital Audio Sampling & Conversion Lab"
-      units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title, detail: digitalLeftDetail(m.id) }))}
       // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
-      howItCounts="A module counts once you open it. Opening it again, or practicing, never removes it."
+      howItCounts="A module counts once every CHECK YOURSELF on it is answered right. Opening it again, or practicing, never removes it."
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"
@@ -169,12 +170,20 @@ export function DigitalModuleScreen() {
           // Rack module: full height — the module's RackUnit pins stage + dock
           // and owns the scroll well (incl. its own guided-lesson entry row).
           <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-            {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+            {width > 0 ? (
+              <ModuleGoalProvider need={DIGITAL_MODULE_CHECKS[meta.id]} onMet={onGoalMet} resetKey={meta.id}>
+                <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+              </ModuleGoalProvider>
+            ) : null}
           </View>
         ) : (
         <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 30 + insets.bottom }]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
           <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-            {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+            {width > 0 ? (
+              <ModuleGoalProvider need={DIGITAL_MODULE_CHECKS[meta.id]} onMet={onGoalMet} resetKey={meta.id}>
+                <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+              </ModuleGoalProvider>
+            ) : null}
           </View>
           {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
           <Pressable

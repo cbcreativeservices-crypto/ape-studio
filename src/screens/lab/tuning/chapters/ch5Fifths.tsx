@@ -122,7 +122,7 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
         initialParam: 'fifths',
         hideDragTag: true,
         bezel: [
-          { k: 'STEP', v: `${revealed}/12`, tint: revealed >= 12 ? colors.red : undefined, flex: 0.8, caption: 'fifths added' },
+          { k: 'STEP', v: `${revealed}`, tint: revealed >= 12 ? colors.red : undefined, flex: 0.8, caption: 'fifths added' },
           // The spelling only: the fraction (up to 13 characters) rides on
           // the lane readout and the step card, where it cannot be cropped.
           { k: 'NEWEST', v: newest.spelling, tint: revealed === 12 ? colors.red : colors.gold, flex: 0.9, caption: 'latest note' },

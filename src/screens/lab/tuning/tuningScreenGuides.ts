@@ -462,7 +462,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     },
     seeing: [
       'Six challenges; three of them use the display. FIGURE picks which: the Octave Elevator (1), the harmonic ladders with a meter (4) or the rail of three E’s over a fixed C (6).',
-      'Watch the readouts for each figure (for example RATIO, VALUE, REGION); DONE shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND. Below, do challenge 2 (match the rule) and answer the questions for 3, 5 and 6.',
+      'Readouts per figure (for example RATIO, VALUE, REGION); LEFT (still to do) shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND. Below, do challenge 2 (match the rule) and answer the questions for 3, 5 and 6.',
     ],
     control: [
       'FIGURE: 1 · Normalize 9/4, 4 · Align the third, 6 · Hear E move.',

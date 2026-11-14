@@ -513,10 +513,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
   SpeechLab: {
     status: 'wired',
     lab: "Speech & Voice Lab",
-    term: "miking",
+    // RE-WIRED 2026-11-14 (checker K4: the Speech lab opened on a "Miking"
+    // card — the miking row, shared with the Miking labs). Its first screen
+    // is THE SPEECH SYSTEM, so the live row "Source-filter model" is copied
+    // VERBATIM (coordinator's read-only glossary lookup, 2026-11-14).
+    term: "Source-filter model",
     plainEnglish:
-      "Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.",
-    glossaryId: "a40d40b1-35b3-496c-b488-65163b445bed",
+      "Speech has two parts working together. A source makes a raw buzz or hiss. The vocal tract shapes it like a filter. Together they make vowels and consonants.",
+    glossaryId: "1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf",
   },
   TubeLab: {
     status: 'wired',

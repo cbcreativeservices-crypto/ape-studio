@@ -50,7 +50,7 @@ export function makeReedSound(spec: ReedSoundSpec) {
     const stageText = (i: number) => S.stages[i].byVariant?.[variant] ?? S.stages[i].text;
     const pred = lesson.predictions.sound;
     const reached = st.shown >= n;
-    const seqBezel: BezelItem[] = [{ k: 'STEP', v: `${st.shown} / ${n}`, flex: 0.8 }, ...spec.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
+    const seqBezel: BezelItem[] = [{ k: 'STEP', v: `${st.shown}`, flex: 0.8 }, ...spec.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
 
     /* the shapes */
     const [mode, setMode] = useState(0);

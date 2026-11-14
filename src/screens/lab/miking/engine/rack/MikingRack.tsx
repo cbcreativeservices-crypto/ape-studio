@@ -9,11 +9,12 @@
  * (side over top, aligned on x), so the stage reports no fixed aspect and
  * zooms as a plain box.
  */
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { RackUnit } from '../../../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize } from '../../../rack/rackTypes';
 import { mikingGlassHeight } from './glassHeight.ts';
+import { runSoon } from '../../../../../lib/afterInteractions.ts';
 import { dockShort } from './dockWords.ts';
 import { bezelCaption } from './bezelCaptions.ts';
 
@@ -55,15 +56,31 @@ export function shortBezel(bezel: BezelItem[]): BezelItem[] {
   });
 }
 
+/** True once this step has been on screen for one macrotask (phase 3, owner
+ *  decision 3: "drawing…" instead of an empty black box). runSoon (the house
+ *  helper) runs after the step's first commit, and waits while the screen is
+ *  busy building the drawing; it is cancelled on unmount. No animation frame
+ *  loop (D8: nothing runs unless a finger moves it). */
+export function useFirstPaint(): boolean {
+  const [painted, setPainted] = useState(false);
+  useEffect(() => {
+    const h = runSoon(() => setPainted(true));
+    return () => h.cancel();
+  }, []);
+  return painted;
+}
+
 export function MikingRack({ spec, children }: { spec: MikingRackSpec; children: ReactNode }) {
   // Taller where the screen allows (owner 2026-10-06): engine/rack/glassHeight.ts.
   const { height: winH } = useWindowDimensions();
   const phoneHeight = mikingGlassHeight(winH);
+  // MikingRack is keyed per step (PageSteps), so each step's drawing gets it.
+  const painted = useFirstPaint();
   return (
     <RackUnit
       params={shortDockParams(spec.params)}
       initialParam={spec.initialParam}
-      stage={{ size: spec.size ?? 'L', phoneHeight, fullScreen: true, badge: spec.badge, bezel: shortBezel(spec.bezel), hideDragTag: true, render: spec.render }}
+      stage={{ size: spec.size ?? 'L', phoneHeight, fullScreen: true, badge: spec.badge, bezel: shortBezel(spec.bezel), hideDragTag: true, render: spec.render, drawing: !painted }}
     >
       <View style={styles.well}>{children}</View>
     </RackUnit>

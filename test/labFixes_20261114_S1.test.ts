@@ -402,3 +402,75 @@ describe('term cards agree with their labs (quick win 9)', () => {
     }
   });
 });
+
+// ───────────────────────── Phase 3 (owner decision 3, 2026-11-14): step intros ──
+// Owner, 2026-11-14 (phase 3 quick-pick): "do your recommendations for these",
+// including "Step intro popups on the first step only, then the same text
+// inline". Drum Tuning took ~36 GOT IT taps for a full run.
+
+const IH = await import('../src/features/lab/screenGuide/introHold.ts');
+
+describe('Phase 3: step intro popups on the first step only, then the same text inline', () => {
+  it('the rule: the first card of a visit pops; later steps are inline; a card carrying the term always pops', () => {
+    assert.equal(IH.introPresentMode(false, false), 'popup');
+    assert.equal(IH.introPresentMode(true, false), 'inline');
+    assert.equal(IH.introPresentMode(true, true), 'popup');
+    assert.equal(IH.introPresentMode(false, true), 'popup');
+  });
+
+  const SG = code('features/lab/screenGuide/ScreenGuide.tsx');
+  const host = block(SG, 'export function ScreenGuideHost(');
+  it('the host applies it per visit: a later step is claimed and shown inline, never as a popup', () => {
+    assert.match(host, /const poppedRef = useRef\(false\);/);
+    assert.match(host, /if \(introPresentMode\(poppedRef\.current, term != null\) === 'inline'\) \{\s*claimIntro\(offer\.id\);\s*setInline\(/);
+    assert.match(host, /poppedRef\.current = true;\s*setShown\(\{ title: offer\.title/);
+    // A step change replaces the note; work under way (a tray) closes it; a hold hides it.
+    assert.match(host, /setShown\(null\);\s*setInline\(null\);/);
+    assert.match(host, /if \(working\) setInline\(null\);/);
+    assert.match(host, /\{inline && !shown && !screenHold && !working \? \(/);
+    // Never lost: ⓘ MORE opens the full card with the same words.
+    assert.match(host, /onMore=\{\(\) => \{[\s\S]*?setShown\(\{ title: inline\.title, guide: inline\.guide, mode: 'intro' \}\);/);
+  });
+
+  it('the inline note never covers anything: it sits IN THE FLOW at the foot of the screen (checkers K2, K4)', () => {
+    const inl = block(SG, 'function ScreenIntroInline(');
+    assert.ok(inl, 'inline note found');
+    // Not an overlay: no absolute layer, no dim, no Modal, no measured placement.
+    assert.doesNotMatch(inl, /styles\.overlay/);
+    assert.doesNotMatch(inl, /styles\.pane/);
+    assert.doesNotMatch(inl, /<Modal/);
+    assert.doesNotMatch(inl, /placeGuideStep|position: 'absolute'/);
+    assert.match(inl, /style=\{\[styles\.inlineWrap, \{ maxHeight: Math\.round\(height \* INLINE_MAX_SHARE\) \}\]\}/);
+    assert.match(SG, /export const INLINE_MAX_SHARE = 0\.3;/);
+    const wrap = (SG.match(/inlineWrap: \{[^}]*\}/) ?? [''])[0];
+    assert.doesNotMatch(wrap, /position|bottom:|top:/, 'in-flow, never positioned');
+    assert.match(inl, /\{intro\.learning\}/);
+    assert.match(inl, /\{intro\.start\}/);
+    // Rendered by the host AFTER its children: it takes room, the page shrinks.
+    const h = block(SG, 'export function ScreenGuideHost(');
+    assert.ok(h.indexOf('{children}') < h.indexOf('<ScreenIntroInline'));
+  });
+
+  it('a card that arrives late lets taps through for its first moment (checker K4: Envelope WHAT’S LEFT)', () => {
+    assert.match(block(SG, 'function useArmedTouches('), /setTimeout\(\(\) => setArmed\(true\), POPUP_ARM_MS\)/);
+    const ov = block(SG, 'function ScreenIntroOverlay(');
+    assert.match(ov, /const armedTouches = useArmedTouches\(\);/);
+    assert.match(ov, /pointerEvents=\{armedTouches \? 'box-none' : 'none'\}/);
+  });
+
+  it('Speech opens on its own term, not "miking" (checker K4): "Source-filter model", verbatim', () => {
+    const e = (DATA.LAB_TERM_ENTRIES as Record<string, { term?: string; glossaryId?: string; plainEnglish?: string }>).SpeechLab;
+    assert.equal(e.term, 'Source-filter model');
+    assert.equal(e.glossaryId, '1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf');
+    assert.equal(e.plainEnglish, 'Speech has two parts working together. A source makes a raw buzz or hiss. The vocal tract shapes it like a filter. Together they make vowels and consonants.');
+  });
+
+  it('the four known labs need no edit: each swaps its steps inside ONE ScreenGuideHost (resetKey per step)', () => {
+    const lab = (p: string) => readFileSync(new URL(`../src/screens/lab/${p}`, import.meta.url), 'utf8');
+    assert.match(lab('drumtuning/DrumTuningLabScreen.tsx'), /<ScreenGuideHost resetKey=\{endState \? 'end' : `\$\{mod\.id\}:\$\{stepIdx\}`\}/);
+    assert.match(lab('tuning/TuningLabScreen.tsx'), /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(chapter\)\}/);
+    assert.match(lab('kit/PagedLab.tsx'), /<ScreenGuideHost resetKey=\{ending \? 'end' : String\(page\)\}/);
+    assert.match(lab('envelope/EnvelopeLabScreen.tsx'), /<PagedLab/);
+    assert.match(lab('speech/SpeechLabScreen.tsx'), /PagedLab/);
+  });
+});

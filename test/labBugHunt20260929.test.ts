@@ -48,7 +48,8 @@ test('Foundations: tone.set is never gated on tone.playing, and NEXT/FINISH shar
   // at module 13 cannot run FINISH on the second tap. The screen keeps no
   // lock of its own for the strip; goTo keeps its stamp for the end screen's
   // own jump links. FINISH opens the what's-left screen (owner 2026-09-29).
-  assert.match(s, /useLabNav\(\{[^}]*finish, unEnd \}\)/);
+  // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): finish is wrapped (finishCredit).
+  assert.match(s, /useLabNav\(\{[^}]*finish: finishCredit, unEnd \}\)/);
   assert.doesNotMatch(s, /navLocked/);
   assert.match(s, /if \(Date\.now\(\) - lastNavAtRef\.current < 400\) return;\s*\n\s*lastNavAtRef\.current = Date\.now\(\);/);
   assert.match(s, /tone\.stop\(\);\s*\n\s*setEnding\(true\);/);

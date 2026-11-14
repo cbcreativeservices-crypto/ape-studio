@@ -18,6 +18,7 @@ import { StyleSheet, View } from 'react-native';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
+import { PLAIN_MODEL_NOTE } from './modules/shared';
 
 export { faderParam, optionsParam } from '../amp/AmpRack';
 export { flipFader } from '../soundsystems/rackLayout';
@@ -55,6 +56,8 @@ export function MasteringRack({ spec, children }: { spec: MasteringRackSpec; chi
         badge: spec.badge,
         bezel: spec.bezel,
         hideDragTag: spec.hideDragTag,
+        // Phase 3: the plain sentence wins over the all-caps badge (S3).
+        modelNote: PLAIN_MODEL_NOTE[spec.badge],
         soundOffLine: spec.soundOffLine,
         captionsId: spec.captionsId,
         render: (w, h) => {

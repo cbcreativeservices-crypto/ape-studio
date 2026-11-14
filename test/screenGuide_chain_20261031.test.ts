@@ -320,7 +320,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion)$/, `ApeDsp.${c} — not a generator/effects call`);
     assert.doesNotMatch(s, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     // The honesty disclosure stays on the faceplate.
-    assert.match(s, /badge: 'MODULES RUN LAB-DEFAULT SETTINGS — GR METERS MEASURED, LIVE'/);
+    assert.match(s, /modelNote: 'Each unit runs lab-default settings; the GR meters are measured live\.'/);
   });
 });
 

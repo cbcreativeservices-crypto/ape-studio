@@ -37,26 +37,27 @@ describe('1. the "I don’t know" line agrees with its numbers (CF-A0108–A0110
   it('none: no line at all', () => {
     assert.equal(unknownNote(answers([])), null);
   });
+  // Owner decision 2026-11-14 ("Remove them"): progress never shows "N of total", so the count stands alone.
   it('one answer: one activity, no dashed bar, never "answers were"', () => {
     const s = unknownNote(answers([sameDim[0]]))!;
-    assert.equal(s, `You chose “I don’t know enough about this” for 1 of the ${QUESTIONS.length} questions. That activity is unexplored, not disliked.`);
+    assert.equal(s, 'You chose “I don’t know enough about this” for 1 question. That activity is unexplored, not disliked.');
     assert.doesNotMatch(s, /answers were|Those activities|dashed/);
   });
   it('two answers on ONE activity: still one activity, and its single dashed bar', () => {
     assert.equal(
       unknownNote(answers(sameDim))!,
-      `You chose “I don’t know enough about this” for 2 of the ${QUESTIONS.length} questions. That activity is unexplored, not disliked. The dashed bar has no rating.`,
+      'You chose “I don’t know enough about this” for 2 questions. That activity is unexplored, not disliked. The dashed bar has no rating.',
     );
   });
   it('two answers on two activities: plural, and no dashed bar (each still has one rating)', () => {
     assert.equal(
       unknownNote(answers([sameDim[0], otherDim]))!,
-      `You chose “I don’t know enough about this” for 2 of the ${QUESTIONS.length} questions. Those activities are unexplored, not disliked.`,
+      'You chose “I don’t know enough about this” for 2 questions. Those activities are unexplored, not disliked.',
     );
   });
   it('two fully unknown activities: plural dashed bars', () => {
     const second = QUESTIONS.filter((q) => q.dimension === QUESTIONS.find((x) => x.id === otherDim)!.dimension).map((q) => q.id);
-    assert.match(unknownNote(answers([...sameDim, ...second]))!, /for 4 of the \d+ questions\. Those activities are unexplored, not disliked\. The dashed bars have no rating\.$/);
+    assert.match(unknownNote(answers([...sameDim, ...second]))!, /for 4 questions\. Those activities are unexplored, not disliked\. The dashed bars have no rating\.$/);
   });
   it('the results screen prints this line, not the old hand-joined pieces', () => {
     const src = read('src/screens/careerfinder/CareerFinderResultsScreen.tsx');
@@ -218,5 +219,62 @@ describe('6. round 3: on-screen check follow-ups', () => {
     assert.doesNotMatch(fam, /fetchV3Curriculum\(\)/);
     assert.match(fam, /Some topic names couldn’t be loaded\. Check your connection, then try again\./);
     assert.match(fam, /<TextLink label="Try again" onPress=\{\(\) => setNamesTry\(\(n\) => n \+ 1\)\} muted \/>/);
+  });
+});
+
+describe('7. round 4: Career Finder decisions (owner, 2026-11-14)', () => {
+  // Career Finder decisions (owner, 2026-11-14): his ticked answers, verbatim, in
+  // docs/careerfinder_text_review_2026_11_14/OWNER_DECISIONS_2026_11_14.md.
+  const idx = JSON.parse(read('src/data/careerIndex.json')) as { families: string[]; careers: { id: string; t: string; f: number; reg?: 1 }[] };
+  const res = read('src/screens/careerfinder/CareerFinderResultsScreen.tsx');
+  const KEPT = ['Audio Instructor', 'Consumer Audio Product Specialist']; // CF-A0453, CF-A0465: "keep mine"
+
+  it('the six lines he chose (CF-A0072, 0073, 0136, 0137, 0309, 0097)', () => {
+    assert.match(res, /RESULTS_LEAD = 'These five audio career families draw most on what you said you would enjoy\. Start with the top one\.'/);
+    assert.match(res, /RESULTS_NOTE = 'These are possibilities to explore, not limits on what you can pursue\. Interests change with experience, so your results may change too\.'/);
+    assert.match(res, /<Lead>Did these results give you at least one career family you would explore\?<\/Lead>/);
+    assert.match(res, /accessibilityLabel="Did these results give you at least one career family you would explore"/);
+    assert.equal((res.match(/title="Your audio career results"/g) ?? []).length, 2);
+    assert.doesNotMatch(res, /Your Audio Career Results|career direction you would explore|a direction to explore"/);
+    assert.match(read('src/features/careerfinder/questions.ts'), /\{ value: null, label: 'I don’t know enough about this', short: 'I don’t know enough about this' \}/);
+  });
+  it('"Sound-System" → "Sound System" in the four titles and his example, together', () => {
+    for (const [id, t] of [['AC-0479', 'Sound System Acoustical Consultant'], ['AC-1079', 'Club Sound System Manager'], ['AC-1189', 'Sound System Measurement Technician'], ['AC-1190', 'Sound System Alignment Engineer']]) {
+      assert.equal(idx.careers.find((c) => c.id === id)!.t, t, id);
+    }
+    assert.ok(!idx.careers.some((c) => /Sound-System/.test(c.t)));
+    assert.ok(FAMILIES.some((f) => f.examples.includes('Sound System Alignment Engineer')));
+  });
+  it('every family example is a real index title, except the two he kept', () => {
+    const titles = new Set(idx.careers.map((c) => c.t));
+    const missing = FAMILIES.flatMap((f) => f.examples.filter((e) => !titles.has(e)));
+    assert.deepEqual(missing.sort(), [...KEPT].sort());
+  });
+  it('licensed examples are still found as licensed (the warning keys off an exact title match)', () => {
+    const licensed = FAMILIES.flatMap((f) => f.examples.filter((e) => idx.careers.some((c) => c.t === e && c.reg)));
+    assert.deepEqual(licensed.sort(), ['Acoustic Intelligence Analyst', 'Audiologist', 'Clinical Voice Specialist', 'Diagnostic Medical Sonographer', 'Entertainment Rigger', 'Hearing Instrument Specialist', 'Music Teacher', 'Music Therapist', 'Power Distribution Technician — Events', 'Sonar Technician', 'Soundproofing Contractor', 'Speech-Language Pathologist']);
+  });
+});
+
+describe('8. no "N of total" in the Career Finder progress (owner decision 2026-11-14, "Remove them")', () => {
+  const quiz = read('src/screens/careerfinder/CareerFinderQuizScreen.tsx');
+  const hub = read('src/screens/careerfinder/CareerFinderScreen.tsx');
+  it('the quiz says "Question 7" and what is left, never "of 28"; the bar stays', () => {
+    assert.match(quiz, /title=\{`Question \$\{index \+ 1\}`\}/);
+    assert.match(quiz, /return left === 0 \? 'Last question' : `\$\{left\} to go`;/);
+    assert.match(quiz, /<ProgressBar value=/, 'a bar is not a printed total');
+    assert.match(quiz, /<Text style=\{styles\.milestone\}>\{milestone \?\? toGoText\(index\)\}<\/Text>/);
+  });
+  it('the hub CONTINUE and its note say what is left', () => {
+    assert.match(hub, /label=\{`CONTINUE · QUESTION \$\{Math\.min\(QUESTION_COUNT, resumeAt \+ 1\)\}`\}/);
+    assert.match(hub, /a11y=\{`Continue at question \$\{resumeAt \+ 1\}`\}/);
+    assert.match(hub, /\{allAnswered\(rec\) \? 'All answered' : `\$\{QUESTION_COUNT - answered\} to go`\}/);
+  });
+  it('no "of {QUESTION_COUNT}" or "of the N questions" left in the Career Finder screens and wording', () => {
+    for (const f of ['src/screens/careerfinder/CareerFinderQuizScreen.tsx', 'src/screens/careerfinder/CareerFinderScreen.tsx', 'src/screens/careerfinder/CareerFinderResultsScreen.tsx', 'src/features/careerfinder/scoring.ts']) {
+      const src = read(f);
+      assert.doesNotMatch(src, /\b(of|OF) \$?\{QUESTION_COUNT\}/, f);
+      assert.doesNotMatch(src, /of the \$\{QUESTIONS\.length\}/, f);
+    }
   });
 });

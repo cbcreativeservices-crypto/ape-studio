@@ -4,7 +4,8 @@
  * bridged operation, watts vs loudness, clipping risk, the rack inspection,
  * and the specification decoder.
  *
- * RACK (2026-09-30): TWO steps. GAIN CHAIN pins the chain on the glass with
+ * RACK (2026-09-30): THREE steps since phase 3 (2026-11-14, owner decision 5:
+ * the six-section practice step was split in two). GAIN CHAIN pins the chain on the glass with
  * the three stage levels as faders (SOURCE on the lane) and the verdict on
  * the bezel. REAL-WORLD PRACTICE is a document step: the load builder, power
  * and current, bridging, watts vs loudness, clipping risk, the rack
@@ -221,7 +222,7 @@ export function Mod7RealWorld() {
         },
         {
           key: 'practice',
-          title: 'Real-world practice',
+          title: 'Loads, power and bridging',
           kind: 'read',
           body: (
             <>
@@ -344,6 +345,17 @@ export function Mod7RealWorld() {
               <MisconceptionCard m={misc('common-ground')} />
               <MisconceptionCard m={misc('bridge-4x')} />
 
+            </>
+          ),
+        },
+        {
+          // Split from 'practice' (phase 3, owner decision 5). Step position is
+          // not stored (AmpModuleSteps keeps it in memory), so nothing earned moves.
+          key: 'risk',
+          title: 'Loudness, risk and spec sheets',
+          kind: 'read',
+          body: (
+            <>
               {/* ── watts vs loudness ── */}
               <SectionTitle>5 · WATTS AND LOUDNESS</SectionTitle>
               {/* Driven in log2 (slider pass 2026-10-14): a linear 0.25–10× lane

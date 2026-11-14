@@ -48,7 +48,8 @@ test('Tuning follows the house guest rule its own end screen promises', () => {
 test('Ear training: a doubled answer scores once; a doubled ▶ spends one replay', () => {
   const s = read('src/screens/lab/eartraining/EarModuleScreen.tsx');
   const answer = s.slice(s.indexOf('const onAnswer = useCallback'), s.indexOf('const onAnswer = useCallback') + 400);
-  assert.match(answer, /\|\| answeredRef\.current\) return;\n\s*answeredRef\.current = true;/);
+  // Phase 3, owner 2026-11-14: decision 4, "answers unlock only after the drill's sound has played once" — the guard also waits for every clip.
+  assert.match(answer, /\|\| answeredRef\.current \|\| !earAnswersUnlocked\(plays\)\) return;\n\s*answeredRef\.current = true;/);
   // re-armed only when the next trial is on screen
   assert.match(s, /answeredRef\.current = false;\n\s*setTrial\(t\);\n\s*setPhase\('answering'\);/);
   const play = s.slice(s.indexOf('const onPlay = useCallback'), s.indexOf('const onAnswer = useCallback'));

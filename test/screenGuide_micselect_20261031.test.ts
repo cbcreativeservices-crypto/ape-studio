@@ -378,7 +378,8 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     // The CHECK row stays on the end screen (the check is drawn there), never back to Lesson 1.
     assert.match(s, /onJump=\{\(id\) => \{ if \(id !== UNDERSTANDING_UNIT\) goTo\(/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /route: 'MicSelectLab', key: 'tr_mic_select', completion: 'understanding'/);
-    assert.match(END.seeing[0], /The title reads WHAT’S LEFT until every step is opened \(the optional mic locker too\) and the check is passed; then it reads LAB COMPLETE/);
+    // Changed on purpose (owner decision 1, 2026-11-14: "Done" = work done, not opened).
+    assert.match(END.seeing[0], /The title reads WHAT’S LEFT until every module’s goal is met \(the optional mic locker too\) and the check is passed; then it reads LAB COMPLETE/);
     assert.match(END.control.join(' '), /CHECK row/);
   });
   it('the shared kit never shows LAB COMPLETE above an unpassed check (re-derived with labEnd)', async () => {
@@ -402,12 +403,14 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     // piece, the locker's says "Optional, still counts". Owner, 2026-11-14: "Begin fixing all bugs
     // found and do obvious (my decision is not required) fixes as you suggestted in the report."
     assert.match(s, /detail: MICSEL_MISSING\[st\.key\]/);
-    assert.match(s, /locker: 'Optional, still counts\./);
+    // Owner decision 1 (2026-11-14, "Done" = work done): the rows come from MICSEL_GOALS.
+    assert.match(s, /k === 'locker' \? 'Optional, still counts\. ' : ''\}Still to do: \$\{g\}\./);
     assert.doesNotMatch(s, /optional: st\.tag === 'OPTIONAL'/);
   });
   it('opened lessons sit under the collapsed REVIEW ▾, so the end TRY THIS says so', () => {
     assert.match(code('src/screens/lab/kit/LabEndScreen.tsx'), /const \[showCredited, setShowCredited\] = useState\(false\);/);
-    for (const t of END.tryThis) assert.match(t, /under REVIEW ▾ once opened/);
+    // Owner decision 1 (2026-11-14): a module is done by its goal, not by opening it.
+    for (const t of END.tryThis) assert.match(t, /under REVIEW ▾ once done/);
   });
   it('Microphone Principles is an Audio Fundamentals lab; this lab is not', () => {
     // course navigation left WHAT THIS TEACHES (owner 2026-11-08), so it never mislabels this lab's place

@@ -150,3 +150,10 @@ The owner's report: `C:\Users\profe\Downloads\2026-11-13_STAGE_PLOT_NEW_FEATURES
 - A new object gets 0.3 m of air beside the last one (0.1 m on a full stage).
 - A new source is offered to the selected performer, or to the only one.
 - Report: docs/labs/novice_audit_2026_11_14/fixes/F3_REPORT.md.
+
+## 13. Lab fix round, phases 2 and 3 (2026-11-14)
+
+- **Phase 2.** Every popup of the lab reports work under way, so an area's first-visit intro card never opens over one (`spForm.tsx` `Sheet`). The rest of the shared frame does not apply here: the lab plays no sound, has no readout row, no check and no end screen.
+- **Phase 3, Setup (owner's decision 5: "Long pages: beginner core first. Keep ALL content… fold the depth under 'Go deeper ▾'").** THE BAND and PERFORMERS are open. THE GIG, TECHNICAL CONTACT, REVISION AND STATUS, STAGE SIZE and NOTES are folded rows: each says what it holds in one line, and GO DEEPER ▾ opens it. No field, switch, note or help text was removed. A review question about a folded part ("no technical contact") shows on its closed row, and GO TO from the review opens the part. Which parts are open is kept while the app is open, per stage plot; it is never saved. Rules: `src/features/stageplot/spSetupFolds.ts`. **Any button that sends the user to a folded part of Setup must open that part:** Export's GO TO SETUP (beside "Contact shown in the packet") does so through `goToSetupPart` in `spIssueActions.ts` (it first landed at the top of Setup with the contact folded away; found on screen and fixed the same day).
+- **Phase 3, what did not change.** The credit rule (the guided task's five steps on a plot started from a blank stage, with a full or compact packet) is as it was: it has always counted work done, never a screen opened. The lab shows no "N of total" counter. "NOT TO SCALE" stays in the key's heading and in the packet: it is the drafting note a real stage plot carries, not a disclaimer badge.
+- Report: docs/labs/novice_audit_2026_11_14/fixes/F3_REPORT.md. Tests: test/labFixes_20261114_F3.test.ts.

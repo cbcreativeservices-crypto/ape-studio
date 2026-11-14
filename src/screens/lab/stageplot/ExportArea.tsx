@@ -68,7 +68,7 @@ import { PacketPreview } from './export/PacketPreview';
 import { WebPrintView } from './export/WebPrintView';
 import { useSpEditor } from './spContext';
 import { Button, Choice, Count, IssueList, Note, Section } from './spForm';
-import { goToIssue, runIssueAction } from './spIssueActions';
+import { goToIssue, goToSetupPart, runIssueAction } from './spIssueActions';
 
 const PACKETS: readonly { value: SpPacketKind; label: string }[] = [
   { value: 'full', label: SP_PACKET_WORD.full },
@@ -384,7 +384,8 @@ export function ExportArea() {
           <Choice label="Paper" value={paper} options={PAPERS} onChange={(v) => patch({ paper: v })} />
           {shown ? <Note>{`${pages ? `The PDF has ${plural(pages, 'page')} on ${SP_PAPER_WORD[paper]}. ` : ''}File name: ${shown.doc.fileName}`}</Note> : null}
           <Note>{`Contact shown in the packet: ${contactShown.join(', ') || 'none'}. Change it in SETUP.`}</Note>
-          <Button label="GO TO SETUP" onPress={() => ed.goTo('setup')} a11yLabel="Go to Setup to choose which contact details the packet shows" />
+          {/* the contact block is a folded part of Setup: open it and bring it into view */}
+          <Button label="GO TO SETUP" onPress={() => goToSetupPart(ed, 'no-contact')} a11yLabel="Go to Setup to choose which contact details the packet shows" />
         </Section>
 
         <Section title="REQUIREMENTS SUMMARY" hint="Worked out from your stage, inputs and monitors. Nothing here is typed in.">

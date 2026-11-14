@@ -1912,7 +1912,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
     const nx = new Set(found);
     nx.add(id);
     setFound(nx);
-    AccessibilityInfo.announceForAccessibility(`Found ${nx.size} of ${CI_RACK_ISSUES.length}: ${issue.label}.`);
+    AccessibilityInfo.announceForAccessibility(`Found: ${issue.label}.`);
     if (nx.size >= REQUIRED_FINDS && !aDone) {
       setADone(true);
       announceComplete('Phase A complete — the rack is condemned. Dressing unlocked.');

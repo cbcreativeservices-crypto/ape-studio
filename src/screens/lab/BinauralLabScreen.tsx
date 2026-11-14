@@ -239,6 +239,8 @@ export function BinauralLabScreen() {
           size: 'L', // the overhead stage IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'SIMPLIFIED BINAURAL — NOT MEASURED HRTF',
+          // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+          modelNote: 'This is a simple model of a head, not measurements of real ears (HRTF).',
           // Phase 2 (S3 silent path): the two cues are numbers on the frame
           // and in THE TWO CUES, so a sound-off learner can follow every move.
           soundOffLine: 'Sound off? The frame shows the cues your ears would use: drag an object and watch ITD, how much later the far ear hears it.',

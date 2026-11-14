@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
 
 /*
@@ -16,11 +17,13 @@ import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
  * line (one partner alone reads as the only reference).
  * The full original resume is still to come (must-do D36).
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/founder",
   title: "Founder",
   description:
     "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy. Four decades in professional audio, teaching it since 1999 as Program Director of a state-certified college audio program; Dual BA and MA, Berklee College of Music.",
-};
+  image: "/og/og-founder.png",
+});
 
 export default function Page() {
   return (

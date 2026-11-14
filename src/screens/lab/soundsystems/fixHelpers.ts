@@ -63,7 +63,7 @@ export function modeCompleteTitle(title: string): string {
 
 /** The end screen's one sentence on how a page counts, said once above the
  *  list (phase 2, S2 §4); each row then names its own missing goals. */
-export const SS_HOW_A_PAGE_COUNTS = 'A page with goal chips counts once every chip is met (a capstone, once its checklist passes); a page without chips counts when you press NEXT at its foot. Rows you opened this session name what is still missing.';
+export const SS_HOW_A_PAGE_COUNTS = 'A module counts once every goal chip in it is met (a capstone, once its checklist passes); opening it does not count it. Rows you opened this session name what is still missing.';
 
 /* ── BUILD ──────────────────────────────────────────────────────────────── */
 
@@ -98,4 +98,12 @@ export function rackLit(on: ReadonlySet<string>, direction: 'up' | 'down', step:
  *  it read the opposite of the screen). */
 export function rackA11y(items: readonly { step: string; label: string }[], on: ReadonlySet<string>, direction: 'up' | 'down'): string {
   return `The rack: ${items.map((r) => `${r.label} ${rackLit(on, direction, r.step) ? 'on' : 'off'}`).join(', ')}`;
+}
+
+/* ── progress words (lab fix round 2026-11-14, phase 3, owner decision 2) ── */
+
+/** What is LEFT, never "N of total": "3 LEFT", or `doneWord` once nothing is. */
+export function leftWord(done: number, total: number, doneWord = 'ALL DONE'): string {
+  const left = Math.max(0, total - done);
+  return left === 0 ? doneWord : `${left} LEFT`;
 }

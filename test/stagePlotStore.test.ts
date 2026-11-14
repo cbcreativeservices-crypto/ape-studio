@@ -851,7 +851,11 @@ describe('the shell is wired as the builders’ contract says', () => {
     assert.equal(actions.takeSpSetupAsk(), null);
     // …and Setup takes it when it opens, and shows the question at the field
     const setup = read('src/screens/lab/stageplot/SetupArea.tsx');
-    assert.match(setup, /const field = spSetupField\(takeSpSetupAsk\(\)\);/);
+    // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Long pages: beginner core first … fold the depth
+    // under 'Go deeper ▾'". The contact block is a folded part now, so Setup keeps the rule it took: the
+    // field is found from it as before, and a question about a folded part also opens that part.
+    assert.match(setup, /const rule = takeSpSetupAsk\(\);\s+const field = spSetupField\(rule\);/);
+    assert.match(setup, /const inFold = spSetupFoldOfRule\(rule\);\s+if \(inFold\) setFoldOpen\(inFold, true\);/);
     // in Setup itself the note does not send the user to Setup (bug test S3-04)
     assert.match(setup, /\{exampleTitle \? <Note tone="warning">The title still says “\(example\)”\. Change it or clear it above\.<\/Note> : null\}/);
     assert.ok(setup.indexOf('label="Title of this stage plot"') < setup.indexOf('{exampleTitle ? <Note'));

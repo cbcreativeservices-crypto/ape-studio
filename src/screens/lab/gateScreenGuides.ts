@@ -65,7 +65,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'Sound flows IN ▸, through the green GATE bar, ▸ OUT. Dashed lines on IN mark the threshold; the dotted outline is the sound untouched.',
       'The GR ladder (0 to 70 dB) grows down as the gate closes.',
       'THRESH and RANGE show your settings. GR, measured live, is how far the gate turns down (— dB when stopped).',
-      'The drawing is a TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL, but GR measures the real click.',
+      'The drawing is a model: CLICK is drawn as a longer DRUM-HIT MODEL, but GR measures the real click.',
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the gate; ■ stops it. Drag the THRESH fader from −50 to −20 dB.',

@@ -26,7 +26,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../../meter/moduleGoal';
 import { CollapsibleSection } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -122,7 +123,7 @@ const BIT_BLURBS: Record<number, string> = {
   24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range (6 dB/bit rule of thumb; 6.02·24 + 1.76 ≈ 146 dB), far below any room’s noise floor.',
 };
 
-const DITHER_BADGE = 'REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT A MEASURED SPECTRUM (FFT)';
+const DITHER_BADGE = 'Real dither math (RPDF, TPDF, first-order shaping); the spectrum strip is a simplified shape, not a measured FFT.';
 
 const CHECK_BITDEPTH: CheckSpec = {
   question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL SNR (6.02·N + 1.76 dB, undithered)?',
@@ -247,14 +248,15 @@ export function QuantModule(p: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the step grid + whiskers are the lesson
-        badge:
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote:
           stageView === 'dither'
-            ? DITHER_BADGE
+            ? 'Real dither math; the spectrum strip is a simplified shape, not a measured FFT.'
             : errorOnly
-              ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
+              ? `Error view, zoomed ×${fmtGroup(levels)} so half a step fills the panel.`
               : bits >= 12
-                ? `AT ${bits}-BIT THE STEPS ARE SMALLER THAN A PIXEL — SHOWN AS A FINE BAND, NOT EXAGGERATED`
-                : 'AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR',
+                ? `At ${bits}-bit the steps are finer than a pixel, so they show as a fine band.`
+                : 'Amber is the original, blue sampled, green stored, red the rounding error.',
         onGuide: () => p.help(stageView === 'dither' ? 'dither' : 'bit_depth'),
         bezel:
           stageView === 'dither'
@@ -290,7 +292,7 @@ export function QuantModule(p: DigitalModuleProps) {
       <View style={styles.stack}>
         <Text style={dstyles.body}>
           Sampling measured WHEN; quantization measures HOW LOUD. Each sample is rounded to the nearest of 2ᴺ levels — the red
-          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: ride the LEVEL fader down and watch.
+          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: slide the LEVEL fader down and watch.
         </Text>
         <ReadoutGrid
           help={p.help}
@@ -328,30 +330,32 @@ export function QuantModule(p: DigitalModuleProps) {
           />
         </CollapsibleSection>
 
-        <PanelCard>
-          <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
-          <Text style={dstyles.body}>
-            A tiny sine reduced to 8 bits, zoomed in to the last few steps. Undithered, the rounding error locks to the signal —
-            the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
-            quantization and preserves low-level behavior at the cost of a controlled noise increase.
-          </Text>
-          {/* The dither choice is the DITHER dock key now (owner rule
-              2026-10-10: every lab control lives in the bottom dock). */}
-          {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
-          <Badge text={DITHER_BADGE} />
-          <Text style={dstyles.caption}>
-            {dither === 'none'
-              ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and fades that cut out (gating), not hiss.'
-              : dither === 'rpdf'
-                ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — in quiet passages the hiss rises and falls.'
-                : dither === 'tpdf'
-                  ? 'TPDF (two flat noises added together, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
-                  : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
-          </Text>
-        </PanelCard>
-
-        <CheckQuestion spec={CHECK_BITDEPTH} />
-        <CheckQuestion spec={CHECK_DITHER} />
+        <GoalCheck spec={CHECK_BITDEPTH} />
+        {/* Two lessons on one page (phase 3, owner decision 5): bit depth first, dither folded here. The DITHER dock key still drives it. */}
+        <CollapsibleSection title="PART 2 · DITHER" startOpen={false}>
+          <PanelCard>
+            <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
+            <Text style={dstyles.body}>
+              A tiny sine reduced to 8 bits, zoomed in to the last few steps. Undithered, the rounding error locks to the signal —
+              the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
+              quantization and preserves low-level behavior at the cost of a controlled noise increase.
+            </Text>
+            {/* The dither choice is the DITHER dock key now (owner rule
+                2026-10-10: every lab control lives in the bottom dock). */}
+            {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
+            <Badge text={DITHER_BADGE} />
+            <Text style={dstyles.caption}>
+              {dither === 'none'
+                ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and fades that cut out (gating), not hiss.'
+                : dither === 'rpdf'
+                  ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — in quiet passages the hiss rises and falls.'
+                  : dither === 'tpdf'
+                    ? 'TPDF (two flat noises added together, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
+                    : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
+            </Text>
+          </PanelCard>
+          <GoalCheck spec={CHECK_DITHER} />
+        </CollapsibleSection>
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -507,7 +511,7 @@ export function BinaryModule(p: DigitalModuleProps) {
     >
       <View style={styles.stack}>
         <Text style={dstyles.body}>
-          A digital recording is nothing but a list of integers. Ride the SAMPLE fader — or tap and
+          A digital recording is nothing but a list of integers. Slide the SAMPLE fader — or tap and
           drag across the strip itself (16-bit · 48 kHz) — and read the SAME stored number every way
           at once: every readout derives from one signed 16-bit integer.
         </Text>
@@ -584,7 +588,7 @@ export function BinaryModule(p: DigitalModuleProps) {
           {/* RESET is the dock's RESET key now (owner rule 2026-10-10). */}
         </PanelCard>
 
-        <CheckQuestion spec={CHECK_MSB} />
+        <GoalCheck spec={CHECK_MSB} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>

@@ -136,13 +136,14 @@ describe('3. each guide quotes its step’s real names', () => {
     prepare: [
       ['DRUM', 'SIZE', 'LUGS', 'RESPONDS'],
       ['HARDWARE', 'BEFORE TUNING, LOOK — TAP A PART', 'RODS', 'LUGS', 'HOOPS', 'HEAD', 'EDGE'],
-      ['LUGS', 'STEP', 'THIS ROD', 'NEXT', '▶ RUN', '■ PAUSE', 'CAUTION'],
-      ['APPROACH', 'STEP', 'SPREAD', 'PITCH', 'EVEN STEPS', 'RANDOM', '▶ STRIKE'],
+      // Phase 3, owner 2026-11-14 (decision 3, one progress word): display readouts no longer say STEP — ORDER, TURNS, STAGE.
+      ['LUGS', 'ORDER', 'THIS ROD', 'NEXT', '▶ RUN', '■ PAUSE', 'CAUTION'],
+      ['APPROACH', 'TURNS', 'SPREAD', 'PITCH', 'EVEN STEPS', 'RANDOM', '▶ STRIKE'],
       ['LOOKING AT', 'WALKED', 'FLAGGED', 'KEY', 'INSPECT', 'HEAD', 'EDGE', 'MAP', '✓ REVEAL KEY', '↺ NEW DRUM'],
       REVIEW,
     ],
     method: [
-      ['STEP', 'DO', 'HEAD', 'SEAT', 'FINGER', 'STAR', 'TAP', 'ADJUST', 'PLAY', 'OTHER', 'BATTER', 'RESONANT', 'CAUTION'],
+      ['STAGE', 'DO', 'HEAD', 'SEAT', 'FINGER', 'STAR', 'TAP', 'ADJUST', 'PLAY', 'OTHER', 'BATTER', 'RESONANT', 'CAUTION'],
       ['LUG', 'TAPPED', 'LUG PITCH', 'SPREAD', '▶ TAP', '◉ REVEAL MAP'],
       ['LUG', 'THIS RUN', 'SPREAD', 'HEAD', 'TURN', 'BATTER', 'RESO', '▶ TAP', '▶ STRIKE', '▶ SHOW ME A MOVE', '↺ NEW HEADS'],
       REVIEW,

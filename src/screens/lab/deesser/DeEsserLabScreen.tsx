@@ -65,7 +65,12 @@ function useRack(): [Settings, (patch: Partial<Settings>) => void] {
   return [s, set];
 }
 
-const touch = (ctx: PageCtx) => { if (!ctx.isDone) ctx.markDone(); };
+/** WORK DONE (phase 3, owner's decision 1, 2026-11-14): using a control no
+ *  longer counts a page. A page with a check counts when its check is answered
+ *  right (manualDone + onCorrect → ctx.markDone); a page with no check is a
+ *  reading page that NEXT counts. Pages already counted keep their ✓. Kept as
+ *  a named no-op so every control's call site reads the same. */
+const touch = (_ctx: PageCtx) => {};
 
 /** Indexes of the sibilant frames. */
 const SIB = PHRASE.map((f, i) => (f.sibilant ? i : -1)).filter((i) => i >= 0);
@@ -191,7 +196,7 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
         options={['It cannot cut deeply enough to tame a loud S', 'It is on all the time, so the vowels lose brightness too', 'EQ bands cannot be placed as high as 6 kHz', 'It adds noise to the recording every time it cuts']}
         correct={1}
         explain="The cut never switches off, so every vowel, breath and bit of air loses the same 8 dB. A de-esser acts only while the detector hears hiss."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -252,7 +257,7 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
         options={['In the signal path, cutting the highs from the whole voice', 'In the side chain, shaping only what the detector listens to', 'After the gain element, cleaning up whatever is left over', 'Nowhere — the detector hears the whole voice, unfiltered']}
         correct={1}
         explain="The filter is in the side chain: it decides, it does not shape the voice. Without it, the detector would react to loud vowels as well as to hiss."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -297,7 +302,7 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
         options={['Working harder, which is what a bright voice needs', 'Ducking the voice on sounds that were never the problem', 'Nothing extra — vowels sit below 2 kHz and cannot trigger it', 'Adding hiss to the vowels to balance the S’s']}
         correct={1}
         explain="Reduction under a vowel means the detector heard enough energy in the band to cross the line. Now the voice dips where there was no hiss to remove — raise the threshold until only the S’s cross."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -365,7 +370,7 @@ function PageFrequency({ ctx }: { ctx: PageCtx }) {
         options={['Increase the range so it can work harder on each word', 'Raise the threshold or re-aim the detector frequency', 'Turn the output gain down so the meter moves less', 'Add an EQ boost above the band so the S’s stand out more']}
         correct={1}
         explain="Reduction on non-sibilant words means the detector is hearing the voice, not the hiss: the threshold is too low or the band is in the wrong place. Range only limits how hard it acts once triggered."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -491,7 +496,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
         options={['Broadband turns down only the hiss band; split-band takes the whole voice down', 'Split-band turns down only the hiss band; broadband takes the whole voice down', 'Both turn down only the hiss band; they differ in how fast they react', 'Both take the whole voice down; they differ in where the detector listens']}
         correct={1}
         explain="Same decision, different action: broadband ducks the whole voice for the moment, split-band attenuates only the band it was listening to."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -541,7 +546,7 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
         options={['The range is too small, so the S’s were never caught', 'Too much reduction — the S’s are being removed, not tamed', 'The detector band is too wide and heard the vowels', 'The microphone was too far away for the detector']}
         correct={1}
         explain="A lisp is the sound of S’s with their hiss taken away. Back off: raise the threshold or lower the range until the S’s are softened, not deleted."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
       <Row><Btn label="RESET RACK TO DEFAULTS" onPress={() => { set({ ...LAB_DEFAULTS }); setAmount(0); }} a11y="Reset every de-esser setting to its default" /></Row>
     </View>
@@ -579,16 +584,31 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
 }
 
 const PAGES: PageDef[] = [
-  { title: 'What Sibilance Is', short: 'Sibilance', Component: PageWhat },
-  { title: 'Why EQ Is Not Enough', short: 'EQ vs de-esser', Component: PageEqVs },
-  { title: 'The Detection Path', short: 'Path', Component: PagePath },
-  { title: 'Threshold', short: 'Threshold', Component: PageThreshold },
-  { title: 'Choosing the Frequency', short: 'Frequency', Component: PageFrequency },
-  { title: 'Reading Gain Reduction', short: 'GR', Component: PageGr },
-  { title: 'Broadband vs Split-Band', short: 'Mode', Component: PageMode },
-  { title: 'Over-De-Essing', short: 'Too much', Component: PageOver },
-  { title: 'Connections & Check', short: 'Check', Component: PageConnections },
+  // Work done (phase 3): a page with a check counts when it is answered right
+  // (manualDone); the two pages with no check are reading pages (NEXT counts).
+  { title: 'What Sibilance Is', short: 'Sibilance', Component: PageWhat, reading: true },
+  { title: 'Why EQ Is Not Enough', short: 'EQ vs de-esser', Component: PageEqVs, manualDone: true },
+  { title: 'The Detection Path', short: 'Path', Component: PagePath, manualDone: true },
+  { title: 'Threshold', short: 'Threshold', Component: PageThreshold, manualDone: true },
+  { title: 'Choosing the Frequency', short: 'Frequency', Component: PageFrequency, manualDone: true },
+  { title: 'Reading Gain Reduction', short: 'GR', Component: PageGr, reading: true },
+  { title: 'Broadband vs Split-Band', short: 'Mode', Component: PageMode, manualDone: true },
+  { title: 'Over-De-Essing', short: 'Too much', Component: PageOver, manualDone: true },
+  { title: 'Connections & Check', short: 'Check', Component: PageConnections, manualDone: true },
 ];
+
+/** WHAT'S LEFT: each unfinished page's own goal (checker K1; S2 `pageDetail`).
+ *  Index = PAGES order. Pages 1 and 6 are reading pages: the shared NEXT rule,
+ *  printed once above the list, is their line (no row of their own). */
+export const DEESSER_STILL_TO_DO: Readonly<Record<number, string>> = {
+  1: 'Still to do: answer its check on why a static EQ cut is a poor de-esser.',
+  2: 'Still to do: answer its check on where the band-pass filter sits.',
+  3: 'Still to do: answer its check on a threshold set too low.',
+  4: 'Still to do: answer its check on a meter that moves on every word.',
+  6: 'Still to do: answer its check on split-band against broadband.',
+  7: 'Still to do: answer its check on a singer who now lisps.',
+  8: 'Still to do: answer its closing question on what a de-esser is.',
+};
 
 export function DeEsserLabScreen() {
   // A fresh rack every time the lab is opened: settings persist across pages,
@@ -604,6 +624,9 @@ export function DeEsserLabScreen() {
       endGuide={DEESSER_END_GUIDE}
       // D41 K8: the certificate credit is the Smart Processors check — the
       // what's-left screen lists it and draws it, so LAB COMPLETE waits for it.
+      // One progress word (phase 3, owner's decision 3): this lab's units are pages.
+      unitNoun="page"
+      pageDetail={(i) => DEESSER_STILL_TO_DO[i]}
       creditCheckLabId="smart-processors"
       creditCheckTitle="Smart Processors Lab"
       // ACCURACY CHIP RULE (owner 2026-10-31): the measurement note stays only

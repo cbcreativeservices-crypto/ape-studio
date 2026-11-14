@@ -148,7 +148,7 @@ export function CymaticsHomeScreen() {
           cleared={end.cleared}
           unreadable={end.unreadable}
           mode="progress"
-          completeTitle="ALL MODULES OPENED"
+          completeTitle="ALL MODULES DONE"
           shownHereId={end.shownHereId}
           extra={end.extra}
           howItCounts={end.howItCounts}

@@ -62,12 +62,12 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
               // 37 characters and cropped to an ellipsis; the tray and the
               // well carry it in full.
               { k: 'DESTINATION', v: dest.name.toUpperCase().split(' ')[0], flex: 2 },
-              { k: 'CONFIRMED', v: `${done.size} / ${dest.confirm.length}`, tint: done.size === dest.confirm.length ? colors.green : colors.amber },
+              { k: 'CONFIRMED', v: done.size === dest.confirm.length ? '✓ ALL' : `${dest.confirm.length - done.size} LEFT`, tint: done.size === dest.confirm.length ? colors.green : colors.amber },
             ],
             params: [
               flipFader({ id: 'dest', label: 'DESTINATION', items: DESTINATIONS, selectedId: destId, onSelect: setDestId, name: (d) => d.name, short: (d) => d.name.split(' ')[0].toUpperCase(), blurb: (d) => d.brief, title: 'DESTINATION', sticky: true }),
               {
-                kind: 'group', id: 'confirm', label: 'CONFIRM', valueLabel: `${done.size}/${dest.confirm.length}`, hideLane: true,
+                kind: 'group', id: 'confirm', label: 'CONFIRM', valueLabel: done.size === dest.confirm.length ? '✓ ALL' : `${dest.confirm.length - done.size} LEFT`, hideLane: true,
                 render: () => (
                   <Checklist items={dest.confirm.map((c, i) => ({ id: String(i), label: c }))} chosen={new Set([...done].map(String))} onToggle={(id) => toggle(Number(id))} />
                 ),

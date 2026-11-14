@@ -64,7 +64,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'This page is for reading. Scroll down, then tap NEXT at the end.',
-      'The strip under the title moves you around the lab: ⏮ goes back to the first page, and ‹ PREV and NEXT › step one page. The readout in the middle (MODULE, with the page number and ▾) opens a list of every page. The strip calls each page a MODULE.',
+      'The strip under the title moves you around the lab: ⏮ goes back to the first page, and ‹ PREV and NEXT › step one page. The readout in the middle (PAGE and its number, with ▾) opens a list of every page.',
       'On later pages you’ll find a display on top, readouts on its frame and controls in the dock at the bottom.',
       'Tap ⓘ beside any page’s title to have that page explained.',
     ],
@@ -359,7 +359,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'Read the table, then answer the check about feeding a tuner. Wrong answers explain themselves; the right one completes the page.',
-      'Come back any time: tap the readout in the middle of the strip (MODULE, with ▾) on any page and pick this page from the list.',
+      'Come back any time: tap the readout in the middle of the strip (PAGE, with ▾) on any page and pick this page from the list.',
     ],
     changes: [
       'The three wirings differ in one thing only: when the normal survives a plug.',
@@ -472,7 +472,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Below them, read the row legend and the status line, and light the three goal chips.',
     ],
     control: [
-      'Ride the PAIR fader through 01–08, or tap it to pick a pair by name. Tapping a column on the bay selects it too.',
+      'Slide the PAIR fader through 01–08, or tap it to pick a pair by name. Tapping a column on the bay selects it too.',
       'TOP JACK and BOTTOM JACK patch the selected pair. Each pair you select starts with empty jacks.',
       'Goal chips: VISIT 4 PAIRS, FIND THE 2 THRU PAIRS and PATCH SOMETHING. Light all three to complete the page.',
     ],

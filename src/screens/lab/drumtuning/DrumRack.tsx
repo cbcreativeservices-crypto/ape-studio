@@ -17,6 +17,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
+import { DRUM_MODEL_NOTES } from './modules/shared';
 
 export { faderParam, optionsParam } from '../amp/AmpRack';
 export { flipFader } from '../soundsystems/rackLayout';
@@ -52,6 +53,8 @@ export function DrumRack({ spec, children }: { spec: DrumRackSpec; children: Rea
         size,
         fullScreen: true,
         badge: spec.badge,
+        // The plain sentence (S3 §2, Phase 3): wins over the badge when known.
+        modelNote: DRUM_MODEL_NOTES[spec.badge],
         bezel: spec.bezel,
         hideDragTag: spec.hideDragTag,
         render: (w, h) => {

@@ -24,7 +24,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, ModeChips, MythReality, PanelCard, ReadoutGrid, dstyles, type ViewMode } from '../bits';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../../meter/moduleGoal';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizChain, type VizChainModule } from '../skiaGate';
@@ -175,7 +176,8 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M', // gain scene pins; the chain + S&H stations read in the well
-        badge: 'ILLUSTRATIVE MODEL — level axis compressed so the noise floor stays visible; noise drawn exaggerated',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'A model: the level axis is squeezed so the noise floor shows; noise is drawn larger.',
         onGuide: () => help('gain_staging'),
         bezel: [
           { k: 'PEAK', v: r.digitalOver ? '0.0 OVER' : `${r.recPeakDb.toFixed(1)} dBFS`, helpKey: 'gain_staging' },
@@ -230,7 +232,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
           ) : (
             <VizUnavailableCard />
           )}
-          <Badge text="ILLUSTRATIVE MODEL — block diagram, not a schematic; the waveform glyph shows the SIGNAL'S FORM at each point" />
+          <Badge text="A model: a block diagram, not a schematic; the small wave shows the signal’s form at each point." />
           {info ? (
             <View style={styles.infoCard}>
               <View style={styles.infoHead}>
@@ -252,7 +254,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>SAMPLE & HOLD — WATCH ONE CELL WORK</Text>
           {viz ? <ShViz viz={viz} width={width} focused={focused} /> : <VizUnavailableCard />}
-          <Badge text="CONCEPTUAL MODEL — SLOWED ~1000×; a real converter does this tens of thousands of times per second" />
+          <Badge text="A model slowed about 1000×; a real converter does this tens of thousands of times a second." />
           <Pressable onPress={() => help('sample_hold')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Sample and hold — guide">
             <Text style={styles.infoGuide}>ⓘ WHAT AM I LOOKING AT?</Text>
           </Pressable>
@@ -264,7 +266,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
           </Text>
         </PanelCard>
 
-        <CheckQuestion spec={ADC_CHECK} />
+        <GoalCheck spec={ADC_CHECK} />
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>
@@ -405,10 +407,11 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the two-fates bus is the star
-        badge:
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote:
           stageView === 'float'
-            ? 'SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields'
-            : 'ILLUSTRATIVE MODEL — one drawn bus; the fixed path clamps at full scale exactly as a 24-bit render does',
+            ? 'Simplified: decimal decades for teaching, not the real IEEE-754 binary fields.'
+            : 'A model of one bus; the fixed path clamps at full scale, as a 24-bit render does.',
         onGuide: () => help(stageView === 'float' ? 'float_vs_int' : 'gain_above_zero'),
         bezel:
           stageView === 'float'
@@ -442,7 +445,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       <View style={{ gap: 12 }}>
         {/* ── Gain above zero (the star — its bus is pinned above) ── */}
         <Text style={dstyles.body}>
-          The same bus, two fates. Ride the GAIN fader, then hit TRIM and watch what each path
+          The same bus, two fates. Slide the GAIN fader, then hit TRIM and watch what each path
           gives back.
         </Text>
         <ReadoutGrid
@@ -462,7 +465,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
           clip only makes a quieter clipped wave. And none of this restores what the ADC clipped:
           float preserves headroom, it never resurrects information.
         </Text>
-        <CheckQuestion spec={FLOAT_CHECK} />
+        <GoalCheck spec={FLOAT_CHECK} />
 
         {/* ── INT vs FLOAT ── */}
         <PanelCard>
@@ -473,7 +476,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
             the whole strip below barely dents it.
           </Text>
           {viz ? <viz.IntFloatRangeView width={width} /> : <VizUnavailableCard />}
-          <Badge text="CONCEPTUAL SCALE — ranges shown in dB; the float bar continues far beyond both edges (~±770 dB for 32-bit float)" />
+          <Badge text="A conceptual scale in dB; the float bar runs far past both edges (about ±770 dB for 32-bit float)." />
           <Pressable onPress={() => help('float_vs_int')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Integer versus float — guide">
             <Text style={styles.infoGuide}>ⓘ WHY TWO NUMBER SYSTEMS?</Text>
           </Pressable>
@@ -483,9 +486,9 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>HOW A FLOAT NUMBER WORKS</Text>
           {viz ? <viz.FloatView width={width} value01={value01} /> : <VizUnavailableCard />}
-          <Badge text="SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields (1 sign · 8 exponent · 23 mantissa bits)" />
+          <Badge text="Simplified: decimal decades for teaching, not the real IEEE-754 fields (1 sign, 8 exponent and 23 mantissa bits)." />
           <Text style={dstyles.caption}>
-            Ride the VALUE fader in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps decade to decade while the MANTISSA slides smoothly between steps. The exponent is why float can represent both whispers and explosions: the ruler itself rescales.
+            Slide the VALUE fader in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps decade to decade while the MANTISSA slides smoothly between steps. The exponent is why float can represent both whispers and explosions: the ruler itself rescales.
           </Text>
         </PanelCard>
 

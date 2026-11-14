@@ -17,7 +17,7 @@ import { checkFeedback, type MicCheckSpec } from './micCheckRule';
 
 export type { MicCheckSpec } from './micCheckRule';
 
-export function MicCheck({ spec }: { spec: MicCheckSpec }) {
+export function MicCheck({ spec, onSolved }: { spec: MicCheckSpec; onSolved?: () => void }) {
   const [order] = useState<number[]>(() => {
     const idx = spec.options.map((_, i) => i);
     for (let i = idx.length - 1; i > 0; i--) {
@@ -61,7 +61,10 @@ export function MicCheck({ spec }: { spec: MicCheckSpec }) {
               onPress={() => {
                 if (solvedRef.current) return;
                 setPicked(i);
-                if (i === spec.correctIdx) solvedRef.current = true;
+                if (i === spec.correctIdx) {
+                  solvedRef.current = true;
+                  onSolved?.();
+                }
                 else setMisses((m) => (m.includes(i) ? m : [...m, i]));
               }}
               style={[styles.opt, good && styles.optGood, bad && styles.optBad]}

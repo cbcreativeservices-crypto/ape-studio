@@ -14,8 +14,8 @@
  *  • MiniConsole — fader/pan/mute/Ø strips with stepper controls (44 pt,
  *    screen-reader adjustable; steppers, not drags — WCAG 2.5.7).
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
-import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
@@ -843,6 +843,43 @@ export function AbPlayer({
   );
 }
 
+/**
+ * GO DEEPER ▾ (phase 3, owner's decision 5, 2026-11-14: "long pages:
+ * beginner core first … fold the depth under Go deeper ▾"). The page's main
+ * experiment comes first; its second lesson (a toolkit list) waits folded
+ * under its own title. Nothing is removed: tap to open; a goal that needs it
+ * still names it at the page's foot. Closed again on every visit.
+ *
+ * A REQUIRED STEP NEVER HIDES (checker K2, 2026-11-14): on these pages the
+ * check draws on the folded list, so `openWhen` opens the fold by itself the
+ * moment the page's first goal (its experiment) is met: the list and the
+ * check then are the next step. While closed, `note` says why to open it.
+ * After that the learner's own taps decide.
+ */
+export function GoDeeper({ title, children, openWhen, note }: { title: string; children: ReactNode; openWhen?: boolean; note?: string }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (openWhen) setOpen(true);
+  }, [openWhen]);
+  return (
+    <View style={styles.deeper}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        style={styles.deeperHead}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${title}. ${open ? 'Fold it away' : 'Go deeper: open it'}`}
+      >
+        <Text style={styles.deeperTitle}>{title}</Text>
+        <Text style={styles.deeperKey}>{open ? 'FOLD ▴' : 'GO DEEPER ▾'}</Text>
+      </Pressable>
+      {!open && note ? <Text style={styles.deeperNote}>{note}</Text> : null}
+      {open ? children : null}
+    </View>
+  );
+}
+
 /** The concept-list pattern the design pass standardised (page 11's term-row
  *  grammar): a short button that opens LEFT-ALIGNED prose beneath it — never
  *  a paragraph baked into a button label. */
@@ -1119,6 +1156,11 @@ const styles = StyleSheet.create({
   // The stepper-column strip styles left with the stepper column itself —
   // the strip is drawn by the gear kit now (../kit/gear.tsx).
   conceptList: { gap: 8 },
+  deeper: { gap: 8 },
+  deeperHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 44 },
+  deeperTitle: { flex: 1, color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
+  deeperKey: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
+  deeperNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   conceptRow: { gap: 4 },
   conceptNote: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
 });

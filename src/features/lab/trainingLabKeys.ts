@@ -56,7 +56,7 @@ export const TRAINING_LABS: readonly TrainingLab[] = [
   // are Comp A's (Downloads\2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql, safe order).
   { route: 'DJSystemsLab', key: 'tr_dj', completion: 'all-modules' },
   // Game Audio Lab [MD:D60] (listed 2026-11-13): complete when every one of
-  // its 22 pages is done — PagedLab's own "lab done" rule, reported through
+  // its 24 pages is done — PagedLab's own "lab done" rule, reported through
   // `labDoneKey`. No backfill: the lab was never on a phone before this key.
   // Its server `labs` row and requirement rows are Comp A's, AFTER the update
   // that reports it is on phones (D60 (f)); until then the server answers

@@ -15,7 +15,7 @@ export type MicCheckSpec = {
   hint?: string;
 };
 
-export const MIC_CHECK_DEFAULT = 'Not that one. Look back at what this lesson showed you, then try another answer.';
+export const MIC_CHECK_DEFAULT = 'Not that one. Look back at what this module showed you, then try another answer.';
 
 /** What the card says now: nothing before a pick; ✓ + reveal when right; the
  *  picked option's reason on a first miss; the reason + reveal from the

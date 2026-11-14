@@ -21,7 +21,7 @@ import { Body, Card, Checklist, DrumStatus, Feedback, KeyButton, KeyTerms, Landi
 import { CAUTION_TEXT, CAUTION_TITLE, DRUM_KEY_TERMS, PREP_ITEMS, prepResult, prepResultLine, revealWaitLine, type PrepFault } from '../drumContent';
 import { DRUMS, DRUM_LIST, TURN_NPM, evenHead, fundamentalHz, lugAngle, meanTension, spreadCents, type DrumKind, type HeadState, type LugCount, type StrikeParams } from '../drumEngine';
 import { ANAT_ASPECT, AnatomyStage, DrumTopStage, STAR_ORDER, TOP_ASPECT, type DrumFaults, type DrumPart, type LookAt, type SoundSync } from '../stagesDrum';
-import { MODEL_BADGE, syncOf, useStrike, type ChapterProps } from './shared';
+import { DRUM_MODEL_NOTES, MODEL_BADGE, syncOf, useStrike, type ChapterProps } from './shared';
 
 const LUG_OPTIONS: { key: LugCount; label: string; short: string; blurb: string }[] = [
   { key: 6, label: '6 lugs (a 10"–13" tom)', short: '6 LUGS', blurb: 'Three opposite pairs: 1 → 4 → 2 → 5 → 3 → 6.' },
@@ -315,7 +315,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           key: 'inspect', title: 'Inspect the hardware', kind: 'LEARN', layout: 'read',
           body: (
             <>
-              <ExpandableFigure aspect={ANAT_ASPECT} badge={MODEL_BADGE} title="HARDWARE" render={(w, h) => <AnatomyStage width={w} height={h} part={hw} />} controls={hardwareChips} />
+              <ExpandableFigure aspect={ANAT_ASPECT} badge={DRUM_MODEL_NOTES[MODEL_BADGE]} title="HARDWARE" render={(w, h) => <AnatomyStage width={w} height={h} part={hw} />} controls={hardwareChips} />
               <SectionTitle>BEFORE TUNING, LOOK — TAP A PART</SectionTitle>
               {hardwareChips}
               <Card tone="accent">
@@ -334,12 +334,12 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             badge: MODEL_BADGE,
             bezel: [
               { k: 'LUGS', v: `${lugs}` },
-              { k: 'STEP', v: `${step + 1} / ${order.length}` },
+              { k: 'ORDER', v: `${step + 1} / ${order.length}` },
               { k: 'THIS ROD', v: `#${order[step] + 1}`, tint: colors.amber },
               { k: 'NEXT', v: step + 1 < order.length ? `#${order[step + 1] + 1}` : 'done', tint: colors.cyan },
             ],
             params: [
-              faderParam({ id: 'step', label: 'STEP', value: step, min: 0, max: order.length - 1, step: 1, format: (v) => `step ${Math.round(v) + 1} of ${order.length} — rod ${order[Math.round(v)] + 1}`, formatShort: (v) => `${Math.round(v) + 1}/${order.length}`, onChange: (v) => { setRunning(false); setStep(Math.round(v)); }, home: 0 }),
+              faderParam({ id: 'step', label: 'ORDER', value: step, min: 0, max: order.length - 1, step: 1, format: (v) => `${Math.round(v) + 1} of ${order.length} in the order — rod ${order[Math.round(v)] + 1}`, formatShort: (v) => `${Math.round(v) + 1}/${order.length}`, onChange: (v) => { setRunning(false); setStep(Math.round(v)); }, home: 0 }),
               optionsParam({ id: 'lugs', label: 'LUGS', value: lugs, options: LUG_OPTIONS, onChange: (v) => { setLugs(v); setStep(0); setRunning(false); } }),
               { kind: 'action', id: 'run', label: running ? '■ PAUSE' : '▶ RUN', onPress: toggleRun },
             ],
@@ -351,7 +351,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
+              <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride ORDER by hand; change LUGS for 6, 8 and 10." />
               <Card>
                 <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all around — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracking sounds from the film are normal.</Point>
                 <Point title="Why opposing">Tightening neighbors in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
@@ -371,12 +371,12 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             badge: MODEL_BADGE,
             bezel: [
               { k: 'APPROACH', v: approach === 'even' ? 'EVEN STEPS' : 'RANDOM', flex: 1.4 },
-              { k: 'STEP', v: `${kStep} / 8` },
+              { k: 'TURNS', v: `${kStep} / 8` },
               { k: 'SPREAD', v: `${knownSpread.toFixed(0)} ¢`, tint: knownSpread <= 10 ? colors.green : knownSpread <= 40 ? colors.amber : colors.red },
               { k: 'PITCH', v: `${fmtHz(knownHz)} Hz`, tint: colors.cyan },
             ],
             params: [
-              faderParam({ id: 'kstep', label: 'STEP', value: kStep, min: 0, max: 8, step: 1, format: (v) => (Math.round(v) === 0 ? 'finger-tight: the known condition' : `after ${Math.round(v)} ${approach === 'even' ? 'even round' : 'random turn'}${Math.round(v) === 1 ? '' : 's'}`), formatShort: (v) => `${Math.round(v)}/8`, onChange: (v) => setKStep(Math.round(v)), home: 0 }),
+              faderParam({ id: 'kstep', label: 'TURNS', value: kStep, min: 0, max: 8, step: 1, format: (v) => (Math.round(v) === 0 ? 'finger-tight' : `${Math.round(v)} ${approach === 'even' ? 'round' : 'turn'}${Math.round(v) === 1 ? '' : 's'}`), formatShort: (v) => `${Math.round(v)}/8`, onChange: (v) => setKStep(Math.round(v)), home: 0 }),
               { kind: 'toggle', id: 'approach', label: approach === 'even' ? 'EVEN STEPS' : 'RANDOM', value: approach === 'even', onToggle: () => setApproach((a) => (a === 'even' ? 'random' : 'even')) },
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: knownStrike.play },
             ],
@@ -385,8 +385,8 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug. The numbers on the head are the order the rods turned, the drum key is on the current rod, and each bar is how far that rod has turned." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
-              <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} failed={knownStrike.failed} rendering={knownStrike.status === 'rendering'} idle="stopped · ride STEP, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
+              <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug. The numbers on the head are the order the rods turned, the drum key is on the current rod, and each bar is how far that rod has turned." prompt="Ride TURNS and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
+              <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} failed={knownStrike.failed} rendering={knownStrike.status === 'rendering'} idle="stopped · ride TURNS, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
               <Card>
                 <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one color and the pitch climbs clean: each step is a whole round of the star. Rod 1, 5, 3, 7, 2, 6, 4, 8, as numbered on the hoop. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
                 <Point title="When a drum is a mess, do not chase it">Back every rod off to finger-tight and come up again in the pattern, an eighth or a quarter of a turn at a time. It is faster than hunting one lug, and it finds hardware faults on the way.</Point>
@@ -403,7 +403,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             badge: MODEL_BADGE,
             bezel: [
               { k: 'LOOKING AT', v: inspecting.short, flex: 1.3, tint: colors.amber },
-              { k: 'WALKED', v: `${walked} / ${inspectPoints.length}` },
+              { k: 'WALKED', v: notLooked ? `${notLooked} LEFT` : 'ALL' },
               { k: 'FLAGGED', v: `${flags.size}` },
               { k: 'KEY', v: revealed ? (perfect ? 'ALL FOUND' : result.missed ? `${result.missed} MISSED` : `${result.extra} EXTRA`) : 'hidden', tint: revealed ? (perfect ? colors.green : colors.amber) : colors.textMuted },
             ],
@@ -437,7 +437,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             <>
               <YourRun lines={[
                 runs.length ? `Checklist: ${runs.length} drum${runs.length === 1 ? '' : 's'} revealed — ${runs.map((r) => `found ${r.found}${r.missed ? `, missed ${r.missed}` : ''}${r.extra ? `, ${r.extra} extra` : ''}`).join('; ')}${runs.some((r) => r.perfect) ? ' — one of them perfect.' : ' — none perfect yet.'}` : 'Checklist: no drum revealed yet.',
-                `Known condition: you took it to step ${kStep} of 8 on ${approach === 'even' ? 'EVEN STEPS' : 'RANDOM'}; SPREAD reads ${knownSpread.toFixed(0)} ¢.`,
+                `Known condition: you took it ${kStep} turn${kStep === 1 ? '' : 's'} on ${approach === 'even' ? 'EVEN STEPS' : 'RANDOM'}; SPREAD reads ${knownSpread.toFixed(0)} ¢.`,
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="A drum will not hold tuning. Name two hardware causes to check before you retune." a="A rod backing out under vibration; a worn or missing washer, a stripped lug insert, a cracked casing." />

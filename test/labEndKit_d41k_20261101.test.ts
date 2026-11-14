@@ -131,7 +131,8 @@ describe('K3 PagedLab START OVER confirm says only what happens', () => {
   it('page-credit labs: credited pages keep their ✓; check-only credit: ticks clear, credit stays; neither: ticks clear', () => {
     assert.match(s, /const pageCredit = !!creditLabKey \|\| pageCreditKeys\.length > 0;/);
     assert.match(s, /const checkCredit = !!check \|\| !!creditCheckId;/);
-    assert.match(s, /pageCredit\s*\? `Starts \$\{title\} again from its first page\. Credited pages keep their ✓\.`\s*: checkCredit\s*\? `Starts \$\{title\} again from its first page and clears its page check marks\. Credit you have already earned stays\.`\s*: `Starts \$\{title\} again from its first page and clears its page check marks\.`/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — the confirm and the CONTENTS rows speak the lab's unitNoun.
+    assert.match(s, /pageCredit\s*\? `Starts \$\{title\} again from its first \$\{unitNoun\}\. Credited \$\{unitNoun\}s keep their ✓\.`\s*: checkCredit\s*\? `Starts \$\{title\} again from its first \$\{unitNoun\} and clears its \$\{unitNoun\} check marks\. Credit you have already earned stays\.`\s*: `Starts \$\{title\} again from its first \$\{unitNoun\} and clears its \$\{unitNoun\} check marks\.`/);
   });
 });
 
@@ -145,7 +146,8 @@ describe('K4 a finished row carries no hands-on line', () => {
 describe('K5 rolled back: the nav’s spoken names keep the visible MODULE', () => {
   it('no a11yNoun plumbing; CONTENTS rows say Module', () => {
     for (const p of ['src/screens/lab/kit/labNav.ts', 'src/screens/lab/kit/useLabNav.ts', 'src/screens/lab/kit/LabNavBar.tsx', 'src/screens/lab/kit/PagedLab.tsx', 'src/screens/lab/soundsystems/SsPagedLab.tsx']) assert.doesNotMatch(code(p), /a11yNoun/, p);
-    assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /`Module \$\{i \+ 1\}`/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — the confirm and the CONTENTS rows speak the lab's unitNoun.
+    assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /`\$\{Noun\} \$\{i \+ 1\}`/);
   });
 });
 

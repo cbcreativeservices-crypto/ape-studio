@@ -24,13 +24,13 @@ import { slotDef } from '../../../features/soundsystems/system';
 import { STATION_LABEL, STATION_ORDER, type Placed, type Station } from '../../../features/soundsystems/types';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import type { DockParam } from '../rack/rackTypes';
-import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, ToolLink, useVisitGoals, VerdictLine } from './bits';
+import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, PickTile, ToolLink, useVisitGoals, VerdictLine } from './bits';
 import { ChainMeterKey, ChainMeterStage } from './art/ChainMeter';
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode } from './art/SystemMap';
 import { FieldKey, PLOT_FS, PLOT_H, PLOT_W, PlotLabel, VenueView, type PlotBeam } from './art/VenueView';
 import { PlanGlyph } from './art/planArt';
 import { ArrivalTimeline, FeedbackLoop } from './art/diagrams';
-import { BEAM_COLOR, PLOT_BADGE, THROW } from './plot';
+import { BEAM_COLOR, THROW } from './plot';
 import { gainBezel, gainReading, gainReadingCopy, gainStageParam, HEADROOM_GOOD_DB } from './gainDock';
 import { lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
@@ -55,7 +55,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'GAIN CHAIN — ILLUSTRATIVE MODEL · teaching values, not a specification',
+        modelNote: 'A teaching model of the gain chain: example values, not a specification.',
         initialParam: 'stage',
         hideDragTag: true,
         bezel: gainBezel(chain, verdict),
@@ -156,7 +156,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'cover',
         hideDragTag: true,
         bezel: [
@@ -287,7 +287,7 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'TIMING RING — ILLUSTRATIVE · delay from distance CALCULATED',
+        modelNote: 'A drawing of the sound arriving; the delay is calculated from distance.',
         initialParam: 'delay',
         hideDragTag: true,
         bezel: [
@@ -445,7 +445,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'FEEDBACK LOOP — ILLUSTRATIVE MODEL · placement buys 12 dB, a notch 4',
+        modelNote: 'A teaching model: here placement buys 12 dB and a notch 4 dB.',
         initialParam: 'send',
         hideDragTag: true,
         bezel: [
@@ -555,12 +555,12 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'THE WALK — ILLUSTRATIVE · readings from a sample fault',
+        modelNote: 'A teaching model: the readings come from a sample fault.',
         initialParam: 'walk',
         hideDragTag: true,
         bezel: [
           { k: 'START', v: STATION_LABEL[METHOD_START].toUpperCase(), flex: 1.4 },
-          { k: 'READ', v: `${probed.length} / ${walk.length}`, flex: 0.8 },
+          { k: 'READ', v: `${probed.length}`, flex: 0.8 },
           { k: 'LAST', v: lastProbed ? STATION_LABEL[lastProbed].toUpperCase() : '—', tint: colors.cyanBright, flex: 1.4 },
           { k: 'FAULT', v: done ? 'FOUND' : '—', tint: done ? colors.green : undefined, flex: 0.8 },
         ],
@@ -600,11 +600,27 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
 
 /* ── 22 · Wrap ──────────────────────────────────────────────────────────── */
 
+/** The four practice modes, opened one at a time on the wrap page. */
+export const WRAP_MODES: readonly { id: string; label: string; what: string }[] = [
+  { id: 'build', label: 'BUILD', what: 'BUILD puts the gear on a venue plot and checks every link.' },
+  { id: 'route', label: 'ROUTE', what: 'ROUTE puts the console under your fingers.' },
+  { id: 'operate', label: 'OPERATE', what: 'OPERATE walks power-up, line check, gain and shutdown.' },
+  { id: 'troubleshoot', label: 'TROUBLESHOOT', what: 'TROUBLESHOOT puts twenty-two faults on the bench.' },
+];
+
 function PageWrap({ ctx }: { ctx: PageCtx }) {
-  useEffect(() => {
-    if (!ctx.isDone) ctx.markDone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Owner decision 1, 2026-11-14 ("done" = work done): this page used to count
+  // the moment it opened. It now counts once each practice mode has been
+  // opened here and read.
+  const [seenModes, setSeenModes] = useState<ReadonlySet<string>>(new Set());
+  const [modeOpen, setModeOpen] = useState<string | null>(null);
+  const goals = [{ label: 'Tap all four practice modes', hit: seenModes.size >= WRAP_MODES.length }];
+  const latched = useVisitGoals(ctx, goals);
+  const openMode = (id: string) => {
+    setModeOpen(id);
+    setSeenModes((s) => new Set([...s, id]));
+  };
+  const shown = WRAP_MODES.find((m) => m.id === modeOpen);
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={14}>WHAT YOU CAN NOW DO</ChapterTag>
@@ -613,7 +629,14 @@ function PageWrap({ ctx }: { ctx: PageCtx }) {
       </Lead>
       <Card tone="ok">
         <Eyebrow>THE FOUR OTHER MODES</Eyebrow>
-        <Body>BUILD puts the gear on a venue plot and checks every link. ROUTE puts the console under your fingers. OPERATE walks power-up, line check, gain and shutdown. TROUBLESHOOT puts twenty-two faults on the bench. The lab’s home page lists what is still outstanding for credit.</Body>
+        <Body>Tap each one to read what it practices. The lab’s home page lists what is still outstanding for credit.</Body>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {WRAP_MODES.map((m) => (
+            <PickTile key={m.id} label={m.label} selected={modeOpen === m.id} done={seenModes.has(m.id)} onPress={() => openMode(m.id)} />
+          ))}
+        </View>
+        {shown ? <Body>{shown.what}</Body> : null}
+        <GoalChips goals={goals} latched={latched} />
       </Card>
       <Card>
         <Eyebrow>NEXT</Eyebrow>

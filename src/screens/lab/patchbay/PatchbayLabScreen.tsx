@@ -88,6 +88,8 @@ export function PatchbayLabScreen() {
 
   return (
     <PagedLab
+      // One word for the unit everywhere (owner's decision 3, phase 3): the lab's own copy says page.
+      unitNoun="page"
       labId="patchbay"
       title="Patchbay Signal Flow & Normalling"
       subtitle="On most bays, top is the source and bottom is the destination. A normal is the path that exists when you do nothing — and patching changes that path."

@@ -313,7 +313,8 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.doesNotMatch(SCREEN, /creditLabKey=|labDoneKey=|optionalPage=/, 'the guide assumes none of these — update it');
     assert.match(SCREEN, /pageDetail={pageDetail}/);
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
-    assert.match(PAGED, /mode=\{creditMode\}\s*noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(PAGED, /mode=\{creditMode\}\s*noun=\{unitNoun\}/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.ok(ET.includes('✓ CREDITED') && ET.includes('✓ DONE if you aren’t signed in'));
   });
@@ -367,7 +368,7 @@ describe('5. the accuracy chip: KEPT — the lab shows measured level readouts',
     assert.doesNotMatch(code(`${MX}/BeginningMixingLabScreen.tsx`), /accuracy=\{false\}/);
     // Lab fix round 2026-11-14 (S3's shared need, owner approval "Begin fixing all bugs found and do obvious ...
     // fixes as you suggested in the report"): PagedLab also takes accuracyVariant; the default stays true / 'tool'.
-    assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, endGuide, accuracy = true, accuracyVariant \}/);
+    assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, endGuide, accuracy = true, accuracyVariant, unitNoun = 'module' \}/);
   });
   it('the reason is on screen: Gain Staging draws measured meters', () => {
     assert.match(code(`${MX}/begArt.tsx`), /sub=\{a \? 'MEASURED' : 'PLAY IT'\}/);

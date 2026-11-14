@@ -439,12 +439,12 @@ export function EnsembleSetups(p: PageProps) {
   const eqRings = useMemo(() => (eq ? [eq.ring] : []), [eq]);
   const bezel: BezelItem[] = plot
     ? [
-        { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
+        { k: 'SETUP', v: sel ? `${i + 1}` : '—', flex: 0.8 },
         { k: 'OPEN MICS', v: `${plot.open}`, flex: 1 },
         { k: 'MARGIN LOST', v: plot.open > 1 ? `${plot.nom.toFixed(1)} dB` : '0 dB', flex: 1 },
       ]
     : [
-        { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
+        { k: 'SETUP', v: sel ? `${i + 1}` : '—', flex: 0.8 },
         { k: 'ARRAY', v: sel?.short ?? (sel?.rig ? ARRAYS[sel.rig.id].short : sel ? ((sel.singles?.length ?? 0) > 1 ? 'CLOSE MICS' : 'SPOT') : '—'), flex: 1.1 },
         { k: 'HEIGHT', v: c ? fmtM(-c.y) : '—', flex: 0.9 },
       ];
@@ -465,8 +465,8 @@ export function EnsembleSetups(p: PageProps) {
             label: 'SETUP',
             value: list.length > 1 ? i / (list.length - 1) : 0,
             onChange: (v) => setIdx(Math.round(v * (list.length - 1))),
-            format: () => (sel ? `${i + 1} of ${list.length} · ${sel.role.toLowerCase()}` : 'no setup'),
-            formatShort: () => `${i + 1} / ${list.length}`,
+            format: () => (sel ? `${sel.role.toLowerCase()}` : 'no setup'),
+            formatShort: () => `${i + 1}`,
           }),
           { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? sel.role.split(' ')[0] : '—', selectedId: sel?.id ?? null, onSelect: (id) => setIdx(Math.max(0, list.findIndex((q) => q.id === id))), sticky: true, options: list.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
           ...viewParam(view, setView, VW, viewsFor(lesson)),
@@ -800,7 +800,7 @@ export function EnsemblePlacement(p: PageProps) {
           { k: `${exStep === 3 ? '▸ ' : ''}${exC.z >= 0 ? 'IN FRONT' : 'BEHIND'}`, v: fmtM(Math.abs(exC.z)), tint: exStep === 3 ? '#ffc64d' : undefined, flex: 0.9 },
           { k: exStep >= 4 ? '▸ NEAR / FAR' : 'NEAR / FAR', v: `${exBias.toFixed(0)} dB`, tint: exStep >= 4 ? '#ffc64d' : undefined, flex: 1 },
         ],
-        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1} / ${pieces.length}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep)],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep)],
         initialParam: 'piece',
       },
       well: (

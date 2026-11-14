@@ -33,7 +33,9 @@ import {
   dstyles,
   type ViewMode,
 } from '../bits';
-import { CheckQuestion, VizUnavailableCard } from '../../foundations/bits';
+import { VizUnavailableCard } from '../../foundations/bits';
+import { GoalCheck } from '../../meter/moduleGoal';
+import { CollapsibleSection } from '../../LabShell';
 import { LabChip } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -106,7 +108,7 @@ const LAYER_CHIPS: { key: LayerKey; label: string }[] = [
 ];
 
 const OS_CHOICES: (1 | 2 | 4 | 8)[] = [1, 2, 4, 8];
-const IMAGES_BADGE = 'ILLUSTRATIVE SPECTRA — MIRROR IMAGES FROM THE MATH, FREQUENCY AXIS SQUEEZED (√f) · NOT A MEASUREMENT';
+const IMAGES_BADGE = 'Mirror images from the math on a squeezed (√f) frequency axis; not a measurement.';
 
 export function DacModule({ width, focused, help }: DigitalModuleProps) {
   const viz = useState(() => requireVizDac())[0];
@@ -237,12 +239,13 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the four-layer hero IS the module
-        badge:
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote:
           stageView === 'isp'
-            ? 'EXACT SINE MATH · 16 SAMPLES NORMALIZED TO −0.1 dBFS · THE CONTINUOUS CURVE IS WHAT THE DAC OUTPUTS'
+            ? 'Exact sine math: 16 samples at −0.1 dBFS; the smooth curve is what the DAC outputs.'
             : stageView === 'images'
               ? IMAGES_BADGE
-              : 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
+              : 'A slowed model; the held steps (ZOH) are drawn as the in-between stage they are.',
         onGuide: () => help(stageView === 'isp' ? 'isp' : stageView === 'images' ? 'oversampling' : 'reconstruction'),
         bezel:
           stageView === 'isp'
@@ -324,68 +327,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
           </Text>
         </PanelCard>
 
-        {/* ── Frequency domain: images + oversampling ──────────────────────── */}
-        <PanelCard>
-          <PanelHead title="SPECTRAL IMAGES & OVERSAMPLING" helpLabel="spectral images" onHelp={() => help('spectral_images')} />
-          <Text style={dstyles.body}>
-            In the frequency domain, sampling mirrored the audio spectrum around every multiple of the
-            sample rate. The reconstruction filter's job is to remove those images. Oversample and the
-            images slide far away — so the analog filter can relax from a cliff into a gentle slope.
-            Pick an oversampling rate with OS RATE in the dock.
-          </Text>
-          {/* The oversampling choice is the OVERSAMP dock key now. */}
-          {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
-          <ReadoutGrid
-            help={help}
-            helpKey="oversampling"
-            items={[
-              { k: 'OUTPUT RATE', v: `${os} × 48 kHz` },
-              { k: 'FIRST IMAGE AT', v: `${os * 48} kHz` },
-              { k: 'FILTER TRANSITION', v: `20 → ${os * 48 - 20} kHz` },
-            ]}
-          />
-          <Badge text={IMAGES_BADGE} />
-          <Text style={dstyles.caption}>
-            Oversampling relaxes the analog filter — it adds no new information. The audio band was
-            fully described by the original samples; the extra rate only buys engineering room.
-          </Text>
-        </PanelCard>
-
-        {/* ── Inter-sample peaks — the advanced star ───────────────────────── */}
-        <PanelCard>
-          <PanelHead title="INTER-SAMPLE PEAK EXPLORER" helpLabel="inter-sample peaks" onHelp={() => help('isp')} />
-          <Text style={dstyles.body}>
-            A near-Nyquist sine, its samples normalized to −0.1 dBFS — every stored value is legal, and
-            a sample-peak meter approves. But the continuous waveform the DAC must reconstruct arcs
-            ABOVE 0 dBFS between the samples. Ride PHASE in the dock and watch the true peak swing while the
-            samples never move past the line.
-          </Text>
-          {/* FREQUENCY and SAMPLE PHASE are the ISP FREQ and PHASE dock keys now. */}
-          {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
-          <ReadoutGrid
-            help={help}
-            helpKey="isp"
-            items={[
-              { k: 'SAMPLE PEAK', v: `${isp.samplePeakDb.toFixed(2)} dBFS` },
-              { k: 'TRUE PEAK', v: `${isp.truePeakDb >= 0 ? '+' : ''}${isp.truePeakDb.toFixed(2)} dBTP` },
-              { k: 'METER MISSES', v: `${isp.missDb.toFixed(2)} dB` },
-            ]}
-          />
-          <View style={[local.riskRow, isp.clipRisk ? local.riskOn : local.riskOff]}>
-            <Text style={[local.riskText, { color: isp.clipRisk ? colors.red : colors.greenBright }]}>
-              {isp.clipRisk
-                ? '⚠ CLIP RISK — reconstruction exceeds 0 dBFS: the DAC or a downstream encoder can overload'
-                : '✓ NO OVERSHOOT — at this phase a sample lands close enough to the crest'}
-            </Text>
-          </View>
-          <Text style={dstyles.caption}>
-            Exact math for a pure sine: where the samples land in phase sets the SAMPLE peak; the
-            sine's amplitude is the TRUE peak. This gap is why sample-peak meters miss what true-peak
-            meters catch — true-peak metering oversamples to estimate the reconstructed waveform.
-          </Text>
-        </PanelCard>
-
-        <CheckQuestion
+        <GoalCheck
           spec={{
             question: 'The reconstruction filter’s output — the waveform on the DAC’s analog connector — looks like:',
             options: [
@@ -403,24 +345,86 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             wrongHint: 'Look at the main display: the bright output curve never touches a step corner and is never a straight segment.',
           }}
         />
-        <CheckQuestion
-          spec={{
-            question: 'Every sample in a file sits below 0 dBFS. Can the DAC’s analog output still overload?',
-            options: [
-              'No — the samples are the signal, so below 0 dBFS is always safe',
-              'Yes — the reconstructed waveform between samples can rise above 0 dBFS',
-              'Only if the file is floating point',
-            ],
-            correctIdx: 1,
-            why: {
-              0: 'The DAC draws a curve through the samples; between them it can swing higher.',
-              2: 'Float or fixed, the curve between samples is the same. Look at the INTER-SAMPLE PEAKS view.',
-            },
-            reveal:
-              'Yes. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
-            wrongHint: 'The explorer above shows legal samples with the reconstruction glowing red above the 0 dBFS line.',
-          }}
-        />
+        {/* Two lessons on one page (phase 3, owner decision 5): reconstruction first; images, oversampling and inter-sample peaks folded here. The OS RATE, ISP FREQ and PHASE dock keys still drive the display. */}
+        <CollapsibleSection title="PART 2 · OVERSAMPLING AND INTER-SAMPLE PEAKS" startOpen={false}>
+          <PanelCard>
+            <PanelHead title="SPECTRAL IMAGES & OVERSAMPLING" helpLabel="spectral images" onHelp={() => help('spectral_images')} />
+            <Text style={dstyles.body}>
+              In the frequency domain, sampling mirrored the audio spectrum around every multiple of the
+              sample rate. The reconstruction filter's job is to remove those images. Oversample and the
+              images slide far away — so the analog filter can relax from a cliff into a gentle slope.
+              Pick an oversampling rate with OS RATE in the dock.
+            </Text>
+            {/* The oversampling choice is the OVERSAMP dock key now. */}
+            {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
+            <ReadoutGrid
+              help={help}
+              helpKey="oversampling"
+              items={[
+                { k: 'OUTPUT RATE', v: `${os} × 48 kHz` },
+                { k: 'FIRST IMAGE AT', v: `${os * 48} kHz` },
+                { k: 'FILTER TRANSITION', v: `20 → ${os * 48 - 20} kHz` },
+              ]}
+            />
+            <Badge text={IMAGES_BADGE} />
+            <Text style={dstyles.caption}>
+              Oversampling relaxes the analog filter — it adds no new information. The audio band was
+              fully described by the original samples; the extra rate only buys engineering room.
+            </Text>
+          </PanelCard>
+
+          <PanelCard>
+            <PanelHead title="INTER-SAMPLE PEAK EXPLORER" helpLabel="inter-sample peaks" onHelp={() => help('isp')} />
+            <Text style={dstyles.body}>
+              A near-Nyquist sine, its samples normalized to −0.1 dBFS — every stored value is legal, and
+              a sample-peak meter approves. But the continuous waveform the DAC must reconstruct arcs
+              ABOVE 0 dBFS between the samples. Ride PHASE in the dock and watch the true peak swing while the
+              samples never move past the line.
+            </Text>
+            {/* FREQUENCY and SAMPLE PHASE are the ISP FREQ and PHASE dock keys now. */}
+            {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
+            <ReadoutGrid
+              help={help}
+              helpKey="isp"
+              items={[
+                { k: 'SAMPLE PEAK', v: `${isp.samplePeakDb.toFixed(2)} dBFS` },
+                { k: 'TRUE PEAK', v: `${isp.truePeakDb >= 0 ? '+' : ''}${isp.truePeakDb.toFixed(2)} dBTP` },
+                { k: 'METER MISSES', v: `${isp.missDb.toFixed(2)} dB` },
+              ]}
+            />
+            <View style={[local.riskRow, isp.clipRisk ? local.riskOn : local.riskOff]}>
+              <Text style={[local.riskText, { color: isp.clipRisk ? colors.red : colors.greenBright }]}>
+                {isp.clipRisk
+                  ? '⚠ CLIP RISK — reconstruction exceeds 0 dBFS: the DAC or a downstream encoder can overload'
+                  : '✓ NO OVERSHOOT — at this phase a sample lands close enough to the crest'}
+              </Text>
+            </View>
+            <Text style={dstyles.caption}>
+              Exact math for a pure sine: where the samples land in phase sets the SAMPLE peak; the
+              sine's amplitude is the TRUE peak. This gap is why sample-peak meters miss what true-peak
+              meters catch — true-peak metering oversamples to estimate the reconstructed waveform.
+            </Text>
+          </PanelCard>
+
+          <GoalCheck
+            spec={{
+              question: 'Every sample in a file sits below 0 dBFS. Can the DAC’s analog output still overload?',
+              options: [
+                'No — the samples are the signal, so below 0 dBFS is always safe',
+                'Yes — the reconstructed waveform between samples can rise above 0 dBFS',
+                'Only if the file is floating point',
+              ],
+              correctIdx: 1,
+              why: {
+                0: 'The DAC draws a curve through the samples; between them it can swing higher.',
+                2: 'Float or fixed, the curve between samples is the same. Look at the INTER-SAMPLE PEAKS view.',
+              },
+              reveal:
+                'Yes. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
+              wrongHint: 'The explorer above shows legal samples with the reconstruction glowing red above the 0 dBFS line.',
+            }}
+          />
+        </CollapsibleSection>
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>
@@ -525,7 +529,8 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M', // the jitter scene operates; the charter reads below
-        badge: 'TIMING DEVIATION EXAGGERATED ×1000 FOR VISIBILITY — ILLUSTRATIVE MODEL',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'A model: timing errors are drawn 1000 times larger so you can see them.',
         onGuide: () => help('jitter'),
         bezel: [
           // Unit on its own line so INTERVAL keeps its key at 390 (beginner audit 2026-11-14).
@@ -582,112 +587,112 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
           </View>
         </PanelCard>
 
-        {/* ── The charter panel ────────────────────────────────────────────── */}
-        <PanelCard>
-          <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
-          <Text style={dstyles.body}>
-            Every classic digital-audio myth, next to what is actually true. If one line of this lab
-            stays in your memory, make it one of these.
-          </Text>
-          {MYTHS.map((m) => (
-            <MythReality key={m.myth} myth={m.myth} reality={m.reality} />
-          ))}
-        </PanelCard>
+        <GoalCheck spec={CLOCKING_CHECK} />
+        {/* Two lessons on one page (phase 3, owner decision 5): jitter and clocking first; the myth charter, the data-rate math and the four review checks folded here. */}
+        <CollapsibleSection title="PART 2 · MYTHS, DATA RATE AND THE LAB REVIEW" startOpen={false}>
+          <PanelCard>
+            <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
+            <Text style={dstyles.body}>
+              Every classic digital-audio myth, next to what is actually true. If one line of this lab
+              stays in your memory, make it one of these.
+            </Text>
+            {MYTHS.map((m) => (
+              <MythReality key={m.myth} myth={m.myth} reality={m.reality} />
+            ))}
+          </PanelCard>
 
-        {/* ── Data rate — the mental math ──────────────────────────────────── */}
-        <PanelCard>
-          <PanelHead title="DATA RATE — THE MENTAL MATH" helpLabel="data rate" onHelp={() => help('data_rate')} />
-          <ReadoutGrid
-            help={help}
-            helpKey="data_rate"
-            items={[
-              { k: 'FORMAT', v: '48k × 24-bit × 2ch' },
-              { k: 'BIT RATE', v: '2.304 Mbit/s' },
-              { k: 'STORAGE', v: '≈ 17.3 MB/min' },
-            ]}
+          <PanelCard>
+            <PanelHead title="DATA RATE — THE MENTAL MATH" helpLabel="data rate" onHelp={() => help('data_rate')} />
+            <ReadoutGrid
+              help={help}
+              helpKey="data_rate"
+              items={[
+                { k: 'FORMAT', v: '48k × 24-bit × 2ch' },
+                { k: 'BIT RATE', v: '2.304 Mbit/s' },
+                { k: 'STORAGE', v: '≈ 17.3 MB/min' },
+              ]}
+            />
+            <Text style={dstyles.caption}>
+              Rate = sample rate × bit depth × channels. Do it once in your head and you can sanity-check
+              any session. The full calculator (with storage planning) lives in the Calculator
+              Laboratory.
+            </Text>
+          </PanelCard>
+
+          <GoalCheck
+            spec={{
+              question: 'Which signal chain is in the correct order?',
+              options: [
+                'mic → ADC → preamp → anti-aliasing → DSP → reconstruction → DAC → amp → speaker',
+                'mic → preamp → anti-aliasing → ADC → DSP → DAC → reconstruction → amp → speaker',
+                'mic → preamp → ADC → anti-aliasing → DSP → DAC → amp → reconstruction → speaker',
+              ],
+              correctIdx: 1,
+              why: {
+                0: 'The preamp has to raise the mic level before conversion. Check where the ADC sits.',
+                2: 'The anti-aliasing filter has to act BEFORE sampling, and reconstruction right after the DAC.',
+              },
+              reveal:
+                'Analog gain and the anti-aliasing filter must come BEFORE the ADC (nothing above Nyquist may reach the sampler), and the reconstruction filter comes right AFTER the DAC — before amplification.',
+              wrongHint: 'In the classic model drawn here, two anchors: anti-aliasing comes right before the ADC; reconstruction comes right after the DAC.',
+            }}
           />
-          <Text style={dstyles.caption}>
-            Rate = sample rate × bit depth × channels. Do it once in your head and you can sanity-check
-            any session. The full calculator (with storage planning) lives in the Calculator
-            Laboratory.
-          </Text>
-        </PanelCard>
-
-        {/* ── Knowledge checks ─────────────────────────────────────────────── */}
-        <CheckQuestion
-          spec={{
-            question: 'Which signal chain is in the correct order?',
-            options: [
-              'mic → ADC → preamp → anti-aliasing → DSP → reconstruction → DAC → amp → speaker',
-              'mic → preamp → anti-aliasing → ADC → DSP → DAC → reconstruction → amp → speaker',
-              'mic → preamp → ADC → anti-aliasing → DSP → DAC → amp → reconstruction → speaker',
-            ],
-            correctIdx: 1,
-            why: {
-              0: 'The preamp has to raise the mic level before conversion. Check where the ADC sits.',
-              2: 'The anti-aliasing filter has to act BEFORE sampling, and reconstruction right after the DAC.',
-            },
-            reveal:
-              'Analog gain and the anti-aliasing filter must come BEFORE the ADC (nothing above Nyquist may reach the sampler), and the reconstruction filter comes right AFTER the DAC — before amplification.',
-            wrongHint: 'In the classic model drawn here, two anchors: anti-aliasing comes right before the ADC; reconstruction comes right after the DAC.',
-          }}
-        />
-        <CheckQuestion
-          spec={{
-            question: 'A recorded waveform shows peaks sliced flat at a constant ceiling. Which stage did the damage?',
-            options: [
-              'The reconstruction filter smoothing too hard',
-              'Jitter on the DAC clock',
-              'Clipping at or before the ADC: driven past full scale',
-            ],
-            correctIdx: 2,
-            why: {
-              0: 'Reconstruction rounds and smooths. It does not slice peaks flat.',
-              1: 'Jitter makes tiny timing errors, not a flat ceiling on every peak.',
-            },
-            reveal:
-              'Flat-topped peaks are clipping: the signal hit the ceiling of the analog stage or the converter’s full scale. The information above the ceiling was never stored — no later stage can bring it back.',
-            wrongHint: 'The reconstruction filter and clock change timing/smoothness — neither slices amplitude flat.',
-          }}
-        />
-        <CheckQuestion
-          spec={{
-            // Different numbers from Module 2's fold check on purpose (learning
-            // pass 2026-08-31): the same 48k/30k pair in both modules meant the
-            // second sighting tested recognition of an answer, not retrieval of
-            // the formula.
-            question: 'fs = 44.1 kHz, no anti-aliasing filter, and a 26 kHz tone reaches the sampler. What frequency lands in the file?',
-            options: ['26 kHz', '22.05 kHz', '18.1 kHz', 'Nothing — it disappears'],
-            correctIdx: 2,
-            why: {
-              0: '26 kHz is above Nyquist for 44.1 kHz, so it cannot be stored as itself.',
-              1: '22.05 kHz is Nyquist itself, the limit, not where 26 kHz lands.',
-              3: 'Without a filter, nothing removes it: it folds to another frequency.',
-            },
-            reveal:
-              'Above Nyquist (22.05 kHz) the tone folds: alias = |26 − 44.1| = 18.1 kHz. The samples fit an 18.1 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
-            wrongHint: 'Fold it around Nyquist: alias = |f − nearest multiple of fs|.',
-          }}
-        />
-        <CheckQuestion
-          spec={{
-            question: 'You archive long spoken-word interviews and, separately, multitrack music masters. A sensible format pairing?',
-            options: [
-              'Everything at 192 kHz / 32-bit float — higher is always better',
-              'Spoken word 48 kHz / 24-bit mono; music masters 96 kHz / 24-bit — spend bandwidth where it pays',
-              'Spoken word 192 kHz for sibilance; music 44.1 kHz / 16-bit to save space',
-            ],
-            correctIdx: 1,
-            why: {
-              0: 'Higher settings cost space and buy nothing a voice can use.',
-              2: 'Speech does not need 192 kHz, and 16-bit leaves masters little headroom to work with.',
-            },
-            reveal:
-              'Match the format to the content: speech stays clear with far less bandwidth than music, but wants headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
-            wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
-          }}
-        />
-        <CheckQuestion spec={CLOCKING_CHECK} />
+          <GoalCheck
+            spec={{
+              question: 'A recorded waveform shows peaks sliced flat at a constant ceiling. Which stage did the damage?',
+              options: [
+                'The reconstruction filter smoothing too hard',
+                'Jitter on the DAC clock',
+                'Clipping at or before the ADC: driven past full scale',
+              ],
+              correctIdx: 2,
+              why: {
+                0: 'Reconstruction rounds and smooths. It does not slice peaks flat.',
+                1: 'Jitter makes tiny timing errors, not a flat ceiling on every peak.',
+              },
+              reveal:
+                'Flat-topped peaks are clipping: the signal hit the ceiling of the analog stage or the converter’s full scale. The information above the ceiling was never stored — no later stage can bring it back.',
+              wrongHint: 'The reconstruction filter and clock change timing/smoothness — neither slices amplitude flat.',
+            }}
+          />
+          <GoalCheck
+            spec={{
+              // Different numbers from Module 2's fold check on purpose (learning
+              // pass 2026-08-31): the same 48k/30k pair in both modules meant the
+              // second sighting tested recognition of an answer, not retrieval of
+              // the formula.
+              question: 'fs = 44.1 kHz, no anti-aliasing filter, and a 26 kHz tone reaches the sampler. What frequency lands in the file?',
+              options: ['26 kHz', '22.05 kHz', '18.1 kHz', 'Nothing — it disappears'],
+              correctIdx: 2,
+              why: {
+                0: '26 kHz is above Nyquist for 44.1 kHz, so it cannot be stored as itself.',
+                1: '22.05 kHz is Nyquist itself, the limit, not where 26 kHz lands.',
+                3: 'Without a filter, nothing removes it: it folds to another frequency.',
+              },
+              reveal:
+                'Above Nyquist (22.05 kHz) the tone folds: alias = |26 − 44.1| = 18.1 kHz. The samples fit an 18.1 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
+              wrongHint: 'Fold it around Nyquist: alias = |f − nearest multiple of fs|.',
+            }}
+          />
+          <GoalCheck
+            spec={{
+              question: 'You archive long spoken-word interviews and, separately, multitrack music masters. A sensible format pairing?',
+              options: [
+                'Everything at 192 kHz / 32-bit float — higher is always better',
+                'Spoken word 48 kHz / 24-bit mono; music masters 96 kHz / 24-bit — spend bandwidth where it pays',
+                'Spoken word 192 kHz for sibilance; music 44.1 kHz / 16-bit to save space',
+              ],
+              correctIdx: 1,
+              why: {
+                0: 'Higher settings cost space and buy nothing a voice can use.',
+                2: 'Speech does not need 192 kHz, and 16-bit leaves masters little headroom to work with.',
+              },
+              reveal:
+                'Match the format to the content: speech stays clear with far less bandwidth than music, but wants headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
+              wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
+            }}
+          />
+        </CollapsibleSection>
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>

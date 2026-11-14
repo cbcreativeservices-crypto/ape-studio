@@ -104,7 +104,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
           key: 'relationships', title: 'Three relationships', kind: 'LEARN', layout: 'read',
           body: (
             <>
-              <ExpandableFigure aspect={ANAT_ASPECT} badge="MODEL · the air couples the heads" title="THE AIR" render={(w, h) => <AnatomyStage width={w} height={h} part="air" />} />
+              <ExpandableFigure aspect={ANAT_ASPECT} badge="A model: the air inside couples the two heads." title="THE AIR" render={(w, h) => <AnatomyStage width={w} height={h} part="air" />} />
               <SectionTitle>TWO HEADS, ONE INSTRUMENT</SectionTitle>
               <Body>Once each head is even, the drum's sound is set by how the two relate. The batter pushes the air; the air pushes the resonant head; the two trade the sound back and forth for as long as the note lasts. Where the resonant head sits against the batter decides where that energy ends up — and how long it stays.</Body>
               <Card>
@@ -152,7 +152,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="one hit of the tom; the green mark is where it has died away." prompt="SET a relationship, ▶ STRIKE, compare — then say which rang longest." />
-              <DrumStatus playing={pb.playing} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} idle={`stopped · heard ${heard.size} of 3 relationships · SET one, press ▶ STRIKE`} label="the strike" />
+              <DrumStatus playing={pb.playing} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} idle={`stopped · ${3 - heard.size} relationship${3 - heard.size === 1 ? '' : 's'} still to hear · SET one, press ▶ STRIKE`} label="the strike" />
               <Feedback tone="info">{`${relInfo.label}: ${relInfo.tends}`}</Feedback>
               {allHeard ? (
                 <Card tone="accent">
@@ -173,7 +173,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
               ) : (
                 <Card>
                   {/* Credit needs the strikes heard (fix round 2026-11-14, S3 §2); the readouts still show the comparison silently. */}
-                  <Point title="Credit"><NeedsSoundTag /> Strike the drum with all three relationships set (RESO ↑, EQUAL, BATTER ↑) — {heard.size} of 3 so far — then answer one question.</Point>
+                  <Point title="Credit"><NeedsSoundTag /> Strike the drum with all three relationships set (RESO ↑, EQUAL, BATTER ↑) — {3 - heard.size} still to strike — then answer one question.</Point>
                 </Card>
               )}
               <WhyCard title="WHY · what you are hearing">
@@ -206,9 +206,9 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
           body: (
             <>
               <YourRun lines={[
-                heard.size ? `Heard ${heard.size} of 3 relationships: ${[...heard].map(([k, v]) => `${RELATIONSHIPS.find((r) => r.id === k)!.short} ${fmtS(v)}`).join(' · ')}.` : 'No relationship heard yet.',
+                heard.size ? `Relationships heard: ${[...heard].map(([k, v]) => `${RELATIONSHIPS.find((r) => r.id === k)!.short} ${fmtS(v)}`).join(' · ')}.` : 'No relationship heard yet.',
                 firstLongest ? `Which rang longest: you first said ${RELATIONSHIPS.find((r) => r.id === firstLongest)!.short}${longestRight ? ' — right.' : measuredLongest ? `; the measurement says ${RELATIONSHIPS.find((r) => r.id === measuredLongest)!.short}.` : '.'}` : 'Which rang longest: not answered yet.',
-                reached ? `Decisions: ${reached} of ${WHOLE_SCENARIOS.length} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
+                reached ? `Decisions: ${reached} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="Which relationship tends to sustain longest in this model, and why?" a="Equal heads: the two trade the sound back and forth freely, and the resonant head — with no stick on it — keeps whatever lands on it longest." />

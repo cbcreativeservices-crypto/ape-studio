@@ -30,7 +30,8 @@ export function useCymaticsEnd(visited: ReadonlySet<string>, visitsUnreadable: b
     unreadable: visitsUnreadable || (hasCheck && completionUnreadable),
     shownHereId: hasCheck ? CYMATICS_CHECK_ROW : undefined,
     /** The rule every module row shares, said once (S2 §4). */
-    howItCounts: 'A module counts once you open it. The check counts once every answer is right.',
+    // Work done, not opened (owner decision 1, 2026-11-14).
+    howItCounts: 'A module counts once you work through it and move on with NEXT › (FINISH › on the last). Modules already counted stay counted. The check counts once every answer is right.',
     extra: hasCheck ? <LabUnderstandingBlock labId="cymatics" labTitle="Cymatics Lab" /> : undefined,
   };
 }

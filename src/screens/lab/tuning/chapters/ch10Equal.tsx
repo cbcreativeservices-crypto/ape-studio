@@ -85,7 +85,7 @@ export function Ch10Equal({ ctx }: ChapterProps) {
         initialParam: 'steps',
         hideDragTag: true,
         bezel: [
-          { k: 'STEP', v: `${built}/12`, flex: 0.8, caption: 'steps added' },
+          { k: 'STEP', v: `${built}`, flex: 0.8, caption: 'steps added' },
           { k: 'RATIO', v: built === 0 ? '1' : CHROMA[built].value.decimalLabel, tint: colors.gold, flex: 1.2, caption: 'times C' },
           { k: 'Hz', v: `${hz(built).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
           soundCell(status),

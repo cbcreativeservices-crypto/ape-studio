@@ -27,7 +27,7 @@ type Param = {
   onToggle?: () => void;
   render?: () => unknown;
 };
-type Stage = { badge: string; bezel: { k: string; v: string }[]; render: (w: number, h: number) => unknown; onGuide: () => void };
+type Stage = { modelNote: string; bezel: { k: string; v: string }[]; render: (w: number, h: number) => unknown; onGuide: () => void };
 
 const anything = (): unknown => new Proxy(function () {}, { get: (_t, k) => (k === Symbol.toPrimitive ? () => '' : anything()), apply: () => anything() });
 
@@ -123,7 +123,8 @@ describe('Module 3: DITHER answers on the pinned display', () => {
     const bezel = t.rack().stage.bezel;
     assert.deepEqual(bezel.find((b) => b.k === 'DITHER')?.v, 'RPDF');
     assert.equal(bezel.find((b) => b.k === 'BITS'), undefined, 'BITS does not drive this chart');
-    assert.match(t.rack().stage.badge, /REAL DITHER MATH/);
+    // S3 plain model note since phase 3 (owner decision 3; checker K3 F-1, 2026-11-14).
+    assert.match(t.rack().stage.modelNote, /Real dither math/);
     t.rack().stage.onGuide();
     assert.deepEqual(t.help, ['dither']);
   });
@@ -170,7 +171,8 @@ describe('Module 7: OS RATE answers on the pinned display', () => {
     assert.ok((t.chart('ImagesView')!.props.height as number) <= H - 14);
     assert.match(textOf(t.rack().stage.render(W, H)), /MODE or LAYERS returns/);
     assert.equal(t.rack().stage.bezel.find((b) => b.k === '1ST IMAGE')?.v, '192 kHz');
-    assert.match(t.rack().stage.badge, /ILLUSTRATIVE SPECTRA/);
+    // S3 plain model note since phase 3 (owner decision 3; checker K3 F-1, 2026-11-14).
+    assert.match(t.rack().stage.modelNote, /Mirror images from the math/);
     t.rack().stage.onGuide();
     assert.deepEqual(t.help, ['oversampling']);
   });

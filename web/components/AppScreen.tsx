@@ -10,11 +10,13 @@ const WIDTH = {
   marquee: "w-[120px] sm:w-[160px]",
 } as const;
 
-type Asset = { kind: "video"; src: string } | { kind: "image"; src: string };
+type Asset =
+  | { kind: "video"; src: string; poster?: string }
+  | { kind: "image"; src: string };
 
 function assetFromScreen(screen: AppScreenDef): Asset {
   if (screen.media === "video") {
-    return { kind: "video", src: `/app-screens/${screen.file}.mp4` };
+    return { kind: "video", src: `/app-screens/${screen.file}.mp4`, poster: screen.poster };
   }
   return { kind: "image", src: `/app-screens/${screen.file}.png` };
 }
@@ -25,6 +27,7 @@ export function AppScreen({
   caption = false,
   className = "",
   decorative = false,
+  eager = false,
 }: {
   screen: AppScreenDef;
   size?: keyof typeof WIDTH;
@@ -32,6 +35,13 @@ export function AppScreen({
   className?: string;
   /** Hide from AT when this frame is a duplicate in the marquee. */
   decorative?: boolean;
+  /**
+   * Phone load speed (SEO part C4, 2026-11-14): every video loads only its
+   * metadata and plays only while on screen. The one clip that is on screen
+   * at first paint (the hero's first frame) passes `eager` so it loads and
+   * starts at once and the hero never shows an empty frame.
+   */
+  eager?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
@@ -54,8 +64,10 @@ export function AppScreen({
   useEffect(() => {
     const img = imageRef.current;
     if (img && img.complete && img.naturalWidth > 0) setReady(true);
+    // A video counts as ready once a frame can be painted (not on metadata
+    // alone: with preload="metadata" that would show a blank frame).
     const vid = videoRef.current;
-    if (vid && vid.readyState >= HTMLMediaElement.HAVE_METADATA) setReady(true);
+    if (vid && vid.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) setReady(true);
   }, [planned.src, failed]);
 
   useEffect(() => {
@@ -63,7 +75,11 @@ export function AppScreen({
     if (!el || planned.kind !== "video" || failed) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    if (reduce) {
+      // The eager clip carries autoPlay in the HTML; honour reduced motion.
+      el.pause();
+      return;
+    }
 
     const tryPlay = () => {
       void el.play().catch(() => {});
@@ -82,6 +98,10 @@ export function AppScreen({
 
   const label = `${screen.title}. ${screen.caption}`;
   const imageFit = screen.fit === "contain" ? "object-contain" : "object-cover";
+  // A video with a poster still is shown at once (the poster covers the frame
+  // until the clip plays); one without stays behind the labelled placeholder
+  // until its first frame is decoded.
+  const videoShown = ready || (asset?.kind === "video" && !!asset.poster);
 
   return (
     <figure className={`mx-auto ${WIDTH[size]} ${className}`}>
@@ -116,15 +136,15 @@ export function AppScreen({
             <video
               ref={videoRef}
               className={`absolute inset-0 z-[1] h-full w-full object-cover ${
-                ready ? "opacity-100" : "opacity-0"
+                videoShown ? "opacity-100" : "opacity-0"
               }`}
               muted
               loop
               playsInline
-              autoPlay
-              preload="auto"
+              autoPlay={eager}
+              preload={eager ? "auto" : "metadata"}
+              poster={asset.poster}
               src={asset.src}
-              onLoadedMetadata={markReady}
               onLoadedData={markReady}
               onCanPlay={markReady}
               onError={() => setFailed(true)}

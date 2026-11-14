@@ -304,7 +304,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     control: [
       'There’s nothing to adjust: this screen is a picture to compare. TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing.',
-      'FINISH › on the strip, or FINISH · SEE WHAT’S LEFT › at the end of the reading, opens the list of modules you haven’t opened yet.',
+      'FINISH › on the strip, or FINISH · SEE WHAT’S LEFT › at the end of the reading, opens the list of modules still to do.',
     ],
     changes: [
       'Both do the same job, a small signal controlling a large one, with different physics.',
@@ -324,15 +324,15 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
   },
 };
 
-/** The what's-left screen (LabEndScreen, mode "progress", noun "section"). */
+/** The what's-left screen (LabEndScreen, mode "progress", noun "module"). */
 export const TUBE_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the tube story: parts, warm-up, the grid, gain, high voltage, tube types, bias, saturation and transistors, and the core ideas the lab’s check asks about.',
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'WHAT’S LEFT lists the modules you haven’t opened yet. Last on the list is the CHECK row. LAB COMPLETE appears once every module is opened and the check is passed.',
-    'Opened modules, and the check once passed, fold into one ✓ DONE row. REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz.',
+    'WHAT’S LEFT lists the modules still to do. Last on the list is the CHECK row. LAB COMPLETE appears once every module’s task is done and the check is passed.',
+    'Finished modules, and the check once passed, fold into one ✓ DONE row. REVIEW ▾ lists them. CHECK YOUR UNDERSTANDING holds the lab’s short quiz.',
   ],
   control: [
     'Tap a module’s row to open it. Tap the CHECK row to scroll this screen up to the check.',
@@ -341,7 +341,7 @@ export const TUBE_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'A module counts once you open it, and its row moves from the list to the ✓ row.',
+    'A module counts once its own task is done (its CHECK YOURSELF answered right, or its goal reached), and its row moves from the list to the ✓ row. Opening it is not enough.',
     'The check counts once every answer is right, and it stays passed when you practice again.',
     'If your progress can’t be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],

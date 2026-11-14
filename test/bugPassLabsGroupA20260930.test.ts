@@ -43,7 +43,10 @@ test("PREV on WHAT'S LEFT returns to the last module in every module host", () =
   // `unEnd` on the end screen (back to Module 14) and `go(step - 1)` otherwise.
   const fos = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
   assert.match(fos, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/);
-  assert.match(fos, /useLabNav\(\{[^}]*ending, go: goTo, finish, unEnd \}\)/);
+  // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): the strip's go / finish
+  // wrap goTo / finish so a module with no check counts on NEXT.
+  assert.match(fos, /useLabNav\(\{[^}]*ending, go: goCredit, finish: finishCredit, unEnd \}\)/);
+  assert.match(fos, /goTo\(n\);/);
   assert.match(fos, /<LabNavBar nav=\{nav\} \/>/);
 });
 

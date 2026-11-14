@@ -15,7 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { WAVE_HOME_GUIDE, WAVE_SCREEN_GUIDES } from './waveScreenGuides';
-import { notOpenedDetail, visitCounts } from '../foundations/endRows';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
@@ -72,8 +72,8 @@ export function WaveLabHomeScreen() {
         <LabEndScreen
           labTitle="Wave Physics Laboratory"
           labId="af_wave_physics"
-          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: notOpenedDetail(WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
-          howItCounts={visitCounts('module')}
+          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail('check', WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+          howItCounts={goalCounts()}
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"

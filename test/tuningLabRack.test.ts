@@ -138,7 +138,8 @@ describe('the shell hosts a rack chapter at full height', () => {
   });
 
   test('the shell navigates through the shared strip (kit/LabNavBar), 1-based, with FINISH on the last chapter', () => {
-    assert.match(shell, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav \} from '\.\.\/kit\/LabNavBar'/);
+    // Phase 3, owner 2026-11-14: one unit noun per lab — the strip says CHAPTER (LabNounProvider).
+    assert.match(shell, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav \} from '\.\.\/kit\/LabNavBar'/);
     assert.match(shell, /<LabHeader\b/);
     assert.match(shell, /<LabNavBar nav=\{nav\} \/>/);
     assert.match(shell, /<LabNavProvider value=\{nav\}>/, 'the rack chapters get the in-flow NEXT from the provider');

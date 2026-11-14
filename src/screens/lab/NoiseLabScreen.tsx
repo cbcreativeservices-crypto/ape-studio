@@ -273,6 +273,10 @@ export function NoiseLabScreen() {
           badge: speakerView
             ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
             : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: speakerView
+            ? `This is the phone-speaker version: a ${SPEAKER_HPF_HZ} Hz high-pass filter is on.`
+            : 'These slopes are idealized, worked out from the math, not measured.',
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'COLOR', v: selected.label, tint: NOISE_TINTS[color], helpKey: color },

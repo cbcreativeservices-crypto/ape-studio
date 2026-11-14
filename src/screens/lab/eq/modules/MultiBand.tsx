@@ -141,7 +141,7 @@ function specsFor(b: Bands): EqBandSpec[] {
   return out;
 }
 
-export function MultiBandModule(_p: EqModuleComponentProps) {
+export function MultiBandModule(p: EqModuleComponentProps) {
   const [bands, setBands] = useState<Bands>(DEFAULTS);
   const [sel, setSel] = useState<BandKey>('b1');
   const [bypass, setBypass] = useState(false);
@@ -458,7 +458,9 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         </Text>
 
         {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+        {/* Work done (phase 3): this module counts when its check is answered right. */}
         <CheckQuestion
+          onSolved={p.onDone}
           spec={{
             question: 'Two +6 dB bells are both centered at 1 kHz. What does the signal experience there?',
             options: [

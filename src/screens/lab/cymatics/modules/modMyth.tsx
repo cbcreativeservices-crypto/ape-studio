@@ -56,7 +56,7 @@ export function MythModule(_p: CymaticsModuleProps) {
           </View>
         );
       })}
-      {answered === ROWS.length ? <Text style={[P.strong, { color: colors.amber }]}>{score} of {ROWS.length} — the misses are the ones worth re-reading.</Text> : null}
+      {answered === ROWS.length ? <Text style={[P.strong, { color: colors.amber }]}>{score} right — the misses are the ones worth re-reading.</Text> : null}
       <Text style={P.h}>HOW THIS LAB STAYS HONEST</Text>
       <Text style={P.body}>
         Every rendered plate carries a label — Calculated, Approximated or Illustrative Simulation — naming the model behind it. The size, thickness and material scaling law is exact; the rectangular free-plate shapes use the standard Ritz approximation; disc modes use Bessel shapes with tabulated free-edge eigenvalues (published values for a free edge). Nothing decorative is ever added: every figure comes from the selected physical parameters.

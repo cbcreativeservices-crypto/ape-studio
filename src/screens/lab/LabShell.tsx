@@ -18,7 +18,7 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { labProbe } from '../../features/lab/labProbe';
-import { Animated, Easing, LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
+import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -37,6 +37,7 @@ import { readingColumn } from '../../theme/readingColumn';
 import { fitValue } from '../../theme/legibility';
 import { LabHeader } from './kit/LabNavBar';
 import { LabCheckEnd } from './kit/LabCheckEnd';
+import { useFirstLabVisit } from './rack/learnFirstStore';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, type ScreenGuide } from '../../features/lab/screenGuide';
 import type { DockParam, RackStage } from './rack/rackTypes';
@@ -47,6 +48,9 @@ import { reportTrainingComplete } from '../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../features/lab/labCompletion';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import { isLabTermIntroOwed, useLabTermIntroOwed } from '../../features/intro/screenIntros';
+
+/** How long after the last touch the arrival Sound Safety ask waits (SN7). */
+export const ARRIVAL_TOUCH_QUIET_MS = 400;
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
 // avoids an import cycle). Re-exported here so the 30+ existing call sites
@@ -493,6 +497,16 @@ export function LabShell({
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
+  // FIRST VISIT OPENS ON LEARN (phase 3, owner's decision 3; report section 3
+  // row 11): a rack lab's plain explanation sits on LEARN, and a newcomer
+  // landed on EXPLORE. Once known (rack/learnFirstStore), a first visit turns
+  // to LEARN unless the learner already picked a tab; later visits open on
+  // EXPLORE as before.
+  const firstVisit = useFirstLabVisit(labId, !!rack);
+  const pickedTabRef = useRef(false);
+  useEffect(() => {
+    if (firstVisit === true && !pickedTabRef.current) setMode('learn');
+  }, [firstVisit]);
   const modes = modesFor(labId);
   const hasCheck = modes.some((m) => m.key === 'check');
   const shownGuide = typeof guide === 'function' ? guide(mode) : mode === 'explore' ? guide : undefined;
@@ -576,6 +590,13 @@ export function LabShell({
   // any closing Modal's fade, rootModalHoldMs), so the sheet is up before the
   // page takes a tap — never 1.2 s later, on the learner's next tap.
   const waitedRef = useRef(false);
+  // NEVER UNDER A FINGER (S1's SN7; checker K4: on Oscillators the first
+  // EXPLORE tap raised the sheet and the tab stayed on LEARN). The fallback
+  // timer can fire while a press is in flight; the sheet's Modal then lands
+  // under the finger and the press never completes. The ask waits until no
+  // finger is down and the last one lifted ARRIVAL_TOUCH_QUIET_MS ago.
+  const touchingRef = useRef(false);
+  const touchAtRef = useRef(0);
   useEffect(() => {
     if (labTermFirst) {
       waitedRef.current = true;
@@ -583,8 +604,14 @@ export function LabShell({
     }
     if (entryAskedRef.current) return undefined;
     let done = false;
+    let later: ReturnType<typeof setTimeout> | null = null;
     const ask = () => {
       if (done) return;
+      if (touchingRef.current || Date.now() - touchAtRef.current < ARRIVAL_TOUCH_QUIET_MS) {
+        if (later) clearTimeout(later);
+        later = setTimeout(ask, ARRIVAL_TOUCH_QUIET_MS + 50);
+        return;
+      }
       done = true;
       // Low-Light Production Mode (and the dev popup kill-switch): nothing
       // auto-appears — bug hunt 2026-09-29. The gate still asks when the
@@ -601,15 +628,19 @@ export function LabShell({
       return () => {
         done = true;
         clearTimeout(t);
+        if (later) clearTimeout(later);
       };
     }
     const unsub = (navigation as any).addListener('transitionEnd', (e: { data?: { closing?: boolean } }) => {
       if (!e?.data?.closing) setTimeout(ask, 120);
     });
-    const fallback = setTimeout(ask, 1200);
+    // The web preview sends no transitionEnd, so it asks after a short beat;
+    // iOS and Android keep the same 1200 ms fallback (platform parity).
+    const fallback = setTimeout(ask, Platform.OS === 'web' ? 150 : 1200);
     return () => {
       done = true;
       clearTimeout(fallback);
+      if (later) clearTimeout(later);
       unsub?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -637,7 +668,35 @@ export function LabShell({
   );
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+    <View
+      style={[styles.root, { paddingTop: insets.top + 10 }]}
+      onTouchStart={() => {
+        touchingRef.current = true;
+        touchAtRef.current = Date.now();
+      }}
+      onTouchEnd={() => {
+        touchingRef.current = false;
+        touchAtRef.current = Date.now();
+      }}
+      onTouchCancel={() => {
+        touchingRef.current = false;
+        touchAtRef.current = Date.now();
+      }}
+      // The browser preview has a mouse and react-native-web sends it no
+      // touch events: the same guard listens to it there (web only).
+      {...(Platform.OS === 'web'
+        ? ({
+            onMouseDown: () => {
+              touchingRef.current = true;
+              touchAtRef.current = Date.now();
+            },
+            onMouseUp: () => {
+              touchingRef.current = false;
+              touchAtRef.current = Date.now();
+            },
+          } as object)
+        : null)}
+    >
       {/* Screen Guide host (opt-in `guide`): its overlay renders as this
           root's last child; a tab switch, or an in-screen MODE that swaps
           the guide (guideIdOf), closes an open guide. Regions only when the
@@ -662,6 +721,7 @@ export function LabShell({
               style={[styles.tab, selected && { borderColor: c, backgroundColor: c + '1e' }]}
               onPress={() => {
                 // A tab press can land mid-drag; free the scroll lock too.
+                pickedTabRef.current = true;
                 setScrollLocked(false);
                 setMode(m.key);
               }}

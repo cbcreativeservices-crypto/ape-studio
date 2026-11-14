@@ -841,7 +841,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
       {head ? <Text style={styles.stageTitle}>{head.title}</Text> : null}
 
       {/* ── STEP 1 · identify the three spaces (one card: the selected one) ── */}
-      <CiSection title={`1 · IDENTIFY EACH SPACE — ${identified} OF ${CI_FIRE_SPACES.length}`}>
+      <CiSection title={`1 · IDENTIFY EACH SPACE${identified < CI_FIRE_SPACES.length ? ` — ${CI_FIRE_SPACES.length - identified} LEFT` : ' ✓'}`}>
         {selSpace ? (
           <View key={selSpace.id} style={[styles.spaceCard, styles.spaceCardSel]}>
             <View style={styles.spaceHead}>
@@ -896,7 +896,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
       </CiSection>
 
       {/* ── STEP 2 · the five questions at the sleeve ── */}
-      <CiSection title={`2 · ONE RATED-WALL PENETRATION — ${Math.min(flowAns.length, FLOW.length)} OF ${FLOW.length}`}>
+      <CiSection title={`2 · ONE RATED-WALL PENETRATION${flowAns.length < FLOW.length ? ` — ${FLOW.length - flowAns.length} LEFT` : ' ✓'}`}>
         {!spacesDone ? (
           <Text style={styles.pendingNote}>Identify all three spaces to unlock the penetration walk-through.</Text>
         ) : (
@@ -925,7 +925,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
                 <View key={q.id} ref={answered ? undefined : nextRef} collapsable={false}>
                 <Appear style={styles.flowCard}>
                   <Text style={styles.flowNum}>
-                    QUESTION {qi + 1} / {FLOW.length}
+                    QUESTION {qi + 1}
                   </Text>
                   <Text style={styles.flowQ}>{q.q}</Text>
                   <View style={{ gap: 7 }}>

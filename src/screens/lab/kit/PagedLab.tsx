@@ -74,6 +74,13 @@ export type PageDef = {
    *  disabled until it had; since owner 2026-09-29 it opens the what's-left
    *  screen, which lists the unmarked page instead.) */
   manualDone?: boolean;
+  /** ADDITIVE (owner decision 1, 2026-11-14: "done = work done"): the page
+   *  has NO goal or check — reading it through (NEXT / FINISH at its foot) is
+   *  its work, so NEXT marks it. A page WITH a goal or check is `manualDone`
+   *  and calls ctx.markDone() only when it is met. A page that declares
+   *  neither keeps the old behavior (NEXT marks it) so nothing earned is lost;
+   *  test/labFixes_20261114_S2 lists undeclared pages per lab (shrink-only). */
+  reading?: true;
   /** ADDITIVE (2026-10-10, Patchbay rack conversion — the branch
    *  soundsystems/SsPagedLab carried locally): the page renders a RackUnit,
    *  so the shell gives it the FULL HEIGHT and no ScrollView of its own. The
@@ -117,14 +124,15 @@ const NO_KEYS: readonly string[] = [];
 /** The end-screen row of a `creditCheckLabId` check (never a page index). */
 const CREDIT_CHECK_ROW = 'credit-check';
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
-import { PAGE_READ_RULE, PAGE_TASK_RULE } from './labEnd';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
+import { pageReadRule, pageTaskRule } from './labEnd';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav, type LabNavUnit } from './LabNavBar';
+import type { UnitNoun } from './labNav';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, creditCheckLabId, creditCheckTitle, pageGuide, endGuide, accuracy = true, accuracyVariant }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, creditCheckLabId, creditCheckTitle, pageGuide, endGuide, accuracy = true, accuracyVariant, unitNoun = 'module' }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -152,7 +160,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  still moves on — it just does not count that page — so the end screen
    *  says plainly why it is still listed. Since the lab fix round 2026-11-14
    *  (quick win 17) it is printed ONCE above the list (HOW A PAGE COUNTS),
-   *  never under each row. Omitted = the shared PAGE_TASK_RULE. */
+   *  never under each row. Omitted = the shared pageTaskRule(unitNoun). */
   handsOnDetail?: string;
   /** ADDITIVE (2026-10-18, DJ Systems Lab, learning review X5): the what's-
    *  left line for page `index` when it is not done — e.g. its unmet goals by
@@ -194,6 +202,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  the pages show — 'tool' (the default, unchanged) or 'about' (a CONCEPT
    *  lesson's plain scope note). Passed to both AccuracyNote calls below. */
   accuracyVariant?: 'tool' | 'about';
+  /** ADDITIVE (owner decision 3, 2026-11-14: one name per unit of progress):
+   *  the lab's ONE unit noun — module (default) / lesson / chapter / step. The
+   *  strip, CONTENTS, the end screen (lead, WHERE TO START, HOW A … COUNTS)
+   *  all use it. Before, the strip said MODULE while the end screen said page. */
+  unitNoun?: UnitNoun;
   /** ADDITIVE (D41 K8, 2026-11-01): the lab whose understanding check is this
    *  lab's CERTIFICATE credit when this lab has no check of its own (De-Esser
    *  → 'smart-processors'). With questions authored there, the what's-left
@@ -506,10 +519,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const checkCredit = !!check || !!creditCheckId;
   const confirmReset = () => {
     const message = pageCredit
-      ? `Starts ${title} again from its first page. Credited pages keep their ✓.`
+      ? `Starts ${title} again from its first ${unitNoun}. Credited ${unitNoun}s keep their ✓.`
       : checkCredit
-        ? `Starts ${title} again from its first page and clears its page check marks. Credit you have already earned stays.`
-        : `Starts ${title} again from its first page and clears its page check marks.`;
+        ? `Starts ${title} again from its first ${unitNoun} and clears its ${unitNoun} check marks. Credit you have already earned stays.`
+        : `Starts ${title} again from its first ${unitNoun} and clears its ${unitNoun} check marks.`;
     if (Platform.OS === 'web') {
       // react-native-web's Alert is a no-op: keep the guard with the browser's confirm.
       const confirm = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
@@ -568,8 +581,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // hands-on rule.
   const leftPages = pagesWithCheck.filter((p, i) => !(check && i === pages.length) && !endCleared.has(String(i)) && !optionalPage?.(i));
   const howItCounts = [
-    leftPages.some((p) => !p.manualDone) ? PAGE_READ_RULE : null,
-    leftPages.some((p) => p.manualDone) ? handsOnDetail ?? PAGE_TASK_RULE : null,
+    leftPages.some((p) => !p.manualDone) ? pageReadRule(unitNoun) : null,
+    leftPages.some((p) => p.manualDone) ? handsOnDetail ?? pageTaskRule(unitNoun) : null,
   ].filter(Boolean).join(' ') || undefined;
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, isPageDone: (i: number) => endCleared.has(String(i)) };
   // A lab that banks certificate credit — `p<n>` units OR one key per page
@@ -611,6 +624,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const guide = ending ? endGuide : def.guide ?? pageGuide?.(page);
 
   return (
+    <LabNounProvider value={unitNoun}>
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         {/* Screen Guide host (opt-in): the overlay renders as this root's last
@@ -636,7 +650,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
             cleared={endCleared}
             unreadable={endUnreadable}
             mode={creditMode}
-            noun="page"
+            noun={unitNoun}
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}
             onDone={() => safeGoBack(navigation)}
@@ -681,6 +695,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       </View>
       {proNote ? <ProNoteIntro onOwed={setProNoteOwed} /> : null}
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

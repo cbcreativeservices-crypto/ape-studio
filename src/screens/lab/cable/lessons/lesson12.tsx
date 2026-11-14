@@ -127,7 +127,7 @@ export function Lesson12Body() {
     // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
     // outcome + progress are announced here (sweep 2026-08-15).
     AccessibilityInfo.announceForAccessibility(
-      `Correct. ${Math.min(generalRef.current, FINAL_QUESTIONS.length)} of ${FINAL_QUESTIONS.length} solved.`,
+      `Correct. ${Math.max(0, FINAL_QUESTIONS.length - generalRef.current)} still to solve.`,
     );
     if (generalRef.current >= FINAL_QUESTIONS.length) {
       // Genuine full solve of the general bank → the final-check unit

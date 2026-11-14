@@ -32,7 +32,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { CollapsibleSection } from '../../LabShell';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../moduleGoal';
 import { ListeningSoonCard, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import { levelColor } from '../../../../features/tools/levelColor';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -307,7 +308,7 @@ const WAVEFORM_CHECKS: CheckSpec[] = [
       3: 'Digital silence is zeros, and zero is drawn on the center line. Look at where this line sits.',
     },
     reveal:
-      'True digital silence is zeros, drawn AT the center line. A flat line OFF center means a constant (DC) voltage was added to every sample: it steals headroom from one side and clicks or thumps at every edit point. Ride the DC lane in the dock and watch the whole picture ride up without getting any "louder".',
+      'True digital silence is zeros, drawn AT the center line. A flat line OFF center means a constant (DC) voltage was added to every sample: it steals headroom from one side and clicks or thumps at every edit point. Slide the DC lane in the dock and watch the whole picture ride up without getting any "louder".',
     wrongHint: 'Where must true digital silence sit on the vertical axis?',
   },
   {
@@ -402,7 +403,7 @@ export function WaveformModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the picture IS the module
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHESIZED TEACHING SIGNAL · LEVELS IN dBFS',
+        modelNote: SIGNAL_NOTE,
         bezel,
         onGuide: () => p.help('waveform_read'),
         render: (w, h) =>
@@ -424,7 +425,7 @@ export function WaveformModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane into the rails, slide DC off center, flip the Ø POL key — the readout
+          Slide the GAIN lane into the rails, slide DC off center, flip the Ø POL key — the readout
           numbers are computed from exactly the signal the picture draws.
         </Text>
 
@@ -451,8 +452,8 @@ export function WaveformModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <MistakesCard items={WAVEFORM_MISTAKES} />
-        <CheckQuestion spec={WAVEFORM_CHECKS[0]} />
-        <CheckQuestion spec={WAVEFORM_CHECKS[1]} />
+        <GoalCheck spec={WAVEFORM_CHECKS[0]} />
+        <GoalCheck spec={WAVEFORM_CHECKS[1]} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -567,7 +568,7 @@ export function PeakModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHESIZED TEACHING SIGNAL · LEVELS IN dBFS',
+        modelNote: SIGNAL_NOTE,
         bezel,
         onGuide: () => p.help('peak_meter'),
         render: (w, h) =>
@@ -580,7 +581,7 @@ export function PeakModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and drive the columns into the OVER lamp; tap RESET HOLD to clear
+          Slide the GAIN lane and drive the columns into the OVER lamp; tap RESET HOLD to clear
           the PK HOLD reading, and switch signals in the SIGNAL tray to compare while the meter reacts.
         </Text>
 
@@ -603,7 +604,7 @@ export function PeakModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <MistakesCard items={PEAK_MISTAKES} />
-        <CheckQuestion spec={PEAK_CHECK} />
+        <GoalCheck spec={PEAK_CHECK} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -708,7 +709,7 @@ export function VuModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the flagship face rendered LARGE
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHESIZED TEACHING SIGNAL · dBFS · NEEDLE ~300 ms — BY DESIGN',
+        modelNote: VU_NOTE,
         bezel,
         onGuide: () => p.help('vu_meter'),
         render: (w, h) =>
@@ -721,7 +722,7 @@ export function VuModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and switch signals in the SIGNAL tray while the needle answers — NDL MAX in the
+          Slide the GAIN lane and switch signals in the SIGNAL tray while the needle answers — NDL MAX in the
           readouts shows how far the ~300 ms ballistics ever get.
         </Text>
 
@@ -750,8 +751,8 @@ export function VuModule(p: MeterModuleProps) {
         />
 
         <MistakesCard items={VU_MISTAKES} />
-        <CheckQuestion spec={VU_CHECKS[0]} />
-        <CheckQuestion spec={VU_CHECKS[1]} />
+        <GoalCheck spec={VU_CHECKS[0]} />
+        <GoalCheck spec={VU_CHECKS[1]} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -769,8 +770,11 @@ const LOUDNESS_HELP: Partial<Record<SignalKey, string>> = {
   kick: 'lra',
 };
 
-const LOUDNESS_MODEL_BADGE =
-  'SIMPLIFIED BS.1770-STYLE TEACHING MODEL — not a compliance meter (ITU-R BS.1770-5 measurement needs real DSP)';
+/** The stages' plain model notes (S3's RackStage.modelNote, phase 3 2026-11-14):
+ *  what each picture is and is not, in one sentence. */
+const SIGNAL_NOTE = 'A built-in teaching signal, levels in dBFS, not a measurement of real audio.';
+const VU_NOTE = 'A built-in teaching signal in dBFS; the needle takes about 300 ms on purpose.';
+const LOUDNESS_MODEL_NOTE = 'A simplified BS.1770-style teaching model, not a compliance loudness meter.';
 
 const LOUDNESS_MISTAKES = [
   'Mastering "as loud as possible" for streaming — most platforms turn it back DOWN to their integrated target; you traded dynamics for nothing.',
@@ -866,7 +870,7 @@ export function LoudnessModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // taller face + bigger fonts (owner 2026-08-05)
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: LOUDNESS_MODEL_BADGE,
+        modelNote: LOUDNESS_MODEL_NOTE,
         bezel,
         onGuide: () => p.help('lufs'),
         render: (w, h) =>
@@ -908,8 +912,8 @@ export function LoudnessModule(p: MeterModuleProps) {
         <ListeningSoonCard what="Level-matched loudness A/B comparison (same integrated LUFS, different crest and dynamics)" />
 
         <MistakesCard items={LOUDNESS_MISTAKES} />
-        <CheckQuestion spec={LOUDNESS_CHECKS[0]} />
-        <CheckQuestion spec={LOUDNESS_CHECKS[1]} />
+        <GoalCheck spec={LOUDNESS_CHECKS[0]} />
+        <GoalCheck spec={LOUDNESS_CHECKS[1]} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>

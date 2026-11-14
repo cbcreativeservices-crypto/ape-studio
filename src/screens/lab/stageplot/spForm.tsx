@@ -29,6 +29,7 @@ import { Modal, useAfterModalsClose } from '../../../components/DimModal';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import { useScreenGuideWork } from '../../../features/lab/screenGuide/introHold';
 import type { SpIssue, SpIssueAction, SpIssueLevel } from '../../../features/stageplot/spReview';
+import { spFoldRowSay } from '../../../features/stageplot/spSetupFolds';
 import { fitValue } from '../../../theme/legibility';
 import { colors, fonts } from '../../../theme/tokens';
 import { spIssueActionLabel } from './spIssueActions';
@@ -324,6 +325,40 @@ export function MoreDetails(p: { title?: string; children: ReactNode; initiallyO
         <Text style={styles.moreMark}>{open ? 'HIDE ▴' : 'SHOW ▾'}</Text>
       </Pressable>
       {open ? <View style={styles.moreBody}>{p.children}</View> : null}
+    </View>
+  );
+}
+
+/**
+ * A SECTION THAT FOLDS (Setup, 2026-11-14; owner's decision 5: "beginner
+ * core first … fold the depth under 'Go deeper ▾'"). Closed, it is one row:
+ * the section's title, one line saying what it holds now (`summary`), a
+ * review question that is answered inside it (`ask`, so a question is never
+ * folded away), and the button. Open, it is the section as it always was.
+ * The caller keeps `open` (a GO TO from the review opens it, and it stays
+ * as the user left it while they visit another area).
+ */
+export function FoldSection(p: { title: string; summary: string; ask?: string | null; open: boolean; onToggle: () => void; openWord: string; closeWord: string; hint?: string; children: ReactNode }) {
+  return (
+    <View style={styles.section}>
+      <Pressable
+        onPress={p.onToggle}
+        style={styles.foldHead}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: p.open }}
+        aria-expanded={p.open}
+        accessibilityLabel={spFoldRowSay(p)}
+      >
+        <View style={styles.sectionHeadText}>
+          <Text style={styles.sectionTitle} accessibilityRole="header">
+            {p.title}
+          </Text>
+          {p.open ? p.hint ? <Text style={styles.hint}>{p.hint}</Text> : null : <Text style={styles.hint}>{p.summary}</Text>}
+          {!p.open && p.ask ? <Text style={styles.foldAsk}>{`? ${p.ask}`}</Text> : null}
+        </View>
+        <Text style={styles.moreMark}>{p.open ? p.closeWord : p.openWord}</Text>
+      </Pressable>
+      {p.open ? <View style={styles.sectionBody}>{p.children}</View> : null}
     </View>
   );
 }
@@ -638,6 +673,9 @@ const styles = StyleSheet.create({
   switchWord: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
   switchWordOn: { color: colors.amber },
 
+  // a folded section's row: the section head's own rule and spacing, at least a 46-point target
+  foldHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, borderTopWidth: 1, borderTopColor: SURFACE_BORDER, paddingTop: 14, minHeight: 46 },
+  foldAsk: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.amber },
   more: { borderTopWidth: 1, borderTopColor: SURFACE_BORDER },
   moreHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 46 },
   moreTitle: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.3, color: colors.textSecondary },

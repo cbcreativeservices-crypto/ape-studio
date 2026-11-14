@@ -81,7 +81,7 @@ export const GAIN_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves this screen.',
   ],
   changes: [
-    'Every module except the Troubleshooting Challenge counts as done as soon as you open it.',
+    'A module counts once its own task is done: its CHECK YOURSELF answered right, or its goal reached (healthy input gain, a balanced chain, a change in Free Practice). Opening it is not enough.',
     'The Troubleshooting Challenge counts only when you pass it: you find the fault and bring every stage back to healthy.',
   ],
   teaches: [

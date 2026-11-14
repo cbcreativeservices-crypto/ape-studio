@@ -523,3 +523,87 @@ describe('Checker C1 · small items', () => {
     assert.ok(t.includes("stateOf(reading) !== 'ok' ? 'This reading is not healthy."));
   });
 });
+
+/* ══ PHASE 3 (the owner's decisions, 2026-11-14) ═══════════════════════════ */
+
+describe('Phase 3 · 7 · the three fault titles, as the owner chose', () => {
+  it('renamed', () => {
+    const titles = (FAULTS as readonly { title: string }[]).map((f) => f.title);
+    for (const t of ['Hum through the system', 'Sound cuts in and out', 'Vocals coming out of the subwoofer']) assert.ok(titles.includes(t), t);
+    for (const t of ['Ground loop', 'Intermittent cable or connector', 'Subwoofer receives vocals unintentionally']) assert.ok(!titles.includes(t), t);
+  });
+});
+
+describe('Phase 3 · 2 · no "N of total" progress counters', () => {
+  it('leftWord says what is left', async () => {
+    const h = await import('../src/screens/lab/soundsystems/fixHelpers.ts');
+    assert.equal(h.leftWord(3, 10), '7 LEFT');
+    assert.equal(h.leftWord(10, 10, 'PASS'), 'PASS');
+    assert.equal(dj.leftWord(2, 9, 'ALL IN'), '7 LEFT');
+  });
+  it('the old counters are gone from both labs', () => {
+    const ss = readdirSync(SS).filter((f) => f.endsWith('.tsx')).map((f) => read(`${SS}/${f}`)).join('\n');
+    for (const old of ['of 10 · ${', 'OF 10 · ${', '} OF ${cases.length}', '${row.done}/${row.total}', '${grade.met.length}/${capstone.requirements.length}', '${correct}/${DESTINATIONS.length}', '${seen.size}/10', 'OF ${VENUE_CASES.length}']) assert.ok(!ss.includes(old), old);
+    const d = readdirSync(`${DJ}/pages`).filter((f) => f.endsWith('.tsx')).map((f) => read(`${DJ}/pages/${f}`)).join('\n');
+    for (const old of ['${audioOk} / 9', '${powerOk} / 7', '4/4 FOUND', 'FIND ${job + 1}/4', 'FIND ${find + 1}/3', 'FAULT ${i + 1} OF 2']) assert.ok(!d.includes(old), old);
+  });
+});
+
+describe('Phase 3 · 1 · "done" = work done', () => {
+  it('no Sound Systems page marks itself done on opening', () => {
+    for (const f of readdirSync(SS).filter((x) => /^pages.*\.tsx$/.test(x))) {
+      assert.doesNotMatch(read(`${SS}/${f}`), /useEffect\(\(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/, f);
+    }
+  });
+  it('the bench intro and the LEARN wrap page count on a goal', () => {
+    assert.match(read(`${SS}/pagesTroubleshoot.tsx`), /label: 'Find where the example walk stopped', hit: found/);
+    assert.match(read(`${SS}/pagesLearnC.tsx`), /label: 'Tap all four practice modes', hit: seenModes\.size >= WRAP_MODES\.length/);
+  });
+  it('the words no longer say opening counts', () => {
+    const g = read(`${SS}/soundsystemsScreenGuides.ts`);
+    assert.ok(!g.includes('counts as soon as you open it') && !g.includes('opening it is enough to mark it read'));
+  });
+});
+
+describe('Phase 3 · 3 · one progress word, the plain model note', () => {
+  it('Sound Systems says "module" (the strip’s word), never "page", for its unit', () => {
+    assert.ok(!read(`${SS}/SsPagedLab.tsx`).includes('noun="page"'));
+    assert.match(read(`${SS}/fixHelpers.ts`), /SS_HOW_A_PAGE_COUNTS = 'A module counts/);
+  });
+  it('every Sound Systems rack draws a sentence-case model note, no all-caps badge', () => {
+    const ss = readdirSync(SS).filter((f) => /^pages.*\.tsx$/.test(f)).map((f) => read(`${SS}/${f}`)).join('\n');
+    assert.ok(!/\bbadge: /.test(ss));
+    const notes = [...ss.matchAll(/modelNote: '([^']+)'/g)].map((m) => m[1]);
+    assert.ok(notes.length >= 25, String(notes.length));
+    for (const n of notes) {
+      assert.ok(n.length <= 90, n);
+      assert.match(n, /^[A-Z]/, n);
+      assert.doesNotMatch(n, /[A-Z]{4,}/, `sentence case, no all-caps words: ${n}`);
+    }
+    assert.match(read(`${SS}/rackLayout.tsx`), /modelNote: rack\.modelNote,/);
+  });
+});
+
+describe('Phase 3 · 5 · capstone 6: the beginner core first, the rest folded', () => {
+  it('five core channels, MORE CHANNELS for the rest', () => {
+    const b = read(`${SS}/pagesBuild.tsx`);
+    assert.match(b, /MONITOR_CORE_CHANNELS: readonly string\[\] = \['vox', 'gtr', 'bass', 'kick', 'keys'\]/);
+    assert.match(b, /channels=\{core \?\? ui\.channels\}/);
+    assert.match(b, /\{moreChannels \? <ConsolePanel/);
+  });
+});
+
+describe('Phase 3 · 3 · DJ’s one progress word is "screen"', () => {
+  it('the DJ PagedLab passes unitNoun="screen"; its copy never calls a unit a module', () => {
+    assert.match(read(`${DJ}/DJSystemsLabScreen.tsx`), /unitNoun="screen"/);
+    assert.doesNotMatch(read(`${DJ}/djScreenGuides.ts`), /\bmodules?\b/i);
+  });
+});
+
+describe('Checker K1 · the last two progress totals in Sound Systems', () => {
+  it('the hub’s WHAT IS LEFT rows and the capstone console card say what is left', () => {
+    assert.ok(!read(`${SS}/SoundSystemsLabScreen.tsx`).includes('{r.done}/{r.total}'));
+    assert.match(read(`${SS}/SoundSystemsLabScreen.tsx`), /\{leftWord\(r\.done, r\.total, '✓ DONE'\)\}/);
+    assert.match(read(`${SS}/pagesBuild.tsx`), /ON THE CONSOLE · \{leftWord\(routeMet, routeReqs\.length, '✓ ALL'\)\}/);
+  });
+});

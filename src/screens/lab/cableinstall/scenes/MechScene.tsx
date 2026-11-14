@@ -335,7 +335,6 @@ const BendArt = memo(function BendArt({
 function BendCard({
   ex,
   index,
-  total,
   w,
   initialT,
   done,
@@ -345,7 +344,6 @@ function BendCard({
 }: {
   ex: (typeof CI_BEND_EXERCISES)[number];
   index: number;
-  total: number;
   w: number;
   initialT: number;
   done: boolean;
@@ -454,7 +452,7 @@ function BendCard({
   return (
     <View style={[styles.card, done && styles.cardDone]}>
       <Text style={styles.cardHead}>
-        {done ? '✓ ' : ''}BEND {index + 1} OF {total} — {ex.cableName.toUpperCase()}
+        {done ? '✓ ' : ''}BEND {index + 1} — {ex.cableName.toUpperCase()}
       </Text>
       <SpecCard text={ex.specText} />
       {ex.note ? <Text style={styles.exNote}>{ex.note}</Text> : null}
@@ -1032,7 +1030,6 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
             <BendCard
               ex={ex}
               index={i}
-              total={CI_BEND_EXERCISES.length}
               w={artW}
               initialT={completed ? tForDia(Math.min(R_MAX_DIA, ex.minRadiusDia + 2)) : START_T}
               done={bendDone[i]}
@@ -1044,7 +1041,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
         ))}
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {bendsDone >= CI_BEND_EXERCISES.length ? '✓ ' : ''}
-          {bendsDone} of {CI_BEND_EXERCISES.length} bends meet their spec
+          {bendsDone === CI_BEND_EXERCISES.length ? 'Every bend meets its spec' : `${CI_BEND_EXERCISES.length - bendsDone} bend${CI_BEND_EXERCISES.length - bendsDone === 1 ? '' : 's'} still outside spec`}
         </Text>
         {bendsDone >= CI_BEND_EXERCISES.length ? (
           <Appear>
@@ -1092,7 +1089,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
         </View>
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {pullSeen.size >= CI_PULL_SPEC.events.length ? '✓ ' : ''}
-          {pullSeen.size} of {CI_PULL_SPEC.events.length} pull events explored
+          {pullSeen.size >= CI_PULL_SPEC.events.length ? 'Every pull event explored' : `${CI_PULL_SPEC.events.length - pullSeen.size} pull events still to explore`}
         </Text>
         {activePull ? (
           <Appear key={activePull.id}>

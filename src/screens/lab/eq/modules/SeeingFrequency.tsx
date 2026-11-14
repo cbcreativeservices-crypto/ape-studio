@@ -285,7 +285,7 @@ function SeeingGlass({
   );
 }
 
-export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
+export function SeeingFrequencyModule(p: EqModuleComponentProps) {
   // Ref-stable config (RtaScreen rule): useDspEngine's start() closes over this
   // object. spectrumEnabled MUST stay true — the native engine only runs the
   // FFT when spectrum is enabled and the band frame is derived from that FFT.
@@ -410,7 +410,9 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
         </Text>
 
         {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+        {/* Work done (phase 3): this module counts when its check is answered right. */}
         <CheckQuestion
+          onSolved={p.onDone}
           spec={{
             question: 'The amber curve on the display is…',
             options: [

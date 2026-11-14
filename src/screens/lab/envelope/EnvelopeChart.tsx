@@ -49,7 +49,8 @@ const PEAK_ON_RAMP = 0.82;
 const PEAK_LINE = colors.textPrimary;
 const AVG_LINE = colors.purple;
 
-export const CHART_HONESTY = 'ILLUSTRATIVE MODEL — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT';
+// K4 (owner decision 3, 2026-11-14): one plain sentence, not an all-caps disclaimer.
+export const CHART_HONESTY = 'An illustrative model, drawn from the settings, not a measurement.';
 
 /** A label with a dark backing so it stays legible over the curves. 9 pt of
  *  the viewBox minimum (owner 2026-09-25). */
@@ -291,7 +292,7 @@ export function EnvelopeChart({
         )}
       />
       {sweepRow}
-      <Text style={styles.caption}>{CHART_HONESTY} · vertical = relative level · horizontal = time{caption ? ` · ${caption}` : ''}</Text>
+      <Text style={styles.caption}>{CHART_HONESTY} Up is relative level; across is time.{caption ? ` ${caption}` : ''}</Text>
     </View>
   );
 }

@@ -130,7 +130,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>Each STEP is one foot contact on the stone path. The strip under the picture shows the last eight takes.</Look>
         <P>The ear notices an exact repeat immediately, so a footstep event holds several takes. A take is one version of the same sound. The event picks one take each time and changes its level and pitch a little.</P>
-        <P>A holder that picks at random is a random container. One that plays in a set order is a sequence container. These are Wwise’s names: page 20 has the others. Every take must still sound like the same shoe.</P>
+        <P>A holder that picks at random is a random container. One that plays in a set order is a sequence container. These are Wwise’s names: page 22 has the others. Every take must still sound like the same shoe.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>

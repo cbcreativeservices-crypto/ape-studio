@@ -47,7 +47,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'Q works opposite the apparent width — and gain changes amount, not width.',
 };
 
-export function QBandwidthModule(_p: EqModuleComponentProps) {
+export function QBandwidthModule(p: EqModuleComponentProps) {
   const [q, setQ] = useState(2);
   const bwOct = bwOctFromQ(q);
 
@@ -112,7 +112,8 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
           trips up almost everyone once. Not you, now.
         </Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

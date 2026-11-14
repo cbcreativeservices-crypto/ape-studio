@@ -16,12 +16,12 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { hiddenNoteText, labHiddenKeys, resolveLab, resolveStage } from '../../../features/production/schema';
-import type { NoticeDef } from '../../../features/production/schema';
+import type { NoticeDef, ResolvedField } from '../../../features/production/schema';
 import { StageSignalBadge } from './ReadinessMeter';
 import { readStage } from '../../../features/production/readiness';
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject, FieldValue } from '../../../features/production/types';
-import { valueKey } from '../../../features/production/types';
+import { isAnswered, valueKey } from '../../../features/production/types';
 import { authoredStage, labDef } from '../../../features/production/labs';
 import { FieldRow, STATE_TINT } from './FieldRow';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -297,6 +297,35 @@ export function ProductionStageScreen() {
   /** This stage's guide; none for a stage this lab does not have. */
   const guide = productionStageGuide(lab, stageId);
 
+  /** The learner's own fold choice per section (phase 3; checker K2): once
+   *  they tap, their choice wins over the automatic opening. */
+  const [foldChoice, setFoldChoice] = useState<Readonly<Record<string, boolean>>>({});
+  /** One question row — drawn only once the project and stage are read. */
+  const renderField = (field: ResolvedField, sectionId: string) => {
+    if (!project || !stage || !report) return null;
+    const key = valueKey(stage.stageId, field.fieldId);
+    const fieldState = report.fields.find((f) => f.fieldId === field.fieldId)?.state ?? 'missing';
+    return (
+      <View
+        key={field.fieldId}
+        style={field.fieldId === focus ? styles.focused : undefined}
+        onLayout={(e) => {
+          fieldY.current.set(field.fieldId, { sectionId, y: e.nativeEvent.layout.y });
+          if (field.fieldId === focus) tryFocus();
+        }}
+      >
+        <FieldRow
+          field={field}
+          value={project.values[key]}
+          naReason={project.na[key]}
+          state={fieldState}
+          onChange={(v) => void setValue(field.fieldId, v)}
+          onSetNa={(reason) => void setNa(field.fieldId, reason)}
+        />
+      </View>
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.root}
@@ -450,29 +479,43 @@ export function ProductionStageScreen() {
                   </Text>
                 )
               ) : null}
-              {section.fields.map((field) => {
-                const key = valueKey(stage.stageId, field.fieldId);
-                const fieldState = report.fields.find((f) => f.fieldId === field.fieldId)?.state ?? 'missing';
+              {(() => {
+                /* REQUIRED FIRST, THE REST FOLDED (phase 3, owner's decision 5,
+                   2026-11-14: "long pages: beginner core first … fold the depth";
+                   G4: stage 1 put 33 questions in one scroll). Each section
+                   shows its required questions, then folds its optional ones
+                   under one key. Nothing is removed. A fold is open from the
+                   start when one of its questions is already answered or
+                   marked not applicable, or when WHAT'S LEFT sent the learner
+                   to it (`focus`). */
+                const required = section.fields.filter((f) => f.required);
+                const optional = section.fields.filter((f) => !f.required);
+                const touched = (fieldId: string) => {
+                  const k = valueKey(stage.stageId, fieldId);
+                  return isAnswered(project.values[k]) || !!project.na[k]?.trim();
+                };
+                const autoOpen = optional.some((f) => f.fieldId === focus || touched(f.fieldId));
+                const moreOpen = foldChoice[section.sectionId] ?? autoOpen;
+                const rows = [...required, ...(moreOpen ? optional : [])];
                 return (
-                  <View
-                    key={field.fieldId}
-                    style={field.fieldId === focus ? styles.focused : undefined}
-                    onLayout={(e) => {
-                      fieldY.current.set(field.fieldId, { sectionId: section.sectionId, y: e.nativeEvent.layout.y });
-                      if (field.fieldId === focus) tryFocus();
-                    }}
-                  >
-                    <FieldRow
-                      field={field}
-                      value={project.values[key]}
-                      naReason={project.na[key]}
-                      state={fieldState}
-                      onChange={(v) => void setValue(field.fieldId, v)}
-                      onSetNa={(reason) => void setNa(field.fieldId, reason)}
-                    />
-                  </View>
+                  <>
+                    {rows.map((field) => renderField(field, section.sectionId))}
+                    {optional.length > 0 ? (
+                      <Pressable
+                        onPress={() => setFoldChoice((c) => ({ ...c, [section.sectionId]: !moreOpen }))}
+                        style={styles.moreKey}
+                        accessibilityRole="button"
+                        accessibilityState={{ expanded: moreOpen }}
+                        accessibilityLabel={moreOpen ? `Fold the ${optional.length} optional questions in ${section.title}` : `Show ${optional.length} more optional questions in ${section.title}`}
+                      >
+                        <Text style={styles.moreKeyText}>
+                          {moreOpen ? 'FOLD THE OPTIONAL QUESTIONS ▴' : `${optional.length} MORE QUESTION${optional.length === 1 ? '' : 'S'} · OPTIONAL · GO DEEPER ▾`}
+                        </Text>
+                      </Pressable>
+                    ) : null}
+                  </>
                 );
-              })}
+              })()}
             </View>
           ))}
 
@@ -617,6 +660,8 @@ const styles = StyleSheet.create({
 
   /** The question WHAT'S LEFT sent the learner to. */
   focused: { borderLeftWidth: 2, borderLeftColor: colors.amber, paddingLeft: 9 },
+  moreKey: { minHeight: 44, justifyContent: 'center', borderTopWidth: 1, borderTopColor: colors.hairline, marginTop: 4 },
+  moreKeyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   hiddenNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 17, color: colors.textMuted, marginBottom: 10 },
   leftLink: {
     marginTop: 14,

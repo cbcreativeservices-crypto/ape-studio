@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, List, CTARow } from "@/components/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/about",
   title: "About",
   description:
     "The mission behind Pro Audio Training Academy: a serious foundation in professional audio — knowledge, safety and professional conduct — at a cost that doesn’t decide who can begin.",
-};
+});
 
 // Mission and organizational thinking — from the owner's scope brief
 // (2026-11-01). Copy claims KNOWLEDGE, never skills (owner rule 2026-10-28):

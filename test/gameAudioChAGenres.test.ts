@@ -230,14 +230,19 @@ describe('page 4: the GAMES tray fits a phone (196 pt with the strip)', () => {
     assert.equal(rows, 3);
     assert.ok(46 + 6 + rows * 44 + (rows - 1) * 6 <= 196, `${rows} rows`);
   });
+  // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
+  // The old page's two checks are still two (L-22): one on "Kinds of games", one on the page its
+  // listener lesson became (p23Listener.tsx). Each page's goal is "Pass the check".
   it('each check’s correct option is not its longest (learning audit L-16), and there are two checks (L-22)', () => {
-    const blocks = [...PAGE4.matchAll(/options=\{\[([\s\S]*?)\]\}/g)].map((m) => [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]));
+    const PAGE5 = readFileSync(new URL('../src/screens/lab/gameaudio/pages/p23Listener.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+    const blocks = [...(PAGE4 + PAGE5).matchAll(/options=\{\[([\s\S]*?)\]\}/g)].map((m) => [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]));
     assert.equal(blocks.length, 2);
     for (const opts of blocks) {
       assert.equal(opts.length, 4);
       assert.ok(opts[0].length < Math.max(...opts.slice(1).map((o) => o.length)), opts.map((o) => o.length).join('/'));
     }
-    assert.match(PAGE4, /label: 'Pass both checks', hit: check && check2/);
+    assert.match(PAGE4, /label: 'Pass the check', hit: check \}/);
+    assert.match(PAGE5, /label: 'Pass the check', hit: check \}/);
   });
 });
 

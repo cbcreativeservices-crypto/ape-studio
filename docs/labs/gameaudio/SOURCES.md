@@ -107,3 +107,22 @@ What the fix round changed in this record: the sound list and its count (section
 - Page 11: the SOURCES key says ALL OFF, GEN 1 ON, SCENE ON or BOTH ON. Page 10: the key is WIND.
 - Every page says under its goal chips when it counts toward the lab.
 - Report: docs/labs/novice_audit_2026_11_14/fixes/F3_REPORT.md.
+
+## 8. Lab fix round, all three phases (2026-11-14; beginner audit G5 / G5b; the owner's approvals and decisions of that day)
+
+Reports: `docs/labs/novice_audit_2026_11_14/fixes/F3_REPORT.md`. Tests: `test/labFixes_20261114_F3.test.ts`.
+
+**Page numbers in sections 1 to 6 above are those of the 22-page plan.** Since phase 3 of this round the lab has 24 pages (below). A file keeps its number as its name (`p11Distance.tsx` is the learner's page 13): the table is in `src/screens/lab/gameaudio/pages/index.ts`.
+
+| Date | What changed | Why |
+|---|---|---|
+| 2026-11-14, phase 1 | Page 17: the BUDGET stops are 1, 2, 4, 8, 16 and no limit (12 removed); the burst card prints its sum ("TAKEN 9 = 5 loops + 4 one-shots") and names a protected sound that kept its voice | Audit G5b: "set BUDGET to 8" took two presses; six rows stood over "TAKEN 9" |
+| 2026-11-14, phase 1 | Page 19: FIX opens on no setting; ALL FIVE faults count as fixed only after the same action is run again (before, only fault 5). New credit only; stored marks untouched | Audit G5b; owner: "Begin fixing all bugs found…" |
+| 2026-11-14, phase 1 | Page 11's key says ON / OFF (never "NONE"); page 10's key is WIND; every page says under its goal chips when it counts; page 2 starts with OPEN DOOR, not SOUND | Audit G5 |
+| 2026-11-14, phase 2 | The frame's "Sound off?" line on every page; a NEEDS SOUND tag on the one step judged by ear (page 1); first-visit captions under the readouts; the end screen says per page what is still to do; LEVEL is the first key on every page that has it | Shared frame of the fix round (SHARED_API.md) |
+| 2026-11-14, phase 3 | **24 PAGES.** The old page 4 is "Kinds of games" + "Whose ears: the listener"; the old page 10 is "Ambience and zones" + "Loops and their joins". No sentence, goal or check was cut; each went to one of the two pages. The loop page needs no walking (its listener stays in the courtyard) | Owner's decision 5: "Split a page that holds two lessons into two pages" |
+| 2026-11-14, phase 3 | **The credit rule.** Its words are unchanged: `tr_game_audio` is reported once EVERY page is done. The number of pages it covers went from 22 to 24, with the same goals and checks as before shared out over two more pages (each of the four split pages has its own check). A credit already reported is kept by labCompletion and is not looked at again | Same decision; "Credit already earned is never removed" |
+| 2026-11-14, phase 3 | **Saved page marks.** They are kept by page INDEX in `ape:game-audio:v1`. A record saved in the 22-page layout is moved once per device before the shell reads it (`model/gaPageLayout.ts`): a finished old page 4 or 10 marks both pages it became, every other page keeps its mark. The layout number is kept in `ape:onboarding:gaPageLayout`, a family the account wipe keeps, with a copy of the pre-split record. A further change of page order needs a layout 3 there | "Before you split, find how stored progress and credit are keyed… Map old keys so nothing earned is lost, and test it" |
+| 2026-11-14, phase 3 | The strip, CONTENTS and the end screen say "page" (the lab's own word), not MODULE; "drawing…" stands on the glass until the page has had two turns of the task queue (the house `runSoon`, never frame callbacks: GaLab must not become a loop host), 1.2 s at most | Owner's decision 3 |
+
+**Simplifications register, additions:** the "drawing…" line goes after two animation frames or 1.2 s, whichever comes first; it is not a measure of when the picture was painted.

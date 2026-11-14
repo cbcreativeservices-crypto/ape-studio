@@ -10,7 +10,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
-import { AbPlayer, ConceptList, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
+import { AbPlayer, ConceptList, GoDeeper, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { combNotchesHz, combPeaksHz } from './engine/advanced.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { ParallelArt, type ParallelMode } from './advFigures';
@@ -150,8 +150,9 @@ function PageAdvEq({ ctx }: { ctx: PageCtx }) {
         />
       </Card>
       <Card>
-        <Eyebrow>THE ADVANCED TOOLKIT</Eyebrow>
-        <ConceptList items={conceptItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE ADVANCED TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={conceptItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="The acoustic guitar masks the vocal — but only in the chorus, when it strums hard. The precise tool:"
@@ -216,8 +217,9 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
         <DuckArt ducking={ducked} />
       </Card>
       <Card>
-        <Eyebrow>THE ADVANCED TOOLKIT</Eyebrow>
-        <ConceptList items={toolItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE ADVANCED TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={toolItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="Why do engineers often prefer two compressors doing 3 dB each over one doing 6 dB?"
@@ -362,8 +364,9 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
         <DecayPlot space={space} />
       </Card>
       <Card>
-        <Eyebrow>THE SET-DESIGN TOOLKIT</Eyebrow>
-        <ConceptList items={depthItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE SET-DESIGN TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={depthItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="The vocal needs a lush, long reverb — but the mix gets muddy the moment you add it. The set-design fix:"

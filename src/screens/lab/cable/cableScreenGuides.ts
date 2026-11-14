@@ -96,7 +96,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   l03_analog: {
     intro: {
       learning: 'What each contact on the common analog connectors does, why XLR doesn’t always mean mic or TRS always mean stereo, and how a balanced line cancels noise.',
-      start: '3-PIN XLR is open: read CONTACTS & USES. Then tap 1/4-INCH TRS and count its wirings. Scroll down to BALANCED VS UNBALANCED to see the noise cancel.',
+      start: '3-PIN XLR is picked: tap CONTACTS & USES to open it. Then tap 1/4-INCH TRS and count its wirings. Scroll down to BALANCED VS UNBALANCED to see the noise cancel.',
     },
     seeing: [
       'THE ANALOG FAMILY draws seven connectors at one scale, so you see their real sizes side by side. PINOUT INK KEY colors each contact; always read it with the printed label.',
@@ -105,7 +105,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     ],
     control: [
       'Tap a chip or a connector in the drawing: 3-PIN XLR (open first), 1/4-INCH TS, 1/4-INCH TRS, 3.5 MM TRS, 3.5 MM TRRS, RCA, COMBO XLR/TRS.',
-      'Tap a section title to open or close it; CONTACTS & USES starts open. MALE / FEMALE / CABLE switch the photo where shown.',
+      'Tap a section title to open or close it; every section starts closed. MALE / FEMALE / CABLE switch the photo where shown.',
       'Tap ⤢ FULL SCREEN under a drawing to enlarge it.',
       'Solve all four questions; wrong picks stay open. ALSO RECOGNIZE browses patch, multipin and compact connectors.',
     ],

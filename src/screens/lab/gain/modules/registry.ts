@@ -43,3 +43,39 @@ export const GAIN_MODULES: GainModuleDef[] = [
  *  what's-left list (phase 2 end screen, 2026-11-14): it is the one module
  *  that counts on a pass, not on opening. */
 export const GAIN_TROUBLESHOOT_LEFT = 'Still to do: find the first stage that clips and fix it, until the green frame appears.';
+
+/** "Done = work done" (owner's decision 1, phase 3, 2026-11-14): what makes
+ *  each module count — never opening it.
+ *   - What Gain Staging Is, Follow the Signal, Too Low vs. Too High, Gain vs.
+ *     Fader: the CHECK YOURSELF answered right (1 each).
+ *   - Input Gain First: the preamp set in the healthy green (its goal line).
+ *   - Multiple Gain Stages: the chain balanced (BALANCE ✓ OK).
+ *   - Free Practice: any change made to the source or a stage.
+ *   - Troubleshooting Challenge: the fault found and fixed (unchanged).
+ *  The numbers are the checks each module draws (0 = a hands-on goal). */
+export const GAIN_MODULE_CHECKS: Record<GainModuleId, number> = {
+  intro: 1,
+  input: 0,
+  follow: 1,
+  lowhigh: 1,
+  fadervsgain: 1,
+  multistage: 0,
+  freeplay: 0,
+  troubleshoot: 0,
+};
+
+/** HOW IT COUNTS on the Gain end screens (home + module). */
+export const GAIN_HOW_IT_COUNTS =
+  'A module counts once its own task is done: its CHECK YOURSELF answered right, or its goal reached (healthy input gain, a balanced chain, a change in Free Practice, the fault fixed). Practicing again never removes credit.';
+
+/** The what's-left row's second line: what is still to do on that module. */
+export const GAIN_LEFT: Record<GainModuleId, string> = {
+  intro: 'Still to do: answer its CHECK YOURSELF right.',
+  input: 'Still to do: set the input gain so the preamp sits in the healthy green.',
+  follow: 'Still to do: answer its CHECK YOURSELF right.',
+  lowhigh: 'Still to do: answer its CHECK YOURSELF right.',
+  fadervsgain: 'Still to do: answer its CHECK YOURSELF right.',
+  multistage: 'Still to do: balance the chain until BALANCE reads ✓ OK.',
+  freeplay: 'Still to do: change the source or any stage.',
+  troubleshoot: GAIN_TROUBLESHOOT_LEFT,
+};

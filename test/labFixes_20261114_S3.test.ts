@@ -446,3 +446,67 @@ describe('F2 · a readout that repeats its fader name is not read twice', async 
     assert.match(l, /\{readout\}\s*<\/Text>/, 'the lane still prints the readout as is');
   });
 });
+
+// ─────────────────────────────────────────────── PHASE 3 (owner's decision 3, 2026-11-14:
+// "do your recommendations for these")
+describe('Phase 3 · S3: LEARN first, the plain model note, "drawing…", a visible ⓘ in a tray', () => {
+  it('a rack lab opens on LEARN on the first visit only (an intro flag, latched, recorded once known)', () => {
+    const f = read('screens/lab/rack/learnFirstStore.ts');
+    assert.match(f, /export const LEARN_FIRST_KEY = 'ape:intro:labLearnFirst';/);
+    assert.match(f, /createLocalStore<string\[\]>\(/);
+    assert.match(f, /onScreenIntrosReset\(\(\) => store\.reset\(\)\);/);
+    assert.match(f, /else if \(unreadable\) latched\.current = false;/, 'a failed read opens EXPLORE, as before');
+    const s = code('screens/lab/LabShell.tsx');
+    assert.match(s, /useState<LabMode>\('explore'\)/, 'later visits: EXPLORE as before');
+    assert.match(s, /const firstVisit = useFirstLabVisit\(labId, !!rack\);/);
+    assert.match(s, /if \(firstVisit === true && !pickedTabRef\.current\) setMode\('learn'\);/);
+    assert.match(s, /pickedTabRef\.current = true;/, 'a tab the learner picked is never overridden');
+  });
+  it('the disclosure can be one plain sentence (modelNote), inline and in full screen; badge still works', () => {
+    assert.match(read('screens/lab/rack/rackTypes.ts'), /modelNote\?: string;/);
+    const r = code('screens/lab/rack/RackUnit.tsx');
+    assert.match(r, /\{stage\.modelNote \? \(\s*<ModelNote text=\{stage\.modelNote\} \/>\s*\) : stage\.badge \? \(/);
+    assert.match(r, /badge=\{stage\.modelNote \?\? stage\.badge\}\s*badgePlain=\{!!stage\.modelNote\}/);
+    const m = code('screens/lab/rack/ModelNote.tsx');
+    assert.match(m, /fontFamily: fonts\.barlowRegular,/, 'sentence-case body type, not the all-caps badge face');
+    assert.doesNotMatch(m, /textTransform: 'uppercase'/);
+  });
+  it('the glass shows "drawing…" before its first measure and while the lab says it is not drawn', () => {
+    assert.match(read('screens/lab/rack/rackTypes.ts'), /drawing\?: boolean;/);
+    assert.match(code('screens/lab/rack/RackUnit.tsx'), /\{glassW <= 0 \|\| stage\.drawing \? <DrawingPlaceholder \/> : null\}/);
+    assert.match(code('screens/lab/rack/ModelNote.tsx'), /export const DRAWING_TEXT = 'drawing…';/);
+  });
+  it('an open tray whose key has a lesson shows an ⓘ that opens it (no more long-press only)', () => {
+    const t = code('screens/lab/rack/DockTray.tsx');
+    assert.match(t, /\{param\.helpKey && onHelp \? \(\s*<Pressable\s*onPress=\{\(\) => onHelp\(param\.helpKey\)\}/);
+    assert.match(t, /accessibilityLabel=\{`What \$\{param\.label\} does`\}/);
+  });
+  it('decision 2: the frame prints no "N of total" progress counter', () => {
+    for (const f of ['RackUnit.tsx', 'BezelReadouts.tsx', 'DockTray.tsx', 'DockButton.tsx', 'ParamLane.tsx', 'StageFullScreen.tsx']) {
+      const src = code(`screens/lab/rack/${f}`);
+      assert.doesNotMatch(src, /\$\{[^}]+\} (of|OF) \$\{[^}]+\}/, f);
+      assert.doesNotMatch(src, /\$\{[^}]+\} ?\/ ?\$\{[^}]+\.length\}/, f);
+    }
+  });
+});
+
+describe('Phase 3 · a rack that mounted hidden (first visit on LEARN) still draws on EXPLORE', () => {
+  it('a 0 measure is the hidden state and is ignored; the rack measures itself again when it becomes active', () => {
+    const r = code('screens/lab/rack/RackUnit.tsx');
+    assert.match(r, /function keepShown\(set: \(v: number\) => void, v: number\): void \{\s*if \(v > 0\) set\(v\);\s*\}/);
+    assert.match(r, /onLayout=\{\(e\) => keepShown\(setGlassW, Math\.round\(e\.nativeEvent\.layout\.width\) - 2\)\}/);
+    assert.match(r, /if \(!active\) return undefined;[\s\S]{0,120}glassRef\.current\?\.measure\?\.\(\(_x, _y, w\) => keepShown\(setGlassW, Math\.round\(w\) - 2\)\);/);
+  });
+});
+
+describe("S1's SN7 · the arrival Sound Safety ask never lands under a finger", () => {
+  it('waits while a finger is down and for 400 ms after it lifts; the same 1200 ms fallback on iOS and Android', () => {
+    const s = code('screens/lab/LabShell.tsx');
+    assert.match(s, /export const ARRIVAL_TOUCH_QUIET_MS = 400;/);
+    assert.match(s, /if \(done\) return;\s*if \(touchingRef\.current \|\| Date\.now\(\) - touchAtRef\.current < ARRIVAL_TOUCH_QUIET_MS\) \{\s*if \(later\) clearTimeout\(later\);\s*later = setTimeout\(ask, ARRIVAL_TOUCH_QUIET_MS \+ 50\);\s*return;\s*\}\s*done = true;/);
+    assert.match(s, /onTouchStart=\{\(\) => \{\s*touchingRef\.current = true;\s*touchAtRef\.current = Date\.now\(\);\s*\}\}/);
+    assert.match(s, /onTouchEnd=\{\(\) => \{\s*touchingRef\.current = false;/);
+    assert.match(s, /const fallback = setTimeout\(ask, Platform\.OS === 'web' \? 150 : 1200\);/, 'phones: one rule for iOS and Android');
+    assert.equal((s.match(/if \(later\) clearTimeout\(later\);/g) ?? []).length, 3, 'both cleanups clear the deferred ask');
+  });
+});

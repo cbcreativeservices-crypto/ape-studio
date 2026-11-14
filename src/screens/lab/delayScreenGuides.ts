@@ -54,7 +54,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     },
     seeing: [
       'Your source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. OUT’s ruler: seconds since a sound passed the stage.',
-      'TIME, FDBK and MIX show your settings. The strip under them says TEACHING MODEL: the picture comes from the same math as the sound you hear.',
+      'TIME, FDBK and MIX show your settings. The line under them says the picture is a model, drawn from the same math as the sound you hear.',
       'A steady SINE or PINK source draws a band and says TRY CLICK: repeats of a steady sound blur into it.',
     ],
     control: [

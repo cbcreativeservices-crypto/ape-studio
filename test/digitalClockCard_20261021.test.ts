@@ -29,7 +29,9 @@ describe('the clocking card lives in the jitter module (Errors & Limits)', () =>
     assert.match(errors, /\{CLOCKING_CARD\.intro\}/);
     assert.match(errors, /CLOCKING_CARD\.ways\.map/);
     assert.match(errors, /\{CLOCKING_CARD\.wrong\}/);
-    assert.match(errors, /<CheckQuestion spec=\{CLOCKING_CHECK\} \/>/);
+    // GoalCheck = the shared CheckQuestion reporting to the module's goal (phase 3, 2026-11-14:
+    // a module counts once its checks are answered right, never on opening).
+    assert.match(errors, /<GoalCheck spec=\{CLOCKING_CHECK\} \/>/);
   });
   it('the module blurb promises the clock sharing it now teaches (and still names jitter)', () => {
     const line = read('src/screens/lab/digital/modules/registry.ts').split('\n').find((l) => l.includes("id: 'errors'"))!;

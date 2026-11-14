@@ -122,6 +122,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       rack={{
         size: 'M',
         badge: `SIMULATION · APPROXIMATED — ${shape === 'circle' ? 'Bessel disc modes, edge-driven' : 'Ritz square-plate modes, center-driven'}`,
+        modelNote: shape === 'circle' ? 'A simulation, approximated with Bessel disc modes, driven from the edge.' : 'A simulation, approximated with Ritz square-plate modes, driven from the center.',
         onHelp: help,
         onGuide: () => help('display'),
         initialParam: 'freq',

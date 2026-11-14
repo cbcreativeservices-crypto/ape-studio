@@ -520,34 +520,60 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
       kind: 'read',
       guide: {
         intro: {
-          learning: 'How speaker loads add in parallel and series, what bridging really does to the load, and why twice the power is only about 3 dB louder.',
+          learning: 'How speaker loads add in parallel and series, how load sets current and power, and what bridging really does to the load.',
           start: 'With two 8 Ω cabinets in Parallel, the load builder reads Ztotal ≈ 4.00 Ω. Tap + 8 Ω once more and watch the warning appear.',
         },
         seeing: [
-          'This page is a set of worked tools: the speaker-load builder, power and current, bridged operation, watts and loudness, clipping risk, a rack inspection and a specification decoder.',
+          'This page is three worked tools: the speaker-load builder, power and current, and bridged operation. The next page carries on with loudness, risk and spec sheets.',
           'Every figure is a resistive teaching example. A real speaker’s impedance changes with frequency, so its load moves around the nominal figure.',
         ],
         control: [
           'Load builder: Parallel or Series. + 16 Ω, + 8 Ω or + 4 Ω adds a cabinet (up to four); CLEAR starts again.',
           'Power: 8 Ω, 4 Ω or 2 Ω at 28.3 Vrms. Bridge: Stereo or Bridge mode, then an 8 Ω or 4 Ω bridged load.',
+          'NEXT at the foot of the page moves on to loudness, risk and spec sheets.',
+        ],
+        changes: [
+          'Cabinets in parallel lower the total impedance; in series they raise it. Below the amp’s 4 Ω minimum, expect protection, limiting or heat.',
+          'Halve the load and the current doubles at the same voltage. Bridging doubles the voltage, but each channel sees half the load.',
+        ],
+        teaches: [
+          'How working engineers read speaker loads and bridge mode.',
+          'Why minimum-load ratings exist: a lower load draws more current and runs the amplifier hotter.',
+        ],
+        tryThis: [
+          'Two 8 Ω in parallel read Ztotal ≈ 4.00 Ω, within the minimum. Tap + 8 Ω: 2.67 Ω, and the warning appears.',
+          'In POWER AND CURRENT pick 4 Ω: 7.08 A and 200 W, against 3.54 A and 100 W at 8 Ω. Same voltage, half the load, double the current.',
+        ],
+      },
+    },
+    {
+      key: 'risk',
+      kind: 'read',
+      guide: {
+        intro: {
+          learning: 'Why twice the power is only about 3 dB louder, how clipping endangers loudspeakers, and how to read a rack and a power rating.',
+          start: 'The power ratio starts at 2.00×: read the dB it gives. Then slide it to 10× and compare.',
+        },
+        seeing: [
+          'This page is four worked tools: watts and loudness, clipping risk, a rack inspection and a specification decoder.',
+          'Every figure is a teaching example; a real rating only means something with its test conditions.',
+        ],
+        control: [
           'Watts: slide the Power ratio P2 ÷ P1 from 0.25× to 10×.',
           'Inspection: pick a Rack, then the finding you see. Decoder: pick a Sheet, check what’s missing, then tap CHECK.',
           'At the end: CHECK YOURSELF questions, the TAKEAWAY and MARK COMPLETE ›.',
         ],
         changes: [
-          'Cabinets in parallel lower the total impedance; in series they raise it. Below the amp’s 4 Ω minimum, expect protection, limiting or heat.',
-          'Halve the load and the current doubles at the same voltage. Bridging doubles the voltage, but each channel sees half the load.',
           'Twice the power is only about +3 dB. Roughly ten times the power sounds about twice as loud.',
+          'A rating without its load, bandwidth and distortion figure leaves gaps the decoder marks.',
         ],
         teaches: [
-          'How working engineers read speaker loads, bridge mode and power ratings.',
           'A power rating means little without its test conditions, such as the load it was measured into.',
           'Not every rack needs a fix: some are fine and best left alone.',
         ],
         tryThis: [
-          'Two 8 Ω in parallel read Ztotal ≈ 4.00 Ω, within the minimum. Tap + 8 Ω: 2.67 Ω, and the warning appears.',
-          'In POWER AND CURRENT pick 4 Ω: 7.08 A and 200 W, against 3.54 A and 100 W at 8 Ω. Same voltage, half the load, double the current.',
           'The power ratio starts at 2.00×: the formula reads +3.01 dB. Slide it to the top, 10.00×: +10.00 dB, about twice as loud.',
+          'In the decoder, pick a sheet, mark what is missing and tap CHECK.',
         ],
       },
     },

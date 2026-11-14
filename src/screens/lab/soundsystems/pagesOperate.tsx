@@ -27,7 +27,7 @@ import { flipFader, SoundSystemsRackLayout, StageBox, type SsPageDef } from './r
 import { StageFit } from '../rack/StageFit';
 import { usePageMemory } from './pageMemory';
 // The rack's spoken label from the drawing's own test (lab fix round 2026-11-14, F2).
-import { rackA11y, rackLit } from './fixHelpers';
+import { rackA11y, rackLit, leftWord } from './fixHelpers';
 
 function useOperateCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -60,7 +60,7 @@ function useSequence(steps: readonly PowerStep[], onCorrect: () => void) {
       kind: 'options',
       id: 'step',
       label: 'STEP',
-      valueLabel: `${order.length}/${steps.length}`,
+      valueLabel: leftWord(order.length, steps.length, 'ALL'),
       options: bin.map((s) => ({
         id: s.id,
         label: `${order.includes(s.id) ? `${order.indexOf(s.id) + 1} · ` : ''}${s.short}`,
@@ -145,13 +145,13 @@ function PagePowerUp({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'S',
-        badge: 'POWER SEQUENCE — ILLUSTRATIVE · devices light in the order you choose',
+        modelNote: 'A drawing: the devices light in the order you choose.',
         initialParam: 'step',
         bezel: [
-          { k: 'STEPS', v: `${seq.order.length}/${POWER_UP.length}`, flex: 0.9 },
+          { k: 'STEPS', v: leftWord(seq.order.length, POWER_UP.length, 'ALL'), flex: 0.9 },
           { k: 'LAST', v: seq.last ? seq.byId(seq.last).short.toUpperCase() : '—', tint: colors.cyanBright, flex: 2 },
           { k: 'ORDER', v: seq.err ? 'WRONG' : seq.complete ? 'CORRECT' : 'SO FAR OK', tint: seq.err ? colors.red : seq.complete ? colors.green : colors.amber, flex: 1.1 },
-          { k: 'LIT', v: `${lit}/${RACK.length}`, tint: lit ? colors.greenBright : undefined, flex: 0.7 },
+          { k: 'LIT', v: `${lit} ON`, tint: lit ? colors.greenBright : undefined, flex: 0.7 },
         ],
         stage: (w, h) => <PowerRack on={on} direction="up" w={w} h={h} />,
         params: seq.params,
@@ -274,14 +274,14 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'LINE CHECK — ILLUSTRATIVE · readings revealed by each probe',
+        modelNote: 'A teaching model: each probe shows a sample reading.',
         initialParam: 'line',
         hideDragTag: true,
         bezel: [
           { k: 'LINE', v: it.short, tint: colors.cyanBright, flex: 1.2 },
           { k: isOut ? 'PROC OUT' : 'STAGEBOX LED', v: probed ? (it.led ? (isOut ? 'SIGNAL' : 'LIT') : (isOut ? 'NONE' : 'DARK')) : '?', tint: probed ? (it.led ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
           { k: isOut ? 'RIGHT FEED' : 'CH METER', v: probed ? (it.meter ? (isOut ? 'YES' : 'MOVING') : (isOut ? 'NO' : 'FLAT')) : '?', tint: probed ? (it.meter ? colors.greenBright : colors.orange) : undefined, flex: 1.1 },
-          { k: 'MARKED', v: `${correct}/${ALL_LINES.length}`, tint: done ? colors.green : undefined },
+          { k: 'MARKED', v: leftWord(correct, ALL_LINES.length, 'ALL'), tint: done ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={STRIP_W / (STRIP_H * 2 + 8)}>
@@ -340,7 +340,7 @@ function PageGainStructure({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'GAIN CHAIN — ILLUSTRATIVE MODEL · teaching values, not a specification',
+        modelNote: 'A teaching model of the gain chain: example values, not a specification.',
         initialParam: 'stage',
         hideDragTag: true,
         bezel: gainBezel(chain, reading),
@@ -432,7 +432,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'RING-OUT — ILLUSTRATIVE MODEL · placement buys 12 dB, a notch 4',
+        modelNote: 'A teaching model: here placement buys 12 dB and a notch 4 dB.',
         initialParam: 'send',
         hideDragTag: true,
         bezel: wedges.map((x) => {
@@ -516,19 +516,19 @@ function PageShutdown({ ctx }: { ctx: PageCtx }) {
   );
   const params: DockParam[] = [
     ...seq.params,
-    { kind: 'group', id: 'docs', label: 'DOCUMENT', valueLabel: `${docs.size}/${DOCS.length}`, render: () => docsCard },
+    { kind: 'group', id: 'docs', label: 'DOCUMENT', valueLabel: leftWord(docs.size, DOCS.length, 'ALL'), render: () => docsCard },
   ];
   return (
     <SoundSystemsRackLayout
       rack={{
         size: 'S',
-        badge: 'POWER SEQUENCE — ILLUSTRATIVE · devices go dark in the order you choose',
+        modelNote: 'A drawing: the devices go dark in the order you choose.',
         initialParam: 'step',
         bezel: [
-          { k: 'STEPS', v: `${seq.order.length}/${POWER_DOWN.length}`, flex: 0.9 },
+          { k: 'STEPS', v: leftWord(seq.order.length, POWER_DOWN.length, 'ALL'), flex: 0.9 },
           { k: 'LAST', v: seq.last ? seq.byId(seq.last).short.toUpperCase() : '—', tint: colors.cyanBright, flex: 2 },
           { k: 'ORDER', v: seq.err ? 'WRONG' : seq.complete ? 'CORRECT' : 'SO FAR OK', tint: seq.err ? colors.red : seq.complete ? colors.green : colors.amber, flex: 1.1 },
-          { k: 'DARK', v: `${dark}/${RACK.length}`, flex: 0.7 },
+          { k: 'DARK', v: `${dark} OFF`, flex: 0.7 },
         ],
         stage: (w, h) => <PowerRack on={off} direction="down" w={w} h={h} />,
         params,

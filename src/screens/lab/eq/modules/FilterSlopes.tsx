@@ -68,7 +68,7 @@ const CHECK: CheckSpec = {
     'Slope is a rate, not a width. A pass filter does have a Q — it sets how much the response peaks right at the corner — but that is not what “per octave” measures.',
 };
 
-export function FilterSlopesModule(_p: EqModuleComponentProps) {
+export function FilterSlopesModule(p: EqModuleComponentProps) {
   const [slope, setSlope] = useState<Slope>(12);
   const order = slope / 6;
 
@@ -157,7 +157,8 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
           the −3 dB point (the cutoff) stays put while the slope beyond it swings.
         </Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

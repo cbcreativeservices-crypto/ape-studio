@@ -16,8 +16,8 @@
  * the CONTENTS footer open the what's-left screen (LabEndScreen). The header
  * ‹ always leaves. Never blocked.
  *
- * READ: NEXT › and FINISH mark the guide being left as read; MARK AS READ at
- * the foot does it in place. ✓ READ shows only from the record (a write
+ * READ: MARK AS READ at the foot of a guide is the one thing that counts it
+ * (owner 2026-11-14, "done = work done"; NEXT › used to count it too). ✓ READ shows only from the record (a write
  * result or this session's held reading for a guest), never optimistically.
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -35,7 +35,7 @@ import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { useLatchedPress } from '../../../lib/latch';
 import { LabEndScreen } from '../kit/LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { MIXING_GUIDE_INDEX } from './data/index';
 import { loadGuide } from './data/load';
@@ -105,10 +105,10 @@ export function MixingGuideScreen() {
     index,
     ending,
     go,
-    // Leaving a guide forward with NEXT › / FINISH counts it as read.
-    beforeAdvance: (from) => {
-      void markGuideRead(MIXING_GUIDE_INDEX[from].id);
-    },
+    // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): NEXT › and FINISH
+    // no longer mark the guide being left as read. A reading guide's work is
+    // reading it to its end, and MARK AS READ sits at that end, so it is the
+    // one thing that counts a guide. Reads already stored stay read.
     finish: () => setEnding(true),
     unEnd: () => setEnding(false),
   });
@@ -132,6 +132,7 @@ export function MixingGuideScreen() {
   const setAll = () => setOpen(allOpen ? new Set<GuideSectionKey>() : new Set(sections.map((s) => s.key)));
 
   return (
+    <LabNounProvider value="guide">
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         {/* Screen Guide host: no Rack Unit here (a reading page), so every
@@ -143,12 +144,13 @@ export function MixingGuideScreen() {
             opens the what's-left guide (WHERE YOU ARE). */}
         <LabHeader
           title={ending ? 'MIXING GUIDES' : entry.title.toUpperCase()}
-          subtitle={ending ? 'What’s left' : `Mixing guide ${entry.num} of ${MIXING_GUIDE_INDEX.length}${isRead ? ' · read' : ''}`}
+          subtitle={ending ? 'What’s left' : `Mixing guide${isRead ? ' · read' : ''}`}
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
           guide={ending ? MIXING_GUIDES_END_GUIDE : MIXING_GUIDE_READER_GUIDE}
           guideTitle={ending ? 'WHERE YOU ARE' : undefined}
         />
-        <LabNavBar nav={nav} />
+        {/* One noun (S2 phase 3): the strip reads GUIDE and names the style, never "n / 50". */}
+        <LabNavBar nav={nav} posLabel={ending ? undefined : entry.title.toUpperCase()} />
         {ending ? (
           <LabEndScreen
             labId="mixing-guides"
@@ -160,7 +162,7 @@ export function MixingGuideScreen() {
             noun="guide"
             // Said ONCE above the list (phase 2, 2026-11-14): every row would
             // repeat it, so no row carries a line of its own.
-            howItCounts="A guide counts as read when you leave it with NEXT › or FINISH ›, or tap MARK AS READ at its foot. Opening it, or jumping away with ‹ PREV or the list, does not count."
+            howItCounts="A guide counts as read when you reach its end and tap MARK AS READ. Opening it, or moving on with NEXT ›, ‹ PREV or the list, does not count."
             onJump={(id) => go(MIXING_GUIDE_INDEX.findIndex((g) => g.id === id))}
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}
@@ -230,6 +232,7 @@ export function MixingGuideScreen() {
         </ScreenGuideHost>
       </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

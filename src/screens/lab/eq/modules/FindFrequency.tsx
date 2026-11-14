@@ -20,7 +20,7 @@
  * builds with the FX engine, EqAuditionBar plays the hidden coloration live. Match the dim
  * reference: your correction is perfect when the bold curve sits back on it.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { ResponseCurveGraph } from './eqResponseGraph';
@@ -124,12 +124,17 @@ function judge(hidden: Hidden[], user: UserBand[]): Verdict {
   return { lines, pass: allPass };
 }
 
-export function FindFrequencyModule(_p: EqModuleComponentProps) {
+export function FindFrequencyModule(p: EqModuleComponentProps) {
   const [level, setLevel] = useState<number>(1);
   const [hidden, setHidden] = useState<Hidden[]>(() => makeHidden(1));
   const [bands, setBands] = useState<UserBand[]>(() => freshBands(1));
   const [selIdx, setSelIdx] = useState(0);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
+  // Work done (phase 3, owner's decision 1): the module counts on a CHECK that passes.
+  const { onDone } = p;
+  useEffect(() => {
+    if (verdict?.pass) onDone?.();
+  }, [verdict, onDone]);
 
   const newRound = useCallback((lvl: number) => {
     setLevel(lvl);
@@ -245,6 +250,8 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend + honesty, verbatim from the pre-rack panel head.
         badge: 'SIGNAL (bold) vs REFERENCE (dim) · SYNTHETIC',
+        // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+        modelNote: 'Bold is the signal, dim is the reference: a made-up spectrum, not a recording.',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>

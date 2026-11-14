@@ -22,7 +22,7 @@ export const G03: ScreenGuide = {
   changes: [
     'Picking a card changes only what you read. It does not change the phone in your hand or how this lab plays.',
     'Moving BUDGET prints a MIX line in the log. The open card stays as it was.',
-    'With nothing playing, only the number after the slash in VOICES changes. Page 17 plays enough sounds to reach the limit.',
+    'With nothing playing, only the number after the slash in VOICES changes. Page 19 plays enough sounds to reach the limit.',
   ],
   teaches: [
     'Platform is where the game runs, delivery is how it reaches the player, and output is how the player hears it. These can be three different devices.',

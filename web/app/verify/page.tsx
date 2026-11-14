@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import VerifyForm from "@/components/VerifyForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/verify",
   title: "Verify a Credential",
   description:
     "Confirm a Pro Audio Training Academy credential from its verification code or QR code.",
-};
+  image: "/og/og-verify.png",
+});
 
 export default function Page() {
   return (

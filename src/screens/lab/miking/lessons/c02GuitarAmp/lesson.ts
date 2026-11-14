@@ -670,7 +670,7 @@ export const C02_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'A solid-body electric guitar and the amp it plays through. On its own the guitar is very quiet: its pickups turn the strings’ motion into a small electrical signal, and the amp and its speaker make the sound. The mic hears the speaker — not the guitar.', src: 'LESSON L4-L6' },
-    { title: 'WHERE YOU MEET IT', text: 'Rock, pop, blues, jazz, country and worship bands, on stage and in the studio — through a combo (amp and speaker in one box) or a separate head and cabinet. The speaker itself is covered in full in the Amplified speakers & Leslie module.', src: 'LESSON L4' },
+    { title: 'WHERE YOU MEET IT', text: 'Rock, pop, blues, jazz, country and worship bands, on stage and in the studio — through a combo (amp and speaker in one box) or a separate head and cabinet. The speaker itself is covered in full in the Amplified Speakers and Leslie module.', src: 'LESSON L4' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Rhythm, riffs and solos. The player’s tone is the guitar, the pedals, the amp’s settings AND the speaker — clean, edge-of-breakup or heavily driven. Mic the amp they bring, as they set it.', src: 'LESSON L6' },
     { title: 'ITS SIZE', text: 'A common combo with one 12 in speaker is about 62 cm wide, 44.5 cm tall and 24 cm deep. The speaker often sits off-center, under the controls; the back is often open.', src: 'FEN-65DR-MAN' },
   ],

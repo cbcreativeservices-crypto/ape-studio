@@ -1,27 +1,16 @@
 /**
- * Page 4 — KINDS OF GAMES (handoff lesson 3 and section 5).
+ * KINDS OF GAMES (handoff lesson 3 and section 5). The learner's page 4.
  *
  * Genre, perspective and play mode are three SEPARATE choices. The learner
- * browses twelve kinds of game (pages/data/gaGenres) and then does the one
- * thing that changes most between them: moves the LISTENER from the player
- * to an overhead camera, and reads what that does to one sound.
+ * browses twelve kinds of game (pages/data/gaGenres): each pick starts the
+ * scene again and shows one thing that kind of game cares about.
  *
- * WHAT THE MODEL REALLY DOES (read before changing the text):
- *   - the camera listener is over the middle of the scene, high up
- *     (GA_CAMERA_HEIGHT), and its left and right follow the picture; FACING
- *     turns the player only, so with the camera listening GEN PAN no longer
- *     follows FACING;
- *   - the camera's height only narrows the pan. At FACING 0° the generator
- *     is far to the player's right, and from the camera it sits nearer the
- *     center. At other facings its side can change instead of narrowing,
- *     which is why the page asks for 0° first;
- *   - LEVEL is measured along the ground from the middle of the scene
- *     (gaListenDistance), so nothing drops out of range because the camera
- *     is high: a source near the middle is louder for the camera than one
- *     near an edge, wherever the player stands.
- *
- * The page does not put the listener back when it is left: every page opens
- * with the player listening (GaRack's `enterPage`).
+ * ONE LESSON SINCE 2026-11-14 (owner's decision 5: "Split a page that holds
+ * two lessons into two pages"; beginner audit G5, page 4: "Two unrelated
+ * lessons share one page"). The second lesson, where the game puts its
+ * LISTENER, is the next page (p23Listener.tsx, the learner's page 5), with
+ * its tray, its goals and its check. Nothing was cut: every sentence, card,
+ * goal and check of the old page is on one of the two.
  *
  * GAMES MOVES THE SCENE (walk audit W1 F11). Picking a kind starts the scene
  * again (`enterPage`: nothing playing, everyone at the start) and runs that
@@ -35,78 +24,27 @@
  * measured room): the line (two lines of text) above the twelve chips in
  * four columns (three rows of 44 pt).
  *
- * Common mistake taught against: placing every sound on the visible player
- * character in every camera mode.
+ * Common mistake taught against: reading a kind of game as a rule for its
+ * sound (the old page's own sentence, "A card shows a typical emphasis, not
+ * a rule", now in the mistake box).
  */
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
-import { GaRack } from '../GaLab';
+import { GaRack, masterKey } from '../GaLab';
 import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
-import { listenerOf, type GaState } from '../model/gaModel';
 import { gaDispatch, useGa } from '../model/gaStore';
-import { PLACES, stereoPan } from '../model/gaWorld';
-import { ChABullets, ChACard, ChAEmpty, ChARow, ChATray, ChATrayGrid, ChATrayNote, ChATrayRow } from './chAViews';
+import { ChABullets, ChACard, ChAEmpty, ChARow, ChATrayGrid } from './chAViews';
 import { GA_GAME_CHOICES, GA_GENRES, GA_GENRES_TO_OPEN, gaGenre, type GaGenreId } from './data/gaGenres';
 import { gaSeenWord } from './data/gaPlatforms';
 import { G04 } from './guides/p04';
-import { facingKey, useSince } from './shared';
 
 const ASSETS = ['gen_hum', 'gen_air', 'fountain'] as const;
-const TERMS = gaTerms('Audio listener', 'Listener position', 'Listener orientation', 'Split-screen audio');
-
-/** Where the generator sits, left to right, for whoever is listening now:
- *  the model's own stereo pan, in words and a number (never color alone).
- *  A generator that is not played (off, or VIRTUAL past its maximum
- *  distance, as OPEN WORLD shows) has no pan: "—", as page 11 prints it
- *  (round-2 bug test 2026-11-13, R2-GA1-07). */
-function genPan(s: GaState): { v: string; a11y: string } {
-  const inst = s.inst.find((i) => i.event === 'generator' && i.owner === 'generator-1');
-  const voices = inst ? s.voices.filter((v) => v.inst === inst.id) : [];
-  if (!voices.length) return { v: '—', a11y: 'no pan: generator 1 is not playing' };
-  if (voices.every((v) => v.state === 'virtual')) return { v: '—', a11y: 'no pan: generator 1 is virtual, tracked and not played' };
-  const pan = stereoPan(listenerOf(s), PLACES.generator);
-  const n = Math.round(Math.abs(pan) * 100);
-  if (n < 3) return { v: 'CENTER', a11y: 'the generator is in the center' };
-  return { v: `${pan < 0 ? 'L' : 'R'} ${n}%`, a11y: `the generator is ${n} percent to the ${pan < 0 ? 'left' : 'right'}` };
-}
-
-const LISTENER_NOTE: Record<GaState['listenerMode'], string> = {
-  player: 'The listener is on YOU. Left and right follow the way you face.',
-  camera: 'The listener is a camera high above the middle of the scene. Left and right follow the picture, level follows the distance from the middle, and FACING turns only the character.',
-};
-
-/** The LISTENER tray: whose ears, and one sound to judge them by. */
-function ListenerTray({ onCamera }: { onCamera: () => void }) {
-  const s = useGa();
-  const gen = s.machines.find((m) => m.id === 'generator-1');
-  const on = !!gen?.on;
-  return (
-    <ChATray>
-      <ChATrayRow
-        head="WHOSE EARS"
-        chips={[
-          { label: 'YOUR EARS', mark: true, on: s.listenerMode === 'player', onPress: () => gaDispatch({ type: 'listener', mode: 'player' }) },
-          {
-            label: 'OVERHEAD CAMERA',
-            mark: true,
-            on: s.listenerMode === 'camera',
-            onPress: () => {
-              onCamera();
-              gaDispatch({ type: 'listener', mode: 'camera' });
-            },
-          },
-        ]}
-      />
-      <ChATrayNote>{LISTENER_NOTE[s.listenerMode]}</ChATrayNote>
-      <ChATrayRow head="A SOUND TO LISTEN TO" chips={[{ label: on ? 'GENERATOR 1 · ON' : 'GENERATOR 1 · OFF', on, onPress: () => gaDispatch({ type: 'machine', id: 'generator-1', on: !on }) }]} />
-    </ChATray>
-  );
-}
+const TERMS = gaTerms('Split-screen audio');
 
 /** Start the scene again and run one kind's demonstration. */
 function runDemo(id: GaGenreId): void {
@@ -138,47 +76,18 @@ function GamesTray({ genre, onPick }: { genre: GaGenreId | null; onPick: (id: Ga
 
 function Page({ ctx }: { ctx: PageCtx }) {
   const s = useGa();
-  const { since } = useSince(s);
   const [check, setCheck] = useState(false);
-  const [check2, setCheck2] = useState(false);
   const [genre, setGenre] = useState<GaGenreId | null>(null);
   const [opened, setOpened] = useState<readonly GaGenreId[]>([]);
   const card = gaGenre(genre);
 
-  // "the player turned while the camera was the listener": the model counts
-  // every turn; this notes which listener was in use when the count rose
-  const turns = since('turned');
-  const turnsSeen = useRef(turns);
-  const turnedUnderCamera = useRef(false);
-  if (turns > turnsSeen.current) {
-    if (s.listenerMode === 'camera') turnedUnderCamera.current = true;
-    turnsSeen.current = turns;
-  }
-
-  // the camera chosen BY THE LEARNER in the LISTENER tray: STRATEGY's
-  // demonstration hands the listener over too, and that is not the goal
-  // (round-2 bug test 2026-11-13, R2-GA1-06)
-  const [choseCamera, setChoseCamera] = useState(false);
-
   const goals = [
     { label: 'Open three kinds of game', hit: opened.length >= GA_GENRES_TO_OPEN },
-    { label: 'Listen from the overhead camera', hit: choseCamera && since('listener:camera') > 0 },
-    { label: 'Move FACING while the camera listens', hit: turnedUnderCamera.current },
-    { label: 'Choose YOUR EARS again', hit: since('listener:player') > 0 },
-    { label: 'Pass both checks', hit: check && check2 },
+    { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);
-  const pan = genPan(s);
   const camera = s.listenerMode === 'camera';
 
-  const listenerKey: DockParam = {
-    kind: 'group',
-    id: 'listener',
-    label: 'LISTENER',
-    valueLabel: camera ? 'CAMERA' : 'YOU',
-    valueA11y: camera ? 'the overhead camera is listening' : 'you, the player, are listening',
-    render: () => <ListenerTray onCamera={() => setChoseCamera(true)} />,
-  };
   const pickGenre = (next: GaGenreId) => {
     setGenre(next);
     setOpened((was) => (was.includes(next) ? was : [...was, next]));
@@ -199,11 +108,12 @@ function Page({ ctx }: { ctx: PageCtx }) {
   return (
     <GaRack
       spec={{
-        keys: [facingKey(s), listenerKey, gamesKey],
-        initialParam: 'facing',
+        // LEVEL is the slider (the lab's one key order: the slider first)
+        keys: [masterKey(s), gamesKey],
+        initialParam: 'master',
         readouts: [
+          // STRATEGY's demonstration hands the listener to the camera: this cell shows it
           { k: 'LISTENER', kNarrow: 'EARS', v: camera ? 'CAMERA' : 'YOU', vA11y: camera ? 'the overhead camera is listening' : 'you, the player, are listening', flex: 1.2 },
-          { k: 'GEN PAN', v: pan.v, vA11y: pan.a11y, flex: 1.2 },
         ],
         showNames: true,
         // the platformer's surface by the foot, the adventure's beds crossing over
@@ -212,7 +122,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>The scene is drawn from above, the way a strategy game shows its map. Until now the listener has been on YOU.</Look>
+        <Look>The scene is drawn from above, the way a strategy game shows its map.</Look>
         <P>Genre, perspective and play mode are three separate choices. A puzzle can be played in first person, and a racing game can be seen from above.</P>
         <ChACard eyebrow="THREE SEPARATE CHOICES" title="GENRE · PERSPECTIVE · PLAY MODE">
           {GA_GAME_CHOICES.map((c) => (
@@ -236,41 +146,19 @@ function Page({ ctx }: { ctx: PageCtx }) {
         ) : (
           <ChAEmpty>No kind of game is open yet. The GAMES key is in the dock at the bottom.</ChAEmpty>
         )}
-        <P>A card shows a typical emphasis, not a rule. Many games combine several kinds.</P>
       </Step>
       <Step n={3}>
-        <P>One thing changes with the perspective: where the game puts its listener.</P>
-        <Do>Open LISTENER and switch GENERATOR 1 on. Move FACING to 0°, so YOU face the top of the picture, and read GEN PAN. Then choose OVERHEAD CAMERA and read it again.</Do>
-        <P>At 0°, for your ears the generator is far to the right. For the camera it sits nearer the center, because the camera is high above the scene. Now move FACING: YOU turn, and GEN PAN stays still. The character is not the listener.</P>
-        <P>Level follows the listener too: for the camera, each sound’s level depends on its distance from the middle of the scene, not from YOU.</P>
-        <Do>Then choose YOUR EARS again.</Do>
-        <Note tone="mistake">Placing every sound on the visible player character in every camera mode. The team chooses where the listener goes.</Note>
+        <Do>After each pick, read the line at the top of the GAMES tray, then the activity log.</Do>
+        <P>The line says what the picture now shows. The log lists what the game asked for and what the audio side answered.</P>
         <ActivityLog state={s} lines={4} />
+        <Note tone="mistake">Reading a kind of game as a rule for its sound. A card shows a typical emphasis, not a rule. Many games combine several kinds.</Note>
+        <P>One thing changes with the perspective: where the game puts its listener. The next page is about that.</P>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>
         <GoalChips goals={goals} latched={latched} />
       </Step>
       <Step n={5}>
-        <UnderstandingCheck
-          eyebrow=""
-          question="You move the listener from the player to the overhead camera. The generator has not moved. Why does its pan change?"
-          options={[
-            'Direction is measured from the listener, and it has moved',
-            'The generator’s sound file was replaced by an overhead version',
-            'In an overhead view, every sound is placed in the center',
-            'Pan follows the visible player character, and the character turned',
-          ]}
-          correct={0}
-          explain="The game measures every sound against the listener. Move the listener and each sound’s direction and distance change, with nothing restarted."
-          wrong={[
-            undefined,
-            'No file changed. The same sound kept playing; only the place it is measured from moved.',
-            'Sounds still sit to the left or the right of the camera, as the picture shows them. Their pan is now measured from the camera, not from YOU.',
-            'That is the common mistake. The character did not turn, and with the camera listening, turning the character changes nothing.',
-          ]}
-          onCorrect={() => setCheck(true)}
-        />
         <UnderstandingCheck
           eyebrow=""
           question="A racing game is seen from above. Two people play it in turns on one screen. Which of these is its play mode?"
@@ -283,7 +171,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
             'That is the perspective: where the camera is.',
             'Two people share one screen here, and they take turns.',
           ]}
-          onCorrect={() => setCheck2(true)}
+          onCorrect={() => setCheck(true)}
         />
       </Step>
     </GaRack>

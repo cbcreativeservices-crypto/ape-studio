@@ -1149,7 +1149,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
           <View style={styles.doneCard}>
             <Text style={styles.doneHead}>✓ STAGE 8 COMPLETE</Text>
             <Text style={styles.doneBody}>
-              You found {found.size} of {CI_CEILING_DEFECTS.length} violations, then installed the route the professional
+              You found {found.size === CI_CEILING_DEFECTS.length ? 'every violation' : `${found.size} violations (${CI_CEILING_DEFECTS.length - found.size} missed)`}, then installed the route the professional
               way: independent supports from structure, spaced to the supplied system’s criteria — flip to FINISHED VIEW
               and remember that all of this rides above every clean ceiling.
             </Text>

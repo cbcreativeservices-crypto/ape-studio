@@ -145,8 +145,8 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
           label: 'STEP',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-          formatShort: () => `${shown} / ${n}`,
+          format: () => `${stage.title.toLowerCase()}`,
+          formatShort: () => `${shown}`,
         },
         n,
         shown - 1,
@@ -156,7 +156,7 @@ export function makeWindSoundPage(cfg: WindSoundConfig): (p: PageProps) => React
       { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [
-      { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+      { k: 'EVENT', v: `${shown}`, flex: 0.8 },
       { k: edge ? 'AIR JET' : 'REED', v: shown <= 1 ? (edge ? 'ACROSS THE HOLE' : 'PRESSED') : edge ? 'FLIPPING' : 'OPEN · CLOSE', flex: 1.3 },
       { k: 'AIR COLUMN', v: shown >= 3 ? 'RINGING' : 'AT REST', flex: 1.1 },
       { k: 'SOUND', v: shown >= 4 ? (demo.hole > 0 ? `HOLE ${demo.hole}` : endWord) : '—', flex: 1 },

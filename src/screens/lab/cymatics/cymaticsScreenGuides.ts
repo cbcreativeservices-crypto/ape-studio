@@ -61,7 +61,7 @@ export const CYMATICS_HOME_GUIDE: ScreenGuide = {
     'Tap NEW HERE? START HERE › for What Is Cymatics?, or an OPEN THE … STUDIO › button for a free-play instrument.',
     'Tap a module’s name to read its one-line description; tap OPEN to start it.',
     'In CHECK YOUR UNDERSTANDING, answer every question correctly to complete the lab. You can try a wrong answer again right away.',
-    'SEE WHAT’S LEFT › lists the modules you haven’t opened yet. ‹ leaves the lab; ⓘ on any module or studio explains that screen.',
+    'SEE WHAT’S LEFT › lists the modules you haven’t finished yet. ‹ leaves the lab; ⓘ on any module or studio explains that screen.',
   ],
   changes: [
     'Modules 1–3 build the central idea: a plate answers only at its own resonances, and the plate, not the tone, decides which.',
@@ -87,8 +87,8 @@ export const CYMATICS_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. PRACTICE AGAIN FROM THE START reopens What Is Cymatics? and clears nothing.',
   },
   seeing: [
-    'WHAT’S LEFT lists the modules you haven’t opened yet, then the check. Each module row has a › to jump in.',
-    'Opened modules fold into one ✓ DONE line; REVIEW ▾ shows them. With every module opened and the check passed, the title reads ALL MODULES OPENED.',
+    'WHAT’S LEFT lists the modules you haven’t finished yet, then the check. Each module row has a › to jump in.',
+    'Finished modules fold into one ✓ DONE line; REVIEW ▾ shows them. With every module finished and the check passed, the title reads ALL MODULES DONE.',
   ],
   control: [
     'Tap a row to open that module.',
@@ -96,7 +96,7 @@ export const CYMATICS_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves this screen.',
   ],
   changes: [
-    'A module counts as done once you open it. Nothing here is graded or timed.',
+    'A module counts as done once you work through it and move on with NEXT › (FINISH › on the last); opening it alone does not count. Modules already counted stay counted. Nothing here is graded or timed.',
     'The studios aren’t rows here. To complete the lab, answer CHECK YOUR UNDERSTANDING, drawn on this screen below the list.',
   ],
   teaches: [
@@ -104,7 +104,7 @@ export const CYMATICS_END_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Is Change One Thing still listed? Open it first: it is where you test whether the plate or the tone decides the figure.',
-    'Every module opened? Answer CHECK YOUR UNDERSTANDING below the list to complete the lab.',
+    'Every module finished? Answer CHECK YOUR UNDERSTANDING below the list to complete the lab.',
   ],
 };
 

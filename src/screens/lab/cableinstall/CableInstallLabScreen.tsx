@@ -35,7 +35,7 @@ import { ciScreenGuide, type CiScreenKey } from './cableInstallScreenGuides';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { useLabEndGuest } from '../kit/LabEndScreen';
 import { ciLeftLead, ciSaveNotice, ciSaveState, ciSaveWording, type CiSaveState } from './completeCopy';
 import { useGuestWording } from '../../../features/commercial/useTier';
@@ -490,6 +490,7 @@ export function CableInstallLabScreen() {
             : CI_TITLE.toUpperCase();
 
   return (
+    <LabNounProvider value="stage">
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The guide overlay wraps the root's whole content (its overlay is the
@@ -532,7 +533,7 @@ export function CableInstallLabScreen() {
               // A finished run's START LAB starts at stage 1, not the last
               // stage (bug hunt 2026-09-30).
               onStart={() => goTo(firstIncomplete <= CI_MODULES.length ? firstIncomplete : 1)}
-              resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — MODULE ${firstIncomplete}` : null}
+              resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — STAGE ${firstIncomplete}` : null}
               // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
               progressLine={`${cleared} ${cleared === 1 ? 'unit' : 'units'} complete`}
               unreadable={progressUnreadable}
@@ -603,6 +604,7 @@ export function CableInstallLabScreen() {
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

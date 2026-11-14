@@ -76,8 +76,10 @@ describe('the shared lab navigation and the end screen', () => {
   });
   it('the guest rule waits for the entitlement to resolve and blocks the store', () => {
     assert.match(src, /setRoomDesignSaveBlocked\(!resolved \|\| guest\)/);
-    assert.match(src, /markLabVisit\(ROOM_LAB_ID, mod\.id, \{ persist: !guest \}\)/);
-    assert.match(src, /if \(!resolved \|\| ending\) return;/);
+    // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): a
+    // hands-on module is marked on a change to the room, a reading one on NEXT.
+    assert.match(src, /markLabVisit\(ROOM_LAB_ID, id, \{ persist: !guest \}\)/);
+    assert.match(src, /if \(!resolved\) return;/);
   });
   it('the document modules draw the in-flow NEXT themselves', () => {
     for (const m of ['modIntro', 'modReview']) assert.match(strip(read(`${LAB}modules/${m}.tsx`)), /<LabNextButton \/>/, m);

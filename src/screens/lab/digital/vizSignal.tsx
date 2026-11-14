@@ -1009,7 +1009,7 @@ export function AAFilterView({
         </Path>
       </Canvas>
       <RNText style={[lbl.tag, { left: padL, top: 2 }]}>
-        {filterOn ? `LOW-PASS BEFORE THE SAMPLER — ${slopeDbOct} dB/OCT` : 'FILTER BYPASSED — EVERYTHING REACHES THE SAMPLER'}
+        {filterOn ? `Low-pass before the sampler: ${slopeDbOct} dB/oct` : 'Filter bypassed: everything reaches the sampler'}
       </RNText>
       <RNText style={[lbl.mono, { left: 2, top: yOf(0) - 6 }]}>0</RNText>
       <RNText style={[lbl.mono, { left: 2, top: yOf(-30) - 6 }]}>−30</RNText>

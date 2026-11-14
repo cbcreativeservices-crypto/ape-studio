@@ -660,7 +660,7 @@
    "education"
   ]
  },
- "_renameTitles_about": "Spelling-only title fixes, applied LAST so every other override keeps matching the workbook title (Career Finder text review 2026-11-14; Comp A AC-0589, AC-0116, AC-1052, AC-1331, Pattern 11). Sources: CAOHC names the credential Occupational Hearing Conservationist; SAG-AFTRA writes voiceover as one word (and the owner's family example says Voiceover Recording Engineer); the index already spells Mobile Device Audio Engineer (AC-1624).",
+ "_renameTitles_about": "Spelling-only title fixes, applied LAST so every other override keeps matching the workbook title (Career Finder text review 2026-11-14; Comp A AC-0589, AC-0116, AC-1052, AC-1331, Pattern 11). Sources: CAOHC names the credential Occupational Hearing Conservationist; SAG-AFTRA writes voiceover as one word (and the owner's family example says Voiceover Recording Engineer); the index already spells Mobile Device Audio Engineer (AC-1624). Sound-System → Sound System: Career Finder decisions (owner, 2026-11-14), titles and his family example changed together.",
  "renameTitles": {
   "Occupational Hearing-Conservationist": "Occupational Hearing Conservationist",
   "Audio System Tech": "Audio System Technician",
@@ -668,7 +668,11 @@
   "Hand-Percussionist": "Hand Percussionist",
   "Voice-Over Artist": "Voiceover Artist",
   "Voice-Over Recording Engineer": "Voiceover Recording Engineer",
-  "Voice-Over Producer": "Voiceover Producer"
+  "Voice-Over Producer": "Voiceover Producer",
+  "Sound-System Acoustical Consultant": "Sound System Acoustical Consultant",
+  "Club Sound-System Manager": "Club Sound System Manager",
+  "Sound-System Measurement Technician": "Sound System Measurement Technician",
+  "Sound-System Alignment Engineer": "Sound System Alignment Engineer"
  },
  "_renamePreparation_about": "Whole-line wording of a preparation line, applied after the craft re-table and the licensed-role guard (which compare against the workbook strings). Pattern 10 of the 2026-11-14 text review: no serial comma, like the rest of the screen text. Words and requirements unchanged.",
  "renamePreparation": {

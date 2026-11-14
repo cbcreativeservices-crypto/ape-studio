@@ -41,7 +41,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'Both adjust gain — that’s the one thing a graphic slider does.',
 };
 
-export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
+export function GraphicVsParametricModule(p: EqModuleComponentProps) {
   const [board, setBoard] = useState<'oct' | 'third'>('oct');
   const [octGains, setOctGains] = useState<number[]>(Array(OCT_CENTERS.length).fill(0));
   const [thirdGains, setThirdGains] = useState<number[]>(Array(THIRD_CENTERS.length).fill(0));
@@ -164,7 +164,8 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
           precision and full control.
         </Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

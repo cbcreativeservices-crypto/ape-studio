@@ -128,6 +128,7 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
       rack={{
         size: 'L',
         badge: 'CALCULATED — RATIOS OF NATURAL FREQUENCIES · PLATE: THIS LAB’S MODEL, APPROXIMATED',
+        modelNote: 'The frequency ratios are calculated; the plate is this lab’s model, approximated.',
         onHelp: help,
         onGuide: () => help('harmonics'),
         initialParam: 'mode',

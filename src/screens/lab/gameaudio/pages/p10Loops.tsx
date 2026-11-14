@@ -1,35 +1,32 @@
 /**
- * Page 10 — LOOPS, AMBIENCE AND ZONES (chapter 2 closes).
+ * AMBIENCE AND ZONES. The learner's page 11.
  *
- * A loop's join; beds and spot sounds; a local emitter; entering and leaving
- * a zone. The learner starts the scene, opens the door, walks from the
- * courtyard into the workshop and reads ONE crossfade per crossing; swaps
- * the courtyard wind for the cut with no loop preparation and waits for its
- * join; then meets the planted fault `bedPileUp`: every position update
- * starts the bed again and the copies stack.
+ * Beds and spot sounds; a local emitter; entering and leaving a zone. The
+ * learner starts the scene, opens the door, walks from the courtyard into
+ * the workshop and reads ONE crossfade per crossing; then meets the planted
+ * fault `bedPileUp`: every position update starts the bed again and the
+ * copies stack.
+ *
+ * ONE LESSON SINCE 2026-11-14 (owner's decision 5: "Split a page that holds
+ * two lessons into two pages"; beginner audit G5, page 10: "Four ideas: loop
+ * join, bed vs spot sound, zone crossfade, and a fault"). The loop's join,
+ * with the WIND key, its two goals and its check, is the NEXT page
+ * (p24LoopJoin.tsx, the learner's page 12). Nothing was cut: every
+ * sentence, goal and check of the old page is on one of the two.
  *
  * BED PLUS SPOT SOUNDS (audit 2, sound F14): the courtyard bed is wind only.
  * The bird calls are one-shots the audio side posts at random times and
  * places while that bed plays, so the background never repeats exactly.
  *
- * THE RAW CUT IS JUDGED FROM THE CLOCK, not from a choice and not from
- * hearing: the goal is met when the raw file has passed its join (every
- * 10 s from the moment that bed started) while the listener stood in the
- * courtyard. The `beds` strip under the picture draws the loop, its play
- * position and the JUMP at the join ("JUMPS n"), so the moment is seen with
- * sound off too.
- *
- * Four keys: FACING (the lane) and STEP walk the player for real; the SOUNDS
+ * Three keys: FACING (the lane) and STEP walk the player for real; the SOUNDS
  * tray holds the scene, the door and the rule for when a bed starts (the
  * fault is that rule set wrong): two rows, so it fits the tray's box on a
- * phone (lead's decision 15); WIND chooses the courtyard wind's file (the
- * key was WIND FILE: in this six-key dock it was cut to "WIND F…" at 390
- * wide, beginner audit 2026-11-14, G5 page 10).
+ * phone (lead's decision 15).
  *
  * Common mistake taught against: starting a new background loop on every
  * update while the player stays in one area.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
@@ -37,20 +34,17 @@ import { GaRack } from '../GaLab';
 import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaPlaying, listenerOf } from '../model/gaModel';
-import { gaDispatch, gaGet, gaNow, useGa } from '../model/gaStore';
+import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { zoneAt } from '../model/gaWorld';
-import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen, useFreshProof, usePlantedFault } from './chbBits';
+import { TrayBox, TrayChip, TrayRow, onOff, useFreshProof, usePlantedFault } from './chbBits';
 import { gaPlantedWhere, type GaWhere } from '../bitsLogic';
-import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, P10_WIND_KEY, chbBeds, chbJoinsPassed, chbLoops, chbRawBed, chbSteps } from './data/chbScene';
+import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbSteps } from './data/chbScene';
 import { G10 } from './guides/p10';
-import { facingKey, gaFact, stepKey, useSince } from './shared';
+import { facingKey, stepKey, useSince } from './shared';
 
-const ASSETS: readonly string[] = ['amb_room', 'amb_yard', 'amb_yard_raw', 'bird_1', 'bird_2', 'bird_3', 'fountain', 'door', 'door_close', 'door_rattle', ...CHB_FOOTSTEP_ASSETS];
-const TERMS = gaTerms('Ambience zone', 'Ambient loop', 'Loop Point', 'Crossfade', 'Room Tone');
+const ASSETS: readonly string[] = ['amb_room', 'amb_yard', 'bird_1', 'bird_2', 'bird_3', 'fountain', 'door', 'door_close', 'door_rattle', ...CHB_FOOTSTEP_ASSETS];
+const TERMS = gaTerms('Ambience zone', 'Crossfade', 'Room Tone');
 
-const setRawLoop = (on: boolean) => {
-  if (gaGet().options.rawYardLoop !== on) gaDispatch({ type: 'option', patch: { rawYardLoop: on } });
-};
 const setPileUp = (on: boolean) => {
   if (gaGet().faults.bedPileUp !== on) gaDispatch({ type: 'fault', patch: { bedPileUp: on } });
 };
@@ -78,53 +72,16 @@ function SoundsTray({ pile, pick, where }: { pile: boolean; pick: (on: boolean) 
   );
 }
 
-/**
- * How many times the raw cut has passed its join WHILE THE LISTENER STOOD IN
- * THE COURTYARD, on this visit. A join is a moment on the scene clock
- * (`chbJoinsPassed`); a timer wakes the page just after the next one, and
- * the count goes up only if the listener is in the courtyard then. Nothing
- * here is heard or pressed: it is the same with sound off.
- */
-function useYardJoins(raw: { id: string; born: number; loopS: number } | null, inYard: boolean): number {
-  const [, wake] = useState(0);
-  const seen = useRef<{ key: string; passed: number }>({ key: '', passed: 0 });
-  const count = useRef(0);
-  const key = raw ? `${raw.id}@${raw.born}` : '';
-  const born = raw ? raw.born : null;
-  const loopS = raw ? raw.loopS : 0;
-  const passed = chbJoinsPassed(raw, gaNow());
-  if (seen.current.key !== key) seen.current = { key, passed };
-  else if (passed > seen.current.passed) {
-    if (inYard) count.current += 1;
-    seen.current.passed = passed;
-  }
-  useEffect(() => {
-    if (born == null || !(loopS > 0)) return undefined;
-    const next = born + (passed + 1) * loopS;
-    const id = setTimeout(() => wake((n) => n + 1), Math.max(0, (next - gaNow()) * 1000) + 40);
-    return () => clearTimeout(id);
-  }, [key, born, loopS, passed]);
-  return count.current;
-}
-
 function Page({ ctx }: { ctx: PageCtx }) {
   const s = useGa();
   const { since } = useSince(s);
   const [zoneCheck, setZoneCheck] = useState(false);
-  const [joinCheck, setJoinCheck] = useState(false);
   const beds = chbBeds(s);
   const zone = zoneAt(listenerOf(s));
   const sceneOn = beds.room + beds.yard > 0 || gaPlaying(s, 'fountain');
-  const loops = chbLoops(s);
-  const raw = chbRawBed(s);
-  const yardJoins = useYardJoins(raw, zone === 'yard');
 
   // crossings that really crossfaded the beds (the model's own count)
   const crossings = since('zoneCrossFade');
-  // ■ STOP was pressed while loops were playing, and none is left
-  const loopsBefore = useRef(loops);
-  const silenced = useCountWhen(gaFact(s, 'stopAll'), loopsBefore.current > 0 && loops === 0) > 0;
-  loopsBefore.current = loops;
   // the planted fault's symptom happened on this visit: an update started a bed again
   const pileCount = since('bedPileUp');
   const pileSeen = pileCount > 0;
@@ -146,9 +103,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
 
   const goals = [
     { label: 'Cross the doorway twice with the scene running', hit: crossings >= 2 },
-    { label: 'Stay in the courtyard until the raw cut passes its join', hit: yardJoins > 0 },
-    { label: 'Silence every loop with ■ STOP', hit: silenced },
-    { label: 'Pass both checks', hit: zoneCheck && joinCheck },
+    { label: 'Pass the check', hit: zoneCheck },
   ];
   const latched = useVisitGoals(ctx, goals);
 
@@ -162,26 +117,12 @@ function Page({ ctx }: { ctx: PageCtx }) {
     valueA11y: `the scene’s background is ${sceneOn ? 'on' : 'off'}; the door is ${s.doorOpen ? 'open' : 'closed'}`,
     render: () => <SoundsTray pile={plant.shown} pick={(on) => plant.pick(on, setPileUp)} where={where} />,
   };
-  const windKey: DockParam = {
-    kind: 'options',
-    id: 'wind-file',
-    // four letters: nine did not fit a sixth of a 390-wide dock ("WIND F…")
-    label: P10_WIND_KEY,
-    valueLabel: s.options.rawYardLoop ? 'RAW' : 'LOOP',
-    valueA11y: s.options.rawYardLoop ? 'the courtyard wind is the raw cut, with no loop preparation' : 'the courtyard wind is the prepared loop',
-    options: [
-      { id: 'loop', label: 'PREPARED LOOP', blurb: 'The wind file was blended across its join, so its end runs into its start with no jump.' },
-      { id: 'raw', label: 'RAW CUT', blurb: 'The same wind, cut with no loop preparation. It ends in a gust and begins in a lull, so the level jumps at the join.' },
-    ],
-    selectedId: s.options.rawYardLoop ? 'raw' : 'loop',
-    onSelect: (id) => setRawLoop(id === 'raw'),
-  };
   const copies = beds.room + beds.yard;
 
   return (
     <GaRack
       spec={{
-        keys: [facingKey(s), stepKey('player'), soundsKey, windKey],
+        keys: [facingKey(s), stepKey('player'), soundsKey],
         initialParam: 'facing',
         hud: 'beds',
         readouts: [
@@ -196,8 +137,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>Two ambience zones, the courtyard and the workshop, share one door. The fountain is a local emitter: its sound has a place.</Look>
-        <P>A loop repeats, so the join where its end meets its start must be prepared, or it jumps on every pass. A bed is a loop with no position: courtyard wind, workshop room tone. The birds are spot sounds: one-shots at random times and places, so the background does not repeat.</P>
-        <P>Both beds start once, with the scene. Entering the other zone fades one bed down and the other up: a crossfade. A fade does not repair a badly cut loop.</P>
+        <P>A bed is a loop with no position: courtyard wind, workshop room tone. The birds are spot sounds: one-shots at random times and places, so the background does not repeat.</P>
+        <P>Both beds start once, with the scene. Entering the other zone fades one bed down and the other up: a crossfade.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -206,8 +147,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={6} only={CHB_P10_LOG} />
       </Step>
       <Step n={3}>
-        <Do>In the courtyard, set WIND to RAW CUT. Under the picture, JUMPS counts each pass of the join. Then choose PREPARED LOOP and start the fault on the TROUBLESHOOT card.</Do>
-        <P>The raw cut was not prepared as a loop. It ends in a gust and begins in a lull, so it jumps every 10 s.</P>
+        <Do>Read BEDS while you walk inside one zone: it stays at 2. Then start the fault on the TROUBLESHOOT card.</Do>
+        <P>The next page is about the loop itself: the join where its end meets its start.</P>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>
@@ -238,7 +179,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={5}>
         <UnderstandingCheck
-          eyebrow="QUESTION 1"
+          eyebrow="QUESTION"
           question="You stay inside the workshop and walk around. How many copies of the room tone are playing?"
           options={[
             'One: it started once, with the scene',
@@ -256,28 +197,9 @@ function Page({ ctx }: { ctx: PageCtx }) {
           ]}
           onCorrect={() => setZoneCheck(true)}
         />
-        <UnderstandingCheck
-          eyebrow="QUESTION 2"
-          question="A wind loop jumps in level every 10 seconds. Someone makes the crossfade at the doorway twice as long. What happens to the jump?"
-          options={[
-            'It stays, because the join inside the file is unchanged',
-            'It goes, because a crossfade smooths every change of level',
-            'It comes half as often, because the fade is twice as long',
-            'It moves to the doorway, where the crossfade happens',
-          ]}
-          correct={0}
-          explain="The jump is at the loop’s join, inside the file. The crossfade at the doorway works only while you cross. The file has to be prepared as a loop."
-          wrong={[
-            undefined,
-            'A crossfade works between two sounds while you cross. This jump is inside one file, on every pass.',
-            'The file is still 10 seconds long, so it still passes its join every 10 seconds.',
-            'The join is a moment in the file. It is not a place in the scene.',
-          ]}
-          onCorrect={() => setJoinCheck(true)}
-        />
       </Step>
     </GaRack>
   );
 }
 
-export const P10: PageDef = { title: 'Loops, ambience and zones', short: 'ZONES', Component: Page, manualDone: true, rack: true, guide: G10 };
+export const P10: PageDef = { title: 'Ambience and zones', short: 'ZONES', Component: Page, manualDone: true, rack: true, guide: G10 };

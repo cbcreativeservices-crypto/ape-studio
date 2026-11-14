@@ -377,6 +377,8 @@ export function ModularLabScreen() {
           minWell: 132,
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'THE PATCH — EVERY CABLE IS LIVE · KNOBS AT YOUR SETTINGS',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: 'Every cable in this patch is live, and the knobs show your settings.',
           onGuide: () => openLesson('display'),
           bezel: [
             {

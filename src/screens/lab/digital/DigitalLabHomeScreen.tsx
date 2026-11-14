@@ -18,7 +18,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
-import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
+import { DIGITAL_MODULES, digitalLeftDetail, type DigitalModuleId } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -93,9 +93,9 @@ export function DigitalLabHomeScreen() {
           // The recap and next-lab card (labEndContent.ts, S4).
           labId="af_digital_audio"
           labTitle="Digital Audio Sampling & Conversion Lab"
-          units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title, detail: digitalLeftDetail(m.id) }))}
           // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
-          howItCounts="A module counts once you open it. Opening it again, or practicing, never removes it."
+          howItCounts="A module counts once every CHECK YOURSELF on it is answered right. Opening it again, or practicing, never removes it."
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"

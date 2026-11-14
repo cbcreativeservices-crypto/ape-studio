@@ -25,6 +25,7 @@ import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout'
 import { StageFit } from '../rack/StageFit';
 // Console routing survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
 import { usePageMemory } from './pageMemory';
+import { leftWord } from './fixHelpers';
 
 function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -37,7 +38,6 @@ function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
 }
 
 const WEDGE_NAMES = { aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY' } as const;
-const BUS_BADGE = 'BUS METERS — COMPUTED · who hears what, from the console’s settings';
 
 /** The bus a channel contributes to, in dB — or OFF. */
 function heardDb(list: ReturnType<typeof mainHears>, channelId: string): string {
@@ -89,13 +89,13 @@ function PageChannel({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'CHANNEL STRIP — ILLUSTRATIVE · one channel in signal order',
+        modelNote: 'A drawing of one console channel, in signal order.',
         initialParam: 'station',
         hideDragTag: true,
         bezel: [
           { k: 'STATION', v: st.name.toUpperCase(), tint: colors.cyanBright, flex: 2.2 },
           { k: 'AUDIO', caption: 'through / copy', v: st.kind, flex: 1 },
-          { k: 'SEEN', v: `${seen.size}/${STATIONS.length}`, flex: 0.7 },
+          { k: 'SEEN', v: leftWord(seen.size, STATIONS.length, 'ALL SEEN'), flex: 0.7 },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / STRIP_H}>
@@ -178,7 +178,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
         size: 'M',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'fader',
         hideDragTag: true,
         bezel: [
@@ -251,7 +251,7 @@ function PageWhichTool({ ctx }: { ctx: PageCtx }) {
           />
         );
       })}
-      <Body>{count} of {WHICH_TOOL.length} chosen.</Body>
+      <Body>{count === WHICH_TOOL.length ? 'Every situation answered.' : `${WHICH_TOOL.length - count} situations still to answer.`}</Body>
     </View>
   );
 }
@@ -339,14 +339,14 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
         size: 'L',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'send',
         hideDragTag: true,
         bezel: [
           { k: 'CHANNEL', v: ch.name.toUpperCase(), tint: colors.cyanBright, flex: 1.4 },
           { k: 'SEND', v: `${fmtDb(sendDb)}${sendDb > -60 ? ' dB' : ''}`, tint: colors.amber },
           { k: 'TAP', caption: 'copy point', v: send ? tap.toUpperCase() : '—', tint: tap === 'pre' && send ? colors.greenBright : undefined, flex: 0.8 },
-          { k: 'WEDGES ≥2', caption: 'two-plus each', v: `${each.filter((n) => n >= 2).length}/4`, tint: each.every((n) => n >= 2) ? colors.green : undefined },
+          { k: 'WEDGES ≥2', caption: 'two-plus each', v: leftWord(each.filter((n) => n >= 2).length, 4, 'ALL FOUR'), tint: each.every((n) => n >= 2) ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <BusBank
@@ -417,14 +417,14 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
         size: 'L',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'dca',
         hideDragTag: true,
         bezel: [
           { k: 'KICK → MAIN', caption: 'kick in house', v: heardDb(mainHears(cs), 'kick'), flex: 1.2 },
           { k: 'KICK → WEDGE', caption: 'kick in wedge', v: heardDb(auxHears(cs, 'aux4'), 'kick'), tint: colors.greenBright, flex: 1.2 },
           { k: 'BAND DCA', caption: 'band remote', v: `${fmtDb(dca.levelDb)}${dca.levelDb > -60 ? ' dB' : ''}`, tint: colors.amber },
-          { k: 'DRUMS GRP', caption: 'drum subgroup', v: subgrouped ? (group.toMain ? '→ L/R' : 'NOT → L/R') : `${drums.filter((d) => cs.channels.find((c) => c.id === d)?.subgroup === 'sub-drums').length}/3`, tint: subgrouped && group.toMain ? colors.green : undefined },
+          { k: 'DRUMS GRP', caption: 'drum subgroup', v: subgrouped ? (group.toMain ? '→ L/R' : 'NOT → L/R') : leftWord(drums.filter((d) => cs.channels.find((c) => c.id === d)?.subgroup === 'sub-drums').length, 3, 'ALL IN'), tint: subgrouped && group.toMain ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <BusBank
@@ -491,7 +491,7 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
         size: 'M',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'mg-band',
         bezel: [
           { k: 'BAND MUTE', v: bandMuted ? 'ON' : 'OFF', tint: bandMuted ? colors.red : undefined },
@@ -562,7 +562,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
       kind: 'group',
       id: 'matrix',
       label: 'MATRICES',
-      valueLabel: `${[fillsOk, lobbyOk, recOk].filter(Boolean).length}/3`,
+      valueLabel: leftWord([fillsOk, lobbyOk, recOk].filter(Boolean).length, 3, 'ALL SET'),
       render: () => (
         <View style={{ gap: 10 }}>
           <Body>Three matrices and the buses they can take. Tap a crosspoint to cycle it: off → 0 dB → −6 dB. The matrices above fill as you go.</Body>
@@ -592,7 +592,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
         size: 'L',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'mc7',
         hideDragTag: true,
         bezel: [
@@ -683,13 +683,13 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'OUTPUT PATCH — ILLUSTRATIVE · a wrong patch is silent at best',
+        modelNote: 'A drawing of the stagebox outputs; a wrong patch is silent at best.',
         initialParam: 'socket',
         hideDragTag: true,
         bezel: [
           { k: 'SOCKET', v: act.short, tint: colors.cyanBright, flex: 1.3 },
           { k: 'FED FROM', caption: 'which bus', v: actBus ?? 'UNPATCHED', tint: actBus ? (actBus === act.needs ? colors.green : colors.red) : undefined, flex: 1.3 },
-          { k: 'PATCHED', v: `${correct}/${DESTINATIONS.length}`, tint: done ? colors.green : undefined },
+          { k: 'PATCHED', v: leftWord(correct, DESTINATIONS.length, 'ALL'), tint: done ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / PATCH_H}>

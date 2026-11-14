@@ -64,6 +64,12 @@ export const snapNear = (value: number, target: number, window = 0.25): number =
  *  ratios — nothing here is measured. */
 export const BADGE_EXACT = 'CALCULATED — exact ratios, nothing measured';
 export const BADGE_MODEL = 'EXPLANATORY MODEL — not a measurement';
+/** The same disclosures as one plain sentence each (Phase 3, owner decision 3,
+ *  2026-11-14: S3's `RackStage.modelNote`, which wins over the badge). */
+export const TUNING_MODEL_NOTES: Readonly<Record<string, string>> = {
+  [BADGE_EXACT]: 'Every number here is worked out from exact ratios; nothing is measured.',
+  [BADGE_MODEL]: 'This picture is a model that explains the idea, not a measurement.',
+};
 
 export type TuningRack = {
   /** The pinned display, sized by the glass. */
@@ -107,6 +113,7 @@ export function TuningRackLayout({
         render: rack.stage,
         size: rack.size ?? 'M',
         badge: rack.badge ?? BADGE_EXACT,
+        modelNote: TUNING_MODEL_NOTES[rack.badge ?? BADGE_EXACT],
         bezel: rack.bezel,
         hideDragTag: rack.hideDragTag,
         // FULL SCREEN on every tuning stage (owner 2026-09-30): the rack owns

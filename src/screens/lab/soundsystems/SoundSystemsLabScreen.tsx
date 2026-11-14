@@ -43,6 +43,7 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 // Screen Guide (owner 2026-10-31): the header ⓘ + "this screen, explained".
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { SS_HUB_GUIDE } from './soundsystemsScreenGuides';
+import { leftWord } from './fixHelpers';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -177,7 +178,7 @@ export function SoundSystemsLabScreen() {
                 <View style={styles.cardHead}>
                   <Text style={styles.cardTitle}>{m.title}</Text>
                   <Text style={[styles.cardCount, known && row.done >= row.total && { color: colors.green }]}>
-                    {known ? `${row.done}/${row.total}` : '—'}
+                    {known ? leftWord(row.done, row.total, '✓ DONE') : '—'}
                   </Text>
                 </View>
                 <Text style={styles.cardBlurb}>{m.blurb}</Text>
@@ -226,7 +227,7 @@ export function SoundSystemsLabScreen() {
                     <Text style={styles.leftHint}>{r.hint}</Text>
                   </View>
                   <Text style={styles.leftCount}>
-                    {r.done}/{r.total}
+                    {leftWord(r.done, r.total, '✓ DONE')}
                   </Text>
                   <Text style={styles.cardGo}>›</Text>
                 </Pressable>

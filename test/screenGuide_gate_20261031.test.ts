@@ -115,7 +115,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       'IN ▸', '▸ OUT', 'GATE', 'GR', 'THRESH', 'RANGE', '— dB',
       '−20 dB GENTLE', '−40 dB', '−70 dB SILENCE', 'HOLD', 'RLS', '20 ms CHATTER', '100 ms', '500 ms', 'SOURCE', 'CLICK 90', 'PINK NOISE',
       'LAB NOTES', 'GATE ATTENUATION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
-      'TEACHING MODEL', 'DRUM-HIT MODEL',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'is a model', 'DRUM-HIT MODEL',
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'THRESH', 'Attack', 'HOLD', 'RLS', 'RANGE', 'Hysteresis', 'Lookahead', 'CLICK 90', '20 ms CHATTER', '−70 dB SILENCE', '−20 dB GENTLE'],
     // '−20 dB GENTLE' left the CHECK guide (decision 6, 2026-11-08): it was the range-partial answer's setting

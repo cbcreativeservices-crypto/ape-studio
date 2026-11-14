@@ -534,8 +534,8 @@ export const FOUNDATIONS_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of Foundations of Sound. Any modules you haven’t opened yet are listed first.',
-    'Modules you’ve already opened read CREDITED (DONE when you aren’t signed in). Tap REVIEW ▾ to list them.',
+    'You’ve reached the end of Foundations of Sound. Any modules not done yet are listed first, each with what is still to do.',
+    'Modules you’ve done read CREDITED (DONE when you aren’t signed in). Tap REVIEW ▾ to list them.',
   ],
   control: [
     'Tap any module row to jump straight to it.',
@@ -543,8 +543,8 @@ export const FOUNDATIONS_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves the lab. ‹ PREV on the strip returns to Module 14. Next in Audio Fundamentals: the Sound Playground, then Microphone Principles.',
   ],
   changes: [
-    'A module counts once you open it, so the list shrinks as you visit.',
-    'Going back to practice or review never undoes a module you’ve already opened.',
+    'A module counts once its CHECK YOURSELF is answered right; Module 3, which has none, counts when you move on with NEXT.',
+    'Going back to practice or review never undoes a module you’ve already done.',
   ],
   teaches: [
     'Every module adds one property to the same picture of sound: size, rate, spacing, pitch, loudness, phase and recipe.',

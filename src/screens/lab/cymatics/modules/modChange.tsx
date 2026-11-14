@@ -158,6 +158,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       rack={{
         size: 'L',
         badge: 'SIMULATION · one locked tone, two plates — APPROXIMATED (Ritz / Bessel) · CALCULATED (solved shapes)',
+        modelNote: 'A simulation: one locked tone on two plates, approximated; the shapes are solved.',
         onHelp: help,
         onGuide: () => help('change_one'),
         initialParam: 'a', // no fader: the drive is locked on purpose

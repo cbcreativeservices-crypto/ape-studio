@@ -32,7 +32,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { MeterModuleProps } from '../MeterModuleScreen';
 import { MythReality, ReadoutGrid, dstyles } from '../../digital/bits';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../moduleGoal';
 import { CollapsibleSection } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -302,7 +303,8 @@ export function SpectrumModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the shape IS the lesson
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHETIC TEACHING PATTERNS — CALCULATED, NOT MEASURED',
+        // S3's plain model note (phase 3, 2026-11-14), not an all-caps badge.
+        modelNote: 'Built-in teaching patterns, calculated, not measured from real audio.',
         onGuide: () => p.help('spectrum_read'),
         bezel: [
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
@@ -337,8 +339,8 @@ export function SpectrumModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <CommonMistakes items={SPECTRUM_MISTAKES} />
-        <CheckQuestion spec={CHECK_SPECTRUM_ID} />
-        <CheckQuestion spec={CHECK_HUM_VS_FEEDBACK} />
+        <GoalCheck spec={CHECK_SPECTRUM_ID} />
+        <GoalCheck spec={CHECK_HUM_VS_FEEDBACK} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -460,7 +462,8 @@ export function SpectrogramModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHETIC TEACHING PATTERNS — CALCULATED, NOT MEASURED',
+        // S3's plain model note (phase 3, 2026-11-14), not an all-caps badge.
+        modelNote: 'Built-in teaching patterns, calculated, not measured from real audio.',
         onGuide: () => p.help('spectrogram_axes'),
         // AXES FIRST (the module's charter) — printed permanently on the bezel.
         bezel: [
@@ -502,8 +505,8 @@ export function SpectrogramModule(p: MeterModuleProps) {
         <Text style={dstyles.caption}>{SPECTROGRAM_CAPTIONS[pattern]}</Text>
 
         <CommonMistakes items={SPECTROGRAM_MISTAKES} />
-        <CheckQuestion spec={CHECK_SGRAM_AXES} />
-        <CheckQuestion spec={CHECK_WHISTLE_VS_FEEDBACK} />
+        <GoalCheck spec={CHECK_SGRAM_AXES} />
+        <GoalCheck spec={CHECK_WHISTLE_VS_FEEDBACK} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -559,7 +562,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'DAMPING',
     helpKey: 'damping',
     caption:
-      'Ride the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k collapse in the readouts long before RT·125 follows. This is why bass traps are thick.',
+      'Slide the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k collapse in the readouts long before RT·125 follows. This is why bass traps are thick.',
   },
   {
     title: 'COMPARE ROOMS',
@@ -813,7 +816,8 @@ export function WaterfallModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the flagship — the collapsing range IS the module
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT',
+        // S3's plain model note (phase 3, 2026-11-14), not an all-caps badge.
+        modelNote: 'Drawn from the room-decay (RT60) model, not a measurement of a real room.',
         onGuide: () => p.help('waterfall_axes'),
         bezel: [
           { k: 'RT·125', v: `${rt.r125.toFixed(2)} s`, helpKey: 'waterfall_decay', caption: 'bass fade' },
@@ -917,8 +921,8 @@ export function WaterfallModule(p: MeterModuleProps) {
         />
 
         <CommonMistakes items={WATERFALL_MISTAKES} />
-        <CheckQuestion spec={CHECK_Z_AXIS} />
-        <CheckQuestion spec={CHECK_RIDGE_FIX} />
+        <GoalCheck spec={CHECK_Z_AXIS} />
+        <GoalCheck spec={CHECK_RIDGE_FIX} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>

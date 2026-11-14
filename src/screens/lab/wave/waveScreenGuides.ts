@@ -33,9 +33,9 @@ export const WAVE_HOME_GUIDE: ScreenGuide = {
   },
   seeing: [
     'This is the Wave Physics menu: experiments on how sound travels, bounces, bends and adds up.',
-    'MODULES 1–15 lists one experiment per row. A ✓ marks each one you’ve opened.',
+    'MODULES 1–15 lists one experiment per row. A ✓ marks each one whose check you’ve passed.',
     'PUT IT ALL TOGETHER · MODULE 16 opens the Room Builder, where every effect from the modules happens in one room.',
-    'GUIDED LESSON at the top explains every control. SEE WHAT’S LEFT at the bottom lists the modules you haven’t opened yet.',
+    'GUIDED LESSON at the top explains every control. SEE WHAT’S LEFT at the bottom lists the modules not done yet.',
   ],
   control: [
     'Tap a module’s name to read its one-line description, then tap OPEN to start it.',

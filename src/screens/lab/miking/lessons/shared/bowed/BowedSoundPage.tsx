@@ -141,8 +141,8 @@ export function makeBowedSoundPage(cfg: BowedSoundConfig): (p: PageProps) => Rea
           label: 'STEP',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-          formatShort: () => `${shown} / ${n}`,
+          format: () => `${stage.title.toLowerCase()}`,
+          formatShort: () => `${shown}`,
         },
         n,
         shown - 1,
@@ -152,7 +152,7 @@ export function makeBowedSoundPage(cfg: BowedSoundConfig): (p: PageProps) => Rea
       { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [
-      { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+      { k: 'EVENT', v: `${shown}`, flex: 0.8 },
       { k: 'STRING', v: shown <= 1 ? (cfg.excite === 'bow' ? 'GRIPPED' : 'PULLED') : shown === 2 ? (cfg.excite === 'bow' ? 'SLIPS' : 'RELEASED') : 'VIBRATING', flex: 1.2 },
       { k: 'BRIDGE', v: shown >= 3 ? 'ROCKING' : 'AT REST', flex: 1.1 },
       { k: 'TOP', v: shown >= 4 ? 'MOVING' : 'AT REST', flex: 1 },

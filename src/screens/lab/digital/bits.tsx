@@ -113,7 +113,8 @@ export const dstyles = StyleSheet.create({
 const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   panelCard: { gap: 10, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  // A plain sentence-case note (phase 3, owner decision 3), as S3's ModelNote reads.
+  badge: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   cell: { minWidth: 96, flexGrow: 1, borderRadius: 8, borderWidth: 1, borderColor: '#232329', backgroundColor: '#0f0f13', padding: 8, gap: 2 },
   cellK: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, color: colors.textSub },

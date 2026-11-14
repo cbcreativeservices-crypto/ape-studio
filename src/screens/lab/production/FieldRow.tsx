@@ -52,7 +52,7 @@ export function FieldRow({
         <View style={[styles.dot, { backgroundColor: STATE_TINT[state] }]} />
         <Text style={styles.label}>
           {field.label}
-          {field.required ? <Text style={styles.req}> ·  required</Text> : null}
+          {field.required ? <Text style={styles.req}> · required</Text> : null}
         </Text>
       </View>
       {field.help ? <Text style={styles.help}>{field.help}</Text> : null}

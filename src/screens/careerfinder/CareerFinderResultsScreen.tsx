@@ -27,8 +27,9 @@ import { confirmReset } from './CareerFinderScreen';
 import { Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
 
-export const RESULTS_LEAD = 'Five audio career families lean on what you said you would enjoy. Start with the top one.';
-export const RESULTS_NOTE = 'These are possibilities to explore — not limits on what you can pursue. Interests change with experience, and these will too.';
+// Career Finder decisions (owner, 2026-11-14): CF-A0072 and CF-A0073, his choice of Comp A's wording.
+export const RESULTS_LEAD = 'These five audio career families draw most on what you said you would enjoy. Start with the top one.';
+export const RESULTS_NOTE = 'These are possibilities to explore, not limits on what you can pursue. Interests change with experience, so your results may change too.';
 
 export function CareerFinderResultsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -182,7 +183,7 @@ export function CareerFinderResultsScreen() {
             : null;
     if (words) {
       return (
-        <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back">
+        <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your audio career results" onBack={() => safeGoBack(navigation)} backLabel="Back">
           <Body>{words}</Body>
           {face === 'ready' ? <CtaButton label="START CAREER FINDER" tone="green" onPress={() => navigation.replace('CareerFinderQuiz')} /> : null}
         </FinderShell>
@@ -191,7 +192,7 @@ export function CareerFinderResultsScreen() {
   }
 
   return (
-    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back">
+    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your audio career results" onBack={() => safeGoBack(navigation)} backLabel="Back">
       <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers, not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
 
       <SectionLabel tone="green">{weak ? 'CLOSEST TO YOUR ANSWERS' : 'STRONGEST MATCHES'}</SectionLabel>
@@ -269,8 +270,9 @@ export function CareerFinderResultsScreen() {
         <View style={styles.profileHead}>
           <SectionLabel>FEEDBACK</SectionLabel>
         </View>
-        <Lead>Did these results give you at least one career direction you would explore?</Lead>
-        <View style={styles.fbRow} accessibilityRole="radiogroup" accessibilityLabel="Did these results give you a direction to explore">
+        {/* Career Finder decisions (owner, 2026-11-14): CF-A0136 / CF-A0137 — "career family", and the screen reader hears the same question. */}
+        <Lead>Did these results give you at least one career family you would explore?</Lead>
+        <View style={styles.fbRow} accessibilityRole="radiogroup" accessibilityLabel="Did these results give you at least one career family you would explore">
           {([['yes', 'YES'], ['somewhat', 'SOMEWHAT'], ['no', 'NO']] as const).map(([v, l]) => {
             const on = rec.feedback?.answer === v;
             return (

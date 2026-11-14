@@ -175,10 +175,10 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
             <Btn
               label="LOAD INTO THE EXPLORER ›"
               tone="primary"
-              a11y={`Load ${preset.name} into the explorer on page 1`}
+              a11y={`Load ${preset.name} into the explorer in module 1`}
               onPress={() => { handoff = { name: preset.name, adsr: preset.adsr }; if (ctx.goTo) ctx.goTo(0); }}
             />
-            {!ctx.goTo ? <Body>Then go back one page — the explorer opens with this shape loaded.</Body> : null}
+            {!ctx.goTo ? <Body>Then go back one module — the explorer opens with this shape loaded.</Body> : null}
           </Card>
         </>
       ) : (
@@ -220,7 +220,7 @@ function SpeechChart() {
         </Svg>
       </View>
       )} />
-      <Text style={styles.caption}>{CHART_HONESTY} · syllable timing is typical, not a recording</Text>
+      <Text style={styles.caption}>{CHART_HONESTY} Syllable timing is typical, not a recording.</Text>
     </View>
   );
 }
@@ -293,7 +293,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
       <Prompt>Tap a numbered marker, or its button. Notice how far apart 12 ms and 12 s sit: each equal step along the axis is ten times longer.</Prompt>{/* NEW COPY */}
       <View style={{ gap: 4 }}>
         <Text style={styles.chartTitle}>DURATION · IMPULSE → CONTINUOUS · LOG TIME</Text>
-        <ExpandableFigure aspect={W / H} title="DURATION" badge="TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED" controls={<View style={styles.dock}>{picks}</View>} render={(w, h) => (
+        <ExpandableFigure aspect={W / H} title="DURATION" badge="Typical values, for illustration, not measured." controls={<View style={styles.dock}>{picks}</View>} render={(w, h) => (
         <View accessible accessibilityRole="image" accessibilityLabel={`Duration timeline on a logarithmic axis from 1 millisecond to 20 seconds: ${DURATION_EXAMPLES.map((e, i) => `${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`).join('; ')}.${chosen ? ` Selected: ${chosen.name}.` : ''} Typical values, illustrative.`} style={{ width: w, height: h }}>
           <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
             <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
@@ -332,7 +332,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
           </Svg>
         </View>
         )} />
-        <Text style={styles.caption}>TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED · real sounds vary</Text>{/* NEW COPY */}
+        <Text style={styles.caption}>Typical values, for illustration, not measured; real sounds vary.</Text>{/* NEW COPY */}
       </View>
       {picks}
       <Card>
@@ -419,7 +419,7 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
       <Body>The classic mix-up: a long reverb tail is NOT a long release. Release is the source stopping; the tail is the room still returning energy after it has.</Body>{/* NEW COPY */}
       {/* The button used to vanish with no word of what it did (novice audit
           2026-11-14): the page now says it is done. */}
-      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.loaded}>✓ THIS PAGE IS DONE · NEXT MOVES ON</Text>}
+      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.loaded}>✓ THIS MODULE IS DONE · NEXT MOVES ON</Text>}
     </View>
   );
 }
@@ -478,7 +478,7 @@ const CHECKS: { q: string; options: string[]; correct: number; explain: string; 
     correct: 2,
     explain: 'ADSR, transients and duration describe the sound at its source. The room’s decay is reverberation — propagation, the Wave Physics lab’s subject. A snare’s release at the source is the same in any room.', // NEW COPY
     // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
-    wrong: ['Percussive or not, ADSR is drawn at the source. The Envelope vs Propagation page keeps the two subjects apart.', 'A hall’s long ring comes after the source has stopped. Reread Envelope vs Propagation.', undefined, 'Reflections or none, an envelope belongs to the sound where it starts. Reread Envelope vs Propagation for the other subject.'],
+    wrong: ['Percussive or not, ADSR is drawn at the source. The Envelope vs Propagation module keeps the two subjects apart.', 'A hall’s long ring comes after the source has stopped. Reread Envelope vs Propagation.', undefined, 'Reflections or none, an envelope belongs to the sound where it starts. Reread Envelope vs Propagation for the other subject.'],
   },
 ];
 
@@ -495,8 +495,8 @@ function PageChecks({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>Six checks — one per idea in this lab. A wrong pick explains itself and lets you try again.</Lead>{/* NEW COPY */}
       <Card tone={complete ? 'ok' : 'plain'}>
-        <Eyebrow>{n} OF {CHECKS.length} CORRECT</Eyebrow>
-        <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This page is already complete — answer again for practice.' : 'All six — this page is complete.') : 'This page completes when all six are answered correctly.'}</Body>{/* NEW COPY — evening hunt 1 (2026-10-02): FINISH is never locked and records nothing (kit/PagedLab: the what's-left screen lists this page until it is done); the old lines said FINISH "unlocks" and "records it", and called the LAB complete when only this page was. */}
+        <Eyebrow>{n >= CHECKS.length ? 'ALL CORRECT' : `${CHECKS.length - n} STILL TO GET RIGHT`}</Eyebrow>
+        <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This module is already complete — answer again for practice.' : 'All six — this module is complete.') : 'This module completes when all six are answered correctly.'}</Body>{/* NEW COPY — evening hunt 1 (2026-10-02): FINISH is never locked and records nothing (kit/PagedLab: the what's-left screen lists this page until it is done); the old lines said FINISH "unlocks" and "records it", and called the LAB complete when only this page was. */}
       </Card>
       {CHECKS.map((c, i) => <UnderstandingCheck key={i} question={c.q} options={c.options} correct={c.correct} explain={c.explain} wrong={c.wrong} onCorrect={onCorrect(i)} />)}
     </View>
@@ -504,14 +504,27 @@ function PageChecks({ ctx }: { ctx: PageCtx }) {
 }
 
 const PAGES: PageDef[] = [
-  { title: 'The Envelope Explorer', short: 'Explorer', Component: PageExplorer },
-  { title: 'Common Sound Shapes', short: 'Gallery', Component: PageGallery },
-  { title: 'Transient Explorer', short: 'Transients', Component: PageTransients },
-  { title: 'How Long Does a Sound Last?', short: 'Duration', Component: PageDuration },
-  { title: 'Peak vs Average Level', short: 'Peak/Avg', Component: PagePeakAverage },
-  { title: 'Envelope vs Propagation', short: 'Scope', Component: PageScope },
+  // Phase 3 (owner decision 1, 2026-11-14: "done = work done"): each module says
+  // its kind. Modules 1–5 count when a control is used (useTouch); NEXT alone
+  // no longer counts them. Envelope vs Propagation has nothing to do but read.
+  { title: 'The Envelope Explorer', short: 'Explorer', Component: PageExplorer, manualDone: true },
+  { title: 'Common Sound Shapes', short: 'Gallery', Component: PageGallery, manualDone: true },
+  { title: 'Transient Explorer', short: 'Transients', Component: PageTransients, manualDone: true },
+  { title: 'How Long Does a Sound Last?', short: 'Duration', Component: PageDuration, manualDone: true },
+  { title: 'Peak vs Average Level', short: 'Peak/Avg', Component: PagePeakAverage, manualDone: true },
+  { title: 'Envelope vs Propagation', short: 'Scope', Component: PageScope, reading: true },
   { title: 'Check Yourself', short: 'Check', Component: PageChecks, manualDone: true },
 ];
+
+/** WHAT'S LEFT: each hands-on module names its own missing piece (S2 §4). */
+export const ENVELOPE_STILL_TO_DO: Record<number, string> = {
+  0: 'Still to do: move any slider, or switch a curve.',
+  1: 'Still to do: tap one of the sound shapes.',
+  2: 'Still to do: tap one of the transient types.',
+  3: 'Still to do: tap one of the numbered sounds.',
+  4: 'Still to do: tap Percussive (snare) or Sustained (trumpet).',
+  6: 'Still to do: get all six questions in this module right.',
+};
 
 export function EnvelopeLabScreen() {
   return (
@@ -526,7 +539,7 @@ export function EnvelopeLabScreen() {
       endGuide={ENVELOPE_END_GUIDE}
       // WHAT'S LEFT (fix round 2026-11-14, S2 §4): the one hands-on page names
       // what is missing; reading pages get the shared NEXT rule once.
-      pageDetail={(i) => (i === 6 ? 'Still to do: get all six questions on this page right.' : undefined)}
+      pageDetail={(i) => ENVELOPE_STILL_TO_DO[i]}
       // A CONCEPT lab (owner rule 2026-10-31): visual only, nothing is
       // measured — every chart carries its own ILLUSTRATIVE MODEL badge — so
       // no accuracy note; the ⓘ takes its spot.

@@ -475,7 +475,8 @@ export function SignalChainLabScreen() {
         onHelp: openLesson,
         stage: {
           size: 'L', // the chain diagram IS the lab — earns the tall glass
-          badge: 'MODULES RUN LAB-DEFAULT SETTINGS — GR METERS MEASURED, LIVE',
+          // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+          modelNote: 'Each unit runs lab-default settings; the GR meters are measured live.',
           // Silent learner (phase 2, S3): the lab's own line, true here: every
           // step can be read with sound off, and ▶ gives the GR numbers.
           soundOffLine: 'Sound off? Every step still works: build the chain, then tap ▶ for the GR numbers each unit would show.',

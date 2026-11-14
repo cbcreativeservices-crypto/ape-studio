@@ -315,7 +315,7 @@ function OrganSetting(p: PageProps) {
             <Point title="SAFE ACCESS">Accessible floor stands whenever they meet the goal. Anything elevated or suspended needs the venue’s approval and a qualified rigger with rated supports — never hang a mic from pipes, ornament, sprinklers, lighting or an unverified beam.</Point>
           </Card>
           <Note tone="warn">Protect your hearing during full-organ and PA tests: NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Both are limits for people where they listen, not a mic’s rating. No deliberate loud feedback test is ever needed.</Note>
-          <SpkLink text="An electronic organ and its rotary speaker cabinet are miked like a loudspeaker — covered in full in the Amplified speakers & Leslie module." />
+          <SpkLink text="An electronic organ and its rotary speaker cabinet are miked like a loudspeaker — covered in full in the Amplified Speakers and Leslie module." />
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

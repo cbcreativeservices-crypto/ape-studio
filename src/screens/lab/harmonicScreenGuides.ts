@@ -50,7 +50,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     seeing: [
       'Frequency runs up. Each harmonic is a band, brighter and wider when louder. Left labels: harmonic, Hz, note, cents (1: 100 G2 +35¢).',
       'On LOG ♪ a piano runs up the right side; keys under a harmonic glow amber. Below is the summed wave, three cycles.',
-      'Readouts: F0, THD (overtones against the fundamental, %), CREST (peak against RMS level, dB), SLOPE (dB per octave). Badge: ANALYTIC MODEL — NOT A MEASUREMENT.',
+      'Readouts: F0, THD (overtones against the fundamental, %), CREST (peak against RMS level, dB), SLOPE (dB per octave). Note: drawn from the math, not measured.',
     ],
     control: [
       'Tap ▶ in the header to hear the twelve harmonics as drawn; ■ stops. Slide F0 to move the fundamental from 60 to 300 Hz.',
@@ -86,7 +86,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     seeing: [
       'REAL SIGNAL: your mic, analyzed live. A heatmap fills the display, newest at the right, about 18 s of history, with the harmonic marker lines on top.',
       'The green curve at the right is the spectrum right now; the bottom strip is the mic’s level over time.',
-      'Readouts: F0, MIC (LIVE, START… or OFF), TONE (ON, OFF or MUTED), MAX (strongest on the heatmap). REAL SIGNAL — dBFS · UNCALIBRATED: levels are relative.',
+      'Readouts: F0, MIC (LIVE, START… or OFF), TONE (ON, OFF or MUTED), MAX (strongest on the heatmap). Note: dBFS, not calibrated, so levels are relative.',
     ],
     control: [
       'Tap ▶ in the header, or the display, to start the mic, and the tone once ⚠ ALLOW SPEAKER WHILE MIC IS ON is checked; ■ stops both.',

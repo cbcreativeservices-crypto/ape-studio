@@ -36,7 +36,7 @@ const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('ad
 // OVER (PRACTICE) — credit is never shown as missing (toddler pass 2026-10-13).
 const PAGE_KEYS = PAGES.map((_, i) => mixingPageKeyAt('adv', i));
 const ADV_ACCURACY_DETAIL =
-  'In this lab: LUFS and true-peak readings are BS.1770-style ESTIMATES, and the peak, RMS, crest, null-test and decay numbers measure the lab’s own rendered mixes, played through your phone’s uncalibrated output. Learn the decisions here; deliver with calibrated monitors and certified meters.';
+  'In this lab: LUFS and true-peak readings are BS.1770-style ESTIMATES, and the peak, RMS, crest, null-test and decay numbers measure the lab’s own rendered mixes, played through this device’s uncalibrated output. Learn the decisions here; deliver with calibrated monitors and certified meters.';
 
 /**
  * WHAT'S LEFT, row by row (phase 2, 2026-11-14): each unfinished page names
@@ -80,5 +80,5 @@ export function AdvancedMixingLabScreen() {
   // header chip only on rack pages, and this lab has none); the ⓘ has the
   // header to itself.
   // The note's first line says what THIS lab measures (novice audit G4, 2026-11-14).
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={ADV_ACCURACY_DETAIL} pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  return <PagedLab labId="mixing-adv" unitNoun="page" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={ADV_ACCURACY_DETAIL} pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

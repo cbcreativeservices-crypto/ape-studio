@@ -279,6 +279,10 @@ export function OscillatorLabScreen() {
           badge: speakerView
             ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF APPLIED`
             : 'ANALYTIC MODEL — NOT A MEASUREMENT',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: speakerView
+            ? `This is the phone-speaker version: a ${SPEAKER_HPF_HZ} Hz high-pass filter is applied.`
+            : 'This picture is worked out from the math of the wave, not measured.',
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'WAVE', v: waveLabel, flex: 1.3, helpKey: WAVES.find((w) => w.key === wave)!.lessonKey },

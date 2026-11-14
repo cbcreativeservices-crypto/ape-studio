@@ -263,6 +263,21 @@ export function DockTray({
               <Text style={styles.stickyNote}>{titleFit.note === 'short' ? TRAY_STICKY_NOTE_SHORT : TRAY_STICKY_NOTE}</Text>
             ) : null}
           </Text>
+          {/* A VISIBLE ⓘ (phase 3, owner's decision 3): the control's lesson
+              was long-press only ("hidden long-press help", report pattern).
+              The same lesson the long-press opens; RackUnit's `help` leaves
+              full screen first. */}
+          {param.helpKey && onHelp ? (
+            <Pressable
+              onPress={() => onHelp(param.helpKey)}
+              hitSlop={10}
+              style={styles.helpKey}
+              accessibilityRole="button"
+              accessibilityLabel={`What ${param.label} does`}
+            >
+              <Text style={styles.helpGlyph}>ⓘ</Text>
+            </Pressable>
+          ) : null}
           <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={styles.close}>✕</Text>
           </Pressable>
@@ -401,6 +416,8 @@ const styles = StyleSheet.create({
    *  zero basis and the measure collapsed to one word). */
   measureTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textPrimary },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, paddingHorizontal: 4 },
+  helpKey: { paddingHorizontal: 4 },
+  helpGlyph: { fontFamily: fonts.barlowSemiBold, fontSize: 15, color: colors.amber },
   bodyWrap: { flexShrink: 1, minHeight: 0 },
   slack: { flexGrow: 1, flexShrink: 0, marginTop: -8 },
   body: { flexGrow: 0 },

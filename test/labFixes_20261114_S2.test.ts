@@ -11,7 +11,7 @@
  * API for phase 2: docs/labs/novice_audit_2026_11_14/fixes/SHARED_API.md (S2).
  */
 import { strict as assert } from 'node:assert';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -19,8 +19,8 @@ import { addMiss, checkFeedback, checkWhyProblems, CHECK_DEFAULT_NUDGE, MISSES_B
 import { PRACTICE_LAB_CHECKS } from '../src/features/lab/understandingChecks.ts';
 import { LAB_END_CONTENT, labEndContentFor } from '../src/features/lab/labEndContent.ts';
 import {
-  PAGE_READ_RULE,
-  PAGE_TASK_RULE,
+  pageReadRule,
+  pageTaskRule,
   howItCountsHeading,
   nextHeading,
   recapHeading,
@@ -185,7 +185,7 @@ describe('row 5 · a state-aware WHERE TO START', () => {
     assert.equal(howItCountsHeading('page'), 'HOW A PAGE COUNTS');
   });
   it('no new "N of total" counter in the new words', () => {
-    for (const t of [PAGE_READ_RULE, PAGE_TASK_RULE]) assert.doesNotMatch(t, /\d+\s*(of|\/)\s*\d+/);
+    for (const t of [pageReadRule(), pageTaskRule()]) assert.doesNotMatch(t, /\d+\s*(of|\/)\s*\d+/);
   });
 });
 
@@ -214,8 +214,8 @@ describe('row 5 / quick win 17 · the end screen draws it', () => {
     assert.doesNotMatch(P, /\{ detail: handsOnDetail \}/);
     // a row's only line is the lab's own pageDetail (its real missing piece)
     assert.match(P, /: \{ id: String\(i\), label: p\.title \},/);
-    assert.match(P, /leftPages\.some\(\(p\) => p\.manualDone\) \? handsOnDetail \?\? PAGE_TASK_RULE : null,/);
-    assert.match(P, /leftPages\.some\(\(p\) => !p\.manualDone\) \? PAGE_READ_RULE : null,/);
+    assert.match(P, /leftPages\.some\(\(p\) => p\.manualDone\) \? handsOnDetail \?\? pageTaskRule\(unitNoun\) : null,/);
+    assert.match(P, /leftPages\.some\(\(p\) => !p\.manualDone\) \? pageReadRule\(unitNoun\) : null,/);
     assert.match(P, /labId=\{labId\}\n\s*howItCounts=\{howItCounts\}/);
   });
   it('Game Audio (F3: one sentence on 19 rows): HANDS_ON reaches only howItCounts; pages 20–22 keep their own pageDetail', () => {
@@ -227,7 +227,9 @@ describe('row 5 / quick win 17 · the end screen draws it', () => {
     assert.match(P, /const d = pageDetail\?\.\(i\);\n\s*return d \? \{ detail: d \} : null;/);
     const GA = code('src/screens/lab/gameaudio/GameAudioLabScreen.tsx');
     assert.match(GA, /handsOnDetail=\{HANDS_ON\} pageDetail=\{pageDetail\}/);
-    assert.match(GA, /19: 'Counts once its six checks are done/);
+    // Owner decision 5 (quick pick, 2026-11-14): "Split a page that holds two lessons into two pages" — F3 split
+    // Game Audio pages 4 and 10 (24 pages), so the tools page's line moved from index 19 to 21; words unchanged.
+    assert.match(GA, /21: 'Counts once its six checks are done/);
   });
   it('LabCheckEnd and ReviewLabEnd read the content by their id and close their layer before NEXT leaves', () => {
     assert.match(code('src/screens/lab/kit/LabCheckEnd.tsx'), /labId=\{labId\}\n\s*beforeLeave=\{close\}/);
@@ -372,5 +374,109 @@ describe('shared lab header: a title word never breaks; narrow phones drop the k
     assert.equal(rule('OSCILLATOR LAB'), 107);
     assert.equal(rule('GATE LAB'), 80);
     if (titleMinWidth) assert.equal(titleMinWidth('HARMONOGRAPH LAB'), 128);
+  });
+});
+
+// ── PHASE 3 (owner's quick-pick decisions, 2026-11-14; PHASE3_BRIEF.md) ──────────────────────────────
+// 1 "Done = work done." 2 "N of total progress counters: remove them." 3 "One name per unit of progress
+// in each lab … used everywhere in that lab: strip, end screen, guides, buttons."
+describe('Phase 3 · decision 2: the shared strip prints no "N of total"', async () => {
+  const { navView, relabelView } = await import('../src/screens/lab/kit/labNav.ts');
+  it('MODULE 3, MODULE 3 · STEP 2, INTRO, WHAT’S LEFT — never "3 / 8" and never "of 8" (screen reader too)', () => {
+    const views = [navView(2, 8, false), navView(2, 8, false, { i: 1, count: 4 }), navView(-1, 8, false, undefined, true), navView(7, 8, true), navView(7, 8, false)];
+    for (const v of views) {
+      assert.doesNotMatch(`${v.noun} ${v.pos}`, /\d+\s*\/\s*\d+/);
+      for (const t of Object.values(v.a11y)) assert.doesNotMatch(t, /\bof \d/);
+    }
+    assert.deepEqual([views[0].noun, views[0].pos], ['MODULE', '3']);
+    assert.deepEqual([views[1].noun, views[1].pos], ['MODULE 3 · STEP', '2']);
+  });
+  it('the kit prints no n-of-N anywhere else (labNav, LabNavBar, LabEndScreen, labEnd)', () => {
+    for (const f of ['src/screens/lab/kit/labNav.ts', 'src/screens/lab/kit/LabNavBar.tsx', 'src/screens/lab/kit/LabEndScreen.tsx', 'src/screens/lab/kit/labEnd.ts']) {
+      assert.doesNotMatch(code(f), /\$\{[^}]+\} (?:\/|of) \$\{(?:count|total|units\.length|sub\.count)\}/, f);
+    }
+  });
+  it('decision 3 · relabelView: one noun everywhere the strip speaks', () => {
+    const v = relabelView(navView(2, 8, false), 'chapter');
+    assert.equal(v.noun, 'CHAPTER');
+    assert.equal(v.a11y.next, 'Next chapter');
+    assert.equal(v.a11y.pos, 'Chapter 3. Opens the contents');
+    const s = relabelView(navView(2, 8, false, { i: 1, count: 4 }), 'lesson');
+    assert.equal(s.noun, 'LESSON 3 · STEP');
+    assert.deepEqual(relabelView(navView(2, 8, false), 'module'), navView(2, 8, false));
+  });
+});
+
+describe('Phase 3 · decision 3: the lab says its noun ONCE', () => {
+  const B = code('src/screens/lab/kit/LabNavBar.tsx');
+  const E = code('src/screens/lab/kit/LabEndScreen.tsx');
+  const P = code('src/screens/lab/kit/PagedLab.tsx');
+  it('LabNounProvider (default module) feeds the strip, CONTENTS and the end screen', () => {
+    assert.match(B, /const LabNounContext = createContext<UnitNoun>\('module'\);/);
+    assert.match(B, /const labeled = relabelView\(nav\.view, noun\);/);
+    assert.match(B, /`\$\{Noun\} \$\{i \+ 1\}`/);
+    assert.match(E, /const noun = nounProp \?\? labNoun;/);
+    assert.match(E, /endNote\(mode, !!startOver, noun\)/);
+  });
+  it('PagedLab: unitNoun once → provider, end screen, HOW IT COUNTS, START OVER words; no fixed "page" left', () => {
+    assert.match(P, /accuracyVariant, unitNoun = 'module' \}/);
+    assert.match(P, /<LabNounProvider value=\{unitNoun\}>/);
+    assert.match(P, /noun=\{unitNoun\}/);
+    assert.match(P, /pageReadRule\(unitNoun\)/);
+    assert.doesNotMatch(P, /noun="page"|first page|page check marks|Credited pages/);
+  });
+  it('the words follow the noun', () => {
+    assert.equal(pageReadRule('chapter'), 'A reading chapter counts once you press NEXT (or FINISH) at its foot. Jumping to it from CONTENTS does not count it.');
+    assert.match(pageTaskRule('lesson'), /^A lesson with its own goal or check counts once that goal or check is met; NEXT moves on without counting it\.$/);
+    assert.equal(howItCountsHeading('lesson'), 'HOW A LESSON COUNTS');
+  });
+});
+
+describe('Phase 3 · decision 1: "done = work done" — PagedLab pages declare their kind', () => {
+  it('PageDef has `reading?: true`; NEXT marks only pages that do not mark themselves (no new credit on opening)', () => {
+    const P = code('src/screens/lab/kit/PagedLab.tsx');
+    assert.match(P, /  reading\?: true;/);
+    assert.match(P, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
+    // a CONTENTS jump (goTo) never marks: goTo only sets the page
+    const goTo = P.slice(P.indexOf('const goTo = useCallback('), P.indexOf('const markDone = useCallback('));
+    assert.doesNotMatch(goTo, /markDone|completed/);
+  });
+  // SHRINK-ONLY: pages that declare neither `manualDone: true` (goal/check) nor `reading: true`. A lab
+  // agent who declares its pages lowers its number; it may never rise. Baseline 2026-11-14.
+  const BASELINE: Record<string, number> = { envelope: 0 /* F8 phase 3: all 6 pages declared (5 manualDone, 1 reading) */, speech: 0 /* F8 phase 3: all 10 declared (9 manualDone, 1 reading) */, deesser: 0 /* F7 phase 3: all 9 pages declared (7 manualDone, 2 reading) */, connectorselect: 0, patchbay: 0, mixing: 0, dj: 0, gameaudio: 0 };
+  const dir = (d: string, re: RegExp) => readdirSync(resolve(ROOT, d)).filter((f) => re.test(f)).map((f) => `${d}/${f}`);
+  const FILES: Record<string, string[]> = {
+    envelope: ['src/screens/lab/envelope/EnvelopeLabScreen.tsx'],
+    speech: ['src/screens/lab/speech/SpeechLabScreen.tsx'],
+    deesser: ['src/screens/lab/deesser/DeEsserLabScreen.tsx'],
+    connectorselect: dir('src/screens/lab/connectorselect', /^pages/),
+    patchbay: dir('src/screens/lab/patchbay', /^pages/),
+    mixing: dir('src/screens/lab/mixing', /^pages/),
+    dj: dir('src/screens/lab/dj/pages', /^p\d/),
+    gameaudio: dir('src/screens/lab/gameaudio/pages', /^p\d/),
+  };
+  for (const [lab, files] of Object.entries(FILES)) {
+    it(`${lab}: undeclared pages ≤ ${BASELINE[lab]}`, () => {
+      let undeclared = 0;
+      for (const f of files) for (const m of read(f).matchAll(/\{[^{}]*\bComponent:[^{}]*\}/g)) if (!/manualDone:\s*true|reading:\s*true/.test(m[0])) undeclared += 1;
+      assert.ok(undeclared <= BASELINE[lab], `${lab}: ${undeclared} undeclared (baseline ${BASELINE[lab]}) — declare each page manualDone (goal/check) or reading`);
+    });
+  }
+});
+
+// F4's phase-3 shared need (coordinator, 2026-11-14): PAGE / GUIDE / STAGE nouns and a name in place of the number.
+describe('Phase 3 · F4: page / guide / stage nouns, and a name instead of the number', async () => {
+  const { navView, relabelView, UNIT_NOUNS } = await import('../src/screens/lab/kit/labNav.ts');
+  it('the noun set includes page, guide and stage', () => {
+    for (const n of ['module', 'lesson', 'chapter', 'step', 'page', 'screen', 'guide', 'stage']) assert.ok((UNIT_NOUNS as readonly string[]).includes(n), n);
+    assert.equal(relabelView(navView(9, 24, false), 'screen').noun, 'SCREEN');
+    assert.equal(relabelView(navView(6, 16, false), 'page').noun, 'PAGE');
+    assert.equal(relabelView(navView(6, 16, false), 'page').pos, '7');
+    assert.equal(relabelView(navView(0, 50, false), 'guide').a11y.next, 'Next guide');
+  });
+  it('LabNavBar `posLabel` replaces the number (never a total), not on the end screen or the intro', () => {
+    const B = code('src/screens/lab/kit/LabNavBar.tsx');
+    assert.match(B, /export function LabNavBar\(\{ nav, posLabel \}: \{/);
+    assert.match(B, /const view = posLabel && !nav\.ending && nav\.index >= 0 \? \{ \.\.\.labeled, pos: posLabel \} : labeled;/);
   });
 });

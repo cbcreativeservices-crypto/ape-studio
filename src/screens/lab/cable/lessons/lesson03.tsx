@@ -132,7 +132,8 @@ export function Lesson03Body() {
             <Text style={s.cardHead}>WHY THIS ONE MATTERS</Text>
             <Text style={s.body}>{entry.leadIn}</Text>
           </DetailCard>
-          <ConnectorCard rec={rec} />
+          {/* Folded (phase 3, owner decision 5): the record opened longer than a phone screen. */}
+          <ConnectorCard rec={rec} folded />
         </>
       ) : null}
 

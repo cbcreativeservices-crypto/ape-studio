@@ -66,7 +66,8 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
-import { notOpenedDetail, visitCounts } from './endRows';
+import { goalCounts, moduleGoalDetail } from './endRows';
+import { CheckCreditScope } from './CheckCredit';
 import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
@@ -75,10 +76,10 @@ import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
 
 /** Every module's rack: first-visit bezel captions, and the sound-off line where
  *  the module has PLAY (lab fix round 2026-11-14, phase 2). */
-const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true });
+const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true, modelNotes: true, drawingPlaceholder: true });
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { StageTextScale, useStageTextScale } from '../rack/stageAspect';
-import { CheckQuestion, ConceptBadge, LevelMeterBar, TracerCaption, VizUnavailableCard, type CheckSpec } from './bits';
+import { CheckQuestion, ConceptBadge, LevelMeterBar, PlainModelNote, TracerCaption, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
@@ -494,13 +495,14 @@ function playKey(tone: ToneApi, onPlay: () => void, opts?: { drivesLevel?: boole
 
 /** The static-panel disclosure twin of ConceptBadge (§1.7). */
 function AnalyticBadge({ text }: { text?: string }) {
-  return <Text style={styles.analyticBadge}>{text ?? 'ANALYTIC — DRAWN FROM THE MATH, NOT A MEASUREMENT'}</Text>;
+  // Plain sentence case (owner's decision 3; checker K1), the shared look.
+  return <PlainModelNote>{text ?? 'Drawn exactly from the math. It is not a measurement.'}</PlainModelNote>;
 }
 
 // Compact honesty classes pinned on the stage bezel strip (one line). The FULL
 // verbatim disclosure stays with each module, leading the well.
+// (The bezel shows each as a plain sentence: modelNotes.ts, owner's decision 3.)
 const BADGE_CONCEPT = 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY';
-const BADGE_ANALYTIC = 'ANALYTIC — DRAWN FROM THE MATH, NOT A MEASUREMENT';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Module racks (each renders the RackUnit itself; viz children mount ONLY when
@@ -611,7 +613,7 @@ function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <ConceptBadge extra="ALL THREE WINDOWS SHOW THE SAME MOMENT" />
+      <ConceptBadge extra="All three windows show the same moment." />
       {wellBottom}
     </RackUnit>
   );
@@ -833,7 +835,7 @@ function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <ConceptBadge extra={`LEFT = ${M5_FIXED_A} Hz reference · RIGHT = your frequency — count the orbit laps`} />
+      <ConceptBadge extra={`Left is the ${M5_FIXED_A} Hz reference, right is your frequency: count the orbit laps.`} />
       <Text style={styles.caption}>
         Slide FREQ B ({M5_MIN}–{M5_MAX} Hz): B's orbit dot and its
         compressions both speed up or slow down with the frequency — same-size vibration, different
@@ -893,7 +895,7 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
       }}
     >
       {wellTop}
-      <ConceptBadge extra="HORIZONTAL SCALE IS REAL — the room is 7 m wide, ticks every 1 m" />
+      <ConceptBadge extra="The distances are real: the room is 7 m wide, with a tick every 1 m." />
       <Text style={styles.caption}>
         λ = speed ÷ frequency = 343 ÷ {f} ≈ {lambda.toFixed(2)} m — {(7 / lambda).toFixed(1)}{' '}
         wavelength{7 / lambda >= 1.95 ? 's' : ''} fit across the room. The amber bracket IS that
@@ -1062,7 +1064,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
               <Text style={[styles.beatTxt, beat === 3 && styles.beatTxtGreen]}>3 · DRAG THE PROBE</Text>
             </View>
           </View>
-          <ConceptBadge extra="ONE WAVE — TWO QUESTIONS · where vs when" />
+          <ConceptBadge extra="One wave, two questions: where, and when." />
           <Text style={styles.caption}>
             The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
             in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
@@ -1129,7 +1131,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="ANALYTIC — THE SPIRAL IS HOW HEARING MAPS FREQUENCY (log), DRAWN EXACTLY · THE ORBIT LAPS ONCE PER CYCLE (SLOWED)" />
+      <AnalyticBadge text="The spiral is how hearing maps frequency, drawn exactly from the math; the orbit laps once per cycle, slowed down." />
       <Text style={styles.spiralHint}>
         Drag AROUND the spiral to glide the pitch — one full turn is one octave. The dots on the
         upward ray mark 110 · 220 · 440 · 880 Hz: every crossing is a DOUBLING, yet each turn feels
@@ -1282,7 +1284,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · TOP-RIGHT INSET = WHAT YOU HEAR (ITS SIZE = LEVEL × EAR CURVE · SLOWED)" />
+      <AnalyticBadge text="A simplified hearing curve inspired by equal-loudness contours, not measured data. The top-right inset is what you hear: its size is the level times the ear curve (slowed)." />
       {sens != null && sensDb != null ? (
         <Text style={styles.caption}>
           Ear sensitivity at {f} Hz ≈ {sensDb} dB relative to 1 kHz —{' '}
@@ -1395,7 +1397,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="DRAWN FROM THE MATH — THE BOTTOM LINE IS THE EXACT SUM OF THE TWO TRAVELING WAVES (SLOWED)" />
+      <AnalyticBadge text="Drawn from the math: the bottom line is the exact sum of the two traveling waves, slowed down." />
       {tone.stereoReady ? (
         <Text style={styles.caption}>
           Two REAL tones (the HEAR key), hard-panned: one fully left, one fully right. DRIFTING =
@@ -1523,7 +1525,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE YOU HEAR · PHASE-LOCKED, SLOWED · EACH ROW'S COLOR = ITS LEVEL" />
+      <AnalyticBadge text="The layers and the sum are drawn from the same recipe you hear, locked in step and slowed down. Each row's color is its level." />
       {!tone.additiveReady && tone.engineReady ? (
         <Text style={styles.caption}>
           {__DEV__
@@ -1608,7 +1610,7 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="ANALYTIC — THE WAVE TAKEN APART: WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
+      <AnalyticBadge text="The wave is taken apart exactly by the math: the wave and its ingredients travel (slowed); the spectrum holds still. The measured version lives in the RTA and the spectrogram." />
       <Text style={styles.caption}>
         Fourier’s claim: ANY repeating pressure pattern — however jagged — is a stack of plain
         sines. Every analyzer in this app takes real signals apart the same way, live.
@@ -1656,7 +1658,7 @@ function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps)
       }}
     >
       {wellTop}
-      {viz ? <ConceptBadge extra="SOURCE → AIR → MIC — the chain every tool below listens to" /> : null}
+      {viz ? <ConceptBadge extra="SOURCE → AIR → MIC is the chain every tool below listens to." /> : null}
       {/* Intro text ABOVE the list (owner 2026-08-05). */}
       <Text style={styles.caption}>
         Every card opens the REAL tool — live mic, real measurements, honest units (dBFS · uncalibrated
@@ -1741,7 +1743,7 @@ function M14Rack({ viz, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      {viz ? <ConceptBadge extra="THE WHOLE MODEL, ONE LAST LOOK" /> : null}
+      {viz ? <ConceptBadge extra="The whole model, one last look." /> : null}
       <Text style={styles.comingHead}>YOU BUILT THE WHOLE MODEL</Text>
       {M14_RECAP.map((c) => (
         <Text key={c} style={styles.comingRow}>
@@ -1774,6 +1776,11 @@ type Step = {
    *  recap alone was a passive re-read — the weakest consolidation form. */
   checks?: CheckSpec[];
 };
+
+/** Does the module carry a CHECK YOURSELF card (its "done" is then the card)? */
+function moduleHasCheck(s: Step | undefined): boolean {
+  return !!s && (!!s.check || (s.checks?.length ?? 0) > 0);
+}
 
 const STEPS: Step[] = [
   {
@@ -2242,9 +2249,12 @@ export function FoundationsCourseScreen() {
   useEffect(() => {
     registerLabUnits(FOUNDATIONS_LAB_KEY, FOUNDATIONS_UNITS);
   }, []);
-  useEffect(() => {
-    markLabUnit(FOUNDATIONS_LAB_KEY, String(step));
-  }, [step]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a module counts when
+  // its CHECK YOURSELF card(s) are answered right (CheckCreditScope below),
+  // not when it is opened. Module 3 has no card: it counts when the learner
+  // moves on from it with NEXT (forwardCredits). Credit already stored is
+  // never touched; only new credit follows this rule.
+  const creditStep = useCallback((i: number) => markLabUnit(FOUNDATIONS_LAB_KEY, String(i)), []);
 
   /**
    * THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
@@ -2269,7 +2279,20 @@ export function FoundationsCourseScreen() {
     () => STEPS.map((st, i) => ({ id: String(i), title: st.title, done: banked.has(String(i)) })),
     [banked],
   );
-  const nav = useLabNav({ units: navUnits, index: step, ending, go: goTo, finish, unEnd });
+  // A module with no CHECK YOURSELF card counts when the learner moves on from
+  // it to the next one (the reading-page rule); a jump elsewhere does not.
+  const goCredit = useCallback(
+    (n: number) => {
+      if (n === step + 1 && !moduleHasCheck(STEPS[step])) creditStep(step);
+      goTo(n);
+    },
+    [step, goTo, creditStep],
+  );
+  const finishCredit = useCallback(() => {
+    if (!moduleHasCheck(STEPS[step])) creditStep(step);
+    finish();
+  }, [step, finish, creditStep]);
+  const nav = useLabNav({ units: navUnits, index: step, ending, go: goCredit, finish: finishCredit, unEnd });
 
   const s = STEPS[step];
   const openPlayground = useCallback(() => {
@@ -2400,8 +2423,8 @@ export function FoundationsCourseScreen() {
         <LabEndScreen
           labTitle="Foundations of Sound"
           labId="af_foundations"
-          units={STEPS.map((st, i) => ({ id: String(i), label: st.title, detail: notOpenedDetail(FOUNDATIONS_SCREEN_GUIDES[st.key as FoundationsStepKey]?.intro?.learning) }))}
-          howItCounts={visitCounts('module')}
+          units={STEPS.map((st, i) => ({ id: String(i), label: st.title, detail: moduleGoalDetail(moduleHasCheck(st) ? 'check' : 'next', FOUNDATIONS_SCREEN_GUIDES[st.key as FoundationsStepKey]?.intro?.learning) }))}
+          howItCounts={goalCounts({ next: true })}
           cleared={banked}
           unreadable={progressUnreadable}
           mode="credit"
@@ -2412,6 +2435,7 @@ export function FoundationsCourseScreen() {
         />
       ) : (
       <View style={styles.rackWrap}>
+        <CheckCreditScope key={s.key} onComplete={() => creditStep(step)}>
         <s.Rack
           key={s.key}
           viz={viz}
@@ -2424,6 +2448,7 @@ export function FoundationsCourseScreen() {
           m7Predicted={m7Predicted}
           onM7Predict={setM7Predicted}
         />
+        </CheckCreditScope>
       </View>
       )}
 

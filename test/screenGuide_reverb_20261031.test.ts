@@ -134,7 +134,8 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // the glass (fxAnim ReverbFlow) + the badge strip
-      'IN ▸', '▸ OUT', 'REVERB', 'TEACHING MODEL',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'IN ▸', '▸ OUT', 'REVERB', 'is a model',
       // bezel readouts, dock keys, tray heads + choices (literal in the source)
       'RT60', 'PRE', 'MIX', 'PRE-DLY', 'DAMP', 'SOURCE', 'PRE-DELAY', 'HF DAMPING', 'DARK 2k', 'NATURAL 5.5k', 'BRIGHT 12k', '35%', '70%', '100% WET', 'BURST 1 kHz', 'PINK NOISE',
       // the rack, the header and LAB NOTES

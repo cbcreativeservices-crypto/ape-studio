@@ -377,7 +377,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
         render: (w, h) => <ConeSequence w={w} h={h} back={back} reveal={reveal} shown={shown} accessibilityLabel={`The 1 by 12 cabinet cut open from the side, ${back} back. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />,
         badge: 'The order of events, not their speed · cone motion drawn much larger · silent',
         bezel: [
-          { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+          { k: 'EVENT', v: `${shown}`, flex: 0.8 },
           { k: 'CONE', v: shown >= 2 ? 'FORWARD' : 'AT REST', flex: 1.1 },
           { k: 'FRONT AIR', v: shown >= 3 ? 'PUSHED' : '—', flex: 1.1 },
           { k: 'BACK AIR', v: shown >= 3 ? (back === 'open' ? 'PULLED · OUT' : 'PULLED · IN BOX') : '—', flex: 1.4 },
@@ -390,8 +390,8 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
               label: 'STEP',
               value: (shown - 1) / Math.max(1, n - 1),
               onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-              format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-              formatShort: () => `${shown} / ${n}`,
+              format: () => `${stage.title.toLowerCase()}`,
+              formatShort: () => `${shown}`,
             },
             n,
             shown - 1,
@@ -1001,7 +1001,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: [
-          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
+          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
           ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
         ],
         initialParam: 'piece',

@@ -11,7 +11,8 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
+import { type CheckSpec } from '../../foundations/bits';
+import { GoalCheck, useMetWhen } from '../../meter/moduleGoal';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -25,7 +26,8 @@ const mk = (key: string, name: string, kind: Stage['kind'], gain: number, min: n
 
 /** Honesty badge on every gain-chain glass: the meters are a simulation on a
  *  relative scale (0 = the overload ceiling) — never a measurement. */
-const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';
+// S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+const BADGE = 'A simulated signal chain; levels are relative dB.';
 
 const fmtDb = (v: number) => `${v >= 0 ? '+' : ''}${v} dB`;
 // The dock KEY carries the unit too (emulator pass 2026-10-14: the key read
@@ -102,7 +104,7 @@ export function IntroModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'SOURCE', v: fmtLv(nodes[0].level), tint: stageTint(nodes[0]) },
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
@@ -125,7 +127,7 @@ export function IntroModule(_p: GainModuleComponentProps) {
           preamp is forced into overload; pull it down and everything sinks toward TOO LOW. The whole
           job: a healthy level at every stage.
         </Text>
-        <CheckQuestion spec={INTRO_CHECK} />
+        <GoalCheck spec={INTRO_CHECK} />
       </View>
     </RackUnit>
   );
@@ -141,6 +143,9 @@ export function InputGainModule(_p: GainModuleComponentProps) {
   const nodes = computeChain(-30, stages);
   const preNode = nodes[1];
   const done = preNode.region === 'healthy' && !preNode.distorted;
+  // The module counts once the preamp sits in the healthy green (owner's
+  // decision 1, phase 3: done = work done, never on opening).
+  useMetWhen(done);
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -166,7 +171,7 @@ export function InputGainModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(preNode.level), tint: stageTint(preNode) },
           { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB`, caption: 'until clip' },
@@ -262,7 +267,7 @@ export function FollowModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
           { k: 'PROC', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
@@ -293,7 +298,7 @@ export function FollowModule(_p: GainModuleComponentProps) {
           Notice you can’t rescue a bad preamp setting with anything that comes after it — a decision
           early in the chain has already shaped everything downstream.
         </Text>
-        <CheckQuestion spec={FOLLOW_CHECK} />
+        <GoalCheck spec={FOLLOW_CHECK} />
       </View>
     </RackUnit>
   );
@@ -397,7 +402,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
@@ -432,7 +437,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
                   : 'BALANCED: healthy level at every stage, with headroom to spare.'}
           </Text>
         </View>
-        <CheckQuestion spec={LOWHIGH_CHECK} />
+        <GoalCheck spec={LOWHIGH_CHECK} />
       </View>
     </RackUnit>
   );
@@ -508,7 +513,7 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
           { k: 'OUTPUT', v: fmtLv(nodes[3].level), tint: stageTint(nodes[3]) },
@@ -534,7 +539,7 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
                 : 'Clean chain. Clipping has to be prevented at the input gain, not patched at the fader.'}
           </Text>
         </View>
-        <CheckQuestion spec={FADER_CHECK} />
+        <GoalCheck spec={FADER_CHECK} />
       </View>
     </RackUnit>
   );

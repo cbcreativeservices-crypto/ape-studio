@@ -30,7 +30,7 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
   },
   seeing: [
     'Read the top row left to right. It’s the whole chain: SOUND › ANALOG › SAMPLES › NUMBERS … › LOUDSPEAKER › SOUND.',
-    'THE EIGHT MODULES lists the lab in order, one row each. A ✓ marks a module you’ve opened.',
+    'THE EIGHT MODULES lists the lab in order, one row each. A ✓ marks a module whose checks you’ve answered right.',
     'SECONDARY TOOLS and LEARNING are shortcuts into a module or a calculator, and to the GUIDED LESSON.',
     'The level, float and jitter scenes are illustrations for comparing settings.',
   ],
@@ -39,7 +39,7 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
     'Tool chips jump straight in: SAMPLE INSPECTOR opens Module 4, ALIASING EXPLORER Module 2, DITHER COMPARATOR Module 3, TRUE-PEAK EXPLORER Module 7, CLOCK & JITTER Module 8.',
     'DATA-RATE CALCULATOR, BUFFER LATENCY CALC and FFT RESOLUTION CALC open their calculators. MYTH vs REALITY and KNOWLEDGE CHECKS both open Module 8. Every module also has its own checks at the bottom.',
     'In a module, the display is on top with readouts on its frame, and the controls sit in the dock below. Scroll down for notes and checks. Tap ⓘ beside the title to have the screen explained.',
-    'SEE WHAT’S LEFT lists the modules you haven’t opened. ‹ leaves the lab.',
+    'SEE WHAT’S LEFT lists the modules still to do. ‹ leaves the lab.',
   ],
   changes: [
     'Modules 1–2 start with the analog signal, then measure it in time: sampling, Nyquist and aliasing.',
@@ -67,8 +67,8 @@ export const DIGITAL_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'This is WHAT’S LEFT: the modules of this lab you haven’t opened yet. When none are left, the title reads LAB COMPLETE.',
-    'The modules you’ve opened fold into one ✓ CREDITED row (✓ DONE if you’re not signed in). Tap REVIEW ▾ to list them.',
+    'This is WHAT’S LEFT: the modules of this lab still to do. When none are left, the title reads LAB COMPLETE.',
+    'The modules you’ve done fold into one ✓ CREDITED row (✓ DONE if you’re not signed in). Tap REVIEW ▾ to list them.',
   ],
   control: [
     'Tap a module’s row to open it.',
@@ -76,7 +76,7 @@ export const DIGITAL_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS goes back one screen. If you came from FINISH on Module 8, it takes you to the lab menu. If you came from the menu, it takes you out of the lab.',
   ],
   changes: [
-    'A module counts as done as soon as you open it, and its row moves from the list into the ✓ row.',
+    'A module counts once every CHECK YOURSELF on it is answered right; then its row moves from the list into the ✓ row. Opening it is not enough.',
     'If your progress can’t be loaded, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [
@@ -170,7 +170,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
       start: 'Switch BITS from 4-BIT to 16-BIT and watch LEVELS and TH. SNR jump. Then set 8-BIT, turn ERROR on, and pull LEVEL down below −24 dBFS.',
     },
     seeing: [
-      'Two cycles of a sine and the level grid it must round to. AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR.',
+      'Two cycles of a sine and the level grid it must round to. Amber is the original, blue sampled, green stored, red the rounding error.',
       'Up to 4 bits you can see every level line. Above that, there are so many that they merge into a fine band.',
       'Readouts: BITS, LEVELS, TH. SNR (theoretical signal-to-noise ratio) and PEAK (the sine’s level).',
     ],

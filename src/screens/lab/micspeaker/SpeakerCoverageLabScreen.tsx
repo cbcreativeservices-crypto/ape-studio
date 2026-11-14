@@ -32,7 +32,8 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 // examples of a lab that keeps the chip (mirrors Room Design).
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { SPEAKER_END_GUIDE, SPEAKER_SCREEN_GUIDES, type SpeakerSectionId } from './micSpeakerScreenGuides';
-import { notOpenedDetail, visitCounts } from '../foundations/endRows';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
+import { CheckCreditScope } from '../foundations/CheckCredit';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -46,7 +47,7 @@ import { captionedRack } from '../foundations/captionedRack';
 import { SPEAKER_CAPTIONS } from '../foundations/bezelCaptions';
 
 /** The racks with first-visit bezel captions (phase 2, 2026-11-14). */
-const RackUnit = captionedRack(SPEAKER_CAPTIONS);
+const RackUnit = captionedRack(SPEAKER_CAPTIONS, { modelNotes: true });
 import type { DockParam, RackStage } from '../rack/rackTypes';
 import { GlassShape, useGlassSize } from '../glassShape';
 import { requireMsViz } from './skiaGate';
@@ -299,9 +300,9 @@ export function SpeakerCoverageLabScreen() {
   useEffect(() => {
     registerLabUnits(SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS);
   }, []);
-  useEffect(() => {
-    markLabUnit(SPEAKER_COVERAGE_LAB_KEY, SECTIONS[sectionIdx].key);
-  }, [sectionIdx]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): each of the three
+  // modules counts when its CHECK YOURSELF card is answered right
+  // (CheckCreditScope below), not when it is opened. Stored credit stays.
 
   const topDisp = DISPERSIONS[topDispIdx];
   const sideDisp = DISPERSIONS[sideDispIdx];
@@ -646,16 +647,16 @@ export function SpeakerCoverageLabScreen() {
         guideTitle={ending ? 'SPEAKER PLACEMENT & COVERAGE' : s.title}
       />
       <LabNavBar nav={nav} />
+      <CheckCreditScope key={ending ? 'end' : s.key} onComplete={() => markLabUnit(SPEAKER_COVERAGE_LAB_KEY, s.key)}>
       {ending ? (
         <LabEndScreen
           labTitle="Speaker Placement & Coverage"
           labId="af_speaker_coverage"
-          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: notOpenedDetail(SPEAKER_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
-          howItCounts={visitCounts('section')}
+          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: moduleGoalDetail('check', SPEAKER_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
+          howItCounts={goalCounts()}
           cleared={banked}
           unreadable={progressUnreadable}
           mode="credit"
-          noun="section"
           onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
           onPracticeAgain={() => openSection(0)}
           onDone={() => safeGoBack(navigation)}
@@ -676,17 +677,17 @@ export function SpeakerCoverageLabScreen() {
             </CollapsibleSection>
           ) : null}
           {sectionIdx === 1 && lineArray ? (
-            <Text style={styles.badge}>
-              LINE ARRAY — CONCEPTUAL MODEL, NOT AN SPL PREDICTION. The summed field illustrates why several
+            <Text style={styles.modelNote}>
+              A line array, as a conceptual model, not an SPL prediction. The summed field shows why several
               hung boxes, angled apart, hold level deeper than one box; real array prediction is far more involved.
             </Text>
           ) : null}
           {sectionIdx === 1 && rearDelay ? (
-            <Text style={styles.badge}>
-              DELAY ALIGNMENT — CONCEPTUAL MODEL, NOT TRUE TIME-ALIGNMENT MATH. The two traveling
-              fronts (green lines) illustrate firing the rear speaker late so arrivals fuse. In the
-              field it is set a few milliseconds LATER still, so the ear keeps locating the sound on
-              the stage (the precedence effect). Timing here is illustrative only.
+            <Text style={styles.modelNote}>
+              Delay alignment, as a conceptual model, not true time-alignment math. The two traveling
+              fronts (green lines) show firing the rear speaker late so the arrivals fuse. In the
+              field it is set a few milliseconds later still, so the ear keeps locating the sound on
+              the stage (the precedence effect). The timing here is illustrative only.
             </Text>
           ) : null}
           <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
@@ -731,6 +732,7 @@ export function SpeakerCoverageLabScreen() {
           <LabNextButton />
         </ScrollView>
       )}
+      </CheckCreditScope>
       <GuidedLessonSheet
         visible={lessonOpen}
         lesson={getLabLesson('speaker')}
@@ -757,6 +759,7 @@ const styles = StyleSheet.create({
   trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  modelNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   conceptT: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, marginTop: 4 },
   futureNote: {
     fontFamily: fonts.barlowMedium,

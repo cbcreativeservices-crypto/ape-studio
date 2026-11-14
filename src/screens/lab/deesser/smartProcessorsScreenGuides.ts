@@ -385,8 +385,8 @@ export const DEESSER_END_GUIDE: ScreenGuide = {
     'In the strip above, ‹ PREV returns to the page you came from. WHAT\'S LEFT ▾ lists every page, with START OVER (PRACTICE) at its foot. START OVER asks first, then clears the page ✓ marks; a passed check stays.',
   ],
   changes: [
-    'A page counts as done when you use one of its controls (not FULL SCREEN or RESET RACK TO DEFAULTS), answer its check right, or press NEXT.',
-    'Connections & Check counts when you answer its closing question right, or tap FINISH. Opening a page from a list doesn’t count it.',
+    'A page with a check counts when you answer its check right. What Sibilance Is and Reading Gain Reduction have none: they count when you press NEXT.',
+    'Connections & Check counts when you answer its closing question right; FINISH alone doesn’t. Opening a page, or using its controls, doesn’t count it.',
     'You can pass the five-question check here or on the Smart Processors Lab page; either one counts.',
   ],
   teaches: [

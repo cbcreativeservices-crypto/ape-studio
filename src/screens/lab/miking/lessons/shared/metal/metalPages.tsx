@@ -264,7 +264,7 @@ function MetalSound(spec: SoundSpec) {
     const pred = lesson.predictions.sound;
     const reached = st.shown >= n;
     const cells = spec.cells(variant);
-    const strikeBezel: BezelItem[] = [{ k: 'EVENT', v: `${st.shown} / ${n}`, flex: 0.8 }, ...cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
+    const strikeBezel: BezelItem[] = [{ k: 'EVENT', v: `${st.shown}`, flex: 0.8 }, ...cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
 
     /* the shapes */
     const SH = spec.shapes;

@@ -413,7 +413,9 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
   it('progress mode, noun module: rows and the folded line read ✓ DONE (never CREDITED); REVIEW ▾ unfolds them', () => {
     assert.match(END, /mode="progress"/);
     assert.doesNotMatch(END, /noun=/);
-    assert.match(LES, /noun = 'module'/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page". Default 'module' now comes from LabNounProvider.
+    assert.match(LES, /const noun = nounProp \?\? labNoun;/);
+    assert.match(read('src/screens/lab/kit/LabNavBar.tsx'), /createContext<UnitNoun>\('module'\)/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(LES, /showCredited \? 'HIDE ▴' : 'REVIEW ▾'/);
     assert.ok(T.includes('✓ DONE') && T.includes('REVIEW ▾'));

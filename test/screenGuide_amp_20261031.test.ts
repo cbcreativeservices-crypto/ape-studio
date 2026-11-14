@@ -176,7 +176,9 @@ describe('3. each guide quotes its screen’s real names', () => {
     'classd.bridge': ["k: 'AT PEAK'", "k: 'TO LOAD'", "k: 'AS HEAT'", '+RAIL', '−RAIL', 'HIGH SIDE', 'LOW SIDE', 'LOAD', '0 V', 'DEAD TIME', 'WHERE THE ENERGY GOES'],
     'supply.rails': ["k: 'STATE'", "k: 'RAILS'", "k: 'OUTPUT'", "k: 'CURRENT'", "k: 'POWER'", "'V-CLIP'", "'I-LIMIT'", "'PROTECT'", "label: 'RAIL'", "label: 'LOAD'", "label: 'SUPPLY'", "label: 'Linear supply'", "label: 'Switch-mode supply'"],
     'realworld.gain': ["label: 'SOURCE'", "label: 'MIXER'", "label: 'AMP IN'", "k: 'VERDICT'", "'HEALTHY'", "'STARVED'", "'MIXER / DSP'", "'AMP OUTPUT'", "'(rails)'", "'SPEAKER'", 'CLIPPING', '% of clip'],
-    'realworld.practice': ["label: 'Parallel'", "label: 'Series'", 'CLEAR', 'Bridge mode', 'Power ratio P2 ÷ P1', 'CHECK', 'POWER AND CURRENT'],
+    // Split in two (phase 3, owner decision 5, 2026-11-14): loads/power/bridging, then loudness/risk/spec sheets.
+    'realworld.practice': ["label: 'Parallel'", "label: 'Series'", 'CLEAR', 'Bridge mode', 'POWER AND CURRENT'],
+    'realworld.risk': ['Power ratio P2 ÷ P1', 'CHECK'],
     'apply.diagnose': ['OUTPUT — what is this amplifier doing?', "k: 'PICTURE'", "k: 'SCORE'", "k: 'READING'", "'RIGHT'", "'WRONG'", 'NEXT WAVEFORM ›', 'REPEAT THE ROUND ›'],
     'apply.choose': ['2 · CHOOSE AN AMPLIFIER', '3 · MYTH REVIEW', 'NEXT SCENARIO ›', 'NEXT STATEMENT ›', "label: 'True'", "label: 'False'", "label: 'It depends'"],
     'apply.challenge': ["k: 'OUTPUT'", "k: 'FAULT'", "'NONE'", "k: 'SCORE'", "label: 'SETUP'", 'SCORE THIS CONFIGURATION', '"Operating mode"', '"Supply condition"', '"Speaker load (nominal)"', '"Ventilation"', "label: 'Sagging (weak AC power)'"],
@@ -458,7 +460,8 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     const p = guideOf('realworld', 'practice').tryThis.join(' ');
     assert.match(p, /Ztotal ≈ 4\.00 Ω[\s\S]*\+ 8 Ω: 2\.67 Ω/);
     assert.match(p, /4 Ω: 7\.08 A and 200 W, against 3\.54 A and 100 W at 8 Ω/);
-    assert.match(p, /starts at 2\.00×: the formula reads \+3\.01 dB\. Slide it to the top, 10\.00×: \+10\.00 dB/);
+    // The watts lane moved to the split-off 'risk' step (phase 3, owner decision 5).
+    assert.match(guideOf('realworld', 'risk').tryThis.join(' '), /starts at 2\.00×: the formula reads \+3\.01 dB\. Slide it to the top, 10\.00×: \+10\.00 dB/);
     assert.match(src, /const \[ratio, setRatio\] = useState\(2\);/);
     // The log2 lane's top: round(log2(10)·12)/12 overshoots, the clamp lands on log2(10) → 10.000×.
     const top = Math.min(Math.log2(10), Math.round(Math.log2(10) / (1 / 12)) * (1 / 12));

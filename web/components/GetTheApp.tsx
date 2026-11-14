@@ -47,7 +47,7 @@ function Badge({
       rel="noopener noreferrer"
       className="transition-transform hover:-translate-y-0.5"
     >
-      <span className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-2.5">
+      <span className="flex h-full items-center gap-3 rounded-lg border border-border bg-surface px-4 py-2.5">
         {glyph}
         <span className="text-left leading-tight">
           <span className="block text-[0.65rem] uppercase tracking-wide text-text-muted">{top}</span>
@@ -55,6 +55,36 @@ function Badge({
         </span>
       </span>
     </a>
+  );
+}
+
+/**
+ * The two store badges alone (home hero, SEO part E 2026-11-14). Owner's badge
+ * rule: Apple first; Google Play the same height or larger (both badges share
+ * one Badge shape, and the row stretches them to one height).
+ * Renders nothing until the store links are live.
+ */
+export function StoreBadges({ className = "" }: { className?: string }) {
+  if (!APP_LINKS_LIVE) return null;
+  return (
+    <div className={`flex flex-wrap items-stretch gap-3 ${className}`}>
+      {APP_STORE_URL ? (
+        <Badge
+          href={APP_STORE_URL}
+          glyph={<AppleGlyph />}
+          top="Download on the"
+          bottom="App Store"
+        />
+      ) : null}
+      {PLAY_STORE_URL ? (
+        <Badge
+          href={PLAY_STORE_URL}
+          glyph={<PlayGlyph />}
+          top="Get it on"
+          bottom="Google Play"
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -90,24 +120,7 @@ export default function GetTheApp({ className = "" }: { className?: string }) {
       </p>
 
       <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
-        <div className="flex flex-wrap gap-3">
-          {APP_STORE_URL ? (
-            <Badge
-              href={APP_STORE_URL}
-              glyph={<AppleGlyph />}
-              top="Download on the"
-              bottom="App Store"
-            />
-          ) : null}
-          {PLAY_STORE_URL ? (
-            <Badge
-              href={PLAY_STORE_URL}
-              glyph={<PlayGlyph />}
-              top="Get it on"
-              bottom="Google Play"
-            />
-          ) : null}
-        </div>
+        <StoreBadges />
 
         {APP_QR_READY ? (
           <div className="flex items-center gap-3">

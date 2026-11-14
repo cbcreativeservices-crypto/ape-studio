@@ -14,21 +14,25 @@
  * on each visit (bits `useVisitGoals`), so for a page that is not done every
  * goal is still to do.
  *
- * Index = page index (0 = page 1). Pages 20, 21 and 22 keep their own lines
- * in GameAudioLabScreen (PAGE_DETAIL). test/labFixes_20261114_F3.test.ts
+ * Index = page index (0 = page 1) in the 24-page list of pages/index.ts.
+ * Pages 22, 23 and 24 keep their own lines in GameAudioLabScreen
+ * (PAGE_DETAIL). The split of 2026-11-14 gave the old pages 4 and 10 two
+ * lines each, each with that page's own goals. test/labFixes_20261114_F3.test.ts
  * holds each line against its page's goal chips. Pure data.
  */
 export const GA_PAGE_LEFT: readonly string[] = [
   'Still to do: set LEVEL to 40% or lower, start the scene, stop it with ■ STOP, and pass the check.',
   'Still to do: open or close the door, start the generator, change SPEED while it runs, and pass the check.',
   'Still to do: open the MOBILE, DESKTOP, CONSOLE and BROWSER cards, choose a LISTENING setup, change the BUDGET, and pass both checks.',
-  'Still to do: open three kinds of game, listen from the overhead camera, move FACING while it listens, choose YOUR EARS again, and pass both checks.',
+  'Still to do: open three kinds of game, and pass the check.',
+  'Still to do: listen from the overhead camera, move FACING while it listens, choose YOUR EARS again, and pass the check.',
   'Still to do: play six kinds of sound, solo two categories, solo the ALARM’s category while it runs, and pass the check.',
   'Still to do: play the door through the whole chain, break the chain, restore the file so the door plays again, and pass the check.',
   'Still to do: run two generators from one event at different speeds, stop one, remove generator 2 while it runs, and pass the check.',
   'Still to do: step as you and as the guide, step on a new surface, move SPEED while the generator runs, change MOOD, and pass the check.',
   'Still to do: take three steps with variation off, play three different takes on one surface, open the door, and pass both checks.',
-  'Still to do: cross the doorway twice with the scene running, let the raw cut pass its join, silence every loop with ■ STOP, and pass both checks.',
+  'Still to do: cross the doorway twice with the scene running, and pass the check.',
+  'Still to do: stay in the courtyard until the raw cut passes its join, silence every loop with ■ STOP, and pass the check.',
   'Still to do: run the generator and the scene, turn until the source is straight behind you, walk until a sound goes VIRTUAL, and pass the check.',
   'Still to do: run GENERATOR 1 behind the closed door (GEN 1 reads MUFFLED), open the door (CLEAR), walk into the workshop, switch ROOM to DRY and back to REVERB, and pass the check.',
   'Still to do: turn with STEREO chosen, turn with HEADPHONE 3D chosen, fold the output to MONO, and pass the check.',

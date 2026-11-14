@@ -329,7 +329,8 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.match(ENDSCREEN, /label="PRACTICE AGAIN FROM THE START"/);
     assert.match(endCall, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
     assert.match(endCall, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
-    assert.match(endCall, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(endCall, /noun=\{unitNoun\}/);
     for (const n of ['REVIEW ▾', 'HIDE ▴']) assert.ok(ENDSCREEN.includes(n), n);
     for (const n of ['DONE · BACK TO LABS', 'PRACTICE AGAIN FROM THE START', 'REVIEW ▾', 'HIDE ▴', 'Before You Begin']) assert.ok(ET.includes(n), `the guide never names "${n}"`);
     assert.equal(ADVANCED_MIXING_GUIDE_PAGE_TITLES.p1, 'Before You Begin');

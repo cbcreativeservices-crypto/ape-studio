@@ -56,10 +56,17 @@ describe('MasteringLabScreen (pass 2)', () => {
 });
 
 describe('visit hosts wait for resolved', () => {
-  for (const [f, lab] of [['src/screens/lab/eq/EqModuleScreen.tsx', 'eq'], ['src/screens/lab/cymatics/CymaticsModuleScreen.tsx', 'cymatics']]) {
+  // Phase 3, owner 2026-11-14 (decision 1, "a page counts when its own goal or
+  // check is met, not when opened"): Cymatics now marks a module on NEXT /
+  // FINISH (beforeAdvance), persisting only once the tier resolves.
+  it('src/screens/lab/cymatics/CymaticsModuleScreen.tsx', () => {
+    assert.match(read('src/screens/lab/cymatics/CymaticsModuleScreen.tsx'), /markLabVisit\('cymatics', m\.id, \{ persist: resolved && !guest \}\)/);
+  });
+  for (const [f, lab] of [['src/screens/lab/eq/EqModuleScreen.tsx', 'eq']]) {
     it(f, () => {
       const s = read(f);
-      assert.match(s, new RegExp(`if \\(focused && resolved\\) markLabVisit\\('${lab}'`));
+      // Phase 3, lab fix round (owner 2026-11-14, decision 1: "Done = work done … not when it is opened"): the EQ Lab marks a module when its goal is met (doneId), still only once resolved.
+      assert.match(s, new RegExp(`if \\((?:focused|doneId) && resolved\\) markLabVisit\\('${lab}'`));
     });
   }
 });

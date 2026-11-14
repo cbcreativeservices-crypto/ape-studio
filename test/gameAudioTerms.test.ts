@@ -119,7 +119,9 @@ describe('audit 2 (2026-11-12): whose word, which are shown, no filler', () => {
     assert.match(GA_TERMS['Game Syncs'], /Switches, States, Game Parameters \(linked by RTPCs\) and Triggers/);
     assert.match(GA_TERMS['Game Syncs'], /A Wwise Trigger starts a music stinger\. A footstep is an Event\./);
     assert.ok(!/\b(trigger|foot)\b.*\bGame Syncs?\b/i.test(GA_TERMS['Audio trigger']), 'the lab’s own trigger is not called a Game Sync');
-    assert.match(GA_TERMS['Layer container'], /No tool on page 20 uses this exact name/);
+    // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
+    // The tools page was page 20 of 22 and is page 22 of 24.
+    assert.match(GA_TERMS['Layer container'], /No tool on page 22 uses this exact name/);
   });
   it('the three meanings the accuracy report corrected, and no filler (B7, L-27)', () => {
     assert.match(GA_TERMS.FMOD, /^Another widely used/);

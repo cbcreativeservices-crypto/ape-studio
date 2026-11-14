@@ -272,7 +272,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
             <>
               <YourRun lines={[
                 met.size ? `Goals met: ${GOALS.filter((x) => met.has(x.id)).map((x) => x.short).join(', ')}. Not yet: ${GOALS.filter((x) => !met.has(x.id)).map((x) => x.short).join(', ') || 'none'} (${checks} check${checks === 1 ? '' : 's'}).` : `Goals met: none yet (${checks} check${checks === 1 ? '' : 's'}).`,
-                reached ? `Decisions: ${reached} of ${TYPES_SCENARIOS.length} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
+                reached ? `Decisions: ${reached} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="Soft strokes on the snare give no wire sound. Where do you look first?" a="The snare-side head's tension and the strainer: the wires answer to the bottom head, and a tight strainer raises the threshold a soft stroke cannot reach." />

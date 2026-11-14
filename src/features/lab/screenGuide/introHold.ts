@@ -54,3 +54,22 @@ export function introWorkAction(working: boolean, owed: boolean, shown: 'intro' 
   if (shown === 'guide') return 'none';
   return owed ? 'drop' : 'none';
 }
+
+/**
+ * STEP INTROS: A POPUP ON THE FIRST STEP ONLY, THEN INLINE (owner decision
+ * 2026-11-14, phase 3 item 3: "do your recommendations for these"; audit
+ * section 3 row 15. Drum Tuning took ~36 GOT IT taps for a full run;
+ * Envelope, Tuning and Speech the same).
+ *
+ * A ScreenGuideHost that swaps its content in place (steps, chapters, pages,
+ * tabs: its `resetKey`) offers one intro card per step. The FIRST card the
+ * host presents on a visit is the popup; every later step's card in the same
+ * visit shows the SAME words as a non-blocking inline note (nothing dimmed,
+ * no tap held), so nothing is lost and nothing interrupts. A card that
+ * carries the lab's glossary term is always the popup (the term needs it).
+ */
+export type IntroPresentMode = 'popup' | 'inline';
+export function introPresentMode(poppedThisVisit: boolean, carriesTerm: boolean): IntroPresentMode {
+  if (carriesTerm) return 'popup';
+  return poppedThisVisit ? 'inline' : 'popup';
+}

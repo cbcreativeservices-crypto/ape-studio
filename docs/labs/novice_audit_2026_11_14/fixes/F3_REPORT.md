@@ -120,3 +120,125 @@ Nothing else: I did not edit `understandingChecks.ts` or `labEndContent.ts`, and
 ## P2-5. Files changed in phase 2
 
 Game Audio: `GaLab.tsx`, `GameAudioLabScreen.tsx`, `bitsLogic.ts`, new `pages/data/gaPageLeft.ts`, `pages/guides/end.ts`, `pages/p01Welcome.tsx`, `pages/p18Multiplayer.tsx`, `pages/p19Testing.tsx`. Stage Plot: `spForm.tsx`. Tests: `test/labFixes_20261114_F3.test.ts` (12 tests added). No pinned test of another file needed changing.
+
+---
+
+# PHASE 3 · the owner's decisions of 2026-11-14, for both labs
+
+**Phase 3 summary: 8 items done (5 Game Audio, 3 Stage Plot, one of them a bug of my own fold found on screen and fixed) · 9 checked and already met or not applicable · 1 held (the saved-mark move on a real phone: phone-only check) · 3 shared needs (comments only) · both labs seen on screen at the end (P3-7).**
+
+Tests: `test/labFixes_20261114_F3.test.ts` is now 61 tests, 61 pass (20 new in phase 3). Every test of the two labs, plus S2's and S4's files, the storage and wipe tests that guard what I touched, and the two ratchets the coordinator's gate named (`patternP10b_20261002`, `afterInteractions_20261004`): **2393 pass, 0 fail**. No `npx tsc` (as told). Every changed file was parsed with the TypeScript parser (26 files, parse ok) and the preview bundle answered 200 after my last edit. No commits.
+
+## P3-1. Game Audio Lab
+
+| Item (owner's decision) | What was done | file:line | Test |
+|---|---|---|---|
+| **5 · Old page 4 held two lessons** | Now two pages. **Page 4 "Kinds of games"** (the beginner part: open three kinds of game, one check on the play mode). **Page 5 "Whose ears: the listener"** (the depth: the camera, FACING, the pan check). Every goal and both checks of the old page are on one of the two, none twice. Nothing was dropped | `pages/p04Games.tsx`, new `pages/p23Listener.tsx`, guides `guides/p04.ts`, new `guides/p23.ts` | "old page 4: its five goals and two checks are on the two pages, none twice" |
+| **5 · Old page 10 held two lessons** | Now two pages. **Page 11 "Ambience and zones"** (the beginner part: cross the doorway, one check). **Page 12 "Loops and their joins"** (the depth: the raw-cut join, ■ STOP for every loop, the join check) | `pages/p10Loops.tsx`, new `pages/p24LoopJoin.tsx`, guides `guides/p10.ts`, new `guides/p24.ts` | "old page 10: its three goals and two checks are on the two pages, none twice" |
+| **5 · "Find how progress is keyed first"** | Found: page marks are keyed by the page's **index** in the list, not by an id (`src/features/lab/pagedProgress.ts:17`, `{completed: number[], lastPage, done}`, stored as `ape:game-audio:v1` on the device only: nothing uploads or downloads it; a guest's marks are held for the session and written to that record after sign-in). The certificate credit `tr_game_audio` is a separate record, keyed by the lab, and is not indexed | | |
+| **5 · "Map old keys so nothing earned is lost"** | A one-time move of the saved marks, done before the lab's shell reads them. Old pages 1-3 keep their place; old 4 becomes 4 **and** 5; old 5-9 become 6-10; old 10 becomes 11 **and** 12; old 11-22 become 13-24. "Last page open" moves the same way; "lab done" is kept. So a learner who had finished the old page 4 or 10 has both new pages done, and a learner with all 22 done has all 24 done | new `model/gaPageLayout.ts:59` (`gaIndexFromLayout1`), `:70`, `:129` (`gaEnsurePageLayout`); `GameAudioLabScreen.tsx:87` | "the map: every old page keeps its mark…" |
+| **5 · "…and test it" with a saved record from before the split** | Six tests drive the real move against a stand-in for the device's storage: a fully done 22-page record; a partly done one (pages 1, 4, 6, 10, 17, last open on 12); the next visit, a new app start and a later wipe (it never runs twice); a device with nothing stored; the app closed in the middle of the move; a device that cannot be read or will not write | | `describe` "pages 4 and 10 are two pages each, and saved marks follow them" (9 tests) |
+| **5 · Page count updated everywhere** | The list is 24 pages (`pages/index.ts:69`). Every number a learner reads was moved: "Page 8 explains them" (page 1), "Page 19 plays…" (page 3's guide), "page 22 has the others" (page 9, a term note), the end screen's guide ("Page 22 is done when its six checks are passed, page 23 when its two are"). The end screen's 21 "Still to do" lines and its three own lines were re-keyed (`pages/data/gaPageLeft.ts`, `GameAudioLabScreen.tsx:66-69`). CONTENTS and the strip count from the list, so they needed nothing | | "every page number a learner reads is today's number"; "24 pages, in this order…" |
+| **3 · One name per unit** | `unitNoun="page"`: the strip, CONTENTS and the end screen now say PAGE (they said MODULE), which is the word the lab's lessons, goal notes and guides always used. As the coordinator noted, S2 re-pinned the end screen's tools row to index 21 after the split | `GameAudioLabScreen.tsx:110` | "the strip, CONTENTS and the end screen use the lab's own word, page" |
+| **3 · "drawing…" instead of a blank panel** (pages 5, 6, 7, 12 of the audit) | Adopted S3's `stage.drawing` for **every** page: the glass says "drawing…" until the page has had two turns of the task queue to build and draw its scene, and for 1.2 s at most, so it can never stay. It waits with the house `runSoon` (no frame callbacks): the coordinator's gate caught that my first version, which waited on two animation frames, made `GaLab.tsx` a new loop host for `test/patternP10b_20261002.test.ts`; the code was changed, no list was touched, and that test passes | `GaLab.tsx:231-262, 330` | "the glass says 'drawing…' until the picture has had its first frames, and never for good" |
+| **3 · Plain model note in place of an all-caps badge** | NOT APPLICABLE: this lab shows no "NOT A MEASUREMENT" badge (it has `accuracy={false}` and passes no `badge`) | | |
+| **3 · LEARN first, ⓘ in a tray, step intros inline** | NOTHING TO FILL IN. LEARN first: not a LabShell lab (no LEARN tab). ⓘ in a tray: it shows where a tray key has a long-press lesson (`helpKey`); this lab has no long-press help at all (its help is each page's guide and its term chips, both already visible), so there was no hidden help to surface. Step intros: automatic (S1) | | |
+| **1 · "Done" = work done** | ALREADY MET and now declared: all 24 pages are `manualDone: true`; a page marks itself only when all its goals and its check are met in one visit; NEXT and a CONTENTS jump mark nothing. S2's ratchet for this lab is 0 | every `pages/pNN*.tsx` last line | S2's ratchet test, plus mine in phase 2 |
+| **2 · No "N of total" progress counter** | NONE LEFT in the lab's own files (checked every page and guide). The strip's "MODULE n / N" went with S2's change. "TAKE 1 of 4", "VOICES 0/16" and "BUDGET 8" are values, and stay | | |
+
+### The credit rule, exactly
+
+- **The words did not change.** The rule is still "every page done" → `tr_game_audio` (PagedLab's `labDoneKey`).
+- **The number changed from 22 pages to 24.** No goal and no check was added: the old page 4's five goals and two checks, and the old page 10's three goals and two checks, are now spread over two pages each. Each of the four pages has its own check, so each counts on its own.
+- **Credit already earned is untouched.** `tr_game_audio` is kept by the shared credit record, which never removes a credit. A learner who had finished all 22 pages also keeps a full page list (24 of 24), so the end screen does not ask them to redo anything.
+- **A learner part-way through** keeps every mark. A finished old page 4 or 10 counts for both pages it became, so nobody has to redo a lesson they had passed.
+- **For a new learner the work is the same.** The one "pass both checks" goal of each old page became one "Pass the check" goal on each new page. The same things are done in two shorter visits instead of one long one.
+
+### How the move is kept safe
+
+- It runs once per device, guarded by a small device-level value (`ape:onboarding:gaPageLayout`). That key family survives the account wipe on purpose: a guest's pages are written to the account after the sign-in wipe, so a wiped marker would have moved the same record twice.
+- Three steps, each safe to repeat: keep a copy of the old record in the marker → write the moved record and read it back → set the marker to "24 pages". If the app closes in the middle, the next start finishes from the copy.
+- A device with nothing stored is marked "24 pages" at once, so its first record is never taken for an old one.
+- If the device cannot be read or will not write, nothing is changed and it tries again on the next visit. The lab never waits on it (labs never block navigation).
+- **One residual risk, stated plainly:** in that last case (storage unreadable at that moment) the lab still opens, and a page finished in that visit is saved in the new layout while the old record is still unmoved. The record then mixes the two. It needs a storage failure at exactly that moment; the result would be one or two marks on the wrong page, never a lost credit. I did not build more for it.
+- **For whoever changes the page list next:** adding, removing or reordering a page needs a layout 3 in `model/gaPageLayout.ts` (the file's header says how). File numbers are names, not places: `p23Listener.tsx` is the learner's page 5 and `p24LoopJoin.tsx` is page 12 (`pages/index.ts` header).
+
+## P3-2. Stage Plot and Channel Designer
+
+| Item (owner's decision) | What was done | file:line | Test |
+|---|---|---|---|
+| **5 · SETUP's ~25 fields: beginner core first** | A new plot now shows **THE BAND** and **PERFORMERS** open (what a beginner must fill in to get a plot), then one line, "Five more parts of the packet. All are optional: open one when you need it.", and five folded rows: **THE GIG**, **TECHNICAL CONTACT**, **REVISION AND STATUS**, **STAGE SIZE**, **NOTES**, each with **GO DEEPER ▾** (and HIDE ▴ when open). Every field, switch and note is still there, in the same order | new `src/features/stageplot/spSetupFolds.ts`; `spForm.tsx:340` (`FoldSection`); `SetupArea.tsx:442-520` | "five parts fold, in the order they were in…"; "nothing was removed…" |
+| A folded row is never blank | Each closed row says what it holds now in one line. On a new plot: "The venue, the date and the times. Nothing typed yet.", "The person the venue’s engineer should ask. Nobody yet.", "Revision 1 · Draft", "Rectangle · no size yet (not to scale)", "Nothing written yet." Once filled in, the row shows the values instead (the venue, the date, the times; the contact's name and details; the size) | `spSetupFolds.ts:48` | "a closed part says what it holds, in one line, and is never blank" |
+| A review question is never folded away | "No technical contact" shows on the closed TECHNICAL CONTACT row, and GO TO from the review opens that part before it moves to the field | `spSetupFolds.ts:77-88`, `SetupArea.tsx:188-193` | "a review question is never folded away…" (and the re-pinned line in `stagePlotStore.test.ts`) |
+| An open part stays open | Per plot, for the session: leaving Setup and coming back keeps what was opened. Not stored on the device (nothing to migrate) | `SetupArea.tsx` (`openFolds`) | same `describe` |
+| **Export's GO TO SETUP opens the folded contact** (found on screen) | "Contact shown in the packet: none. Change it in SETUP." has a GO TO SETUP button. With the contact folded it landed at the top of Setup, the contact out of sight. It now leaves the contact's rule, as a review "Go to" does, so Setup opens TECHNICAL CONTACT and brings it into view. Every other "go to Setup" in the lab is about a performer, and PERFORMERS is never folded | `spIssueActions.ts:92` (`goToSetupPart`), `ExportArea.tsx:388` | "Export’s GO TO SETUP for the contact opens the folded contact part" |
+| Folds are rows, not pulldowns | The row opens in place inside the page's own scroll, like the lab's existing MORE DETAILS; no menu drops over other content (popups, not pulldowns) | | |
+| **A screen reader hears each part of a row as its own sentence** (checker K2) | Two rows' summaries have no full stop on screen ("Revision 1 · Draft", "Rectangle · 24 × 16 ft"), so the spoken label ran into "Show this part". The label is now built in one place and closes every part with a full stop: "REVISION AND STATUS. Revision 1 · Draft. Show this part." The words on screen did not change | `spSetupFolds.ts` (`spFoldRowSay`), `spForm.tsx:350` | "a screen reader hears each part of a row as its own sentence" (every row, empty and filled). Read back from the page: all five labels correct |
+| Both "go to" paths, checked again with my tab in front (asked by the coordinator after K2) | The review's "Go to it" for the contact question, and Export's GO TO SETUP: each opened Setup with TECHNICAL CONTACT open (HIDE ▴) and its heading at the top of the view, just under the tab bar (heading at 194 of 844 points, the first field at 384) | | seen, with a picture |
+| Guide and intro card | The Setup guide's start line and control list now say the parts are folded (control list kept to 5 lines, 691 characters, inside the cap) | `guides/setup.ts` | "the guide and the intro card say the parts are folded" |
+| **1 · "Done" = work done** | ALREADY MET: the lab has no pages and no credit on opening. Its progress is the GUIDED TASK, which ticks a step only from what the plot holds | | |
+| **2 · No "N of total"** | NONE: no counter of that kind in the lab. "NOT TO SCALE" is a drafting note on the plot and stays | | |
+| **3 · One name per unit** | NOT APPLICABLE: no strip, no end screen. The areas are called areas everywhere | | |
+| **3 · Model note, "drawing…", LEARN first** | NOT APPLICABLE: not a rack lab; the stage draws at once from the plot (no blank panel was reported) | | |
+
+## P3-3. SHARED NEEDS (phase 3)
+
+All three are comments, in files I do not own. No behavior depends on them.
+
+1. `src/features/lab/trainingCompletion.ts:22`: "every one of its 22 pages done" → "every one of its 24 pages done".
+2. `src/features/lab/trainingLabKeys.ts:59`: "its 22 pages is done" → "its 24 pages is done".
+3. `src/navigation/types.ts:420`: "22 pages on the PagedLab shell" → "24 pages on the PagedLab shell".
+
+Already settled, for the record: S2's pin of the end screen's tools row (index 19 → 21) was changed by S2, as the coordinator said.
+
+## P3-4. Pinned tests changed on purpose
+
+Each carries a comment quoting the owner's decision 5 of 2026-11-14 ("Split a page that holds two lessons into two pages." / "Long pages: beginner core first … fold the depth under 'Go deeper ▾'"):
+`gameAudioBugtestR2_20261113` (the listener's guide is now G23 / `p23Listener`), `gameAudioChAFamilies` ("Page 8"), `gameAudioTerms` ("page 22"), `gameAudioChETools` (rows 21 and 22), `gameAudioChAGenres` (two checks across the two pages), `gameAudioChB` (the page list gains `p24LoopJoin`; the raw-cut goal lives there), `stagePlotStore` (Setup keeps the rule it took, and opens the fold), `stagePlotPacket` (Export's GO TO SETUP opens the contact part).
+
+## P3-5. Docs
+
+`docs/labs/gameaudio/SOURCES.md` section 8 and `docs/labs/stageplot/SOURCES.md` section 13 record what changed in this round and why (the 24 pages, the credit rule, the saved-mark move, the unit word, the folded Setup).
+
+## P3-6. Files changed in phase 3
+
+Game Audio: new `model/gaPageLayout.ts`, new `pages/p23Listener.tsx`, new `pages/p24LoopJoin.tsx`, new `pages/guides/p23.ts`, new `pages/guides/p24.ts`; `GameAudioLabScreen.tsx`, `GaLab.tsx`, `gaTerms.ts`, `pages/index.ts`, `pages/p04Games.tsx`, `pages/p10Loops.tsx`, `pages/p01Welcome.tsx`, `pages/p09Variation.tsx`, `pages/data/gaPageLeft.ts`, `pages/guides/p03.ts`, `p04.ts`, `p10.ts`, `end.ts`. Stage Plot: new `src/features/stageplot/spSetupFolds.ts`; `spForm.tsx`, `SetupArea.tsx`, `guides/setup.ts`, `spIssueActions.ts`, `ExportArea.tsx`. Docs: the two SOURCES files. Tests: `test/labFixes_20261114_F3.test.ts` (20 added) and the eight pins above.
+
+## P3-7. Seen on screen in phase 3 (390 × 844, sound off, the built-in pane)
+
+The preview could not be loaded for most of phase 3 (see "The preview server" below). It came back near the end, and I then looked at both labs.
+
+| Lab | What I looked at | What I saw |
+|---|---|---|
+| Game Audio | The strip | "PAGE 1 ▾" (was MODULE); its screen-reader label is "Page 1. Opens the contents". No "n / N" |
+| Game Audio | CONTENTS | 24 rows with the right names: 4 "Kinds of games", 5 "Whose ears: the listener", 11 "Ambience and zones", 12 "Loops and their joins", 24 "Capstone and free play". Read from the rows themselves; the popup did not show in the picture of the pane (the pane was hidden, where popups do not animate in) |
+| Game Audio | Page 4, done from start to finish | The scene is drawn; LISTENER reads YOU ("whose ears"). Picking PUZZLE, RACING and HORROR ticked "Open three kinds of game" (the key read 3 SEEN). The right answer ticked "Pass the check", and the page said "✓ Every goal here is done, so this page is counted." The foot button read "NEXT: WHOSE EARS: THE LISTENER ›". CONTENTS then said "Page 4, Kinds of games, done" |
+| Game Audio | Page 5 | The glass said "drawing…" on arrival, then the scene. GENERATOR 1 on gave GEN PAN L 25%. OVERHEAD CAMERA, a move of FACING and YOUR EARS ticked the three practice goals. Its intro came as the inline note above the dock (S1's phase 3), not a popup |
+| Game Audio | Page 11 | Two goals ("Cross the doorway twice with the scene running", "Pass the check"), the fault card, one check. Five dock keys (FACING, STEP, SOUNDS, SOUND, ■ STOP), none cut |
+| Game Audio | Page 12 | WIND reads LOOP. SCENE on and WIND on RAW CUT: after about 12 s the strip read JUMPS 1 and the first goal ticked. ■ STOP ticked the second |
+| Game Audio | The end screen | "23 pages still to go." HOW A PAGE COUNTS once, with the lab's sentence. Rows 01 to 03 and 05 to 21 each read "Still to do: …" with that page's own goals; rows 22, 23 and 24 have their own lines; page 04 is not listed and the foot reads "✓ 1 DONE" |
+| Game Audio | A device with nothing stored | On the first open of the lab the layout value was written as "24 pages" at once, as designed |
+| Stage Plot | SETUP on a blank plot | The intro card says the parts are folded. THE BAND and PERFORMERS are open. Then the line "Five more parts of the packet. All are optional: open one when you need it." and five rows, each with GO DEEPER ▾ and its one-line summary. Nothing is cut at 390 |
+| Stage Plot | Open THE GIG, go to STAGE, come back | It opened in place (HIDE ▴, its hint, Venue, Event date, Load-in, Soundcheck, Performance) and was still open on return |
+| Stage Plot | A plot with a performer and no contact (the Solo performer example) | The closed TECHNICAL CONTACT row shows the review question: "? The packet shows no technical contact with a phone number or an email. The venue’s engineer has nobody to ask." |
+| Stage Plot | EXPORT › "Contact shown in the packet: none. Change it in SETUP." › GO TO SETUP | **A bug of my own fold, found by looking and fixed:** it landed at the top of Setup with the contact folded away. It now opens TECHNICAL CONTACT and brings it to the top of the view (seen after the fix). `spIssueActions.ts` (`goToSetupPart`), `ExportArea.tsx:388`; test "Export’s GO TO SETUP for the contact opens the folded contact part"; the pin in `stagePlotPacket.test.ts:1260` was changed on purpose, with the owner's decision quoted |
+
+### Not seen on screen, and why
+
+- **The saved-mark move itself. HELD: phone-only check.** It cannot be shown in the web preview: the preview runs as a guest, a guest's page marks are never written to the device there ("You are not signed in, so nothing here is saved yet"), and the guest launch wipe removes a record put there by hand (`accountLocalSync.ts:104`; the test record I had put in was gone once the app had started). So the move is proved by the tests only, against a stand-in for the device's storage. The real proof is a signed-in phone that holds a record saved before this change.
+- **The checks on pages 5, 11 and 12, and page 11's doorway goal**: not done on screen. They use the same check card and the same goal rule as page 4, which I did do from start to finish.
+- **The other four folds opened by hand** (TECHNICAL CONTACT by its own row, REVISION AND STATUS, STAGE SIZE, NOTES): only THE GIG was opened by its row, and TECHNICAL CONTACT by GO TO SETUP. All five use the one `FoldSection`.
+- **The review list's own "Go to it" for the contact question**: not pressed. It uses the same path as the fixed button (tested).
+- **A phone, 320 wide, and sound on**: not looked at. "drawing…" stayed about 2 s in the hidden pane, where timers run slow; on a phone it is two turns of the task queue, 1.2 s at most. After the change to `runSoon` I looked once more: on a page change the line showed at once and was gone inside 1.5 s, with the scene drawn.
+
+### The preview server (told to the coordinator when it happened)
+
+- For most of phase 3 a pane tab could not load the app: a request that asks for compression (every browser does) came at about 12 KB/s, so the 78 MB bundle needed about 17 minutes, while a plain request was answered in 2.5 s.
+- Then nothing was listening on 8142 for a few minutes. I did not stop or restart it. It went down within seconds of my tab's app starting; I cannot tell whether that was the cause or a coincidence. One possible cause is memory, with many tabs each waiting on a compressed bundle.
+- It came back (not by me), and compressed loads were then fast (under 1 s).
+- For one failed attempt I served a saved copy of the bundle from a small read-only helper on 127.0.0.1:8747 for about a minute. It is stopped and the copy is deleted.
+
+### The preview's storage, as I left it
+
+- The test record I had put in (`ape:game-audio:v1`) is gone, and I put nothing else there.
+- The layout value the lab wrote itself (`ape:onboarding:gaPageLayout`) was there after my Game Audio look and gone a few minutes later, together with the "seen" flags of the intro cards. No app code removes that key (the wipe keeps its family, and "Reset onboarding hints" removes two other named keys and `ape:intro:*` only), so I take it another agent cleared the shared preview storage between my two looks. Not proven. On a device this cannot happen without the record going too: page marks are kept on the device only, and nothing downloads them.

@@ -33,14 +33,14 @@ export const GA_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'A page with the scene is done when every goal on it is ✓ in one visit. Page 20 is done when its six checks are passed, page 21 when its two are. The capstone is done when its seven goals are ✓.',
+    'A page with the scene is done when every goal on it is ✓ in one visit. Page 22 is done when its six checks are passed, page 23 when its two are. The capstone is done when its seven goals are ✓.',
     'Moving on does not finish a page. Goals start empty each visit, and reopening a finished page to practice does not clear its ✓ DONE.',
   ],
   teaches: [
     'Game sound is built from behaviors that wait to be asked for: events start sounds, and switches, states and parameters shape them.',
     'Every sound has a place in a mix and a share of a budget; priority decides what is stopped first.',
     'The activity log shows what really happened, as the profiler of a real tool does.',
-    'You have not opened a real tool in this lab. Page 20 is the map to take with you when you do.',
+    'You have not opened a real tool in this lab. Page 22 is the map to take with you when you do.',
   ],
   tryThis: [
     'Open the page you found hardest and finish one goal you missed. Read the activity log line that proves it.',

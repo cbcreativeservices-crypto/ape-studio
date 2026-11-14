@@ -360,7 +360,7 @@ export function EquationStage({ steps, title, reduceMotion, autoAdvance }: { ste
         </Animated.View>
       ))}
       <Row>
-        {shown < steps.length ? <Btn label={`NEXT STEP (${shown}/${steps.length})`} onPress={reveal} tone="primary" /> : null}
+        {shown < steps.length ? <Btn label={`NEXT STEP (${steps.length - shown} left)`} onPress={reveal} tone="primary" /> : null}
         {shown > 1 ? <Btn label="REPLAY" onPress={() => setShown(1)} /> : null}
       </Row>
     </Card>

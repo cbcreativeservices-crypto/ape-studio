@@ -19,6 +19,11 @@
  *     first thing a user does.
  *   • The guided task is optional. It is open on a plot started from a
  *     blank stage and closed on an example band (GuidedTask, 2026-11-14).
+ *   • BEGINNER CORE FIRST (owner 2026-11-14, decision 5). THE BAND and
+ *     PERFORMERS are open. THE GIG, TECHNICAL CONTACT, REVISION AND STATUS,
+ *     STAGE SIZE and NOTES are folded rows (FoldSection): each shows what
+ *     it holds in one line, and GO DEEPER ▾ opens it. No field was removed;
+ *     a review question about a folded part shows on its row and opens it.
  *
  * Every change goes through the editor's `apply` with spModel edits.
  */
@@ -41,6 +46,7 @@ import {
   spUpdatePerformer,
 } from '../../../features/stageplot/spModel';
 import { spCanMarkReady, spLooksLikePhone } from '../../../features/stageplot/spReview';
+import { SP_FOLD_CLOSE_WORD, SP_SETUP_DEEPER_LINE, spSetupFoldAsk, spSetupFoldOfRule, spSetupFoldSummary, type SpSetupFoldId } from '../../../features/stageplot/spSetupFolds';
 import { spDateWords, spDayFromText, spLooksLikeTime as looksLikeTime, spProjectName, spStageSizeFromText as sizeFromText, useSpProjects } from '../../../features/stageplot/spStore';
 import { SP_TEMPLATES } from '../../../features/stageplot/spTemplates';
 import { SP_ROUND_REF_MAX, SP_ROUND_SIDES, SP_SHAPES, SP_SHAPE_HINT, SP_SHAPE_WORD, SP_WINGS_HINT, spHasWings, spIsCircle, spRoundRef, spRoundSides, spRoundSidesWord, spShapeOf, type SpStageForm } from '../../../features/stageplot/spShape';
@@ -54,7 +60,7 @@ import { InsideOffer, noteDisplaced } from './InsideOffer';
 import { DATE_HOW, spWhen } from './ProjectLibrary';
 import { useSpEditor } from './spContext';
 import { placeOnStage, spSetupField, takeSpSetupAsk } from './spIssueActions';
-import { Button, Choice, Count, Fields, HelpTip, Note, RowCard, Section, Sheet, Switch, TextField, type SpCommitHow } from './spForm';
+import { Button, Choice, Count, Fields, FoldSection, HelpTip, Note, RowCard, Section, Sheet, Switch, TextField, type SpCommitHow } from './spForm';
 
 const CONTACT_FIELDS: readonly { key: 'name' | 'role' | 'email' | 'phone'; label: string; word: string; keyboard: 'default' | 'email' | 'phone'; placeholder?: string }[] = [
   { key: 'name', label: 'Contact name', word: 'name', keyboard: 'default' },
@@ -123,11 +129,38 @@ function swapName(text: string, from: string, to: string): string {
   return out + text.slice(at);
 }
 
+/** Which folded parts are open, for each stage plot, remembered while the
+ *  app is open: a visit to another area (often through a GO button) does not
+ *  fold them again (the rule of S3-07). Never saved: a screen preference. */
+const openFolds: Record<string, ReadonlySet<SpSetupFoldId>> = {};
+
 export function SetupArea() {
   const ed = useSpEditor();
   const p = ed.project;
   const insets = useSafeAreaInsets();
   const library = useSpProjects();
+  // BEGINNER CORE FIRST (owner 2026-11-14, decision 5; features/stageplot/
+  // spSetupFolds): the band and its performers are open; the five other
+  // parts are one row each until opened. Nothing is removed.
+  const [folds, setFolds] = useState<ReadonlySet<SpSetupFoldId>>(() => openFolds[p.id] ?? new Set());
+  const setFoldOpen = (id: SpSetupFoldId, on: boolean) =>
+    setFolds((cur) => {
+      if (cur.has(id) === on) return cur;
+      const next = new Set(cur);
+      if (on) next.add(id);
+      else next.delete(id);
+      openFolds[p.id] = next;
+      return next;
+    });
+  /** The props every folded part shares. GO DEEPER ▾ is the closed row's button. */
+  const fold = (id: SpSetupFoldId) => ({
+    summary: spSetupFoldSummary(p, id),
+    ask: spSetupFoldAsk(ed.issues, id),
+    open: folds.has(id),
+    onToggle: () => setFoldOpen(id, !folds.has(id)),
+    openWord: 'GO DEEPER ▾',
+    closeWord: SP_FOLD_CLOSE_WORD,
+  });
   // Another area can send the user here for one performer ("Go to Setup"):
   // that performer's row opens, and the list is brought into view.
   const select = ed.select;
@@ -153,7 +186,11 @@ export function SetupArea() {
   const contactY = useRef<number | null>(null);
   const bandY = useRef<number | null>(null);
   useEffect(() => {
-    const field = spSetupField(takeSpSetupAsk());
+    const rule = takeSpSetupAsk();
+    const field = spSetupField(rule);
+    // a question that is answered in a folded part opens that part
+    const inFold = spSetupFoldOfRule(rule);
+    if (inFold) setFoldOpen(inFold, true);
     if (field === 'performers') {
       if (performersY.current != null) scrollRef.current?.scrollTo({ y: Math.max(0, performersY.current - 8), animated: false });
       else showAsked.current = true;
@@ -164,6 +201,8 @@ export function SetupArea() {
       if (bandY.current != null) scrollRef.current?.scrollTo({ y: Math.max(0, bandY.current - 8), animated: false });
       else wanted.current = 'band';
     }
+    // once, when the area opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [removing, setRemoving] = useState<string | null>(null);
   /** A date that was not read: KEPT in the field with the note, so the user
@@ -400,7 +439,9 @@ export function SetupArea() {
           </Section>
           </View>
 
-          <Section title="THE GIG" hint="All optional. Type what you know now. You can add the rest later.">
+          <Text style={styles.deeper}>{SP_SETUP_DEEPER_LINE}</Text>
+
+          <FoldSection title="THE GIG" hint="All optional. Type what you know now. You can add the rest later." {...fold('gig')}>
             <TextField label="Venue" value={p.venue} onCommit={(venue) => set((d) => (d.venue = venue))} />
             <TextField label="Event date" value={dateRefused ?? p.eventDate} onCommit={commitDate} placeholder="2026-12-05" hint="Year first, or the month as a word: 2026-12-05, or Dec 5, 2026. It is also used in the packet’s file name." />
             {p.eventDate && dateRefused == null ? <Text style={styles.quiet}>Read as {spDateWords(p.eventDate)}.</Text> : null}
@@ -411,7 +452,7 @@ export function SetupArea() {
               <TextField label="Performance" value={p.performance} onCommit={(performance) => set((d) => (d.performance = performance))} placeholder="9:00 PM" width="half" />
             </Fields>
             {unreadTimes.length ? <Text style={styles.quiet}>{`Not read as a time: ${unreadTimes.join(', ')}. It is printed as typed. A time reads best as 3:00 PM or 15:00.`}</Text> : null}
-          </Section>
+          </FoldSection>
 
           <View
             onLayout={(e) => {
@@ -422,7 +463,7 @@ export function SetupArea() {
               }
             }}
           >
-          <Section title="TECHNICAL CONTACT" hint="The person the venue’s engineer should ask. You choose which details the venue sees.">
+          <FoldSection title="TECHNICAL CONTACT" hint="The person the venue’s engineer should ask. You choose which details the venue sees." {...fold('contact')}>
             {noContact ? <Note tone="warning">{noContact.text}</Note> : null}
             {CONTACT_FIELDS.map((f) => (
               <View key={f.key} style={styles.pair}>
@@ -433,10 +474,10 @@ export function SetupArea() {
                 <Switch label={`Show the ${f.word} in the packet`} value={p.contact.show[f.key]} onChange={(on) => setContact((c) => (c.show[f.key] = on))} />
               </View>
             ))}
-          </Section>
+          </FoldSection>
           </View>
 
-          <Section title="REVISION AND STATUS">
+          <FoldSection title="REVISION AND STATUS" {...fold('status')}>
             <View style={styles.counts}>
               <Count value={p.revision} label="revision, printed on every page" />
             </View>
@@ -469,9 +510,9 @@ export function SetupArea() {
                 hint="Recorded only because you say so, and kept apart from the status. It returns to off when the stage plot changes."
               />
             ) : null}
-          </Section>
+          </FoldSection>
 
-          <Section title="STAGE SIZE" hint="Optional. Choose the shape, and type the size if the venue told you or you measured it.">
+          <FoldSection title="STAGE SIZE" hint="Optional. Choose the shape, and type the size if the venue told you or you measured it." {...fold('size')}>
             {/* THE SHAPE (2026-11-13), next to the size: one plain line for each */}
             <Choice<SpStageForm> label="Shape of the stage" value={shape} options={SHAPE_OPTIONS} onChange={(next) => (next === shape ? undefined : setShape({ shape: next }))} />
             {/* the chosen shape's own line, in full (learner point 11; owner
@@ -537,9 +578,9 @@ export function SetupArea() {
               title="Stage right, stage left, upstage, downstage"
               body="Stage directions are the performer’s, facing the audience. Stage right is the performer’s right, so it is on the LEFT of the drawing. Stage left is on the right of the drawing. Upstage is the back of the stage, away from the audience. Downstage is the front, toward the audience. The drawing always has the audience at the bottom."
             />
-          </Section>
+          </FoldSection>
 
-          <Section title="NOTES" hint="Printed in the packet as you write them.">
+          <FoldSection title="NOTES" hint="Printed in the packet as you write them." {...fold('notes')}>
             <TextField label="General notes" value={p.notes} multiline onCommit={(notes) => set((d) => (d.notes = notes))} />
             <TextField label="Access and setup notes" value={p.accessNotes} multiline onCommit={(accessNotes) => set((d) => (d.accessNotes = accessNotes))} hint="Load-in route, parking, set changes: anything the crew should know." />
             <TextField
@@ -549,7 +590,7 @@ export function SetupArea() {
               onCommit={(viewNote) => set((d) => (d.viewNote = viewNote))}
               hint="Stage left and stage right are the performer’s left and right, facing the audience. If any of your names use another viewpoint, such as overhead microphones named as the audience sees the kit, say so here."
             />
-          </Section>
+          </FoldSection>
         </View>
       </ScrollView>
 
@@ -616,6 +657,8 @@ const styles = StyleSheet.create({
   counts: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quiet: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.textSub },
+  // the line over the folded parts: the section hint's look
+  deeper: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, marginBottom: -8 },
   body: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 21, color: colors.textPrimary },
   noteText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
   links: { gap: 8 },

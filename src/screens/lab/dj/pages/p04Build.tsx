@@ -27,6 +27,7 @@ import { AUDIO_PLUGS, POWERED, POWER_PLUGS, PLUGS, SPEAKERS, connect, deviceLive
 import type { BoothRender } from '../engine/djRender';
 import type { BoothMotion } from '../art/motion';
 import { soundCell, useBoothKit } from './shared';
+import { leftWord } from './fixGuards';
 
 const TERMS = [
   { term: 'Signal path', def: 'The route the music takes, stage by stage: player → cable → mixer input → channel → mix → output → speaker. When something is silent, you follow it until it stops.' },
@@ -106,7 +107,7 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
       frame={cable ? patchBox(follow) : MAP_FRAME}
       aspect={MAP_FRAME.w / MAP_FRAME.h}
       motion={motion}
-      a11y={`${cable ? `Close up on the ${PLUGS[sel].short} cable, from behind the booth.` : LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
+      a11y={`${cable ? `Close up on the ${PLUGS[sel].short} cable, from behind the booth.` : LOOK} ${9 - audioOk} audio cables still to plug in, ${powerOk} devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
       obstacles={cable ? [] : hard}
       obstaclesAt={cable ? undefined : titleAt}
       fill
@@ -242,8 +243,8 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
       spec={{
         render: (w, h) => <BuildMap w={w} h={h} booth={booth} last={last} motion={motion} flowMotion={audio.flowMotion} flash={flash} sel={selPlug} justPatched={justPatched} audioOk={audioOk} powerOk={powerOk} view={view} powerTask={powerTask} />,
         bezel: [
-          { k: 'CABLES', v: `${audioOk} / 9`, tint: audioOk === 9 ? colors.green : colors.amber },
-          { k: 'POWERED', v: `${powerOk} / 7`, tint: powerOk === 7 ? colors.green : colors.amber },
+          { k: 'CABLES', v: leftWord(audioOk, 9, 'ALL IN'), tint: audioOk === 9 ? colors.green : colors.amber },
+          { k: 'POWERED', v: `${powerOk} ON`, tint: powerOk === 7 ? colors.green : colors.amber },
           { k: 'PA L · R', v: `${paL ? '✓' : '—'} · ${paR ? '✓' : '—'}`, vA11y: `PA left ${paL ? 'playing' : 'silent'}, PA right ${paR ? 'playing' : 'silent'}`, tint: paL && paR ? colors.green : paL || paR ? colors.amber : colors.textSub },
           soundCell(audio),
         ],
@@ -252,7 +253,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
             kind: 'group',
             id: 'patch',
             label: 'PATCH',
-            valueLabel: `${audioOk}/9`,
+            valueLabel: leftWord(audioOk, 9, 'ALL IN'),
             render: () => (
               <View style={styles.tray}>
                 {/* the VIEW switch rides in the PATCH tray (six dock keys would crop at 390) */}
@@ -275,7 +276,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
               </View>
             ),
           },
-          { kind: 'group', id: 'power', label: 'POWER', valueLabel: `${powerOk}/7`, render: () => <PowerTray onEvent={onPower} lastEvent={lastPower} /> },
+          { kind: 'group', id: 'power', label: 'POWER', valueLabel: `${powerOk} ON`, render: () => <PowerTray onEvent={onPower} lastEvent={lastPower} /> },
           boothKey(booth, tr),
           {
             kind: 'action',

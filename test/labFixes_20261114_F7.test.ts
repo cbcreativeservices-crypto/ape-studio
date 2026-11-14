@@ -271,10 +271,11 @@ describe('F7 phase 2 · check guides and own checks (S2 API)', () => {
       assert.match(read(f), /start: 'Read WHERE TO START at the top: it names the next thing to do from where you are\.',/, f);
     }
   });
-  it('EQ Lab end rows name what is still to open; the shared rule is said once', () => {
+  it('EQ Lab end rows name what is still to do; the shared rule is said once', () => {
     const e = code('src/screens/lab/eq/eqEnd.ts');
-    assert.match(e, /detail: `Still to open: \$\{m\.blurb\}`/);
-    assert.match(e, /export const EQ_END_HOW_IT_COUNTS = 'A module counts once you open it\. The check counts once every answer is right\.';/);
+    // Phase 3 (owner decision 1, "done = work done"): the row names the module's own goal.
+    assert.match(e, /detail: `Still to do: \$\{goal\}`/);
+    assert.match(e, /export const EQ_END_HOW_IT_COUNTS = 'A module counts when its own goal is met, not when you open it\. The check counts once every answer is right\.';/);
     for (const f of ['src/screens/lab/eq/EqLabHomeScreen.tsx', 'src/screens/lab/eq/EqModuleScreen.tsx']) {
       // Owner 2026-11-14 approved the end-screen recap (row 5); the EQ Lab now has
       // its own recap key, separate from the Equalizer's "eq" (S4 wiring round).
@@ -374,5 +375,112 @@ describe('F7 · checker C4 fixes', () => {
     const start = mod.PHASER_SCREEN_GUIDES.explore.intro!.start;
     assert.match(start, /^Open SWEEP, set DEPTH \(SWEEP\) to STATIC, and drag CENTER/);
     assert.ok(start.indexOf('▶') > 0);
+  });
+});
+
+
+// ══ PHASE 3 (owner's decisions, 2026-11-14) ═════════════════════════════════
+describe('F7 phase 3 · plain one-line model notes (decision 3, S3 modelNote)', () => {
+  const cfg = read('src/screens/lab/fxLabConfigs.tsx');
+  it('every effect lab has a sentence-case modelNote and curveNote, ≤ 100 characters, no all-caps', () => {
+    const notes = [...cfg.matchAll(/^ {2}(modelNote|curveNote): '([^']+)',/gm)];
+    assert.equal(notes.filter((n) => n[1] === 'modelNote').length, 12);
+    assert.equal(notes.filter((n) => n[1] === 'curveNote').length, 12);
+    for (const [, , t] of notes) {
+      assert.ok(t.length <= 100, t);
+      assert.doesNotMatch(t, /NOT A MEASUREMENT|TEACHING MODEL|CALCULATED/, t);
+      assert.match(t, /^[A-Z][a-z]/, t);
+    }
+  });
+  it('FxLabScreen passes the stage note and draws the curve note with ModelNote', () => {
+    const fx = code('src/screens/lab/FxLabScreen.tsx');
+    assert.match(fx, /modelNote: config\.modelNote,/);
+    assert.match(fx, /config\.curveNote \? <ModelNote text=\{config\.curveNote\}/);
+  });
+  it('Binaural and the EQ Lab disclaimers are plain sentences too', () => {
+    assert.match(read('src/screens/lab/BinauralLabScreen.tsx'), /modelNote: 'This is a simple model of a head, not measurements of real ears \(HRTF\)\.',/);
+    assert.match(read('src/screens/lab/eq/modules/CameraAnalogy.tsx'), /modelNote: 'A real bell, boosted a fixed \+9 dB: on this page you only aim and zoom\.',/);
+    assert.match(read('src/screens/lab/eq/modules/LiveSpectrumEq.tsx'), /'Levels from an uncalibrated phone mic: compare them, don’t read them as true levels\.'/);
+    for (const f of ['FindFrequency', 'FixSignal']) assert.match(read(`src/screens/lab/eq/modules/${f}.tsx`), /modelNote: 'Bold is the signal, dim is the reference: a made-up spectrum, not a recording\.',/);
+  });
+});
+
+describe('F7 phase 3 · no "N of total" progress (decision 2)', () => {
+  it('Fix the Signal names the scenario by its number, not "2/5"', () => {
+    const s = code('src/screens/lab/eq/modules/FixSignal.tsx');
+    assert.doesNotMatch(s, /\$\{idx \+ 1\}\/\$\{SCENARIOS\.length\}/);
+    assert.match(s, /\{ k: 'SCENARIO', v: String\(idx \+ 1\) \}/);
+  });
+});
+
+describe('F7 phase 3 · done = work done (decision 1)', () => {
+  it('EQ Lab: a module is marked when its own goal is met, never on opening', () => {
+    const host = code('src/screens/lab/eq/EqModuleScreen.tsx');
+    assert.doesNotMatch(host, /if \(focused && resolved\) markLabVisit/);
+    assert.match(host, /const onDone = useCallback\(\(\) => setDoneId\(meta\.id\), \[meta\.id\]\);/);
+    assert.match(host, /if \(doneId && resolved\) markLabVisit\('eq', doneId, \{ persist: !guest \}\);/);
+    assert.equal((host.match(/onDone=\{onDone\}/g) ?? []).length, 2, 'rack and reading hosts both pass it');
+    const D = 'src/screens/lab/eq/modules/';
+    for (const m of ['CameraAnalogy', 'EqChallenges', 'WhyEq', 'FilterShapes', 'FilterSlopes', 'GraphicTruth', 'GraphicVsParametric', 'ParametricControls', 'QBandwidth']) {
+      assert.match(code(`${D}${m}.tsx`), /<CheckQuestion spec=\{CHECK\} onSolved=\{p\.onDone\} \/>/, m);
+    }
+    for (const m of ['MultiBand', 'SeeingFrequency']) assert.match(code(`${D}${m}.tsx`), /<CheckQuestion\s+onSolved=\{p\.onDone\}/, m);
+    assert.match(code(`${D}FindFrequency.tsx`), /if \(verdict\?\.pass\) onDone\?\.\(\);/);
+    assert.match(code(`${D}FixSignal.tsx`), /if \(checked\?\.pass\) onDone\?\.\(\);/);
+    assert.match(code(`${D}MatchCurve.tsx`), /if \(showScore && live >= 90\) onDone\?\.\(\);/);
+    assert.match(code(`${D}LiveSpectrumEq.tsx`), /if \(hpfHz != null && bellOn\) onDone\?\.\(\);/);
+  });
+  it('EQ Lab end screen and guides say the new rule; every module has its own goal line', () => {
+    const e = code('src/screens/lab/eq/eqEnd.ts');
+    assert.match(e, /EQ_END_HOW_IT_COUNTS = 'A module counts when its own goal is met, not when you open it\./);
+    const ids = ['spectrum', 'whyEq', 'camera', 'parametric', 'qband', 'shapes', 'slopes', 'gvp', 'graphic', 'multiband', 'liveEq', 'findFreq', 'matchCurve', 'fixSignal', 'challenges'];
+    for (const id of ids) assert.match(e, new RegExp(`\\n  ${id}: '[^']+',`), id);
+    const g = read('src/screens/lab/eq/eqScreenGuides.ts');
+    assert.doesNotMatch(g, /once you open it|haven’t opened|have not opened|every module is opened/);
+  });
+  it('De-Esser: a page with a check counts on its right answer; controls no longer count', () => {
+    const s = read('src/screens/lab/deesser/DeEsserLabScreen.tsx');
+    assert.match(s, /const touch = \(_ctx: PageCtx\) => \{\};/);
+    assert.doesNotMatch(s, /onCorrect=\{\(\) => touch\(ctx\)\}/);
+    assert.equal((s.match(/manualDone: true \}/g) ?? []).length, 7);
+    assert.equal((s.match(/reading: true \}/g) ?? []).length, 2);
+    assert.match(read('src/screens/lab/deesser/smartProcessorsScreenGuides.ts'), /A page with a check counts when you answer its check right\./);
+  });
+});
+
+describe('F7 phase 3 · one progress word per lab (decision 3)', () => {
+  it('the EQ Lab calls its units modules, never lessons', () => {
+    assert.match(read('src/screens/lab/eq/EqLabHomeScreen.tsx'), /Modules build in a deliberate order/);
+    assert.doesNotMatch(read('src/screens/lab/eq/eqScreenGuides.ts'), /the next lesson/);
+  });
+});
+
+describe('F7 phase 3 · LEARN first (S3, automatic for rack LabShell labs)', () => {
+  it('every effect lab and Binaural is a rack LabShell lab with a LEARN guide intro to open on', async () => {
+    const fx = code('src/screens/lab/FxLabScreen.tsx');
+    assert.match(fx, /rack=\{\{/);
+    assert.match(code('src/screens/lab/BinauralLabScreen.tsx'), /rack=\{\{/);
+    assert.match(code('src/screens/lab/LabShell.tsx'), /const firstVisit = useFirstLabVisit\(labId, !!rack\);/);
+    for (const n of ['equalizer', 'compression', 'gate', 'limiter', 'delay', 'reverb', 'chorus', 'flanger', 'phaser', 'distortion', 'phase', 'stereo', 'binaural']) {
+      const file = n === 'equalizer' ? 'src/screens/lab/eq/equalizerScreenGuides.ts' : `src/screens/lab/${n}ScreenGuides.ts`;
+      const mod = (await import(new URL(file, ROOT).href)) as Record<string, unknown>;
+      const fn = Object.values(mod).find((v) => typeof v === 'function') as (m: string) => { intro?: { start: string } } | undefined;
+      assert.ok(fn?.('learn')?.intro?.start, `${n}: LEARN has an intro card`);
+    }
+  });
+});
+
+describe('F7 phase 3 · De-Esser says page everywhere (S2 unitNoun)', () => {
+  it('the PagedLab gets unitNoun="page"', () => {
+    assert.match(read('src/screens/lab/deesser/DeEsserLabScreen.tsx'), /unitNoun="page"/);
+  });
+});
+
+describe('F7 · checker K1 F-1: De-Esser WHAT’S LEFT rows name each page’s goal', () => {
+  it('every manualDone page has its own Still to do line; reading pages use the shared rule', () => {
+    const s = read('src/screens/lab/deesser/DeEsserLabScreen.tsx');
+    assert.match(s, /pageDetail=\{\(i\) => DEESSER_STILL_TO_DO\[i\]\}/);
+    const keys = [...s.matchAll(/^ {2}(\d): 'Still to do: [^']+',/gm)].map((m) => Number(m[1]));
+    assert.deepEqual(keys, [1, 2, 3, 4, 6, 7, 8]);
   });
 });

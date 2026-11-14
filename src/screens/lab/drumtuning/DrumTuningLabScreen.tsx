@@ -45,7 +45,7 @@ import { useGuestWording } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId, type TuningNote } from './drumContent';
 import { deleteTuningNote, drumReadFailed, drumResumePoint,emptyDrumChapter, keepSessionNotes, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
 import { DRUM_CHAPTER_COMPONENTS, DRUM_NEEDS_INTERACTIVE, DRUM_STEP_COUNTS } from './modules';
@@ -440,8 +440,10 @@ export function DrumTuningLabScreen() {
   // CONTENTS and the REVIEW page): a rack well is short, and the prompt must
   // not be pushed below the fold.
   const head = <Text style={styles.objectiveLabel}>{`CHAPTER ${mod.num} · ${mod.goal}`}</Text>;
+  // Phase 3 (owner 2026-11-14): no "N of total" progress; the line counts what is LEFT.
+  const decisionsLeft = scenarios.length - answeredCount;
   const standing = scenarios.length
-    ? `${answeredCount} of ${scenarios.length} decisions right${needsInteractive ? `, hands-on step ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''}`
+    ? `${decisionsLeft > 0 ? `${decisionsLeft} decision${decisionsLeft === 1 ? '' : 's'} still to get right` : 'every decision right'}${needsInteractive ? `, hands-on step ${interactive.has(mod.id) ? 'done' : 'not yet'}` : ''}`
     : needsInteractive
       ? interactive.has(mod.id) ? 'done' : 'not yet'
       : '';
@@ -492,6 +494,9 @@ export function DrumTuningLabScreen() {
   }
 
   return (
+    // ONE unit noun (owner decision 3, 2026-11-14): the strip, CONTENTS and the
+    // end screen all say CHAPTER, as the chapters themselves do.
+    <LabNounProvider value="chapter">
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         {/* Screen Guide host: the overlay is this root's last child; a step or
@@ -524,6 +529,7 @@ export function DrumTuningLabScreen() {
         </ScreenGuideHost>
       </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

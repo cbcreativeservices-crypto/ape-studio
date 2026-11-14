@@ -280,7 +280,9 @@ describe('page 1: what the student reads when the scene starts', () => {
   });
   it('the welcome page does not teach instances and voices before page 7 does (learning audit L-12)', () => {
     assert.doesNotMatch(PAGE1, /PLAYING counts instances|One instance can use several voices/);
-    assert.match(PAGE1, /PLAYING and VOICES count what is sounding now\. Page 7 explains them\./);
+    // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
+    // "Events and instances" was page 7 of 22 and is page 8 of 24.
+    assert.match(PAGE1, /PLAYING and VOICES count what is sounding now\. Page 8 explains them\./);
     // and it says this scene's simplification about the silent room tone (decision 5)
     assert.match(PAGE1, /This scene counts it anyway\. A real engine usually does not\./);
   });

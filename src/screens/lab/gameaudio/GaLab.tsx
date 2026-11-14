@@ -19,9 +19,10 @@
  * door closed, nothing playing, standard settings, an empty log. The lab's
  * sound session and level carry on from page to page; the scene does not.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { colors } from '../../../theme/tokens';
+import { runSoon } from '../../../lib/afterInteractions';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
@@ -226,6 +227,40 @@ export const masterKey = (s: GaState): DockParam => ({
   formatShort: (v) => `${Math.round(v * 100)}%`,
 });
 
+/** How long the "drawing…" line may stand in for the scene at most (ms). */
+export const GA_DRAWING_MAX_MS = 1200;
+
+/**
+ * False until this page's picture has had time to be painted: two turns of
+ * the task queue after the page mounted (`runSoon`, a real macrotask each),
+ * or GA_DRAWING_MAX_MS, whichever comes first. While false the rack shows
+ * the shared "drawing…" line on the glass (rack `stage.drawing`, phase 3 of
+ * the lab fix round, 2026-11-14) instead of an empty black panel: the
+ * beginner audit saw one for 1 to 3 s after a page change on pages 5, 6, 7
+ * and 12, the pages that build the most sounds when they open. The page's
+ * own work (building its sounds) runs before the second task, so the line
+ * goes when the picture can come. The timer is the cap: the line never
+ * stays for good.
+ *
+ * NOT AN ANIMATION LOOP, AND NO FRAME CALLBACKS (D8; the loop-host ratchet,
+ * test/patternP10b_20261002.test.ts): this is a one-shot wait, so it uses
+ * the house `runSoon`, as Miking's wait does.
+ */
+export function useGaScenePainted(): boolean {
+  const [painted, setPainted] = useState(false);
+  useEffect(() => {
+    let wait = runSoon(() => {
+      wait = runSoon(() => setPainted(true));
+    });
+    const timer = setTimeout(() => setPainted(true), GA_DRAWING_MAX_MS);
+    return () => {
+      wait.cancel();
+      clearTimeout(timer);
+    };
+  }, []);
+  return painted;
+}
+
 /** Every page opens on a clean scene (model: 'enterPage'). GaRack calls it;
  *  a reading page with no rack calls it too, so no sound from the page
  *  before plays on under a page that has no ■ STOP key. */
@@ -246,6 +281,7 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
   useEffect(() => {
     if (assets) preload(assets);
   }, [assets, preload]);
+  const painted = useGaScenePainted();
 
   const soundKey: DockParam = {
     kind: 'toggle',
@@ -290,6 +326,8 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
         bezel,
         // the silent learner's line, at the top of the well while sound is off (phase 2, row 3)
         soundOffLine: GA_SOUND_OFF_LINE,
+        // "drawing…" on the glass until the picture has had its first frames (phase 3)
+        drawing: !painted,
         render: (w, h) => (spec.glass ? spec.glass(w, h) : <GaGlass w={w} h={h} spec={spec} state={s} />),
       }}
     >

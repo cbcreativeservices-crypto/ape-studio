@@ -431,7 +431,10 @@ describe('the log lines pages 6, 7 and 9 describe', () => {
   });
 });
 
-const PAGES = ['p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p09Variation', 'p10Loops'] as const;
+// Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
+// The old page 10 is two pages: p10Loops.tsx (Ambience and zones) and p24LoopJoin.tsx (Loops and their
+// joins). Both are held to this group's rules.
+const PAGES = ['p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p09Variation', 'p10Loops', 'p24LoopJoin'] as const;
 const src = (f: string) => readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages', `${f}.tsx`), 'utf8').replace(/\r\n/g, '\n');
 /** The lesson prose (P, Do, Look, Note), as the learning audit counted it. */
 const prose = (f: string): string[] => [...src(f).replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/<(P|Do|Look|Note)(\s[^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[3].replace(/\{[^}]*\}/g, 'X').replace(/\s+/g, ' ').trim());
@@ -464,7 +467,8 @@ describe('pages 6–10 as the learner reads them (audit 2)', () => {
     const t = prose('p10Loops').join(' ');
     assert.match(t, /The birds are spot sounds: one-shots at random times and places/);
     assert.ok(!/listen for 30 seconds/.test(t));
-    assert.match(src('p10Loops'), /label: 'Stay in the courtyard until the raw cut passes its join', hit: yardJoins > 0/);
+    // (the raw-cut goal went with the loop lesson to its own page)
+    assert.match(src('p24LoopJoin'), /label: 'Stay in the courtyard until the raw cut passes its join', hit: yardJoins > 0/);
     assert.ok(!/cross-fade/.test(src('p10Loops')), 'crossfade is one word, as the glossary spells it');
   });
   it('the TROUBLESHOOT card comes before the check, inside step 4, and a step points to it (L-10)', () => {

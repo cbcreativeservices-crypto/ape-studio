@@ -1,6 +1,6 @@
 # F6 report · Meter, Signal Chain, Gain, Patchbay, Digital, Cable, Cable Dressing, Connector Selection, Vacuum Tube, Amplifier, Calculator Lab · lab fix round 1, phase 1 (2026-11-14)
 
-Status: PHASE 1 and PHASE 2 DONE (2026-11-14). Phase 2 is the section at the end.
+Status: PHASES 1, 2 and 3 DONE, plus checker K3's fixes (2026-11-14). The last section is the K3 round, with the on-screen look.
 
 ## Summary
 43 items: **36 fixed · 4 not a bug · 1 OUT (owner decision) · 2 shared needs · 0 held.** Tests: `test/labFixes_20261114_F6.test.ts` 38 pass; the touched files' own suites 752 pass, 0 fail; `npx tsc --noEmit` 0 errors (whole project, once, end of phase 1). Pinned tests changed on purpose, each with the owner's words above the change: screenGuide_chain, auditR2_A_D_labs (the Signal Chain line only), gainEmulatorPass, screenGuide_patchbay, screenGuide_digital, screenGuide_cableinstall, patternP16; screenGuide_calc (its import line only, for the new helper).
@@ -312,3 +312,183 @@ The three C3 pages were also measured at 390, all fitting:
 **Tests:** the F6 file has 63 tests, all passing. With the Meter, Digital, Amp, Gain, chain, calc, fact-audit, wiring-fix and US-spelling suites, 3,166 ran and the only failure was my own 10-character caption check. I widened that rule to 12 characters, the longest caption that measured inside its cell ('needle’s top'), and the F6 file then passed 63/63. Every edited file parse-checks. 8142 returned 200. No tsc was run.
 
 The calculator fixes were checked with the real `domainMsg` and the source, not opened on screen.
+
+# Phase 3 (owner's decisions, 2026-11-14)
+
+## 1. "Done = work done": NEW credit only when a module's goal or check is met
+
+Credit already earned is untouched. No unit id was renamed or split, so every stored record keeps its meaning. A test feeds an old record (every old id banked) to the what's-left screen, and it still reads LAB COMPLETE.
+
+The shared mechanism is new: src/screens/lab/meter/moduleGoal.tsx.
+- `ModuleGoalProvider need={n} onMet` fires once per visit.
+- `GoalCheck` is the shared CheckQuestion, which now reports its right answer to the goal.
+- `useMetWhen(reached)` covers a hands-on goal.
+- The module hosts no longer call `markLabUnit` on focus.
+
+**What I chose for each lab:**
+
+| Lab | Module counts when | Was |
+|---|---|---|
+| Digital Audio (8) | Every CHECK YOURSELF on it is answered right: analog 1, sampling 2, quant 2, binary 1, ADC 1, processing 1, DAC 2, errors 5 | Opened |
+| Visual Audio Analysis (11) | Modules 1–10: every check answered right (1–2 each). Signal Detective: one whole case, all four of its questions, answered right. The standalone Signal Detective lab still needs every case. | Opened (the coordinator listed only Tube, Digital and Gain; I found Meter did the same) |
+| Gain Staging (8) | What Gain Staging Is, Follow, Too Low/High, Gain vs Fader: the check answered right. Input Gain First: the preamp in the healthy green. Multiple Gain Stages: BALANCE ✓ OK; it starts unbalanced, which a test checks. Free Practice: any change to the source or a stage. Troubleshooting: the fault fixed (unchanged). | Opened, except Troubleshooting |
+| Vacuum Tube (9) | What's Inside: every part chip tapped. Electron Flow: warmed to steady current (stage 5). Grid and Bias: their check right. Amplify and Tube vs Transistor: a NEW one-question check each, with reasons per wrong option, physics checked. High V: the B+ supply switched in. Types: all three looked at. Saturation: driven into SATURATED. | Shown (paging gave "✓ 9 DONE") |
+| Amp | Unchanged: every check answered, then the module banks (plus the final on module 8). This already needed work. | Already on work |
+| Cable, Cable Dressing, Connector Selection, Patchbay | Already goal-based. Patchbay's three reading pages are now declared `reading: true` (S2: reading through is the work). | Already on work |
+| Signal Chain, Calculator | No credit units. | n/a |
+
+**Words changed:**
+- HOW IT COUNTS on every Meter, Digital, Gain and Tube end screen (home and module).
+- Each what's-left row now says what is still to do, e.g. "Still to do: answer all 5 of its CHECK YOURSELF questions right.", or Tube's "Still to do: drive the tube into saturation."
+- The home and end guides that said a ✓ meant opened.
+- Tube's end screen dropped `noun="section"`; the strip already says MODULE.
+
+**Pins updated:**
+- digitalClockCard (`<GoalCheck spec={CLOCKING_CHECK} />`)
+- labEndCheckUnit_tubeAmp (the end-guide sentence)
+- F6's phase-2 tests (rule wording; the question count is now 119 = 117 + the two new Tube checks)
+
+## 2. No "N of total" progress counters
+
+| Lab | Was | Now |
+|---|---|---|
+| Amp header | "Module 7 of 8" | "Module 7" |
+| Amp checks | "CHECK YOURSELF · n OF m" | "CHECK YOURSELF · k TO ANSWER" (or ✓) |
+| Amp module 8 | "(n of N)" ×3, PICTURE n / N, SCORE r / t | "PICTURE n", "JOB n", "MYTH n"; "r right" |
+| Amp module 8 | "Diagnosis round: r of t" | "r right, m missed" |
+| Amp module 8 | "n OF 6 DIMENSIONS PASS" | "EVERY DIMENSION PASSES — SYSTEM READY" or "k DIMENSIONS STILL FAIL" |
+| Amp module 8 | final "r of N correct" | "r correct, m missed" |
+| Patchbay | PREDICT / CASE / CALL n OF N | PREDICT / CASE / CALL n |
+| Cable Dressing | QUESTION n / 5 | QUESTION n |
+| Cable Dressing | "n of N reviewed" | "n reviewed" |
+| Cable Dressing | INSTALLATION n OF N | INSTALLATION n |
+| Cable Dressing | "n of 12 calls correct" | "n calls correct, m missed" |
+| Cable Dressing | BEND n OF N | BEND n |
+| Cable Dressing | "n of N bends meet their spec" | "Every bend meets its spec" or "k bends still outside spec" |
+| Cable Dressing | "found n of N violations" | "every violation" or "n (m missed)" |
+| Tube card | "01 / 40" | "01" |
+
+**Kept, because they are values or what is left:**
+- "16 stages still to finish…" (Cable Dressing) counts what is LEFT.
+- CHAIN 0/9 (Signal Chain) is the units in the chain.
+- STAGE n/5 is the tube's warm-up stage.
+- LAYERS n/4 is the layers shown.
+- Rank and score scales (route "n of 100") are values.
+
+## 3. One word per lab; S3's model note
+
+**Unit words:**
+- Meter, Digital, Gain, Tube, Amp: module.
+- Cable Fundamentals: lesson (`LabNounProvider`).
+- Cable Dressing: stage (`LabNounProvider`; RESUME now reads "RESUME — STAGE n").
+- Patchbay and Connector Selection: page (`unitNoun="page"`). The Patchbay guide no longer says "The strip calls each page a MODULE".
+
+**Patchbay pages:** the three undeclared pages ("Signal falls downhill", "One pair, two pictures", "The four questions, answered") are now `reading: true`. Patchbay's BASELINE in test/labFixes_20261114_S2.test.ts is lowered to 0, and only that entry was touched.
+
+**Meter:** all 11 stages use S3's `modelNote` (sentence case, ≤ 90 characters) instead of the all-caps badges. For example, "A simplified BS.1770-style teaching model, not a compliance loudness meter." The disclosure stays on every stage.
+
+**"drawing…" placeholder:** S3's automatic first-frame placeholder covers my labs. None of them draws an empty box of its own (a missing Skia viz shows VizUnavailableCard).
+
+## 5. Long pages, beginner core first (nothing removed)
+
+**Digital modules 2, 3, 7, 8 (two lessons per page):** lesson one stays open, and lesson two folds under its own heading. Its check folds with it.
+- "PART 2 · THE ANTI-ALIASING FILTER"
+- "PART 2 · DITHER"
+- "PART 2 · OVERSAMPLING AND INTER-SAMPLE PEAKS"
+- "PART 2 · MYTHS, DATA RATE AND THE LAB REVIEW"
+
+I folded rather than split into new modules. Each module is one rack with one shared dock that drives both lessons, and module ids are the credit keys. Folding keeps every stored id valid with no remapping. A true split would need new unit ids plus a migration of old 'sampling' / 'quant' / 'dac' / 'errors' credit.
+
+**Cable lesson 3:** the connector record opens folded (`ConnectorCard folded`). Every section, CONTACTS & USES included, starts closed, so the record opens on the photo, the name and its cautions. The guide was updated.
+
+**Amp module 7 step 2 (six sections):** split into two steps, "Loads, power and bridging" (sections 2–4) and "Loudness, risk and spec sheets" (sections 5–8), each with its own guide. The step position is never stored (AmpModuleSteps keeps it in memory), so nothing earned moves; a test pins that.
+
+## Phase 3: tests and checks
+- test/labFixes_20261114_F6.test.ts: 80/80 pass, all phases. The new Phase 3 tests check:
+  - check counts against the source, per module
+  - no on-focus marks
+  - Gain's hands-on goals are not met at the start (engine)
+  - the old-record LAB COMPLETE
+  - the N-of-total removals
+  - the unit words
+  - the model notes
+  - the folds
+  - the Amp split
+- Pins updated:
+  - screenGuide_amp (realworld.risk)
+  - screenGuide_meter (model notes)
+  - meterLabWaterfallNav (RT60 note)
+  - digitalClockCard
+  - labEndCheckUnit_tubeAmp
+  - S2's Patchbay baseline (3 → 0)
+- Every edited file parse-checks, including meter/modMeterC.tsx (S2's mid-edit syntax error is gone). 8142 answers 200.
+- More pins updated after the full run:
+  - labsGroupBBugHunt (tube marks on its goal, still only once the tier is known)
+  - screenGuide_patchbay (the strip reads PAGE)
+  - screenGuide_cableinstall (RESUME — STAGE)
+- **Full suite:** 22,817 tests, 22,806 pass, 11 fail before those three pin updates. Four of the 11 were mine:
+  - the labsGroupBBugHunt tube test
+  - the cableinstall home test
+  - two patchbay name tests (p1, p10)
+
+  All four pass now (152/152 in those files). The other 7 are not in F6 files:
+  - 3 in labFixes_20261114_F8
+  - mixingGuides
+  - patternP10b on gameaudio/GaLab.tsx
+  - 2 in stagePlotStore
+- **Not seen on screen (at first):** the browser pane stalled on the 78 MB bundle. curl fetched it in 6 s with 200, but the pane's request stayed pending through three tabs and reloads. The look was done later (next section).
+
+## Checker K3 fixes (2026-11-14, CHECK2_K3_REPORT.md)
+
+**F-1: plain sentence-case model notes everywhere in F6's rack labs** (S3's `modelNote`, ≤ 90 characters).
+- Digital: modules 1, 2, 3, 5, 6, 7, 8. Module 2 now reads "Each dot measures the continuous signal; below Nyquist the dots describe it fully."
+- Vacuum Tube: all 9 modules. Module 1 now reads "A drawn cross-section, not measured tube data."
+- Gain: all 8 stages.
+- Signal Chain.
+- Digital's in-well notes (13) are rewritten in sentence case, and the Badge style is now plain Barlow 12/16, the way S3's ModelNote reads.
+- The sampling chart's "FILTER BYPASSED — …" label is sentence case too.
+- Left as they are:
+  - Patchbay's CONCEPTUAL MODEL jack note: owner-ratified copy, and its guide quotes it.
+  - Amp and Cable Dressing: already sentence case.
+
+**F-4: no "n of N" progress left in either cable lab.** Swept both labs.
+- Cable Fundamentals:
+  - LAYER n
+  - ROUTING PICKS · SCENARIO n
+  - <stage> · PICK n
+  - the spoken "n still to solve"
+- Cable Dressing:
+  - INSTALLATION n
+  - "k pull events still to explore" / "Every pull event explored"
+  - "c correct · k left to sort"
+  - ITEM n
+  - "c sorted correctly (p%)"
+  - "You need k right (80%)"
+  - "c right on record"
+  - "Pass mark: k right (80%)"
+  - WALL n
+  - Fire sections "— k LEFT" / ✓
+  - the spoken "Found: <issue>."
+  - "n cable types reviewed"
+- Kept, because they are values, not progress: the route score "of 100" and its rank, the pull tension "of 150 allowed", and Inspect's pass rule.
+
+**F-5: Cable Fundamentals.** Under "LESSON n" the line now reads "n LESSONS DONE" (lessons whose units are all cleared), never "UNITS CLEARED".
+
+**Plain English:**
+- What's-left rows say "answer both of its CHECK YOURSELF questions right", never "all 2" (Digital and Meter).
+- "Slide the GAIN / DC / DAMPING / FREQ / LEVEL / VALUE / SAMPLE / PAIR …", never "Ride the …" (Meter, Digital, the Patchbay guide).
+
+**Tests:**
+- F6 file: 84/84.
+- My labs' suites, every screen guide, batch4 digital and the progress-count files: 3,425/3,425.
+- Pins updated with the reason: batch4_G2-digital-stage, d41jCopy_progressCounts, screenGuide_chain / gain / tube / digital (the quant colour line is now "Amber is the original, blue sampled, green stored, red the rounding error.").
+
+**Seen on screen (8142, my tab fronted, 390):**
+- **Digital module 2:**
+  - The note sits under the display in sentence case, on two lines, not cut.
+  - The fold "PART 2 · THE ANTI-ALIASING FILTER" is there.
+  - Answering CHECK_ALIAS right, then opening the fold and answering CHECK_AA right, turned module 2 ✓ in CONTENTS. Module 1, opened but not answered, stayed ○.
+- **Vacuum Tube module 1:** shows the new note; no "ILLUSTRATIVE MODEL" left.
+- **Cable Fundamentals:** reads "0 LESSONS DONE" under LESSON 1.
+
+The tab is closed and the viewport reset.

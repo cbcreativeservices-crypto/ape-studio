@@ -52,6 +52,17 @@ export const MODEL_BADGE = 'MODEL · illustration, not a measurement';
  *  buffer, heard through an uncalibrated phone output. */
 export const RENDER_BADGE = 'SYNTHESIZED · additive membrane model computed before playback, envelope measured and T60 estimated from that sound, uncalibrated output';
 export const VIB_BADGE = 'MODEL · the mode shape the sound was built from (Bessel Jₙ · cos nθ), strobed; fades with the measured envelope';
+export const KIT_BADGE = 'MODEL · the ladder; the hits are SYNTHESIZED (additive membrane model)';
+
+/** The same disclosures as ONE plain sentence each (Phase 3, owner decision 3,
+ *  2026-11-14: S3's `RackStage.modelNote` replaces the all-caps badge face).
+ *  DrumRack draws the note for a known badge; the badge stays as the fallback. */
+export const DRUM_MODEL_NOTES: Readonly<Record<string, string>> = {
+  [MODEL_BADGE]: 'This drum is a model drawn to explain the idea, not a measurement.',
+  [RENDER_BADGE]: 'The sound is made from a drum model; its decay is measured from that sound. Level uncalibrated.',
+  [VIB_BADGE]: 'The moving head shows the shape the sound was built from, slowed down so you can see it.',
+  [KIT_BADGE]: 'The ladder is a model; the hits are made from a drum model, not recordings.',
+};
 
 /** One strike, rendered offline whenever its parameters change. */
 export function useStrike(p: StrikeParams, draw = true): DrumPlayback {

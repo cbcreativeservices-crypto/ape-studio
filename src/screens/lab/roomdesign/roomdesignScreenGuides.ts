@@ -247,8 +247,8 @@ export const ROOM_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'WHAT’S LEFT lists the modules you haven’t opened yet, each with its number. Once you’ve opened them all, it reads LAB COMPLETE.',
-    '✓ DONE holds the modules you’ve opened; REVIEW ▾ shows them.',
+    'WHAT’S LEFT lists the modules not done yet, each with what is still to do. Once all are done, it reads LAB COMPLETE.',
+    '✓ DONE holds the modules you’ve done; REVIEW ▾ shows them.',
     'Your progress here is saved on this device only.',
   ],
   control: [
@@ -256,7 +256,7 @@ export const ROOM_END_GUIDE: ScreenGuide = {
     'PRACTICE AGAIN FROM THE START reopens module 1. DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'Opening a module checks it off. A practice run never removes a check mark.',
+    'A hands-on module is checked off once you change the room on it; a reading module when you move on with NEXT. A practice run never removes a check mark.',
     'Your design stays while the lab is open. Leaving the lab clears it; a design you saved comes back with LOAD in REVIEW.',
   ],
   teaches: [
@@ -264,7 +264,7 @@ export const ROOM_END_GUIDE: ScreenGuide = {
     'Model numbers show where problems are likely; a measurement in the real room has the last word.',
   ],
   tryThis: [
-    'Open any module you skipped, straight from its row.',
+    'Open any module still listed, straight from its row, and do its step.',
     'Tap PRACTICE AGAIN FROM THE START and model your real room from a tape measure’s numbers. Compare its RATIO S:M:L with the default room’s 1:1.6:2.0.',
   ],
 };

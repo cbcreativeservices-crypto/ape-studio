@@ -131,7 +131,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     // 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as
     // you suggestted in the report."): FS keeps one meaning, full scale.
     sampling: ['INPUT — CONTINUOUS', 'TRUE INPUT (DIM) — ABOVE NYQUIST', 'ALIAS REMOVED', 'INPUT', 'NYQUIST', 'READS AS', 'FREQ', 'ZOOM', 'RATE', '/CYC', 'RECONSTRUCTED · ON', 'ALIAS', 'PLAY INPUT', 'PLAY PREDICTED ALIAS', 'ANTI-ALIASING FILTER', 'FILTER OFF', 'FILTER ON', 'dB/OCT', 'CUTOFF'],
-    quant: ['AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR', 'BITS', 'LEVELS', 'TH. SNR', 'PEAK', 'LEVEL', '-BIT', 'ERROR', 'DITHER', 'NO DITHER', 'RPDF', 'TPDF', 'NOISE-SHAPED', 'CORRELATED', 'ERROR HISTOGRAM'],
+    quant: ['Amber is the original, blue sampled, green stored, red the rounding error.','BITS', 'LEVELS', 'TH. SNR', 'PEAK', 'LEVEL', '-BIT', 'ERROR', 'DITHER', 'NO DITHER', 'RPDF', 'TPDF', 'NOISE-SHAPED', 'CORRELATED', 'ERROR HISTOGRAM'],
     binary: ['SAMPLE', 'DECIMAL', 'HEX', 'LEVEL', 'TIME', 'BINARY', 'NORMALIZED', '% OF FS', 'RESET REG', 'SIGN', '16-bit · 48 kHz'],
     adc: ['0 dBFS (full scale)', 'analog rail', 'noise floor', 'ANLG', 'DIG', 'TOO LOW', 'RIGHT', 'TOO HIGH', 'PEAK', 'SNR', 'HEADROOM', 'ZONE', 'INPUT', 'AN. CLIP', 'A+D CLIP', '0.0 OVER', 'THE CONVERSION CHAIN', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'SAMPLE & HOLD — WATCH ONE CELL WORK'],
     processing: ['FLOAT INTERNAL PATH', 'FIXED-POINT RENDER (24-BIT)', 'FLOAT BUS', 'FIXED', '0.0 CLIP', 'TRIM', 'GAIN', 'VALUE', 'HOW A FLOAT NUMBER WORKS', 'SIGN', 'EXPONENT (decade)', 'MANTISSA (slides 1→10)', 'INTEGER vs FLOATING POINT'],
@@ -316,12 +316,13 @@ describe('6. chip decision: Digital Audio is a CONCEPT lab — no accuracy chip'
       assert.doesNotMatch(s, /right=\{/, `${p}: nothing else sits in the header's right slot`);
     }
   });
-  it('the model scenes carry their own illustrative-model badges (Modules 3–4 are exact math)', () => {
+  // S3 plain model notes since phase 3 (owner decision 3; checker K3 F-1, 2026-11-14).
+  it('the model scenes carry their own model notes (Modules 3–4 are exact math)', () => {
     const M = (f: string) => code(`src/screens/lab/digital/modules/${f}.tsx`);
     const BADGES: [string, string[]][] = [
-      ['modAnalog', ['ILLUSTRATIVE MODEL, SLOWED']], // Module 1
-      ['modChain', ['ILLUSTRATIVE MODEL — level axis compressed', 'ILLUSTRATIVE MODEL — one drawn bus']], // Modules 5, 6
-      ['modDac', ['CONCEPTUAL MODEL', 'EXACT SINE MATH', 'TIMING DEVIATION EXAGGERATED ×1000']], // Modules 7, 8
+      ['modAnalog', ['A slowed model: one sound, three views']], // Module 1
+      ['modChain', ['A model: the level axis is squeezed', 'A model of one bus']], // Modules 5, 6
+      ['modDac', ['A slowed model; the held steps', 'Exact sine math', 'timing errors are drawn 1000 times larger']], // Modules 7, 8
     ];
     for (const [f, bs] of BADGES) for (const b of bs) assert.ok(M(f).includes(b), `${f}: "${b}"`);
   });

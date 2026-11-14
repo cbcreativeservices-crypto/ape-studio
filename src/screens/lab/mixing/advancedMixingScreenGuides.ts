@@ -252,7 +252,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'COMPLEMENTARY EQ, HEARD plays two versions, matched in level: CROWDED and COMPLEMENTARY.',
       'The EQ plot shades LEAD’S PRESENCE from 2 to 4 kHz, where the lead vocal’s clarity lives.',
-      'THE ADVANCED TOOLKIT lists Complementary EQ, Dynamic EQ, Mid/side EQ and Low-frequency management.',
+      'THE ADVANCED TOOLKIT (under GO DEEPER ▾) lists Complementary EQ, Dynamic EQ, Mid/side EQ and Low-frequency management.',
       'Below are a check about a guitar masking a vocal and the goal chips.',
     ],
     control: [
@@ -284,9 +284,9 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Tap ▶ NO DUCK, then ▶ KICK DUCKS BASS, and watch the gain line under the kick dip on each hit, even with sound off. Then open each tool in THE ADVANCED TOOLKIT.',
     },
     seeing: [
-      'SIDECHAIN, HEARD plays kick and bass only: NO DUCK and KICK DUCKS BASS, deliberately not level-matched.',
-      'THE KEY, DRAWN FROM THE REAL KICK shows two bars of the kick track, with the bass compressor’s gain under it.',
-      'THE ADVANCED TOOLKIT lists Serial compression, Multiband compression, Expansion & gating, Transient shaping and Advanced de-essing.',
+      'SIDECHAIN, HEARD plays kick and bass only: NO DUCK and KICK DUCKS BASS, not level-matched.',
+      'THE KEY, DRAWN FROM THE REAL KICK shows two bars of kick, with the bass compressor’s gain under it.',
+      'THE ADVANCED TOOLKIT (under GO DEEPER ▾) lists Serial compression, Multiband compression, Expansion & gating, Transient shaping and Advanced de-essing.',
       'Below: a check about two gentle compressors, and goal chips.',
     ],
     control: [
@@ -351,7 +351,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'THE SIZE OF THE ROOM, HEARD sends the same parts into two shared spaces, matched in level: TIGHT ROOM and BIG HALL.',
       'THE TWO SPACES, MEASURED plots each reverb’s decay and its RT60: how long it takes to fall 60 dB.',
-      'THE SET-DESIGN TOOLKIT lists Multiple spaces, Pre-delay as position, Filtered ambience, and Tempo delays & throws.',
+      'THE SET-DESIGN TOOLKIT (under GO DEEPER ▾) lists Multiple spaces, Pre-delay as position, Filtered ambience, and Tempo delays & throws.',
       'Below: a check about a muddy vocal reverb, and goal chips.',
     ],
     control: [
@@ -381,9 +381,9 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Tap ▶ CLEAN, then ▶ GENTLE DRIVE, then ▶ HARD DRIVE, and watch the drive plot change with each, even with sound off. Then open What saturation adds in THE TOOLKIT.',
     },
     seeing: [
-      'THE DRIVE, HEARD runs the full session through a soft saturator (it rounds peaks off gently): CLEAN, GENTLE DRIVE and HARD DRIVE, matched in level so loudness can’t fool you.',
+      'THE DRIVE, HEARD runs the full session through a soft saturator (it rounds peaks off gently): CLEAN, GENTLE DRIVE and HARD DRIVE, matched in level.',
       'The drive plot shows how hard your pick pushes into the saturator.',
-      'THE TOOLKIT: What saturation adds; Tape, console, tube; Clipping as a tool; Level-matched evaluation. Then a check on a plugin that sounds instantly “bigger”.',
+      'THE TOOLKIT (under GO DEEPER ▾): What saturation adds; Tape, console, tube; Clipping as a tool; Level-matched evaluation. Then a check on an instantly “bigger” plugin.',
     ],
     control: [
       'Tap ▶ CLEAN, ▶ GENTLE DRIVE or ▶ HARD DRIVE to hear each version. The plot switches to the one you pressed.',
@@ -446,7 +446,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'SECTION DESIGN, HEARD plays one passage two ways, matched in level: STATIC (no fader moves) and SECTION-DESIGNED.',
       'The lanes show the fader level of LEAD, BGV PAD (background vocal pad), PERC, GTR and KEYS, split into VERSE · BARS 1–2 and CHORUS · BARS 3–4.',
-      'THE MOVES: Detailed rides, Subgroup & VCA automation, Plugin automation, Snapshots & sections.',
+      'THE MOVES (under GO DEEPER ▾): Detailed rides, Subgroup & VCA automation, Plugin automation, Snapshots & sections.',
     ],
     control: [
       'Tap ▶ STATIC or ▶ SECTION-DESIGNED to hear each version. The lanes redraw for the one you pressed, even with the sound off.',

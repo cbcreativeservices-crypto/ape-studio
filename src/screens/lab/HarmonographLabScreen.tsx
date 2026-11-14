@@ -456,6 +456,8 @@ export function HarmonographLabScreen() {
           // viewer (THE DRAWING inset) stays as it is and opens from the glass.
           fullScreen: true,
           badge: 'RIGID-BODY MACHINE — DRAWN FROM THE EQUATIONS',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: 'The machine is drawn from the pendulum equations, not filmed.',
           onGuide: () => openLesson('display'),
           // OSC readouts live ON the machine (each pendulum wears its own
           // tag). The bezel is READ-ONLY (owner rule 2026-10-10): the pen

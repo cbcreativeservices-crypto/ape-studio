@@ -67,6 +67,7 @@ import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
 import { StageAspectReport, StageInFullScreen, useStageTextScale } from './rack/stageAspect';
+import { ModelNote } from './rack/ModelNote';
 import type { FxAnimModel } from './fxAnim';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -295,6 +296,13 @@ export type FxLabConfig = {
   /** The hero teaching visual, rendered from the current param values. */
   Hero: (values: Record<number, number>, src?: FxSourceSpec) => ReactNode;
   heroBadge: string;
+  /** Phase 3 (owner's decision 3, S3 `RackStage.modelNote`): ONE plain
+   *  sentence, sentence case, saying what the moving picture is and is not —
+   *  drawn where the all-caps ANIM_BADGE was. */
+  modelNote?: string;
+  /** Phase 3: the same for the DESIGNED RESPONSE curve in the well (instead
+   *  of the all-caps heroBadge there). */
+  curveNote?: string;
   heroCaption?: (values: Record<number, number>) => string;
   /** The ANIMATED signal-flow hero: maps the CURRENT param values to a fxAnim
    *  model. Optional — labs without an authored animation (or clients without
@@ -805,6 +813,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           // Honesty badge verbatim (§1.7). The strip may ellipsize the long
           // animated-model badge — its full text prints in the well below.
           badge: animOnStage ? ANIM_BADGE : heroBadgeText,
+          // The plain sentence wins over the all-caps badge (S3 phase 3).
+          modelNote: config.modelNote,
           onGuide: () => openLesson('display'),
           bezel,
           soundOffLine: config.soundOffLine,
@@ -889,7 +899,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               its own heroBadge (device pass 2026-09-14b: the animated badge was
               printing twice on every Skia FX-rack lab). */}
           <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
-          {heroBadgeText ? <Text style={styles.badge}>{heroBadgeText}</Text> : null}
+          {heroBadgeText ? (
+            config.curveNote ? <ModelNote text={config.curveNote} style={styles.curveNote} /> : <Text style={styles.badge}>{heroBadgeText}</Text>
+          ) : null}
           {config.Hero(values, sources[sourceIdx])}
           {showCaption ? <Text style={styles.caption}>{config.heroCaption!(values)}</Text> : null}
         </View>
@@ -951,4 +963,6 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
+  // The well's plain curve note sits left, like the captions around it.
+  curveNote: { textAlign: 'left', paddingHorizontal: 0 },
 });

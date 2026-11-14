@@ -113,6 +113,15 @@ export type RackStage = {
    *  readouts show what you would hear."); a string = the lab's own. Only for
    *  a stage where that is true. Omitted = nothing, as before. */
   soundOffLine?: boolean | string;
+  /** ADDITIVE (phase 3, 2026-11-14, owner's decision 3): the honesty note as
+   *  ONE plain sentence in sentence case ("This picture is a model of the
+   *  EQ, not a meter."), drawn where `badge` is, inline and in full screen.
+   *  Wins over `badge` when both are set. Never empty: it is a disclosure. */
+  modelNote?: string;
+  /** ADDITIVE (phase 3): true while the lab's own drawing is not painted yet
+   *  (a scene still loading): the glass shows "drawing…" instead of an empty
+   *  black box. The glass also shows it before its first measure. */
+  drawing?: boolean;
   /** ADDITIVE (2026-11-14, row 7): the id under which this stage's bezel
    *  captions (BezelItem.caption) count as seen. Default: the captions
    *  joined. Two stages that teach the same strip may share one id. */

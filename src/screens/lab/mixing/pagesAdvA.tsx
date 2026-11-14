@@ -174,7 +174,7 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
             return <Btn key={p.id} label={on ? `✓ ${p.name}` : p.name} tone={on ? 'primary' : 'plain'} selected={on} onPress={press} a11y={`${on ? 'Remove' : 'Choose'} priority ${p.name}`} />;
           })}
         </Row>
-        <Body>{priorities.length === 3 ? (overPick ? 'Three is the limit. Tap one of your three to drop it, then pick the new one.' : '✓ Three named. Every decision from here negotiates around these.') : `${priorities.length}/3 chosen — a priority list longer than three is a wish list.`}</Body>
+        <Body>{priorities.length === 3 ? (overPick ? 'Three is the limit. Tap one of your three to drop it, then pick the new one.' : '✓ Three named. Every decision from here negotiates around these.') : `${3 - priorities.length} more to choose — a priority list longer than three is a wish list.`}</Body>
       </Card>
       <UnderstandingCheck
         question="Halfway through a dense mix you realize the drums, percussion and two loops all need the same treatment. The planning lesson:"

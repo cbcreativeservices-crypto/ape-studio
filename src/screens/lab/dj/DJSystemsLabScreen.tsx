@@ -111,6 +111,9 @@ export function DJSystemsLabScreen() {
       // D37 (lab fix round 2026-11-14, phase 2, F2): a modeled booth, not a
       // measuring lab: the chip reads ABOUT and shows only this lab's own note.
       accuracyVariant="about"
+      // Owner decision 3 (phase 3, 2026-11-14): one progress word per lab — DJ's
+      // own word, "screen", on the strip, CONTENTS and the end screen.
+      unitNoun="screen"
       optionalPage={optionalPage}
       labDoneKey={trainingKeyFor('DJSystemsLab')}
       pageGuide={pageGuide}

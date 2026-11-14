@@ -426,6 +426,8 @@ export function BassLabScreen() {
           size: 'L', // the fretboard IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'FRETS AT REAL SPACING FROM THE FRET EQUATION — BRIDGE ← NUT',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: 'The frets sit at their real spacing, worked out from the fret equation.',
           onGuide: () => openLesson('display'),
           bezel:
             mode === 'fretted'
@@ -546,7 +548,7 @@ export function BassLabScreen() {
         <Text style={styles.sectionHead}>THE EXACT NUMBERS</Text>
         {/* Fraction · interval · wavelength — the richer readout lines behind
             the bezel cells (NOTE/FREQ/INTERVAL live up there). */}
-        <Text style={styles.badge}>READOUT — EXACT VALUES FROM THE STRING MODEL</Text>
+        <Text style={styles.badge}>Readout: exact values from the string model.</Text>
         {mode === 'fretted' ? (
           <Text style={styles.readRow}>
             Vibrating length: {(vibFrac * 100).toFixed(1)}% of the string

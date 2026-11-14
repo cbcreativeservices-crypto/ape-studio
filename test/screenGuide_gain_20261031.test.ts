@@ -282,7 +282,7 @@ describe('5. accuracy chip decision: KEPT beside the ⓘ (gain/level readouts �
   });
   it('the readouts are still badged as a simulation, and the guide never retells the chip', () => {
     const src = code('src/screens/lab/gain/modules/modLearn.tsx') + code('src/screens/lab/gain/modules/modExplore.tsx');
-    assert.match(src, /const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';/);
+    assert.match(src, /const BADGE = 'A simulated signal chain; levels are relative dB\.';/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /MEASURE WITH THE RIGHT TOOL|LEARN HERE/, `${id}: still describes the chip`);
   });
 });

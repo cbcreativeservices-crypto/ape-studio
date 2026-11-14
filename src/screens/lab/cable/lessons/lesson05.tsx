@@ -159,7 +159,7 @@ export function Lesson05Body() {
         <Text style={s.hint}>{CABLE_COMPARE_NOTE}</Text>
       </DetailCard>
 
-      <Eyebrow text={`ROUTING PICKS · ${Math.min(idx + 1, ROUTING_SCENARIOS.length)} OF ${ROUTING_SCENARIOS.length}`} />
+      <Eyebrow text={`ROUTING PICKS · SCENARIO ${Math.min(idx + 1, ROUTING_SCENARIOS.length)}`} />
       {!allDone ? (
         <>
           <DetailCard>

@@ -221,3 +221,86 @@ Owner approval: "Begin fixing all bugs found and do obvious ... fixes as you sug
   - An `'auto'` ask while work is under way on the screen, or while an intro card is owed or up, is dropped quietly (answers "sound off", NOT counted as a decline), so the sheet never opens over an open tray or a card.
 - The sheet: KEEP SOUND OFF and ENABLE SOUND are pinned below the scroll (always visible; ENABLE stays disabled until the box at the END of the text is ticked); a tap on the dim does nothing (only KEEP SOUND OFF or BACK decline, so it never "vanishes"); no fade (never see-through); taps in its first 0.35 s are ignored; the footnote reads "This warning appears once each time you open the app, until you enable sound."
 - Lab agents: nothing to fill in. Do not call `requestAudioOutput()` on arrival or from a timer; only a tap. If a lab must ask without a tap, `markSoundAsk('auto')` first.
+
+## Phase 3 · S3 (owner's decision 3, 2026-11-14: "do your recommendations for these")
+
+All in `src/screens/lab/rack/` and `LabShell.tsx`.
+
+### 1. Rack labs open on LEARN on the first visit: AUTOMATIC
+- A LabShell lab with a rack opens on its LEARN tab the first time a learner opens it on this device; every later visit opens on EXPLORE as before. Stored per lab (`ape:intro:labLearnFirst`, an intro flag: kept through the guest wipe, cleared by Settings › Reset onboarding hints). A failed read opens EXPLORE (as before) and writes nothing. Nothing to fill in.
+
+### 2. The plain model note (instead of an all-caps "TEACHING MODEL · NOT A MEASUREMENT" badge)
+```ts
+stage: { …, modelNote: 'This picture is a model of the EQ, not a meter.' }
+```
+- `RackStage.modelNote`: ONE plain sentence, sentence case, at most ~90 characters, saying what the picture is and is not. While set, the rack draws it (small, grey, sentence case) where `badge` was drawn, in the inline rack and in full screen. Keep `badge` for a lab that has not moved yet: `modelNote` wins when both are set.
+- Outside a rack: `<ModelNote text="…" />` from `rack/ModelNote.tsx` (same look).
+- The disclosure must stay on screen (owner rule): do not drop it, rewrite it.
+- FX labs: their badge comes from `FxLabScreen.tsx` (`ANIM_BADGE`, `heroBadge`); that file's owner passes `modelNote` there.
+
+### 3. "drawing…" instead of an empty black box
+```ts
+stage: { …, drawing: !sceneReady }   // true while YOUR drawing is not painted yet
+```
+- `RackStage.drawing`: while true, the glass shows a calm "drawing…" line over the dark glass; it goes the moment you pass false. AUTOMATIC: the glass also shows it before its first measure (the first frame).
+- Outside a rack: `<DrawingPlaceholder />` from `rack/ModelNote.tsx`.
+
+### 4. A visible ⓘ in an open tray: AUTOMATIC
+- An options / group tray whose key has a `helpKey` shows an ⓘ beside its ✕. A tap opens the same lesson the long-press opens. Nothing to fill in; give your tray keys a `helpKey`.
+
+### 5. N of total in the frame
+- The rack prints no "N of total" progress counter itself (checked: RackUnit, BezelReadouts, DockTray, DockButton, ParamLane, StageFullScreen, LabShell). Lane values such as "FRET 3 of 12" are values, not progress, and stay.
+
+## Phase 3 · S2 (owner's decisions 1, 2 and 3, 2026-11-14): the progress strip, one unit noun, "done = work done"
+
+### 1. No "N of total" in the shared strip: AUTOMATIC
+- The strip reads **MODULE 3**, not "MODULE / 3 / 8". In step mode it reads **MODULE 3 · STEP 2**, not "STEP 2 / 4".
+- Screen-reader labels drop "of 8" too ("Module 3. Opens the contents").
+- Counts of what is LEFT on the end screen stay ("3 modules not done yet"), and so does "✓ 5 DONE".
+- Nothing to do in your lab.
+
+### 2. One unit noun per lab: pass it ONCE
+Allowed nouns: `'module' | 'lesson' | 'chapter' | 'step'`. The default is `'module'`.
+
+- **PagedLab labs:** `<PagedLab … unitNoun="chapter" />`. The strip ("CHAPTER 3"), CONTENTS (screen-reader rows), the end screen ("3 chapters not done yet", WHERE TO START, HOW A CHAPTER COUNTS) and the next-button words all use it.
+  - ⚠ PagedLab's end screen used to say "page" while its strip said "MODULE". With no `unitNoun` both now say "module". If your guides or copy say "page", pick one noun and change the words to match it.
+- **Labs that build their own screen with `useLabNav` + `<LabNavBar>` / `<LabEndScreen>`:** wrap the lab once in `<LabNounProvider value="lesson">…</LabNounProvider>` (from `src/screens/lab/kit/LabNavBar`). LabNavBar, CONTENTS and LabEndScreen read it.
+  - A `noun="…"` prop you already pass to `<LabEndScreen>` still wins. Remove it unless the end screen counts something else on purpose: LabCheckEnd's single "check", ReviewLabEnd's single "step".
+- **Your own words** (guides, captions, buttons): use the same noun. The kit cannot rewrite them.
+
+### 3. "Done = work done" in PagedLab: declare each page's kind
+PagedLab has never credited a page on OPENING: a CONTENTS jump marks nothing. It marks a page when NEXT / FINISH leaves it, unless the page marks itself. Each page now says which kind it is:
+
+```ts
+{ title: 'Check Yourself', short: 'CHECK', Component: P7, manualDone: true }     // has a goal/check: call ctx.markDone() when it is MET; NEXT never counts it
+{ title: 'Common Sound Shapes', short: 'SHAPES', Component: P2, reading: true }   // no goal: reading it through (NEXT at its foot) is the work
+```
+
+- A page with a goal or check MUST be `manualDone: true` and call `ctx.markDone()` only when that goal or check is met.
+- A page with nothing to do but read is `reading: true`.
+- An undeclared page keeps today's behavior (NEXT marks it), so nothing earned is lost and no lab becomes impossible to complete. Declare every page in phase 3.
+- `test/labFixes_20261114_S2.test.ts` lists the undeclared pages per lab as a shrink-only ratchet. Remove your lab from it when every page is declared.
+- Stored progress and credit are never touched; only NEW marks follow the declaration.
+- The end screen's HOW A <NOUN> COUNTS says both rules once.
+
+## Phase 3 · S1 · Step intros: a popup on the first step only, then the same text inline
+
+Owner decision 2026-11-14 (phase 3, item 3: "do your recommendations for these").
+
+- **AUTOMATIC, nothing to fill in.** Any `ScreenGuideHost` that swaps its steps in place (its `resetKey`: steps, chapters, pages, tabs) applies this. Drum Tuning, Tuning, Envelope and Speech already do (PagedLab, LabShell and the step labs all use one host per screen), so no lab edit is needed.
+  - The FIRST intro card the host presents on a visit is the popup (with the lab term inside it, if the term is still owed).
+  - Every LATER step's intro on the same visit shows the SAME two lines (WHAT YOU'RE LEARNING / WHERE TO START) as an **inline note**: a compact strip just above the dock, in the TRY THIS strip's place. Nothing is dimmed and no tap is held.
+  - The note has ✕ to hide it and "ⓘ EXPLAIN THIS SCREEN" to open the full card. It goes on the next step, when a tray opens (work under way), or while the host's `hold` is on.
+  - Showing it inline counts as seen.
+- **A new visit** (the lab screen opened again) gets one popup again: the first unseen step of that visit.
+- **Rule (pure):** `introPresentMode(poppedThisVisit, carriesTerm)` in `src/features/lab/screenGuide/introHold.ts`. A card that carries the lab's glossary term is always the popup.
+- **Lab authors:** keep each step's `guide.intro.start` short (≤ 40 words, the existing cap), because it is now read inline above the dock. If a lab needs a step's intro as a popup on purpose, give that step its own ScreenGuideHost; ask S1 first, as no lab needs it today.
+
+### 4. F4's nouns (PAGE / GUIDE / STAGE) and a name in place of the number: LANDED 2026-11-14
+- **Nouns now allowed:** `UnitNoun = 'module' | 'lesson' | 'chapter' | 'step' | 'page' | 'screen' | 'guide' | 'stage'` (src/screens/lab/kit/labNav.ts). DJ Systems: `unitNoun="screen"`; Game Audio and De-Esser: `unitNoun="page"`.
+- **Both Mixing labs (PagedLab):** `<PagedLab … unitNoun="page" />`. The strip reads PAGE 7 ▾. The end screen, HOW A PAGE COUNTS, WHERE TO START and START OVER all say "page".
+- **Mixing Guides, or any lab with its own `useLabNav` + `<LabNavBar>`:** wrap the screen once in `<LabNounProvider value="guide">` (from `src/screens/lab/kit/LabNavBar`).
+  - To show the style instead of the number, pass `<LabNavBar nav={nav} posLabel="POP" />`. The readout then shows GUIDE over POP; without it, GUIDE over 7.
+  - `posLabel` is ignored on the intro and the end screen.
+- **Not on useLabNav:** `useLabNav.ts` is on the do-not-touch list. The noun goes in through the provider (or PagedLab's `unitNoun`), and the strip relabels itself (`relabelView`).
+- **Step mode:** reads MODULE 3 · STEP 2 ▾. With `value="page"` it reads PAGE 3 · STEP 2 ▾.

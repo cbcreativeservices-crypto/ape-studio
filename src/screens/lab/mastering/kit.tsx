@@ -394,7 +394,35 @@ export function unmatchedWarning(mixLufs: number | undefined, loudLufs: number |
   return `Turn your volume down first — unmatched, ${loudName} steps up by about ${step != null ? step.toFixed(0) : fallback} dB.`;
 }
 
+/**
+ * GO DEEPER ▾ (phase 3, owner's decision 5, 2026-11-14: "long pages:
+ * beginner core first … fold the depth under Go deeper ▾"). The step's
+ * beginner core reads first; the mechanics and the measurement notes wait
+ * folded. Nothing is removed. Closed again on every visit.
+ */
+export function GoDeeper({ title, children }: { title: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={{ gap: 10 }}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        style={styles.deeperHead}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${title}. ${open ? 'Fold it away' : 'Go deeper: open it'}`}
+      >
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <Text style={styles.deeperKey}>{open ? 'FOLD ▴' : 'GO DEEPER ▾'}</Text>
+      </Pressable>
+      {open ? children : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  deeperHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 44 },
+  deeperKey: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
   sectionTitle: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 2, marginTop: 4 },
   kicker: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.8 },
   body: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },

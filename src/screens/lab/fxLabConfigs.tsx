@@ -250,6 +250,9 @@ const eqConfig: FxLabConfig = {
   },
   anim: (v) => ({ kind: 'eq', bands: [eqBandOf(v)] }),
   heroBadge: ANALYTIC,
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the EQ, drawn from the audio’s own math, not a meter.',
+  curveNote: 'This curve is worked out from the filter’s math, not measured.',
   // Pass filters ignore GAIN (and HP ignores Q) — the caption used to keep
   // printing both anyway (fix 2026-08-31). NEW COPY — owner review.
   heroCaption: (v) => {
@@ -422,6 +425,9 @@ const delayConfig: FxLabConfig = {
     src: fxSrcOf(src),
   }),
   heroBadge: 'ECHO PATTERN — CALCULATED (spacing = time · decay = feedback)',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the echoes, drawn from the audio’s math, not a meter.',
+  curveNote: 'Worked out from your settings: the spacing is the delay time, the shrinking is feedback.',
   heroCaption: (v) =>
     // At FDBK 0% there is ONE repeat, so "each repeat is 0% of the last" read
     // as nonsense (lab fix round 2026-11-14, G6b Delay).
@@ -556,6 +562,9 @@ const reverbConfig: FxLabConfig = {
     src: fxSrcOf(src),
   }),
   heroBadge: 'DECAY SLOPE — CALCULATED (RT60 = time to fall 60 dB)',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the room’s decay, from the audio’s math, not a meter.',
+  curveNote: 'Worked out from your settings: RT60 is the time the tail takes to fall 60 dB.',
   heroCaption: (v) =>
     v[P.preDelayMs] === 0
       ? `No pre-delay: the wash starts with the dry hit, gluing the source to the tail. Then the tail falls 60 dB in ${v[P.rt60]} s.`
@@ -716,6 +725,9 @@ const chorusConfig: FxLabConfig = {
     ...chorusToneOf(src),
   }),
   heroBadge: ANALYTIC,
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the chorus, drawn from the audio’s math, not a meter.',
+  curveNote: 'This curve is worked out from the chorus’s math, not measured.',
   heroCaption: (v) =>
     v[P.modMix] >= 1
       ? '100% wet removes the dry voice — nothing left to beat against: that is vibrato, not chorus.'
@@ -859,6 +871,9 @@ const flangerConfig: FxLabConfig = {
     spectrum: src?.gen.mode === GEN_MODES.white ? 'white' : 'pink',
   }),
   heroBadge: ANALYTIC,
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the flanger’s notches, from the audio’s math, not a meter.',
+  curveNote: 'This curve is worked out from the flanger’s math, not measured.',
   heroCaption: (v) =>
     v[P.modMix] >= 1
       ? 'At 100% MIX there is no dry signal left to cancel against, so there are no deep notches — just a moving delay that wobbles the pitch. FDBK raises resonant peaks that ring at ±70%; at −70% that is the hollow, through-a-tube tone. Set MIX to 50% to bring back the dry signal the notches need.'
@@ -1040,6 +1055,9 @@ const phaserConfig: FxLabConfig = {
     spectrum: src?.gen.mode === GEN_MODES.white ? 'white' : 'pink',
   }),
   heroBadge: ANALYTIC,
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the phaser’s dips, from the audio’s math, not a meter.',
+  curveNote: 'This curve is worked out from the phaser’s math, not measured.',
   heroCaption: (v) =>
     `${v[P.stages]} stages ≈ ${Math.floor(v[P.stages] / 2)} notches, UNEVENLY spaced (set by phase, not by a delay time) — a phaser is not a delay.`,
   checks: [
@@ -1208,6 +1226,9 @@ const compConfig: FxLabConfig = {
     signal: dynSignalOf(src, true),
   }),
   heroBadge: 'TRANSFER CURVE — CALCULATED · GR METER — LIVE',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the compressor, from the audio’s math. GR is measured live.',
+  curveNote: 'This curve is worked out from your settings; the GR meter above measures the live audio.',
   heroCaption: (v) =>
     `Above ${v[P.thresholdDb]} dB, every ${v[P.ratio]} dB in becomes 1 dB out. The source peaks at −20 dBFS — ` +
     (v[P.thresholdDb] < -20
@@ -1357,6 +1378,9 @@ const gateConfig: FxLabConfig = {
     signal: dynSignalOf(src),
   }),
   heroBadge: 'TRANSFER CURVE — CALCULATED · GR METER — LIVE',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the gate, from the audio’s math. GR is measured live.',
+  curveNote: 'This curve is worked out from your settings; the GR meter above measures the live audio.',
   heroCaption: (v) =>
     `Below −${Math.abs(v[P.thresholdDb])} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
     (v[P.rangeDb] <= -70 ? 'Full silence is abrupt — a partial floor usually sounds more natural.' : 'A partial floor keeps a little ambience.'),
@@ -1479,6 +1503,9 @@ const limiterConfig: FxLabConfig = {
     signal: dynSignalOf(src),
   }),
   heroBadge: 'TRANSFER CURVE — CALCULATED · GR METER — LIVE',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the limiter, from the audio’s math. GR is measured live.',
+  curveNote: 'This curve is worked out from your settings; the GR meter above measures the live audio.',
   heroCaption: (v) =>
     `Peaks are turned down to about ${v[P.ceilingDb]} dB. This limiter cannot look ahead, so a sharp hit can slip a few dB over first, and peaks between samples can poke above too (see ⓘ). Source at −20 dBFS → ${
       v[P.ceilingDb] < -20
@@ -1627,6 +1654,9 @@ const distConfig: FxLabConfig = {
     srcIsNoise: isNoiseSrc(src),
   }),
   heroBadge: 'WAVESHAPE — TRUE LEVEL: input −20 dBFS (dim) · input × drive before the clip (dashed) · output (amber) · dashed bounds = 0 dBFS',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the clipped wave, from the audio’s math, not a meter.',
+  curveNote: 'True level: dim is the −20 dBFS input, dashed is it driven before the clip, amber is the output.',
   heroCaption: (v) => {
     // True level (round 3): the −20 dBFS sine × DRIVE only reaches the 0 dBFS
     // ceiling past +20 dB, so the caption must not claim clipping below it.
@@ -1762,6 +1792,9 @@ const phaseConfig: FxLabConfig = {
     srcIsNoise: isNoiseSrc(src),
   }),
   heroBadge: 'LISSAJOUS + CORRELATION — CALCULATED (440 Hz model)',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the two channels, from the audio’s math, not a meter.',
+  curveNote: 'The scope and CORRELATION are worked out from a 440 Hz model, not measured.',
   // Delay captions scoped 2026-10-31 (two verifiers): on the 440 Hz model the
   // meter reads cos(2π·440·τ), negated when flipped — inverted it is −1.00
   // again at 2.3 ms and +0.99 at 1.1 ms — so a delay caption never claims a
@@ -1920,6 +1953,9 @@ const stereoConfig: FxLabConfig = {
     bassMonoHz: v[P.bassMonoHz],
   }),
   heroBadge: 'GONIOMETER + CORRELATION — 440 Hz STEREO TEST TONE (model)',
+  // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
+  modelNote: 'This picture is a model of the stereo image, from the audio’s math, not a meter.',
+  curveNote: 'The scope and CORRELATION are worked out from a 440 Hz stereo test tone, not measured.',
   // Owner 2026-10-24: with PINK · MONO selected these hold only for the stereo
   // sources, so they are hidden (badge, the >100% caption, both checks' hints:
   // under MONO the goniometer stays a vertical line at every width).

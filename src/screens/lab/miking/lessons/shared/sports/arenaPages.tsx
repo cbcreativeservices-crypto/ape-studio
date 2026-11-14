@@ -368,7 +368,7 @@ export function useCoveragePlanStep({ onInteractive, done, prediction }: { onInt
           {carry ? <Point title={carry.by ? `CARRIED BY ${carry.by.short}` : 'A KNOWN GAP'}>{carry.words}</Point> : <Point title="THE DRILL">Lose one input at a time and decide, before the event, which feed replaces it and how to avoid a jump in level.</Point>}
         </Card>
         <Body>A bigger layout is worth its extra channels only if it covers a tested gap in the smaller one — more mics also bring more spill, peaks, cable routes and timing differences to manage.</Body>
-        {complete ? <Note tone="ok">{`Both layouts compared and the drill run. Start minimal, add an input only for a tested gap — and know what survives each loss. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Layouts looked at: ${seenLayouts.size} of ${LAYOUT_IDS.length}; roles lost: ${lostRoles.size} (lose at least two different roles).`}</Body>}
+        {complete ? <Note tone="ok">{`Both layouts compared and the drill run. Start minimal, add an input only for a tested gap — and know what survives each loss. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Layouts still to look at: ${LAYOUT_IDS.length - seenLayouts.size}; roles lost so far: ${lostRoles.size} (lose at least two different roles).`}</Body>}
       </>
     ),
   };

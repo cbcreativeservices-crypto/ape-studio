@@ -149,7 +149,6 @@ export function BeatingModel({ diffHz, fit, note = true }: { diffHz: number; /**
         <Polyline points={pts1.join(' ')} fill="none" stroke={ROLE.active} strokeWidth={1} opacity={0.8} />
         <Polyline points={pts2.join(' ')} fill="none" stroke={ROLE.operation} strokeWidth={1} opacity={0.8} />
         <Polyline points={env.join(' ')} fill="none" stroke={d < 0.01 ? ROLE.exact : ROLE.near} strokeWidth={2} />
-        <SvgText x={W2 - 8} y={13} fontSize={10.5} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>EXPLANATORY MODEL · NOT A MEASUREMENT</SvgText>
       </Svg>
       {note ? (
       <Text style={styles.note}>

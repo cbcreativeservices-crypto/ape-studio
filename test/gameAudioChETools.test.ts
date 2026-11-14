@@ -242,8 +242,10 @@ describe('page 20: the checks need the tool names (audit 2, L-05, B10, L-16, W2-
     assert.match(page, /export const P20_CHECKS = 6;/);
     assert.match(page, /The six checks below complete this page\./);
     const screen = readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/GameAudioLabScreen.tsx'), 'utf8');
-    assert.match(screen, /19: 'Counts once its six checks are done;/);
-    assert.match(screen, /20: 'Counts once its two checks are done;/);
+    // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
+    // 24 pages: the tools page and "today" are at indexes 21 and 22 (they were 19 and 20).
+    assert.match(screen, /21: 'Counts once its six checks are done;/);
+    assert.match(screen, /22: 'Counts once its two checks are done;/);
     assert.equal(checksOf('p21Today.tsx').length, 2);
   });
   it('the correct option is never the longest', () => {

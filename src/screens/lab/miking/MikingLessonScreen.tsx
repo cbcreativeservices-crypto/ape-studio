@@ -381,7 +381,8 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     const ids = pageOf(lesson, id).credit.scenarios.filter((q) => q in answers);
     if (!ids.length) return '';
     const right = ids.filter((q) => answers[q]).length;
-    return ` First try: ${right} of ${ids.length} right${right < ids.length ? ' — worth a second look' : ''}.`;
+    // No N-of-total (owner 2026-11-14, decision 2): what was missed, in words.
+    return right === ids.length ? ' First try: all right.' : ` First try: ${ids.length - right} missed — worth a second look.`;
   };
   const c = content.credit;
   const answered = c.scenarios.filter((id) => id in answers).length;

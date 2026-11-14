@@ -210,10 +210,10 @@ export function endLead(
  * behind "practicing never clears"); in a credit lab a credited page keeps
  * its ✓ (PagedLab's endCleared reads the banked unit). Credit never goes.
  */
-export function endNote(mode: 'credit' | 'progress', startOver: boolean): string {
+export function endNote(mode: 'credit' | 'progress', startOver: boolean, noun = 'page'): string {
   if (mode === 'credit') {
     return startOver
-      ? 'Practicing again or reviewing never removes credit you have already earned. START OVER (PRACTICE) starts a fresh run; credited pages keep their ✓.'
+      ? `Practicing again or reviewing never removes credit you have already earned. START OVER (PRACTICE) starts a fresh run; credited ${noun}s keep their ✓.`
       : 'Practicing again or reviewing never removes credit you have already earned.';
   }
   return startOver
@@ -244,18 +244,26 @@ export function howItCountsHeading(noun: string): string {
   return `HOW A ${noun.toUpperCase()} COUNTS`;
 }
 
-/** PagedLab's rule for a reading page (useLabNav's beforeAdvance marks the
+/** PagedLab's rule for a reading page (a function of the lab's noun since 2026-11-14) (useLabNav's beforeAdvance marks the
  *  page NEXT / FINISH leaves; a CONTENTS jump marks nothing). G7: Envelope
  *  and Speech read "not done" after pages were opened from CONTENTS, with no
  *  line saying why. */
-export const PAGE_READ_RULE = 'A page counts once you press NEXT (or FINISH) at its foot. Jumping to it from CONTENTS does not count it.';
+export function pageReadRule(noun = 'module'): string {
+  // In the lab's own unit noun (owner decision 3, 2026-11-14). For a page
+  // declared `reading: true`, or not yet declared (PagedLab, decision 1).
+  return `A reading ${noun} counts once you press NEXT (or FINISH) at its foot. Jumping to it from CONTENTS does not count it.`;
+}
 
 /** PagedLab's rule for a self-marking (hands-on) page, said once above the
  *  list when the lab gives no `handsOnDetail` of its own. A row names its
  *  own missing piece only through the lab's `pageDetail` line — never one
  *  shared sentence repeated under every row (quick win 17; seen on screen
  *  2026-11-14: even a short shared line read 16 times on Beginning Mixing). */
-export const PAGE_TASK_RULE = 'A page with its own task (answers or goals on the page) counts once that task is done; NEXT moves on without counting it.';
+export function pageTaskRule(noun = 'module'): string {
+  // Owner decision 1, 2026-11-14: "done = work done" — a unit with a goal or
+  // check counts when that goal or check is MET, never on opening or NEXT.
+  return `A ${noun} with its own goal or check counts once that goal or check is met; NEXT moves on without counting it.`;
+}
 
 export type WhereToStart = {
   kind: 'start' | 'resume' | 'check' | 'done';

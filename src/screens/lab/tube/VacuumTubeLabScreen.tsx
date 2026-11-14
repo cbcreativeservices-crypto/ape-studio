@@ -38,7 +38,8 @@ import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../fea
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../foundations/bits';
+import { GoalCheck, ModuleGoalProvider, useMetWhen } from '../meter/moduleGoal';
 import { RackUnit } from '../rack/RackUnit';
 import type { DockParam } from '../rack/rackTypes';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
@@ -196,6 +197,10 @@ function InsideSection(p: SectionProps) {
   // glows (when visible) and drives the explainer note.
   const [visible, setVisible] = useState<TubePart[]>(ALL_PART_KEYS);
   const [lastTouched, setLastTouched] = useState<TubePart | null>(null);
+  // The section counts once every part has been tapped (its blurb: "tap each
+  // piece to learn its job") — owner's decision 1, phase 3: done = work done.
+  const [touched, setTouched] = useState<ReadonlySet<TubePart>>(() => new Set());
+  useMetWhen(touched.size >= PARTS.length);
   const allOn = visible.length === ALL_PART_KEYS.length;
   const sel = PARTS.find((part) => part.key === lastTouched) ?? null;
   const togglePart = (key: TubePart) => {
@@ -212,6 +217,7 @@ function InsideSection(p: SectionProps) {
       return next;
     });
     setLastTouched(key);
+    setTouched((t) => (t.has(key) ? t : new Set([...t, key])));
   };
   const toggleAll = () => {
     // HIDE ALL = glass only (owner 2026-08-10); SHOW ALL restores everything.
@@ -290,7 +296,8 @@ function InsideSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN, PARTS tray and E-VIEW ride inside
-        badge: 'ILLUSTRATIVE MODEL — SCHEMATIC CROSS-SECTION, NOT MEASURED TUBE DATA',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'A drawn cross-section, not measured tube data.',
         onGuide: () => p.help('cutaway'),
         bezel: [
           { k: 'PARTS', v: `${visible.length}/${ALL_PART_KEYS.length}`, helpKey: 'cutaway' },
@@ -324,6 +331,8 @@ function FlowSection(p: SectionProps) {
   const [heat, setHeat] = useState(0);
   const stage = FLOW_STAGES.find((s) => heat < s.until) ?? FLOW_STAGES[4];
   const stageNum = FLOW_STAGES.indexOf(stage) + 1;
+  // The section counts once the tube is warmed up to steady current (stage 5).
+  useMetWhen(stageNum === FLOW_STAGES.length);
   const current = heat > 0.7 ? (heat - 0.7) / 0.3 : 0;
   const heatWord = (v: number) => (v < 0.15 ? 'cold' : v < 0.7 ? 'warming…' : 'conducting');
   const glass = useGlassSize();
@@ -350,7 +359,7 @@ function FlowSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the WARM-UP lane docked inside
-        badge: 'CONCEPTUAL — the warm-up sequence, slowed and drawn; real electrons are invisible and countless',
+        modelNote: 'The warm-up drawn slowly; real electrons are invisible and countless.',
         onGuide: () => p.help('warm_up'),
         bezel: [
           { k: 'HEAT', v: pct(heat), helpKey: 'warm_up' },
@@ -426,7 +435,7 @@ function GridSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the GRID V lane and E-VIEW docked inside
-        badge: "CONCEPTUAL — electron view adds the grid's repelling field lines; conduction is illustrative",
+        modelNote: 'Electron view adds the grid’s field lines; the conduction shown is illustrative.',
         onGuide: () => p.help('grid_voltage'),
         bezel: [
           { k: 'GRID', v: gridState(v), flex: 1.2, helpKey: 'grid_voltage' },
@@ -443,7 +452,7 @@ function GridSection(p: SectionProps) {
           That sentence is the entire reason vacuum tubes changed the world — read it again while
           you slide the GRID V fader.
         </Text>
-        <CheckQuestion spec={GRID_CHECK} />
+        <GoalCheck spec={GRID_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -455,6 +464,21 @@ function GridViz({ viz, width, height, cond, flow, electron, running }: { viz: T
 
 // ── 4 · Amplification ───────────────────────────────────────────────────────
 
+/** The section's own check (phase 3, 2026-11-14): a reading section needs a
+ *  task to count, and this is the one idea it teaches. */
+const AMPLIFY_CHECK: CheckSpec = {
+  question: 'Your signal wiggles the GRID a little. What leaves the PLATE?',
+  options: ['A bigger copy, flipped upside down', 'The same small wiggle, unchanged', 'A smaller copy, the same way up'],
+  correctIdx: 0,
+  why: {
+    1: 'The grid only gates the big cathode-to-plate stream. Compare the blue wave with the amber one.',
+    2: 'The plate stream is the large one. Look at how tall the amber wave is next to the blue.',
+  },
+  reveal:
+    'A small grid wiggle opens and chokes the much larger cathode-to-plate current, so the plate carries a bigger copy of your signal, inverted: a more positive grid means more current, and more current pulls the plate voltage down.',
+  wrongHint: 'Follow the colors: blue goes in at the grid, amber comes out of the plate.',
+};
+
 function AmplifySection(p: SectionProps) {
   const glass = useGlassSize();
   return (
@@ -465,7 +489,7 @@ function AmplifySection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN
-        badge: 'ILLUSTRATIVE — gain drawn ~×7; the output is INVERTED (that sign-flip is real tube behavior)',
+        modelNote: 'Gain drawn at about ×7; the output is inverted, as in a real tube.',
         onGuide: () => p.help('amplification'),
         bezel: [
           { k: 'GAIN', v: '~×7', helpKey: 'amplification' },
@@ -488,6 +512,7 @@ function AmplifySection(p: SectionProps) {
           Most tube mic preamps, guitar amps, compressors and broadcast consoles repeat this one
           picture, with other stages (like the cathode follower) mixed in.
         </Text>
+        <GoalCheck spec={AMPLIFY_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -501,6 +526,8 @@ function AmplifyViz({ viz, width, height, running }: { viz: TubeVizModule; width
 
 function HighVoltSection(p: SectionProps) {
   const [highB, setHighB] = useState(false);
+  // The section counts once the high-voltage supply (B+) has been switched in.
+  useMetWhen(highB);
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -529,7 +556,7 @@ function HighVoltSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the SUPPLY tray inside
-        badge: 'CONCEPTUAL — attraction strength drawn as arrow length and electron count',
+        modelNote: 'Attraction drawn as arrow length and electron count, not measured.',
         onGuide: () => p.help('high_voltage'),
         bezel: [
           { k: 'SUPPLY', v: highB ? 'B+ HIGH' : 'SMALL', helpKey: 'high_voltage' },
@@ -614,6 +641,10 @@ const TYPES: {
 function TypesSection(p: SectionProps) {
   const [idx, setIdx] = useState(0);
   const t = TYPES[idx];
+  // The section counts once all three types have been looked at.
+  const [seenTypes, setSeenTypes] = useState<ReadonlySet<number>>(() => new Set([0]));
+  useEffect(() => setSeenTypes((v) => (v.has(idx) ? v : new Set([...v, idx]))), [idx]);
+  useMetWhen(seenTypes.size >= TYPES.length);
   const ink = TUBE_INK[t.newPart];
   const glass = useGlassSize();
 
@@ -645,7 +676,7 @@ function TypesSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the TYPE tray and E-VIEW inside
-        badge: "ILLUSTRATIVE — the newest grid GLOWS in its own color · in ⚡ E-VIEW, red dots = secondary emission (the tetrode's problem, the pentode's fix)",
+        modelNote: 'The newest grid glows; in ⚡ E-VIEW, red dots are secondary emission.',
         onGuide: () => p.help('tube_types'),
         bezel: [
           { k: 'TYPE', v: t.label, helpKey: 'tube_types' },
@@ -714,7 +745,7 @@ function BiasSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the BIAS lane docked inside
-        badge: 'ILLUSTRATIVE TRANSFER CURVE (normalized) — left: the operating point riding the curve · right: the resulting output',
+        modelNote: 'A normalized transfer curve: the operating point (left) and the output (right).',
         onGuide: () => p.help('bias'),
         bezel: [
           { k: 'BIAS', v: pct(b), helpKey: 'bias' },
@@ -732,7 +763,7 @@ function BiasSection(p: SectionProps) {
           inside an energized chassis at lethal voltage, by a qualified technician. Learn what
           bias IS here; have the work done by someone trained to do it.
         </Text>
-        <CheckQuestion spec={BIAS_CHECK} />
+        <GoalCheck spec={BIAS_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -747,6 +778,8 @@ function BiasViz({ viz, width, height, bias, running }: { viz: TubeVizModule; wi
 function SaturationSection(p: SectionProps) {
   const [drive, setDrive] = useState(0.2);
   const state = drive < 0.3 ? 'CLEAN' : drive < 0.7 ? 'WARMING' : 'SATURATED';
+  // The section counts once the tube has been driven into saturation.
+  useMetWhen(state === 'SATURATED');
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -772,7 +805,7 @@ function SaturationSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the DRIVE lane docked inside
-        badge: 'ILLUSTRATIVE — normalized tanh (soft-clipping) curve (left, vs the straight dashed ideal) · input & output waves (right)',
+        modelNote: 'A normalized soft-clipping curve (left) and the input and output waves (right).',
         onGuide: () => p.help('saturation'),
         bezel: [
           { k: 'DRIVE', v: pct(drive), helpKey: 'saturation' },
@@ -802,6 +835,20 @@ function SatViz({ viz, width, height, drive, running }: { viz: TubeVizModule; wi
 
 // ── 9 · Tube vs transistor ──────────────────────────────────────────────────
 
+/** The section's own check (phase 3, 2026-11-14). */
+const VERSUS_CHECK: CheckSpec = {
+  question: 'Which one needs a heater warm-up and hundreds of volts to work?',
+  options: ['The tube', 'The transistor', 'Both, equally'],
+  correctIdx: 0,
+  why: {
+    1: 'A transistor moves carriers through a solid junction at a few volts, with nothing to warm up.',
+    2: 'Only one of them boils electrons off a hot cathode. Read the two columns above.',
+  },
+  reveal:
+    'The tube heats its cathode to boil electrons off, then needs hundreds of volts on the plate to pull them across the vacuum. A transistor moves carriers through a semiconductor junction at a few volts and works the instant it is powered.',
+  wrongHint: 'Which side of the drawing glows and has to warm up?',
+};
+
 function VersusSection(p: SectionProps) {
   const glass = useGlassSize();
   return (
@@ -812,7 +859,7 @@ function VersusSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN
-        badge: 'ILLUSTRATIVE — left: electrons crossing a vacuum · right: carriers crossing semiconductor junctions',
+        modelNote: 'Left: electrons cross a vacuum. Right: carriers cross a semiconductor junction.',
         onGuide: () => p.help('tube_vs_transistor'),
         bezel: [
           { k: 'TUBE', v: 'VACUUM', tint: TUBE_INK.plate, helpKey: 'tube_vs_transistor' },
@@ -837,6 +884,7 @@ function VersusSection(p: SectionProps) {
           different physics. Neither is “better”: the transistor won on size, cost and reliability;
           the tube survives wherever its soft overload behavior IS the sound.
         </Text>
+        <GoalCheck spec={VERSUS_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -849,6 +897,34 @@ function VersusViz({ viz, width, height, running }: { viz: TubeVizModule; width:
 // ── The sectioned shell ─────────────────────────────────────────────────────
 // The Tube Reference library left this list (rack conversion 2026-08-23): it
 // navigates from the dock's TUBE REF action key — it is not a stage section.
+
+/** "Done = work done" (owner's decision 1, phase 3, 2026-11-14): what makes
+ *  each module count. A number is how many CHECK YOURSELF questions must be
+ *  answered right; 0 is a hands-on goal (TUBE_SECTION_GOALS says which). */
+export const TUBE_SECTION_CHECKS: Record<TubeSectionId, number> = {
+  inside: 0,
+  flow: 0,
+  grid: 1,
+  amplify: 1,
+  highv: 0,
+  types: 0,
+  bias: 1,
+  sat: 0,
+  versus: 1,
+};
+export const TUBE_SECTION_GOALS: Record<TubeSectionId, string> = {
+  inside: 'Tap every part chip once.',
+  flow: 'Warm the tube up to steady current (stage 5).',
+  grid: 'Answer its CHECK YOURSELF right.',
+  amplify: 'Answer its CHECK YOURSELF right.',
+  highv: 'Switch in the high-voltage supply (B+).',
+  types: 'Look at all three types.',
+  bias: 'Answer its CHECK YOURSELF right.',
+  sat: 'Drive the tube into saturation.',
+  versus: 'Answer its CHECK YOURSELF right.',
+};
+export const TUBE_HOW_IT_COUNTS =
+  'A module counts once its own task is done: a CHECK YOURSELF answered right, or its goal reached. Opening it again, or practicing, never removes it.';
 
 const SECTIONS: { key: TubeSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
   { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: 'Glass, metal, wire, and nothing at all — open PARTS and tap each piece to learn its job.', Comp: InsideSection },
@@ -905,13 +981,18 @@ export function VacuumTubeLabScreen() {
   const progressUnreadable = visitsUnreadable || (hasCheck && completionUnreadable);
   const endUnits = useMemo(() => tubeEndUnits(hasCheck), [hasCheck]);
   const endCleared = useMemo(() => tubeEndCleared(visited, bankedUnits), [visited, bankedUnits]);
+  // "DONE = WORK DONE" (owner's decision 1, phase 3, 2026-11-14): a module
+  // counts once its own task is done (TUBE_SECTION_GOALS), never on opening —
+  // it used to be marked here whenever a section was shown, so paging through
+  // read "✓ 9 DONE". Modules already marked stay marked.
+  const [goalsMet, setGoalsMet] = useState<ReadonlySet<TubeSectionId>>(() => new Set());
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30): the provider boots at
-    // 'anonymous'-but-unresolved, so a cold-start guest's first section was
+    // 'anonymous'-but-unresolved, so a cold-start guest's work would be
     // PERSISTED before `guest` could turn true.
     if (!entResolved) return;
-    markLabVisit('tube', SECTIONS[sectionIdx].key, { persist: !guest });
-  }, [sectionIdx, guest, entResolved]);
+    goalsMet.forEach((key) => markLabVisit('tube', key, { persist: !guest }));
+  }, [goalsMet, guest, entResolved]);
   const openSection = (i: number) => {
     setEnding(false);
     setSectionIdx(i);
@@ -974,9 +1055,8 @@ export function VacuumTubeLabScreen() {
             cleared={endCleared}
             unreadable={progressUnreadable}
             mode="progress"
-            noun="section"
-            // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
-            howItCounts="A section counts once you open it. Opening it again, or practicing, never removes it."
+            // One word for the unit, as on the strip: module (phase 3, 2026-11-14).
+            howItCounts={TUBE_HOW_IT_COUNTS}
             // The CHECK row stays here: the check is drawn on this screen (extra).
             onJump={(id) => { if (id !== UNDERSTANDING_UNIT) openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id))); }}
             // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
@@ -989,7 +1069,13 @@ export function VacuumTubeLabScreen() {
             extra={<LabUnderstandingBlock labId="tube" labTitle="Vacuum Tube Fundamentals" />}
           />
         ) : (
-          <s.Comp key={s.key} {...sectionProps} />
+          <ModuleGoalProvider
+            need={TUBE_SECTION_CHECKS[s.key]}
+            onMet={() => setGoalsMet((g) => (g.has(s.key) ? g : new Set([...g, s.key])))}
+            resetKey={s.key}
+          >
+            <s.Comp key={s.key} {...sectionProps} />
+          </ModuleGoalProvider>
         )}
       </View>
       <GuidedLessonSheet
@@ -1007,7 +1093,8 @@ export function VacuumTubeLabScreen() {
 /** The end screen's units: every section in order, then the understanding
  *  check as a CHECK row when questions are authored for this lab (D41 J2). */
 export function tubeEndUnits(hasCheck: boolean): LabEndUnit[] {
-  const units: LabEndUnit[] = SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }));
+  // Each row says what is still to do on it (phase 3: done = work done).
+  const units: LabEndUnit[] = SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: `Still to do: ${TUBE_SECTION_GOALS[sec.key].replace(/^./, (c) => c.toLowerCase())}` }));
   if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
   return units;
 }

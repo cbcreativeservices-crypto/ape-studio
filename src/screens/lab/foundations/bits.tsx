@@ -14,7 +14,7 @@
  *  • ConceptBadge — the standing "CONCEPTUAL MODEL — SLOWED FOR VISIBILITY"
  *    disclosure every animated panel carries.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { TRACER_CAPTION, TRACER_COLOR } from './tracer';
@@ -28,6 +28,7 @@ import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
 import { laneFingerAt, laneFingerDx, laneLandDx, type LaneFinger, type LaneLift } from '../rack/laneFinger';
 import { addMiss, checkWrongText, seededOrder, showRevealAfterMisses } from './checkWords';
+import { CheckCreditContext } from './CheckCredit';
 
 export type CheckSpec = {
   question: string;
@@ -61,6 +62,11 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
   // SEEDED, not Math.random (checker C3 O-2, 2026-11-14): a remount must
   // never reorder the options (checkWords.seededOrder).
   const [order] = useState<number[]>(() => seededOrder(spec.question, spec.options));
+  // "Done = work done" (owner 2026-11-14): inside a CheckCreditScope the card
+  // registers itself and reports a right answer, so its module counts once
+  // every card on it is solved. Outside a scope: nothing changes.
+  const credit = useContext(CheckCreditContext);
+  useEffect(() => credit?.register(spec.question), [credit, spec.question]);
   // Synchronous guard (QA night 2026-09-01): same-frame repeat taps all saw
   // solved===false and fired onSolved once EACH — one Cable final-check
   // question credited "3 OF 10 SOLVED", and a counter jumping past its ===
@@ -74,6 +80,7 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
       solvedRef.current = true;
       setSolved(true);
       onSolved?.(); // optional: lets a host aggregate a "passed" state (R6c)
+      credit?.solved(spec.question);
     }
   };
   return (
@@ -462,12 +469,20 @@ export function VizUnavailableCard() {
 
 /** The standing disclosure on every animated model panel. */
 export function ConceptBadge({ extra }: { extra?: string }) {
+  // ONE PLAIN SENTENCE (owner's decision 3, 2026-11-14; checker K1): the
+  // all-caps "CONCEPTUAL MODEL — SLOWED FOR VISIBILITY" line now reads as a
+  // sentence-case note. The disclosure stays; only the wording changed.
   return (
-    <Text style={styles.badge}>
-      CONCEPTUAL MODEL — SLOWED FOR VISIBILITY (real air moves at the audio rate, thousands of
-      times faster){extra ? ` · ${extra}` : ''}
+    <Text style={styles.modelNote}>
+      A picture of the idea, slowed down so you can see it: real air moves thousands of times
+      faster.{extra ? ` ${extra}` : ''}
     </Text>
   );
+}
+
+/** The same plain note look for a module's own disclosure sentence. */
+export function PlainModelNote({ children }: { children: string }) {
+  return <Text style={styles.modelNote}>{children}</Text>;
 }
 
 /**
@@ -590,6 +605,7 @@ const styles = StyleSheet.create({
   unavailBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
 
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  modelNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
 
   tracerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   tracerDot: { width: 9, height: 9, borderRadius: 4.5, marginTop: 5, backgroundColor: TRACER_COLOR },

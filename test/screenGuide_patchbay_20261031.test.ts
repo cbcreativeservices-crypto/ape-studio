@@ -137,7 +137,7 @@ describe('2. each guide quotes its page’s real names', () => {
     .map(code)
     .join('\n');
   const NAMES: Record<string, string[]> = {
-    p1: ['TOP ROW = SOURCES · OUTPUTS', 'BOTTOM ROW = DESTINATIONS · INPUTS', 'Signal falls downhill. Top → Bottom.', 'THE PATCHBAY MANTRA', '‹ PREV', 'NEXT ›', '⏮', 'MODULE'],
+    p1: ['TOP ROW = SOURCES · OUTPUTS', 'BOTTOM ROW = DESTINATIONS · INPUTS', 'Signal falls downhill. Top → Bottom.', 'THE PATCHBAY MANTRA', '‹ PREV', 'NEXT ›', '⏮', 'PAGE'],
     p2: ['CONSOLE OUT 1', 'INTERFACE IN 1', 'SOURCE · OUTPUT', 'DESTINATION · INPUT', 'BTM', 'TOP JACK', 'BOTTOM JACK', 'DEST HEARS', 'CORD', 'EMPTY', 'NONE', 'NOTHING', 'PATCH', 'YOUR CABLE', 'HIDE DISPLAY', 'FULL SCREEN'],
     p3: ['NO INTERNAL', 'NOT PLUGGED IN', 'ALT SOURCE', 'ONE CORD', 'TOP TO BOTTOM', 'SEE THE DEAD END (top only)', 'COMPLETE THE ROUTE (both jacks)', 'goes only into the cord'],
     p4: ['NO PATCH CORD REQUIRED', 'UNDERSTANDING CHECK', 'Nowhere — patch cords make every connection'],
@@ -148,7 +148,7 @@ describe('2. each guide quotes its page’s real names', () => {
     p7: ['PREDICT BEFORE PATCHING', 'PREDICT IT (answer above)', 'THEN DO IT (patch the top)', 'SPLIT'],
     p8: ['FULL-NORMAL', 'HALF-NORMAL (COMMON BAY)', 'UNDERSTANDING CHECK', 'Both'],
     p9: ['TAP THE MIX (top only — nothing interrupted)', 'REPLACE THE SOURCE (bottom — normal breaks)', 'MULT', 'PARALLEL', 'ANALYZER', 'DRUM MACHINE'],
-    p10: ['ACTION', 'FULL', 'HALF (COMMON)', 'THRU', 'THE PATCHBAY MANTRA', 'MODULE'],
+    p10: ['ACTION', 'FULL', 'HALF (COMMON)', 'THRU', 'THE PATCHBAY MANTRA', 'PAGE'],
     p11: ['PREDICT', 'Here is why — read the path.'],
     p12: ['CASE', 'YOUR VERDICT', 'Full-normal', 'Half-normal', 'Thru', '▸'],
     p13: ['THE PATCHBAY MANTRA', 'SOURCES BEHIND THIS LAB', 'PART TWO STARTS ON THE NEXT PAGE'],
@@ -359,7 +359,8 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
     assert.match(ET, /✓ CREDITED line \(✓ DONE if you’re not signed in\)/);
   });
   it('the unit is a page; no understanding check, no optional page, no per-page detail line', () => {
-    assert.match(endEl, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(endEl, /noun=\{unitNoun\}/);
     assert.doesNotMatch(code('src/features/lab/understandingChecks.ts'), /\bpatchbay\s*:/, 'Patchbay has no understanding check (no CHECK row)');
     // pageDetail + handsOnDetail added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all
     // bugs found and do obvious (my decision is not required) fixes as you suggestted in the report."): each

@@ -476,7 +476,7 @@ export function TubeCardScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.barTitle} numberOfLines={1}>
-            {String(tubeListNum(tube)).padStart(2, '0')} / {TUBE_REFS.length} · {tube.short}
+            {String(tubeListNum(tube)).padStart(2, '0')} · {tube.short}
           </Text>
           <Text style={styles.barSub} numberOfLines={1}>{famTitle}</Text>
         </View>

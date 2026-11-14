@@ -98,7 +98,7 @@ export function CymaticsModuleScreen() {
     (navigation as { setParams: (p: { id: CymaticsModuleId }) => void }).setParams({ id: CYMATICS_MODULES[i].id });
   };
   // This lab banks no credit and kept no record, so it remembers which
-  // modules were OPENED (labVisits — progress, never credit). Guests: this
+  // modules were WORKED THROUGH (labVisits — progress, never credit). Guests: this
   // session only (house guest rule, owner 2026-08-12).
   const guest = useLabEndGuest();
   const { resolved } = useEntitlement();
@@ -108,14 +108,22 @@ export function CymaticsModuleScreen() {
   // Wait for `resolved` (the Room Design rule): before it a guest reads as a
   // member, so a guest's first module was SAVED to the device (night pass 2,
   // 2026-10-01). The effect re-runs when the tier lands.
-  useEffect(() => {
-    if (focused && resolved) markLabVisit('cymatics', meta.id, { persist: !guest });
-  }, [focused, resolved, meta.id, guest]);
+  // WORK DONE, NOT OPENED (owner decision 1, 2026-11-14): a module counts when
+  // the learner moves on from it with NEXT › / FINISH › (the PagedLab rule),
+  // never on arrival and never on a CONTENTS jump (useLabNav runs
+  // beforeAdvance on NEXT / FINISH only). Modules already stored as visited
+  // stay done: nothing earned is taken back. Before `resolved` a guest reads as
+  // a member, so nothing is persisted until the tier lands.
+  const markWorked = (from: number) => {
+    const m = CYMATICS_MODULES[from];
+    if (m) markLabVisit('cymatics', m.id, { persist: resolved && !guest });
+  };
   const nav = useLabNav({
     units: CYMATICS_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
     index: idx,
     ending,
     go: goToModule,
+    beforeAdvance: markWorked,
     finish: () => setEnding(true),
     unEnd: () => setEnding(false),
     reset: { label: 'START OVER (PRACTICE)', run: () => goToModule(0) },
@@ -131,7 +139,7 @@ export function CymaticsModuleScreen() {
       cleared={end.cleared}
       unreadable={end.unreadable}
       mode="progress"
-      completeTitle="ALL MODULES OPENED"
+      completeTitle="ALL MODULES DONE"
       onJump={(id) => { if (id !== end.shownHereId) goToModule(CYMATICS_MODULES.findIndex((m) => m.id === id)); }}
       shownHereId={end.shownHereId}
       extra={end.extra}

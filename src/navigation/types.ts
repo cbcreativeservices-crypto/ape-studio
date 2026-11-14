@@ -417,7 +417,7 @@ export type RootStackParamList = {
   // DJ Systems Lab (2026-10-18): members-only, Stage 1 (twelve screens).
   DJSystemsLab: undefined;
   /** Game Audio Lab (owner plan 2026-11-12, listed 2026-11-13 [MD:D60]):
-   *  members-only, its own Game Audio subject; 22 pages on the PagedLab shell. */
+   *  members-only, its own Game Audio subject; 24 pages on the PagedLab shell. */
   GameAudioLab: undefined;
   /** Stage Plot and Channel Designer (owner GO 2026-11-12, listed 2026-11-13
    *  [MD:D60]): members-only, under Live Sound Reinforcement; a working tool. */

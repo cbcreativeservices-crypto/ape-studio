@@ -291,7 +291,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   // labels: a dock key has ~10 characters of room.
   const tapsLeft = c.tapsNeeded - sim.tapped.length;
   const stageKey = !investigated
-    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap around the lugs first — ${sim.tapped.length} of ${c.tapsNeeded} needed. Listen for the odd ones out.`), tint: colors.textMuted }
+    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap around the lugs first — ${tapsLeft} more needed. Listen for the odd ones out.`), tint: colors.textMuted }
     : !hypothesised
       ? optionsParam({ id: 'where', label: 'WHERE?', value: '', options: c.areas.map((a) => ({ key: a, label: a, short: a.split(' ')[0].toUpperCase() })), onChange: nameArea, sticky: false })
       : optionsParam({ id: 'fix', label: 'FIX', value: lastFix ?? '', options: c.fixes.map((f) => ({ key: f.id, label: f.label, short: f.id.toUpperCase() })), onChange: applyFix, sticky: false });
@@ -357,7 +357,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             <>
               <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (use VIEW below for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP around the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
               <DrumStatus playing={pb.playing || tap.playing} pending={pb.pending || tap.pending} failed={pb.failed || tap.failed} rendering={pb.status === 'rendering' || tap.status === 'rendering'} idle={`stopped · ${!struck ? 'press ▶ STRIKE to begin' : !tappedEnough ? `▶ TAP ${c.tapsNeeded - sim.tapped.length} more lug${c.tapsNeeded - sim.tapped.length === 1 ? '' : 's'}` : !hypothesised ? 'open WHERE? and name the area' : 'pick a FIX and strike again'}`} label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
-              <Feedback tone="warn">{`${c.title}: ${c.symptom} (cleared ${cleared.size} of ${SYMPTOMS.length})`}</Feedback>
+              <Feedback tone="warn">{`${c.title}: ${c.symptom} (${SYMPTOMS.length - cleared.size} case${SYMPTOMS.length - cleared.size === 1 ? '' : 's'} still to clear)`}</Feedback>
               {whereNote && !fixInfo ? <Feedback tone={sim.hypothesisRight === false ? 'warn' : 'info'}>{whereNote}</Feedback> : null}
               {noSound && !investigated ? (
                 <KeyButton label="◉ CAN'T LISTEN NOW · USE THE READOUTS" onPress={workSilently} tint={colors.amber} />
@@ -377,7 +377,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
               </Card>
               <WhyCard title="CREDIT · and a fresh case">
                 {/* A case counts only when it was listened to (fix round 2026-11-14, S3 §2). */}
-                <Body><NeedsSoundTag />{` Clear all five cases — ${cleared.size} of ${SYMPTOMS.length} so far. The review counts how many you named right on the first hypothesis. ↺ RESET CASE deals the case again for practice; credit stays.`}</Body>
+                <Body><NeedsSoundTag />{` Clear all five cases — ${SYMPTOMS.length - cleared.size} still to clear. The review counts how many you named right on the first hypothesis. ↺ RESET CASE deals the case again for practice; credit stays.`}</Body>
                 <KeyButton label="↺ RESET CASE" onPress={resetCase} />
               </WhyCard>
             </>
@@ -393,8 +393,8 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             <>
               <YourRun lines={[
                 // "right on 0 of 0 named" read as a riddle to a learner who had not named one (novice audit 2026-11-14).
-                hypothesised_n ? `Cleared ${cleared.size} of ${SYMPTOMS.length}; first hypothesis right on ${firstRight} of ${hypothesised_n} named.` : `Cleared ${cleared.size} of ${SYMPTOMS.length}; you have not named a cause yet.`,
-                reached ? `Decisions: ${reached} of ${TROUBLE_SCENARIOS.length} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
+                hypothesised_n ? `Cases cleared: ${cleared.size}; first guesses right: ${firstRight}.` : `Cases cleared: ${cleared.size}; you have not named a cause yet.`,
+                reached ? `Decisions: ${reached} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="A drum will not hold tuning — name two hardware causes before you retune." a="A rod backing out under vibration (fit a nylon washer or lug lock); a worn washer, stripped insert or damaged lug." />

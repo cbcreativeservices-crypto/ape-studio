@@ -163,7 +163,7 @@ function PagePredict({ ctx }: { ctx: PageCtx }) {
       {PREDICT_SCENARIOS.map((s, i) => (
         <View key={s.id} style={{ gap: 8 }}>
           <UnderstandingCheck
-            eyebrow={`PREDICT ${i + 1} OF ${PREDICT_SCENARIOS.length}`}
+            eyebrow={`PREDICT ${i + 1}`}
             question={s.question}
             options={s.options}
             correct={s.correct}
@@ -212,7 +212,7 @@ function PageDetective({ ctx }: { ctx: PageCtx }) {
       {DETECTIVE_CASES.map((c, i) => (
         <View key={c.id} style={{ gap: 8 }}>
           <Card>
-            <Eyebrow>{`CASE ${i + 1} OF ${DETECTIVE_CASES.length}`}</Eyebrow>
+            <Eyebrow>{`CASE ${i + 1}`}</Eyebrow>
             <Body>{c.intro}</Body>
             {c.probes.map((p) => (
               <Text key={p.prose} style={local.probe}>
@@ -283,7 +283,7 @@ export const PATCHBAY_PAGES_B: PageDef[] = [
   { title: 'Full vs Half vs Thru — the table', short: 'TABLE', Component: PageCompare, manualDone: true },
   { title: 'Predict before patching', short: 'PREDICT', Component: PagePredict, manualDone: true },
   { title: 'Patchbay detective', short: 'DETECT', Component: PageDetective, manualDone: true },
-  { title: 'The four questions, answered', short: 'WRAP', Component: PageWrap },
+  { title: 'The four questions, answered', short: 'WRAP', Component: PageWrap, reading: true },
 ];
 
 const local = StyleSheet.create({

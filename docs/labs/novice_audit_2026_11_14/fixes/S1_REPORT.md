@@ -191,3 +191,68 @@ Do this on a phone (Pixel and iPhone) with a real finger, or in the pane with re
 - **The rule.** A cleanup-only effect must not re-run its cleanup when a dep changes (the Bass ▶ shape), so it takes `[]` deps.
 - **The fix.** The deps are now `[]`. `carrierId` comes from `useState`, so it never changes. No allowlist entry was added.
 - **Re-run.** patternP12 + labFixes_20261114_S1 + screenGuideOn_20261108 + screenGuide_20261031: **124 pass, 0 fail**.
+
+## Phase 3 (owner decision 3): step intro popups on the first step only, then the same text inline
+
+**Summary: 1 fixed · 0 not a bug · 0 held · 0 shared needs.** No lab edit is needed.
+
+### Verified in code first
+Each of the four known labs swaps its steps inside ONE `ScreenGuideHost`, whose `resetKey` changes per step. Each step's own guide carries its own `intro`, so every step offered a new intro card, and each card popped with its own GOT IT.
+- Drum Tuning: `DrumTuningLabScreen.tsx:502`, `resetKey={`${mod.id}:${stepIdx}`}`, guide `drumScreenGuide(mod.id, stepIdx)`.
+- Tuning: `TuningLabScreen.tsx:323`, `resetKey={String(chapter)}`.
+- Envelope and Speech: both run on PagedLab (`kit/PagedLab.tsx:596`, `resetKey={String(page)}`).
+
+So the fix belongs in the host.
+
+### The fix
+- `src/features/lab/screenGuide/introHold.ts` gets a pure rule, `introPresentMode(poppedThisVisit, carriesTerm)`:
+  - the first card of a visit is the popup;
+  - every later step's card is shown inline;
+  - a card that carries the lab's glossary term is always a popup.
+- `src/features/lab/screenGuide/ScreenGuide.tsx`, ScreenGuideHost:
+  - `poppedRef` remembers that this visit already had its popup.
+  - A later step's card is claimed (seen) and shown as `ScreenIntroInline`: the SAME two lines (WHAT YOU'RE LEARNING and WHERE TO START) in a compact note just above the dock, in the TRY THIS strip's place. Nothing is dimmed and no tap is held.
+  - The note has ✕ to hide it, and "ⓘ EXPLAIN THIS SCREEN" to open the full card, so the words are never lost.
+  - It goes on the next step, when a tray opens, or while the host's `hold` is on.
+  - A new visit gets one popup again, for the first unseen step.
+- The API is in SHARED_API.md, "Phase 3 · S1".
+
+### Tests
+- `test/labFixes_20261114_S1.test.ts` has a new "Phase 3" block (4 tests): the rule, the host wiring, a non-blocking note, and that the four labs need no edit.
+- One pinned test was updated, with the owner's words: `test/labShellCheckEndGuideReset_d41_20261101.test.ts`. A step change now also clears the inline note.
+- Re-run: the related set plus accountWipeRegistry, perfStartTrim and patternP12 gives **1044 pass, 0 fail**. Start graph: 260.
+- File checks: both files parse clean. curl of the 8142 bundle returned 200. No tsc, per the brief.
+
+### Seen on screen (Drum Tuning, 390 x 844, own tab, closed after)
+- **Step 1:** the intro card is a POPUP (GOT IT).
+- **GOT IT, then NEXT, then step 2:** no popup. The page text shows the inline note: "WHERE TO START ✕ / Why more tension raises a drum's pitch… / Tap ▶ STRIKE and read PITCH 233 Hz… / ⓘ EXPLAIN THIS SCREEN".
+- **After a reload (a new visit):**
+  - step 2 shows nothing, because it was already seen;
+  - step 3, the first unseen step of this visit, is a POPUP;
+  - after GOT IT and NEXT, step 4 is INLINE with no GOT IT.
+- **Not seen as a picture:** the preview reloaded several times (other agents' edits), and the screenshot tool kept returning a stale frame. The inline note's position and look are confirmed from page text only. The checker should look at a later Drum Tuning step and confirm the note sits above the dock and leaves the fader live.
+
+### Pre-existing failures I saw mid-run (not mine)
+Two tests failed once and then passed on re-run with no change from me, while other agents were editing PagedLab and LabNavBar:
+- "K3 PagedLab START OVER confirm…"
+- "K5 rolled back: the nav's spoken names…"
+
+Both are in `test/labEndKit_d41k_20261101.test.ts`.
+
+## Checker fixes (K2 FAIL 1, K4 regression notes), 2026-11-14
+
+| # | Item | Fix | Test | Seen on screen | Status |
+|---|---|---|---|---|---|
+| K2-1 / K4-2 | The inline intro note (ScreenGuide.tsx) was an absolute overlay of about 217 px. It covered the well's foot: Envelope m6 "NEXT: CHECK YOURSELF", Mastering steps 2–3, Game Audio page 3. | `ScreenIntroInline` is now IN THE FLOW. The host renders it after its children, so it takes its own room at the foot of the screen and the page above shrinks; it is never positioned and never covers anything. It is capped at 30% of the window (`INLINE_MAX_SHARE`), and its text scrolls inside it. It reads "WHERE TO START · ⓘ MORE · ✕". | "the inline note never covers anything…" | YES, Envelope module 6 at 390x844: the note sits under the well. With the well scrolled, NEXT: CHECK YOURSELF spans 597–645 px and the note starts at 691 px; elementFromPoint at the button's centre hits the button. | FIXED |
+| K4-1 | The Speech lab opened on a "Miking" term card. | Speech now uses the live row "Source-filter model" (`1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf`), copied verbatim from the coordinator's read-only lookup. Pins in labTermIntro_20261019 were updated, with the owner's words. **Owner note:** the old pin said "the Speech & Voice lab … define 'miking'" (wired 2026-10-19). If that was the owner's own choice, revert this one entry. | "Speech opens on its own term…"; labTermIntro_20261019 | not re-seen (data only) | FIXED |
+| K4-3 | On Envelope WHAT'S LEFT, the end-guide card arrived after paint and took the first tap. | For its first 350 ms (`POPUP_ARM_MS`), an in-screen intro card takes NO touches (`pointerEvents="none"`): a tap aimed at the page, or one already under way, reaches the page. The 350 ms guard on its buttons stays. | "a card that arrives late lets taps through…" | not seen on screen (timing) | FIXED |
+| K4-4 | Oscillators: the first EXPLORE tap opened Sound Safety, and the tab stayed on LEARN. | The cause is in LabShell.tsx, now S3's file. The arrival ask comes from the 1200 ms fallback timer (no transitionEnd on web or on a restored screen), and when it fires during the tab press the Modal takes the release. | – | – | SHARED NEED SN7 |
+
+**SN7 (to S3), `src/screens/lab/LabShell.tsx`:**
+1. On the screen root `<View>`: `onTouchStart={() => { touchAtRef.current = Date.now(); touchingRef.current = true; }}` and `onTouchEnd={() => { touchingRef.current = false; touchAtRef.current = Date.now(); }}`.
+2. In the arrival ask's `ask()`, right after `if (done) return;` (before `done = true;`): `if (touchingRef.current || Date.now() - touchAtRef.current < 400) { later = setTimeout(ask, 450); return; }`. Clear `later` in both cleanups.
+3. Change the fallback to `Platform.OS === 'web' ? 150 : 1200`.
+
+The result is that the tap finishes and the tab switches first, and only then does the sheet ask.
+
+**Re-run:** the 57-file related set plus accountWipeRegistry, perfStartTrim and patternP12 gives **1069 pass, 0 fail**. Parse-checked the changed files; bundle curl 200. No tsc, no commits.

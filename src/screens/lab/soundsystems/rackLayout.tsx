@@ -50,6 +50,9 @@ export type SsRack = {
   size?: StageSize;
   /** Honesty badge (Simulation / Calculated / Approximated / Illustrative). */
   badge?: string;
+  /** ADDITIVE (phase 3, S3): the plain one-line model note that replaces the
+   *  all-caps honesty badge (it wins when both are set). */
+  modelNote?: string;
   /** Live readouts printed on the glass bezel (3–4 cells). */
   bezel?: BezelItem[];
   params: DockParam[];
@@ -92,6 +95,7 @@ export function SoundSystemsRackLayout({
         render: rack.stage,
         size: rack.size ?? 'M',
         badge: rack.badge,
+        modelNote: rack.modelNote,
         bezel: rack.bezel,
         hideDragTag: rack.hideDragTag,
         fullScreen: rack.fullScreen !== false,

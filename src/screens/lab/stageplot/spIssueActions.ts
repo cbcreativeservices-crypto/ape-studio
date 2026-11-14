@@ -83,6 +83,17 @@ export function goToIssue(ed: Pick<SpEditor, 'goTo'>, issue: SpIssue): void {
   ed.goTo(issue.area, spIssueSelection(issue));
 }
 
+/** "Go to Setup" for ONE part of it, from a button that is not a review
+ *  question (Export's "Contact shown in the packet … Change it in SETUP").
+ *  It leaves that part's rule as a review "Go to" does, so Setup opens the
+ *  part if it is folded and brings it into view. Without this the button
+ *  landed at the top of Setup with the contact block folded away (seen on
+ *  screen, lab fix round phase 3). */
+export function goToSetupPart(ed: Pick<SpEditor, 'goTo'>, rule: 'no-contact'): void {
+  setupAsk = rule;
+  ed.goTo('setup');
+}
+
 /** The words on an answer's button, in capitals as every button is. */
 export function spIssueActionLabel(action: SpIssueAction, issue?: SpIssue): string {
   switch (action) {

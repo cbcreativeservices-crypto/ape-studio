@@ -30,10 +30,11 @@ import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, 
 import { GearGlyph, GearInSvg, INK } from './art/gearArt';
 import { CableLegend, FieldKey, PLOT_H, PLOT_W, VenueView, type PlotBeam } from './art/VenueView';
 import { SplitDiagram, SubFeedRouter, type SubFeedMode } from './art/diagrams';
-import { BEAM_COLOR, placedToBeams, PLOT_BADGE, THROW } from './plot';
+import { BEAM_COLOR, placedToBeams, THROW } from './plot';
 import { flipFader, lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
+import { leftWord } from './fixHelpers';
 
 /* ── 8 · Subwoofer feeds ────────────────────────────────────────────────── */
 
@@ -94,7 +95,7 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'SUB FEED ROUTER — ILLUSTRATIVE · blue = what reaches the subwoofer',
+        modelNote: 'A drawing: blue shows what reaches the subwoofer.',
         initialParam: 'feed',
         // The feed's NAME cropped in its bezel cell ("CROSSOVER-…"): it prints
         // in full above the router now (owner 2026-09-29, TitledStage). The
@@ -230,7 +231,7 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'layout',
         hideDragTag: true,
         // The layout's NAME cropped in its bezel cell ("CARDIOID STACK…"): it
@@ -307,14 +308,14 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'monitor',
         hideDragTag: true,
         // MONITOR and STANDS AT cropped in their bezel cells ("IN-EAR MONI…"):
         // both print in full above the stage now (owner 2026-09-29).
         bezel: [
           { k: 'FED BY', v: m.feed, flex: 1.4 },
-          { k: 'SEEN', v: `${seen.size}/4`, flex: 0.7 },
+          { k: 'SEEN', v: leftWord(seen.size, 4, 'ALL SEEN'), flex: 0.7 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={m.name} subtitle={`Stands at ${slotDef(m.slot).label}`}>
@@ -394,13 +395,13 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'FOH / MONITOR SPLIT — ILLUSTRATIVE',
+        modelNote: 'A drawing of one microphone split between two consoles.',
         initialParam: 'gain',
         bezel: [
           { k: 'SPLIT', caption: 'mic splitter', v: mode === 'analog' ? 'ANALOG' : 'GAIN SHARE', tint: colors.cyanBright, flex: 1.3 },
           { k: 'MON PREAMP', caption: 'monitor gain', v: gainMove ? `+${gainDb} dB` : 'AS SET', flex: 1.1 },
           { k: 'FOH HEARS', caption: 'the house desk', v: !gainMove ? 'AS SET' : mode === 'analog' ? 'UNCHANGED' : `TRIM −${gainDb}`, tint: colors.green, flex: 1.2 },
-          { k: 'CHECKS', kNarrow: 'DONE', v: `${solved}/2`, flex: 0.8 },
+          { k: 'CHECKS', kNarrow: 'DONE', v: leftWord(solved, 2, 'BOTH DONE'), flex: 0.8 },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / 160}>
@@ -662,7 +663,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'PARALLEL LOAD — CALCULATED · from the Audio Calculator Laboratory',
+        modelNote: 'The load is calculated with the Audio Calculator Laboratory.',
         initialParam: 'count',
         hideDragTag: true,
         bezel: [
@@ -811,7 +812,7 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         size: 'S',
         // View-built band and readouts: nothing in it grows with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: 'POWER BAND — CALCULATED · SPL from the Audio Calculator Laboratory · free field, one cabinet',
+        modelNote: 'Calculated with the Audio Calculator Laboratory: one cabinet, in free field.',
         initialParam: 'amp',
         hideDragTag: true,
         bezel: [

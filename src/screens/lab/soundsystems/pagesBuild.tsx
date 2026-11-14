@@ -43,13 +43,13 @@ import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ChapterTag, GoalChips, KeyFact, ReqRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph } from './art/gearArt';
 import { CableLegend, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
-import { placedToBeams, PLOT_BADGE, twinCableTag } from './plot';
+import { placedToBeams, twinCableTag } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
 import { goalsScopeOf, setGoalsLeft, usePageMemory } from './pageMemory';
-import { venueSentence } from './fixHelpers';
+import { venueSentence, leftWord } from './fixHelpers';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
 
@@ -258,7 +258,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
   );
   const rack: SsRack = {
     size: 'L',
-    badge: PLOT_BADGE,
+    modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
     initialParam: 'part',
     hideDragTag: true,
     bezel,
@@ -494,6 +494,11 @@ function hearsList(cs: ConsoleState, h: RouteUi['hears'][number]) {
   }
 }
 
+const SEND_NAMES: Record<string, string> = { aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'MONO', aux9: 'STEREO L', aux10: 'STEREO R' };
+
+/** Capstone 6's beginner core: the channels a first monitor mix needs. */
+export const MONITOR_CORE_CHANNELS: readonly string[] = ['vox', 'gtr', 'bass', 'kick', 'keys'];
+
 function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   const built = useBuilder(EMPTY_SYSTEM, capstone.id);
   // A capstone that never opens the console starts it with its sub buses
@@ -518,6 +523,12 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grade.pass]);
   const ui = ROUTE_UI[capstone.id];
+  // Owner decision 5, 2026-11-14 (long pages: beginner core first): capstone
+  // 6's desk was ten channels × four wedges, about 160 tap targets in one
+  // tray. The five channels a first monitor mix needs come first; the rest
+  // fold under MORE CHANNELS. Nothing is removed.
+  const core = ui && !ui.channels && capstone.id === 'monitors' ? MONITOR_CORE_CHANNELS : null;
+  const [moreChannels, setMoreChannels] = useState(false);
   const buildReqs = capstone.requirements.filter((r) => r.kind === 'build');
   const routeReqs = capstone.requirements.filter((r) => r.kind === 'route');
   const routeMet = routeReqs.filter((r) => grade.met.includes(r.id)).length;
@@ -527,11 +538,20 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
         id: 'console',
         hideLane: true,
         label: 'CONSOLE',
-        valueLabel: routeReqs.length ? `${routeMet}/${routeReqs.length}` : 'Open',
+        valueLabel: routeReqs.length ? leftWord(routeMet, routeReqs.length, 'ALL MET') : 'Open',
         render: () => (
           <View style={{ gap: 10 }}>
             <Body>▲/▼ step a level; PRE lights the pre-fader tap. Check the buses below for who hears what — worked out from your settings. The plot above stays live.</Body>
-            <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'MONO', aux9: 'STEREO L', aux10: 'STEREO R' }} />
+            {core ? <Body>Start with WEDGE 1 · SINGER: tap ▲ on Lead vocal, then give each musician their own instrument.</Body> : null}
+            <ConsolePanel cs={cs} onChange={setCs} channels={core ?? ui.channels} columns={ui.columns} sendNames={SEND_NAMES} />
+            {core ? (
+              <>
+                <Pressable onPress={() => setMoreChannels((o) => !o)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: moreChannels }} accessibilityLabel={moreChannels ? 'Hide the other channels' : 'Show the other channels: snare, overheads, backing vox, announce and playback'}>
+                  <Text style={styles.moreText}>{moreChannels ? 'MORE CHANNELS ▴' : 'MORE CHANNELS ▾ · snare, overheads, backing vox, announce, playback'}</Text>
+                </Pressable>
+                {moreChannels ? <ConsolePanel cs={cs} onChange={setCs} channels={cs.channels.map((c) => c.id).filter((id) => !core.includes(id))} columns={ui.columns} sendNames={SEND_NAMES} /> : null}
+              </>
+            ) : null}
             {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
             {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
             {ui.matrices?.map((m) => (
@@ -542,7 +562,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
             ))}
             {routeReqs.length ? (
               <Card tone={routeMet >= routeReqs.length ? 'ok' : 'plain'}>
-                <Eyebrow>ON THE CONSOLE · {routeMet} OF {routeReqs.length}</Eyebrow>
+                <Eyebrow>ON THE CONSOLE · {leftWord(routeMet, routeReqs.length, '✓ ALL')}</Eyebrow>
                 {routeReqs.map((r) => (
                   <ReqRow key={r.id} met={grade.met.includes(r.id)} text={r.text} />
                 ))}
@@ -554,7 +574,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     : undefined;
   const requirements = (
     <Card tone={grade.pass ? 'ok' : 'plain'}>
-      <Eyebrow>{grade.pass ? 'REQUIREMENTS MET — CAPSTONE PASSED' : `REQUIREMENTS · ${grade.met.length} OF ${capstone.requirements.length}`}</Eyebrow>
+      <Eyebrow>{grade.pass ? 'REQUIREMENTS MET — CAPSTONE PASSED' : `REQUIREMENTS · ${capstone.requirements.length - grade.met.length} LEFT`}</Eyebrow>
       {buildReqs.map((r) => {
         const met = grade.met.includes(r.id);
         const why = met ? null : r.why?.(b.system, cs);
@@ -577,13 +597,13 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   );
   const r = useBuilderRack(b, capstone.bin, {
     console: consoleParam,
-    bezel: { k: 'REQS', caption: 'checklist', v: grade.pass ? 'PASS' : `${grade.met.length}/${capstone.requirements.length}`, tint: grade.pass ? colors.green : colors.amber, flex: 1 },
+    bezel: { k: 'REQS', caption: 'checklist', v: grade.pass ? 'PASS' : leftWord(grade.met.length, capstone.requirements.length, 'PASS'), tint: grade.pass ? colors.green : colors.amber, flex: 1 },
     wellTop: requirements,
-    title: { title: capstone.title, subtitle: `Capstone ${capstone.n} of 10 · ${capstone.venue}` },
+    title: { title: capstone.title, subtitle: `Capstone ${capstone.n} · ${capstone.venue}` },
   });
   return (
-    <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} of 10 · ${venueSentence(capstone.venue)} Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
-      <ChapterTag n={capstone.n}>{`CAPSTONE ${capstone.n} OF 10 · ${capstone.venue.toUpperCase()}`}</ChapterTag>
+    <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} · ${venueSentence(capstone.venue)} Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
+      <ChapterTag n={capstone.n}>{`CAPSTONE ${capstone.n} · ${capstone.venue.toUpperCase()}`}</ChapterTag>
       <Body>{capstone.brief}</Body>
       {!capstone.routing && capstone.bin.some((k) => k === 'poweredSub' || k === 'passiveSub') ? <Text style={styles.small}>{CONSOLE_PRESET_NOTE}</Text> : null}
       <Prompt>{r.prompt}</Prompt>
@@ -608,6 +628,8 @@ const styles = StyleSheet.create({
   hand: { flexDirection: 'row', gap: 10, alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#1a1409', padding: 8 },
   inspect: { flexDirection: 'row', gap: 10, alignItems: 'center' },
   slotRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  moreKey: { minHeight: 40, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, paddingHorizontal: 10, paddingVertical: 6 },
+  moreText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5 },
   slotChip: { minHeight: 36, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1a1409', paddingHorizontal: 10, paddingVertical: 6 },
   slotText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5 },
   small: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },

@@ -30,6 +30,7 @@ import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { holdSessionWork, registerSessionCarry } from '../../../../features/lab/sessionCarry';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck, useGoalMet } from '../moduleGoal';
 import { MythReality, dstyles } from '../../digital/bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
@@ -50,7 +51,8 @@ import {
 import type { MeterModuleProps } from '../MeterModuleScreen';
 
 /** The standing honesty badge (§1.7), silk-screened under every stage. */
-const HONESTY = 'SYNTHESIZED TEACHING SIGNAL — NOTHING HERE MEASURES REAL AUDIO';
+// S3's plain model note (phase 3, 2026-11-14), not an all-caps badge.
+const HONESTY = 'A built-in teaching signal: nothing here measures real audio.';
 
 /** The well's guided-lesson entry row (rack modules own it — the host's bottom
  *  row only exists on non-rack modules; styling mirrors MeterModuleScreen). */
@@ -225,7 +227,7 @@ export function PhaseModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help('phase_meter'),
         bezel,
         render: (w, h) =>
@@ -253,8 +255,8 @@ export function PhaseModule(p: MeterModuleProps) {
           myth="Out-of-phase tricks just make a mix sound wider — the width is free."
           reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
         />
-        <CheckQuestion spec={CHECK_PHASE_PA} />
-        <CheckQuestion spec={CHECK_PHASE_HEALTHY} />
+        <GoalCheck spec={CHECK_PHASE_PA} />
+        <GoalCheck spec={CHECK_PHASE_HEALTHY} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -384,7 +386,7 @@ export function StereoModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help('stereo_width'),
         bezel,
         render: (w, h) =>
@@ -426,7 +428,7 @@ export function StereoModule(p: MeterModuleProps) {
           myth="Wider is always better — push every element to the sides."
           reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
         />
-        <CheckQuestion spec={CHECK_MS} />
+        <GoalCheck spec={CHECK_MS} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -615,7 +617,7 @@ export function ScopeModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help(xy ? 'lissajous' : 'oscilloscope'),
         bezel,
         render: (w, h) =>
@@ -655,8 +657,8 @@ export function ScopeModule(p: MeterModuleProps) {
           myth="If no meter shows red, nothing is clipping anywhere in the chain."
           reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
         />
-        <CheckQuestion spec={CHECK_SCOPE_SQUARE} />
-        <CheckQuestion spec={CHECK_LISSAJOUS_LINE} />
+        <GoalCheck spec={CHECK_SCOPE_SQUARE} />
+        <GoalCheck spec={CHECK_LISSAJOUS_LINE} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -1305,6 +1307,11 @@ const CASES: DetectiveCase[] = [
   },
 ];
 
+/** One whole case answered right: all four of its questions (keys `case-step`). */
+export function aCaseSolved(solved: ReadonlySet<string>): boolean {
+  return CASES.some((_, ci) => [0, 1, 2, 3].every((q) => solved.has(`${ci}-${q}`)));
+}
+
 function CaseHero({
   vm,
   vs,
@@ -1350,6 +1357,8 @@ export function DetectiveModule(p: MeterModuleProps) {
       if (!live) return;
       set.forEach((k) => solvedRef.current.add(k));
       setSolvedN(solvedRef.current.size);
+      // A whole case already answered right (saved on this device) is work done.
+      if (aCaseSolved(solvedRef.current)) goalMet();
     });
     return () => {
       live = false;
@@ -1368,11 +1377,17 @@ export function DetectiveModule(p: MeterModuleProps) {
   // backing out of the module at 27/28 threw the whole run away.
   const solvedRef = useRef<Set<string>>(new Set(solvedCache ?? []));
   const [solvedN, setSolvedN] = useState(solvedRef.current.size);
+  // "Done = work done" (owner's decision 1, phase 3, 2026-11-14): in the
+  // Visual Audio Analysis lab this module counts once ONE whole case — all
+  // four of its questions — is answered right (the standalone Signal
+  // Detective lab below still needs every case).
+  const goalMet = useGoalMet();
   const onSolved = () => {
     solvedRef.current.add(`${idx}-${step}`);
     setSolvedN(solvedRef.current.size);
     persistSolved(solvedRef.current);
     holdSolved(`${idx}-${step}`);
+    if (aCaseSolved(solvedRef.current)) goalMet();
     if (solvedRef.current.size >= n * qCount) markLabUnit('af_signal_detective', PASS_UNIT);
   };
   const goCase = (next: number) => {
@@ -1404,7 +1419,7 @@ export function DetectiveModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help('detective'),
         bezel,
         render: (w, h) =>

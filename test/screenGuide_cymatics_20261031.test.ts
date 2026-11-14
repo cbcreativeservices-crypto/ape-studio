@@ -157,7 +157,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     },
     end: {
       files: ['src/screens/lab/kit/LabEndScreen.tsx', 'src/screens/lab/kit/labEnd.ts', `${D}modules/registry.ts`, `${D}CymaticsHomeScreen.tsx`, `${D}CymaticsModuleScreen.tsx`],
-      names: [['WHAT’S LEFT', "WHAT'S LEFT"], 'ALL MODULES OPENED', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'What Is Cymatics?', ['✓ DONE', "'DONE'"]],
+      // Phase 3, owner 2026-11-14: modules count on work done, not on opening — ALL MODULES OPENED became ALL MODULES DONE.
+      names: [['WHAT’S LEFT', "WHAT'S LEFT"], 'ALL MODULES DONE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'What Is Cymatics?', ['✓ DONE', "'DONE'"]],
     },
     'module.intro': {
       files: [`${D}modules/modIntro.tsx`, `${D}modules/shared.tsx`, 'src/screens/lab/kit/ExpandableFigure.tsx'],
@@ -560,7 +561,8 @@ describe('5. wiring and the accuracy-chip decision', () => {
   });
   it('what’s left never claims LAB COMPLETE on visits alone: both hosts pass completeTitle (credit = the understanding check)', () => {
     for (const f of ['CymaticsHomeScreen', 'CymaticsModuleScreen']) {
-      assert.match(code(`${D}${f}.tsx`), /<LabEndScreen[\s\S]*?mode="progress"\s*completeTitle="ALL MODULES OPENED"/, f);
+      // Phase 3, owner 2026-11-14: work done, not opened — the title reads ALL MODULES DONE.
+      assert.match(code(`${D}${f}.tsx`), /<LabEndScreen[\s\S]*?mode="progress"\s*completeTitle="ALL MODULES DONE"/, f);
     }
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /route: 'CymaticsLab', key: 'tr_cymatics', completion: 'understanding'/);
     assert.doesNotMatch(textOf(G.CYMATICS_END_GUIDE as unknown as Guide), /LAB COMPLETE/);

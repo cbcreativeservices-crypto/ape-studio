@@ -563,12 +563,12 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
         ),
       badge: 'Placed for you · amber dashed = where each mic points · white dashed = a pattern’s shape, not its range · the corner box = the mic at its height, to scale · ranges calculated from the drawing',
       bezel: [
-        { k: 'SETUP', v: `${i + 1} / ${setups.length}`, flex: 0.8 },
+        { k: 'SETUP', v: `${i + 1}`, flex: 0.8 },
         { k: 'ROLE', v: sel ? roleKey(sel.role) : '—', flex: 1 },
         { k: 'RANGE', v: fmtM1(r0), flex: 1 },
       ],
       params: [
-        ...faderUnlessFew(setups.length, { kind: 'fader', id: 'setup', label: 'SETUP', value: setups.length > 1 ? i / (setups.length - 1) : 0, onChange: (v) => setIdx(Math.round(v * (setups.length - 1))), format: () => (sel ? `${i + 1} of ${setups.length} · ${sel.role.toLowerCase()}` : 'no setup'), formatShort: () => `${i + 1} / ${setups.length}` }),
+        ...faderUnlessFew(setups.length, { kind: 'fader', id: 'setup', label: 'SETUP', value: setups.length > 1 ? i / (setups.length - 1) : 0, onChange: (v) => setIdx(Math.round(v * (setups.length - 1))), format: () => (sel ? `${sel.role.toLowerCase()}` : 'no setup'), formatShort: () => `${i + 1}` }),
         { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? roleKey(sel.role) : '—', selectedId: sel?.id ?? null, sticky: true, onSelect: (id) => setIdx(Math.max(0, setups.findIndex((q) => q.id === id))), options: setups.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
       ],
       initialParam: 'setup',
@@ -772,7 +772,7 @@ export function useWorkedStep({ scene, mic, pieces, box, title }: { scene: Venue
       ),
       badge: 'WORKED EXAMPLE · placed for you · amber = the piece being read · the corner box = the mic at its height, to scale',
       bezel: pieces.map((q, i) => ({ k: i === ex ? `▸ ${q.key}` : q.key, v: q.value, tint: i === ex ? AMBER : undefined, flex: 1 })),
-      params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
+      params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
       initialParam: 'piece',
     },
     well: (
@@ -1097,7 +1097,7 @@ export function useCoverageStep({ scene, tasks, mics, box, onInteractive, done }
         { k: 'ZONE', v: z.short, flex: 1 },
         { k: 'TAG', v: COVERAGE_WORDS[tag].short, tint: tag === 'detail' ? GREEN : tag === 'ambience' ? BLUE : RED, flex: 1.1 },
         { k: 'NEAREST MIC', v: fmtM1(nearest), flex: 1.1 },
-        { k: 'FAIR', v: `${tasks.filter((t) => touched.has(t.id) && t.ok.includes(tags[t.id])).length} / ${tasks.length}`, flex: 0.8 },
+        { k: 'TO TAG', v: `${tasks.length - tasks.filter((t) => touched.has(t.id) && t.ok.includes(tags[t.id])).length} left`, flex: 0.8 },
       ],
       params: [
         { kind: 'options', id: 'zone', label: 'ZONE', valueLabel: z.short, selectedId: z.id, sticky: true, onSelect: (id) => setZi(Math.max(0, tasks.findIndex((t) => t.id === id))), options: tasks.map((t) => ({ id: t.id, label: t.label, blurb: `Handoff: ${t.handoff}` })) },
@@ -1194,7 +1194,7 @@ export function useHeadroomStep({ onInteractive, done, prediction }: { onInterac
           <Point title={firstOver ? `FIRST OVERLOADED · ${firstOver.label.toUpperCase()}` : 'NO STAGE IS OVER'}>{firstOver ? firstOver.blurb : `The converter reads ${fmtDbfs(r.adcDbfs)} for ${EVENTS[ev].label.toLowerCase()}.`}</Point>
         </Card>
         {s.fader !== START_SETTINGS.fader && r.firstOver && r.firstOver !== 'bus' ? <Note tone="warn">The output fader changed only the bus output. The clip happened upstream — a low output fader does not undo it, and a high-pass filter cannot repair it.</Note> : null}
-        {good && tried.size === EVENT_IDS.length ? <Note tone="ok">{`The loudest safe rehearsal peak sits near ${TRIAL_DBFS} dBFS, and the surprise still has room. A suggested starting point, not a delivery standard: keep more margin when the real event is less predictable, and follow your own equipment’s manual.`}</Note> : <Body>{`Events tried: ${tried.size} of ${EVENT_IDS.length}.`}</Body>}
+        {good && tried.size === EVENT_IDS.length ? <Note tone="ok">{`The loudest safe rehearsal peak sits near ${TRIAL_DBFS} dBFS, and the surprise still has room. A suggested starting point, not a delivery standard: keep more margin when the real event is less predictable, and follow your own equipment’s manual.`}</Note> : <Body>{`Events still to try: ${EVENT_IDS.length - tried.size}.`}</Body>}
       </>
     ),
   };

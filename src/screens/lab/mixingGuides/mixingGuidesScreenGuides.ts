@@ -12,7 +12,7 @@
  * written against the props this screen passes: mode="progress" (rows read
  * ✓ DONE for everyone), noun "guide", no optional units, no check, no
  * completeTitle; DONE runs safeGoBack (the hub is the only way in); a guide
- * counts as read on NEXT › / FINISH › (beforeAdvance) or MARK AS READ, never
+ * counts as read on MARK AS READ only (owner 2026-11-14, done = work done), never
  * on a CONTENTS jump or ‹ PREV; a members-only preview records nothing.
  *
  * ⛔ The guide files under data/ are HAND-EDITED (D77–D78): this file only
@@ -52,7 +52,7 @@ export const MIXING_GUIDES_HUB_GUIDE: ScreenGuide = {
   changes: [
     'The map fills in the countries a style comes from, and the caption spells them out in words.',
     'Searching hides the cards that do not match and shows how many do. With no match it says so and suggests a shorter word.',
-    'A card shows ✓ READ after you read its guide (NEXT › or MARK AS READ).',
+    'A card shows ✓ READ after you read its guide to the end and tap MARK AS READ.',
   ],
   teaches: [
     'Each music style’s audience expects something different from a mix.',
@@ -79,7 +79,7 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
   control: [
     'Tap a section’s header to open or close it. OPEN ALL ▾ opens every section; CLOSE ALL ▴ closes them.',
     'MARK AS READ at the foot records the guide as read.',
-    'Use ‹ PREV and NEXT › to walk the styles in number order; NEXT › also marks this guide read. Tap the readout for the list of styles (✓ when read); FINISH › opens the what’s-left screen.',
+    'Use ‹ PREV and NEXT › to walk the styles in number order; NEXT › does not mark this guide read; MARK AS READ at its foot does. Tap the readout for the list of styles (✓ when read); FINISH › opens the what’s-left screen.',
     'Of the two ⓘ keys in the header, the first explains the level figures; the far-right one opens this guide. The ‹ at the top goes back to the menu.',
   ],
   changes: [
@@ -118,7 +118,7 @@ export const MIXING_GUIDES_END_GUIDE: ScreenGuide = {
     'Under the header, ‹ PREV goes back to the guide you came from, and the WHAT’S LEFT ▾ readout opens the list of styles (✓ when read).',
   ],
   changes: [
-    'A guide counts as read when you leave it with NEXT › or FINISH ›, or tap MARK AS READ. Just opening it, or jumping away with ‹ PREV or the list, doesn’t count.',
+    'A guide counts as read when you reach its end and tap MARK AS READ. Opening it, or moving on with NEXT ›, ‹ PREV or the list, doesn’t count.',
     'A read guide moves to the ✓ DONE line. A preview records nothing and says so.',
     'If your reading record can’t be loaded, the title reads YOUR PROGRESS and a note says why. Every guide still opens.',
   ],
@@ -127,7 +127,7 @@ export const MIXING_GUIDES_END_GUIDE: ScreenGuide = {
     'Every value stays a suggested starting point, not a rule. Reread a style’s guide before mixing in that style, and check against a reference matched in level.',
   ],
   tryThis: [
-    'Open the first style still listed and tap NEXT › (on the last style, FINISH › brings you straight back). Then tap the readout and WHAT’S LEFT ›: that style has moved to the ✓ DONE line.',
+    'Open the first style still listed, scroll to its end and tap MARK AS READ. Then tap the readout and WHAT’S LEFT ›: that style has moved to the ✓ DONE line.',
     'Tap REVIEW ▾ and reopen a style you have read: the sections you had open on your last guide are open on this one too.',
     'Tap DONE · BACK TO THE GUIDES and find ✓ READ on the cards of the styles you have read.',
   ],

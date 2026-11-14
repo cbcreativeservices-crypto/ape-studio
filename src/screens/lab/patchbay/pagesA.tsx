@@ -391,8 +391,8 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
 }
 
 export const PATCHBAY_PAGES_A: PageDef[] = [
-  { title: 'Signal falls downhill', short: 'TOP↓BTM', Component: PageDirection },
-  { title: 'One pair, two pictures', short: 'PAIR', Component: PagePair, rack: true },
+  { title: 'Signal falls downhill', short: 'TOP↓BTM', Component: PageDirection, reading: true },
+  { title: 'One pair, two pictures', short: 'PAIR', Component: PagePair, reading: true, rack: true },
   { title: 'Thru: nothing is connected yet', short: 'THRU', Component: PageThru, manualDone: true, rack: true },
   { title: 'What “normal” means', short: 'NORMAL', Component: PageNormal, manualDone: true },
   { title: 'The switching contact', short: 'CONTACT', Component: PageContact, manualDone: true, rack: true },

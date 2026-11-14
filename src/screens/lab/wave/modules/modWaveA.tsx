@@ -30,10 +30,11 @@ import { Text, View } from 'react-native';
 import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { PanelCard, dstyles } from '../../digital/bits';
+import { PlainModelNote } from '../../foundations/bits';
 import { useLabPhoto } from '../../labPhoto';
 import { MATERIAL_PHOTOS } from '../materialPhotos';
-import { WaveLayout } from './waveLayout';
+import { FoldedReadoutGrid, WaveLayout } from './waveLayout';
 import { StageAspectReport } from '../../rack/stageAspect';
 import {
   MATERIALS,
@@ -453,7 +454,7 @@ export function ReflectionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={REFLECTION_MISTAKES} />}
@@ -620,8 +621,8 @@ export function AbsorptionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>ABSORPTION & DECAY</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
-          <Badge text="SABINE RT TREATS THE 2-D ROOM AS 3 m TALL — TEXTBOOK TEACHING α VALUES, NOT ISO 354 PRODUCT DATA" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
+          <PlainModelNote>The reverb time (Sabine) treats this 2-D room as 3 m tall and uses textbook teaching absorption values, not ISO 354 product data.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={ABSORB_MISTAKES} />}
@@ -797,8 +798,8 @@ export function DiffusionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>DIFFUSER STATUS</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
-          <Badge text="THE DRAWING SHOWS THE SPECULAR (MIRROR) RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
+          <PlainModelNote>The drawing shows the mirror (specular) ray. A diffuser fans that same energy into many dim rays from the bounce point: spread, not removed.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFUSION_MISTAKES} />}
@@ -940,8 +941,8 @@ export function RefractionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>SOUND SPEED & RAY</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
-          <Badge text="TEACHING MODEL — AIR TEMPERATURE CHANGES EVENLY WITH HEIGHT, ±8 °C AT 60 m" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
+          <PlainModelNote>A teaching model: the air temperature changes evenly with height, ±8 °C at 60 m.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={REFRACTION_MISTAKES} />}
@@ -1073,8 +1074,8 @@ export function DiffractionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>MAEKAWA NUMBERS</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
-          <Badge text="MAEKAWA KNIFE-EDGE · FIXED GEOMETRY: SOURCE 10 m BEFORE THE BARRIER, LISTENER 10 m BEYOND, BOTH AT 1.5 m" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
+          <PlainModelNote>A knife-edge barrier model (Maekawa) with fixed geometry: the source is 10 m before the barrier, the listener 10 m beyond, both at 1.5 m.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFRACTION_MISTAKES} />}
@@ -1267,8 +1268,8 @@ export function InterferenceModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="interference" />
-          <Badge text="NO REFLECTING WALLS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RELATIVE TO ONE SOURCE AT 1 m" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="interference" />
+          <PlainModelNote>No reflecting walls (free field): only the two direct waves interfere. Level is in dB relative to one source at 1 m.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={INTERFERENCE_MISTAKES} />}
@@ -1446,15 +1447,15 @@ export function CombModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE MIC</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="comb" />
-          <Badge text="ONE SOURCE + ONE REFLECTIVE WALL (RIGHT) — THE OTHER BOUNDARIES ARE OPENINGS" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="comb" />
+          <PlainModelNote>One source and one reflective wall (right); the other boundaries are openings.</PlainModelNote>
         </PanelCard>
       }
       secondary={
         <PanelCard>
           <Text style={dstyles.eyebrow}>RESPONSE AT THE MIC — 20 Hz TO 20 kHz</Text>
           <ResponseCurveGraph curves={curves} dbRange={18} height={150} samples={1600} />
-          <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS · 0 dB = DIRECT SOUND ALONE" />
+          <PlainModelNote>Computed from the scene’s direct and reflected arrivals; 0 dB is the direct sound alone.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={COMB_MISTAKES} />}
@@ -1625,8 +1626,8 @@ export function StandingWaveModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>THIS MODE</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
-          <Badge text="MODAL PRESSURE MAP — BRIGHT = ANTINODE (PRESSURE MAX), DARK = NODE (PRESSURE MIN) · DRAG THE LISTENER THROUGH IT" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
+          <PlainModelNote>A modal pressure map: bright is an antinode (most pressure), dark is a node (least). Drag the listener through it.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={STANDING_MISTAKES} />}

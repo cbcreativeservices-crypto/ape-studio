@@ -189,7 +189,8 @@ test('mixing QC pages stop their staged renders on leave and lock same-frame dou
 
 test('tube: visits persist only once the tier is known; card re-fits on rotation; coverage rack keyed per section', () => {
   const v = read('src/screens/lab/tube/VacuumTubeLabScreen.tsx');
-  assert.match(v, /if \(!entResolved\) return;\n\s*markLabVisit\('tube'/);
+  // Since phase 3 (2026-11-14, owner decision 1) a module is marked when its goal is met, still only once the tier is known.
+  assert.match(v, /if \(!entResolved\) return;\n\s*goalsMet\.forEach\(\(key\) => markLabVisit\('tube'/);
   assert.match(read('src/screens/lab/tube/TubeCardScreen.tsx'), /\}, \[area\.w, area\.h\]\);/);
   assert.match(read('src/screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx'), /<RackUnit key=\{s\.key\}/);
 });

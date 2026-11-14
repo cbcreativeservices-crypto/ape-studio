@@ -139,7 +139,7 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
           width={Math.max(120, p.width)}
           aspect={GRAPH_ASPECT}
           title="THE PROBLEM"
-          badge="SYNTHETIC SPECTRUM · dim = healthy reference · bold = the signal"
+          badge="A made-up spectrum: dim is a healthy reference, bold is the signal."
           render={(w, h) => (
             <ResponseCurveGraph
               curves={curves}
@@ -189,7 +189,8 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
         wrong. Choose deliberately.
       </Text>
 
-      <CheckQuestion spec={CHECK} />
+      {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+      <CheckQuestion spec={CHECK} onSolved={p.onDone} />
 
       <Text style={styles.caption}>
         More challenges live inside the lab: FLAT → SMOOTH → JAGGED (in “What a Graphic EQ

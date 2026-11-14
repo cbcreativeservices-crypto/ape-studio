@@ -126,7 +126,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'You’re looking at the whole booth from BEHIND, so it’s mirrored. At the top is the room: PA speakers on stands, the table, decks, mixer, headphones and booth monitors.',
-      'Below it, full size, is everything you plug in. A cable glows blue while audio flows through it. CABLES, POWERED and PA L · R track your wiring, the power and what reaches each PA speaker.',
+      'Below it, full size, is everything you plug in. A cable glows blue while audio flows through it. CABLES (left to plug in), POWERED (devices on) and PA L · R track your wiring, the power and what reaches each PA speaker.',
     ],
     control: [
       'In PATCH, pick a cable by the end already in its source, then tap where its loose end goes. VIEW switches between FOLLOW THE CABLE and WHOLE BOOTH.',

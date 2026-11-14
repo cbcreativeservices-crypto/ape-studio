@@ -422,10 +422,13 @@ describe('5. the accuracy chip: a concept lab', () => {
     const A = code('src/screens/lab/meter/modules/modMeterA.tsx');
     const B = code('src/screens/lab/meter/modules/modMeterB.tsx');
     const C = code('src/screens/lab/meter/modules/modMeterC.tsx');
-    assert.equal((A.match(/badge: 'SYNTHESIZED TEACHING SIGNAL/g) ?? []).length, 3, 'Waveform, Peak, VU');
-    assert.match(A, /SIMPLIFIED BS\.1770-STYLE TEACHING MODEL — not a compliance meter/);
-    assert.equal((B.match(/badge: 'SYNTHETIC/g) ?? []).length, 3, 'Spectrum, Spectrogram, Waterfall');
-    assert.match(C, /const HONESTY = 'SYNTHESIZED TEACHING SIGNAL — NOTHING HERE MEASURES REAL AUDIO';/);
-    assert.equal((C.match(/badge: HONESTY/g) ?? []).length, 4, 'Phase, Stereo, Scope, Detective');
+    // S3's plain model note replaced the all-caps badges (owner's decision 3, phase 3, 2026-11-14);
+    // the disclosure stays on every stage.
+    assert.equal((A.match(/modelNote: (SIGNAL_NOTE|VU_NOTE|LOUDNESS_MODEL_NOTE),/g) ?? []).length, 4, 'Waveform, Peak, VU, Loudness');
+    assert.match(A, /const LOUDNESS_MODEL_NOTE = 'A simplified BS\.1770-style teaching model, not a compliance loudness meter\.';/);
+    assert.equal((B.match(/modelNote: '(Built-in teaching patterns|Drawn from the room-decay)/g) ?? []).length, 3, 'Spectrum, Spectrogram, Waterfall');
+    assert.match(C, /const HONESTY = 'A built-in teaching signal: nothing here measures real audio\.';/);
+    assert.equal((C.match(/modelNote: HONESTY/g) ?? []).length, 4, 'Phase, Stereo, Scope, Detective');
+    for (const f of [A, B, C]) assert.doesNotMatch(f, /^\s*badge: /m);
   });
 });

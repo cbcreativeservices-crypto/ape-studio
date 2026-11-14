@@ -105,7 +105,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
   };
   const revealMap = () => {
     if (tapped.size < SPEC.lugs) {
-      setRevealNote(`Tap every lug first — ${tapped.size} of ${SPEC.lugs} so far. The map comes after the ear.`);
+      setRevealNote(`Tap every lug first — ${SPEC.lugs - tapped.size} still to tap. The map comes after the ear.`);
       setNoSound(true);
       return;
     }
@@ -184,24 +184,24 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
                 hitCentre={m.id === 'play'}
                 selected={m.id === 'finger' ? 0 : null}
                 exploded={m.id === 'seat'}
-                title={`step ${methodStep + 1} · ${m.title}`}
+                title={`stage ${methodStep + 1} · ${m.title}`}
               />
             ),
             aspect: TOP_ASPECT,
             size: 'L',
             badge: MODEL_BADGE,
             bezel: [
-              { k: 'STEP', v: `${methodStep + 1} / ${METHOD_STEPS.length}` },
+              { k: 'STAGE', v: `${methodStep + 1}` }, // K4: no total (owner decision 2)
               { k: 'DO', v: m.short, flex: 1.2, tint: colors.amber },
               { k: 'HEAD', v: m.id === 'other' ? 'RESONANT' : 'BATTER', flex: 1.2 },
             ],
-            params: [flipFader({ id: 'mstep', label: 'STEP', items: METHOD_STEPS, selectedId: m.id, onSelect: (id) => setMethodStep(Math.max(0, METHOD_STEPS.findIndex((x) => x.id === id))), name: (x) => x.title, short: (x) => x.short, blurb: (x) => x.detail, title: 'THE METHOD', sticky: true })],
+            params: [flipFader({ id: 'mstep', label: 'STAGE', items: METHOD_STEPS, selectedId: m.id, onSelect: (id) => setMethodStep(Math.max(0, METHOD_STEPS.findIndex((x) => x.id === id))), name: (x) => x.title, short: (x) => x.short, blurb: (x) => x.detail, title: 'THE METHOD', sticky: true })],
             initialParam: 'mstep',
             hideDragTag: true,
           },
           well: (
             <>
-              <Landing looking="the floor tom at each step of the method." prompt="Ride STEP." />
+              <Landing looking="the floor tom at each stage of the method." prompt="Ride STAGE." />
               <Card tone="accent">
                 <Point title={`${methodStep + 1}. ${m.title}`}>{m.detail}</Point>
               </Card>
@@ -217,13 +217,13 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
         {
           key: 'hear', title: 'Tap near each lug', kind: 'HEAR', layout: 'rack',
           rack: {
-            render: (w, h) => <DrumTopStage width={w} height={h} drum={DRUM} head={hearHead} tap={hearLug} selected={null} showMap={mapShown ? true : 'hidden'} title="tap around the head" tapSync={syncOf(hearTap)} legend={mapShown ? undefined : `map hidden · tapped ${tapped.size} of ${SPEC.lugs}`} />,
+            render: (w, h) => <DrumTopStage width={w} height={h} drum={DRUM} head={hearHead} tap={hearLug} selected={null} showMap={mapShown ? true : 'hidden'} title="tap around the head" tapSync={syncOf(hearTap)} legend={mapShown ? undefined : `map hidden · ${SPEC.lugs - tapped.size} lugs still to tap`} />,
             aspect: TOP_ASPECT,
             size: 'L',
             badge: MODEL_BADGE,
             bezel: [
               { k: 'LUG', v: `${hearLug + 1} / ${SPEC.lugs}` },
-              { k: 'TAPPED', v: `${tapped.size} / ${SPEC.lugs}`, tint: tapped.size >= SPEC.lugs ? colors.green : colors.amber },
+              { k: 'TAPPED', v: tapped.size >= SPEC.lugs ? 'ALL' : `${SPEC.lugs - tapped.size} LEFT`, tint: tapped.size >= SPEC.lugs ? colors.green : colors.amber },
               { k: 'LUG PITCH', v: mapShown ? `${fmtHz(lugTapHz(hearHead, hearLug, SPEC.diameterIn, SPEC.sigmaBatter))} Hz` : 'listen', tint: colors.cyan, flex: 1.3 },
               { k: 'SPREAD', v: mapShown ? `${spreadCents(hearHead).toFixed(0)} ¢` : 'hidden', tint: mapShown ? colors.red : colors.textMuted },
             ],

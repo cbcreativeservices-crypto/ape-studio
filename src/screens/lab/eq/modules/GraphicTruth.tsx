@@ -59,7 +59,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'If the sliders WERE the response, this lesson wouldn’t exist.',
 };
 
-export function GraphicTruthModule(_p: EqModuleComponentProps) {
+export function GraphicTruthModule(p: EqModuleComponentProps) {
   const [gains, setGains] = useState<number[]>(Array(OCT_CENTERS.length).fill(0));
   const [showIndividual, setShowIndividual] = useState(false);
   const [view, setView] = useState<'mag' | 'phase'>('mag');
@@ -220,7 +220,8 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
           </Text>
         </View>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

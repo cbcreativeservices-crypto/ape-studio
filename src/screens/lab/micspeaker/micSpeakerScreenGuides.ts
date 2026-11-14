@@ -364,16 +364,16 @@ export const MIC_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of Microphone Principles. LAB COMPLETE means you’ve opened every section; otherwise WHAT’S LEFT lists the ones you haven’t opened yet.',
-    'REVIEW ▾ opens the mic sections you’ve already seen.',
+    'You’ve reached the end of Microphone Principles. LAB COMPLETE means every module is done; otherwise WHAT’S LEFT lists the ones still to do.',
+    'REVIEW ▾ opens the mic modules you’ve already done.',
   ],
   control: [
-    'Tap a row to jump straight to that section.',
+    'Tap a row to jump straight to that module.',
     'Tap PRACTICE AGAIN FROM THE START to go back to CAPSULE, or DONE · BACK TO LABS to leave the lab.',
   ],
   changes: [
-    'Each of the ten sections counts as done as soon as you open it. Once all ten are open, the lab is complete.',
-    'Practicing again or reviewing never takes away a section you’ve already opened, so you can repeat any mic experiment freely.',
+    'A module counts once its CHECK YOURSELF is answered right; CAPSULE and PLOSIVES, which have none, count when you move on with NEXT.',
+    'Practicing again or reviewing never takes away a module you’ve already done, so you can repeat any mic experiment freely.',
   ],
   teaches: [
     'A mic is a small generator with a direction: its pattern decides what it hears, and its null decides what it ignores.',
@@ -381,7 +381,7 @@ export const MIC_END_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Jump to POLAR and find the CARDIOID null again — then HAND GRIP, and watch FULL CUP erase it.',
-    'Reopen a section whose check question you missed; nothing you have earned is lost.',
+    'Reopen a module whose check question you missed; nothing you have earned is lost.',
   ],
 };
 
@@ -500,16 +500,16 @@ export const SPEAKER_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of Speaker Placement & Coverage. LAB COMPLETE means you’ve opened every section; otherwise WHAT’S LEFT lists the ones you haven’t opened yet.',
-    'REVIEW ▾ opens the coverage sections you’ve already seen.',
+    'You’ve reached the end of Speaker Placement & Coverage. LAB COMPLETE means every module is done; otherwise WHAT’S LEFT lists the ones still to do.',
+    'REVIEW ▾ opens the coverage modules you’ve already done.',
   ],
   control: [
-    'Tap a row to jump straight to that section.',
+    'Tap a row to jump straight to that module.',
     'Tap PRACTICE AGAIN FROM THE START to go back to TOP VIEW, or DONE · BACK TO LABS to leave the lab.',
   ],
   changes: [
-    'Each of the three sections counts as done as soon as you open it. Once all three are open, the lab is complete.',
-    'Practicing again or reviewing never takes away a section you’ve already opened, so you can try new speaker layouts freely.',
+    'Each of the three modules counts once its CHECK YOURSELF is answered right. Once all three are done, the lab is complete.',
+    'Practicing again or reviewing never takes away a module you’ve already done, so you can try new speaker layouts freely.',
   ],
   teaches: [
     'Pattern, position and aim decide which seats sit in a speaker’s beam; height and tilt decide how evenly it reaches front to back.',

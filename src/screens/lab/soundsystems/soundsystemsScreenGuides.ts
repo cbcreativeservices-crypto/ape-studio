@@ -26,20 +26,20 @@ import type { ScreenGuide, ScreenIntro } from '../../../features/lab/screenGuide
 export const SS_HUB_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How a complete live sound system fits together, seen five ways: what each part does, how it’s assembled, how signal is routed, how it’s run, and how faults are found.',
-    start: 'Tap the LEARN card first: its opening page puts the whole system on one map. Then glance at WHAT IS LEFT below the cards to see what you haven’t finished yet.',
+    start: 'Tap the LEARN card first: its first module puts the whole system on one map. Then glance at WHAT IS LEFT below the cards to see what you haven’t finished yet.',
   },
   seeing: [
     'This is the Sound Systems Lab home. It builds on the cable, gain and speaker labs. Each of the five mode cards has its own progress bar.',
     'LEARN explains the system chapter by chapter. BUILD, ROUTE, OPERATE and TROUBLESHOOT put the same ideas in your hands.',
-    'WHAT IS LEFT lists what you haven’t finished, with the UNDERSTANDING CHECK (the last page of LEARN) at the bottom.',
+    'WHAT IS LEFT lists what you haven’t finished, with the UNDERSTANDING CHECK (the last module of LEARN) at the bottom.',
   ],
   control: [
     'Tap a mode card to open that mode where you left it. You can take the modes in any order.',
     'Tap a row in WHAT IS LEFT to jump straight to that mode.',
-    'Tap START OVER (PRACTICE) to send every mode back to its first page for another run. Nothing you’ve finished is lost: completed pages, capstones, exercises and faults stay done.',
+    'Tap START OVER (PRACTICE) to send every mode back to its first module for another run. Nothing you’ve finished is lost: completed modules, capstones, exercises and faults stay done.',
   ],
   changes: [
-    'Each card’s bar fills as you finish its pages, capstones, exercises or faults, and each mode remembers your place when you come back.',
+    'Each card’s bar fills as you finish its modules, capstones, exercises or faults, and each mode remembers your place when you come back.',
     'A mode’s row leaves WHAT IS LEFT once you complete it. The UNDERSTANDING CHECK row stays and gets a ✓ once you pass it. When everything is done, the panel turns green and reads SOUND SYSTEMS LAB — COMPLETE.',
   ],
   teaches: [
@@ -47,7 +47,7 @@ export const SS_HUB_GUIDE: ScreenGuide = {
     'All five layers follow the same signal path, from source to listener, so what you learn in one carries straight into the next.',
   ],
   tryThis: [
-    'Start with LEARN: its first page is the whole system on one map, and every later mode refers back to it.',
+    'Start with LEARN: its first module is the whole system on one map, and every later mode refers back to it.',
     'After a few LEARN chapters, open BUILD, place a source, a console and a loudspeaker on the empty venue, and cable them until the loudspeaker goes LIVE.',
   ],
 };
@@ -60,17 +60,17 @@ export const SS_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of this mode. The title reads WHAT\'S LEFT, or the mode’s name with COMPLETE (TROUBLESHOOT COMPLETE, for example) once every page in this mode is done. The other four modes keep their own lists on the lab’s home.',
-    'Pages you haven’t finished are listed by name. The pages you have finished fold into one ✓ line.',
+    'You’ve reached the end of this mode. The title reads WHAT\'S LEFT, or the mode’s name with COMPLETE (TROUBLESHOOT COMPLETE, for example) once every module in this mode is done. The other four modes keep their own lists on the lab’s home.',
+    'Modules you haven’t finished are listed by name. The modules you have finished fold into one ✓ line.',
   ],
   control: [
-    'Tap a page that is still listed to jump straight to it.',
-    'Tap REVIEW ▾ on the ✓ line to unfold your finished pages, then tap any one to open it again.',
-    'PRACTICE AGAIN FROM THE START takes you back to page 1. It clears nothing.',
+    'Tap a module that is still listed to jump straight to it.',
+    'Tap REVIEW ▾ on the ✓ line to unfold your finished modules, then tap any one to open it again.',
+    'PRACTICE AGAIN FROM THE START takes you back to module 1. It clears nothing.',
     'DONE · BACK TO SOUND SYSTEMS returns you to the lab’s home, where WHAT IS LEFT covers all five modes.',
   ],
   changes: [
-    'A page joins the ✓ line once you meet its goals, shown by the goal chips in its notes. A summary page counts as soon as you open it.',
+    'A module joins the ✓ line once you meet its goals, shown by the goal chips in its notes. Every module has goals, the summary modules too: opening a module never counts it on its own.',
     'In LEARN, the check counts only when you’ve answered every question correctly.',
   ],
   teaches: [
@@ -78,8 +78,8 @@ export const SS_END_GUIDE: ScreenGuide = {
     'The same signal path looks different from each side — parts, assembly, routing, operation, faults — and each view makes the others clearer.',
   ],
   tryThis: [
-    'Jump to the first page still listed and read its LAB NOTES before you touch a control.',
-    'Open REVIEW ▾, pick one finished page and say out loud what it showed about the signal path. Then open it and check yourself.',
+    'Jump to the first module still listed and read its LAB NOTES before you touch a control.',
+    'Open REVIEW ▾, pick one finished module and say out loud what it showed about the signal path. Then open it and check yourself.',
   ],
 };
 
@@ -100,7 +100,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Slide STATION along the signal path, or tap any station on the map, to see what it does.',
       'STAGE IN: Analog snake (a multicore cable carries every mic to the console at mic level) or Digital stagebox (the preamps sit on stage, and one network cable carries audio both ways).',
       'HOUSE: Passive + amps (processor → amplifiers → passive boxes, which have no amplifier of their own) or Powered boxes (the amplifier is inside the cabinet).',
-      'Open LAB NOTES for the chapter text and the goal chips that show what this page asks of you.',
+      'Open LAB NOTES for the chapter text and the goal chips that show what this module asks of you.',
     ],
     changes: [
       'Switching STAGE IN or HOUSE redraws the map, but the ORDER never changes: source → stage input → console → processing → amplification → loudspeaker → listener.',
@@ -123,7 +123,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'You’re looking at the nine stations of the house path. Each stays dark until you light it.',
-      'LIT counts the stations you’ve lit, LAST names the one you lit last, and THREAD reads OK, WRONG or COMPLETE.',
+      'LIT says how many stations are left to light, LAST names the one you lit last, and THREAD reads OK, WRONG or COMPLETE.',
       'Once THREAD reads COMPLETE, the LEDs chase along the path as the program flows.',
     ],
     control: [
@@ -328,7 +328,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'You’re looking down on the stage: a wedge at the lip (the front edge), a side fill at the wing, a drum fill beside the drum riser and a performer wearing in-ears.',
-      'The card names the monitor you picked and where it stands. FED BY shows which console send drives it; SEEN shows the types you have opened.',
+      'The card names the monitor you picked and where it stands. FED BY shows which console send drives it; SEEN says how many are left to open.',
     ],
     control: [
       'Slide MONITOR through THE MONITOR WORLD: Floor wedge, Side fill, Drum fill and In-ear monitors. Or tap a monitor on the stage.',
@@ -665,18 +665,19 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'What you can now do': {
     intro: {
       learning: 'How the fourteen LEARN chapters join into one picture of a live system: choosing and wiring it, routing it, setting gain, controlling feedback and finding faults.',
-      start: 'Read the summary. Then picture the system map from the first chapter and name each section from memory. When you’re ready, tap NEXT for the understanding check.',
+      start: 'Read the summary, then tap each of the four practice modes to read what it practices. When you’re ready, tap NEXT for the understanding check.',
     },
     seeing: [
       'You’ve reached the close of LEARN: a summary of what the fourteen chapters covered, from the system map to fault-finding.',
-      'It also shows where BUILD, ROUTE, OPERATE and TROUBLESHOOT take each idea next, and tells you the understanding check follows this page.',
+      'It also shows where BUILD, ROUTE, OPERATE and TROUBLESHOOT take each idea next, and tells you the understanding check follows this module.',
     ],
     control: [
+      'Tap BUILD, ROUTE, OPERATE and TROUBLESHOOT, one at a time, to read what each mode practices.',
       'Tap NEXT to open the understanding check.',
       'Tap “Lab home — what is left” to return to the lab home and see which parts you haven’t done yet.',
     ],
     changes: [
-      'Nothing on this page moves; opening it is enough to mark it read.',
+      'This module counts once you have tapped all four modes: its goal chip turns ✓.',
       'The understanding check that follows draws on every chapter, so this is the moment to look back over them.',
     ],
     teaches: [
@@ -684,7 +685,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Gain structure, coverage, delay alignment and feedback control make it sound right; the source-forward walk finds what breaks.',
     ],
     tryThis: [
-      'Before the check, picture the system map from the first page and name each section from memory.',
+      'Before the check, picture the system map from the first module and name each section from memory.',
       'Pick the mode that matches the chapter you found hardest and open it from the lab home.',
     ],
   },
@@ -696,7 +697,7 @@ export const SS_CHECK_GUIDE: ScreenGuide = {
     start: 'Read the first question and tap the option you think is right. If NOT QUITE — TRY ANOTHER appears, read what it says to look at again before you choose.',
   },
   seeing: [
-    'This is the understanding check: every question from LEARN on one page, each with its options.',
+    'This is the understanding check: every question from LEARN in one module, each with its options.',
     'When you answer a question correctly, a ✓ replaces its number.',
   ],
   control: [
@@ -711,7 +712,7 @@ export const SS_CHECK_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'After a wrong answer, read its reason and look back at that chapter before you choose again.',
-    'If a question stalls you, tap the page readout ▾ in the strip, pick its chapter from the list, then return.',
+    'If a question stalls you, tap the MODULE readout ▾ in the strip, pick its chapter from the list, then return.',
   ],
 };
 
@@ -758,7 +759,7 @@ function capstone(n: number, t: CapstoneText): ScreenGuide {
     control: t.routing ? [...BUILD_CONTROL.slice(0, 3), CAPSTONE_CONSOLE_LINE, BUILD_CONTROL[3]] : BUILD_CONTROL,
     changes: [
       t.cableCheck ?? BUILD_CHANGES[0],
-      `${t.routing ? 'Each requirement checks itself the moment the plot or the console meets it' : 'Each requirement checks itself the moment the plot meets it'}; REQS reads PASS when every one is met. ${t.open}`,
+      `${t.routing ? 'Each requirement checks itself the moment the plot or the console meets it' : 'Each requirement checks itself the moment the plot meets it'}; REQS says how many are left and reads PASS when every one is met. ${t.open}`,
     ],
     teaches: t.teaches,
     tryThis: t.tryThis,
@@ -975,7 +976,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'One channel strip, drawn top to bottom in the order the signal flows. Sends leave as copies at the PRE and POST tap points; the main path ends at the assignment.',
-      'STATION names the block you’re on, AUDIO says what it does to the signal, and SEEN tracks the blocks you’ve looked at. The notes show the same channel on the console, read-only.',
+      'STATION names the block you’re on, AUDIO says what it does to the signal, and SEEN says how many blocks are left to look at. The notes show the same channel on the console, read-only.',
     ],
     control: [
       'STATION: slide THE CHANNEL, TOP TO BOTTOM — input and preamp, high-pass filter, EQ, insert, fader, pan and mute, aux sends, assignment, direct output — or tap a block on the strip.',
@@ -1167,7 +1168,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'The stagebox’s seven line outputs. Above each socket is a strip of tape naming its bus, and you can see where its cable runs.',
-      'Nothing is patched yet. SOCKET names the output you’ve picked, FED FROM shows the bus feeding it, and PATCHED tracks the sockets you’ve patched.',
+      'Nothing is patched yet. SOCKET names the output you’ve picked, FED FROM shows the bus feeding it, and PATCHED says how many sockets are left to patch.',
     ],
     control: [
       'Slide SOCKET along THE STAGEBOX’S LINE OUTPUTS, or tap a socket on the panel.',
@@ -1199,7 +1200,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'The whole system starts dark: stage devices, console, processor, amplifiers and loudspeakers. Each device shows ● ON as you switch it on.',
-      'POWER UP · YOUR ORDER lists the steps you’ve taken. STEPS counts them, LAST names the latest, ORDER says whether it’s safe, and LIT tracks what is on.',
+      'POWER UP · YOUR ORDER lists the steps you’ve taken. STEPS says how many are left, LAST names the latest, ORDER says whether it’s safe, and LIT says how many devices are on.',
     ],
     control: [
       'Tap STEP and pick the next thing to switch on. You choose the order; ORDER tells you whether it’s safe.',
@@ -1227,7 +1228,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'Two strips of LEDs: the processor outputs above, the stagebox inputs below. Each probe gives you two readings to compare.',
       'On an input you read STAGEBOX LED (LIT or DARK) and CH METER (MOVING or FLAT). On an output, PROC OUT (SIGNAL or NONE) and RIGHT FEED (YES or NO).',
-      'LINE names the line you’re on; MARKED shows your verdicts.',
+      'LINE names the line you’re on; MARKED says how many lines are left to mark.',
     ],
     control: [
       'LINE: slide OUTPUTS FIRST, THEN EVERY INPUT, one line at a time.',
@@ -1313,7 +1314,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'The whole system starts on. Each device shows ○ OFF as you switch it off.',
-      'POWER DOWN · YOUR ORDER lists your steps. STEPS counts them, LAST names the latest, ORDER says whether the order is safe, and DARK tracks what is off.',
+      'POWER DOWN · YOUR ORDER lists your steps. STEPS says how many are left, LAST names the latest, ORDER says whether the order is safe, and DARK says how many devices are off.',
     ],
     control: [
       'STEP: tap the power-down steps in the order you think is safe.',
@@ -1380,7 +1381,7 @@ export const SS_TROUBLESHOOT_GUIDES: Record<string, ScreenGuide> = {
   'How the bench works': {
     intro: {
       learning: 'Building on LEARN’s source-forward method: how a symptom tells you where to start, and why the first reading that changes marks the fault.',
-      start: 'Find the three stations the symptom already cleared, then follow the walk to the processor’s NO SIGNAL. Read what ✓ and ✓✓ mean, then tap NEXT.',
+      start: 'Follow the worked example from the console input and tap the station where the walk stopped. Then read what ✓ and ✓✓ mean, and tap NEXT.',
     },
     seeing: [
       'A worked example on the bench map. The symptom already cleared the first three stations, so the walk began at the console.',
@@ -1388,7 +1389,7 @@ export const SS_TROUBLESHOOT_GUIDES: Record<string, ScreenGuide> = {
       'Below the map: twenty-two faults in five groups, how a walk starts, and what ✓ and ✓✓ mean.',
     ],
     control: [
-      'There’s nothing to operate here. Read the worked example, then tap NEXT to open the first fault group.',
+      'Tap the station on the map where the example walk stopped. The line under the map says whether you found it; then tap NEXT to open the first fault group.',
     ],
     changes: [
       'The walk stopped at the first reading that changed: that station is the answer. Every station after it would read NO SIGNAL too, so probing further tells you nothing new.',

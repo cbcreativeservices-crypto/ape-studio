@@ -575,8 +575,8 @@ export function makeLuteSoundPage(built: BuiltLute) {
             label: 'STEP',
             value: (shown - 1) / Math.max(1, n - 1),
             onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-            format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-            formatShort: () => `${shown} / ${n}`,
+            format: () => `${stage.title.toLowerCase()}`,
+            formatShort: () => `${shown}`,
           },
           n,
           shown - 1,
@@ -589,7 +589,7 @@ export function makeLuteSoundPage(built: BuiltLute) {
       [shown, n, stage, playing, motion],
     );
     const strikeBezel: BezelItem[] = [
-      { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+      { k: 'EVENT', v: `${shown}`, flex: 0.8 },
       ...C.sound.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, shown - 1)] ?? '—', flex: c.flex ?? 1 })),
     ];
     const swingFader = (id: string, value: number, set: (v: number) => void, still: string): DockParam => ({

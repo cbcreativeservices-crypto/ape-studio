@@ -6,7 +6,7 @@
  * No GuidedLessonSheet yet — the 'eq' lesson belongs to the audible Equalizer
  * effect lab; this lab gets its own entry when the content registry grows one.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -127,7 +127,8 @@ export function EqModuleScreen() {
     (navigation as { setParams: (p: { id: EqModuleId }) => void }).setParams({ id: EQ_MODULES[i].id });
   };
   // This lab banks no credit and kept no record, so it remembers which
-  // modules were OPENED (labVisits — progress, never credit). Guests: this
+  // modules were DONE (labVisits — progress, never credit; since phase 3 a
+  // module is marked when its own goal is met, see onDone below). Guests: this
   // session only (house guest rule, owner 2026-08-12).
   const guest = useLabEndGuest();
   const { resolved } = useEntitlement();
@@ -148,9 +149,16 @@ export function EqModuleScreen() {
   // Wait for `resolved` (the Room Design rule): before it a guest reads as a
   // member, so a guest's first module was SAVED to the device (night pass 2,
   // 2026-10-01). The effect re-runs when the tier lands.
+  //
+  // WORK DONE (phase 3, owner's decision 1, 2026-11-14: "Done = work done"): a
+  // module counts when its own goal or check is met — the module calls onDone —
+  // never on opening. Modules already counted stay counted (credit is never
+  // removed; labVisits is only added to).
+  const [doneId, setDoneId] = useState<EqModuleId | null>(null);
+  const onDone = useCallback(() => setDoneId(meta.id), [meta.id]);
   useEffect(() => {
-    if (focused && resolved) markLabVisit('eq', meta.id, { persist: !guest });
-  }, [focused, resolved, meta.id, guest]);
+    if (doneId && resolved) markLabVisit('eq', doneId, { persist: !guest });
+  }, [doneId, resolved, guest]);
   const nav = useLabNav({
     units: EQ_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
     index: idx,
@@ -209,7 +217,7 @@ export function EqModuleScreen() {
               // Rack module: full height, no host ScrollView — the module's own
               // RackUnit pins stage + dock and owns the scroll well.
               <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-                {width > 0 ? <Comp width={width} focused={focused} /> : null}
+                {width > 0 ? <Comp width={width} focused={focused} onDone={onDone} /> : null}
               </View>
             ) : (
               <ScrollView
@@ -218,7 +226,7 @@ export function EqModuleScreen() {
                 scrollEnabled={!scrollLocked}
               >
                 <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-                  {width > 0 ? <Comp width={width} focused={focused} /> : null}
+                  {width > 0 ? <Comp width={width} focused={focused} onDone={onDone} /> : null}
                 </View>
                 {/* The in-flow NEXT at the end of the reading (a rack well gets it from RackUnit). */}
                 <LabNextButton />

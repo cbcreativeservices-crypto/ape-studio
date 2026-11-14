@@ -56,7 +56,9 @@ test('Mixing: a guest\'s focal point and priorities are never written', () => {
 
 test('Mic Selection: a cold-start guest\'s first lesson is not persisted before the tier lands', () => {
   const s = read('src/screens/lab/micselect/MicSelectLabScreen.tsx');
-  assert.match(s, /if \(!resolved\) return;\n\s*markLabVisit\('micselect', STEPS\[step\]\.key, \{ persist: !noAccountRef\.current \}\);\n\s*\}, \[step, resolved, entitlement\]\);/);
+  // Changed on purpose (owner decision 1, 2026-11-14: "Done" = work done): a module is recorded
+  // when its goal is met, no longer on opening — still only once the tier is known.
+  assert.match(s, /if \(!resolved\) return;\n\s*for \(const key of met\) markLabVisit\('micselect', key, \{ persist: !noAccountRef\.current \}\);\n\s*\}, \[met, resolved, entitlement\]\);/);
 });
 
 test('Sound Systems hub never tells a guest that their work is saved', () => {

@@ -69,7 +69,10 @@ describe('#11 the guide host resets when the guide on screen changes, not only t
     // fired on Fast Refresh / StrictMode re-runs and closed the intro card unread).
     assert.match(
       code('src/features/lab/screenGuide/ScreenGuide.tsx'),
-      /const lastReset = useRef\(resetKey\);\s*useEffect\(\(\) => \{\s*if \(lastReset\.current === resetKey\) return;\s*lastReset\.current = resetKey;\s*setShown\(null\);\s*\}, \[resetKey\]\);/,
+      // Phase 3 (owner decision 2026-11-14, "do your recommendations for
+      // these": step intros inline after the first step): a step change also
+      // replaces the previous step's inline intro note (setInline(null)).
+      /const lastReset = useRef\(resetKey\);\s*useEffect\(\(\) => \{\s*if \(lastReset\.current === resetKey\) return;\s*lastReset\.current = resetKey;\s*setShown\(null\);\s*(?:setInline\(null\);\s*)?\}, \[resetKey\]\);/,
     );
   });
   it('Harmonic: MODE swaps the EXPLORE guide object (so the key changes); each is a fixed object (so a re-render never does)', () => {

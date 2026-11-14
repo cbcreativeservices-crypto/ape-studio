@@ -40,7 +40,7 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { READING_MAX_W, popupCard } from '../../../theme/readingColumn';
 import { Modal } from '../../../components/DimModal';
 import { useModalHandoff } from '../../../lib/confirm';
-import { NAV, nextButtonLabel } from './labNav';
+import { NAV, nextButtonLabel, relabelView, type UnitNoun } from './labNav';
 import type { LabNav } from './useLabNav';
 import { safeGoBack } from '../../../lib/safeGoBack';
 // Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained".
@@ -48,6 +48,19 @@ import { ScreenGuideHintAnchor, ScreenGuideKey, type ScreenGuide } from '../../.
 
 export { useLabNav } from './useLabNav';
 export type { LabNav, LabNavOptions, LabNavSub, LabNavUnit } from './useLabNav';
+
+/**
+ * The lab's ONE unit noun (owner decision 3, 2026-11-14: one name per unit
+ * of progress, used everywhere). A host says it once — PagedLab's `unitNoun`
+ * prop, or <LabNounProvider value="lesson"> around a lab that builds its own
+ * screen — and the strip, CONTENTS and LabEndScreen all read it. Default
+ * 'module' (what the strip always said).
+ */
+const LabNounContext = createContext<UnitNoun>('module');
+export const LabNounProvider = LabNounContext.Provider;
+export function useLabNoun(): UnitNoun {
+  return useContext(LabNounContext);
+}
 
 /** Hosts provide their LabNav so RackUnit can append LabNextButton to the well. */
 export const LabNavContext = createContext<LabNav | null>(null);
@@ -165,8 +178,18 @@ export function titleMinWidth(title: string): number {
 }
 
 /** The strip + the CONTENTS popup (a centered card, never a pull-down). */
-export function LabNavBar({ nav }: { nav: LabNav }) {
-  const { view, contentsOpen, setContentsOpen } = nav;
+export function LabNavBar({ nav, posLabel }: {
+  nav: LabNav;
+  /** ADDITIVE (2026-11-14, F4): the readout's lower line instead of the
+   *  unit's number, e.g. a Mixing Guide's style: GUIDE over POP. Never a
+   *  total. Omitted = the number (GUIDE over 7). */
+  posLabel?: string;
+}) {
+  const { contentsOpen, setContentsOpen } = nav;
+  // The strip speaks the lab's own unit noun (MODULE / LESSON / CHAPTER / STEP / PAGE / GUIDE / STAGE).
+  const noun = useLabNoun();
+  const labeled = relabelView(nav.view, noun);
+  const view = posLabel && !nav.ending && nav.index >= 0 ? { ...labeled, pos: posLabel } : labeled;
   const { height: winH } = useWindowDimensions();
 
   // Android BACK closes CONTENTS while it is open (registered only then).
@@ -251,13 +274,14 @@ export function LabNavBar({ nav }: { nav: LabNav }) {
         onRequestClose={() => setContentsOpen(false)}
         accessibilityViewIsModal
       >
-        {contentsOpen ? <LabContents nav={nav} maxHeight={listMax} /> : null}
+        {contentsOpen ? <LabContents nav={nav} maxHeight={listMax} noun={noun} /> : null}
       </Modal>
     </View>
   );
 }
 
-function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
+function LabContents({ nav, maxHeight, noun }: { nav: LabNav; maxHeight: number; noun: UnitNoun }) {
+  const Noun = noun[0].toUpperCase() + noun.slice(1);
   const { units, index, ending } = nav;
   const close = () => nav.setContentsOpen(false);
   // START OVER opens a confirm dialog: run it after this popup's Modal has
@@ -287,7 +311,7 @@ function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
                 accessibilityRole="button"
                 accessibilityState={{ selected: current }}
                 aria-pressed={current}
-                accessibilityLabel={`${u.kind === 'check' ? 'Check' : `Module ${i + 1}`}, ${u.title}${u.done ? ', done' : ''}${current ? ', current' : ''}`}
+                accessibilityLabel={`${u.kind === 'check' ? 'Check' : `${Noun} ${i + 1}`}, ${u.title}${u.done ? ', done' : ''}${current ? ', current' : ''}`}
               >
                 <Text style={[styles.rowMark, u.done && styles.rowMarkDone, current && styles.rowCurrent]}>{u.done ? '✓' : '○'}</Text>
                 <Text style={[styles.rowNum, u.kind === 'check' && styles.rowNumCheck, current && styles.rowCurrent]}>{num}</Text>

@@ -91,7 +91,8 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   useMarkWhen(Math.abs(thirdErr) < 0.05, () => mark(3));
   useMarkWhen(all, ctx.markDone);
 
-  const doneCell: BezelItem = { k: 'DONE', v: `${done.filter(Boolean).length}/6`, tint: all ? colors.green : colors.cyanBright, flex: 0.8 };
+  // Phase 3 (owner 2026-11-14): no "N of total" progress; the cell counts what is LEFT.
+  const doneCell: BezelItem = { k: 'LEFT', v: all ? 'NONE' : `${6 - done.filter(Boolean).length}`, tint: all ? colors.green : colors.cyanBright, flex: 0.8, caption: 'still to do' };
   const bezel: BezelItem[] =
     figure === 'fold' ? [
       { k: 'RATIO', v: fracLabel(c1), tint: c1In ? colors.green : colors.gold, caption: 'the fraction' },

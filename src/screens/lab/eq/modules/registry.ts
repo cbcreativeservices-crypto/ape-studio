@@ -36,7 +36,14 @@ export type EqModuleId =
   | 'challenges';
 
 /** Props every EQ Lab module component receives from EqModuleScreen. */
-export type EqModuleComponentProps = { width: number; focused: boolean };
+export type EqModuleComponentProps = {
+  width: number;
+  focused: boolean;
+  /** Work done (phase 3, owner's decision 1, 2026-11-14): the module calls this
+   *  when ITS OWN goal is met (its CHECK YOURSELF answered right, or its task
+   *  passed). The module counts then, never on opening. */
+  onDone?: () => void;
+};
 
 export type EqModuleDef = {
   id: EqModuleId;

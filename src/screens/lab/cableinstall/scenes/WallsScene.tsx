@@ -716,7 +716,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
             {wall ? (
               <View style={{ gap: 8 }}>
                 <Text style={styles.wallLabel}>
-                  WALL {wallIdx + 1} OF {CI_WALL_TYPES.length}: {wall.label}
+                  WALL {wallIdx + 1}: {wall.label}
                 </Text>
                 <View style={{ gap: 7 }}>
                   {stableShuffle(wall.actions).map(({ item: a }, i) => (

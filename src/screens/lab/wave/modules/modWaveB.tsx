@@ -28,10 +28,11 @@ import { GlassButton } from '../../../../components/GlassButton';
 import { DecayCurveGraph } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { PanelCard, dstyles } from '../../digital/bits';
+import { PlainModelNote } from '../../foundations/bits';
 import { LabPhoto, useLabPhoto } from '../../labPhoto';
 import { MATERIAL_PHOTOS } from '../materialPhotos';
-import { WaveLayout } from './waveLayout';
+import { FoldedReadoutGrid, WaveLayout } from './waveLayout';
 import { StageAspectReport, useStageTextScale } from '../../rack/stageAspect';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
@@ -530,7 +531,7 @@ export function CoverageModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
-          <Badge text="EFFECTIVE COVERAGE = THE −6 dB POINTS OF THE MODEL’S DIRECTIVITY PATTERN (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
+          <PlainModelNote>Effective coverage is the −6 dB points of the model’s directivity pattern (nominal at 1 kHz: wider in the lows, narrower in the highs).</PlainModelNote>
           <Text style={dstyles.caption}>
             Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
           </Text>
@@ -722,7 +723,7 @@ export function LineArrayModule(p: WaveModuleProps) {
       }
       readouts={
         <PanelCard>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="line_array"
             items={[
@@ -733,7 +734,7 @@ export function LineArrayModule(p: WaveModuleProps) {
               { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
-          <Badge text="EACH BOX = ONE 30°-NOMINAL SOURCE, HUNG AT THE CHOSEN SPLAY — HEAT SHOWS THE BOXES COUPLING AT LF AND BEAMING AT HF" />
+          <PlainModelNote>Each box is one 30°-nominal source, hung at the chosen splay. The heat shows the boxes coupling in the lows and beaming in the highs.</PlainModelNote>
           <Text style={dstyles.caption}>
             SECTION VIEW — x is distance into the venue, y is height (audience floor along the bottom). Drag the listener to a seat.
           </Text>
@@ -939,7 +940,7 @@ export function DelayAlignModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="delay_align"
             items={[
@@ -1123,7 +1124,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
                   <LabChip label="CARDIOID" selected={isCardioid} onPress={() => setPreset(true)} onLongPress={() => p.help('cardioid_sub')} />
                   <LabChip label="WRONG WAY" selected={isWrongWay} onPress={() => setPreset(false)} onLongPress={() => p.help('cardioid_sub')} />
                 </View>
-                <Badge text="CARDIOID = REAR DELAYED BY SPACING ÷ SOUND SPEED (c) AND POLARITY-INVERTED → BROADBAND REAR CANCEL · WRONG WAY = SAME DELAY, POLARITY NORMAL → THE NULL FLIPS TOWARD THE AUDIENCE (DEEPEST NEAR c/4d ≈ 71 Hz, d = SPACING)" />
+                <PlainModelNote>Cardioid: the rear sub is delayed by the spacing ÷ the speed of sound (c) and polarity-inverted, so the rear cancels across the band. Wrong way: the same delay with normal polarity flips the null toward the audience (deepest near c/4d ≈ 71 Hz, d = spacing).</PlainModelNote>
                 <View style={dstyles.chipRow}>
                   <LabChip
                     label="REAR POLARITY Ø INVERT"
@@ -1172,7 +1173,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
       }
       readouts={
         <PanelCard>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="cardioid_sub"
             items={[
@@ -1350,7 +1351,7 @@ export function BeamSteerModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="beam_steer"
             items={[
@@ -1364,7 +1365,7 @@ export function BeamSteerModule(p: WaveModuleProps) {
               { k: 'LEVEL @ LISTENER (vs 1 m)', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
-          <Badge text="Δt = d·sin θ / c PER BOX (d = BOX SPACING, θ = STEER ANGLE, c = SPEED OF SOUND) — A LINEAR DELAY GRADIENT TILTS THE WAVEFRONT; THE CABINETS NEVER MOVE" />
+          <PlainModelNote>Each box is delayed by Δt = d·sin θ / c (d = box spacing, θ = steer angle, c = speed of sound). A steady delay step tilts the wavefront; the cabinets never move.</PlainModelNote>
           {Math.abs(steer) > 40 ? (
             <Text style={dstyles.caption}>
               OVER-STEERED (past ~40° either way): the delay gradient outruns the array’s geometry — at higher frequencies grating lobes appear in the HEAT map, spraying energy off-beam.
@@ -1620,7 +1621,7 @@ export function EchoModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="echo"
             items={[
@@ -1651,7 +1652,7 @@ export function EchoModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>ECHO TIMELINE — ARRIVALS AT THE LISTENER</Text>
           <ArrivalTimeline arrivals={arrivals} thresholdMs={ECHO_FUSE_MS} />
-          <Badge text="STEMS = ARRIVALS: THE DIRECT SOUND, THEN THE FIRST AND SECOND REFLECTIONS · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO · THE ECHO READOUT TRACKS THE LOUDEST RED STEM, NOT THE LAST" />
+          <PlainModelNote>Stems are arrivals: the direct sound, then the first and second reflections. Amber fuses with the direct (under 50 ms); red reads as a separate echo. The echo readout tracks the loudest red stem, not the last.</PlainModelNote>
         </PanelCard>
       }
       mistakes={
@@ -1798,7 +1799,7 @@ export function ReverbModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="reverb_field"
             items={[
@@ -1809,7 +1810,7 @@ export function ReverbModule(p: WaveModuleProps) {
               { k: '1ST REFL GAP', v: `${gapMs.toFixed(1)} ms` },
             ]}
           />
-          <Badge text="ABSORB = HOW MANY WALLS SWAP CONCRETE → FIBERGLASS · SABINE MODEL, ASSUMING A 3 m CEILING" />
+          <PlainModelNote>ABSORB is how many walls swap concrete for fiberglass. A Sabine model, assuming a 3 m ceiling.</PlainModelNote>
           <Text style={dstyles.caption}>
             Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: thin porous absorption barely touches the lows.
           </Text>
@@ -1819,7 +1820,7 @@ export function ReverbModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>DECAY — LEVEL VS TIME</Text>
           <DecayCurveGraph rt60={rt500} preDelayMs={gapMs} refRt60={hardRt500} />
-          <Badge text="AMBER = CURRENT ROOM (SABINE RT60 @ 500 Hz) · DIM = THE UNTREATED ALL-CONCRETE ROOM · GAP = DIRECT→FIRST-REFLECTION TIME" />
+          <PlainModelNote>Amber is the current room (Sabine RT60 at 500 Hz); dim is the untreated all-concrete room; the gap is the time from the direct sound to the first reflection.</PlainModelNote>
           <Text style={dstyles.eyebrow}>THE BUILDUP — DIRECT → EARLY → LATE</Text>
           <ArrivalTimeline arrivals={arrivals} thresholdMs={80} />
         </PanelCard>
@@ -2119,7 +2120,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
                     />
                   ))}
                 </View>
-                <Badge text="TEXTBOOK-TYPICAL TEACHING α VALUES — NOT ISO 354 PRODUCT DATA" />
+                <PlainModelNote>Textbook-typical teaching absorption values, not ISO 354 product data.</PlainModelNote>
               </View>
             ),
           },
@@ -2222,7 +2223,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             material is treated as the whole partition: heavy concrete stops almost everything, glass and drywall let
             the bass out, curtains and foam barely stop anything. Sweep the frequency down and watch more escape.
           </Text>
-          <Badge text="WHAT GETS THROUGH USES A TEACHING MASS-LAW MODEL (TRANSMISSION LOSS TL ≈ 20·log10(m·f) − 47 dB, m = WALL MASS PER m²) WITH EXAGGERATED FADING. REAL ISOLATION DEPENDS ON CONSTRUCTION, GAPS AND FLANKING — MEASURE IT WITH A CALIBRATED METER." />
+          <PlainModelNote>What gets through uses a teaching mass-law model (transmission loss TL ≈ 20·log10(m·f) − 47 dB, m = wall mass per m²) with exaggerated fading. Real isolation depends on construction, gaps and flanking: measure it with a calibrated meter.</PlainModelNote>
           <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
           <Text style={dstyles.body}>
             • Build a cardioid: two SUBs 1.2 m apart (SRC key), rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
@@ -2238,7 +2239,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-          <ReadoutGrid
+          <FoldedReadoutGrid
             help={p.help}
             helpKey="room_builder"
             items={[

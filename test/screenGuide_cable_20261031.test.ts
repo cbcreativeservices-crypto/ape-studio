@@ -440,7 +440,8 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     assert.ok(T.includes('REVIEW ▾'));
   });
   it('noun "page"; no check row (no understanding check authored) and no optional pages', async () => {
-    assert.match(PL, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(PL, /noun=\{unitNoun\}/);
     const { understandingFor } = await import('../src/features/lab/understanding.ts');
     assert.equal(understandingFor('connector-select'), null, 'a check would add a CHECK row — update the END guide');
     assert.match(CS, /labId="connector-select"/);

@@ -135,8 +135,8 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
           label: 'STEP',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-          formatShort: () => `${shown} / ${n}`,
+          format: () => `${stage.title.toLowerCase()}`,
+          formatShort: () => `${shown}`,
         },
         n,
         shown - 1,
@@ -146,7 +146,7 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
       { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [
-      { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+      { k: 'EVENT', v: `${shown}`, flex: 0.8 },
       { k: 'LIPS', v: 'BUZZING', flex: 1 },
       { k: 'AIR IN THE TUBE', v: shown <= 1 ? '—' : shown === 2 ? 'PULSE RUNS' : 'STANDING WAVE', flex: 1.4 },
       { k: 'BELL', v: shown <= 2 ? '—' : shown === 3 ? 'TURNS SOME BACK' : 'SOUND LEAVES', flex: 1.3 },

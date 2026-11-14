@@ -116,7 +116,7 @@ export function EqLabHomeScreen() {
         </View>
         <Text style={styles.body}>
           Start by seeing the real frequency content of the room you’re in — then learn to shape
-          it. Lessons build in a deliberate order: each one introduces only what the next needs.
+          it. Modules build in a deliberate order: each one introduces only what the next needs.
         </Text>
 
         {EQ_SECTION_META.map((sec) => {

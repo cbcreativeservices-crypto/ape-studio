@@ -143,8 +143,8 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
           label: 'STEP',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-          format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-          formatShort: () => `${shown} / ${n}`,
+          format: () => `${stage.title.toLowerCase()}`,
+          formatShort: () => `${shown}`,
         },
         n,
         shown - 1,
@@ -158,7 +158,7 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
     [shown, n, stage, playing, motion, variant, lesson.model.variants],
   );
   const strikeBezel: BezelItem[] = [
-    { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+    { k: 'EVENT', v: `${shown}`, flex: 0.8 },
     { k: 'HEAD', v: shown >= 2 ? 'PUSHED IN' : 'AT REST', flex: 1.2 },
     { k: 'AIR', v: shown >= 3 ? 'PUSHED DOWN' : 'AT REST', flex: 1.3 },
     { k: 'OPEN END', v: open ? 'CLEAR' : 'ON FLOOR', flex: 1.1 },

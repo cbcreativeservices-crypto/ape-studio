@@ -127,7 +127,7 @@ export function WhyEqModule(p: EqModuleComponentProps) {
           width={Math.max(120, p.width)}
           aspect={GRAPH_ASPECT}
           title="EQ RESPONSE"
-          badge="DESIGNED RESPONSE — CALCULATED"
+          badge="Designed response: worked out from the math, not measured."
           render={(w, h) => <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} width={w} totalHeight={h} mainColor={gc} />}
           controls={
             <View style={styles.controls}>
@@ -153,7 +153,8 @@ export function WhyEqModule(p: EqModuleComponentProps) {
         more effective than raising everything around it, but boosting is not inherently wrong.
       </Text>
 
-      <CheckQuestion spec={CHECK} />
+      {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+      <CheckQuestion spec={CHECK} onSolved={p.onDone} />
     </View>
   );
 }

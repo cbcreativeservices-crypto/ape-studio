@@ -154,7 +154,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     gvp: ['BOARD', 'RANGE', '±12 dB', 'BAND', 'LEVEL', '1-OCTAVE · 10 BANDS', '1/3-OCTAVE · 31 BANDS', 'RESET', 'ACTUAL combined response'],
     multiband: ['HPF', 'LOW', 'LMF', 'HMF', 'HIGH', 'LPF', 'BAND', 'FREQ', 'GAIN', 'ACTIVE', 'BYPASS', 'BAND ON', 'BAND OFF', 'RESET', 'BYP', 'COMBINED', 'HEAR IT', 'PINK NOISE', 'SWEEP'],
     graphic: ['VIEW', 'MAG', 'PHASE ±180°', 'FILTERS', 'SHOWN', 'HIDDEN', 'BAND', 'LEVEL', 'MAGNITUDE', 'PHASE', 'EXAMPLE', 'CLEAR', 'THE SLIDERS ARE NOT THE RESPONSE'],
-    liveEq: ['VIEW', 'LOW CUT', 'BAND', 'MIC', 'SPECTRUM ONLY', 'EQ ONLY', 'COMBINED', 'BAND ON', 'BAND OFF', 'MIC LIVE — PAUSE', 'MIC PAUSED — RESUME', 'dBFS · UNCALIBRATED APPROXIMATE', 'SLOPE', 'dB/OCT', 'FREQ', 'GAIN'],
+    liveEq: ['VIEW', 'LOW CUT', 'BAND', 'MIC', 'SPECTRUM ONLY', 'EQ ONLY', 'COMBINED', 'BAND ON', 'BAND OFF', 'MIC LIVE — PAUSE', 'MIC PAUSED — RESUME', /* phase 3 (owner 2026-11-14, decision 3): plain model note */ 'uncalibrated phone mic', 'SLOPE', 'dB/OCT', 'FREQ', 'GAIN'],
     findFreq: ['LVL', 'BAND', 'RESULT', 'PASS', 'MISS', 'LEVEL', 'NEW SIGNAL', 'CHECK', 'NEXT LEVEL ›', 'Target', 'Your selection', 'Difference', 'REFERENCE', 'SIGNAL', 'HEAR IT', 'PINK NOISE', 'SWEEP'],
     matchCurve: ['TARGET', 'MATCH', 'HIDDEN', 'BANDS', 'BAND', 'SCORE', 'HIDE', 'NEW', 'EXCELLENT', 'CLOSE', 'KEEP TRYING'],
     fixSignal: ['CASE', 'SCENARIO', 'RESULT', 'FIXED', 'NOT YET', 'BOOMY KICK', 'HARSH VOCAL', 'STAGE RUMBLE', 'HONKY GUITAR', 'SIBILANT VOCAL', 'CHECK', 'REFERENCE', 'SIGNAL', 'HEAR IT'],

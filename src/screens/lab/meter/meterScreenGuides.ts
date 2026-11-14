@@ -36,7 +36,7 @@ export const METER_HOME_GUIDE: ScreenGuide = {
   },
   seeing: [
     'This lab teaches you to read the ten displays engineers look at every day, one module each. Then Signal Detective puts them to work.',
-    'Each row is a module, and a ✓ means you’ve opened it. SEE WHAT’S LEFT lists the ones you haven’t.',
+    'Each row is a module, and a ✓ means you’ve answered every CHECK YOURSELF on it right. SEE WHAT’S LEFT lists the ones still to do.',
     'The measurement tools measure; this lab shows you what their pictures mean. USE WHAT YOU LEARNED links to those tools and the ⓘ GUIDED LESSON.',
   ],
   control: [
@@ -69,19 +69,19 @@ export const METER_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'This is your list for the lab. WHAT’S LEFT shows the modules you haven’t opened yet, and each one is a link.',
-    'The ones you’ve opened fold into a single ✓ line, so only the unfinished work stands out.',
+    'This is your list for the lab. WHAT’S LEFT shows the modules still to do, and each one is a link.',
+    'The ones you’ve done fold into a single ✓ line, so only the unfinished work stands out.',
     'Once all eleven are done, the title changes to LAB COMPLETE.',
   ],
   control: [
     'Tap a module that’s still left to jump straight to it.',
-    'REVIEW ▾ on the ✓ line unfolds the modules you’ve opened. Tap any one to open it again.',
+    'REVIEW ▾ on the ✓ line unfolds the modules you’ve done. Tap any one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens Module 1 and clears nothing.',
     'DONE · BACK TO LABS goes back one screen. Came here from a module? It returns to this lab’s menu (if you entered through it). Came from the menu? It takes you out of the lab.',
   ],
   changes: [
-    'Each module you open moves to the ✓ line, so this list shrinks as you go.',
-    'Signal Detective joins the ✓ line as soon as you open it. Its own lab under AUDIO FUNDAMENTALS › Signal counts as finished only once you’ve answered every question of every case right.',
+    'A module moves to the ✓ line once its CHECK YOURSELF questions are all answered right. Opening it is not enough.',
+    'Signal Detective joins the ✓ line once you answer all four questions of one case right. Its own lab under AUDIO FUNDAMENTALS › Signal counts as finished only once you’ve answered every question of every case right.',
     'Going back into a module takes nothing away, so its ✓ stays.',
   ],
   teaches: [
@@ -90,7 +90,7 @@ export const METER_END_GUIDE: ScreenGuide = {
     'A reading only means something once you know what the display measures and how fast it reacts.',
   ],
   tryThis: [
-    'Jump to a module you haven’t opened and read its display before you touch a control. What can you tell from the picture alone?',
+    'Jump to a module still on the list and read its display before you touch a control. What can you tell from the picture alone?',
     'Use PRACTICE AGAIN FROM THE START to run the eleven modules in order once more. Your ✓ line stays as it is.',
   ],
 };
@@ -173,7 +173,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     },
     seeing: [
       'This classic VU meter gives you two answers: a needle on an arc scale for the average, a PEAK lamp for fast peaks. Watch both.',
-      'The needle takes about 300 ms to respond, by design, as the badge says. Here, 0 VU sits at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
+      'The needle takes about 300 ms to respond, by design, as the note says. Here, 0 VU sits at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
       'NDL MAX is the highest a 300 ms average reached, in dBFS. Compare it with PEAK, RMS and CREST (their gap).',
     ],
     control: [

@@ -128,7 +128,8 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // the glass (fxAnim EchoFlow) + the badge strip
-      'IN ▸', '▸ OUT', 'DELAY', 'TRY CLICK', 'TEACHING MODEL', 'L', 'R',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'IN ▸', '▸ OUT', 'DELAY', 'TRY CLICK', 'is a model', 'L', 'R',
       // bezel readouts, dock keys, tray choices (literal in the source)
       'TIME', 'FDBK', 'MIX', 'COLOR', 'SOURCE', 'PING-PONG', 'REPEAT DAMPING', 'DARK 2k', 'TAPE 6k', 'OFF 20k', '100% WET', 'PINK NOISE',
       // the rack, the header and LAB NOTES

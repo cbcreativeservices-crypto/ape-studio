@@ -44,7 +44,7 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
     'Inside most modules, the display is on top, readouts sit on its frame and the controls are in the dock at the bottom. Scroll below for notes and a check. Tap ⓘ beside a module’s title to have that screen explained.',
     'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab; a wrong answer can be tried again straight away.',
     'RELATED TOOLS opens the SPECTRUM ANALYZER / RTA, the EQUALIZER EFFECT LAB (the one-band lab you can hear) and the Q & BANDWIDTH CALC.',
-    'SEE WHAT’S LEFT lists the modules you have not opened; ‹ leaves the lab.',
+    'SEE WHAT’S LEFT lists the modules whose goal is not met yet; ‹ leaves the lab.',
   ],
   changes: [
     'Modules 1–3 show what frequency content looks like, what EQ is for, and the three kinds of EQ.',
@@ -72,8 +72,8 @@ export const EQ_END_GUIDE: ScreenGuide = {
     start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'WHAT’S LEFT lists the EQ Lab modules you haven’t opened yet. The CHECK row, for the lab’s questions, is last on the list. You see LAB COMPLETE once every module is opened and the check is passed.',
-    'Modules you’ve opened, and the check once you pass it, fold into one ✓ DONE row; tap REVIEW ▾ to list them. CHECK YOUR UNDERSTANDING holds the same short quiz as the lab menu.',
+    'WHAT’S LEFT lists the EQ Lab modules whose goal is not met yet. The CHECK row, for the lab’s questions, is last on the list. You see LAB COMPLETE once every module is done and the check is passed.',
+    'Modules you’ve done, and the check once you pass it, fold into one ✓ DONE row; tap REVIEW ▾ to list them. CHECK YOUR UNDERSTANDING holds the same short quiz as the lab menu.',
   ],
   control: [
     'Tap a module’s row to open that module. Tapping the CHECK row keeps you here, because the check is on this screen.',
@@ -81,7 +81,7 @@ export const EQ_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS goes back one screen. If you came from FINISH on the last module, that’s the lab menu; if you came from the menu, it takes you out of the lab.',
   ],
   changes: [
-    'A module counts once you open it; its row moves from the list to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
+    'A module counts when its own goal is met (its CHECK YOURSELF, or its task); its row then moves to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
     'If your progress cannot be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [
@@ -188,7 +188,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'FIXED: the camera is bolted on the lamp — the EQ works only at 2.00 kHz; Q and WIDTH read FIXED.',
       'SEMI-PARAMETRIC: PAN moves camera and bell together; the width stays the same.',
       'FULLY PARAMETRIC: ZOOM too. Zoom in, see less of the room — a narrower band, a HIGHER Q.',
-      'Gain is not part of this analogy — it is the next lesson.',
+      'Gain is not part of this analogy — it is the next module.',
     ],
     teaches: [
       'Fixed, semi-parametric and fully parametric EQ differ in the controls they give you.',
@@ -447,7 +447,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'Your room’s live 1/3-octave spectrum from the phone microphone, with your EQ drawn over it as an amber curve once you touch a band fader or pick a LOW CUT.',
       'Bars: dB below full scale (0 to −90), blue quiet to red loud, with peak marks. Gray slots: too narrow to measure.',
-      'With no EQ set, the line under the display reads dBFS · UNCALIBRATED APPROXIMATE.',
+      'With no EQ set, the line below names the uncalibrated phone mic as the source.',
       'Watch VIEW, LOW CUT, BAND (its frequency, or OFF) and MIC.',
     ],
     control: [

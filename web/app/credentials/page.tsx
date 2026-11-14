@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero, Section, List, CTARow } from "@/components/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/credentials",
   title: "Credentials",
   description:
     "Pro Audio Training Academy credentials are a verifiable record of completed educational work — how they are earned, verified, and what they do and do not represent.",
-};
+  image: "/og/og-credentials.png",
+});
 
 export default function Page() {
   return (

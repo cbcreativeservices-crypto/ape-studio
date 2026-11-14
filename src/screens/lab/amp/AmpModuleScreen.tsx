@@ -224,7 +224,8 @@ export function AmpModuleScreen() {
     <>
       {checks.length ? (
         <>
-          <SectionTitle>CHECK YOURSELF · {answeredCount} OF {checks.length}</SectionTitle>
+          {/* What is LEFT, never "N of total" (owner's decision 2, phase 3). */}
+          <SectionTitle>CHECK YOURSELF{answeredCount < checks.length ? ` · ${checks.length - answeredCount} TO ANSWER` : ' · ✓'}</SectionTitle>
           {checks.map((c) => (
             <CheckCard key={c.id} check={c} onAnswered={(ok) => onCheck(c.id, ok)} />
           ))}
@@ -333,7 +334,7 @@ export function AmpModuleScreen() {
             numbers, so it carries the ⓘ alone. */}
         <LabHeader
           title={endState ? LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
-          subtitle={endState ? 'What’s left' : `Module ${mod.num} of ${AMP_MODULES.length}${done ? ' · completed' : ''}`}
+          subtitle={endState ? 'What’s left' : `Module ${mod.num}${done ? ' · completed' : ''}`}
           right={
             <AccuracyNote compact detail="This lab MODELS amplifier behavior on your phone — the numbers and curves are teaching tools, not bench measurements. For real amplifier work use proper test gear." />
           }

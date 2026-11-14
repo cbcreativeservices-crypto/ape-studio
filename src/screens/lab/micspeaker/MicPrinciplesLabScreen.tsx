@@ -43,7 +43,11 @@ import { levelColor, levelColorForDb, rampColors } from '../../../features/tools
 // header's accuracy chip gives its spot to the ⓘ "this screen, explained" key.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { MIC_END_GUIDE, MIC_SCREEN_GUIDES, type MicSectionId } from './micSpeakerScreenGuides';
-import { notOpenedDetail, visitCounts } from '../foundations/endRows';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
+import { CheckCreditScope } from '../foundations/CheckCredit';
+
+/** The two modules with no CHECK YOURSELF card: they count on NEXT (phase 3). */
+const MIC_NO_CHECK: ReadonlySet<string> = new Set(['capsule', 'pop']);
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -56,7 +60,7 @@ import { captionedRack } from '../foundations/captionedRack';
 import { MIC_CAPTIONS } from '../foundations/bezelCaptions';
 
 /** Every section's rack with first-visit bezel captions (phase 2, 2026-11-14). */
-const RackUnit = captionedRack(MIC_CAPTIONS);
+const RackUnit = captionedRack(MIC_CAPTIONS, { modelNotes: true, drawingPlaceholder: true });
 import type { DockParam } from '../rack/rackTypes';
 import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../rack/stageAspect';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
@@ -332,7 +336,8 @@ const MISTAKES: { kind: 'correct' | 'grille' | 'cup' | 'away' | 'far' | 'switch'
 // ── Small shared bits ────────────────────────────────────────────────────────
 
 function IllustrationBadge({ text }: { text?: string }) {
-  return <Text style={styles.badge}>{text ?? 'ILLUSTRATIVE MODEL — DRAWN FROM THE EQUATIONS, NOT A MEASUREMENT'}</Text>;
+  // One plain sentence-case note (owner's decision 3, 2026-11-14; checker K1).
+  return <Text style={styles.modelNote}>{text ?? 'An illustrative model drawn from the equations. It is not a measurement.'}</Text>;
 }
 
 /** A thin labeled meter bar (RN — works on every client). */
@@ -402,10 +407,10 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
               width={width}
               aspect={MIC_ASPECT}
               render={(w) => <MicCutaway width={w} running={focused} />}
-              badge="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current"
+              badge="A model cutaway: the coil’s travel is exaggerated about 1,000×; amber is the induced current."
               title="INSIDE THE CAPSULE"
             />
-            <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
+            <IllustrationBadge text="A moving-coil dynamic cutaway, an illustrative model: the coil’s travel is exaggerated about 1,000×; amber is the induced current (⊗/⊙ mark its direction, and flip as it reverses)." />
             <DisplayGuideButton onPress={() => help('capsule')} />
             <Text style={styles.readout}>e = B · l · v (field × wire length × speed) — voltage tracks the coil’s VELOCITY</Text>
             <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
@@ -1443,7 +1448,7 @@ function WhyCutaway({ viz, width, blocked, help }: { viz: MsVizModule | null; wi
   return (
     <View style={{ gap: 8 }}>
       {viz ? <CutawayViz viz={viz} width={width} blocked={blocked} /> : <VizUnavailableCard />}
-      <IllustrationBadge text="CUTAWAY — diaphragm · front entry (top) · rear ports (sides). Green dots = sound reaching each entry" />
+      <IllustrationBadge text="A cutaway: the diaphragm, the front entry (top) and the rear ports (sides). Green dots are sound reaching each entry." />
       <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('cupping_why')} delayLongPress={300}>
         <Text style={styles.caption}>
           A cardioid is a PRESSURE-GRADIENT design: sound reaches the diaphragm from the front AND
@@ -1603,9 +1608,11 @@ export function MicPrinciplesLabScreen() {
   useEffect(() => {
     registerLabUnits(MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS);
   }, []);
-  useEffect(() => {
-    markLabUnit(MIC_PRINCIPLES_LAB_KEY, SECTIONS[sectionIdx].key);
-  }, [sectionIdx]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a module counts when
+  // its CHECK YOURSELF card(s) are answered right (MISTAKES: all three picture
+  // rounds), not when it is opened. CAPSULE and PLOSIVES have no card: they
+  // count when the learner moves on from them with NEXT. Stored credit stays.
+  const creditSection = (i: number) => markLabUnit(MIC_PRINCIPLES_LAB_KEY, SECTIONS[i].key);
 
   /**
    * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
@@ -1632,7 +1639,10 @@ export function MicPrinciplesLabScreen() {
     units: SECTIONS.map((sec) => ({ id: sec.key, title: sec.title, done: banked.has(sec.key) })),
     index: sectionIdx,
     ending,
-    go: openSection,
+    go: (i: number) => {
+      if (i === sectionIdx + 1 && MIC_NO_CHECK.has(SECTIONS[sectionIdx].key)) creditSection(sectionIdx);
+      openSection(i);
+    },
     finish: () => setEnding(true),
     unEnd: () => setEnding(false),
   });
@@ -1685,19 +1695,20 @@ export function MicPrinciplesLabScreen() {
           <LabEndScreen
             labTitle="Microphone Principles"
             labId="af_mic_principles"
-            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: notOpenedDetail(MIC_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
-            howItCounts={visitCounts('section')}
+            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: moduleGoalDetail(MIC_NO_CHECK.has(sec.key) ? 'next' : 'check', MIC_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
+            howItCounts={goalCounts({ next: true })}
             cleared={banked}
             unreadable={progressUnreadable}
             mode="credit"
-            noun="section"
             onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
             onPracticeAgain={() => openSection(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
           />
         ) : (
-          <s.Comp key={s.key} viz={viz} focused={focused} help={help} wellTop={wellTop} wellBottom={wellBottom} />
+          <CheckCreditScope key={s.key} onComplete={() => creditSection(sectionIdx)}>
+            <s.Comp key={s.key} viz={viz} focused={focused} help={help} wellTop={wellTop} wellBottom={wellBottom} />
+          </CheckCreditScope>
         )}
       </View>
       <GuidedLessonSheet
@@ -1727,6 +1738,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  modelNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.5, color: colors.amber },
   readoutBad: { color: '#ff6b5e' },
   meterLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSecondary },

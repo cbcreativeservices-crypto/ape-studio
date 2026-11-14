@@ -29,7 +29,7 @@
  * the same: change the three together or not at all.
  *
  * NEVER RENAME OR REMOVE A KEY: every key is a live glossary entry's exact
- * name, and all 22 pages take their chips from here.
+ * name, and all 24 pages take their chips from here.
  */
 import type { Term } from './bits';
 
@@ -74,7 +74,7 @@ export const GA_TERMS = {
   'Sound variation': 'Another version of the same sound, a little different, so repeats do not sound identical.',
   'Random container': 'A holder for several versions of a sound that picks one at random each time the game asks. The name is Wwise’s. FMOD Studio calls the same idea a multi instrument.',
   'Sequence container': 'A holder that plays its sounds one after another, in an order you set. The name is Wwise’s.',
-  'Layer container': 'A general name for a holder that plays several sounds at the same time, stacked into one bigger sound. No tool on page 20 uses this exact name: in Wwise, sounds that play together sit in a Blend Container.',
+  'Layer container': 'A general name for a holder that plays several sounds at the same time, stacked into one bigger sound. No tool on page 22 uses this exact name: in Wwise, sounds that play together sit in a Blend Container.',
   'Blend container': 'Wwise’s name for a holder that plays several sounds together and can mix between them as a game value changes.',
   'Avoid-repeat setting': 'A setting that stops the same version playing twice in a row when several exist.',
   'Machine-gun effect': 'What you hear when the exact same clip repeats: the ear notices immediately, and it sounds like a machine, not a person.',

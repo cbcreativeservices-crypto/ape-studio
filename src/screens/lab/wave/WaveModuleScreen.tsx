@@ -4,7 +4,7 @@
  * (kit/LabNavBar), scroll, and the 'wave' guided lesson wired into every
  * module's ⓘ/long-press help.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +20,8 @@ import { ScrollLockProvider } from '../LabShell';
 import { LabPhotoLightbox } from '../labPhoto';
 import { WAVE_MODULES, type WaveModuleId } from './modules/registry';
 import { WAVE_SCREEN_GUIDES } from './waveScreenGuides';
-import { notOpenedDetail, visitCounts } from '../foundations/endRows';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
+import { CheckCreditScope } from '../foundations/CheckCredit';
 import {
   ReflectionModule, AbsorptionModule, DiffusionModule, RefractionModule,
   DiffractionModule, InterferenceModule, CombModule, StandingWaveModule,
@@ -94,11 +95,12 @@ export function WaveModuleScreen() {
   const focused = useIsFocused();
   const meta = WAVE_MODULES.find((m) => m.id === route.params.id) ?? WAVE_MODULES[0];
   const Comp = COMPONENTS[meta.id];
-  // R6c: mark this module viewed → the Wave Physics lab completes once every
-  // module has been seen (fires mark_lab_complete server-side).
-  useEffect(() => {
-    if (focused) markLabUnit('af_wave_physics', meta.id);
-  }, [focused, meta.id]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a module counts when
+  // its CHECK YOURSELF card(s) are answered right (CheckCreditScope around the
+  // module below; Room Builder's four cards all count), not when it is
+  // opened. Credit already stored is never touched. The lab still completes
+  // (mark_lab_complete) once every module is credited.
+  const creditModule = useCallback(() => markLabUnit('af_wave_physics', meta.id), [meta.id]);
   const [width, setWidth] = useState(0);
   // Modules lock the ScrollView during their drags via the lockScroll prop
   // (owner 2026-07-29 drag-vs-scroll fix).
@@ -146,8 +148,8 @@ export function WaveModuleScreen() {
     <LabEndScreen
       labTitle="Wave Physics Laboratory"
       labId="af_wave_physics"
-      units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: notOpenedDetail(WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
-      howItCounts={visitCounts('module')}
+      units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail('check', WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+      howItCounts={goalCounts()}
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"
@@ -190,7 +192,9 @@ export function WaveModuleScreen() {
           <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
             {width > 0 ? (
               <LabPhotoLightbox>
-                <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+                <CheckCreditScope key={meta.id} onComplete={creditModule}>
+                  <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+                </CheckCreditScope>
               </LabPhotoLightbox>
             ) : null}
           </View>
@@ -199,7 +203,9 @@ export function WaveModuleScreen() {
           <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
             {width > 0 ? (
               <LabPhotoLightbox>
-                <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+                <CheckCreditScope key={meta.id} onComplete={creditModule}>
+                  <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+                </CheckCreditScope>
               </LabPhotoLightbox>
             ) : null}
           </View>

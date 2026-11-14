@@ -649,7 +649,7 @@ const d = ROTORS.drum;
 export const SPK_LESSON: Lesson = {
   id: 'SPK',
   labId: 'drums',
-  title: 'Amplified speakers & Leslie',
+  title: 'Amplified Speakers and Leslie',
   subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside',
   noun: { one: 'speaker cabinet', many: 'speaker cabinets' },
   model: CAB.model,

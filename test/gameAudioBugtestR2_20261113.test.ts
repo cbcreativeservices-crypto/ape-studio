@@ -15,7 +15,7 @@ import { GA_TAKES_MAX, gaFact, gaInitial, gaReduce, type GaAction, type GaState 
 import { GA_DEMO_LINE_MAX, gaGenre } from '../src/screens/lab/gameaudio/pages/data/gaGenres.ts';
 import { benchAdvance, benchStart, faultActions, faultFixed, faultOpen, faultDef, strayLoops, type Bench } from '../src/screens/lab/gameaudio/pages/data/gaFaults.ts';
 import { memoryRowSpoken, type MemoryRow } from '../src/screens/lab/gameaudio/pages/data/gaBudget.ts';
-import { G04 } from '../src/screens/lab/gameaudio/pages/guides/p04.ts';
+import { G23 } from '../src/screens/lab/gameaudio/pages/guides/p23.ts';
 import { G06 } from '../src/screens/lab/gameaudio/pages/guides/p06.ts';
 import { G07 } from '../src/screens/lab/gameaudio/pages/guides/p07.ts';
 import { G10 } from '../src/screens/lab/gameaudio/pages/guides/p10.ts';
@@ -97,23 +97,26 @@ describe('R2-GA1-01: after START THE FAULT every setting looks as it did, until 
 
 /* ── R2-GA1-02, -06, -07, -12, -13: page 4 ───────────────────────────────── */
 
+  // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
+  // The listener lesson of the old page 4 is its own page now (pages/p23Listener.tsx, guide G23): the
+  // three checks below read the same lines and the same code where they went. The words are unchanged.
 describe('page 4', () => {
   it('R2-GA1-02: the camera’s "nearer the center" is said for FACING 0° only; what is always true is said in general', () => {
-    const changes = G04.changes.join('\n');
+    const changes = G23.changes.join('\n');
     assert.doesNotMatch(changes, /From the camera the generator sits nearer the center, because/);
     assert.match(changes, /From the camera, left and right follow the picture, so FACING no longer changes GEN PAN\. At 0° the generator sits nearer the center\./);
-    const c = read('pages/p04Games.tsx');
+    const c = read('pages/p23Listener.tsx');
     assert.match(c, /At 0°, for your ears the generator is far to the right\./);
     assert.doesNotMatch(c, /They sit less far to the side, because the camera is high above them/);
   });
   it('R2-GA1-06: the camera goal counts only the LISTENER tray’s own choice, not STRATEGY’s demonstration', () => {
-    const c = code('pages/p04Games.tsx');
+    const c = code('pages/p23Listener.tsx');
     assert.match(c, /hit: choseCamera && since\('listener:camera'\) > 0/);
     assert.match(c, /<ListenerTray onCamera=\{\(\) => setChoseCamera\(true\)\} \/>/);
     assert.deepEqual(gaGenre('strategy')!.demo.actions, [{ type: 'listener', mode: 'camera' }], 'the demonstration still hands the camera over');
   });
   it('R2-GA1-07: GEN PAN is "—" for a generator that is not played; OPEN WORLD leaves it VIRTUAL', () => {
-    const c = code('pages/p04Games.tsx');
+    const c = code('pages/p23Listener.tsx');
     assert.match(c, /if \(!voices\.length\) return \{ v: '—'/);
     assert.match(c, /if \(voices\.every\(\(v\) => v\.state === 'virtual'\)\) return \{ v: '—'/);
     const s = run(fresh(), ...gaGenre('sandbox')!.demo.actions);

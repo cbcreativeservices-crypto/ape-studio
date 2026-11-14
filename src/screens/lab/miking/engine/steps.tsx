@@ -20,6 +20,7 @@ import { ScrollView } from 'react-native';
 import { MikingRack, type MikingRackSpec } from './rack/MikingRack';
 import { Note } from './kit';
 import { LISTEN_LINES, mentionsListening } from './listenLine.ts';
+import { foldLong } from './goDeeper';
 // Screen Guide (owner 2026-10-31): the step on screen, in its on-screen words.
 import { stepInfoKey, stepInfoOf, type MikingStepInfo } from '../mikingScreenGuides';
 
@@ -98,7 +99,7 @@ export function PageSteps({ steps: raw }: { steps: MikingStep[] }) {
       <MikingRack key={s.key} spec={s.rack}>
         {head}
         {listen}
-        {s.well}
+        {foldLong(s.well)}
         {tail}
       </MikingRack>
     );
@@ -107,7 +108,7 @@ export function PageSteps({ steps: raw }: { steps: MikingStep[] }) {
     <>
       {head}
       {listen}
-      {s.body}
+      {foldLong(s.body)}
       {tail}
     </>
   );

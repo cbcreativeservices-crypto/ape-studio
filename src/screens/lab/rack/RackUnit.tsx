@@ -54,6 +54,7 @@ import { SoundOffLine, soundOffLineText } from './silentPath';
 import { captionsIdFor, markCaptionsSeen, useCaptionsUnseen } from './bezelFirstSight';
 import { laneStepA11y, laneStepTries } from './laneStep';
 import { TRAY_READ_MIN, peekHeight, shouldPeek, shouldTrayFold } from './peekRules';
+import { DrawingPlaceholder, ModelNote } from './ModelNote';
 
 /** Tablet glass height as a share of the window height, per declared size
  *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
@@ -207,9 +208,25 @@ export function RackUnit({
   const glassRef = useRef<View>(null);
   const bezelRef = useRef<View>(null);
   const dockRef = useRef<View>(null);
+  const rootRef = useRef<View>(null);
+  const stageRef = useRef<View>(null);
   useGuideRegion('display', glassRef);
   useGuideRegion('readouts', bezelRef);
   useGuideRegion('dock', dockRef);
+  // SHOWN AGAIN, MEASURED AGAIN (phase 3): a rack that mounted hidden (a
+  // first visit opens on LEARN) measured 0, and the web does not always send
+  // a new layout when `display` comes back, so the glass never drew. When the
+  // rack becomes active it measures its parts itself (keepShown).
+  useEffect(() => {
+    if (!active) return undefined;
+    const t = setTimeout(() => {
+      glassRef.current?.measure?.((_x, _y, w) => keepShown(setGlassW, Math.round(w) - 2));
+      rootRef.current?.measure?.((_x, _y, _w, h) => keepShown(setRootH, Math.round(h)));
+      stageRef.current?.measure?.((_x, _y, _w, h) => keepShown(setStageBlockH, Math.round(h)));
+      dockRef.current?.measure?.((_x, _y, _w, h) => keepShown(setDockH, Math.round(h)));
+    }, 0);
+    return () => clearTimeout(t);
+  }, [active]);
   const scrollWellTo = useCallback((y: number) => {
     wellRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
   }, []);
@@ -780,9 +797,9 @@ export function RackUnit({
   );
 
   return (
-    <View style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => setRootH(Math.round(e.nativeEvent.layout.height))}>
+    <View ref={rootRef} style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => keepShown(setRootH, Math.round(e.nativeEvent.layout.height))}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
-      <View style={styles.stageWrap} onLayout={(e) => setStageBlockH(Math.round(e.nativeEvent.layout.height))}>
+      <View ref={stageRef} style={styles.stageWrap} onLayout={(e) => keepShown(setStageBlockH, Math.round(e.nativeEvent.layout.height))}>
         {/* Not rendered at all when collapsed — a zero-height canvas would
             still be mounted and still be drawing frames. */}
         {stageCollapsed ? null : (
@@ -793,10 +810,13 @@ export function RackUnit({
           onTouchStart={peek ? () => setPeek(false) : undefined}
           {...mouseToo(peek ? () => setPeek(false) : undefined)}
         >
-        <View ref={glassRef} collapsable={false} style={[styles.glass, { height: glassH }, folded && { marginTop: -Math.round((glassH - peekHeight(glassH)) / 2) }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
+        <View ref={glassRef} collapsable={false} style={[styles.glass, { height: glassH }, folded && { marginTop: -Math.round((glassH - peekHeight(glassH)) / 2) }]} onLayout={(e) => keepShown(setGlassW, Math.round(e.nativeEvent.layout.width) - 2)}>
           {glassW > 0 ? (
             <StageAspectReport.Provider value={glassReport}>{stage.render(glassW, glassH - 2)}</StageAspectReport.Provider>
           ) : null}
+          {/* "drawing…" (phase 3): never an empty black box — before the
+              first measure, and while the lab says its drawing is not ready. */}
+          {glassW <= 0 || stage.drawing ? <DrawingPlaceholder /> : null}
           {/* Smoked-glass sheen (ToolsHub TileGlass language). Decorative. */}
           <LinearGradient
             pointerEvents="none"
@@ -819,7 +839,11 @@ export function RackUnit({
             <BezelReadouts items={bezelItems ?? []} onGuide={stage.onGuide} onHelp={help} captions={showCaptions} unitsChip />
           </View>
         ) : null}
-        {stage.badge ? (
+        {stage.modelNote ? (
+          // Phase 3 (owner's decision 3): the disclosure as one plain
+          // sentence, still pinned with the display.
+          <ModelNote text={stage.modelNote} />
+        ) : stage.badge ? (
           // Honesty badge: silk-screened on the FACEPLATE under the unit —
           // never floated over the glass (owner 2026-08-23: no hover objects
           // may block the display). Still pinned with it. Two lines + a gentle
@@ -964,7 +988,7 @@ export function RackUnit({
 
       {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
       {/* A touch on the dock unfolds a folded display (row 9). */}
-      <View ref={dockRef} collapsable={false} onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))} onTouchStart={peek ? () => setPeek(false) : undefined} {...mouseToo(peek ? () => setPeek(false) : undefined)}>{dockFor(false)}</View>
+      <View ref={dockRef} collapsable={false} onLayout={(e) => keepShown(setDockH, Math.round(e.nativeEvent.layout.height))} onTouchStart={peek ? () => setPeek(false) : undefined} {...mouseToo(peek ? () => setPeek(false) : undefined)}>{dockFor(false)}</View>
 
       {/* Blank faceplate below the raised dock — calm, non-interactive. Gone
           while a tray is open: the dock drops to the bottom instead. */}
@@ -995,7 +1019,8 @@ export function RackUnit({
             setFull(false);
           }}
           render={stage.render}
-          badge={stage.badge}
+          badge={stage.modelNote ?? stage.badge}
+          badgePlain={!!stage.modelNote}
           glassW={glassW}
           controls={dockFor(true)}
           overlay={trayNodeFull}
@@ -1071,6 +1096,17 @@ function LaneStepKey({ dir, param }: { dir: -1 | 1; param: Extract<DockParam, { 
     </Pressable>
   );
 }
+/**
+ * A HIDDEN RACK MEASURES 0 (phase 3, seen on screen): LabShell keeps the rack
+ * mounted under `display: 'none'` on LEARN / CHECK, and since a first visit
+ * now opens on LEARN, the glass reported a width of 0 there and never drew
+ * again on the hop back to EXPLORE (a "drawing…" box for good). A measure of
+ * 0 or less is the hidden state, not a size: the last real one is kept.
+ */
+function keepShown(set: (v: number) => void, v: number): void {
+  if (v > 0) set(v);
+}
+
 /** How long a lane step waits for the lab to take a try before the next. */
 const LANE_RETRY_MS = 60;
 

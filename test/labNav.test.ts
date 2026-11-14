@@ -12,30 +12,32 @@ import { describe, it } from 'node:test';
 import { NAV, createTapLock, navView, nextButtonLabel } from '../src/screens/lab/kit/labNav.ts';
 
 describe('navView — a plain lab of 8 modules', () => {
-  it('module 1: ⏮ and PREV dimmed, NEXT live, readout MODULE 1 / 8', () => {
+  // Owner decision 2 (quick pick, 2026-11-14): "N of total" progress counters: remove them — the strip reads MODULE 3, not MODULE / 3 / 8.
+  it('module 1: ⏮ and PREV dimmed, NEXT live, readout MODULE 1 (no total)', () => {
     const v = navView(0, 8, false);
     assert.equal(v.startOn, false);
     assert.equal(v.prevOn, false);
     assert.equal(v.nextLabel, NAV.next);
     assert.equal(v.noun, 'MODULE');
-    assert.equal(v.pos, '1 / 8');
+    assert.equal(v.pos, '1');
     assert.equal(v.a11y.next, 'Next module');
     assert.equal(v.a11y.prev, 'Previous module');
     assert.equal(v.a11y.start, 'Back to the first module');
-    assert.match(v.a11y.pos, /Module 1 of 8/);
+    assert.match(v.a11y.pos, /^Module 1\. /);
+    assert.doesNotMatch(v.a11y.pos, / of \d/);
   });
   it('a middle module: everything live', () => {
     const v = navView(2, 8, false);
     assert.equal(v.startOn, true);
     assert.equal(v.prevOn, true);
     assert.equal(v.nextLabel, NAV.next);
-    assert.equal(v.pos, '3 / 8');
+    assert.equal(v.pos, '3');
   });
   it('the last module: NEXT becomes FINISH — never null, never disabled', () => {
     const v = navView(7, 8, false);
     assert.equal(v.nextLabel, NAV.finish);
     assert.equal(v.a11y.next, "Finish the lab and see what's left");
-    assert.equal(v.pos, '8 / 8');
+    assert.equal(v.pos, '8');
   });
   it('past the end is clamped to the last module', () => {
     assert.equal(navView(12, 8, false).nextLabel, NAV.finish);
@@ -60,7 +62,7 @@ describe('navView — one-unit labs and empty labs', () => {
     assert.equal(v.prevOn, false);
     assert.equal(v.startOn, false);
     assert.equal(v.nextLabel, NAV.finish);
-    assert.equal(v.pos, '1 / 1');
+    assert.equal(v.pos, '1');
   });
   it('no units at all still offers FINISH (labs never dead-end)', () => {
     assert.equal(navView(0, 0, false).nextLabel, NAV.finish);
@@ -76,7 +78,7 @@ describe('navView — INTRO before unit 1', () => {
     assert.equal(v.startOn, false);
     assert.equal(v.prevOn, false);
     assert.equal(v.nextLabel, NAV.next);
-    assert.match(v.a11y.pos, /before module 1 of 8/);
+    assert.match(v.a11y.pos, /before module 1\./);
   });
   it('with an intro, PREV on module 1 is live (it returns to the intro); without, dimmed', () => {
     assert.equal(navView(0, 8, false, undefined, true).prevOn, true);
@@ -85,14 +87,14 @@ describe('navView — INTRO before unit 1', () => {
   });
 });
 
-describe('navView — sub-step mode (MODULE 3 · STEP 2 / 4)', () => {
+describe('navView — sub-step mode (MODULE 3 · STEP 2)', () => {
   it('reads the module in the noun and the step in the position', () => {
     const v = navView(2, 8, false, { i: 1, count: 4 });
     assert.equal(v.noun, 'MODULE 3 · STEP');
-    assert.equal(v.pos, '2 / 4');
+    assert.equal(v.pos, '2');
     assert.equal(v.a11y.next, 'Next step');
     assert.equal(v.a11y.prev, 'Previous step');
-    assert.match(v.a11y.pos, /Module 3 of 8, step 2 of 4/);
+    assert.match(v.a11y.pos, /Module 3, step 2\./);
   });
   it('module 1 step 1: PREV dimmed; module 1 step 2: PREV live (a step back)', () => {
     assert.equal(navView(0, 8, false, { i: 0, count: 4 }).prevOn, false);

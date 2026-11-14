@@ -77,6 +77,7 @@ export function StageFullScreen({
   onClose,
   render,
   badge,
+  badgePlain = false,
   glassW,
   aspect,
   title = 'DISPLAY',
@@ -94,6 +95,9 @@ export function StageFullScreen({
   onBack?: () => void;
   render: (w: number, h: number) => ReactNode;
   badge?: string;
+  /** ADDITIVE (phase 3, 2026-11-14): `badge` is a plain sentence (RackStage
+   *  modelNote): drawn in sentence-case type, not the all-caps badge face. */
+  badgePlain?: boolean;
   /** The width the stage is drawn at on the glass (or inline). Sets
    *  StageTextScale (floored at 1) so overlay labels grow with the drawing,
    *  and is published as StageGlassWidth. Omit = 1. */
@@ -408,7 +412,7 @@ export function StageFullScreen({
           </View>
         ) : null}
         {badge && !fold.badgeInFoot ? (
-          <Text style={styles.badge} numberOfLines={2}>
+          <Text style={[styles.badge, badgePlain && styles.badgePlain]} numberOfLines={2}>
             {badge}
           </Text>
         ) : null}
@@ -421,7 +425,7 @@ export function StageFullScreen({
         {controls || (fold.badgeInFoot && badge) ? (
           <View style={styles.foot}>
             {fold.badgeInFoot && badge ? (
-              <Text style={styles.badgeInFoot} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.95}>
+              <Text style={[styles.badgeInFoot, badgePlain && styles.badgePlainFoot]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.95}>
                 {badge}
               </Text>
             ) : (
@@ -491,6 +495,8 @@ const styles = StyleSheet.create({
   controls: { paddingTop: 0 },
   foot: { flexDirection: 'row', alignItems: 'center', minHeight: 22, paddingHorizontal: 10, gap: 8 },
   footSpacer: { flex: 1 },
+  badgePlain: { fontFamily: fonts.barlowRegular, fontSize: 12, letterSpacing: 0 },
+  badgePlainFoot: { fontFamily: fonts.barlowRegular, fontSize: 11, letterSpacing: 0 },
   badgeInFoot: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 0.5, color: colors.textSubAlt },
   dockHandle: { minHeight: 22, paddingHorizontal: 14, justifyContent: 'center' },
   dockHandleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSubAlt },

@@ -29,12 +29,12 @@ import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, ReadoutRow
 import { GearGlyph } from './art/gearArt';
 import { benchMap, chapterOneMap, MAP_H, MAP_W, SystemMap, type MapEdge, type MapNode, type MapVariant } from './art/SystemMap';
 import { FieldKey, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
-import { PLOT_BADGE, layoutToBeams, layoutToPlaced } from './plot';
+import { layoutToBeams, layoutToPlaced } from './plot';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
+import { leftWord } from './fixHelpers';
 
-const MAP_BADGE = 'SYSTEM MAP — ILLUSTRATIVE · LEDs chase simulated program';
 
 /* ── 1 · The complete system ────────────────────────────────────────────── */
 
@@ -133,7 +133,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: MAP_BADGE,
+        modelNote: 'A drawing of the system; its lights follow a made-up program, not sound.',
         initialParam: 'station',
         hideDragTag: true,
         bezel: [
@@ -218,10 +218,10 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: MAP_BADGE,
+        modelNote: 'A drawing of the system; its lights follow a made-up program, not sound.',
         initialParam: 'next',
         bezel: [
-          { k: 'LIT', v: `${picked.length} / ${STATION_ORDER.length}` },
+          { k: 'LIT', v: leftWord(picked.length, STATION_ORDER.length, 'ALL LIT') },
           { k: 'LAST', v: last ? STATION_LABEL[last].toUpperCase() : '—', flex: 1.6 },
           { k: 'THREAD', caption: 'order so far', v: wrongAt >= 0 ? 'WRONG' : complete ? 'COMPLETE' : 'OK', tint: wrongAt >= 0 ? colors.red : complete ? colors.green : colors.amber },
         ],
@@ -282,7 +282,7 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'type',
         hideDragTag: true,
         // The system's NAME and SCALE were bezel cells, cropped to
@@ -292,7 +292,7 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'TYPE', v: `${SYSTEM_TYPES.indexOf(t) + 1} OF 10` },
           { k: 'BOXES', v: `${t.layout.length}`, flex: 0.7 },
-          { k: 'SEEN', v: `${seen.size}/10`, flex: 0.8 },
+          { k: 'SEEN', v: leftWord(seen.size, 10, 'ALL SEEN'), flex: 0.8 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={t.name} subtitle={t.scale}>
@@ -344,7 +344,7 @@ function PageVenueMatch({ ctx }: { ctx: PageCtx }) {
         return (
           <UnderstandingCheck
             key={v.id}
-            eyebrow={`VENUE ${i + 1} OF ${VENUE_CASES.length}`}
+            eyebrow={`VENUE ${i + 1}`}
             question={v.venue}
             options={options}
             correct={0}
@@ -404,7 +404,7 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'config',
         hideDragTag: true,
         // The configuration's NAME cropped in its bezel cell ("TOPS AND SUBS
@@ -477,7 +477,7 @@ function PageChooseConfig({ ctx }: { ctx: PageCtx }) {
       {CONFIG_CASES.map((c, i) => (
         <UnderstandingCheck
           key={c.id}
-          eyebrow={`CASE ${i + 1} OF ${CONFIG_CASES.length}`}
+          eyebrow={`CASE ${i + 1}`}
           question={c.situation}
           options={[name(c.correct), ...c.distractors.map(name)]}
           correct={0}

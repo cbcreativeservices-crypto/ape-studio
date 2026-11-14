@@ -1,4 +1,4 @@
-# F8 report · lab fix round 1, phase 1 (2026-11-14)
+# F8 report · lab fix round 1, phases 1–3 (2026-11-14)
 
 Group F8: Oscillators, Noise, Harmonics, FM, Modular, Envelope, Autotune, Tuning, Drum Tuning, Cymatics, Harmonograph, Speech, Ear Training, Bass.
 
@@ -151,3 +151,124 @@ No `npx tsc` (coordinator's rule). Every edited .ts/.tsx was parse-checked with 
 **Cross-lab effect to note:** `tuning/components/check.tsx` (`UnderstandingCheck`) is also used by DJ Systems, Connector Selection, Cable Install, De-Esser and others. For any check WITH a `wrong` map, a second DIFFERENT wrong pick now also shows the explanation, and a repeat of the same wrong option no longer counts as a second miss. This is the shared check card's rule (SHARED_API S2 §1); no other lab's test pins the old line.
 
 Pinned tests changed on purpose in phase 2 (owner's words above each): `tuningCheckRetry_20261107.test.ts:43-44`, `screenGuide_speech_20261031.test.ts:494` (`pageDetail` allowed: a line only, no credit), `labHubUnreadable_20261003.test.ts:292,303` (Cymatics end screens read the visits AND the check through `useCymaticsEnd`, the EQ rule; this was my phase-1 change).
+
+---
+
+# Phase 3 (owner's decisions 1–4)
+
+**Summary:** the four decisions are done in all 14 labs, plus the coordinator's S2 add-on.
+- Tests: `labFixes_20261114_F8.test.ts` now has 95 tests, and all pass.
+- The other tests that read the files I touched were re-run: 2,929 tests, 4 failures. All 4 failures are in other groups' labs, not in my files: Vacuum Tube `labsGroupBBugHunt:190`, Game Audio `patternP10b:263`, and two in Patchbay `screenGuide_patchbay:170` ("MODULE" no longer in its guide).
+- The preview bundle builds (HTTP 200). Every edited file was parse-checked; no tsc was run.
+- **Not seen on screen.** My one tab waited about two minutes and the shared preview never painted (the bundle was still downloading under load). I closed the tab; the checker round can look.
+
+## (4) Ear Training: play first
+- **Answers locked until every clip has sounded.**
+  - The answer chips (and their `onAnswer` guard) stay locked until every clip of the trial has actually sounded.
+  - Pure helper: `earAnswersUnlocked(plays)` in `eartraining/earLabEnd.ts`.
+  - A clip counts only after the output gate says yes, so sound off can never unlock the chips.
+  - Replays stay free, within the level's own cap.
+- **The line under the clips while locked** (`earPlayFirstLine`):
+  - With sound on: "Play every clip first…".
+  - With sound off: "This drill needs sound, and sound is off… Turn sound on (Profile › AUDIO OUTPUT) to practice, or go to the drill list; nothing here is lost."
+  - With sound off, a **TO THE DRILL LIST ›** key (`safeGoBack`) also shows. Navigation is never blocked.
+  - The key no longer says "‹ BACK", which is a retired navigation word (labNavLaw).
+- Stored stats are untouched.
+- The drill guide's control line says the chips open once each clip has sounded.
+
+## (2) No "N of total" progress counters
+- **Removed or turned into a count of what is LEFT:**
+  - Ear Training: "Trial n · Streak", "Level n · name", "n right this round", and the end rows ("Level 2 cleared…", "Tried · level 1 · …"). The "Level 2 of 5" leftover S2 saw is gone.
+  - Envelope: "n OF 6 CORRECT" → "n STILL TO GET RIGHT" / "ALL CORRECT".
+  - Speech: "n of 7 correct" (and its spoken version) → "n correct this visit · k more completes the module".
+  - Drum Tuning:
+    - "x of y decisions right" → "k decisions still to get right";
+    - YOUR RUN "Decisions: x reached";
+    - ch 2 WALKED "n LEFT";
+    - ch 3 TAPPED "n LEFT", plus the map legend and reveal note ("n still to tap");
+    - ch 4 "k relationships still to hear";
+    - ch 7 "k cases still to clear", "k more needed", and the review line "Cases cleared: n".
+  - Tuning:
+    - ch 5 and ch 10 STEP readouts read the number alone;
+    - ch 14's DONE n/6 became **LEFT** ("still to do" caption);
+    - NEXT STEP (k left).
+  - Cymatics myth check: "n right".
+- **Kept, because they are values, not progress:**
+  - fader positions (FRET 3 of 12, the STEPS fader's "n/12", TURNS "n / 8");
+  - the Gallery's compare pick limit;
+  - every count of what is left.
+
+## (1) Done = work done
+- **Cymatics:** a module was marked on OPENING (a focus effect). It is now marked on NEXT › / FINISH › (`beforeAdvance`); a CONTENTS jump marks nothing.
+  - Visits already stored stay. Nothing is saved before the tier resolves.
+  - End title: ALL MODULES OPENED → **ALL MODULES DONE**.
+  - `howItCounts` and the end guide now say opening alone does not count.
+- **Envelope and Speech:** every page is declared, as the S2 add-on asked.
+  - Envelope: 5 `manualDone` (a slider or choice) and 1 `reading` (Envelope vs Propagation).
+  - Speech: 9 `manualDone` (a main key) and 1 `reading` (Voices Differ).
+  - S2's BASELINE for both is now 0.
+  - Each hands-on module names its missing piece on WHAT'S LEFT (`ENVELOPE_STILL_TO_DO`, `SPEECH_STILL_TO_DO`).
+  - NEXT alone no longer counts a hands-on module. Stored marks stay.
+- **Already work-based, checked:**
+  - Tuning (each chapter's own task; acknowledgement chapters on NEXT);
+  - Drum Tuning (decisions and the hands-on step);
+  - Ear Training (level 2 cleared at 80 %);
+  - the eight LabShell rack labs (their check).
+
+## (3) One progress word per lab; S1 and S3
+- **Tuning and Drum Tuning say CHAPTER** on the strip, CONTENTS and the end screen (`<LabNounProvider value="chapter">`). Drum's step mode reads "CHAPTER n · STEP m".
+  - Three Drum display readouts or faders also said STEP. They are renamed so STEP means only the strip's step: ch 2 seat → ORDER, ch 2 known condition → TURNS, ch 3 method → STAGE. The guides follow.
+- **Envelope and Speech say "module"**, the strip's default: every guide line and on-screen line that called the unit a "page" now says module (for example "✓ THIS MODULE IS DONE").
+  - S2's late list also allows `unitNoun="page"`. I kept "module" because the work was already done and it matches the strip, and nothing in those labs still says "page" for a unit.
+- **Cymatics and Ear Training** already say module.
+- **S1 (first-step-only intro popups):** SHARED_API "Phase 3 · S1" says it is automatic for Drum Tuning, Tuning, Envelope and Speech (one ScreenGuideHost per screen). None of my labs draws a per-step popup of its own, so there was nothing lab-local to remove.
+- **S3 model note:** a plain sentence (≤ 100 characters, sentence case) replaces the all-caps badge face on every rack lab in my group. The badge text stays as the fallback.
+  - Oscillators, Noise and Harmonics (model and REAL SIGNAL notes), FM, Harmonograph, Bass, Autotune and Modular.
+  - Tuning: `TUNING_MODEL_NOTES` in `tuning/rackLayout.tsx`.
+  - Drum Tuning: `DRUM_MODEL_NOTES` in `modules/shared.tsx`, used by DrumRack.
+  - Cymatics: its own sentences for Nodes, Harmonics, Harmony and Change; `plainBadge()` for Other Systems.
+  - Guides that quoted the old badge face now describe the note.
+  - **"drawing…" placeholder:** automatic for the first frame. No lab of mine draws its picture late, so there was no `drawing` flag to set.
+  - **Not converted:** the `ExpandableFigure` badges in Envelope, Speech and Drum Tuning, which sit outside a rack. They are drawn by the shared `ExpandableFigure`, which has no plain mode. This is not a SHARED NEED, because the badge still discloses.
+
+## Pinned tests changed on purpose in phase 3 (owner's words above each)
+- `screenGuide_eartraining:519-520`
+- `emulatorPass_20261014:44-45, 136`
+- `labsAEvening1_20261002:80`
+- `labsGroupBBugPass20260930Day:51`
+- `labsANightPass2_20261001:59` (the Cymatics row)
+- `screenGuide_cymatics:160, 563`
+- `screenGuide_tuning:129, 311`
+- `tuningLabRack:141`
+- `screenGuide_drumtuning:139-145`
+- `screenGuide_envelope`: 7 pins
+- `screenGuide_speech`: 5 pins
+- `screenGuide_harmonic:125, 135`, `screenGuide_noise:113, 215`, `screenGuide_oscillator:115, 221` (the badge names are now model notes)
+- `labFixes_20261114_S2:446` (envelope and speech BASELINE 0)
+- my own F8 pins (ch 7 review, GOT IT line, pageDetail, Cymatics howItCounts)
+
+## SHARED NEEDS after phase 3
+- **SHARED NEED 3** (kit/LabNavBar.tsx header wrap at 320) is still open, unchanged from above.
+- No new SHARED NEEDS.
+
+## Checker K4 fixes (owner decision 3: plain model notes; decision 2: no totals)
+
+| K4 item | Fix | File |
+|---|---|---|
+| K4-1 Tuning ch 5: "EXPLANATORY MODEL · NOT A MEASUREMENT" drawn inside the SVG, with the envelope line through it | The SvgText is removed. The plain sentence under the figure already says it | `tuning/components/harmonicLadder.tsx` |
+| K4-1 Tuning ch 5: the full-screen badge used BADGE_MODEL | The badge is now `TUNING_MODEL_NOTES[BADGE_MODEL]` (the plain sentence) | `tuning/chapters/ch4Harmonics.tsx` |
+| K4-2 LEARN entries for Oscillators and Noise quoted the old caps badges | Both entries describe the note under the display instead (only those two entries were edited) | `src/features/lab/guidedLessons/content.ts` (~519, ~664) |
+| Envelope captions | `CHART_HONESTY` reads "An illustrative model, drawn from the settings, not a measurement." Chart caption: "Up is relative level; across is time." Speech caption, plus Duration's badge and caption: "Typical values, for illustration, not measured; real sounds vary." The guide follows | `envelope/EnvelopeChart.tsx`, `EnvelopeLabScreen.tsx`, `envelopeScreenGuides.ts` |
+| Cymatics intro figures | Three caps lines → sentence case, both the figure note and its full-screen badge | `cymatics/modules/modIntro.tsx` |
+| Cymatics Membrane | The badge is now plain sentences (drum, kettle, speaker), also passed as `modelNote` | `cymatics/MembraneStudioScreen.tsx` |
+| Bass | "Readout: exact values from the string model." | `BassLabScreen.tsx` |
+| Drum Tuning: the badges on the two drawings outside a rack | HARDWARE uses `DRUM_MODEL_NOTES[MODEL_BADGE]`; THE AIR reads "A model: the air inside couples the two heads." (The rack ones were already plain through DrumRack.) | `ch2Prepare.tsx`, `ch4Whole.tsx` |
+| Drum Tuning STAGE "1 / 7" | Now reads "1", with no total | `ch3Method.tsx` |
+| Drum Tuning TURNS lane value cut off at 390 | Shortened to "finger-tight" / "n rounds" / "n turns" | `ch2Prepare.tsx` |
+
+- **Tests:** 4 new F8 K4 tests; the F8 file now has 98 tests.
+  - Pins updated with the owner's words: `cymaticsFullScreen:109`, `factAuditR3_D_labs:35` (the violet fact kept, in sentence case), `screenGuide_envelope:131, 323-324`.
+  - Re-runs: 632 + 1,910 tests, 0 failures.
+- Parse check: ok. The 8142 bundle returns HTTP 200.
+- **Seen on screen:** Envelope at 390. The chart caption is the plain sentence and the strip reads "MODULE 1" with no total. Tuning's strip reads "CHAPTER" ("Chapter 1. Opens the contents").
+- **Not seen on screen:** Tuning ch 5's beating figure. Another agent navigated my tab to StagePlotLab mid-look, so I left that tab alone rather than close it under them.

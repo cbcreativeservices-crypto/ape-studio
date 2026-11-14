@@ -69,6 +69,9 @@ export function ExpandableFigure({
         onClose={() => setFull(false)}
         render={render}
         badge={badge}
+        /* A sentence-case model note (round 2, 2026-11-14) keeps its plain
+           font in full screen too; an old ALL-CAPS badge keeps the badge font. */
+        badgePlain={!!badge && badge !== badge.toUpperCase()}
         glassW={w}
         aspect={aspect}
         title={title}

@@ -41,7 +41,9 @@ describe('lab-credit units (af_foundations)', () => {
     // Format-TOLERANT on purpose: this reads production source, so anchoring on
     // exact indentation or a trailing comma turns any reformat into a false
     // failure (the first version did exactly that and flaked once).
-    assert.match(screen, /markLabUnit\(\s*FOUNDATIONS_LAB_KEY\s*,\s*String\(step\)\s*\)/);
+    // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): the
+    // unit id is still String(index), now marked when the module's goal is met.
+    assert.match(screen, /markLabUnit\(\s*FOUNDATIONS_LAB_KEY\s*,\s*String\(i\)\s*\)/);
     // One `key: 'mN'` per step in the STEPS array.
     const stepKeys = screen.match(/\bkey:\s*'m\d+'/g) ?? [];
     assert.equal(stepKeys.length, 14);

@@ -271,7 +271,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
             <>
               <YourRun lines={[
                 turned ? `You turned a rod ${turned} time${turned === 1 ? '' : 's'}; the head now reads ${spread.toFixed(0)} ¢ spread${beat >= 0.05 ? ` with a ${beat.toFixed(1)} Hz beat` : ''}.` : 'You have not turned a rod yet — the ADJUST step is worth a visit.',
-                reached ? `Decisions: ${reached} of ${SOUND_SCENARIOS.length} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
+                reached ? `Decisions: ${reached} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="What does turning ONE rod change besides that lug's pitch?" a="The head's balance: an uneven head makes two slightly different notes at once, and they beat as a warble." />

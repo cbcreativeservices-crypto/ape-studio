@@ -109,7 +109,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     control: [
       '▶ plays a clip and ■ stops it. At the top level each clip allows two plays while you answer, so make the first listen count.',
-      'Tap an answer chip to answer. NEXT TRIAL › draws the next tone; after ten, NEXT ROUND › starts a new round.',
+      'Play every clip first: the answer chips open once each one has sounded. NEXT TRIAL › draws the next tone; after ten, NEXT ROUND › starts a new round.',
       'If your speaker or headphones can’t play deep bass, check “My playback can’t reproduce sub-bass.” From the next trial, tones at or below 80 Hz are skipped.',
       '⤢ FULL SCREEN enlarges the SPECTRUM with the ▶ chips under it, so you can replay a tone while you watch its peak. FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
     ],

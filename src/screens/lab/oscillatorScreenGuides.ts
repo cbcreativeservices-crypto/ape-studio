@@ -45,7 +45,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
     seeing: [
       'On top, the wave: two cycles traveling left to right, colored by level — redder toward full scale.',
       'Below: its recipe. Bars 1 to 12 are the first twelve harmonics; a bar’s height is how strong that harmonic is next to bar 1, the fundamental.',
-      'Readouts: WAVE, F0 (the fundamental), VIEW (IDEAL or SPEAKER). Badge: ANALYTIC MODEL — NOT A MEASUREMENT; with SPKR on, PHONE SPEAKER OUTPUT — 150 Hz HPF APPLIED.',
+      'Readouts: WAVE, F0 (the fundamental), VIEW (IDEAL or SPEAKER). Under the display: drawn from the math, not measured; with SPKR on, the 150 Hz high-pass filter.',
     ],
     control: [
       '▶ in the header plays the wave you see; ■ stops it. A tap on the display does the same.',

@@ -65,7 +65,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     seeing: [
       'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',
       'On OUT: the gray dry click, then the amber wash (reverb) falling as a straight slope. Dashed guides sit 30 dB apart; the dim line is the previous sweep.',
-      'RT60, PRE, MIX: your settings. TEACHING MODEL: a drawing of the idea, not a measurement.',
+      'RT60, PRE, MIX: your settings. The line below says the picture is a model, not a meter.',
     ],
     control: [
       'Tap ▶ in the header, or tap the glass, to play the source through the reverb; ■ stops it. Every control works while it plays.',

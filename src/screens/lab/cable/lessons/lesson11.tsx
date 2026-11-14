@@ -409,7 +409,7 @@ function ChallengeBlock({
       {pickStage && pick ? (
         <>
           <Eyebrow
-            text={`${pickStage.title} · ${Math.min(prog.pickIdx + 1, pickStage.picks.length)} OF ${pickStage.picks.length}`}
+            text={`${pickStage.title} · PICK ${Math.min(prog.pickIdx + 1, pickStage.picks.length)}`}
           />
           <Text style={s.body}>{pickStage.intro}</Text>
           <OnePick

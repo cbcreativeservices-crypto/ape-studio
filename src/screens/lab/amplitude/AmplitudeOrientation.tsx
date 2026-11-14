@@ -818,7 +818,7 @@ function RampCheck({ onPassed, practice = false }: { onPassed?: () => void; prac
     <View style={styles.checkCard}>
       <View style={styles.checkHead}>
         <Text style={styles.checkTitle}>{practice ? 'TEST YOURSELF' : CHECK_TITLE}</Text>
-        <Text style={styles.checkProgress}>{q + 1}/3</Text>
+        <Text style={styles.checkProgress}>QUESTION {q + 1}</Text>
       </View>
       <Text style={styles.checkQ}>{CHECK_QS[q]}</Text>
 

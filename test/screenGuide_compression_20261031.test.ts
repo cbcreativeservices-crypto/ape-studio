@@ -134,7 +134,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       'LAB NOTES', 'GAIN REDUCTION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
       // the stage badge + the CLICK drawing's note (fxAnim)
       // the CLICK is drawn as the real 5 ms ping since D41 J4 (was 'DRUM-HIT MODEL')
-      'TEACHING MODEL', '5 ms CLICK',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'is a model', '5 ms CLICK',
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'THRESH', 'RATIO', 'ATTACK', 'RELEASE', 'MAKEUP', 'CLICK 120', '0.5 ms FAST', '25 ms PUNCH'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'THRESH'],
@@ -431,7 +432,7 @@ describe('6. the compressor drawing and the GR meter run the same click (D41 J4)
     assert.equal(+drawn(-40, 25, true).drop.toFixed(1), 0, '25 ms PUNCH leaves it untouched');
     assert.match(GUIDES.explore.tryThis[2], /so the spike passes untouched/);
     assert.match(GUIDES.learn.tryThis[1], /0\.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0\.0/);
-    assert.match(GUIDES.explore.seeing.join(' '), /Drawn as a TEACHING MODEL, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
+    assert.match(GUIDES.explore.seeing.join(' '), /The drawing is a model, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /DRUM-HIT|drawn hit still clamps|longer drawn hit/);
     assert.doesNotMatch(COMP, /its tail trails behind/);
   });

@@ -47,3 +47,9 @@ export const TRIM_FIXED_DB = 3;
 export function trimStillHot(trimDb: number, channelClipping: boolean): boolean {
   return trimDb > TRIM_FIXED_DB && !channelClipping;
 }
+
+/** What is LEFT, never "N of total" (phase 3, owner decision 2). */
+export function leftWord(done: number, total: number, doneWord = 'ALL DONE'): string {
+  const left = Math.max(0, total - done);
+  return left === 0 ? doneWord : `${left} LEFT`;
+}

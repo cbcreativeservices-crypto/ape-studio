@@ -51,7 +51,7 @@ import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { endLead, endNote, endTitle, howItCountsHeading, nextHeading, recapHeading, whatsLeft, whereToStart, type LabEndRow, type LabEndUnit } from './labEnd';
 import { labEndContentFor, type LabEndNext } from '../../../features/lab/labEndContent';
 import { runSoon } from '../../../lib/afterInteractions';
-import { LabNextButton, claimLabLeave } from './LabNavBar';
+import { LabNextButton, claimLabLeave, useLabNoun } from './LabNavBar';
 import { ProgressUnreadableNote } from './ProgressUnreadableNote';
 import { DiscussLabLink } from '../../directory/forum/DiscussLabLink';
 
@@ -74,7 +74,7 @@ export function LabEndScreen({
   units,
   cleared,
   mode,
-  noun = 'module',
+  noun: nounProp,
   onJump,
   onPracticeAgain,
   onDone,
@@ -150,6 +150,11 @@ export function LabEndScreen({
   beforeLeave?: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // The lab's ONE unit noun (owner decision 3, 2026-11-14): a host's own
+  // `noun` prop wins (LabCheckEnd's "check", ReviewLabEnd's "step");
+  // otherwise the noun the lab gave its LabNounProvider (default 'module').
+  const labNoun = useLabNoun();
+  const noun = nounProp ?? labNoun;
   // WORDING, not behaviour (tier sweep 2026-10-03): "You are not signed in"
   // is said to a KNOWN guest only. A signed-in learner whose membership read
   // failed reads 'guest' on the resolved-based tier — the lab still holds /
@@ -349,7 +354,7 @@ export function LabEndScreen({
       <Text style={styles.note}>
         {isGuest
           ? 'Practicing again, reviewing and leaving are always open.'
-          : endNote(mode, !!startOver)}
+          : endNote(mode, !!startOver, noun)}
       </Text>
     </ScrollView>
   );

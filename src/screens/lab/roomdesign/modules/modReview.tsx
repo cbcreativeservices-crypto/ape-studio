@@ -16,6 +16,7 @@ import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
 import { accountDesignsLine, BADGE, DELETE_FAILED, SAVE_FAILED, SAVE_NOT_YET, saveLine, STORE_UNREADABLE, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
+import { GoDeeper } from '../../foundations/GoDeeper';
 import {
   analyze,
   bounds,
@@ -77,6 +78,18 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
 
   return (
     <View style={styles.doc}>
+      {/* BEGINNER CORE FIRST (owner's decision 5, 2026-11-14; G1 Room 6:
+          "the Review page buries its advice under tables"): SUGGESTED NEXT
+          STEPS opens the page; the two tables fold under GO DEEPER ▾. */}
+      <Card>
+        <SectionTitle title="SUGGESTED NEXT STEPS" />
+        <Caption>! look at this first · ▸ worth testing · ✓ as it should be · ⓘ normal, not a reason to move anything.</Caption>
+        {a.suggestions.map((s, i) => (
+          <SuggestionRow key={i} s={s} tag={i === firstCheck ? 'TRY FIRST' : undefined} />
+        ))}
+      </Card>
+
+      <GoDeeper hint="The room and layout table, the modes, the reflections and the decay times.">
       <Card>
         <SectionTitle title="ROOM AND LAYOUT" tier="CALCULATED" />
         <KV k="Plan" v={`${room.shape} · ${fmtU(b.width)} × ${fmtU(b.length)}`} />
@@ -157,14 +170,8 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
           {bassJudgement(a)} {imagingJudgement(a)} {translationJudgement(a)}
         </Caption>
       </Card>
+      </GoDeeper>
 
-      <Card>
-        <SectionTitle title="SUGGESTED NEXT STEPS" />
-        <Caption>! look at this first · ▸ worth testing · ✓ as it should be · ⓘ normal, not a reason to move anything.</Caption>
-        {a.suggestions.map((s, i) => (
-          <SuggestionRow key={i} s={s} tag={i === firstCheck ? 'TRY FIRST' : undefined} />
-        ))}
-      </Card>
 
       <Card>
         <SectionTitle title="MEASURE VERSUS ESTIMATE" tier="MEASURED" />

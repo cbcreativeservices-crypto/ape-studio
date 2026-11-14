@@ -141,10 +141,12 @@ describe('3. the search results TRY THIS quotes are what filterGuides returns', 
   it('an unmatched search says so and suggests a shorter word', () => {
     assert.match(code(`${MG}/MixingGuidesHubScreen.tsx`), /No style matches “\{deferredQuery\}”\. Try a shorter word/);
   });
-  it('opened sections are kept across styles (the reader’s TRY THIS), and NEXT › marks the guide left as read', () => {
+  it('opened sections are kept across styles (the reader’s TRY THIS); NEXT › no longer marks a guide read', () => {
     const r = code(`${MG}/MixingGuideScreen.tsx`);
     assert.match(r, /const \[open, setOpen\] = useState<ReadonlySet<GuideSectionKey>>\(\(\) => new Set<GuideSectionKey>\(\['purpose'\]\)\);/);
-    assert.match(r, /beforeAdvance: \(from\) => \{\n\s*void markGuideRead\(MIXING_GUIDE_INDEX\[from\]\.id\);/);
+    // Owner's decision 1, 2026-11-14 ("done = work done"): NEXT › no longer
+    // marks a guide read; MARK AS READ at its foot is the one thing that counts it.
+    assert.doesNotMatch(r, /beforeAdvance:/);
     assert.match(code(`${MG}/data/types.ts`), /eq: \[\n\s*\{ key: 'source', label: 'Source' \},\n\s*\{ key: 'cut', label: 'Cut' \},\n\s*\{ key: 'boost', label: 'Boost' \},\n\s*\{ key: 'notes', label: 'Notes' \},/);
   });
 });
@@ -224,8 +226,9 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     assert.doesNotMatch(END, /OPTIONAL|\bCHECK\b/, 'this lab has no optional units and no check');
   });
 
-  it('what counts as read: NEXT › / FINISH › (beforeAdvance) or MARK AS READ — never a CONTENTS jump or ‹ PREV; a preview records nothing', () => {
-    assert.match(READER, /beforeAdvance: \(from\) => \{\n\s*void markGuideRead\(MIXING_GUIDE_INDEX\[from\]\.id\);/);
+  it('what counts as read: MARK AS READ only — never NEXT ›, a CONTENTS jump or ‹ PREV; a preview records nothing', () => {
+    // Owner's decision 1, 2026-11-14 ("done = work done"): only MARK AS READ counts.
+    assert.doesNotMatch(READER, /beforeAdvance:/);
     assert.match(READER, /const markRead = useLatchedPress\(\(\) => markGuideRead\(entry\.id\)\);/);
     assert.match(NAV_RAW, /FINISH\s+→ beforeAdvance\?\(i\) → finish\(\)/);
     assert.match(NAV_RAW, /CONTENTS → jump\(i\) = go\(i\)\s+\(beforeAdvance is NOT run\)/);
@@ -233,10 +236,10 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     assert.match(code(`${MG}/readProgress.ts`), /if \(getLabPreview\(\)\.active\) return Promise\.resolve\(false\);/);
     // The in-flow button at the foot of each guide runs the same nav.next.
     assert.match(NAV, /const press = onPress \?\? nav\?\.next;/);
-    assert.ok(GUIDES.end.changes[0].includes('leave it with NEXT › or FINISH ›, or tap MARK AS READ'));
+    assert.ok(GUIDES.end.changes[0].includes('reach its end and tap MARK AS READ'));
     // ⏮ (start → go(0)) and the CONTENTS footer (openEnd → finish()) skip beforeAdvance too.
     assert.match(NAV, /const openEnd = useCallback\(\(\) => \{\n\s*if \(lock\(\)\) return;\n\s*setContentsOpen\(false\);\n\s*finish\(\);/);
-    assert.ok(GUIDES.end.changes[0].includes('Just opening it, or jumping away with ‹ PREV or the list, doesn’t count'));
+    assert.ok(GUIDES.end.changes[0].includes('Opening it, or moving on with NEXT ›, ‹ PREV or the list, doesn’t count'));
     assert.ok(GUIDES.end.changes[1].includes('A preview records nothing'));
   });
 
@@ -258,8 +261,9 @@ describe('6. the END guide matches the end screen this lab renders', () => {
     assert.match(KIT, /\{unreadable \? \(\n\s*<ProgressUnreadableNote \/>/);
     assert.doesNotMatch(END, /every guide stays listed/);
     assert.ok(GUIDES.end.changes[2].includes('a note says why. Every guide still opens'));
-    // FINISH › on the last style goes straight to the end screen.
-    assert.ok(GUIDES.end.tryThis[0].includes('on the last style, FINISH › brings you straight back'));
+    // Owner's decision 1, 2026-11-14 ("done = work done"): the TRY THIS now
+    // marks a guide with MARK AS READ at its end (NEXT › no longer counts it).
+    assert.ok(GUIDES.end.tryThis[0].includes('scroll to its end and tap MARK AS READ'));
     assert.doesNotMatch(END, /index order|still new to you/);
   });
 });

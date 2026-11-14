@@ -1,13 +1,13 @@
 /**
  * TuningLabScreen — the paced chapter shell (spec Stage 1 §5–6): the SHARED
  * LAB NAVIGATION strip (kit/LabNavBar, owner 2026-09-30 — ⏮ / ‹ PREV /
- * MODULE n / 14 ▾ / NEXT ›, FINISH › on the last chapter, CONTENTS from the
+ * CHAPTER n ▾ / NEXT ›, FINISH › on the last chapter, CONTENTS from the
  * readout), Basic View / See the Math in the header, sound status + Stop on
  * the reading chapter and the end screen (rack chapters carry ■ STOP in the
  * dock). One TuningPlayer for the whole lab, disposed on unmount; switching
  * Basic/Math never remounts the chapter (the chapter component is the same
- * element, only ctx changes). The strip calls a chapter a MODULE; the
- * chapter eyebrows inside the content keep their word.
+ * element, only ctx changes). The strip says CHAPTER too (LabNounProvider,
+ * owner decision 3, 2026-11-14: one name per unit of progress).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -31,7 +31,7 @@ import { CHAPTERS, CHAPTER_COUNT, CHAPTER_FINISH } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
@@ -308,6 +308,9 @@ export function TuningLabScreen() {
   });
 
   return (
+    // ONE unit noun (owner decision 3, 2026-11-14): the strip, CONTENTS and the
+    // end screen all say CHAPTER, as the chapters themselves do.
+    <LabNounProvider value="chapter">
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       {/* Screen Guide host: the overlay is this root's last child; a chapter
@@ -395,6 +398,7 @@ export function TuningLabScreen() {
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

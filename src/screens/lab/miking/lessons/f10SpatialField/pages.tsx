@@ -524,7 +524,7 @@ function F10Setups(p: PageProps) {
         render: (w, h) => (sel ? <SetupDrawing s={sel} variant={variant} view={view} w={w} h={h} /> : <Text style={styles.missing}>No setup here.</Text>),
         badge: view === 'top' ? 'Placed for you · amber dashed = where each capsule points · white dashed = a pattern’s shape, not its range · the corner box = the rig from above' : 'Placed for you · white = its height above the ground · amber dashed = where it points',
         bezel: [
-          { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
+          { k: 'SETUP', v: sel ? `${i + 1}` : '—', flex: 0.8 },
           { k: 'RIG', v: rig ? ARRAYS[rig.id].short : '—', flex: 1.2 },
           { k: 'HEIGHT', v: rig ? fmtM(-rig.c.y) : '—', flex: 0.9 },
         ],
@@ -535,8 +535,8 @@ function F10Setups(p: PageProps) {
             label: 'SETUP',
             value: list.length > 1 ? i / (list.length - 1) : 0,
             onChange: (v) => setIdx(Math.round(v * (list.length - 1))),
-            format: () => (sel ? `${i + 1} of ${list.length} · ${sel.role.toLowerCase()}` : 'no setup'),
-            formatShort: () => `${i + 1} / ${list.length}`,
+            format: () => (sel ? `${sel.role.toLowerCase()}` : 'no setup'),
+            formatShort: () => `${i + 1}`,
           }),
           { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? sel.role.split(' ')[0] : '—', selectedId: sel?.id ?? null, onSelect: (id) => setIdx(Math.max(0, list.findIndex((q) => q.id === id))), sticky: true, options: list.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
           ...viewParam(view, setView),
@@ -1042,7 +1042,7 @@ function F10Placement(p: PageProps) {
           { k: ex === 2 ? '▸ FRONT' : 'FRONT', v: 'SCENE FRONT', tint: ex === 2 ? AMBER : undefined, flex: 1.2 },
           { k: ex >= 3 ? '▸ FOR' : 'FOR', v: 'HEADPHONES', tint: ex >= 3 ? AMBER : undefined, flex: 1.1 },
         ],
-        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
         initialParam: 'piece',
       },
       well: (

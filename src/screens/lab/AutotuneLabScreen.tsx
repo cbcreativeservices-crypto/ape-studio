@@ -296,6 +296,8 @@ export function AutotuneLabScreen() {
           size: 'L', // the cents grid IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'CENTS GRID — THE CURVE SHOWS THE EXACT RETUNING YOU HEAR',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: 'The curve on this grid of cents shows the exact retuning you hear.',
           onGuide: () => openLesson('cents_grid'),
           bezel: [
             // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).

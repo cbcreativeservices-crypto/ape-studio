@@ -297,7 +297,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(
-      `${viewed.size} of ${CI_CABLE_TYPES.length} cable types reviewed`,
+      `${viewed.size} cable types reviewed`,
     );
   }, [viewed.size]);
   const [ans, setAns] = useState<Record<string, DrillAnswers>>({});
@@ -346,7 +346,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
           ))}
         </View>
         <Text style={styles.browseLine} accessibilityLiveRegion="polite">
-          {viewed.size} of {CI_CABLE_TYPES.length} reviewed — browse freely; the drill below is what completes the stage.
+          {viewed.size} reviewed — browse freely; the drill below is what completes the stage.
         </Text>
       </CiSection>
 
@@ -362,7 +362,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
           return (
             <Stagger key={s.id} index={i}>
             <View style={styles.scnCard}>
-              <Text style={styles.scnTag}>INSTALLATION {i + 1} OF {CI_ID_SCENARIOS.length}</Text>
+              <Text style={styles.scnTag}>INSTALLATION {i + 1}</Text>
               <Text style={styles.scnPrompt}>{s.prompt}</Text>
 
               <Text style={styles.q}>1 · WHAT CABLE IS THIS?</Text>
@@ -479,7 +479,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
               {'Identify what the cable is, what it carries, and how long it stays — the pathway, the protection and the paperwork all follow from those three answers. Same room, different cable or different duration: different installation.'}
             </Text>
             <Text style={styles.lessonScore}>
-              {summary.idc + summary.riskc} of 12 calls correct — replay any time.
+              {summary.idc + summary.riskc} calls correct, {12 - summary.idc - summary.riskc} missed — replay any time.
             </Text>
           </Appear>
         ) : null}

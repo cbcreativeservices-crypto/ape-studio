@@ -26,7 +26,7 @@ import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import type { DockParam } from '../../rack/rackTypes';
-import { BADGE_MODEL, TuningRackLayout, lanePos, laneVal, snapNear, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+import { BADGE_MODEL, TUNING_MODEL_NOTES, TuningRackLayout, lanePos, laneVal, snapNear, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 type Third = 'just' | 'equal' | 'pyth';
 const THIRDS: Record<Third, { label: string; value: typeof JUST_MAJOR_THIRD }> = {
@@ -203,7 +203,8 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
       <Eyebrow>BEATING MODEL</Eyebrow>
       <ExpandableFigure
         title="BEATING MODEL"
-        badge={BADGE_MODEL}
+        // K4 (owner decision 3): the plain sentence, not the caps badge face.
+        badge={TUNING_MODEL_NOTES[BADGE_MODEL]}
         aspect={BEATS_W / BEATS_H}
         render={() => <BeatingModel diffHz={diff} fit note={false} />}
       />

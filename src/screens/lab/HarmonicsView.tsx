@@ -1788,6 +1788,11 @@ export function HarmonicsView({
         view === 'model'
           ? 'ANALYTIC MODEL — NOT A MEASUREMENT'
           : 'REAL SIGNAL — dBFS · UNCALIBRATED',
+      // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+      modelNote:
+        view === 'model'
+          ? 'This picture is worked out from the math of the tone, not measured.'
+          : 'This is your real signal in dBFS, not calibrated to a sound level.',
       onGuide: () => openLesson('display'),
       bezel,
       render: (w, h) => (

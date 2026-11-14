@@ -12,7 +12,7 @@
  * until you ask (the owner's check-yourself toggle, now a tap-to-reveal
  * readout window); BAND on the bezel switches bands on two-band targets.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { ResponseCurveGraph } from './eqResponseGraph';
@@ -74,7 +74,7 @@ function scoreMatch(target: EqBandSpec[], user: UserBand[]): number {
   return Math.max(0, Math.min(100, Math.round(100 * (1 - errUser / errFlat))));
 }
 
-export function MatchCurveModule(_p: EqModuleComponentProps) {
+export function MatchCurveModule(p: EqModuleComponentProps) {
   const [target, setTarget] = useState<EqBandSpec[]>(() => makeTarget());
   // Match the FIRST target's band count too (QA night 2026-09-01: a 2-band
   // first roll left one user band and no switcher — unwinnable by design).
@@ -123,6 +123,12 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
   );
 
   const live = scoreMatch(target, bands);
+  // Work done (phase 3, owner's decision 1): the module counts when the shown
+  // score reaches the lab's own EXCELLENT line (90 %).
+  const { onDone } = p;
+  useEffect(() => {
+    if (showScore && live >= 90) onDone?.();
+  }, [showScore, live, onDone]);
   const verdict =
     live >= 90 ? 'EXCELLENT — that is the curve.' : live >= 75 ? 'CLOSE — refine width and center.' : 'KEEP TRYING — start with WHERE, then HOW MUCH, then HOW WIDE.';
 

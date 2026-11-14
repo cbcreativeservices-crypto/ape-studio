@@ -21,3 +21,30 @@ export const METER_MODULES: { id: MeterModuleId; num: string; title: string; blu
   { id: 'scope', num: '10', title: 'Oscilloscope', blurb: 'The raw voltage picture — plus X-Y Lissajous mode for stereo relationships.' },
   { id: 'detective', num: '11', title: 'Signal Detective', blurb: 'Unknown meter, unknown problem: identify it, read it, prescribe the fix.' },
 ];
+
+/** "Done = work done" (owner's decision 1, phase 3, 2026-11-14): modules 1–10
+ *  count once EVERY CHECK YOURSELF on them is answered right, never on
+ *  opening. Signal Detective (0 here) counts once one whole case — all four
+ *  of its questions — is answered right (DetectiveModule). Pinned against the
+ *  source by test/labFixes_20261114_F6.test.ts. */
+export const METER_MODULE_CHECKS: Record<MeterModuleId, number> = {
+  waveform: 2,
+  peak: 1,
+  vu: 2,
+  loudness: 2,
+  spectrum: 2,
+  spectrogram: 2,
+  waterfall: 2,
+  phase: 2,
+  stereo: 1,
+  scope: 2,
+  detective: 0,
+};
+
+/** The what's-left row's second line: what is still to do on that module. */
+export function meterLeftDetail(id: MeterModuleId): string {
+  if (id === 'detective') return 'Still to do: answer all four questions of one case right.';
+  const n = METER_MODULE_CHECKS[id];
+  // K3 (phase 3): 'both', never 'all 2'.
+  return n === 1 ? 'Still to do: answer its CHECK YOURSELF right.' : n === 2 ? 'Still to do: answer both of its CHECK YOURSELF questions right.' : `Still to do: answer all ${n} of its CHECK YOURSELF questions right.`;
+}

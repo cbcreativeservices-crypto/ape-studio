@@ -10,8 +10,10 @@
  * is not required) fixes as you suggestted in the report."
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { registerHooks } from 'node:module';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { introWorkAction } from '../src/features/lab/screenGuide/introHold.ts';
 import { GA_CAPTION_MAX, GA_GOALS_COUNTED, GA_GOALS_PENDING, GA_READOUT_CAPTION, GA_SOUND_OFF_LINE, gaGoalsNote, gaWithCaption } from '../src/screens/lab/gameaudio/bitsLogic.ts';
 import { GA_HANDS_ON, GA_PAGE_LEFT } from '../src/screens/lab/gameaudio/pages/data/gaPageLeft.ts';
@@ -21,7 +23,7 @@ import { P10_WIND_KEY } from '../src/screens/lab/gameaudio/pages/data/chbScene.t
 import { BUDGET_STOPS, BURST_COUNT, budgetStep, burstSpoken, burstTotalWords, lastBurst, protectedKept, protectedKeptWords } from '../src/screens/lab/gameaudio/pages/data/gaBudget.ts';
 import { FAULTS, FAULT_IDS, benchAdvance, benchStart, faultActions, faultDef, faultFixed, faultOpen, faultRetest, faultStatus, proofCount, stepInPlace, type Bench, type FaultId } from '../src/screens/lab/gameaudio/pages/data/gaFaults.ts';
 import { G02 } from '../src/screens/lab/gameaudio/pages/guides/p02.ts';
-import { G10 } from '../src/screens/lab/gameaudio/pages/guides/p10.ts';
+import { G24 } from '../src/screens/lab/gameaudio/pages/guides/p24.ts';
 import { G11 } from '../src/screens/lab/gameaudio/pages/guides/p11.ts';
 import { G19 } from '../src/screens/lab/gameaudio/pages/guides/p19.ts';
 import { spAddPerformer, spObject } from '../src/features/stageplot/spModel.ts';
@@ -32,7 +34,7 @@ import type { SpProject } from '../src/features/stageplot/spTypes.ts';
 import { SP_GUIDE_EXPORT } from '../src/screens/lab/stageplot/guides/export.ts';
 import { SP_GUIDE_SETUP } from '../src/screens/lab/stageplot/guides/setup.ts';
 import { SP_GUIDE_STAGE } from '../src/screens/lab/stageplot/guides/stage.ts';
-import { placeOnStage, runIssueAction } from '../src/screens/lab/stageplot/spIssueActions.ts';
+import { goToSetupPart, placeOnStage, runIssueAction, spSetupField, takeSpSetupAsk } from '../src/screens/lab/stageplot/spIssueActions.ts';
 import { spReview } from '../src/features/stageplot/spReview.ts';
 import { stageBoxBounds, stageObjectBox, stageTransformFor } from '../src/screens/lab/stageplot/stage/stageGeom.ts';
 import { STAGE_MIN_AIR, STAGE_NEW_AIR, STAGE_NEW_SPOT, stageAddDrawing, stageAddWithPackage, stageDefaultWho, stageFreeSpot, stagePackagesFor, stagePlace } from '../src/screens/lab/stageplot/stage/stageLinks.ts';
@@ -221,14 +223,15 @@ describe('F3 · Game Audio page 21: the first line points at the TOPIC key where
 });
 
 describe('F3 · Game Audio page 10: the fourth key is not cut at 390 wide', () => {
+  // (phase 3: the WIND key went with the loop lesson to its own page, p24LoopJoin.tsx)
   it('WIND, not WIND FILE, on the key, in the lesson and in the guide', () => {
     assert.equal(P10_WIND_KEY, 'WIND');
     assert.ok(P10_WIND_KEY.length <= 6, 'no longer than SOUNDS, the longest key that dock shows whole');
-    const page = code(`${GA}/pages/p10Loops.tsx`);
+    const page = code(`${GA}/pages/p24LoopJoin.tsx`);
     assert.match(page, /label: P10_WIND_KEY,/);
     assert.doesNotMatch(page, /WIND FILE/);
     assert.match(page, /set WIND to RAW CUT/);
-    assert.doesNotMatch(Object.values(G10).flat().map(String).join(' ') + G10.intro!.start, /WIND FILE/);
+    assert.doesNotMatch(Object.values(G24).flat().map(String).join(' ') + G24.intro!.start, /WIND FILE/);
   });
 });
 
@@ -437,7 +440,9 @@ describe('F3 · Stage Plot: two intro cards that named the wrong first step', ()
 
 /* ══ PHASE 2: the shared frame, filled in for both labs ═══════════════════ */
 
-const PAGE_FILES = ['p01Welcome', 'p02Reacts', 'p03Platforms', 'p04Games', 'p05Sounds', 'p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p09Variation', 'p10Loops', 'p11Distance', 'p12Walls', 'p13Formats', 'p14Music', 'p15Dialogue', 'p16Mix', 'p17Budgets', 'p18Multiplayer', 'p19Testing', 'p20Tools', 'p21Today', 'p22Capstone'];
+/** The page files in the LEARNER'S order (pages/index.ts GA_PAGES): 24 since
+ *  the split of phase 3. A file's number is its name, not its place. */
+const PAGE_FILES = ['p01Welcome', 'p02Reacts', 'p03Platforms', 'p04Games', 'p23Listener', 'p05Sounds', 'p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p09Variation', 'p10Loops', 'p24LoopJoin', 'p11Distance', 'p12Walls', 'p13Formats', 'p14Music', 'p15Dialogue', 'p16Mix', 'p17Budgets', 'p18Multiplayer', 'p19Testing', 'p20Tools', 'p21Today', 'p22Capstone'];
 const pageCode = (f: string) => code(`${GA}/pages/${f}.tsx`);
 
 describe('F3 phase 2 · Game Audio: the silent learner (S3)', () => {
@@ -498,9 +503,9 @@ describe('F3 phase 2 · Game Audio: one key order on every page (S3, trays)', ()
 });
 
 describe('F3 phase 2 · Game Audio: each unfinished row says what that page needs (S2)', () => {
-  it('one line for each of pages 1 to 19: its own goals, in the words of its chips, then its check', () => {
-    assert.equal(GA_PAGE_LEFT.length, 19);
-    assert.equal(new Set(GA_PAGE_LEFT).size, 19, 'no two pages share a line');
+  it('one line for each of pages 1 to 21: its own goals, in the words of its chips, then its check', () => {
+    assert.equal(GA_PAGE_LEFT.length, 21);
+    assert.equal(new Set(GA_PAGE_LEFT).size, 21, 'no two pages share a line');
     GA_PAGE_LEFT.forEach((line, i) => {
       const f = PAGE_FILES[i];
       assert.ok(line.startsWith('Still to do: '), f);
@@ -516,8 +521,9 @@ describe('F3 phase 2 · Game Audio: each unfinished row says what that page need
       // every control or readout word a goal chip names is in the line
       for (const label of labels.slice(0, -1)) for (const w of label.match(/\b[A-Z]{3,}\b/g) ?? []) assert.ok(line.includes(w), `${f}: the line names ${w} ("${label}")`);
     });
-    // page 19's goals are its five faults
-    for (const fault of FAULTS) assert.ok(GA_PAGE_LEFT[18].includes(fault.goal.split(': ')[1]), fault.goal);
+    // the testing page's goals are its five faults
+    assert.equal(PAGE_FILES[20], 'p19Testing');
+    for (const fault of FAULTS) assert.ok(GA_PAGE_LEFT[20].includes(fault.goal.split(': ')[1]), fault.goal);
   });
   it('the screen hands them to the end screen; pages 20 to 22 keep their own; the rule stands alone as a sentence', () => {
     const screen = code(`${GA}/GameAudioLabScreen.tsx`);
@@ -525,7 +531,8 @@ describe('F3 phase 2 · Game Audio: each unfinished row says what that page need
     assert.match(screen, /handsOnDetail=\{HANDS_ON\} pageDetail=\{pageDetail\}/);
     assert.match(screen, /const HANDS_ON = GA_HANDS_ON;/);
     assert.equal(GA_HANDS_ON, 'A page counts once its practice goals and its check are done in one visit; NEXT moves on without counting it.');
-    for (const i of [19, 20, 21]) assert.match(screen, new RegExp(`${i}: '`), `page ${i + 1} keeps its own line`);
+    for (const i of [21, 22, 23]) assert.match(screen, new RegExp(`${i}: '`), `page ${i + 1} keeps its own line`);
+    assert.doesNotMatch(screen, /\b(19|20): '/, 'no line is left on an index of the 22-page list');
   });
   it('the end guide’s WHERE TO START is true whatever is left', () => {
     assert.equal(GA_END_GUIDE.intro!.start, 'Read WHERE TO START at the top: it names the next thing to do from where you are. Tap any page in the list to open it.');
@@ -566,5 +573,377 @@ describe('F3 phase 2 · Stage Plot: no intro card over an open popup (S1)', () =
     assert.equal(introWorkAction(false, true, null), 'none');
     // both hosts wrap the areas whose popups these are
     assert.equal((code(`${SP}/StagePlotLabScreen.tsx`).match(/<ScreenGuideHost /g) ?? []).length, 2);
+  });
+});
+
+/* ══ PHASE 3: the owner's decisions ═══════════════════════════════════════ */
+
+/* ── Game Audio: 22 pages became 24, and no saved mark is lost ───────────── */
+
+// A fake device store, so the real pagedProgress and the real layout store run.
+type F3Kv = { map: Map<string, string>; failGet: boolean; failSet: boolean };
+const f3kv: F3Kv = { map: new Map(), failGet: false, failSet: false };
+(globalThis as unknown as { __f3Kv: F3Kv }).__f3Kv = f3kv;
+(globalThis as unknown as { __DEV__: boolean }).__DEV__ = false;
+const F3_STUBS: Record<string, string> = {
+  'async-storage': `const s = globalThis.__f3Kv; export default {
+    getItem: async (k) => { if (s.failGet) throw new Error('unreadable'); return s.map.has(k) ? s.map.get(k) : null; },
+    setItem: async (k, v) => { if (s.failSet) throw new Error('refused'); s.map.set(k, v); },
+    removeItem: async (k) => { s.map.delete(k); },
+    multiRemove: async (ks) => { for (const k of ks) s.map.delete(k); },
+    getAllKeys: async () => [...s.map.keys()],
+  };`,
+  supabase: `export const supabase = { rpc: async () => ({ data: null, error: { message: 'user_not_found' } }) };`,
+};
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (specifier === '@react-native-async-storage/async-storage') return { url: 'f3-stub:async-storage', shortCircuit: true };
+    if (/\/lib\/supabase$/.test(specifier)) return { url: 'f3-stub:supabase', shortCircuit: true };
+    if (specifier.startsWith('.') && !/\.[cm]?[jt]sx?$/.test(specifier) && context.parentURL) {
+      for (const ext of ['.ts', '.tsx', '/index.ts']) {
+        const candidate = new URL(specifier + ext, context.parentURL);
+        if (existsSync(fileURLToPath(candidate))) return { url: candidate.href, shortCircuit: true };
+      }
+    }
+    return nextResolve(specifier, context);
+  },
+  load(url, context, nextLoad) {
+    if (url.startsWith('f3-stub:')) return { format: 'module', shortCircuit: true, source: F3_STUBS[url.slice('f3-stub:'.length)] };
+    return nextLoad(url, context);
+  },
+});
+const layout = await import('../src/screens/lab/gameaudio/model/gaPageLayout.ts');
+const paged = await import('../src/features/lab/pagedProgress.ts');
+const WIPE = read('src/features/account/clearLocalAccountData.ts');
+
+const GA_KEY = 'ape:game-audio:v1';
+const LAYOUT_KEY = 'ape:onboarding:gaPageLayout';
+/** A new app start on a device that holds exactly these keys. */
+async function freshDevice(keys: Record<string, unknown> = {}): Promise<void> {
+  f3kv.map.clear();
+  f3kv.failGet = false;
+  f3kv.failSet = false;
+  for (const [k, v] of Object.entries(keys)) f3kv.map.set(k, JSON.stringify(v));
+  await layout.gaPageLayoutReload();
+}
+const stored = () => JSON.parse(f3kv.map.get(GA_KEY) ?? 'null') as { completed: number[]; lastPage: number; done: boolean } | null;
+
+describe('F3 phase 3 · Game Audio: pages 4 and 10 are two pages each, and saved marks follow them', () => {
+  const titles = [...read(`${GA}/pages/index.ts`).matchAll(/^import \{ (P\d\d) \} from '\.\/(p\d\d\w+)';$/gm)].map((m) => ({ id: m[1], file: m[2] }));
+  const order = read(`${GA}/pages/index.ts`).match(/export const GA_PAGES: PageDef\[\] = \[([^\]]+)\];/)![1].split(',').map((x) => x.trim());
+  const titleOf = (id: string): string => {
+    const file = titles.find((t) => t.id === id)!.file;
+    return code(`${GA}/pages/${file}.tsx`).match(/export const P\d\d: PageDef = \{\s*title: '([^']+)'/)![1];
+  };
+
+  it('24 pages, in this order; each split page is followed by its second lesson', () => {
+    assert.equal(order.length, 24);
+    assert.equal(new Set(order).size, 24);
+    assert.equal(layout.GA_PAGES_LAYOUT_2, order.length);
+    const names = order.map(titleOf);
+    assert.deepEqual(names.slice(2, 6), ['Where games run', 'Kinds of games', 'Whose ears: the listener', 'Kinds of game sound']);
+    assert.deepEqual(names.slice(9, 13), ['Variation and layers', 'Ambience and zones', 'Loops and their joins', 'Emitters and distance']);
+    assert.equal(names[0], 'Welcome and safe listening');
+    assert.equal(names[23], 'Capstone and free play');
+  });
+
+  it('the map: every old page keeps its mark, and a finished old page 4 or 10 marks both pages it became', () => {
+    const old = ['Welcome and safe listening', 'Sound that reacts', 'Where games run', 'Kinds of games', 'Kinds of game sound', 'From source to game build', 'Events and instances', 'Triggers, states, switches', 'Variation and layers', 'Loops, ambience and zones', 'Emitters and distance', 'Walls, doors and rooms', 'Output formats', 'Adaptive music', 'Dialogue and languages', 'The game mix', 'Budgets and voice limits', 'Multiplayer sound', 'Testing and fault finding', 'Finding your way in the tools', 'Game audio today', 'Capstone and free play'];
+    assert.equal(old.length, layout.GA_PAGES_LAYOUT_1);
+    const now = order.map(titleOf);
+    old.forEach((title, i) => {
+      const to = layout.gaIndexFromLayout1(i);
+      if (i === 3) assert.deepEqual(to.map((n) => now[n]), ['Kinds of games', 'Whose ears: the listener']);
+      else if (i === 9) assert.deepEqual(to.map((n) => now[n]), ['Ambience and zones', 'Loops and their joins']);
+      else assert.deepEqual(to.map((n) => now[n]), [title], `old page ${i + 1}`);
+    });
+    // every new page is reached by exactly one old page: nothing is added that was not earned
+    const hit = old.flatMap((_, i) => layout.gaIndexFromLayout1(i));
+    assert.deepEqual([...hit].sort((a, b) => a - b), Array.from({ length: 24 }, (_, i) => i));
+    for (const bad of [-1, 22, 23, 500, 1.5, Number.NaN]) assert.deepEqual(layout.gaIndexFromLayout1(bad), []);
+  });
+
+  it('a record saved before the split is moved once: a learner with every page done still has every page done', async () => {
+    const all = Array.from({ length: 22 }, (_, i) => i);
+    await freshDevice({ [GA_KEY]: { completed: all, lastPage: 21, done: true } });
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'moved');
+    assert.deepEqual(stored(), { completed: Array.from({ length: 24 }, (_, i) => i), lastPage: 23, done: true });
+    const p = await paged.loadPagedProgress('game-audio');
+    assert.ok(Array.from({ length: 24 }, (_, i) => i).every((i) => p.completed.includes(i)), 'the shell’s "lab done" rule holds for all 24');
+    // the pre-split record is kept on the device, beside the layout number
+    assert.deepEqual(JSON.parse(f3kv.map.get(LAYOUT_KEY)!), { v: 2, was: { completed: all, lastPage: 21, done: true } });
+  });
+
+  it('a partly done record: pages 1, 4, 6, 10 and 17 done, last open on page 12', async () => {
+    await freshDevice({ [GA_KEY]: { completed: [0, 3, 5, 9, 16], lastPage: 11, done: false } });
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'moved');
+    // 1 → 1 · 4 → 4 and 5 · 6 → 7 · 10 → 11 and 12 · 17 → 19 (as page numbers)
+    assert.deepEqual(stored(), { completed: [0, 3, 4, 6, 10, 11, 18], lastPage: 13, done: false });
+  });
+
+  it('it never runs twice: the next visit, a new app start and a later wipe leave a 24-page record alone', async () => {
+    await freshDevice({ [GA_KEY]: { completed: [3, 9], lastPage: 4, done: false } });
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'moved');
+    const after = stored();
+    assert.deepEqual(after, { completed: [3, 4, 10, 11], lastPage: 5, done: false });
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'current');
+    await layout.gaPageLayoutReload(); // a new app start
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'current');
+    assert.deepEqual(stored(), after);
+    // the shell saves in the new layout; an account wipe then removes the record but keeps the layout number
+    await paged.savePagedProgress('game-audio', { completed: [3, 4, 5, 10, 11], lastPage: 5, done: false });
+    // (the wipe keeps the whole `ape:onboarding:` family, in both its forms, before it looks at any list)
+    assert.match(WIPE, /k\.startsWith\('ape:onboarding:'\) \|\|/);
+    assert.match(WIPE, /if \(isOnboardingFlag\(k\)\) return true;\s+return opts\?\.total === true \? GUEST_KEEP\.has\(k\) : KEEP\.has\(k\);/);
+    assert.ok(LAYOUT_KEY.startsWith('ape:onboarding:') && !GA_KEY.startsWith('ape:onboarding:'));
+    f3kv.map.delete(GA_KEY);
+    // a guest's pages written to the account AFTER the wipe (24-page indexes) are not moved again
+    await paged.savePagedProgress('game-audio', { completed: [5, 6], lastPage: 6, done: false });
+    await layout.gaPageLayoutReload();
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'current');
+    assert.deepEqual(stored(), { completed: [5, 6], lastPage: 6, done: false });
+  });
+
+  it('a device with nothing stored is marked 24-page at once, so its first record is never taken for an old one', async () => {
+    await freshDevice();
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'fresh');
+    assert.equal(stored(), null);
+    await paged.savePagedProgress('game-audio', { completed: [3], lastPage: 3, done: false });
+    await layout.gaPageLayoutReload();
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'current');
+    assert.deepEqual(stored(), { completed: [3], lastPage: 3, done: false });
+  });
+
+  it('the app closed in the middle of the move: the next start finishes it from the copy, not from the half-moved record', async () => {
+    const old = { completed: [3, 4, 9], lastPage: 9, done: false };
+    // step 1 landed (the copy is in the value), step 2 also landed, step 3 did not
+    await freshDevice({ [LAYOUT_KEY]: { v: 1, old }, [GA_KEY]: { completed: [3, 4, 5, 10, 11], lastPage: 10, done: false } });
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'moved');
+    assert.deepEqual(stored(), { completed: [3, 4, 5, 10, 11], lastPage: 10, done: false }, 'the same record, not one moved twice');
+    // step 1 landed, step 2 did not: the record on the device is still the old one
+    await freshDevice({ [LAYOUT_KEY]: { v: 1, old }, [GA_KEY]: old });
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'moved');
+    assert.deepEqual(stored(), { completed: [3, 4, 5, 10, 11], lastPage: 10, done: false });
+  });
+
+  it('a device that cannot be read or will not write changes nothing, and tries again next time', async () => {
+    const old = { completed: [0, 3], lastPage: 3, done: false };
+    await freshDevice({ [GA_KEY]: old });
+    f3kv.failGet = true;
+    await layout.gaPageLayoutReload();
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'unread');
+    f3kv.failGet = false;
+    assert.deepEqual(stored(), old);
+    assert.equal(f3kv.map.has(LAYOUT_KEY), false);
+    // writes refused: still nothing changed
+    await layout.gaPageLayoutReload();
+    f3kv.failSet = true;
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'unread');
+    f3kv.failSet = false;
+    assert.deepEqual(stored(), old);
+    // the next visit moves it
+    await layout.gaPageLayoutReload();
+    assert.equal(await layout.gaEnsurePageLayout('game-audio'), 'moved');
+    assert.deepEqual(stored(), { completed: [0, 3, 4], lastPage: 3, done: false });
+  });
+
+  it('the lab screen moves the record before the shell can read it, and never blocks on it', () => {
+    const screen = code(`${GA}/GameAudioLabScreen.tsx`);
+    assert.match(screen, /void gaEnsurePageLayout\(GA_LAB_ID\)\.then\(\(\) => \{/);
+    assert.match(screen, /\{ready \? \(\s*<PagedLab labId=\{GA_LAB_ID\}/);
+    // the credit key and the "every page" rule are untouched: all 24 pages, no optional page
+    assert.match(screen, /labDoneKey=\{trainingKeyFor\('GameAudioLab'\)\}/);
+    assert.match(screen, /optionalPage=\{noPageOptional\}/);
+    // the layout value is in the family the wipe keeps, on the shared safe store
+    const mod = code(`${GA}/model/gaPageLayout.ts`);
+    assert.match(mod, /key: 'ape:onboarding:gaPageLayout'/);
+    assert.match(mod, /createLocalStore<LayoutValue>\(/);
+  });
+});
+
+describe('F3 phase 3 · Game Audio: the split pages keep every lesson, goal and check of the old ones', () => {
+  const kinds = pageCode('p04Games');
+  const ears = pageCode('p23Listener');
+  const zones = pageCode('p10Loops');
+  const loops = pageCode('p24LoopJoin');
+
+  it('old page 4: its five goals and two checks are on the two pages, none twice', () => {
+    const labels = (src: string) => [...src.matchAll(/\{ label: '([^']+)', hit:/g)].map((m) => m[1]);
+    assert.deepEqual(labels(kinds), ['Open three kinds of game', 'Pass the check']);
+    assert.deepEqual(labels(ears), ['Listen from the overhead camera', 'Move FACING while the camera listens', 'Choose YOUR EARS again', 'Pass the check']);
+    assert.match(kinds, /question="A racing game is seen from above\. Two people play it in turns on one screen\. Which of these is its play mode\?"/);
+    assert.match(ears, /question="You move the listener from the player to the overhead camera\. The generator has not moved\. Why does its pan change\?"/);
+    // every sentence of the old lesson is still said, on one page or the other
+    for (const s of [
+      'Genre, perspective and play mode are three separate choices. A puzzle can be played in first person, and a racing game can be seen from above.',
+      'Each kind of game puts different sounds first, built from the same parts.',
+      'Each pick starts the scene again and shows one thing that kind of game cares about.',
+      'A card shows a typical emphasis, not a rule. Many games combine several kinds.',
+      'One thing changes with the perspective: where the game puts its listener.',
+      'At 0°, for your ears the generator is far to the right. For the camera it sits nearer the center, because the camera is high above the scene.',
+      'GEN PAN stays still. The character is not the listener.',
+      'Level follows the listener too: for the camera, each sound’s level depends on its distance from the middle of the scene, not from YOU.',
+      'Placing every sound on the visible player character in every camera mode. The team chooses where the listener goes.',
+    ]) assert.ok((kinds + ears).includes(s), s);
+    // one lesson each: the listener's tray is not on the kinds page, the games tray not on the listener page
+    assert.doesNotMatch(kinds, /ListenerTray|GEN PAN/);
+    assert.doesNotMatch(ears, /GamesTray|GA_GENRES/);
+  });
+
+  it('old page 10: its three goals and two checks are on the two pages, none twice', () => {
+    const labels = (src: string) => [...src.matchAll(/\{ label: '([^']+)', hit:/g)].map((m) => m[1]);
+    assert.deepEqual(labels(zones), ['Cross the doorway twice with the scene running', 'Pass the check']);
+    assert.deepEqual(labels(loops), ['Stay in the courtyard until the raw cut passes its join', 'Silence every loop with ■ STOP', 'Pass the check']);
+    assert.match(zones, /question="You stay inside the workshop and walk around\. How many copies of the room tone are playing\?"/);
+    assert.match(loops, /question="A wind loop jumps in level every 10 seconds\. Someone makes the crossfade at the doorway twice as long\. What happens to the jump\?"/);
+    for (const s of [
+      'A loop repeats, so the join where its end meets its start must be prepared, or it jumps on every pass.',
+      'A bed is a loop with no position: courtyard wind, workshop room tone. The birds are spot sounds: one-shots at random times and places, so the background does not repeat.',
+      'Both beds start once, with the scene. Entering the other zone fades one bed down and the other up: a crossfade.',
+      'A fade does not repair a badly cut loop.',
+      'Each crossing prints one STATE line that begins ZONE: one crossfade of 1.5 s.',
+      'The raw cut was not prepared as a loop. It ends in a gust and begins in a lull, so it jumps every 10 s.',
+      'Starting a background loop again on every position update in one area. The copies stack, get louder and use voices.',
+    ]) assert.ok((zones + loops).includes(s), s);
+    // the fault and its card stay with the zones; the WIND key goes with the loop
+    assert.match(zones, /<FaultCard\s+title="THE BACKGROUND THAT KEEPS GROWING"/);
+    assert.doesNotMatch(zones, /windKey|rawYardLoop/);
+    assert.doesNotMatch(loops, /FaultCard|bedPileUp/);
+    // the loop page needs no walking: three keys, the slider first
+    assert.match(loops, /keys: \[masterKey\(s\), sceneKey\(s\), windKey\],/);
+    assert.match(zones, /keys: \[facingKey\(s\), stepKey\('player'\), soundsKey\],/);
+  });
+
+  it('every page number a learner reads is today’s number', () => {
+    const order = PAGE_FILES;
+    const titleAt = (n: number) => pageCode(order[n - 1]).match(/export const P\d\d: PageDef = \{\s*title: '([^']+)'/)![1];
+    // number → the page that sentence is about
+    const expected: Record<number, string> = { 8: 'Events and instances', 19: 'Budgets and voice limits', 22: 'Finding your way in the tools', 23: 'Game audio today' };
+    for (const [n, title] of Object.entries(expected)) assert.equal(titleAt(Number(n)), title, `page ${n}`);
+    const files = [...order.map((f) => `${GA}/pages/${f}.tsx`), ...order.map((f) => `${GA}/pages/guides/p${f.slice(1, 3)}.ts`), `${GA}/pages/guides/end.ts`, `${GA}/gaTerms.ts`, `${GA}/bits.tsx`, `${GA}/bitsLogic.ts`, `${GA}/pages/data/gaPageLeft.ts`];
+    let seen = 0;
+    for (const f of files) {
+      const src = code(f).replace(/\s\/\/ .*$/gm, '');
+      for (const m of src.matchAll(/\b[Pp]ages? (\d+)/g)) {
+        seen += 1;
+        assert.ok(expected[Number(m[1])], `${f} says "page ${m[1]}": is that still the right page?`);
+      }
+    }
+    assert.ok(seen >= 6, `${seen} page numbers checked`);
+    assert.match(pageCode('p01Welcome'), /Page 8 explains them\./);
+    assert.match(GA_END_GUIDE.changes.join(' '), /Page 22 is done when its six checks are passed, page 23 when its two are\./);
+  });
+
+  it('the strip, CONTENTS and the end screen use the lab’s own word, page (owner’s decision 3)', () => {
+    assert.match(code(`${GA}/GameAudioLabScreen.tsx`), /pageDetail=\{pageDetail\} unitNoun="page" /);
+    assert.match(GA_HANDS_ON, /^A page counts once/);
+    assert.match(GA_GOALS_PENDING, /^This page counts once/);
+  });
+
+  it('the glass says "drawing…" until the picture has had its first frames, and never for good', () => {
+    const lab = code(`${GA}/GaLab.tsx`);
+    assert.match(lab, /drawing: !painted,/);
+    assert.match(lab, /export const GA_DRAWING_MAX_MS = 1200;/);
+    assert.match(lab, /const timer = setTimeout\(\(\) => setPainted\(true\), GA_DRAWING_MAX_MS\);/);
+    // a one-shot wait on the house runSoon (two real macrotasks), never frame callbacks: GaLab must not
+    // become a loop host (D8; test/patternP10b_20261002.test.ts, whose lists may only shrink)
+    assert.match(lab, /let wait = runSoon\(\(\) => \{\s*wait = runSoon\(\(\) => setPainted\(true\)\);\s*\}\);/);
+    assert.match(lab, /wait\.cancel\(\);\s*clearTimeout\(timer\);/);
+    assert.match(lab, /import \{ runSoon \} from '\.\.\/\.\.\/\.\.\/lib\/afterInteractions';/);
+    assert.doesNotMatch(lab, /requestAnimationFrame|cancelAnimationFrame|InteractionManager/);
+  });
+});
+
+/* ── Stage Plot: Setup shows the beginner core, the rest is folded ───────── */
+
+const folds = await import('../src/features/stageplot/spSetupFolds.ts');
+
+describe('F3 phase 3 · Stage Plot SETUP: the band and the performers first, five parts folded', () => {
+  const setup = code(`${SP}/SetupArea.tsx`);
+  it('five parts fold, in the order they were in; THE BAND and PERFORMERS do not', () => {
+    assert.deepEqual(folds.SP_SETUP_FOLDS.map((f) => f.title), ['THE GIG', 'TECHNICAL CONTACT', 'REVISION AND STATUS', 'STAGE SIZE', 'NOTES']);
+    assert.deepEqual([...folds.SP_SETUP_OPEN_PARTS], ['THE BAND', 'PERFORMERS']);
+    const sections = [...setup.matchAll(/<(Section|FoldSection) title="([^"]+)"/g)].map((m) => `${m[1]}:${m[2]}`);
+    assert.deepEqual(sections, ['Section:THE BAND', 'Section:PERFORMERS', 'FoldSection:THE GIG', 'FoldSection:TECHNICAL CONTACT', 'FoldSection:REVISION AND STATUS', 'FoldSection:STAGE SIZE', 'FoldSection:NOTES']);
+    for (const f of folds.SP_SETUP_FOLDS) assert.match(setup, new RegExp(`<FoldSection title="${f.title}"[^>]*\\{\\.\\.\\.fold\\('${f.id}'\\)\\}>`), f.title);
+    assert.equal(folds.SP_FOLD_OPEN_WORD, 'GO DEEPER ▾');
+    assert.match(setup, /openWord: 'GO DEEPER ▾',/);
+    assert.match(setup, /useState<ReadonlySet<SpSetupFoldId>>\(\(\) => openFolds\[p\.id\] \?\? new Set\(\)\)/, 'closed until opened; kept while the app is open');
+  });
+  it('nothing was removed: every field, switch and note of the five parts is still in the file', () => {
+    for (const label of ['label="Venue"', 'label="Event date"', 'label="Load-in"', 'label="Soundcheck"', 'label="Performance"', "label: 'Contact name'", "label: 'Their role'", "label: 'Email'", "label: 'Phone'", 'label={`Show the ${f.word} in the packet`}', 'label="Status"', 'label="The venue has confirmed this revision"', 'label="Shape of the stage"', 'label="Wings at each side"', 'label="Width"', 'label="Depth"', 'label="Diameter"', 'label="Thrust width"', 'label="Thrust depth"', 'label="Width of each wing"', 'label="Measured in"', 'label="These numbers are"', 'label="General notes"', 'label="Access and setup notes"', 'label="Viewpoint note"', 'title="Thrust, in the round, wings: what changes for sound"', 'title="Stage right, stage left, upstage, downstage"']) {
+      assert.ok(read(`${SP}/SetupArea.tsx`).includes(label), label);
+    }
+  });
+  it('a closed part says what it holds, in one line, and is never blank', () => {
+    const p = spFromTemplate('blank', { id: 'folds', now: 1 });
+    assert.equal(folds.spSetupFoldSummary(p, 'gig'), 'The venue, the date and the times. Nothing typed yet.');
+    assert.equal(folds.spSetupFoldSummary(p, 'contact'), 'The person the venue’s engineer should ask. Nobody yet.');
+    assert.equal(folds.spSetupFoldSummary(p, 'status'), 'Revision 1 · Draft');
+    assert.equal(folds.spSetupFoldSummary(p, 'size'), 'Rectangle · no size yet (not to scale)');
+    assert.equal(folds.spSetupFoldSummary(p, 'notes'), 'Nothing written yet.');
+    const q: SpProject = { ...p, venue: 'The Roxy', eventDate: '2026-12-05', soundcheck: '5:00 PM', notes: 'Two vans.', viewNote: 'x', contact: { ...p.contact, name: 'Ana', email: 'ana@example.com' }, stage: { ...p.stage, width: 24, depth: 16 } };
+    assert.equal(folds.spSetupFoldSummary(q, 'gig'), 'The Roxy · December 5, 2026 · soundcheck 5:00 PM');
+    assert.equal(folds.spSetupFoldSummary(q, 'contact'), 'Ana · ana@example.com');
+    assert.equal(folds.spSetupFoldSummary(q, 'size'), 'Rectangle · 24 × 16 ft');
+    assert.equal(folds.spSetupFoldSummary(q, 'notes'), 'Written: general, viewpoint.');
+    for (const f of folds.SP_SETUP_FOLDS) for (const x of [p, q]) assert.ok(folds.spSetupFoldSummary(x, f.id).length > 5, f.id);
+    // no "N of total" in any summary
+    for (const f of folds.SP_SETUP_FOLDS) assert.doesNotMatch(folds.spSetupFoldSummary(q, f.id), /\d+ of \d+/);
+  });
+  it('a screen reader hears each part of a row as its own sentence (checker K2: two rows ran into "Show this part")', () => {
+    const p = spFromTemplate('blank', { id: 'say', now: 1 });
+    const q: SpProject = { ...p, venue: 'The Roxy', contact: { ...p.contact, name: 'Ana', email: 'ana@example.com' }, stage: { ...p.stage, width: 24, depth: 16 } };
+    const say = (x: SpProject, id: 'gig' | 'contact' | 'status' | 'size' | 'notes', ask: string | null = null, open = false) =>
+      folds.spFoldRowSay({ title: folds.SP_SETUP_FOLDS.find((f) => f.id === id)!.title, summary: folds.spSetupFoldSummary(x, id), ask, open });
+    assert.equal(say(p, 'status'), 'REVISION AND STATUS. Revision 1 · Draft. Show this part.');
+    assert.equal(say(p, 'size'), 'STAGE SIZE. Rectangle · no size yet (not to scale). Show this part.');
+    assert.equal(say(q, 'size'), 'STAGE SIZE. Rectangle · 24 × 16 ft. Show this part.');
+    assert.equal(say(q, 'gig'), 'THE GIG. The Roxy. Show this part.');
+    assert.equal(say(q, 'contact'), 'TECHNICAL CONTACT. Ana · ana@example.com. Show this part.');
+    assert.equal(say(p, 'notes'), 'NOTES. Nothing written yet. Show this part.', 'a summary that ends in a full stop gets no second one');
+    assert.equal(say(p, 'contact', 'Nobody to ask'), 'TECHNICAL CONTACT. The person the venue’s engineer should ask. Nobody yet. A question: Nobody to ask. Show this part.');
+    assert.equal(say(p, 'gig', null, true), 'THE GIG. Hide this part.');
+    // every row, empty and filled, closed: no two sentences run together, and no doubled full stop
+    for (const x of [p, q]) for (const f of folds.SP_SETUP_FOLDS) {
+      const s = say(x, f.id);
+      assert.match(s, /[.!?…] Show this part\.$/, `${f.id}: ${s}`);
+      assert.doesNotMatch(s, /\.\./, `${f.id}: ${s}`);
+    }
+    assert.match(code(`${SP}/spForm.tsx`), /accessibilityLabel=\{spFoldRowSay\(p\)\}/);
+  });
+  it('a review question is never folded away: it shows on the closed row, and GO TO opens the part', () => {
+    const a = spAddPerformer(spFromTemplate('blank', { id: 'ask', now: 1 }), { name: 'Ana', role: '' });
+    const issues = spReview(a.p);
+    const ask = issues.find((i) => i.rule === 'no-contact');
+    assert.ok(ask, 'a plot with a performer and no contact is asked about it');
+    assert.equal(folds.spSetupFoldAsk(issues, 'contact'), ask.text);
+    assert.equal(folds.spSetupFoldAsk(issues, 'gig'), null);
+    assert.equal(folds.spSetupFoldOfRule('no-contact'), 'contact');
+    for (const rule of ['no-band-name', 'example-title', 'empty', null]) assert.equal(folds.spSetupFoldOfRule(rule), null, `${rule}: its field is in the open part`);
+    assert.match(setup, /const inFold = spSetupFoldOfRule\(rule\);\s+if \(inFold\) setFoldOpen\(inFold, true\);/);
+    const form = code(`${SP}/spForm.tsx`);
+    assert.match(form, /\{!p\.open && p\.ask \? <Text style=\{styles\.foldAsk\}>\{`\? \$\{p\.ask\}`\}<\/Text> : null\}/);
+    assert.match(form, /accessibilityState=\{\{ expanded: p\.open \}\}/);
+  });
+  it('Export’s GO TO SETUP for the contact opens the folded contact part (it landed at the top of Setup, contact folded away: seen on screen)', () => {
+    const went: unknown[][] = [];
+    goToSetupPart({ goTo: (...a: unknown[]) => void went.push(a) } as never, 'no-contact');
+    assert.deepEqual(went, [['setup']], 'it goes to Setup');
+    const rule = takeSpSetupAsk();
+    assert.equal(rule, 'no-contact', 'and leaves the part’s rule for Setup, as a review "Go to" does');
+    assert.equal(folds.spSetupFoldOfRule(rule), 'contact', 'which opens the TECHNICAL CONTACT part');
+    assert.equal(spSetupField(rule), 'contact', 'and brings it into view');
+    assert.equal(takeSpSetupAsk(), null, 'taken once');
+    assert.match(code(`${SP}/ExportArea.tsx`), /<Button label="GO TO SETUP" onPress=\{\(\) => goToSetupPart\(ed, 'no-contact'\)\}/);
+    // every other "go to Setup" in the lab is about a performer, and PERFORMERS is never folded
+    for (const f of ['monitors/MixSheets.tsx', 'stage/StageInspector.tsx']) {
+      for (const m of code(`${SP}/${f}`).matchAll(/a11yLabel=(?:"|\{`)(Go to [^"`]*Setup[^"`]*)/g)) assert.match(m[1], /performer|in Setup/i, `${f}: ${m[1]}`);
+    }
+  });
+  it('the guide and the intro card say the parts are folded', () => {
+    assert.match(SP_GUIDE_SETUP.control.join(' '), /GO DEEPER ▾ opens a folded part, such as the gig or the stage size\. Its row says what it holds\./);
+    assert.match(SP_GUIDE_SETUP.intro!.start, /each is folded until you open it/);
+    assert.ok(SP_GUIDE_SETUP.control.join('\n').length <= 700);
   });
 });

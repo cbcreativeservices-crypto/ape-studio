@@ -36,7 +36,9 @@ export function stateOf(r: Reading): MapState {
 // helpers (lab fix round 2026-11-14, F2) so the tests reach them.
 export { readoutOf, mapReadout } from './fixHelpers';
 
-const BENCH_BADGE = 'THE BENCH — ILLUSTRATIVE · readings from sample faults';
+
+/** Where the bench intro's worked example stops (its answer). */
+export const BENCH_EXAMPLE_STOP: Station = 'processor';
 
 function shuffled(n: number): number[] {
   const idx = Array.from({ length: n }, (_, i) => i);
@@ -116,7 +118,8 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
       kind: 'options',
       id: 'case',
       label: 'CASE',
-      valueLabel: c ? `${cases.indexOf(c) + 1}/${cases.length}` : 'Pick',
+      valueLabel: c ? `${cases.indexOf(c) + 1}` : 'Pick',
+      valueA11y: c ? c.title : 'pick a case',
       options: cases.map((f) => ({
         id: f.id,
         label: `${progress.faults.includes(f.id) ? (progress.forward.includes(f.id) ? '✓✓ ' : '✓ ') : '○ '}${f.title}`,
@@ -223,14 +226,14 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: BENCH_BADGE,
+        modelNote: 'A teaching model: the readings come from sample faults.',
         initialParam: 'case',
         // The case's TITLE cropped in its bezel cell ("SIGNAL REACHES THE
         // MIX…"): it prints in full above the map now, with the fault group
         // under it (owner 2026-09-29, TitledStage). The bezel
         // keeps the case number / the solved count.
         bezel: [
-          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1} OF ${cases.length}` : `${solvedHere} SOLVED`, flex: 1.2 },
+          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1}` : `${solvedHere} SOLVED`, vA11y: c ? c.title : undefined, flex: 1.2 },
           { k: 'PROBED', caption: 'stations read', v: c ? `${probes.length}` : '—', flex: 0.8 },
           { k: 'READS', caption: 'what it shows', v: c && last ? readoutOf(c.reads[last]) : '—', tint: c && last ? (stateOf(c.reads[last]) === 'ok' ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
           { k: 'GRADE', caption: 'right + walk', v: grade ? (grade.correct ? (grade.forward ? '✓✓' : '✓') : '✗') : '—', tint: grade ? (grade.correct ? colors.green : colors.red) : undefined, flex: 0.7 },
@@ -263,10 +266,13 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
 /* ── page 1 · how the bench works ───────────────────────────────────────── */
 
 function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
-  useEffect(() => {
-    if (!ctx.isDone) ctx.markDone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Owner decision 1, 2026-11-14 ("done" = work done): the page used to count
+  // the moment it opened. It now counts once the learner finds, on the worked
+  // example, the station where the walk stopped.
+  const [picked, setPicked] = useState<Station | null>(null);
+  const found = picked === BENCH_EXAMPLE_STOP;
+  const goals = [{ label: 'Find where the example walk stopped', hit: found }];
+  const latched = useVisitGoals(ctx, goals);
   const progress = useSoundSystemsProgress();
   const demo = useMemo(() => benchMap({}, {}), []);
   const nodes: MapNode[] = demo.nodes.map((n) => {
@@ -276,8 +282,18 @@ function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={14}>TESTING AND TROUBLESHOOTING · THE BENCH</ChapterTag>
-      <Body>How a case reads: the symptom cleared the first three stations, so the walk started at the console input — healthy, healthy — and stopped at the processor, which reads NO SIGNAL. That station is the answer.</Body>
-      <SystemMap nodes={nodes} edges={demo.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) > 5 }))} running={false} a11y="An example walk: console in and console out read healthy, the processor reads no signal, everything after it is unlit." />
+      <Body>How a case reads: the symptom cleared the first three stations, so the walk started at the console input and moved forward one station at a time. Find the station where this walk stopped, and tap it on the map.</Body>
+      <SystemMap nodes={nodes} edges={demo.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) > 5 }))} running={false} onTap={(id) => setPicked(id as Station)} selectedId={picked} a11y="An example walk: console in and console out read healthy, one station reads no signal, everything after it is unlit. Tap a station." />
+      {picked ? (
+        <VerdictLine ok={found}>
+          {found
+            ? 'Yes: the processor. Two healthy readings, then NO SIGNAL. The first reading that is not healthy is the answer.'
+            : picked === 'consoleIn' || picked === 'consoleOut'
+              ? 'That one reads OK: the signal is still healthy there. Walk on to the first reading that is not.'
+              : 'Not that one. Start where the walk started, the console input, and stop at the first reading that is not healthy.'}
+        </VerdictLine>
+      ) : null}
+      <GoalChips goals={goals} latched={latched} />
       <ReadingKey />
       <Lead>
         Twenty-two faults from real shows, in five groups. Each one hands you a symptom and a system. You probe the stations on the map — each probe reveals what a technician would read there — and then you name the fault.

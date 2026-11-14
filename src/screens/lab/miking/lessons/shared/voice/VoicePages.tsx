@@ -59,7 +59,7 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
     const stage = S.stages[st.shown - 1];
     const extra = spec.useExtra?.(p) ?? null;
     const seqBezel: BezelItem[] = [
-      { k: 'STEP', v: `${st.shown} / ${n}`, flex: 0.8 },
+      { k: 'STEP', v: `${st.shown}`, flex: 0.8 },
       { k: 'EVENT', v: stage.title.toUpperCase(), flex: 2 },
       { k: 'WHERE', v: spec.where[st.shown - 1] ?? '—', flex: 1.2 },
     ];

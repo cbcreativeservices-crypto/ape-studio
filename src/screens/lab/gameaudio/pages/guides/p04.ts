@@ -1,37 +1,36 @@
 /**
- * Screen guide — page 4, "Kinds of games". Pure data (the guide test loads
- * it under node). Voice: to the student, about THIS screen.
+ * Screen guide — "Kinds of games" (the learner's page 4). Pure data (the guide
+ * test loads it under node). Voice: to the student, about THIS screen.
+ *
+ * Since 2026-11-14 this page holds ONE lesson (owner's decision 5). The lines
+ * about the listener went with that lesson to guides/p23.ts.
  */
 import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.ts';
 
 export const G04: ScreenGuide = {
   intro: {
-    learning: 'Genre, perspective and play mode are separate choices, and the listener does not have to be where the visible character is.',
-    start: 'Open GAMES and pick a kind of game: the scene shows one thing it cares about. Then open LISTENER, switch GENERATOR 1 on, move FACING to 0° and compare GEN PAN for YOUR EARS and OVERHEAD CAMERA.',
+    learning: 'Genre, perspective and play mode are three separate choices, and each kind of game puts different sounds first.',
+    start: 'Open GAMES and pick a kind of game. The scene starts again and shows one thing that kind cares about. Read its card in step 2, then pick two more.',
   },
   seeing: [
-    'You look down on the scene, as on a strategy game’s map. The amber wedge on YOU marks the listener. With the overhead camera, the mark CAMERA · LISTENER in the middle takes its place.',
-    'LISTENER names whose ears are in use. GEN PAN shows how far left or right the generator sits for that listener; — means it is not played.',
+    'You look down on the scene, as on a strategy game’s map.',
     'Step 2’s card is the kind of game you picked, with the sounds it often puts first.',
+    'LISTENER names whose ears are in use. One kind of game hands them to a camera; the next page is about that.',
   ],
   control: [
-    'FACING turns YOU through a full circle, in steps of 5°. At 0° you face the top of the picture.',
-    'LISTENER opens a tray: YOUR EARS or OVERHEAD CAMERA, and GENERATOR 1 to give yourself a sound to listen to. The chosen ears show a ✓.',
     'GAMES opens twelve kinds of game. A pick starts the scene again and shows one thing that kind cares about. The line at the top of the tray says what you are seeing.',
+    'LEVEL is the lab’s playback level, on the slider. It is the first key on this page.',
   ],
   changes: [
-    'With your ears, GEN PAN follows FACING: as you turn, the generator moves from one side to the other.',
-    'From the camera, left and right follow the picture, so FACING no longer changes GEN PAN. At 0° the generator sits nearer the center.',
-    'Level follows the listener too. For the camera, each sound is as loud as its distance from the middle makes it. YOUR ring turns gray and dashed: you are not listening.',
+    'Each pick empties the scene and runs one short demonstration: a door, a footstep, a burst of impacts, a warning with a sign.',
+    'The GAMES key counts the kinds you have seen on this visit.',
   ],
   teaches: [
-    'Direction and distance are measured from the listener, not from the character on screen.',
-    'A team chooses where the listener goes. In an overhead game it is often with the camera.',
+    'What the player does, where the camera is, and who plays are separate choices. A puzzle can be played in first person, and a racing game can be seen from above.',
     'Kinds of game differ in which sounds matter most. All kinds are built from the same parts.',
   ],
   tryThis: [
-    'As YOUR EARS, move FACING to 0° and read GEN PAN: far to the right. Choose OVERHEAD CAMERA and it moves toward the center.',
-    'With OVERHEAD CAMERA chosen, move FACING from end to end. YOU turn in the picture and GEN PAN does not move.',
     'In GAMES pick STRATEGY: the camera becomes the listener. Then pick RACING: the generator starts at high speed, and its rings crowd close.',
+    'Pick HORROR and read its card. Which sounds does that kind of game often put first?',
   ],
 };

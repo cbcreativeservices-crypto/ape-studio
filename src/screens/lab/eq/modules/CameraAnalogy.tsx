@@ -290,6 +290,8 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
         size: 'L',
         fullScreen: true,
         badge: 'REAL PEAKING RESPONSE AT A FIXED +9 dB — GAIN IS NOT PART OF THE ANALOGY',
+        // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+        modelNote: 'A real bell, boosted a fixed +9 dB: on this page you only aim and zoom.',
         bezel: [
           { k: 'EQ TYPE', caption: 'kind of EQ', v: STAGE_SHORT[stage], flex: 1.1 },
           { k: 'FREQ', v: fmtHz(eqFreq) },
@@ -337,7 +339,8 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
         a NARROWER bandwidth and a HIGHER Q. Gain (boost or cut) is the next lesson.
       </Text>
 
-      <CheckQuestion spec={CHECK} />
+      {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+      <CheckQuestion spec={CHECK} onSolved={p.onDone} />
     </RackUnit>
   );
 }

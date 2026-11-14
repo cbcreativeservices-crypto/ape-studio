@@ -15,7 +15,7 @@
  * (anonymous) users always start at step 1 and never resume (owner
  * 2026-08-12 guest rule — same as Foundations).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,7 +25,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { colors, fonts } from '../../../theme/tokens';
 import { MicCheck } from './micCheck';
 import { MicPhotoLightbox, MicVisual } from './micArt';
@@ -93,6 +93,41 @@ const stepStore = createLocalStore<number | null>({
 // ─────────────────────────────────────────────────────────────────────────────
 // Small shared pieces
 
+/**
+ * WORK DONE (owner decision 1, 2026-11-14: "Done" = work done). A module
+ * counts when its own goal is met, never when it is opened. Each module's
+ * body reports its goal here; the host records it (labVisits, the same
+ * store, so every module already counted stays counted).
+ */
+const GoalCtx = createContext<(key: string) => void>(() => {});
+const useGoal = () => useContext(GoalCtx);
+/** Calls the goal once `value` has taken `need` different values. */
+function useSeenGoal(key: string, value: string | null, need: number) {
+  const meet = useGoal();
+  const seen = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (value == null) return;
+    seen.current.add(value);
+    if (seen.current.size >= need) meet(key);
+  }, [value, key, need, meet]);
+}
+/** The goal each module asks for (the end screen's "still to do" line). */
+export const MICSEL_GOALS: Readonly<Record<string, string>> = {
+  types: 'open a second mic card, or compare two',
+  chars: 'open three characteristic cards',
+  patterns: 'pick a pattern and a reason that fits it',
+  curves: 'answer its CHECK YOURSELF question',
+  spl: 'try all three microphones against the sources',
+  power: 'open all three power cases',
+  form: 'read it to the end and press NEXT',
+  env: 'open all three places (A, B and C)',
+  jobs: 'answer its CHECK YOURSELF question',
+  challenge: 'choose a mic and press CHECK MY REASONING',
+  locker: 'cover all ten jobs',
+};
+/** Reading modules count on NEXT at their foot. */
+const MICSEL_READING: ReadonlySet<string> = new Set(['form']);
+
 function LessonBanner({ text }: { text: string }) {
   return (
     <View style={styles.banner}>
@@ -157,6 +192,8 @@ function TypesStep() {
   const [sel, setSel] = useState<string | null>('dynamic');
   const [compare, setCompare] = useState(false);
   const [pair, setPair] = useState<string[]>([]);
+  useSeenGoal('types', sel, 2);
+  useSeenGoal('types', pair.length === 2 ? 'pair' : null, 1);
 
   const toggleCompare = () => {
     if (!compare) {
@@ -259,6 +296,7 @@ function TypesStep() {
 
 function CharsStep() {
   const [sel, setSel] = useState(CHARACTERISTICS[0].key);
+  useSeenGoal('chars', sel, 3);
   const c = CHARACTERISTICS.find((x) => x.key === sel)!;
   return (
     <View style={styles.stepGap}>
@@ -312,6 +350,7 @@ function PatternsStep() {
   const reasonRows = useShuffledRows(PATTERN_REASONS);
   const chosenReason = PATTERN_REASONS.find((r) => r.key === reason);
   const reasonGood = chosenReason?.goodFor.includes(pattern) ?? false;
+  useSeenGoal('patterns', reasonGood ? 'good' : null, 1);
   const reasonAlt = chosenReason ? PATTERNS.find((p) => chosenReason.goodFor.includes(p.key))?.name : null;
 
   return (
@@ -360,6 +399,7 @@ function PatternsStep() {
 // Lesson 4 — Frequency response
 
 function CurvesStep() {
+  const meetGoal = useGoal();
   const [sel, setSel] = useState('a');
   const [w, onLayout] = useWidth();
   const H = 150;
@@ -427,6 +467,7 @@ function CurvesStep() {
       {/* Per-option reasons and balanced options (fix round 2026-11-14, F9
           phase 2): the right answer was the longest and said why. */}
       <MicCheck
+        onSolved={() => meetGoal('curves')}
         spec={{
           question: 'A lectern mic keeps picking up stage rumble under the speech. Which response curve helps?',
           options: ['A low-frequency rolloff', 'A presence peak around 5 kHz', 'A perfectly flat curve, since flat is best'],
@@ -450,6 +491,7 @@ function CurvesStep() {
 
 function SplStep() {
   const [mic, setMic] = useState('cond');
+  useSeenGoal('spl', mic, 3);
   const [tier, setTier] = useState<string | null>(null);
   const profile = MIC_PROFILES.find((m) => m.key === mic)!;
   return (
@@ -506,6 +548,7 @@ function SplStep() {
 
 function PowerStep() {
   const [sel, setSel] = useState('dyn');
+  useSeenGoal('power', sel, 3);
   const pc = POWER_CASES.find((p) => p.key === sel)!;
   return (
     <View style={styles.stepGap}>
@@ -565,6 +608,7 @@ function FormStep() {
 
 function EnvStep() {
   const [sel, setSel] = useState('studio');
+  useSeenGoal('env', sel, 3);
   const sc = ENV_SCENARIOS.find((s) => s.key === sel)!;
   return (
     <View style={styles.stepGap}>
@@ -591,6 +635,7 @@ function EnvStep() {
 // Lesson 9 — Application explorer
 
 function JobsStep() {
+  const meetGoal = useGoal();
   const [group, setGroup] = useState('voice');
   const [job, setJob] = useState('livevocal');
   const g = JOB_GROUPS.find((x) => x.key === group)!;
@@ -632,6 +677,7 @@ function JobsStep() {
       </View>
       {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
       <MicCheck
+        onSolved={() => meetGoal('jobs')}
         spec={{
           question: 'Two mics: one labeled "vocal", one labeled "instrument". Which is right for a loud guitar cab?',
           options: ['Whichever one’s specs handle the level and the tone', 'The "instrument" one, because its label says instruments', 'Not the "vocal" one: vocal mics never work on instruments'],
@@ -664,7 +710,7 @@ function JobFit({ ratings }: { ratings: [string, number][] }) {
   return (
     <View style={{ gap: 4 }}>
       {ratings.map(([name, n]) => (
-        <Text key={name} style={styles.bullet}>{n <= 2 ? `•  ${name} (rated low) → it matters little for this job, or is not wanted` : `•  ${name} → ${JOB_FIT[name] ?? 'see Lesson 2’s list of characteristics'}`}</Text>
+        <Text key={name} style={styles.bullet}>{n <= 2 ? `•  ${name} (rated low) → it matters little for this job, or is not wanted` : `•  ${name} → ${JOB_FIT[name] ?? 'see Module 2’s list of characteristics'}`}</Text>
       ))}
       <Text style={[styles.body, { marginTop: 4 }]}>Several microphones can meet the same list. Next, the challenge asks you to choose one and defend it.</Text>
     </View>
@@ -683,6 +729,7 @@ function ChallengeStep() {
   // The variants stay hidden until the base brief has been answered once —
   // they rendered before the first pick and invited skipping it (2026-08-31).
   const [baseTried, setBaseTried] = useState(false);
+  useSeenGoal('challenge', checked && pick ? 'checked' : null, 1);
 
   const variant = CHALLENGE_VARIANTS.find((v) => v.key === scenario);
   const spec = variant ?? CHALLENGE_BASE;
@@ -799,7 +846,7 @@ function ChallengeStep() {
           </Text>
           {!variant && (correctPick || acceptedPick) ? (
             <Text style={styles.body}>
-              {`Reasoning: ${factorScore}/3 key factors selected${factorWrong > 0 ? `, ${factorWrong} that ${factorWrong === 1 ? 'doesn’t' : 'don’t'} bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
+              {`Reasoning: ${factorScore === 3 ? 'every key factor picked' : factorScore === 0 ? 'no key factor picked yet' : `key factors still missing: ${3 - factorScore}`}${factorWrong > 0 ? `, ${factorWrong} that ${factorWrong === 1 ? 'doesn’t' : 'don’t'} bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
             </Text>
           ) : null}
           {/* The full rationale names the right mic — printing it on a WRONG
@@ -844,6 +891,7 @@ function LockerStep() {
     }
     return s;
   }, [chosen]);
+  useSeenGoal('locker', covered.size >= LOCKER_JOBS.length ? 'all' : null, 1);
   return (
     <View style={styles.stepGap}>
       <Text style={styles.body}>
@@ -919,63 +967,63 @@ type StepDef = { key: string; tag: string; title: string; intro: string; Body: (
 const STEPS: StepDef[] = [
   {
     key: 'types',
-    tag: 'LESSON 1',
+    tag: 'MODULE 1',
     title: 'MEET THE MICROPHONE TYPES',
     intro: 'What choices exist? Recognize the major categories and their broad practical differences.',
     Body: TypesStep,
   },
   {
     key: 'chars',
-    tag: 'LESSON 2',
+    tag: 'MODULE 2',
     title: 'CHARACTERISTICS THAT MATTER',
     intro: 'What makes microphones different — the foundation every later decision stands on.',
     Body: CharsStep,
   },
   {
     key: 'patterns',
-    tag: 'LESSON 3',
+    tag: 'MODULE 3',
     title: 'POLAR PATTERN SELECTION',
     intro: 'Where should the microphone listen — and what should it refuse to hear?',
     Body: PatternsStep,
   },
   {
     key: 'curves',
-    tag: 'LESSON 4',
+    tag: 'MODULE 4',
     title: 'FREQUENCY RESPONSE & TONAL CHARACTER',
     intro: 'Learn to read a response curve the way you would read a spec sheet.',
     Body: CurvesStep,
   },
   {
     key: 'spl',
-    tag: 'LESSON 5',
+    tag: 'MODULE 5',
     title: 'SENSITIVITY, NOISE & SPL',
     intro: 'Can this microphone appropriately capture this source?',
     Body: SplStep,
   },
   {
     key: 'power',
-    tag: 'LESSON 6',
+    tag: 'MODULE 6',
     title: 'ACTIVE VS. PASSIVE / POWER',
     intro: 'What does the microphone require from the rig?',
     Body: PowerStep,
   },
   {
     key: 'form',
-    tag: 'LESSON 7',
+    tag: 'MODULE 7',
     title: 'FORM FACTOR MATTERS',
     intro: 'What physical design fits the job? Selection is not just electrical.',
     Body: FormStep,
   },
   {
     key: 'env',
-    tag: 'LESSON 8',
+    tag: 'MODULE 8',
     title: 'SELECTING FOR THE ENVIRONMENT',
     intro: 'How the surroundings change the decision before any spec is read.',
     Body: EnvStep,
   },
   {
     key: 'jobs',
-    tag: 'LESSON 9',
+    tag: 'MODULE 9',
     title: 'APPLICATION EXPLORER',
     intro: 'Organized by JOB, not by microphone: priorities first, characteristics second.',
     Body: JobsStep,
@@ -1048,6 +1096,8 @@ export function MicSelectLabScreen() {
    * Lesson 1 (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
+  const [met, setMet] = useState<ReadonlySet<string>>(() => new Set());
+  const meetGoal = useCallback((key: string) => setMet((m) => (m.has(key) ? m : new Set([...m, key]))), []);
   const finish = useCallback(() => setEnding(true), []);
   const unEnd = useCallback(() => setEnding(false), []);
   const visited = useLabVisits('micselect');
@@ -1071,9 +1121,11 @@ export function MicSelectLabScreen() {
     // provider boots at 'anonymous'-but-unresolved, so a cold-start guest's
     // first lesson was PERSISTED before the guest rule could apply. Re-runs
     // when the tier lands, so that lesson is still recorded.
+    // WORK DONE (owner decision 1, 2026-11-14): a module is recorded when its
+    // goal is met (MICSEL_GOALS), no longer when it is opened.
     if (!resolved) return;
-    markLabVisit('micselect', STEPS[step].key, { persist: !noAccountRef.current });
-  }, [step, resolved, entitlement]);
+    for (const key of met) markLabVisit('micselect', key, { persist: !noAccountRef.current });
+  }, [met, resolved, entitlement]);
 
   const s = STEPS[step];
 
@@ -1087,11 +1139,17 @@ export function MicSelectLabScreen() {
     go: goTo,
     finish,
     unEnd,
+    // A reading module counts on NEXT (or FINISH) at its foot.
+    beforeAdvance: () => {
+      if (MICSEL_READING.has(STEPS[step].key)) meetGoal(STEPS[step].key);
+    },
     reset: { label: 'START OVER (PRACTICE)', run: () => goTo(0) },
   });
 
   return (
     <MicPhotoLightbox>
+    {/* ONE unit noun, said once (owner decision 3, 2026-11-14; S2's API): module. */}
+    <LabNounProvider value="module">
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The guide overlay is the root's last child; a step change closes an
@@ -1116,7 +1174,6 @@ export function MicSelectLabScreen() {
           cleared={endCleared}
           unreadable={progressUnreadable}
           mode="progress"
-          noun="lesson"
           // The CHECK row stays here: the check is drawn on this screen (extra).
           onJump={(id) => { if (id !== UNDERSTANDING_UNIT) goTo(Math.max(0, STEPS.findIndex((st) => st.key === id))); }}
           // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
@@ -1132,16 +1189,19 @@ export function MicSelectLabScreen() {
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
         <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
-        <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${STEPS.length}`}</Text>
+        <Text style={styles.tag}>{s.tag}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>
-        <s.Body key={s.key} />
+        <GoalCtx.Provider value={meetGoal}>
+          <s.Body key={s.key} />
+        </GoalCtx.Provider>
         <LabNextButton nav={nav} />
       </ScrollView>
       )}
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
+    </LabNounProvider>
     </MicPhotoLightbox>
   );
 }
@@ -1158,20 +1218,10 @@ export function micSelEndUnits(hasCheck: boolean): LabEndUnit[] {
 /** Each unfinished row's own line: what that lesson asks of you (fix round
  *  2026-11-14, F9 phase 2, the S2 end-screen rule). The rule every row
  *  shares is said once, in MICSEL_HOW_IT_COUNTS. */
-export const MICSEL_MISSING: Readonly<Record<string, string>> = {
-  types: 'Not opened yet: tap the mic types and read their cards.',
-  chars: 'Not opened yet: the characteristics that drive a choice.',
-  patterns: 'Not opened yet: pick a pattern for the stage and say why.',
-  curves: 'Not opened yet: read a response curve, then its check.',
-  spl: 'Not opened yet: match three mics to quiet and loud sources.',
-  power: 'Not opened yet: what each mic needs from the rig.',
-  form: 'Not opened yet: the body shapes and the jobs they suit.',
-  env: 'Not opened yet: one voice in three places.',
-  jobs: 'Not opened yet: a job’s requirements, rated, and what fits them.',
-  challenge: 'Not opened yet: choose a mic for the brief and defend it.',
-  locker: 'Optional, still counts. Not opened yet: six slots for ten jobs.',
-};
-export const MICSEL_HOW_IT_COUNTS = 'A lesson counts as soon as you open it. The check counts once every answer is right.';
+export const MICSEL_MISSING: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries(MICSEL_GOALS).map(([k, g]) => [k, `${k === 'locker' ? 'Optional, still counts. ' : ''}Still to do: ${g}.`]),
+);
+export const MICSEL_HOW_IT_COUNTS = 'A module counts once its own goal is met (a reading module, once you press NEXT at its foot). Opening it does not count it. The check counts once every answer is right.';
 
 /** Lessons opened (device progress) plus the check once it is banked. */
 export function micSelEndCleared(visited: ReadonlySet<string>, banked: ReadonlySet<string>): ReadonlySet<string> {

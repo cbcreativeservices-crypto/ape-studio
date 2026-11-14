@@ -250,7 +250,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone, pageGuid
     setResetSeq((n) => n + 1);
   };
   const confirmReset = () => {
-    const message = `Starts ${title} again from its first page. Pages, capstones, exercises and faults you have completed stay credited.`;
+    const message = `Starts ${title} again from its first module. Modules, capstones, exercises and faults you have completed stay credited.`;
     if (Platform.OS === 'web') {
       // react-native-web's Alert is a no-op: keep the guard with the browser's confirm.
       const confirm = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
@@ -343,7 +343,6 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone, pageGuid
             cleared={endCleared}
             unreadable={unreadable}
             mode="progress"
-            noun="page"
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}
             onDone={() => safeGoBack(navigation)}

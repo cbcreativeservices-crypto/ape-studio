@@ -221,7 +221,8 @@ export function unknownNote(responses: Responses): string | null {
   if (!n) return null;
   const activities = new Set(unknownQs.map((q) => q.dimension)).size;
   const dashed = Object.values(dimensionScores(responses)).filter((d) => d.insufficient).length;
-  let s = `You chose “I don’t know enough about this” for ${n} of the ${QUESTIONS.length} questions.`;
+  // Owner decision 2026-11-14 ("Remove them"): no "N of total"; the count stands alone, branched.
+  let s = `You chose “I don’t know enough about this” for ${n} ${n === 1 ? 'question' : 'questions'}.`;
   s += activities === 1 ? ' That activity is unexplored, not disliked.' : ' Those activities are unexplored, not disliked.';
   if (dashed === 1) s += ' The dashed bar has no rating.';
   else if (dashed > 1) s += ' The dashed bars have no rating.';

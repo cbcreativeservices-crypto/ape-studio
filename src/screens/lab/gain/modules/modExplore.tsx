@@ -25,6 +25,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
+import { useMetWhen } from '../../meter/moduleGoal';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { SView } from '../../stageScale';
@@ -62,7 +63,8 @@ const SHORT: Record<string, string> = {
 };
 
 /** Honesty badge on every gain-chain glass: simulation on a relative scale. */
-const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';
+// S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+const BADGE = 'A simulated signal chain; levels are relative dB.';
 
 const fmtDb = (v: number) => `${v >= 0 ? '+' : ''}${v} dB`;
 // The dock KEY carries the unit too (emulator pass 2026-10-14: the key read
@@ -88,6 +90,8 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
   const stages = useMemo(() => fullChain(g), [g]);
   const nodes = computeChain(-30, stages);
   const healthy = chainIsHealthy(nodes);
+  // The module counts once the chain is balanced (owner's decision 1, phase 3).
+  useMetWhen(healthy);
   const setGain = useCallback((k: string, v: number) => setG((prev) => ({ ...prev, [k]: v })), []);
 
   /** One in-tray DragSlider bound to a chain stage (the group-tray graft). */
@@ -174,7 +178,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
           { k: 'HEADROOM', v: `${Math.max(0, -Math.round(nodes[6].level))} dB`, caption: 'until clip' },
@@ -215,6 +219,9 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
   const [xray, setXray] = useState(true);
   const stages = useMemo(() => fullChain(g), [g]);
   const nodes = computeChain(source, stages);
+  // Nothing is graded here: the module counts once you change the source or
+  // a stage (owner's decision 1, phase 3 — practice is the work).
+  useMetWhen(source !== -30 || (Object.keys(FREE_START) as (keyof Gains)[]).some((k) => g[k] !== FREE_START[k]));
   const setGain = useCallback((k: string, v: number) => setG((prev) => ({ ...prev, [k]: v })), []);
 
   const traySlider = (key: string, label: string) => {
@@ -310,7 +317,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'SOURCE', v: fmtLv(nodes[0].level), tint: stageTint(nodes[0]) },
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
@@ -484,7 +491,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
           { k: 'STATUS', ...stageStatus(nodes[6]) },

@@ -387,7 +387,7 @@ describe('5. wiring and the accuracy-chip decisions', () => {
   });
   it('chip decision — the lab: a CONCEPT lab, no AccuracyNote; its honesty badges and lethal-voltage lines stay on the screens', () => {
     assert.doesNotMatch(LAB_SRC, /AccuracyNote/);
-    assert.match(LAB_SRC, /badge: 'ILLUSTRATIVE MODEL — SCHEMATIC CROSS-SECTION, NOT MEASURED TUBE DATA'/);
+    assert.match(LAB_SRC, /modelNote: 'A drawn cross-section, not measured tube data\.'/);
     assert.match(LAB_SRC, /it is enough to kill/);
     assert.match(LAB_SRC, /inside an energized chassis at lethal voltage, by a qualified technician/);
     assert.match(MODULES.highv.teaches.join(' '), /can kill, even after the amp is unplugged/);

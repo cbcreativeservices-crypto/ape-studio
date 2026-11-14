@@ -1257,7 +1257,11 @@ describe('the Export area: its guide, its memory and its wiring', async () => {
   });
   it('the area says which contact details the packet shows, with a way to change them', () => {
     assert.match(area, /Contact shown in the packet: \$\{contactShown\.join\(', '\) \|\| 'none'\}\. Change it in SETUP\./);
-    assert.match(area, /<Button label="GO TO SETUP" onPress=\{\(\) => ed\.goTo\('setup'\)\}/);
+    // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Long pages: beginner core first. Keep ALL content.
+    // Put the beginner part first and fold the depth under 'Go deeper ▾'." The contact block is a folded
+    // part of Setup now, so this button opens that part and brings it into view (it landed at the top of
+    // Setup with the contact folded away: seen on screen in the lab fix round).
+    assert.match(area, /<Button label="GO TO SETUP" onPress=\{\(\) => goToSetupPart\(ed, 'no-contact'\)\}/);
   });
   it('the preview comes before the buttons that send the packet', () => {
     assert.ok(area.indexOf('<Section title="PREVIEW"') > 0);

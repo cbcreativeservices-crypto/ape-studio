@@ -260,7 +260,9 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
   it('Sound Systems hub: no "0/N" before the read, the note when any record is unreadable', () => {
     const src = read('src/screens/lab/soundsystems/SoundSystemsLabScreen.tsx');
     before(src, '{unreadable ? <ProgressUnreadableNote /> : pagesRead === \'pending\' ? <ProgressLoadingNote /> : null}', '{SS_MODES.map((m) => {\n          const row', 'Sound Systems');
-    assert.match(src, /\{known \? `\$\{row\.done\}\/\$\{row\.total\}` : '—'\}/);
+    // Owner decision 2, 2026-11-14 ("N of total" progress counters: remove them):
+    // the mode cards read what is LEFT ("12 LEFT", "✓ DONE"), still "—" before the read.
+    assert.match(src, /\{known \? leftWord\(row\.done, row\.total, '✓ DONE'\) : '—'\}/);
     assert.match(src, /useSoundSystemsProgressUnreadable\(\)/);
     assert.match(src, /useLabCompletionUnreadable\(\)/);
   });

@@ -383,7 +383,7 @@ function PageWrongPatch({ ctx }: { ctx: PageCtx }) {
       {WRONG_PATCH_CASES.map((c, i) => (
         <View key={c.id} style={{ gap: 8 }}>
           <Card>
-            <Eyebrow>{`CALL ${i + 1} OF ${WRONG_PATCH_CASES.length} · ${c.title.toUpperCase()}`}</Eyebrow>
+            <Eyebrow>{`CALL ${i + 1} · ${c.title.toUpperCase()}`}</Eyebrow>
             <Body>{c.situation}</Body>
           </Card>
           {c.render ? (

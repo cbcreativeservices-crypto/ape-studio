@@ -59,7 +59,8 @@ const pageSrc = (fn: string) => {
 
 describe('1. every Smart Processors screen has a complete guide', () => {
   it('a guide per De-Esser page, in PAGES order, titles verbatim', () => {
-    const titles = [...LAB.matchAll(/\{ title: '([^']+)', short: '[^']+', Component: Page\w+ \}/g)].map((m) => m[1]);
+    // Phase 3, lab fix round (owner 2026-11-14, decision 1: "Done = work done … not when it is opened"): each page declares reading or manualDone.
+    const titles = [...LAB.matchAll(/\{ title: '([^']+)', short: '[^']+', Component: Page\w+(?:, (?:reading|manualDone): true)? \}/g)].map((m) => m[1]);
     assert.deepEqual(titles, G.DEESSER_PAGES.map((p: { title: string }) => p.title));
     assert.deepEqual(Object.keys(PAGES), G.DEESSER_PAGES.map((p: { id: string }) => p.id));
     G.DEESSER_PAGES.forEach((p: { id: string }, i: number) => assert.equal(G.deEsserPageGuide(i), PAGES[p.id]));
@@ -313,7 +314,9 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(END.seeing.join(' '), /WHAT'S LEFT lists each page you haven’t done[\s\S]*LAB COMPLETE[\s\S]*YOUR PROGRESS/);
   });
   it('"progress" mode: no creditLabKey / pageCreditKeys / labDoneKey, no appended check — rows read ✓ DONE, never CREDITED; the credit check is listed and drawn (D41 K8)', () => {
-    for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail', 'pageDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
+    // Phase 3, checker K1 F-1 (owner 2026-11-14, decision 1: a page counts when its own check is met): the
+    // De-Esser now passes `pageDetail`, so each unfinished row names its page's goal. Still progress mode.
+    for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
     assert.match(SHELL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(END.seeing.join(' '), /then a CHECK row: the five Smart Processors questions\. LAB COMPLETE shows once every page is done and the check is passed/);
@@ -333,7 +336,8 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(SHELL, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
     assert.match(SHELL, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
     assert.match(SHELL, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
-    assert.match(SHELL, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(SHELL, /noun=\{unitNoun\}/);
     // page 1 is What Sibilance Is; PRACTICE AGAIN only moves (goTo never clears marks)
     assert.match(LAB, /const PAGES: PageDef\[\] = \[\n\s*\{ title: 'What Sibilance Is'/);
     assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START opens What Sibilance Is and clears nothing/);
@@ -347,19 +351,22 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
     assert.match(END.control.join(' '), /‹ PREV returns to the page you came from\. WHAT'S LEFT ▾ lists every page, with START OVER \(PRACTICE\) at its foot\. START OVER asks first, then clears the page ✓ marks; a passed check stays/);
   });
-  it('what makes a page count: any control or its check (touch / markDone), or NEXT / FINISH (no manualDone page); a CONTENTS jump never', () => {
-    assert.doesNotMatch(LAB, /manualDone/);
+  // Phase 3, lab fix round (owner 2026-11-14, decision 1: "Done = work done. A page, module or lesson counts
+  // when its own goal or check is met, not when it is opened"): a page with a check is manualDone and counts
+  // on its right answer; the two pages without one are reading pages (NEXT); a control no longer counts.
+  it('what makes a page count: its check answered right (manualDone), or NEXT on a reading page; a CONTENTS jump never', () => {
     assert.match(SHELL, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
-    // pages 1–8 mark themselves on any control (touch); page 9 only on the closing question's right answer
-    for (const fn of ['PageWhat', 'PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageGr', 'PageMode', 'PageOver']) assert.match(pageSrc(fn), /touch\(ctx\)/, fn);
-    assert.doesNotMatch(pageSrc('PageConnections'), /touch\(ctx\)/);
-    assert.match(pageSrc('PageConnections'), /onCorrect=\{\(\) => ctx\.markDone\(\)\}/);
+    assert.match(LAB, /const touch = \(_ctx: PageCtx\) => \{\};/);
+    for (const fn of ['PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageMode', 'PageOver', 'PageConnections']) assert.match(pageSrc(fn), /onCorrect=\{\(\) => ctx\.markDone\(\)\}/, fn);
+    assert.match(LAB, /Component: PageWhat, reading: true/);
+    assert.match(LAB, /Component: PageGr, reading: true/);
+    for (const fn of ['PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageMode', 'PageOver', 'PageConnections']) assert.match(LAB, new RegExp(`Component: ${fn}, manualDone: true`), fn);
     // goTo (CONTENTS / an end-screen row) marks nothing
     const goTo = SHELL.slice(SHELL.indexOf('const goTo = useCallback'), SHELL.indexOf('const markDone = useCallback'));
     assert.doesNotMatch(goTo, /markDone|completed/);
     const t = END.changes.join(' ');
-    assert.match(t, /use one of its controls \(not FULL SCREEN or RESET RACK TO DEFAULTS\), answer its check right, or press NEXT\. Connections & Check counts when you answer its closing question right, or tap FINISH/);
-    assert.match(t, /Opening a page from a list doesn’t count it/);
+    assert.match(t, /A page with a check counts when you answer its check right\./);
+    assert.match(t, /Opening a page, or using its controls, doesn’t count it/);
     // the two controls that do NOT count a page: FULL SCREEN (ExpandableFigure only opens) and RESET RACK TO DEFAULTS
     const fig = code('src/screens/lab/kit/ExpandableFigure.tsx');
     assert.match(fig, /onPress=\{\(\) => setFull\(true\)\}/);

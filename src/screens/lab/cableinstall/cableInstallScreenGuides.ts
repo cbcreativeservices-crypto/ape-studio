@@ -38,7 +38,7 @@ export const CI_HOME_GUIDE: ScreenGuide = {
     'Below the drawing you read what professional installation involves. Local codes always govern the real job.',
   ],
   control: [
-    'Tap the big button to open the first stage you haven’t finished. It reads START LAB while that is Stage 1, otherwise RESUME — MODULE and its number. With every stage done, START LAB reopens Stage 1.',
+    'Tap the big button to open the first stage you haven’t finished. It reads START LAB while that is Stage 1, otherwise RESUME — STAGE and its number. With every stage done, START LAB reopens Stage 1.',
     'WHAT YOU’LL LEARN opens or closes the objectives. SOURCES / STANDARDS › lists the codes and standards this lab draws on.',
     'In the strip under the title, ‹ PREV and NEXT › step between stages. Tap its middle for the stage list, with WHAT\'S LEFT at the end.',
     'Every stage is open at any time. Tap ⓘ on any stage to have that screen explained.',

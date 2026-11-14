@@ -278,6 +278,11 @@ export function FmLabScreen() {
             env.decaySec > 0
               ? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · AT THE STRIKE'
               : 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · EACH AT FC ± k·FM',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote:
+            env.decaySec > 0
+              ? 'Each line’s height comes from the Bessel math, at the moment of the strike.'
+              : 'Each line’s height comes from the Bessel math; each sits at FC ± k·FM.',
           onGuide: () => openLesson('display'),
           bezel: [
             // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).

@@ -45,7 +45,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'Think back to the camera: which control was PAN?',
 };
 
-export function ParametricControlsModule(_p: EqModuleComponentProps) {
+export function ParametricControlsModule(p: EqModuleComponentProps) {
   const [freq, setFreq] = useState(1000);
   const [gainDb, setGainDb] = useState(6);
   const [q, setQ] = useState(2);
@@ -127,7 +127,8 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
         <Text style={styles.roleLine}>Gain determines HOW MUCH you boost or cut.</Text>
         <Text style={styles.roleLine}>Q determines HOW WIDE or NARROW the affected range is.</Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

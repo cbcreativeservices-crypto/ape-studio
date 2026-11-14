@@ -883,7 +883,7 @@ export function DeliverySheetStage({ width, height, title, brief, items, confirm
       {/* The destination's first word: the full name is on the bezel's tray
           and in the well; the sheet keeps room for the count at the right. */}
       <SvgText x={16} y={23} fontSize={f2} fill={complete ? ink.green : ink.amber} fontFamily={fonts.oswaldMedium}>{`DELIVERY CHECKLIST · ${title.toUpperCase().split(' ')[0]}`}</SvgText>
-      <SvgText x={W - 16} y={23} fontSize={fs} fill={complete ? ink.green : ink.dim} textAnchor="end" fontFamily={fonts.mono}>{`${done} / ${items.length}`}</SvgText>
+      <SvgText x={W - 16} y={23} fontSize={fs} fill={complete ? ink.green : ink.dim} textAnchor="end" fontFamily={fonts.mono}>{done === items.length ? '✓ ALL' : `${items.length - done} LEFT`}</SvgText>
       {briefLines.map((line, i) => (
         <SvgText key={i} x={16} y={46 + i * 13 * bst} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowRegular}>{line}</SvgText>
       ))}

@@ -366,7 +366,7 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
       <Body>For the engineer: a lower fundamental puts more energy in the bottom octaves (mind the proximity effect and the high-pass filter); higher formants push the presence region up — sibilance sits a little higher too.</Body>
       {/* The button used to vanish with no word of what it did (novice audit
           2026-11-14): the page now says it is done. */}
-      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.doneLine}>✓ THIS PAGE IS DONE · NEXT MOVES ON</Text>}
+      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.doneLine}>✓ THIS MODULE IS DONE · NEXT MOVES ON</Text>}
     </View>
   );
 }
@@ -431,7 +431,7 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
   // a screen reader on a page that GATES on it. One answer at a time.
   useEffect(() => {
     if (Platform.OS !== 'ios' || n === 0) return;
-    AccessibilityInfo.announceForAccessibility(`${n} of ${FINAL_CHECKS.length} correct`);
+    AccessibilityInfo.announceForAccessibility(`${n} correct`);
   }, [n]);
   return (
     <View style={{ gap: 12 }}>
@@ -439,7 +439,7 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
       {/* The count is THIS visit's (the answer chips reshuffle and start fresh each
           visit); the page mark is saved. So a page completed earlier reads
           "0 of 7 correct this visit · page complete" — practice, nothing lost. */}
-      <Text style={styles.foot} accessibilityLiveRegion="polite">{n} of {FINAL_CHECKS.length} correct this visit{ctx.isDone ? ' · page complete' : ` · ${PASS_MARK} completes the page`}</Text>
+      <Text style={styles.foot} accessibilityLiveRegion="polite">{n} correct this visit{ctx.isDone ? ' · module complete' : n >= PASS_MARK ? '' : ` · ${PASS_MARK - n} more completes the module`}</Text>
       {FINAL_CHECKS.map((c) => <SpeechCheckCard key={c.id} id={c.id} onCorrect={bump} />)}
     </View>
   );

@@ -81,6 +81,8 @@ export function ConnectorSelectLabScreen() {
 
   return (
     <PagedLab
+      // One word for the unit everywhere (owner's decision 3, phase 3): the lab's own copy says page.
+      unitNoun="page"
       labId="connector-select"
       title="Audio Connectors & Cable Selection"
       subtitle="A connector’s shape does not determine the signal, cable construction, level, or protocol — ask what the equipment expects, what the cable is built as, and whether the connection is safe."

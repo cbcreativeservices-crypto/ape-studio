@@ -233,8 +233,8 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
         label: 'STEP',
         value: (shown - 1) / Math.max(1, n - 1),
         onChange: (x) => goTo(1 + Math.round(x * (n - 1))),
-        format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-        formatShort: () => `${shown} / ${n}`,
+        format: () => `${stage.title.toLowerCase()}`,
+        formatShort: () => `${shown}`,
       },
       n,
       shown - 1,
@@ -262,7 +262,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
     ...(setupRedraws(G, midBarOf) ? [setupParam] : []),
   ];
   const strikeBezel: BezelItem[] = [
-    { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+    { k: 'EVENT', v: `${shown}`, flex: 0.8 },
     ...W.cells.map((c) => {
       const at = c.byVariant?.[v] ?? c.at;
       return { k: c.k, v: strikeWord(at[Math.min(at.length - 1, shown - 1)] ?? '—', damped), flex: c.flex ?? 1 };

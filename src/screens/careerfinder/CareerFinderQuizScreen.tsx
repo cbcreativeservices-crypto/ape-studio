@@ -38,6 +38,12 @@ const STEM = 'How would you feel about ';
 // was fixed text and would go wrong if the question count changed. For 28 questions the keys
 // stay 6 / 13 / 20 and the words stay the same; "to go" counts the questions after this one.
 const HALF = Math.floor(QUESTION_COUNT / 2);
+// Owner decision 2026-11-14 ("Remove them"): progress never shows "N of total"; it says what is left.
+// The title says "Question 7"; this line says what is left (the bar shows the rest).
+function toGoText(index: number): string {
+  const left = QUESTION_COUNT - (index + 1);
+  return left === 0 ? 'Last question' : `${left} to go`;
+}
 const MILESTONE: Record<number, string> = {
   [Math.round(QUESTION_COUNT / 4) - 1]: 'A quarter done',
   [HALF - 1]: `Halfway — ${QUESTION_COUNT - HALF} to go`,
@@ -106,7 +112,7 @@ export function CareerFinderQuizScreen() {
     setIndex(idx);
     setQuestionIndex(idx);
     scrollRef.current?.scrollTo({ y: 0, animated: animationsAllowed() });
-    AccessibilityInfo.announceForAccessibility?.(`Question ${idx + 1} of ${QUESTION_COUNT}`);
+    AccessibilityInfo.announceForAccessibility?.(`Question ${idx + 1}, ${toGoText(idx)}`);
   }, [fade]);
 
   // ONE finish (bug hunt 2026-09-30). Answering Q28 arms a 450 ms auto-finish,
@@ -148,7 +154,7 @@ export function CareerFinderQuizScreen() {
   return (
     <FinderShell
       kicker="AUDIO CAREER FINDER"
-      title={`Question ${index + 1} of ${QUESTION_COUNT}`}
+      title={`Question ${index + 1}`}
       onBack={() => safeGoBack(navigation)}
       backLabel={saving ? (guest ? 'Leave the questions. Your answers are kept until you close the app.' : 'Leave the questions. Your answers are saved.') : 'Leave the questions. Your answers could not be saved on this device.'}
       scrollRef={scrollRef}
@@ -164,8 +170,8 @@ export function CareerFinderQuizScreen() {
         </>
       }
     >
-      <ProgressBar value={(index + (answeredThis ? 1 : 0)) / QUESTION_COUNT} label={`Question ${index + 1} of ${QUESTION_COUNT}`} />
-      {milestone ? <Text style={styles.milestone}>{milestone}</Text> : null}
+      <ProgressBar value={(index + (answeredThis ? 1 : 0)) / QUESTION_COUNT} label={`Question ${index + 1}, ${toGoText(index)}`} />
+      <Text style={styles.milestone}>{milestone ?? toGoText(index)}</Text>
       {q ? (
         <Animated.View style={{ opacity: fade, gap: 12 }}>
           <Text style={styles.question} accessibilityRole="header">

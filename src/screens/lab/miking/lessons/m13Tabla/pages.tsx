@@ -55,7 +55,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
   const d = focus === 'dayan' ? DAYAN : BAYAN;
   const pred = lesson.predictions.sound;
   const strikeBezel: BezelItem[] = [
-    { k: 'EVENT', v: `${st.shown} / ${n}`, flex: 0.8 },
+    { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },
     { k: 'HEADS', v: st.shown >= 2 ? 'MOVING' : 'AT REST', flex: 1.1 },
     { k: 'BAYAN', v: st.shown >= 3 ? 'PRESSED' : '—', flex: 1.1 },
     { k: 'SOUND OUT', v: st.shown >= 4 ? 'BOTH HEADS' : '—', flex: 1.2 },

@@ -526,7 +526,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         ),
         bezel: [
           { k: mode === 'item' ? 'EQUIPMENT' : 'SYSTEM', v: mode === 'item' ? (itemDef.label.length > 14 ? itemDef.short : itemDef.label) : sysDef.label.replace('CONTROLLER', 'CTRL'), vA11y: mode === 'item' ? itemDef.label : sysDef.label, tint: colors.amber, flex: 2 },
-          job < JOBS.length ? { k: `FIND ${job + 1}/4`, v: JOBS[job].bezel, tint: jobMsg && !jobMsg.ok ? '#ff8a7e' : colors.textPrimary, flex: 1.3 } : { k: 'JOBS', v: '4/4 FOUND', tint: colors.green },
+          job < JOBS.length ? { k: 'FIND', v: JOBS[job].bezel, tint: jobMsg && !jobMsg.ok ? '#ff8a7e' : colors.textPrimary, flex: 1.3 } : { k: 'JOBS', v: 'ALL FOUND', tint: colors.green },
           // the software's output is a laptop + controller setting: shown
           // only where it means something (visual review finding 24)
           ...(mode === 'system' && sys === 'laptop' ? [{ k: 'SENDS TO', caption: 'audio goes to', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 }] : []),
@@ -585,7 +585,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>{job < JOBS.length ? `Find what ${JOBS[job].ask}: open EQUIPMENT and pick it. (${job + 1} of 4 — FIND on the readout strip.)` : 'All four jobs found. Step through the rest of EQUIPMENT for anything you have not met.'}</Do>
+        <Do>{job < JOBS.length ? `Find what ${JOBS[job].ask}: open EQUIPMENT and pick it. (${JOBS.length - job} ${JOBS.length - job === 1 ? 'job' : 'jobs'} left — FIND on the readout strip.)` : 'All four jobs found. Step through the rest of EQUIPMENT for anything you have not met.'}</Do>
         {jobMsg ? <Note tone={jobMsg.ok ? 'try' : 'safety'}>{jobMsg.text}</Note> : null}
       </Step>
       <Step n={3}>

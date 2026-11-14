@@ -284,7 +284,7 @@ function SpectrumGlass({
   );
 }
 
-export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
+export function LiveSpectrumEqModule(p: EqModuleComponentProps) {
   const cfg = useRef<EngineConfig>({
     fftSize: FFT_SIZE,
     fraction: 3,
@@ -300,6 +300,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
   const [bellF, setBellF] = useState(1000);
   const [bellG, setBellG] = useState(6);
   const [bellQ, setBellQ] = useState(2);
+  // Work done (phase 3, owner's decision 1): the module counts once a LOW CUT
+  // is set AND a band is shaped — its WHERE TO START, done (no mic needed).
+  const { onDone } = p;
+  useEffect(() => {
+    if (hpfHz != null && bellOn) onDone?.();
+  }, [hpfHz, bellOn, onDone]);
 
   const [micPaused, setMicPaused] = useState(false);
   useEffect(() => {
@@ -433,6 +439,13 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
             : designed && mode === 'eq'
               ? 'AMBER = DESIGNED RESPONSE — ANALYTIC'
               : 'dBFS · UNCALIBRATED APPROXIMATE',
+        // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+        modelNote:
+          designed && mode === 'combined'
+            ? 'Amber is the EQ’s designed curve; the bars are drawn as if EQ’d. The mic is never filtered.'
+            : designed && mode === 'eq'
+              ? 'Amber is the EQ’s designed curve, worked out from its math.'
+              : 'Levels from an uncalibrated phone mic: compare them, don’t read them as true levels.',
         bezel: [
           { k: 'VIEW', caption: 'what is drawn', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB' },
           { k: 'LOW CUT', v: hpfHz != null ? `${hpfHz}Hz·${slope}` : 'OFF' },

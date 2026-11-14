@@ -50,7 +50,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
       'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint gray outline is the signal before limiting.',
       'The GR (gain reduction) ladder on the right grows down as the level is held down.',
       'CEIL and RLS show your settings. GR is measured live (— dB while stopped).',
-      'TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
+      'It is a model: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the limiter; ■ stops it. Drag the CEILING fader from −45 to −15 dB to set the level nothing should pass.',

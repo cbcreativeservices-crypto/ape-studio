@@ -229,7 +229,8 @@ describe('F9-6 · Microphone Selection', () => {
     assert.match(S, /WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS\?<\/Text>[\s{}]*<JobFit key=\{j\.key\} ratings=\{j\.ratings\} \/>/);
     assert.match(S, /label="SHOW WHAT FITS ▾"/);
     for (const g of JOB_GROUPS) for (const j of g.jobs) for (const [name] of j.ratings) assert.ok(JOB_FIT[name], `${j.name}: ${name}`);
-    for (const v of Object.values(JOB_FIT)) assert.match(v, /\(Lessons? [1-8]( and [1-8])?\)$/);
+    // Phase 3 (one unit word, owner decision 3): the lab's units are modules.
+    for (const v of Object.values(JOB_FIT)) assert.match(v, /\(Modules? [1-8]( and [1-8])?\)$/);
   });
   it('COMPARE keeps the mic on show as the first pick', () => {
     assert.match(S, /setPair\(sel \? \[sel\] : \[\]\);\s*setCompare\(true\);/);
@@ -307,8 +308,8 @@ describe('F9-P2-2 · "Can’t listen now?" on every step whose words say listen'
     for (const k of kinds) assert.match(LISTEN_LINES[k], /^Can’t listen now\? Nothing in this lab makes a sound\. /, k);
     const S = code(`${M}/engine/steps.tsx`);
     assert.match(S, /const listen = mentionsListening\(s\.layout === 'rack' \? s\.well : s\.body\) \? <Note>\{LISTEN_LINES\[s\.kind\]\}<\/Note> : null;/);
-    assert.match(S, /\{head\}\s*\{listen\}\s*\{s\.well\}/);
-    assert.match(S, /\{head\}\s*\{listen\}\s*\{s\.body\}/);
+    assert.match(S, /\{head\}\s*\{listen\}\s*\{foldLong\(s\.well\)\}/);
+    assert.match(S, /\{head\}\s*\{listen\}\s*\{foldLong\(s\.body\)\}/);
   });
 });
 
@@ -357,7 +358,7 @@ describe('F9-P2-4 · check cards: a reason per wrong option, the answer only aft
   it('Mic Selection: both cards have a reason for every wrong option; the answer is not the longest', () => {
     const S = read('src/screens/lab/micselect/MicSelectLabScreen.tsx');
     assert.doesNotMatch(code('src/screens/lab/micselect/MicSelectLabScreen.tsx'), /<CheckQuestion/);
-    const blocks = [...S.matchAll(/<MicCheck\s+spec=\{\{([\s\S]*?)\n\s*\}\}\s*\/>/g)].map((m) => m[1]);
+    const blocks = [...S.matchAll(/<MicCheck\s+(?:onSolved=\{[^\n]*\}\s+)?spec=\{\{([\s\S]*?)\n\s*\}\}\s*\/>/g)].map((m) => m[1]);
     assert.equal(blocks.length, 2);
     for (const b of blocks) {
       const options = [...(/options: \[([^\]]*)\]/.exec(b)![1].matchAll(/'((?:[^'\\]|\\.)*)'/g))].map((m) => m[1]);
@@ -391,7 +392,8 @@ describe('F9-P2-5 · end screens: each row names what it is missing; WHERE TO ST
     const src = read('src/screens/lab/micselect/MicSelectLabScreen.tsx');
     const keys = [...src.matchAll(/^\s{4}key: '([a-z]+)',$/gm)].map((m) => m[1]);
     assert.equal(keys.length, 11);
-    for (const k of keys) assert.match(src, new RegExp(`\\n  ${k}: 'Not opened yet|\\n  ${k}: 'Optional, still counts`), k);
+    // Phase 3 (owner decision 1, "Done" = work done): each row names its module's own goal.
+    for (const k of keys) assert.match(src, new RegExp(`\\n  ${k}: '[a-z]`), `MICSEL_GOALS has ${k}`);
     assert.match(code('src/screens/lab/micselect/MicSelectLabScreen.tsx'), /howItCounts=\{MICSEL_HOW_IT_COUNTS\}/);
   });
   it('both end guides start from WHERE TO START (their text never depends on the learner’s state)', () => {
@@ -428,5 +430,112 @@ describe('F9-C4 · every Placement Studio counts the same way; one unit word', (
     const J = code(`${M}/engine/journeyKit.tsx`);
     for (const m of J.matchAll(/(['`])((?:(?!\1).)*)\1/g)) if (!/pages\/|PageId/.test(m[2])) assert.doesNotMatch(m[2], /\bpages?\b/, m[2].slice(0, 80));
     assert.match(MIKING_HOW_IT_COUNTS, /^A module counts/);
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════
+// PHASE 3 (the owner's decisions, 2026-11-14)
+// ════════════════════════════════════════════════════════════════════════
+import { readdirSync, statSync } from 'node:fs';
+import { CORE_WORDS, FOLD_OVER_WORDS, planFold, wordsOf } from '../src/screens/lab/miking/engine/foldRule.ts';
+
+const walk = (dir: string): string[] =>
+  readdirSync(new URL(dir, ROOT)).flatMap((n) => {
+    const p = `${dir}/${n}`;
+    return statSync(new URL(p, ROOT)).isDirectory() ? walk(p) : /\.tsx?$/.test(n) ? [p] : [];
+  });
+
+describe('F9-P3-2 · no "N of total" progress counters (owner decision 2)', () => {
+  const files = [...walk(M), ...walk('src/screens/lab/micselect')];
+  it('sequence keys and lanes show the item, never "n / N" or "n of N ·" (SETUP, STEP, EVENT, STAGE)', () => {
+    const bad: string[] = [];
+    for (const f of files) {
+      const s = code(f);
+      if (/formatShort: \([^)]*\) => `\$\{[^`]*\} \/ \$\{[^`]*\}`/.test(s)) bad.push(`${f}: key value n / N`);
+      if (/\{ k: '(EVENT|STEP|SETUP)', v: (sel \? )?`\$\{[^`]*\} \/ \$\{[^`]*\}`/.test(s)) bad.push(`${f}: bezel n / N`);
+      if (/`\$\{[^{}`]+\} of \$\{[^{}`]+\} · /.test(s)) bad.push(`${f}: lane n of N ·`);
+    }
+    assert.deepEqual(bad, []);
+    assert.match(code(`${M}/lessons/m11Kit/pages.tsx`), /valueLabel: `\$\{stage \+ 1\}`,/);
+  });
+  it('scores and to-do counts read as what is left or what was missed', () => {
+    const J = code(`${M}/engine/journeyKit.tsx`);
+    assert.doesNotMatch(J, /\} of \$\{items\.length\} answered|OF \$\{res\.total\}|OF \$\{gradedP\.total\}|\$\{QUICK_CHECK_PASS\} of /);
+    assert.match(J, /still to answer/);
+    const S = code(`${M}/MikingLessonScreen.tsx`);
+    assert.doesNotMatch(S, /First try: \$\{right\} of/);
+    assert.match(S, /First try: all right\.|missed — worth a second look/);
+    const MS = code('src/screens/lab/micselect/MicSelectLabScreen.tsx');
+    assert.doesNotMatch(MS, /OF \$\{STEPS\.length\}|\}\/3 key factors/);
+    for (const [f, re] of [[`${M}/lessons/shared/sports/sportsPages.tsx`, /Events still to try/], [`${M}/lessons/shared/sports/sportsTools.tsx`, /Heights still to try/], [`${M}/lessons/shared/sports/arenaPages.tsx`, /Layouts still to look at/], [`${M}/engine/chain/ChainRack.tsx`, /k: 'TO LINK'/]] as const) assert.match(code(f), re, f);
+  });
+});
+
+describe('F9-P3-5 · long steps: beginner core first, the depth under "Go deeper ▾" (owner decision 5)', () => {
+  const card = (n: number) => ({ type: 'Card', props: { children: Array.from({ length: n }, () => 'word').join(' ') } });
+  const isReading = (x: unknown) => (x as { type?: string })?.type === 'Card';
+  it('a short step is never folded; a long one keeps its opening and folds only a list of reading cards', () => {
+    assert.equal(planFold(['short intro', [card(50), card(50)]], isReading), null);
+    const long = ['an intro of a few words', [card(120), card(120), card(120), card(120)], 'a closing safety note'];
+    assert.ok(wordsOf(long) > FOLD_OVER_WORDS);
+    const p = planFold(long, isReading)!;
+    assert.deepEqual({ list: p.list, keep: p.keep, folded: p.folded }, { list: 1, keep: 2, folded: 2 });
+    // The kept part stays within the core budget (or one card at least).
+    assert.ok(wordsOf(['an intro of a few words', card(120), card(120)]) <= CORE_WORDS);
+  });
+  it('never folds a list holding anything but reading cards (a check, a task, a prediction)', () => {
+    const mixed = ['intro', [card(150), { type: 'Check', props: { children: 'q' } }, card(150), card(150)]];
+    assert.equal(planFold(mixed, isReading), null);
+  });
+  it('one mechanism in the shared engine: PageSteps folds every step through foldLong; only Card, Body, Point, Note, ZoneCard count as reading', () => {
+    const S = code(`${M}/engine/steps.tsx`);
+    assert.match(S, /\{foldLong\(s\.well\)\}/);
+    assert.match(S, /\{foldLong\(s\.body\)\}/);
+    const G = code(`${M}/engine/goDeeper.tsx`);
+    assert.match(G, /const READING = new Set<unknown>\(\[Card, Body, Point, Note, ZoneCard\]\);/);
+    assert.match(G, /GO DEEPER ▾ · \$\{count\} more/);
+  });
+});
+
+describe('F9-P3-1 · Microphone Selection: "done" = work done (owner decision 1)', () => {
+  const S = code('src/screens/lab/micselect/MicSelectLabScreen.tsx');
+  it('a module is recorded when its goal is met, never on opening; a reading module on NEXT', () => {
+    assert.doesNotMatch(S, /markLabVisit\('micselect', STEPS\[step\]\.key/);
+    assert.match(S, /for \(const key of met\) markLabVisit\('micselect', key, \{ persist: !noAccountRef\.current \}\);/);
+    assert.match(S, /if \(MICSEL_READING\.has\(STEPS\[step\]\.key\)\) meetGoal\(STEPS\[step\]\.key\);/);
+    for (const k of ['types', 'chars', 'patterns', 'spl', 'power', 'env', 'challenge', 'locker']) assert.match(S, new RegExp(`useSeenGoal\\('${k}'`), k);
+    assert.match(S, /onSolved=\{\(\) => meetGoal\('curves'\)\}/);
+    assert.match(S, /onSolved=\{\(\) => meetGoal\('jobs'\)\}/);
+  });
+  it('every module has a goal, and the words say opening does not count', () => {
+    const src = read('src/screens/lab/micselect/MicSelectLabScreen.tsx');
+    const keys = [...src.matchAll(/^\s{4}key: '([a-z]+)',$/gm)].map((m) => m[1]);
+    const goals = src.slice(src.indexOf('export const MICSEL_GOALS'), src.indexOf('const MICSEL_READING'));
+    for (const k of keys) assert.match(goals, new RegExp(`\\n  ${k}: '`), k);
+    assert.match(src, /Opening it does not count it\./);
+    assert.match(read('src/screens/lab/micselect/micSelectScreenGuides.ts'), /Opening a module does not count it\./);
+    assert.doesNotMatch(read('src/screens/lab/micselect/micSelectScreenGuides.ts'), /as soon as you open it/);
+  });
+});
+
+describe('F9-P3-3 · one unit word in Microphone Selection: module (as the strip says)', () => {
+  it('no "LESSON n" tag, "Lesson n" reference or lesson row; the end screen says module', () => {
+    for (const f of ['src/screens/lab/micselect/MicSelectLabScreen.tsx', 'src/screens/lab/micselect/micSelectData.ts', 'src/screens/lab/micselect/micSelectScreenGuides.ts']) {
+      const s = code(f).replace(/import[^\n]*\n/g, '');
+      for (const m of s.matchAll(/(['`])((?:(?!\1).)*)\1/g)) assert.doesNotMatch(m[2], /\b[Ll]essons?\b|\bLESSON\b/, `${f}: ${m[2].slice(0, 60)}`);
+    }
+    // S2's API: the noun said once for the whole lab; no disagreeing noun on the end screen.
+    const MS = code('src/screens/lab/micselect/MicSelectLabScreen.tsx');
+    assert.match(MS, /<LabNounProvider value="module">[\s\S]*<LabNavProvider value=\{nav\}>[\s\S]*<\/LabNavProvider>\s*<\/LabNounProvider>/);
+    assert.doesNotMatch(MS, /noun="/);
+  });
+});
+
+describe('F9-P3-S3 · "drawing…" instead of an empty glass on every Miking rack step', () => {
+  it('MikingRack passes drawing until the step has been on screen one macrotask (runSoon, cancelled on unmount; no frame loop, D8)', () => {
+    const S = code(`${M}/engine/rack/MikingRack.tsx`);
+    assert.match(S, /render: spec\.render, drawing: !painted \}/);
+    assert.match(S, /const h = runSoon\(\(\) => setPainted\(true\)\);\s*return \(\) => h\.cancel\(\);/);
+    assert.doesNotMatch(S, /requestAnimationFrame/);
   });
 });

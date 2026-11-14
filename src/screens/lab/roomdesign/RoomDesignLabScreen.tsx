@@ -51,7 +51,7 @@ import { ReviewModule } from './modules/modReview';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { ROOM_END_GUIDE, ROOM_SCREEN_GUIDES } from './roomdesignScreenGuides';
-import { notOpenedDetail, visitCounts } from '../foundations/endRows';
+import { moduleGoalDetail, roomCounts } from '../foundations/endRows';
 
 const TITLE = 'ROOM DESIGN & MONITORING LAB';
 
@@ -94,7 +94,17 @@ export function RoomDesignLabScreen() {
   const [design, setDesign] = useState<RoomDesign>(() => defaultDesign());
   // Judged on the store's own list, which is what the store trims.
   const evicts = useMemo(() => evictedBySave(rawSaved, design, MAX_SAVED_DESIGNS), [rawSaved, design]);
-  const update = useCallback((fn: (d: RoomDesign) => RoomDesign) => setDesign((d) => ({ ...fn(d), updatedAt: Date.now() })), []);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a HANDS-ON module
+  // (create, monitoring, explore, treatment) counts once the learner changes
+  // the room on it; a READING module (intro, review) when they move on from it
+  // with NEXT. Opening a module no longer counts it. Progress already stored
+  // stays. markWorkRef is filled in below, once the module and guest state
+  // are known.
+  const markWorkRef = useRef<() => void>(() => {});
+  const update = useCallback((fn: (d: RoomDesign) => RoomDesign) => {
+    markWorkRef.current();
+    setDesign((d) => ({ ...fn(d), updatedAt: Date.now() }));
+  }, []);
   const analysis = useMemo(() => analyze(design), [design]);
 
   // Guest rule: decide only once the entitlement is known.
@@ -102,13 +112,19 @@ export function RoomDesignLabScreen() {
     setRoomDesignSaveBlocked(!resolved || guest);
   }, [resolved, guest]);
 
-  // Record the module as opened (progress, never credit). A guest's visits
-  // live for this session only.
+  // Record a module's progress when its work is done (progress, never
+  // credit). A guest's progress lives for this session only.
   const mod = ROOM_MODULES[idx] ?? ROOM_MODULES[0];
-  useEffect(() => {
-    if (!resolved || ending) return;
-    markLabVisit(ROOM_LAB_ID, mod.id, { persist: !guest });
-  }, [mod.id, resolved, guest, ending]);
+  const markDone = useCallback(
+    (id: string) => {
+      if (!resolved) return;
+      markLabVisit(ROOM_LAB_ID, id, { persist: !guest });
+    },
+    [resolved, guest],
+  );
+  markWorkRef.current = () => {
+    if (!ending && mod.rack) markDone(mod.id);
+  };
 
   const ctx: RoomLabCtx = useMemo(
     () => ({
@@ -158,12 +174,24 @@ export function RoomDesignLabScreen() {
     setEnding(false);
     setIdx(Math.max(0, Math.min(ROOM_MODULES.length - 1, i)));
   }, []);
+  // NEXT from a reading module counts it (a jump elsewhere does not).
+  const goNext = useCallback(
+    (i: number) => {
+      if (!ending && i === idx + 1 && !mod.rack) markDone(mod.id);
+      go(i);
+    },
+    [ending, idx, mod, markDone, go],
+  );
   const nav = useLabNav({
     units: ROOM_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
     index: idx,
     ending,
-    go,
-    finish: () => setEnding(true),
+    go: goNext,
+    finish: () => {
+      // FINISH from the last module (Review, a reading module) counts it.
+      if (!ending && !mod.rack) markDone(mod.id);
+      setEnding(true);
+    },
     unEnd: () => setEnding(false),
     reset: { label: 'START OVER (PRACTICE)', run: () => go(0) },
   });
@@ -206,8 +234,8 @@ export function RoomDesignLabScreen() {
           <LabEndScreen
             labTitle="Room Design & Monitoring Lab"
             labId="room-design"
-            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title, detail: notOpenedDetail(ROOM_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
-            howItCounts={visitCounts('module')}
+            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail(m.rack ? 'work' : 'next', ROOM_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+            howItCounts={roomCounts()}
             cleared={visited}
             unreadable={visitsUnreadable}
             mode="progress"

@@ -202,7 +202,11 @@ describe('2. the right term — and the right meaning — per lab', () => {
       'MikingHub:ensembles': 'miking',
       'MikingHub:field': 'miking',
       'MikingHub:broadcast': 'miking',
-      SpeechLab: 'miking',
+      // 2026-11-14 (lab fix round, checker K4; owner approval "Begin fixing
+      // all bugs found and do obvious ... fixes"): the Speech & Voice lab
+      // teaches how speech is MADE (its first screen is THE SPEECH SYSTEM),
+      // so it opens on the live row "Source-filter model", copied verbatim.
+      SpeechLab: 'Source-filter model',
     };
     for (const [key, term] of Object.entries(want)) assert.equal(L.wiredLabTerm(key)?.term, term, key);
     assert.equal(Object.keys(want).length, 63, 'every wired lab is pinned here');
@@ -236,7 +240,8 @@ describe('2. the right term — and the right meaning — per lab', () => {
     for (const lab of ['drums', 'percussion', 'winds', 'strings', 'ensembles', 'field', 'broadcast']) {
       assert.equal(wired('MikingHub', { lab })?.glossaryId, MIKING_ID, lab);
     }
-    assert.equal(wired('SpeechLab')?.glossaryId, MIKING_ID);
+    // Not the Speech & Voice lab any more (2026-11-14, see the pin above).
+    assert.equal(wired('SpeechLab')?.glossaryId, '1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf');
     assert.equal(
       wired('MikingHub', { lab: 'ensembles' })?.plainEnglish,
       'Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.',
@@ -455,10 +460,13 @@ describe('6. once per TERM (glossary row), on the shared safe store', () => {
     await seenStore.labTermsSeenHydrate();
     assert.deepEqual([...seenStore.seenLabTerms()], []);
     const seenOf = (k: string) => seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), k);
-    const MIKING = ['MikingHub:drums', 'MikingHub:percussion', 'MikingHub:winds', 'MikingHub:strings', 'MikingHub:ensembles', 'MikingHub:field', 'MikingHub:broadcast', 'SpeechLab'];
+    const MIKING = ['MikingHub:drums', 'MikingHub:percussion', 'MikingHub:winds', 'MikingHub:strings', 'MikingHub:ensembles', 'MikingHub:field', 'MikingHub:broadcast'];
+    // SpeechLab left the miking term on 2026-11-14 (checker K4; see the pin above): seeing miking no longer covers it.
+    assert.equal(seenStore.labTermSeenOf(true, false, [], 'SpeechLab'), false);
     for (const k of MIKING) assert.equal(seenOf(k), false, k);
     await seenStore.markLabTermSeen('MikingHub:drums');
     for (const k of MIKING) assert.equal(seenOf(k), true, k);
+    assert.equal(seenOf('SpeechLab'), false, 'Speech has its own term since 2026-11-14');
     assert.deepEqual(state({ seen: seenOf('MikingHub:strings') }), { owed: false, show: false });
     // A different term is still owed, even a close cousin ("Mic Technique").
     assert.equal(seenOf('MicSelectLab'), false);
@@ -488,7 +496,8 @@ describe('6. once per TERM (glossary row), on the shared safe store', () => {
     assert.equal(L.isLabTermSeen([], 'MikingHub:winds'), false);
     // A HOLD lab has no term, so only its own key could ever count.
     assert.equal(L.labTermSeenFlag('CalcLab'), 'CalcLab');
-    assert.equal(L.labTermSeenFlag('SpeechLab'), 'term:a40d40b1-35b3-496c-b488-65163b445bed');
+    // 2026-11-14: SpeechLab's own row (Source-filter model), no longer miking's.
+    assert.equal(L.labTermSeenFlag('SpeechLab'), 'term:1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf');
   });
   it('"Reset onboarding hints" brings every lab popup back without a relaunch', async () => {
     await seenStore.markLabTermSeen('ReverbLab');

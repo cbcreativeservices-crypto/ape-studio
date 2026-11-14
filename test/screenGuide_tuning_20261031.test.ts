@@ -126,7 +126,7 @@ describe('3. each guide quotes its chapter’s real names', () => {
     ['STEP', 'RATIO', 'Hz', 'ADD ×r', 'OCTAVE ✓', 'STEPS', 'A / B', 'A · PATTERN IN C', 'B · STARTING ON F', 'A → B'],
     ['NOTE', 'Hz', 'VS EQUAL', 'SYSTEM', 'REF', 'A4 = 440', 'A / B', 'EXAMPLE', 'SYSTEM B', 'HEAR THE SAME NOTE MOVE', 'C FIXED AT', '0 ¢ = EQUAL TEMPERAMENT', '+ HIGHER', '− LOWER'],
     ['MISCONCEPTIONS', 'WHERE THIS MEETS PROFESSIONAL AUDIO', 'UNDERSTOOD ›', 'seen · tap to reread ▸', 'A4 = 440 Hz is a law of nature.'],
-    ['FIGURE', '1 · Normalize 9/4', '4 · Align the third', '6 · Hear E move', 'FOLD', 'THIRD', 'E MOVES', 'RATIO', 'VALUE', 'REGION', 'DONE', '4 × RATIO', 'SHOW ME', 'WHAT YOU KEEP', 'RETRY THE CHALLENGES'],
+    ['FIGURE', '1 · Normalize 9/4', '4 · Align the third', '6 · Hear E move', 'FOLD', 'THIRD', 'E MOVES', 'RATIO', 'VALUE', 'REGION', /* Phase 3, owner 2026-11-14: "remove progress N-of-total"; DONE n/6 became LEFT */ 'LEFT', '4 × RATIO', 'SHOW ME', 'WHAT YOU KEEP', 'RETRY THE CHALLENGES'],
   ];
   it('a name list for every chapter', () => assert.equal(NAMES.length, GUIDES.length));
   NAMES.forEach((names, i) => {
@@ -307,7 +307,8 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     assert.ok(s13.includes('const c2Correct = RULES.every((r) => picks[r.rule] === r.answer);'));
     for (const n of [2, 4, 5]) assert.ok(s13.includes(`onCorrect={() => mark(${n})}`), `challenge ${n + 1} ticks on a right answer`);
     const g = all(13);
-    assert.ok(g.includes('DONE shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND'));
+    // Phase 3, owner 2026-11-14: "remove progress N-of-total" — the DONE n/6 cell now counts what is LEFT.
+    assert.ok(g.includes('LEFT (still to do) shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND'));
     assert.ok(g.includes('do challenge 2 (match the rule) and answer the questions for 3, 5 and 6'));
     assert.ok(g.includes('gets a check mark once you get it right'));
     assert.doesNotMatch(g, /perfect answers are not needed/);

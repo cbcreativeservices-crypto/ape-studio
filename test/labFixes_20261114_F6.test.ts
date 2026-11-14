@@ -25,8 +25,8 @@ describe('Meter lab', () => {
     assert.match(viz, /`DC \$\{st\.dc >= 0 \? '\+' : ''\}\$\{\(st\.dc \* 100\)\.toFixed\(1\)\}%`/);
     assert.doesNotMatch(viz, /st\.dc\.toFixed\(2\)/);
   });
-  it('module 4: the loudness model disclosure is printed once (stage badge only)', () => {
-    assert.equal((A.match(/LOUDNESS_MODEL_BADGE/g) ?? []).length, 2, 'declared + the stage badge');
+  it('module 4: the loudness model disclosure is printed once (the stage model note only, phase 3)', () => {
+    assert.equal((A.match(/LOUDNESS_MODEL_NOTE/g) ?? []).length, 2, 'declared + the stage model note');
     assert.doesNotMatch(A, /<Badge text=\{LOUDNESS_MODEL_BADGE\}/);
   });
   it('module 4: the five loudness keys keep their place (unit on the sub line)', () => {
@@ -133,8 +133,9 @@ describe('Digital Audio', () => {
     assert.match(q, /k: 'LEVEL',\n\s*v: Number\.isFinite\(sampleDb\(v\)\) \? sampleDb\(v\)\.toFixed\(1\) : '−∞',\n\s*sub: 'dBFS'/);
     assert.match(dac, /\{ k: 'INTERVAL', v: '20\.83', sub: 'µs @48k'/);
   });
-  it('M1: the badge is short enough not to be cut', () => {
-    const m = /'(ILLUSTRATIVE MODEL, SLOWED[^']*)'/.exec(an);
+  it('M1: the model note is short enough not to be cut', () => {
+    // S3 plain model note since phase 3 (owner decision 3; checker K3 F-1, 2026-11-14).
+    const m = /modelNote: '(A slowed model[^']*)'/.exec(an);
     assert.ok(m && m[1].length <= 100, `${m?.[1].length}`);
   });
 });
@@ -334,11 +335,13 @@ describe('Phase 2 · end screens name what is missing; state-neutral WHERE TO ST
     assert.match(read('src/screens/lab/patchbay/PatchbayLabScreen.tsx'), /pageDetail=\{pageDetail\}/);
     assert.match(read('src/screens/lab/connectorselect/ConnectorSelectLabScreen.tsx'), /pageDetail=\{pageDetail\}/);
   });
-  it('open-to-count labs say the shared rule once (howItCounts); Gain names its one pass-only module', () => {
+  it('each module lab says its rule once (howItCounts) and each row says what is still to do (phase 3: done = work done)', () => {
     for (const f of ['meter/MeterLabHomeScreen.tsx', 'meter/MeterModuleScreen.tsx', 'digital/DigitalLabHomeScreen.tsx', 'digital/DigitalModuleScreen.tsx', 'gain/GainLabHomeScreen.tsx', 'gain/GainModuleScreen.tsx', 'tube/VacuumTubeLabScreen.tsx']) {
-      assert.match(read(`src/screens/lab/${f}`), /howItCounts="/, f);
+      const s = read(`src/screens/lab/${f}`);
+      assert.match(s, /howItCounts=/, f);
+      assert.doesNotMatch(s, /counts once you open it/, f);
     }
-    assert.match(read('src/screens/lab/gain/GainModuleScreen.tsx'), /detail: m\.id === 'troubleshoot' \? GAIN_TROUBLESHOOT_LEFT : undefined/);
+    assert.match(read('src/screens/lab/gain/GainModuleScreen.tsx'), /detail: GAIN_LEFT\[m\.id\]/);
   });
   it('every F6 end guide starts state-neutral', () => {
     const NEU = 'Read WHERE TO START at the top: it names the next thing to do from where you are.';
@@ -396,7 +399,7 @@ describe('Phase 2 · CheckSpec.why: every wrong option of every F6 CHECK YOURSEL
     'cable/data/lesson06.ts', 'cable/data/lesson07.ts', 'cable/data/lesson12.ts', 'cableinstall/data/scenarios.ts',
   ];
   const STR = String.raw`'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|` + '`(?:[^`\\\\]|\\\\.)*`';
-  it('117 questions, every wrong option covered, never the right one, ≤ 30 words, never quoting the answer', () => {
+  it('119 questions (117 + the two Tube module checks of phase 3), every wrong option covered, never the right one, ≤ 30 words, never quoting the answer', () => {
     let n = 0;
     for (const f of FILES) {
       const s = read(`src/screens/lab/${f}`);
@@ -423,7 +426,7 @@ describe('Phase 2 · CheckSpec.why: every wrong option of every F6 CHECK YOURSEL
         }
       }
     }
-    assert.equal(n, 117);
+    assert.equal(n, 119);
   });
 });
 
@@ -559,5 +562,257 @@ describe('C3 O-1: the Peak Meter picture and the bezel read CREST from the same 
     const a = read('src/screens/lab/meter/modules/modMeterA.tsx');
     assert.match(a, /const sig = useMemo\(\(\) => renderSignal\(signal\), \[signal\]\);\n\s*const proc = useMemo\(\(\) => processed\(sig, gainDb\), \[sig, gainDb\]\);/);
     assert.match(a, /\{ k: 'CREST', v: `\$\{crestDb\(proc\)\.toFixed\(1\)\}dB`/);
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// PHASE 3 (owner's decisions, 2026-11-14)
+// ════════════════════════════════════════════════════════════════════════════
+
+/** The source of one exported function component, up to the next top-level export/function. */
+const fnBody = (src: string, name: string) => {
+  const a = src.indexOf(`export function ${name}(`) >= 0 ? src.indexOf(`export function ${name}(`) : src.indexOf(`function ${name}(`);
+  assert.ok(a >= 0, name);
+  const rest = src.slice(a + 10);
+  const m = rest.search(/\n(export )?function [A-Z]\w*\(/);
+  return src.slice(a, m < 0 ? undefined : a + 10 + m);
+};
+const goalChecks = (body: string) => (body.match(/<GoalCheck\b/g) ?? []).length;
+
+describe('Phase 3 · decision 1: a module counts when its goal or check is met, never on opening', async () => {
+  const G = await import('../src/screens/lab/meter/moduleGoal.tsx').catch(() => null);
+  it('the shared goal: enough distinct right answers, and never with nothing to answer', () => {
+    const src = read('src/screens/lab/meter/moduleGoal.tsx');
+    assert.match(src, /export function goalReached\(solved: ReadonlySet<string>, need: number\): boolean \{\n\s*return need > 0 && solved\.size >= need;/);
+    assert.match(src, /goal\?\.solved\(spec\.question\);/);
+    assert.match(src, /if \(firedRef\.current\) return;\n\s*firedRef\.current = true;/, 'fires once per visit');
+    void G;
+  });
+  it('no module host marks credit on focus any more', () => {
+    for (const f of ['digital/DigitalModuleScreen.tsx', 'meter/MeterModuleScreen.tsx', 'gain/GainModuleScreen.tsx']) {
+      const s = read(`src/screens/lab/${f}`);
+      assert.doesNotMatch(s, /if \(focused[^)]*\) markLabUnit/, f);
+      assert.match(s, /<ModuleGoalProvider need=\{\w+_MODULE_CHECKS\[meta\.id\]\} onMet=\{onGoalMet\} resetKey=\{meta\.id\}>/, f);
+    }
+    const t = read('src/screens/lab/tube/VacuumTubeLabScreen.tsx');
+    assert.doesNotMatch(t, /markLabVisit\('tube', SECTIONS\[sectionIdx\]\.key/);
+    assert.match(t, /goalsMet\.forEach\(\(key\) => markLabVisit\('tube', key, \{ persist: !guest \}\)\);/);
+  });
+  it('Digital: the check counts match what each module draws', async () => {
+    const { DIGITAL_MODULE_CHECKS } = await import('../src/screens/lab/digital/modules/registry.ts');
+    const A = read('src/screens/lab/digital/modules/modAnalog.tsx');
+    const Q = read('src/screens/lab/digital/modules/modQuant.tsx');
+    const C = read('src/screens/lab/digital/modules/modChain.tsx');
+    const D = read('src/screens/lab/digital/modules/modDac.tsx');
+    const drawn = {
+      analog: goalChecks(fnBody(A, 'AnalogModule')), sampling: goalChecks(fnBody(A, 'SamplingModule')),
+      quant: goalChecks(fnBody(Q, 'QuantModule')), binary: goalChecks(fnBody(Q, 'BinaryModule')),
+      adc: goalChecks(fnBody(C, 'AdcModule')), processing: goalChecks(fnBody(C, 'ProcessingModule')),
+      dac: goalChecks(fnBody(D, 'DacModule')), errors: goalChecks(fnBody(D, 'ErrorsModule')),
+    };
+    assert.deepEqual(drawn, DIGITAL_MODULE_CHECKS);
+  });
+  it('Meter: modules 1–10 count on their checks; Signal Detective on one whole case', async () => {
+    const { METER_MODULE_CHECKS } = await import('../src/screens/lab/meter/modules/registry.ts');
+    const A = read('src/screens/lab/meter/modules/modMeterA.tsx');
+    const B = read('src/screens/lab/meter/modules/modMeterB.tsx');
+    const C = read('src/screens/lab/meter/modules/modMeterC.tsx');
+    const drawn = {
+      waveform: goalChecks(fnBody(A, 'WaveformModule')), peak: goalChecks(fnBody(A, 'PeakModule')), vu: goalChecks(fnBody(A, 'VuModule')), loudness: goalChecks(fnBody(A, 'LoudnessModule')),
+      spectrum: goalChecks(fnBody(B, 'SpectrumModule')), spectrogram: goalChecks(fnBody(B, 'SpectrogramModule')), waterfall: goalChecks(fnBody(B, 'WaterfallModule')),
+      phase: goalChecks(fnBody(C, 'PhaseModule')), stereo: goalChecks(fnBody(C, 'StereoModule')), scope: goalChecks(fnBody(C, 'ScopeModule')), detective: 0,
+    };
+    assert.deepEqual(drawn, METER_MODULE_CHECKS);
+    assert.match(C, /export function aCaseSolved\(solved: ReadonlySet<string>\): boolean \{\n\s*return CASES\.some\(\(_, ci\) => \[0, 1, 2, 3\]\.every\(\(q\) => solved\.has\(`\$\{ci\}-\$\{q\}`\)\)\);/);
+    assert.match(C, /if \(aCaseSolved\(solvedRef\.current\)\) goalMet\(\);/);
+  });
+  it('Gain: four modules count on their check, three on a hands-on goal, the challenge on its pass', async () => {
+    const { GAIN_MODULE_CHECKS, GAIN_LEFT } = await import('../src/screens/lab/gain/modules/registry.ts');
+    const L = read('src/screens/lab/gain/modules/modLearn.tsx');
+    const X = read('src/screens/lab/gain/modules/modExplore.tsx');
+    assert.equal(goalChecks(fnBody(L, 'IntroModule')), GAIN_MODULE_CHECKS.intro);
+    assert.equal(goalChecks(fnBody(L, 'FollowModule')), GAIN_MODULE_CHECKS.follow);
+    assert.equal(goalChecks(fnBody(L, 'LowHighModule')), GAIN_MODULE_CHECKS.lowhigh);
+    assert.equal(goalChecks(fnBody(L, 'FaderVsGainModule')), GAIN_MODULE_CHECKS.fadervsgain);
+    assert.match(fnBody(L, 'InputGainModule'), /useMetWhen\(done\);/);
+    assert.match(fnBody(X, 'MultiStageModule'), /useMetWhen\(healthy\);/);
+    assert.match(fnBody(X, 'FreePlayModule'), /useMetWhen\(source !== -30 \|\| /);
+    assert.match(X, /if \(healthy\) markLabUnit\('af_gain_staging', 'troubleshoot'\);/);
+    for (const id of Object.keys(GAIN_MODULE_CHECKS)) assert.match(GAIN_LEFT[id as keyof typeof GAIN_LEFT], /^Still to do: /);
+  });
+  it('Gain: neither hands-on goal is met at the start (opening never counts)', async () => {
+    const E = await import('../src/screens/lab/gain/gainEngine.ts');
+    const mk = (key: string, kind: string, gain: number, min: number, max: number) => ({ key, name: key, kind, gain, min, max, adjustable: true }) as never;
+    const multi = { pre: 8, eq: -6, comp: 0, fad: 6, bus: 6, out: 0 };
+    assert.match(read('src/screens/lab/gain/modules/modExplore.tsx'), /const MULTI_START: Gains = \{ pre: 8, eq: -6, comp: 0, fad: 6, bus: 6, out: 0 \};/);
+    const chain = [mk('pre', 'preamp', multi.pre, 0, 40), mk('eq', 'eq', multi.eq, -12, 12), mk('comp', 'comp', multi.comp, -12, 12), mk('fad', 'fader', multi.fad, -30, 10), mk('bus', 'bus', multi.bus, -12, 12), mk('out', 'output', multi.out, -30, 6)];
+    assert.equal(E.chainIsHealthy(E.computeChain(-30, chain)), false, 'Multiple Gain Stages starts unbalanced');
+    const input = E.computeChain(-30, [{ key: 'pre', name: 'Preamp', kind: 'preamp', gain: 0, min: 0, max: 40, adjustable: true } as never, { key: 'out', name: 'Output', kind: 'output', gain: 0, min: -30, max: 6, adjustable: false } as never]);
+    assert.notEqual(input[1].region, 'healthy', 'Input Gain First starts below the healthy green');
+  });
+  it('Vacuum Tube: each module has its task; two reading modules gained their own check', () => {
+    const t = read('src/screens/lab/tube/VacuumTubeLabScreen.tsx');
+    const checks = t.match(/export const TUBE_SECTION_CHECKS: Record<TubeSectionId, number> = \{([\s\S]*?)\};/)![1];
+    const n = Object.fromEntries([...checks.matchAll(/(\w+): (\d)/g)].map((m) => [m[1], Number(m[2])]));
+    const comp: Record<string, string> = { inside: 'InsideSection', flow: 'FlowSection', grid: 'GridSection', amplify: 'AmplifySection', highv: 'HighVoltSection', types: 'TypesSection', bias: 'BiasSection', sat: 'SaturationSection', versus: 'VersusSection' };
+    for (const [k, fn] of Object.entries(comp)) {
+      const body = fnBody(t, fn);
+      if (n[k]) assert.equal(goalChecks(body), n[k], k);
+      else assert.match(body, /useMetWhen\(/, `${k} has a hands-on goal`);
+    }
+    assert.match(t, /useMetWhen\(touched\.size >= PARTS\.length\);/);
+    assert.match(t, /useMetWhen\(stageNum === FLOW_STAGES\.length\);/);
+    assert.match(t, /useMetWhen\(highB\);/);
+    assert.match(t, /useMetWhen\(seenTypes\.size >= TYPES\.length\);/);
+    assert.match(t, /useMetWhen\(state === 'SATURATED'\);/);
+    assert.doesNotMatch(t, /noun="section"/);
+  });
+  it('the words: no lab of F6 says opening counts', () => {
+    for (const f of ['meter/meterScreenGuides.ts', 'digital/digitalScreenGuides.ts', 'gain/gainScreenGuides.ts', 'tube/tubeScreenGuides.ts', 'meter/MeterLabHomeScreen.tsx', 'digital/DigitalLabHomeScreen.tsx', 'gain/GainLabHomeScreen.tsx']) {
+      const s = read(`src/screens/lab/${f}`);
+      assert.doesNotMatch(s, /counts? (as done )?(once|as soon as) you open|you haven’t opened|modules you’ve opened|✓ means you’ve opened|marks a module you’ve opened/, f);
+    }
+  });
+  it('stored progress is untouched: an old record (every old id banked) still reads LAB COMPLETE', async () => {
+    const L = await import('../src/screens/lab/kit/labEnd.ts');
+    const { DIGITAL_MODULES } = await import('../src/screens/lab/digital/modules/registry.ts');
+    const { METER_MODULES } = await import('../src/screens/lab/meter/modules/registry.ts');
+    const { GAIN_MODULES } = await import('../src/screens/lab/gain/modules/registry.ts');
+    // The ids an earlier build banked (unchanged: nothing was split or renamed).
+    const OLD = {
+      digital: ['analog', 'sampling', 'quant', 'binary', 'adc', 'processing', 'dac', 'errors'],
+      meter: ['waveform', 'peak', 'vu', 'loudness', 'spectrum', 'spectrogram', 'waterfall', 'phase', 'stereo', 'scope', 'detective'],
+      gain: ['intro', 'input', 'follow', 'lowhigh', 'fadervsgain', 'multistage', 'freeplay', 'troubleshoot'],
+    };
+    for (const [lab, mods] of [['digital', DIGITAL_MODULES], ['meter', METER_MODULES], ['gain', GAIN_MODULES]] as const) {
+      const units = mods.map((m) => ({ id: m.id, label: m.title }));
+      assert.equal(L.endTitle(L.whatsLeft(units, new Set(OLD[lab]))), 'LAB COMPLETE', lab);
+    }
+  });
+});
+
+describe('Phase 3 · decision 2: no "N of total" progress counters in F6 labs', () => {
+  it('the counters became plain names or what is left', () => {
+    const amp = read('src/screens/lab/amp/modules/mod8Apply.tsx');
+    assert.match(amp, /\{ k: 'PICTURE', v: `\$\{diagIdx \+ 1\}`/);
+    assert.doesNotMatch(amp, / of \{DIAG_ORDER\.length\}| of \{APP_SCENARIOS\.length\}| of \{MYTH_REVIEW_IDS\.length\}|OF 6 DIMENSIONS|of \{finalItems\.length\}|of \{diagScore\.total\}/);
+    const host = read('src/screens/lab/amp/AmpModuleScreen.tsx');
+    assert.doesNotMatch(host, /\{answeredCount\} OF \{checks\.length\}|of \$\{AMP_MODULES\.length\}/);
+    assert.match(host, /` · \$\{checks\.length - answeredCount\} TO ANSWER`/);
+    assert.doesNotMatch(read('src/screens/lab/patchbay/pagesB.tsx'), / OF \$\{(PREDICT_SCENARIOS|DETECTIVE_CASES)\.length\}/);
+    assert.doesNotMatch(read('src/screens/lab/patchbay/pagesC.tsx'), / OF \$\{WRONG_PATCH_CASES\.length\}/);
+    assert.doesNotMatch(read('src/screens/lab/cableinstall/scenes/FireScene.tsx'), /QUESTION \{qi \+ 1\} \/ \{FLOW\.length\}/);
+    const know = read('src/screens/lab/cableinstall/scenes/KnowScene.tsx');
+    assert.doesNotMatch(know, / of \{CI_CABLE_TYPES\.length\}| OF \{CI_ID_SCENARIOS\.length\}| of 12 calls/);
+    const mech = read('src/screens/lab/cableinstall/scenes/MechScene.tsx');
+    assert.doesNotMatch(mech, /OF \{total\}|of \{CI_BEND_EXERCISES\.length\} bends/);
+    assert.doesNotMatch(read('src/screens/lab/cableinstall/scenes/CeilingScene.tsx'), /\{found\.size\} of \{CI_CEILING_DEFECTS\.length\}/);
+    assert.doesNotMatch(read('src/screens/lab/tube/TubeCardScreen.tsx'), /\/ \{TUBE_REFS\.length\}/);
+  });
+  it('values that are not progress stay (CHAIN units in, the warm-up STAGE, LAYERS shown)', () => {
+    assert.match(read('src/screens/lab/SignalChainLabScreen.tsx'), /\{ k: 'CHAIN', v: `\$\{chainCount\}\/9`/);
+    assert.match(read('src/screens/lab/tube/VacuumTubeLabScreen.tsx'), /\{ k: 'STAGE', v: `\$\{stageNum\}\/5`/);
+  });
+});
+
+describe('Phase 3 · decision 3: one unit word per lab; S3’s plain model note', () => {
+  it('Cable Fundamentals says lesson, Cable Dressing says stage, Patchbay and Connector Selection say page', () => {
+    assert.match(read('src/screens/lab/cable/CableLabScreen.tsx'), /<LabNounProvider value="lesson">/);
+    const ci = read('src/screens/lab/cableinstall/CableInstallLabScreen.tsx');
+    assert.match(ci, /<LabNounProvider value="stage">/);
+    assert.match(ci, /`RESUME — STAGE \$\{firstIncomplete\}`/);
+    assert.match(read('src/screens/lab/patchbay/PatchbayLabScreen.tsx'), /unitNoun="page"/);
+    assert.match(read('src/screens/lab/connectorselect/ConnectorSelectLabScreen.tsx'), /unitNoun="page"/);
+    assert.doesNotMatch(read('src/screens/lab/patchbay/patchbayScreenGuides.ts'), /calls each page a MODULE|\(MODULE, with/);
+  });
+  it('Patchbay declares its three reading pages', () => {
+    assert.match(read('src/screens/lab/patchbay/pagesA.tsx'), /Component: PageDirection, reading: true \}/);
+    assert.match(read('src/screens/lab/patchbay/pagesA.tsx'), /Component: PagePair, reading: true, rack: true \}/);
+    assert.match(read('src/screens/lab/patchbay/pagesB.tsx'), /Component: PageWrap, reading: true \}/);
+  });
+  it('Meter: every stage carries a plain model note (≤ 90 characters), no all-caps badge', () => {
+    for (const f of ['modMeterA.tsx', 'modMeterB.tsx', 'modMeterC.tsx']) {
+      const s = read(`src/screens/lab/meter/modules/${f}`);
+      assert.doesNotMatch(s, /^\s*badge: /m, f);
+      for (const m of s.matchAll(/(?:const \w+_NOTE|const HONESTY|modelNote:) = ?'([^']+)'|modelNote: '([^']+)'/g)) {
+        const t = m[1] ?? m[2];
+        assert.ok(t.length <= 90, t);
+        assert.notEqual(t, t.toUpperCase(), 'sentence case');
+      }
+    }
+  });
+});
+
+describe('Phase 3 · decision 5: long pages, beginner core first', () => {
+  it('Digital modules 2, 3, 7 and 8 keep lesson one open and fold lesson two (nothing removed)', () => {
+    const A = fnBody(read('src/screens/lab/digital/modules/modAnalog.tsx'), 'SamplingModule');
+    const Q = fnBody(read('src/screens/lab/digital/modules/modQuant.tsx'), 'QuantModule');
+    const D = read('src/screens/lab/digital/modules/modDac.tsx');
+    const fold = (s: string, title: string, inside: string[]) => {
+      const a = s.indexOf(`<CollapsibleSection title="${title}" startOpen={false}>`);
+      assert.ok(a > 0, title);
+      const body = s.slice(a, s.indexOf('</CollapsibleSection>', a));
+      for (const x of inside) assert.ok(body.includes(x), `${title}: ${x}`);
+    };
+    fold(A, 'PART 2 · THE ANTI-ALIASING FILTER', ['ANTI-ALIASING FILTER</Text>', '<GoalCheck spec={CHECK_AA} />']);
+    assert.ok(A.indexOf('<GoalCheck spec={CHECK_ALIAS} />') < A.indexOf('PART 2 ·'));
+    fold(Q, 'PART 2 · DITHER', ['DITHER — THE FIX FOR CORRELATED ERROR', '<GoalCheck spec={CHECK_DITHER} />']);
+    fold(fnBody(D, 'DacModule'), 'PART 2 · OVERSAMPLING AND INTER-SAMPLE PEAKS', ['SPECTRAL IMAGES & OVERSAMPLING', 'INTER-SAMPLE PEAK EXPLORER', 'Every sample in a file sits below 0 dBFS.']);
+    fold(fnBody(D, 'ErrorsModule'), 'PART 2 · MYTHS, DATA RATE AND THE LAB REVIEW', ['MODULE 8 · MYTH vs REALITY', 'DATA RATE — THE MENTAL MATH', 'Which signal chain is in the correct order?', 'A sensible format pairing?']);
+  });
+  it('Cable lesson 3 opens its connector record folded', () => {
+    assert.match(read('src/screens/lab/cable/lessons/lesson03.tsx'), /<ConnectorCard rec=\{rec\} folded \/>/);
+    assert.match(read('src/screens/lab/cable/lessons/connectorCard.tsx'), /<Section title="CONTACTS & USES" startOpen=\{!folded\}>/);
+  });
+  it('Amp module 7: the six-section step is two steps; step position is never stored, so nothing earned moves', () => {
+    const m = read('src/screens/lab/amp/modules/mod7RealWorld.tsx');
+    assert.match(m, /key: 'practice',\n\s*title: 'Loads, power and bridging',/);
+    assert.match(m, /key: 'risk',\n\s*title: 'Loudness, risk and spec sheets',/);
+    assert.ok(m.indexOf("key: 'risk'") < m.indexOf('5 · WATTS AND LOUDNESS'));
+    assert.ok(m.indexOf("key: 'risk'") > m.indexOf('4 · BRIDGED OPERATION'));
+    assert.doesNotMatch(read('src/screens/lab/amp/steps.tsx'), /createLocalStore|AsyncStorage|persist/);
+  });
+});
+
+describe('Checker K3 (phase 3): plain notes, no leftover counters, one word, plain English', () => {
+  it('F-1: Digital, Tube, Gain and Signal Chain racks use a plain model note; no all-caps badge left', () => {
+    const files = ['digital/modules/modAnalog.tsx', 'digital/modules/modChain.tsx', 'digital/modules/modDac.tsx', 'digital/modules/modQuant.tsx', 'tube/VacuumTubeLabScreen.tsx', 'gain/modules/modLearn.tsx', 'gain/modules/modExplore.tsx', 'SignalChainLabScreen.tsx'];
+    for (const f of files) {
+      const s = read(`src/screens/lab/${f}`);
+      assert.doesNotMatch(s, /^\s*badge:/m, f);
+      for (const m of s.matchAll(/modelNote:\s*'([^']+)'/g)) {
+        assert.ok(m[1].length <= 90, `${f}: ${m[1]}`);
+        assert.notEqual(m[1], m[1].toUpperCase(), `${f}: sentence case`);
+      }
+      for (const m of s.matchAll(/<Badge text="([^"]+)"/g)) assert.notEqual(m[1], m[1].toUpperCase(), `${f}: ${m[1]}`);
+    }
+    assert.match(read('src/screens/lab/digital/modules/modAnalog.tsx'), /modelNote: 'Each dot measures the continuous signal; below Nyquist the dots describe it fully\.'/);
+    assert.match(read('src/screens/lab/tube/VacuumTubeLabScreen.tsx'), /modelNote: 'A drawn cross-section, not measured tube data\.'/);
+    assert.match(read('src/screens/lab/digital/bits.tsx'), /badge: \{ fontFamily: fonts\.barlowRegular, fontSize: 12, lineHeight: 16, color: colors\.textSub \}/);
+  });
+  it('F-4: no "n of N" / "n OF N" progress left in either cable lab', () => {
+    const files = [
+      ...['lesson02.tsx', 'lesson05.tsx', 'lesson11.tsx', 'lesson12.tsx'].map((f) => `src/screens/lab/cable/lessons/${f}`),
+      ...['FireScene.tsx', 'KnowScene.tsx', 'MechScene.tsx', 'RackScene.tsx', 'RouteScene.tsx', 'SupportsScene.tsx', 'WallsScene.tsx', 'CeilingScene.tsx'].map((f) => `src/screens/lab/cableinstall/scenes/${f}`),
+    ];
+    for (const f of files) {
+      const s = read(f);
+      assert.doesNotMatch(s, /\$\{[^}]+\} OF \$\{[^}]+(length|N)\}|\} OF \{[^}]+\}|\{[^}]+\} of \{[A-Z_.]+(length)?\} (sorted|pull|bends|reviewed|violations)|Found \$\{nx\.size\} of/, f);
+    }
+    assert.match(read('src/screens/lab/cableinstall/scenes/SupportsScene.tsx'), /\{correct\} correct · \{Math\.max\(0, N - answered\)\} left to sort/);
+  });
+  it('F-5: Cable Fundamentals counts LESSONS DONE under its LESSON tag, never units', () => {
+    const s = read('src/screens/lab/cable/CableLabScreen.tsx');
+    assert.match(s, /const lessonsDone = navUnits\.filter\(\(u\) => u\.done\)\.length;/);
+    assert.match(s, /`\$\{lessonsDone\} \$\{lessonsDone === 1 \? 'LESSON' : 'LESSONS'\} DONE`/);
+    assert.doesNotMatch(s, /UNITS CLEARED/);
+  });
+  it('plain English: "both of its", and "Slide" a lane, never "ride"', async () => {
+    const { digitalLeftDetail } = await import('../src/screens/lab/digital/modules/registry.ts');
+    assert.equal(digitalLeftDetail('sampling'), 'Still to do: answer both of its CHECK YOURSELF questions right.');
+    assert.equal(digitalLeftDetail('errors'), 'Still to do: answer all 5 of its CHECK YOURSELF questions right.');
+    for (const f of ['meter/modules/modMeterA.tsx', 'meter/modules/modMeterB.tsx', 'digital/modules/modAnalog.tsx', 'digital/modules/modChain.tsx', 'digital/modules/modQuant.tsx']) {
+      assert.doesNotMatch(read(`src/screens/lab/${f}`), /Ride the [A-Z]|ride the [A-Z]{3,} (fader|lane)/, f);
+    }
   });
 });

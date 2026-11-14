@@ -113,7 +113,8 @@ describe('Drum Tuning · listening steps have a silent path', () => {
     assert.match(s, /before: null, silent: false \}/);
   });
   it('chapter 7 review never prints "0 of 0 named"', () => {
-    assert.match(read(`${LAB}/drumtuning/modules/ch7Trouble.tsx`), /hypothesised_n \? `Cleared[\s\S]*?: `Cleared \$\{cleared\.size\} of \$\{SYMPTOMS\.length\}; you have not named a cause yet\.`/);
+    // Phase 3, owner 2026-11-14: "remove progress N-of-total" — cases cleared are counted alone.
+    assert.match(read(`${LAB}/drumtuning/modules/ch7Trouble.tsx`), /hypothesised_n \? `Cases cleared[\s\S]*?: `Cases cleared: \$\{cleared\.size\}; you have not named a cause yet\.`/);
   });
 });
 
@@ -193,8 +194,9 @@ describe('Speech and Envelope · small copy and feedback bugs', () => {
     assert.doesNotMatch(SPEECH_SCREEN_GUIDES.p2.intro!.learning, /four jobs/);
   });
   it('a GOT IT › that has been tapped leaves a done line, never nothing', () => {
-    assert.match(read(`${LAB}/envelope/EnvelopeLabScreen.tsx`), /markDone\} \/> : <Text style=\{styles\.loaded\}>✓ THIS PAGE IS DONE · NEXT MOVES ON<\/Text>\}/);
-    assert.match(read(`${LAB}/speech/speechPagesB.tsx`), /markDone\} \/> : <Text style=\{styles\.doneLine\}>✓ THIS PAGE IS DONE · NEXT MOVES ON<\/Text>\}/);
+    // Phase 3, owner 2026-11-14: one unit noun per lab ("module" in Envelope and Speech).
+    assert.match(read(`${LAB}/envelope/EnvelopeLabScreen.tsx`), /markDone\} \/> : <Text style=\{styles\.loaded\}>✓ THIS MODULE IS DONE · NEXT MOVES ON<\/Text>\}/);
+    assert.match(read(`${LAB}/speech/speechPagesB.tsx`), /markDone\} \/> : <Text style=\{styles\.doneLine\}>✓ THIS MODULE IS DONE · NEXT MOVES ON<\/Text>\}/);
   });
 });
 
@@ -267,11 +269,14 @@ describe('Phase 2 · each unfinished row names what is missing', () => {
     assert.match(s, /howItCounts="A chapter counts once its own task is done/);
   });
   it('Envelope and Speech: the hands-on check page names its missing piece (pageDetail)', () => {
-    assert.match(read(`${LAB}/envelope/EnvelopeLabScreen.tsx`), /pageDetail=\{\(i\) => \(i === 6 \? 'Still to do: get all six questions on this page right\.' : undefined\)\}/);
-    assert.match(read(`${LAB}/speech/SpeechLabScreen.tsx`), /pageDetail=\{\(i\) => \(i === 10 \? 'Still to do: five right answers on this page\.' : undefined\)\}/);
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
+    // Phase 3 (decision 1): every hands-on module now names its own missing piece, not only the check.
+    assert.match(read(`${LAB}/envelope/EnvelopeLabScreen.tsx`), /6: 'Still to do: get all six questions in this module right\.',/);
+    assert.match(read(`${LAB}/speech/SpeechLabScreen.tsx`), /10: 'Still to do: five right answers in this module\.',/);
   });
   it('Cymatics: the shared rule is said once on both end screens', () => {
-    assert.match(read(`${LAB}/cymatics/useCymaticsEnd.tsx`), /howItCounts: 'A module counts once you open it\. The check counts once every answer is right\.'/);
+    // Phase 3, owner 2026-11-14 (decision 1): work done, not opened.
+    assert.match(read(`${LAB}/cymatics/useCymaticsEnd.tsx`), /howItCounts: 'A module counts once you work through it and move on with NEXT › \(FINISH › on the last\)\. Modules already counted stay counted\. The check counts once every answer is right\.'/);
     for (const f of ['CymaticsHomeScreen', 'CymaticsModuleScreen']) assert.match(read(`${LAB}/cymatics/${f}.tsx`), /howItCounts=\{end\.howItCounts\}/);
   });
 });
@@ -447,5 +452,152 @@ describe('Phase 2 · silent learner and bezel captions (S3)', () => {
       assert.match(s, /<NeedsSoundTag \/>/, f);
     }
     assert.match(read(`${LAB}/eartraining/EarModuleScreen.tsx`), /\{trial\.question\} <NeedsSoundTag \/><\/Text>/);
+  });
+});
+
+describe('Phase 3 · owner decision 4: Ear Training plays first', () => {
+  it('the answers open only once every clip has sounded; replays stay allowed', () => {
+    assert.equal(EAR.earAnswersUnlocked([]), false);
+    assert.equal(EAR.earAnswersUnlocked([0]), false);
+    assert.equal(EAR.earAnswersUnlocked([1, 0]), false);
+    assert.equal(EAR.earAnswersUnlocked([1, 1]), true);
+    assert.equal(EAR.earAnswersUnlocked([3]), true);
+  });
+  it('with sound off the line says plainly it needs sound and offers a way on', () => {
+    const off = EAR.earPlayFirstLine(true);
+    assert.match(off, /needs sound/);
+    assert.match(off, /go to the drill list; nothing here is lost/);
+    assert.match(EAR.earPlayFirstLine(false), /^Play every clip first\./);
+  });
+  it('the drill screen gates the chips and the answer handler, and BACK never blocks', () => {
+    const s = read(`${LAB}/eartraining/EarModuleScreen.tsx`);
+    assert.match(s, /const unlocked = earAnswersUnlocked\(plays\);/);
+    assert.match(s, /\|\| !earAnswersUnlocked\(plays\)/);
+    assert.match(s, /disabled=\{phase !== 'answering' \|\| !unlocked\}/);
+    assert.match(s, /TO THE DRILL LIST ›/);
+    assert.doesNotMatch(s, /‹ BACK/); // a retired navigation word (labNavLaw)
+    assert.match(s, /safeGoBack\(navigation\)/);
+  });
+});
+
+describe('Phase 3 · owner decision 2: no "N of total" progress counters', () => {
+  const NO = [
+    ['envelope/EnvelopeLabScreen.tsx', /\{n\} OF \{CHECKS\.length\} CORRECT/],
+    ['speech/speechPagesB.tsx', /of \$?\{FINAL_CHECKS\.length\} correct/],
+    ['drumtuning/DrumTuningLabScreen.tsx', /\$\{answeredCount\} of \$\{scenarios\.length\}/],
+    ['drumtuning/modules/ch1Sound.tsx', /reached\} of \$\{/],
+    ['drumtuning/modules/ch2Prepare.tsx', /\$\{walked\} \/ \$\{inspectPoints\.length\}/],
+    ['drumtuning/modules/ch3Method.tsx', /tapped \$\{tapped\.size\} of|\$\{tapped\.size\} \/ \$\{SPEC\.lugs\}|\$\{tapped\.size\} of \$\{SPEC\.lugs\} so far/],
+    ['drumtuning/modules/ch4Whole.tsx', /heard\.size\} of 3|reached\} of \$\{/],
+    ['drumtuning/modules/ch5Types.tsx', /reached\} of \$\{/],
+    ['drumtuning/modules/ch7Trouble.tsx', /cleared\.size\} of \$\{SYMPTOMS\.length\}|tapped\.length\} of \$\{c\.tapsNeeded\}|reached\} of \$\{/],
+    ['tuning/chapters/ch5Fifths.tsx', /k: 'STEP', v: `\$\{revealed\}\/12`/],
+    ['tuning/chapters/ch10Equal.tsx', /k: 'STEP', v: `\$\{built\}\/12`/],
+    ['tuning/chapters/ch13Apply.tsx', /\.length\}\/6`/],
+    ['tuning/components/primitives.tsx', /NEXT STEP \(\$\{shown\}\/\$\{steps\.length\}\)/],
+    ['cymatics/modules/modMyth.tsx', /\{score\} of \{ROWS\.length\}/],
+    ['eartraining/EarModuleScreen.tsx', /Trial \{trialNo\} of|\{roundScore\} of|\/ \$\{mod\.levels\}/],
+    ['eartraining/earLabEnd.ts', /of \$\{m\.levels\}/],
+  ] as const;
+  for (const [f, re] of NO) it(f, () => assert.doesNotMatch(read(`${LAB}/${f}`), re));
+  it('what is LEFT is counted instead, and slider positions stay values', () => {
+    assert.match(read(`${LAB}/envelope/EnvelopeLabScreen.tsx`), /STILL TO GET RIGHT/);
+    assert.match(read(`${LAB}/drumtuning/modules/ch3Method.tsx`), /`\$\{SPEC\.lugs - tapped\.size\} LEFT`/);
+    assert.match(read(`${LAB}/tuning/chapters/ch13Apply.tsx`), /k: 'LEFT', v: all \? 'NONE'/);
+    // a fader position is a value, not progress (owner: "FRET 3 of 12 … stay")
+    assert.match(read(`${LAB}/BassLabScreen.tsx`), /`\$\{fret\} of \$\{NUM_FRETS\}`/);
+    assert.match(read(`${LAB}/tuning/chapters/ch5Fifths.tsx`), /formatShort: \(p\) => `\$\{Math\.round\(p \* 12\)\}\/12`/);
+  });
+});
+
+describe('Phase 3 · owner decision 1: done = work done', () => {
+  it('Cymatics marks a module on NEXT / FINISH, never on opening; stored visits stay', () => {
+    const s = read(`${LAB}/cymatics/CymaticsModuleScreen.tsx`);
+    assert.doesNotMatch(s, /if \(focused && resolved\) markLabVisit/);
+    assert.match(s, /beforeAdvance: markWorked,/);
+    assert.match(s, /markLabVisit\('cymatics', m\.id, \{ persist: resolved && !guest \}\)/);
+    for (const f of ['CymaticsHomeScreen', 'CymaticsModuleScreen']) assert.match(read(`${LAB}/cymatics/${f}.tsx`), /completeTitle="ALL MODULES DONE"/, f);
+    const g = JSON.stringify(CYMATICS_END_GUIDE);
+    assert.doesNotMatch(g, /once you open it|ALL MODULES OPENED|haven’t opened/);
+    assert.match(g, /opening it alone does not count/);
+  });
+  it('Envelope and Speech declare every module: a goal (manualDone) or reading', () => {
+    for (const f of ['envelope/EnvelopeLabScreen.tsx', 'speech/SpeechLabScreen.tsx']) {
+      const s = read(`${LAB}/${f}`);
+      const rows = [...s.matchAll(/\{[^{}]*\bComponent:[^{}]*\}/g)].map((m) => m[0]);
+      assert.ok(rows.length >= 7, f);
+      for (const r of rows) assert.match(r, /manualDone: true|reading: true/, `${f}: ${r}`);
+    }
+    assert.match(read(`${LAB}/envelope/EnvelopeLabScreen.tsx`), /short: 'Scope', Component: PageScope, reading: true/);
+    assert.match(read(`${LAB}/speech/SpeechLabScreen.tsx`), /short: 'Voices', Component: PageVoices, reading: true/);
+  });
+  it('each hands-on module names its missing piece on WHAT’S LEFT', async () => {
+    const { ENVELOPE_STILL_TO_DO } = await import('../src/screens/lab/envelope/EnvelopeLabScreen.tsx').catch(() => ({ ENVELOPE_STILL_TO_DO: null }));
+    const s = read(`${LAB}/envelope/EnvelopeLabScreen.tsx`) + read(`${LAB}/speech/SpeechLabScreen.tsx`);
+    assert.match(s, /pageDetail=\{\(i\) => ENVELOPE_STILL_TO_DO\[i\]\}/);
+    assert.match(s, /pageDetail=\{\(i\) => SPEECH_STILL_TO_DO\[i\]\}/);
+    for (const m of s.matchAll(/^\s+\d+: '(Still to do: [^']+)',$/gm)) assert.ok(m[1].split(/\s+/).length <= 14, m[1]);
+    void ENVELOPE_STILL_TO_DO;
+  });
+});
+
+describe('Phase 3 · owner decision 3: one progress word per lab; S3 model note', () => {
+  it('Tuning and Drum Tuning say CHAPTER on the strip (LabNounProvider)', () => {
+    for (const f of ['tuning/TuningLabScreen.tsx', 'drumtuning/DrumTuningLabScreen.tsx']) {
+      const s = read(`${LAB}/${f}`);
+      assert.match(s, /<LabNounProvider value="chapter">/, f);
+      assert.match(s, /<\/LabNavProvider>\s*<\/LabNounProvider>/, f);
+    }
+  });
+  it('Envelope and Speech say "module", as their strip does; no progress "page" left in their words', () => {
+    for (const f of ['envelope/envelopeScreenGuides.ts', 'speech/speechScreenGuides.ts', 'envelope/EnvelopeLabScreen.tsx', 'speech/speechPagesB.tsx']) {
+      const lines = read(`${LAB}/${f}`).replace(/\{\/\*[\s\S]*?\*\/\}/g, '').split('\n').filter((l) => !/^\s*(\/\/|\*|\/\*|\{\/\*)/.test(l));
+      for (const l of lines) assert.doesNotMatch(l, /THIS PAGE|this page|every page|the page you|first page|step one page|Pages? (you|1)|page (marks|check|complete)/, `${f}: ${l.trim()}`);
+    }
+  });
+  it('Drum Tuning display readouts no longer say STEP (the strip’s word): ORDER, TURNS, STAGE', () => {
+    const c2 = read(`${LAB}/drumtuning/modules/ch2Prepare.tsx`);
+    const c3 = read(`${LAB}/drumtuning/modules/ch3Method.tsx`);
+    assert.doesNotMatch(c2 + c3, /k: 'STEP'|label: 'STEP'/);
+    assert.match(c2, /k: 'ORDER'/);
+    assert.match(c2, /k: 'TURNS'/);
+    assert.match(c3, /k: 'STAGE'/);
+    assert.doesNotMatch(JSON.stringify(DRUM_SCREEN_GUIDES), /ride STEP|Move STEP|STEP fader/);
+  });
+  it('S3 modelNote: a plain sentence on every F8 rack lab (≤ 100 characters, sentence case)', async () => {
+    const files = ['OscillatorLabScreen.tsx', 'NoiseLabScreen.tsx', 'HarmonicsView.tsx', 'FmLabScreen.tsx', 'HarmonographLabScreen.tsx', 'BassLabScreen.tsx', 'AutotuneLabScreen.tsx', 'ModularLabScreen.tsx', 'cymatics/modules/modNodes.tsx', 'cymatics/modules/modHarmonics.tsx', 'cymatics/modules/modHarmony.tsx', 'cymatics/modules/modChange.tsx'];
+    for (const f of files) {
+      const s = read(`${LAB}/${f}`);
+      assert.match(s, /modelNote:/, f);
+      const expr = /modelNote:([\s\S]*?),\n\s*(?:\/\/|[a-zA-Z]+:)/.exec(s)?.[1] ?? '';
+      const notes = [...expr.matchAll(/'([^']{20,})'|`([^`]{20,})`/g)].map((m) => m[1] ?? m[2]);
+      assert.ok(notes.length >= 1, f);
+      for (const n of notes.slice(0, 3)) {
+        if (/^[A-Z]{4,} /.test(n)) assert.fail(`${f}: "${n}" is all caps`);
+        assert.ok(n.length <= 100, `${f}: ${n.length} chars`);
+      }
+    }
+    assert.match(read(`${LAB}/tuning/rackLayout.tsx`), /modelNote: TUNING_MODEL_NOTES\[rack\.badge \?\? BADGE_EXACT\]/);
+    assert.match(read(`${LAB}/drumtuning/DrumRack.tsx`), /modelNote: DRUM_MODEL_NOTES\[spec\.badge\]/);
+    assert.match(read(`${LAB}/cymatics/modules/rackLayout.tsx`), /modelNote: rack\.modelNote \?\? \(rack\.badge \? plainBadge\(rack\.badge\) : undefined\)/);
+  });
+});
+describe('Checker K4 · plain model notes, no caps disclaimers, no totals', () => {
+  it('Tuning: the beating model draws no caps line in the SVG; its full-screen badge is the plain sentence', () => {
+    assert.doesNotMatch(read(`${LAB}/tuning/components/harmonicLadder.tsx`), /EXPLANATORY MODEL · NOT A MEASUREMENT/);
+    assert.match(read(`${LAB}/tuning/chapters/ch4Harmonics.tsx`), /badge=\{TUNING_MODEL_NOTES\[BADGE_MODEL\]\}/);
+  });
+  it('no all-caps disclaimer left in the flagged lines', () => {
+    const CAPS = /ILLUSTRATIVE MODEL — DRAWN|TYPICAL VALUES — ILLUSTRATIVE|ILLUSTRATIVE — AIR|SIMULATION · 240 mm|PHASE VIEW · AMBER|SIMULATION · CALCULATED|SIMULATION · ILLUSTRATIVE|READOUT — EXACT|MODEL · the air/;
+    for (const f of ['envelope/EnvelopeChart.tsx', 'envelope/EnvelopeLabScreen.tsx', 'cymatics/modules/modIntro.tsx', 'cymatics/MembraneStudioScreen.tsx', 'BassLabScreen.tsx', 'drumtuning/modules/ch4Whole.tsx']) assert.doesNotMatch(read(`${LAB}/${f}`), CAPS, f);
+    const lessons = read('src/features/lab/guidedLessons/content.ts');
+    assert.doesNotMatch(lessons, /The badge ANALYTIC MODEL — NOT A MEASUREMENT|\(IDEALIZED SPECTRAL SLOPES\)/);
+    assert.match(read(`${LAB}/drumtuning/modules/ch2Prepare.tsx`), /badge=\{DRUM_MODEL_NOTES\[MODEL_BADGE\]\} title="HARDWARE"/);
+    assert.match(read(`${LAB}/cymatics/MembraneStudioScreen.tsx`), /badge,\n\s*modelNote: badge,/);
+  });
+  it('Drum Tuning: STAGE has no total; the TURNS lane value is short', () => {
+    assert.match(read(`${LAB}/drumtuning/modules/ch3Method.tsx`), /\{ k: 'STAGE', v: `\$\{methodStep \+ 1\}` \}/);
+    const c2 = read(`${LAB}/drumtuning/modules/ch2Prepare.tsx`);
+    assert.match(c2, /label: 'TURNS'[^\n]*format: \(v\) => \(Math\.round\(v\) === 0 \? 'finger-tight' : `\$\{Math\.round\(v\)\} \$\{approach === 'even' \? 'round' : 'turn'\}/);
   });
 });

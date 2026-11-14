@@ -496,7 +496,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
           ),
         bezel: [
           { k: 'EVENT', v: `#${seed}`, sub: doorsOpen ? 'DOORS OPEN' : 'SETTING UP', tint: colors.amber },
-          { k: 'POWER', v: `${POWERED.filter((d) => deviceLive(booth, d)).length}/7`, sub: 'ON', tint: allOn ? colors.green : colors.amber },
+          { k: 'POWER', v: `${POWERED.filter((d) => deviceLive(booth, d)).length} ON`, tint: allOn ? colors.green : colors.amber },
           { k: 'THE ROOM', v: roomV, tint: !last ? colors.textSub : roomV === 'MUSIC' ? colors.green : roomV === 'HUM' ? colors.amber : PEAK_RED },
           { k: 'PLAYING', v: decksValue(booth), tint: colors.amber },
         ],
@@ -568,7 +568,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         />
         {fixedAll
           ? scenario.faults.map((f, i) => (
-              <Debrief key={`${seed}-${f}`} fault={f} seed={seed} head={two ? `DEBRIEF · FAULT ${i + 1} OF 2` : 'DEBRIEF · THE EVENT’S FAULT'} onDone={() => setDebriefed((d) => ({ ...d, [i]: true }))} />
+              <Debrief key={`${seed}-${f}`} fault={f} seed={seed} head={two ? `DEBRIEF · FAULT ${i + 1}` : 'DEBRIEF · THE EVENT’S FAULT'} onDone={() => setDebriefed((d) => ({ ...d, [i]: true }))} />
             ))
           : null}
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />

@@ -449,11 +449,12 @@ function MembraneStudio() {
       ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
+  // K4 (owner decision 3, 2026-11-14): one plain sentence, not an all-caps disclaimer.
   const badge = isSpeaker
-    ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED fs, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
+    ? `A simulation: fs, ka and the 1/f² excursion are calculated; ${cone.label === 'CALCULATED' ? 'this cone stage is calculated too.' : 'this cone stage is illustrative.'}`
     : spec.kettle
-      ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (measured on real timpani)'
-      : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes';
+      ? 'A simulation: the head’s Bessel modes are calculated; the kettle loading is approximated from real timpani.'
+      : 'A simulation: the clamped head’s Bessel modes, calculated.';
   // SAVE → the Pattern Gallery (Phase 4): the full state, never a picture.
   // One save per press: SAVE stays disabled until the write settles, and the
   // ref catches a same-frame double tap before the re-render (bug hunt
@@ -506,6 +507,7 @@ function MembraneStudio() {
           stage: {
             size: 'L',
             badge,
+            modelNote: badge,
             onGuide: () => openLesson('membrane_display'),
             bezel,
             hideDragTag: true,

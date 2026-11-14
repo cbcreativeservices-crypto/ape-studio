@@ -516,8 +516,10 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
     // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
     // under 20 answers the pill says how many answers its score rests on.
     assert.match(MOD, /<Text style=\{styles\.statSub\}>\{accuracy != null \? earScoreWindowLabel\(scoreAnswers\)\.sub : 'last 20'\}<\/Text>/);
-    assert.match(MOD, /subtitle=\{`Level \$\{level\}\/\$\{mod\.levels\}/);
-    assert.match(MOD, /Trial \{trialNo\} of \{ROUND\} · Streak \{streak\}\s*<\/Text>\s*<Text style=\{styles\.question\}>/, 'the trial/streak line sits above the question');
+    // Phase 3 (owner 2026-11-14: "N of total" progress counters removed): the level and the
+    // trial are named alone, without "/4" or "of 10".
+    assert.match(MOD, /subtitle=\{`Level \$\{level\} · /);
+    assert.match(MOD, /Trial \{trialNo\} · Streak \{streak\}\s*<\/Text>\s*<Text style=\{styles\.question\}>/, 'the trial/streak line sits above the question');
     const withHeader = Object.entries(GUIDES).filter(([, gd]) => gd.seeing.includes(HEADER)).map(([id]) => id);
     assert.ok(withHeader.includes('frequency'), `header readouts named in ${withHeader.join(', ') || 'no drill'}`);
   });

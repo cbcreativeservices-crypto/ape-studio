@@ -45,7 +45,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
     seeing: [
       'Level per hertz against frequency: 20 Hz at the left, 20k at the right. Five straight lines, one per color, cross at the dot at 1 kHz.',
       'The selected line is bright; a faint trace on it shimmers while noise plays.',
-      'Readouts: COLOR, SLOPE (tilt, dB per octave), OUT (level sent, dBFS). Badge: IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT; with SPKR, PHONE SPEAKER OUTPUT — 150 Hz HPF ON plus the color.',
+      'Readouts: COLOR, SLOPE (tilt, dB per octave), OUT (level sent, dBFS). Under the display: idealized slopes, not measured; with SPKR, the 150 Hz high-pass filter.',
     ],
     control: [
       '▶ in the header plays the selected noise; ■ stops it. A tap on the chart does the same.',

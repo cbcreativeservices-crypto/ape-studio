@@ -1,4 +1,4 @@
-# F5 report: Amplitude, Foundations of Sound, Sound Playground, Microphone Principles, Wave Physics, Speaker Placement, Room Design (phase 1)
+# F5 report: Amplitude, Foundations of Sound, Sound Playground, Microphone Principles, Wave Physics, Speaker Placement, Room Design (phases 1–3)
 
 **Summary (phase 1 done, 2026-11-14):** 33 fixed · 3 not a bug · 1 held (owner decision, the colour only; the words are fixed) · 1 moved to phase 2 (shared bezel captions) · 0 shared needs from me. One shared change asked of me has LANDED: `CheckSpec.why` (see the section below the table).
 
@@ -150,3 +150,97 @@ None.
 **Intro-seen ids I removed** (from `ape:intro:screenIntroCards` in localStorage on 8142): `iar6v34` (Gain "Follow the Signal") and `i167vqn8` (Gain "Gain vs. Fader"). localStorage is shared by every tab on 8142, so any agent opening those two modules in that window would also have seen their intro card. Both ids were written back when I tapped GOT IT (checked: present again, 202 entries as before).
 
 Parse-checked with esbuild; the 8142 bundle answers 200. F5 tests 100/100; F7 45/45. F6 57/58: its one failure is its own AWG refusal test (calc, F6's F-3), not my files. No tsc.
+
+---
+
+# Phase 3 (the owner's decisions, 2026-11-14)
+
+**Summary:** decisions 1, 2, 3 and 5 are done for my seven labs, and decision 6 needs no change. Tests: `test/labFixes_20261114_F5.test.ts` 113/113. The pinned tests that the new credit rule changed on purpose are updated, each with the owner's words: bugPassLabsGroupA20260930, labBugHunt20260929, labEndScreen, labNavHostsWp3, labUnits, roomDesignLabWiring and labEndsAndBanner. S2's useLabNav pins for Foundations, Mic Principles and Wave are green again. No tsc and no commits; each .tsx was parse-checked and 8142 builds (curl 200).
+
+## 1. "Done = work done": NEW credit follows each module's goal; stored credit is untouched
+
+How it works:
+- **CheckCreditScope:** a new component in `foundations/CheckCredit.tsx`; its pure rule is in `checkCreditRules.ts`.
+- **Every card reports to it:** the shared CheckQuestion registers itself with the scope and reports a right answer. Outside a scope nothing changes, so other groups' labs are untouched.
+- **When a module counts:** it counts once EVERY card it drew is answered right. Credit is marked with the same `markLabUnit` and the same unit ids, so all stored credit stays exactly as it is.
+- **What was removed:** each host's "mark on open" effect.
+
+| Lab | Goal per module (what I chose) | Where |
+|---|---|---|
+| Foundations of Sound | Modules 1, 2, 4–13: their CHECK YOURSELF answered right. Module 14: all three course checks right. Module 3 has no card, so it counts when the learner moves on with NEXT (a jump elsewhere does not count it). | FoundationsCourseScreen.tsx (CheckCreditScope around the module; goCredit / finishCredit; `moduleHasCheck`) |
+| Microphone Principles | POLAR, DISTANCE, PROXIMITY, OFF-AXIS, STEREO, HANDLING and HAND GRIP: their card right. MISTAKES: all three picture rounds right. CAPSULE and PLOSIVES have no card, so they count on NEXT. | MicPrinciplesLabScreen.tsx (`MIC_NO_CHECK`) |
+| Wave Physics | Every module: its card right. Room Builder: all four cards (the deep-null check and the three capstones). | WaveModuleScreen.tsx |
+| Speaker Placement | TOP VIEW, SIDE VIEW and READING THE MAP: their card right. | SpeakerCoverageLabScreen.tsx |
+| Room Design | Its "progress" (never credit) followed opening; now hands-on modules (Create, Monitoring, Explore, Treatment) count on the first change to the room made there, and reading modules (Intro, Review) count on NEXT / FINISH. | RoomDesignLabScreen.tsx (markWorkRef, goNext) |
+| Sound Playground | MARK AS REVIEWED appears only once its CHECK YOURSELF is answered right. A lab already reviewed still shows ✓ REVIEWED. The end step names what is open. | FoundationsPlaygroundScreen.tsx |
+| Amplitude | Already credited only after its check passes; no change. | — |
+
+The words now match. "Not opened yet. Inside: …" is now "Still to do: answer its CHECK YOURSELF right. Inside: …" (or "read it through and press NEXT at its foot", or "change the room on it"). HOW A MODULE COUNTS now says the goal, and that opening does not count. The end guides of Foundations, Mic, Speaker and Room and the Wave home guide no longer say "opened".
+
+## 2. No "N of total" of my own
+
+- Amplitude's check now reads "QUESTION 1" instead of "1/3".
+- The strip's "MODULE n / N" belongs to S2.
+- Values stay as they are (TREATED 0/14, "1/4 walls fiberglass").
+- "MODULES 1–15" is a label, not a counter.
+
+## 3. Shared-frame extras adopted
+
+- **One progress word: "module".** Mic and Speaker no longer pass `noun="section"`, and their guides and end lines say "module" like the strip. No LabNounProvider is needed: every one of my labs uses "module".
+- **Plain model note (S3 `modelNote`):** every all-caps Foundations, Playground and Wave rack badge now shows one plain sentence (`foundations/modelNotes.ts`, applied by `captionedRack`). Example: "A teaching model drawn from geometry, not a full simulation of the room."
+- **"drawing…" (S3 `drawing`):** the glass shows "drawing…" until the module's drawing has mounted and the app went idle (`captionedRack`, `PaintSignal` + `runSoon`). This covers Foundations (all, including 6/8/12), the Playground, Mic (all, including 5/10) and Wave (all, including 8).
+- **Visible ⓘ in trays and LEARN first:** automatic (S3).
+- **Not changed:** the all-caps lines INSIDE the reading well (Foundations' ConceptBadge / AnalyticBadge, and Wave's in-well `Badge` from digital/bits, which I do not own). I left those as they are; the rack's disclaimer is the one S3 replaced.
+
+## 5. Beginner core first, depth folded (nothing removed)
+
+The new `foundations/GoDeeper.tsx` is a "GO DEEPER ▾" fold, closed by default.
+
+- **Wave, all 16 modules (waveLayout.tsx):** the reading well now opens with the explanation, any undocked controls and CHECK YOURSELF. The number-tile tables, the second graph and COMMON MISTAKES fold under GO DEEPER (G1b S9: "the reading window often opens on a grid of number tiles").
+- **Room Review (modReview.tsx):** SUGGESTED NEXT STEPS now opens the page. ROOM AND LAYOUT and LIKELY ACOUSTIC BEHAVIOR fold under GO DEEPER; MEASURE and SAVED DESIGNS stay open.
+- **No page split,** so no keys moved.
+- **Not folded:**
+  - Foundations module 7: its density is in the display, not the well.
+  - Mic module 1: moving it would be a lesson reorder.
+  - Amplitude's six cards: they ARE the lesson.
+
+## 6. Foundations module 10 stays red
+
+No change.
+
+## SHARED NEEDS
+
+None.
+
+## Not seen on screen (phase 3)
+
+The 8142 pane would not load during this phase. Three fresh tabs stayed blank; the bundle request hung in the pane while curl got 200 in about 15 s. The checker round should look at these:
+- a module turns ✓ only after its check;
+- the GO DEEPER fold;
+- the model-note line;
+- "drawing…";
+- Room Review's order.
+
+## Checkers K1 + K3 (2026-11-14)
+- K1 / K3 F-1 (owner decision 3): every all-caps model note in my labs now reads as one plain sentence-case line.
+  - Reading wells:
+    - Foundations: ConceptBadge and AnalyticBadge, with all their extras and texts.
+    - Playground: the chart line.
+    - Wave: 13 in-well `<Badge>` lines.
+    - Mic: IllustrationBadge, the module 1 cutaway full-screen badge, and module 13.
+    - Speaker: the line array and delay notes.
+  - Mic and Speaker rack badges: captionedRack now runs with `modelNotes: true`, and there are 11 new entries in modelNotes.ts (each 104 characters or fewer).
+  - The shared looks are `PlainModelNote` (foundations/bits.tsx) and a local `styles.modelNote` (Barlow 12/16).
+  - The unused BADGE_ANALYTIC constant is removed.
+- K3 F-2 (Wave): the readouts card is open again, so the teaching prose and instructions in modules 9, 11, 13, 14 and 15 show without a tap. Only the number table folds, through `FoldedReadoutGrid` in waveLayout.tsx, which all 15 tables now use. The second graph and COMMON MISTAKES stay under GO DEEPER.
+- K3 minor (Foundations module 10, PRESET tray open at 390x844): not reproduced. At 0°, 180° and 270° with the tray open, the sum, the red CANCELED line and its label all sit inside the stage above the bezel.
+- Pins updated with the owner's words:
+  - screenGuide_micspeaker (the IllustrationBadge default);
+  - auditR2_A_D (STEMS);
+  - auditR2_B_D (R014925).
+- Tests: 321/321 on the F5 test file plus the touched pins. On the 69-file sweep there were 6 failures before these fixes; the 2 still failing are not mine:
+  - labFixes F6 "M1 model note";
+  - chain lab "MODULES RUN LAB-DEFAULT SETTINGS".
+- Checks: parse-check OK on all 8 files, bundle 200 on 8142, and I looked with the tab fronted (Wave echo, Mic modules 1 and 2, Speaker, Foundations module 10, Playground). The tab is closed.
+- Left on purpose: the "SIMPLIFIED MODEL —" lead-in drawn inside the MicCutaway SVG art (on-drawing text, not a well note).
+- SHARED NEED: ExpandableFigure (kit) does not forward `badgePlain` to StageFullScreen. The cutaway's sentence-case badge therefore shows in Oswald in full screen.

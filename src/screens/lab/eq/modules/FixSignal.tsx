@@ -12,7 +12,7 @@
  * audition bar, and the verdict + moral live in the well — deliberately: the
  * complaint is the brief you re-read while you work the lanes.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { ResponseCurveGraph } from './eqResponseGraph';
@@ -66,10 +66,15 @@ const SCENARIOS: Scenario[] = [
 
 type UserBand = { f: number; g: number; q: number };
 
-export function FixSignalModule(_p: EqModuleComponentProps) {
+export function FixSignalModule(p: EqModuleComponentProps) {
   const [idx, setIdx] = useState(0);
   const [band, setBand] = useState<UserBand>({ f: 500, g: 0, q: 1.4 });
   const [checked, setChecked] = useState<null | { pass: boolean }>(null);
+  // Work done (phase 3, owner's decision 1): the module counts once a case is FIXED.
+  const { onDone } = p;
+  useEffect(() => {
+    if (checked?.pass) onDone?.();
+  }, [checked, onDone]);
 
   const sc = SCENARIOS[idx];
   // The audition plays the scenario's HIDDEN problem + the user's correction —
@@ -159,7 +164,8 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       kind: 'options',
       id: 'scenario',
       label: 'SCENARIO',
-      valueLabel: `${idx + 1}/${SCENARIOS.length}`,
+      // Phase 3 (owner's decision 2: no "N of total"): the scenario's own number, never "2/5".
+      valueLabel: `#${idx + 1}`,
       // The scenario's story is its blurb — the mystery you just picked, readable
       // in the tray (the moral stays hidden until solved).
       options: SCENARIOS.map((s, i) => ({ id: String(i), label: `${i + 1} · ${s.name}`, blurb: s.story })),
@@ -171,7 +177,8 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
 
   const bezel: BezelItem[] = [
     { k: 'CASE', v: sc.name, flex: 2 },
-    { k: 'SCENARIO', v: `${idx + 1}/${SCENARIOS.length}` },
+    // Phase 3: "SCENARIO 2", not "2/5" (the CASE cell already names it).
+    { k: 'SCENARIO', v: String(idx + 1) },
     {
       k: 'RESULT',
       v: checked ? (checked.pass ? 'FIXED' : 'NOT YET') : '—',
@@ -188,6 +195,8 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         // Legend + honesty, verbatim from the pre-rack panel head.
         badge: 'SIGNAL (bold) vs REFERENCE (dim) · SYNTHETIC',
+        // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+        modelNote: 'Bold is the signal, dim is the reference: a made-up spectrum, not a recording.',
         bezel,
         render: (w, h) => (
           <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>

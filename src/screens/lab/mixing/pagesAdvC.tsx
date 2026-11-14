@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
-import { AbPlayer, ConceptList, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
+import { AbPlayer, ConceptList, GoDeeper, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { BusChainArt, type BusChain } from './advFigures';
 import { AutomationLanes, DrivePlot, WidthArt, type Ride, type WidthView } from './advPlots';
@@ -53,8 +53,9 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
         <DrivePlot driveDb={variants.find((v) => v.id === drive)?.busDriveDb ?? 0} />
       </Card>
       <Card>
-        <Eyebrow>THE TOOLKIT</Eyebrow>
-        <ConceptList items={satItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={satItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="A saturation plugin makes the mix “bigger and more exciting” the instant it is enabled. The advanced reflex:"
@@ -200,8 +201,9 @@ function PageAdvAutomation({ ctx }: { ctx: PageCtx }) {
         <AutomationLanes rides={rides} />
       </Card>
       <Card>
-        <Eyebrow>THE MOVES</Eyebrow>
-        <ConceptList items={autoItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE MOVES" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={autoItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="You need the whole rhythm section to swell 2 dB into the final chorus — drums, bass, percussion, twelve tracks. The clean tool:"

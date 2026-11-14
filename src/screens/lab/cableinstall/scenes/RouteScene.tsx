@@ -597,7 +597,7 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
         const shortOverall = shortIdx >= 0 ? rk[shortIdx].overall : 0;
 
         return (
-          <CiSection key={s.id} title={`INSTALLATION ${si + 1} OF ${CI_ROUTE_SCENARIOS.length} — ${s.title.toUpperCase()}`}>
+          <CiSection key={s.id} title={`INSTALLATION ${si + 1} — ${s.title.toUpperCase()}`}>
             <Text style={styles.brief}>{s.brief}</Text>
             <View style={styles.cableRow}>
               <View style={[styles.cableSwatch, { backgroundColor: type.tint }]} />

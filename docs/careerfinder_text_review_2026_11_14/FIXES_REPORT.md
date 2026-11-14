@@ -51,6 +51,52 @@
 3. **One licensing warning** is used in all three places (`LICENSED_WARNING`, `src/features/careerfinder/educationNote.ts:33`).
 4. **Problem found and fixed on the way: the career index and its build had drifted apart.** The 2026-11-11 copy commit (16f59f11, D59) edited `src/data/careerIndex.json` (46 preparation lines) and `src/data/careerFamilies.json` (5 "where people work" lines) directly, not through `scripts/career-index-overrides.json`. If anyone reran the build, all 51 fixes would come back out. I moved the 46 preparation lines into the overrides and proved the rebuild was byte-identical to the committed file, then made this review's changes. In round 2 the 5 family lines went into the overrides through the new `settings` hook, also proved byte-identical, so both files are now safe to rebuild.
 
+## Round 4: owner decisions
+
+The owner's ticked answers, verbatim, are in `docs/careerfinder_text_review_2026_11_14/OWNER_DECISIONS_2026_11_14.md`. Applied exactly. **Section 3's decision list below is now all decided.**
+
+| Decision | Applied as | Where |
+|---|---|---|
+| CF-A0072 | "These five audio career families draw most on what you said you would enjoy. Start with the top one." | CareerFinderResultsScreen.tsx `RESULTS_LEAD` |
+| CF-A0073 | "These are possibilities to explore, not limits on what you can pursue. Interests change with experience, so your results may change too." | `RESULTS_NOTE` |
+| CF-A0136 | "Did these results give you at least one career family you would explore?" (the owner's own wording: "career family", not Comp A's "career direction") | results feedback question |
+| CF-A0137 | The screen reader now hears the same question as the visible text (without the "?") | feedback radiogroup label |
+| CF-A0309 | `short: 'I don’t know enough about this'` | questions.ts:63. This field is not read by any screen today; the screen reader already hears the full button label. |
+| CF-A0097 | "Your audio career results" | both results-screen titles |
+| CF-D0101, D0115, D0116, D0125 | kept as they are ("keep mine") | no change |
+| Sound-System | "Sound System" in AC-0479 Sound System Acoustical Consultant (still PE-flagged), AC-1079 Club Sound System Manager, AC-1189 Sound System Measurement Technician, AC-1190 Sound System Alignment Engineer, **and** his example CF-A0488 | overrides `renameTitles` + families.ts |
+| Family example titles | 27 replaced exactly as listed. 26 are from the Pattern 8 list; the 27th is CF-A0488 (Sound System). CF-A0453 "Audio Instructor" and CF-A0465 "Consumer Audio Product Specialist" are kept ("keep mine"). CF-A0395 already matched after round 2. Where Comp A gave two options, the owner's pick was used: CF-A0444 Surveillance Audio Technician, CF-A0474 Audio UX Designer, CF-A0535 Noise Survey Technician. | src/features/careerfinder/families.ts |
+
+**Checks:**
+- **Index match:** every family example is now an exact title in careerIndex.json, except the two he kept. A test pins this.
+- **Disclosures:** none of the 28 new or renamed examples is licensed, PE-flagged or degree-gated, so no warning appeared or disappeared. The 12 licensed examples (Audiologist, Speech-Language Pathologist, Sonar Technician, …) still match their licensed index title exactly, so `isRegulatedTitle` still warns on them. A test pins that list.
+- **For the owner, one item:** his pick "Audio Test Engineer" (CF-A0435) is an index title, but it sits in the *Audio Hardware, Transducers & Electronics Engineering* family, not in *Manufacturing, Quality, Calibration & Repair*, where it is shown as an example. A learner who taps that family will not find it in the family's list. This was already true of Comp A's suggestion. Ten older examples had the same kind of cross-family placement before this review (for example Studio Manager, Orchestrator, Backline Technician); they were not part of the decisions and are unchanged.
+- **Rebuild and diff (round 3 → round 4):**
+  - careerIndex.json: 1,896 records, 42 families, same order. Only the title column changed, on **4 records** (the Sound-System titles). Every other column: 0.
+  - careerFamilies.json: byte-identical.
+- **Tests:** the new test gained 4 tests ("7. round 4"; 33 in all). The career set, related ratchets and the tests that read the family page (24 files): **396 of 396 pass**. No pinned test needed changing, because no existing test pinned the six lines or the old examples.
+- **Parse check:** 14 changed TS/TSX files have 0 parse errors; all 3 JSON files parse; the Python build script parses.
+- **8142:** `/` and `/careers` return 200. The web bundle (78 MB, dev) returns 200 and contains the new results line and the START HERE fallback line.
+- tsc was not run, as asked.
+- **Not changed:** the feedback email's internal field name "Gave a direction to explore" (CareerFinderResultsScreen.tsx:84). It is the label the Academy reads in the mail, not screen text, so I left it.
+
+## Round 5: no "N of total" (owner decision 2026-11-14, "Remove them")
+
+Progress now says what is LEFT, never a total. The progress bar stays, because a bar is not a printed total.
+
+| Where | Before | Now |
+|---|---|---|
+| Quiz title (CareerFinderQuizScreen.tsx:157) | Question 7 of 28 | Question 7 |
+| Quiz line under the bar | (only at milestones) | the milestone ("A quarter done", "Halfway — 14 to go", "Last seven"), otherwise "21 to go", and "Last question" on the last one |
+| Quiz bar label and screen-reader announcement | Question 7 of 28 | Question 7, 21 to go |
+| Hub CONTINUE (CareerFinderScreen.tsx:115) | CONTINUE · QUESTION 7 OF 28 / "Continue at question 7 of 28" | CONTINUE · QUESTION 7 / "Continue at question 7" |
+| Hub note | 6 of 28 answered · saved … · all answered | 22 to go · saved … (or "All answered · …") |
+| Results "I don't know" line (scoring.ts) | … for 1 of the 28 questions. | … for 1 question. / … for 2 questions. (branched) |
+
+Left as they are, because they are counts, not progress: "Rate 28 activities", "28 questions ask …", the hero stats (28 QUESTIONS).
+
+Tests: the new test gained section 8 (3 tests, 36 in all), and the unknownNote pins were updated with the owner's decision quoted. Career set plus related tests (27 files): **435 of 435 pass**. Parse check: 0 errors. No commits; tsc not run.
+
 ## 2. Every finding
 
 Status: APPLIED / SKIPPED (why) / OWNER TEXT / OWNER DECISION. Line numbers are in the working tree after the edits.

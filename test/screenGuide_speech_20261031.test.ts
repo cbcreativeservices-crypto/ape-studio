@@ -325,7 +325,7 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   it('p11: seven final checks, five right completes the page; the appended check has four questions', () => {
     assert.equal(M.SPEECH_CHECKS.filter((c: { where: string }) => c.where === 'final').length, 7);
     assert.match(B, /const PASS_MARK = 5;/);
-    assert.ok(/Seven questions/.test(textOf(GUIDES.p11)) && /Five right completes the page/.test(textOf(GUIDES.p11)));
+    assert.ok(/Seven questions/.test(textOf(GUIDES.p11)) && /Five right completes the module/.test(textOf(GUIDES.p11))); // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
     const blk = code('src/features/lab/understandingChecks.ts').match(/const SPEECH: readonly Q\[\] = \[([\s\S]*?)\n\];/);
     assert.ok(blk);
     assert.equal([...blk![1].matchAll(/\bid: '/g)].length, 4);
@@ -496,7 +496,8 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.doesNotMatch(s, /creditLabKey|pageCreditKeys|handsOnDetail|optionalPage|labDoneKey/);
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(endBlock, /mode=\{creditMode\}/);
-    assert.match(endBlock, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(endBlock, /noun=\{unitNoun\}/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(LE, /Everything you have done is saved on this device/);
     assert.ok(END.seeing.join(' ').includes('saved on this device'));
@@ -518,7 +519,8 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     // the strip on the end screen: ‹ PREV leaves the end screen for the page you came from
     assert.match(USE, /if \(ending\) \{\s*unEnd\(\);\s*return;/);
     assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/);
-    assert.ok(c.includes('‹ PREV returns to the page you came from'));
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
+    assert.ok(c.includes('‹ PREV returns to the module you came from'));
   });
 
   it('what makes a page count: NEXT (not Check Yourself), main keys, five right on Check Yourself, all four on the check; a list jump marks nothing', () => {
@@ -528,12 +530,13 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.match(B, /if \(n >= PASS_MARK && !isDone\) markDone\(\);/);
     // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
     // once tapped, the page says it is done instead of the button vanishing.
-    assert.match(B, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : <Text style=\{styles\.doneLine\}>✓ THIS PAGE IS DONE · NEXT MOVES ON<\/Text>\}/);
+    assert.match(B, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : <Text style=\{styles\.doneLine\}>✓ THIS MODULE IS DONE · NEXT MOVES ON<\/Text>\}/); // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
     // goTo (a row tap / CONTENTS jump) never marks a page
     const goTo = PAGED.match(/const goTo = useCallback\([\s\S]*?\n  \}, \[/)![0];
     assert.doesNotMatch(goTo, /markDone/);
     const ch = END.changes.join(' ');
-    assert.ok(ch.includes('leave it with NEXT ›') && ch.includes('GOT IT › on Voices Differ') && ch.includes('Opening it from a list counts nothing'));
+    // Phase 3, owner 2026-11-14 (decision 1, "a page counts when its own goal or check is met, not when opened"): hands-on modules are manualDone; Voices Differ is reading.
+    assert.ok(ch.includes('A module counts once you tap one of its main keys; NEXT › alone moves on without counting it') && ch.includes('counts with GOT IT › or NEXT ›') && ch.includes('Opening a module from a list counts nothing'));
     assert.ok(ch.includes('Check Yourself counts only at five right in one visit'));
     assert.ok(ch.includes('only once all four are right'));
     const blk = code('src/features/lab/understandingChecks.ts').match(/const SPEECH: readonly Q\[\] = \[([\s\S]*?)\n\];/);
@@ -566,7 +569,7 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.ok(END.tryThis.some((t) => t.includes('from its row or from REVIEW ▾')));
     assert.doesNotMatch(END.tryThis.join('\n'), /^Tap REVIEW ▾/m);
     // the first-row experiment holds for Check Yourself / the check / LAB COMPLETE
-    assert.ok(END.tryThis[0].startsWith('If any row is still listed') && END.tryThis[0].includes('on any page before Check Yourself, NEXT › then counts it'));
+    assert.ok(END.tryThis[0].startsWith('If any row is still listed') && END.tryThis[0].includes('its row says what is still to do')); // Phase 3, owner 2026-11-14 (decision 1): NEXT alone no longer counts a hands-on module.
     // every content page's idea is named (page 2 included)
     assert.equal(PAGE_TITLES[1], 'How a Voice Is Made');
     assert.ok(END.teaches[0].includes('the parts of the voice, how a voice is made, voicing'));

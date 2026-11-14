@@ -315,7 +315,9 @@ describe('5. the accuracy chip: Speaker Coverage keeps it beside the ⓘ; Mic Pr
     assert.doesNotMatch(c, /<LabHeader[^>]*\bright=/, `${MIC_SCREEN}: nothing else in the header's right group`);
   });
   it('the reason holds: both screens say on the glass that they are models, not measurements', () => {
-    assert.match(code(MIC_SCREEN), /'ILLUSTRATIVE MODEL — DRAWN FROM THE EQUATIONS, NOT A MEASUREMENT'/);
+    // Owner's decision 3 (2026-11-14, checkers K1/K3): the same disclosure in one
+    // plain sentence-case line.
+    assert.match(code(MIC_SCREEN), /'An illustrative model drawn from the equations\. It is not a measurement\.'/);
     assert.match(code(SPK_SCREEN), /const TOP_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION';/);
     // No live input anywhere in either lab.
     for (const p of [MIC_SCREEN, SPK_SCREEN]) assert.doesNotMatch(code(p), /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions/);

@@ -168,8 +168,8 @@ export function makeStringSoundPage(spec: StringSoundSpec) {
             label: 'STEP',
             value: (shown - 1) / Math.max(1, n - 1),
             onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-            format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-            formatShort: () => `${shown} / ${n}`,
+            format: () => `${stage.title.toLowerCase()}`,
+            formatShort: () => `${shown}`,
           },
           n,
           shown - 1,
@@ -183,7 +183,7 @@ export function makeStringSoundPage(spec: StringSoundSpec) {
       [shown, n, stage, playing, motion, variant, variantLabel],
     );
     const seqBezel: BezelItem[] = [
-      { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+      { k: 'EVENT', v: `${shown}`, flex: 0.8 },
       ...spec.cells.map((c) => {
         const at = c.byVariant?.[variant] ?? c.at;
         return { k: c.k, v: at[Math.min(at.length - 1, shown - 1)] ?? '—', flex: c.flex ?? 1 };

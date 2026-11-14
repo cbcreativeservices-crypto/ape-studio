@@ -62,7 +62,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     seeing: [
       'Sound flows IN ▸ through COMP ▸ OUT. Dashed lines mark the threshold; the dotted outline is the sound untouched.',
       'THRESH and RATIO show your settings. GR is gain reduction, the dB being turned down now (— dB if stopped); the ladder at right echoes it.',
-      'Drawn as a TEACHING MODEL, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole (about 1 dB lower): GR peaks as each click ends.',
+      'The drawing is a model, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole (about 1 dB lower): GR peaks as each click ends.',
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the compressor; ■ stops it. Drag the THRESH fader from −50 to −10 dB.',

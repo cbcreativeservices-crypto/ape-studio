@@ -63,7 +63,7 @@ const CHECK: CheckSpec = {
   wrongHint: 'Name the filter by what it PASSES, not what it removes.',
 };
 
-export function FilterShapesModule(_p: EqModuleComponentProps) {
+export function FilterShapesModule(p: EqModuleComponentProps) {
   const [shape, setShape] = useState<ShapeKey>('bell');
   const [freq, setFreq] = useState(1000);
   const [gainDb, setGainDb] = useState(6);
@@ -182,7 +182,8 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
           <Text style={styles.teach}>{meta.teach}</Text>
         </View>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

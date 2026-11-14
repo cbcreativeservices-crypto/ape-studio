@@ -349,7 +349,7 @@ describe('Phase 2 · Mastering end screen, silent learner and captions', () => {
 describe('Phase 2 · Mixing Guides end screen: the rule said once', () => {
   it('howItCounts carries the read rule; no row repeats it', () => {
     const s = code('src/screens/lab/mixingGuides/MixingGuideScreen.tsx');
-    assert.match(s, /howItCounts="A guide counts as read when you leave it with NEXT › or FINISH ›, or tap MARK AS READ at its foot\./);
+    assert.match(s, /howItCounts="A guide counts as read when you reach its end and tap MARK AS READ\./);
     assert.match(s, /units=\{MIXING_GUIDE_INDEX\.map\(\(g\) => \(\{ id: g\.id, label: g\.title \}\)\)\}/);
   });
 });
@@ -392,5 +392,120 @@ describe('Checker C2 · HOW A PAGE COUNTS says goals are met in ONE visit', () =
     assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
     // …which is true: the chips live in a ref that a remount starts empty.
     assert.match(code(`${MX}/kit.tsx`), /const seen = useRef<boolean\[\]>\(goals\.map\(\(\) => ctx\.isDone\)\);/);
+  });
+});
+
+// ══ PHASE 3 (2026-11-14): the owner's decisions for F4's labs ═══════════════
+
+describe('Phase 3 · decision 1: a Mixing Guide counts only when its work is done', () => {
+  const s = code('src/screens/lab/mixingGuides/MixingGuideScreen.tsx');
+  it('NEXT › / FINISH no longer mark a guide read; MARK AS READ (at its foot) is the one way', () => {
+    assert.doesNotMatch(s, /beforeAdvance:/);
+    assert.match(s, /const markRead = useLatchedPress\(\(\) => markGuideRead\(entry\.id\)\);/);
+    const foot = s.indexOf('MARK AS READ</Text>');
+    const lastSection = s.lastIndexOf('<Section key={s.key}');
+    assert.ok(foot > lastSection && lastSection > 0, 'MARK AS READ sits after the last section');
+  });
+  it('the words say so, and stored reads are untouched (the store keeps every id it has)', async () => {
+    assert.match(s, /howItCounts="A guide counts as read when you reach its end and tap MARK AS READ\. Opening it, or moving on with NEXT ›, ‹ PREV or the list, does not count\."/);
+    const R = await import('../src/screens/lab/mixingGuides/readRecord.ts');
+    assert.deepEqual(R.sanitizeGuidesRead({ v: 1, read: ['pop', 'rock'] }).read, ['pop', 'rock']);
+  });
+});
+
+describe('Phase 3 · decision 2: no "N of total" progress counters in F4’s labs', () => {
+  it('Mixing Guides: the header no longer reads "Mixing guide n of 50"', () => {
+    const s = code('src/screens/lab/mixingGuides/MixingGuideScreen.tsx');
+    assert.match(s, /subtitle=\{ending \? 'What’s left' : `Mixing guide\$\{isRead \? ' · read' : ''\}`\}/);
+    assert.doesNotMatch(s, /\$\{entry\.num\} of/);
+  });
+  it('Mastering: CONFIRMED, the delivery sheet, the QC card and the key result count what is LEFT', () => {
+    const m7 = code(`${MA}/modules/mod7Release.tsx`);
+    assert.doesNotMatch(m7, /\$\{done\.size\} \/ \$\{dest\.confirm\.length\}|\$\{done\.size\}\/\$\{dest\.confirm\.length\}/);
+    assert.match(m7, /`\$\{dest\.confirm\.length - done\.size\} LEFT`/);
+    assert.doesNotMatch(code(`${MA}/stages.tsx`), /\$\{done\} \/ \$\{items\.length\}/);
+    const m8 = code(`${MA}/modules/mod8Project.tsx`);
+    assert.doesNotMatch(m8, / of \$\{PROJECT_CHECKS\.length\}| of \$\{PROJECT_QC\.length\}/);
+    assert.match(m8, /left to check/);
+    assert.match(m8, /to look at again/);
+  });
+  it('Advanced Mixing page 2: "3 more to choose", not "0/3 chosen"', () => {
+    const a = code(`${MX}/pagesAdvA.tsx`);
+    assert.doesNotMatch(a, /\/3 chosen/);
+    assert.match(a, /`\$\{3 - priorities\.length\} more to choose — a priority list longer than three is a wish list\.`/);
+  });
+});
+
+describe('Phase 3 · decision 5: beginner core first, depth folded, nothing removed', () => {
+  it('Advanced Mixing 7, 8, 10, 11, 13: each second lesson (the toolkit) sits under GO DEEPER ▾', () => {
+    const b = code(`${MX}/pagesAdvB.tsx`);
+    const c = code(`${MX}/pagesAdvC.tsx`);
+    // Checker K2: a required check never hides — each fold opens itself once
+    // the page's first goal (its experiment) is met, and says why while closed.
+    for (const t of ['THE ADVANCED TOOLKIT', 'THE SET-DESIGN TOOLKIT']) assert.match(b, new RegExp(`<GoDeeper title="${t}" openWhen=\\{latched\\[0\\]\\} note="The check below draws on this list`));
+    assert.equal((b.match(/<GoDeeper title=[^>]*openWhen=\{latched\[0\]\}/g) ?? []).length, 3);
+    for (const t of ['THE TOOLKIT', 'THE MOVES']) assert.match(c, new RegExp(`<GoDeeper title="${t}" openWhen=\\{latched\\[0\\]\\}`));
+    assert.equal((c.match(/<GoDeeper title=[^>]*openWhen=\{latched\[0\]\}/g) ?? []).length, 2);
+    assert.match(code(`${MX}/kit.tsx`), /useEffect\(\(\) => \{\s*if \(openWhen\) setOpen\(true\);\s*\}, \[openWhen\]\);/);
+    // The toolkit goal is still on each page (nothing became optional).
+    for (const g of ['Open all four tools', 'Open all five tools', 'Open all four cards', 'Open all four moves']) assert.ok((b + c).includes(`'${g}'`), g);
+  });
+
+  it('FOLDED, NOT SPLIT: Advanced still has the same 20 pages in the same order, so a stored record (page indices and per-page credit keys) means what it meant', async () => {
+    // An OLD record, as PagedLab stores it (ape:mixing-adv:v1): pages 7, 8, 10, 11, 13 done.
+    const old = { completed: [6, 7, 9, 10, 12], lastPage: 12, done: false };
+    const titles = ['Before You Begin', 'Advanced Mix Planning', 'Complex Session Management', 'Groups, Subgroups & VCAs', 'Advanced Auxiliary Routing', 'Parallel & Multibus Mixing', 'Advanced EQ & Masking', 'Advanced Dynamics', 'Phase, Polarity & Alignment', 'Advanced Depth & Space', 'Harmonic Processing', 'Stereo Imaging', 'Advanced Automation', 'Mix-Bus Processing', 'Translation & Quality Control', 'Stems & Alternate Mixes', 'Stem Reconstruction', 'Professional Delivery', 'Mix Diagnosis', 'The Final Repair'];
+    const now = ['pagesAdvA', 'pagesAdvB', 'pagesAdvC', 'pagesAdvD'].flatMap((f) => [...code(`${MX}/${f}.tsx`).matchAll(/\{ title: '([^']+)', short: '[^']+', Component: \w+/g)].map((m) => m[1]));
+    assert.deepEqual(now, titles);
+    assert.deepEqual(old.completed.map((i) => now[i]), ['Advanced EQ & Masking', 'Advanced Dynamics', 'Advanced Depth & Space', 'Harmonic Processing', 'Advanced Automation']);
+    const { MIXING_ADV_PAGE_IDS } = await import('../src/features/lab/trainingLabKeys.ts');
+    assert.equal(MIXING_ADV_PAGE_IDS.length, 20, 'one credit key per page, unchanged');
+  });
+
+  it('Mastering module 1 step 3: what to listen for comes first; the mechanics and numbers fold', () => {
+    const m = code(`${MA}/modules/mod1What.tsx`);
+    const listen = m.indexOf('What to listen for at matched level');
+    const deeper = m.indexOf('<GoDeeper title="HOW THIS COMPARISON WORKS">');
+    assert.ok(listen > 0 && deeper > listen, 'the beginner core sits above the fold');
+    for (const t of ['driven 8 dB into a peak limiter', 'TRUE PK reads over 0 dBTP here on purpose', 'The faceplate on the display', 'Honesty']) {
+      assert.ok(m.indexOf(t) > deeper, `${t} is kept, inside the fold`);
+    }
+    assert.ok(m.indexOf('Before you switch MATCH off') < deeper, 'the volume warning stays in view');
+  });
+
+  it('Pre/Post-Production stages: required questions first, the optional ones folded per section', () => {
+    const s = code(`${PR}/ProductionStageScreen.tsx`);
+    assert.match(s, /const required = section\.fields\.filter\(\(f\) => f\.required\);/);
+    assert.match(s, /const rows = \[\.\.\.required, \.\.\.\(moreOpen \? optional : \[\]\)\];/);
+    // Checker K2: the learner's own tap wins over the automatic opening.
+    assert.match(s, /const autoOpen = optional\.some\(\(f\) => f\.fieldId === focus \|\| touched\(f\.fieldId\)\);\s*const moreOpen = foldChoice\[section\.sectionId\] \?\? autoOpen;/);
+    assert.match(s, /onPress=\{\(\) => setFoldChoice\(\(c\) => \(\{ \.\.\.c, \[section\.sectionId\]: !moreOpen \}\)\)\}/);
+    assert.match(code(`${PR}/FieldRow.tsx`), /> · required<\/Text>/);
+    // Platform-true: the model note says "this device", not "your phone" (web too).
+    assert.doesNotMatch(read(`${MA}/modules/shared.tsx`) + read(`${MA}/modules/mod1What.tsx`), /phone.s uncalibrated/);
+    assert.match(s, /MORE QUESTION\$\{optional\.length === 1 \? '' : 'S'\} · OPTIONAL · GO DEEPER ▾/);
+  });
+
+  it('Pre-Production stage 1: its 17 required questions are what shows first', async () => {
+    const { resolveStage, stageFields } = await import('../src/features/production/schema.ts');
+    const { STAGE1_DEFINE } = await import('../src/features/production/preprod/stage1.data.ts');
+    const f = stageFields(resolveStage(STAGE1_DEFINE, 'music'));
+    assert.equal(f.filter((x: { required: boolean }) => x.required).length, 17);
+    assert.ok(f.length >= 30);
+  });
+});
+
+describe('Phase 3 · decision 3: Mastering’s badges become one plain sentence (S3 modelNote)', () => {
+  it('every badge a Mastering stage passes has a plain note, and MasteringRack hands it to the rack', async () => {
+    const S = await import(`../${MA}/modules/shared.tsx`).catch(() => null);
+    const src = code(`${MA}/modules/shared.tsx`);
+    assert.match(code(`${MA}/MasteringRack.tsx`), /modelNote: PLAIN_MODEL_NOTE\[spec\.badge\],/);
+    const files = ['mod1What', 'mod2Roles', 'mod3Room', 'mod4Tools', 'mod5Workflow', 'mod6Loudness', 'mod7Release', 'mod8Project'];
+    const literal = files.flatMap((f) => [...code(`${MA}/modules/${f}.tsx`).matchAll(/badge: '([^']+)'/g)].map((m) => m[1]));
+    for (const b of literal) assert.ok(src.includes(`'${b}': '`), `no plain note for "${b}"`);
+    for (const k of ['MODEL_BADGE', 'METER_BADGE', 'RENDER_BADGE']) assert.match(src, new RegExp(`\\[${k}\\]: '`));
+    const notes = [...src.matchAll(/\]?: '([^']+)',\n/g)].map((m) => m[1]).filter((t) => /^[A-Z][a-z]/.test(t));
+    for (const n of notes) assert.ok(n.length <= 90 && !/[A-Z]{4,}/.test(n), `"${n}" is one plain sentence`);
+    void S;
   });
 });

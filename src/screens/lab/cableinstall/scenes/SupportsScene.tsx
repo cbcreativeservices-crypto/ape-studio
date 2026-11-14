@@ -708,16 +708,16 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
       <CiSection title="B · THE SORT — WOULD YOU HANG CABLE ON THIS?">
         <Text style={styles.lead}>
           One piece of hardware at a time. Approve only purpose-built, rated cable hardware — "it happens to be there"
-          is not a support. Pass mark: {passNeeded} of {N}.
+          is not a support. Pass mark: {passNeeded} right (80%).
         </Text>
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {sortPassed ? '✓ ' : ''}
-          {correct} correct · {Math.min(answered, N)} of {N} sorted
+          {correct} correct · {Math.max(0, N - answered)} left to sort
         </Text>
         {item ? (
           <Animated.View style={[styles.card, cardStyle]}>
             <Text style={styles.cardHead}>
-              ITEM {idx + 1} OF {N}
+              ITEM {idx + 1}
             </Text>
             <Text style={styles.itemName}>{item.name}</Text>
             <Appear key={`pic-${idx}`} delay={70}>
@@ -825,13 +825,13 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
             {finishedLive ? (
               <VerdictBanner
                 verdict={finishedPass ? 'correct' : 'wrong'}
-                text={`${correct} of ${N} sorted correctly (${Math.round((correct / N) * 100)}%). ${
-                  finishedPass ? 'Sort passed.' : `You need ${passNeeded} of ${N} (80%) — run it again.`
+                text={`${correct} sorted correctly (${Math.round((correct / N) * 100)}%). ${
+                  finishedPass ? 'Sort passed.' : `You need ${passNeeded} right (80%) — run it again.`
                 }`}
               />
             ) : (
               <Appear>
-                <Text style={styles.passedLine}>✓ Sort passed — {correctAtPassRef.current} of {N} on record.</Text>
+                <Text style={styles.passedLine}>✓ Sort passed — {correctAtPassRef.current} right on record.</Text>
               </Appear>
             )}
             <OptionChip label={sortPassed ? 'RUN THE SORT AGAIN' : 'RETRY THE SORT'} onPress={onRetrySort} action />

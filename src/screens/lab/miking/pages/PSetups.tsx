@@ -210,9 +210,10 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
         format: (v) => {
           const k = Math.round(v * (setups.length - 1));
           const s = setups[k];
-          return s ? `${k + 1} of ${setups.length} · ${roleWords(s).toLowerCase()}` : 'no setup';
+          return s ? `${roleWords(s).toLowerCase()}` : 'no setup';
         },
-        formatShort: (v) => `${Math.round(v * (setups.length - 1)) + 1} / ${setups.length}`,
+        // No N-of-total (owner 2026-11-14, decision 2): the setup's number alone.
+        formatShort: (v) => `${Math.round(v * (setups.length - 1)) + 1}`,
       }),
       {
         kind: 'options',
@@ -246,7 +247,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
     [setups, i, sel, view, both, variant, variantLabel, lesson.model.variants, C.variantKey],
   );
   const bezel: BezelItem[] = [
-    { k: 'SETUP', v: sel ? `${i + 1} / ${setups.length}` : '—', flex: 0.8 },
+    { k: 'SETUP', v: sel ? `${i + 1}` : '—', flex: 0.8 },
     { k: 'MIC', v: t0 ? t0.short : '—', flex: 1.2 },
     { k: 'DISTANCE', v: d0 != null ? fmtLen(d0).replace(/ \(.*\)$/, '') : '—', sub: sel?.mics.length === 2 && guides[1] ? `B ${fmtLen(guides[1].distance).replace(/ \(.*\)$/, '')}` : undefined, flex: 1.1 },
   ];

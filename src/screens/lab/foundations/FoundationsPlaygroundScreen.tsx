@@ -47,6 +47,7 @@ import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngi
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
 import { ReviewLabEnd } from '../kit/ReviewLabEnd';
+import { useLabDone } from '../../../features/lab/labCompletion';
 import { CheckQuestion } from './bits';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
@@ -66,10 +67,10 @@ import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
 
 /** The playground's rack: first-visit bezel captions, and the sound-off line
  *  (lab fix round 2026-11-14, phase 2). */
-const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true });
+const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true, modelNotes: true, drawingPlaceholder: true });
 import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
-import { ConceptBadge, DragSlider, LevelMeterBar, TracerCaption, VizUnavailableCard } from './bits';
+import { ConceptBadge, DragSlider, LevelMeterBar, PlainModelNote, TracerCaption, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
@@ -150,6 +151,9 @@ function recipe(kind: WaveKind, keep: number, phaseDeg: number, inverted: boolea
 
 export function FoundationsPlaygroundScreen() {
   const insets = useSafeAreaInsets();
+  // Phase 3, "done = work done": the review mark waits for the check.
+  const [checkPassed, setCheckPassed] = useState(false);
+  const reviewed = useLabDone('af_sound_playground');
   const { height: winH } = useWindowDimensions();
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
@@ -736,10 +740,7 @@ export function FoundationsPlaygroundScreen() {
         {/* Full honesty disclosures, verbatim (the stage badge is the condensed
             one-liner — these are the complete texts). */}
         <ConceptBadge />
-        <Text style={styles.badge}>
-          ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do the
-          real thing)
-        </Text>
+        <PlainModelNote>The waveform and spectrum are drawn from your settings, not measured: the measurement tools do the real thing.</PlainModelNote>
 
         {/* Retrieval BEFORE the self-report (learning pass 2026-08-31): one
             combined-context check — deliberately the null-result experiment,
@@ -761,12 +762,26 @@ export function FoundationsPlaygroundScreen() {
               'A pure sine has ONE partial (one frequency ingredient). A low-pass at 2 kHz cuts mostly above 2 kHz — and your sine sits far below it. Filters change a sound only when something lives near or past the cutoff. Try the same filter on a SAW and count what survives.',
             wrongHint: 'Look at the spectrum pane: how many lines does a sine have, and where is yours relative to 2 kHz?',
           }}
+          onSolved={() => setCheckPassed(true)}
         />
 
-        {/* R6c: sandbox — no modules/challenge; explicit review records credit. */}
-        <LabReviewButton labKey="af_sound_playground" />
+        {/* R6c: sandbox — no modules/challenge; explicit review records credit.
+            "DONE = WORK DONE" (owner's decision 1, 2026-11-14): MARK AS REVIEWED
+            appears once CHECK YOURSELF is answered right (or when the lab is
+            already reviewed: stored credit is never hidden). */}
+        {checkPassed || reviewed ? (
+          <LabReviewButton labKey="af_sound_playground" />
+        ) : (
+          <Text style={styles.caption}>Answer CHECK YOURSELF right and MARK AS REVIEWED appears here.</Text>
+        )}
         {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14, #21). */}
-        <ReviewLabEnd labKey="af_sound_playground" labTitle="Sound Playground" onOpen={stop} />
+        <ReviewLabEnd
+          labKey="af_sound_playground"
+          labTitle="Sound Playground"
+          onOpen={stop}
+          stepLabel={checkPassed ? 'Press MARK AS REVIEWED (your check is passed)' : 'Answer CHECK YOURSELF right, then press MARK AS REVIEWED'}
+          stepDetail="Both are at the foot of the playground, under TRY THIS."
+        />
       </RackUnit>
 
       <GuidedLessonSheet

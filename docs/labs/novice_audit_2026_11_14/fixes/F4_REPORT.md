@@ -137,3 +137,57 @@ Notes for other owners (not needs from me):
 | Re-check | Mastering cards I had left unbalanced in phase 2 | **Saved answers are keyed by CARD ID, not by option text or index.** `masteringProgress.ts:33-35` `answers: Record<string, boolean>` (scenario id → "right on the first pick"), and the card rebuilds a recorded right answer from the CURRENT text: `mastering/kit.tsx` ScenarioCard, `const picked = pickedHere ?? (recorded === true ? s.correct : null)`. So rewording is safe, and my phase-2 reason for leaving them was wrong. | Balanced. Measured precisely, only 5 cards were over 1.3 (t4, t7, e1, w1, w5); the six I named in phase 2 were within 1.3. `masteringContent.ts`: the triage option "More information from the client" is now "Ask the client first" (t4, t7, e1 and TRIAGE_OPTIONS); w1's and w5's wrong options are fuller. `masteringWhy.ts` keys, the two guide lines, and the Module 1 and 8 intros follow. `screenGuide_mastering` pin updated with the owner's words. Docs: only the audit file quotes the old label. | F4 "Mastering … at most 1.3×" + "a recorded answer is keyed by card id" | not seen (Mastering not reopened this round) | FIXED |
 
 Checks: 2,269 tests across every suite that names the mixing or mastering files pass, 0 fail. Every changed file passes the TypeScript parser. `curl` of the 8142 bundle returned 200. No tsc.
+
+
+---
+
+# Phase 3 (2026-11-14): the owner's decisions, F4's labs
+
+**Summary:** 9 done, 0 held, 2 shared needs (strip noun, below). 50 F4 tests pass (15 new in phase 3), 3,002 of 3,007 in every suite naming my files. The 5 failures are other groups' files: Foundations nav lock, F6's howItCounts, the Cymatics module screen, Mic Selection, and a new loop in MikingRack. Every changed file passes the TypeScript parser, and the 8142 bundle returns 200. No tsc, no commits.
+
+| # | Decision → item | What I did (file) | Why | Test | Seen on screen |
+|---|---|---|---|---|---|
+| 1 | Done = work done: Mixing Guides counted a guide as read on NEXT › | `MixingGuideScreen.tsx`: `beforeAdvance` removed; **MARK AS READ is the one thing that counts a guide.** `howItCounts`, the reader and end guides (`mixingGuidesScreenGuides.ts`) and the hub card line all say "reach its end and tap MARK AS READ". Stored reads are untouched: `readRecord`/`readProgress` are unchanged, and nothing removes an id. | A reading guide has no check, so its work is reading it. MARK AS READ sits at the guide's foot, after the 13th section, so tapping it means the learner reached the end and says so. Counting by scroll position would credit a fast scroll; this is honest and already built. | F4 (2) + `screenGuide_mixingGuides` pins moved (owner's words) | not seen (preview did not load in my tab) |
+| 1 | Other F4 labs that credit on opening? | Checked: Mastering credits on answered decisions + the QC list; both mixing labs on goal chips; Pre/Post on every stage complete (`complete.ts`). None credits on opening. | — | — | — |
+| 2 | "Mixing guide 1 of 50" | Header subtitle is now "Mixing guide" (· read). | — | F4 | not seen |
+| 2 | Other N-of-total in my labs | Mastering M7 CONFIRMED "0 / 6" → "6 LEFT" / "✓ ALL" (bezel, tray key and the delivery-sheet drawing); M8 "3 of 8 match the key" → "5 lines to look at again" / "Every line matches the key"; M8 "0 of 9" → "9 lines left to check"; Advanced p2 "0/3 chosen" → "3 more to choose". Kept as VALUES, not progress: Mastering STAGE 4 / 5 and FLOW 1 / 7 (slider positions, like FRET 3 of 12), STAGES 0 / 5 (slots in the chain), the Production readiness score "/ 100" (a score, not a count of done items), and the packet table's "Row n of m" (a screen-reader table position). | Owner's rule: a count of what is LEFT stays. | F4 (3) + `masteringToddlerPass2` pin (owner's words) | not seen |
+| 2/3 | "MODULE n / 50" and "MODULE n / 16" on the shared strip; one progress word per lab | Not my file: the strip is `kit/labNav.ts` (S2). See SHARED NEEDS 1 and 2. Each of my labs already uses one word everywhere else: **page** (both mixing labs), **guide** (Mixing Guides), **module · step** (Mastering), **stage** (Pre/Post). | — | — | — |
+| 3 | Plain one-line model note instead of all-caps badges | Mastering: `modules/shared.tsx` `PLAIN_MODEL_NOTE` (one sentence per badge, ≤ 87 characters); `MasteringRack.tsx` passes `modelNote` (S3), so every rack step shows it. Mixing labs: no rack, no badge. Mixing Guides, Production: no model badge. | — | F4 (every badge has a note; one sentence, no all-caps word) | not seen |
+| 3 | "drawing…" placeholder | Automatic on the first frame (S3). Mastering's LISTEN glass already shows a "STOPPED · PRESS ▶" line, never an empty box; the mixing labs draw synchronously in SVG. | — | — | — |
+| 3 | LEARN-first, tray ⓘ | n/a: my labs are not LabShell rack labs with LEARN tabs, and Mastering's trays have no `helpKey` lessons. | — | — | — |
+| 5 | Advanced Mixing pages 7, 8, 10, 11, 13: two lessons per page | **FOLDED, not split.** Each page's second lesson (THE ADVANCED TOOLKIT ×2, THE SET-DESIGN TOOLKIT, THE TOOLKIT, THE MOVES) now sits under a `GO DEEPER ▾` key (`mixing/kit.tsx` `GoDeeper`) below the page's main experiment. All content is kept, and the toolkit goal stays on each page. Guide lines name the fold. | Stored progress is keyed by page INDEX (`pagedProgress.ts`, `ape:mixing-adv:v1` `completed: number[]`). Credit is one server key per page (`trainingLabKeys.ts` MIXING_ADV_PAGE_IDS, 20 ids, used by the certificate requirements). A split would change every later index AND need new server keys: a server change in another group's file. The fold keeps every stored record meaning what it meant, with nothing to migrate. | F4: an OLD record `{completed: [6,7,9,10,12]}` still maps to the same five pages; 20 titles in the same order; 20 credit ids | not seen |
+| 5 | Mastering module 1 step 3 | The beginner core now leads: "What to listen for at matched level", a two-line how-to, and the MATCH-off volume warning (kept in view: it is about safe volume). The mechanics, the measured numbers, the TRUE PK note, the faceplate and the honesty notes fold under `HOW THIS COMPARISON WORKS · GO DEEPER ▾` (`mastering/kit.tsx` `GoDeeper`). All text is kept. | — | F4 (order + every passage still present) | not seen |
+| 5 | Pre-Production stage 1's 33 questions | `ProductionStageScreen.tsx`, for every stage of both labs: each section shows its **required** questions first, then folds its optional ones under `N MORE QUESTIONS · OPTIONAL · GO DEEPER ▾`. A fold opens by itself when one of its questions is already answered or marked not applicable, or when WHAT'S LEFT sent the learner to it (`focus`), so no answer or link is ever hidden. Stage 1 now opens on its 17 required questions. The schema, rules, readiness and packet are untouched (screen order only). | Stage 1 is named, but every stage is a long phone form (G4), and one rule for all stages keeps both labs alike. | F4 (2) | not seen |
+
+## SHARED NEEDS (phase 3)
+
+1. **`src/screens/lab/kit/labNav.ts` (S2), the strip noun.** The strip always reads "MODULE n / N" (`labNav.ts:32-34`, `NavNoun = 'MODULE' | 'STEP'`). That is N-of-total, and the wrong word in my labs.
+   - Proposed: an optional `noun` on `useLabNav` options ('PAGE' | 'GUIDE' | 'MODULE', default 'MODULE').
+   - The strip would print the noun and the unit's own number or name, with no total: "PAGE 7 ▾", "GUIDE · POP ▾", "MODULE 3 · STEP 2 ▾".
+   - I would then pass `noun: 'PAGE'` (Beginning and Advanced Mixing, via PagedLab) and `'GUIDE'` (Mixing Guides).
+2. **`src/screens/lab/kit/PagedLab.tsx` (S2):** pass that `noun` through from a PagedLab prop (the mixing labs already pass `noun="page"` to LabEndScreen through PagedLab).
+
+## Not checked (phase 3)
+
+- On screen: the preview did not finish loading in my tab within about 40 s (the bundle was rebuilding under many agents' edits). Every phase 3 item is "not seen on screen", for the checker round. The bundle URL itself returned 200 before and after.
+
+
+## Phase 3 · S2 noun API adopted (2026-11-14)
+
+- Both mixing labs: `<PagedLab … unitNoun="page">`, so the strip, CONTENTS and the end screen say PAGE, as every guide and goal line already does (`beginningMixingScreenGuides.ts:601` "HOW A PAGE COUNTS" now matches). Every mixing page is already declared `manualDone: true` (S2 ratchet: mixing 0).
+- Mixing Guides: wrapped once in `<LabNounProvider value="guide">`; the strip shows the style name (`posLabel`, e.g. "GUIDE · POP") with no total. The end screen's `noun="guide"` agrees, so it stays.
+- Mastering: "module" (the default) on the strip and the end screen; no `noun` prop to drop.
+- This closes my phase-3 SHARED NEEDS 1 and 2.
+- Tests: F4 plus screenGuide mixing-beg / mixing-adv / mastering / mixingGuides and mixingHandsOnCredit: 337 / 337 pass. Parse-check clean; the bundle returns 200. Not seen on screen.
+
+
+## Checker K2 fixes (2026-11-14)
+
+| K2 finding | Fix | Test | Seen on screen |
+|---|---|---|---|
+| Pre-Production: FOLD THE OPTIONAL QUESTIONS did nothing once an optional question was answered | `ProductionStageScreen.tsx`: `foldChoice[section] ?? autoOpen`. The automatic opening (an answered or N/A optional question, or WHAT'S LEFT focus) is only the starting state; the learner's tap decides after that. | F4 | not seen (production labs have no preview route) |
+| "·  required" double space | `FieldRow.tsx:55` → " · required" | F4 | not seen |
+| Advanced p8 (and 7, 10, 11, 13): the check draws on the folded list | `mixing/kit.tsx` `GoDeeper`: `openWhen` opens the fold by itself once the page's first goal (its experiment) is met, with sound or by the silent path. While closed it says "The check below draws on this list; it opens by itself once the experiment above is done." After that the learner's taps decide. | F4 | YES, tab fronted. p8: the closed fold showed the note; ▶ NO DUCK → KEEP SOUND OFF → ▶ KICK DUCKS BASS ticked "✓ Hear the kick duck the bass" and the fold opened (FOLD ▴, Serial compression listed). |
+| Mastering model note said "your phone's uncalibrated output" in the browser too | "this device's uncalibrated output" in `modules/shared.tsx`, the M1 S3 Honesty point, and both mixing labs' accuracy notes | F4 | not seen |
+
+Tests: F4 + screenGuide mixing-adv / mastering / preprod / postprod, masteringLabStructure, productionEngine and every FieldRow suite: 814 / 814 pass. Parse-check clean; the bundle returns 200.

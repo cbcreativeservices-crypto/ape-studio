@@ -66,7 +66,7 @@ function TonbakSound({ lesson, answers, onAnswered, onInteractive, interactiveDo
   const reached = st.shown >= n;
 
   const strikeBezel: BezelItem[] = [
-    { k: 'EVENT', v: `${st.shown} / ${n}`, flex: 0.8 },
+    { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },
     { k: 'HEAD', v: st.shown >= 2 ? 'MOVING' : 'AT REST', flex: 1.1 },
     { k: 'AIR INSIDE', v: st.shown >= 3 ? 'MOVING' : '—', flex: 1.1 },
     { k: 'SOUND OUT', v: st.shown >= 4 ? 'HEAD + END' : '—', flex: 1.2 },

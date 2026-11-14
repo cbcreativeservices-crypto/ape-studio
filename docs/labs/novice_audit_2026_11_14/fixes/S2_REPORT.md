@@ -140,3 +140,50 @@ Tests: labFixes_20261114_S2, understandingChecks_20261013, screenGuide_micselect
 | HD-1 | At 320 wide a long title word broke inside the word (Cymatics "MEMBR / ANE & …"; also HARMONOGRAPH) | LabNavBar.tsx styles (before): `header` with no wrap and `titleBlock: { flexShrink: 1, flexGrow: 1 }`, so the right-hand keys kept their width and squeezed the title | Applied F8's change (`header` flexWrap 'wrap'; `titleBlock` flexBasis 0; `headerRight` marginLeft 'auto'), with one correction. F8's fixed `minWidth: 110` was not enough: measured at 320, HARMONOGRAPH (126 px in Oswald SemiBold 16 / 1.2 tracking) still broke as "HARMONOGRAP / H", because 123 px was left for the title and the keys stayed on row 1. The floor is now per title: `titleMinWidth(title)` = longest word × 10.7 px, clamped 80–128. A short title (GATE LAB) keeps one row even at 320; a long word sends the keys to a second, right-aligned row. Words measured: HARMONOGRAPH 126, UNDERSTANDING 123, DIRECTIONALITY 121, FUNDAMENTALS 114, LOUDSPEAKER 105, OSCILLATOR 90 | labFixes_20261114_S2 "shared lab header…" (2 tests). The 41 files that read LabNavBar: 1592 of 1592 pass | Yes, measured in the 8142 preview (element boxes and the title word's line boxes), each at 320 and 390: **Membrane** 390 one row (title 131 wide, keys at x 175), 320 keys on row 2 and the title on one line. **Harmonograph** 390 one row (title 193), 320 keys on row 2 and HARMONOGRAPH on one line (126). **Gate** 390 one row; 320 one row (title 123 ≥ floor 80). **Oscillator** 390 one row; 320 one row, OSCILLATOR whole (90 ≤ 123). Nothing overlaps; at 390 every box sits where it did before | FIXED |
 
 Not checked: a phone (the rule uses the bundled Oswald font, the same on iOS and Android); labs whose titles were not opened.
+
+## Phase 3 (owner's decisions 1, 2, 3; PHASE3_BRIEF.md). API: SHARED_API.md "Phase 3 · S2"
+
+| # | Decision / item | Verified in code (before) | Fix | Test | Status |
+|---|---|---|---|---|---|
+| P3-1 | **2 · No "N of total" in the shared strip** | kit/labNav.ts `navView`: pos `${i + 1} / ${count}` ("MODULE / 3 / 8"), step mode `${sub.i + 1} / ${sub.count}`, screen-reader "Module 3 of 8", "before module 1 of 8", "step 2 of 4" | The strip reads MODULE 3 / MODULE 3 · STEP 2. Screen-reader labels drop "of N" too. The rest of the kit has no other n-of-N: the end screen counts only what is LEFT ("3 modules not done yet") and what is done ("✓ 5 DONE"), and both stay | labFixes_20261114_S2 "Phase 3 · decision 2" + labNav.test, meterLabWaterfallNav updated (owner's words quoted) | FIXED |
+| P3-2 | **3 · One unit noun per lab, passed once** | The strip always said MODULE, while PagedLab's end screen said "page" (noun="page", "first page", "page check marks", "credited pages") and CONTENTS rows were spoken "Module n" | New `UnitNoun` = module / lesson / chapter / step (labNav.ts). `relabelView(view, noun)` puts the lab's noun into every word the strip says. `LabNounProvider` / `useLabNoun` (LabNavBar.tsx) feed the strip, CONTENTS and LabEndScreen (a host's own `noun` prop still wins). PagedLab `unitNoun` (default 'module') reaches the provider, the end screen, HOW A … COUNTS (`pageReadRule(noun)`, `pageTaskRule(noun)`), the START OVER confirm and `endNote(…, noun)`. ⚠ With no `unitNoun`, PagedLab end screens now say "modules", matching the strip, where they said "pages" | "Phase 3 · decision 3" + labEndKit_d41k, navShellNightPass2, pagedLabCheckPage, mixingHandsOnCredit, screenGuide_{cable, djsystems, envelope, mastering, mixing-adv, mixing-beg, patchbay, smartprocessors, speech} pins updated (owner's words quoted) | FIXED (labs choose their noun in phase 3) |
+| P3-3 | **1 · "Done = work done" in PagedLab** | PagedLab never credits on OPENING: a CONTENTS jump (`goTo`) marks nothing. NEXT / FINISH marks a page unless it is `manualDone` (`beforeAdvance`, PagedLab.tsx ~608). So a page with a goal that is NOT declared `manualDone` would be credited on NEXT without its goal | PageDef `reading?: true` declares a page with no goal (reading it through is its work); a page with a goal or check is `manualDone` and calls `ctx.markDone()` only when it is met. Undeclared pages keep today's NEXT behavior, so no lab becomes impossible to complete and nothing earned is touched. A shrink-only ratchet lists the undeclared pages per lab. HOW A … COUNTS now says "…once that goal or check is met" | "Phase 3 · decision 1" (8 per-lab ratchet tests) | FIXED (kit); labs declare in phase 3 |
+
+**Undeclared PagedLab pages, the ratchet baseline** (pages that are neither `manualDone: true` nor `reading: true`):
+- Envelope 6 (all but Check Yourself)
+- Speech 10
+- De-Esser 9
+- Patchbay 3 ("Signal falls downhill", "One pair, two pictures", "The four questions, answered")
+- Connector Selection, Mixing (both), DJ and Game Audio: 0, every page already marks itself.
+
+Each lab agent declares its pages. A reading page gets `reading: true`. A page with a goal gets `manualDone: true`, and must call `ctx.markDone()` when the goal is met: that is where "credit on NEXT without the goal" would stop.
+
+**SHARED NEEDS (phase 3), for the lab agents:**
+1. **Every PagedLab lab** (Envelope, Speech, De-Esser, Connector Selection, Patchbay, Beginning and Advanced Mixing, DJ, Game Audio): pass `unitNoun` once, or accept "module". Then change your guides and copy that say "page" to the same noun. Known guide lines quoting "pages":
+   - envelopeScreenGuides ("6 pages plus the check");
+   - beginningMixingScreenGuides:601 ("Each page still to do…");
+   - the speech, DJ, patchbay and game-audio end guides.
+   Today's end screen says "modules" where those guides say "pages".
+2. **Labs that use `useLabNav` + `<LabNavBar>` themselves** (Foundations, Mic Principles, Speaker Coverage, Wave, Digital, Gain, Meter, EQ Lab, Cymatics, Amp, Tuning, Ear Training, Mic Selection, Mastering…): wrap the lab once in `<LabNounProvider value="…">` if your unit is not a module, and drop any `noun="…"` prop on `<LabEndScreen>` that disagrees.
+3. **Envelope, Speech, De-Esser, Patchbay:** declare each page `reading: true` or `manualDone: true`, then lower your number in the S2 test's BASELINE.
+
+Seen on screen: see below.
+
+**Phase 3, additions after the coordinator's notes:**
+- **Nouns:** `UnitNoun` now also takes `'page'` (Game Audio, De-Esser, both Mixing labs), `'screen'` (DJ Systems), `'guide'` (Mixing Guides) and `'stage'` (Production labs). This answers F4's shared need.
+- **`posLabel`:** new on `<LabNavBar>`. The readout's lower line shows a name instead of the number (GUIDE over POP); it is ignored on the intro and the end screen.
+- **Not on useLabNav:** it is on the do-not-touch list, so the noun goes in through `LabNounProvider` or PagedLab's `unitNoun`.
+- **Game Audio test pin:** moved to index 21 after F3's split, with the owner's decision 5 quoted ("Split a page that holds two lessons into two pages").
+
+**The exact prop:**
+- PagedLab labs add `unitNoun="page"` (or `"screen"` / `"lesson"` / `"chapter"` / `"step"` / `"guide"` / `"stage"`) to `<PagedLab …>`.
+- Labs with their own `useLabNav` wrap the screen in `<LabNounProvider value="…">`.
+
+**Tests:** labFixes_20261114_S2 and labNav pass 147 of 147. Across the 102 files that read the kit, 14 failures remain, all in host files other agents are editing:
+- Foundations, Mic Selection, Mic Principles, Wave: useLabNav call pins and F5's own tests;
+- Ear Training: "‹ BACK" and "Level 2 of 5";
+- Tuning ch13 and the S1 ScreenGuide pin.
+
+**Seen on screen: NOT SEEN.** Three tries with one tab each. The 8142 bundle (78 MB) did not finish loading within about 2 minutes, while other agents' edits forced rebuilds; one try showed TransformErrors in meter/modMeterC.tsx and ProductionStageScreen.tsx (other agents' files in mid-edit). Each tab was closed. For the checker round:
+- Envelope: the strip reads MODULE 1, and CONTENTS → WHAT'S LEFT says "… modules … not done yet" with HOW A MODULE COUNTS.
+- Any LabNavBar lab: the strip shows no "/ N".

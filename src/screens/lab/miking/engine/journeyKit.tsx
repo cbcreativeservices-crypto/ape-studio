@@ -138,7 +138,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
     const gradedP = answeredP === items.length ? gradeQuickCheck(items, practice) : null;
     return (
       <View style={{ gap: 10 }}>
-        <Text style={styles.note}>{`QUICK CHECK · PRACTICE · not recorded. Your first try (${res ? `${res.right} of ${res.total}` : 'on record'}) is the one that counts.`}</Text>
+        <Text style={styles.note}>{`QUICK CHECK · PRACTICE · not recorded. Your first try (${res ? `${res.right} right` : 'on record'}) is the one that counts.`}</Text>
         {items.map((it, i) => (
           <QuickItem
             key={it.id}
@@ -153,7 +153,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
         ))}
         {gradedP ? (
           <View style={[styles.result, { borderColor: colors.hairline }]}>
-            <Text style={[styles.resultHead, { color: colors.textSecondary }]}>{`PRACTICE · ${gradedP.right} OF ${gradedP.total}`}</Text>
+            <Text style={[styles.resultHead, { color: colors.textSecondary }]}>{`PRACTICE · ${gradedP.right} RIGHT · ${gradedP.total - gradedP.right} MISSED`}</Text>
             <Text style={styles.resultText}>Practice only — it does not change your first try or what it opened.</Text>
             <View style={styles.row}>
               <Go label="PRACTICE AGAIN" onPress={() => setPractice({})} />
@@ -161,7 +161,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
             </View>
           </View>
         ) : (
-          <Text style={styles.small}>{`${answeredP} of ${items.length} answered · practice.`}</Text>
+          <Text style={styles.small}>{`${items.length - answeredP} still to answer · practice.`}</Text>
         )}
       </View>
     );
@@ -180,7 +180,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
   const graded = answered === items.length ? res ?? gradeQuickCheck(items, picks) : null;
   return (
     <View style={{ gap: 10 }}>
-      <Text style={styles.note}>{`QUICK CHECK · ${items.length} questions on the first two modules · your FIRST TRY is the one that counts · to pass: ${QUICK_CHECK_PASS} of ${items.length}, with the safety question right. It opens the activities; it does not credit any module.`}</Text>
+      <Text style={styles.note}>{`QUICK CHECK · ${items.length} questions on the first two modules · your FIRST TRY is the one that counts · to pass: at most ${items.length - QUICK_CHECK_PASS} missed, with the safety question right. It opens the activities; it does not credit any module.`}</Text>
       {items.map((it, i) => (
         <QuickItem
           key={it.id}
@@ -200,7 +200,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
           }}
         />
       ))}
-      {graded ? <QuickResult res={graded} journey={journey} /> : <Text style={styles.small}>{`${answered} of ${items.length} answered${answered > 0 ? ' · this is your first try — leaving this module keeps your answers' : ''}.`}</Text>}
+      {graded ? <QuickResult res={graded} journey={journey} /> : <Text style={styles.small}>{`${items.length - answered} still to answer${answered > 0 ? ' · this is your first try — leaving this module keeps your answers' : ''}.`}</Text>}
     </View>
   );
 }
@@ -209,7 +209,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
   return (
     <View style={[styles.result, { borderColor: res.pass ? colors.green : colors.gold }]}>
       <Text style={[styles.resultHead, { color: res.pass ? colors.green : colors.gold }]}>
-        {`${before ? 'QUICK CHECK, FIRST TRY · ' : ''}${res.right} OF ${res.total} · ${res.pass ? 'PASSED' : 'NOT YET'}`}
+        {`${before ? 'QUICK CHECK, FIRST TRY · ' : ''}${res.right} RIGHT · ${res.total - res.right} MISSED · ${res.pass ? 'PASSED' : 'NOT YET'}`}
       </Text>
       {res.pass ? (
         <>

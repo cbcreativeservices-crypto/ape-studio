@@ -36,7 +36,7 @@ const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('be
 // OVER (PRACTICE) — credit is never shown as missing (toddler pass 2026-10-13).
 const PAGE_KEYS = PAGES.map((_, i) => mixingPageKeyAt('beg', i));
 const BEG_ACCURACY_DETAIL =
-  'In this lab: the peak and RMS meters and every level-matched comparison measure the lab’s own rendered mixes, played through your phone’s uncalibrated output. Learn the decisions here; judge a real mix on calibrated monitors and meters.';
+  'In this lab: the peak and RMS meters and every level-matched comparison measure the lab’s own rendered mixes, played through this device’s uncalibrated output. Learn the decisions here; judge a real mix on calibrated monitors and meters.';
 
 /**
  * WHAT'S LEFT, row by row (phase 2, 2026-11-14): each unfinished page names
@@ -85,5 +85,5 @@ export function BeginningMixingLabScreen() {
   // every screen"; the chip stays for labs with REAL-WORLD numbers): this
   // lab's meters read its own rendered mixes, so the chip is the ABOUT
   // variant, which shows only BEG_ACCURACY_DETAIL.
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={BEG_ACCURACY_DETAIL} accuracyVariant="about" pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  return <PagedLab labId="mixing-beg" unitNoun="page" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={BEG_ACCURACY_DETAIL} accuracyVariant="about" pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

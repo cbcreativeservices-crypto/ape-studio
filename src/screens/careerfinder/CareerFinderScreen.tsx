@@ -111,8 +111,9 @@ export function CareerFinderScreen() {
         </View>
       ) : inProgress ? (
         <View style={styles.actions}>
-          <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)} OF ${QUESTION_COUNT}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1} of ${QUESTION_COUNT}`} />
-          <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · {saving ? (guest ? 'kept until you close the app' : 'saved on this device') : 'not saved on this device'}{allAnswered(rec) ? ' · all answered' : ''}</Text>
+          {/* Owner decision 2026-11-14 ("Remove them"): progress never shows "N of total"; it says what is left. */}
+          <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1}`} />
+          <Text style={styles.note}>{allAnswered(rec) ? 'All answered' : `${QUESTION_COUNT - answered} to go`} · {saving ? (guest ? 'kept until you close the app' : 'saved on this device') : 'not saved on this device'}</Text>
         </View>
       ) : (
         <View style={styles.actions}>
