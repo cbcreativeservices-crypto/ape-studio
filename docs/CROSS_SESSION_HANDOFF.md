@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 00:19 · ccode · 35fa9911
+changed: must-do D60: owner accepts 320-wide hidden names; riser already sizable; phone update tomorrow [MD:D60]
+affects other side: nothing on the server. must-do list only: owner decisions on D60 [MD:D60].
+needs: nothing now; the Comp A rows for tr_game_audio / tr_stage_plot stay on D60 (f) [MD:D60].
+
+
 ### 2026-11-14 00:15 · ccode · 8aeb2847
 changed: Stage Plot round 3 (owner "build the remaining held items too"): sub-snake returns, L/R and split sidefills, box size labels, venue split choice; phone labels never over a neighbour, MOVE THEM INSIDE, round side-name choice, export preview fits; German timpani, narrow choir build, Bina 23B harmonium, singer count printed [MD:D60]
 affects other side: nothing on the server. App-only Stage Plot round 3 (remaining held items), not published; schema stays 2 [MD:D60].
