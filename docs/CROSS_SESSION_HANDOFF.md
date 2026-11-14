@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 13:19 · ccode · c8ab3629
+changed: docs: fix round report, final test counts
+affects other side: nothing (docs only).
+needs: [MD:D64] nothing new; the server zip is in the b2fb526e entry.
+
+
 ### 2026-11-14 13:19 · ccode · b2fb526e
 changed: Lab fix round 1: checker fixes, last per-lab fills, Career Finder round 3 [MD:D64] [MD:D63]
 affects other side: nothing on the server. App code only, not published.
