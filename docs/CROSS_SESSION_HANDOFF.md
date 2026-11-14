@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-13 21:26 · ccode · 3d76d0f4
+changed: Stage Plot: shaped-stage labels never collide (88 overlaps to 0); rectangles byte-identical; D60 (z5) built [MD:D60]
+affects other side: nothing on the server. App-only Stage Plot label placement on shaped stages, not published [MD:D60].
+needs: nothing now; the Comp A rows for tr_game_audio / tr_stage_plot stay on D60 (f) [MD:D60].
+
+
 ### 2026-11-13 19:50 · ccode · 8e84e3eb
 changed: Stage Plot: stage shapes (thrust, round, wings), numbered stage boxes with Box · socket, 22 new instrument symbols [MD:D60]
 affects other side: nothing on the server. App-only Stage Plot features (stage shapes, numbered stage boxes, 22 symbols), not published; saved plots move to schema 2 locally [MD:D60].
