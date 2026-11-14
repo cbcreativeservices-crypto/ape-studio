@@ -166,7 +166,10 @@ export function CableLabScreen() {
         <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
           <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
           <View style={styles.tagRow}>
-            <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
+            {/* The lesson's tag alone (beginner audit 2026-11-14): its own "n OF 12"
+                disagreed with the strip's "MODULE n / 11" (lesson 12 is the
+                what's-left end state, not a module). The strip is the one count. */}
+            <Text style={styles.tag}>{s.tag}</Text>
             {total > 0 && !unreadable ? (
               // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
               <Text style={styles.progressText} accessibilityLabel={`${cleared} lab ${cleared === 1 ? 'unit' : 'units'} cleared`}>{`${cleared} ${cleared === 1 ? 'UNIT' : 'UNITS'} CLEARED`}</Text>

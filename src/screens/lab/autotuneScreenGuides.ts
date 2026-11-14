@@ -108,7 +108,7 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
       'A ✓ replaces a card’s number once you get it right.',
     ],
     control: [
-      'Tap an answer. If it’s right, you see CORRECT and the reason. If not, you see NOT QUITE — TRY ANOTHER with the same explanation. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'Use the tabs under the title to go back to LEARN or EXPLORE at any time; a right answer stays right.',
     ],
     changes: [

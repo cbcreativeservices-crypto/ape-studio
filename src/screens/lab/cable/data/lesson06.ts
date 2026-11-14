@@ -176,11 +176,16 @@ export const L06_CHECKS: CheckSpec[] = [
     question: 'Two devices have matching ports and the cable clicks home at both ends. Is the connection proven to work?',
     options: [
       'Yes — matching connectors mean matching systems',
-      'No — the connector, the cable class, the protocol and the direction must all agree',
+      'No — cable class, protocol and direction must agree too',
       'Yes, as long as the cable itself is undamaged',
       'Only if both devices are professional equipment',
     ],
     correctIdx: 1,
+    why: {
+      0: 'A plug that fits proves only the shape. The devices may still speak different languages.',
+      2: 'An undamaged cable can still be the wrong class or speak the wrong protocol.',
+      3: 'Professional gear can use the same plug for completely different systems.',
+    },
     reveal:
       'Fitting is not proof. The same plug serves unrelated systems — Dante and office networking, ADAT and optical S/PDIF, Thunderbolt and basic USB — so the protocol, the cable’s capability and the direction must all agree before the link works.',
     wrongHint: 'Think of Dante vs office networking, or ADAT vs S/PDIF — same plug, different systems.',
@@ -189,11 +194,16 @@ export const L06_CHECKS: CheckSpec[] = [
     question: 'Two USB-C cables look identical from the outside. What can you safely conclude?',
     options: [
       'They have identical capabilities — USB-C is standardized',
-      'Nothing — they can differ in data speed, power rating and alternate-mode support',
+      'Nothing — speed, power and video support can all differ',
       'The thicker one is always the full-featured one',
       'If both can charge a phone, both will also carry data',
     ],
     correctIdx: 1,
+    why: {
+      0: 'The connector is standard; the cables behind it are not. Look at the cable classes.',
+      2: 'Thickness can hint at power wiring, but it proves neither data speed nor video support.',
+      3: 'Some charge-only cables have no data wires at all.',
+    },
     reveal:
       'Behind identical oval plugs, one cable may hold only the USB 2.0 pair and power conductors while another carries a full set of high-speed pairs and an electronic marker for higher current. The cable is a component with its own specification — check it, don’t assume it.',
     wrongHint: 'Charge-only and USB 2.0-only C-to-C cables are common — and they look exactly like full-featured ones.',
@@ -207,6 +217,11 @@ export const L06_CHECKS: CheckSpec[] = [
       'T568A is reserved for audio networks',
     ],
     correctIdx: 2,
+    why: {
+      0: 'Both wiring schemes are in the standard; neither is a defect on its own.',
+      1: 'Mixing the two schemes on one patch cable makes a crossover, which can fail on modern gear.',
+      3: 'The schemes are general network wiring, not tied to audio.',
+    },
     reveal:
       'T568A and T568B are equally valid. Mixing them on one cable swaps the send and receive pairs and builds a crossover — modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
     wrongHint: 'Neither scheme is “the wrong one.” The problem is consistency between the two ends.',
@@ -216,10 +231,15 @@ export const L06_CHECKS: CheckSpec[] = [
     options: [
       'The instrument’s audio, in digital form',
       'Audio and control data together',
-      'Control instructions only — which note, how hard, which knob moved',
+      'Control instructions only: which note, how hard, which knob',
       'Nothing until audio software opens the port',
     ],
     correctIdx: 2,
+    why: {
+      0: 'MIDI never carries the sound itself, in any form. Read the MIDI card again.',
+      1: 'There is no audio on a MIDI cable at all, alongside the data or otherwise.',
+      3: 'MIDI works between hardware with no computer involved.',
+    },
     reveal:
       'MIDI carries no live audio. It is a one-way stream of instructions flowing OUT→IN; the receiving instrument makes the sound through its own audio outputs.',
     wrongHint: 'Connect a MIDI OUT toward an amplifier and you get silence — what does that say about the cable’s contents?',

@@ -43,6 +43,7 @@ import { levelColor, levelColorForDb, rampColors } from '../../../features/tools
 // header's accuracy chip gives its spot to the ⓘ "this screen, explained" key.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { MIC_END_GUIDE, MIC_SCREEN_GUIDES, type MicSectionId } from './micSpeakerScreenGuides';
+import { notOpenedDetail, visitCounts } from '../foundations/endRows';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -51,7 +52,11 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from '../foundations/captionedRack';
+import { MIC_CAPTIONS } from '../foundations/bezelCaptions';
+
+/** Every section's rack with first-visit bezel captions (phase 2, 2026-11-14). */
+const RackUnit = captionedRack(MIC_CAPTIONS);
 import type { DockParam } from '../rack/rackTypes';
 import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../rack/stageAspect';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
@@ -532,6 +537,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
             'Behind the mic, in the null',
             'Anywhere — the mic cannot hear a wedge',
           ],
+          why: { 0: 'In front is where the mic hears best, so the wedge would feed straight back. Drag the speaker there and read PICKUP.', 2: 'Drag the speaker around: PICKUP changes with direction, so the mic hears a wedge almost everywhere.' },
           correctIdx: 1,
           reveal:
             'Cardioid’s null points straight behind the mic — that is where the wedge lives, which is why cardioid rules the stage. Cover the rear ports (HAND GRIP shows how) and that null disappears.',
@@ -739,6 +745,7 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
             'The balance flips — the room overtakes the direct sound',
             'The pitch drops as distance grows',
           ],
+          why: { 0: 'Watch the two bars: getting quieter is not all that changes. One bar overtakes the other.', 2: 'Distance does not change pitch. Watch the DIRECT and ROOM bars instead.' },
           correctIdx: 1,
           reveal:
             'Direct sound obeys the inverse-square law; the room’s reverberant level barely changes. Past the crossing point (the critical distance, ~12 in here) the room wins — and gain cannot fix it, because turning up brings the room up with it.',
@@ -770,9 +777,10 @@ const PROX_CHECK: CheckSpec = {
   question: 'Which microphone gets BASSIER as you move in close?',
   options: [
     'Any microphone — closeness always adds bass',
-    'Directional mics (cardioid, figure-8) — omnis do not have proximity effect',
-    'Only large-diaphragm mics',
+    'Directional mics only — omnis have no proximity effect',
+    'Only large-diaphragm studio mics',
   ],
+  why: { 0: 'Switch MIC to OMNI and watch the curve: does closeness still add bass?', 2: 'Diaphragm size is not the cause. Flip the pattern tray and watch which design keeps a flat curve.' },
   correctIdx: 1,
   reveal:
     'Proximity effect comes from the PRESSURE-GRADIENT design that makes a mic directional — the same rear ports that create the cardioid pattern create the up-close bass boost. An omni is a pure pressure mic: no ports, no gradient, no proximity effect.',
@@ -780,12 +788,14 @@ const PROX_CHECK: CheckSpec = {
 };
 
 function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
-  // Distance is a continuous control (owner 2026-08-05): ride the DISTANCE
-  // lane to bring the mic in toward the mouth and watch the low-shelf grow.
-  // d01 = 0 far (12 in) → 1 close (1 in).
-  const [d01, setD01] = useState(0);
+  // Distance is a continuous control (owner 2026-08-05): slide DISTANCE to
+  // bring the mic in toward the mouth and watch the low-shelf grow.
+  // SAME DIRECTION AS MODULE 3 (lab fix round 2026-11-14, G1 module 4: here
+  // right moved the mic IN, in Module 3 right moved it OUT): d01 = 0 close
+  // (1 in) → 1 far (12 in), starting far, so right = farther in both.
+  const [d01, setD01] = useState(1);
   const [directional, setDirectional] = useState(true);
-  const inches = Math.round((12 - d01 * 11) * 10) / 10;
+  const inches = Math.round((1 + d01 * 11) * 10) / 10;
   const boostDb = proxBoostForInches(inches);
   const glass = useGlassSize();
 
@@ -993,6 +1003,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
             'The voice gets duller — the highs go before the level does',
             'Nothing, until they leave the pattern entirely',
           ],
+          why: { 0: 'Compare @100 Hz and @8 kHz at 60°: they do not drop by the same amount.', 2: 'At 60° both readouts already move. Watch @8 kHz as you turn the mic.' },
           correctIdx: 1,
           reveal:
             'High frequencies fall off faster off-axis than lows, so tone changes before level. That is why drifting singers sound muffled first — and why smooth off-axis response is a mark of a great microphone.',
@@ -1159,6 +1170,7 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
             'Through the floor and stand — vibration conducted through solids',
             'Electrical interference from the lighting rig',
           ],
+          why: { 0: 'The stage is quiet, so the air carries little. Watch INTO MIC as you switch mounts.', 2: 'Lights can hum, but they do not thump in step with footsteps. Watch the stand shake travel up.' },
           correctIdx: 1,
           reveal:
             'Vibration travels through solids straight into the capsule — no air required. That is what the shock mount is for: the cradle shakes with the stand while the elastic soaks up the difference.',
@@ -1249,6 +1261,7 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
             'AB — its time differences become phase cancellation',
             'Mid-Side — the side mic cancels the mid',
           ],
+          why: { 0: 'XY capsules sit at one spot, so their sound arrives together. Read its IN MONO line.', 2: 'Mid-Side is built to fold down: the side parts cancel and the mid stays. Read its IN MONO line.' },
           correctIdx: 1,
           reveal:
             'AB makes stereo from TIME differences, and summed to one speaker those become comb filtering — the sound goes hollow and phasey. XY differs only in level, so it folds down clean; Mid-Side collapses to the MID mic alone, which is why it is the one-take safety choice.',
@@ -1265,10 +1278,11 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
 const CUP_CHECK: CheckSpec = {
   question: 'Cupping a cardioid mic’s grille makes feedback MORE likely because…',
   options: [
-    'The hand reflects sound back into the mic',
-    'Blocking the rear ports collapses the pattern toward OMNI — the null aimed at the monitor disappears',
-    'It boosts the microphone’s output level',
+    'The hand reflects the monitor’s sound back into the mic',
+    'It turns the pattern toward omni, so the null facing the monitor is gone',
+    'It boosts the microphone’s output level, so it runs hotter',
   ],
+  why: { 0: 'A hand is too small and close to send much back. Watch the rear of the polar panel at FULL CUP.', 2: 'Output level is not the issue. Watch what happens to the null at the back of the pattern.' },
   correctIdx: 1,
   reveal:
     'The cardioid null is what lets the mic sit near a monitor wedge without howling. The rear ports CREATE that null — cover them and the mic hears in every direction (toward omni), the monitor pours straight in, and the engineer must pull the fader down. Cupped mic = quieter in the mix AND worse tone.',
@@ -1670,7 +1684,9 @@ export function MicPrinciplesLabScreen() {
         {ending ? (
           <LabEndScreen
             labTitle="Microphone Principles"
-            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+            labId="af_mic_principles"
+            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: notOpenedDetail(MIC_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
+            howItCounts={visitCounts('section')}
             cleared={banked}
             unreadable={progressUnreadable}
             mode="credit"

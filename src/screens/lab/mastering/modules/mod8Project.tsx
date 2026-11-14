@@ -126,8 +126,8 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
             badge: 'PLAN · fictional EP, loudness estimates',
             bezel: [
               { k: 'ORDER', v: seq.short, flex: 1.8 },
-              { k: 'GAP', v: crossfade ? 'XF' : `${gap.toFixed(1)} s`, tint: crossfade ? colors.cyan : colors.amber },
-              { k: 'MAX STEP', v: `${step.toFixed(1)} LU`, tint: step > 6 ? colors.amber : colors.green },
+              { k: 'GAP', caption: 'between songs', v: crossfade ? 'XF' : `${gap.toFixed(1)} s`, tint: crossfade ? colors.cyan : colors.amber },
+              { k: 'MAX STEP', caption: 'biggest jump', v: `${step.toFixed(1)} LU`, tint: step > 6 ? colors.amber : colors.green },
               { k: 'TOTAL', v: `${Math.floor(laid.totalSec / 60)}:${String(Math.round(laid.totalSec % 60)).padStart(2, '0')}` },
             ],
             params: [

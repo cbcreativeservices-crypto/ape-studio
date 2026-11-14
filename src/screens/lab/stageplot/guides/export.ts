@@ -11,7 +11,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_EXPORT: ScreenGuide = {
   intro: {
     learning: 'A packet is your stage plot, input list and monitor plan in one document. Every page comes from the same revision, and an open question is printed, not hidden.',
-    start: 'Read REVIEW and answer what you can. Choose the packet and the paper, look at PREVIEW, then press SHARE PDF or PRINT. The line under the button tells you what happened.',
+    start: 'Read REVIEW and answer what you can. Choose the packet and the paper, look at PREVIEW, then press SHARE PDF (DOWNLOAD PDF in a browser) or PRINT. The line under the button tells you what happened.',
   },
   seeing: [
     'The counts are worked out from your stage, inputs and monitors. You do not type them, so they cannot disagree with your lists.',

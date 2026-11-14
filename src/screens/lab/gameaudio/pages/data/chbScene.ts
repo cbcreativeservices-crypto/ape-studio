@@ -150,6 +150,12 @@ export function chbBeds(s: GaState): ChbBeds {
  *  nothing (the wall, the closed door, the edge of the scene). */
 export const CHB_P10_LOG: readonly GaLogKind[] = ['state', 'mix', 'failed', 'note'];
 
+/** Page 10's fourth dock key, which chooses the courtyard wind's file. It
+ *  was WIND FILE: nine letters in a sixth of a 390-wide dock were cut to
+ *  "WIND F…" (beginner audit 2026-11-14, G5 page 10). Six letters at most:
+ *  the longest key that page shows whole is SOUNDS. */
+export const P10_WIND_KEY = 'WIND';
+
 /** The courtyard bed that is playing the RAW CUT: when it started and how
  *  long one pass of its file is. Null while the prepared loop plays, or no
  *  courtyard bed plays. */

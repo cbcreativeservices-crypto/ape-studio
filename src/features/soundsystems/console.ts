@@ -348,11 +348,11 @@ export type WhichToolCase = {
 export const WHICH_TOOL: readonly WhichToolCase[] = [
   {
     id: 'drum-comp',
-    situation: 'The drummer’s eight microphones should be compressed together and ridden on one fader in the house mix.',
+    situation: 'The drummer’s eight microphones should be compressed together and controlled on one fader in the house mix.',
     correct: 'subgroup',
-    why: 'A subgroup SUMS the drum channels into one audio path — so one insert compresses them all and one fader rides them.',
+    why: 'A subgroup SUMS the drum channels into one audio path — so one insert compresses them all and one fader controls them.',
     wrong: {
-      dca: 'A DCA rides the level, but no audio passes through it — there is nothing to insert a compressor on.',
+      dca: 'A DCA sets the level, but no audio passes through it — there is nothing to insert a compressor on.',
       aux: 'An aux makes a copy; the drums would still reach the main mix by their own channels, uncompressed.',
     },
   },

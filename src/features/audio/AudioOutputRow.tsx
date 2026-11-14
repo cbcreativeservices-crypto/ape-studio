@@ -34,7 +34,7 @@ import {
   noteAudioActivity,
   useAudioOutputEnabled,
 } from './audioOutputStore';
-import { isAcknowledged } from './soundSafetyAck';
+import { isAcknowledged, markSoundAsk } from './soundSafetyAck';
 import { panicMuteAudio } from './panicMute';
 
 // Idle auto-mute window in minutes, derived from the store constant so this hint
@@ -100,6 +100,11 @@ export function AudioOutputRow() {
           }
           // Through the gate, never around it — the gate owns the first-use
           // safety warning, and it is the only thing entitled to enable sound.
+          // This 5-second hold is the DELIBERATE "turn sound on" act: it still
+          // asks after a KEEP SOUND OFF earlier this session (owner 2026-11-14,
+          // "Once per session (Recommended)": every other request is answered
+          // "sound off" until the app is closed).
+          markSoundAsk('deliberate');
           void requestAudioOutput().then((ok) => {
             if (ok) noteAudioActivity();
           });

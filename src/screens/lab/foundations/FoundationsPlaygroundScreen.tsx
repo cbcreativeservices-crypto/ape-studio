@@ -61,7 +61,12 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { PLAYGROUND_SCREEN_GUIDE } from './foundationsScreenGuides';
 import { LabChip } from '../LabShell';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from './captionedRack';
+import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
+
+/** The playground's rack: first-visit bezel captions, and the sound-off line
+ *  (lab fix round 2026-11-14, phase 2). */
+const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true });
 import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ConceptBadge, DragSlider, LevelMeterBar, TracerCaption, VizUnavailableCard } from './bits';
@@ -376,7 +381,7 @@ export function FoundationsPlaygroundScreen() {
   const TRY_THIS: { when: 'wave' | 'noise' | 'sweep' | 'any'; text: string }[] = [
     { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
     { when: 'wave', text: 'LPF 500 Hz on a SAW — count the spectrum lines that should survive before you look.' },
-    { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Module 10 answers.' },
+    { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Foundations of Sound, Module 10 (Phase), answers.' },
     { when: 'wave', text: 'Double FREQ and watch the readouts: λ should halve. Does it?' },
     { when: 'noise', text: 'Step WHITE → PINK → BROWN and watch the spectrum tilt. Which end loses energy each step?' },
     { when: 'sweep', text: 'Listen for the moment the sweep passes the pitch of your speaking voice — then check where the level meter sits.' },
@@ -558,7 +563,7 @@ export function FoundationsPlaygroundScreen() {
           <Text style={styles.caption}>
             EQ shapes the drawings above; BALANCE moves the L–R strip under them. DELAY changes
             what you HEAR only — it is not drawn.
-            {!fxReady && engineReady ? ' (Update the app to hear these effects.)' : ''}
+            {!fxReady && engineReady ? ' (These effects do not play on this phone; EQ and BALANCE still show in the drawings.)' : ''}
           </Text>
         </View>
       ),
@@ -594,12 +599,13 @@ export function FoundationsPlaygroundScreen() {
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>FOUNDATIONS PLAYGROUND</Text>
+          {/* The Labs menu tile's name (G1: header and tile disagreed). */}
+          <Text style={styles.title}>SOUND PLAYGROUND</Text>
           {/* Was "Every control drives every view" — an overclaim: BALANCE and
               DELAY reach the audio but have no drawn twin (fix 2026-08-28). */}
           <Text style={styles.subtitle}>Drive the views, hear the change — experiment freely</Text>
         </View>
-        <ScreenGuideKey title="FOUNDATIONS PLAYGROUND" guide={PLAYGROUND_SCREEN_GUIDE} />
+        <ScreenGuideKey title="SOUND PLAYGROUND" guide={PLAYGROUND_SCREEN_GUIDE} />
       </View>
       </ScreenGuideHintAnchor>
 
@@ -659,8 +665,9 @@ export function FoundationsPlaygroundScreen() {
             SILENT with the PLAY key sitting far right looking disabled — and
             hearing the change is half this screen's premise. Never autoplay
             (speaker-safety rules); invite. */}
+        {/* Silent first step (G1): a sound-off learner can do this one. */}
         {engineReady && !everPlayed && !playing ? (
-          <Text style={styles.playNudge}>Press PLAY — you are looking at a sound. Hear every change you make.</Text>
+          <Text style={styles.playNudge}>Change anything below and watch all three views answer. Press PLAY to hear it too.</Text>
         ) : null}
 
         {/* TRY THIS — one prompt at a time; ↻ advances. The views themselves
@@ -696,12 +703,12 @@ export function FoundationsPlaygroundScreen() {
           <>
             <Text style={styles.caption}>
               Phase shifts and polarity flips change the DRAWING but are inaudible on a single
-              mono source — hold that thought for Module 10, where two copies collide.
+              mono source; they matter when two copies collide (Foundations of Sound, Module 10: Phase).
             </Text>
             {!additiveReady && engineReady ? (
               <Text style={styles.caption}>
-                This version of the app plays only a pure sine here. The drawings stay exact; update the
-                app to hear the full sound.
+                On this phone the sound here stays a pure sine; the drawings show the full shape
+                exactly.
               </Text>
             ) : null}
           </>
@@ -741,12 +748,14 @@ export function FoundationsPlaygroundScreen() {
             so recall precedes the credit press. */}
         <CheckQuestion
           spec={{
-            question: 'You low-pass a 295 Hz sine with the cutoff at 2 kHz. What changes?',
+            // 290 Hz: the page's own starting FREQ (G1: the check said 295 while the page showed 290).
+            question: 'A low-pass filter (LPF) cuts what lies above its cutoff. You low-pass a 290 Hz sine with the cutoff at 2 kHz. What changes?',
             options: [
               'The tone gets duller — highs are cut',
               'Nothing — its only partial sits far below the cutoff',
               'The pitch drops toward the cutoff',
             ],
+            why: { 0: 'A sine has one line in the SPECTRUM. Is any of it above 2 kHz to be cut?', 2: 'A filter changes how strong each part is, not where it sits. Watch the one line stay put.' },
             correctIdx: 1,
             reveal:
               'A pure sine has ONE partial (one frequency ingredient). A low-pass at 2 kHz cuts mostly above 2 kHz — and your sine sits far below it. Filters change a sound only when something lives near or past the cutoff. Try the same filter on a SAW and count what survives.',

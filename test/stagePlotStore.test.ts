@@ -502,18 +502,31 @@ describe('spIssueActions — each answer does what its words say', () => {
     assert.deepEqual(actions.spIssueSelection(about), { kind: 'extra', id: ex.id });
   });
 
-  it('a source not on the stage: "locate" only jumps, "off the stage on purpose" answers it', () => {
+  // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+  // required) fixes as you suggestted in the report." This answer's button reads PLACE ON THE STAGE
+  // (spIssueActionLabel), and the beginner audit found that such a button "does not place" (G5, Stage
+  // Plot): it only jumped, and the stage asked for a second press. It now places, in one edit, and
+  // opens the stage with the new symbol selected. (The test's title said "locate" only jumps.)
+  it('a source not on the stage: PLACE ON THE STAGE places it, "off the stage on purpose" answers it', () => {
     let p = four();
     const src = p.sources.find((s) => p.objects.some((o) => o.sourceId === s.id))!;
     p = model.spRemoveObjects(p, p.objects.filter((o) => o.sourceId === src.id || o.performerId === src.performerId).map((o) => o.id));
     const issue = review.spReview(p).find((x) => x.rule === 'source-unplaced' && x.target.id === src.id);
     assert.ok(issue, 'the source is now reported as not on the stage');
+    assert.equal(actions.spIssueActionLabel('locate', issue), 'PLACE ON THE STAGE');
     const ed = standIn(p);
     actions.runIssueAction(ed, issue, 'locate');
-    assert.deepEqual(ed.went, [['stage', { kind: 'source', id: src.id }]]);
-    assert.equal(ed.edits, 0);
-    actions.runIssueAction(ed, issue, 'mark-offstage');
+    assert.equal(ed.edits, 1, 'one edit, one undo step');
+    const drawn = ed.project.objects.find((o) => o.sourceId === src.id);
+    assert.ok(drawn, 'the source has its symbol');
+    assert.deepEqual(ed.went, [['stage', { kind: 'object', id: drawn.id }]]);
+    assert.equal(ed.project.inputs.length, p.inputs.length, 'a drawing only: no input is added');
     assert.equal(review.spReview(ed.project).some((x) => x.rule === 'source-unplaced' && x.target.id === src.id), false);
+    // the other answer, on the plot as it was: the source is off the stage on purpose
+    const ed2 = standIn(p);
+    actions.runIssueAction(ed2, issue, 'mark-offstage');
+    assert.equal(ed2.project.objects.some((o) => o.sourceId === src.id), false, 'nothing is drawn');
+    assert.equal(review.spReview(ed2.project).some((x) => x.rule === 'source-unplaced' && x.target.id === src.id), false);
   });
 
   it('a source with no input: acoustic or self-contained, in the band’s own words', () => {

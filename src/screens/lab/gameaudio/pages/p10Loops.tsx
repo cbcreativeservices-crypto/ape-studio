@@ -22,7 +22,9 @@
  * Four keys: FACING (the lane) and STEP walk the player for real; the SOUNDS
  * tray holds the scene, the door and the rule for when a bed starts (the
  * fault is that rule set wrong): two rows, so it fits the tray's box on a
- * phone (lead's decision 15); WIND FILE chooses the courtyard wind's file.
+ * phone (lead's decision 15); WIND chooses the courtyard wind's file (the
+ * key was WIND FILE: in this six-key dock it was cut to "WIND F…" at 390
+ * wide, beginner audit 2026-11-14, G5 page 10).
  *
  * Common mistake taught against: starting a new background loop on every
  * update while the player stays in one area.
@@ -39,7 +41,7 @@ import { gaDispatch, gaGet, gaNow, useGa } from '../model/gaStore';
 import { zoneAt } from '../model/gaWorld';
 import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen, useFreshProof, usePlantedFault } from './chbBits';
 import { gaPlantedWhere, type GaWhere } from '../bitsLogic';
-import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbJoinsPassed, chbLoops, chbRawBed, chbSteps } from './data/chbScene';
+import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, P10_WIND_KEY, chbBeds, chbJoinsPassed, chbLoops, chbRawBed, chbSteps } from './data/chbScene';
 import { G10 } from './guides/p10';
 import { facingKey, gaFact, stepKey, useSince } from './shared';
 
@@ -163,7 +165,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const windKey: DockParam = {
     kind: 'options',
     id: 'wind-file',
-    label: 'WIND FILE',
+    // four letters: nine did not fit a sixth of a 390-wide dock ("WIND F…")
+    label: P10_WIND_KEY,
     valueLabel: s.options.rawYardLoop ? 'RAW' : 'LOOP',
     valueA11y: s.options.rawYardLoop ? 'the courtyard wind is the raw cut, with no loop preparation' : 'the courtyard wind is the prepared loop',
     options: [
@@ -203,7 +206,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={6} only={CHB_P10_LOG} />
       </Step>
       <Step n={3}>
-        <Do>In the courtyard, set WIND FILE to RAW CUT. Under the picture, JUMPS counts each pass of the join. Then choose PREPARED LOOP and start the fault on the TROUBLESHOOT card.</Do>
+        <Do>In the courtyard, set WIND to RAW CUT. Under the picture, JUMPS counts each pass of the join. Then choose PREPARED LOOP and start the fault on the TROUBLESHOOT card.</Do>
         <P>The raw cut was not prepared as a loop. It ends in a gust and begins in a lull, so it jumps every 10 s.</P>
       </Step>
       <Step n={4}>

@@ -425,7 +425,9 @@ function BendCard({
           accessibilityRole="button"
           accessibilityLabel={`${ex.cableName}: ease the bend — larger radius`}
         >
-          <Text style={styles.nudgeText}>− EASE</Text>
+          {/* No − / + (beginner audit 2026-11-14): "− EASE" made the ×dia
+              number go UP. The words say what happens to the bend. */}
+          <Text style={styles.nudgeText}>◂ GENTLER</Text>
         </Pressable>
         <Pressable
           style={styles.nudgeBtn}
@@ -433,7 +435,7 @@ function BendCard({
           accessibilityRole="button"
           accessibilityLabel={`${ex.cableName}: tighten the bend — smaller radius`}
         >
-          <Text style={styles.nudgeText}>+ TIGHTEN</Text>
+          <Text style={styles.nudgeText}>TIGHTER ▸</Text>
         </Pressable>
         <Pressable
           style={[styles.checkBtn, done && styles.checkBtnDone]}

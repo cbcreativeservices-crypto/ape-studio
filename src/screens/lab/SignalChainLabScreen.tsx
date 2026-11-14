@@ -31,6 +31,7 @@ import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MOD
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { startFenced } from '../../features/audio/startFenced';
+import { NeedsSoundTag } from './rack/silentPath';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LessonContent } from '../../features/lab/guidedLessons';
 import { LabReviewButton } from '../../features/lab/LabReviewButton';
 import { ReviewLabEnd } from './kit/ReviewLabEnd';
@@ -188,7 +189,9 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
     lesson: 'The gate opens on every hit and slams shut between — watch its GR drop to zero on each click and return in the silence.',
   },
   {
-    key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1, hot: [1, 8],
+    // `short` keeps the button's own words (beginner audit 2026-11-14: SCENE
+    // read "SQUASH" while the button said HOT INTO LIMITER).
+    key: 'squash', label: 'HOT INTO LIMITER', short: 'HOT→LIMIT', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1, hot: [1, 8],
     lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order. On the phone speaker most of the boosted bass is filtered out at the source, before the chain, to protect the speaker, so both meters stay near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
   },
   {
@@ -217,6 +220,10 @@ const CHAIN_CHECKS: CheckSpec[] = [
       'It falls — EQ absorbs some of the level',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Each unit works on what the one before hands it. Run EQ BOOST → COMP and watch COMP’s GR.',
+      2: 'A boost adds level, so the compressor sees MORE, not less.',
+    },
     reveal:
       'The compressor only knows what it is fed. Boost bass first and the compressor clamps on every bass note — the EQ\u2019s tone change becomes a dynamics change too. That is why order matters.',
     wrongHint: 'Run EQ BOOST \u2192 COMP and watch the COMP meter as the chain lights.',
@@ -229,6 +236,10 @@ const CHAIN_CHECKS: CheckSpec[] = [
       'Last — the final safety ceiling before the output',
     ],
     correctIdx: 2,
+    why: {
+      0: 'Anything after the limiter could push past its ceiling again.',
+      1: 'The effects after it can still add level, so the ceiling would not hold.',
+    },
     reveal:
       'The limiter is the output ceiling: it must see everything — every boost, echo and tail — or something can still sneak past it. Anything after the limiter can exceed the ceiling it just enforced.',
     wrongHint: 'What could get louder AFTER the limiter if anything ran downstream of it?',
@@ -237,10 +248,14 @@ const CHAIN_CHECKS: CheckSpec[] = [
     question: 'DELAY \u2192 REVERB and REVERB \u2192 DELAY sound different. Why?',
     options: [
       'They don\u2019t — both add the same two effects',
-      'Delay\u2192reverb washes each echo into the space; reverb\u2192delay echoes the wash itself',
+      'Delay\u2192reverb blurs each echo; reverb\u2192delay repeats the wash',
       'Reverb always has to come last in any chain',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Same two units, different order: each one processes what the other hands it.',
+      2: 'Order is a creative choice; there is no rule that reverb always goes last.',
+    },
     reveal:
       'Each stage processes what the previous stage hands it. Echoes INTO the reverb = every repeat gets its own tail. Reverb INTO the delay = the whole wash repeats. Neither is wrong — it is a creative choice you make by ordering.',
     wrongHint: 'Run DELAY \u2192 REVERB on the click, then imagine feeding the wash back through the delay.',
@@ -266,6 +281,10 @@ export function SignalChainLabScreen() {
   useStopOnAudioMute(setRunning);
 
   const [genError, setGenError] = useState('');
+  // ▶ that cannot sound (sound kept off, or no audio on this device) used to
+  // do nothing visible (beginner audit 2026-11-14). It now says so on the
+  // OUT readout and in a note that gives the GR numbers the meters would show.
+  const [silent, setSilent] = useState<null | 'off' | 'device'>(null);
   const [gr, setGr] = useState({ comp: 0, gate: 0, limiter: 0 });
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
@@ -301,11 +320,19 @@ export function SignalChainLabScreen() {
   }, []);
 
   const start = useCallback(async () => {
-    if (!fxReady) return;
+    if (!fxReady) {
+      setSilent('device');
+      return;
+    }
     const gen = ++genRef.current;
     wantRef.current = true;
     const ok = await requestAudioOutput();
-    if (!ok || gen !== genRef.current) return;
+    if (gen !== genRef.current) return;
+    if (!ok) {
+      setSilent('off');
+      return;
+    }
+    setSilent(null);
     setGenError('');
     ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...SOURCES[sourceIdx].gen });
     pushChain(enabled);
@@ -436,7 +463,6 @@ export function SignalChainLabScreen() {
       headerAction={
         <HeaderPlayButton
           playing={running}
-          disabled={!fxReady}
           onPress={() => (running ? stop() : void start())}
           label={running ? 'Stop' : anyOn ? 'Play the chain' : 'Play (chain empty — dry)'}
         />
@@ -450,12 +476,15 @@ export function SignalChainLabScreen() {
         stage: {
           size: 'L', // the chain diagram IS the lab — earns the tall glass
           badge: 'MODULES RUN LAB-DEFAULT SETTINGS — GR METERS MEASURED, LIVE',
+          // Silent learner (phase 2, S3): the lab's own line, true here: every
+          // step can be read with sound off, and ▶ gives the GR numbers.
+          soundOffLine: 'Sound off? Every step still works: build the chain, then tap ▶ for the GR numbers each unit would show.',
           onGuide: () => openLesson('display'),
           bezel: [
-            { k: 'SRC', v: SOURCES[sourceIdx].label },
-            { k: 'CHAIN', v: `${chainCount}/9`, helpKey: 'module_toggle' },
-            { k: 'SCENE', v: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'), flex: 1.4, helpKey: 'chain_order' },
-            { k: 'OUT', v: running ? 'LIVE' : 'IDLE', helpKey: 'gain_staging' },
+            { k: 'SRC', v: SOURCES[sourceIdx].label, caption: 'test sound' },
+            { k: 'CHAIN', v: `${chainCount}/9`, helpKey: 'module_toggle', caption: 'units in' },
+            { k: 'SCENE', v: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'), flex: 1.4, helpKey: 'chain_order', caption: 'scenario' },
+            { k: 'OUT', v: running ? 'LIVE' : silent ? 'SILENT' : 'IDLE', tint: !running && silent ? '#ff8a7e' : undefined, helpKey: 'gain_staging', caption: 'playing?' },
           ],
           render: (w, h) => (
             <View style={[styles.stageInner, { height: h }]}>
@@ -550,6 +579,18 @@ export function SignalChainLabScreen() {
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
+      {silent && !running ? (
+        <Text style={styles.silentNote}>
+          {`${
+            silent === 'off'
+              ? 'Sound is off, so the chain is not playing and every GR meter stays at 0.'
+              : 'This device cannot play the chain, so every GR meter stays at 0.'
+          } Here is what they show when it plays: with SOURCE on SINE 220 and LIMIT alone, LIMIT turns the tone down by about 4 to 5 dB (GR −4.5). Put DIST in too and LIMIT’s GR jumps to about −16 dB, because DIST hands it a signal about 12 dB hotter.${
+            silent === 'off' ? ' To watch it live, tap ▶ again and turn sound on.' : ''
+          }`}
+        </Text>
+      ) : null}
+
       <Text style={styles.caption}>
         Modules run their lab-default teaching settings — each module’s full controls live in its
         own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes. One
@@ -561,7 +602,15 @@ export function SignalChainLabScreen() {
       </Text>
 
       {scenario ? (
-        <Text style={styles.scenarioLesson}>{scenario.lesson}</Text>
+        <Text style={styles.scenarioLesson}>
+          {scenario.lesson}
+          {/* DELAY → REVERB shows on no meter: only the ear tells the two
+              orders apart (phase 2, S3 needs-sound tag). */}
+          {scenario.key === 'delay_reverb' ? <NeedsSoundTag /> : null}
+          {scenario.key === 'delay_reverb'
+            ? ' Can’t listen now? Read the chain left to right: the echoes reach the reverb first, so each repeat gets its own tail.'
+            : null}
+        </Text>
       ) : anyOn ? (
         // A customized chain used to lose ALL interpretive text the moment the
         // learner made it theirs (learning pass 2026-08-31). NEW COPY — owner
@@ -586,7 +635,7 @@ export function SignalChainLabScreen() {
           <Text style={styles.caption}>
             {__DEV__
               ? 'Chain AUDIO needs the v6 engine build — this dev client predates the effects path. The diagram, scenarios, and lessons are fully live; install the next dev build to hear it.'
-              : 'This version of the app cannot play the chain audio yet. The diagram, scenarios and lessons work fully; update the app to hear it.'}
+              : 'The chain cannot play sound on this device. The diagram, the scenarios and the lessons all work, and ▶ tells you what the GR meters would read.'}
           </Text>
         )
       ) : null}
@@ -614,6 +663,7 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   scenarioLesson: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
+  silentNote: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.amber },
 
   // Stage: chain diagram on top, GR meter row anchored below on the same glass.
   stageInner: { padding: 10, gap: 6 },

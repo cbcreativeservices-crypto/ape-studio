@@ -31,7 +31,8 @@ const wm = (t: string) => index.enums.workModel[byTitle(t).wm];
 
 describe('mixing & mastering: no "bachelor’s degree common" default (F091130–F091155, F091175)', () => {
   for (const t of ['Mixing Engineer', 'Mastering Engineer', 'Vinyl Mastering Engineer', 'Sample-Library Recording Engineer']) {
-    it(t, () => assert.equal(prep(t), "Varies: portfolio/experience, certificate, associate, or bachelor's pathway"));
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): no serial comma (Pattern 10), via `renamePreparation` / `renameWorkModel` in the overrides. Words unchanged.
+    it(t, () => assert.equal(prep(t), "Varies: portfolio/experience, certificate, associate or bachelor's pathway"));
   }
   it('assistants get the hands-on line', () => assert.match(prep('Assistant Mastering Engineer'), /^Hands-on training/));
   it('music mix engineers are mostly freelance', () => {
@@ -58,7 +59,8 @@ describe('degree, licence and clinical facts', () => {
     for (const t of ['Audiovisual Conservator', 'Magnetic-Tape Conservator']) assert.match(prep(t), /^Graduate degree commonly expected/, t);
   });
   it('patent attorney: science background + registration exam, not "audio/music specialization" (F091986)', () => {
-    assert.match(prep('Audio Technology Patent Attorney'), /Science or engineering degree, law degree, bar admission, and the patent office registration exam/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): no serial comma (Pattern 10), via `renamePreparation` / `renameWorkModel` in the overrides. Words unchanged.
+    assert.match(prep('Audio Technology Patent Attorney'), /Science or engineering degree, law degree, bar admission and the patent office registration exam/);
     assert.doesNotMatch(prep('Audio Technology Patent Attorney'), /audio\/music specialization/);
   });
   it('school music directors: degree + state teaching license (F092585–F092587)', () => {
@@ -105,11 +107,12 @@ describe('work model', () => {
     assert.doesNotMatch(wm('Audio Product Owner'), /freelance/);
   });
   it('workbook work-model codes 0-3 never move (new strings are appended)', () => {
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): no serial comma (Pattern 10), via `renamePreparation` / `renameWorkModel` in the overrides. Words unchanged. The codes stay put; only the shown text of 1 and 3 changed.
     assert.deepEqual(index.enums.workModel.slice(0, 4), [
       'Staff roles common; consulting/contract options vary',
-      'Staff, freelance, or project-based depending on sector',
+      'Staff, freelance or project-based depending on sector',
       'Often freelance/contract; staff roles also exist',
-      'Project, venue, tour, or contract work common',
+      'Project, venue, tour or contract work common',
     ]);
   });
 });

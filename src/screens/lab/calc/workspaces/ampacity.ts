@@ -339,6 +339,11 @@ const FIELDS: Workspace['fields'] = [
     signed: true,
     integer: true,
     range: [-3, 18],
+    // D53 in words a learner can use (beginner audit 2026-11-14: "must be from
+    // -3 to 18" beside a title that says 14 AWG – 4/0 — no one has met a
+    // negative wire gauge).
+    rangeMsg:
+      'CONDUCTOR SIZE must be a gauge from 18 AWG up to 4/0. Type 1/0 as 0, 2/0 as −1, 3/0 as −2 and 4/0 as −3. For 250 kcmil and larger, use the kcmil function.',
     placeholder: '12',
     help: 'Copper building wire, 14 AWG to 4/0. Enter 1/0 as 0, 2/0 as −1, 3/0 as −2 and 4/0 as −3 (as in Voltage Drop). For 250 kcmil and up, use the kcmil function.',
   },

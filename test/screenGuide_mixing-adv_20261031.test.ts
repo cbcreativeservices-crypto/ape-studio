@@ -352,8 +352,9 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
-    assert.ok(ET.includes('It counts once the goal chips at the foot of that page are done'));
-    assert.match(ET, /NEXT and FINISH move you on, but they don’t mark the page done/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; lab fix round phase 2, F4): the rule is said once (HOW A PAGE COUNTS), each row has its own goals.
+    assert.ok(ET.includes('with its own goals. HOW A PAGE COUNTS says once how a page is credited'));
+    assert.match(ET, /with sound off, a ▶ tap counts as looked at. NEXT and FINISH don’t mark a page done/);
   });
   it('page 1 counts when opened with Beginning Mixing complete on this device, or once its three checks are passed', () => {
     const A = code(`${MX}/pagesAdvA.tsx`);

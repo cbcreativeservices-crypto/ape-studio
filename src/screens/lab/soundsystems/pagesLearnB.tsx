@@ -237,8 +237,8 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
         // prints in full above the plan now (owner 2026-09-29).
         bezel: [
           { k: 'SUBS', v: `${l.placed.length}`, flex: 0.6 },
-          { k: 'PATTERN', v: l.pattern, tint: '#6fa8ff', flex: 1.2 },
-          { k: 'RIG', v: l.rig, flex: 0.9 },
+          { k: 'PATTERN', caption: 'mic pickup', v: l.pattern, tint: '#6fa8ff', flex: 1.2 },
+          { k: 'RIG', caption: 'flown or stack', v: l.rig, flex: 0.9 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={l.name}>
@@ -247,7 +247,7 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride LAYOUT through the five arrangements and watch where the low end lands — and, for the two arrays, where it stops."
+      caption="Slide LAYOUT through the five arrangements and watch where the low end lands — and, for the two arrays, where it stops."
     >
       <ChapterTag n={5}>SUBWOOFER PLACEMENT AND ARRAYS</ChapterTag>
       <Body>{l.orient}</Body>
@@ -323,7 +323,7 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Tap a monitor on the stage, or ride MONITOR through the four of them."
+      caption="Tap a monitor on the stage, or slide MONITOR through the four of them."
       wellTop={
         <Card tone="math">
           <View style={styles.inspectHead}>
@@ -397,9 +397,9 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
         badge: 'FOH / MONITOR SPLIT — ILLUSTRATIVE',
         initialParam: 'gain',
         bezel: [
-          { k: 'SPLIT', v: mode === 'analog' ? 'ANALOG' : 'GAIN SHARE', tint: colors.cyanBright, flex: 1.3 },
-          { k: 'MON PREAMP', v: gainMove ? `+${gainDb} dB` : 'AS SET', flex: 1.1 },
-          { k: 'FOH HEARS', v: !gainMove ? 'AS SET' : mode === 'analog' ? 'UNCHANGED' : `TRIM −${gainDb}`, tint: colors.green, flex: 1.2 },
+          { k: 'SPLIT', caption: 'mic splitter', v: mode === 'analog' ? 'ANALOG' : 'GAIN SHARE', tint: colors.cyanBright, flex: 1.3 },
+          { k: 'MON PREAMP', caption: 'monitor gain', v: gainMove ? `+${gainDb} dB` : 'AS SET', flex: 1.1 },
+          { k: 'FOH HEARS', caption: 'the house desk', v: !gainMove ? 'AS SET' : mode === 'analog' ? 'UNCHANGED' : `TRIM −${gainDb}`, tint: colors.green, flex: 1.2 },
           { k: 'CHECKS', kNarrow: 'DONE', v: `${solved}/2`, flex: 0.8 },
         ],
         stage: (w, h) => (
@@ -409,7 +409,7 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride MON GAIN to have the monitor engineer raise a preamp, then switch the SPLIT. Read what happens at front of house."
+      caption="Slide MON GAIN to have the monitor engineer raise a preamp, then switch the SPLIT. Read what happens at front of house."
     >
       <ChapterTag n={6}>MONITOR CONSOLE, SPLITS AND TALKBACK</ChapterTag>
       <Body>Three sources feeding TWO consoles — the house console at front of house and the monitor console at side stage — by one of the two ways the split is made.</Body>
@@ -666,9 +666,9 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
         initialParam: 'count',
         hideDragTag: true,
         bezel: [
-          { k: 'TOTAL LOAD', kNarrow: 'LOAD', v: fmtOhms(load.ohms), tint: loadTint, flex: 1.2 },
+          { k: 'TOTAL LOAD', caption: 'amp sees', kNarrow: 'LOAD', v: fmtOhms(load.ohms), tint: loadTint, flex: 1.2 },
           { k: 'AMP MIN', v: `${min} Ω` },
-          { k: 'INTO LOAD', v: watts == null ? '—' : `${watts} W` },
+          { k: 'INTO LOAD', caption: 'power to boxes', v: watts == null ? '—' : `${watts} W` },
           { k: 'VERDICT', v: verdict.toUpperCase(), tint: loadTint, flex: 1.2 },
         ],
         stage: (w, h) => (
@@ -678,7 +678,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride CABINETS to add boxes across the channel and watch the load fall. Find the point where the amplifier can no longer drive it."
+      caption="Slide CABINETS to add boxes across the channel and watch the load fall. Find the point where the amplifier can no longer drive it."
       wellTop={
         <>
           <VerdictLine ok={verdict === 'safe'} warn={verdict === 'marginal' || verdict === 'open'}>
@@ -816,14 +816,14 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         hideDragTag: true,
         bezel: [
           { k: 'MATCH', v: match === 'ok' ? (amp > CABINET.program ? 'JUST OVER' : 'IN BAND') : match === 'under' ? 'UNDER' : 'OVER', tint },
-          { k: 'CONTINUOUS', v: `${CABINET.continuous} W`, flex: 1.1 },
-          { k: 'PROGRAM', v: `${CABINET.program} W` },
+          { k: 'CONTINUOUS', caption: 'steady power', v: `${CABINET.continuous} W`, flex: 1.1 },
+          { k: 'PROGRAM', caption: 'music power', v: `${CABINET.program} W` },
           { k: `SPL @ ${dist} m`, kNarrow: 'SPL', v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },
         ],
         stage: (w, h) => <PowerBand amp={amp} match={match} dist={dist} spl={spl} w={w} h={h} />,
         params,
       }}
-      caption="Ride AMP across the cabinet’s power band and read which side of it the amplifier lands on. Move the LISTENER and watch the SPL fall with distance."
+      caption="Slide AMP across the cabinet’s power band and read which side of it the amplifier lands on. Move the LISTENER and watch the SPL fall with distance."
       wellTop={<VerdictLine ok={match === 'ok'} warn={match === 'over'}>{ampMatchCopy(match, amp, CABINET.continuous, CABINET.program)}</VerdictLine>}
     >
       <ChapterTag n={8}>POWER RATINGS, HEADROOM AND PROTECTION</ChapterTag>

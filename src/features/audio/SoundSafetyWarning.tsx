@@ -1,6 +1,6 @@
 /**
- * SoundSafetyWarning — the once-ever gate a user must pass before this app is
- * allowed to make any sound at all.
+ * SoundSafetyWarning — the gate a user must pass before this app is allowed to
+ * make any sound at all.
  *
  * Owner 2026-09-17. It sits IN FRONT of the existing per-session audio-output
  * gate (AudioOutputGate's explain → 5-second hold), not instead of it:
@@ -8,36 +8,55 @@
  *     first launch   →  THIS  →  explain  →  hold 5s  →  sound
  *     every launch after       →  explain  →  hold 5s  →  sound
  *
+ * WHEN IT IS ASKED (owner 2026-11-14, "Once per session (Recommended)"): on
+ * the first sound lab of a session. KEEP SOUND OFF is honoured until the app
+ * is closed; a new launch asks again (soundSafetyAck.ts, the switch
+ * SOUND_SAFETY_ASK_AFTER_DECLINE). An acceptance is recorded once, ever.
+ *
  * ── THE RULES THIS SCREEN OBEYS, AND WHY EACH ONE MATTERS ────────────────────
  *
  *  • The box starts UNCHECKED and is never pre-selected.
  *  • ENABLE SOUND is DISABLED until the box is checked — it is not merely
  *    styled as disabled, it does not fire.
- *  • Tapping the scrim or pressing BACK does NOT accept. Both resolve as
- *    "keep sound off", because a dismissal is not an agreement.
+ *  • Tapping the dim does NOTHING (2026-11-14): only KEEP SOUND OFF or BACK
+ *    close it, as "keep sound off", because a dismissal is not an agreement.
+ *    A stray tap on the dim used to close it, which a learner saw as the
+ *    sheet "vanishing on its own" (audit G6_EqLab: "without me pressing
+ *    either KEEP SOUND OFF or I UNDERSTAND").
  *  • Nothing plays before acceptance. This component produces no sound itself
  *    and returns control to the gate, which is still muted.
  *  • If the acknowledgment CANNOT BE RECORDED, sound is not enabled. An
  *    acknowledgment nobody wrote down did not happen.
+ *  • A tap in the sheet's first moment (POPUP_ARM_MS) is ignored: a tap aimed
+ *    at the lab a beat before the sheet arrived never presses a button on it.
+ *  • No fade: the sheet is opaque from its first frame. A fading sheet left
+ *    its text and the lab's text overlapping and both unreadable (audit
+ *    G6_LimiterLab, "semi-transparent for ~2 s").
  *
- * ── SCROLLED, AND WHY THAT IS NOT A GESTURE OF DEFEAT ────────────────────────
+ * ── THE BUTTONS ARE PINNED, THE CHECKBOX IS NOT (owner approval 2026-11-14) ──
  *
- * The warning is long and is meant to be. It is in a ScrollView with the
- * acknowledgment and both buttons BELOW it, inside the scroll — so reaching the
- * checkbox means passing the text. The buttons are deliberately NOT pinned to
- * the bottom of the card, which is the usual pattern here (see
- * CredentialDetailModal's measured footer) precisely because a pinned ACCEPT
- * button can be tapped without the text ever having moved.
+ * The warning is long and is meant to be. It scrolls; the acknowledgment
+ * checkbox sits at the END of the text, inside the scroll, so ticking it still
+ * means passing the text. The two buttons are pinned below the scroll so they
+ * are always on screen (audit 2026-11-14: Compression and Signal Chain needed
+ * a scroll inside the sheet to reach KEEP SOUND OFF; report row 2, "Pin KEEP
+ * SOUND OFF and ENABLE SOUND so both are always visible", approved by the
+ * owner: "Begin fixing all bugs found and do obvious ... fixes"). A pinned
+ * ENABLE SOUND cannot be tapped before the text has moved: it stays disabled
+ * until the box at the end of the text is ticked.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
+import { isIntroCardOwed, isScreenWorkUnderway, popupArming } from '../intro/screenIntros';
+import { clearSoundAsk, decideSoundSafetyOpen, noteSoundSafetyDeclined, soundAskOpenId } from './soundSafetyAck';
 import {
   SOUND_SAFETY_ACCEPT,
   SOUND_SAFETY_ACK,
   SOUND_SAFETY_BODY,
   SOUND_SAFETY_DECLINE,
+  SOUND_SAFETY_FOOTNOTE,
   SOUND_SAFETY_INTRO,
   SOUND_SAFETY_LIMITS,
   SOUND_SAFETY_PROTECTIONS,
@@ -46,6 +65,33 @@ import {
   SOUND_SAFETY_STEPS_TITLE,
   SOUND_SAFETY_TITLE,
 } from './soundSafetyText';
+
+/**
+ * The open request's decision is kept while ANY copy of the sheet is up (the
+ * root one or the one hosted inside another Modal) and for a beat after the
+ * last one goes, so the gate's close-and-reopen of the same request (its
+ * iOS re-present, HOST_DISMISS_MS) or a hosting switch never re-decides it.
+ * A request settled by a path that never passed through this sheet's buttons
+ * (a hosted BACK, a failed record) is forgotten once nothing has shown it for
+ * SHEET_FORGET_MS.
+ */
+const SHEET_FORGET_MS = 700;
+let sheetsUp = 0;
+let forgetTimer: ReturnType<typeof setTimeout> | null = null;
+function holdSheetOpen(): () => void {
+  sheetsUp += 1;
+  if (forgetTimer) clearTimeout(forgetTimer);
+  forgetTimer = null;
+  return () => {
+    sheetsUp = Math.max(0, sheetsUp - 1);
+    if (sheetsUp > 0) return;
+    if (forgetTimer) clearTimeout(forgetTimer);
+    forgetTimer = setTimeout(() => {
+      forgetTimer = null;
+      if (sheetsUp === 0) clearSoundAsk();
+    }, SHEET_FORGET_MS);
+  };
+}
 
 export function SoundSafetyWarning({
   visible,
@@ -57,7 +103,8 @@ export function SoundSafetyWarning({
   visible: boolean;
   /** Called only when the box is ticked AND the accept button is pressed. */
   onAccept: () => void;
-  /** Every other exit: the decline button, the scrim, the hardware back key. */
+  /** Every other exit: the decline button, the hardware back key — and a
+   *  request this session's KEEP SOUND OFF already answered. */
   onDecline: () => void;
   /** The acknowledgment is being written — ACCEPT shows it and cannot fire
    *  twice (bug hunt 2026-09-29). */
@@ -69,36 +116,73 @@ export function SoundSafetyWarning({
   const [checked, setChecked] = useState(false);
   const { height } = useWindowDimensions();
 
-  // The box resets every time the warning opens. A declined-then-reopened
-  // warning must not remember a tick from a session the user abandoned.
+  // ONCE PER SESSION (owner 2026-11-14): decided once per request, kept while
+  // the sheet is up (decideSoundSafetyOpen). 'refuse' = KEEP SOUND OFF was
+  // already chosen this session; 'drop' = an arrival ask over work under way
+  // or a first-open card. Either way no sheet: the request answers "sound
+  // off" at once (below), and a 'drop' is not counted as a decline.
+  const decision = visible
+    ? decideSoundSafetyOpen({ workUnderway: isScreenWorkUnderway(), cardOwed: isIntroCardOwed() })
+    : null;
+  const shown = decision === 'show';
+  const answeredRef = useRef(false);
   useEffect(() => {
-    if (visible) setChecked(false);
-  }, [visible]);
+    if (!visible) {
+      answeredRef.current = false;
+      return;
+    }
+    if (decision === 'show' || answeredRef.current) return;
+    answeredRef.current = true;
+    clearSoundAsk();
+    onDecline();
+  }, [visible, decision, onDecline]);
+
+  // The box resets on every NEW request — not on the gate's close-and-reopen
+  // of the same one (a tick must not vanish under the reader). A
+  // declined-then-reopened warning never remembers a tick (close() below).
+  const openId = soundAskOpenId();
+  useEffect(() => {
+    setChecked(false);
+  }, [openId]);
+
+  // The arm window starts when the sheet is really shown.
+  const shownAt = useRef<number | null>(null);
+  useEffect(() => {
+    shownAt.current = shown ? Date.now() : null;
+    if (!shown) return undefined;
+    return holdSheetOpen();
+  }, [shown]);
+  const arming = useCallback(() => popupArming(shownAt.current, Date.now()), []);
+
   const close = useCallback(() => {
     setChecked(false);
     onDecline();
   }, [onDecline]);
+  /** KEEP SOUND OFF / BACK: the learner's choice, honoured this session. */
+  const decline = useCallback(() => {
+    if (arming()) return;
+    noteSoundSafetyDeclined();
+    close();
+  }, [arming, close]);
 
   // The tick is KEPT while the acknowledgment is written (it used to clear on
   // press, so the box emptied under the finger while the save ran); it resets
-  // on the next open instead, above.
+  // on the next request instead, above.
   const accept = useCallback(() => {
     if (!checked || busy) return; // belt and braces — the button is already disabled
+    if (arming()) return;
+    clearSoundAsk();
     onAccept();
-  }, [checked, busy, onAccept]);
+  }, [checked, busy, arming, onAccept]);
 
   const acceptOff = !checked || busy;
 
   const body = (
       <View style={[styles.backdrop, embedded ? StyleSheet.absoluteFill : null]} accessibilityViewIsModal>
-        {/* The scrim closes WITHOUT accepting. */}
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={close}
-          accessibilityRole="button"
-          accessibilityLabel="Close without enabling sound"
-        />
-        <View style={[styles.card, { maxHeight: height * 0.86 }]}>
+        {/* The dim takes the tap and does nothing: neither an agreement nor a
+            dismissal (the sheet never "vanishes" under a stray tap). */}
+        <Pressable style={StyleSheet.absoluteFill} onPress={() => {}} accessible={false} />
+        <View style={[styles.card, { maxHeight: height * 0.88 }]}>
           <View style={styles.headerBar}>
             <Text style={styles.title}>{SOUND_SAFETY_TITLE}</Text>
           </View>
@@ -139,7 +223,7 @@ export function SoundSafetyWarning({
 
             <Text style={styles.limits}>{SOUND_SAFETY_LIMITS}</Text>
 
-            {/* ── the acknowledgment ─────────────────────────────────────── */}
+            {/* ── the acknowledgment: at the END of the text, in the scroll ── */}
             <Pressable
               style={styles.ackRow}
               onPress={() => setChecked((v) => !v)}
@@ -156,7 +240,11 @@ export function SoundSafetyWarning({
               <Text style={styles.ackText}>{SOUND_SAFETY_ACK}</Text>
             </Pressable>
 
-            {/* Buttons live INSIDE the scroll, below the text. See the header. */}
+            <Text style={styles.footNote}>{SOUND_SAFETY_FOOTNOTE}</Text>
+          </ScrollView>
+
+          {/* PINNED: both buttons always on screen (see the header). */}
+          <View style={styles.footer}>
             <Pressable
               style={[styles.acceptBtn, acceptOff && styles.acceptBtnOff]}
               onPress={accept}
@@ -168,7 +256,7 @@ export function SoundSafetyWarning({
                   ? 'Saving your acknowledgment'
                   : checked
                     ? SOUND_SAFETY_ACCEPT
-                    : 'Enable sound. Unavailable until you confirm you have read the warning.'
+                    : 'Enable sound. Unavailable until you tick the box at the end of the warning.'
               }
             >
               <Text style={[styles.acceptText, acceptOff && styles.acceptTextOff]}>
@@ -178,33 +266,30 @@ export function SoundSafetyWarning({
 
             <Pressable
               style={styles.declineBtn}
-              onPress={close}
+              onPress={decline}
               accessibilityRole="button"
               accessibilityLabel={SOUND_SAFETY_DECLINE}
             >
               <Text style={styles.declineText}>{SOUND_SAFETY_DECLINE}</Text>
             </Pressable>
-
-            <Text style={styles.footNote}>
-              This warning appears once. The Pro Audio Safety topic covers hearing protection in full.
-            </Text>
-          </ScrollView>
+          </View>
         </View>
       </View>
   );
 
-  if (embedded) return visible ? body : null;
+  if (embedded) return shown ? body : null;
   return (
     <Modal
       accessibilityViewIsModal
       // A root surface of the audio gate: it publishes into other hosts, and
       // hosts a confirm raised over it — skipped by the gate's own count.
       overlayPublisher="gate"
-      visible={visible}
+      visible={shown}
       transparent
-      animationType="fade"
+      // No fade (2026-11-14): opaque from its first frame, never see-through.
+      animationType="none"
       statusBarTranslucent
-      onRequestClose={close}
+      onRequestClose={decline}
     >
       {body}
     </Modal>
@@ -217,10 +302,11 @@ const GREEN = colors.green;
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(8,8,10,0.86)',
+    // Nearly opaque: the lab's text never reads through the warning.
+    backgroundColor: 'rgba(8,8,10,0.94)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 18,
+    padding: 16,
   },
   card: {
     width: '100%',
@@ -249,7 +335,8 @@ const styles = StyleSheet.create({
     color: RED,
     textAlign: 'center',
   },
-  scroll: { flexGrow: 0 },
+  // Shrinks first, so the pinned footer always keeps its room.
+  scroll: { flexGrow: 0, flexShrink: 1 },
   scrollBody: { padding: 16, gap: 10 },
   intro: { fontFamily: fonts.oswaldMedium, fontSize: 14, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSecondary },
@@ -296,25 +383,32 @@ const styles = StyleSheet.create({
   checkboxOn: { borderColor: 'rgba(55,224,95,.85)', backgroundColor: 'rgba(55,224,95,.16)' },
   checkboxMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 17, color: GREEN },
   ackText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary },
+  // The pinned footer: a hairline above it says "the text scrolls, these stay".
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: '#2a2a2e',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 12,
+    gap: 8,
+  },
   acceptBtn: {
-    marginTop: 12,
     borderRadius: 9,
     backgroundColor: 'rgba(55,224,95,.12)',
     borderWidth: 1.5,
     borderColor: 'rgba(55,224,95,.7)',
-    paddingVertical: 13,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   acceptBtnOff: { backgroundColor: '#141414', borderColor: '#3a3a3a' },
   acceptText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: GREEN, textAlign: 'center' },
   acceptTextOff: { color: colors.textMuted },
   declineBtn: {
-    marginTop: 8,
     borderRadius: 9,
     borderWidth: 1,
     borderColor: '#3a3a3a',
     backgroundColor: '#141414',
-    paddingVertical: 13,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   declineText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: colors.textSecondary },
@@ -324,6 +418,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: colors.textMuted,
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 4,
   },
 });

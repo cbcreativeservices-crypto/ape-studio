@@ -328,7 +328,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
 export const TUBE_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the tube story: parts, warm-up, the grid, gain, high voltage, tube types, bias, saturation and transistors, and the core ideas the lab’s check asks about.',
-    start: 'Open any module still listed under WHAT’S LEFT, or tap the CHECK row and answer CHECK YOUR UNDERSTANDING. Use REVIEW ▾ to reopen a module you found hard.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT’S LEFT lists the modules you haven’t opened yet. Last on the list is the CHECK row. LAB COMPLETE appears once every module is opened and the check is passed.',

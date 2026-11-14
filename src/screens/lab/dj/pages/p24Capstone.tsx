@@ -55,6 +55,7 @@ import { DJ_COVERS, isOptionalNo } from './registry';
 import { getDjRegistry } from './registryRuntime';
 import { announce, EventListen, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceIn, withFreshEvent } from './eventShared';
 import { holdDoneUnlessFresh } from './eventGuards';
+import { trimStillHot } from './fixGuards';
 import { PEAK_RED } from './shared';
 import type { BoothRender } from '../engine/djRender';
 import { isEventRender, type EventRender } from '../engine/djEventRender';
@@ -469,7 +470,14 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
   const f1 = scenario.faults[0];
   const f2 = scenario.faults[1];
   const hints = two ? [hintsFor(f1)[0], `Fault 1: ${FAULTS[f1].probe}`, `Fault 1: ${FAULTS[f1].where}`, `Fault 2: ${FAULTS[f2].probe}`, `Fault 2: ${FAULTS[f2].where}`] : hintsFor(f1);
-  const roomV = !last ? '—' : last.rmsDb.crowd < -50 ? 'SILENT' : last.clipped.master + last.clipped.bus > 0 ? 'CLIPPING' : (last.ext.clipped.paR ?? 0) > 0 ? 'DISTORTED' : last.ext.hum.crowd ? 'HUM' : 'MUSIC';
+  // A clipping CHANNEL is in the room's sound too (lab fix round 2026-11-14,
+  // F2: THE ROOM read MUSIC while channel 1 still clipped — the transition
+  // check above already counts ch1/ch2).
+  const chClip = !!last && last.clipped.ch1 + last.clipped.ch2 > 0;
+  const roomV = !last ? '—' : last.rmsDb.crowd < -50 ? 'SILENT' : last.clipped.master + last.clipped.bus > 0 || chClip ? 'CLIPPING' : (last.ext.clipped.paR ?? 0) > 0 ? 'DISTORTED' : last.ext.hum.crowd ? 'HUM' : 'MUSIC';
+  // The hot-trim fault is repaired at +3 dB or less: between that and the
+  // clip point the room sounds clean, so the page says why it is still open.
+  const trimHotOpen = doorsOpen && scenario.faults.includes('TRIM_HOT') && trimStillHot(trimDb(booth.ch[1].trim), chClip);
   const f1v = Math.round(booth.ch[1].fader * 100);
   const f2v = Math.round(booth.ch[2].fader * 100);
 
@@ -524,6 +532,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         <Do>Open EVENT → POWER and switch the system on in the safe order: the decks and the mixer first, the speakers LAST. Start RECORD. Then open the doors: EVENT → OPEN THE DOORS (or the red card in Step 5).</Do>
         <P>Then run the show: play deck A to the room; cue deck B in your headphones with its fader down; bring B in and A out with FADERS (CH 1 ↓ under it) — no gap, no clip; switch the mic on and make an announcement the room AND the recorder carry.</P>
         {silentRoom ? <Note tone="try">The room is silent while music plays: trace it on the board — source, channel, mix, output — and find the last live meter.</Note> : null}
+        {trimHotOpen ? <Note tone="try">{`Channel 1 has stopped clipping, but TRIM 1 is still ${dbStr(trimDb(booth.ch[1].trim))}: hotter than channel 2, with no headroom left for a loud bar. Bring it down to +3 dB or less (about 0 dB matches channel 2).`}</Note> : null}
         {trans.current.failed ? <Note tone="try">{`${trans.current.failed}${faultLive ? ' — fix the event’s fault first.' : ''} Bring CH 1 back up and CH 2 down to try again.`}</Note> : null}
       </Step>
       <Step n={3}>
@@ -539,7 +548,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="Mid-set the room goes silent. The MASTER meters still move and the booth monitors still play. Where do you look first?"
-          options={['After the mixer: the MASTER cables, the PA’s power and its input', 'The channel’s input selector', 'The headphone blend', 'The trim of the deck that is playing']}
+          options={['After the mixer: MASTER cables, PA power and input', 'The input selector of the playing channel', 'The headphone blend of cue and master', 'The trim of the deck that is playing']}
           correct={0}
           explain="The MASTER meters and the booth prove the music reaches the mixer’s outputs. The loss is downstream of the last live meter: the MASTER cables, the PA’s power, its input setting or its level."
           wrong={[undefined, 'A wrong selector would silence the channel meter too — and the booth.', 'The headphones are a separate bus; they cannot silence the room.', 'A trim changes the channel’s level; the MASTER meters show the music is there.']}

@@ -86,10 +86,13 @@ export const SAMPLER_STOPS: SamplerStop[] = [
   {
     id: 'career',
     label: 'Where this leads',
-    blurb: 'The careers built on sound level and acoustics — find your fit.',
+    // Comp A text review 2026-11-14: CF-E0005 ("find your fit" promised what the About screen says
+    // the Career Finder cannot measure) and CF-E0006 (say what the choice does; the end menu reads
+    // "head into the Academy").
+    blurb: 'Careers built on sound level and acoustics.',
     accent: colors.gold,
     route: { name: 'CareerFinder' },
-    recap: 'From a single number to a whole career. Explore more, or make yourself at home?',
+    recap: 'A single sound-level number can lead to a whole career. Keep exploring, or head into the Academy?',
     next: ['fundamentals', 'decibel'],
   },
 ];

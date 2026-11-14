@@ -20,6 +20,21 @@
  *   requirements vary by jurisdiction, and rigging and electrical distribution
  *   belong to licensed people. "SCOPE" chip. See PRACTICE_TITLE below.
  *
+ * • variant "about" (ADDED lab fix round 1, 2026-11-14) — a CONCEPT lesson's
+ *   own note and nothing else: the chip reads ABOUT and opens only `detail`
+ *   under `label` (default ABOUT THIS LESSON), with none of the phone-
+ *   calibration, light-meter or tool list. G8 (Miking): in a silent drawing
+ *   lesson the calibration text read as "am I supposed to be measuring
+ *   something?" — the lesson's own ABOUT THESE STARTING POINTS note stays.
+ *
+ * ⛔ NO SECOND ⓘ IN A HEADER (2026-11-14, section 3 row 6 / quick win 6; owner:
+ * "Begin fixing all bugs found and do obvious ... fixes as you suggested in
+ * the report"). The screen guide's key is the header's ⓘ ("Explain this
+ * screen"). This chip used to wear an ⓘ too, so a header read "ⓘ ⓘ" and "a
+ * beginner cannot tell them apart" (G2 Gain, G8 Miking, G1 Speaker…). Its
+ * glyph now names what it is about: ± (accuracy, the tool variant), § (scope:
+ * legal and safety, the practice variant), ✓ (verified, calc), the word ABOUT.
+ *
  * Self-contained (owns its open state) so any screen adds it in one line.
  */
 import { useState } from 'react';
@@ -73,6 +88,15 @@ export const CALC_BODY = [
 ];
 export const CALC_CLOSER = 'Computed exactly from the method shown — the FORMULA and notes in each calculator show the source.';
 
+/** The "about" variant's words. */
+export const ABOUT_CHIP = 'ABOUT';
+export const ABOUT_TITLE = 'ABOUT THIS LESSON';
+
+/** Each variant's chip glyph: never the screen guide's ⓘ (row 6). Pure. */
+export function accuracyGlyph(variant: 'tool' | 'calc' | 'practice' | 'about'): string {
+  return variant === 'calc' ? '✓' : variant === 'practice' ? '§' : variant === 'about' ? '' : '±';
+}
+
 export function AccuracyNote({
   variant = 'tool',
   detail,
@@ -83,7 +107,7 @@ export function AccuracyNote({
   /** "tool" = labs & live-input tools (teaching / uncalibrated caveat);
    *  "calc" = calculators & equations (verified / source-of-truth);
    *  "practice" = planning labs (boundary: not legal or safety advice). */
-  variant?: 'tool' | 'calc' | 'practice';
+  variant?: 'tool' | 'calc' | 'practice' | 'about';
   /** Context-specific caveat shown emphasised at the top (live-input tools). */
   detail?: string;
   /** Chip label; hidden when `compact`. Defaults per variant. */
@@ -95,15 +119,17 @@ export function AccuracyNote({
   const [open, setOpen] = useState(false);
   const isCalc = variant === 'calc';
   const isPractice = variant === 'practice';
-  const chipLabel = label ?? (isCalc ? 'VERIFIED' : isPractice ? 'SCOPE' : 'ACCURACY');
+  const isAbout = variant === 'about';
+  const chipLabel = isAbout ? ABOUT_CHIP : label ?? (isCalc ? 'VERIFIED' : isPractice ? 'SCOPE' : 'ACCURACY');
 
   // Content per variant, resolved once. The style toggles below stay as they
   // were: calc is green, tool and practice share the amber treatment.
-  const sheetTitle = isCalc ? CALC_TITLE : isPractice ? PRACTICE_TITLE : ACCURACY_TITLE;
-  const sheetBody = isCalc ? CALC_BODY : isPractice ? PRACTICE_BODY : ACCURACY_BODY;
-  const sheetCloser = isCalc ? CALC_CLOSER : isPractice ? PRACTICE_CLOSER : ACCURACY_CLOSER;
+  const sheetTitle = isAbout ? (label ?? ABOUT_TITLE) : isCalc ? CALC_TITLE : isPractice ? PRACTICE_TITLE : ACCURACY_TITLE;
+  // "about": the lesson's own note (`detail`) is the whole sheet.
+  const sheetBody: readonly string[] = isAbout ? [] : isCalc ? CALC_BODY : isPractice ? PRACTICE_BODY : ACCURACY_BODY;
+  const sheetCloser = isAbout ? null : isCalc ? CALC_CLOSER : isPractice ? PRACTICE_CLOSER : ACCURACY_CLOSER;
   // The "use a calibrated instrument" list belongs to the tool variant alone.
-  const showToolList = !isCalc && !isPractice;
+  const showToolList = !isCalc && !isPractice && !isAbout;
 
   return (
     <>
@@ -124,15 +150,18 @@ export function AccuracyNote({
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel={
-          isCalc
-            ? 'How this calculation is verified'
-            : isPractice
-              ? 'What this lab does and does not cover'
-              : 'About accuracy and calibration'
+          isAbout
+            ? `About this lesson: ${label ?? ABOUT_TITLE}`
+            : isCalc
+              ? 'How this calculation is verified'
+              : isPractice
+                ? 'What this lab does and does not cover'
+                : 'About accuracy and calibration'
         }
       >
-        <Text style={[styles.chipGlyph, isCalc && styles.chipGlyphCalc]}>{isCalc ? '✓' : 'ⓘ'}</Text>
-        {compact ? null : <Text style={styles.chipLabel}>{chipLabel}</Text>}
+        {isAbout ? null : <Text style={[styles.chipGlyph, isCalc && styles.chipGlyphCalc]}>{accuracyGlyph(variant)}</Text>}
+        {/* ABOUT is a word even when compact: there is no glyph for it. */}
+        {isAbout ? <Text style={styles.chipWord}>{chipLabel}</Text> : compact ? null : <Text style={styles.chipLabel}>{chipLabel}</Text>}
       </Pressable>
 
       <Modal accessibilityViewIsModal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
@@ -168,7 +197,7 @@ export function AccuracyNote({
                 </>
               ) : null}
 
-              <Text style={[styles.closer, isCalc && styles.closerCalc]}>{sheetCloser}</Text>
+              {sheetCloser ? <Text style={[styles.closer, isCalc && styles.closerCalc]}>{sheetCloser}</Text> : null}
 
               <Pressable
                 style={[styles.gotIt, isCalc && styles.gotItCalc]}
@@ -209,6 +238,7 @@ const styles = StyleSheet.create({
   chipGlyph: { fontFamily: fonts.barlowSemiBold, fontSize: 13, color: colors.amber, marginTop: -1 },
   chipGlyphCalc: { fontFamily: fonts.oswaldSemiBold, color: colors.green },
   chipLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: colors.textSub },
+  chipWord: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.amber },
 
   backdrop: {
     flex: 1,

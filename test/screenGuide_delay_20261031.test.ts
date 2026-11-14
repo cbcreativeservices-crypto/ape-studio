@@ -171,7 +171,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(DELAY, /label: 'FEEDBACK', short: 'FDBK'/);
     assert.match(DELAY, /id: 'color', label: 'COLOR', paramIds: \[P\.pingpong, P\.dampHz\]/);
     assert.match(SCREEN, /label: 'SOURCE',/);
-    assert.match(DELAY, /bezel: \[\s*\{ k: 'TIME', paramId: P\.timeMs \},\s*\{ k: 'FDBK', paramId: P\.delayFeedback \},\s*\{ k: 'MIX', paramId: P\.delayMix \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(DELAY, /bezel: \[\s*\{ k: 'TIME', paramId: P\.timeMs(?:, caption: '[^']*')? \},\s*\{ k: 'FDBK', paramId: P\.delayFeedback(?:, caption: '[^']*')? \},\s*\{ k: 'MIX', paramId: P\.delayMix(?:, caption: '[^']*')? \},\s*\]/);
   });
 });
 

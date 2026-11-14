@@ -18,6 +18,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } from '../../../features/cymatics/plateModes';
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
+import { useCymaticsEnd } from './useCymaticsEnd';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import { goToCymatics } from './goToCymatics';
 import { useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
@@ -116,6 +117,8 @@ export function CymaticsHomeScreen() {
   // The hub's rows carry no ticks; only WHAT'S LEFT shows progress — and
   // says so when the visits could not be read (owner 2026-10-03, "do 2").
   const visitsUnreadable = useLabVisitsUnreadable();
+  // The check row + the check on the what's-left screen (useCymaticsEnd).
+  const end = useCymaticsEnd(visited, visitsUnreadable);
   const open = (id: CymaticsModuleId) => {
     setEnding(false);
     go('CymaticsModule', { id });
@@ -139,13 +142,17 @@ export function CymaticsHomeScreen() {
       />
       {ending ? (
         <LabEndScreen
+          labId="cymatics"
           labTitle="Cymatics Lab: Sound Made Visible"
-          units={CYMATICS_MODULES.map((m) => ({ id: m.id, label: m.title }))}
-          cleared={visited}
-          unreadable={visitsUnreadable}
+          units={end.units}
+          cleared={end.cleared}
+          unreadable={end.unreadable}
           mode="progress"
           completeTitle="ALL MODULES OPENED"
-          onJump={(id) => open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id)}
+          shownHereId={end.shownHereId}
+          extra={end.extra}
+          howItCounts={end.howItCounts}
+          onJump={(id) => { if (id !== end.shownHereId) open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id); }}
           onPracticeAgain={() => open(CYMATICS_MODULES[0].id)}
           onDone={() => safeGoBack(navigation)}
           bottomInset

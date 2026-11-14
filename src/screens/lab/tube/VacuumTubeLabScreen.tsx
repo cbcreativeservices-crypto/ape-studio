@@ -294,7 +294,7 @@ function InsideSection(p: SectionProps) {
         onGuide: () => p.help('cutaway'),
         bezel: [
           { k: 'PARTS', v: `${visible.length}/${ALL_PART_KEYS.length}`, helpKey: 'cutaway' },
-          { k: 'EMISSION', v: emitting ? 'ON' : 'OFF', tint: emitting ? undefined : DIM, helpKey: 'cutaway' },
+          { k: 'EMISSION', v: emitting ? 'ON' : 'OFF', tint: emitting ? undefined : DIM, helpKey: 'cutaway', caption: 'electrons out' },
           { k: 'CURRENT', v: current, tint: flowing ? '#5bff85' : DIM, flex: 1.3, helpKey: 'cutaway' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => (
@@ -355,7 +355,7 @@ function FlowSection(p: SectionProps) {
         bezel: [
           { k: 'HEAT', v: pct(heat), helpKey: 'warm_up' },
           { k: 'STAGE', v: `${stageNum}/5`, helpKey: 'warm_up' },
-          { k: 'PLATE I', v: pct(current), tint: current > 0 ? '#5bff85' : DIM, helpKey: 'warm_up' },
+          { k: 'PLATE I', v: pct(current), tint: current > 0 ? '#5bff85' : DIM, helpKey: 'warm_up', caption: 'plate current' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => <FlowViz viz={viz} width={w} height={h} heat={heat} running={p.focused} />),
       }}
@@ -385,6 +385,10 @@ const GRID_CHECK: CheckSpec = {
     'It heats up and emits extra electrons',
   ],
   correctIdx: 1,
+  why: {
+    0: 'The grid is an open mesh; electrons could pass straight through. Slide GRID V and watch the field.',
+    2: 'Only the heated cathode gives off electrons. The grid works by its voltage.',
+  },
   reveal:
     'The grid is a sparse spiral — most electrons could fly right through the gaps. What stops them is its FIELD: a small negative voltage repels the (negative) electrons back toward the cathode. Nudge that voltage slightly and the entire stream swells or starves — a tiny voltage controlling a large current IS amplification.',
   wrongHint: 'Slide the GRID V fader and watch — do the grid wires move, or does something invisible change?',
@@ -426,7 +430,7 @@ function GridSection(p: SectionProps) {
         onGuide: () => p.help('grid_voltage'),
         bezel: [
           { k: 'GRID', v: gridState(v), flex: 1.2, helpKey: 'grid_voltage' },
-          { k: 'PLATE I', v: pct(plateI), tint: plateI === 0 ? colors.textSub : plateI > 0.85 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage' },
+          { k: 'PLATE I', v: pct(plateI), tint: plateI === 0 ? colors.textSub : plateI > 0.85 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage', caption: 'plate current' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => (
           <GridViz viz={viz} width={w} height={h} cond={v} flow={plateI} electron={p.electron} running={p.focused} />
@@ -672,6 +676,10 @@ const BIAS_CHECK: CheckSpec = {
     'It gets louder, because the tube works harder',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Slide BIAS far left and look at the output wave: part of it is missing.',
+    2: 'In cutoff the tube passes less, not more. Watch ZONE as you slide BIAS.',
+  },
   reveal:
     'Bias sets WHERE on the transfer curve the tube idles. Too negative and the stream is shut off for much of the swing — the input wiggles a closed valve, so part of the wave (or all of it) is lost. Correct bias parks the idle point mid-curve so the whole swing stays on the straight part. Too positive and it slams into saturation instead.',
   wrongHint: 'Slide the BIAS fader to the far left and watch the output wave on the right of the display.',
@@ -959,12 +967,16 @@ export function VacuumTubeLabScreen() {
       <View style={styles.rackArea}>
         {ending ? (
           <LabEndScreen
+            // The recap and next-lab card (labEndContent.ts, S4).
+            labId="tube"
             labTitle="Vacuum Tube Fundamentals"
             units={endUnits}
             cleared={endCleared}
             unreadable={progressUnreadable}
             mode="progress"
             noun="section"
+            // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+            howItCounts="A section counts once you open it. Opening it again, or practicing, never removes it."
             // The CHECK row stays here: the check is drawn on this screen (extra).
             onJump={(id) => { if (id !== UNDERSTANDING_UNIT) openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id))); }}
             // D41 K6: the CHECK row moves the screen to the check drawn here (extra).

@@ -136,6 +136,17 @@ def main():
             if s not in families[fam]['sources']: sys.exit(f'removeFamilySources: {fam!r} has no source {s!r}')
             families[fam]['sources'].remove(s)
 
+    # Per-family "where people work" lines (Career Finder text review 2026-11-14). The 2026-11-11
+    # copy audit (D59) corrected five families' settings directly in careerFamilies.json, so a
+    # rebuild from the workbook silently reverted them. `settings` replaces a family's whole list;
+    # an unknown family or an empty list fails the build.
+    for fam, lst in _ov_early.get('settings', {}).items():
+        if fam.startswith('_'): continue
+        if fam not in families: sys.exit(f'settings names an unknown family: {fam!r}')
+        if not isinstance(lst, list) or not lst or not all(isinstance(s, str) and s.strip() for s in lst):
+            sys.exit(f'settings for {fam!r} must be a non-empty list of strings')
+        families[fam]['settings'] = list(lst)
+
     # master list
     rows = list(wb['Career Master List'].iter_rows(values_only=True))
     hdr_i = next(i for i, r in enumerate(rows) if r and sum(1 for c in r if c) >= 8)
@@ -314,6 +325,41 @@ def main():
             sys.exit(f'removeTitles emptied a family: {_empty}')
         print(f'overrides: removeTitles dropped {_removed} ({_before} -> {len(careers)})')
 
+    # ── wording-only renames, LAST (Career Finder text review 2026-11-14) ──────────
+    # Every override above matches the WORKBOOK's exact title / line, so these run after all
+    # of them: a rename never has to be repeated in `regulated`, `preparation` and the rest.
+    # Each key must change at least one row, or the build fails (a workbook change would
+    # otherwise let a rename silently stop applying).
+    # renameTitles {workbook title: shown title}: spelling only (a hyphen, "Tech" -> "Technician").
+    for old, new in ov.get('renameTitles', {}).items():
+        if old.startswith('_'): continue
+        hit = [c for c in careers if c['t'] == old]
+        if not hit: sys.exit(f'renameTitles: no title {old!r}')
+        for c in hit:
+            if any(o is not c and o['f'] == c['f'] and o['t'] == new for o in careers):
+                sys.exit(f'renameTitles: {new!r} already exists in that family')
+            c['t'] = new
+    # renamePreparation {line: shown line}: punctuation / wording of a whole preparation line.
+    # Runs after the craft re-table and the licensed-role guard, which compare against the
+    # workbook's DEGREE_DEFAULT / VARIES strings.
+    for old, new in ov.get('renamePreparation', {}).items():
+        if old.startswith('_'): continue
+        hit = [c for c in careers if c['prep'] == old]
+        if not hit: sys.exit(f'renamePreparation: no title uses {old!r}')
+        for c in hit: c['prep'] = new
+    # renameWorkModel {WORK_MODEL entry: shown text}: the codes 0-8 never move; only the text.
+    work_model_out = list(WORK_MODEL)
+    for old, new in ov.get('renameWorkModel', {}).items():
+        if old.startswith('_'): continue
+        if old not in work_model_out: sys.exit(f'renameWorkModel: no work model {old!r}')
+        work_model_out[work_model_out.index(old)] = new
+    # sourceNames {name in the workbook: shown name}: e.g. spell out an acronym.
+    for old, new in ov.get('sourceNames', {}).items():
+        if old.startswith('_'): continue
+        hit = [f for f in families.values() if old in f['sources']]
+        if not hit: sys.exit(f'sourceNames: no family lists {old!r}')
+        for f in hit: f['sources'] = [new if s == old else s for s in f['sources']]
+
     # preparation pathway is 14 distinct strings — table it too
     preps = sorted({c['prep'] for c in careers})
     for c in careers: c['prep'] = preps.index(c['prep'])
@@ -321,7 +367,7 @@ def main():
     out = {
         'version': 'grand-audio-career-index-v2-2026-09-04',
         'families': fam_ids,
-        'enums': {'tier': TIER, 'relationship': RELATIONSHIP, 'orientation': ORIENTATION, 'titleClass': TITLE_CLASS, 'status': STATUS, 'workModel': WORK_MODEL, 'preparation': preps},
+        'enums': {'tier': TIER, 'relationship': RELATIONSHIP, 'orientation': ORIENTATION, 'titleClass': TITLE_CLASS, 'status': STATUS, 'workModel': work_model_out, 'preparation': preps},
         'careers': careers,
     }
     # US spelling on screen (owner 2026-10-29, D27): the workbook and the overrides keep

@@ -25,6 +25,7 @@ import { startFenced } from '../../../../features/audio/startFenced';
 import type { EqBandSpec } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
 import { MiniBtn } from './eqBits';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { useStopOnAudioMute } from '../../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../../features/audio/useStopOnBlur';
@@ -154,6 +155,9 @@ export function EqAuditionBar({ bands }: { bands: EqBandSpec[] }) {
   return (
     <View style={styles.bar}>
       <Text style={styles.head}>HEAR IT</Text>
+      {/* Listening only (phase 2, S3): the task above is done on the graph;
+          this bar is the one part that needs sound. */}
+      <NeedsSoundTag />
       {SOURCES.map((s) => (
         <MiniBtn
           key={s.key}

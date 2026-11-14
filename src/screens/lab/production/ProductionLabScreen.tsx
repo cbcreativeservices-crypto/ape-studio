@@ -569,7 +569,7 @@ export function ProductionLabScreen() {
             </Text>
             {def.stages
               .filter((s) => s.activity && (!s.activity.onlyFor || s.activity.onlyFor.includes(project.pathway)))
-              .map((s) => (
+              .map((s, i) => (
               <Pressable
                 key={s.activity!.activityId}
                 style={styles.exercise}
@@ -583,8 +583,15 @@ export function ProductionLabScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`Exercise, ${s.activity!.title}, from stage ${s.num}`}
               >
-                <Text style={styles.exerciseNum}>{s.num}</Text>
-                <Text style={styles.exerciseName}>{s.activity!.title}</Text>
+                {/* Numbered in the list shown, with the stage it belongs to
+                    named beside it: the stage number alone skipped (1, 2, 4, 5)
+                    where a project type hides an exercise (novice audit G4,
+                    2026-11-14). */}
+                <Text style={styles.exerciseNum}>{i + 1}</Text>
+                <Text style={styles.exerciseName}>
+                  {s.activity!.title}
+                  <Text style={styles.exerciseStage}>{` · stage ${s.num}`}</Text>
+                </Text>
                 <Text style={styles.exerciseGo}>›</Text>
               </Pressable>
               ))}
@@ -780,6 +787,7 @@ const styles = StyleSheet.create({
   },
   exerciseNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textMuted, width: 15 },
   exerciseName: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textPrimary },
+  exerciseStage: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted },
   exerciseGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber },
 });
 

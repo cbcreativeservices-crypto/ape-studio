@@ -52,7 +52,10 @@
 import { Component, useCallback, useEffect, useMemo, useState, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { holdAllowed, persistAllowed } from '../../../features/commercial/tier';
+// The lab's recap and next lab (lab fix round 2026-11-14, S4; report section 3 row 5).
+import { labEndContentFor } from '../../../features/lab/labEndContent';
 import { useTier } from '../../../features/commercial/useTier';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
@@ -210,6 +213,7 @@ export function StagePlotLabScreen() {
               <ScrollView contentContainerStyle={[styles.libraryScroll, { paddingBottom: 48 + insets.bottom }]} keyboardShouldPersistTaps="handled">
                 <View style={cardColumn}>
                   <ProjectLibrary onOpen={(project, saveState) => setOpen({ project, saveState, at: Date.now() })} />
+                  <LabRecap />
                 </View>
               </ScrollView>
             </AreaBoundary>
@@ -217,6 +221,49 @@ export function StagePlotLabScreen() {
         )}
       </View>
     </GlossaryLinkProvider>
+  );
+}
+
+/**
+ * WHAT THIS LAB COVERS + AFTER THIS LAB, at the foot of the list of stage
+ * plots (lab fix round 2026-11-14, S4; owner: "Begin fixing all bugs found and
+ * do obvious ... fixes", suggested order item 6 "The end screen recap"). This
+ * lab has no shared end screen, so the words from features/lab/labEndContent
+ * ('stage-plot') sit where every visit starts and ends: the list.
+ */
+function LabRecap() {
+  const navigation = useNavigation();
+  const c = labEndContentFor('stage-plot');
+  if (!c.recap?.length && !c.next) return null;
+  return (
+    <View style={styles.recap}>
+      {c.recap?.length ? (
+        <View style={styles.recapBox} accessibilityRole="summary">
+          <Text style={styles.recapHead}>WHAT THIS LAB COVERS</Text>
+          {c.recap.map((l) => (
+            <View key={l} style={styles.recapRow}>
+              <Text style={styles.recapDot}>•</Text>
+              <Text style={styles.recapText}>{l}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      {c.next ? (
+        <Pressable
+          onPress={() => (navigation as unknown as { navigate: (route: string) => void }).navigate(c.next!.route)}
+          style={styles.recapNext}
+          accessibilityRole="button"
+          accessibilityLabel={`After this lab: ${c.next.title}${c.next.why ? `, ${c.next.why}` : ''}. Leaves this lab and opens it.`}
+        >
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={styles.recapHead}>AFTER THIS LAB</Text>
+            <Text style={styles.recapNextTitle}>{c.next.title}</Text>
+            {c.next.why ? <Text style={styles.recapWhy}>{c.next.why}</Text> : null}
+          </View>
+          <Text style={styles.recapGo}>›</Text>
+        </Pressable>
+      ) : null}
+    </View>
   );
 }
 
@@ -362,6 +409,17 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   guest: { marginHorizontal: 14, marginBottom: 6 },
   libraryScroll: { paddingHorizontal: 14, paddingTop: 8 },
+  // The recap and next-lab card (S4, 2026-11-14): the shared end screen's look.
+  recap: { gap: 10, marginTop: 18 },
+  recapBox: { gap: 6, borderWidth: 1, borderColor: 'rgba(55,224,95,.3)', borderRadius: 10, backgroundColor: '#0f1d14', padding: 12 },
+  recapHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.4 },
+  recapRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  recapDot: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
+  recapText: { flex: 1, color: colors.textPrimary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
+  recapNext: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, borderWidth: 1, borderColor: '#2a2a2e', borderRadius: 10, backgroundColor: '#141416', paddingVertical: 10, paddingHorizontal: 12 },
+  recapNextTitle: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 20 },
+  recapWhy: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
+  recapGo: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
 
   bar: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingBottom: 6 },
   barKey: { minHeight: 44, minWidth: 44, borderRadius: 9, borderWidth: 1, borderColor: '#34343b', backgroundColor: '#141418', paddingHorizontal: 9, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },

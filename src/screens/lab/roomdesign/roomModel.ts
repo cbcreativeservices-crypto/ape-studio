@@ -1670,6 +1670,15 @@ export function analyze(d: RoomDesign, layoutIndex = d.active): Analysis {
 
 /** Specific observations and things worth testing — never a single score and
  *  never "the optimum". Each carries the tier of the number it rests on. */
+/** The untreated wall reflections that blur the image: within 15 ms of the
+ *  direct sound and no more than 12 dB below it. ONE rule for the Review
+ *  page's two sentences (lab fix round 2026-11-14, G1 module 6: "6 untreated
+ *  wall reflections inside 15 ms" next to "2 early wall reflections within
+ *  15 ms" — one counted every level, the other only the strong ones). */
+export function earlyUntreatedWallReflections<R extends { surface: { kind: string }; treatedBy?: unknown; delayMs: number; levelDb: number }>(reflections: R[]): R[] {
+  return reflections.filter((r) => r.surface.kind === 'wall' && !r.treatedBy && r.delayMs < 15 && r.levelDb > -12);
+}
+
 export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Suggestion[] {
   const out: Suggestion[] = [];
   const u = d.room.units;
@@ -1762,7 +1771,7 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
     out.push({ tier: a.rectangular ? 'CALCULATED' : 'ESTIMATED', level: 'check', text: `${where} — a buildup at one frequency; ${why}. Nothing moves the walls, but bass trapping and position both change what you hear.` });
   }
   const live = d.treatment.filter((t) => t.enabled);
-  const untreatedSide = a.reflections.filter((r) => r.surface.kind === 'wall' && !r.treatedBy && r.delayMs < 15 && r.levelDb > -12);
+  const untreatedSide = earlyUntreatedWallReflections(a.reflections);
   if (untreatedSide.length > 0) {
     out.push({ tier: 'ESTIMATED', level: 'try', text: `${untreatedSide.length} early wall reflection${untreatedSide.length === 1 ? '' : 's'} within 15 ms of the direct sound reach the listener untreated. Test absorbers at the marked reflection points — the model places them where the speaker and listener positions put them.` });
   }

@@ -134,7 +134,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(LIM, /label: 'CEILING', paramId: P\.ceilingDb/);
     assert.match(LIM, /fader: \{ min: -45, max: -15,/);
     assert.match(GUIDES.explore.control.join(' '), /CEILING fader from −45 to −15 dB/);
-    assert.match(LIM, /bezel: \[\s*\{ k: 'CEIL', paramId: P\.ceilingDb \},\s*\{ k: 'RLS', paramId: P\.releaseMs \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(LIM, /bezel: \[\s*\{ k: 'CEIL', paramId: P\.ceilingDb(?:, caption: '[^']*')? \},\s*\{ k: 'RLS', paramId: P\.releaseMs(?:, caption: '[^']*')? \},\s*\]/);
     assert.match(LIM, /pollGr: 'limiter'/);
     assert.match(LIM, /note: 'True-peak \(inter-sample\) detection and lookahead are covered in the lesson/);
     assert.match(GUIDES.explore.control.join(' '), /a note on true peak/);

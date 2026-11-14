@@ -11,7 +11,7 @@
  * POWER lists each device's switch; the order is the lesson.
  */
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { getBooth, updateBooth } from './booth/boothStore';
@@ -102,17 +102,39 @@ export function flipPower(d: DeviceId): PowerEvent {
   return { device: d, on, thump };
 }
 
+/** A power switch's spoken name: the device, then its state. */
+export function powerSwitchA11y(label: string, on: boolean, noCord: boolean): string {
+  return `${label} power, ${on ? 'on' : 'off'}${noCord ? ', but its cord is not in the strip' : ''}`;
+}
+
 export function PowerTray({ onEvent, lastEvent }: { onEvent: (e: PowerEvent) => void; lastEvent: PowerEvent | null }) {
   const booth: Booth = getBooth();
   return (
     <View style={styles.tray}>
       <Text style={styles.head}>POWER SWITCHES (a device needs its cord in the strip too)</Text>
-      {POWER_ORDER.map((p) => (
-        <View key={p.id} style={styles.powerRow}>
-          <Text style={[styles.dev, { color: deviceLive(booth, p.id) ? colors.green : colors.textSub }]}>{`${p.label}${booth.power[p.id] && !deviceLive(booth, p.id) ? ' (no power cord)' : ''}`}</Text>
-          <LabChip label={booth.power[p.id] ? 'ON' : 'OFF'} selected={booth.power[p.id]} onPress={() => onEvent(flipPower(p.id))} compact />
-        </View>
-      ))}
+      {/* The WHOLE row is the switch, named for its device (lab fix round
+          2026-11-14, F2: seven buttons were read aloud only as "OFF", and
+          the switch itself was 26 points wide). */}
+      {POWER_ORDER.map((p) => {
+        const on = booth.power[p.id];
+        const noCord = on && !deviceLive(booth, p.id);
+        return (
+          <Pressable
+            key={p.id}
+            style={styles.powerRow}
+            onPress={() => onEvent(flipPower(p.id))}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: on }}
+            aria-checked={on}
+            accessibilityLabel={powerSwitchA11y(p.label, on, noCord)}
+          >
+            <Text style={[styles.dev, { color: deviceLive(booth, p.id) ? colors.green : colors.textSub }]}>{`${p.label}${noCord ? ' (no power cord)' : ''}`}</Text>
+            <View style={[styles.powerPill, on && styles.powerPillOn]}>
+              <Text style={[styles.powerText, on && { color: colors.amber }]}>{on ? 'ON' : 'OFF'}</Text>
+            </View>
+          </Pressable>
+        );
+      })}
       {lastEvent?.thump ? <Text style={styles.warn}>THUMP — a speaker was already on while that switched. In a real room that bang goes straight to the speakers (and to ears). Speakers on LAST, off FIRST, levels down.</Text> : null}
     </View>
   );
@@ -123,7 +145,10 @@ const styles = StyleSheet.create({
   head: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   note: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
-  powerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  powerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44, paddingVertical: 2 },
+  powerPill: { minWidth: 64, minHeight: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', backgroundColor: '#141418', paddingHorizontal: 12 },
+  powerPillOn: { borderColor: colors.amber, backgroundColor: '#1a1409' },
+  powerText: { color: colors.textSub, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
   dev: { fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 0.8 },
   warn: { color: '#ff8a7e', fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   wrong: { color: colors.amber, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },

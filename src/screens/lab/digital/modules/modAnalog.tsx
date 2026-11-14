@@ -31,6 +31,7 @@ import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { startFenced } from '../../../../features/audio/startFenced';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafety';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { levelColor } from '../../../../features/tools/levelColor';
@@ -56,6 +57,14 @@ import { useStopOnClose } from '../../../../features/audio/useStopOnBlur';
 function fmtHz(f: number): string {
   if (f >= 1000) return `${Number((f / 1000).toFixed(2))} kHz`;
   return `${Math.round(f)} Hz`;
+}
+
+/** A bezel value as number + unit line (BezelItem `v` + `sub`), so a long
+ *  frequency keeps its key at 390 wide (beginner audit 2026-11-14: INPUT and
+ *  READS AS lost their keys at "14.27 kHz"). */
+function hzCell(f: number, extra = ''): { v: string; sub: string } {
+  if (f >= 1000) return { v: `${Number((f / 1000).toFixed(2))}`, sub: `kHz${extra}` };
+  return { v: `${Math.round(f)}`, sub: `Hz${extra}` };
 }
 
 /** Compact ≤7-char frequency for the dock button. */
@@ -139,6 +148,11 @@ const ANALOG_CHECK: CheckSpec = {
     'Nothing measurable until the converter clocks it',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Numbers only exist after the converter. The question is one microsecond BEFORE it.',
+    2: 'Steps come from sampling, inside the converter. Before it, nothing has been sampled yet.',
+    3: 'The microphone and preamp are already making a voltage. Look at the third view in the display.',
+  },
   reveal:
     'Analog all the way: the microphone and preamp produce a voltage that varies continuously in ' +
     'time and in level — infinitely many values between any two instants. No numbers exist ' +
@@ -300,13 +314,15 @@ export function AnalogModule(p: DigitalModuleProps) {
         badge:
           // Shortened (emulator pass 2026-10-14): the two-line strip cut the
           // old wording after "(blue quiet →", losing the colour key's end.
-          'ILLUSTRATIVE MODEL, SLOWED · ONE EVENT, 3 VIEWS IN STEP: PRESSURE → DIAPHRAGM → VOLTAGE · COLOR = LOUDNESS (blue quiet → red full scale)',
+          // Short enough for the two-line badge at 390 (beginner audit 2026-11-14:
+          // it was cut at "COLOR · LOUDNESS (blu…").
+          'ILLUSTRATIVE MODEL, SLOWED · ONE SOUND, 3 VIEWS · COLOR = LOUDNESS (blue quiet → red full scale)',
         onGuide: () => p.help('waveform_view'),
         bezel: [
           { k: 'FREQ', v: wave === 'noise' ? 'broadband' : `${freq} Hz`, helpKey: 'source' },
-          { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms`, helpKey: 'waveform_view' },
+          { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms`, helpKey: 'waveform_view', caption: 'one cycle' },
           { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
-          { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
+          { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—', helpKey: 'waveform_view', caption: 'average' },
         ],
         render: (w, h) =>
           viz ? (
@@ -393,6 +409,11 @@ const CHECK_ALIAS: CheckSpec = {
     'A 6 kHz alias (30k − 24k)',
   ],
   correctIdx: 2,
+  why: {
+    0: 'Push FREQ past NYQUIST and watch READS AS: the tone does not vanish, it lands somewhere.',
+    1: 'At 48 kHz nothing above 24 kHz can be stored as itself. Check NYQUIST.',
+    3: 'The fold is measured from the nearest multiple of the sample RATE, not from Nyquist.',
+  },
   reveal:
     '30 kHz is above Nyquist (24 kHz), so the sample points fit a lower sinusoid exactly: ' +
     '|30,000 − 48,000| = 18,000 Hz. Folded around Nyquist: 24k − (30k − 24k) = 18 kHz. Try it with ' +
@@ -404,11 +425,16 @@ const CHECK_AA: CheckSpec = {
   question: 'Why must the anti-aliasing filter sit BEFORE the sampler instead of after it?',
   options: [
     'It protects the microphone from ultrasonic damage',
-    'After sampling, an alias is an ordinary in-band signal — no filter can tell it from real audio',
+    'After sampling, an alias looks like real audio — no filter can split them',
     'Filters only work on analog signals, never on digital ones',
     'It is cheaper to build the electronics that way',
   ],
   correctIdx: 1,
+  why: {
+    0: 'A microphone is not harmed by ultrasound. The filter protects the RECORDING.',
+    2: 'Digital filters exist and are everywhere. The question is what they can still tell apart.',
+    3: 'Cost is not the reason. Think about what an alias looks like once it is stored.',
+  },
   reveal:
     'Once folded, an alias lands inside the audio band and is mathematically identical to a real ' +
     'recording at that frequency — the damage is permanent and unremovable. The only place to ' +
@@ -689,7 +715,16 @@ export function SamplingModule(p: DigitalModuleProps) {
       helpKey: 'aliasing',
       render: () => (
         <View style={{ gap: 10 }}>
-          <Text style={dstyles.eyebrow}>HEAR THE FOLD</Text>
+          <Text style={dstyles.eyebrow}>
+            HEAR THE FOLD <NeedsSoundTag />
+          </Text>
+          {/* The can't-listen path (phase 2, S3): what the two buttons would
+              play, read off the screen. */}
+          <Text style={dstyles.caption}>
+            {`Can’t listen now? INPUT plays ${fmtHz(f)}; PREDICTED ALIAS plays ${fmtHz(alias)}, the READS AS number. ${
+              aliased ? 'They differ: the red curve on the display is the lower tone you would hear.' : 'Below NYQUIST they are the same tone.'
+            }`}
+          </Text>
           {!engineReady ? (
             <EngineGate state={gate} />
           ) : (
@@ -759,14 +794,17 @@ export function SamplingModule(p: DigitalModuleProps) {
           'EVERY DOT IS A MEASUREMENT OF THE CONTINUOUS SIGNAL — NOT A BLOCK OF SOUND. BELOW NYQUIST THE DOTS DESCRIBE IT COMPLETELY.',
         onGuide: () => p.help('sample_rate'),
         bezel: [
+          // RATE, never FS (beginner audit 2026-11-14): FS means FULL SCALE on
+          // module 1 ("0.75 FS"); the sample rate is RATE, as on the dock key.
           {
-            k: 'FS',
-            v: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)`,
+            k: 'RATE', caption: 'samples a sec',
+            ...hzCell(fs, rateMode.kind === 'abs' ? '' : ` (${rateMode.mult}×f)`),
+            vA11y: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)`,
             helpKey: 'sample_rate',
           },
-          { k: 'INPUT', v: fmtHz(f), helpKey: 'nyquist' },
-          { k: 'NYQUIST', v: fmtHz(nyq), helpKey: 'nyquist' },
-          { k: 'READS AS', v: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing' },
+          { k: 'INPUT', ...hzCell(f), vA11y: fmtHz(f), helpKey: 'nyquist' },
+          { k: 'NYQUIST', ...hzCell(nyq), vA11y: fmtHz(nyq), helpKey: 'nyquist', caption: 'highest kept' },
+          { k: 'READS AS', ...hzCell(alias), vA11y: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing', caption: 'what you get' },
         ],
         render: (w, h) =>
           viz ? (

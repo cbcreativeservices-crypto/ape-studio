@@ -292,7 +292,9 @@ describe('5. wiring + the accuracy-chip decision', () => {
     // the shell honours all three: the end guide shows only while ending, titled WHERE YOU ARE
     assert.match(SHELL, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
     assert.match(SHELL, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
-    assert.match(SHELL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} \/> : null\}/);
+    // Lab fix round 2026-11-14 (S3's shared need, owner approval "Begin fixing all bugs found and do obvious ...
+    // fixes as you suggested in the report"): the note also takes the lab's accuracyVariant.
+    assert.match(SHELL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} variant=\{accuracyVariant\} \/> : null\}/);
   });
   it('a CONCEPT lab: nothing plays, nothing is measured, and every figure keeps its "conceptual" badge', () => {
     assert.doesNotMatch(LAB + HUB, /ApeDsp|useMicrophone|getUserMedia|AudioRecorder|startFenced/);

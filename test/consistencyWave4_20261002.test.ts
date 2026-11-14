@@ -164,10 +164,12 @@ test('2 · the exposure screen says an unreadable earlier dose inline, in the no
 
 /* ───────────────────────── 3. career education chip ───────────────────────── */
 
-test('3 · educationChip: PE LICENSE / DEGREE REQ. on the collapsed row; LICENSED titles keep their own chip', () => {
+// "DEGREE REQUIRED", spelled out (Comp A Career Finder text review 2026-11-14, CF-A0597; owner:
+// "assign an agent in the background to work on this").
+test('3 · educationChip: PE LICENSE / DEGREE REQUIRED on the collapsed row; LICENSED titles keep their own chip', () => {
   assert.equal(edu.educationChip({ regulated: false, professionalEngineer: true, preparation: "Bachelor's degree common" }), 'PE LICENSE');
-  assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: "Bachelor's to doctorate, depending on research responsibility" }), 'DEGREE REQ.');
-  assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: 'Graduate degree commonly expected' }), 'DEGREE REQ.');
+  assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: "Bachelor's to doctorate, depending on research responsibility" }), 'DEGREE REQUIRED');
+  assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: 'Graduate degree commonly expected' }), 'DEGREE REQUIRED');
   assert.equal(edu.educationChip({ regulated: true, professionalEngineer: true, preparation: "Master's" }), null, 'LICENSED already shows');
   assert.equal(edu.educationChip({ regulated: false, professionalEngineer: false, preparation: 'Portfolio, credits, craft training' }), null);
   // The chip is exactly the expanded row's disclosure, never a different rule.

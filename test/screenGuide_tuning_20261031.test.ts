@@ -56,7 +56,9 @@ describe('1. every Tuning & Temperament screen has a complete guide', () => {
   it('one guide per chapter, in CHAPTERS order — the registry still lists these fourteen files', () => {
     const reg = code(`${DIR}/chapters/index.ts`);
     assert.equal(GUIDES.length, 14);
-    const order = [...reg.matchAll(/\{ index: (\d+), title: CHAPTER_TITLES\[\d+\], short: '[^']*', objective: '[^']*',(?: rack: true,)? Component: (Ch\w+) \}/g)].map((m) => [Number(m[1]), m[2]]);
+    // `ackDone: true` (fix round 2026-11-14, owner: "Begin fixing all bugs found and do
+    // obvious … fixes"): a NEXT off an acknowledgement-only chapter marks it.
+    const order = [...reg.matchAll(/\{ index: (\d+), title: CHAPTER_TITLES\[\d+\], short: '[^']*', objective: '[^']*',(?: rack: true,)?(?: ackDone: true,)? Component: (Ch\w+) \}/g)].map((m) => [Number(m[1]), m[2]]);
     assert.deepEqual(order.map((o) => o[0]), [...Array(14).keys()]);
     assert.deepEqual(order.map((o) => o[1]), CH_FILES.map((f) => f.replace(/^ch(\d+)(\w+)$/, (_, n, w) => `Ch${n}${w}`)));
   });

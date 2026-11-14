@@ -491,7 +491,9 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
   });
 
   it('PROGRESS mode: no credit keys → rows read ✓ DONE and the lead says saved on this device', () => {
-    assert.doesNotMatch(s, /creditLabKey|pageCreditKeys|handsOnDetail|pageDetail|optionalPage|labDoneKey/);
+    // `pageDetail` (fix round 2026-11-14, owner: "Begin fixing all bugs found and do obvious … fixes";
+    // SHARED_API S2 §4) is a what's-left LINE only; it changes no credit, so it is allowed here.
+    assert.doesNotMatch(s, /creditLabKey|pageCreditKeys|handsOnDetail|optionalPage|labDoneKey/);
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(endBlock, /mode=\{creditMode\}/);
     assert.match(endBlock, /noun="page"/);
@@ -524,7 +526,9 @@ describe('7. the what’s-left END screen guide (SPEECH_END_GUIDE)', () => {
     assert.match(s, /title: 'Check Yourself', short: 'Check', Component: PageSpeechChecks, manualDone: true/);
     assert.match(B, /const PASS_MARK = 5;/);
     assert.match(B, /if \(n >= PASS_MARK && !isDone\) markDone\(\);/);
-    assert.match(B, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : null\}/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // once tapped, the page says it is done instead of the button vanishing.
+    assert.match(B, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : <Text style=\{styles\.doneLine\}>✓ THIS PAGE IS DONE · NEXT MOVES ON<\/Text>\}/);
     // goTo (a row tap / CONTENTS jump) never marks a page
     const goTo = PAGED.match(/const goTo = useCallback\([\s\S]*?\n  \}, \[/)![0];
     assert.doesNotMatch(goTo, /markDone/);

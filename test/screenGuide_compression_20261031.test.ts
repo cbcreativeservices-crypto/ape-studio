@@ -159,7 +159,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(COMP, /label: 'RELEASE', paramId: P\.releaseMs[\s\S]*?\[\s*\{ label: '30 ms', value: 30 \},\s*\{ label: '120 ms', value: 120 \},\s*\{ label: '500 ms', value: 500 \},/);
     assert.match(COMP, /id: 'env', label: 'ATK\/REL', paramIds: \[P\.attackMs, P\.releaseMs\]/);
     assert.match(COMP, /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
-    assert.match(COMP, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb \},\s*\{ k: 'RATIO', paramId: P\.ratio \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(COMP, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb(?:, caption: '[^']*')? \},\s*\{ k: 'RATIO', paramId: P\.ratio(?:, caption: '[^']*')? \},\s*\]/);
     assert.match(COMP, /pollGr: 'comp'/);
     // the lab's own two well questions — "two quick questions"
     assert.equal((COMP.match(/^\s{6}question: '/gm) ?? []).length, 2);

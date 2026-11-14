@@ -16,11 +16,19 @@
  * strip; FIX first chooses ONE setting, then shows that setting's two
  * values, so all five settings are reachable above the fold.
  *
+ * FIX OPENS ON NO SETTING (lab fix round 2026-11-14; beginner audit G5b:
+ * "The FIX tray opens with the right tab already selected and ticked: it
+ * gives the answer away, and a beginner may read the ✓ as 'this one is
+ * fine'"). The learner chooses the setting; the chosen chip carries ▸, the
+ * mark the fault picker uses for "shown now", never ✓.
+ *
  * The bench is data/gaFaults: a fault counts as fixed only when it was
  * planted on this page (every page opens on a clean scene, so no fault
  * arrives from elsewhere), its symptom really happened (the reducer's
- * facts, compared across two states), and its setting is correct again —
- * so nobody fixes a fault by pressing two buttons without looking.
+ * facts, compared across two states), its setting is correct again, AND
+ * the same action was run again and came out healthy — so nobody fixes a
+ * fault by pressing two buttons without looking, and all five are proved
+ * the same way (before 2026-11-14 only fault 5 asked for the re-run).
  *
  * Common mistake taught against: declaring success because the picture
  * changed.
@@ -38,7 +46,7 @@ import { gaTerms } from '../gaTerms';
 import { gaPlaying } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { Tray, TrayChip, TrayGrid, TrayNote, onOff, speaking, useWatch } from './chdKit';
-import { FAULTS, FAULT_IDS, FAULT_STATUS_MARK, FAULT_STATUS_WORD, benchAdvance, benchStart, faultActions, faultDef, faultFixed, faultOpen, faultSet, faultStatus, faultsOpen, fixChoices, nextFault, settingsWrong, standMoves, standingOn, stepInPlace, type Bench, type FaultId, type StandId } from './data/gaFaults';
+import { FAULTS, FAULT_IDS, FAULT_STATUS_MARK, FAULT_STATUS_WORD, benchAdvance, benchStart, faultActions, faultDef, faultFixed, faultOpen, faultRetest, faultSet, faultStatus, faultsOpen, fixChoices, nextFault, settingsWrong, standMoves, standingOn, stepInPlace, type Bench, type FaultId, type StandId } from './data/gaFaults';
 import { G19 } from './guides/p19';
 
 const ASSETS = ['door', 'door_rattle', 'gen_hum', 'gen_air', 'vo_greeting', 'vo_greeting_long', 'fs_wood_1', 'fs_wood_2', 'fs_wood_3', 'fs_wood_4', 'fs_stone_1', 'fs_stone_2', 'fs_stone_3', 'fs_stone_4', 'fs_gravel_1', 'fs_gravel_2', 'fs_gravel_3', 'fs_gravel_4'] as const;
@@ -109,40 +117,51 @@ function TestTray() {
   );
 }
 
+/** The FIX tray's words before a setting is chosen. Two lines at 390 wide,
+ *  in the place the two values take, so no chip moves when one is chosen. */
+export const P19_FIX_NEUTRAL = 'Choose the setting you think is wrong. Its two values appear here, and ● marks the one in use now.';
+
 /** FIX tray: first choose ONE of the five settings (a row of five chips),
  *  then its two values, with the filled mark on the value that is in now.
  *  Two rows, so all five settings are above the fold (W2-03: five rows of
- *  values were 256 points in a 220-point tray). It opens on the setting of
- *  the fault whose card is on screen. The chips name settings, not faults:
- *  nothing here says which value is wrong. */
-function FixTray({ start }: { start: FaultId }) {
+ *  values were 256 points in a 220-point tray). It opens with NO setting
+ *  chosen (see the header): which setting to look at is the learner's
+ *  finding. The chips name settings, not faults: nothing here says which
+ *  value is wrong. */
+function FixTray() {
   const s = useGa();
-  const [pick, setPick] = useState<FaultId>(start);
-  const f = faultDef(pick);
-  const wrongNow = faultSet(f.id, s);
+  const [pick, setPick] = useState<FaultId | null>(null);
+  const f = pick ? faultDef(pick) : null;
+  const wrongNow = f ? faultSet(f.id, s) : false;
   return (
     <Tray>
       <TrayGrid cols={5}>
         {FAULTS.map((x) => (
-          <TrayChip key={x.id} label={marked(x.pick, x.id === pick)} a11y={`Show the setting ${x.setting}`} selected={x.id === pick} onPress={() => setPick(x.id)} />
+          <TrayChip key={x.id} label={`${x.id === pick ? '▸ ' : ''}${x.pick}`} a11y={`Show the setting ${x.setting}${x.id === pick ? ', shown now' : ''}`} selected={x.id === pick} onPress={() => setPick(x.id)} />
         ))}
       </TrayGrid>
-      <TrayGrid head={f.setting} cols={2}>
-        {fixChoices(f).map((c) => {
-          const current = c.right !== wrongNow;
-          return (
-            <TrayChip
-              key={c.label}
-              label={`${current ? '●' : '○'} ${c.label}`}
-              a11y={`${f.setting}: ${c.label}, ${current ? 'chosen now' : 'not chosen'}`}
-              selected={current}
-              onPress={() => {
-                if (!current) setFault(f.id, !c.right);
-              }}
-            />
-          );
-        })}
-      </TrayGrid>
+      {f ? (
+        <TrayGrid head={f.setting} cols={2}>
+          {fixChoices(f).map((c) => {
+            const current = c.right !== wrongNow;
+            return (
+              <TrayChip
+                key={c.label}
+                label={`${current ? '●' : '○'} ${c.label}`}
+                a11y={`${f.setting}: ${c.label}, ${current ? 'chosen now' : 'not chosen'}`}
+                selected={current}
+                onPress={() => {
+                  if (!current) setFault(f.id, !c.right);
+                }}
+              />
+            );
+          })}
+        </TrayGrid>
+      ) : (
+        <View style={styles.neutral}>
+          <TrayNote>{P19_FIX_NEUTRAL}</TrayNote>
+        </View>
+      )}
     </Tray>
   );
 }
@@ -151,7 +170,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
   const s = useGa();
   const bench = useWatch(s, benchStart, benchAdvance);
   const [check, setCheck] = useState(false);
-  /** The fault whose card step 4 shows (and FIX opens on). */
+  /** The fault whose card step 4 shows. */
   const [focus, setFocus] = useState<FaultId>(FAULT_IDS[0]);
 
   const goals = [...FAULTS.map((f) => ({ label: f.goal, hit: faultFixed(f.id, bench, s) })), { label: 'Pass the check', hit: check }];
@@ -165,15 +184,18 @@ function Page({ ctx }: { ctx: PageCtx }) {
     kind: 'group',
     id: 'fix',
     label: 'FIX',
-    valueLabel: wrong ? `${wrong} WRONG` : 'ALL OK',
-    valueA11y: wrong ? `${gaCount(wrong, 'setting is', 'settings are')} wrong now` : 'every setting is correct now',
-    render: () => <FixTray start={focus} />,
+    // every setting right but a fault still open = its re-run is owed: the key
+    // must not read ALL OK beside FAULTS 1
+    valueLabel: wrong ? `${wrong} WRONG` : open ? 'RE-TEST' : 'ALL OK',
+    valueA11y: wrong ? `${gaCount(wrong, 'setting is', 'settings are')} wrong now` : open ? `every setting is correct now; ${gaCount(open, 'fault still needs', 'faults still need')} its action run again` : 'every setting is correct now',
+    render: () => <FixTray />,
   };
 
   return (
     <GaRack
       spec={{
-        keys: [testKey, fixKey, masterKey(s)],
+        // the slider first, as on every other page (the lab's one key order)
+        keys: [masterKey(s), testKey, fixKey],
         initialParam: 'master',
         hud: FAULT_HUD[focus],
         readouts: [
@@ -197,7 +219,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <Do>Start fault 1 on its card in step 4. Repeat the action, read the log, compare it with the picture, and only then open FIX.</Do>
-        <P>Each fault is one wrong setting. It counts as fixed after you have seen its symptom and corrected the setting: finding comes before fixing. After a fix, run the same action again.</P>
+        <P>Each fault is one wrong setting. Finding comes before fixing, and testing comes after. A fault is fixed once you have seen its symptom, corrected the setting, and run the same action again.</P>
         <Note tone="mistake">Declaring success because the picture changed. An animation shows that the game acted. A START line shows that the audio side started it. Your ears confirm it reached you.</Note>
       </Step>
       <Step n={4}>
@@ -252,10 +274,12 @@ function FaultRow({ id, bench, onNext }: { id: FaultId; bench: Bench; onNext: (i
   const f = faultDef(id);
   const open = faultOpen(id, bench, s);
   const fixed = faultFixed(id, bench, s);
+  // the setting is correct and the re-run is still owed: the card says which action to repeat
+  const retest = faultRetest(id, bench, s) ? f.retest : undefined;
   const next = fixed ? nextFault(id, bench, s) : null;
   return (
     <>
-      <FaultCard key={id} title={f.title} symptom={f.symptom} armed={open} fixed={fixed} onStart={() => setFault(id, true)} hints={f.hints} why={f.why} />
+      <FaultCard key={id} title={f.title} symptom={f.symptom} armed={open} fixed={fixed} onStart={() => setFault(id, true)} hints={f.hints} why={f.why} retest={retest} />
       {next ? (
         <View style={styles.next}>
           <TrayChip label={`NEXT: FAULT ${FAULT_IDS.indexOf(next) + 1} ›`} onPress={() => onNext(next)} />
@@ -273,6 +297,8 @@ function FaultRow({ id, bench, onNext }: { id: FaultId; bench: Bench; onNext: (i
 
 const styles = StyleSheet.create({
   next: { alignSelf: 'flex-start', minWidth: 160 },
+  // as tall as a heading and a row of value chips (chdKit: 11-pt head + 5 gap + 44), so the tray keeps its size
+  neutral: { minHeight: 63, justifyContent: 'center' },
 });
 
 export const P19: PageDef = { title: 'Testing and fault finding', short: 'TESTING', Component: Page, manualDone: true, rack: true, guide: G19 };

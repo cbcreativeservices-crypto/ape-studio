@@ -158,7 +158,11 @@ describe('2. the right term — and the right meaning — per lab', () => {
       DistortionLab: 'Distortion',
       PhaseLab: 'Phase',
       OscillatorLab: 'Oscillator',
-      NoiseLab: 'Noise',
+      // 2026-11-14 (lab fix round S1, quick win 9; owner approval "Begin
+      // fixing all bugs found and do obvious ... fixes"): "Noise" (unwanted
+      // signal) contradicted a lab that plays noise on purpose; the live row
+      // "noise color" is what the lab teaches first, copied verbatim.
+      NoiseLab: 'noise color',
       HarmonicLab: 'Harmonics',
       ModularLab: 'Modular synthesizer',
       StereoLab: 'Stereo Imaging',
@@ -283,10 +287,16 @@ describe('2. the right term — and the right meaning — per lab', () => {
 });
 
 describe('3. who sees it: everyone on a FREE lab, members only on a members-only lab', () => {
-  it('members-only lab — locked (guest or free), checking and unconfirmed: nothing shown, nothing owed', () => {
-    for (const gate of ['locked', 'checking', 'unconfirmed'] as const) {
+  it('members-only lab — locked (guest or free) and unconfirmed: nothing shown, nothing owed; checking: owed, nothing shown', () => {
+    for (const gate of ['locked', 'unconfirmed'] as const) {
       assert.deepEqual(state({ gate }), { owed: false, show: false }, gate);
     }
+    // CHANGED 2026-11-14 (lab fix round S1; owner approval "Begin fixing all
+    // bugs found and do obvious ... fixes", report row 1, one popup at a
+    // time): while membership is still being checked the term may be owed in
+    // a moment, so the screen's intro card waits instead of presenting first
+    // and having the term land on top of it. Still nothing shown.
+    assert.deepEqual(state({ gate: 'checking' }), { owed: true, show: false });
   });
   it('never over a members-only preview scrim', () => {
     assert.deepEqual(state({ previewActive: true }), { owed: false, show: false });
@@ -399,8 +409,11 @@ describe('5. ordering — first, and never stacked', () => {
   it('the lab shell’s entry audio prompt (the sound-safety / output popup) waits for it, and asks once', () => {
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /const labTermFirst = useLabTermIntroOwed\(\);/);
-    assert.match(shell, /if \(labTermFirst \|\| entryAskedRef\.current\) return undefined;/);
-    assert.match(shell, /if \(isLabTermIntroOwed\(\)\) return;[^\n]*\n\s*entryAskedRef\.current = true;\s*void requestAudioOutput\(\);/);
+    // Lab fix round 1 (2026-11-14, S1's SN1; owner: "Once per session
+    // (Recommended)"): the ask still waits for the card; it is now an `auto`
+    // ask, and after a card closes it asks at once (rootModalHoldMs).
+    assert.match(shell, /if \(labTermFirst\) \{\s*waitedRef\.current = true;\s*return undefined;\s*\}\s*if \(entryAskedRef\.current\) return undefined;/);
+    assert.match(shell, /if \(isLabTermIntroOwed\(\)\) return;[^\n]*\n\s*entryAskedRef\.current = true;\s*markSoundAsk\('auto'\);[^\n]*\n\s*void requestAudioOutput\(\);/);
     assert.match(shell, /\}, \[labTermFirst\]\);/);
   });
   it('the owed flag is published before paint and cleared on unmount', () => {

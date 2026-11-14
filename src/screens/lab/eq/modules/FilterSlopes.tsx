@@ -41,9 +41,9 @@ type Slope = (typeof SLOPES)[number];
 const CHECK: CheckSpec = {
   question: '“24 dB per octave” describes…',
   options: [
-    'How quickly attenuation increases beyond the filter’s transition region',
+    'How fast the cut deepens past the cutoff',
     'How much the filter boosts at the cutoff',
-    'How wide the filter’s Q is',
+    'How wide the filter’s bell (its Q) is',
   ],
   correctIdx: 0,
   reveal:
@@ -59,6 +59,11 @@ const CHECK: CheckSpec = {
    * The teaching point survives without the false half: slope is a RATE, Q is
    * not what "per octave" measures.
    */
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    1: '“Per octave” is a rate, not a boost: it says how something changes from one octave to the next.',
+    2: 'Q shapes the corner, but “per octave” is about how fast something changes, not a width.',
+  },
   wrongHint:
     'Slope is a rate, not a width. A pass filter does have a Q — it sets how much the response peaks right at the corner — but that is not what “per octave” measures.',
 };
@@ -120,8 +125,8 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         badge: `Butterworth response — ${order} pole${order === 1 ? '' : 's'} (slope settles at ${slope} dB/oct).`,
         bezel: [
-          { k: 'SLOPE', v: `${slope} dB/OCT` },
-          { k: 'CUTOFF', v: `${CUTOFF} Hz` },
+          { k: 'SLOPE', caption: 'how steep', v: `${slope} dB/OCT` },
+          { k: 'CUTOFF', caption: 'cut starts', v: `${CUTOFF} Hz` },
           // Geometry proof: the REAL computed attenuation at 40 and 20 Hz.
           { k: '@40 Hz', v: `${atOctBelow.toFixed(1)} dB` },
           { k: '@20 Hz', v: `${atTwoOct.toFixed(1)} dB` },

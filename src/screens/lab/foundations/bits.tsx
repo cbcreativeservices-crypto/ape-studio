@@ -27,6 +27,7 @@ import { NO_INSETS, laneDragValue, laneRawAt, laneValueAt } from '../rack/laneEd
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
 import { laneFingerAt, laneFingerDx, laneLandDx, type LaneFinger, type LaneLift } from '../rack/laneFinger';
+import { addMiss, checkWrongText, showRevealAfterMisses } from './checkWords';
 
 export type CheckSpec = {
   question: string;
@@ -36,11 +37,18 @@ export type CheckSpec = {
   reveal: string;
   /** Shown after a wrong answer (gentle nudge, stays until solved). */
   wrongHint?: string;
+  /** A reason per WRONG option, keyed by the AUTHORED option index (the card
+   *  shuffles only what it shows). Wins over `wrongHint` for that option
+   *  (lab fix round 2026-11-14, shared check card); see checkWords.ts. */
+  why?: Record<number, string>;
 };
 
 export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: () => void }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [solved, setSolved] = useState(false);
+  // Distinct wrong options picked so far (checkWords.addMiss): after a second,
+  // different miss the explanation shows under the reason.
+  const [misses, setMisses] = useState<number[]>([]);
   // Collapsible (owner 2026-08-31): same expand/close triangle as the
   // WHAT'S HAPPENING sections, in the card's top-left. Starts open.
   const [open, setOpen] = useState(true);
@@ -66,6 +74,7 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
   const pick = (orig: number) => {
     if (solved || solvedRef.current) return;
     setPicked(orig);
+    setMisses((m) => addMiss(m, orig, spec.correctIdx));
     if (orig === spec.correctIdx) {
       solvedRef.current = true;
       setSolved(true);
@@ -120,7 +129,10 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
       {solved ? (
         <Text style={styles.checkReveal}>✓ {spec.reveal}</Text>
       ) : picked != null ? (
-        <Text style={styles.checkHint}>{spec.wrongHint ?? 'Not quite — try again.'}</Text>
+        <>
+          <Text style={styles.checkHint}>{checkWrongText(spec, picked)}</Text>
+          {showRevealAfterMisses(misses) ? <Text style={styles.checkRevealAfterMiss}>{spec.reveal}</Text> : null}
+        </>
       ) : null}
         </>
       )}
@@ -507,6 +519,7 @@ const styles = StyleSheet.create({
   checkOptTextBad: { color: '#ff6b5e' },
   checkReveal: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#37e05f' },
   checkHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: '#ff8d7a' },
+  checkRevealAfterMiss: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
 
   // DragSlider
   sliderHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },

@@ -85,9 +85,11 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/drumtuning/modules/ch1Sound.tsx", now: "OVERTONES are the higher notes that ring above it; the lab scores them as the share of the hit far above the pitch (above three times it).", gone: "OVERTONES are the notes above it (the share of the hit above three times the pitch)." },
   { file: "src/screens/lab/drumtuning/modules/ch2Prepare.tsx", now: "so the head rises evenly instead of wrinkling on one side.\"", gone: "so the head rises evenly and never wrinkles on one side.\"" },
   { file: "src/screens/lab/drumtuning/modules/ch2Prepare.tsx", now: "ead has a working range; turn rods with a drum key and your fingers only, not pliers or a drill.</Body>", gone: "ead has a working range; drum key and fingers only.</Body>" },
-  { file: "src/screens/lab/fxLabConfigs.tsx", now: "'The peaks between the notches grow tall and narrow and ring", gone: "'The notches deepen and the pea" }, // 2026-10-31: at MIX 50% FDBK makes notches shallower; the peaks are what grow (combResponseDb)
+  // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", check card row 4: balanced option lengths): the option is shorter; the physics (peaks grow, not deeper notches) is unchanged.
+  { file: "src/screens/lab/fxLabConfigs.tsx", now: "'Tall, narrow peaks ring between the notches'", gone: "'The notches deepen and the pea" }, // 2026-10-31: at MIX 50% FDBK makes notches shallower; the peaks are what grow (combResponseDb)
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "rculates the delayed copy: the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant", gone: "rculates the delayed copy, sharpening the comb: deeper notches, resonant peaks" }, // D42 r2 2026-11-01: "deeper contrast" was false at MIX 50% (notches get shallower)
-  { file: "src/screens/lab/fxLabConfigs.tsx", now: "with a very high ratio — peaks held at a ceiling',", gone: "with a very high ratio — a ceiling nothing passes'," },
+  // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", check card row 4: balanced option lengths): the right answer lost its glued-on reason; the reveal keeps it.
+  { file: "src/screens/lab/fxLabConfigs.tsx", now: "'A compressor with a very high ratio',", gone: "with a very high ratio — a ceiling nothing passes'," },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "note: 'Hot: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Everything", gone: "note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "working level, under the NIOSH recommended exposure limit:", gone: "working level, under the daily exposure limit:" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "te: 'Unsafe for working: about three hours or less a day at this level (NIOSH),", gone: "te: 'Unsafe for working: two hours or less a day at this level," },
@@ -137,14 +139,21 @@ test('audit R2 · D_labs: corrected wording present, wrong wording gone', () => 
 
 test('audit R2 · D_labs: developer build notes show only in dev builds, learners get plain words', () => {
   const DEV: [string, string, string][] = [
-    ['src/screens/lab/BinauralLabScreen.tsx', 'Binaural audio needs the v7 engine build', 'cannot play the binaural mix yet'],
+    // Binaural + effect labs: learner lines changed on purpose, lab fix round 1 (F7; owner 2026-11-14: "Begin
+    // fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the
+    // report."): no "update the app"; the web says where the sound plays.
+    ['src/screens/lab/BinauralLabScreen.tsx', 'Binaural audio needs the v7 engine build', 'The binaural mix can’t play on this device.'],
     ['src/screens/lab/FmLabScreen.tsx', 'FM audio needs the v7 engine build', 'cannot play the FM voice yet'],
-    ['src/screens/lab/FxLabScreen.tsx', 'Effect AUDIO needs the v6 engine build', 'cannot play the effect audio yet'],
-    ['src/screens/lab/SignalChainLabScreen.tsx', 'Chain AUDIO needs the v6 engine build', 'cannot play the chain audio yet'],
+    ['src/screens/lab/FxLabScreen.tsx', 'Effect AUDIO needs the v6 engine build', 'The effect audio can’t play on this device.'],
+    // Learner line changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."): no "update the app".
+    ['src/screens/lab/SignalChainLabScreen.tsx', 'Chain AUDIO needs the v6 engine build', 'The chain cannot play sound on this device.'],
     ['src/screens/lab/OscillatorLabScreen.tsx', 'This engine build predates the additive generator', 'plays the fundamental SINE only'],
     ['src/screens/lab/OscillatorLabScreen.tsx', 'Frequency and amplitude modulation are not in the current ape-dsp engine', 'have no controls in this lab'],
-    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the stereo dual-oscillator', 'update the app to HEAR the drifting-phase demo'],
-    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the additive generator', 'update the app to HEAR each harmonic enter the tone'],
+    // // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): the learner line points at the picture, never "update the app".
+    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the stereo dual-oscillator', 'set PRESET to 180° and watch the bottom line go flat'],
+    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the additive generator', 'watch the SUM change shape while its rate stays put'],
   ];
   for (const [file, dev, learner] of DEV) {
     const s = read(file);

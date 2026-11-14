@@ -309,7 +309,9 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
   });
   it('credit mode: the lab passes pageCreditKeys, so PagedLab runs LabEndScreen in credit mode (✓ CREDITED; ✓ DONE for a guest), noun "page"', () => {
     assert.match(SCREEN, /pageCreditKeys=\{PAGE_KEYS\}/);
-    assert.doesNotMatch(SCREEN, /creditLabKey=|labDoneKey=|optionalPage=|pageDetail=/, 'the guide assumes none of these — update it');
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; lab fix round phase 2, F4): pageDetail now gives each unfinished row its own goals.
+    assert.doesNotMatch(SCREEN, /creditLabKey=|labDoneKey=|optionalPage=/, 'the guide assumes none of these — update it');
+    assert.match(SCREEN, /pageDetail={pageDetail}/);
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(PAGED, /mode=\{creditMode\}\s*noun="page"/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
@@ -323,8 +325,13 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
     assert.match(KIT, /useMarkWhen\(all, \(\) => \{\s*if \(!ctx\.isDone\) ctx\.markDone\(\);/);
     assert.match(KIT, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
-    assert.ok(ET.includes('counts once the goals at the foot of the page are done; NEXT moves on without counting it.'), 'says the whole row line');
-    assert.match(ET, /every goal chip at its foot shows ✓\. On most pages one chip is Pass the check\. NEXT and FINISH move on without counting it/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs
+    // found and do obvious (my decision is not required) fixes as you
+    // suggestted in the report"; phase 2, F4): the rule is said once (HOW A
+    // PAGE COUNTS), each row names its own goals, and with sound off a ▶ tap
+    // counts as looked at (the silent path).
+    assert.ok(ET.includes('HOW A PAGE COUNTS says once how a page is credited. Each page still to do is listed with its own goals.'), 'says the row line');
+    assert.match(ET, /every goal chip at its foot shows ✓ \(sound off: a ▶ tap counts as looked at\)\. NEXT and FINISH move on without counting it/);
   });
   it('no check row: the lab has no understanding check; the guide names the pages’ Pass the check chips, never a "check row"', () => {
     assert.doesNotMatch(read('src/features/lab/understandingChecks.ts') + read('src/features/lab/understanding.ts'), /mixing-beg/);
@@ -357,7 +364,9 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab’s end s
 describe('5. the accuracy chip: KEPT — the lab shows measured level readouts', () => {
   it('the screen does not pass accuracy={false}; PagedLab’s default is true', () => {
     assert.doesNotMatch(code(`${MX}/BeginningMixingLabScreen.tsx`), /accuracy=\{false\}/);
-    assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, endGuide, accuracy = true \}/);
+    // Lab fix round 2026-11-14 (S3's shared need, owner approval "Begin fixing all bugs found and do obvious ...
+    // fixes as you suggested in the report"): PagedLab also takes accuracyVariant; the default stays true / 'tool'.
+    assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, endGuide, accuracy = true, accuracyVariant \}/);
   });
   it('the reason is on screen: Gain Staging draws measured meters', () => {
     assert.match(code(`${MX}/begArt.tsx`), /sub=\{a \? 'MEASURED' : 'PLAY IT'\}/);

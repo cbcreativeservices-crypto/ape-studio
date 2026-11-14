@@ -197,7 +197,10 @@ describe('review fixes 2026-10-31 (each vetted against the code)', () => {
     assert.ok(GUIDES.learn.seeing[0].includes('▶ in the header still plays or stops the melody'));
   });
   it('CHECK (decision 6, 2026-11-08): the 50% line works the 45¢ row, never the card’s 40¢ → 20¢, and does not state the share', () => {
-    assert.match(code('src/features/lab/understandingChecks.ts'), /sung 40 cents flat and CORRECTION AMOUNT is 50%[\s\S]*?correct: '20 cents flat'/);
+    // Lab fix round 2026-11-14, phase 2 (S2), owner approval: "Begin fixing all bugs found and do obvious ... fixes
+    // as you suggested in the report" + row 4 per-option reasons approved: the prompt names the on-screen control,
+    // AMOUNT (AutotuneLabScreen label: 'AMOUNT'), not "CORRECTION AMOUNT".
+    assert.match(code('src/features/lab/understandingChecks.ts'), /sung 40 cents flat and AMOUNT is 50%[\s\S]*?correct: '20 cents flat'/);
     const checkText = [textOf(GUIDES.check), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
     assert.doesNotMatch(checkText, /20 cents|20¢|half of the|100 cents|snaps instantly|before the correction has time/);
     assert.ok(GUIDES.check.tryThis[0].includes('ENDS reads about 22–23¢'));

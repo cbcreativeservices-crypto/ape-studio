@@ -111,10 +111,12 @@ describe('3. Career Finder store', () => {
     assert.equal((store as unknown as { isCareerFinderSaving: () => boolean }).isCareerFinderSaving(), false);
     store.resetLocal();
     const quiz = read('src/screens/careerfinder/CareerFinderQuizScreen.tsx');
-    assert.match(quiz, /backLabel=\{saving \? \(guest \? 'Leave the questions\. Your answers are kept until you close the app\.' : 'Leave the questions\. Your answers are saved\.'\) : 'Leave the questions\. Your answers could not be saved on this phone\.'\}/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(quiz, /backLabel=\{saving \? \(guest \? 'Leave the questions\. Your answers are kept until you close the app\.' : 'Leave the questions\. Your answers are saved\.'\) : 'Leave the questions\. Your answers could not be saved on this device\.'\}/);
     // (guestEphemeral 2026-10-04: a known guest's answers are erased at the
     // next launch, so they read "kept until you close the app" instead.)
-    assert.match(read('src/screens/careerfinder/CareerFinderScreen.tsx'), /\{saving \? \(guest \? 'kept until you close the app' : 'saved on this phone'\) : 'not saved on this phone'\}/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(read('src/screens/careerfinder/CareerFinderScreen.tsx'), /\{saving \? \(guest \? 'kept until you close the app' : 'saved on this device'\) : 'not saved on this device'\}/);
   });
 });
 

@@ -22,6 +22,8 @@ import { Animated, Easing, LayoutAnimation, Pressable, ScrollView, StyleSheet, T
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
+import { markSoundAsk } from '../../features/audio/soundSafetyAck';
+import { rootModalHoldMs } from '../../components/DimModal';
 import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -34,6 +36,7 @@ import { RackUnit, useRackLeaveFull } from './rack/RackUnit';
 import { readingColumn } from '../../theme/readingColumn';
 import { fitValue } from '../../theme/legibility';
 import { LabHeader } from './kit/LabNavBar';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, type ScreenGuide } from '../../features/lab/screenGuide';
 import type { DockParam, RackStage } from './rack/rackTypes';
@@ -567,8 +570,18 @@ export function LabShell({
   // fade). Asked at most once per visit.
   const labTermFirst = useLabTermIntroOwed();
   const entryAskedRef = useRef(false);
+  // S1's SN1 (lab fix round 1, 2026-11-14, row 2; owner: "Once per session
+  // (Recommended)"): the arrival ask is an `auto` ask (it never counts as a
+  // tap on ▶), and once a first-open card has closed it asks RIGHT AWAY (after
+  // any closing Modal's fade, rootModalHoldMs), so the sheet is up before the
+  // page takes a tap — never 1.2 s later, on the learner's next tap.
+  const waitedRef = useRef(false);
   useEffect(() => {
-    if (labTermFirst || entryAskedRef.current) return undefined;
+    if (labTermFirst) {
+      waitedRef.current = true;
+      return undefined;
+    }
+    if (entryAskedRef.current) return undefined;
     let done = false;
     const ask = () => {
       if (done) return;
@@ -579,8 +592,17 @@ export function LabShell({
       if (areOverlaysSuppressed()) return;
       if (isLabTermIntroOwed()) return; // the effect re-runs when it clears
       entryAskedRef.current = true;
+      markSoundAsk('auto'); // an ask nobody tapped for (owner 2026-11-14: once per session)
       void requestAudioOutput();
     };
+    // A first-open card just closed: ask NOW (after any closing Modal's fade).
+    if (waitedRef.current) {
+      const t = setTimeout(ask, rootModalHoldMs());
+      return () => {
+        done = true;
+        clearTimeout(t);
+      };
+    }
     const unsub = (navigation as any).addListener('transitionEnd', (e: { data?: { closing?: boolean } }) => {
       if (!e?.data?.closing) setTimeout(ask, 120);
     });
@@ -691,7 +713,12 @@ export function LabShell({
                     reportTrainingComplete(trainingKeyForCheck(labId));
                   }}
                 />
-                {checkEnd ?? null}
+                {/* Every check ends on FINISH · SEE WHAT'S LEFT (lab fix round 1,
+                    2026-11-14, quick win 4, S2's SHARED NEED; owner: "Begin
+                    fixing all bugs found and do obvious ... fixes as you
+                    suggested in the report"): a lab that passes no checkEnd of
+                    its own gets the shared what's-left layer. */}
+                {checkEnd ?? <LabCheckEnd labId={labId} labTitle={checkTitle ?? title} />}
               </View>
             </ScrollView>
             </View>

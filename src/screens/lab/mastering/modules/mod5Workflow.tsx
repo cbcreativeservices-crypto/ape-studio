@@ -118,6 +118,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
               { kind: 'action', id: 'stop', label: '■ STOP', onPress: pb.stop, tint: colors.green },
             ],
             initialParam: 'tilt',
+            soundOffLine: 'Sound off? Move TILT and watch the faceplate and the readouts change; the comparison by ear needs sound.',
           },
           well: (
             <>

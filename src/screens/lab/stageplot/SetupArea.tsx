@@ -17,7 +17,8 @@
  *     their name, in the same edit.
  *   • PERFORMERS is the second block: renaming the example's people is the
  *     first thing a user does.
- *   • The guided task is optional and closed until asked for.
+ *   • The guided task is optional. It is open on a plot started from a
+ *     blank stage and closed on an example band (GuidedTask, 2026-11-14).
  *
  * Every change goes through the editor's `apply` with spModel edits.
  */
@@ -52,7 +53,7 @@ import { GuidedTask } from './GuidedTask';
 import { InsideOffer, noteDisplaced } from './InsideOffer';
 import { DATE_HOW, spWhen } from './ProjectLibrary';
 import { useSpEditor } from './spContext';
-import { spSetupField, takeSpSetupAsk } from './spIssueActions';
+import { placeOnStage, spSetupField, takeSpSetupAsk } from './spIssueActions';
 import { Button, Choice, Count, Fields, HelpTip, Note, RowCard, Section, Sheet, Switch, TextField, type SpCommitHow } from './spForm';
 
 const CONTACT_FIELDS: readonly { key: 'name' | 'role' | 'email' | 'phone'; label: string; word: string; keyboard: 'default' | 'email' | 'phone'; placeholder?: string }[] = [
@@ -382,9 +383,11 @@ export function SetupArea() {
                           // back to Setup then does not reopen this row (S3-09)
                           onPress={() => {
                             const fig = p.objects.find((x) => x.performerId === pf.id && x.kind === 'performer') ?? p.objects.find((x) => x.performerId === pf.id);
-                            ed.goTo('stage', fig ? { kind: 'object', id: fig.id } : { kind: 'performer', id: pf.id });
+                            // PLACE really places (2026-11-14): one edit, then the stage with the figure selected
+                            if (fig) ed.goTo('stage', { kind: 'object', id: fig.id });
+                            else placeOnStage(ed, { kind: 'performer', id: pf.id });
                           }}
-                          a11yLabel={placed ? `Locate ${name} on the stage` : `Go to the Stage area to place ${name}`}
+                          a11yLabel={placed ? `Locate ${name} on the stage` : `Place ${name} on the stage and show it there`}
                         />
                         <Button label="REMOVE" tone="danger" onPress={() => setRemoving(pf.id)} a11yLabel={`Remove ${name}. You are shown what they are linked to first.`} />
                       </View>

@@ -48,6 +48,12 @@ import { facingKey, stepKey, useSince } from './shared';
 const ASSETS: readonly string[] = ['door', 'door_rattle', 'gen_hum', 'gen_air', 'fountain', 'amb_room', 'amb_yard', 'ir_room', ...GA_ASSETS.filter((a) => a.id.startsWith('fs_')).map((a) => a.id)];
 const TERMS = gaTerms('Audio Emitter', 'Attenuation curve', 'Minimum distance', 'Maximum distance', 'Positional audio', 'Cone attenuation');
 
+/** The SOURCES key's value: what is SWITCHED ON, said with ON / OFF. It read
+ *  "SOURCES ▸ NONE" while the tray showed "✓ GENERATOR 1" chosen to measure,
+ *  and a beginner took NONE for "nothing chosen" (beginner audit 2026-11-14,
+ *  G5 page 11). Never a bare NONE. The guide quotes these four. */
+const p11OnWord = (genOn: boolean, sceneOn: boolean): string => (genOn && sceneOn ? 'BOTH ON' : genOn ? 'GEN 1 ON' : sceneOn ? 'SCENE ON' : 'ALL OFF');
+
 /** The SOURCES tray: which source to measure, and what is switched on. */
 function SourcesTray({ src, setSrc }: { src: ChcSource; setSrc: (s: ChcSource) => void }) {
   const s = useGa();
@@ -88,7 +94,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
   ];
   const latched = useVisitGoals(ctx, goals);
 
-  const onWord = genOn && sceneOn ? 'BOTH' : genOn ? 'GEN 1' : sceneOn ? 'SCENE' : 'NONE';
+  // what is SWITCHED ON, said with ON / OFF: the key read "SOURCES ▸ NONE"
+  // while the tray showed "✓ GENERATOR 1" chosen to measure, and a beginner
+  // took NONE for "nothing chosen" (beginner audit 2026-11-14, G5 page 11)
+  const onWord = p11OnWord(genOn, sceneOn);
   const sourcesKey: DockParam = {
     kind: 'group',
     id: 'sources',

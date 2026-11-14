@@ -289,6 +289,10 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
       assert.match(src, /useLabVisitsUnreadable\(\)/, p);
       // EQ (D41 J2, 2026-11-01): its end screen also counts the banked check, so the visits read joins the completion read.
       if (p.startsWith('eq/')) assert.match(src, /const progressUnreadable = visitsUnreadable \|\| \(hasCheck && completionUnreadable\);[\s\S]*unreadable=\{progressUnreadable\}/, p);
+      // Cymatics (fix round 2026-11-14, owner: "Begin fixing all bugs found and do obvious … fixes"):
+      // its end screen now lists the check too, so the visits read joins the completion read in
+      // useCymaticsEnd (`visitsUnreadable || (hasCheck && completionUnreadable)`), the EQ rule.
+      else if (p.startsWith('cymatics/')) assert.match(src, /useCymaticsEnd\(visited, visitsUnreadable\)[\s\S]*unreadable=\{end\.unreadable\}/, p);
       else assert.match(src, /unreadable=\{visitsUnreadable\}/, p);
     }
     before(read('src/screens/lab/roomdesign/RoomDesignLabScreen.tsx'), NOTE, '<LabEndScreen', 'Room Design');
@@ -300,8 +304,11 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
       'foundations/FoundationsCourseScreen', 'micspeaker/MicPrinciplesLabScreen', 'micspeaker/SpeakerCoverageLabScreen',
       'cymatics/CymaticsModuleScreen', 'eq/EqModuleScreen', 'micselect/MicSelectLabScreen', 'tube/VacuumTubeLabScreen',
     ]) {
-      assert.match(read(`src/screens/lab/${p}.tsx`), /unreadable=\{progressUnreadable\}/, p);
+      // Cymatics (fix round 2026-11-14): the same read, through useCymaticsEnd (see above).
+      if (p.startsWith('cymatics/')) assert.match(read(`src/screens/lab/${p}.tsx`), /useCymaticsEnd\(visited, progressUnreadable\)[\s\S]*unreadable=\{end\.unreadable\}/, p);
+      else assert.match(read(`src/screens/lab/${p}.tsx`), /unreadable=\{progressUnreadable\}/, p);
     }
+    assert.match(read('src/screens/lab/cymatics/useCymaticsEnd.tsx'), /unreadable: visitsUnreadable \|\| \(hasCheck && completionUnreadable\)/);
   });
 
   it('credit is only ever read: no hub change touches markLabUnit', () => {

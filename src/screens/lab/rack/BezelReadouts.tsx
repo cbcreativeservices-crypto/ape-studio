@@ -8,26 +8,46 @@
  * at the MIN_FONT 12 floor.
  */
 import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { fitValue } from '../../../theme/legibility';
+import { Modal } from '../../../components/DimModal';
 import type { BezelItem } from './rackTypes';
 import { bezelKeyFit, dockValueFitSize } from './dockFit';
+import { useSoundOff } from './silentPath';
+import { markUnitsChipSeen, useUnitsChipOwed } from './bezelFirstSight';
+import { UNITS_CHIP_LABEL, UNITS_LINES, UNITS_TITLE, bezelCellSaid, bezelShown, showsHzOrDb } from './bezelRules';
+
+export { UNITS_CHIP_LABEL, UNITS_LINES, UNITS_TITLE, bezelCellSaid, bezelShown, showsHzOrDb } from './bezelRules';
 
 export function BezelReadouts({
   items,
   onGuide,
   onHelp,
+  captions = false,
+  unitsChip = false,
 }: {
   items: BezelItem[];
   /** ⓘ display-guide slot at the strip's end. */
   onGuide?: () => void;
   onHelp?: (helpKey?: string) => void;
+  /** Draw the cells' plain-word captions (BezelItem.caption): the rack passes
+   *  true on the learner's first visit to this stage (bezelFirstSight). */
+  captions?: boolean;
+  /** Offer the Hz / dB chip under the strip while it is owed (the inline
+   *  rack only; never in full screen). */
+  unitsChip?: boolean;
 }) {
+  const soundOff = useSoundOff();
+  const shown = items.map((it) => bezelShown(it, soundOff));
+  const chipOwed = useUnitsChipOwed();
+  const [unitsOpen, setUnitsOpen] = useState(false);
+  const showChip = unitsChip && (chipOwed || unitsOpen) && showsHzOrDb(shown.map((x) => `${x.it.v} ${x.it.sub ?? ''}`));
   return (
+    <>
     <View style={styles.strip}>
-      {items.map((it, i) => (
-        <Cell key={`${it.k}${i}`} it={it} first={i === 0} onHelp={onHelp} />
+      {shown.map((x, i) => (
+        <Cell key={`${x.it.k}${i}`} it={x.it} silent={x.silent} caption={captions ? x.it.caption : undefined} first={i === 0} onHelp={onHelp} />
       ))}
       {onGuide ? (
         <Pressable
@@ -41,6 +61,41 @@ export function BezelReadouts({
         </Pressable>
       ) : null}
     </View>
+    {showChip ? (
+      <Pressable
+        style={styles.unitsChip}
+        hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+        onPress={() => {
+          setUnitsOpen(true);
+          void markUnitsChipSeen();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="What hertz and decibels mean"
+      >
+        <Text style={styles.unitsChipText}>{UNITS_CHIP_LABEL}</Text>
+      </Pressable>
+    ) : null}
+    {unitsChip ? (
+      <Modal accessibilityViewIsModal visible={unitsOpen} transparent animationType="fade" onRequestClose={() => setUnitsOpen(false)}>
+        <Pressable accessible={false} style={styles.unitsBackdrop} onPress={() => setUnitsOpen(false)}>
+          <Pressable accessible={false} style={styles.unitsCard} onPress={() => {}}>
+            <ScrollView contentContainerStyle={styles.unitsBody} showsVerticalScrollIndicator={false}>
+              <Text style={styles.unitsTitle}>{UNITS_TITLE}</Text>
+              {UNITS_LINES.map((l) => (
+                <Text key={l.term} style={styles.unitsText}>
+                  <Text style={styles.unitsTerm}>{l.term}: </Text>
+                  {l.text}
+                </Text>
+              ))}
+              <Pressable style={styles.unitsGotIt} onPress={() => setUnitsOpen(false)} accessibilityRole="button" accessibilityLabel="Close">
+                <Text style={styles.unitsGotItText}>GOT IT</Text>
+              </Pressable>
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+    ) : null}
+    </>
   );
 }
 
@@ -68,7 +123,7 @@ function splitUnit(v: string): [string, string] | null {
   return [m[1].trim(), m[2].trim()];
 }
 
-function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (helpKey?: string) => void }) {
+function Cell({ it, first, onHelp, silent = false, caption }: { it: BezelItem; first: boolean; onHelp?: (helpKey?: string) => void; silent?: boolean; caption?: string }) {
   // ⛔ A CROPPED READOUT IS A WRONG READOUT (owner 2026-09-26: "if they begin
   // to get cropped, then drop the descriptor text and just show the #
   // readout"). Five cells on a 375 phone left "INTEGRAT…" over "-15.9LU…".
@@ -128,7 +183,7 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
       delayLongPress={350}
       disabled={!it.onPress && !it.helpKey}
       accessibilityRole={it.onPress ? 'button' : 'text'}
-      accessibilityLabel={`${it.k}: ${it.vA11y ?? it.v}${it.sub ? ` ${it.sub}` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`}
+      accessibilityLabel={`${it.k}: ${bezelCellSaid(it, silent)}`}
       // On the web floored, never rounded up (frame round 2): the width arrives
       // as a whole pixel already (63.58 as 64), and BEZEL_KEY_MARGIN_PX covers
       // that. On a phone rounded, as before (checker follow-up).
@@ -194,6 +249,12 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
           {it.sub}
         </Text>
       ) : null}
+      {/* First visit only (row 7): what the number means, in plain words. */}
+      {caption ? (
+        <Text style={styles.caption} {...fitValue(10)}>
+          {caption}
+        </Text>
+      ) : null}
     </Pressable>
   );
 }
@@ -236,6 +297,19 @@ const styles = StyleSheet.create({
     borderLeftColor: '#26262c',
   },
   guideGlyph: { fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSub },
+  /** The first-visit caption (row 7): small plain words, never under 9 pt. */
+  caption: { fontFamily: fonts.barlowRegular, fontSize: 10, lineHeight: 12, color: '#9aa0a8' },
+  // The Hz / dB chip under the strip, and its popup (AccuracyNote's card).
+  unitsChip: { alignSelf: 'flex-end', marginTop: 4, marginRight: 2, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#1a1609' },
+  unitsChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.amber },
+  unitsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.66)', alignItems: 'center', justifyContent: 'center', padding: 22 },
+  unitsCard: { width: '100%', maxWidth: 460, maxHeight: '82%', borderRadius: 14, borderWidth: 1, borderColor: '#2a2a31', backgroundColor: '#101014' },
+  unitsBody: { padding: 18, gap: 11 },
+  unitsTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.amber },
+  unitsText: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSecondary },
+  unitsTerm: { fontFamily: fonts.barlowSemiBold, color: colors.textPrimary },
+  unitsGotIt: { marginTop: 6, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.5)', backgroundColor: 'rgba(255,198,77,.12)', paddingVertical: 11, alignItems: 'center' },
+  unitsGotItText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   /** A zero-size, clipped, invisible box for the key measures (DockButton's). */
   measureBox: { position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 },
   measureRow: { position: 'absolute', left: 0, top: 0, width: 1000, flexDirection: 'row', alignItems: 'flex-start' },

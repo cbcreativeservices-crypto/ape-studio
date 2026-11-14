@@ -18,13 +18,29 @@
  * learner's own change and is logged like any other setting.
  *
  * So a learner who starts a fault and switches it straight back has fixed
- * nothing: finding comes before fixing. The orphan loop needs two things
- * more: the stray loop itself gone, because correcting the setting does
- * not stop a loop that already lost its owner, and the removal TESTED
- * AGAIN (a running generator removed with the rule correct, its loop
- * stopped with it: `proved`), as on page 7. A new generator never takes the
- * stray loop over (the model refuses to place it while that loop plays),
- * so ADD alone proves nothing (round-2 bug test 2026-11-13, R2-GA2-01).
+ * nothing: finding comes before fixing.
+ *
+ * EVERY FAULT IS PROVED BY A RE-RUN (lab fix round 2026-11-14; beginner
+ * audit G5b page 19: "Faults 1-4 count as fixed without re-running the
+ * action, although step 3 says 'After a fix, run the same action again' …
+ * Fault 5 is the opposite … inconsistent"). After the setting is corrected
+ * the SAME ACTION has to run again and come out healthy (`proofCount`,
+ * `proved`), as pages 6, 7, 8 and 10 already ask on their own cards:
+ *   missing file   the door's own layer starts          (once)
+ *   wrong bus      the guide's line starts, routed right (once)
+ *   one take       a footstep with variation on          (twice: one step
+ *                  cannot show that the take changes)
+ *   scope          the guide steps, on its own surface   (once)
+ *   orphan loop    a running generator removed, its loop stopped with it
+ * A new symptom clears the proof: a second round needs its own re-run.
+ * Until then the fault is still open and its card says which action to
+ * repeat (`retest`, `faultRetest`).
+ *
+ * The orphan loop needs one thing more: the stray loop itself gone, because
+ * correcting the setting does not stop a loop that already lost its owner.
+ * A new generator never takes the stray loop over (the model refuses to
+ * place it while that loop plays), so ADD alone proves nothing (round-2 bug
+ * test 2026-11-13, R2-GA2-01).
  *
  * EVERY SYMPTOM CAN BE MADE FROM THE CLEAN SCENE with the page's own TEST
  * tray, as often as the learner likes (the test walks each one). So the
@@ -60,6 +76,11 @@ export type FaultDef = {
   /** How many times the symptom has to be seen (identical footsteps are
    *  only a pattern after a few). */
   need: number;
+  /** How many healthy re-runs prove the fix (see the header). */
+  prove: number;
+  /** The card's words once the setting is corrected and the re-run is still
+   *  owed: which action to repeat, and what to read. */
+  retest: string;
   /** The setting in the FIX tray: its name (the heading over its two
    *  values), the short name on its chip in the tray's first row, and its
    *  two values. */
@@ -83,8 +104,10 @@ export const FAULTS: readonly FaultDef[] = [
       'The next line is marked FAULT, and it names a file.',
       'Open FIX and choose DOOR FILE. The door event can point at one of two files. One of them is not in the build.',
     ],
-    why: 'The game posted the event correctly. The file the event pointed to was not in the build, so the door layer could not play. Only the rattle layer played. The picture changed all the same; only the log showed the problem. Press the door key again and read the START line that names the door’s file.',
+    why: 'The game posted the event correctly. The file the event pointed to was not in the build, so the door layer could not play. Only the rattle layer played. The picture changed all the same; only the log showed the problem. Your second press proved the fix: its START line names the door’s file.',
     need: 1,
+    prove: 1,
+    retest: 'In TEST, press the door key again. Read the START line: it now names the door’s file.',
     setting: 'DOOR EVENT: FILE',
     pick: 'DOOR FILE',
     right: 'door_open.wav',
@@ -101,8 +124,10 @@ export const FAULTS: readonly FaultDef[] = [
       'This one ends “→ EFFECTS bus”.',
       'The duck acts only for a line on the DIALOGUE bus. Open FIX and choose VOICE BUS.',
     ],
-    why: 'The line itself was fine, and it played. It was sent to the effects bus, so the mix did not treat it as speech and nothing turned down. A good sound can still fail through its routing. When the line has ended, play it again and read DUCK on.',
+    why: 'The line itself was fine, and it played. It was sent to the effects bus, so the mix did not treat it as speech and nothing turned down. A good sound can still fail through its routing. Played again after the fix, the line went to the DIALOGUE bus and the log printed DUCK on.',
     need: 1,
+    prove: 1,
+    retest: 'In TEST, press GUIDE LINE again (if the guide is still speaking, wait until the line ends). Read the bus at the end of its START line, and the DUCK line.',
     setting: 'GUIDE’S VOICE: BUS',
     pick: 'VOICE BUS',
     right: 'DIALOGUE',
@@ -121,6 +146,8 @@ export const FAULTS: readonly FaultDef[] = [
     ],
     why: 'Four takes were in the build, but the event played only the first. The ear notices an exact repeat very quickly. With variation on, the take changes from step to step, and level and pitch move a little each time.',
     need: 3,
+    prove: 2,
+    retest: 'In TEST, press STEP: GUIDE twice or more. Read the take number in each START line: it now changes.',
     setting: 'FOOTSTEPS: THE TAKES',
     // five chips share a row: FOOTSTEPS broke into "FOOTSTE / PS" (seen at 390 pt)
     pick: 'TAKES',
@@ -140,6 +167,8 @@ export const FAULTS: readonly FaultDef[] = [
     ],
     why: 'The surface is a switch that each character holds for itself. Set for everyone, it gave every character the player’s surface. This is a scope fault: a value that belongs to one object was applied to all of them.',
     need: 1,
+    prove: 1,
+    retest: 'In TEST, press STEP: GUIDE again. Read the surface in its GAME line: it is now the floor under the guide.',
     setting: 'SURFACE SWITCH',
     pick: 'SURFACE',
     right: 'FOR EACH CHARACTER',
@@ -158,6 +187,8 @@ export const FAULTS: readonly FaultDef[] = [
     ],
     why: 'Removing the generator did not stop its loop, so the loop kept its voices with no owner. Cleanup is part of a sound’s design: whatever starts a loop also needs a way to stop it.',
     need: 1,
+    prove: 1,
+    retest: 'Correcting the setting does not stop a loop that has already lost its generator. Press ■ STOP to silence the stray loop. Then, in TEST, press ADD GENERATOR 2, switch it on and press REMOVE GENERATOR 2. PLAYING goes down with it.',
     setting: 'WHEN A GENERATOR IS REMOVED',
     pick: 'REMOVAL',
     right: 'STOP ITS LOOP',
@@ -261,8 +292,9 @@ export function standingOn(s: GaState): StandId | null {
 
 /* ── the bench: what was planted, and what was seen ─────────────────────── */
 
-/** `proved`: the orphan only — how many removals stopped their loop after
- *  the symptom was seen, with the rule correct (the re-test). */
+/** `proved`: how many healthy re-runs of the fault's action came after its
+ *  symptom was seen, with the setting correct (the re-test; `proofCount`).
+ *  Absent = 0. */
 export type FaultProgress = { planted: boolean; seen: number; proved?: number };
 export type Bench = Record<FaultId, FaultProgress>;
 
@@ -300,6 +332,34 @@ export function symptomCount(id: FaultId, prev: GaState, next: GaState): number 
   }
 }
 
+/** The guide's footsteps so far, on any surface (the model counts each as
+ *  `step:guide:<surface>`). */
+const guideSteps = (s: GaState): number => Object.keys(s.facts).reduce((n, k) => (k.startsWith('step:guide:') ? n + (s.facts[k] ?? 0) : n), 0);
+
+/** How many times this fault's action ran HEALTHY between two states: the
+ *  re-run that proves a fix. It can only happen while the setting is
+ *  correct. */
+export function proofCount(id: FaultId, prev: GaState, next: GaState): number {
+  if (faultSet(id, next)) return 0;
+  switch (id) {
+    case 'missingFile':
+      // the door's own layer started (the opening or the closing take), not only the rattle
+      return Math.max(0, delta(prev, next, 'take:door_open::door') + delta(prev, next, 'take:door_open::door_close'));
+    case 'wrongBus':
+      // the guide's line started, and the routing is right
+      return Math.max(0, delta(prev, next, 'inst:vo_greeting'));
+    case 'repeat':
+      // a footstep started with every take allowed
+      return Math.max(0, delta(prev, next, 'inst:footstep'));
+    case 'scope':
+      // the guide stepped, and the surface used is the one under it
+      return delta(prev, next, 'stepWrongSurface') > 0 ? 0 : Math.max(0, guideSteps(next) - guideSteps(prev));
+    case 'orphan':
+      // a running generator was removed and its loop stopped with it
+      return Math.max(0, delta(prev, next, 'cleanRemove'));
+  }
+}
+
 /** Advance the bench by one change of the scene. */
 export function benchAdvance(b: Bench, prev: GaState, next: GaState): Bench {
   let out = b;
@@ -308,25 +368,35 @@ export function benchAdvance(b: Bench, prev: GaState, next: GaState): Bench {
     const now = symptomCount(id, prev, next);
     const seen = b[id].seen + now;
     const was = b[id].proved ?? 0;
-    // a NEW orphan clears the proof: the re-test has to come after the newest
-    // symptom, so a second round on one visit needs its own (checker C-1)
-    const proved = id === 'orphan' && now > 0 ? 0 : was + (id === 'orphan' && planted && b[id].seen > 0 && !faultSet(id, next) ? Math.max(0, delta(prev, next, 'cleanRemove')) : 0);
+    // a NEW symptom clears the proof: the re-test has to come after the newest
+    // symptom, so a second round on one visit needs its own (checker C-1).
+    // A re-run counts only once the symptom was seen as often as it takes.
+    const proved = now > 0 ? 0 : was + (planted && b[id].seen >= faultDef(id).need ? proofCount(id, prev, next) : 0);
     if (planted !== b[id].planted || seen !== b[id].seen || proved !== was) {
       if (out === b) out = { ...b };
-      out[id] = id === 'orphan' ? { planted, seen, proved } : { planted, seen };
+      out[id] = proved > 0 ? { planted, seen, proved } : { planted, seen };
     }
   }
   return out;
 }
 
-/** The fault is still open: its setting is wrong, or (the orphan) the stray
- *  loop it left behind is still playing, or its symptom was seen and the
- *  removal has not been tested again since. */
+/** The symptom was seen as often as it takes, and the re-run that proves
+ *  the fix has not happened yet. */
+const proofOwed = (id: FaultId, b: Bench): boolean => b[id].planted && b[id].seen >= faultDef(id).need && (b[id].proved ?? 0) < faultDef(id).prove;
+
+/** The fault is still open: its setting is wrong, or its symptom was seen
+ *  and its action has not been run again since the setting was corrected,
+ *  or (the orphan) the stray loop it left behind is still playing. */
 export function faultOpen(id: FaultId, b: Bench, s: GaState): boolean {
   if (faultSet(id, s)) return true;
-  if (id !== 'orphan' || !b.orphan.planted) return false;
-  return strayLoops(s).length > 0 || (b.orphan.seen > 0 && !((b.orphan.proved ?? 0) > 0));
+  if (!b[id].planted) return false;
+  if (id === 'orphan' && strayLoops(s).length > 0) return true;
+  return proofOwed(id, b);
 }
+
+/** The setting is correct again and the fault is still open: the card asks
+ *  for the re-run (the fault's `retest`). */
+export const faultRetest = (id: FaultId, b: Bench, s: GaState): boolean => !faultSet(id, s) && faultOpen(id, b, s);
 
 /** Fixed: planted on this visit, its symptom seen, and nothing left open. */
 export function faultFixed(id: FaultId, b: Bench, s: GaState): boolean {

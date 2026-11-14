@@ -101,7 +101,7 @@ export function DeviceBody({ device, onDone, onLocate }: { device: SpDevice; onD
       <View style={styles.block}>
         <SubHeading>ON THE STAGE</SubHeading>
         <Line>{stage.objectId || stage.worn ? `${stage.line}.` : `${stage.line}. A device can be in the list with no symbol on the stage.`}</Line>
-        <Button label={stage.button} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Go to the Stage area to place ${title}`} />
+        <Button label={stage.button} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Place ${title} on the stage and show it there`} />
       </View>
 
       <MoreDetails>

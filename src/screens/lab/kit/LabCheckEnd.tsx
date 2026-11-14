@@ -109,6 +109,11 @@ export function LabCheckEnd({
               unreadable={unreadable}
               mode="credit"
               noun="check"
+              // Lab fix round 2026-11-14 (S2): recap / next lab by labId
+              // (features/lab/labEndContent); the next-lab card closes this
+              // layer before it leaves.
+              labId={labId}
+              beforeLeave={close}
               onJump={close}
               onPracticeAgain={close}
               onDone={() => {

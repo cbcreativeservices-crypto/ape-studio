@@ -530,6 +530,18 @@ export function spNumbersFollowOrder(p: SpProject, patchId: SpPatchId): boolean 
 
 export type SpGuidedStep = { id: 'performers' | 'sources' | 'monitors' | 'review' | 'export'; label: string; done: boolean };
 
+/** The guided task's heading. It carried "(OPTIONAL)" until 2026-11-14
+ *  (owner, approving the beginner audit's quick win 13: "open the GUIDED
+ *  TASK by default on a blank stage and drop '(OPTIONAL)'"). The task is
+ *  still optional, and the line under the heading says it can be skipped. */
+export const SP_GUIDED_TITLE = 'GUIDED TASK';
+
+/** Are the steps open before the user has chosen SHOW or HIDE? Yes on a
+ *  plot started from a blank stage: the plot the task completes the lab on,
+ *  and the newcomer's path. No on a plot started from an example band,
+ *  where the task earns nothing. */
+export const spGuidedOpenByDefault = (p: { startedBlank: boolean }): boolean => p.startedBlank === true;
+
 /** The five steps of the optional guided task, judged from the project
  *  itself (never from a button press). `exported` is told by the screen: a
  *  packet was made from this revision. */

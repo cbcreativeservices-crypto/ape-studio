@@ -485,15 +485,15 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
         onGuide: () => help('systems'),
         initialParam: 'harmonic',
         bezel: [
-          { k: 'SYSTEM', v: s.short.toUpperCase(), helpKey: 'systems' },
+          { k: 'SYSTEM', v: s.short.toUpperCase(), helpKey: 'systems', caption: 'what vibrates' },
           // ── NO MORE EM-DASHES (2026-09-18, design review #6) ────────────────
           // These two cells read "—" for the three systems that now have a
           // drawing on the stage. A live picture beside two blank readouts
           // looks like the readouts are broken; each drawing states the mode
           // it is actually showing.
-          { k: 'MODE', v: hasHarmonic ? (n === 1 ? 'fund.' : `${n}f`) : (s.modeLabel ?? '—'), helpKey: 'systems' },
-          { k: 'NODES', v: hasHarmonic ? `${n + 1}` : (s.nodesLabel ?? '—'), helpKey: 'systems' },
-          { k: 'FAMILY', v: s.harmonic === null ? '1-D wave' : s.harmonic ? 'HARMONIC' : 'INHARM.', tint: s.harmonic === null ? undefined : s.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2 },
+          { k: 'MODE', v: hasHarmonic ? (n === 1 ? 'fund.' : `${n}f`) : (s.modeLabel ?? '—'), helpKey: 'systems', caption: 'which pattern' },
+          { k: 'NODES', v: hasHarmonic ? `${n + 1}` : (s.nodesLabel ?? '—'), helpKey: 'systems', caption: 'still points' },
+          { k: 'FAMILY', v: s.harmonic === null ? '1-D wave' : s.harmonic ? 'HARMONIC' : 'INHARM.', tint: s.harmonic === null ? undefined : s.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2, caption: 'evenly spaced?' },
         ],
         stage: (w, h) => {
           // FULL SCREEN (house rule D35, 2026-09-30): the full-screen body is

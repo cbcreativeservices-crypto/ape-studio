@@ -23,6 +23,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { PanelCard } from '../../digital/bits';
 import { RackUnit } from '../../rack/RackUnit';
+import { WAVE_CAPTIONS, withCaptions } from '../../foundations/bezelCaptions';
 import type { BezelItem, DockParam, StageSize } from '../../rack/rackTypes';
 
 /** A wave module's Rack Unit declaration (see rackTypes for the grammar). */
@@ -89,7 +90,8 @@ export function WaveLayout({
           render: rack.stage,
           size: rack.size ?? 'L',
           badge: rack.badge,
-          bezel: rack.bezel,
+          // First-visit captions (phase 2, 2026-11-14; foundations/bezelCaptions).
+          bezel: withCaptions(rack.bezel, WAVE_CAPTIONS),
           onGuide: rack.onGuide,
           // FULL SCREEN for all 16 modules (legibility pass 2026-09-25): the
           // rack owns the button and renders the dock + trays inside it.

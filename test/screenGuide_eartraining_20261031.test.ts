@@ -466,7 +466,9 @@ describe('4. wiring: the guide key in both headers, a host around each root', ()
     assert.match(HOME, /<\/ScrollView>\s*\)\}\s*<\/ScreenGuideHost>\s*<\/View>\s*\);\s*\}/);
   });
   it('the module screen keeps its accuracy pill (last-20 score) beside the ⓘ', () => {
-    assert.match(MOD, /<Text style=\{styles\.statSub\}>last 20<\/Text>/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // under 20 answers the pill says how many answers its score rests on.
+    assert.match(MOD, /<Text style=\{styles\.statSub\}>\{accuracy != null \? earScoreWindowLabel\(scoreAnswers\)\.sub : 'last 20'\}<\/Text>/);
   });
 });
 
@@ -511,7 +513,9 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
     assert.ok(EAR_HOME_GUIDE.changes[1].includes('judged only on answers at your current level'));
   });
   it('drill readouts the guides name are on the screen: the “last 20” pill, the level subtitle, the trial/streak line', () => {
-    assert.match(MOD, /<Text style=\{styles\.statSub\}>last 20<\/Text>/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // under 20 answers the pill says how many answers its score rests on.
+    assert.match(MOD, /<Text style=\{styles\.statSub\}>\{accuracy != null \? earScoreWindowLabel\(scoreAnswers\)\.sub : 'last 20'\}<\/Text>/);
     assert.match(MOD, /subtitle=\{`Level \$\{level\}\/\$\{mod\.levels\}/);
     assert.match(MOD, /Trial \{trialNo\} of \{ROUND\} · Streak \{streak\}\s*<\/Text>\s*<Text style=\{styles\.question\}>/, 'the trial/streak line sits above the question');
     const withHeader = Object.entries(GUIDES).filter(([, gd]) => gd.seeing.includes(HEADER)).map(([id]) => id);

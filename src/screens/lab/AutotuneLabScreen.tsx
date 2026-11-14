@@ -41,6 +41,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -265,6 +266,8 @@ export function AutotuneLabScreen() {
   return (
     <LabShell
       labId="autotune"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the melody (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="autotune" labTitle="Autotune Lab" onOpen={stop} />}
       title="AUTOTUNE LAB"
       subtitle="Pitch Correction · Cents Grid · Retune Speed"
       intro={INTRO}
@@ -288,13 +291,16 @@ export function AutotuneLabScreen() {
         initialParam: 'amount',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? AMOUNT and SPEED still redraw each note: watch ENDS.',
           size: 'L', // the cents grid IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'CENTS GRID — THE CURVE SHOWS THE EXACT RETUNING YOU HEAR',
           onGuide: () => openLesson('cents_grid'),
           bezel: [
-            { k: 'AMOUNT', v: fmtAmount(amount), helpKey: 'correction' },
-            { k: 'SPEED', v: speed.short, helpKey: 'retune_speed' },
+            // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'AMOUNT', v: fmtAmount(amount), helpKey: 'correction', caption: 'how far pulled' },
+            { k: 'SPEED', v: speed.short, helpKey: 'retune_speed', caption: 'how fast' },
             // Live transport readout: which note is being corrected right now.
             {
               k: 'NOTE',
@@ -302,7 +308,7 @@ export function AutotuneLabScreen() {
               helpKey: 'cents_grid',
             },
             // The residual: where the worst note (45¢ flat) ENDS after correction.
-            { k: 'ENDS', v: `${remaining(MELODY[3].offCents)}¢`, helpKey: 'correction' },
+            { k: 'ENDS', v: `${remaining(MELODY[3].offCents)}¢`, helpKey: 'correction', caption: 'still off by' },
           ],
           render: (w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same

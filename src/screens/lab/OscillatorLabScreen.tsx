@@ -65,6 +65,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { oscillatorScreenGuide } from './oscillatorScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
@@ -246,6 +247,8 @@ export function OscillatorLabScreen() {
   return (
     <LabShell
       labId="oscillator"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the tone (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="oscillator" labTitle="Oscillator Lab" onOpen={stopTone} />}
       title="OSCILLATOR LAB"
       subtitle="Waveforms · Spectra · Harmonic recipes"
       intro={INTRO}
@@ -267,6 +270,8 @@ export function OscillatorLabScreen() {
         initialParam: 'wave', // the teaching-central param (no faders here — the lane stays dark)
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? Every wave still shows its harmonic bars: watch which ones light.',
           size: 'L', // strip + bars stacked — the pair earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-26)
           // Honesty badge stays per-display and dynamic: reference model vs
@@ -277,8 +282,9 @@ export function OscillatorLabScreen() {
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'WAVE', v: waveLabel, flex: 1.3, helpKey: WAVES.find((w) => w.key === wave)!.lessonKey },
-            { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency' },
-            { k: 'VIEW', v: speakerView ? 'SPEAKER' : 'IDEAL', helpKey: 'display' },
+            // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency', caption: 'the pitch' },
+            { k: 'VIEW', v: speakerView ? 'SPEAKER' : 'IDEAL', helpKey: 'display', caption: 'drawn as' },
           ],
           render: (w, h) => {
             // Split the glass budget: traveling strip on top, harmonic bars

@@ -30,6 +30,7 @@ import { nudge, trueBeat } from '../model/djDeck';
 import { BEATS_PER_PHRASE, barInPhrase, phaseOffset, playedBpm } from '../model/djTime';
 import type { Booth } from '../model/djModel';
 import { useBoothKit } from './shared';
+import { beatAligned, beatOffsetText } from './fixGuards';
 
 const TERMS = [
   { term: 'BPM', def: 'Beats per minute: the tempo. 122 BPM is about two beats a second.' },
@@ -240,11 +241,13 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'A BPM', v: bpmA.toFixed(2), tint: colors.textPrimary },
-          { k: 'B BPM', v: bpmB.toFixed(2), tint: Math.abs(bpmA - bpmB) < 0.05 ? colors.green : '#8fbcff' },
-          { k: 'B vs A', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
+          { k: 'A BPM', caption: 'beats a minute', v: bpmA.toFixed(2), tint: colors.textPrimary },
+          { k: 'B BPM', caption: 'beats a minute', v: bpmB.toFixed(2), tint: Math.abs(bpmA - bpmB) < 0.05 ? colors.green : '#8fbcff' },
+          // three decimals: a pass (≤ 0.062) and a miss (≥ 0.063) never print
+          // the same number (lab fix round 2026-11-14, F2; fixGuards)
+          { k: 'B vs A', caption: '+ = B is early', v: both ? beatOffsetText(off) : '—', tint: both && beatAligned(off) ? colors.green : colors.amber },
           // bar 8 is the count-in: the cell flashes before the phrase's ONE
-          { k: 'A PHRASE', v: aBar == null ? '—' : aBar === 8 ? '8 / 8 ▸' : `${aBar} / 8`, tint: aBar === 8 ? '#ff8a7e' : aBar === 1 ? colors.green : colors.textPrimary },
+          { k: 'A PHRASE', caption: 'bar of the 8', v: aBar == null ? '—' : aBar === 8 ? '8 / 8 ▸' : `${aBar} / 8`, tint: aBar === 8 ? '#ff8a7e' : aBar === 1 ? colors.green : colors.textPrimary },
         ],
         params: [
           tempoKey(booth, 'B'),
@@ -273,7 +276,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <Note>In a big room the PA reaches you late — about 3 ms for every meter. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
       </Step>
       <Step n={4}>
-        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (the lab’s pass mark — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
+        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (B vs A at 0.062 or less, green: the lab’s pass mark — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
         {startMsg ? <Note tone={phraseStart ? 'try' : 'safety'}>{startMsg}</Note> : null}
         <P>Then try the blend: bring B’s fader up (JOG B → CH2 FADER) as the next phrase begins. Where you start is a musical choice — the start of a phrase is a strong suggested starting point.</P>
         <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />
@@ -282,7 +285,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="You line the kicks up, but over the next 8 bars the flam slowly grows again. Which control fixes it?"
-          options={['The TEMPO fader — a growing flam is drift: the tempos still differ', 'The jog — nudge again every bar', 'The channel fader', 'The EQ — cut the LOW so the flam is hidden']}
+          options={['The TEMPO fader: the tempos still differ', 'The jog — nudge B again every bar', 'The channel fader for deck B', 'The EQ — cut the LOW to hide the flam']}
           correct={0}
           explain="A flam that GROWS is drift: one deck is still a little faster. Nudging only resets it for a while; a fine move of the TEMPO fader stops it. A steady flam that never grows would be an offset — a nudge."
           wrong={[undefined, 'Nudging resets the beats, but they keep sliding apart — the tempos still differ.', 'The fader changes how loud B is, not when its beats land.', 'Hiding the kick hides the symptom; the tempos still differ.']}

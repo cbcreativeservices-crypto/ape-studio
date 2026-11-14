@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
 import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { GAIN_TROUBLESHOOT_LEFT } from './modules/registry';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
@@ -107,8 +108,12 @@ export function GainModuleScreen() {
   });
   const endScreen = ending ? (
     <LabEndScreen
+      // The recap and next-lab card (labEndContent.ts, S4).
+      labId="af_gain_staging"
       labTitle="Gain Staging Lab"
-      units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title, detail: m.id === 'troubleshoot' ? GAIN_TROUBLESHOOT_LEFT : undefined }))}
+      // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+      howItCounts="A module counts once you open it, except the Troubleshooting Challenge, which counts once its fault is fixed. Practicing again never removes credit."
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"

@@ -43,7 +43,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How chorus works: a copy of your sound, 15–35 ms late and slowly wobbling in time, beats against the dry sound, and your ear hears that as thick and wide.',
-      start: 'Set SOURCE to SINE 440 Hz and tap ▶. Watch the bold line swell and thin. Then set MIX to 100% = VIBRATO and see the swelling stop.',
+      start: 'Watch the bold line on OUT for a few seconds: it swells and thins. Set MIX to 100% = VIBRATO and see the swelling stop. Then tap ▶ with SINE 440 Hz to hear both.',
     },
     seeing: [
       'Left of the green CHORUS bar (IN ▸) is your sound, in gray. Right of it, to ▸ OUT: your sound again (faint gray), the delayed copy (blue) and what you hear: the two mixed (bold glowing line).',
@@ -116,7 +116,8 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one is right, the check starts over.',
     ],

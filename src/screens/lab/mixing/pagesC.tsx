@@ -51,7 +51,10 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
   ];
   const latched = useVisitGoals(ctx, goals);
   const lastHeardFix = [...pb.heard].reverse().find((h) => h !== 'clash');
-  const lastNote = EQ_SOLUTIONS.find((s) => s.id === lastHeardFix);
+  // The trade-off follows the fix on the picture: a tap draws it with sound
+  // off too, and the line under it used to wait for audio, saying "Audition a
+  // fix" beside a picture titled FIX: EQ (novice audit G4, 2026-11-14).
+  const lastNote = EQ_SOLUTIONS.find((s) => s.id === (pick !== 'clash' ? pick : lastHeardFix));
   return (
     <View style={styles.page}>
       <Lead>This is the FREQUENCY dimension at mix scale: EQ here is not about making tracks sound good alone — it is about making them FIT. And an EQ move is only one of several fixes for a frequency fight.</Lead>

@@ -467,6 +467,19 @@ export const STAGE7_FINISH: StageDef = {
       logicIntent: "Fire when both brief.true_peak_max and measured_true_peak are numbers and the measurement is greater than the ceiling."
     },
     {
+      // Novice audit G4 (2026-11-14): a measured +0.4 dBTP on a project with
+      // no ceiling in the brief raised nothing at all.
+      ruleId: "finish-true-peak-over-zero-no-ceiling",
+      watches: ["finish.measured_true_peak", "brief.true_peak_max"],
+      severity: "attention",
+      kind: "missing",
+      title: "True peak above 0 dBTP, with no ceiling to check it against",
+      detail: "The measured true peak is above 0 dBTP: the waveform between the samples goes past full scale, so most converters and encoders will clip it. The brief carries no true-peak ceiling, so nothing in this plan says how far below zero it has to sit.",
+      fixHint: "Record the delivery's true-peak ceiling in stage 1 (most specifications sit between −1 and −2 dBTP). Then lower the limiter's ceiling or take overall gain off, and re-measure the exported file.",
+      needsLogic: true,
+      logicIntent: "Fire when measured_true_peak is a number above 0 and brief.true_peak_max is empty."
+    },
+    {
       ruleId: "finish-measured-wrong-thing",
       watches: ["finish.measurement_source"],
       severity: "attention",

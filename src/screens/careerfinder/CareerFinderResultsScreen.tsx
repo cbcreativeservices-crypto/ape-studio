@@ -17,10 +17,10 @@ import type { RootStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
 import { DIMENSIONS } from '../../features/careerfinder/dimensions';
-import { CLARITY_LABEL, clarityCopy, computeResult, explainFamily, type FamilyScore } from '../../features/careerfinder/scoring';
+import { CLARITY_LABEL, clarityCopy, computeResult, explainFamily, unknownNote, type FamilyScore } from '../../features/careerfinder/scoring';
 import { familyFieldOf, familyMetaOf, furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
+import { EDUCATION_NOT_REPLACED, LICENSED_WARNING } from '../../features/careerfinder/educationNote';
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
-import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
 import { answeredCount, getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, useCareerFinderFace, useCareerFinderSaving, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
@@ -135,19 +135,17 @@ export function CareerFinderResultsScreen() {
             </Text>
           ))}
         </Text>
-        {f.examples.some(isRegulatedTitle) ? (
-          <Text style={styles.gatedNote}>
-            ⚠ Licensed or credentialed occupation. Academy study does not lead to that license or
-            credential — check what is required where you live.
-          </Text>
-        ) : null}
+        {/* ONE licensing warning everywhere (Comp A text review 2026-11-14, Pattern 6): this
+            card, the family page's example list and an expanded title row said nearly the same
+            thing three ways. LICENSED_WARNING is the single text; it says more, never less. */}
+        {f.examples.some(isRegulatedTitle) ? <Text style={styles.gatedNote}>{LICENSED_WARNING}</Text> : null}
         {/* Degrees and the PE licence too, not only licensed titles (full-app
             run 1, 2026-10-01) — see features/careerfinder/educationNote. */}
         {f.examples.map((e) => {
           const need = furtherEducationForTitle(e);
           return need ? (
             <Text key={`edu-${e}`} style={styles.gatedNote}>
-              ⚠ {e}: {need} Academy study does not replace it — check what is required where you live.
+              ⚠ {e}: {need} {EDUCATION_NOT_REPLACED}
             </Text>
           ) : null;
         })}
@@ -178,7 +176,7 @@ export function CareerFinderResultsScreen() {
       face === 'loading'
         ? 'Loading your results…'
         : face === 'unreadable' && answeredCount(rec) === 0
-          ? 'Your saved answers and results could not be read on this phone, so there is nothing to show yet. Go back and open the Career Finder again to retry.'
+          ? 'Your saved answers and results could not be read on this device, so there is nothing to show yet. Go back and open the Career Finder again to retry.'
           : face === 'ready'
             ? 'No results yet — answer the questions first.'
             : null;
@@ -194,7 +192,7 @@ export function CareerFinderResultsScreen() {
 
   return (
     <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back">
-      <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers — not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
+      <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers, not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
 
       <SectionLabel tone="green">{weak ? 'CLOSEST TO YOUR ANSWERS' : 'STRONGEST MATCHES'}</SectionLabel>
       {top2.map((t) => familyCard({ item: t, size: 'large', why: explainFamily(t.family, result.dims, { rank: t.rank }) }))}
@@ -218,24 +216,21 @@ export function CareerFinderResultsScreen() {
         {meanings ? (
           <>
             {result.strongest.map((d) => <Body key={d.code} muted><Text style={styles.em}>{DIMENSIONS[d.code].label}</Text> — {DIMENSIONS[d.code].measures}</Body>)}
-            <Body muted>Each activity is measured by only two questions, so one answer moves its bar a lot. Treat the bars as a sketch of what you said you would enjoy — not a measurement of ability.</Body>
-            {result.unknown > 0 ? (
-              <Body muted>
-                {result.unknown} of {QUESTION_COUNT} answers were “I don’t know enough about this”. Those activities are unexplored, not disliked
-                {Object.values(result.dims).some((d) => d.insufficient) ? ' — the dashed bars had no rating at all.' : '.'}
-              </Body>
-            ) : null}
+            <Body muted>Each activity is measured by only two questions, so one answer moves its bar a lot. Treat the bars as a sketch of what you said you would enjoy, not a measurement of ability.</Body>
+            {/* "1 of 28 answers were …" (Comp A 2026-11-14, must fix): one line, every count
+                branched for one vs many — see unknownNote in scoring.ts. */}
+            {unknownNote(rec.responses) ? <Body muted>{unknownNote(rec.responses)}</Body> : null}
           </>
         ) : null}
       </Card>
 
-      <SectionLabel>{weak ? 'NEXT CLOSEST' : 'OTHER PROMISING DIRECTIONS'}</SectionLabel>
+      <SectionLabel>{weak ? 'NEXT CLOSEST' : 'OTHER FAMILIES TO EXPLORE'}</SectionLabel>
       {rest.map((t) => familyCard({ item: t, size: 'compact' }))}
 
       {result.surprise ? (
         <>
           <SectionLabel tone="cyan">ONE YOU MAY NOT HAVE CONSIDERED</SectionLabel>
-          <Body>Same strongest interest, a different corner of the audio world. Many of these families are unfamiliar even to people who work in audio — that is part of why the index exists.</Body>
+          <Body>It shares your strongest interest, in a different part of audio. Many of these families are unfamiliar even to people who work in audio, which is part of why the index exists.</Body>
           {familyCard({ item: result.surprise, size: 'compact', ranked: false, why: lead ? `Shares your strongest interest, ${DIMENSIONS[lead.code].label}, in a field none of your top five touch.` : undefined })}
         </>
       ) : null}
@@ -256,10 +251,10 @@ export function CareerFinderResultsScreen() {
           </NextRow>
         ) : result.surprise ? (
           <NextRow n={3} onPress={() => openFamily(result.surprise!.family.id)} a11y={`Read about ${result.surprise.family.name}`}>
-            Read <Text style={styles.em}>{result.surprise.family.name}</Text> — same strongest interest, a different corner.
+            Read <Text style={styles.em}>{result.surprise.family.name}</Text>: it shares your strongest interest, in a different part of audio.
           </NextRow>
         ) : null}
-        <Body muted>When you have tried one, come back and change any answer — the results recalculate.</Body>
+        <Body muted>When you have tried one, come back and change any answer. Your results update.</Body>
       </Card>
 
       <View style={styles.after}>
@@ -292,13 +287,13 @@ export function CareerFinderResultsScreen() {
               value={note}
               onChangeText={setNote}
               onBlur={() => void keepFeedback(rec.feedback!.answer, note)}
-              placeholder="Anything it got wrong, missed, or named badly."
+              placeholder="Anything it got wrong, missed or named badly."
               placeholderTextColor="#5f6068"
               multiline
               style={styles.fbInput}
               accessibilityLabel="What did the Career Finder misunderstand"
             />
-            <Body muted>{fbUnsaved ? 'This device could not save your feedback — it is on screen for now and will be gone when you close the app. You can still send it to the Academy with the button.' : 'Saved on this device. To send it to the Academy, use the button — it opens your mail app with the answer filled in, and you decide whether to send.'}</Body>
+            <Body muted>{fbUnsaved ? 'This device could not save your feedback. It stays on screen for now and will be gone when you close the app. You can still send it to the Academy with the button.' : 'Saved on this device. To send it to the Academy, use the button. It opens your mail app with the answer filled in, and you decide whether to send.'}</Body>
             <CtaButton label="SEND TO THE ACADEMY" onPress={mailFeedback} hint="Opens your mail app. Nothing is sent until you send it." />
           </>
         ) : null}

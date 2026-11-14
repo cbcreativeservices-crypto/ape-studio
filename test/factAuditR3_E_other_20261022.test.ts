@@ -71,8 +71,12 @@ const CASES: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F084175', file: 'src/features/production/preprod/stage5.data.ts', now: 'gain is set once, at line check or soundcheck, by a named person,', gone: 'gain is set once, during line check, by a named person,' },
   { id: 'F085120', file: 'src/features/soundsystems/capstones.ts', now: 'This lab’s amplifier has two channels: one mix each.', gone: 'An amplifier has two channels: one mix each.' },
   { id: 'F085298', file: 'src/features/soundsystems/check.ts', now: 'Walking forward is steady and skips nothing;', gone: 'Walking forward finds it in the fewest steps;' },
-  { id: 'F085225', file: 'src/features/soundsystems/check.ts', now: 'The input can be damaged — speaker level is far beyond what a line input tolerates', gone: 'The input is damaged — speaker level is far beyond what a line input tolerates' },
-  { id: 'F085259', file: 'src/features/soundsystems/check.ts', now: 'Reaching level means driving it into clipping, which can overheat drivers, tweeters most of all', gone: 'Reaching level means driving it into clipping, which is what usually damages high-frequency drivers' },
+  // Lab fix round 2026-11-14 phase 2 (F2), owner: "Begin fixing all bugs found and do
+  // obvious (my decision is not required) fixes as you suggestted in the report." —
+  // the right options were shortened so they are not the one long line (the
+  // audit's hedges "can be damaged" / "can overheat" are kept).
+  { id: 'F085225', file: 'src/features/soundsystems/check.ts', now: 'The input can be damaged: the level is far too big', gone: 'The input is damaged — speaker level is far beyond what a line input tolerates' },
+  { id: 'F085259', file: 'src/features/soundsystems/check.ts', now: 'To get loud it is driven into clipping, which can overheat tweeters', gone: 'Reaching level means driving it into clipping, which is what usually damages high-frequency drivers' },
   { id: 'F085331', file: 'src/features/soundsystems/configs.ts', now: 'A common club and touring layout. Low frequencies are hard to place by ear, so stereo subs gain little and add cancellation.', gone: 'The standard club and touring layout. Low frequencies are not localised, so stereo subs buy nothing and cost cancellation.' },
   { id: 'F085355', file: 'src/features/soundsystems/configs.ts', now: 'name: \'Lobby, recording and broadcast feeds\',', gone: 'name: \'Lobby, recording, broadcast and overflow feeds\',' },
   { id: 'F085404', file: 'src/features/soundsystems/configs.ts', now: 'long enough to control — a very short line, like four boxes, gives little control in the low mids.', gone: 'long enough to control — four boxes are a stack, not an array.' },

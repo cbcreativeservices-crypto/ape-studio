@@ -398,7 +398,11 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     assert.equal(endTitle(whatsLeft(units, new Set([...keys.filter((k) => k !== 'locker'), 'understanding']))), "WHAT'S LEFT");
   });
   it('the locker row is labelled Optional but still counts toward LAB COMPLETE (owner ruling 2026-10-31)', () => {
-    assert.match(s, /detail: st\.tag === 'OPTIONAL' \? 'Optional' : undefined/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 phase 2): each row names its own missing
+    // piece, the locker's says "Optional, still counts". Owner, 2026-11-14: "Begin fixing all bugs
+    // found and do obvious (my decision is not required) fixes as you suggestted in the report."
+    assert.match(s, /detail: MICSEL_MISSING\[st\.key\]/);
+    assert.match(s, /locker: 'Optional, still counts\./);
     assert.doesNotMatch(s, /optional: st\.tag === 'OPTIONAL'/);
   });
   it('opened lessons sit under the collapsed REVIEW ▾, so the end TRY THIS says so', () => {

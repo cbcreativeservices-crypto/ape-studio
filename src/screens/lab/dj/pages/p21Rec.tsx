@@ -362,7 +362,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Pick TAP → REC OUT, open REC, play deck A and press RECORD. Now ride MASTER up and down: the room changes, the RECORDER’s meters do not.</Do>
+        <Do>Pick TAP → REC OUT, open REC, play deck A and press RECORD. Now slide MASTER up and down: the room changes, the RECORDER’s meters do not.</Do>
         <P>Try BOOTH OUT and do the same with the booth — every booth move is in the take. LOOPBACK records only what the computer plays: here, nothing at all.</P>
       </Step>
       <Step n={3}>

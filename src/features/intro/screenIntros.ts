@@ -77,7 +77,22 @@ export async function resetScreenIntros(): Promise<void> {
  * Plain objects, not `let`: neither is user data (they only order popups),
  * and both empty themselves when their screens unmount.
  */
-const labTermSignal = { owed: new Set<number>(), holds: new Set<number>(), seq: 0 };
+const labTermSignal = {
+  owed: new Set<number>(),
+  holds: new Set<number>(),
+  /** Screen intro cards owed or on screen (ScreenGuide's IntroCardController
+   *  and its overlay) — see "ONE AT A TIME" below. */
+  cards: new Set<number>(),
+  /** Work under way inside a ScreenGuideHost (a tray open, a drag). */
+  work: new Set<number>(),
+  /** Hosts able to carry the lab term inside their intro card: 'pending'
+   *  while the card's seen flag is still being read, 'ready' once it is due. */
+  carriers: new Map<number, 'pending' | 'ready'>(),
+  /** The focused lab's term, offered to a carrier while it is owed. */
+  offered: null as CarriedLabTerm | null,
+  offeredBy: 0,
+  seq: 0,
+};
 const labTermListeners = new Set<() => void>();
 function emitLabTerm(): void {
   for (const l of Array.from(labTermListeners)) l();
@@ -93,18 +108,145 @@ export function labTermSignalId(): number {
   labTermSignal.seq += 1;
   return labTermSignal.seq;
 }
-export function setLabTermIntroOwed(id: number, owed: boolean): void {
-  const had = labTermSignal.owed.has(id);
-  if (owed === had) return;
-  if (owed) labTermSignal.owed.add(id);
-  else labTermSignal.owed.delete(id);
+function setIn(set: Set<number>, id: number, on: boolean): void {
+  if (set.has(id) === on) return;
+  if (on) set.add(id);
+  else set.delete(id);
   emitLabTerm();
 }
+export function setLabTermIntroOwed(id: number, owed: boolean): void {
+  setIn(labTermSignal.owed, id, owed);
+}
+/**
+ * ⛔ ONE AT A TIME (audit 2026-11-14, row 1: "Two to four popups arrive
+ * before the first touch, and late ones swallow the first tap"; owner
+ * approval: "Begin fixing all bugs found and do obvious ... fixes").
+ *
+ * "Owed" now means a FIRST-OPEN CARD is still to come on this visit: the lab
+ * term popup OR the screen's intro card (which may carry the term inside it,
+ * see CARRY below). Everything that already waited for the term popup — the
+ * lab's own first-open popups (useScreenIntro: ProNote), GuestStartReminder,
+ * LabShell's arrival audio ask and the ⓘ hint — now also waits for the card,
+ * so they come one after another, never on top of each other.
+ */
 export function isLabTermIntroOwed(): boolean {
-  return labTermSignal.owed.size > 0;
+  return labTermSignal.owed.size > 0 || labTermSignal.cards.size > 0;
 }
 export function useLabTermIntroOwed(): boolean {
   return useSyncExternalStore(subscribeLabTerm, isLabTermIntroOwed, isLabTermIntroOwed);
+}
+/** The TERM popup alone (the intro card itself waits on this, never on its
+ *  own entry). */
+export function isLabTermOnlyOwed(): boolean {
+  return labTermSignal.owed.size > 0;
+}
+export function useLabTermOnlyOwed(): boolean {
+  return useSyncExternalStore(subscribeLabTerm, isLabTermOnlyOwed, isLabTermOnlyOwed);
+}
+/** A focused screen's intro card is owed or on screen (ScreenGuide). */
+export function setIntroCardOwed(id: number, owed: boolean): void {
+  setIn(labTermSignal.cards, id, owed);
+}
+export function isIntroCardOwed(): boolean {
+  return labTermSignal.cards.size > 0;
+}
+
+/**
+ * WORK UNDER WAY (introHold.ts publishes it): a view inside a ScreenGuideHost
+ * has a tray open or a drag on its lane. App-wide, so surfaces outside the
+ * host (the lab term popup, the Sound Safety arrival ask) never open over it.
+ */
+export function setScreenWork(id: number, on: boolean): void {
+  setIn(labTermSignal.work, id, on);
+}
+export function isScreenWorkUnderway(): boolean {
+  return labTermSignal.work.size > 0;
+}
+export function useScreenWorkUnderway(): boolean {
+  return useSyncExternalStore(subscribeLabTerm, isScreenWorkUnderway, isScreenWorkUnderway);
+}
+
+/**
+ * CARRY: the lab term rides INSIDE the intro card (audit 2026-11-14, row 1:
+ * "Merge the term card into the intro card"). One card, the term on top.
+ *
+ *   LabTermIntro  — while its term is owed and ready, OFFERS it
+ *                   (offerLabTermToCard) and, while a carrier is 'pending' or
+ *                   'ready', draws nothing of its own (still owed, so the
+ *                   lab's other popups keep waiting);
+ *   ScreenGuide   — a focused host whose intro card is due registers as a
+ *                   carrier (setLabTermCarrier), draws the offered term inside
+ *                   the card, and on close reports it read
+ *                   (finishCarriedLabTerm), which marks the term seen.
+ * A screen with no intro card due has no carrier: the term shows on its own
+ * sheet as before.
+ */
+export type CarriedLabTerm = { key: string; title: string; plainEnglish: string };
+/** `offeredBy` is the owner of the offer slot: a blurred lab withdrawing late
+ *  never clears the focused lab's offer. */
+export function offerLabTermToCard(owner: number, term: CarriedLabTerm | null): void {
+  if (!term) {
+    if (labTermSignal.offeredBy !== owner || labTermSignal.offered == null) return;
+    labTermSignal.offeredBy = 0;
+    labTermSignal.offered = null;
+    emitLabTerm();
+    return;
+  }
+  const cur = labTermSignal.offered;
+  if (labTermSignal.offeredBy === owner && cur && cur.key === term.key && cur.plainEnglish === term.plainEnglish) return;
+  labTermSignal.offeredBy = owner;
+  labTermSignal.offered = term;
+  emitLabTerm();
+}
+function offeredNow(): CarriedLabTerm | null {
+  return labTermSignal.offered;
+}
+export function useOfferedLabTerm(): CarriedLabTerm | null {
+  return useSyncExternalStore(subscribeLabTerm, offeredNow, offeredNow);
+}
+export function setLabTermCarrier(id: number, state: 'none' | 'pending' | 'ready'): void {
+  const cur = labTermSignal.carriers.get(id) ?? 'none';
+  if (cur === state) return;
+  if (state === 'none') labTermSignal.carriers.delete(id);
+  else labTermSignal.carriers.set(id, state);
+  emitLabTerm();
+}
+/** 'ready' if any carrier is ready, else 'pending' if any is still reading,
+ *  else 'none'. */
+export function labTermCarrierState(): 'none' | 'pending' | 'ready' {
+  let pending = false;
+  for (const s of labTermSignal.carriers.values()) {
+    if (s === 'ready') return 'ready';
+    pending = true;
+  }
+  return pending ? 'pending' : 'none';
+}
+export function useLabTermCarrierState(): 'none' | 'pending' | 'ready' {
+  return useSyncExternalStore(subscribeLabTerm, labTermCarrierState, labTermCarrierState);
+}
+const carriedDone = new Set<(key: string) => void>();
+/** The carrying card closed: its term was read. */
+export function finishCarriedLabTerm(key: string): void {
+  for (const fn of Array.from(carriedDone)) fn(key);
+}
+export function onCarriedLabTermDone(fn: (key: string) => void): () => void {
+  carriedDone.add(fn);
+  return () => {
+    carriedDone.delete(fn);
+  };
+}
+
+/**
+ * A popup ignores taps for its first moment (audit 2026-11-14, quick win 1:
+ * "Make popups ignore taps until they are fully shown"). A tap aimed at the
+ * page a beat before a card arrived must not close it, nor press a button on
+ * it. Shared by the intro card, the term popup, the ⓘ hint and the Sound
+ * Safety sheet.
+ */
+export const POPUP_ARM_MS = 350;
+/** Pure: is a tap at `now` inside the arm window of a popup shown at `shownAt`? */
+export function popupArming(shownAt: number | null, now: number, armMs = POPUP_ARM_MS): boolean {
+  return shownAt != null && now - shownAt < armMs;
 }
 /** Hold the term popup back while the caller owns the screen; returns the
  *  release (an effect cleanup). */

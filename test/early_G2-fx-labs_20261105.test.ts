@@ -93,7 +93,8 @@ describe('2 + 5. Stereo Imaging Lab: BASS-MONO and PAN are said and shown', () =
   });
   it('the setting reaches the bezel and the stage', () => {
     const c = configOf('stereoConfig');
-    assert.match(c, /\{ k: 'BASS', paramId: P\.bassMonoHz \}/);
+    // Phase 2, lab fix round (owner 2026-11-14): a bezel cell may carry its first-visit caption.
+    assert.match(c, /\{ k: 'BASS', paramId: P\.bassMonoHz(?:, caption: '[^']*')? \}/);
     assert.match(c, /bassMonoHz: v\[P\.bassMonoHz\],/);
     assert.match(ANIM, /bassMonoHz=\{model\.bassMonoHz\}/);
     assert.match(ANIM, /const bassOn = flavor === 'width' && bassMonoHz > 0;/);

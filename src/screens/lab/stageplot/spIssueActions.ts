@@ -27,6 +27,7 @@ import { spAutoAssignBoxes, spPairRestore, spPairToMono, spPatch, spRenumber, sp
 import type { SpIssue, SpIssueAction } from '../../../features/stageplot/spReview.ts';
 import type { SpProject } from '../../../features/stageplot/spTypes.ts';
 import type { SpEditor, SpSelection } from './spContext.tsx';
+import { STAGE_NEW_SPOT, stagePlace } from './stage/stageLinks.ts';
 
 /** The part of the editor an answer needs. */
 export type SpIssueEditor = Pick<SpEditor, 'project' | 'apply' | 'goTo'>;
@@ -127,6 +128,29 @@ export function spIssueActionLabel(action: SpIssueAction, issue?: SpIssue): stri
   }
 }
 
+/** PLACE ON THE STAGE, pressed in Setup, Inputs, Monitors or a review
+ *  question: the button DOES what it says (lab fix round 2026-11-14;
+ *  beginner audit G5: "'PLACE ON THE STAGE' under a new performer switches
+ *  to the STAGE tab but does not place the performer … and needs a second
+ *  press"). ONE edit draws the row at a free place near downstage center
+ *  (stageLinks `stagePlace`, the same edit the Stage area's own button
+ *  makes: a drawing only, nothing added to any list), then the Stage area
+ *  opens with the new symbol selected, ready to be dragged. A row that
+ *  cannot be drawn is handed to the Stage area as before, which says so.
+ *  Returns the new object's id, or null. */
+export function placeOnStage(ed: Pick<SpEditor, 'apply' | 'goTo'>, sel: NonNullable<SpSelection>): string | null {
+  let id: string | null = null;
+  // `apply` runs the edit before it returns (spContext)
+  ed.apply((q) => {
+    const r = stagePlace(q, sel, STAGE_NEW_SPOT);
+    if (!r) return q;
+    id = r.id;
+    return r.p;
+  });
+  ed.goTo('stage', id ? { kind: 'object', id } : sel);
+  return id;
+}
+
 /** Carry out one answer. An answer that does not fit the issue's row does
  *  nothing (the list was made for another state of the project). */
 export function runIssueAction(ed: SpIssueEditor, issue: SpIssue, action: SpIssueAction): void {
@@ -139,9 +163,16 @@ export function runIssueAction(ed: SpIssueEditor, issue: SpIssue, action: SpIssu
 
     /* ── jumps ── */
     case 'locate':
+      // "PLACE ON THE STAGE" (spIssueActionLabel) places: a source or a
+      // performer that has no symbol yet is drawn, then shown.
+      if ((issue.rule === 'performer-unplaced' || issue.rule === 'source-unplaced') && sel && (sel.kind === 'performer' || sel.kind === 'source')) {
+        placeOnStage(ed, sel);
+        return;
+      }
+      ed.goTo('stage', sel);
+      return;
     case 'link-source':
-      // The stage shows the row: a source or a performer still to be placed,
-      // or the object that is off the stage or has no link yet.
+      // The stage shows the object that has no link yet.
       ed.goTo('stage', sel);
       return;
     case 'add-inputs':

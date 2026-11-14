@@ -591,6 +591,14 @@ function PageAdvFinal({ ctx }: { ctx: PageCtx }) {
     <View style={styles.page}>
       <MixMantra />
       <Lead>The handoff from hell: a mix someone else abandoned — vocal buried, guitar hot and centered, keys muddy, everything drowned. Repair it, check it, deliver it. This is the job.</Lead>
+      {/* Page 2's promise, kept BEFORE the work (novice audit G4, 2026-11-14:
+          the priorities appeared only in DELIVERED, after all seven steps). */}
+      {priorities.length === 3 ? (
+        <Card tone="note">
+          <Eyebrow>YOUR PAGE-2 CONTRACT</Eyebrow>
+          <Body>{`${priorities.join(' · ')}. Repair with these three in mind; the DELIVERED card asks whether the repair honored them.`}</Body>
+        </Card>
+      ) : null}
       <Card>
         <Eyebrow>STEP 1 — DIAGNOSE THE HANDOFF</Eyebrow>
         <AbPlayer pb={pb} variants={[variants[0]]} />

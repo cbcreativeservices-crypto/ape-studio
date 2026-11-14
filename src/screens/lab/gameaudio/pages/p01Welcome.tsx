@@ -43,6 +43,7 @@ import { gaTerms } from '../gaTerms';
 import { gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, useGa } from '../model/gaStore';
 import type { DockParam } from '../../rack/rackTypes';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { G01 } from './guides/p01';
 import { useCountWhen } from './chbBits';
 import { gaFact, pct, useSince } from './shared';
@@ -117,8 +118,11 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={6} />
       </Step>
       <Step n={3}>
-        <Do>Raise LEVEL slowly until the scene is comfortable. Then press ■ STOP.</Do>
-        <P>LEVEL moves every bar on the strip under the picture.</P>
+        {/* the one step that asks for a judgment by ear: tagged, with its sound-off path in the next line */}
+        <Do>
+          Raise LEVEL slowly until the scene is comfortable. <NeedsSoundTag /> Then press ■ STOP.
+        </Do>
+        <P>LEVEL moves every bar on the strip under the picture. With sound off, watch the bars rise instead.</P>
         <P>■ STOP is always the last key in the dock. It stops everything immediately.</P>
         <P>LEVEL is the lab’s own level. Your device’s volume control is separate: keep it low too.</P>
         <Note tone="mistake">Raising the level first and starting the sound second. A sound you have not heard yet can be louder than you expect.</Note>

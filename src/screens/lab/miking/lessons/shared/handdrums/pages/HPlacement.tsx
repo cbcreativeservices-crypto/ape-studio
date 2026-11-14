@@ -33,6 +33,7 @@ import type { PageProps } from '../../../../pages/pageTypes';
 import { useWorkedMark } from '../../hand/handPages';
 import { handOf } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
+import { zoneActivityLine } from '../../../../engine/progress/zoneActivity.ts';
 
 export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const H = handOf(lesson);
@@ -65,7 +66,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   }, [variant, exType]);
   useEffect(() => {
     if (ex.variant !== variant || ex.mics[0].typeId !== exType) return;
-    ex.jumpTo('A', exZone.start);
+    ex.jumpTo('A', exZone.start, exZone.id);
     if (ex.surfaceId !== exZone.refSurface) ex.setSurfaceId(exZone.refSurface);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ex.variant, ex.mics[0].typeId, exZone.id]);
@@ -168,7 +169,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       selectedId: zone?.id ?? null,
       onSelect: (id) => {
         const z = lesson.zones.find((q) => q.id === id);
-        if (z) rig.jumpTo('A', z.start);
+        if (z) rig.jumpTo('A', z.start, z.id);
       },
       options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
     },
@@ -220,7 +221,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{shown.blocked.partId === 'gooseneck' ? 'A clip-on mic reaches only as far as its gooseneck from the rim it clamps to — it stops there.' : `It would touch the ${shown.blocked.label} — the mic stops there.`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic${multi ? ' and setup' : ''}: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or setup'}.`}</Body>}
-          <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{zoneActivityLine([...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id))}</Body>
           {tried && pred ? <Note tone="ok">{`You predicted “${predicted}”. ${pred.after}`}</Note> : null}
           {idea ? <Note>{idea}</Note> : null}
           <Note>Clearance comes first: stop the player before moving a real mic, and check again while they play their loudest, most animated passage.</Note>

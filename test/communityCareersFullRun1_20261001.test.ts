@@ -38,7 +38,9 @@ describe('C1: career examples disclose degrees and the PE licence, not only lice
 
   it('graduate-degree titles are disclosed with the index’s own preparation text', () => {
     assert.match(noteForExample('Music Librarian') ?? '', /MLS\/MLIS/);
-    assert.match(noteForExample('Audio Archivist') ?? '', /Master's/);
+    // Updated for the Comp A Career Finder text review (2026-11-14), on the owner's word: "assign an
+    // agent in the background to work on this". The screen shows the curly apostrophe now (Pattern 9).
+    assert.match(noteForExample('Audio Archivist') ?? '', /Master['’]s/);
     assert.match(noteForExample('Acoustics Research Scientist') ?? '', /doctorate/);
   });
 
@@ -54,7 +56,10 @@ describe('C1: career examples disclose degrees and the PE licence, not only lice
     it(`${screen.split('/').pop()} prints the note under the examples`, () => {
       const src = read(screen);
       assert.match(src, /furtherEducationForTitle\(e\)/);
-      assert.match(src, /Academy study does not replace it/);
+      // Comp A text review 2026-11-14 (owner: "assign an agent in the background to work on this"):
+      // one shared sentence, dash → period (Pattern 7). The screen prints the constant.
+      assert.match(src, /\{EDUCATION_NOT_REPLACED\}/);
+      assert.match(read('src/features/careerfinder/educationNote.ts'), /EDUCATION_NOT_REPLACED = 'Academy study does not replace it\. Check what is required where you live\.'/);
     });
   }
 });

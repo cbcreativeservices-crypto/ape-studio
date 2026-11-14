@@ -231,12 +231,17 @@ const CHECK_SPECTRUM_ID: CheckSpec = {
   question:
     'Soundcheck. The analyzer shows a single NARROW spike at 1.7 kHz — and it is slowly GROWING while the rest of the curve holds still. What are you looking at?',
   options: [
-    'Feedback building at 1.7 kHz — ring it out or move the mic before it screams',
+    'Feedback building at 1.7 kHz — act before it screams',
     'Mains hum leaking in from the power grid',
     'The kick drum’s click bump',
     'Pink noise from the PA',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Hum is a family of spikes at 50 or 60 Hz and its multiples, and it holds steady.',
+    2: 'A kick’s click is a broad bump that comes and goes with each hit, not one narrow spike.',
+    3: 'Pink noise is a smooth, sloped curve across the whole band, with no single spike.',
+  },
   reveal:
     'ONE towering narrow spike that grows over time is the feedback signature. Hum would be a FAMILY of spikes locked to the power-line frequency and its multiples (60/120/180 Hz here); a kick click is broad and rhythm-locked; pink noise is a smooth ramp. Notch 1.7 kHz or change the mic/speaker geometry NOW.',
   wrongHint: 'Count the spikes and watch the clock: how many are there, and is it growing?',
@@ -245,12 +250,17 @@ const CHECK_SPECTRUM_ID: CheckSpec = {
 const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
   question: 'Mains hum and feedback both draw thin spikes. Which pair of tells separates them?',
   options: [
-    'Hum = SEVERAL spikes at exact power-line multiples (e.g. 60, 120, 180 Hz), steady; feedback = ONE spike anywhere in the band, growing',
+    'Hum: several steady spikes at power-line multiples; feedback: one spike, growing',
     'Hum = one spike high in the band; feedback = many spikes down low',
     'Hum grows over time; feedback holds perfectly steady',
     'They look identical — only listening can separate them',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Pick MAINS HUM in PATTERN: count the spikes and see where they sit.',
+    2: 'Watch the two patterns over time: which one holds still, and which one climbs?',
+    3: 'The picture alone separates them: count the spikes and check whether they grow.',
+  },
   reveal:
     'Hum is locked to the power grid: a steady family at exact multiples of the power-line frequency, always in the same place. Feedback is a single spike that can appear ANYWHERE the loop gain passes unity (each trip around the mic-to-speaker loop comes back louder) — and it grows. Count the spikes, check the frequencies, watch the trend.',
   wrongHint: 'One of them is locked to the power grid; the other appears anywhere — and grows.',
@@ -298,7 +308,7 @@ export function SpectrumModule(p: MeterModuleProps) {
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
           { k: 'PEAK', v: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
           { k: 'LEVEL', v: `${(Math.abs(scan.peakDb) < 0.05 ? 0 : scan.peakDb).toFixed(1)} dB rel`, helpKey: 'spectrum_read' },
-          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read' },
+          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read', caption: 'high vs low' },
         ],
         render: (w, h) =>
           viz ? (
@@ -370,6 +380,11 @@ const CHECK_SGRAM_AXES: CheckSpec = {
     'Spectrograms don’t show frequency',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Left to right is time on a spectrogram: OLDER ← TIME → NOW.',
+    2: 'Color shows how much energy, not which pitch. Check the HI / LO bar beside the picture.',
+    3: 'Read the axes: FREQUENCY ↑ is printed on the left edge.',
+  },
   reveal:
     'Time →, frequency ↑, level = color. A spectrogram is a spectrum FILMED over time — not a waveform, so height means PITCH, never loudness. Loudness is the brightness.',
   wrongHint: 'It is a spectrum filmed over time — which way does the film run?',
@@ -379,12 +394,17 @@ const CHECK_WHISTLE_VS_FEEDBACK: CheckSpec = {
   question:
     'Two thin horizontal lines on the spectrogram: one holds steady brightness, the other keeps getting brighter. Which is which — and what do you DO?',
   options: [
-    'Steady = whistle (it’s the performance — leave it); growing = feedback (pull the gain or notch that frequency NOW)',
+    'Steady = whistle, leave it; growing = feedback, pull gain or notch it',
     'Steady = feedback (notch it); growing = whistle (leave it)',
     'Both are feedback — mute the monitors',
     'Both are whistles — nothing to do',
   ],
   correctIdx: 0,
+  why: {
+    1: 'A whistle is a held note: steady. Feedback is a loop feeding itself, so it keeps growing.',
+    2: 'Only one of the lines is growing. A steady line is not running away.',
+    3: 'One line is getting brighter every moment. A performed note does not do that.',
+  },
   reveal:
     'A steady thin line is usually a stable tone — a whistle, a synth, a flute: part of the sound. A line that GROWS is a loop feeding itself: feedback. The display tells you the frequency to notch and the trend tells you how long you have.',
   wrongHint: 'Stable level = source. Growing level = a loop feeding itself.',
@@ -571,11 +591,16 @@ const CHECK_Z_AXIS: CheckSpec = {
   question: 'In the waterfall (CSD), what is the Z axis — the direction the ridges step through the picture?',
   options: [
     'TIME — each ridge nearer the front is the spectrum a moment later',
-    'Phase',
-    'A second frequency axis for harmonics',
-    'Stereo width',
+    'Phase — how far each frequency is shifted in time',
+    'A second frequency axis, for the harmonics above it',
+    'Stereo width — how far the sound spreads left to right',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Phase is not drawn on a waterfall at all. Press REPLAY and watch which way the slices step.',
+    2: 'Frequency already runs across the picture. The third direction shows something else.',
+    3: 'A waterfall shows one channel’s decay; stereo width is the phase meter’s job.',
+  },
   reveal:
     'X = frequency across, Y = amplitude up, Z = time stepping toward you. The back edge is the start (t = 0); each slice nearer the front is later, and the front edge is the latest instant. The mountain range collapsing toward you IS decay.',
   wrongHint: 'The back edge is the start (t = 0) — what is each slice in front of it?',
@@ -585,12 +610,17 @@ const CHECK_RIDGE_FIX: CheckSpec = {
   question:
     'The classroom’s 250 Hz ridge stretches far toward the front while its neighbors die fast. What actually SHORTENS that ring?',
   options: [
-    'Acoustic treatment/damping — absorb the stored energy (EQ only changes the ridge’s LEVEL)',
+    'Acoustic treatment that absorbs the stored energy (EQ only lowers it)',
     'An EQ cut at 250 Hz — less level means less ring time',
     'Boosting the rest of the range so the ridge stands out less',
     'A shorter reverb preset on the vocal',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Try EQ in the dock: the ridge gets lower, but watch whether it gets any shorter.',
+    2: 'Boosting the rest changes levels again, not how long the 250 Hz ridge lasts.',
+    3: 'The ring is in the room, not in the vocal effect. A reverb preset never reaches it.',
+  },
   reveal:
     'EQ mostly moves the ridge up and down (level); across the room it keeps storing and releasing energy at 250 Hz. Only absorption — damping, treatment, bass trapping — shortens the DECAY for every seat. The waterfall shows both axes separately, which is exactly why it exists.',
   wrongHint: 'Try the EQ lane in this module: the mountain gets taller or shorter — does it reach FARTHER toward the front, or not?',
@@ -786,10 +816,10 @@ export function WaterfallModule(p: MeterModuleProps) {
         badge: 'SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT',
         onGuide: () => p.help('waterfall_axes'),
         bezel: [
-          { k: 'RT·125', v: `${rt.r125.toFixed(2)} s`, helpKey: 'waterfall_decay' },
-          { k: 'RT·4k', v: `${rt.r4k.toFixed(2)} s`, helpKey: 'waterfall_decay' },
+          { k: 'RT·125', v: `${rt.r125.toFixed(2)} s`, helpKey: 'waterfall_decay', caption: 'low-end fade' },
+          { k: 'RT·4k', v: `${rt.r4k.toFixed(2)} s`, helpKey: 'waterfall_decay', caption: 'treble fade' },
           {
-            k: 'RIDGE',
+            k: 'RIDGE', caption: 'rings longest',
             v: ringing ? fmtHz(rt.f) : 'none',
             tint: ringing ? '#ff6b5e' : '#7a7f8a',
             helpKey: 'room_ring',
@@ -845,8 +875,8 @@ export function WaterfallModule(p: MeterModuleProps) {
             { k: 'RT60 · 250 Hz', v: `${rt.r250.toFixed(2)} s` },
             { k: 'RT60 · 1 kHz', v: `${rt.r1k.toFixed(2)} s` },
             { k: 'RT60 · 4 kHz', v: `${rt.r4k.toFixed(2)} s` },
-            { k: 'RIDGE', v: ringing ? fmtHz(rt.f) : 'none' },
-            { k: 'VS NEIGHBORS', v: ringing ? `${rt.ratio.toFixed(1)}× longer` : 'even decay' },
+            { k: 'RIDGE', v: ringing ? fmtHz(rt.f) : 'none', caption: 'rings longest' },
+            { k: 'VS NEIGHBORS', v: ringing ? `${rt.ratio.toFixed(1)}× longer` : 'even decay', caption: 'how much more' },
           ]}
         />
         <Text style={dstyles.caption}>

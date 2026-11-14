@@ -340,9 +340,11 @@ export function WaveformView(p: {
   const R = useMemo(() => {
     const raw = overview ? renderOverview(p.signal) : renderSignal(p.signal, 2048);
     const n = raw.length;
-    // The readouts keep the meter engine's reference buffer so every lesson's
-    // PK / RMS / crest numbers are unchanged (peaks match by construction).
-    const ref = overview ? renderSignal(p.signal, 2048) : raw;
+    // The picture's PK / RMS / CREST / DC line reads the SAME buffer as the
+    // module's readout frame (the engine default, renderSignal at 1024), so
+    // the two never disagree on one screen (beginner audit 2026-11-14: the
+    // picture said "DC +0.02" beside the frame's "DC +4.0%").
+    const ref = renderSignal(p.signal);
     // Per-column min/max at DEVICE-PIXEL density (owner: hero resolution).
     const cols = Math.max(96, Math.min(Math.round((w - gut) * DPR), n));
     const rMin = new Array<number>(cols);
@@ -367,7 +369,12 @@ export function WaveformView(p: {
     const sgn = inv ? -1 : 1;
     const k = sgn * gain;
     const ref = R.ref.map((v) => k * v + dc);
-    const stats = { pkDb: db(peakOf(ref)), rmsDb: db(rmsOf(ref)), crest: crestDb(ref), dc: dcOf(ref) };
+    // With the rails shown, the line reads what the file STORES (clipped at
+    // full scale), like the PEAK readout beside it; how far the wave wanted
+    // to go is the CLIP readout's "+n OVER" (beginner audit 2026-11-14: the
+    // picture said "PK 5.5" beside "PEAK +0.0").
+    const stored = showClip ? ref.map((v) => Math.max(-1, Math.min(1, v))) : ref;
+    const stats = { pkDb: db(peakOf(stored)), rmsDb: db(rmsOf(stored)), crest: crestDb(stored), dc: dcOf(stored) };
     const cols = R.cols;
     const colW = (w - gut) / cols;
     const lim = showClip ? 1 : 1.2; // showClip shears the tops at the rails
@@ -506,7 +513,7 @@ export function WaveformView(p: {
       )}
       {!p.plain && Math.abs(st.dc) > 0.004 ? (
         <Lbl x={w - 230} y={17 * ts} w={226} align="right" size={10} color={AMBER}>
-          {`DC ${st.dc >= 0 ? '+' : ''}${st.dc.toFixed(2)}`}
+          {`DC ${st.dc >= 0 ? '+' : ''}${(st.dc * 100).toFixed(1)}%`}
         </Lbl>
       ) : null}
     </View>
@@ -1429,15 +1436,22 @@ export function LoudnessView(p: {
    *  visibly moves the loudness face. Default 0 keeps the Visual Audio
    *  Analysis lab bit-for-bit as before. */
   gainDb?: number;
+  /** ADDITIVE (Mastering Lab fix round, F4 request 2026-11-14): the true peak
+   *  (dBTP, before `gainDb`) the host already shows on its own bezel, so the
+   *  face's TP label and its −1 dBTP lamp agree with it. Undefined keeps the
+   *  Visual Audio Analysis lab exactly as before (the simulated value). */
+  truePeakDbtp?: number;
 }) {
   const w = p.width;
   const targetLufs = p.targetLufs === undefined ? -14 : p.targetLufs;
   const gainDb = p.gainDb ?? 0;
+  const tpIn = p.truePeakDbtp;
   // Taller face + bigger fonts (owner 2026-08-05: the display was too small to
   // read). The integrated LUFS numeral is the headline, enlarged up top.
   const h = p.height ?? 300;
   const sim = useMemo(() => {
-    const s = simulateLoudness(p.signal);
+    const s0 = simulateLoudness(p.signal);
+    const s = tpIn === undefined ? s0 : { ...s0, truePeakDbtp: tpIn };
     if (!gainDb) return s;
     return {
       ...s,
@@ -1446,7 +1460,7 @@ export function LoudnessView(p: {
       integratedLufs: Math.round((s.integratedLufs + gainDb) * 10) / 10,
       truePeakDbtp: Math.round((s.truePeakDbtp + gainDb) * 10) / 10,
     };
-  }, [p.signal, gainDb]);
+  }, [p.signal, gainDb, tpIn]);
   const N = sim.momentary.length;
   // Overlay labels grow in FULL SCREEN (StageTextScale, 1 on the glass); the
   // gutters that hold them — scale column, title strip, legend strip — grow

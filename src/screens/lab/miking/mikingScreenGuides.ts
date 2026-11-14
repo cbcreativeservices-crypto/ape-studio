@@ -509,8 +509,9 @@ function keyPhrase(k: MikingDockKey, level: 0 | 1 | 2): string {
 }
 
 const STRIP_LINE = 'In the strip under the title, ‹ PREV and NEXT › move one step, on into the next module (FINISH › at the very end); ⏮ returns to module 1. Tap the middle readout (MODULE, plus STEP when there are several) for the contents. Every module stays open.';
-/** The header's other ⓘ: the lesson's starting-points note (AccuracyNote). */
-const CHIP_LINE = 'The other ⓘ, beside the one you tapped, opens the lesson’s ABOUT THESE STARTING POINTS note.';
+/** The header's ABOUT chip: the lesson's starting-points note (AccuracyNote
+ *  variant "about", fix round 2026-11-14). */
+const CHIP_LINE = 'ABOUT, beside the ⓘ you tapped, opens the lesson’s ABOUT THESE STARTING POINTS note.';
 const FULL_LINE = '⤢ FULL SCREEN shows the drawing at full size, with zoom. ▴ HIDE DISPLAY gives the words the whole screen.';
 
 function sequenceLine(prev: string | null, next: string | null): string {
@@ -670,7 +671,7 @@ export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; 
 export const MIKING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How a miking lesson fits together: find where the sound leaves, compare setups, choose the mic, place it clear of everything, then test it in real situations.',
-    start: 'Read LAB COMPLETE, or the WHAT’S LEFT rows and what each module still needs. Tap a row to jump to that module, or open REVIEW ▾ to look back at the ones you’ve done.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Each row still listed says what that module still needs; tap a row to jump to it.',
   },
   seeing: [
     'You’ve reached the end of this lesson. LAB COMPLETE means every module is done. Otherwise WHAT’S LEFT lists each module still to do, what it needs, and any note on your first try.',
@@ -706,6 +707,12 @@ export const MIKING_END_GUIDE: ScreenGuide = {
 export function mikingHubGuide(family?: { family: string }): ScreenGuide {
   const where = family ? `${family.family.toUpperCase()}: one tile per lesson in this family` : 'MIKING LABS: every family’s lessons, under a heading for each family';
   return {
+    // The screen the Miking Labs open on gets its intro card (S1 phase 2, fix
+    // round 2026-11-14): the lab term rides on top of it.
+    intro: {
+      learning: 'One silent, drawn lesson per instrument or source. Every lesson runs the same journey, from where the sound leaves to a mic placed clear of everything.',
+      start: 'Tap the instrument or source you are curious about. Every lesson opens, in any order.',
+    },
     seeing: [
       `${where}. The line at the top says what the lessons cover.`,
       'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done (the tile calls them pages). ✓ marks a finished lesson.',

@@ -24,6 +24,7 @@ import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { SettingItem, ViewBox, Wedge } from '../../../engine/model/types.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { copyOf } from '../../../engine/model/copy.ts';
+import { articleFor } from '../../../engine/journey.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
@@ -501,7 +502,7 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
     };
     const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
-      { k: `FOR ${/^[aeiou]/i.test(lesson.noun.one) ? 'AN' : 'A'} ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
+      { k: `FOR ${articleFor(lesson.noun.one).toUpperCase()} ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
       ...(extra ? [extra] : []),
     ];
     const card = (it: SettingItem | undefined, idle: string) =>

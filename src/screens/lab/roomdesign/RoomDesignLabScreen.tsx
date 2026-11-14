@@ -51,6 +51,7 @@ import { ReviewModule } from './modules/modReview';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { ROOM_END_GUIDE, ROOM_SCREEN_GUIDES } from './roomdesignScreenGuides';
+import { notOpenedDetail, visitCounts } from '../foundations/endRows';
 
 const TITLE = 'ROOM DESIGN & MONITORING LAB';
 
@@ -204,7 +205,9 @@ export function RoomDesignLabScreen() {
         {ending ? (
           <LabEndScreen
             labTitle="Room Design & Monitoring Lab"
-            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+            labId="room-design"
+            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title, detail: notOpenedDetail(ROOM_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+            howItCounts={visitCounts('module')}
             cleared={visited}
             unreadable={visitsUnreadable}
             mode="progress"

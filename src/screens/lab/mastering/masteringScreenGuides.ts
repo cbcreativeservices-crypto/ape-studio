@@ -112,7 +112,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'Why a louder version tends to sound “better” at first, and what a limiter really trades away once both versions play at the same loudness.',
-          start: 'Leave MATCH LEVEL on. Tap ▶ MIX, then ▶ LOUDER, and listen to the kick and snare hits. Then compare the PLR cell (peak above loudness) for each version.',
+          start: 'Read the PLR cell (peak above loudness) and the GAIN REDUCTION graph: they show the LOUDER version, even with sound off. With sound on, leave MATCH LEVEL on, tap ▶ MIX, then ▶ LOUDER, and listen to the hits.',
         },
         seeing: [
           'The display shows the waveform of the version playing (THE MIX or LOUDER), a gain-reduction strip and the limiter faceplate: INPUT, CEILING, RELEASE, GR (gain reduction), or BYP (bypass) when nothing is processed.',
@@ -154,7 +154,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -163,7 +163,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         tryThis: [
           'For each card, ask: does this touch the whole program, one element inside it, or is something unknown?',
-          'Read every explanation, right or wrong: each one shows the reasoning behind the next step.',
+          'Read every line, right or wrong: each one shows the reasoning behind the next step.',
         ],
       },
     },
@@ -193,7 +193,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         tryThis: [
           'Cover the definitions and say each KEY TERM in your own words.',
-          'If the line at the foot says cards are still open, ‹ PREV returns to the PRACTICE step.',
+          'If the line at the foot says cards are still open, OPEN THE PRACTICE CARDS › (under it) returns to the PRACTICE step.',
         ],
       },
     },
@@ -273,7 +273,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -387,7 +387,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'A monitoring path is an order of jobs — playback, conversion, level control, amplification, loudspeakers — and the order holds however the boxes share them.',
-          start: 'Press + CONNECT and watch DAW appear on the glass. Keep pressing until PATH reads COMPLETE. Then tap CLEAR and build a chain that ends in ACTIVE.',
+          start: 'Press + CONNECT and watch DAW appear on the glass. Then pick the next DEVICE yourself and connect it, until PATH reads COMPLETE. Then tap CLEAR and build a chain that ends in ACTIVE.',
         },
         seeing: [
           'The display draws the chain you build, device by device. The next device shows faintly, marked NEXT ›, and each cable is drawn by what it carries.',
@@ -396,7 +396,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: [
           'Pick a DEVICE in the dock: DAW, DAC (digital-to-analog converter), MON CTL (monitor controller), AMP, PASSIVE or ACTIVE. Each has a one-line note on its job.',
-          '+ CONNECT adds it to the chain. If it’s already in, you see ✓ PLACED; at five devices, SLOTS FULL. The choice then moves on to the next device not yet placed.',
+          '+ CONNECT adds it to the chain. If it’s already in, you see ✓ PLACED; at five devices, SLOTS FULL. The choice stays on the device you just placed: picking the next one is your decision.',
           '‹ UNDO removes the last device; CLEAR empties the chain.',
         ],
         changes: [
@@ -410,7 +410,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
           'Power order: amplifiers on last and off first, so switching thumps from other gear never reach the speakers.',
         ],
         tryThis: [
-          'Press + CONNECT five times: the choice walks DAW, DAC, MON CTL, AMP, PASSIVE and PATH reads COMPLETE.',
+          'Connect DAW, DAC, MON CTL, AMP and PASSIVE, choosing each one in DEVICE: PATH reads COMPLETE.',
           'Tap CLEAR, connect DAW, DAC, MON CTL and AMP, then choose ACTIVE last: PATH reads CHECK. Read the note to see why.',
         ],
       },
@@ -427,7 +427,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -571,7 +571,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -681,7 +681,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'Why a mastering change is judged against the bypassed mix at matched level, and how a small level boost makes a change seem better than it is.',
-          start: 'Leave MATCH LEVEL on. Tap ▶ BYPASS, then ▶ WITH EQ, and listen to the tone. Then move the TILT fader and compare the two again.',
+          start: 'Move the TILT fader and watch the faceplate and the readouts change, even with sound off. With sound on, leave MATCH LEVEL on, tap ▶ BYPASS, then ▶ WITH EQ, and listen to the tone.',
         },
         seeing: [
           'The display shows the waveform of the version you’re hearing and the EQ faceplate. TILT is split between the 200 Hz and 2.5 kHz shelves: one end goes up as the other goes down.',
@@ -722,7 +722,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -740,7 +740,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'The seven workflow stages in order, and two habits behind them: compare every change with the bypass at matched level, and run QC on the files you send.',
-          start: 'Read KEY IDEAS and KEY TERMS, then the TAKEAWAY at the foot. If the line under it says cards are still open, ‹ PREV takes you back to the PRACTICE step.',
+          start: 'Read KEY IDEAS and KEY TERMS, then the TAKEAWAY at the foot. If the line under it says cards are still open, OPEN THE PRACTICE CARDS › takes you there.',
         },
         seeing: [
           'KEY IDEAS sums up the workflow; KEY TERMS gives its words and what they mean.',
@@ -804,7 +804,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'What a louder master costs: pushing a limiter harder raises loudness but takes away transients and movement, which you only hear fairly at matched level.',
-          start: 'Leave MATCH LEVEL on and tap ▶ QUIETER, then ▶ LOUDER. Push DRIVE higher and compare again, listening to the hits and the space between them.',
+          start: 'Push DRIVE higher and watch GR and PLR change, even with sound off. With sound on, leave MATCH LEVEL on, tap ▶ QUIETER, then ▶ LOUDER, and listen to the hits and the space between them.',
         },
         seeing: [
           'The display shows the waveform, the gain-reduction strip and the limiter faceplate: INPUT (the drive), CEILING −1.0 dBFS, RELEASE 80 ms and GR (gain reduction).',
@@ -905,7 +905,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -1013,7 +1013,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
       guide: {
         intro: {
           learning: 'How release decisions start from the destination’s current spec and the client’s request, instead of one setting remembered from another job.',
-          start: 'Read the first card and ask what you’d check before deciding. Tap an option, then read the explanation, right or wrong. NEXT CARD › moves on.',
+          start: 'Read the first card and ask what you’d check before deciding. Tap an option, then read the line under it, right or wrong. NEXT CARD › moves on.',
         },
         seeing: [
           'A deck of release decisions, one card at a time. Each card is a choice you’d face when delivering a release.',
@@ -1021,7 +1021,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Once the last card has an answer, this module is done, even if some first picks were wrong.',
         ],
         teaches: [
@@ -1107,7 +1107,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         control: DECK_CONTROL,
         changes: [
-          'A fitting pick shows ✓ and the full explanation. Another pick tells you it isn’t the best fit, so you can choose again.',
+          'A fitting pick shows ✓ and the full explanation. Another pick says why that option doesn’t fit, so you can choose again; a second miss adds the full explanation.',
           'Module 8 is done once these four track decisions are answered and every line of the final QC checklist is checked.',
         ],
         teaches: [
@@ -1224,7 +1224,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
 export const MASTERING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A look back over the whole mastering path — what a master can and can’t change, the two roles, room, tools, workflow, loudness and delivery — and what’s still open.',
-    start: 'Read the rows still listed: each one names what finishes that module. Tap a row to open that step, or tap REVIEW ▾ to reopen a module you found hard.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Tap any row to open that step.',
   },
   seeing: [
     'The title tells you where you stand: WHAT’S LEFT while modules remain, LAB COMPLETE once every module is done. If your saved progress can’t be loaded, it reads YOUR PROGRESS.',

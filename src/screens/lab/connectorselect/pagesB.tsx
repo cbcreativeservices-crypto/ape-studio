@@ -112,7 +112,18 @@ function JobQuiz({ entry, onSolved }: { entry: JobMatrixEntry; onSolved: () => v
       ) : allRight ? (
         <Text style={[styles.jobNote, { color: colors.green }]}>✓ Every job matched — this family is yours.</Text>
       ) : (
-        <Btn label="TRY AGAIN" onPress={() => setChecked(false)} a11y="Clear the judgment and try again" />
+        <>
+          {/* A failed check says in words what the red rows mean (beginner
+              audit 2026-11-14: red marks with no words at all). It still
+              withholds each row's reason until the set is right. */}
+          <Text style={[styles.jobNote, { color: colors.gold }]}>
+            {(() => {
+              const n = entry.jobs.filter((j) => j.can !== marked.has(j.id)).length;
+              return `${n} ${n === 1 ? 'row is' : 'rows are'} red: each is either a real job you left unmarked or an impostor you marked. Change ${n === 1 ? 'it' : 'them'}, then check again. Every reason shows once the set is right.`;
+            })()}
+          </Text>
+          <Btn label="TRY AGAIN" onPress={() => setChecked(false)} a11y="Clear the judgment and try again" />
+        </>
       )}
     </View>
   );

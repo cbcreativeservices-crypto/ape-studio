@@ -72,6 +72,20 @@ export const SOUND_SAFETY_DECLINE = 'KEEP SOUND OFF';
 export const SOUND_SAFETY_ACCEPT = 'I UNDERSTAND — ENABLE SOUND';
 
 /**
+ * The line under the buttons. NOT part of the acknowledgment record (it says
+ * when the sheet appears, not what is agreed to), so no version bump.
+ *
+ * Owner 2026-11-14 chose "Once per session (Recommended)": the warning is asked
+ * on the first sound lab of a session, KEEP SOUND OFF is honoured until the app
+ * is closed, and a new launch asks again. The old line, "This warning appears
+ * once.", was false for anyone who kept sound off (audit 2026-11-14: it came
+ * back on 13 of 13 sound labs). "…until you enable sound" is the tightening the
+ * owner allowed: an acceptance is recorded once and never asked again.
+ */
+export const SOUND_SAFETY_FOOTNOTE =
+  'This warning appears once each time you open the app, until you enable sound. The Pro Audio Safety topic covers hearing protection in full.';
+
+/**
  * The full warning as one string, for the acknowledgment record and for Help to
  * display back verbatim.
  *

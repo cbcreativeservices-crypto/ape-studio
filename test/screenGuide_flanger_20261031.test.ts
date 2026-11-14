@@ -304,7 +304,8 @@ describe('7. −70% HOLLOW is hollow only at full wet (screen + lesson copy, 202
     assert.doesNotMatch(CFG, /Math\.abs\(v\[P\.modFeedback\]\) >= 0\.7/);
     assert.ok(CFG.includes("wrongHint: 'Step FDBK from 0% to 70% METALLIC and watch the peaks between the notches on OUT rise above the dotted input line.'"));
     // the card's answer/reveal follow the maths: peaks grow (0 → +2.5 → +6.7 dB), notches get SHALLOWER
-    assert.ok(CFG.includes("'The peaks between the notches grow tall and narrow and ring"));
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", check card row 4: balanced option lengths): shorter option, same maths (the peaks grow).
+    assert.ok(CFG.includes("'Tall, narrow peaks ring between the notches'"));
     // D42 r2 (owner GO 2026-11-01): the CHECK reveal follows the maths too — taller,
     // narrower peaks; never "deeper contrast" or "deeper notches".
     assert.ok(CFG.includes('the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant'));

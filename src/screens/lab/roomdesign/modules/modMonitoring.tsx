@@ -266,13 +266,13 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.monitoring, bezel, params, initialParam: 'spread', hideDragTag: true }}
-      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD (it sets the pair evenly about the room's center line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
+      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or slide SPREAD (it sets the pair evenly about the room's center line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
       captionFirst
       wellTop={
         <View style={{ gap: 6 }}>
           {st && !st.inFront ? (
             <Text style={styles.warn}>
-              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Ride SEAT farther into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
+              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Slide SEAT farther into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
             </Text>
           ) : st ? (
             <Text style={styles.line}>

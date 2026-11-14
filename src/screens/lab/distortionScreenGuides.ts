@@ -107,7 +107,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
   learn: {
     intro: {
       learning: 'The ideas behind EXPLORE, in words: how a bent sine becomes a harmonic series, odd versus even harmonics, where aliasing lands and what THD measures.',
-      start: 'Read what distortion is first. Then read the COMMON MISTAKES line on odd and even harmonics, and on EXPLORE switch TYPE between HARD CLIP and TUBE (ASYM).',
+      start: 'Read what distortion is first. Then read GUIDED STEPS 2 and 3, on odd and even harmonics, and on EXPLORE switch TYPE between HARD CLIP and TUBE (ASYM).',
     },
     seeing: [
       'The LEARN tab: this lab’s lesson as one page. Nothing on it moves; the header ▶ still plays or stops the sound.',
@@ -131,7 +131,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
       'Why a bent sine becomes a harmonic series: whole-number multiples of the note you put in.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on odd and even harmonics. Then on EXPLORE, switch TYPE between HARD CLIP and TUBE (ASYM) at DRIVE +24 dB and compare the two shapes.',
+      'Read GUIDED STEPS 2 and 3, on odd and even harmonics. Then on EXPLORE, switch TYPE between HARD CLIP and TUBE (ASYM) at DRIVE +24 dB and compare the two shapes.',
       'Read the COMMON MISTAKES line on drive and loudness. Then on EXPLORE, play SINE 220 Hz on HARD CLIP at DRIVE +12 dB (clean, −8 dBFS), then +24 dB: louder AND gritty, two changes at once.',
     ],
   },
@@ -148,7 +148,8 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
       'When every answer is right, a note tells you the check is passed.',
     ],
     control: [
-      'Tap an answer. If it’s right, you see CORRECT and a short explanation, and the card locks. If not, you see NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'There is no score and no limit on tries.',
       'Use the tabs under the title to look something up on LEARN or EXPLORE, such as a clip shape; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],

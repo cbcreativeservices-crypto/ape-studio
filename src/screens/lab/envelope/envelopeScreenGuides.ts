@@ -248,14 +248,14 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p7: {
     intro: {
       learning: 'A review of six ideas that are easy to confuse: the transient, piano sustain, rise time, peak versus average, crest factor versus dynamic range, and envelope versus propagation.',
-      start: 'Read the first UNDERSTANDING CHECK card and tap the answer you think is right. If it’s wrong, read the explanation and try again.',
+      start: 'Read the first UNDERSTANDING CHECK card and tap the answer you think is right. If it’s wrong, read why that one is not it and try again.',
     },
     seeing: [
       'Six questions, one for each idea in this lab, each in an UNDERSTANDING CHECK card.',
       'The card at the top shows how many you’ve got right so far and whether the page is complete.',
     ],
     control: [
-      'Tap an answer. A wrong pick stays open: the first miss asks you to try again; from the second miss on, the explanation shows as a hint.',
+      'Tap an answer. A wrong pick says why that one is not it; from the second miss on, the explanation shows too.',
       'All six right completes this page. NEXT › then moves on to the lab’s final check.',
     ],
     changes: [
@@ -276,12 +276,12 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A last look at four of the lab’s ideas: what sustain is, where rise time is measured, what crest factor is, and what a big hall does to a snare.',
-      start: 'Read each question and tap your answer. Read the explanation either way. Unsure? Go back to the page the question comes from, then return.',
+      start: 'Read each question and tap your answer. A wrong pick says what to look at again. Unsure? Go back to the page the question comes from, then return.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING: four questions on what sustain is, where rise time is measured, what crest factor is, and a snare in a big hall.',
       'Above them you see how many are still to get right; a ✓ replaces a question’s number once it’s right.',
-      'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
+      'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
       'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
@@ -289,7 +289,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'If you leave this page before all four are right, the questions start fresh.',
     ],
     changes: [
-      'Each explanation gives the reason, right or wrong, so every answer teaches something.',
+      'A wrong pick names what to look at again; a second wrong pick also shows the explanation, so every answer teaches something.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -320,7 +320,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const ENVELOPE_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The lab’s path at a glance: a sound’s envelope, its transient, how long it lasts, peak versus average level, and how the envelope differs from what the room adds.',
-    start: 'Tap any page still listed to open it. If only Check your understanding is left, open it and get all four questions right.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'The title reads WHAT\'S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what’s left and whether it’s saved.',

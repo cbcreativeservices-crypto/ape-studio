@@ -16,11 +16,17 @@ import type { LabEndUnit } from '../kit/labEnd';
 
 /** Every module in order, then the check as a CHECK row when questions are
  *  authored for this lab. */
-export function eqEndUnits(modules: readonly { id: string; title: string }[], hasCheck: boolean): LabEndUnit[] {
-  const units: LabEndUnit[] = modules.map((m) => ({ id: m.id, label: m.title }));
+export function eqEndUnits(modules: readonly { id: string; title: string; blurb?: string }[], hasCheck: boolean): LabEndUnit[] {
+  // Each row says what is still to see there, in the module's own words
+  // (phase 2, S2 end screen: a row names its own missing piece; the rule every
+  // row shares is EQ_END_HOW_IT_COUNTS, printed once).
+  const units: LabEndUnit[] = modules.map((m) => ({ id: m.id, label: m.title, ...(m.blurb ? { detail: `Still to open: ${m.blurb}` } : {}) }));
   if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
   return units;
 }
+
+/** The rule every module row shares, said ONCE above the list (S2 `howItCounts`). */
+export const EQ_END_HOW_IT_COUNTS = 'A module counts once you open it. The check counts once every answer is right.';
 
 /** Modules opened (device progress) plus the check once it is banked. */
 export function eqEndCleared(visited: ReadonlySet<string>, banked: ReadonlySet<string>): ReadonlySet<string> {

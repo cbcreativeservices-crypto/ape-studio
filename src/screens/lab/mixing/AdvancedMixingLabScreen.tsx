@@ -35,6 +35,38 @@ const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('ad
 // The same keys, so a page banked to the account reads CREDITED after START
 // OVER (PRACTICE) — credit is never shown as missing (toddler pass 2026-10-13).
 const PAGE_KEYS = PAGES.map((_, i) => mixingPageKeyAt('adv', i));
+const ADV_ACCURACY_DETAIL =
+  'In this lab: LUFS and true-peak readings are BS.1770-style ESTIMATES, and the peak, RMS, crest, null-test and decay numbers measure the lab’s own rendered mixes, played through your phone’s uncalibrated output. Learn the decisions here; deliver with calibrated monitors and certified meters.';
+
+/**
+ * WHAT'S LEFT, row by row (phase 2, 2026-11-14): each unfinished page names
+ * its OWN goals (the chips at its foot); the shared rule (HANDS_ON_DETAIL) is
+ * printed once above the list. With sound off a ▶ tap counts as looked at
+ * (kit.tsx, the silent path). Pinned by test/labFixes_20261114_F4.
+ */
+export const ADV_PAGE_DETAIL: readonly string[] = [
+  'Goal: finish Beginning Mixing, or pass the three checks on this page.',
+  'Goals: open every planning move · commit to three priorities · pass the check.',
+  'Goals: open every practice · pass the check.',
+  'Goals: play dry, bus comp and per-track comp · pass the check.',
+  'Goals: open every routing tool · pass the check.',
+  'Goals: play dry, insert and parallel · pass the check.',
+  'Goals: play crowded vs complementary · open all four tools · pass the check.',
+  'Goals: play the kick ducking the bass · open all five tools · pass the check.',
+  'Goals: explore two comb delays · pass the check.',
+  'Goals: play room vs hall · open all four tools · pass the check.',
+  'Goals: play clean, gentle and hard drive · open all four cards · pass the check.',
+  'Goals: play mixed, widened and the mono price · pass the check.',
+  'Goals: play static vs section-designed · open all four moves · pass the check.',
+  'Goals: play clean, conservative and overcooked · pass the check.',
+  'Goals: measure the mix · run the mono fold · pass the check.',
+  'Goals: open all five cards · pass the check.',
+  'Goals: run the null test · pass the check.',
+  'Goals: open all three practices · check the whole checklist · pass the check.',
+  'Goal: solve all three cases.',
+  'Goal: complete all seven steps of the repair.',
+];
+const pageDetail = (i: number): string | undefined => ADV_PAGE_DETAIL[i];
 
 export function AdvancedMixingLabScreen() {
   // Same release valve as the Beginning lab, and deliberately the same COUNTED
@@ -47,5 +79,6 @@ export function AdvancedMixingLabScreen() {
   // decays. The note sits at the top of each reading page (PagedLab draws the
   // header chip only on rack pages, and this lab has none); the ⓘ has the
   // header to itself.
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  // The note's first line says what THIS lab measures (novice audit G4, 2026-11-14).
+  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={ADV_ACCURACY_DETAIL} pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

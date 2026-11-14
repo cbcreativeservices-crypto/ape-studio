@@ -13,6 +13,7 @@ import type { PageCtx } from '../kit/PagedLab';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
+import { speechWrongFor } from './speechCheckWhy';
 import { HeadCrossSection, VocalFolds } from './speechViz';
 import { FormantChart, VowelChart } from './vowelViz';
 import { ConsonantSpectrogram } from './consonantViz';
@@ -30,7 +31,9 @@ const F = fonts.barlowMedium;
 export function SpeechCheckCard({ id, onCorrect }: { id: string; onCorrect?: () => void }) {
   const c = SPEECH_CHECKS.find((o) => o.id === id)!;
   const [shuffled] = useState(() => shuffleCheck(c));
-  return <UnderstandingCheck question={c.question} options={shuffled.options} correct={shuffled.correct} explain={c.explain} onCorrect={onCorrect} />;
+  // A reason per wrong option, keyed by its text (fix round 2026-11-14, speechCheckWhy.ts).
+  const wrong = speechWrongFor(c.id, shuffled.options, shuffled.correct);
+  return <UnderstandingCheck question={c.question} options={shuffled.options} correct={shuffled.correct} explain={c.explain} wrong={wrong} onCorrect={onCorrect} />;
 }
 
 /** A one-line "what to notice" cue under a drawing (shared with pages B). */

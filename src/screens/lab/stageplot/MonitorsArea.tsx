@@ -44,7 +44,7 @@ import { runSoon, type SoonHandle } from '../../../lib/afterInteractions';
 import { cardColumn } from '../../../theme/readingColumn';
 import { useSpEditor, type SpSelection } from './spContext';
 import { Button, Count, HelpTip, IssueList, Note, RowCard, Section, Sheet } from './spForm';
-import { goToIssue, runIssueAction } from './spIssueActions';
+import { goToIssue, placeOnStage, runIssueAction } from './spIssueActions';
 import { AudienceTag, Box, ButtonRow, FactTags, GroupHeading, Line } from './monitors/bits';
 import { DeviceBody, NewDeviceBody } from './monitors/DeviceSheets';
 import { MixBody, NewMixBody } from './monitors/MixSheets';
@@ -138,7 +138,7 @@ function DeviceCard({ device, selected, onEdit, onLocate }: { device: SpDevice; 
       <Line tone="dim">{`${stage.line}.`}</Line>
       <ButtonRow>
         <Button label="EDIT DEVICE" onPress={onEdit} a11yLabel={`Edit the device ${title}`} />
-        <Button label={stage.button} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Go to the Stage area to place ${title}`} />
+        <Button label={stage.button} onPress={onLocate} a11yLabel={stage.objectId ? `Show ${title} on the stage` : `Place ${title} on the stage and show it there`} />
       </ButtonRow>
     </RowCard>
   );
@@ -232,10 +232,12 @@ export function MonitorsArea() {
       ed.goTo('stage', { kind: 'object', id: stage.objectId });
       return;
     }
-    // Not on the stage yet: the stage is told which device this is about,
-    // and offers to place it.
-    sentAway = { kind: 'device', id: device.id };
-    ed.goTo('stage', sentAway);
+    // Not on the stage yet: PLACE really places (2026-11-14). One edit draws
+    // it, then the stage opens with the symbol selected. If it cannot be
+    // drawn, the stage is told which device this is about, as before.
+    const sel: NonNullable<SpSelection> = { kind: 'device', id: device.id };
+    sentAway = sel;
+    if (placeOnStage(ed, sel)) sentAway = null;
   };
 
   // "GO TO" on a question: a mix or a device opens here (through the

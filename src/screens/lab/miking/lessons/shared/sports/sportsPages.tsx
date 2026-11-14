@@ -80,6 +80,7 @@ import { sportPlan, type SportId } from './sportPlans.ts';
 import type { SafetyRow } from './safety.ts';
 import { PRACTICE_RULES } from './safety.ts';
 import { PF_ARC } from './practiceScenes.ts';
+import { zoneActivityLine } from '../../../engine/progress/zoneActivity.ts';
 
 export const AMBER = '#ffc64d';
 export const BLUE = '#8fbcff';
@@ -657,6 +658,16 @@ export function beforeStep(p: PageProps, rows: readonly SafetyRow[], extra?: Rea
  *  `tol` degrees of it). `kinds`: the mics it takes. */
 export type PlanZone = { id: string; label: string; band: string; tendency: string; rect: PlanRect; h: [number, number]; target: string; tol: number; kinds: readonly PlanMicKind[] };
 
+/** Where a ZONE pick stands the mic (fix round 2026-11-14, F9 item 3): the
+ *  rectangle's middle, else the first OK point of a 3 × 3 grid inside it,
+ *  middle first; else the middle. Always inside the rectangle. Pure. */
+export function planSpotIn(r: PlanRect, ok: (p: P2) => boolean): P2 {
+  const at = (fx: number, fy: number): P2 => ({ x: r.x0 + (r.x1 - r.x0) * fx, y: r.y0 + (r.y1 - r.y0) * fy });
+  const f = [0.5, 0.25, 0.75];
+  for (const fy of f) for (const fx of f) if (ok(at(fx, fy))) return at(fx, fy);
+  return at(0.5, 0.5);
+}
+
 export function inPlanZone(z: PlanZone, kind: PlanMicKind, at: P2, h: number, aimDeg: number, scene: VenueScene): boolean {
   if (!z.kinds.includes(kind)) return false;
   if (!(at.x >= z.rect.x0 && at.x <= z.rect.x1 && at.y >= z.rect.y0 && at.y <= z.rect.y1)) return false;
@@ -812,6 +823,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
   const [axis, setAxis] = useState<Axis>('x');
   const [tid, setTid] = useState(scene.targets.find((t) => t.p.x === m0.aimAt.x && t.p.y === m0.aimAt.y)?.id ?? scene.targets[0]?.id ?? '');
   const [visited, setVisited] = useState<ReadonlySet<string>>(() => new Set());
+  const [pickedZone, setPickedZone] = useState<string | null>(null);
   const [predicted, setPredicted] = useState<string | null>(null);
   const atRef = useRef(at);
   const liveStep = useRef<number | null>(null);
@@ -829,13 +841,35 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
     setAim(aimRel(m.at, m.aimAt));
     setRest({ at: m.at, h: m.h, aim: aimRel(m.at, m.aimAt) });
     setMoved(false);
+    setPickedZone(null);
   };
   const kind = m0.kind;
   const arc = arcIn && (!arcKinds || arcKinds.includes(kind)) ? arcIn : undefined;
   const deg = aim; // relative to straight ahead (+y): the same as degOf
   const refused = refusedAt(scene, at);
   const outOfArc = arc ? !(aim >= arc.fromDeg - 1e-9 && aim <= arc.toDeg + 1e-9) : false;
-  const zone = zones.find((z) => inPlanZone(z, kind, rest.at, rest.h, rest.aim, scene) && !refusedAt(scene, rest.at)) ?? null;
+  // The ZONE key (fix round 2026-11-14, F9 item 3: the sport lessons had no
+  // zone jump). A pick stands the mic on an approved spot inside that zone, at
+  // its height, aimed at its target; it counts like the learner's own rest and
+  // is the zone the words report while the mic stays in it (zones may overlap).
+  const inZoneNow = (z: PlanZone) => inPlanZone(z, kind, rest.at, rest.h, rest.aim, scene) && !refusedAt(scene, rest.at);
+  const zone = (pickedZone ? zones.find((z) => z.id === pickedZone && inZoneNow(z)) : undefined) ?? zones.find(inZoneNow) ?? null;
+  const myZones = zones.filter((z) => z.kinds.includes(kind));
+  const goZone = (id: string) => {
+    const z = myZones.find((q) => q.id === id);
+    const t = z ? scene.targets.find((q) => q.id === z.target) : undefined;
+    if (!z || !t) return;
+    const spot = planSpotIn(z.rect, (q) => !refusedAt(scene, q));
+    const a = Math.max(-60, Math.min(60, Math.round(aimRel(spot, t.p))));
+    const hh = Math.round(((z.h[0] + z.h[1]) / 2) * 10) / 10;
+    setAt(spot);
+    setH(hh);
+    setAim(a);
+    setRest({ at: spot, h: hh, aim: a });
+    setMoved(true);
+    setPickedZone(id);
+    setTid(t.id);
+  };
   useEffect(() => {
     if (moved && zone && !(arc && !(rest.aim >= arc.fromDeg && rest.aim <= arc.toDeg))) setVisited((prev) => (prev.has(zone.id) ? prev : new Set([...prev, zone.id])));
   }, [zone?.id, rest, moved]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -918,6 +952,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
     },
     { kind: 'options', id: 'target', label: 'TARGET', valueLabel: target?.short ?? '—', selectedId: tid, onSelect: setTid, options: scene.targets.map((t) => ({ id: t.id, label: `Measure to ${t.label}`, blurb: `The readouts measure to ${t.label}.` })) },
     { kind: 'options', id: 'start', label: 'START', valueLabel: roleKey(start.role), selectedId: startId, onSelect: pickStart, options: starts.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
+    ...(myZones.length ? [{ kind: 'options' as const, id: 'zone', label: 'ZONE', valueLabel: zone ? 'IN ZONE' : 'GO TO', selectedId: zone?.id ?? null, onSelect: goZone, options: myZones.map((z) => ({ id: z.id, label: z.label, blurb: z.band })) }] : []),
   ];
   const zoneRects = (px: number) =>
     zones
@@ -967,7 +1002,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
     well: (
       <>
         {prediction ? <PredictCard p={prediction} value={predicted} onPick={setPredicted} /> : null}
-        <Landing looking={`${start.title} · from above`} prompt="MOVE the mic (ALONG, OUT · IN or HEIGHT) and AIM it, then let go to rest it. Rest it in two different blue starting points; TARGET chooses what the readouts measure to." />
+        <Landing looking={`${start.title} · from above`} prompt="MOVE the mic (ALONG, OUT · IN or HEIGHT) and AIM it, then let go to rest it — or open ZONE to jump into one. Rest it in two different blue starting points; TARGET chooses what the readouts measure to." />
         <NowLine text={nowWords} />
         {refused ? <Note tone="warn">{`It would stand in ${refused.label}. ${refuseWords ?? 'Only on an approved place: not in play, keep-clear space or a route, unless the event approves that one spot.'}`}</Note> : null}
         {outOfArc && arc ? <Note tone="warn">Outside the approved turn arc: stop tracking and hand off to a fixed mic or the ambience — never step or lean out of the operating box.</Note> : null}
@@ -979,7 +1014,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
           <Body>{`Not at a suggested starting point. On this plan: ${zones.filter((z) => z.kinds.includes(kind)).map((z) => z.label).join('; ')}.`}</Body>
         )}
         {target && Number.isFinite(range) ? <Body>{`To ${target.label}: ${fmtRange(range)} (slant, capsule ${fmtM1(h)} to a source ${fmtM1(target.h)} up) — calculated from the drawing.`}</Body> : null}
-        <Body>{`Activity: zones rested in — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+        <Body>{zoneActivityLine([...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id), 'the mic', 'on an approved place')}</Body>
         {predicted != null && visited.size >= 2 && prediction ? <Note tone="ok">{prediction.after}</Note> : null}
       </>
     ),

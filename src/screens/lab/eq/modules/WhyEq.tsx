@@ -39,10 +39,15 @@ const GRAPH_ASPECT = 320 / (140 + 14);
 
 const CHECK: CheckSpec = {
   question: 'Turning a frequency region DOWN with an EQ is called…',
-  options: ['Boost', 'Cut (attenuation)', 'Q'],
+  options: ['Boost (more gain)', 'Cut (attenuation)', 'Q (the width)'],
   correctIdx: 1,
   reveal:
     'Cut (attenuation) lowers a region’s level; boost raises it. Neither is inherently right or wrong — EQ is about changing the BALANCE of frequency content.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'A boost raises a region; this one goes down.',
+    2: 'Q is about width, not up or down.',
+  },
   wrongHint: 'Think “down = ?” — Q is about width, not direction.',
 };
 

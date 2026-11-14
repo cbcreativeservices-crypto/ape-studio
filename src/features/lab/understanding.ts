@@ -40,9 +40,19 @@ export type UnderstandingQuestion = {
   /** The correct option, BY VALUE — never by index, so re-ordering the
    *  authored list can never silently change the answer. */
   correct: string;
-  /** Shown after answering, right or wrong. This is the teaching moment and
-   *  is not optional. */
+  /** Shown on a RIGHT answer, and after a SECOND miss (lab fix round
+   *  2026-11-14, report section 3 row 4: the explanation usually names the
+   *  answer, so showing it on the first wrong tap taught "tap anything and
+   *  read"). The teaching moment, and not optional. */
   explanation: string;
+  /** OPTIONAL, per wrong option (2026-11-14): keyed by the option's EXACT
+   *  text (by value, like `correct`) — one line on why THAT option is not
+   *  right, or where to look in the picture. Never states the right answer.
+   *  Shown on the first miss of that option (LabUnderstandingCheck). */
+  why?: Readonly<Record<string, string>>;
+  /** OPTIONAL (2026-11-14): one line pointing at what to look at, for a wrong
+   *  option with no `why` of its own. Never states the right answer. */
+  hint?: string;
 };
 
 /**

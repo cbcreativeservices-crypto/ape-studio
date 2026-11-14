@@ -53,8 +53,10 @@ export type Rig = {
    *  written to the shared values only (no page re-render). `commit` on release. */
   preview: (slot: MicSlot, to: MicPose) => { pose: MicPose; blocked: Blocked };
   /** "Go to zone": jump straight to a validated pose (clear → placed;
-   *  blocked → stays, and says why). No magnetic snapping anywhere else. */
-  jumpTo: (slot: MicSlot, to: MicPose) => Blocked;
+   *  blocked → stays, and says why). No magnetic snapping anywhere else.
+   *  `zoneId` (a ZONE pick): that zone is the one the readouts report while
+   *  the mic is inside it, even where zones overlap (zoneFor's `prefer`). */
+  jumpTo: (slot: MicSlot, to: MicPose, zoneId?: string) => Blocked;
   /** Gesture end: copy the shared pose into React state. */
   commit: (slot: MicSlot) => void;
   setType: (slot: MicSlot, typeId: string) => void;
@@ -145,10 +147,12 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const body = useMemo(() => ({ A: micBodyOf(micType(typeA)), B: micBodyOf(micType(typeB)) }), [typeA, typeB]);
   const pin = useMemo(() => ({ A: pinFor(lesson, typeA), B: pinFor(lesson, typeB) }), [lesson, typeA, typeB]);
   const lineId = useMemo(() => lineFor(lesson.model, variant, surfaceId), [lesson, variant, surfaceId]);
+  // The zone each slot was last sent to by a ZONE pick (fix round 2026-11-14).
+  const [prefer, setPrefer] = useState<Record<MicSlot, string | null>>({ A: null, B: null });
   const ctx = useMemo(() => {
-    const mk = (typeId: string, b: MicBody): ReadoutCtx => ({ scene, surfaces: lesson.model.surfaces, lines: lesson.model.lines, zones: lesson.zones, variant, micTypeId: typeId, body: b });
-    return { A: mk(typeA, body.A), B: mk(typeB, body.B) };
-  }, [scene, lesson, variant, typeA, typeB, body]);
+    const mk = (typeId: string, b: MicBody, pz: string | null): ReadoutCtx => ({ scene, surfaces: lesson.model.surfaces, lines: lesson.model.lines, zones: lesson.zones, variant, micTypeId: typeId, body: b, prefer: pz });
+    return { A: mk(typeA, body.A, prefer.A), B: mk(typeB, body.B, prefer.B) };
+  }, [scene, lesson, variant, typeA, typeB, body, prefer]);
 
   const write = useCallback((slot: MicSlot, p: MicPose) => {
     setMics((prev) => prev.map((m) => (m.slot === slot ? { ...m, pose: p } : m)));
@@ -267,8 +271,10 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   );
 
   const jumpTo = useCallback(
-    (slot: MicSlot, to: MicPose) => {
+    (slot: MicSlot, to: MicPose, zoneId?: string) => {
       stopGlide(slot);
+      const pz = zoneId ?? null;
+      setPrefer((prev) => (prev[slot] === pz ? prev : { ...prev, [slot]: pz }));
       const sv = slot === 'A' ? poseA : poseB;
       const pn = pin[slot];
       const target = pn ? pinToSurface(to, pn.top, body[slot], pn.halfWidth) : to;

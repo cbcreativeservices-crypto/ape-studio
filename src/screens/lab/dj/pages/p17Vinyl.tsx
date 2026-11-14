@@ -256,12 +256,12 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
           </Scene>
         ),
         bezel: [
-          { k: 'DIAL', v: `${dialReads(v).toFixed(1)} g`, tint: colors.textPrimary },
-          { k: 'TRUE FORCE', v: v.scale && !v.armUp ? `${Math.max(0, F).toFixed(1)} g` : '—', sub: v.scale ? (tooHeavy(v) ? 'TOO HEAVY' : inRange(v) ? 'IN RANGE' : 'TOO LIGHT') : 'USE A SCALE', tint: v.scale ? (inRange(v) ? colors.green : '#ff8a7e') : colors.textSub },
-          { k: 'TRACKING', v: trackWord, tint: trackWord === 'CLEAN' ? colors.green : trackWord === 'ARM UP' ? colors.textSub : '#ff8a7e' },
+          { k: 'DIAL', caption: 'what dial says', v: `${dialReads(v).toFixed(1)} g`, tint: colors.textPrimary },
+          { k: 'TRUE FORCE', caption: 'scale reading', v: v.scale && !v.armUp ? `${Math.max(0, F).toFixed(1)} g` : '—', sub: v.scale ? (tooHeavy(v) ? 'TOO HEAVY' : inRange(v) ? 'IN RANGE' : 'TOO LIGHT') : 'USE A SCALE', tint: v.scale ? (inRange(v) ? colors.green : '#ff8a7e') : colors.textSub },
+          { k: 'TRACKING', caption: 'needle hold', v: trackWord, tint: trackWord === 'CLEAN' ? colors.green : trackWord === 'ARM UP' ? colors.textSub : '#ff8a7e' },
           view === 'ROOM'
-            ? { k: 'LOOP GAIN', v: `×${G.toFixed(2)}`, sub: G >= 1 ? 'HOWL' : G >= 0.6 ? 'BOOMY' : 'OK', tint: G >= 1 ? '#ff5a48' : G >= 0.6 ? colors.amber : colors.green }
-            : { k: 'STAGES', v: count < 0 ? '—' : String(count), sub: !v.gnd ? 'HUM: NO GND' : count === 1 ? 'RIGHT' : 'WRONG', tint: count === 1 && v.gnd ? colors.green : '#ff8a7e' },
+            ? { k: 'LOOP GAIN', caption: 'over 1 = howl', v: `×${G.toFixed(2)}`, sub: G >= 1 ? 'HOWL' : G >= 0.6 ? 'BOOMY' : 'OK', tint: G >= 1 ? '#ff5a48' : G >= 0.6 ? colors.amber : colors.green }
+            : { k: 'STAGES', caption: 'phono stages', v: count < 0 ? '—' : String(count), sub: !v.gnd ? 'HUM: NO GND' : count === 1 ? 'RIGHT' : 'WRONG', tint: count === 1 && v.gnd ? colors.green : '#ff8a7e' },
         ],
         params: [
           { kind: 'group', id: 'arm', label: 'ARM', valueLabel: `${dialReads(v).toFixed(1)} g`, valueA11y: `dial ${dialReads(v).toFixed(1)} grams`, render: () => <ArmTray onView={() => setView('ARM')} /> },
@@ -323,7 +323,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="The force is set to 4 g, but on loud passages the RIGHT channel distorts while the left stays clean. What do you check?"
-          options={['The anti-skate — too little lets the stylus lean off the outer wall, which carries the right channel', 'The ground wire', 'The tracking force — it must be far too heavy', 'The record’s RIAA curve']}
+          options={['The anti-skate: too little leaves the right wall', 'The ground wire to the mixer’s GND post', 'The tracking force — it must be far too heavy', 'The record’s RIAA curve at the phono stage']}
           correct={0}
           explain="A spinning record pulls the arm toward the center (skating), pressing the inner groove wall (left) and easing off the outer wall (right). Anti-skate cancels that pull; without it the right channel mistracks first."
           wrong={[undefined, 'A missing ground is a steady buzz on both sides, not distortion on loud passages.', 'Too heavy wears the record but tracks fine; one-sided distortion points at the skating force.', 'The RIAA curve is undone by the phono stage for both channels alike.']}

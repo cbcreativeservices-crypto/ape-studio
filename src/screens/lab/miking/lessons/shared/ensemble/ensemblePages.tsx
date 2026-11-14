@@ -49,6 +49,7 @@ import { acrossKey, acrossWords, axesFor, axisForView, blockedWords, settleHeigh
 import { MIC_TYPES } from '../../../data/micTypes.ts';
 import { nomDb, worstSpill, worstThreeToOne, type Spill } from './stagePlot.ts';
 import type { ArrayMount, EnsembleData, EnsembleLesson, EnsembleSetup } from './ensembleData.ts';
+import { zoneActivityLine } from '../../../engine/progress/zoneActivity.ts';
 
 /* ═══════════════════ the lesson's DATA (ensembleData.ts) ═══════════════════ */
 export type { EnsembleData, EnsembleLesson, EnsembleSetup, PlaceZone } from './ensembleData.ts';
@@ -558,6 +559,22 @@ const AXIS: Record<Axis, { label: string; blurb: string; lo: number; hi: number 
 
 export { arrayClear } from './seating.ts';
 
+/** Where a ZONE pick puts the array's center (fix round 2026-11-14, F9 item
+ *  3): the box's middle, else the first clear point of a 3 × 3 × 3 grid
+ *  inside it, middle first; else the middle (the page then says what it
+ *  would touch, and the rest earns nothing). Always INSIDE the box. Pure. */
+export function landInZone(box: { min: Vec3; max: Vec3 }, clear: (p: Vec3) => boolean): Vec3 {
+  const at = (fx: number, fy: number, fz: number) => v3(box.min.x + (box.max.x - box.min.x) * fx, box.min.y + (box.max.y - box.min.y) * fy, box.min.z + (box.max.z - box.min.z) * fz);
+  const mid = at(0.5, 0.5, 0.5);
+  if (clear(mid)) return mid;
+  const f = [0.5, 0.25, 0.75];
+  for (const fy of f) for (const fz of f) for (const fx of f) {
+    const p = at(fx, fy, fz);
+    if (clear(p)) return p;
+  }
+  return mid;
+}
+
 export function EnsemblePlacement(p: PageProps) {
   const { lesson, variant, answers, onAnswered, onInteractive, interactiveDone, startFrom } = p;
   const E = ensembleOf(lesson);
@@ -622,6 +639,7 @@ export function EnsemblePlacement(p: PageProps) {
   const seesHeight = axes.includes('h');
   const [visited, setVisited] = useState<ReadonlySet<string>>(() => new Set());
   const [moved, setMoved] = useState(false);
+  const [pickedZone, setPickedZone] = useState<string | null>(null);
   const [predicted, setPredicted] = useState<string | null>(null);
   const cRef = useRef(c);
   cRef.current = c;
@@ -639,6 +657,7 @@ export function EnsemblePlacement(p: PageProps) {
     setRest(q.rig.place.c);
     // A start a setup gives earns nothing (L5-R1-04): only a learner's own rest counts.
     setMoved(false);
+    setPickedZone(null);
   };
   // ARRAY switch (L5-R1-05): the old array's spacing/angle is not this one's —
   // take this array's own starting geometry (else its default).
@@ -657,7 +676,25 @@ export function EnsemblePlacement(p: PageProps) {
   const caps = useMemo(() => arrayCapsules(preset, params, place), [preset, params, c.x, c.y, c.z, face, tilt]); // eslint-disable-line react-hooks/exhaustive-deps
   const foot = mount.kind === 'boom' ? v3(c.x - Math.sin(face * (Math.PI / 180)) * mount.reach, 0, c.z + Math.cos(face * (Math.PI / 180)) * mount.reach) : v3(c.x, 0, c.z);
   const blocked = arrayClear(s, caps, foot);
-  const zone = zones.find((z) => rest.x >= z.box.min.x && rest.x <= z.box.max.x && rest.y >= z.box.min.y && rest.y <= z.box.max.y && rest.z >= z.box.min.z && rest.z <= z.box.max.z) ?? null;
+  // The ZONE key (fix round 2026-11-14, F9 item 3: the 13 group lessons had no
+  // zone jump, only MOVE). A pick lands the array's center inside that zone,
+  // clear of the players where the zone allows it, counts like the learner's
+  // own rest, and is the zone the words report while the center stays in it
+  // (zones may overlap; the first in the list used to win).
+  const inBox = (z: (typeof zones)[number], p: Vec3) => p.x >= z.box.min.x && p.x <= z.box.max.x && p.y >= z.box.min.y && p.y <= z.box.max.y && p.z >= z.box.min.z && p.z <= z.box.max.z;
+  const zone = (pickedZone ? zones.find((z) => z.id === pickedZone && inBox(z, rest)) : undefined) ?? zones.find((z) => inBox(z, rest)) ?? null;
+  const goZone = (id: string) => {
+    const z = zones.find((q) => q.id === id);
+    if (!z) return;
+    const q = landInZone(z.box, (p) => {
+      const ft = mount.kind === 'boom' ? v3(p.x - Math.sin(face * (Math.PI / 180)) * mount.reach, 0, p.z + Math.cos(face * (Math.PI / 180)) * mount.reach) : v3(p.x, 0, p.z);
+      return !arrayClear(s, arrayCapsules(preset, params, { c: p, face, tilt }), ft);
+    });
+    setC(q);
+    setRest(q);
+    setMoved(true);
+    setPickedZone(id);
+  };
   useEffect(() => {
     // Only where the learner rested it (the start a setup gives earns nothing).
     if (moved && zone && !blocked) setVisited((prev) => (prev.has(zone.id) ? prev : new Set([...prev, zone.id])));
@@ -728,6 +765,7 @@ export function EnsemblePlacement(p: PageProps) {
     { kind: 'options', id: 'array', label: 'ARRAY', valueLabel: def.short, selectedId: preset, onSelect: (id) => pickPreset(id as ArrayPresetId), sticky: true, options: presets.map((id) => ({ id, label: ARRAYS[id].name, blurb: ARRAYS[id].what })) },
     { kind: 'options', id: 'start', label: 'START', valueLabel: (start?.role ?? '').split(' ')[0], selectedId: startId, onSelect: pickStart, options: list.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
     ...viewParam(view, pickView, VW, viewsFor(lesson)),
+    ...(zones.length ? [{ kind: 'options' as const, id: 'zone', label: 'ZONE', valueLabel: zone ? 'IN ZONE' : 'GO TO', selectedId: zone?.id ?? null, onSelect: goZone, options: zones.map((z) => ({ id: z.id, label: z.label, blurb: z.band })) }] : []),
   ];
   // Group 4: a small group's equal-distance ring and the spread of distances.
   const eqNow = E.ring ? equalRing(s, c) : null;
@@ -793,7 +831,7 @@ export function EnsemblePlacement(p: PageProps) {
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt={`MOVE the array (choose ${axes.slice(0, -1).map((k) => AX[k].label).join(', ')} or ${AX[axes[axes.length - 1]].label}) and let go to rest it. Rest its center in two different blue zones. Watch what the readouts do.`} />
+          <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt={`MOVE the array (choose ${axes.slice(0, -1).map((k) => AX[k].label).join(', ')} or ${AX[axes[axes.length - 1]].label}) and let go to rest it, or open ZONE to jump into one. Rest its center in two different blue zones. Watch what the readouts do.`} />
           <NowLine text={nowWords} />
           {seesHeight ? null : <Body>{`From above, height cannot be seen, so there is no UP–DOWN move. The height comes from the START you choose, and each blue zone includes a height: rest the array in a zone and it takes that zone’s height. HEIGHT reads ${fmtM(-c.y)} now.`}</Body>}
           {eqNow ? <Body>{`Equal distance: the players are ${fmtDist(eqNow.near)} to ${fmtDist(eqNow.far)} from the array’s center — ${fmtDist(eqNow.spread)} apart. The white dotted ring shows it from above.`}</Body> : null}
@@ -805,7 +843,7 @@ export function EnsemblePlacement(p: PageProps) {
           ) : (
             <Body>{`Not at a suggested starting point. For this seating: ${zones.map((z) => z.label).join('; ')}.`}</Body>
           )}
-          <Body>{`Activity: zones rested in, clear of the players: ${visited.size}${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}. Goal: 2.`}</Body>
+          <Body>{zoneActivityLine([...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id), one ? 'the mic' : 'the array’s center', 'clear of the players')}</Body>
           {predicted != null && visited.size >= 2 && pred ? <Note tone="ok">{pred.after}</Note> : null}
         </>
       ),

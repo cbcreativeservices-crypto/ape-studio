@@ -137,7 +137,8 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
       'When every answer is right, a note tells you the check is passed.',
     ],
     control: [
-      'Tap an answer. If it’s right, you see CORRECT and a short explanation, and the card locks. If not, you see NOT QUITE — TRY ANOTHER with the same explanation as a nudge; tap another answer.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'There is no score and no limit on tries.',
       'Use the tabs under the title to look something up on LEARN or EXPLORE, such as the scope; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],

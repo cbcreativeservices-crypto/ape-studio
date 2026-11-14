@@ -37,10 +37,13 @@ const SECTION_KEYS = SCREEN_GUIDE_SECTIONS.map((s: { key: string }) => s.key);
 
 describe('#13 the CHECK stays mounted across a tab switch', () => {
   it('rendered whenever the lab has a check, hidden (not unmounted) off its tab — like the RackUnit', () => {
+    // Lab fix round 1 (2026-11-14, quick win 4; owner: "Begin fixing all bugs
+    // found and do obvious ... fixes as you suggested in the report"): with no
+    // checkEnd of its own, a lab's CHECK ends on the shared LabCheckEnd.
     assert.match(SHELL, /const hasCheck = modes\.some\(\(m\) => m\.key === 'check'\);/);
     assert.match(
       SHELL,
-      /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck[\s\S]*?\{checkEnd \?\? null\}\s*<\/View>\s*<\/ScrollView>\s*<\/View>\s*\) : null\}/,
+      /\{hasCheck \? \(\s*<View style=\{mode === 'check' \? styles\.rackFill : styles\.rackHidden\}>\s*<ScrollView[\s\S]*?<LabUnderstandingCheck[\s\S]*?\{checkEnd \?\? <LabCheckEnd labId=\{labId\} labTitle=\{checkTitle \?\? title\} \/>\}\s*<\/View>\s*<\/ScrollView>\s*<\/View>\s*\) : null\}/,
     );
     assert.doesNotMatch(SHELL, /\{mode === 'check' \? \(/, 'the old mount-only-on-CHECK branch is gone');
     assert.match(SHELL, /rackHidden: \{ display: 'none' \}/);
@@ -102,9 +105,13 @@ describe('#3 / #12 / #14 Binaural, Stereo Imaging and FM end on a what’s-left 
   it('each lab passes it as checkEnd, stopping its sound, with its END guide', () => {
     assert.match(code('src/screens/lab/BinauralLabScreen.tsx'), /checkEnd=\{<LabCheckEnd labId="binaural" labTitle="Binaural Panner Lab" onOpen=\{stop\} endGuide=\{BINAURAL_END_GUIDE\} \/>\}/);
     assert.match(code('src/screens/lab/FmLabScreen.tsx'), /checkEnd=\{<LabCheckEnd labId="fm" labTitle="FM Synth Lab" onOpen=\{stop\} endGuide=\{FM_END_GUIDE\} \/>\}/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", then
+    // quick win 4 "FINISH · SEE WHAT'S LEFT after Check passed in the effect labs"): EVERY effect lab now
+    // passes LabCheckEnd, stopping its sound; Stereo keeps its END guide, and "Stereo Imaging Lab" is the
+    // config title in words (labTitleWords).
     assert.match(
       code('src/screens/lab/FxLabScreen.tsx'),
-      /checkEnd=\{\s*config\.labId === 'stereo' \? \(\s*<LabCheckEnd labId="stereo" labTitle="Stereo Imaging Lab" onOpen=\{stop\} endGuide=\{STEREO_END_GUIDE\} \/>\s*\) : undefined\s*\}/,
+      /checkEnd=\{\s*<LabCheckEnd\s+labId=\{config\.labId\}\s+labTitle=\{labTitleWords\(config\.title\)\}\s+onOpen=\{stop\}\s+endGuide=\{config\.labId === 'stereo' \? STEREO_END_GUIDE : undefined\}\s*\/>\s*\}/,
     );
   });
   const ENDS: [string, Guide][] = [

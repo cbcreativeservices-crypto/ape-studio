@@ -207,7 +207,9 @@ describe('drum toddler pass 2 — chapter corrections', () => {
   it('Ch7: a restart of the ringing strike counts, and drifts the rod once per strike when the ring ends', () => {
     const ch7 = strip(read(`${DIR}/modules/ch7Trouble.tsx`));
     assert.match(ch7, /strikeRef\.current = \{ id, n: sims\[id\]\.strikes \+ 1, k: 1 \};/);
-    assert.match(ch7, /if \(pb\.playing && ring && ring\.id === caseId\) \{\s*strikeRef\.current = \{ id: ring\.id, n: ring\.n \+ 1, k: ring\.k \+ 1 \};\s*setSims\(\(all\) => \(\{ \.\.\.all, \[ring\.id\]: \{ \.\.\.all\[ring\.id\], strikes: all\[ring\.id\]\.strikes \+ 1 \} \}\)\);\s*\}\s*solo\.strike\(\);/);
+    assert.match(ch7, /if \(pb\.playing && ring && ring\.id === caseId\) \{\s*strikeRef\.current = \{ id: ring\.id, n: ring\.n \+ 1, k: ring\.k \+ 1 \};\s*setSims\(\(all\) => \(\{ \.\.\.all, \[ring\.id\]: \{ \.\.\.all\[ring\.id\], strikes: all\[ring\.id\]\.strikes \+ 1 \} \}\)\);\s*\}\s*void solo\.strike\(\)\.then\(\(ok\) => \{\s*if \(!ok\) setNoSound\(true\);/);
+    // ↑ fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // a strike that did not sound offers the CAN'T LISTEN NOW path.
     assert.match(ch7, /i === 1 \? t - 0\.12 \* struckNow\.k : t/);
   });
 

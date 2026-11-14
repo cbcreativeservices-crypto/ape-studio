@@ -170,9 +170,13 @@ export function Mod7RealWorld() {
             badge: 'Relative levels — 100% = that stage’s clip point',
             bezel: [
               { k: 'VERDICT', v: verdictShort, tint: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green },
-              { k: 'SOURCE', v: pct(src), tint: levelColor(src) },
-              { k: 'MIXER', v: pct(mix), tint: levelColor(mix) },
-              { k: 'AMP IN', v: pct(ampIn), tint: levelColor(ampIn) },
+              // These are the FADER SETTINGS; the meters on the drawing read each
+              // stage's LEVEL as % of its clip point. Each number now says which
+              // it is (beginner audit 2026-11-14: "SOURCE 80% of clip" on the
+              // drawing beside "SOURCE 50%" here, unexplained).
+              { k: 'SOURCE', v: pct(src), sub: 'SETTING', tint: levelColor(src) },
+              { k: 'MIXER', v: pct(mix), sub: 'SETTING', tint: levelColor(mix) },
+              { k: 'AMP IN', v: pct(ampIn), sub: 'SETTING', tint: levelColor(ampIn) },
             ],
             params: [
               faderParam({ id: 'src', label: 'SOURCE', value: src, min: 0, max: 1, step: 0.01, format: pct, onChange: setSrc, level: true }),

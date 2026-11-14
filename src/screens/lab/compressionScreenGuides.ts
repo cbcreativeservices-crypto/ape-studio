@@ -57,7 +57,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
   explore: {
     intro: {
       learning: 'How a compressor turns down only the level above the threshold, by the ratio, and how attack and release set how fast it clamps and lets go.',
-      start: 'Tap ▶ to play CLICK 120 and watch GR (gain reduction) kick on each hit. Then switch SOURCE to SINE 440 Hz, set THRESH to −30 dB, and watch GR hold at about 7 dB.',
+      start: 'Drag THRESH down and watch the amber strip under OUT hang deeper: the compressor turns each click down. Then tap ▶ to play CLICK 120 and watch GR (gain reduction) kick live on each hit.',
     },
     seeing: [
       'Sound flows IN ▸ through COMP ▸ OUT. Dashed lines mark the threshold; the dotted outline is the sound untouched.',
@@ -131,11 +131,12 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'A ✓ replaces a question’s number once you get it right. The line under the title says how many are still to get right.',
     ],
     control: [
-      'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look up a compressor setting.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick about ratio or attack still teaches you something.',
+      'A first wrong pick gets a pointer, not the answer, so you still work it out.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [

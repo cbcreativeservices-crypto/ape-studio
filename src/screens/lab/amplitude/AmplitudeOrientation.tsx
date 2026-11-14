@@ -65,6 +65,7 @@ import { AMPLITUDE_SCREEN_GUIDES } from './amplitudeScreenGuides';
 import { readingText } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ReviewLabEnd } from '../kit/ReviewLabEnd';
+import { amplitudeEndStep } from './amplitudeEndStep';
 
 /** Full-scale red — top of the canonical ramp (kept SSoT, never hardcoded). */
 const LOUD_RED = LOUDNESS_STOPS[0].color;
@@ -106,15 +107,23 @@ const HONESTY_LINE = 'Illustrative training graphics — not live measurements.'
 const VIZ_H = 92;
 
 /** Amplitude envelope over normalized time 0..1: attack → sustain (gentle
- *  ripple) → short full-scale burst at ~0.7 → release. */
+ *  ripple) → short burst at ~0.7 → release.
+ *  THE BURST MUST BE SEEN (lab fix round 2026-11-14, G1: "find the short
+ *  burst in WAVEFORM" failed at 390 wide — the burst rose only from 0.47 to
+ *  0.66 of full scale over ~3 bars, green into yellow-green). The sustain now
+ *  sits lower and the burst is wider, peaking at the LEVEL METER's own PEAK
+ *  (−3 dBFS = 0.708 of full scale, BURST_ENV × TRACE_PEAK): twice the
+ *  sustain's height, and yellow-orange against green. */
+const SUSTAIN_ENV = 0.5;
+const BURST_ENV = 1.075;
 function env(t: number): number {
-  if (t < 0.12) return (t / 0.12) * 0.72;
-  if (t >= 0.66 && t <= 0.74) {
-    const c = 1 - Math.abs((t - 0.7) / 0.04); // triangle peak
-    return 0.72 + 0.28 * c;
+  if (t < 0.12) return (t / 0.12) * SUSTAIN_ENV;
+  if (t >= 0.64 && t <= 0.76) {
+    const c = 1 - Math.abs((t - 0.7) / 0.06); // triangle peak
+    return SUSTAIN_ENV + (BURST_ENV - SUSTAIN_ENV) * c;
   }
-  if (t > 0.82) return Math.max(0.14, 0.72 - (t - 0.82) * 3.2);
-  return 0.72 + 0.04 * Math.sin(t * 18);
+  if (t > 0.82) return Math.max(0.1, SUSTAIN_ENV - (t - 0.82) * 2.2);
+  return SUSTAIN_ENV + 0.028 * Math.sin(t * 18);
 }
 
 /** Instantaneous two-component trace (fundamental + weaker 3rd harmonic). */
@@ -179,10 +188,10 @@ function spectroMag(t: number, fy: number): number {
   const e = env(t);
   let m = 0.03; // faint floor
   // The SAME log-frequency axis and the SAME strengths as the RTA card: at
-  // the sustain level (e = 0.72) each band paints the colour of its RTA bar
+  // the sustain level (e = SUSTAIN_ENV) each band paints the colour of its RTA bar
   // (art grading 2026-10-16: the harmonic sat at mid-height and painted as
   // hot as the fundamental). No 5th harmonic — trace() has none.
-  const k = e / 0.72;
+  const k = e / SUSTAIN_ENV;
   m += 0.95 * k * gaussian(fy, rtaFrac(3), 0.03); // fundamental (band 3)
   m += 0.44 * k * gaussian(fy, rtaFrac(3) + 1.585 / 10, 0.03); // 3rd harmonic, +1.58 oct
   m += 0.78 * gaussian(t, 0.7, 0.022) * (0.6 + 0.4 * fy); // broadband transient
@@ -855,8 +864,11 @@ function RampCheck({ onPassed, practice = false }: { onPassed?: () => void; prac
 export function AmplitudeColorBody({
   showHeader = true,
   alsoReviewLab = false,
+  onCheckPassed,
 }: {
   showHeader?: boolean;
+  /** Fires once the ramp check is passed (the lab's What's left step). */
+  onCheckPassed?: () => void;
   /** Standalone lab (Path A): completing here ALSO records the Audio
    *  Fundamentals R6c credit — one button instead of the two stacked
    *  completion controls that let students press the green one and never earn
@@ -906,6 +918,14 @@ export function AmplitudeColorBody({
         <Text style={styles.sixViewsSub}>
           Every card draws the SAME example signal — a strong low tone, a weaker high harmonic (a fainter, higher tone),
           and one short burst — in the same level colors.
+        </Text>
+        {/* G1 (lab fix round 2026-11-14): 78 dB SPL drawn green-yellow next to
+            PEAK −3 drawn orange looked like it broke "warmer = more". The
+            mapping is the house standard (levelColor on each display's own
+            window: SPL 40–100 dB, the meter −48–0 dBFS); the words now say so. */}
+        <Text style={styles.sixViewsSub}>
+          Each display colors its OWN scale: near the top of that scale is warm, whatever the number. That is
+          why 78 dB SPL (mid-way up its 40–100 scale) is green-yellow while PEAK −3 (near the top of its meter) is orange.
         </Text>
       </View>
 
@@ -1000,7 +1020,12 @@ export function AmplitudeColorBody({
         </>
       ) : (
         <>
-          <RampCheck onPassed={() => setCheckPassed(true)} />
+          <RampCheck
+            onPassed={() => {
+              setCheckPassed(true);
+              onCheckPassed?.();
+            }}
+          />
           <GlassButton
             label={alsoReviewLab ? 'UNDERSTOOD — MARK REVIEWED' : 'UNDERSTOOD — CONTINUE'}
             tint="green"
@@ -1033,6 +1058,9 @@ export function AmplitudeColorBody({
 export function AmplitudeLabScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  // What's left names the step still open (G1 page 2, lab fix round 2026-11-14).
+  const [checkPassed, setCheckPassed] = useState(false);
+  const orientationDone = useAmplitudeOrientationDone() === true;
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The screen guide (owner 2026-10-31): no Rack Unit on this page, so
@@ -1073,15 +1101,15 @@ export function AmplitudeLabScreen() {
         {/* Before a guest begins (owner 2026-10-04): this lab's review is
             credit, and a guest's is kept only if they sign in this session. */}
         <GuestStartReminder activity="lab:af_amplitude" />
-        <AmplitudeColorBody alsoReviewLab />
+        <AmplitudeColorBody alsoReviewLab onCheckPassed={() => setCheckPassed(true)} />
         {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14,
             #21). The credit here is the ramp check, so the end screen points
             back to it rather than offering a bare review tap. */}
         <ReviewLabEnd
           labKey="af_amplitude"
           labTitle="Understanding Level & Amplitude"
-          stepLabel="Pass CHECK YOURSELF — THREE QUICK READS, then press UNDERSTOOD — MARK REVIEWED"
-          stepDetail="Both are at the foot of the lab, after the six views."
+          stepLabel={amplitudeEndStep({ checkPassed, orientationDone })}
+          stepDetail={checkPassed || orientationDone ? 'The button is at the foot of the lab, after the six views.' : 'Both are at the foot of the lab, after the six views.'}
           offerReview={false}
         />
       </ScrollView>

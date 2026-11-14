@@ -8,7 +8,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_STAGE: ScreenGuide = {
   intro: {
     learning: 'A stage plot shows who stands where. It looks down on the stage from above, with the audience at the bottom. Names and numbers stand beside each symbol.',
-    start: 'Tap ADD and choose Performer. Drag the figure to where that person stands, then add what they play. Tap an object to select it; OBJECT moves and turns it.',
+    start: 'Performers from Setup wait under the drawing: tap PLACE … ON THE STAGE for each. For anyone new, tap ADD and choose Performer. Drag a figure to where that person stands, then add what they play.',
   },
   seeing: [
     'The drawing looks down on your stage. UPSTAGE is at the top and AUDIENCE / DOWNSTAGE is at the bottom.',

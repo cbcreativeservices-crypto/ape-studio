@@ -264,7 +264,8 @@ describe('4. TRY THIS (and quoted) numbers are what the modules print', () => {
     assert.doesNotMatch(C, /q\.toFixed\([01]\)/);
     assert.match(C, /format: \(\) => `zoom the camera · Q \$\{q\.toFixed\(2\)\}/);
     assert.match(C, /formatShort: \(\) => `Q\$\{q\.toFixed\(2\)\}`/);
-    assert.match(C, /\{ k: 'Q', v: stage === 0 \? 'FIXED' : q\.toFixed\(2\) \}/);
+    // Phase 2, lab fix round (owner 2026-11-14): a bezel cell may carry its first-visit caption.
+    assert.match(C, /\{ k: 'Q', (?:caption: '[^']*', )?v: stage === 0 \? 'FIXED' : q\.toFixed\(2\) \}/);
     assert.ok(!all('camera').includes('rounds it to 0.3'));
   });
   it('Parametric Controls: Q 0.3–12 → BW 3.70–0.12 oct; GAIN ±18; double-tap home prints +0.0 dB', () => {

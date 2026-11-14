@@ -16,6 +16,7 @@ import type { Finding, LabKind } from '../../../features/production/types';
 import type { ReadinessReport, StageReadiness } from '../../../features/production/readiness';
 import { STAGE_WORD, stageSignal } from '../../../features/production/readiness';
 import { fitValue } from '../../../theme/legibility';
+import { decisionsMadeText } from '../../../features/production/packet';
 import { STATE_TINT } from './FieldRow';
 
 export function ReadinessMeter({
@@ -35,7 +36,11 @@ export function ReadinessMeter({
    */
   unreadable?: boolean;
 }) {
-  const verdictTint = unreadable
+  // A project with nothing answered yet reads in neutral grey, not the red of
+  // a failing plan (novice audit quick win 15, 2026-11-14). Red starts with
+  // the first answer; a blocker is red whenever it is open.
+  const untouched = report.blockers.length === 0 && report.stages.every((s) => s.answeredAll === 0);
+  const verdictTint = unreadable || untouched
     ? colors.textMuted
     : report.verdict === 'ready' ? colors.green : report.verdict === 'ready_with_conditions' ? colors.amber : colors.red;
 
@@ -78,7 +83,7 @@ export function ReadinessMeter({
       <Text style={styles.counts}>
         {unreadable
           ? 'Your saved answers could not be read just now, so no figure is shown.'
-          : `${report.answeredRequired} required decisions made`}
+          : decisionsMadeText(report.answeredRequired)}
       </Text>
 
       {report.blockers.length > 0 ? (
@@ -131,7 +136,7 @@ export function ReadinessMeter({
 export function stageSignalLabel(stage: StageReadiness | null, unreadable?: boolean): string {
   const sig = stageSignal(unreadable ? null : stage);
   if (sig.pct === null || !stage) return 'progress could not be read just now';
-  const counts = `${stage.answeredRequired} required decisions made, ${stage.answeredAll} questions answered`;
+  const counts = `${decisionsMadeText(stage.answeredRequired)}, ${stage.answeredAll} question${stage.answeredAll === 1 ? '' : 's'} answered`;
   // A blocked stage is SAID blocked first, as it is drawn (2026-10-04).
   if (stage.blockers.length > 0) return `Blocked, ${blockerCount(stage)}, ${counts}`;
   return `${sig.pct} percent, ${STAGE_WORD[stage.state]}, ${counts}`;
@@ -184,7 +189,9 @@ export function StageProgressRow({
               <Text style={{ color: tint }}>
                 {stage.blockers.length > 0 ? blockerCount(stage) : STAGE_WORD[sig.state]}
               </Text>
-              {` · ${stage.answeredRequired} required · ${stage.answeredAll} answered`}
+              {/* "0 required" read as "nothing is required" on a new
+                  project (novice audit G4, 2026-11-14); it counts decisions. */}
+              {` · ${stage.answeredRequired} required decided · ${stage.answeredAll} answered`}
             </>
           ) : (
             'Could not be read just now'

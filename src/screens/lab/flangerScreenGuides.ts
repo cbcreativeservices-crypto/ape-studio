@@ -48,7 +48,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a flanger works: a copy delayed by a few milliseconds cancels the dry sound at evenly spaced notches, and sweeping that delay makes the jet sound.',
-      start: 'Tap ▶ to play PINK NOISE and watch the notches slide on OUT. Then drag CENTER from 2.0 ms down to 0.50 ms and see the notches spread apart.',
+      start: 'Drag CENTER from 2.0 ms down to 0.50 ms and see the notches on OUT spread apart. Then tap ▶ to play PINK NOISE and hear them sweep: the jet.',
     },
     seeing: [
       'Two spectrum analyzers. Left of the green FLANGER bar (IN ▸) is your source: PINK NOISE draws flat, WHITE NOISE rises to the right. Right of the bar, SPECTRUM (dB) to ▸ OUT shows the same noise after the flanger.',
@@ -121,7 +121,8 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],

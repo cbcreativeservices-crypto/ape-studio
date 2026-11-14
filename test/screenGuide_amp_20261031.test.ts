@@ -338,7 +338,9 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     // decimal and agrees with the 0.08 test at every 1% BIAS step. The HEAT
     // cell reads "warm" across the whole lane, so the cost shown is SUPPLY.
     assert.match(src, /const idlePct = \(pp\.idleCurrent \* 100\)\.toFixed\(1\);/);
-    assert.match(src, /\{ k: 'IDLE', v: `\$\{idlePct\}%`, tint: tooHot \? colors\.gold : AMP_COLORS\.pos \}/);
+    // `caption` added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."): the first-visit bezel caption.
+    assert.match(src, /\{ k: 'IDLE', v: `\$\{idlePct\}%`, tint: tooHot \? colors\.gold : AMP_COLORS\.pos, caption: 'resting draw' \}/);
     assert.doesNotMatch(src, /Math\.round\(pp\.idleCurrent \* 100\)/);
     assert.equal((pp(0.83).idleCurrent * 100).toFixed(1), '8.0');
     assert.equal((pp(0.84).idleCurrent * 100).toFixed(1), '8.1');

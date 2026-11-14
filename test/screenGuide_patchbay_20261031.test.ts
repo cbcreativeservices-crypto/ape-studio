@@ -143,7 +143,9 @@ describe('2. each guide quotes its page’s real names', () => {
     p4: ['NO PATCH CORD REQUIRED', 'UNDERSTANDING CHECK', 'Nowhere — patch cords make every connection'],
     p5: ['INSIDE THE JACK — CUTAWAY', 'FRONT PANEL', 'TIP SPRING', 'FROM SOURCE · REAR', 'NORMAL CONTACT', 'TO DESTINATION · REAR', 'INSERTION', 'CONTACTS', 'TOUCHING', 'OPEN', 'INTACT', 'BROKEN', 'CONCEPTUAL MODEL', 'ENLARGED', 'PLUG INSERTION', 'BREAK THE NORMAL (insert fully)', 'RESTORE IT (pull the plug back out)'],
     p6: ['ANALYZER', 'DRUM MACHINE', 'NORMAL BROKEN', 'A · NOTHING PATCHED', 'B · TOP ONLY', 'C · BOTTOM ONLY', 'D · BOTH', 'SOURCE'],
-    p7: ['PREDICT BEFORE PATCHING', 'PREDICT IT (answer below)', 'THEN DO IT (patch the top)', 'SPLIT'],
+    // 'answer above' (lab fix round 1, owner 2026-11-14: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes as you suggestted in the report."): the question sits above the chip.
+    p7: ['PREDICT BEFORE PATCHING', 'PREDICT IT (answer above)', 'THEN DO IT (patch the top)', 'SPLIT'],
     p8: ['FULL-NORMAL', 'HALF-NORMAL (COMMON BAY)', 'UNDERSTANDING CHECK', 'Both'],
     p9: ['TAP THE MIX (top only — nothing interrupted)', 'REPLACE THE SOURCE (bottom — normal breaks)', 'MULT', 'PARALLEL', 'ANALYZER', 'DRUM MACHINE'],
     p10: ['ACTION', 'FULL', 'HALF (COMMON)', 'THRU', 'THE PATCHBAY MANTRA', 'MODULE'],
@@ -359,7 +361,11 @@ describe('6. the END guide (what’s-left screen) is true for THIS lab', () => {
   it('the unit is a page; no understanding check, no optional page, no per-page detail line', () => {
     assert.match(endEl, /noun="page"/);
     assert.doesNotMatch(code('src/features/lab/understandingChecks.ts'), /\bpatchbay\s*:/, 'Patchbay has no understanding check (no CHECK row)');
-    assert.doesNotMatch(SCREEN, /optionalPage=|pageDetail=|handsOnDetail=|labDoneKey=|doneLabel=/);
+    // pageDetail + handsOnDetail added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all
+    // bugs found and do obvious (my decision is not required) fixes as you suggestted in the report."): each
+    // unfinished row names what is missing; the guide's seeing line says so.
+    assert.doesNotMatch(SCREEN, /optionalPage=|labDoneKey=|doneLabel=/);
+    assert.match(SCREEN, /pageDetail=\{pageDetail\}/);
     assert.doesNotMatch(ET, /\bCHECK\b|optional/i);
     assert.match(ET, /listed by its number and name/);
     assert.match(LES, /String\(r\.num\)\.padStart\(2, '0'\)/);

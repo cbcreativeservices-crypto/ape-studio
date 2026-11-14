@@ -100,9 +100,9 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
         initialParam: 'upper',
         hideDragTag: true,
         bezel: [
-          { k: 'RATIO', v: shownRatio, tint: colors.cyanBright },
-          { k: 'CENTS', v: `${cents.toFixed(2)} ¢` },
-          { k: 'INTERVAL', v: SHORT[name] ?? 'between', flex: 1.1 },
+          { k: 'RATIO', v: shownRatio, tint: colors.cyanBright, caption: 'upper ÷ lower' },
+          { k: 'CENTS', v: `${cents.toFixed(2)} ¢`, caption: 'interval size' },
+          { k: 'INTERVAL', v: SHORT[name] ?? 'between', flex: 1.1, caption: 'its name' },
           soundCell(status),
         ],
         stage: (w, h) => (

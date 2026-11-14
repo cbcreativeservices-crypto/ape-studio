@@ -28,11 +28,16 @@ const CONSEQUENCES: { id: string; title: string; body: string }[] = [
   { id: 'work', title: 'PROFESSIONAL WORKMANSHIP', body: 'An installation should be organized, understandable and maintainable — by someone who has never seen it before.' },
 ];
 
-const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: string; verdict: 'good' | 'bad'; short: string }[] = [
+/** Before the pick each close-up shows only its letter and a plain look at
+ *  it (`blind`); the nickname and the judging caption come with the reveal
+ *  (phase 2, 2026-11-14: "THE PROFESSIONAL" and "Less photogenic …" gave the
+ *  answer away before the learner had looked). */
+const EXAMPLES: { id: ExampleId; name: string; caption: string; blind: string; verdictRule: string; verdict: 'good' | 'bad'; short: string }[] = [
   {
     id: 'a',
     name: 'A — THE SHOWPIECE',
     caption: 'Beautifully symmetrical bundle — cinched so hard the cables have gone oval.',
+    blind: 'A dead-straight, symmetrical bundle, every tie pulled snug.',
     verdict: 'bad',
     verdictRule: 'mech-restraint-tension',
     short: 'Gorgeous — and the over-tight restraints are deforming every cable in the loom.',
@@ -41,6 +46,7 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     id: 'b',
     name: 'B — THE PROFESSIONAL',
     caption: 'Less photogenic: gentle bends, labeled ends, supported weight, reachable connectors.',
+    blind: 'Loose bends, labels on the ends, cables resting on bars across the back.',
     verdict: 'good',
     verdictRule: 'rack-not-max-tight',
     short: 'Approve it. Supported, serviceable, honest geometry — this is what correct looks like.',
@@ -49,6 +55,7 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     id: 'c',
     name: 'C — THE PILE',
     caption: 'Unsecured cable heaped where it fell.',
+    blind: 'Cable lying loose at the bottom of the rack.',
     verdict: 'bad',
     verdictRule: 'sup-purpose-built',
     short: 'Nothing is supported, nothing is traceable — this isn\'t an installation yet.',
@@ -57,6 +64,7 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     id: 'd',
     name: 'D — THE BLOCKADE',
     caption: 'A tidy loom dressed straight across the ventilation grille and the service panel.',
+    blind: 'A tidy, straight loom running across the back panel.',
     verdict: 'bad',
     verdictRule: 'rack-airflow',
     short: 'Neat — and it blocks cooling and service access. Tidy in the wrong place is still wrong.',
@@ -151,9 +159,9 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                   accessibilityState={{ selected: picked, disabled: locked }}
                   aria-pressed={picked}
                   aria-disabled={locked}
-                  accessibilityLabel={`${ex.name}. ${ex.caption}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
+                  accessibilityLabel={`${revealed ? ex.name : `Close-up ${ex.id.toUpperCase()}`}. ${revealed ? ex.caption : ex.blind}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
                 >
-                  <Text style={styles.exampleName}>{ex.name}</Text>
+                  <Text style={styles.exampleName}>{revealed ? ex.name : ex.id.toUpperCase()}</Text>
                 </Pressable>
                 <ExpandableFigure
                   width={artW}
@@ -175,7 +183,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                       style={[styles.fsApprove, locked && { opacity: 0.45 }]}
                       accessibilityRole="button"
                       accessibilityState={{ disabled: locked }}
-                      accessibilityLabel={`Approve ${ex.name}`}
+                      accessibilityLabel={`Approve close-up ${ex.id.toUpperCase()}`}
                     >
                       <Text style={styles.fsApproveText}>
                         {picked ? (ex.verdict === 'good' ? '✓ APPROVED' : '✕ NOT APPROVABLE') : `APPROVE ${ex.id.toUpperCase()}`}
@@ -184,7 +192,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                   }
                 />
                 <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
-                  <Text style={styles.exampleCaption}>{ex.caption}</Text>
+                  <Text style={styles.exampleCaption}>{revealed ? ex.caption : ex.blind}</Text>
                 </Pressable>
                 {revealed ? (
                   <Appear>

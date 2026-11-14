@@ -94,19 +94,19 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   const doneCell: BezelItem = { k: 'DONE', v: `${done.filter(Boolean).length}/6`, tint: all ? colors.green : colors.cyanBright, flex: 0.8 };
   const bezel: BezelItem[] =
     figure === 'fold' ? [
-      { k: 'RATIO', v: fracLabel(c1), tint: c1In ? colors.green : colors.gold },
-      { k: 'VALUE', v: fracValue(c1).toFixed(4) },
-      { k: 'REGION', v: fracValue(c1) < 1 ? 'BELOW' : c1In ? 'INSIDE' : 'ABOVE', tint: c1In ? colors.green : undefined },
+      { k: 'RATIO', v: fracLabel(c1), tint: c1In ? colors.green : colors.gold, caption: 'the fraction' },
+      { k: 'VALUE', v: fracValue(c1).toFixed(4), caption: 'as a decimal' },
+      { k: 'REGION', v: fracValue(c1) < 1 ? 'BELOW' : c1In ? 'INSIDE' : 'ABOVE', tint: c1In ? colors.green : undefined, caption: 'where it sits' },
       doneCell,
     ]
     : figure === 'third' ? [
-      { k: 'THIRD', v: `${thirdCents.toFixed(2)} ¢`, tint: done[3] ? colors.green : colors.cyanBright },
-      { k: '4 × RATIO', v: (4 * thirdRatio).toFixed(4), tint: Math.abs(thirdErr) < 0.05 ? colors.green : undefined },
-      { k: 'FROM 5/4', v: Math.abs(thirdErr) < 0.05 ? '0 ¢' : `${thirdErr > 0 ? '+' : ''}${thirdErr.toFixed(2)} ¢`, tint: Math.abs(thirdErr) < 0.05 ? colors.green : Math.abs(thirdErr) < 8 ? colors.gold : colors.orange },
+      { k: 'THIRD', v: `${thirdCents.toFixed(2)} ¢`, tint: done[3] ? colors.green : colors.cyanBright, caption: 'size of third' },
+      { k: '4 × RATIO', v: (4 * thirdRatio).toFixed(4), tint: Math.abs(thirdErr) < 0.05 ? colors.green : undefined, caption: 'four of them' },
+      { k: 'FROM 5/4', v: Math.abs(thirdErr) < 0.05 ? '0 ¢' : `${thirdErr > 0 ? '+' : ''}${thirdErr.toFixed(2)} ¢`, tint: Math.abs(thirdErr) < 0.05 ? colors.green : Math.abs(thirdErr) < 8 ? colors.gold : colors.orange, caption: 'off pure third' },
       doneCell,
     ]
     : [
-      ...E_SYSTEMS.map(([l, s]) => ({ k: `${l.toUpperCase()} E`, v: `${eOf(s).value.cents.toFixed(2)} ¢`, tint: last === `e${l}` ? colors.cyanBright : undefined })),
+      ...E_SYSTEMS.map(([l, s]) => ({ k: `${l.toUpperCase()} E`, v: `${eOf(s).value.cents.toFixed(2)} ¢`, tint: last === `e${l}` ? colors.cyanBright : undefined, caption: 'where E sits' })),
       soundCell(status, 0.9),
     ];
 

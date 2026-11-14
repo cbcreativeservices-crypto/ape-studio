@@ -226,6 +226,12 @@ export type PacketModel = {
   foot: string;
 };
 
+/** "1 required decision made" / "3 required decisions made" — the plural
+ *  follows the number (novice audit G4, 2026-11-14: "1 required decisions"). */
+export function decisionsMadeText(n: number): string {
+  return `${n} required decision${n === 1 ? '' : 's'} made`;
+}
+
 /** The words an empty answer prints. */
 export function emptyText(required: boolean): string {
   return required ? 'Not decided — required' : 'Not decided';
@@ -257,7 +263,7 @@ export function buildPacketModel(input: PacketInput): PacketModel {
     verdict: report.verdict,
     verdictLine:
       `${VERDICT_LABEL[project.lab][report.verdict]} — ` +
-      `${report.answeredRequired} required decisions made`,
+      decisionsMadeText(report.answeredRequired),
     blockers: report.blockers.map((b) => ({ title: b.title, detail: b.detail })),
     accepted: report.acceptedBlockers.map((b) => ({
       title: b.title,
@@ -271,7 +277,7 @@ export function buildPacketModel(input: PacketInput): PacketModel {
         num: stage.num,
         title: stage.title,
         status: sr
-          ? `${STAGE_WORD[sr.state]} — ${sr.answeredRequired} required decisions made`
+          ? `${STAGE_WORD[sr.state]} — ${decisionsMadeText(sr.answeredRequired)}`
           : null,
         notices: stage.notices.map((n) => ({ kind: n.kind, text: n.text })),
         sections: stage.sections.map((section) => ({

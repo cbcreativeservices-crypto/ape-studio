@@ -27,6 +27,9 @@ export type ReadoutCtx = {
   variant: VariantId;
   micTypeId: string;
   body: MicBody;
+  /** The zone the learner last picked with the ZONE key (zoneFor's `prefer`,
+   *  fix round 2026-11-14, F9 item 3). */
+  prefer?: string | null;
 };
 
 export function deriveReadouts(ctx: ReadoutCtx, pose: MicPose, surfaceId: string, lineId: string): Readouts {
@@ -40,7 +43,7 @@ export function deriveReadouts(ctx: ReadoutCtx, pose: MicPose, surfaceId: string
   const blocked = checkAssembly(ctx.scene, pose, ctx.body);
   const zoneId = blocked
     ? null
-    : zoneFor(ctx.zones, { scene: ctx.scene, surfaces: ctx.surfaces, lines: ctx.lines, variant: ctx.variant, micTypeId: ctx.micTypeId, mount: ctx.body.mount }, pose);
+    : zoneFor(ctx.zones, { scene: ctx.scene, surfaces: ctx.surfaces, lines: ctx.lines, variant: ctx.variant, micTypeId: ctx.micTypeId, mount: ctx.body.mount }, pose, ctx.prefer);
   return {
     surfaceId,
     distance: surfaceDistance(ctx.surfaces, surfaceId, pose),

@@ -69,7 +69,7 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
 export const EQ_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of how the EQ Lab’s ideas connect: seeing frequency content, then where, how much and how wide, then filter shapes, then diagnosing real problems.',
-    start: 'Open the first module on the list and work down. To go back over one you found hard, tap REVIEW ▾ and pick it.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT’S LEFT lists the EQ Lab modules you haven’t opened yet. The CHECK row, for the lab’s questions, is last on the list. You see LAB COMPLETE once every module is opened and the check is passed.',
@@ -89,7 +89,7 @@ export const EQ_END_GUIDE: ScreenGuide = {
     'A diagnosis is a method — where, how much, how wide — so it works on any fresh problem, not only on one answer you remember.',
   ],
   tryThis: [
-    'Open the first module on the list and work down in order.',
+    'Tap a module still listed to open it, or REVIEW ▾ to reopen one you have done.',
     'Tap REVIEW ▾ and reopen a module you found hard.',
   ],
 };
@@ -99,13 +99,13 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   spectrum: {
     intro: {
       learning: 'A room that seems quiet still carries low-frequency energy, and a low-cut (high-pass) filter removes the unwanted low end while keeping the useful content.',
-      start: 'If the bars aren’t moving, tap MIC. Look at the bars left of the dashed line at 100 Hz, then slide LOW CUT up and watch them drop.',
+      start: 'The microphone stays off until you tap MIC. Then look at the bars left of the dashed line at 100 Hz, and slide LOW CUT up to watch them drop.',
     },
     seeing: [
       'Each bar is a 1/3-octave slice of your room’s sound, live from the phone mic, lows left. Height is dBFS (dB below full scale), 0 to −90.',
       'Color runs blue quiet to red loud; a light mark holds each recent peak. Gray slots can’t be resolved.',
       'LOW CUT off: a dashed amber line marks 100 Hz. On: an amber curve shows the filter.',
-      'Read HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT (bar width), MIC (LIVE, PAUSED or —).',
+      'Read HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT (bar width), MIC (OFF, LIVE, PAUSED).',
     ],
     control: [
       'Slide the LOW CUT fader from OFF through 20, 40, 60, 80, 100, 120 or 160 Hz; it snaps to those steps. It’s a high-pass filter (HPF): it lets the highs pass and cuts the lows.',
@@ -453,8 +453,8 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     control: [
       'FREQ, GAIN (−8 to +8 dB) and Q (0.3–12) shape one parametric bell. Touch any of them and the band switches on.',
       'Tap LOW CUT to pick OFF, 40, 80 or 120 Hz, and a SLOPE of 12, 24 or 48 dB/OCT.',
-      'Tap VIEW for SPECTRUM ONLY, EQ ONLY or COMBINED. The same tray holds BAND ON / BAND OFF for the band, and MIC LIVE — PAUSE or MIC PAUSED — RESUME for the microphone.',
-      'Tapping the display also pauses or resumes the microphone.',
+      'Tap VIEW for SPECTRUM ONLY, EQ ONLY or COMBINED. The same tray holds BAND ON / BAND OFF for the band, and the microphone key: MIC OFF — START, then MIC LIVE — PAUSE and MIC PAUSED — RESUME.',
+      'The microphone stays off until you start it. Tapping the display also starts, pauses or resumes it.',
     ],
     changes: [
       'COMBINED: the bars are redrawn as if your room’s sound had passed through the EQ. Nothing in the room changes.',

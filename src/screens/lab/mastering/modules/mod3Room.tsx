@@ -25,17 +25,6 @@ const DEVICES: readonly { key: PathDevice; label: string; short: string; blurb: 
   { key: 'active', label: PATH_DEVICE_NAMES.active, short: 'ACTIVE', blurb: 'Amplifiers built in: a line-level feed from the controller is all it takes.' },
 ];
 
-/** The next device not yet in the chain (cognitive review finding 6). */
-function firstUnplaced(chain: readonly PathDevice[], after: PathDevice): PathDevice {
-  const keys = DEVICES.map((d) => d.key);
-  const start = keys.indexOf(after);
-  for (let i = 1; i <= keys.length; i++) {
-    const k = keys[(start + i) % keys.length];
-    if (!chain.includes(k)) return k;
-  }
-  return after;
-}
-
 export function Mod3Room({ onAnswered }: ModuleProps) {
   const [level, setLevel] = useState(83);
   const [chain, setChain] = useState<PathDevice[]>([]);
@@ -47,13 +36,12 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
   // Five slots, six devices: with every slot filled, + CONNECT was a live
   // green key that silently did nothing (`add` refuses a sixth). It says so.
   const full = chain.length >= 5;
-  const add = () =>
-    setChain((c) => {
-      if (c.length >= 5 || c.includes(next)) return c;
-      const n = [...c, next];
-      setNext(firstUnplaced(n, next));
-      return n;
-    });
+  // The selection STAYS on the device just connected (+ CONNECT reads
+  // ✓ PLACED): the learner picks the next one. It used to move on to the next
+  // unplaced device in list order, and the list is in signal order, so five
+  // presses of + CONNECT built the correct chain with no decision made
+  // (novice audit G4, 2026-11-14).
+  const add = () => setChain((c) => (c.length >= 5 || c.includes(next) ? c : [...c, next]));
   const toneTint = advice.tone === 'sensible' ? colors.green : advice.tone === 'low' ? colors.cyan : advice.tone === 'hot' ? colors.orange : colors.red;
 
   return (
@@ -89,10 +77,10 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
             aspect: MONITOR_ASPECT,
             badge: MODEL_BADGE,
             bezel: [
-              { k: 'SPL (C)', v: `${Math.round(level)} dB`, tint: splColorForDba(level), flex: 1.1 },
-              { k: 'BASS', v: `${shift.bassDb > 0 ? '+' : ''}${shift.bassDb.toFixed(1)} dB`, flex: 1.1 },
-              { k: 'TREBLE', v: `${shift.trebleDb > 0 ? '+' : ''}${shift.trebleDb.toFixed(1)} dB`, flex: 1.1 },
-              { k: 'PER DAY', v: dailyLimitLabel(level), tint: toneTint, flex: 1.1 },
+              { k: 'SPL (C)', v: `${Math.round(level)} dB`, tint: splColorForDba(level), flex: 1.1, caption: 'how loud' },
+              { k: 'BASS', v: `${shift.bassDb > 0 ? '+' : ''}${shift.bassDb.toFixed(1)} dB`, flex: 1.1, caption: 'bass you hear' },
+              { k: 'TREBLE', v: `${shift.trebleDb > 0 ? '+' : ''}${shift.trebleDb.toFixed(1)} dB`, flex: 1.1, caption: 'top you hear' },
+              { k: 'PER DAY', v: dailyLimitLabel(level), tint: toneTint, flex: 1.1, caption: 'safe hours' },
               // ≤ 6 characters: "SENSIBLE" cropped to an ellipsis at 375 wide.
               { k: 'READING', v: advice.tone === 'sensible' ? 'GOOD' : advice.tone === 'low' ? 'QUIET' : advice.tone.toUpperCase(), tint: toneTint, flex: 1.3 },
             ],
@@ -145,7 +133,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Choose a DEVICE — it appears faintly at the end of the chain, marked NEXT › — then + CONNECT it (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. Each cable is drawn by what it carries: USB from the computer only into the converter (or a controller that converts inside itself), balanced line after conversion, the red-and-black speaker pair from a power amplifier. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
+              <Body>Choose a DEVICE — it appears faintly at the end of the chain, marked NEXT › — then + CONNECT it. Then choose the next DEVICE yourself: the order is the decision. Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. Each cable is drawn by what it carries: USB from the computer only into the converter (or a controller that converts inside itself), balanced line after conversion, the red-and-black speaker pair from a power amplifier. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
               <Card tone={verdict.grade === 'complete' ? 'accent' : 'plain'}>
                 {verdict.notes.length ? verdict.notes.map((n) => <Body key={n}>• {n}</Body>) : <Body>Every stage in order. Try the other loudspeaker type: a passive pair needs the amplifier, an active pair makes it a mistake.</Body>}
               </Card>

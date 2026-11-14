@@ -108,7 +108,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     ],
     control: [
       'Move the DISTANCE fader to place the mic 4 in to 48 in from the mouth. You start at 17 in.',
-      'As you move it, the mic slides through the field, and the fader lane shows the distance and the level compared with 4 in.',
+      'As you move it, the mic slides through the field, and the slider shows the distance and the level compared with 4 in.',
       'Tap ⤢ FULL SCREEN to see the talker, the mic and the room’s glow larger.',
     ],
     changes: [
@@ -328,7 +328,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
   mistakes: {
     intro: {
       learning: 'The six handheld-mic habits that hurt the sound or the show, and which principle each one breaks: the pattern, the angle, the distance, or stagecraft.',
-      start: 'Swipe through the seven cards and guess each habit before you read its title. Then play SPOT THE MISTAKE — 3 ROUNDS.',
+      start: 'Swipe through the seven cards: look at each picture first and guess the habit, then read its title. Then play SPOT THE MISTAKE — 3 ROUNDS.',
     },
     seeing: [
       'Swipe through a field guide of seven handheld-mic pictures: one ✅ Correct grip and six ❌ habits.',
@@ -361,7 +361,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
 export const MIC_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the whole lab: how a mic turns sound into voltage, where it listens, and what distance, angle, air, vibration and a hand do to it.',
-    start: 'Tap any row under WHAT’S LEFT to open a section you missed. Already complete? Open REVIEW ▾, go back to POLAR and HAND GRIP, and compare the cardioid null.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'You’ve reached the end of Microphone Principles. LAB COMPLETE means you’ve opened every section; otherwise WHAT’S LEFT lists the ones you haven’t opened yet.',
@@ -497,7 +497,7 @@ export const SPEAKER_SCREEN_GUIDES: Record<SpeakerSectionId, ScreenGuide> = {
 export const SPEAKER_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab: how dispersion, position, aim, height and tilt decide who hears a loudspeaker, and how fills and delays reach the rest.',
-    start: 'Tap any row under WHAT’S LEFT to open a section you missed. Already complete? Open REVIEW ▾, go back to TOP VIEW or SIDE VIEW, and try a new layout.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'You’ve reached the end of Speaker Placement & Coverage. LAB COMPLETE means you’ve opened every section; otherwise WHAT’S LEFT lists the ones you haven’t opened yet.',

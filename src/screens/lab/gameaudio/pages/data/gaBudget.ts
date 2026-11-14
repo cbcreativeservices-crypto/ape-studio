@@ -10,12 +10,17 @@
  * cost this page prints, because it is exact. It prints no processing
  * figure: the lab does not measure one.
  */
+import { GA_EVENTS } from '../../model/gaDefs.ts';
 import type { GaLogEntry, GaLogKind, GaState } from '../../model/gaModel.ts';
 
 /* ── the BUDGET lane ────────────────────────────────────────────────────── */
 
-/** The voice limits the lane stops at, tightest first. 0 = no limit. */
-export const BUDGET_STOPS = [1, 2, 4, 8, 12, 16, 0] as const;
+/** The voice limits the lane stops at, tightest first. 0 = no limit. Each
+ *  stop is half the one above it, so one press of ‹ FEWER takes the page's
+ *  start (16) to the 8 that step 2 asks for. There was a stop at 12: "set
+ *  BUDGET to 8" took two presses and showed a 12 the lesson never mentions
+ *  (beginner audit 2026-11-14, G5b page 17). */
+export const BUDGET_STOPS = [1, 2, 4, 8, 16, 0] as const;
 const LAST = BUDGET_STOPS.length - 1;
 
 const stopIndex = (limit: number): number => {
@@ -162,9 +167,44 @@ export function lastBurst(log: readonly GaLogEntry[]): BurstReport | null {
  *  "Crate impact × 4 · a one-shot: stopped". */
 export const burstTheftWords = (t: BurstTheft): string => `${t.name}${t.times > 1 ? ` × ${t.times}` : ''} · ${t.loop ? 'a loop: it went virtual' : t.times > 1 ? 'one-shots: they stopped' : 'a one-shot: it stopped'}`;
 
+/** The card's total, with the sum that makes it: "TAKEN 9 = 5 loops + 4
+ *  one-shots · REFUSED 0". The rows above it group a run of the same sound
+ *  ("Crate impact × 4"), so six rows stood over "TAKEN 9" with nothing to
+ *  join them (beginner audit 2026-11-14, G5b page 17). A total of one kind
+ *  only needs no sum: "TAKEN 4 one-shots", "TAKEN 0". */
+export function burstTotalWords(r: BurstReport): string {
+  const loops = r.thefts.filter((t) => t.loop).reduce((n, t) => n + t.times, 0);
+  const shots = r.thefts.filter((t) => !t.loop).reduce((n, t) => n + t.times, 0);
+  const l = `${loops} ${loops === 1 ? 'loop' : 'loops'}`;
+  const o = `${shots} ${shots === 1 ? 'one-shot' : 'one-shots'}`;
+  const taken = loops && shots ? `TAKEN ${r.stolen} = ${l} + ${o}` : loops ? `TAKEN ${l}` : shots ? `TAKEN ${o}` : `TAKEN ${r.stolen}`;
+  return `${taken} · REFUSED ${r.refused}`;
+}
+
+/** The protected sounds that hold a voice right now, by name, each once
+ *  ("Alarm"). The card names them: a protected sound is not in the list of
+ *  voices taken, and a learner had to notice that it was missing (beginner
+ *  audit 2026-11-14, G5b page 17). */
+export function protectedKept(s: GaState): string[] {
+  const out: string[] = [];
+  for (const v of s.voices) {
+    if (!v.protected || v.state === 'virtual') continue;
+    const inst = s.inst.find((i) => i.id === v.inst);
+    const n = inst ? GA_EVENTS[inst.event].label : null;
+    if (n && !out.includes(n)) out.push(n);
+  }
+  return out;
+}
+/** "Kept its voice: Overheat alarm (protected)." Empty when no protected
+ *  sound holds a voice. */
+export function protectedKeptWords(names: readonly string[]): string {
+  if (!names.length) return '';
+  return `Kept ${names.length === 1 ? 'its voice' : 'their voices'}: ${names.join(', ')} (protected).`;
+}
+
 /** The card in one spoken sentence. */
 export function burstSpoken(r: BurstReport | null): string {
   if (!r) return 'No burst yet. Press BURST.';
-  const taken = r.thefts.length ? `Voices taken, in order: ${r.thefts.map(burstTheftWords).join('; ')}.` : 'No voice was taken.';
+  const taken = r.thefts.length ? `Voices taken, in order: ${r.thefts.map(burstTheftWords).join('; ')}. ${r.stolen} in all.` : 'No voice was taken.';
   return `${taken} ${r.refused} new ${r.refused === 1 ? 'sound was' : 'sounds were'} refused.`;
 }

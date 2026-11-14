@@ -47,9 +47,9 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         // "exact ratios" badge belongs to the rails, not to this drawing.
         badge: BADGE_MODEL,
         bezel: [
-          { k: 'EXPECTED C', v: `${expectedHz.toFixed(2)} Hz`, tint: colors.green, flex: 1.2 },
-          { k: 'ACTUAL B♯', v: `${actualHz.toFixed(2)} Hz`, tint: colors.red, flex: 1.2 },
-          { k: 'GAP', v: `${PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢`, tint: colors.red },
+          { k: 'EXPECTED C', v: `${expectedHz.toFixed(2)} Hz`, tint: colors.green, flex: 1.2, caption: 'where C is' },
+          { k: 'ACTUAL B♯', v: `${actualHz.toFixed(2)} Hz`, tint: colors.red, flex: 1.2, caption: 'where it lands' },
+          { k: 'GAP', v: `${PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢`, tint: colors.red, caption: 'the comma' },
           soundCell(status),
         ],
         stage: (w, h) => (

@@ -57,6 +57,8 @@ import { authoredStage, labDef } from '../../../features/production/labs';
 // chip, owner rule 2026-10-31); the key sits after it.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { productionPacketGuide } from './productionScreenGuides';
+// The lab's recap and next lab (lab fix round 2026-11-14, S4; report section 3 row 5).
+import { labEndContentFor } from '../../../features/lab/labEndContent';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionPacket'>;
@@ -251,6 +253,45 @@ export function ProductionPacketScreen() {
                 </View>
               ))
             )}
+
+            {/* ── RECAP + NEXT LAB (lab fix round 2026-11-14, S4; owner: "Begin
+                fixing all bugs found and do obvious ... fixes", suggested order
+                item 6 "The end screen recap"). The words live in
+                features/lab/labEndContent, keyed by this lab ('preprod' /
+                'postprod'); the same headings as the shared end screen. */}
+            {(() => {
+              const c = labEndContentFor(lab);
+              const done = built.left.length === 0 && !stale;
+              return (
+                <>
+                  {c.recap?.length ? (
+                    <>
+                      <Text style={styles.h2} accessibilityRole="header">
+                        {done ? 'WHAT YOU LEARNED' : 'WHAT THIS LAB COVERS'}
+                      </Text>
+                      {c.recap.map((l) => (
+                        <Text key={l} style={styles.para}>{`•  ${l}`}</Text>
+                      ))}
+                    </>
+                  ) : null}
+                  {c.next ? (
+                    <Pressable
+                      style={styles.leftRow}
+                      onPress={() => (navigation as unknown as { navigate: (route: string) => void }).navigate(c.next!.route)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${done ? 'Up next' : 'After this lab'}: ${c.next.title}${c.next.why ? `, ${c.next.why}` : ''}. Opens it.`}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.leftKind}>{done ? 'UP NEXT' : 'AFTER THIS LAB'}</Text>
+                        <Text style={styles.leftTitle}>{c.next.title}</Text>
+                        {c.next.why ? <Text style={styles.para}>{c.next.why}</Text> : null}
+                      </View>
+                      <Text style={styles.go}>›</Text>
+                    </Pressable>
+                  ) : null}
+                </>
+              );
+            })()}
 
             {/* ── SHARE, behind the honesty gate ──────────────────────────── */}
             {isPdfAvailable() ? (

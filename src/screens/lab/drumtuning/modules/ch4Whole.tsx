@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { optionsParam, pitchFaderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, noteName } from '../kit';
@@ -134,7 +135,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
             bezel: [
               { k: 'BATTER', v: `${batterHz} Hz`, tint: colors.cyan },
               { k: 'RESO', v: `${resoHz} Hz`, tint: colors.green },
-              { k: 'REL', v: `${semis >= 0 ? '+' : ''}${semis.toFixed(1)} st`, flex: 1.1, tint: colors.amber },
+              { k: 'REL', v: `${semis >= 0 ? '+' : ''}${semis.toFixed(1)} st`, flex: 1.1, tint: colors.amber, caption: 'keys apart' },
               { k: 'SUSTAIN', v: fmtS(pb.rendered?.t60), tint: colors.green },
               { k: 'LATE SOUND', v: late != null ? `${Math.abs(late) >= PITCH_CLAMP ? '≈' : ''}${fmtCents(late)}` : '—', flex: 1.4, tint: colors.amber },
             ],
@@ -171,7 +172,8 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
                 </Card>
               ) : (
                 <Card>
-                  <Point title="Credit">Strike the drum with all three relationships set (RESO ↑, EQUAL, BATTER ↑) — {heard.size} of 3 so far — then answer one question.</Point>
+                  {/* Credit needs the strikes heard (fix round 2026-11-14, S3 §2); the readouts still show the comparison silently. */}
+                  <Point title="Credit"><NeedsSoundTag /> Strike the drum with all three relationships set (RESO ↑, EQUAL, BATTER ↑) — {heard.size} of 3 so far — then answer one question.</Point>
                 </Card>
               )}
               <WhyCard title="WHY · what you are hearing">

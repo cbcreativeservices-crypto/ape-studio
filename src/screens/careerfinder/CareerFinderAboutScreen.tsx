@@ -26,17 +26,18 @@ export function CareerFinderAboutScreen() {
   const report = () => sendFeedback('correction', 'Audio Career Finder', { Screen: 'How this works', 'Assessment version': ASSESSMENT_VERSION, 'Index version': CAREER_INDEX_VERSION });
   return (
     <FinderShell kicker="AUDIO CAREER FINDER · HOW THIS WORKS" title="What it measures, and what it doesn’t" onBack={() => safeGoBack(navigation)}>
-      <Lead>The Career Finder is a career-exploration tool. It helps you discover paid work involving audio and identify promising directions to investigate. It does not tell you what you should become.</Lead>
+      {/* Wording on this screen: Comp A text review 2026-11-14 (CF-A0224 … A0255). */}
+      <Lead>The Career Finder is a career-exploration tool. It helps you find kinds of paid audio work and pick the ones worth looking into. It does not tell you what you should become.</Lead>
 
       <Card>
         <SectionLabel>WHAT COUNTS AS AN AUDIO CAREER</SectionLabel>
-        <Body>Any paid work that requires audio knowledge, audio-related skill or audio ability — employees, freelancers, contractors, consultants, business owners, performers, researchers, educators, clinicians, craftspeople and paid gig workers. A title does not need the word “audio” in it if sound-related knowledge is necessary to do the job. Unpaid hobby or volunteer activity is not included.</Body>
+        <Body>Any paid work that requires audio knowledge, audio-related skill or audio ability. That includes employees, freelancers, contractors, consultants, business owners, performers, researchers, educators, clinicians, craftspeople and paid gig workers. A title does not need the word “audio” in it if sound-related knowledge is necessary to do the job. Unpaid hobby or volunteer activity is not included.</Body>
         <Body>Because that definition is broad, every title also says how central audio is to it: <Text style={styles.em}>{CENTRALITY.core.label}</Text> ({CENTRALITY.core.explain.toLowerCase().replace(/\.$/, '')}), <Text style={styles.em}>{CENTRALITY.specialized.label}</Text> ({CENTRALITY.specialized.explain.toLowerCase().replace(/\.$/, '')}) or <Text style={styles.em}>{CENTRALITY.enabled.label}</Text> ({CENTRALITY.enabled.explain.toLowerCase().replace(/\.$/, '')}).</Body>
       </Card>
 
       <Card>
         <SectionLabel>WHAT THE QUESTIONS MEASURE</SectionLabel>
-        <Body>{QUESTION_COUNT} questions ask how you would feel about doing specific activities. They measure <Text style={styles.em}>interest</Text> — what you think you would enjoy — across fourteen kinds of audio work:</Body>
+        <Body>{QUESTION_COUNT} questions ask how you would feel about doing specific activities. They measure <Text style={styles.em}>interest</Text> (what you think you would enjoy) across {DIMENSION_CODES.length} kinds of audio work:</Body>
         <View style={{ gap: 3 }}>
           {DIMENSION_CODES.map((c) => (
             <Text key={c} style={styles.dimLine}><Text style={styles.dimCode}>{c}</Text>  <Text style={styles.dimLabel}>{DIMENSIONS[c].label}</Text> — {DIMENSIONS[c].measures}</Text>
@@ -46,7 +47,7 @@ export function CareerFinderAboutScreen() {
 
       <Card tone="amber">
         <SectionLabel>WHAT IT DOES NOT MEASURE</SectionLabel>
-        <Body>It does not measure ability, aptitude, knowledge, readiness, personality or fit with a workplace. It cannot tell whether you can hear distortion, troubleshoot signal flow, write code or run a session today. Interest is one useful piece of a career decision — research finds it relates to satisfaction, but modestly. Pay, colleagues, values, preparation and opportunity matter too.</Body>
+        <Body>It does not measure ability, aptitude, knowledge, readiness, personality or fit with a workplace. It cannot tell whether you can hear distortion, troubleshoot signal flow, write code or run a session today. Interest is one useful piece of a career decision. Research finds it relates to satisfaction, but only modestly. Pay, colleagues, values, preparation and opportunity matter too.</Body>
         <Body>“I don’t know enough about this” is treated as missing evidence, never as dislike. Not having tried something is not the same as being unsuited to it.</Body>
         <Body>Each activity is measured by only two questions, so one answer can move its bar a lot. Treat the profile as a sketch, not a measurement.</Body>
         <Body>Your answers are stored only on this device and are never sent anywhere unless you choose to email feedback.</Body>
@@ -54,15 +55,15 @@ export function CareerFinderAboutScreen() {
 
       <Card>
         <SectionLabel>HOW CAREERS ARE GROUPED AND MATCHED</SectionLabel>
-        <Body>{fmt(CAREER_COUNT)} job titles were cross-checked against publicly available occupational listings and role descriptions — including those published by the U.S. Bureau of Labor Statistics and O*NET, the Audio Engineering Society, the Acoustical Society of America, SMPTE, ASHA, IATSE and the Piano Technicians Guild — and grouped by the Academy into {FAMILY_COUNT} career families. None of those organizations participated in, reviewed or endorsed this index, and no title here implies membership in or certification by any of them. Titles and licensing rules are described mainly as used in the United States; names and requirements differ elsewhere.</Body>
-        <Body>Many titles are the same occupation under different names, seniority levels or employers; the index keeps them because that is how the industry actually talks.</Body>
-        <Body>Each family names its three dominant activities. Your score on the main activity carries {Math.round(FAMILY_WEIGHTS[0] * 100)}% of the family’s score, the second {Math.round(FAMILY_WEIGHTS[1] * 100)}% and the third {Math.round(FAMILY_WEIGHTS[2] * 100)}%. Families are ranked from highest to lowest, and the reason each one appeared is generated from your actual answers by a fixed template — never by an AI.</Body>
-        <Body>Profile clarity is a plain description of your answers: <Text style={styles.em}>Clear</Text> when at least one activity scored high and others sat clearly lower; <Text style={styles.em}>Broad</Text> when most were rated alike; <Text style={styles.em}>Early</Text> when more than {Math.round(CLARITY_RULES.unknownShare * 100)}% of answers were “I don’t know”.</Body>
+        <Body>{fmt(CAREER_COUNT)} job titles were cross-checked against publicly available occupational listings and role descriptions. Sources include the U.S. Bureau of Labor Statistics and O*NET, the Audio Engineering Society, the Acoustical Society of America, the Society of Motion Picture and Television Engineers (SMPTE), the American Speech-Language-Hearing Association (ASHA), the International Alliance of Theatrical Stage Employees (IATSE) and the Piano Technicians Guild. The Academy grouped the titles into {FAMILY_COUNT} career families. None of those organizations participated in, reviewed or endorsed this index, and no title here implies membership in or certification by any of them. Titles and licensing rules are described mainly as used in the United States; names and requirements differ elsewhere.</Body>
+        <Body>Many titles are the same occupation under different names, seniority levels or employers. The index keeps them all, because that is how people in the industry name them.</Body>
+        <Body>Each family names its three dominant activities. Your score on the main activity carries {Math.round(FAMILY_WEIGHTS[0] * 100)}% of the family’s score, the second {Math.round(FAMILY_WEIGHTS[1] * 100)}% and the third {Math.round(FAMILY_WEIGHTS[2] * 100)}%. Families are ranked from highest to lowest, and the reason each one appeared is generated from your actual answers by a fixed template, never by an AI.</Body>
+        <Body>Profile clarity is a plain description of your answers: <Text style={styles.em}>Clear</Text> when at least one activity scored high and others sat clearly lower; <Text style={styles.em}>Broad</Text> when most were rated alike; <Text style={styles.em}>Early</Text> when more than {Math.round(CLARITY_RULES.unknownShare * 100)}% of answers were “I don’t know enough about this.”</Body>
       </Card>
 
       <Card>
-        <SectionLabel>PROVISIONAL, AND LABELED SO</SectionLabel>
-        <Body>The links between families and activities, and the weights above, are an expert’s first estimate, not a tested measure. They haven’t been checked against real answers yet and will change as people use the Finder and professionals correct it. Nothing here should be used to screen anyone for a job.</Body>
+        <SectionLabel>AN EARLY ESTIMATE</SectionLabel>
+        <Body>The links between families and activities, and the weights above, are an expert’s first estimate, not a tested measure. They haven’t been checked against real answers yet and will change as people use the Career Finder and professionals correct it. Nothing here should be used to screen anyone for a job.</Body>
         <Text style={styles.version}>Questionnaire {ASSESSMENT_VERSION} · Index {CAREER_INDEX_VERSION}</Text>
       </Card>
 

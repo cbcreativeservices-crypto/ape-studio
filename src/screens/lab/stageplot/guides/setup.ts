@@ -9,7 +9,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_SETUP: ScreenGuide = {
   intro: {
     learning: 'What a venue needs to know first: who the band is, when and where the show is, whom to call, and how large the stage is.',
-    start: 'Type your band name, then add each performer under PERFORMERS. The venue, the date and the stage size are optional, and you can fill them in later.',
+    start: 'Type your band name, then add each performer under PERFORMERS. The venue, the date and the stage size are optional, and you can fill them in later. New here? GUIDED TASK, at the top, lists five steps.',
   },
   seeing: [
     'Setup is the first of five work areas. The tab bar above it opens the others in any order.',
@@ -22,7 +22,7 @@ export const SP_GUIDE_SETUP: ScreenGuide = {
     'The switch beside each contact field chooses whether the venue sees that detail in the packet.',
     'Under Status, choose Draft or Ready to advance. Ready is refused while something must be corrected.',
     'ADD A PERFORMER adds a performer to your band. REMOVE lists what that performer is linked to before anything is removed.',
-    'The guided task is optional. All five steps on a plot started from a blank stage complete this lab. An example band is for practice. Each step has a GO button that opens the area where it is done.',
+    'GUIDED TASK opens on a blank stage. All five steps on a plot started from a blank stage complete this lab. An example band is for practice. Each step has a GO button that opens the area where it is done.',
   ],
   changes: [
     'The band name, the venue and the date print at the top of the packet.',

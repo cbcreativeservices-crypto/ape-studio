@@ -18,7 +18,7 @@ import { useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DiagnosticItem, PageId } from './model/types.ts';
-import { FOUNDATION_PAGES, gradeQuickCheck, QUICK_CHECK_PASS, STAGES, type LearnerPath, type QuickCheckResult } from './journey.ts';
+import { articleFor, FOUNDATION_PAGES, gradeQuickCheck, QUICK_CHECK_PASS, STAGES, type LearnerPath, type QuickCheckResult } from './journey.ts';
 import { Card } from './kit';
 import { optionOrder } from './model/itemOrder.ts';
 
@@ -82,7 +82,7 @@ export function PathChooser({ journey }: { journey: JourneyProps }) {
   return (
     <View style={{ gap: 8 }}>
       <Text style={styles.q}>How would you like to start?</Text>
-      {opt('new', `New to miking ${/^[aeiou]/i.test(noun.one) ? 'an' : 'a'} ${noun.one}`,'Start at the beginning: where the sound leaves, the starting setups, then the microphones.')}
+      {opt('new', `New to miking ${articleFor(noun.one)} ${noun.one}`,'Start at the beginning: where the sound leaves, the starting setups, then the microphones.')}
       {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. It shows where you stand; every page is open either way. Each page earns its credit when you answer all of its questions.')}
     </View>
   );

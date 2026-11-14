@@ -183,7 +183,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Set gain and read meters': {
     intro: {
       learning: 'Why tracks are matched by their average level, with the peak only a ceiling, and why clipping can happen at the mix bus even when each channel is clean.',
-      start: 'Play deck A and ride TRIM 1 until CH1 AVG sits between −21 and −15 dBFS with PK under −3. Then play deck B and find why CH2 reads “—”.',
+      start: 'Play deck A and slide TRIM 1 until CH1 AVG sits between −21 and −15 dBFS with PK under −3. Then play deck B and find why CH2 reads “—”.',
     },
     seeing: [
       'You’re looking down on the mixer: two input selectors, TRIM 1 and TRIM 2, four meters (CH1, master L and R, CH2) with their scale, and the BUS OVER light.',
@@ -191,7 +191,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'TRIM 1 and TRIM 2 set how much of each track comes into its channel, in ±1 dB steps.',
-      'LEVELS gives you one lane for CH1 FADER, CH2 FADER or MASTER; tap the LEVELS key to choose which.',
+      'LEVELS gives you one slider for CH1 FADER, CH2 FADER or MASTER; tap the LEVELS key to choose which.',
       'DECKS plays the decks. It also holds each channel’s INPUT SELECTOR (LINE, PHONO, USB) and CUE 2.',
       STOP,
     ],
@@ -205,7 +205,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Signals that add together can clip where they meet, at the mix bus. Turning down after that point can’t undo it.',
     ],
     tryThis: [
-      'Play deck A and ride TRIM 1 until CH1 AVG sits in −21…−15 dBFS with PK under −3.',
+      'Play deck A and slide TRIM 1 until CH1 AVG sits in −21…−15 dBFS with PK under −3.',
       'Play deck B: CH2 reads “—”. Look at its input selector in DECKS to find why, then set TRIM 2 so CH2 AVG is within 2 dB of CH1 AVG.',
     ],
   },
@@ -237,7 +237,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In CUE press ▶ PLAY B, then CUE 2 with the CH2 fader down. Listen as PHONES, then switch to CROWD: what reaches the room?',
-      'Ride BLEND from CUE to MASTER, then turn SPLIT on and listen to each ear: the next track on the left, the room on the right.',
+      'Slide BLEND from CUE to MASTER, then turn SPLIT on and listen to each ear: the next track on the left, the room on the right.',
     ],
   },
   // ── 8 ──────────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'CH1 → MIX and CH2 → MIX show, in dB, how much of each channel reaches the mix. The fourth cell, TWO COPIES, shows how much two identical copies add when they sum.',
     ],
     control: [
-      'FADERS gives you one lane for CH1 (DECK A) or CH2 (DECK B).',
+      'FADERS gives you one slider for CH1 (DECK A) or CH2 (DECK B).',
       'X-FADER: the crossfader.',
       'In SETUP, assign each channel to side A or B, choose the CURVE (BLEND, DIP or CUT), or tap PUT THE SAME TRACK ON BOTH DECKS, ALIGNED.',
       'DECKS: play both.',
@@ -283,7 +283,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'LOW 1 and LOW 2 sit side by side, so you can hand the bass from one channel to the other.',
-      'EQ+FILT gives you one lane for CH1/CH2 HIGH and MID, CH1/CH2 FILTER or RESONANCE.',
+      'EQ+FILT gives you one slider for CH1/CH2 HIGH and MID, CH1/CH2 FILTER or RESONANCE.',
       'DECKS: play both.',
       STOP,
     ],
@@ -656,7 +656,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Recording and streaming': {
     intro: {
       learning: 'Why a recording is taken from its own tap at its own level, so room moves don’t change the take, and why the mic must be in the recording too.',
-      start: 'In TAP, pick REC OUT and press RECORD. Ride MASTER: the room changes, but the RECORDER’s level holds. Then set REC GAIN and PLAY THE TAKE.',
+      start: 'In TAP, pick REC OUT and press RECORD. Slide MASTER: the room changes, but the RECORDER’s level holds. Then set REC GAIN and PLAY THE TAKE.',
     },
     seeing: [
       'The drawing shows the tap the recorder takes its signal from, the RECORDER with its meters, and the take’s waveform. Green marks show where the mic is in the take.',
@@ -680,7 +680,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Only playback proves a take: it shows whether the level held and the mic made it in.',
     ],
     tryThis: [
-      'Pick TAP → REC OUT, press RECORD and ride MASTER: the room changes, but the RECORDER’s level doesn’t.',
+      'Pick TAP → REC OUT, press RECORD and slide MASTER: the room changes, but the RECORDER’s level doesn’t.',
       'Set REC GAIN so REC PEAK sits between −12 and −3 dBFS, then PLAY THE TAKE and look for the green mic marks.',
     ],
   },
@@ -712,7 +712,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In CLOCK set CH 1, 5-PIN MIDI and EXTERNAL, then play deck A: MACHINE reads deck A’s tempo.',
-      'Use START ON THE NEXT BAR, then ride TEMPO A and watch MACHINE follow.',
+      'Use START ON THE NEXT BAR, then slide TEMPO A and watch MACHINE follow.',
     ],
   },
   // ── 23 ─────────────────────────────────────────────────────────────────
@@ -792,7 +792,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const DJ_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A look back over the DJ booth as one system: safe levels, the path from player to PA, and the cueing, blending and timing you’ve worked through so far.',
-    start: 'Tap the first screen still listed to go straight to it. Or tap REVIEW ▾ on the ✓ DONE line to reopen a screen you’ve finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'The title reads WHAT’S LEFT while you still have required screens to do, and LAB COMPLETE once you’ve done them all. If your saved progress can’t be read, it reads YOUR PROGRESS.',

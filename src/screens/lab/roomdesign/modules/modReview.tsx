@@ -21,6 +21,7 @@ import {
   bounds,
   compareMeasured,
   diffLayouts,
+  earlyUntreatedWallReflections,
   fmtDelta,
   fmtHz,
   fmtLen,
@@ -306,7 +307,8 @@ function bassJudgement(a: ReturnType<typeof analyze>): string {
 function imagingJudgement(a: ReturnType<typeof analyze>): string {
   const s = a.stereo;
   if (!s) return '';
-  const early = a.reflections.filter((r) => r.surface.kind === 'wall' && r.delayMs < 15 && !r.treatedBy).length;
+  // The same rule as SUGGESTED NEXT STEPS (earlyUntreatedWallReflections).
+  const early = earlyUntreatedWallReflections(a.reflections).length;
   const sym = s.pathDiff <= SYM_TOL && Math.abs(s.wallL.side - s.wallR.side) <= 0.15;
   return `Stereo imaging: ${sym ? 'the geometry is matched left and right' : 'the two sides do not match'}${early > 0 ? `, and ${early} untreated wall reflection${early > 1 ? 's' : ''} inside 15 ms will blur the image and widen the center` : ', and the early wall reflections are treated or late'}.`;
 }

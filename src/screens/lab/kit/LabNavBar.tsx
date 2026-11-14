@@ -24,8 +24,9 @@
  *     </LabNavProvider>
  *   );
  * The strip enforces: ⏮ / ‹ PREV dim on unit 1; NEXT › is FINISH › on the last
- * unit, never disabled; the readout opens CONTENTS (tap only; Android BACK
- * closes it); one 400 ms tap lock; 44 pt targets; 13 pt labels, nothing under
+ * unit, never disabled; the readout opens CONTENTS — a CENTERED POPUP since
+ * the lab fix round 2026-11-14 (owner standing rule "popups, never
+ * pulldowns"; F6): ✕, a tap outside or Android BACK closes it; one 400 ms tap lock; 44 pt targets; 13 pt labels, nothing under
  * 9 pt; the row caps at READING_MAX_W on a tablet. The header ‹ ALWAYS leaves
  * the lab. Retired words: CONTINUE, COMPLETE ✓, DONE ✓, SKIP AHEAD, ‹ BACK,
  * ⏮ START (guarded by test/labNavLaw.test.ts). LabNextButton in the well
@@ -36,7 +37,9 @@ import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View, useWindowDi
 import { NavigationContext, useNavigation } from '@react-navigation/native';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
-import { READING_MAX_W } from '../../../theme/readingColumn';
+import { READING_MAX_W, popupCard } from '../../../theme/readingColumn';
+import { Modal } from '../../../components/DimModal';
+import { useModalHandoff } from '../../../lib/confirm';
 import { NAV, nextButtonLabel } from './labNav';
 import type { LabNav } from './useLabNav';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -145,7 +148,7 @@ export function LabHeader({
   return guide ? <ScreenGuideHintAnchor>{header}</ScreenGuideHintAnchor> : header;
 }
 
-/** The strip + the CONTENTS dropdown. */
+/** The strip + the CONTENTS popup (a centered card, never a pull-down). */
 export function LabNavBar({ nav }: { nav: LabNav }) {
   const { view, contentsOpen, setContentsOpen } = nav;
   const { height: winH } = useWindowDimensions();
@@ -166,8 +169,8 @@ export function LabNavBar({ nav }: { nav: LabNav }) {
     return () => sub.remove();
   }, [contentsOpen, setContentsOpen, navCtx]);
 
-  // CONTENTS is capped so the rack stage stays visible under it.
-  const listMax = Math.max(44 * 3, Math.min(Math.round(winH * 0.42), 320));
+  // The popup's list scrolls inside the card; the card never fills the screen.
+  const listMax = Math.max(44 * 3, Math.min(Math.round(winH * 0.62), 520));
 
   return (
     <View>
@@ -220,17 +223,43 @@ export function LabNavBar({ nav }: { nav: LabNav }) {
           )}
         </View>
       </View>
-      {contentsOpen ? <LabContents nav={nav} maxHeight={listMax} /> : null}
+      {/* CONTENTS as the app's centered popup (lab fix round 2026-11-14; owner
+          standing rule "popups, never pulldowns" — it used to open in-tree
+          under the strip and push the lab down). DimModal keeps Low-Light's
+          wash; onRequestClose is Android BACK while the popup is up (the
+          BackHandler above stays for the focus rule). */}
+      <Modal
+        visible={contentsOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setContentsOpen(false)}
+        accessibilityViewIsModal
+      >
+        {contentsOpen ? <LabContents nav={nav} maxHeight={listMax} /> : null}
+      </Modal>
     </View>
   );
 }
 
 function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
   const { units, index, ending } = nav;
+  const close = () => nav.setContentsOpen(false);
+  // START OVER opens a confirm dialog: run it after this popup's Modal has
+  // gone (house helper; iOS refuses to present while one is still closing).
+  const handoff = useModalHandoff();
   return (
-    <View style={styles.contentsWrap}>
-      <View style={[styles.contents, { maxHeight }]}>
-        <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
+    // A tap outside the card closes it; the card swallows its own taps.
+    <Pressable accessible={false} style={styles.contentsBackdrop} onPress={close}>
+      <Pressable accessible={false} style={[styles.contents, { maxHeight: maxHeight + 56 }]} onPress={() => {}}>
+        <View style={styles.contentsHead}>
+          <Text style={styles.contentsTitle} accessibilityRole="header">
+            CONTENTS
+          </Text>
+          <Pressable onPress={close} hitSlop={12} style={styles.contentsClose} accessibilityRole="button" accessibilityLabel="Close the contents">
+            <Text style={styles.contentsCloseText}>✕</Text>
+          </Pressable>
+        </View>
+        <ScrollView style={{ maxHeight }} keyboardShouldPersistTaps="handled" nestedScrollEnabled>
           {units.map((u, i) => {
             const current = !ending && i === index;
             const num = u.kind === 'check' ? 'CHECK' : String(i + 1).padStart(2, '0');
@@ -264,8 +293,9 @@ function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
           {nav.reset ? (
             <Pressable
               onPress={() => {
+                const run = nav.reset?.run;
                 nav.setContentsOpen(false);
-                nav.reset?.run();
+                if (run) handoff(run);
               }}
               style={styles.row}
               accessibilityRole="button"
@@ -275,8 +305,8 @@ function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
             </Pressable>
           ) : null}
         </ScrollView>
-      </View>
-    </View>
+      </Pressable>
+    </Pressable>
   );
 }
 
@@ -344,12 +374,15 @@ const styles = StyleSheet.create({
   nextSlot: { minWidth: 88, minHeight: 44 },
   nextLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.amber },
 
-  // CONTENTS — in-tree (no Modal), under the strip, capped.
-  contentsWrap: { paddingHorizontal: 12, paddingTop: 6, paddingBottom: 4 },
+  // CONTENTS — the centered popup (2026-11-14): dim backdrop, card at the
+  // popup width (popupCard), ✕ in its header.
+  contentsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 20 },
+  contentsHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 14, paddingRight: 4, minHeight: 48, borderBottomWidth: 1, borderBottomColor: colors.hairlineDim },
+  contentsTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.amber },
+  contentsClose: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  contentsCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
   contents: {
-    width: '100%',
-    maxWidth: READING_MAX_W,
-    alignSelf: 'center',
+    ...popupCard,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.hairline,

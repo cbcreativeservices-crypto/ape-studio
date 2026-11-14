@@ -18,7 +18,11 @@ import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { CollapsibleSection } from '../LabShell';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from '../foundations/captionedRack';
+import { ROOM_CAPTIONS } from '../foundations/bezelCaptions';
+
+/** Room Design's racks with first-visit bezel captions (phase 2, 2026-11-14). */
+const RackUnit = captionedRack(ROOM_CAPTIONS);
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
 
 export type RoomRack = {

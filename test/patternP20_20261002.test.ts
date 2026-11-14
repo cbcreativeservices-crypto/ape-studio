@@ -60,8 +60,14 @@ test('ratchet: every useDspEngine host releases the mic when the app goes to the
 });
 
 test('the three lab hosts that held the mic open in the background are wired', () => {
+  // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do
+  // obvious … fixes as you suggested in the report"; report §7 "EQ Lab
+  // modules 1 and 11 show MIC: LIVE on arrival … a microphone that turns on
+  // by itself"): the two EQ lessons no longer auto-start the mic, so they are
+  // MANUAL-start hosts now and use the manual-start background release.
   for (const f of ['src/screens/lab/eq/modules/LiveSpectrumEq.tsx', 'src/screens/lab/eq/modules/SeeingFrequency.tsx']) {
-    assert.match(code(read(f)), /useToolAutoStart\(state, onStart, stop\);/, f);
+    assert.match(code(read(f)), /useReleaseMicOnBackground\(state, stop\);/, f);
+    assert.doesNotMatch(code(read(f)), /useToolAutoStart\(/, f);
   }
   assert.match(code(read('src/screens/lab/HarmonicsView.tsx')), /useReleaseMicOnBackground\(state, stop\);/);
 });

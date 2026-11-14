@@ -31,7 +31,7 @@ import { GaEngineHost } from './engine/GaEngineHost';
 import { useGaSound, type GaSoundState } from './engine/useGaSound';
 import { gaVoiceCount, type GaState } from './model/gaModel';
 import { gaBindEngine, gaCloseScene, gaDispatch, useGa } from './model/gaStore';
-import { gaCount, gaFitReadouts, type GaReadout } from './bitsLogic';
+import { GA_SOUND_OFF_LINE, gaCount, gaFitReadouts, gaWithCaption, type GaReadout } from './bitsLogic';
 import { GA_SCENE_ASPECT, GaScene, type GaSceneSelect, type GaSceneShow } from './scene/GaScene';
 import { GA_GLASS_PAD, GA_SPLIT_ASPECT, gaGlassSplit } from './scene/gaSceneLogic';
 import { GA_HUDS, GA_HUD_H, type GaHudId } from './scene/hud';
@@ -271,7 +271,8 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
       { k: 'PLAYING', kNarrow: 'PLAYS', v: String(s.inst.length), vA11y: `${gaCount(s.inst.length, 'instance')} playing` },
       { k: 'VOICES', v: s.voiceLimit ? `${voices}/${s.voiceLimit}` : String(voices), vA11y: s.voiceLimit ? `${voices} of ${gaCount(s.voiceLimit, 'voice')}` : gaCount(voices, 'voice') },
       { k: 'SOUND', kNarrow: 'SND', v: GA_SOUND_WORD[sound], tint: sound === 'on' ? colors.green : sound === 'failed' || sound === 'unavailable' ? colors.red : colors.textSub },
-    ],
+      // a first-visit caption under each cell whose key is a term (phase 2, row 7)
+    ].map(gaWithCaption),
     winW,
   );
 
@@ -287,6 +288,8 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
         minWell: 120,
         fullScreen: true,
         bezel,
+        // the silent learner's line, at the top of the well while sound is off (phase 2, row 3)
+        soundOffLine: GA_SOUND_OFF_LINE,
         render: (w, h) => (spec.glass ? spec.glass(w, h) : <GaGlass w={w} h={h} spec={spec} state={s} />),
       }}
     >

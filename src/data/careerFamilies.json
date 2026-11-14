@@ -92,7 +92,7 @@
   "sources": [
    "U.S. Bureau of Labor Statistics / O*NET",
    "Audio Engineering Society",
-   "IATSE"
+   "International Alliance of Theatrical Stage Employees (IATSE)"
   ],
   "count": 46
  },
@@ -117,7 +117,7 @@
   ],
   "sources": [
    "Audio Engineering Society",
-   "IATSE"
+   "International Alliance of Theatrical Stage Employees (IATSE)"
   ],
   "count": 34
  },
@@ -263,7 +263,7 @@
   ],
   "sources": [
    "Acoustical Society of America",
-   "NIOSH"
+   "National Institute for Occupational Safety and Health (NIOSH)"
   ],
   "count": 50
  },
@@ -290,7 +290,7 @@
   "sources": [
    "Acoustical Society of America",
    "American Society for Nondestructive Testing",
-   "NOAA",
+   "National Oceanic and Atmospheric Administration (NOAA)",
    "NASA"
   ],
   "count": 61
@@ -494,7 +494,7 @@
   "sources": [
    "Society of Motion Picture and Television Engineers",
    "Federal Communications Commission",
-   "NIOSH",
+   "National Institute for Occupational Safety and Health (NIOSH)",
    "U.S. Copyright Office"
   ],
   "count": 41
@@ -722,8 +722,8 @@
    "rental companies"
   ],
   "sources": [
-   "NIOSH",
-   "IATSE"
+   "National Institute for Occupational Safety and Health (NIOSH)",
+   "International Alliance of Theatrical Stage Employees (IATSE)"
   ],
   "count": 36
  },
@@ -923,7 +923,7 @@
   ],
   "sources": [
    "Acoustical Society of America",
-   "NIOSH",
+   "National Institute for Occupational Safety and Health (NIOSH)",
    "Occupational Safety and Health Administration"
   ],
   "count": 45
@@ -952,7 +952,7 @@
   "sources": [
    "U.S. Copyright Office",
    "Music Library Association",
-   "NAMM"
+   "NAMM (National Association of Music Merchants)"
   ],
   "count": 52
  },
@@ -974,7 +974,7 @@
   ],
   "sources": [
    "Acoustical Society of America",
-   "NOAA",
+   "National Oceanic and Atmospheric Administration (NOAA)",
    "U.S. Navy"
   ],
   "count": 44
@@ -1029,7 +1029,7 @@
   "sources": [
    "Piano Technicians Guild",
    "National Association of Professional Band Instrument Repair Technicians",
-   "NAMM"
+   "NAMM (National Association of Music Merchants)"
   ],
   "count": 45
  },
@@ -1051,7 +1051,7 @@
   ],
   "sources": [
    "Association of Moving Image Archivists",
-   "NOAA",
+   "National Oceanic and Atmospheric Administration (NOAA)",
    "Library of Congress",
    "Linguistic Society of America"
   ],

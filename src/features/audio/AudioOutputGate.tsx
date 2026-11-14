@@ -48,7 +48,7 @@ import { isRealAccount } from '../commercial/realAccount';
 import { colors, fonts } from '../../theme/tokens';
 import { SoundSafetyWarning } from './SoundSafetyWarning';
 import { soundSafetyFullText } from './soundSafetyText';
-import { isAcknowledged, loadSoundSafetyAck, recordSoundSafetyAck } from './soundSafetyAck';
+import { isAcknowledged, loadSoundSafetyAck, noteSoundSafetyDeclined, recordSoundSafetyAck } from './soundSafetyAck';
 import { optionalModule } from '../tools/capture/optionalModule';
 
 /** The running build's version, for the acknowledgment record.
@@ -532,8 +532,15 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       : phase === 'explain'
         ? explainBody
         : holdBody;
+  // Android BACK on the HOSTED Sound Safety sheet reaches the host, not the
+  // sheet: it is KEEP SOUND OFF all the same, honoured for the session
+  // (owner 2026-11-14, "Once per session (Recommended)").
+  const onHostedBack = () => {
+    if (phaseRef.current === 'safety') noteSoundSafetyDeclined();
+    settle(false);
+  };
   useEffect(() => {
-    setHostedOverlay(hostedBody ? { node: hostedBody, onBack: () => settle(false) } : null);
+    setHostedOverlay(hostedBody ? { node: hostedBody, onBack: onHostedBack } : null);
   });
   useEffect(() => () => setHostedOverlay(null), []);
 

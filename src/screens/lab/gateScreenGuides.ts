@@ -59,7 +59,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a gate turns down sound that falls below the threshold, and how RANGE, HOLD and release decide how deep and how smoothly it closes.',
-      start: 'Tap ▶ to play CLICK 90 and watch GR drop toward 0 on each hit. Then raise THRESH to −20 dB and see GR stay at the RANGE floor.',
+      start: 'Drag THRESH up to −20 dB and back down to −50 dB, and watch how much of each hit gets through on OUT. Then tap ▶ to play CLICK 90 and watch GR drop toward 0 on each hit.',
     },
     seeing: [
       'Sound flows IN ▸, through the green GATE bar, ▸ OUT. Dashed lines on IN mark the threshold; the dotted outline is the sound untouched.',
@@ -132,11 +132,12 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'A ✓ replaces a question’s number once you get it right. The line under the title says how many are still to get right.',
     ],
     control: [
-      'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says why that pick is not right; a second wrong pick also shows the explanation.',
       'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look up a gate setting.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick about range or hold still teaches you something.',
+      'A wrong pick about range or hold gets its own reason, never the answer, so you still work it out.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [

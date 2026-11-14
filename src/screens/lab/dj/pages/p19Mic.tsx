@@ -696,7 +696,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
             </Scene>
           );
         },
-        bezel: [dbCell('MIC PEAK', speaking ? micPk : null), { k: 'MUSIC DIP', v: last && last.ext.duckMinDb < -0.5 ? `${last.ext.duckMinDb.toFixed(0)} dB` : '0 dB', tint: colors.amber }, marginCell, voiceCell(last)],
+        bezel: [dbCell('MIC PEAK', speaking ? micPk : null), { k: 'MUSIC DIP', caption: 'talkover dip', v: last && last.ext.duckMinDb < -0.5 ? `${last.ext.duckMinDb.toFixed(0)} dB` : '0 dB', tint: colors.amber }, marginCell, voiceCell(last)],
         params: [
           {
             kind: 'fader',

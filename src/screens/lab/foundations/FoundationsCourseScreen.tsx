@@ -66,10 +66,16 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { notOpenedDetail, visitCounts } from './endRows';
 import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from './captionedRack';
+import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
+
+/** Every module's rack: first-visit bezel captions, and the sound-off line where
+ *  the module has PLAY (lab fix round 2026-11-14, phase 2). */
+const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true });
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { StageTextScale, useStageTextScale } from '../rack/stageAspect';
 import { CheckQuestion, ConceptBadge, LevelMeterBar, TracerCaption, VizUnavailableCard, type CheckSpec } from './bits';
@@ -451,7 +457,9 @@ const HSTACK_NATURAL = 282; // 4 + 6×30 rows + 12 gap + 86 sum
 
 /** Shared TONE bezel cell — the voice state, printed on every audio module. */
 function toneCell(tone: ToneApi): BezelItem {
-  return { k: 'TONE', v: tone.playing ? 'LIVE' : '—', tint: tone.playing ? undefined : '#7a7f8a' };
+  // Sound off (phase 2, S3 BezelItem.silent): the cell says so instead of a
+  // bare dash that looked broken (G1 module 1).
+  return { k: 'TONE', v: tone.playing ? 'LIVE' : '—', tint: tone.playing ? undefined : '#7a7f8a', silent: { v: 'OFF' } };
 }
 
 /** Shared PLAY dock key (kind:'toggle', LED = sounding) — the course's inline
@@ -827,7 +835,7 @@ function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       {wellTop}
       <ConceptBadge extra={`LEFT = ${M5_FIXED_A} Hz reference · RIGHT = your frequency — count the orbit laps`} />
       <Text style={styles.caption}>
-        Ride the FREQ B lane ({M5_MIN}–{M5_MAX} Hz): B's orbit dot and its
+        Slide FREQ B ({M5_MIN}–{M5_MAX} Hz): B's orbit dot and its
         compressions both speed up or slow down with the frequency — same-size vibration, different
         RATE. Press PLAY to listen to the frequency you chose.
       </Text>
@@ -1381,7 +1389,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
             flex: 1.3,
             helpKey: 'phase_sum',
           },
-          { k: 'OUT', v: tone.playing && stereoMode ? (stereoMode === 'drift' ? '220/222' : '220/220') : '—', tint: tone.playing ? undefined : '#7a7f8a' },
+          { k: 'OUT', v: tone.playing && stereoMode ? (stereoMode === 'drift' ? '220/222' : '220/220') : '—', tint: tone.playing ? undefined : '#7a7f8a', silent: { v: 'OFF' } },
         ],
         render: (w, h) => (viz ? <M10Stage viz={viz} w={w} h={h} phase={phase} focused={focused} /> : <StageFallback w={w} />),
       }}
@@ -1400,7 +1408,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         <Text style={styles.caption}>
           {__DEV__
             ? 'This engine build predates the stereo dual-oscillator — the drawn sum above stays exact; install the newest dev build to HEAR the drifting-phase demo.'
-            : 'This version of the app cannot play this demo yet. The drawn sum above stays exact; update the app to HEAR the drifting-phase demo.'}
+            : 'This demo’s two tones do not play on this phone, but the drawn sum above is exact: set PRESET to 180° and watch the bottom line go flat.'}
         </Text>
       ) : null}
       {wellBottom}
@@ -1461,7 +1469,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       helpKey: 'harmonic_stack',
       render: () => (
         <View style={{ gap: 10 }}>
-          <Text style={styles.trayHead}>HARMONICS — tap to select; the lane sets its level</Text>
+          <Text style={styles.trayHead}>HARMONICS — tap one, then slide its level</Text>
           <View style={styles.chipRow}>
             {amps.map((a, i) => {
               const on = a > 0.02;
@@ -1520,7 +1528,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         <Text style={styles.caption}>
           {__DEV__
             ? 'This engine build predates the additive generator — the drawing stays exact; install the newest dev build to HEAR each harmonic enter the tone.'
-            : 'This version of the app cannot play this demo yet. The drawing stays exact; update the app to HEAR each harmonic enter the tone.'}
+            : 'The harmonics do not play on this phone, but the drawing is exact: change a layer’s level and watch the SUM change shape while its rate stays put.'}
         </Text>
       ) : null}
       <Text style={styles.caption}>
@@ -1603,8 +1611,7 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       <AnalyticBadge text="ANALYTIC — THE WAVE TAKEN APART: WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
       <Text style={styles.caption}>
         Fourier’s claim: ANY repeating pressure pattern — however jagged — is a stack of plain
-        sines. Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer in this
-        app does exactly that, live, on real signals.
+        sines. Every analyzer in this app takes real signals apart the same way, live.
       </Text>
       {wellBottom}
     </RackUnit>
@@ -1777,15 +1784,19 @@ const STEPS: Step[] = [
       'Sound is a pressure wave, usually in air. Not electricity. Not a waveform. Not a speaker. Not a graph.',
       'Air molecules repeatedly squeeze together (compression) and spread apart (rarefaction). Those pressure changes travel outward until they reach your ears.',
       'Watch the particles: each one only rocks back and forth around its home. The PATTERN of squeezes is what travels — the air itself stays put.',
+      // G1 module 1 (lab fix round 2026-11-14): "FREQ ×4 while MODEL ×1.8,
+      // unexplained" — visHzFor is a slowed, squeezed (log) speed on purpose.
+      'FREQ is the real tone. MODEL is how fast the drawing rocks: slowed far down, and squeezed so every pitch stays watchable. From MID to HIGH, FREQ goes ×4 (220 → 880 Hz) but MODEL only about ×1.8. The direction is real (higher pitch, faster rocking); the size of the jump is not.',
     ],
     Rack: M1Rack,
     check: {
       question: 'A clap reaches you across a room. What actually crossed the room?',
       options: [
-        'The air near the clap traveled to your ear',
+        'The air near the clap traveled across to your ear',
         'A pattern of pressure changes — each molecule only rocked in place',
-        'Tiny sound particles thrown off by the hands',
+        'Tiny sound particles thrown off by the clapping hands',
       ],
+      why: { 0: 'Watch a pink tracer dot: it rocks around its mark and never travels toward the ear.', 2: 'Hands throw nothing off. The dots show the same air rocking in place while the squeeze moves on.' },
       correctIdx: 1,
       reveal:
         'The PATTERN travels; the air stays put. Watch the particle window: every molecule rocks around its home while the squeeze marches across the room. This is the single most common misconception about sound — and everything in this course builds on getting it right.',
@@ -1799,18 +1810,19 @@ const STEPS: Step[] = [
     paras: [
       'The same sound can be pictured three ways: the SPEAKER that makes it, the AIR that carries it, and the GRAPH engineers draw of it.',
       'These are three views of ONE phenomenon, at the same moment: the cone pushes, the air squeezes, the graph plots the squeeze.',
-      'The wavy line is NOT the shape of the sound. It is a graph of PRESSURE over time. This one misunderstanding causes enormous confusion later — settle it now.',
+      'The wavy line is NOT the shape of the sound. It is a graph of PRESSURE: here, the pressure all along the air at one moment, lined up with the dots above. This one misunderstanding causes enormous confusion later — settle it now.',
     ],
     Rack: M2Rack,
     check: {
       question: 'Is the wavy line the shape sound makes in the air?',
       options: [
         'Yes — sound ripples through air in a wave shape',
-        'No — it is a graph of pressure plotted over time',
+        'No — it is a graph of pressure, not a picture of the air',
       ],
+      why: { 0: 'Look at the dots above the graph: the air only squeezes and spreads. Nothing in the air is curved like the line.' },
       correctIdx: 1,
       reveal:
-        'The line is a GRAPH — pressure at one point, plotted over time. In the air itself, molecules just move back and forth along the direction of travel (the particle window above). Nothing in the air is ever shaped like the line.',
+        'The line is a GRAPH — how far the pressure sits above or below normal, drawn here along the air at one moment (Module 7 shows the other way: one point, over time). In the air itself, molecules just move back and forth along the direction of travel (the particle window above). Nothing in the air is ever shaped like the line.',
       wrongHint: 'Look at the particle window — do you see anything wave-SHAPED in the air?',
     },
   },
@@ -1819,7 +1831,7 @@ const STEPS: Step[] = [
     tag: 'MODULE 3',
     title: 'COMPRESSION & RAREFACTION',
     paras: [
-      'Ride the STRENGTH lane. A stronger vibration packs the molecules closer on every squeeze (compression) and spreads them thinner on every stretch (rarefaction).',
+      'Slide STRENGTH. A stronger vibration packs the molecules closer on every squeeze (compression) and spreads them thinner on every stretch (rarefaction).',
       'Pressure above the room’s resting pressure is POSITIVE. Below it is NEGATIVE. The resting level — atmospheric pressure — is the graph’s zero line.',
       'Hold onto this picture: a microphone is just a tiny surface that rides these pressure swings. Every mic you will ever use starts here.',
     ],
@@ -1831,7 +1843,7 @@ const STEPS: Step[] = [
     title: 'AMPLITUDE',
     paras: [
       'Small vibration → quiet sound. Large vibration → loud sound. That size is AMPLITUDE.',
-      'Ride the lane and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
+      'Slide AMPLITUDE and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
       'Amplitude is the SIZE of the vibration, not its rate. Rate is a different property — that is the next module.',
     ],
     Rack: M4Rack,
@@ -1842,8 +1854,9 @@ const STEPS: Step[] = [
         'Move back and forth FARTHER',
         'Move physically closer to your ear',
       ],
+      why: { 0: 'How often it moves is the rate, which is pitch (Module 5). Slide AMPLITUDE and watch how far the cone travels.', 2: 'The cone stays where it is. Slide AMPLITUDE and watch what changes in its swing.' },
       correctIdx: 1,
-      wrongHint: 'Ride the AMP lane and watch the cone: what changes — how OFTEN it moves, or how FAR?',
+      wrongHint: 'Slide AMPLITUDE and watch the cone: what changes — how OFTEN it moves, or how FAR?',
       reveal:
         'Farther = bigger pressure swings = louder. Moving back and forth MORE OFTEN squeezes the air more times each second — that changes the PITCH, so it is no longer the same note. (Getting closer does sound louder, but the speaker itself isn’t making a louder sound.)',
     },
@@ -1865,6 +1878,7 @@ const STEPS: Step[] = [
         'Vibrate back and forth MORE OFTEN each second',
         'Push more air with each cycle',
       ],
+      why: { 0: 'A bigger swing was amplitude, back in Module 4. Watch the two orbit dials here instead.', 2: 'More air per cycle is a bigger push, which makes it louder. Count how often B laps A.' },
       correctIdx: 1,
       reveal:
         'Pitch follows the RATE — cycles per second (Hz). Vibrating farther makes it LOUDER (that was Module 4). Two properties, two knobs: size = amplitude (mostly loudness), rate = frequency (pitch).',
@@ -1878,16 +1892,17 @@ const STEPS: Step[] = [
     paras: [
       'A wave is not just a rate — it takes up SPACE. While one compression travels away at 343 m/s, the next is already being made behind it. The distance between them is the wavelength, λ.',
       'λ = speed ÷ frequency. A 55 Hz bass note is over six meters long — it doesn’t fit in your bedroom. A 5 kHz sparkle is seven centimeters.',
-      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big speaker drivers. Ride the lane and watch real meters of air.',
+      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big speaker drivers. Slide FREQ and watch real meters of air.',
     ],
     Rack: M6Rack,
     check: {
       question: 'A 55 Hz wave is ~6 m long. Your eardrum is ~1 cm across. How can you hear it at all?',
       options: [
-        'The whole 6 m wave squeezes into the ear',
+        'The whole 6 m wave squeezes into the ear canal',
         'The ear reads the pressure changes ARRIVING AT ONE POINT, over time',
         'You can’t — subwoofers are felt, not heard',
       ],
+      why: { 0: 'Look at the ear on the stage: the wave runs past it and never fits inside.', 2: 'You do hear 55 Hz; the ear is just less sensitive there (Module 9). Watch the ear marker read one spot.' },
       correctIdx: 1,
       wrongHint: 'Look at the ear marker on the stage: the whole wave never enters it — only the pressure at that one spot, moment by moment.',
       reveal:
@@ -1908,6 +1923,7 @@ const STEPS: Step[] = [
     check: {
       question: 'On a studio waveform display, the horizontal axis is…',
       options: ['Distance through the air, in meters', 'Time, in seconds', 'Frequency, low to high'],
+      why: { 0: 'Distance through the air is what the ROOM picture shows. Check which ruler the mic’s own graph uses.', 2: 'Low to high is a spectrum’s axis (Module 12). Freeze and read the lower graph’s ruler.' },
       correctIdx: 1,
       wrongHint: 'Freeze the display and drag the PROBE: which ruler does the LOWER graph read — meters, or milliseconds?',
       reveal:
@@ -1931,6 +1947,7 @@ const STEPS: Step[] = [
         'Hearing works in RATIOS — both are a doubling (×2)',
         'The ear can’t tell high frequencies apart',
       ],
+      why: { 0: '220 → 440 adds 220 Hz, but 440 → 880 adds 440 Hz. Different steps in hertz, yet they sound the same.', 2: 'The ear tells high notes apart well. Look at where each doubling lands on the spiral.' },
       correctIdx: 1,
       wrongHint: 'Drag the spiral one full turn from 220. Where do you land — 440, or 220 + some fixed number?',
       reveal:
@@ -1954,6 +1971,7 @@ const STEPS: Step[] = [
         'The ear is simply less sensitive at low frequencies',
         'It doesn’t — equal amplitude always means equal loudness',
       ],
+      why: { 0: 'The same pressure swing carries the same push. Watch SEND: it never moves when only FREQ changes.', 2: 'Sweep FREQ with LEVEL untouched: SEND stays put while HEARD moves.' },
       correctIdx: 1,
       wrongHint: 'Sweep FREQ with LEVEL untouched: SEND never moves, but HEARD does. What does that tell you?',
       reveal:
@@ -1967,7 +1985,7 @@ const STEPS: Step[] = [
     paras: [
       'Phase is WHERE in its cycle a wave is, measured in degrees. Alone it is inaudible. But sound is almost never alone.',
       'When two copies of the same wave meet, phase decides everything: aligned (0°) they ADD into double. Opposed (180°) they CANCEL — pressure up meets pressure down, and the air simply never moves.',
-      'Ride the lane and watch the sum. This one idea powers noise-canceling headphones, explains hollow-sounding mic pairs, comb filtering, and why subwoofer placement matters.',
+      'Slide PHASE and watch the sum. This one idea powers noise-canceling headphones, explains hollow-sounding mic pairs, comb filtering, and why subwoofer placement matters.',
     ],
     Rack: M10Rack,
     check: {
@@ -1977,6 +1995,7 @@ const STEPS: Step[] = [
         'Silence — every push meets an equal pull',
         'The pitch drops one octave',
       ],
+      why: { 0: 'Two waves add only when they line up. At 180° watch what the SUM line does.', 2: 'Phase never changes the rate. The frequency in the readouts stays where it was.' },
       correctIdx: 1,
       reveal:
         'At 180° every compression lands on an equal rarefaction: the sum is zero — silence from two real sounds. (The energy isn’t destroyed; in real rooms it redistributes to places where they align.) Aligned instead, the same pair doubles. Phase decides.',
@@ -1996,6 +2015,7 @@ const STEPS: Step[] = [
     check: {
       question: 'Adding harmonics to a 220 Hz fundamental changes the sound’s…',
       options: ['Pitch — more harmonics, higher note', 'Character (timbre) — the pitch stays at 220 Hz', 'Speed through the air'],
+      why: { 0: 'Watch F0 in the readouts while you raise H2 and H3: does it move?', 2: 'Sound travels at one speed for every note. Watch the SUM: its shape changes, its rate does not.' },
       correctIdx: 1,
       wrongHint: 'Turn H2 and H3 up and watch the readouts: does F0 ever move off 220 Hz?',
       reveal:
@@ -2009,7 +2029,7 @@ const STEPS: Step[] = [
     paras: [
       'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can be taken apart into plain sines at whole-number multiples of its repeat rate (its harmonics). The fit is exact — though sharp corners need an endless list of them.',
       'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong, and how they line up in time). Same information, two views.',
-      'Ride UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
+      'Slide UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
     ],
     Rack: M12Rack,
     // Owner 2026-09-13, on the Pixel: this check "asks about a spectrum
@@ -2022,15 +2042,16 @@ const STEPS: Step[] = [
     // same idea is testable from what is actually in front of them.
     check: {
       question:
-        'You ride UNMIX all the way up on a 220 Hz tone and the wave separates into parts at 220, 440 and 660 Hz. What does that tell you?',
+        'You slide UNMIX all the way up on a 220 Hz tone and the wave separates into parts at 220, 440 and 660 Hz. What does that tell you?',
       options: [
         'Three separate sounds got mixed together by mistake',
-        'This ONE tone is built from sines at whole-number multiples of 220 Hz — its harmonics',
+        'ONE tone made of sines at whole multiples of 220 Hz: its harmonics',
         'UNMIX added new frequencies that were not there before',
       ],
+      why: { 0: 'There is only one tone here. Pick PURE and slide UNMIX: does one plain sine split?', 2: 'UNMIX only shows what is already inside. Set RECIPE to PURE and count the parts.' },
       correctIdx: 1,
       wrongHint:
-        'Set the RECIPE to PURE and ride UNMIX again: how many parts does one plain sine come apart into?',
+        'Set the RECIPE to PURE and slide UNMIX again: how many parts does one plain sine come apart into?',
       reveal:
         'UNMIX does not add or remove anything — it shows what was always there. 220 · 440 · 660 is a whole-number family: the signature of ONE 220 Hz tone with its harmonics (Module 11). That list of ingredients is called the SPECTRUM, and reading one is reading a recipe.',
     },
@@ -2048,10 +2069,11 @@ const STEPS: Step[] = [
     check: {
       question: 'A level meter in this app reads −12 dBFS. What is that a measurement of?',
       options: [
-        'The loudness your ear experiences',
+        'The loudness your ear experiences right now',
         'The sound pressure in the room, in dB SPL',
-        'Digital signal level relative to full scale — not calibrated loudness',
+        'Digital level against full scale, not calibrated loudness',
       ],
+      why: { 0: 'The app cannot know what your ear experiences: that depends on your volume, speakers and hearing.', 1: 'dB SPL needs a calibrated microphone in the room. This meter reads the digital signal only.' },
       correctIdx: 2,
       wrongHint: 'Could a meter inside the app know how loud your ROOM is without a calibrated mic? What can it actually measure?',
       reveal:
@@ -2080,14 +2102,16 @@ const STEPS: Step[] = [
           'Louder = vibrate more often · Higher = vibrate farther',
           'Both come from pushing more air per cycle',
         ],
+        why: { 1: 'That swaps them. Module 4 changed the size of the swing; Module 5 changed how often it repeats.', 2: 'Pushing more air is only half the story. Modules 4 and 5 changed two different things.' },
         correctIdx: 0,
         reveal:
-          'SIZE of the vibration mostly sets loudness (Module 4); RATE of the vibration is pitch (Module 5). Two independent knobs — you proved it on the stage when one lane moved without the other.',
+          'SIZE of the vibration mostly sets loudness (Module 4); RATE of the vibration is pitch (Module 5). Two independent knobs — you proved it on the stage when one slider moved without the other.',
         wrongHint: 'Modules 4 and 5 were a deliberate contrast pair: AMP changed one thing, FREQ the other. Which was which?',
       },
       {
         question: 'Course check 2 — a studio waveform slides by on screen. Reading it left to right, you are moving through…',
         options: ['Space — meters across the room', 'Time — earlier to later', 'Frequency — low notes to high'],
+        why: { 0: 'Space was the ROOM picture in Module 7. A recording screen draws what the mic heard, moment by moment.', 2: 'Low to high is a spectrum’s axis (Module 12), not a waveform’s.' },
         correctIdx: 1,
         reveal:
           'The waveform is a diary of pressure AT THE MIC: left is earlier, right is later (Module 7). The room view is the one drawn in meters — and distance = speed × time ties the two rulers together.',
@@ -2100,6 +2124,7 @@ const STEPS: Step[] = [
           'The character (timbre) changes; the pitch stays at 220 Hz',
           'Both rise together',
         ],
+        why: { 0: 'In Module 11, F0 never left 220 Hz while the layers changed.', 2: 'Watch F0 in Module 11: one thing changed and one stayed put.' },
         correctIdx: 1,
         reveal:
           'Harmonics are the RECIPE (Modules 11–12): they set the sound’s character while the repeat rate (220 times a second) keeps the pitch. The analyzer told you the same story in reverse — one tone, many sine ingredients.',
@@ -2374,7 +2399,9 @@ export function FoundationsCourseScreen() {
       {ending ? (
         <LabEndScreen
           labTitle="Foundations of Sound"
-          units={STEPS.map((st, i) => ({ id: String(i), label: st.title }))}
+          labId="af_foundations"
+          units={STEPS.map((st, i) => ({ id: String(i), label: st.title, detail: notOpenedDetail(FOUNDATIONS_SCREEN_GUIDES[st.key as FoundationsStepKey]?.intro?.learning) }))}
+          howItCounts={visitCounts('module')}
           cleared={banked}
           unreadable={progressUnreadable}
           mode="credit"

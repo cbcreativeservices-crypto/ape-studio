@@ -61,6 +61,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { STEREO_END_GUIDE } from './stereoScreenGuides';
+import { useSoundOff } from './rack/silentPath';
 import type { ScreenGuide } from '../../features/lab/screenGuide';
 import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
@@ -72,6 +73,8 @@ import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 
 const GEN_LEVEL_DB = -20;
+/** A bezel value the current settings ignore (ignoredBy) — EQ Lab module 6's gray. */
+const IGNORED_TINT = '#7a7f8a';
 const ACTIVITY_MS = 500;
 // 20 Hz (owner 2026-09-11, gear design pass). Was 100 ms / 10 Hz, which is
 // thin for a meter whose whole purpose is showing HOW FAST a processor grabs.
@@ -107,6 +110,35 @@ function requireFxAnim(): FxAnimModule | null {
  *  Plain words (art grading 2026-10-16: "EXACT JS MIRROR OF THE DSP MATH"
  *  was programmer jargon on a learner's screen). */
 const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';
+
+/**
+ * The line under a dynamics lab's GAIN REDUCTION meter (lab fix round
+ * 2026-11-14, report §7 + pattern 10). One GR truth: it says which number is
+ * measured (the GR readout and this meter, only while ▶ plays) and which is
+ * drawn (the compressor drawing's GR PEAK, worked out from the settings). It
+ * never tells a learner to "update the app" — the developer line it replaced.
+ */
+function grMeterCaption(running: boolean, fxReady: boolean, kind: 'comp' | 'gate' | 'limiter', soundOff = false): string {
+  if (running) return 'Measured from the live audio — watch how fast it grabs and how it lets go.';
+  // Sound off (phase 2, S3): on a steady tone the GR readout shows the MODEL
+  // value the settings are designed to give, so say so.
+  if (soundOff && fxReady) {
+    return 'Sound is off, so nothing is measured. On a steady tone the GR readout shows MODEL: the reduction your settings are designed to give. With sound on, ▶ measures the real one here.';
+  }
+  const drawn = kind === 'comp' ? ' On CLICK, the GR PEAK in the drawing is worked out from your settings, so it shows even while stopped.' : '';
+  if (fxReady) {
+    return `Tap ▶ to measure the real reduction: this meter and the GR readout on the display then follow the live audio. Stopped, GR reads — dB.${drawn}`;
+  }
+  return Platform.OS === 'web'
+    ? `On the web the effect audio can’t play, so nothing is measured here and GR reads — dB. In the phone app, ▶ plays the source and this meter shows the real reduction.${drawn}`
+    : `The effect audio can’t play on this device, so nothing is measured here and GR reads — dB. The drawing and the lessons still work.${drawn}`;
+}
+
+/** "STEREO IMAGING LAB" → "Stereo Imaging Lab": the end layer names the lab
+ *  as the learner reads it (LabCheckEnd `labTitle`). */
+function labTitleWords(title: string): string {
+  return title.toLowerCase().replace(/(^|\s)([a-z])/g, (_m, sp: string, c: string) => sp + c.toUpperCase());
+}
 
 /** The SOURCE_LESSON control key for a generator source, from its mode. */
 function sourceKeyForGen(gen: GenParams): string {
@@ -208,6 +240,10 @@ export type FxLabConfig = {
   guide?: (mode: LabMode) => ScreenGuide | undefined;
   /** false = a concept lab: the ⓘ takes the accuracy chip's spot (chip rule, D37). */
   accuracy?: boolean;
+  /** The silent learner's line (lab fix round 1, 2026-11-14, row 3; rack
+   *  `RackStage.soundOffLine`): shown at the top of the well while sound is
+   *  off. Only where the picture really shows what the ear would hear. */
+  soundOffLine?: boolean | string;
   /** fx::Id of this lab's node. */
   fxId: number;
   title: string;
@@ -229,7 +265,7 @@ export type FxLabConfig = {
   fixed?: { paramId: number; value: number }[];
   /** Bezel legend cells (short ALL-CAPS keys, ≤4 — keep 3 where the LIVE GR
    *  cell auto-appends via `pollGr`; the SOURCE reads on its dock key). */
-  bezel: { k: string; paramId: number }[];
+  bezel: { k: string; paramId: number; /** First-visit plain words (S3 `BezelItem.caption`, ≤ 14 chars). */ caption?: string }[];
   /** 2–3 INTERACTING params folded into ONE group tray so the dock stays ≤5
    *  keys. Grouped params drop their individual dock buttons. */
   dockGroups?: {
@@ -250,12 +286,24 @@ export type FxLabConfig = {
   anim?: (values: Record<number, number>, src?: FxSourceSpec) => FxAnimModel;
   /** Poll the live GR readout while running (which field to show). */
   pollGr?: 'comp' | 'gate' | 'limiter';
+  /** The GR the settings are DESIGNED to give on a steady source (the transfer
+   *  curve's own number), shown on the GR cell marked MODEL while sound is off
+   *  (phase 2, S3 `BezelItem.silent`). undefined = no honest model (a click or
+   *  noise source): the cell keeps "— dB". */
+  grModel?: (values: Record<number, number>, src: FxSourceSpec) => number | undefined;
   /** Optional honest note under the audio section. */
   note?: string;
   /** Retrieval checks rendered after THE AUDIO PATH (learning pass
    *  2026-08-31: the FX fleet was the app's sole zero-retrieval holdout —
    *  35 other lab files import CheckQuestion). Auto-shuffled. */
   checks?: CheckSpec[];
+  /** A control the current settings IGNORE (Equalizer: GAIN on a pass filter,
+   *  Q on the high-pass): return the plain reason, and the bezel cell reads
+   *  "—" in gray while the dock key shows LOCKED, dimmed, and prints the
+   *  reason on a tap (rackTypes `locked`) — EQ Lab module 6's grey-out, copied
+   *  (lab fix round 2026-11-14, quick win 16). The value is kept, so it is
+   *  back as it was when the shape uses it again. */
+  ignoredBy?: (paramId: number, values: Record<number, number>) => string | undefined;
   /** While a `monoCompare` source is selected, text that only holds for the
    *  stereo sources is left out (owner 2026-10-24, Stereo lab): the badge, the
    *  caption in the states `caption` returns true for, and the wrong-answer
@@ -403,6 +451,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   // Seeded with a 390-wide phone's 'S' glass; the glass reports its own.
   const [glassShape, setGlassShape] = useState(368 / 158);
   const focused = useIsFocused();
+  /** The app's audio output is off (S3 silent path). */
+  const soundOff = useSoundOff();
 
   const [gate] = useState<EngineState>(() => {
     if (!ApeDsp.isAvailable()) return 'absent';
@@ -575,16 +625,32 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const compactValue = (p: FxParamSpec) =>
     p.fader ? (p.fader.formatShort ?? p.fader.format)(values[p.paramId]) : shortChoice(choiceLabel(p, values[p.paramId]));
 
+  /** The designed GR on a steady source (grModel), or undefined. */
+  const grModelDb = config.pollGr ? config.grModel?.(values, sources[sourceIdx]) : undefined;
+  /** Why the current settings ignore this param, or undefined (ignoredBy). */
+  const ignored = (paramId: number) => config.ignoredBy?.(paramId, values);
   const bezel: BezelItem[] = [
     ...config.bezel.map((b) => {
       const p = paramById(b.paramId);
-      return { k: b.k, v: compactValue(p), helpKey: p.lessonKey };
+      return ignored(b.paramId)
+        ? { k: b.k, v: '—', tint: IGNORED_TINT, helpKey: p.lessonKey, caption: b.caption }
+        : { k: b.k, v: compactValue(p), helpKey: p.lessonKey, caption: b.caption };
     }),
     // LIVE measured GR (dynamics labs) — fxGrStatus, never simulated.
     ...(config.pollGr
       ? // "— dB" whenever nothing is measured; the well says why (no audio
         // engine in this build, or nothing playing) — "NO ENG" was jargon.
-        [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : '— dB', helpKey: 'gain_reduction' }]
+        [
+          {
+            k: 'GR',
+            v: running ? `${grDb.toFixed(1)} dB` : '— dB',
+            helpKey: 'gain_reduction',
+            // First visit: what the code means (phase 2, S3 bezel captions).
+            caption: 'turned down',
+            // Sound off: the designed GR on a steady tone, marked MODEL.
+            ...(grModelDb != null ? { silent: { v: `${grModelDb.toFixed(1)} dB`, sub: 'MODEL' } } : {}),
+          },
+        ]
       : []),
   ];
 
@@ -638,12 +704,14 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         formatShort: s.formatShort ? () => s.formatShort!(values[p.paramId]) : undefined,
         home: s.home != null ? faderPos(s, s.home) : undefined,
         helpKey: p.lessonKey,
+        locked: ignored(p.paramId),
       });
     } else {
       dockParams.push({
         kind: 'options',
         id: String(p.paramId),
         label: p.short ?? p.label,
+        locked: ignored(p.paramId),
         valueLabel: shortChoice(choiceLabel(p, values[p.paramId])),
         options: p.choices.map((c) => ({
           id: String(c.value),
@@ -692,10 +760,16 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       accuracy={config.accuracy ?? true}
       // The what's-left screen under the CHECK (every lab ends on one; D41):
       // Stereo Imaging for now; the other effect labs are a separate change.
+      // FINISH · SEE WHAT'S LEFT after the check, in EVERY effect lab (phase 2,
+      // S2's FINISH API; quick win 4): onOpen stops the effect's sound when
+      // the end layer opens. Stereo keeps its own end guide.
       checkEnd={
-        config.labId === 'stereo' ? (
-          <LabCheckEnd labId="stereo" labTitle="Stereo Imaging Lab" onOpen={stop} endGuide={STEREO_END_GUIDE} />
-        ) : undefined
+        <LabCheckEnd
+          labId={config.labId}
+          labTitle={labTitleWords(config.title)}
+          onOpen={stop}
+          endGuide={config.labId === 'stereo' ? STEREO_END_GUIDE : undefined}
+        />
       }
       headerAction={
         <HeaderPlayButton
@@ -717,6 +791,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           badge: animOnStage ? ANIM_BADGE : heroBadgeText,
           onGuide: () => openLesson('display'),
           bezel,
+          soundOffLine: config.soundOffLine,
           // FULL SCREEN (owner 2026-09-30, D35): the rack's button + viewer,
           // with the dock docked, the bezel (incl. the live GR cell) across
           // the top and the tray rising above. FxStage draws the same picture
@@ -763,25 +838,27 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           <Text style={styles.sectionHead}>
             {config.pollGr === 'gate' ? 'GATE ATTENUATION' : 'GAIN REDUCTION'}
           </Text>
-          <GrMeter
-            grDb={running ? grDb : 0}
-            // The gate's range is the outlier — it closes far harder than a
-            // compressor reduces, and a 24 dB scale would peg instantly.
-            maxDb={config.pollGr === 'gate' ? 70 : 30}
-            // The meter names the PROCESSOR, not the quantity — the section
-            // header above already says what is being measured, and printing
-            // "GAIN REDUCTION" twice in two lines was the first draft's flaw.
-            // It also matches the Signal Chain lab, where three of these sit
-            // side by side and the name is the only thing telling them apart.
-            label={config.pollGr === 'gate' ? 'GATE' : config.pollGr === 'limiter' ? 'LIMITER' : 'COMPRESSOR'}
-          />
-          <Text style={styles.caption}>
-            {running
-              ? 'Measured from the live audio — watch how fast it grabs and how it lets go.'
-              : fxReady
-                ? 'Play the source to see the reduction. The meter reads zero while nothing is sounding.'
-                : 'This version of the app can’t measure the reduction yet; update the app to see it.'}
-          </Text>
+          {/* ONE GR TRUTH (lab fix round 2026-11-14, report §7: "GR PEAK 5.5
+              dB" / "GR — dB" / "0.0 dB" on one screen). The meter is drawn
+              only while it measures something: stopped, it printed "0.0 dB"
+              beside the bezel's "— dB" and the drawing's GR PEAK, three
+              numbers for one quantity. Stopped, a sentence says which number
+              is which instead. */}
+          {running ? (
+            <GrMeter
+              grDb={grDb}
+              // The gate's range is the outlier — it closes far harder than a
+              // compressor reduces, and a 24 dB scale would peg instantly.
+              maxDb={config.pollGr === 'gate' ? 70 : 30}
+              // The meter names the PROCESSOR, not the quantity — the section
+              // header above already says what is being measured, and printing
+              // "GAIN REDUCTION" twice in two lines was the first draft's flaw.
+              // It also matches the Signal Chain lab, where three of these sit
+              // side by side and the name is the only thing telling them apart.
+              label={config.pollGr === 'gate' ? 'GATE' : config.pollGr === 'limiter' ? 'LIMITER' : 'COMPRESSOR'}
+            />
+          ) : null}
+          <Text style={styles.caption}>{grMeterCaption(running, fxReady, config.pollGr, soundOff)}</Text>
         </View>
       ) : null}
 
@@ -824,7 +901,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
                 ? 'On the web, the effect audio can’t play — it plays in the phone app. The visuals and lessons above work fully.'
                 : __DEV__
                   ? 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'
-                  : 'This version of the app cannot play the effect audio yet. The visuals and lessons above work fully; update the app to hear it.'}
+                  : // Plain words, no "update the app" (lab fix round 2026-11-14, pattern 10).
+                    'The effect audio can’t play on this device. The visuals and lessons above work fully.'}
             </Text>
           )
         ) : null}

@@ -203,7 +203,8 @@ describe('1. every screen a learner reaches has a complete guide', () => {
                   if (!KNOWN_LOSS.has(k)) lost.add(`${k} (${m.id} ${pg.page})`);
                 };
                 assert.match(ctl, /In the strip under the title/, `${m.id} ${pg.page} ${step?.label ?? '—'}`);
-                if (!/The other ⓘ, beside the one you tapped/.test(ctl)) miss('the other ⓘ');
+                // F9 item 5 (lab fix round 2026-11-14, owner-approved): the chip reads ABOUT now.
+                if (!/ABOUT, beside the ⓘ you tapped/.test(ctl)) miss('the other ⓘ');
                 if (step?.layout === 'rack') {
                   rack++;
                   if (!/⤢ FULL SCREEN shows the drawing/.test(ctl)) miss('FULL SCREEN');
@@ -428,7 +429,10 @@ describe('5. wiring', () => {
     assert.match(S, /: mikingScreenGuide\(\{/);
     assert.match(S, /step: stepInfo,/);
     assert.match(S, /enginePage: enginePageOf\(page, Object\.keys\(art\.pages \?\? \{\}\)\),/);
-    assert.match(S, /right=\{<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>\}\s*guide=\{guide\}/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 item 5, D37): the header chip is the ABOUT
+    // variant (the lesson's own starting-points note only). Owner, 2026-11-14: "Begin fixing all
+    // bugs found and do obvious (my decision is not required) fixes as you suggestted in the report."
+    assert.match(S, /right=\{<AccuracyNote variant="about" label="ABOUT THESE STARTING POINTS" detail=\{aboutNote\(lesson\.accuracyDetail\)\} \/>\}\s*guide=\{guide\}/);
     assert.match(S, /const host: StepHost = \{ step: stepIdx, setStep, onSteps, onStepInfo,/);
   });
   it('a ScreenGuideHost wraps the lesson root; a module or step change closes an open guide; regions only on a rack step', () => {
@@ -446,7 +450,9 @@ describe('5. wiring', () => {
 
 describe('6. the accuracy chip', () => {
   it('KEPT on the lesson screen: real-world distances, measured as its starting-points note says', () => {
-    assert.match(code(LESSON_SCREEN), /<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 item 5, D37): ABOUT variant, the note only.
+    // Owner, 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.match(code(LESSON_SCREEN), /<AccuracyNote variant="about" label="ABOUT THESE STARTING POINTS" detail=\{aboutNote\(lesson\.accuracyDetail\)\} \/>/);
     // Every lesson carries the note (the owner's ONE "about these starting
     // points" note, LESSON_JOURNEY §12).
     for (const m of Reg.LESSONS) {
@@ -557,8 +563,10 @@ describe('7. the 2026-10-31 review: each accepted finding, re-proved from the co
     assert.match(textOf(guideAt('M01', 'meet', null)), /Tap the middle readout \(MODULE, plus STEP when there are several\) for the contents/);
   });
   it('the other ⓘ: named only where the lesson header still carries the starting-points chip (never on the hub)', () => {
-    assert.match(code(LESSON_SCREEN), /right=\{<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>\}/);
-    assert.match(G.MIKING_END_GUIDE.control.join('\n'), /The other ⓘ/);
-    assert.doesNotMatch(textOf(G.mikingHubGuide() as unknown as Guide), /The other ⓘ/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 item 5): the chip reads ABOUT. Owner,
+    // 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.match(code(LESSON_SCREEN), /right=\{<AccuracyNote variant="about"/);
+    assert.match(G.MIKING_END_GUIDE.control.join('\n'), /ABOUT, beside the ⓘ you tapped/);
+    assert.doesNotMatch(textOf(G.mikingHubGuide() as unknown as Guide), /ABOUT, beside the ⓘ/);
   });
 });

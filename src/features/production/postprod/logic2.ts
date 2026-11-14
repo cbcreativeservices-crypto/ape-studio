@@ -11,7 +11,7 @@ import type { RuleContext } from '../rules';
 import { registerRuleLogic, cell, cellNum, many, num, rows, str } from '../rules';
 import type { ActivityContext } from '../activities';
 import { registerActivityChecks } from '../activities';
-import { blank, mentions, cellMany, RATE, DEPTH } from './logic';
+import { blank, mentions, cellMany, looksLikeGroup, RATE, DEPTH } from './logic';
 
 // ── shared ───────────────────────────────────────────────────────────────────
 
@@ -273,6 +273,11 @@ registerRuleLogic({
     return measured > ceiling;
   },
 
+  'finish-true-peak-over-zero-no-ceiling': (ctx) => {
+    const measured = num(ctx.get('finish', 'measured_true_peak'));
+    return measured !== null && measured > 0 && num(ctx.get('brief', 'true_peak_max')) === null;
+  },
+
   'finish-measured-wrong-thing': (ctx) =>
     ['session', 'estimate'].includes(str(ctx.get('finish', 'measurement_source'))),
 
@@ -496,7 +501,7 @@ registerActivityChecks({
       label: 'One named person is recorded as the approval authority',
       met: (c) => {
         const who = str(c.get('brief', 'approval_authority'));
-        return who !== '' && !/\b(team|label|committee|board|client|department)\b/i.test(who);
+        return who !== '' && !looksLikeGroup(who);
       },
     },
     {

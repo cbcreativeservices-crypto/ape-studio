@@ -56,6 +56,14 @@ function regionLabelFor(node: ChainNode): string {
   }
 }
 
+/** The one-word form when the glass has no room for two lines: the word
+ *  that carries the meaning — QUIET (SOURCE), (TOO) LOW. The first word was
+ *  taken blindly and TOO LOW read "TOO" (beginner audit 2026-11-14). */
+export function shortRegionLabel(label: string): string {
+  if (label === 'TOO LOW') return 'LOW';
+  return label.split(' ')[0];
+}
+
 /** Source descriptor under the source column (owner wording). */
 export function sourceDesc(node: ChainNode): string {
   return node.region === 'low'
@@ -149,7 +157,7 @@ export function StageMeterV({
         // one line, into the PREAMP column's label on a 7-column X-Ray chain
         // at 360 wide (column pitch ~45 pt).
         <Text style={[s.vRegion, s.vRegionUnder, { color: node.region === 'low' ? '#6f9bff' : col }]}>
-          {shortLabel ? regionLabelFor(node).split(' ')[0] : regionLabelFor(node)}
+          {shortLabel ? shortRegionLabel(regionLabelFor(node)) : regionLabelFor(node)}
         </Text>
       )}
     </View>
@@ -186,6 +194,11 @@ export type StageColSpec = {
   onPress?: () => void;
   /** Scan-blue highlight (the inspected / X-Rayed column). */
   active?: boolean;
+  /** A hidden column already inspected: its verdict word (OK, LOW, HOT,
+   *  CLIP, DIST) replaces INSPECT under the "?", so the learner keeps a map
+   *  of what they checked (beginner audit 2026-11-14) without the meter
+   *  opening (one device at a time, owner 2026-08-10). */
+  checked?: { v: string; tint: string };
 };
 
 /** The drawn gear above each column (pt, unscaled) — art fix 2026-10-16:
@@ -291,7 +304,11 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
                   <View style={[s.slotBox, { height: meterH }]}>
                     <Text style={s.slotQ}>?</Text>
                   </View>
-                  <Text style={s.slotUnder}>INSPECT</Text>
+                  {c.checked ? (
+                    <Text style={[s.slotUnder, { color: c.checked.tint }]}>{c.checked.v}</Text>
+                  ) : (
+                    <Text style={s.slotUnder}>INSPECT</Text>
+                  )}
                 </View>
               )}
               {c.readout ? (

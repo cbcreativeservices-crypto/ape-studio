@@ -79,7 +79,8 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 2 · How a Voice Is Made ───────────────────────────────────────────────
   p2: {
     intro: {
-      learning: 'How a voice is built from four jobs in a fixed order: breath powers it, the folds buzz, the cavities shape the buzz, and the mouth cuts it into words.',
+      // The page draws FIVE stages (speechPagesA.tsx:149); "four jobs" clashed (novice audit 2026-11-14).
+      learning: 'How a voice is built in five stages, always in order: breath powers it, the folds buzz, the cavities shape it, the mouth cuts words, and speech comes out.',
       start: 'Tap ▶ PLAY THE SEQUENCE and watch which parts light at each stage. Then tap RESONANCE on the strip and read the card.',
     },
     seeing: [
@@ -370,14 +371,14 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p11: {
     intro: {
       learning: 'A review of seven ideas from this lab: voicing, formants, pop filters, the soft palate, sibilance, voice ranges and why a voice turns boomy up close.',
-      start: 'Read each question and tap your answer. If it’s wrong, read the explanation before you pick again. Five right completes the page.',
+      start: 'Read each question and tap your answer. If it’s wrong, read why that one is not it before you pick again. Five right completes the page.',
     },
     seeing: [
       'Seven questions, one per idea, each in an UNDERSTANDING CHECK card. The answers come in a fresh order each visit, so you can’t go by position.',
       'A line on top counts how many are correct this visit and says whether the page is complete.',
     ],
     control: [
-      'Tap an answer. A wrong pick explains itself: read it, then try again.',
+      'Tap an answer. A wrong pick says why that one is not it: read it, then try again. From the second miss on, the explanation shows too.',
       'Five right completes the page; NEXT › moves on to the lab’s final check at any time.',
       'If you leave, the questions start fresh; a page already complete stays complete.',
     ],
@@ -404,7 +405,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'CHECK YOUR UNDERSTANDING for the Speech & Voice Lab: four questions on where the hiss of an S comes from, a talker who keeps turning toward their notes, mouth clicks, and breath noise.',
       'Above them you see how many are still to get right; a ✓ replaces a question’s number once it’s right.',
-      'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
+      'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
       'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
@@ -412,7 +413,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'If you leave this page before all four are right, the questions start fresh.',
     ],
     changes: [
-      'Each explanation gives the reason, right or wrong, so every answer teaches something.',
+      'A wrong pick names what to look at again; a second wrong pick also shows the explanation, so every answer teaches something.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -443,7 +444,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const SPEECH_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The lab’s path at a glance: how speech is made from the lungs to the lips, and how voicing, formants, consonants, distance and voice type shape what a mic hears.',
-    start: 'Tap the first page still listed to open it. If only Check your understanding is left, open it and get all four questions right.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'The big title reads WHAT’S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what is left and whether your work is saved on this device.',
@@ -467,7 +468,7 @@ export const SPEECH_END_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'If any row is still listed, open the first one straight from here and try its keys or answers; on any page before Check Yourself, NEXT › then counts it.',
-    'If the CHECK row is still listed, open it: a wrong answer explains itself, so read it and pick again.',
+    'If the CHECK row is still listed, open it: a wrong answer says what to look at again, so read it and pick again.',
     'Open the Speech Problem Simulator, from its row or from REVIEW ▾, and tap each problem key: name the earlier page each problem comes from.',
   ],
 };

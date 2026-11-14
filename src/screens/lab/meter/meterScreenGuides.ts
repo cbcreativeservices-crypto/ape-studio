@@ -66,7 +66,7 @@ export const METER_HOME_GUIDE: ScreenGuide = {
 export const METER_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab’s big idea: each meter answers one question, no single meter tells the whole story, and a reading depends on what it measures and how fast.',
-    start: 'Tap any module still listed under WHAT’S LEFT to open it. Or tap REVIEW ▾ on the ✓ line, reopen a module you’ve done, and read its display before you touch a control.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'This is your list for the lab. WHAT’S LEFT shows the modules you haven’t opened yet, and each one is a link.',
@@ -105,7 +105,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     seeing: [
       'You’re seeing a sound as a DAW (recording software) draws it: time left to right, amplitude up and down from the zero line. Judge height on the 0, −6, −12, −24 scale.',
       'Color warns you: blue near zero, red near full scale, all red while it clips.',
-      'On the frame: PEAK, RMS, CREST (their gap), DC (how far the center is off zero), CLIP (CLEAN, or how far OVER). PK, RMS and CF in the picture match until it clips.',
+      'On the frame: PEAK, RMS, CREST (their gap), DC (how far the center is off zero), CLIP (CLEAN, or how far OVER). The line in the picture shows the same numbers.',
     ],
     control: [
       'GAIN (−12 to +18 dB) turns the signal up or down before it’s drawn, so drag it and watch the wave grow. You start at +0.0 dB.',

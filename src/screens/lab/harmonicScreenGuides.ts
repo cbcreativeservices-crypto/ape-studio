@@ -44,7 +44,8 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'Why timbre is a harmonic recipe: which whole-number multiples of the fundamental are present and how strong, and why the ear follows levels far more than phase.',
-      start: 'Tap ▶ on the default SAW. In LAB NOTES tap MUTE EVEN and watch THD and CREST drop. Then pick PRESET → SQUARE and compare the readouts.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Pick PRESET → SQUARE: the even bands go dark and THD falls from 75.2 % to 43.8 %. Then pick SAW again, tap ▶, and in LAB NOTES tap MUTE EVEN to hear the same change.',
     },
     seeing: [
       'Frequency runs up. Each harmonic is a band, brighter and wider when louder. Left labels: harmonic, Hz, note, cents (1: 100 G2 +35¢).',
@@ -153,7 +154,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'They ask where the 3rd harmonic of 100 Hz sits, what raising the level does, what changing only phases does, and which wave is built from odd harmonics at 1/n.',
     ],
     control: [
-      'Tap an answer. If it’s right, you see CORRECT and the reason, and its number turns to ✓. If not, you see NOT QUITE — TRY ANOTHER with the reason; pick again.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'There’s no score, and a wrong answer costs nothing. Use the tabs under the title to go to LEARN or EXPLORE.',
     ],
     changes: [

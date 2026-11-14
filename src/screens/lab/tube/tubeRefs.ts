@@ -76,7 +76,8 @@ const t = (
   stem: string,
 ): TubeRef => ({ id: short.toLowerCase(), num, short, name, alt, family, base, role, stem });
 
-export const TUBE_REFS: TubeRef[] = [
+/** In card-number order (`num` and `stem` name the card images). */
+const TUBE_REFS_BY_NUM: TubeRef[] = [
   // ── Preamp / small-signal triodes (01–09) ─────────────────────────────────
   t(1, '12AX7', '12AX7 / ECC83', ['ECC83', '7025'], 'preamp', 'Noval (9-pin)', 'Dual high-gain triode — signal preamplification', '01-12AX7'),
   t(2, '12AY7', '12AY7', ['6072'], 'preamp', 'Noval (9-pin)', 'Dual medium-mu triode — low-noise preamp', '02-12AY7'),
@@ -128,6 +129,17 @@ export const TUBE_REFS: TubeRef[] = [
   t(39, '7044', '7044', ['5687 family'], 'preamp', 'Noval (9-pin)', 'Dual triode — high-current / long-life driver', '39-7044'),
   t(40, '7119', '7119 / E182CC', ['E182CC'], 'preamp', 'Noval (9-pin)', 'Dual triode — high-current, low-impedance driver', '40-7119'),
 ];
+
+/** The order the Tube Reference page shows: grouped by family
+ *  (TUBE_FAMILY_META), card-number order inside a group. The card screen swipes
+ *  in this same order, and both print the POSITION (tubeListNum), never the
+ *  card number (beginner audit 2026-11-14: rows read "01-09 then 38-40"). */
+export const TUBE_REFS: TubeRef[] = TUBE_FAMILY_META.flatMap((f) => TUBE_REFS_BY_NUM.filter((r) => r.family === f.key));
+
+/** 1-based position in the Tube Reference list (what the row and card print). */
+export function tubeListNum(r: TubeRef): number {
+  return TUBE_REFS.indexOf(r) + 1;
+}
 
 export function getTubeRef(id: string): TubeRef | undefined {
   return TUBE_REFS.find((r) => r.id === id);

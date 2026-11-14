@@ -33,8 +33,8 @@ export const WAVE_HOME_GUIDE: ScreenGuide = {
   },
   seeing: [
     'This is the Wave Physics menu: experiments on how sound travels, bounces, bends and adds up.',
-    'THE 15 MODULES lists one experiment per row. A ✓ marks each one you’ve opened.',
-    'PUT IT ALL TOGETHER opens the Room Builder, where every effect from the modules happens in one room.',
+    'MODULES 1–15 lists one experiment per row. A ✓ marks each one you’ve opened.',
+    'PUT IT ALL TOGETHER · MODULE 16 opens the Room Builder, where every effect from the modules happens in one room.',
     'GUIDED LESSON at the top explains every control. SEE WHAT’S LEFT at the bottom lists the modules you haven’t opened yet.',
   ],
   control: [
@@ -242,7 +242,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
   interference: {
     intro: {
       learning: 'How two speakers playing the same sound add where their waves arrive in step and cancel where they arrive opposed, so loudness changes from place to place.',
-      start: 'Note vs 1 SPKR at the start, then turn on POL Ø S2 and watch it drop to NULL. Turn it off and drag the listener sideways through the red and blue bands.',
+      start: 'Note vs 1 SPKR at the start, then turn on POL Ø S2 and watch it drop to NULL. Turn it off and drag the listener sideways through the loud (warm) and quiet (cool) bands.',
     },
     seeing: [
       'From above, an 8 m × 6 m open space: two speakers (S1 left, S2 right) and a listener. With no walls, only the two direct sounds meet.',
@@ -382,7 +382,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
   linearray: {
     intro: {
       learning: 'Why a line array’s length sets how low it can control and its splay sets where its coverage lands: the boxes join at low frequencies and beam at high ones.',
-      start: 'With 4 boxes, slide FREQ down until LF CTRL flips to NO. Then open ARRAY, set BOXES to 8 and do it again.',
+      start: 'With 4 boxes, slide FREQ down until LF CTRL flips to NO. Then slide BOXES to 8 and do it again.',
     },
     seeing: [
       'You’re looking at a venue from the side: distance runs left to right (20 m), height up the screen (9 m), and the audience floor along the bottom.',
@@ -391,7 +391,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     ],
     control: [
       'FREQ fader (60 Hz–8 kHz).',
-      'ARRAY key: BOXES (2–8); SPLAY (PER BOX), the angle between neighbors (0°–8°); and HEIGHT (HANG DEPTH), how far down from the top the array hangs (0.40–3.00 m).',
+      'BOXES fader (2–8). SPLAY fader: the angle between neighboring boxes (0°–8° per box). HEIGHT fader: the hang depth, how far down from the top the array hangs (0.40–3.00 m).',
       'LAYERS key: PRESSURE, HEAT, RAYS and ARRIVALS.',
     ],
     changes: [
@@ -420,9 +420,9 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
       start: 'Read OFF BY and SUM at the start, then open ALIGN and tap AUTO-ALIGN. Then drag the listener toward the main speaker and watch REQ and SUM change.',
     },
     seeing: [
-      'You’re looking down on a 16 m × 10 m open space: a subwoofer at upper left, a main speaker to its right, and a listener. Both play the crossover frequency.',
-      'HEAT: red where the two add, blue streaks where they cancel. PRESSURE: rings and dots show when each sound lands.',
-      'Readouts: REQ (the delay the main needs for this seat), SET (your delay), OFF BY (the gap), SUM (0.0 dB = perfectly in step).',
+      'You’re looking down on a 16 m × 10 m open space: SUB at upper left, MAIN to its right, and a listener (YOU). Both play the crossover frequency.',
+      'HEAT: red where the two add, blue where they cancel. PRESSURE: rings show when each sound lands.',
+      'Readouts: REQ (delay the main needs here), SET (yours), OFF BY (the gap), SUM (0.0 dB = in step) with its word: IN STEP, OUT OF STEP, LUCKY FLIP or 1 CYCLE OFF.',
     ],
     control: [
       'DELAY fader (0–20 ms): holds back the main speaker.',
@@ -600,7 +600,7 @@ export const WAVE_SCREEN_GUIDES: Record<WaveModuleId, ScreenGuide> = {
     control: [
       'Drag any source or the listener; tap a source to select it.',
       'FREQ fader (40 Hz–8 kHz): the frequency the whole picture shows.',
-      'ROOM key: ROOM WIDTH and ROOM DEPTH (3–30 m). WALLS key: pick TOP, RIGHT, BOTTOM or LEFT, then its material.',
+      'ROOM key: a WIDTH and a DEPTH slider, side by side (3–30 m). WALLS key: pick TOP, RIGHT, BOTTOM or LEFT, then its material.',
       'SRC key: add a POINT, SPEAKER or SUB (up to four). For the selected one: LEVEL, DELAY, POLARITY Ø INVERT, plus AIM and coverage for a speaker, or remove it.',
       'LAYERS key: PRESSURE, HEAT, RAYS and ARRIVALS.',
     ],

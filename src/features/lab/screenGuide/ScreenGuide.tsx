@@ -54,12 +54,21 @@
  *   Work under way inside the host (a Rack Unit tray open, a drag on its lane;
  *   introHold.ts, 2026-11-13) holds an owed card and drops it for this visit,
  *   and closes one already up: it never sits over an open tray.
+ * • ARRIVAL ORDER (2026-11-14, lab fix round S1; audit row 1 and quick wins
+ *   1, 5): the card CARRIES the lab's glossary term on top (one card, not a
+ *   term popup and then this one); it presents WITH the page (no quiet
+ *   wait), ignores taps for POPUP_ARM_MS, and while owed or up it is "owed"
+ *   to every other first-open popup (ProNote, the guest reminder, the arrival
+ *   Sound Safety ask, the hint), which wait for it. The hint never comes on a
+ *   visit another popup came on, lets taps through to NEXT, and retires on
+ *   any use of the guide or after SCREEN_GUIDE_HINT_LIFE_MS on screen.
  */
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -73,7 +82,18 @@ import { Modal, rootModalHoldMs, useModalHostOpen } from '../../../components/Di
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
 import { areOverlaysSuppressed, useOverlaysSuppressed } from '../../dev/popupSuppressStore';
-import { useLabTermIntroOwed } from '../../intro/screenIntros';
+import {
+  finishCarriedLabTerm,
+  labTermSignalId,
+  popupArming,
+  setIntroCardOwed,
+  setLabTermCarrier,
+  setScreenWork,
+  useLabTermIntroOwed,
+  useLabTermOnlyOwed,
+  useOfferedLabTerm,
+  type CarriedLabTerm,
+} from '../../intro/screenIntros';
 import { devBypass } from '../../../config/devMode';
 import { markScreenGuideHintSeen, useScreenGuideHintSeen } from './screenGuideHintStore';
 import {
@@ -103,9 +123,21 @@ import {
  *  presents first instead of popping over a freshly drawn callout. */
 export const SCREEN_GUIDE_HINT_SETTLE_MS = 1500;
 
-/** The same quiet wait before the INTRO CARD presents (past the guest
- *  reminder's fallback and the lab term popup's hand-off). */
-export const SCREEN_INTRO_SETTLE_MS = 1500;
+/**
+ * The INTRO CARD presents WITH the page: no quiet wait (2026-11-14). It used
+ * to wait 1.5 s, so it arrived after the page was usable and took the first
+ * tap (audit G6b: "arrives ~1 s after the page in every LEARN/CHECK"; Sound
+ * Systems' LEARN NEXT; Connector Selection's first tap). The wait existed to
+ * let the guest reminder and the lab term popup go first; both now wait for
+ * the card instead (screenIntros.ts, "ONE AT A TIME"), and the card is drawn
+ * in the screen's own tree, so it never needs a closing Modal's fade
+ * (rootModalHoldMs) either. A tap in its first POPUP_ARM_MS is ignored.
+ */
+export const SCREEN_INTRO_SETTLE_MS = 0;
+
+/** The ⓘ hint retires once it has been on screen this long: it never stands
+ *  on the header for a whole visit (and it lets taps through meanwhile). */
+export const SCREEN_GUIDE_HINT_LIFE_MS = 8000;
 
 const LAST = SCREEN_GUIDE_SECTIONS.length - 1;
 const DIM = 'rgba(0,0,0,0.62)';
@@ -180,7 +212,8 @@ function GuideCard({
             hitSlop={8}
             style={[styles.tryArrow, e === 0 && styles.navOff]}
             accessibilityRole="button"
-            accessibilityLabel="Previous experiment"
+            // Neutral words (2026-11-14): most screens are not experiments.
+            accessibilityLabel="Previous thing to try"
           >
             <Text style={styles.tryArrowText} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
           </Pressable>
@@ -194,7 +227,7 @@ function GuideCard({
             hitSlop={8}
             style={[styles.tryArrow, e === items.length - 1 && styles.navOff]}
             accessibilityRole="button"
-            accessibilityLabel="Next experiment"
+            accessibilityLabel="Next thing to try"
           >
             <Text style={styles.tryArrowText} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>›</Text>
           </Pressable>
@@ -259,12 +292,16 @@ function IntroCard({
   onClose,
   onExplain,
   maxHeight,
+  term,
 }: {
   title: string;
   intro: ScreenIntro;
   onClose: () => void;
   onExplain: () => void;
   maxHeight?: number;
+  /** CARRY (2026-11-14): the lab's glossary term, drawn on top so the lab
+   *  opens with ONE card instead of a term popup and then this one. */
+  term?: CarriedLabTerm;
 }) {
   return (
     <View style={[styles.card, styles.introCard, maxHeight ? { maxHeight } : null]}>
@@ -277,6 +314,16 @@ function IntroCard({
         </Pressable>
       </View>
       <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.introBody} showsVerticalScrollIndicator={false}>
+        {term ? (
+          // The glossary's own words, exactly as the term popup showed them.
+          <View style={styles.introPart}>
+            <Text style={styles.termTitle} accessibilityRole="header">
+              {term.title}
+            </Text>
+            <View style={styles.termRule} />
+            <Text style={styles.termBody}>{term.plainEnglish}</Text>
+          </View>
+        ) : null}
         <View style={styles.introPart}>
           <Text style={styles.introLabel}>{SCREEN_INTRO_TEXT.learning}</Text>
           <Text style={styles.introLearning}>{intro.learning}</Text>
@@ -303,13 +350,55 @@ function IntroCard({
   );
 }
 
-/** Hold the one-time ⓘ hint back while `on` (a card owed or on screen). */
-function useIntroBusy(on: boolean): void {
+/** Hold the one-time ⓘ hint back while `on` (a card owed or on screen) — and
+ *  (2026-11-14) every other first-open popup too, while `card` (default
+ *  `on`): published as a first-open card owed (setIntroCardOwed), which
+ *  useLabTermIntroOwed() reports, so ProNote, the guest reminder and the lab's
+ *  arrival audio ask wait for it (one popup at a time). A layout effect, so
+ *  nothing that waits on it gets a frame first. */
+function useIntroBusy(on: boolean, card: boolean = on): void {
   const [me] = useState(screenIntroBusyId);
+  const [cardId] = useState(labTermSignalId);
   useEffect(() => {
     setScreenIntroCardBusy(me, on);
     return () => setScreenIntroCardBusy(me, false);
   }, [me, on]);
+  useLayoutEffect(() => {
+    setIntroCardOwed(cardId, card);
+    return () => setIntroCardOwed(cardId, false);
+  }, [cardId, card]);
+}
+
+/** While an in-screen card or the stepped guide is up, a popup from OUTSIDE
+ *  the host (the lab term popup, the Sound Safety arrival ask) must not open
+ *  on top of it: it counts as the screen being busy (setScreenWork), so an
+ *  owed term popup is dropped for this visit rather than stacked (2026-11-14,
+ *  one popup at a time). Neither is a DimModal, so useModalHostOpen cannot
+ *  see them. */
+function useCoversScreen(): void {
+  const [id] = useState(labTermSignalId);
+  useEffect(() => {
+    setScreenWork(id, true);
+    return () => setScreenWork(id, false);
+  }, [id]);
+}
+
+/** Taps in a popup's first moment are ignored (POPUP_ARM_MS, 2026-11-14):
+ *  `guard(fn)` wraps a handler so a tap aimed at the page a beat before the
+ *  card arrived never closes it unread or presses one of its buttons. */
+function useArmGuard(): <A extends unknown[]>(fn: (...a: A) => void) => (...a: A) => void {
+  const shownAt = useRef<number | null>(null);
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, []);
+  return useCallback(
+    <A extends unknown[]>(fn: (...a: A) => void) =>
+      (...a: A) => {
+        if (popupArming(shownAt.current, Date.now())) return;
+        fn(...a);
+      },
+    [],
+  );
 }
 
 type IntroOffer = { owner: number; id: string; title: string; guide: ScreenGuide; intro: ScreenIntro };
@@ -328,33 +417,62 @@ function IntroCardController({
   hold,
   inModal,
   onPresent,
+  carry = false,
 }: {
   offer: IntroOffer;
   hold: boolean;
   /** The host is inside a native Modal (LabCheckEnd's end layer): that Modal
    *  is the open DimModal, so it does not count as "another popup". */
   inModal: boolean;
-  onPresent: () => void;
+  /** The card is presented with the lab term carried inside it (passed the
+   *  term offered at that moment, if any). */
+  onPresent: (term: CarriedLabTerm | null) => void;
+  /** CARRY (2026-11-14): this card may carry the lab's term (a host's card;
+   *  never the fallback popup or a card inside the end layer). */
+  carry?: boolean;
 }) {
   const bypass = devBypass('alwaysShowIntros');
   const stored = useScreenIntroSeen(offer.id);
   const seen = bypass ? false : stored;
   const focused = useIsFocused();
   const suppressed = useOverlaysSuppressed();
-  const labTermFirst = useLabTermIntroOwed();
+  const termOwed = useLabTermOnlyOwed();
+  const offered = useOfferedLabTerm();
   const modalUp = useModalHostOpen();
   const owed = seen === 'loading' || seen === false;
-  useIntroBusy(owed && focused);
+  // The hint waits while owed; every other first-open popup waits too, but
+  // not on a card that cannot show (Low-Light: it stays owed, unseen).
+  useIntroBusy(owed && focused, owed && focused && !suppressed);
+  // CARRY: register as a carrier while this card is due ('ready') or its
+  // seen flag is still being read ('pending'), so the term popup draws
+  // nothing of its own and rides in here. Layout effect: before any frame.
+  const [carrierId] = useState(labTermSignalId);
+  const carrierState: 'none' | 'pending' | 'ready' =
+    !carry || !focused || suppressed ? 'none' : seen === 'loading' ? 'pending' : seen === false ? 'ready' : 'none';
+  useLayoutEffect(() => {
+    setLabTermCarrier(carrierId, carrierState);
+  }, [carrierId, carrierState]);
+  // Unmount only ([] deps — `carrierId` never changes; the G6 ratchet rule).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => () => setLabTermCarrier(carrierId, 'none'), []);
+  const carrying = carry && offered != null;
+  // The term popup goes first only when this card is NOT carrying it.
+  const labTermFirst = termOwed && !carrying;
   const clear = seen === false && focused && !suppressed && !labTermFirst && !hold && (inModal || !modalUp);
   const presentRef = useRef(onPresent);
   presentRef.current = onPresent;
+  const offeredRef = useRef(offered);
+  offeredRef.current = carry ? offered : null;
   useEffect(() => {
     if (!clear) return;
+    // With the page, or the moment what it waited for has gone: no quiet
+    // wait (see SCREEN_INTRO_SETTLE_MS) and no closing-fade wait — the card
+    // is in the screen's own tree, never a second Modal.
     const t = setTimeout(() => {
       // Re-checked at the moment it would show: Low-Light may have come on.
       if (areOverlaysSuppressed()) return;
-      presentRef.current();
-    }, SCREEN_INTRO_SETTLE_MS + rootModalHoldMs());
+      presentRef.current(offeredRef.current);
+    }, SCREEN_INTRO_SETTLE_MS);
     return () => clearTimeout(t);
   }, [clear]);
   return null;
@@ -407,9 +525,15 @@ export function ScreenGuideHost({
 }) {
   // `claim`: the auto-presented intro's id, written to the seen list when the
   // student closes the card (claimIntro), never before.
-  const [shown, setShown] = useState<{ title: string; guide: ScreenGuide; mode: 'guide' | 'intro'; claim?: string } | null>(
-    null,
-  );
+  // `term`: the lab term carried inside this card (CARRY, 2026-11-14), told
+  // read (finishCarriedLabTerm) when the card closes, the same way as `claim`.
+  const [shown, setShown] = useState<{
+    title: string;
+    guide: ScreenGuide;
+    mode: 'guide' | 'intro';
+    claim?: string;
+    term?: CarriedLabTerm;
+  } | null>(null);
   const [offers, setOffers] = useState<readonly IntroOffer[]>([]);
   // Intros already presented (or made moot by the ⓘ key) on this visit: the
   // controller is not mounted for them again, even under the dev bypass.
@@ -424,12 +548,25 @@ export function ScreenGuideHost({
   shownRef.current = shown != null;
   const claimRef = useRef<string | undefined>(undefined);
   claimRef.current = shown?.claim;
+  const termRef = useRef<CarriedLabTerm | undefined>(undefined);
+  termRef.current = shown?.term;
+  // While this host's card (or the guide it opened) still carries the term,
+  // it stays the carrier, so the term popup never draws its own sheet on top.
+  const [carryId] = useState(labTermSignalId);
+  const hostFocused = useIsFocused();
+  const carryingNow = shown?.term != null && hostFocused;
+  useLayoutEffect(() => {
+    setLabTermCarrier(carryId, carryingNow ? 'ready' : 'none');
+    return () => setLabTermCarrier(carryId, 'none');
+  }, [carryId, carryingNow]);
   useEffect(() => {
     if (!backRef) return;
     backRef.current = () => {
       if (!shownRef.current) return false;
       shownRef.current = false;
       claimIntro(claimRef.current);
+      const t = termRef.current;
+      if (t) finishCarriedLabTerm(t.key);
       setShown(null);
       return true;
     };
@@ -446,6 +583,8 @@ export function ScreenGuideHost({
         claimIntro(o.id);
         handle(o.id);
       }
+      // Using the guide in any way retires the ⓘ hint (quick win 5).
+      void markScreenGuideHintSeen();
       setShown({ title, guide, mode: 'guide' });
     },
     [handle],
@@ -468,6 +607,8 @@ export function ScreenGuideHost({
   }, [resetKey]);
   const close = useCallback(() => {
     claimIntro(claimRef.current);
+    const t = termRef.current;
+    if (t) finishCarriedLabTerm(t.key);
     setShown(null);
   }, []);
   // WORK UNDER WAY (held frame item 2, 2026-11-13; introHold.ts): a view
@@ -484,6 +625,13 @@ export function ScreenGuideHost({
     });
   }, []);
   const working = workers.size > 0;
+  // …and app-wide (2026-11-14), so the lab term popup and the Sound Safety
+  // arrival ask, which live outside this host, never open over it either.
+  const [workId] = useState(labTermSignalId);
+  useEffect(() => {
+    setScreenWork(workId, working);
+    return () => setScreenWork(workId, false);
+  }, [workId, working]);
   // The screen's own hold, and work under way: either keeps an owed card back.
   const hold = screenHold || working;
   const owedId = offer && !handled.has(offer.id) ? offer.id : null;
@@ -503,9 +651,10 @@ export function ScreenGuideHost({
           offer={offer}
           hold={hold || shown != null}
           inModal={backRef != null}
-          onPresent={() => {
+          carry={backRef == null}
+          onPresent={(term) => {
             handle(offer.id);
-            setShown({ title: offer.title, guide: offer.guide, mode: 'intro', claim: offer.id });
+            setShown({ title: offer.title, guide: offer.guide, mode: 'intro', claim: offer.id, term: term ?? undefined });
           }}
         />
       ) : null}
@@ -514,9 +663,14 @@ export function ScreenGuideHost({
           title={shown.title}
           intro={introOf}
           regions={regions}
+          term={shown.term}
           onClose={close}
           onExplain={() => {
             claimIntro(shown.claim);
+            if (shown.term) finishCarriedLabTerm(shown.term.key);
+            void markScreenGuideHintSeen();
+            // The term was read with the card; ‹ INTRO shows the card again
+            // without re-claiming it.
             setShown({ title: shown.title, guide: shown.guide, mode: 'guide' });
           }}
         />
@@ -545,15 +699,22 @@ function ScreenIntroOverlay({
   title,
   intro,
   regions,
-  onClose,
-  onExplain,
+  term,
+  onClose: closeNow,
+  onExplain: explainNow,
 }: {
   title: string;
   intro: ScreenIntro;
   regions: boolean;
+  term?: CarriedLabTerm;
   onClose: () => void;
   onExplain: () => void;
 }) {
+  // Never takes a tap in its first moment (POPUP_ARM_MS); BACK is not a
+  // stray tap and closes at once.
+  const guard = useArmGuard();
+  const onClose = useMemo(() => guard(closeNow), [guard, closeNow]);
+  const onExplain = useMemo(() => guard(explainNow), [guard, explainNow]);
   const insets = useSafeAreaInsets();
   const rootRef = useRef<View>(null);
   const alive = useRef(true);
@@ -564,6 +725,7 @@ function ScreenIntroOverlay({
     [],
   );
   useIntroBusy(true);
+  useCoversScreen();
   const [layout, setLayout] = useState<GuideLayout | null>(null);
   const measure = useCallback(async () => {
     const root = await measureView(rootRef);
@@ -583,9 +745,9 @@ function ScreenIntroOverlay({
     void measure();
   }, [measure]);
   const back = useCallback(() => {
-    onClose();
+    closeNow();
     return true;
-  }, [onClose]);
+  }, [closeNow]);
   useBackWhileFocused(true, back);
 
   const place = layout ? placeIntroCard(layout) : null;
@@ -620,7 +782,7 @@ function ScreenIntroOverlay({
         : null}
       {place ? (
         <View pointerEvents="box-none" style={[styles.introSlot, { top: place.slot.top, height: place.slot.height }]}>
-          <IntroCard title={title} intro={intro} onClose={onClose} onExplain={onExplain} maxHeight={place.slot.height} />
+          <IntroCard title={title} intro={intro} term={term} onClose={onClose} onExplain={onExplain} maxHeight={place.slot.height} />
         </View>
       ) : null}
     </View>
@@ -778,12 +940,21 @@ export function ScreenGuidePopup({
   }
   const intro = mode === 'intro' ? guide.intro : undefined;
   useIntroBusy(visible && intro != null);
+  // Never takes a tap in its first moment (POPUP_ARM_MS, 2026-11-14).
+  const shownAt = useRef<number | null>(null);
+  useEffect(() => {
+    shownAt.current = visible ? Date.now() : null;
+  }, [visible]);
+  const tapOff = () => {
+    if (popupArming(shownAt.current, Date.now())) return;
+    onClose();
+  };
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.modalBackdrop}>
         {intro ? (
           // The intro closes on one tap anywhere off the card (house intro rule).
-          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessible={false} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={tapOff} accessible={false} />
         ) : null}
         <View style={styles.modalSlot}>
           {intro ? (
@@ -792,6 +963,8 @@ export function ScreenGuidePopup({
               intro={intro}
               onClose={onClose}
               onExplain={() => {
+                // Using the guide in any way retires the ⓘ hint (quick win 5).
+                void markScreenGuideHintSeen();
                 setStep(0);
                 setExp(0);
                 setMode('guide');
@@ -940,7 +1113,17 @@ export function useScreenGuideHintVisible(): boolean {
   // waits for it, then points at the ⓘ that brings the card back.
   const introFirst = useScreenIntroCardBusy();
   const owed = seen === false && !introFirst;
-  const clear = owed && focused && !suppressed && !labTermFirst && !modalUp;
+  // ONE AT A TIME (2026-11-14, audit row 1: "at most two before the first
+  // touch"): on a visit where any other popup came (the term, the intro card,
+  // the Sound Safety sheet, any Modal), the hint does not come at all; it
+  // waits for a quiet visit. Latched for the visit, cleared on blur.
+  const busyNow = !!labTermFirst || introFirst || modalUp;
+  const [crowded, setCrowded] = useState(busyNow);
+  useEffect(() => {
+    if (!focused) setCrowded(false);
+    else if (busyNow) setCrowded(true);
+  }, [focused, busyNow]);
+  const clear = owed && focused && !suppressed && !labTermFirst && !modalUp && !crowded;
   const [settled, setSettled] = useState(false);
   useEffect(() => {
     if (!clear) {
@@ -950,7 +1133,15 @@ export function useScreenGuideHintVisible(): boolean {
     const t = setTimeout(() => setSettled(true), SCREEN_GUIDE_HINT_SETTLE_MS + rootModalHoldMs());
     return () => clearTimeout(t);
   }, [clear]);
-  return clear && settled;
+  const visible = clear && settled;
+  // Seen once it has stood on screen SCREEN_GUIDE_HINT_LIFE_MS: a one-time
+  // "New:" notice, never a fixture over the header.
+  useEffect(() => {
+    if (!visible) return;
+    const t = setTimeout(() => void markScreenGuideHintSeen(), SCREEN_GUIDE_HINT_LIFE_MS);
+    return () => clearTimeout(t);
+  }, [visible]);
+  return visible;
 }
 
 /**
@@ -967,16 +1158,27 @@ export function ScreenGuideHintAnchor({ children, off = false }: { children: Rea
     <View style={visible ? styles.anchorOnTop : undefined}>
       {children}
       {visible ? (
-        <Pressable
-          style={styles.hint}
-          onPress={() => void markScreenGuideHintSeen()}
-          accessibilityRole="button"
-          accessibilityLabel={`${SCREEN_GUIDE_HINT_TEXT}. Tap to dismiss.`}
-        >
-          <View style={styles.hintCaret} />
-          <Text style={styles.hintText}>{SCREEN_GUIDE_HINT_TEXT}</Text>
-          <Text style={styles.hintClose}>✕</Text>
-        </Pressable>
+        // TAPS GO THROUGH (2026-11-14): the bubble hangs where a module strip
+        // often has NEXT ›, and it used to take that tap (audit G3_CableLab:
+        // "My first tap on NEXT › was swallowed by the tip"). Only its ✕ is
+        // a target; a tap anywhere else on it reaches what is underneath.
+        <View style={styles.hint} pointerEvents="box-none">
+          <View pointerEvents="none" style={styles.hintCaret} />
+          <View pointerEvents="none" style={styles.hintTextWrap}>
+            <Text style={styles.hintText} accessibilityRole="text">
+              {SCREEN_GUIDE_HINT_TEXT}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => void markScreenGuideHintSeen()}
+            hitSlop={10}
+            style={styles.hintCloseBtn}
+            accessibilityRole="button"
+            accessibilityLabel={`${SCREEN_GUIDE_HINT_TEXT}. Dismiss.`}
+          >
+            <Text style={styles.hintClose}>✕</Text>
+          </Pressable>
+        </View>
       ) : null}
     </View>
   );
@@ -1125,6 +1327,12 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,198,77,.75)',
     transform: [{ rotate: '45deg' }],
   },
+  hintTextWrap: { flexShrink: 1 },
   hintText: { flexShrink: 1, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 17, color: colors.textPrimary },
+  hintCloseBtn: { paddingHorizontal: 2 },
   hintClose: { fontFamily: fonts.barlowSemiBold, fontSize: 12, color: colors.textSub },
+  // ── the carried lab term on the intro card (2026-11-14) ──
+  termTitle: { fontFamily: fonts.oswaldMedium, fontSize: 20, lineHeight: 25, color: colors.textPrimary },
+  termRule: { width: 36, height: 2, backgroundColor: colors.amber, borderRadius: 1, marginVertical: 2 },
+  termBody: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20, color: colors.textSecondary },
 });

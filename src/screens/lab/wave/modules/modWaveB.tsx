@@ -41,6 +41,8 @@ import {
   type Arrival, type MaterialKey, type WaveScene, type WaveSource,
 } from '../waveEngine';
 import type { WaveModuleProps } from '../WaveModuleScreen';
+import { bezelMs, cyclesOff, sumVerdict, vsOnAxisReadout } from '../bezelWords';
+import type { NameTags } from '../sceneNameTags';
 
 // ─────────────────────────────────────────────────────────────────── helpers ──
 
@@ -80,7 +82,7 @@ function coverageAtFreq(src: WaveSource, freq: number): number {
 /** Hosts the phase clock next to the Skia view — only rendered when viz ≠ null,
  *  so no conditional hooks ever run in the module bodies. */
 function SceneHero({
-  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, outside, raysShowLoss,
+  viz, scene, width, maxH = 300, fixedH, focused, freq, layers, visHz = 0.6, selectedId, onSelect, onDragSource, onDragListener, wallT, sectionView, probes, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, outside, raysShowLoss, nameTags,
 }: {
   viz: WaveVizModule;
   scene: WaveScene;
@@ -122,6 +124,8 @@ function SceneHero({
   outside?: { marginM: number; tlDb: [number, number, number, number] } | null;
   /** Rays fade with the energy each bounce leaves (Reverb). */
   raysShowLoss?: boolean;
+  /** On-picture names (sceneNameTags); default SPEAKER / SUB / YOU. */
+  nameTags?: NameTags;
 }) {
   const phase = viz.usePhaseClock(focused, visHz);
   const height = fixedH ?? Math.max(150, Math.min(maxH, Math.round((width * scene.h) / scene.w)));
@@ -147,6 +151,7 @@ function SceneHero({
       wallLabels={wallLabels}
       onPulseClock={onPulseClock}
       outside={outside}
+      nameTags={nameTags}
       raysShowLoss={raysShowLoss}
     />
   );
@@ -189,7 +194,7 @@ const layersValue = (layers: WaveLayers) =>
 /** Rack stage — fit the room into the glass: SceneHero derives height from
  *  width × aspect, so hand it the width that lands on h (Room Builder idiom). */
 function RackScene({
-  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, raysShowLoss,
+  viz, scene, w, h, focused, freq, layers, selectedId, onSelect, onDragSource, onDragListener, sectionView, probes, wallT, coverageEdges, labels, delayBars, highlightPath, wallLabels, onPulseClock, raysShowLoss, nameTags,
 }: {
   viz: WaveVizModule | null;
   scene: WaveScene;
@@ -212,6 +217,7 @@ function RackScene({
   wallLabels?: (string | null)[];
   onPulseClock?: (clock: SharedValue<number> | null) => void;
   raysShowLoss?: boolean;
+  nameTags?: NameTags;
 }) {
   if (!viz) return <VizUnavailableCard />;
   return (
@@ -241,6 +247,7 @@ function RackScene({
         highlightPath={highlightPath}
         wallLabels={wallLabels}
         onPulseClock={onPulseClock}
+        nameTags={nameTags}
         raysShowLoss={raysShowLoss}
       />
     </View>
@@ -350,8 +357,14 @@ function ArrivalTimeline({
   const span = Math.max(lastMs * 1.12, thresholdMs * 1.6, 20);
   const topDb = arrivals[0].levelDb;
   const xAt = (ms: number) => padL + (ms / span) * (W - padL - 12);
-  const hOf = (db: number) => Math.max(3, (1 - clamp(topDb - db, 0, 40) / 40) * (H - padB - 10));
+  // A label row is kept clear at the top (G1b module 14: "FAR WALL 16 ms"
+  // sat over the early stems near the direct one): stems stop under it.
+  const labelRow = mark ? fs + 6 : 10;
+  const hOf = (db: number) => Math.max(3, (1 - clamp(topDb - db, 0, 40) / 40) * (H - padB - labelRow));
   const base = H - padB;
+  const markX = mark ? xAt(mark.t * 1000 - t0) : 0;
+  // Beside its stem, on whichever side has room for the words.
+  const markRight = markX + 6 + (markLabel ?? '').length * fs * 0.62 <= W - 2;
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
       <SvgRect x={0} y={0} width={W} height={base} fill="#0f0f13" />
@@ -367,11 +380,11 @@ function ArrivalTimeline({
       })}
       {mark ? (
         <SvgText
-          x={Math.min(W - 4, Math.max(40, xAt(mark.t * 1000 - t0)))}
-          y={Math.max(fs + 2, base - hOf(mark.levelDb) - 4)}
+          x={markRight ? markX + 6 : markX - 6}
+          y={fs + 2}
           fill="#ffd9d3"
           fontSize={fs} fontFamily={fonts.mono}
-          textAnchor="middle"
+          textAnchor={markRight ? 'start' : 'end'}
         >
           {markLabel ?? ''}
         </SvgText>
@@ -391,11 +404,12 @@ const COVERAGE_CHIPS = [40, 60, 90, 120];
 const COVERAGE_CHECK: CheckSpec = {
   question: 'A 90° box is aimed at the mix position. At 8 kHz the balcony is dull; at 250 Hz the whole room is even. What is going on?',
   options: [
-    'The speaker is broken above 4 kHz',
-    'Directivity narrows with frequency — 90° is nominal; the tighter HF beam is what needed aiming',
-    'The audience is absorbing only the low frequencies',
+    'The speaker is broken above 4 kHz and needs repair',
+    'Its pattern narrows as frequency rises — the high beam needed aiming',
+    'The audience absorbs only the low frequencies',
     'The balcony needs more level, not a different aim',
   ],
+  why: { 0: 'The lows and mids are fine, so the box works. Sweep FREQ and watch the pattern width.', 2: 'An audience soaks up mostly highs, not lows. Watch the cone narrow as FREQ rises.', 3: 'More level reaches the same seats. Watch where the high-frequency beam points.' },
   correctIdx: 1,
   reveal:
     'Coverage is frequency-dependent: lows spill nearly omnidirectionally while highs beam. Sweep ' +
@@ -440,6 +454,9 @@ export function CoverageModule(p: WaveModuleProps) {
   const aRad = (aim * Math.PI) / 180;
   const onAxis = responseAt(scene, spk.x + rL * Math.sin(aRad), spk.y + rL * Math.cos(aRad), freq);
   const vsOn = lvl - onAxis;
+  // G1b module 9: off the beam the model sits on its −12 dB floor, which read
+  // as a stuck number. At the floor the cell says "≤ −12 dB" (outside the beam).
+  const vsRead = vsOnAxisReadout(vsOn, directivityGain(spk, listener.x - spk.x, listener.y - spk.y, freq));
   const lambda = speedOfSound(TEMP_C) / freq;
 
   return (
@@ -455,7 +472,7 @@ export function CoverageModule(p: WaveModuleProps) {
           // Short frequency in the key: "EFF @ 4.84 kHz" was cropped at 390.
           { k: `EFF @ ${freq >= 1000 ? `${(freq / 1000).toFixed(1)}k` : Math.round(freq)}`, v: eff >= 360 ? '≈360°' : `${eff}°`, flex: 1.25, helpKey: 'coverage_pattern' },
           { k: 'λ', v: `${lambda.toFixed(2)} m`, helpKey: 'coverage_pattern' },
-          { k: 'vs ON-AXIS', v: `${vsOn > -0.05 ? '0.0' : vsOn.toFixed(1)} dB`, flex: 1.1, helpKey: 'coverage_pattern' },
+          { k: 'vs ON-AXIS', v: vsRead.v, flex: 1.1, helpKey: 'coverage_pattern' },
         ],
         stage: (w, h) => (
           <RackScene
@@ -518,8 +535,13 @@ export function CoverageModule(p: WaveModuleProps) {
             Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
           </Text>
           <Text style={dstyles.caption}>
-            {`Dashed lines = the −6 dB coverage edges at ${fmtHz(freq)}. Level at the listener: ${lvl.toFixed(1)} dB (relative to 1 m on-axis) · ${vsOn > -0.05 ? '0.0' : vsOn.toFixed(1)} dB vs on-axis at the same distance.`}
+            {`Dashed lines = the −6 dB coverage edges at ${fmtHz(freq)}. Level at the listener: ${lvl.toFixed(1)} dB (relative to 1 m on-axis) · ${vsRead.v} vs on-axis at the same distance.`}
           </Text>
+          {vsRead.outside ? (
+            <Text style={dstyles.caption}>
+              The listener is outside the beam. This model stops at 12 dB down beside and behind the box, so vs ON-AXIS reads “≤ −12 dB”: at least that much quieter. A real speaker can fall further.
+            </Text>
+          ) : null}
         </PanelCard>
       }
       mistakes={
@@ -548,9 +570,10 @@ const LINEARRAY_CHECK: CheckSpec = {
   options: [
     'All the way to 40 Hz — arrays handle subs too',
     'Roughly 170 Hz — where the wavelength equals the 2 m array length',
-    '2 kHz — arrays only control highs',
-    'Any frequency, with good enough DSP',
+    '2 kHz — arrays only ever control the highs',
+    'Any frequency at all, with good enough DSP',
   ],
+  why: { 0: 'Compare LEN with λ at 40 Hz: the wave is far longer than the array.', 2: 'The array controls mids too. Slide FREQ down and watch where LF CTRL flips.', 3: 'Processing cannot add length. Compare LEN with λ.' },
   correctIdx: 1,
   reveal:
     'Pattern control needs array LENGTH ≥ wavelength: λ = c/f, so 2 m ≈ 172 Hz. Below that the ' +
@@ -628,6 +651,7 @@ export function LineArrayModule(p: WaveModuleProps) {
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
             sectionView
             wallT={18}
+            nameTags={{ sources: { box0: 'LINE ARRAY' } }}
           />
         ),
         params: [
@@ -640,19 +664,40 @@ export function LineArrayModule(p: WaveModuleProps) {
             format: () => fmtHz(freq),
             helpKey: 'line_array',
           },
+          // ONE KEY PER CONTROL (lab fix round 2026-11-14, G1b module 10): the
+          // old ARRAY key opened three stacked sliders in a tray that shows
+          // about one and a half; SPLAY and HEIGHT sat behind "more ↓", the
+          // BOXES value "4" was cut at the tray's edge, and the key read
+          // "4·4.0°". Each is now its own dock fader with a plain value.
           {
-            kind: 'group',
-            id: 'array',
-            label: 'ARRAY',
-            valueLabel: `${n}·${splay.toFixed(1)}°`,
+            kind: 'fader',
+            id: 'boxes',
+            label: 'BOXES',
+            value: nV,
+            onChange: setNV,
+            format: () => `${n} boxes`,
+            formatShort: () => `${n}`,
             helpKey: 'line_array',
-            render: () => (
-              <View style={{ gap: 10 }}>
-                <DragSlider value={nV} onChange={setNV} label="BOXES" readout={`${n}`} onHelp={() => p.help('line_array')} />
-                <DragSlider value={splayV} onChange={setSplayV} label="SPLAY (PER BOX)" readout={`${splay.toFixed(1)}°`} onHelp={() => p.help('line_array')} />
-                <DragSlider value={hangV} onChange={setHangV} label="HEIGHT (HANG DEPTH)" readout={`${yTop.toFixed(2)} m`} onHelp={() => p.help('line_array')} />
-              </View>
-            ),
+          },
+          {
+            kind: 'fader',
+            id: 'splay',
+            label: 'SPLAY',
+            value: splayV,
+            onChange: setSplayV,
+            format: () => `${splay.toFixed(1)}° per box`,
+            formatShort: () => `${splay.toFixed(1)}°`,
+            helpKey: 'line_array',
+          },
+          {
+            kind: 'fader',
+            id: 'hang',
+            label: 'HEIGHT',
+            value: hangV,
+            onChange: setHangV,
+            format: () => `${yTop.toFixed(2)} m hang depth`,
+            formatShort: () => `${yTop.toFixed(2)} m`,
+            helpKey: 'line_array',
           },
           {
             kind: 'group',
@@ -718,11 +763,12 @@ const ALIGN_MAIN = { x: 8.5, y: 1.2 };
 const ALIGN_CHECK: CheckSpec = {
   question: 'You set the sub/main delay from a tape measure (3.4 m ⇒ ~10 ms) but the crossover null is still there. Most likely culprit?',
   options: [
-    'The tape measure was metric',
-    'Processing latency in the main’s DSP chain — invisible to any tape measure',
-    'The sub simply needs more level',
+    'The tape measure was metric, not imperial',
+    'Processing delay in the main’s DSP, which no tape can see',
+    'The sub simply needs more level to fill it',
     'Polarity must always be flipped along with delay',
   ],
+  why: { 0: 'Units cannot hide 10 ms. Think about time a tape measure never sees.', 2: 'More level does not close a timing gap. Watch the null as OFF BY changes.', 3: 'Polarity and delay are different tools; here the flip helped only by luck.' },
   correctIdx: 1,
   reveal:
     'A tape measures DISTANCE; alignment is about TIME. DSP latency and filter delay add milliseconds no ' +
@@ -776,6 +822,21 @@ export function DelayAlignModule(p: WaveModuleProps) {
   const aMain = Math.pow(10, responseAt({ ...scene, sources: [scene.sources[1]] }, listener.x, listener.y, freq) / 20);
   const sumDb = lvl - 20 * Math.log10(Math.max(1e-9, aSub + aMain));
   const sumText = sumDb > -0.05 ? '0.0 dB' : `${sumDb.toFixed(1)} dB`;
+  // Lab fix round 2026-11-14 (G1b module 11): the SUM cell says in a word what
+  // the number means, so "0.0 dB" next to "OFF BY −8.02 ms" (one whole cycle
+  // at 117 Hz) reads as "in step at this frequency only", not a contradiction.
+  const sumWord = sumVerdict({ sumDb, mismatchMs: mismatch, freq, inverted: mainInv });
+  const cycles = cyclesOff(mismatch, freq);
+  // THE WRONG TOOL can improve THIS seat (−4.4 → −1.7 dB at the start): a flip
+  // is half a cycle at every frequency, which at 100 Hz happens to suit a
+  // 6.96 ms gap better than nothing. The same seat with the main un-flipped,
+  // so the tray can say what the flip did here.
+  const sumUnflipped = (() => {
+    if (!mainInv) return sumDb;
+    const s2: WaveScene = { ...scene, sources: [scene.sources[0], { ...scene.sources[1], polarity: 1 }] };
+    return responseAt(s2, listener.x, listener.y, freq) - 20 * Math.log10(Math.max(1e-9, aSub + aMain));
+  })();
+  const fmtSum = (v: number) => (v > -0.05 ? '0.0 dB' : `${v.toFixed(1)} dB`);
 
   return (
     <WaveLayout
@@ -786,12 +847,14 @@ export function DelayAlignModule(p: WaveModuleProps) {
         onGuide: () => p.help('delay_align'),
         initialParam: 'delay',
         bezel: [
-          { k: 'REQ', v: `${reqDelay.toFixed(2)} ms`, helpKey: 'delay_align' },
-          { k: 'SET', v: `${delayMs.toFixed(2)} ms`, helpKey: 'delay_align' },
+          // 10 ms and more print to 0.1 ms (bezelMs) and the cells are evened
+          // out, so "REQ" keeps its key at 14.98 ms on a 390 phone (G1b, D36).
+          { k: 'REQ', v: bezelMs(reqDelay), vA11y: `${reqDelay.toFixed(2)} ms`, flex: 1.05, helpKey: 'delay_align' },
+          { k: 'SET', v: bezelMs(delayMs), vA11y: `${delayMs.toFixed(2)} ms`, helpKey: 'delay_align' },
           // 'MISS' answered a question the student has not learned to ask (design
           // pass 2026-08-31) — OFF BY says what the number is.
-          { k: 'OFF BY', v: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms`, flex: 1.15, helpKey: 'delay_align' },
-          { k: 'SUM', v: sumText, helpKey: 'delay_align' },
+          { k: 'OFF BY', v: bezelMs(mismatch, true), vA11y: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms`, flex: 1.05, helpKey: 'delay_align' },
+          { k: 'SUM', v: sumText, sub: sumWord, flex: 1.05, helpKey: 'delay_align' },
         ],
         stage: (w, h) => (
           <RackScene
@@ -803,6 +866,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
             freq={freq}
             layers={layers}
             onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            // Which icon is which (G1b module 11: "two identical icons").
+            nameTags={{ sources: { main: 'MAIN' } }}
           />
         ),
         params: [
@@ -840,6 +905,13 @@ export function DelayAlignModule(p: WaveModuleProps) {
                     onLongPress={() => p.help('delay_align')}
                   />
                 </View>
+                {mainInv ? (
+                  <Text style={dstyles.caption}>
+                    {sumDb > sumUnflipped + 0.05
+                      ? `Better at this seat (SUM ${fmtSum(sumUnflipped)} → ${sumText}), by luck: a flip shifts the main by half a cycle, which only suits this seat at ${freq} Hz. Move XOVER or drag the listener and the gain comes and goes. A DELAY fixes the TIME, at every frequency.`
+                      : `Worse at this seat (SUM ${fmtSum(sumUnflipped)} → ${sumText}): a flip shifts the main by half a cycle at every frequency, but the gap here is time, not polarity. A DELAY fixes the TIME.`}
+                  </Text>
+                ) : null}
                 <GlassButton
                   label={`AUTO-ALIGN — SET ${Math.max(0, Math.min(20, reqDelay)).toFixed(2)} ms`}
                   tint="gold"
@@ -881,6 +953,11 @@ export function DelayAlignModule(p: WaveModuleProps) {
               { k: 'LEVEL @ LISTENER (vs 1 m)', v: `${lvl.toFixed(1)} dB` },
             ]}
           />
+          {!mainInv && cycles > 0 && sumDb > -1 ? (
+            <Text style={dstyles.caption}>
+              {`SUM reads ${sumText} although OFF BY is ${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms: at ${freq} Hz one cycle lasts ${(1000 / freq).toFixed(2)} ms, so the main is ${cycles} whole cycle${cycles === 1 ? '' : 's'} off and still lines up at this one frequency. Move XOVER and it falls apart; set the DELAY to REQ to line up the TIME.`}
+            </Text>
+          ) : null}
           <Text style={dstyles.caption}>
             Watch the null through the room close in HEAT as the mismatch approaches 0 — then DRAG THE LISTENER: an alignment that only works at one seat is not an alignment.
           </Text>
@@ -913,10 +990,11 @@ const CSUB_CHECK: CheckSpec = {
   question: 'Can a single subwoofer be made cardioid with clever DSP?',
   options: [
     'Yes — an all-pass filter rotates its pattern',
-    'No — a cardioid needs at least two sources with a time/polarity offset',
-    'Yes — just invert its polarity',
-    'Only above 100 Hz',
+    'No — it needs two sources with a time and polarity offset',
+    'Yes — just invert its polarity in the DSP',
+    'Only above 100 Hz, where the box is directional',
   ],
+  why: { 0: 'An all-pass filter changes phase, but one box still radiates from one point. Try SOLO FRONT SUB.', 2: 'Flipping one box turns its wave upside down everywhere. Try SOLO FRONT SUB and read F − R.', 3: 'Directivity needs two sources at any frequency. Try SOLO FRONT SUB and read F − R.' },
   correctIdx: 1,
   reveal:
     'Directivity comes from INTERFERENCE between separated sources. One omni sub has nothing to ' +
@@ -998,6 +1076,9 @@ export function CardioidSubModule(p: WaveModuleProps) {
             // The REAR readout's measuring point, drawn (proportion audit
             // 2026-09-26: it printed a level for an invisible spot).
             probes={[{ x: CSUB_REAR_PROBE.x, y: CSUB_REAR_PROBE.y, label: 'REAR MIC' }]}
+            // The subs carry their own FRONT SUB / REAR SUB tags below; the
+            // listener is the front probe (G1b module 12: "YOU (front)").
+            nameTags={{ sources: { front: null, rear: null }, listener: 'YOU (front)' }}
             // Which box is which, and what is done to the rear one — the
             // whole lesson (walkthrough 2026-09-26). Right of each sub, clear
             // of its 0.75 m cabinet by ~0.5 m (art grading 2026-10-16: at
@@ -1133,11 +1214,12 @@ const STEER_N_CHIPS = [4, 5, 6];
 const STEER_CHECK: CheckSpec = {
   question: 'You need the sub array’s beam aimed 20° toward the far corner. What does the job?',
   options: [
-    'Physically tilt every cabinet 20°',
-    'Progressive per-box delays — on the order of a couple of milliseconds each here',
+    'Physically tilt every cabinet 20° on its rigging',
+    'Progressive per-box delays, a couple of milliseconds each here',
     'Invert polarity on half of the boxes',
-    'A high-shelf EQ on the outer boxes',
+    'A high-shelf EQ on the outer boxes of the row',
   ],
+  why: { 0: 'Here the boxes never move. Watch the amber delay bars as you slide STEER.', 2: 'A polarity flip makes a null, not a steady tilt. Watch the beam as STEER changes.', 3: 'EQ changes tone, not direction. Watch Δt/BOX as you slide STEER.' },
   correctIdx: 1,
   reveal:
     'A linear delay gradient across the array tilts its wavefront: Δt = d·sin θ / c per box. The ' +
@@ -1350,11 +1432,12 @@ const ECHO_FUSE_MS = 50;
 const ECHO_CHECK: CheckSpec = {
   question: 'A strong reflection arrives 20 ms after the direct sound. What do you hear?',
   options: [
-    'A distinct slap echo',
-    'One fused, slightly thicker sound — precedence (Haas) integrates it',
+    'A distinct slap echo after every word',
+    'One fused, slightly fuller sound (precedence, or Haas)',
     'Two separate syllables on every word',
-    'Nothing — it cancels the direct sound',
+    'Nothing — the reflection cancels the direct sound',
   ],
+  why: { 0: 'Check the 50 ms marker on the timeline: is 20 ms before or after it?', 2: 'A separate repeat needs a longer gap. Check the 50 ms marker.', 3: 'A reflection cancels only some frequencies; here it lands as an extra copy.' },
   correctIdx: 1,
   reveal:
     'Below roughly 50 ms the ear FUSES a reflection with the direct sound — it even reinforces ' +
@@ -1595,10 +1678,11 @@ const REVERB_CHECK: CheckSpec = {
   question: 'Two halls both measure RT60 = 1.4 s. Do they sound the same?',
   options: [
     'Yes — RT60 defines the sound of a room',
-    'No — early-reflection pattern and tail density/shape differ even at equal RT60',
-    'Only if they are the same size',
-    'Yes, above the Schroeder frequency',
+    'No — early reflections and the tail’s shape can still differ',
+    'Only if they are exactly the same size',
+    'Yes, at least above the Schroeder frequency',
   ],
+  why: { 0: 'RT60 describes only the decay time. Look at the early arrivals in the BUILDUP timeline.', 2: 'Two rooms of one size can still differ. What else did this module show?', 3: 'That frequency splits room modes from reverb; it does not make rooms sound alike.' },
   correctIdx: 1,
   reveal:
     'RT60 is one number: how long the tail takes to fall 60 dB. The BUILDUP — direct → first ' +
@@ -1774,6 +1858,7 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
       'Coverage — the speaker pattern misses that seat',
       'Absorption — the walls are too dead back there',
     ],
+    why: { 0: 'A comb changes with a small step and hits many notes. This is one low note at one seat.', 2: 'Coverage would change a range of notes across seats, and the front rows hear fine.', 3: 'Dead walls shorten the tail everywhere; they do not boost one low note at one seat.' },
     correctIdx: 1,
     reveal:
       'One frequency, one position, boom not dropout: a STANDING WAVE antinode (Module 8). Comb filtering would carve a whole series of notches; coverage and absorption change broad bands, not one note.',
@@ -1782,11 +1867,12 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
   {
     question: 'Capstone 2 — a vocal sounds hollow and phasey at ONE mic position near a wall, and fine a step away. Which mechanism?',
     options: [
-      'Comb filtering — the wall reflection interferes with the direct sound',
-      'A room mode',
-      'Diffraction around the mic stand',
-      'Refraction from temperature layers',
+      'Comb filtering — the wall’s reflection meets the direct sound',
+      'A room mode building up at that spot',
+      'Diffraction around the mic stand itself',
+      'Refraction from warm and cool air layers',
     ],
+    why: { 1: 'A room mode is a low-note pattern across the room, not a hollow sound right by one wall.', 2: 'A mic stand is thin next to a voice’s wavelengths. Think about the wall’s reflection.', 3: 'Temperature layers matter outdoors over long distances, not one step from a wall.' },
     correctIdx: 0,
     reveal:
       'A single strong reflection a few milliseconds behind the direct sound carves a whole SERIES of evenly-spaced notches — comb filtering (Module 7). It moves when you move, which is the giveaway; a mode stays pinned to the room.',
@@ -1795,11 +1881,12 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
   {
     question: 'Capstone 3 — the speaker is aimed at the front rows. The back half of the audience hears the highs fall off, but the lows carry fine. Which mechanism?',
     options: [
-      'Standing waves eating the highs',
-      'Comb filtering from the ceiling',
+      'Standing waves eating the highs at the back',
+      'Comb filtering from the ceiling over the back',
       'Coverage — the cabinet’s pattern narrows as frequency rises',
-      'The speed of sound slowing at a distance',
+      'The speed of sound slowing down over distance',
     ],
+    why: { 0: 'Standing waves are low notes, and here the lows are the ones carrying fine.', 1: 'A ceiling comb would change in small steps from seat to seat, not fade the highs with depth.', 3: 'Sound keeps one speed; distance alone does not take the highs first.' },
     correctIdx: 2,
     reveal:
       'A loudspeaker’s pattern NARROWS with rising frequency (Module 9): lows spill everywhere while highs beam. Aim the high-frequency pattern at the audience, not the cabinet at the room.',
@@ -1810,11 +1897,12 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
 const BUILDER_CHECK: CheckSpec = {
   question: 'The HEAT map shows a deep null exactly at your listener at 63 Hz. The cheapest first fix?',
   options: [
-    'Boost 63 Hz on an EQ',
-    'Move the listener (or the source) — the null is geometry',
+    'Boost 63 Hz on an EQ until the seat is even',
+    'Move the listener (or source) — the null is geometry',
     'Add a second sub at the exact same spot',
-    'Raise the source level 6 dB',
+    'Raise the source level 6 dB to fill the dip',
   ],
+  why: { 0: 'EQ cannot fill a spot where two arrivals cancel. Drag the listener half a meter.', 2: 'A second sub in the same spot makes the same pattern. Move the listener instead.', 3: 'More level raises both arrivals and they still cancel. Drag the listener and watch the null.' },
   correctIdx: 1,
   reveal:
     'A null is position-and-frequency-specific interference: at that spot the arrivals cancel, and ' +
@@ -1970,9 +2058,18 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             valueLabel: `${bezelDim(roomW)}×${bezelDim(roomH)}m`,
             helpKey: 'room_builder',
             render: () => (
-              <View style={{ gap: 10 }}>
-                <DragSlider value={wV} onChange={setWV} label="ROOM WIDTH" readout={`${roomW.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
-                <DragSlider value={hV} onChange={setHV} label="ROOM DEPTH" readout={`${roomH.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
+              // SIDE BY SIDE (lab fix round 2026-11-14, G1b module 16): stacked,
+              // the two sliders were 140 px tall in a tray that shows 108 px on a
+              // 770-tall phone, so DEPTH's thumb sat under the tray's "more ↓"
+              // and could not be dragged, and the web scroll bar cut "12.00 m".
+              // One row is 65 px: both sliders in view on every phone.
+              <View style={{ flexDirection: 'row', gap: 14 }}>
+                <View style={{ flex: 1 }}>
+                  <DragSlider value={wV} onChange={setWV} label="WIDTH" readout={`${roomW.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <DragSlider value={hV} onChange={setHV} label="DEPTH" readout={`${roomH.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
+                </View>
               </View>
             ),
           },

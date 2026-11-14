@@ -28,7 +28,7 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
-import { eqEndCleared, eqEndUnits } from './eqEnd';
+import { EQ_END_HOW_IT_COUNTS, eqEndCleared, eqEndUnits } from './eqEnd';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
@@ -93,6 +93,10 @@ export function EqLabHomeScreen() {
           cleared={endCleared}
           unreadable={progressUnreadable}
           mode="progress"
+          howItCounts={EQ_END_HOW_IT_COUNTS}
+          // Recap + next lab from labEndContent (S2/S4): the EQ Lab's own entry
+          // ('eq' is the Equalizer's), wired by S4 on the coordinator's word.
+          labId="eq-lab"
           // The CHECK row stays here: the check is drawn on this screen (extra).
           onJump={(id) => { if (id !== UNDERSTANDING_UNIT) open(EQ_MODULES.find((m) => m.id === id)?.id ?? EQ_MODULES[0].id); }}
           onPracticeAgain={() => open(EQ_MODULES[0].id)}

@@ -85,6 +85,7 @@ import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScre
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
 import { MembraneStudioScreen } from '../screens/lab/cymatics/MembraneStudioScreen';
 import { GalleryScreen as CymaticsGalleryScreen } from '../screens/lab/cymatics/GalleryScreen';
+import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
 // `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
 // the browser harness by name, so a display can be measured without walking
 // Home → OPEN LABS (the app root sometimes rendered blank in the preview).
@@ -235,6 +236,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   CymaticsLiquidStudio: LiquidStudioScreen as ComponentType,
   CymaticsMembraneStudio: MembraneStudioScreen as ComponentType,
   CymaticsGallery: CymaticsGalleryScreen as ComponentType,
+  // The Cymatics HOME (lab fix round 2026-11-14): the beginner audit could not
+  // open it here ("route not registered") and judged it from source.
+  CymaticsLab: CymaticsHomeScreen as ComponentType,
   // Full-screen build, group 3 (2026-09-30): Digital Audio + Gain Staging
   // module pages (`/<id>`). The Digital Skia scenes need CanvasKit (native
   // only); the rack chrome and the Gain chain columns measure here.

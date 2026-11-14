@@ -92,14 +92,16 @@ export const musicOn = (b: Booth): boolean => anyPlaying(b);
 export function dbCell(k: string, db: number | null, unit = 'dBFS'): BezelItem {
   if (db == null || !Number.isFinite(db)) return { k, v: '—', tint: colors.textSub };
   if (unit === 'dBFS' && db >= 0) return { k, v: 'CLIP', tint: PEAK_RED };
-  return { k, v: db.toFixed(1), vA11y: `${db.toFixed(1)} ${unit}`, sub: unit, tint: unit === 'dBFS' ? levelColorForDb(db, -40, 0) : colors.amber };
+  // The unit is the sub line, read after the value: not repeated in the
+  // value ("−12.1 dBFS dBFS", lab fix round 2026-11-14, F2).
+  return { k, v: db.toFixed(1), sub: unit, tint: unit === 'dBFS' ? levelColorForDb(db, -40, 0) : colors.amber };
 }
 
 /** VOICE IN: which feeds carry the mic, in words (learning review
  *  2026-10-18, 19 #4: the cell is the fault's evidence, so no abbreviations),
  *  and the ones that do not on the sub line. */
 export function voiceCell(r: EventRender | null): BezelItem {
-  if (!hadSpeech(r)) return { k: 'VOICE IN', v: 'NOT SPEAKING', tint: colors.textSub };
+  if (!hadSpeech(r)) return { k: 'VOICE IN', caption: 'mic reaches', v: 'NOT SPEAKING', tint: colors.textSub };
   const feeds = [
     { id: 'crowd' as const, w: 'CROWD' },
     { id: 'booth' as const, w: 'BOOTH' },
@@ -107,7 +109,7 @@ export function voiceCell(r: EventRender | null): BezelItem {
   ];
   const yes = feeds.filter((f) => voiceIn(r, f.id)).map((f) => f.w);
   const no = feeds.filter((f) => !voiceIn(r, f.id)).map((f) => f.w);
-  return { k: 'VOICE IN', v: yes.join(' + ') || 'NONE', sub: no.length ? `NOT IN: ${no.join(' · ')}` : 'EVERY FEED', vA11y: `voice in ${yes.length ? yes.join(', ').toLowerCase() : 'no feed'}; not in ${no.length ? no.join(', ').toLowerCase() : 'none'}`, tint: yes.length ? colors.green : colors.amber };
+  return { k: 'VOICE IN', caption: 'mic reaches', v: yes.join(' + ') || 'NONE', sub: no.length ? `NOT IN: ${no.join(' · ')}` : 'EVERY FEED', vA11y: `voice in ${yes.length ? yes.join(', ').toLowerCase() : 'no feed'}; not in ${no.length ? no.join(', ').toLowerCase() : 'none'}`, tint: yes.length ? colors.green : colors.amber };
 }
 
 /* ── LISTEN, with the recorder ────────────────────────────────────────── */

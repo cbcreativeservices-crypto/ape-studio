@@ -451,11 +451,17 @@ describe('SP1 S3: Setup and Library words', () => {
     assert.match(setup, /A stage size above 1000 is not taken/);
     assert.match(setup, /Until both the width and the depth are set/);
     assert.match(setup, /Change it or clear it above\./);
-    assert.match(setup, /ed\.goTo\('stage', fig \? \{ kind: 'object', id: fig\.id \} : \{ kind: 'performer', id: pf\.id \}\)/);
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." A PLACED performer is still selected by their
+    // FIGURE (S3-09); one who is not placed yet is now PLACED by the button, not only handed to the stage
+    // (beginner audit G5: "'PLACE ON THE STAGE' … does not place the performer").
+    assert.match(setup, /if \(fig\) ed\.goTo\('stage', \{ kind: 'object', id: fig\.id \}\);\s+else placeOnStage\(ed, \{ kind: 'performer', id: pf\.id \}\);/);
     assert.match(src(`${SP}/StagePlotLabScreen.tsx`), /' · copy'/);
     // screen switches are remembered while the app is open
     assert.match(src(`${SP}/StageArea.tsx`), /const drawingShows = \{ names: true, numbers: true \};/);
-    assert.match(src(`${SP}/GuidedTask.tsx`), /let stepsOpen = false;/);
+    // Owner 2026-11-14 approved quick win 13 ("open the GUIDED TASK by default on a blank stage"): what is
+    // remembered is the user's own SHOW / HIDE; until they choose, a blank-stage plot decides.
+    assert.match(src(`${SP}/GuidedTask.tsx`), /let stepsChoice: boolean \| null = null;/);
     // round 2 (R2-SP2-07): kept per stage plot and per list
     assert.match(src(`${SP}/inputs/OrderPanel.tsx`), /const keepReservedChoice: Partial<Record<string, boolean>> = \{\};/);
   });

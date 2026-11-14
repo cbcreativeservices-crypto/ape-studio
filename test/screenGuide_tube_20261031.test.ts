@@ -396,10 +396,13 @@ describe('5. wiring and the accuracy-chip decisions', () => {
   });
   it('chip decision — Tube Reference list and card: real data-sheet ratings, so the chip STAYS and the ⓘ sits beside it', () => {
     assert.match(REF_SRC, /<ScreenGuideHost regions=\{false\} resetKey="tubeRef">\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.header\}>/);
-    assert.match(REF_SRC, /<AccuracyNote compact detail="These cards are a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE" guide=\{TUBE_REFERENCE_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
+    // variant="about" (phase 2, D37; owner 2026-11-14 "Begin fixing all bugs found and do obvious ... fixes"): only the cards' own note.
+    assert.match(REF_SRC, /<AccuracyNote compact variant="about" label="ABOUT THESE CARDS" detail="These cards are a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE" guide=\{TUBE_REFERENCE_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
     assert.match(REF_SRC, /<\/ScrollView>\s*<\/ScreenGuideHost>\s*<\/View>/);
-    assert.match(CARD_SRC, /<ScreenGuideHost regions=\{false\} resetKey="tubeCard">\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.navBar\}>/);
-    assert.match(CARD_SRC, /<AccuracyNote compact detail="This card is a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE CARD" guide=\{TUBE_CARD_GUIDE\} \/>\s*<Pressable/);
+    // hold={failed} added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."): never over a load error.
+    assert.match(CARD_SRC, /<ScreenGuideHost regions=\{false\} resetKey="tubeCard" hold=\{failed\}>\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.navBar\}>/);
+    assert.match(CARD_SRC, /<AccuracyNote compact variant="about" label="ABOUT THIS CARD" detail="This card is a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE CARD" guide=\{TUBE_CARD_GUIDE\} \/>\s*<Pressable/);
     assert.match(CARD_SRC, /<\/View>\s*<\/ScreenGuideHintAnchor>\s*<View style=\{styles\.pageRow\}>/);
     assert.match(CARD_SRC, /\) : null\}\s*<\/View>\s*<\/ScreenGuideHost>\s*<\/View>\s*\);\s*\}/);
   });

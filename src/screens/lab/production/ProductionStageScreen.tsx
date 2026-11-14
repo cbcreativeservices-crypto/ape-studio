@@ -37,6 +37,17 @@ import { productionStageGuide } from './productionScreenGuides';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionStage'>;
 
+/**
+ * The failed-write message says what happened and what to do, never a guessed
+ * cause (novice audit G4, 2026-11-14): it used to say "free up some space",
+ * and a write is also refused when the stored list cannot be read or the
+ * project is no longer there, with plenty of space free.
+ */
+const SAVE_FAILED_BANNER =
+  '⚠ THIS DEVICE COULD NOT SAVE YOUR LAST ANSWER. What you see here has not been written down. Re-enter it before you rely on this plan or export the packet; if it keeps happening, close the app and open it again.';
+const SAVE_FAILED_SPOKEN =
+  'This device could not save your last answer. What you see has not been written down. Re-enter it; if it keeps happening, close the app and open it again.';
+
 export function ProductionStageScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
@@ -187,7 +198,7 @@ export function ProductionStageScreen() {
   useEffect(() => {
     if (!saveFailed || Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(
-      'This device could not save your last answer. What you see has not been written down — free up some space and re-enter it.',
+      SAVE_FAILED_SPOKEN,
     );
   }, [saveFailed]);
 
@@ -326,8 +337,7 @@ export function ProductionStageScreen() {
       {saveFailed ? (
         <View style={styles.saveFailed} accessibilityRole="alert" accessibilityLiveRegion="assertive">
           <Text style={styles.saveFailedText}>
-            ⚠ THIS DEVICE COULD NOT SAVE YOUR LAST ANSWER. What you see here has not been written down — free up
-            some space and re-enter it before you rely on this plan or export the packet.
+            {SAVE_FAILED_BANNER}
           </Text>
         </View>
       ) : null}
@@ -342,7 +352,7 @@ export function ProductionStageScreen() {
               : loadState === 'unreadable'
                 ? 'This project could not be read on this device just now. Go back and open it again.'
               : loadState === 'missing'
-                ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there, or start a new one from the lab home.'
+                ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there, or start a new one from the lab home. If you made it on this phone, go back to the lab home and open it from there.'
                 : 'Opening the project…'}
           </Text>
         </View>
@@ -367,7 +377,7 @@ export function ProductionStageScreen() {
           <View style={styles.progressRow}>
             <View style={[styles.dot, { backgroundColor: STATE_TINT[report.state] }]} />
             <Text style={styles.progressText}>
-              {`${report.answeredRequired} required decisions made · ${report.answeredAll} questions answered`}
+              {`${report.answeredRequired} required decision${report.answeredRequired === 1 ? '' : 's'} made · ${report.answeredAll} question${report.answeredAll === 1 ? '' : 's'} answered`}
             </Text>
           </View>
 

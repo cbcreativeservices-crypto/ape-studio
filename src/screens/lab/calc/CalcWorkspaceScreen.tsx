@@ -117,6 +117,10 @@ export function CalcWorkspaceScreen() {
 
   // Assemble base-unit values (shared path); null until every input parses.
   const values: CalcValues | null = useMemo(() => buildValues(fields, raw, unitIdx), [fields, raw, unitIdx]);
+  // The boxes still empty, by name (beginner audit 2026-11-14: Loudspeaker SPL
+  // with four of five boxes typed showed no answer and named no missing box;
+  // the gray example in the fifth looked like a value).
+  const stillNeeded = values ? [] : fields.filter((f) => !(raw[f.key] ?? '').trim()).map((f) => f.name);
 
   // Compute once per (function, values) — NOT on every keystroke's re-render.
   const { outputs, steps, table, computeError, negativeField, inputError, refused } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
@@ -413,7 +417,7 @@ export function CalcWorkspaceScreen() {
             <Text style={styles.resultEyebrow}>
               {/* dB-family tokens keep their casing — "DBV FROM VOLTAGE" reads
                   as a typo in the lab that teaches the difference. */}
-              YOUR ANSWER — {fn.name.toUpperCase().replace(/\bDBFS\b/g, 'dBFS').replace(/\bDBU\b/g, 'dBu').replace(/\bDBV\b/g, 'dBV').replace(/\bDB\b/g, 'dB')}
+              YOUR ANSWER — {fn.name.toUpperCase().replace(/\bMV\/PA\b/g, 'mV/Pa').replace(/\bDBV\/PA\b/g, 'dBV/Pa').replace(/\bDBFS\b/g, 'dBFS').replace(/\bDBU\b/g, 'dBu').replace(/\bDBV\b/g, 'dBV').replace(/\bDB\b/g, 'dB')}
             </Text>
             {counterText ? <Text style={styles.usageCounter}>{counterText}</Text> : null}
             <ScrollView style={{ maxHeight: stageBodyMax }} nestedScrollEnabled keyboardShouldPersistTaps="handled">
@@ -431,7 +435,11 @@ export function CalcWorkspaceScreen() {
               </View>
             ) : !values ? (
               <Text style={styles.resultPlaceholder}>
-                Your answer appears here. Fill in the values below to calculate.
+                {stillNeeded.length > 0 && stillNeeded.length < fields.length
+                  ? `Still needed: ${stillNeeded.join(', ')}. The gray numbers are examples — type a value into every box.`
+                  : stillNeeded.length === 0
+                    ? 'A value below can’t be read as a number. Check what you typed.'
+                    : 'Your answer appears here. Fill in the values below to calculate (the gray numbers are examples).'}
               </Text>
             ) : computeError ? (
               // BEFORE the capped gate (bug pass 2026-09-30): a free account

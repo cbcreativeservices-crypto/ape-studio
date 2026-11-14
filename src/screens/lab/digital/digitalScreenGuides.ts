@@ -64,7 +64,7 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
 export const DIGITAL_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the digital chain: measuring time, measuring level, conversion, rebuilding the wave and timing errors, and which of these ideas you still have to explore.',
-    start: 'Read the list to see which modules you haven’t opened yet. Tap the first row to open it, or tap REVIEW ▾ to go back to a module you’ve already opened.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'This is WHAT’S LEFT: the modules of this lab you haven’t opened yet. When none are left, the title reads LAB COMPLETE.',
@@ -136,7 +136,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     seeing: [
       'The amber sine is the INPUT — CONTINUOUS. Each white dot is one sample, a single measurement. The green line is the sample clock.',
       'Push the input above Nyquist and it dims (TRUE INPUT (DIM) — ABOVE NYQUIST). A red ALIAS curve shows the lower tone the same dots fit.',
-      'Readouts: FS (here the sample rate, not full scale), INPUT, NYQUIST (half of FS) and READS AS, the frequency the samples really describe.',
+      'Readouts: RATE (the sample rate), INPUT, NYQUIST (half of RATE) and READS AS, the frequency the samples really describe.',
     ],
     control: [
       'FREQ fader sets the input, from 100 Hz up to 30 kHz at 48k. From 8k to 48k it can cross NYQUIST; at 96k and 192k it stops below it. ZOOM fader goes from single samples to many cycles.',
@@ -146,8 +146,8 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     changes: [
       'Below NYQUIST the dots follow the input, so READS AS equals INPUT.',
-      'Above it, the same dots fit a lower sine exactly. READS AS turns red and shows where the input folds: the gap from INPUT to the nearest FS multiple.',
-      'A higher FS raises NYQUIST. That buys more bandwidth, not a smoother wave.',
+      'Above it, the same dots fit a lower sine exactly. READS AS turns red and shows the fold: the gap from INPUT to the nearest RATE multiple.',
+      'A higher RATE raises NYQUIST. That buys more bandwidth, not a smoother wave.',
       'The filter turns content above CUTOFF down BEFORE sampling, so less can fold. Once sampled, an alias can’t be removed.',
     ],
     teaches: [
@@ -313,7 +313,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     seeing: [
       'Samples rebuilt into a continuous voltage, slowed down. SAMPLES are the dots. ZOH (zero-order hold) is the dim held steps inside the converter. RECONSTRUCTED is the output; ORIGINAL is what was recorded.',
       'X-RAY adds DAC CLOCK ticks and a RECON LPF (low-pass filter) inset.',
-      'Readouts: FS (48 kHz), MODE, LAYERS. Move ISP FREQ or PHASE for INTER-SAMPLE PEAKS: SAMPLE PK, TRUE PK (dBTP, true-peak dB), MISSED.',
+      'Readouts: RATE (48 kHz), MODE, LAYERS. Move ISP FREQ or PHASE for INTER-SAMPLE PEAKS: SAMPLE PK, TRUE PK (dBTP, true-peak dB), MISSED.',
     ],
     control: [
       'MODE key: SIMPLIFIED (samples and the rebuilt wave, no steps), STANDARD (adds the ZOH steps) or X-RAY (adds the DAC CLOCK ticks and the RECON LPF inset).',

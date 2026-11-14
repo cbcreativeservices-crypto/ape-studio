@@ -27,7 +27,7 @@ import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { colors, fonts } from '../../../theme/tokens';
-import { CheckQuestion } from '../foundations/bits';
+import { MicCheck } from './micCheck';
 import { MicPhotoLightbox, MicVisual } from './micArt';
 import { PolarStage } from './polarStage';
 // Screen Guide (2026-10-31): "this screen, explained" per step + the end screen.
@@ -48,6 +48,7 @@ import {
   ENV_SCENARIOS,
   FORM_FACTORS,
   FORM_LESSON,
+  JOB_FIT,
   JOB_GROUPS,
   JOBS_LESSON,
   LOCKER_JOBS,
@@ -157,6 +158,16 @@ function TypesStep() {
   const [compare, setCompare] = useState(false);
   const [pair, setPair] = useState<string[]>([]);
 
+  const toggleCompare = () => {
+    if (!compare) {
+      setPair(sel ? [sel] : []);
+      setCompare(true);
+      return;
+    }
+    if (pair.length) setSel(pair[pair.length - 1]);
+    setPair([]);
+    setCompare(false);
+  };
   const tap = (key: string) => {
     if (!compare) {
       setSel(key);
@@ -198,7 +209,10 @@ function TypesStep() {
       <LessonBanner text={CLASS_NOTE} />
       <View style={styles.rowBetween}>
         <Text accessibilityRole="header" style={styles.panelEyebrow}>TAP A MICROPHONE</Text>
-        <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => { setCompare((c) => !c); setPair([]); }} />
+        {/* COMPARE keeps the mic on show as the first pick, and COMPARING
+            goes back to the last one picked (fix round 2026-11-14, F9 item 6:
+            it used to empty the card and drop the current mic). */}
+        <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => toggleCompare()} />
       </View>
       <View style={styles.micGrid}>
         {MIC_TYPES.map((m) => {
@@ -229,7 +243,7 @@ function TypesStep() {
             <Detail k={pair[1]} />
           </View>
         ) : (
-          <Text style={styles.hint}>Pick two microphones to place them side by side.</Text>
+          <Text style={styles.hint}>{pair.length === 1 ? `Pick one more microphone to place beside ${MIC_TYPES.find((m) => m.key === pair[0])?.name ?? 'it'}.` : 'Pick two microphones to place them side by side.'}</Text>
         )
       ) : sel ? (
         <View style={styles.detailCard}>
@@ -410,18 +424,20 @@ function CurvesStep() {
         <Text style={styles.body}>{c.useful}</Text>
       </View>
       {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
-      <CheckQuestion
+      {/* Per-option reasons and balanced options (fix round 2026-11-14, F9
+          phase 2): the right answer was the longest and said why. */}
+      <MicCheck
         spec={{
           question: 'A lectern mic keeps picking up stage rumble under the speech. Which response curve helps?',
-          options: [
-            'A low-frequency rolloff — the rumble lives below the voice',
-            'A presence peak around 5 kHz',
-            'A perfectly flat curve — flat is always best',
-          ],
+          options: ['A low-frequency rolloff', 'A presence peak around 5 kHz', 'A perfectly flat curve, since flat is best'],
           correctIdx: 0,
           reveal:
             'The rumble sits below the useful voice band, so a curve that rolls off the lows removes the problem without touching the speech. Flat is not "best" — it is a CHOICE, and here it faithfully reproduces the rumble too.',
-          wrongHint: 'Look at where rumble lives on the frequency axis versus where speech does.',
+          why: {
+            1: 'A presence peak lifts the band where speech is understood. Look at where the rumble sits on the axis: far below it.',
+            2: 'A flat curve passes everything as it is, the rumble included. Flat is a choice, not a fix.',
+          },
+          hint: 'Look at where rumble lives on the frequency axis versus where speech does.',
         }}
       />
       <LessonBanner text={CURVE_LESSON} />
@@ -609,23 +625,48 @@ function JobsStep() {
         ))}
         <Text style={[styles.body, { marginTop: 6 }]}>{j.note}</Text>
         <Text style={[styles.detailHead, { marginTop: 4 }]}>WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS?</Text>
+        {/* The question now has its follow-up (fix round 2026-11-14, F9
+            item 6): think first, then SHOW WHAT FITS lists, per requirement,
+            the characteristic and the lesson that shows it. */}
+        <JobFit key={j.key} ratings={j.ratings} />
       </View>
       {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
-      <CheckQuestion
+      <MicCheck
         spec={{
           question: 'Two mics: one labeled "vocal", one labeled "instrument". Which is right for a loud guitar cab?',
-          options: [
-            'Whichever mic’s SPECS handle the SPL and the tone — the label doesn’t decide',
-            'The "instrument" mic, because the label says so',
-            'The "vocal" mic never works on instruments',
-          ],
+          options: ['Whichever one’s specs handle the level and the tone', 'The "instrument" one, because its label says instruments', 'Not the "vocal" one: vocal mics never work on instruments'],
           correctIdx: 0,
           reveal:
             'Marketing labels describe common use, not capability. The spec sheet decides: max SPL, pattern, response. Plenty of "vocal" mics are studio staples on cabs — read the numbers, not the box.',
-          wrongHint: 'The card above rates CHARACTERISTICS, not labels — which characteristics does a loud cab need?',
+          why: {
+            1: 'A label describes common use, not what a mic can take. Which characteristics does a loud cab need?',
+            2: 'Plenty of mics sold for vocals sit on loud cabs every day. What on the card above decides it?',
+          },
+          hint: 'The card above rates CHARACTERISTICS, not labels — which characteristics does a loud cab need?',
         }}
       />
       <LessonBanner text={JOBS_LESSON} />
+    </View>
+  );
+}
+
+/** Lesson 9's answer, behind one tap so the learner thinks first. */
+function JobFit({ ratings }: { ratings: [string, number][] }) {
+  const [open, setOpen] = useState(false);
+  if (!open) {
+    return (
+      <View style={styles.stepGap}>
+        <Text style={styles.body}>Think of one for each line, then check.</Text>
+        <Chip label="SHOW WHAT FITS ▾" active={false} onPress={() => setOpen(true)} />
+      </View>
+    );
+  }
+  return (
+    <View style={{ gap: 4 }}>
+      {ratings.map(([name, n]) => (
+        <Text key={name} style={styles.bullet}>{n <= 2 ? `•  ${name} (rated low) → it matters little for this job, or is not wanted` : `•  ${name} → ${JOB_FIT[name] ?? 'see Lesson 2’s list of characteristics'}`}</Text>
+      ))}
+      <Text style={[styles.body, { marginTop: 4 }]}>Several microphones can meet the same list. Next, the challenge asks you to choose one and defend it.</Text>
     </View>
   );
 }
@@ -1069,6 +1110,7 @@ export function MicSelectLabScreen() {
 
       {ending ? (
         <LabEndScreen
+          labId="micselect"
           labTitle="Microphone Selection Lab"
           units={endUnits}
           cleared={endCleared}
@@ -1079,6 +1121,7 @@ export function MicSelectLabScreen() {
           onJump={(id) => { if (id !== UNDERSTANDING_UNIT) goTo(Math.max(0, STEPS.findIndex((st) => st.key === id))); }}
           // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
           shownHereId={UNDERSTANDING_UNIT}
+          howItCounts={MICSEL_HOW_IT_COUNTS}
           onPracticeAgain={() => goTo(0)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
@@ -1107,10 +1150,28 @@ export function MicSelectLabScreen() {
  *  Optional but still counted — owner 2026-10-31), then the understanding
  *  check as a CHECK row when questions are authored for this lab. */
 export function micSelEndUnits(hasCheck: boolean): LabEndUnit[] {
-  const units: LabEndUnit[] = STEPS.map((st) => ({ id: st.key, label: st.title, detail: st.tag === 'OPTIONAL' ? 'Optional' : undefined }));
+  const units: LabEndUnit[] = STEPS.map((st) => ({ id: st.key, label: st.title, detail: MICSEL_MISSING[st.key] }));
   if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
   return units;
 }
+
+/** Each unfinished row's own line: what that lesson asks of you (fix round
+ *  2026-11-14, F9 phase 2, the S2 end-screen rule). The rule every row
+ *  shares is said once, in MICSEL_HOW_IT_COUNTS. */
+export const MICSEL_MISSING: Readonly<Record<string, string>> = {
+  types: 'Not opened yet: tap the mic types and read their cards.',
+  chars: 'Not opened yet: the characteristics that drive a choice.',
+  patterns: 'Not opened yet: pick a pattern for the stage and say why.',
+  curves: 'Not opened yet: read a response curve, then its check.',
+  spl: 'Not opened yet: match three mics to quiet and loud sources.',
+  power: 'Not opened yet: what each mic needs from the rig.',
+  form: 'Not opened yet: the body shapes and the jobs they suit.',
+  env: 'Not opened yet: one voice in three places.',
+  jobs: 'Not opened yet: a job’s requirements, rated, and what fits them.',
+  challenge: 'Not opened yet: choose a mic for the brief and defend it.',
+  locker: 'Optional, still counts. Not opened yet: six slots for ten jobs.',
+};
+export const MICSEL_HOW_IT_COUNTS = 'A lesson counts as soon as you open it. The check counts once every answer is right.';
 
 /** Lessons opened (device progress) plus the check once it is banked. */
 export function micSelEndCleared(visited: ReadonlySet<string>, banked: ReadonlySet<string>): ReadonlySet<string> {
@@ -1176,9 +1237,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   micCellActive: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#17140c' },
+  // 11 pt (fix round 2026-11-14, F9 item 6): the photo names were 9 px, the
+  // floor itself; lab text at 390 wide reads at 9 pt or more, with room.
   micCellName: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 9,
+    fontSize: 11,
     letterSpacing: 0.4,
     color: colors.textSecondary,
     textAlign: 'center',

@@ -43,7 +43,8 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a subtractive synth voice works: the VCO makes a bright wave, the VCF carves harmonics away, the VCA sets loudness, and control cables decide what moves what.',
-      start: 'Tap ▶ to hear the drone, then drag CUTOFF down and hear it darken. Next tap PATCH → WOBBLE and watch a blue LFO cable run to the VCF.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Tap PATCH → WOBBLE and watch a blue LFO cable run to the VCF. Then tap ▶ to hear the drone, and drag CUTOFF down to hear it darken.',
     },
     seeing: [
       'THE PATCH: seven modules. CONTROL SOURCES (CV): SEQ, LFO, ENV. AUDIO PATH → OUT: VCO, VCF, VCA, OUT.',
@@ -120,12 +121,12 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Below them, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     control: [
-      'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'A right answer locks in, and its explanation stays to read.',
       'Use the tabs under the title to go back to LEARN or EXPLORE to look something up; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],
     changes: [
-      'Every answer opens its explanation — CORRECT, or NOT QUITE — TRY ANOTHER — with the reason.',
+      'A right answer shows CORRECT with its reason; a wrong one says what to look at again, and a second wrong pick adds the explanation.',
       'Get all four right and the check is passed.',
       'A pass is kept: the questions show as done, and you never need to take the check twice.',
     ],

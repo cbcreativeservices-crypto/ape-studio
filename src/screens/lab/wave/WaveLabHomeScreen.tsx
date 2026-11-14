@@ -14,7 +14,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
-import { WAVE_HOME_GUIDE } from './waveScreenGuides';
+import { WAVE_HOME_GUIDE, WAVE_SCREEN_GUIDES } from './waveScreenGuides';
+import { notOpenedDetail, visitCounts } from '../foundations/endRows';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
@@ -63,14 +64,16 @@ export function WaveLabHomeScreen() {
       <ScreenGuideHintAnchor>
         <LabHeader
           title="WAVE PHYSICS LABORATORY"
-          subtitle="One room model · fifteen experiments"
+          subtitle="One room model · sixteen modules"
           right={<ScreenGuideKey title="WAVE PHYSICS LABORATORY" guide={WAVE_HOME_GUIDE} />}
         />
       </ScreenGuideHintAnchor>
       {ending ? (
         <LabEndScreen
           labTitle="Wave Physics Laboratory"
-          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          labId="af_wave_physics"
+          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: notOpenedDetail(WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+          howItCounts={visitCounts('module')}
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"
@@ -98,7 +101,9 @@ export function WaveLabHomeScreen() {
           wavefronts, interference, reflections and coverage evolve live. Every module below is a
           ready-made setup of the same Room Builder.
         </Text>
-        <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
+        {/* "THE 15 MODULES" while the strip inside said "1 / 16" (G1 W-D, lab
+            fix round 2026-11-14): the Room Builder is module 16, numbered so. */}
+        <Text style={styles.sectionTitle}>MODULES 1–15</Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
             no ✓ on a row is a stand-in when the banked units could not be
             read — said here, before the rows. Every module stays open. */}
@@ -119,7 +124,7 @@ export function WaveLabHomeScreen() {
         </TabletGrid>
         {builder && (
           <>
-            <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER</Text>
+            <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER · MODULE 16</Text>
             <ModuleAccordionRow
               num={builder.num}
               name={builder.title}

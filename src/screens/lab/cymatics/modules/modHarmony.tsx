@@ -400,10 +400,10 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
         onGuide: () => help(view === 'lissajous' ? 'lissajous' : 'ratio'),
         initialParam: 'base',
         bezel: [
-          { k: 'A', v: `${formatHz(f1)} ${nearestNote(f1).label}`, helpKey: 'ratio', flex: 1.2 },
-          { k: 'B', v: `${formatHz(f2)} ${nearestNote(f2).label}`, helpKey: 'ratio', flex: 1.2 },
-          { k: 'INTERVAL', v: tone.detuned ? 'detuned' : ratio.short, helpKey: 'ratio', flex: 1.2 },
-          { k: 'BEAT', v: tone.detuned ? `${beatHz.toFixed(1)} Hz` : '—', tint: tone.detuned ? colors.amber : undefined, helpKey: 'beats' },
+          { k: 'A', v: `${formatHz(f1)} ${nearestNote(f1).label}`, helpKey: 'ratio', flex: 1.2, caption: 'first tone' },
+          { k: 'B', v: `${formatHz(f2)} ${nearestNote(f2).label}`, helpKey: 'ratio', flex: 1.2, caption: 'second tone' },
+          { k: 'INTERVAL', v: tone.detuned ? 'detuned' : ratio.short, helpKey: 'ratio', flex: 1.2, caption: 'their ratio' },
+          { k: 'BEAT', v: tone.detuned ? `${beatHz.toFixed(1)} Hz` : '—', tint: tone.detuned ? colors.amber : undefined, helpKey: 'beats', caption: 'wobble speed' },
         ],
         stage: (w, h) =>
           view === 'waves' ? (

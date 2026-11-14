@@ -289,8 +289,9 @@ describe('2b. Guest Mode entry', () => {
     const s = read('src/screens/careerfinder/CareerFinderScreen.tsx');
     assert.match(s, /const guest = useGuestWording\(\)\.guest;/);
     assert.match(s, /guestTrust: 'Free\. You’re not signed in, so your answers are erased when you close the app\. Sign in first to keep them\.'/);
-    assert.match(s, /saving \? \(guest \? FINDER_INTRO\.guestTrust : upsell \? FINDER_INTRO\.trust : 'Your answers stay on this phone\.'\)/);
-    assert.match(s, /saving \? \(guest \? 'kept until you close the app' : 'saved on this phone'\)/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(s, /saving \? \(guest \? FINDER_INTRO\.guestTrust : upsell \? FINDER_INTRO\.trust : 'Your answers stay on this device\.'\)/);
+    assert.match(s, /saving \? \(guest \? 'kept until you close the app' : 'saved on this device'\)/);
   });
 });
 

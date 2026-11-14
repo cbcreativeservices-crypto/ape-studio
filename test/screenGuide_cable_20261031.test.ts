@@ -444,7 +444,10 @@ describe('6b. the END guide says only what this lab’s end screen does', () => 
     const { understandingFor } = await import('../src/features/lab/understanding.ts');
     assert.equal(understandingFor('connector-select'), null, 'a check would add a CHECK row — update the END guide');
     assert.match(CS, /labId="connector-select"/);
-    assert.doesNotMatch(CS, /optionalPage=|handsOnDetail=|pageDetail=|labDoneKey=/);
+    // pageDetail + handsOnDetail added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all bugs found
+    // and do obvious (my decision is not required) fixes as you suggestted in the report."): each row names what is missing.
+    assert.doesNotMatch(CS, /optionalPage=|labDoneKey=/);
+    assert.match(CS, /pageDetail={pageDetail}/);
     assert.doesNotMatch(T, /check row|optional/i, 'no check row and no optional pages: the guide names neither');
     // Rows are page titles, not stations (the misconceptions page and the Final carry no STATION tag).
     assert.doesNotMatch(T, /station/i);
@@ -531,7 +534,9 @@ describe('7. the accuracy chip: both are concept labs, so it is gone', () => {
   it('ConnectorSelect passes accuracy={false}, which drops PagedLab’s reading-page note and rack chip', () => {
     assert.match(code(`${CONN_DIR}/ConnectorSelectLabScreen.tsx`), /accuracy=\{false\}/);
     const PL = code('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(PL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} \/> : null\}/);
+    // Lab fix round 2026-11-14 (S3's shared need, owner approval "Begin fixing all bugs found and do obvious ...
+    // fixes as you suggested in the report"): the note also takes the lab's accuracyVariant; accuracy={false} still drops it.
+    assert.match(PL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} variant=\{accuracyVariant\} \/> : null\}/);
     assert.match(PL, /right=\{accuracy && def\.rack && !ending \? <AccuracyNote compact/);
   });
   it('why: nothing in either lab is measured — the Cable bench tester is labelled a simulation; the Connector tester is a drawn lamp model', async () => {

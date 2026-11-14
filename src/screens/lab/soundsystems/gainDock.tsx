@@ -95,7 +95,7 @@ export function gainBezel(chain: GainNode[], verdict: GainReading, extra?: Bezel
   return [
     { k: 'AT SPEAKER', v: `${Math.round(last.levelDbu)} dBu`, tint: levelColorForDb(last.levelDbu, -40, 20), flex: 1.1 },
     extra ?? { k: 'ABOVE NOISE', v: `${Math.round(last.snrDb)} dB`, tint: last.snrDb < 70 ? colors.orange : colors.green, flex: 1.1 },
-    { k: 'HEADROOM', v: chain.some((n) => n.clipped) ? 'CLIP' : `${least} dB`, tint: chain.some((n) => n.clipped) ? colors.red : leastHeadroomDb(chain) >= HEADROOM_GOOD_DB ? colors.green : colors.orange },
+    { k: 'HEADROOM', caption: 'room to clip', v: chain.some((n) => n.clipped) ? 'CLIP' : `${least} dB`, tint: chain.some((n) => n.clipped) ? colors.red : leastHeadroomDb(chain) >= HEADROOM_GOOD_DB ? colors.green : colors.orange },
     { k: 'VERDICT', v: verdict.toUpperCase(), tint: vTint },
   ];
 }

@@ -67,7 +67,7 @@ const Panel = await (async () => {
   const typesUrl = pathToFileURL(join(ROOT, 'src/screens/lab/calc/calcTypes.ts')).href;
   const head =
     `import { isRefused } from '${typesUrl}';\n` +
-    `import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from '${unitsUrl}';\n`;
+    `import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, namedOutputUnit, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from '${unitsUrl}';\n`;
   const js = stripTypeScriptTypes(head + PANEL.slice(a, b));
   return import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 })();

@@ -225,7 +225,7 @@ export function StageArea() {
   const sheetH = stageSheetScrollHeight(winH);
   const trayH = stageTrayScrollHeight(winH);
   const paletteBody = (maxHeight: number, onAdd: (make: (q: SpProject, at: Pt) => StageAdded) => void) => (
-    <StagePalette project={p} onAdd={onAdd} onGoInputs={() => ed.goTo('inputs')} onGoMonitors={() => ed.goTo('monitors')} maxHeight={maxHeight} />
+    <StagePalette project={p} onAdd={onAdd} onGoInputs={() => ed.goTo('inputs')} onGoMonitors={() => ed.goTo('monitors')} maxHeight={maxHeight} selectedPerformerId={sel?.performerId ?? null} />
   );
   const chooser = (
     <>

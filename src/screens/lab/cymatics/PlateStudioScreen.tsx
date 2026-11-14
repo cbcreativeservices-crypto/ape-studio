@@ -550,12 +550,12 @@ function PlateStudio() {
   // Compact words + weighted cells (plateBezel.ts, TestFlight build 32): the
   // full mode labels and APPROACHING were cut to an ellipsis on a 390 phone.
   const bezel = [
-    { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
-    { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response },
-    { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode },
+    { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive, caption: 'tone fed in' },
+    { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response, caption: 'how much moves' },
+    { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode, caption: 'which pattern' },
     // Read-only (owner rule 2026-10-10). Landing on the next mode up is the
     // FREQ key's tray button now.
-    { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res },
+    { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res, caption: 'on a mode?' },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());

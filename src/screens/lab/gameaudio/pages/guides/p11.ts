@@ -18,7 +18,7 @@ export const G11: ScreenGuide = {
     'FACING turns you, in steps of 5°. The slider controls it when the page opens.',
     'STEP walks you 0.7 m the way you face. If a wall, the closed door or the edge of the scene stops you, a NOTE in the log says why.',
     'SOURCES chooses which source the rings and the readouts measure, GENERATOR 1 or FOUNTAIN. It also switches GENERATOR 1 and SCENE on and off, and holds the door key.',
-    'On the SOURCES key, NONE, GEN 1, SCENE or BOTH tells you what is switched on. GEN 1 is short for GENERATOR 1.',
+    'On the SOURCES key, ALL OFF, GEN 1 ON, SCENE ON or BOTH ON tells you what is switched on. GEN 1 is short for GENERATOR 1.',
   ],
   changes: [
     'Inside MIN the level is full. Beyond it the level drops 6 dB each time the distance doubles. Over the last fifth of the way to MAX it also fades, to silence at MAX.',

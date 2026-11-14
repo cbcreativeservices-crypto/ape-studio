@@ -32,6 +32,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 // examples of a lab that keeps the chip (mirrors Room Design).
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { SPEAKER_END_GUIDE, SPEAKER_SCREEN_GUIDES, type SpeakerSectionId } from './micSpeakerScreenGuides';
+import { notOpenedDetail, visitCounts } from '../foundations/endRows';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -41,7 +42,11 @@ import { SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { jetColor } from './viz';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from '../foundations/captionedRack';
+import { SPEAKER_CAPTIONS } from '../foundations/bezelCaptions';
+
+/** The racks with first-visit bezel captions (phase 2, 2026-11-14). */
+const RackUnit = captionedRack(SPEAKER_CAPTIONS);
 import type { DockParam, RackStage } from '../rack/rackTypes';
 import { GlassShape, useGlassSize } from '../glassShape';
 import { requireMsViz } from './skiaGate';
@@ -112,6 +117,7 @@ const TOP_CHECK: CheckSpec = {
     'Rough, comb-filtered sound — two arrivals of the same signal interfere',
     'No difference — the colors only add in the drawing',
   ],
+  why: { 0: 'Two arrivals of the same signal do not simply add. Watch the ridge where the wedges cross.', 2: 'The colors show real overlap: both speakers reach those seats, a little apart in time.' },
   correctIdx: 1,
   reveal:
     'Where both boxes cover the same seats, energy piles up AND the two arrival times interfere — boosting some frequencies, canceling others (comb filtering, the Wave lab’s Module 7). Real designs minimize or carefully control overlap.',
@@ -121,10 +127,11 @@ const TOP_CHECK: CheckSpec = {
 const READING_CHECK: CheckSpec = {
   question: 'A seat painted BLACK on the coverage map is…',
   options: [
-    'Just far away — it will still hear fine',
-    'A dead zone — the pattern never reaches it at a workable level; it needs a fill or a delay box',
-    'Too loud — black marks the hottest spots',
+    'Just far away — it will still hear the show fine',
+    'A dead zone — the pattern never reaches it at a usable level',
+    'Too loud — black marks the very hottest spots',
   ],
+  why: { 0: 'Black is past the cool end of the color ramp. Check the legend.', 2: 'The hottest spots are red. Check which end of the ramp black sits on.' },
   correctIdx: 1,
   reveal:
     'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black means the speaker’s position, aim and pattern miss that seat. The fixes are aim, fills, or a delay speaker — turning the level up alone rarely fixes it.',
@@ -135,10 +142,11 @@ const SIDE_CHECK: CheckSpec = {
   question:
     'When the rear seats have low coverage level while the front seats are at their full level, the classic fix is…',
   options: [
-    'Turn the whole system up',
+    'Turn the whole system up until the back is loud enough',
     'Raise it and tilt it down — height plus aim evens out front and back',
-    'Move the speaker closer to the front row',
+    'Move the speaker closer to the front row so it covers more',
   ],
+  why: { 0: 'Louder lifts the front rows as much as the back, so the gap stays. Try HEIGHT and TILT instead.', 2: 'Closer to the front makes the front even louder than the back. Watch the side view.' },
   correctIdx: 1,
   reveal:
     'Raising the box and aiming it so the loud CENTER of its vertical pattern reaches the DISTANT rows — while the near rows sit at the quieter EDGE of the pattern — lets extra distance and the pattern’s shape offset each other, so front and back hear similar levels. Turning the whole system up just makes the already-loud front rows louder; moving the box closer to the front makes the front-to-back imbalance worse.',
@@ -641,7 +649,9 @@ export function SpeakerCoverageLabScreen() {
       {ending ? (
         <LabEndScreen
           labTitle="Speaker Placement & Coverage"
-          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+          labId="af_speaker_coverage"
+          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: notOpenedDetail(SPEAKER_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
+          howItCounts={visitCounts('section')}
           cleared={banked}
           unreadable={progressUnreadable}
           mode="credit"

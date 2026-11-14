@@ -30,7 +30,7 @@
  * requirement is stated.
  */
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, Platform, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { HeadIconSvg } from '../../features/lab/headIconsSvg';
@@ -239,6 +239,9 @@ export function BinauralLabScreen() {
           size: 'L', // the overhead stage IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'SIMPLIFIED BINAURAL — NOT MEASURED HRTF',
+          // Phase 2 (S3 silent path): the two cues are numbers on the frame
+          // and in THE TWO CUES, so a sound-off learner can follow every move.
+          soundOffLine: 'Sound off? The frame shows the cues your ears would use: drag an object and watch ITD, how much later the far ear hears it.',
           onGuide: () => openLesson('display'),
           bezel: [
             {
@@ -246,10 +249,12 @@ export function BinauralLabScreen() {
               v: `${selected + 1} ${sel.on ? 'ON' : 'OFF'}`,
               tint: SRC_COLORS[selected],
               helpKey: 'objects',
+              // First-visit captions (phase 2, S3): what each code means.
+              caption: 'which sound',
             },
-            { k: 'AZ', v: `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`, flex: 1.5, helpKey: 'azimuth' },
-            { k: 'DIST', v: `${sel.dist.toFixed(1)} m`, helpKey: 'distance' },
-            { k: 'ITD', v: `${itdUs(sel.azDeg).toFixed(0)} µs`, helpKey: 'display' },
+            { k: 'AZ', v: `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`, flex: 1.5, helpKey: 'azimuth', caption: 'direction' },
+            { k: 'DIST', v: `${sel.dist.toFixed(1)} m`, helpKey: 'distance', caption: 'how far away' },
+            { k: 'ITD', v: `${itdUs(sel.azDeg).toFixed(0)} µs`, helpKey: 'display', caption: 'far ear late' },
           ],
           render: (w, h) => (
             // The stage is pinned outside the scroll well — the PanResponder
@@ -279,6 +284,25 @@ export function BinauralLabScreen() {
             formatShort: () => `${azSign}${sel.azDeg.toFixed(0)}°`,
             tint: SRC_COLORS[selected],
             helpKey: 'azimuth',
+            // One-degree steps (lab fix round 2026-11-14, report §7 "the AZ
+            // fader jumped from +132° to +180°"): the lane spans the whole
+            // circle, about a degree per point, and a touch lands the cap
+            // where the finger is — so the angles LEARN quotes (+30°, +45°,
+            // +150°) were hard to hit. Hold for 15°. Wraps round the back.
+            nudges: [
+              {
+                label: '‹ −1°',
+                onPress: () => updateSource(selected, { azDeg: binSnapAz(sel.azDeg - 1) }),
+                onLongPress: () => updateSource(selected, { azDeg: binSnapAz(sel.azDeg - 15) }),
+                a11y: 'Turn one degree to the left; hold for fifteen degrees',
+              },
+              {
+                label: '+1° ›',
+                onPress: () => updateSource(selected, { azDeg: binSnapAz(sel.azDeg + 1) }),
+                onLongPress: () => updateSource(selected, { azDeg: binSnapAz(sel.azDeg + 15) }),
+                a11y: 'Turn one degree to the right; hold for fifteen degrees',
+              },
+            ],
           },
           {
             kind: 'fader',
@@ -415,9 +439,15 @@ export function BinauralLabScreen() {
             </>
           ) : (
             <Text style={styles.caption}>
-              {__DEV__
-                ? 'Binaural audio needs the v7 engine build — this dev client predates it. The stage and lessons are fully functional; install the v7 build to hear the mix.'
-                : 'This version of the app cannot play the binaural mix yet. The stage and lessons work fully; update the app to hear the mix.'}
+              {/* Learner lines in plain words (lab fix round 2026-11-14,
+                  pattern 10): the web says where the mix plays; a store
+                  build is never told to "update the app". The build note
+                  stays for development clients only (__DEV__). */}
+              {Platform.OS === 'web'
+                ? 'On the web, the binaural mix can’t play — it plays in the phone app. The stage, the cue numbers and the lessons work fully here.'
+                : __DEV__
+                  ? 'Binaural audio needs the v7 engine build — this dev client predates it. The stage and lessons are fully functional; install the v7 build to hear the mix.'
+                  : 'The binaural mix can’t play on this device. The stage, the cue numbers and the lessons work fully.'}
             </Text>
           )
         ) : null}
@@ -428,13 +458,18 @@ export function BinauralLabScreen() {
         spec={{
           question: 'A studio pan-pot and this binaural panner both "move" a sound. What does the pan-pot NOT do?',
           options: [
-            'Change the timing between the channels — it only changes level',
-            'Change the level between speakers',
-            'Work on headphones',
+            'Change the timing between the channels',
+            'Change the level between the speakers',
+            'Work on headphones as well as speakers',
           ],
           correctIdx: 0,
           reveal:
             'A pan-pot is level-only. Binaural rendering adds the inter-ear TIME difference and the head-shadow filtering, as real hearing does. On their own these two cues still mostly place a sound inside your head; to sit fully outside it, a sound also needs the outer-ear (HRTF) and room cues.',
+          // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+          why: {
+            1: 'Changing the level between the speakers is exactly what a pan-pot does.',
+            2: 'A pan-pot works on any output, headphones included. THE TWO CUES panel shows what it leaves out.',
+          },
           wrongHint: 'THE TWO CUES panel above shows what the pan-pot leaves out.',
         }}
       />
@@ -442,14 +477,21 @@ export function BinauralLabScreen() {
         spec={{
           question: 'Which source is EASIEST to localize with your eyes closed?',
           options: [
-            'Broadband noise — it feeds both cues at once',
+            'Broadband noise',
             'A 250 Hz sine tone',
             'They are all equal',
           ],
           correctIdx: 0,
           reveal:
             'Noise spans the spectrum: its low end carries the timing cue, its top end casts a real head shadow, and its onsets give the brain something to time. A smooth low tone still carries a good timing cue — it is the missing onsets and spectral detail that leave it sitting inside your head. That is why finding a humming subwoofer by ear is so hard.',
-          wrongHint: 'Flip SRC between TONE 250 and PINK while dragging the object.',
+          // A path that works with sound off too (phase 2, S3 "can't listen
+          // now"): the reason in words, then the listening test.
+          // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+          why: {
+            1: 'A steady low tone has no sharp start for your ears to time, so it is hard to place.',
+            2: 'Sources differ: some carry far more cues than others. Read the line under SOURCE TYPE in the SRC tray.',
+          },
+          wrongHint: 'A steady low tone has no sharp start for your ears to time, and little detail up high. With sound on, flip SRC between TONE 250 and PINK while dragging the object.',
         }}
       />
 
@@ -461,6 +503,14 @@ export function BinauralLabScreen() {
       />
     </LabShell>
   );
+}
+
+/** An azimuth in whole degrees, wrapped to −179…+180 (the AZ lane's step). */
+function binSnapAz(az: number): number {
+  let a = Math.round(az);
+  while (a > 180) a -= 360;
+  while (a <= -180) a += 360;
+  return a;
 }
 
 // ── Display mirrors of the native model (Woodworth ITD + sin-θ ILD) ──────────
@@ -590,7 +640,11 @@ function Stage({
         if (az > 180) az -= 360;
         const r = Math.hypot(dx, dy);
         const dist = Math.max(MIN_DIST, Math.min(MAX_DIST, (r / st.rMax) * MAX_DIST));
-        st.onMove(i, az, dist);
+        // Whole degrees and tenths of a metre, the same steps as the AZ and
+        // DIST faders (lab fix round 2026-11-14, report §7 "259 µs shown vs
+        // LEARN's 261"): the drag used to keep the raw angle, so the bezel
+        // printed "+30°" (rounded) while ITD was worked out from 29.6°.
+        st.onMove(i, binSnapAz(az), Math.round(dist * 10) / 10);
       },
       onPanResponderRelease: () => {
         dragIdx.current = -1;

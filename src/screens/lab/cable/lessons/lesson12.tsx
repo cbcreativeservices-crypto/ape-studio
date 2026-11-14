@@ -27,6 +27,7 @@ import { CHALLENGE_A_UNIT, CHALLENGE_B_UNIT, FINAL_UNIT, SAFETY_UNITS, type Cabl
 import { CABLE_LESSONS, LESSON_UNITS } from '../data/lessons';
 import { FINAL_QUESTIONS, L12_LESSON, SAFETY_QUESTIONS, type SafetyCheckItem } from '../data/lesson12';
 import { CheckDoneBanner, Eyebrow, LessonBanner, PrincipleBanner, lessonStyles as s } from './bits';
+import { LabRecapNext } from '../labEndExtras';
 
 /** One row of the what's-left list: a step with uncleared units. */
 type LeftRow = { id: CableLessonId; step: number; title: string; detail: string };
@@ -164,6 +165,10 @@ export function Lesson12Body() {
           <WhatsLeft nav={nav} />
         </>
       )}
+
+      {/* The recap and the next-lab card (labEndContent.ts af_cables, S4), as
+          the shared end screen draws them. */}
+      <LabRecapNext labId="af_cables" complete={completion.complete} />
 
       {/* ── BANK 1 — GENERAL ─────────────────────────────────────────────── */}
       <Eyebrow text={`GENERAL · ${generalSolved} SOLVED`} />

@@ -257,7 +257,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p7: {
     intro: {
       learning: 'A half-normal pair starts out exactly like full-normal. Here you predict, then test, what a plug in each jack does to its normal.',
-      start: 'Answer PREDICT BEFORE PATCHING first; the jacks stay locked until you do. Then turn on TOP JACK and read NORMAL, DEST HEARS and the status line.',
+      start: 'Answer PREDICT BEFORE PATCHING first; the jacks unlock once you pick, right or wrong. Then turn on TOP JACK and read NORMAL, DEST HEARS and the status line.',
     },
     seeing: [
       'The same pair and labels, now HALF-NORMALLED. It starts exactly like full-normal: NORMAL INTACT, DEST HEARS SOURCE.',
@@ -265,9 +265,9 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The dock stays empty and the jacks do nothing until your prediction is in.',
     ],
     control: [
-      'Answer PREDICT BEFORE PATCHING. The right answer unlocks TOP JACK and BOTTOM JACK, in the dock and on the drawing.',
-      'Goal chips: PREDICT IT (answer below) and THEN DO IT (patch the top). You need both to finish the page.',
-      'A wrong answer explains itself, and you try again.',
+      'Answer PREDICT BEFORE PATCHING. Any answer unlocks TOP JACK and BOTTOM JACK, in the dock and on the drawing, so you can test your guess.',
+      'Goal chips: PREDICT IT (answer above) and THEN DO IT (patch the top). You need both to finish the page.',
+      'A wrong answer explains itself; test it on the jacks, or pick again.',
     ],
     changes: [
       'Once your prediction is in, patch the TOP and read NORMAL and DEST HEARS: they show whether this bay’s top jack opens the normal.',
@@ -782,11 +782,11 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const PATCHBAY_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab’s core idea: every pair’s behavior comes down to when its normal survives a plug, whether it is wired thru, full-normal or half-normal.',
-    start: 'Tap any page still listed to open it and finish its task. Or tap REVIEW ▾ and reopen a page you found hard, such as Patchbay detective.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'Use this page to see where you are in the lab. The title reads WHAT’S LEFT, or LAB COMPLETE once you’ve finished every page.',
-    'Each page you still have to do is listed by its number and name.',
+    'The title reads WHAT’S LEFT, or LAB COMPLETE once you’ve finished every page.',
+    'Each page you still have to do is listed by its number and name, with a line naming what is still missing on it.',
     'Finished pages fold into one ✓ CREDITED line (✓ DONE if you’re not signed in).',
     'If your saved progress can’t be read, the title reads YOUR PROGRESS, and you can still open every page.',
   ],

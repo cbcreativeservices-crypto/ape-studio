@@ -109,6 +109,17 @@ export type LabLeaf = {
   /** A count line under the blurb on the Labs menu tile — e.g. the Miking
    *  family tiles' "17 Miking Lab Lessons" (owner 2026-10-06). */
   countLine?: string;
+  /** ADDITIVE (lab fix round 1, 2026-11-14, quick win 12 / section 7; owner:
+   *  "Begin fixing all bugs found and do obvious ... fixes as you suggested in
+   *  the report"). The Labs menu TILE shows the blurb in three lines at most,
+   *  and 34 of 65 were cut there "so the visible words are often the hardest
+   *  ones" (G8). A blurb too long for the tile carries this short form, written
+   *  to fit three lines at 390 wide with its meaning first; the tile shows it
+   *  and the full `blurb` stays everywhere else (the read-aloud label too). */
+  tileBlurb?: string;
+  /** ADDITIVE (2026-11-14, quick win 12): a START HERE marker on the Labs
+   *  menu tile. A marker only — never a lock, never an order. */
+  startHere?: boolean;
 };
 
 /** An optional middle "Lab Family" grouping inside a category. */
@@ -136,6 +147,12 @@ type Common = {
   /** Standalone labs listed INLINE under the category (in addition to its
    *  families/labs, or beneath a hub). */
   extraLabs?: LabLeaf[];
+  /** ADDITIVE (2026-11-14, quick win 12): the name of one of `labs` that the
+   *  menu lists FIRST, ahead of the families (Instruments & Recording:
+   *  Microphone Selection before the 128 miking lessons — G8: "Microphone
+   *  Selection Lab is last, after 128 miking lessons and Bass Guitar
+   *  Physics"). Counts and every other list are unchanged. */
+  firstLab?: string;
 };
 
 /** Note shown on a planned-lab row.
@@ -169,6 +186,15 @@ export type LabCategory = Common &
 
 const labsPlural = (n: number) => `${n} ${n === 1 ? 'Lab' : 'Labs'}`;
 /** A Miking family tile's count line (owner 2026-10-06): "17 Miking Lab Lessons", no chevron. */
+/** Miking family blurbs too long for a Labs menu tile (2026-11-14, see
+ *  LabLeaf.tileBlurb). */
+const MIKING_TILE_BLURBS: Partial<Record<string, string>> = {
+  broadcast: 'Miking speech for broadcast and sport, studio to arena',
+};
+function withMikingTileBlurbs<T extends { params: { lab: string } }>(tiles: T[]): (T & { tileBlurb?: string })[] {
+  return tiles.map((t) => (MIKING_TILE_BLURBS[t.params.lab] ? { ...t, tileBlurb: MIKING_TILE_BLURBS[t.params.lab] } : t));
+}
+
 export const mikingLessonCount = (n: number) => `${n} Miking Lab ${n === 1 ? 'Lesson' : 'Lessons'}`;
 
 const RAW_LAB_CATEGORIES: LabCategory[] = [
@@ -189,10 +215,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // START HERE (owner 2026-08-12): the app-wide blue→red level/amplitude
       // color language, taught once. First lab in Audio Fundamentals, before
       // any other visual audio lab.
-      { name: 'Understanding Level & Amplitude', blurb: 'The blue→red color language every Academy display uses for level and amplitude — learn it once, recognize it everywhere.', route: 'AmplitudeLab', key: 'af_amplitude' },
-      { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse', key: 'af_foundations' },
+      { name: 'Understanding Level & Amplitude', blurb: 'The blue→red color language every Academy display uses for level and amplitude — learn it once, recognize it everywhere.', route: 'AmplitudeLab', key: 'af_amplitude', startHere: true, tileBlurb: 'The blue→red colors every display here uses for level.' },
+      { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse', key: 'af_foundations', tileBlurb: 'What sound is, made visible: waves, wavelength, harmonics.' },
       { name: 'Sound Playground', blurb: 'A sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground', key: 'af_sound_playground', member: true },
-      { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab', key: 'af_mic_principles', member: true },
+      { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab', key: 'af_mic_principles', member: true, tileBlurb: 'How a mic hears: pickup patterns, distance and angle.' },
       // The dosimeter itself is NOT a catalog lab (owner 2026-08-12): it runs
       // silently in the background; the user interacts with it ONLY from the
       // Measurement & Analysis Tools menu (readout + popup) and the 15-minute
@@ -207,13 +233,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behavior.', route: 'WaveLab', key: 'af_wave_physics' },
-      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true },
+      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behavior.', route: 'WaveLab', key: 'af_wave_physics', tileBlurb: 'How sound behaves in a room, from reflection to standing waves.' },
+      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true, tileBlurb: 'Aim, height and tilt: who a speaker reaches, on a live map.' },
       // Room Design & Monitoring Lab (owner spec 2026-10-01): the planning
       // tool that expands the Wave lab's room work — model your room, place
       // the monitors and the listening position, explore, treat, review.
       // Member-only like its neighbour (no credit key: progress, not credit).
-      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labeled calculated, estimated or measured.', route: 'RoomDesignLab', member: true },
+      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labeled calculated, estimated or measured.', route: 'RoomDesignLab', member: true, tileBlurb: 'Model your room: speakers, listening spot, likely problems.' },
     ],
   },
   {
@@ -224,30 +250,30 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true },
-      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true },
-      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true },
+      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true, tileBlurb: 'How sound becomes numbers, and what can go wrong.' },
+      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true, tileBlurb: 'What each meter and display shows about a signal.' },
+      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true, tileBlurb: 'Why the order of the processors in a chain matters.' },
       { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
       // Placed after the signal-flow labs, before Gain Staging (owner ruling).
       // Owner 2026-08-23: now member-only along with the rest of Signal.
-      { name: 'Cable & Connector Fundamentals', blurb: 'Identify it. Understand it. Connect it safely — what every connector carries, what’s inside the cable, and what happens when the wrong one is used.', route: 'CableLab', key: 'af_cables', member: true },
+      { name: 'Cable & Connector Fundamentals', blurb: 'Identify it. Understand it. Connect it safely — what every connector carries, what’s inside the cable, and what happens when the wrong one is used.', route: 'CableLab', key: 'af_cables', member: true, tileBlurb: 'What each connector carries, and what is inside the cable.' },
       // Audio Connectors & Cable Selection (owner brief 2026-09-11): the
       // selection-and-diagnosis companion to the fundamentals lab — same
       // verified connector records, new stations (same-connector/different-job
       // matrix, build-the-system scenarios, fault finder, job-final).
-      { name: 'Audio Connectors & Cable Selection', blurb: 'The shape never tells you the signal — pick the right cable for real systems, refuse the unsafe ones, and find the fault when it hides.', route: 'ConnectorSelectLab', key: 'af_connector_select', member: true },
+      { name: 'Audio Connectors & Cable Selection', blurb: 'The shape never tells you the signal — pick the right cable for real systems, refuse the unsafe ones, and find the fault when it hides.', route: 'ConnectorSelectLab', key: 'af_connector_select', member: true, tileBlurb: 'The shape never tells you the signal: the right cable.' },
       // Professional installation practice — the decision lab that follows the
       // connector fundamentals (owner brief 2026-08-24).
-      { name: 'Cable Dressing & Installation', blurb: 'Route it. Support it. Protect it. Make it serviceable — professional installation decisions from plan to final inspection.', route: 'CableInstallLab', key: 'af_cable_install', member: true },
+      { name: 'Cable Dressing & Installation', blurb: 'Route it. Support it. Protect it. Make it serviceable — professional installation decisions from plan to final inspection.', route: 'CableInstallLab', key: 'af_cable_install', member: true, tileBlurb: 'How installers route, support and protect cable.' },
       // LIVE, complete (owner brief 2026-09-10; both phases device-passed,
       // copy ratified). af_patchbay key added on the owner's 2026-09-10 ruling
       // ("anything in the Audio Fundamentals container is part of the
       // fundamentals requisite"). Its seed, docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql,
       // was run (live `labs` row dated 2026-09-11, checked 2026-10-27), so the
       // credit is live.
-      { name: 'Patchbay Signal Flow & Normalling', blurb: 'On most bays, top is the source and bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true },
+      { name: 'Patchbay Signal Flow & Normalling', blurb: 'On most bays, top is the source and bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true, tileBlurb: 'How a patchbay connects things, and what a patch changes.' },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
       { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true },
     ],
@@ -275,12 +301,12 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       // Both labs LIVE (overnight build 2026-09-11; owner ratification pending).
-      { name: 'Beginning Mixing', blurb: 'A repeatable process from session prep to a clear, balanced stereo mix — faders first, plugins later.', route: 'BeginningMixingLab', member: true },
-      { name: 'Advanced Mixing', blurb: 'Complex routing, parallel paths, phase, translation, stems and professional delivery — repair and ship real mixes.', route: 'AdvancedMixingLab', member: true },
+      { name: 'Beginning Mixing', blurb: 'A repeatable process from session prep to a clear, balanced stereo mix — faders first, plugins later.', route: 'BeginningMixingLab', member: true, tileBlurb: 'A repeatable mixing process: faders first, plugins later.' },
+      { name: 'Advanced Mixing', blurb: 'Complex routing, parallel paths, phase, translation, stems and professional delivery — repair and ship real mixes.', route: 'AdvancedMixingLab', member: true, tileBlurb: 'Routing, parallel paths, phase, stems and delivery.' },
       // Mastering Lab (owner build order 2026-10-01): the stage after the
       // mix — what mastering can and cannot change, the room, the tools, the
       // workflow, loudness at matched level, delivery, a fictional EP.
-      { name: 'Mastering Lab: From Final Mix to Release', blurb: 'The final listening, decision-making and delivery stage — what a master can and cannot change, the room, the tools, loudness at matched level, and delivering to the destination’s current spec.', route: 'MasteringLab', member: true },
+      { name: 'Mastering Lab: From Final Mix to Release', blurb: 'The final listening, decision-making and delivery stage — what a master can and cannot change, the room, the tools, loudness at matched level, and delivering to the destination’s current spec.', route: 'MasteringLab', member: true, tileBlurb: 'What mastering can and cannot change before release.' },
       // MIXING GUIDES (owner 2026-10-07): a written reference, one guide per
       // music style — what its audience expects and where to start the mix.
       // Members-only. Hidden on store builds until the owner approves
@@ -305,8 +331,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Audio Pre-Production', blurb: 'Turn a vague brief into a production a crew can actually run — scope, deliverables, people, schedule and budget — and leave with a Production Packet that shows its own gaps.', route: 'PreProdLab', params: { lab: 'preprod' }, member: true },
-      { name: 'Audio Post-Production', blurb: 'Take a folder of recordings through to a delivery somebody has accepted — ingest, sync, edit, mix, finish to specification, and prove the files arrived intact — leaving a Delivery Package and an archive that can still be opened years later.', route: 'PostProdLab', params: { lab: 'postprod' }, member: true },
+      { name: 'Audio Pre-Production', blurb: 'Turn a vague brief into a production a crew can actually run — scope, deliverables, people, schedule and budget — and leave with a Production Packet that shows its own gaps.', route: 'PreProdLab', params: { lab: 'preprod' }, member: true, tileBlurb: 'From a vague brief to a plan a crew can actually run.' },
+      { name: 'Audio Post-Production', blurb: 'Take a folder of recordings through to a delivery somebody has accepted — ingest, sync, edit, mix, finish to specification, and prove the files arrived intact — leaving a Delivery Package and an archive that can still be opened years later.', route: 'PostProdLab', params: { lab: 'postprod' }, member: true, tileBlurb: 'From a folder of recordings to an accepted delivery.' },
     ],
   },
   // Live Sound Reinforcement (owner brief + GO 2026-09-25): the last lab before
@@ -320,19 +346,19 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Sound Systems Lab', blurb: 'Begin with an empty venue; finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system — fourteen chapters, a venue builder, a live console, an operating walk-through and a twenty-two-fault bench.', route: 'SoundSystemsLab', member: true },
+      { name: 'Sound Systems Lab', blurb: 'Begin with an empty venue; finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system — fourteen chapters, a venue builder, a live console, an operating walk-through and a twenty-two-fault bench.', route: 'SoundSystemsLab', member: true, tileBlurb: 'A live sound system, from an empty venue to a working show.' },
       // DJ Systems Lab (owner GO 2026-10-18): 24 screens on one shared
       // two-deck booth (all in builds 39/23). Members only — nothing free for
       // a guest. Credit [MD:R3]: like every training lab it has no leaf `key`
       // (those are the af_* labs); its completion key is tr_dj, found by this
       // route in trainingLabKeys.ts (added 2026-10-27).
-      { name: 'DJ Systems Lab', blurb: 'Connect, cue, mix and troubleshoot a two-deck DJ booth — safe listening, the gear, cables and levels, building the system, gain and meters, headphone cue, faders, EQ and filters, beatmatching, grids and sync, cues, loops and samples.', route: 'DJSystemsLab', member: true },
+      { name: 'DJ Systems Lab', blurb: 'Connect, cue, mix and troubleshoot a two-deck DJ booth — safe listening, the gear, cables and levels, building the system, gain and meters, headphone cue, faders, EQ and filters, beatmatching, grids and sync, cues, loops and samples.', route: 'DJSystemsLab', member: true, tileBlurb: 'How a two-deck DJ booth is connected, cued and mixed.' },
       // Stage Plot and Channel Designer (owner GO 2026-11-12, listed 2026-11-13
       // [MD:D60] (n)): a working tool — a band's stage, its channel list, its
       // monitors and the packet for the venue. Members only. Credit: its
       // guided task (all five steps done on one stage plot), key tr_stage_plot
       // in trainingLabKeys.ts, found by this route.
-      { name: 'Stage Plot and Channel Designer', blurb: 'Draw a band’s stage, connect each performer and instrument to a channel list, plan the monitor mixes, answer the review, and make the packet a venue’s sound engineer works from.', route: 'StagePlotLab', member: true },
+      { name: 'Stage Plot and Channel Designer', blurb: 'Draw a band’s stage, connect each performer and instrument to a channel list, plan the monitor mixes, answer the review, and make the packet a venue’s sound engineer works from.', route: 'StagePlotLab', member: true, tileBlurb: 'The stage plot and input list a venue works from.' },
     ],
   },
   // Game Audio (owner plan 2026-11-12, listed 2026-11-13 [MD:D60] (e)): a
@@ -346,7 +372,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Game Audio Lab', blurb: 'How a game asks for sound, and how the audio side answers — events and game information, variation and loops, distance and walls, music and dialogue, the mix and its budgets, testing, and the real tools.', route: 'GameAudioLab', member: true },
+      { name: 'Game Audio Lab', blurb: 'How a game asks for sound, and how the audio side answers — events and game information, variation and loops, distance and walls, music and dialogue, the mix and its budgets, testing, and the real tools.', route: 'GameAudioLab', member: true, tileBlurb: 'How a game asks for sound, and how the audio side answers.' },
     ],
   },
   {
@@ -359,7 +385,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Equalizer', blurb: 'One EQ band: bell, shelves or pass filters, with frequency, gain and Q.', route: 'EqLab' },
       // LIVE (slice 1, owner 2026-08-07): its own home + Seeing Frequency module.
-      { name: 'EQ Lab', blurb: 'See, hear, manipulate and diagnose frequency content — live spectrum, filters, training.', route: 'EqLabHome' },
+      { name: 'EQ Lab', blurb: 'See, hear, manipulate and diagnose frequency content — live spectrum, filters, training.', route: 'EqLabHome', tileBlurb: 'See and hear what EQ does to frequency content.' },
     ],
   },
   {
@@ -375,7 +401,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Limiter', blurb: 'Brickwall ceiling, release, gain reduction (GR).', route: 'LimiterLab' },
       // LIVE V1 (owner brief 2026-09-02): the family hub opens with the De-Esser
       // & Sibilance Control lab; the other processors are listed as planned.
-      { name: 'Smart Processors Lab', blurb: 'Processors that listen, decide and act — first up: the De-Esser & Sibilance Control lab.', route: 'SmartProcessorsLab' },
+      { name: 'Smart Processors Lab', blurb: 'Processors that listen, decide and act — first up: the De-Esser & Sibilance Control lab.', route: 'SmartProcessorsLab', tileBlurb: 'Processors that listen and act, starting with the de-esser.' },
     ],
   },
   {
@@ -435,7 +461,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'FM Synthesis', blurb: 'Carrier + modulator: ratio, index, and sidebands.', route: 'FmLab' },
       { name: 'Modular Synth', blurb: 'VCO · VCF · VCA · LFO · envelope · sequencer — signal flow and patching.', route: 'ModularLab' },
       // LIVE (owner brief 2026-09-02): the Sound Envelope & Transients Lab.
-      { name: 'Sound Envelope & Transients Lab', blurb: 'Attack, transient, decay, sustain, release, duration — how a sound evolves over time at its source.', route: 'EnvelopeLab' },
+      { name: 'Sound Envelope & Transients Lab', blurb: 'Attack, transient, decay, sustain, release, duration — how a sound evolves over time at its source.', route: 'EnvelopeLab', tileBlurb: 'How a sound starts, holds and fades over time.' },
       // REMOVED 2026-09-17 (owner): 'Sample Lab' placeholder — returns in a
       // future update. See the note on DEV_NOTE.
     ],
@@ -463,14 +489,14 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
       // LIVE (owner build spec 2026-09-02): the former 'Tunings Lab'
       // placeholder, built as the fourteen-chapter Tuning & Temperament Lab.
-      { name: 'Tuning & Temperament Lab', blurb: 'How musical scales are built, heard, and compared — pure fifths, the comma, Just, meantone, and equal temperament.', route: 'TuningLab' },
+      { name: 'Tuning & Temperament Lab', blurb: 'How musical scales are built, heard, and compared — pure fifths, the comma, Just, meantone, and equal temperament.', route: 'TuningLab', tileBlurb: 'How musical scales are built, heard and compared.' },
       // Drum Tuning Lab (owner spec 2026-10-01; moved here from Instruments &
       // Recording by the owner the same day): prepare, tune, listen to and
       // troubleshoot acoustic drums on a synthesized membrane model — seven
       // chapters, each with a named interactive. Member-only like its
       // neighbours (the training section); `member: true` stated anyway so
       // the gate never depends on the section alone.
-      { name: 'Drum Tuning Lab', blurb: 'Prepare, tune, listen to and troubleshoot acoustic drums — turn one rod and hear the warble, even out a head lug by lug, compare batter/resonant relationships, tune a snare, toms and a kick for a stated sound, build the tom range, diagnose by symptom.', route: 'DrumTuningLab', member: true },
+      { name: 'Drum Tuning Lab', blurb: 'Prepare, tune, listen to and troubleshoot acoustic drums — turn one rod and hear the warble, even out a head lug by lug, compare batter/resonant relationships, tune a snare, toms and a kick for a stated sound, build the tom range, diagnose by symptom.', route: 'DrumTuningLab', member: true, tileBlurb: 'How acoustic drums are tuned, lug by lug, head by head.' },
     ],
   },
   {
@@ -492,7 +518,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // LIVE Phase 1 (owner GO 2026-09-16, spec docs/APE_CYMATICS_LAB_SPEC_2026_09_16.md):
       // standalone lab home + Chladni Plate Studio + theory/integrity modules
       // + guided experiments. Liquid / membrane / harmony / art phases follow.
-      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, a liquid dish on a shaker, a drumhead and a loudspeaker cone — build a plate, drive it with a tone, watch sand find the still lines; shake a liquid past its Faraday threshold; tune a drum and hear why a timpani has a pitch; sweep a cone into breakup; save, color, compare and print your patterns. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
+      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, a liquid dish on a shaker, a drumhead and a loudspeaker cone — build a plate, drive it with a tone, watch sand find the still lines; shake a liquid past its Faraday threshold; tune a drum and hear why a timpani has a pitch; sweep a cone into breakup; save, color, compare and print your patterns. Why a frequency has no shape of its own.', route: 'CymaticsLab', tileBlurb: 'Sound made visible on plates, liquid, drums and cones.' },
       { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
     ],
   },
@@ -503,6 +529,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     description: 'Real instruments and capturing them well.',
     section: 'training',
     kind: 'list',
+    // Microphone Selection first in the group (quick win 12, 2026-11-14).
+    firstLab: 'Microphone Selection Lab',
     labs: [
       { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔︎ intervals.', route: 'BassLab' },
       // REMOVED 2026-09-17 (owner): 'Instrument Recording Lab' placeholder —
@@ -510,7 +538,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // LIVE (owner spec 2026-08-12): 9 lessons + Choose-the-Mic challenge +
       // optional mic-locker exercise. Selection & characteristics only — the
       // physics/technique labs stay separate.
-      { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab' },
+      { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab', tileBlurb: 'What makes one mic right for a job: specs, type, pattern.' },
     ],
     // MIKING LABS (owner GO 2026-10-04, plan §6: "inside Training Labs, as a
     // Miking Labs section in the Instruments & Recording area"). One tile per
@@ -525,7 +553,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     families: mikingVisible() ? [
       {
         name: 'Miking Labs',
-        labs: readyLabs().map((l) => ({ name: l.family, blurb: l.familyBlurb, countLine: mikingLessonCount(lessonsOf(l.id).length), route: 'MikingHub' as const, params: { lab: l.id }, member: true })),
+        labs: withMikingTileBlurbs(readyLabs().map((l) => ({ name: l.family, blurb: l.familyBlurb, countLine: mikingLessonCount(lessonsOf(l.id).length), route: 'MikingHub' as const, params: { lab: l.id }, member: true }))),
       },
     ] : [],
   },
@@ -545,7 +573,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     // LIVE (owner brief 2026-09-02): "How Human Speech Works" — visual, paged.
-    labs: [{ name: 'Speech & Voice Lab', blurb: 'How human speech works — anatomy, voicing, vowels and formants, consonants, plosives, sibilance, distance, voices, problems.', route: 'SpeechLab' }],
+    labs: [{ name: 'Speech & Voice Lab', blurb: 'How human speech works — anatomy, voicing, vowels and formants, consonants, plosives, sibilance, distance, voices, problems.', route: 'SpeechLab', tileBlurb: 'How human speech works: voicing, vowels, consonants.' }],
   },
   {
     id: 'electronics',
@@ -555,7 +583,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Vacuum Tube Fundamentals', blurb: 'How a tube amplifies by controlling electron flow — with an Electron View that shows the invisible.', route: 'TubeLab' },
+      { name: 'Vacuum Tube Fundamentals', blurb: 'How a tube amplifies by controlling electron flow — with an Electron View that shows the invisible.', route: 'TubeLab', tileBlurb: 'How a tube amplifies by steering a flow of electrons.' },
       // The planned 'Cable Troubleshooting Lab' and 'Audio Connectors and
       // Connections Lab' rows were REMOVED (owner ruling 2026-08-15) —
       // superseded by the free Cable & Connector Fundamentals lab (CableLab).
@@ -565,7 +593,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // "coming soon" row here was redundant and misleading.
       // LIVE (owner build spec 2026-09-02): the former 'Amplifier Types Lab'
       // placeholder, built as the eight-module Amplifier Principles Lab.
-      { name: 'Amplifier Principles Lab', blurb: 'From transistors and transformers to amplifier classes — what the amplifier is doing, what load it sees, and where the energy comes from.', route: 'AmpLab' },
+      { name: 'Amplifier Principles Lab', blurb: 'From transistors and transformers to amplifier classes — what the amplifier is doing, what load it sees, and where the energy comes from.', route: 'AmpLab', tileBlurb: 'What an amplifier does, and where its energy comes from.' },
     ],
   },
   {
@@ -579,7 +607,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       {
         name: 'Ear Training Lab',
         blurb: 'Frequencies, EQ moves, bands, noise colors and more — generated test signals, fair scoring, and the analyzer view of every answer.',
-        route: 'EarTrainingLab',
+        route: 'EarTrainingLab', tileBlurb: 'Frequencies, EQ moves and noise colors, heard and scored.',
       },
     ],
   },
@@ -648,11 +676,14 @@ export function sectionCategories(section: LabSection): LabCategory[] {
  *  any extraLabs. */
 export function categoryLabRows(cat: LabCategory): LabLeaf[] {
   if (cat.kind === 'hub') return cat.extraLabs ?? [];
-  return [
+  const rows = [
     ...(cat.families ?? []).flatMap((f) => f.labs),
     ...(cat.labs ?? []),
     ...(cat.extraLabs ?? []),
   ];
+  // `firstLab` (2026-11-14): that one lab leads the subject's rows.
+  const lead = cat.firstLab ? rows.findIndex((l) => l.name === cat.firstLab) : -1;
+  return lead > 0 ? [rows[lead], ...rows.slice(0, lead), ...rows.slice(lead + 1)] : rows;
 }
 
 /** Every category rendered as uniform lab ROWS. A hub becomes ONE row that opens

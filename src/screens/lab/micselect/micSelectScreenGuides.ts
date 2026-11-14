@@ -13,7 +13,7 @@
  * Every name is the on-screen name in MicSelectLabScreen.tsx /
  * micSelectData.ts / polarStage.tsx (chip labels, headings, verdict words,
  * buttons), the shared LabEndScreen / LabUnderstandingCheck, and the
- * CHECK YOURSELF card (foundations/bits.tsx). Every verdict quoted in a TRY
+ * CHECK YOURSELF card (micCheck.tsx, since 2026-11-14). Every verdict quoted in a TRY
  * THIS is what the screen computes for that choice — the polar verdicts from
  * polarR() at each neighbour's bearing (picked up ≥ 0.6, partial 0.25–0.6),
  * the SPL verdicts from SPL_MATCH, the challenge answers from CHALLENGE_*,
@@ -51,7 +51,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   types: {
     intro: {
       learning: 'Builds on Microphone Principles: the main microphone families, and why some names say how a mic turns sound into signal while others only describe its design or body.',
-      start: 'Read the Moving-Coil Dynamic card down to IMPORTANT LIMITATION. Then tap COMPARE, pick Moving-Coil Dynamic and Condenser, and read the two cards side by side.',
+      start: 'Read the Moving-Coil Dynamic card down to IMPORTANT LIMITATION. Then tap COMPARE (Moving-Coil Dynamic stays as your first pick), tap Condenser, and read the two cards side by side.',
     },
     seeing: [
       'Twelve mic types with photos. Four are named for how they turn sound into signal (Moving-Coil Dynamic, Condenser, Electret Condenser, Ribbon), eight for their design or form, from Large-Diaphragm to Contact.',
@@ -60,13 +60,13 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     ],
     control: [
       'Under TAP A MICROPHONE, tap one to show its card. Moving-Coil Dynamic shows first.',
-      'Tap COMPARE, then pick two mics to see their cards side by side. Tap COMPARING to go back to one card.',
+      'Tap COMPARE: the mic on show stays as your first pick; tap a second to see the two cards side by side. Tap COMPARING to go back to one card.',
       'Tap the photo on a card (⤢) to see it bigger.',
       'Tap NEXT: CHARACTERISTICS THAT MATTER › at the bottom, or use the strip under the title, to move between lessons. Tap the readout in the strip for the list of lessons. ‹ leaves the lab.',
     ],
     changes: [
       'The card follows the mic you tap. Its class line reads TRANSDUCER PRINCIPLE when the name is about the parts inside, or DESIGN / FORM FACTOR when it’s about the body around them.',
-      'In COMPARE, a third pick replaces the older of your two.',
+      'In COMPARE, a third pick replaces the older of your two; tapping a picked mic again takes it out.',
       'Every card ends on a limitation, because no type is best at everything.',
     ],
     teaches: [
@@ -156,7 +156,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     ],
     control: [
       'Tap a curve chip: Relatively flat (shown first), Presence rise (3–6 kHz), Low-frequency rolloff, Extended high-frequency response or Strongly shaped (application-voiced).',
-      'In CHECK YOURSELF, tap an answer. A wrong one gives a hint; the right one gives the reason. ▾ folds the card.',
+      'In CHECK YOURSELF, tap an answer. A wrong one says why that one is not it (a second wrong pick adds the explanation); the right one gives the reason. ▾ folds the card.',
       'Tap NEXT: SENSITIVITY, NOISE & SPL ›, or use the strip, to move on.',
     ],
     changes: [
@@ -303,7 +303,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     ],
     control: [
       'Tap a group to list its jobs, then tap a job to show its card. Live vocal shows first.',
-      'In CHECK YOURSELF, tap an answer for a hint or the reason.',
+      'In CHECK YOURSELF, tap an answer: a wrong one says why it is not it, the right one gives the reason.',
       'Tap NEXT: CHOOSE THE MICROPHONE ›, or use the strip, to move on.',
     ],
     changes: [
@@ -388,7 +388,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
 export const MICSEL_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the lab’s lessons fit together into one way of choosing a microphone, starting from the job, the place and the source.',
-    start: 'Answer the four questions under CHECK YOUR UNDERSTANDING. If one stumps you, open REVIEW ▾, tap the lesson it comes from, then come back and try again.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. If a question stumps you, open REVIEW ▾ and the lesson it comes from.',
   },
   seeing: [
     'You’ve reached the end of the lab. The title reads WHAT’S LEFT until every step is opened (the optional mic locker too) and the check is passed; then it reads LAB COMPLETE.',
@@ -396,7 +396,7 @@ export const MICSEL_END_GUIDE: ScreenGuide = {
     'REVIEW ▾ lists the lessons you’ve opened, and the check once you pass it.',
   ],
   control: [
-    'Tap the answer you think is right. CORRECT shows why; NOT QUITE — TRY ANOTHER gives the reason, and you can pick again straight away.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
     'Tap a lesson row to go back to it. The CHECK row, last in the list, scrolls down to the questions.',
     'PRACTICE AGAIN FROM THE START reopens Lesson 1. DONE · BACK TO LABS leaves the lab.',
   ],

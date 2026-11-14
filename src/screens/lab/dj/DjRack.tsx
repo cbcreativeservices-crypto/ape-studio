@@ -243,6 +243,9 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
   );
 }
 
+/** The DJ lab's own "sound off" line (S3 soundOffLine). */
+export const DJ_SOUND_OFF_LINE = 'Sound off? Every step still works: the meters, the readouts and the drawing show what you would hear.';
+
 export function DjRack({ spec, children }: { spec: DjRackSpec; children: ReactNode }) {
   const { height: winH } = useWindowDimensions();
   const render = spec.render;
@@ -257,6 +260,10 @@ export function DjRack({ spec, children }: { spec: DjRackSpec; children: ReactNo
         fullScreen: true,
         badge: spec.badge,
         bezel: spec.bezel,
+        // The silent learner (lab fix round 2026-11-14, phase 2, F2; S3): the
+        // booth renders with sound off, so every meter, readout and goal
+        // still works — said once, at the top of the well, while sound is off.
+        soundOffLine: DJ_SOUND_OFF_LINE,
         hideDragTag: false,
         render: (w, h) => <DjStageHost w={w} h={h} render={render} />,
       }}

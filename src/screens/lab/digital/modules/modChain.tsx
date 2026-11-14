@@ -130,6 +130,10 @@ const ADC_CHECK: CheckSpec = {
     'No clipping — rounded peaks are normal',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Digital clipping is flat and sheared, and the meter would hit 0 dBFS. Here the peaks are rounded.',
+    2: 'Rounded tops mean something saturated. A healthy wave keeps its true shape.',
+  },
   reveal:
     'Rounded (not flat-topped) peaks with the digital meter never reaching 0 dBFS is the analog stage saturating — a separate event, earlier in the chain, at the preamp. Digital full-scale clipping cuts hard, flat tops exactly at 0 dBFS. Either way, the flattened information is gone before it is ever stored.',
   wrongHint: 'Look at the SHAPE of the peaks and where the digital meter topped out.',
@@ -175,8 +179,8 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
         onGuide: () => help('gain_staging'),
         bezel: [
           { k: 'PEAK', v: r.digitalOver ? '0.0 OVER' : `${r.recPeakDb.toFixed(1)} dBFS`, helpKey: 'gain_staging' },
-          { k: 'SNR', v: `${r.snrDb.toFixed(0)} dB`, helpKey: 'gain_staging' },
-          { k: 'HEADROOM', v: r.digitalOver ? 'none' : `${r.headroomDb.toFixed(1)} dB`, helpKey: 'gain_staging' },
+          { k: 'SNR', v: `${r.snrDb.toFixed(0)} dB`, helpKey: 'gain_staging', caption: 'signal vs hiss' },
+          { k: 'HEADROOM', v: r.digitalOver ? 'none' : `${r.headroomDb.toFixed(1)} dB`, helpKey: 'gain_staging', caption: 'room to clip' },
           {
             k: 'ZONE',
             v: r.analogClip && r.digitalOver ? 'A+D CLIP' : r.analogClip ? 'AN. CLIP' : r.zone,
@@ -319,10 +323,14 @@ const FLOAT_CHECK: CheckSpec = {
     'Your float master bus peaks at +4 dBFS. You render straight to a 24-bit fixed file WITHOUT trimming. What is in the file?',
   options: [
     'The intact mix — the file remembers it was float',
-    'A mix clipped flat at 0 dBFS — everything above full scale is sheared off',
+    'A mix clipped flat at 0 dBFS — the excess is sheared off',
     'The mix, automatically turned down to fit',
   ],
   correctIdx: 1,
+  why: {
+    0: 'A fixed-point file cannot store values above full scale. Compare the two panels.',
+    2: 'Nothing turns it down unless you do. That is what TRIM is for.',
+  },
   reveal:
     'Fixed point has no numbers above full scale, so everything over 0 dBFS is sheared flat at the render. The float headroom was real INSIDE the mix path — but it has to be trimmed below 0 dBFS BEFORE meeting any fixed-point stage (renders, converters, most outputs), or it clips there.',
   wrongHint: 'Fixed point simply has no way to write a number bigger than full scale.',

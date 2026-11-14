@@ -22,6 +22,7 @@ import { SP_BOX_MAX, SP_BOX_SIZES, spAddBox, spAutoAssignBoxes, spBox, spBoxFeed
 import type { SpId, SpStageBox, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { spmBoxReturnLines } from '../monitors/monitorPlan';
 import { useSpEditor } from '../spContext';
+import { placeOnStage } from '../spIssueActions';
 import { Button, Choice, Count, FocusMark, HelpTip, Note, NumberField, RowCard, Section, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
 import { SP_SUPPLIERS, spBoxSocketLines } from './inputsLogic';
@@ -297,9 +298,11 @@ export function BoxEditor({ boxId, onClose, onLeaveForStage }: { boxId: SpId; on
           label={o ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'}
           onPress={() => {
             onLeaveForStage();
-            ed.goTo('stage', o ? { kind: 'object', id: o.id } : { kind: 'box', id: boxId });
+            // PLACE really places (2026-11-14): one edit, then the stage with the box selected
+            if (o) ed.goTo('stage', { kind: 'object', id: o.id });
+            else placeOnStage(ed, { kind: 'box', id: boxId });
           }}
-          a11yLabel={o ? `Locate ${spBoxName(b)} on the stage` : `Go to the stage to place ${spBoxName(b)}`}
+          a11yLabel={o ? `Locate ${spBoxName(b)} on the stage` : `Place ${spBoxName(b)} on the stage and show it there`}
         />
       </View>
 

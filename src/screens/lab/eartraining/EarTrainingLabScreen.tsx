@@ -98,6 +98,7 @@ export function EarTrainingLabScreen() {
       />
       {ending ? (
         <LabEndScreen
+          labId="ear-training"
           labTitle="Ear Training Lab"
           // UNREADABLE is not "not tried" (D51): no per-row state is claimed.
           units={unreadable || !progress ? EAR_MODULES.map((m) => ({ id: m.id, label: m.title })) : earEndUnits(EAR_MODULES, progress?.modules)}

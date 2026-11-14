@@ -54,6 +54,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { noiseScreenGuide } from './noiseScreenGuides';
 import { StageAspectReport } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
@@ -235,6 +236,8 @@ export function NoiseLabScreen() {
   return (
     <LabShell
       labId="noise"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the noise (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="noise" labTitle="Noise Lab" onOpen={stopNoise} />}
       title="NOISE LAB"
       subtitle="Colors · Slopes · Energy per octave"
       intro={INTRO}
@@ -259,6 +262,8 @@ export function NoiseLabScreen() {
         initialParam: 'color',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? Each color still shows its tilt: watch the line and SLOPE.',
           size: 'M',
           // The rack's ⤢ FULL SCREEN (full-screen build 2026-09-30). The slope
           // chart draws through a viewBox that follows the box's shape, so
@@ -277,8 +282,10 @@ export function NoiseLabScreen() {
               tint: NOISE_TINTS[color],
               flex: 1.3,
               helpKey: color,
+              // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+              caption: 'how it tilts',
             },
-            { k: 'OUT', v: `${outDb} dBFS` },
+            { k: 'OUT', v: `${outDb} dBFS`, caption: 'output level' },
           ],
           render: (w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31).

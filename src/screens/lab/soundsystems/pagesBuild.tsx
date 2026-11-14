@@ -28,14 +28,14 @@
  * into a line input) renders as a warning, not a shrug.
  */
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/primitives';
 import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
 import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLinks, linkCarries, outChoices, pairIndex, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
 import { isIemPair, OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
-import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
+import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, linkWarning, type Capstone } from '../../../features/soundsystems/capstones';
 import type { ConsoleState } from '../../../features/soundsystems/console';
 import { markCapstonePassed } from '../../../features/soundsystems/progress';
 import type { ConsoleOut, GearKind, Link, SlotId, SoundSystem } from '../../../features/soundsystems/types';
@@ -48,13 +48,14 @@ import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, m
 import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
-import { usePageMemory } from './pageMemory';
+import { goalsScopeOf, setGoalsLeft, usePageMemory } from './pageMemory';
+import { venueSentence } from './fixHelpers';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
 
 type Msg = { text: string; unsafe?: boolean; ok?: boolean };
 
-export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
+export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM, capstoneId: string | null = null) {
   // The plot survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
   const [system, setSystem] = usePageMemory<SoundSystem>('system', initial);
   const [part, setPart] = useState<GearKind | null>(null);
@@ -94,7 +95,11 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
           const b = system.placed.find((p) => p.id === id)!;
           const nth = pairIndex(v.system, v.link);
           const pick = nth > 0 ? ` A second cable — tap OUTPUT ${nth + 1} to choose the console output it carries.` : gearSpec(b.kind).radiates && carriesOutputs(v.system, v.link) ? ' Tap OUTPUT to choose the console output it carries.' : '';
-          setMsg({ text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.${pick}`, ok: true });
+          // A cable the engine accepts but the brief does not (around the
+          // mix, past the stagebox or the processor, a second cable from one
+          // mic) reads △ with the reason, not a green ✓ (lab fix 2026-11-14, F2).
+          const warn = linkWarning(capstoneId ? { id: capstoneId } : null, system, v.system, selected, id);
+          setMsg(warn ? { text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}. ${warn}` } : { text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.${pick}`, ok: true });
           setSelected(id);
         } else {
           setMsg({ text: v.reason, unsafe: v.unsafe });
@@ -109,7 +114,7 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
       const p = system.placed.find((x) => x.id === id);
       if (p) setMsg({ text: `${gearSpec(p.kind).name} selected. Tap another device to connect from it; tap REMOVE to take it off the plot.` });
     },
-    [selected, system],
+    [selected, system, capstoneId],
   );
 
   // Only the tapped cable goes — its twin between the same pair stays.
@@ -162,6 +167,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
   const carried = selLink ? carriedWord(linkCarries(b.system, selLink, b.walk)) : '';
   const fedByEach = selLinks.length > 1 ? selLinks.map((l) => `${gearSpec(b.system.placed.find((p) => p.id === l.from)!.kind).name} · ${carriedWord(linkCarries(b.system, l, b.walk)) || OUT_UNSET}`).join(', ') : '';
   const inHand = b.part ? gearSpec(b.part) : null;
+  const freeTargets = b.targets.filter((t) => !b.system.placed.some((p) => p.slot === t));
   const items = kinds.map((k) => ({ id: k }));
   const exhausted = (k: GearKind) => !gearSpec(k).many && b.system.placed.some((p) => p.kind === k);
   const params: DockParam[] = [
@@ -209,6 +215,19 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
                 because at a readable size neighbouring names overlap on the plot. */}
             {b.targets.length ? <Text style={styles.small}>STANDS AT · {b.targets.map((t) => slotDef(t).label).join(', ')}</Text> : null}
           </View>
+        </View>
+      ) : null}
+      {/* The free positions as buttons too (lab fix round 2026-11-14, F2):
+          on the plot two needed positions can sit closer than a finger
+          (Center cluster over Sub · center, capstone 2), so every position
+          the part may take is also one plain tap here. */}
+      {inHand && freeTargets.length ? (
+        <View style={styles.slotRow} accessibilityRole="list" accessibilityLabel={`Positions for the ${inHand.name.toLowerCase()}`}>
+          {freeTargets.map((t) => (
+            <Pressable key={t} onPress={() => b.tapSlot(t)} style={styles.slotChip} accessibilityRole="button" accessibilityLabel={`Place at ${slotDef(t).label}`}>
+              <Text style={styles.slotText}>{slotDef(t).label}</Text>
+            </Pressable>
+          ))}
         </View>
       ) : null}
       {b.msg ? <VerdictLine ok={!!b.msg.ok} warn={!b.msg.ok && !b.msg.unsafe}>{b.msg.unsafe ? '⚠ ' : ''}{b.msg.text}</VerdictLine> : null}
@@ -476,7 +495,7 @@ function hearsList(cs: ConsoleState, h: RouteUi['hears'][number]) {
 }
 
 function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
-  const built = useBuilder();
+  const built = useBuilder(EMPTY_SYSTEM, capstone.id);
   // A capstone that never opens the console starts it with its sub buses
   // preset (SS-R2-04, capstoneConsole) — the page says so below the brief.
   const [cs, setCs] = usePageMemory<ConsoleState>('console', () => capstoneConsole(capstone));
@@ -484,6 +503,13 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   // (bug hunt 2026-09-29: it used to leave the console as routed).
   const b = { ...built, reset: () => { built.reset(); setCs(capstoneConsole(capstone)); } };
   const grade = useMemo(() => gradeCapstone(capstone, b.system, cs), [capstone, b.system, cs]);
+  // The end screen names this capstone's unmet requirements (lab fix round
+  // 2026-11-14, phase 2, F2; pageMemory.goalsLeftLine).
+  const scope = goalsScopeOf(ctx);
+  const unmetKey = grade.unmet.join('|');
+  useEffect(() => {
+    setGoalsLeft(scope, unmetKey ? unmetKey.split('|').map((id) => capstone.requirements.find((r) => r.id === id)?.text ?? id) : []);
+  }, [scope, unmetKey, capstone]);
   useEffect(() => {
     if (grade.pass) {
       markCapstonePassed(capstone.id);
@@ -551,12 +577,12 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   );
   const r = useBuilderRack(b, capstone.bin, {
     console: consoleParam,
-    bezel: { k: 'REQS', v: grade.pass ? 'PASS' : `${grade.met.length}/${capstone.requirements.length}`, tint: grade.pass ? colors.green : colors.amber, flex: 1 },
+    bezel: { k: 'REQS', caption: 'checklist', v: grade.pass ? 'PASS' : `${grade.met.length}/${capstone.requirements.length}`, tint: grade.pass ? colors.green : colors.amber, flex: 1 },
     wellTop: requirements,
     title: { title: capstone.title, subtitle: `Capstone ${capstone.n} of 10 · ${capstone.venue}` },
   });
   return (
-    <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} of 10 · ${capstone.venue}. Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
+    <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} of 10 · ${venueSentence(capstone.venue)} Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
       <ChapterTag n={capstone.n}>{`CAPSTONE ${capstone.n} OF 10 · ${capstone.venue.toUpperCase()}`}</ChapterTag>
       <Body>{capstone.brief}</Body>
       {!capstone.routing && capstone.bin.some((k) => k === 'poweredSub' || k === 'passiveSub') ? <Text style={styles.small}>{CONSOLE_PRESET_NOTE}</Text> : null}
@@ -581,6 +607,9 @@ export const SS_BUILD_PAGES: SsPageDef[] = [
 const styles = StyleSheet.create({
   hand: { flexDirection: 'row', gap: 10, alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#1a1409', padding: 8 },
   inspect: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  slotRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  slotChip: { minHeight: 36, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1a1409', paddingHorizontal: 10, paddingVertical: 6 },
+  slotText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5 },
   small: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   why: { color: colors.orange, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, marginLeft: 30 },
   status: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8 },

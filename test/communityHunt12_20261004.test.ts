@@ -103,7 +103,8 @@ describe('H12-2 Career Finder hub: an unreadable record is not a fresh start (K2
     // so "will not be saved" became the present-tense truth.
     // (guestEphemeral 2026-10-04: a known guest gets the "erased when you
     // close the app" line in the trust line's place.)
-    assert.match(branch, /\{saving \? \(guest \? FINDER_INTRO\.guestTrust : upsell \? FINDER_INTRO\.trust : 'Your answers stay on this phone\.'\) : 'Your saved answers couldn’t be read on this phone, so new answers aren’t being saved\. Reopen the Career Finder to retry\.'\}/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(branch, /\{saving \? \(guest \? FINDER_INTRO\.guestTrust : upsell \? FINDER_INTRO\.trust : 'Your answers stay on this device\.'\) : 'Your saved answers couldn’t be read on this device, so new answers aren’t being saved\. Reopen the Career Finder to retry\.'\}/);
   });
 });
 

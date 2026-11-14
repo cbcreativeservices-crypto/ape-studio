@@ -83,8 +83,18 @@ export const STANDARD_LINE = 'These are suggested starting points, not rules. Pu
  * it sits". `thing`: the lesson's word for the instrument ("drum", "guitar
  * and its amp"); `plural`: a lesson about several (the hand-drum pairs).
  */
+/** "a" or "an" by the SOUND of the word (fix round 2026-11-14, F9 item 4:
+ *  the vowel-letter rule printed "an euphonium" and "an ukulele"). A "you" or
+ *  "w" sound takes "a" (euphonium, ukulele, unit, one); a silent h takes "an". */
+export function articleFor(word: string): 'a' | 'an' {
+  const w = word.trim().toLowerCase();
+  if (/^(eu|uk|uni(?!n)|use|usu|usa|ure|uri|uti|ute|ubiq|one\b|once\b)/.test(w)) return 'a';
+  if (/^(hour|honest|honor|heir)/.test(w)) return 'an';
+  return /^[aeiou]/.test(w) ? 'an' : 'a';
+}
+
 export function journeyIntro(noun: { one: string; many: string; person?: boolean }, thing?: string, plural = false): string {
-  const a = /^[aeiou]/i.test(noun.one) ? 'an' : 'a';
+  const a = articleFor(noun.one);
   if (noun.person) {
     // A person is never "it" (Lab 7b review 2026-10-08): their voice, them.
     const who = `the ${thing ?? noun.one}`;

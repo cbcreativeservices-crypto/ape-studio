@@ -121,17 +121,17 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING and the lab’s title, then four questions: what WIDTH changes, a fold to mono at 200%, why bass goes mono, and a correlation near −1.',
-      'Each card has a question and its choices. A right answer turns green and its number becomes ✓; CORRECT or NOT QUITE — TRY ANOTHER heads the explanation.',
+      'Each card has a question and its choices. A right answer turns green and its number becomes ✓; CORRECT heads the explanation, NOT QUITE — TRY ANOTHER a pointer.',
       'When all are right, it reads: Every question answered correctly — the check is passed.',
     ],
     control: [
-      'Tap a choice. A wrong one shows its explanation in amber; pick another straight away. Nothing is lost and there is no score.',
+      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away. Nothing is lost and there is no score.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. Leave the lab before the last one and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     changes: [
-      'Every answer shows its explanation, right or wrong, so each question adds to what you know about width and mono.',
+      'A right answer shows its explanation; a wrong one points you back to what to look at, so each question adds to what you know about width and mono.',
       'Get all four right and the check is passed.',
       'A pass is kept: come back later and the check shows as already cleared.',
     ],
@@ -155,7 +155,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
 export const STEREO_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A look back at stereo imaging: how WIDTH, a mono fold, mono bass and CORRELATION shape what a mono listener hears.',
-    start: 'Read WHAT’S LEFT. If the check’s row is still there, tap it to go back to CHECK. Otherwise tap ‹ BACK TO THE LAB to keep listening.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'Under Where you are: the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once you’ve passed the check. If saved progress can’t be read, it says YOUR PROGRESS.',

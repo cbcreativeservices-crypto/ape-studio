@@ -196,8 +196,10 @@ describe('#5 · every stepped picker over a lesson list goes through the few-sto
 
 describe('#23 · direction lanes read "left/right of center"', () => {
   it('aimWords / aimShort', () => {
-    assert.equal(venue.aimWords(0), 'centre');
-    assert.equal(venue.aimWords(0.4), 'centre');
+    // Changed on purpose (lab fix round 2026-11-14, F9): US spelling. Owner, 2026-11-14:
+    // "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.equal(venue.aimWords(0), 'center');
+    assert.equal(venue.aimWords(0.4), 'center');
     assert.equal(venue.aimWords(20), '20° left of center');
     assert.equal(venue.aimWords(-35.2), '35° right of center');
     assert.equal(venue.aimShort(20), '20°L');

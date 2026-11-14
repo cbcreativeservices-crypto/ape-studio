@@ -39,6 +39,9 @@ export function SpeechLabScreen() {
       // (WHERE YOU ARE).
       pageGuide={speechPageGuide}
       endGuide={SPEECH_END_GUIDE}
+      // WHAT'S LEFT (fix round 2026-11-14, S2 §4): the one hands-on page names
+      // what is missing; reading pages get the shared NEXT rule once.
+      pageDetail={(i) => (i === 10 ? 'Still to do: five right answers on this page.' : undefined)}
       // A CONCEPT lab (owner chip rule 2026-10-31): no live microphone and no
       // real-world measurement — its numbers are typical teaching values the
       // pages label "illustrative" themselves — so no accuracy note; the ⓘ

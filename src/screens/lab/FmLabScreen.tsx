@@ -270,6 +270,8 @@ export function FmLabScreen() {
         initialParam: 'index',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? INDEX and RATIO still redraw the sticks: watch them spread and move.',
           size: 'L', // the spectrum IS the lab (lockstep hero) — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge:
@@ -278,15 +280,17 @@ export function FmLabScreen() {
               : 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · EACH AT FC ± k·FM',
           onGuide: () => openLesson('display'),
           bezel: [
-            { k: 'FC', v: `${carrier} Hz`, helpKey: 'carrier' },
-            { k: 'FM', v: `${fm.toFixed(0)} Hz`, helpKey: 'ratio' },
-            { k: 'I', v: index.toFixed(1), helpKey: 'index' },
+            // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'FC', v: `${carrier} Hz`, helpKey: 'carrier', caption: 'the note' },
+            { k: 'FM', v: `${fm.toFixed(0)} Hz`, helpKey: 'ratio', caption: 'the shaker' },
+            { k: 'I', v: index.toFixed(1), helpKey: 'index', caption: 'how hard' },
             {
               k: 'BW',
               v: `${(carson / 1000).toFixed(1)} kHz`,
               // Top of the Carson band past Nyquist = folding — the bezel flags it red.
               tint: pastNyquist ? '#ff6b5e' : undefined,
               helpKey: 'display',
+              caption: 'how wide',
             },
           ],
           render: (w, h) => (

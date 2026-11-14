@@ -47,11 +47,13 @@ import type { PageCtx } from '../kit/PagedLab';
 import { LabEndScreen, type LabEndUnit } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from '../kit/LabNavBar';
 import type { SsPageDef } from './rackLayout';
-import { PageMemoryKey, clearPageMemory } from './pageMemory';
+import { PageMemoryKey, clearPageMemory, goalsLeftLine } from './pageMemory';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { getLabPreview } from '../../../features/lab/labPreviewStore';
 import { setSoundSystemsSaveBlocked } from '../../../features/soundsystems/progress';
 import { safeGoBack } from '../../../lib/safeGoBack';
+// A finished MODE reads "<MODE> COMPLETE" (lab fix round 2026-11-14, F2).
+import { modeCompleteTitle, SS_HOW_A_PAGE_COUNTS } from './fixHelpers';
 // Screen Guide (owner 2026-10-31): the header ⓘ + the stepped "this screen,
 // explained" overlay. The guides live in soundsystemsScreenGuides.ts.
 import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
@@ -261,7 +263,10 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone, pageGuid
   const def = pagesWithCheck[page];
   const Page = def.Component;
   const isDone = !!progress?.completed.includes(page);
-  const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
+  const memoryKey0 = `${labId}:${page}`;
+  // goalsScope: where the page reports its missing goals for the end screen
+  // (lab fix round 2026-11-14, phase 2, F2; pageMemory.goalsScopeOf).
+  const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, goalsScope: memoryKey0 } as PageCtx;
   const rack = !!def.rack;
   // Per-page working state survives PREV / NEXT for the session
   // (pageMemory.ts, bug hunt 2026-09-29).
@@ -272,7 +277,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone, pageGuid
   const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
     check && i === pages.length
       ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
-      : { id: String(i), label: p.title },
+      : { id: String(i), label: p.title, detail: goalsLeftLine(`${labId}:${i}`) },
   );
   const endCleared = new Set<string>();
   pagesWithCheck.forEach((_, i) => {
@@ -330,7 +335,10 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone, pageGuid
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
           <LabEndScreen
+            labId={labId}
             labTitle={title}
+            completeTitle={modeCompleteTitle(title)}
+            howItCounts={SS_HOW_A_PAGE_COUNTS}
             units={endUnits}
             cleared={endCleared}
             unreadable={unreadable}

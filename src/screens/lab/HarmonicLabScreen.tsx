@@ -32,6 +32,8 @@ import { EngineGate } from '../tools/EngineGate';
 import { HarmonicsView } from './HarmonicsView';
 import { harmonicScreenGuide } from './harmonicScreenGuides';
 import { LabShell } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
+import { stopAllSound } from '../../features/audio/panicMute';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -57,6 +59,10 @@ export function HarmonicLabScreen(_props: Props) {
       {({ rack, headerAction, renderWell, view }) => (
         <LabShell
           labId="harmonic"
+          // FINISH · SEE WHAT'S LEFT under the CHECK (fix round 2026-11-14, S2). The tone
+          // lives in HarmonicsView, which unwinds on the sound-stop signal
+          // (useStopWhenSilenced), so stopAllSound stops it.
+          checkEnd={<LabCheckEnd labId="harmonic" labTitle="Harmonic Lab" onOpen={stopAllSound} />}
           title="HARMONIC LAB"
           subtitle="Additive Synthesis · Spectrum · Distortion"
           intro={INTRO}

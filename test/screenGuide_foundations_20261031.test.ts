@@ -223,7 +223,9 @@ describe('3. TRY THIS numbers are the numbers the screen prints', () => {
         assert.equal(`${((343 * tMs) / 1000).toFixed(2)} m · ${tMs.toFixed(1)} ms`, lane(c, f), `display = lane at w=${w}, c=${c}, ${f} Hz`);
       }
     }
-    assert.match(t('m7'), /The PROBE lane reads 1\.56 m/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): house slang "lane" became "slider".
+    assert.match(t('m7'), /The PROBE slider reads 1\.56 m/);
     assert.doesNotMatch(t('m7'), /one wavelength, one period/);
   });
   it('M12: BRIGHT bars — the 6 px floor makes H5 and H6 the same height, and the guide says so', () => {
@@ -278,7 +280,9 @@ describe('4–5. wiring, and the accuracy chip decision (concept screens: chip o
     assert.doesNotMatch(PLAY, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     assert.match(PLAY, /const levelDb = Math\.round\(-48 \+ lvl01 \* 32\);/);
     assert.match(PLAY, /<View style=\{\[styles\.root, \{ paddingTop: insets\.top \+ 10 \}\]\}>\s*<ScreenGuideHost>\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.header\}>/);
-    assert.match(PLAY, /<ScreenGuideKey title="FOUNDATIONS PLAYGROUND" guide=\{PLAYGROUND_SCREEN_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): the header takes the menu tile's name.
+    assert.match(PLAY, /<ScreenGuideKey title="SOUND PLAYGROUND" guide=\{PLAYGROUND_SCREEN_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
     assert.match(PLAY, /<\/ScreenGuideHost>\s*<\/View>\s*\);\s*\}/);
   });
 });

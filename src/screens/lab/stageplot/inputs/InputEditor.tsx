@@ -56,6 +56,7 @@ import {
 } from '../../../../features/stageplot/spModel';
 import type { SpAudience, SpCapture, SpDestination, SpId, SpInput, SpPatchId, SpPhantom, SpPriority, SpStand, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
+import { placeOnStage } from '../spIssueActions';
 import { Button, Choice, Fields, FocusMark, MoreDetails, Note, NumberField, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
 import { SP_CUE_HINT, SP_MAX_CHANNEL, SP_NOBODY, SP_PHANTOM_HINT, SP_SUPPLIERS, spBoxFreeSocket, spBrokenPairDi, spInSentence, spListWords, spMonoChoice, spPairMonoWithDi, spSameNumber, spSameSocket, spSocketSub } from './inputsLogic';
@@ -167,7 +168,9 @@ export function InputEditor({
 
   const locate = () => {
     onLeaveForStage();
-    ed.goTo('stage', object ? { kind: 'object', id: object.id } : { kind: 'input', id: inputId });
+    // PLACE really places (2026-11-14): one edit, then the stage with the symbol selected
+    if (object) ed.goTo('stage', { kind: 'object', id: object.id });
+    else placeOnStage(ed, { kind: 'input', id: inputId });
   };
 
   const makeMono = () => {
@@ -318,7 +321,7 @@ export function InputEditor({
         <Button
           label={object ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'}
           onPress={locate}
-          a11yLabel={object ? `Locate ${input.label} on the stage` : `Go to the stage to place ${input.label}`}
+          a11yLabel={object ? `Locate ${input.label} on the stage` : `Place ${input.label} on the stage and show it there`}
         />
         {source ? <Button label="EDIT THE SOURCE" tone="plain" onPress={() => onOpenSource(source.id)} a11yLabel={`Edit the source ${source.label}`} /> : null}
       </View>

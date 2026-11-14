@@ -7,7 +7,7 @@ import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.
 export const G02: ScreenGuide = {
   intro: {
     learning: 'How a game asks for sound: an event starts a sound, and a parameter changes a sound that is already playing, with nothing restarted.',
-    start: 'Turn SOUND on, press OPEN DOOR, then switch GEN 1 on. Move the SPEED slider while the generator runs and read the activity log: no new START appears.',
+    start: 'Press OPEN DOOR, then switch GEN 1 on. Move SPEED while the generator runs and read the activity log: no new START appears. Turn SOUND on to hear it; with sound off, the log still shows it.',
   },
   seeing: [
     'You are looking down on a courtyard and a workshop. You are the figure on the stone path; the generator is in the workshop.',

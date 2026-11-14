@@ -29,6 +29,7 @@ import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
 import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
 import { createLaneFeed, type LaneFeed } from '../rack/laneFeed';
+import { NOT_HEARD, SoundOffLine, useSoundOff } from '../rack/silentPath';
 import type { PageCtx } from '../kit/PagedLab';
 import { persistAllowed } from '../../../features/commercial/tier';
 import { useTier } from '../../../features/commercial/useTier';
@@ -369,8 +370,14 @@ export interface MixPlayback {
   pending: string | null;
   /** Measurements, available once ready. */
   measured: Record<string, { peakDb: number; rmsDb: number }>;
-  /** Ids that have been listened to (for listening-goal chips). */
+  /** Ids that have been listened to, OR (sound off) pressed and looked at:
+   *  the listening-goal chips read this. THE SILENT PATH (lab fix round,
+   *  phase 2, 2026-11-14): with sound off a ▶ press used to do nothing, so 9
+   *  of Beginning Mixing's 16 pages could never be finished silently ("13
+   *  pages still to finish"). */
   heard: readonly string[];
+  /** The ids in `heard` that were only LOOKED AT, with sound off. */
+  studied: readonly string[];
   /** The variant whose requested play could not sound because its clips
    *  failed to load (K8, hunt 11 2026-10-04) — its row shows the shared
    *  AUDIO_UNAVAILABLE_MESSAGE. Cleared by the next press or a good render. */
@@ -392,7 +399,9 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   const [active, setActive] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [measured, setMeasured] = useState<Record<string, { peakDb: number; rmsDb: number }>>({});
-  const [heard, setHeard] = useState<string[]>([]);
+  const [heardBySound, setHeard] = useState<string[]>([]);
+  const [studied, setStudied] = useState<string[]>([]);
+  const heard = useMemo(() => (studied.length ? [...new Set([...heardBySound, ...studied])] : heardBySound), [heardBySound, studied]);
   const [failed, setFailed] = useState<string | null>(null);
   const playerRef = useRef<EarClipPlayer | null>(null);
   const idsRef = useRef<string[]>([]);
@@ -525,6 +534,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     setPending(null);
     setMeasured({});
     setHeard([]);
+    setStudied([]);
     setFailed(null);
     idsRef.current = [];
     pendingRef.current = null;
@@ -711,7 +721,13 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       cancelReplay();
       setFailed(null);
       void (async () => {
-        if (!(await requestAudioOutput())) return;
+        if (!(await requestAudioOutput())) {
+          // THE SILENT PATH: sound stays off, so this version is LOOKED AT
+          // (the page's drawing and notes show it; onPick already moved the
+          // drawing) and its listening goal can still be met.
+          if (aliveRef.current && !isAudioOutputEnabled()) setStudied((s) => (s.includes(id) ? s : [...s, id]));
+          return;
+        }
         if (!aliveRef.current || !focusedRef.current) return;
         // REFS, not `status`: the gate above is an await, and this closure's
         // `status` is the value from the render that created it. idsRef is set
@@ -753,8 +769,12 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   // blur (owner 2026-09-29; see the focus note above).
   useStopOnClose(stopAll);
 
-  return { status, play, stop, active, pending, measured, heard, failed };
+  return { status, play, stop, active, pending, measured, heard, studied, failed };
 }
+
+/** The mixing labs' own sound-off line (phase 2): it sits above every ▶ row. */
+export const MIX_SOUND_OFF_LINE =
+  'Sound off? Tap ▶ anyway: each version counts as looked at, not heard, so the page can still be finished. The drawing and the note under the buttons show what you would hear.';
 
 /** A/B(/C…) comparison row driven by useMixPlayback. The RENDERING banner
  *  shows only when the pending variant belongs to THIS row, and the pressed
@@ -775,8 +795,11 @@ export function AbPlayer({
 }) {
   const pendingHere = pb.pending != null && variants.some((v) => v.id === pb.pending);
   const failedHere = pb.failed != null && variants.some((v) => v.id === pb.failed);
+  const soundOff = useSoundOff();
+  const lookedHere = variants.filter((v) => pb.studied.includes(v.id)).map((v) => v.label);
   return (
     <View style={styles.ab}>
+      <SoundOffLine text={MIX_SOUND_OFF_LINE} />
       <Row>
         {variants.map((v) => {
           const isActive = pb.active === v.id;
@@ -806,6 +829,9 @@ export function AbPlayer({
         <Text style={styles.unavailable} accessibilityRole="alert">
           {AUDIO_UNAVAILABLE_MESSAGE}
         </Text>
+      ) : null}
+      {soundOff && lookedHere.length ? (
+        <Text style={styles.abNote} accessibilityLiveRegion="polite">{`Looked at (${NOT_HEARD}): ${lookedHere.join(' · ')}.`}</Text>
       ) : null}
       {note ? <Text style={styles.abNote}>{note}</Text> : null}
     </View>

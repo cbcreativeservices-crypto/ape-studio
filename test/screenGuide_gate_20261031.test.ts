@@ -137,7 +137,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(GUIDES.explore.control.join(' '), /THRESH fader from −50 to −20 dB/);
     assert.match(GATE, /choices: \[0, 10, 100\]\.map\(\(ms\) => \(\{ label: `\$\{ms\} ms`, value: ms \}\)\)/);
     assert.match(GUIDES.explore.control.join(' '), /HOLD: 0, 10 or 100 ms/);
-    assert.match(GATE, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb \},\s*\{ k: 'RANGE', paramId: P\.rangeDb \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(GATE, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb(?:, caption: '[^']*')? \},\s*\{ k: 'RANGE', paramId: P\.rangeDb(?:, caption: '[^']*')? \},\s*\]/);
     assert.match(GATE, /pollGr: 'gate'/);
     assert.match(code('src/screens/lab/FxLabScreen.tsx'), /maxDb=\{pollGr === 'gate' \? 70 : 30\}/);
     assert.match(GUIDES.explore.seeing.join(' '), /0 to 70 dB/);

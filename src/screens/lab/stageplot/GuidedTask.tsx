@@ -3,14 +3,22 @@
  * place the performers, add what each one plays or sings, assign monitors, answer the
  * review, make the packet.
  *
- * It is closed until asked for, it never blocks anything, and a user working
- * on a real gig can ignore it. Each step is judged from the project itself
+ * It never blocks anything, and a user working on a real gig can ignore it
+ * (its own line says so). Each step is judged from the project itself
  * (spGuidedSteps), never from a button press, and is shown as done or still
  * to do in words and with a mark; there is no "N of total".
+ *
+ * OPEN ON A PLOT STARTED FROM A BLANK STAGE (owner 2026-11-14, approving the
+ * beginner audit's quick win 13: "open the GUIDED TASK by default on a blank
+ * stage and drop '(OPTIONAL)'"). That plot is the one the task completes
+ * the lab on, and the five steps were the newcomer's best path, closed and
+ * marked optional. On a plot started from an example band the steps stay
+ * closed until asked for (the task earns nothing there). HIDE THE STEPS is
+ * the user's own choice and is kept while the app is open.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { spGuidedSteps, type SpGuidedStep } from '../../../features/stageplot/spReview';
+import { SP_GUIDED_TITLE, spGuidedOpenByDefault, spGuidedSteps, type SpGuidedStep } from '../../../features/stageplot/spReview';
 import { colors, fonts } from '../../../theme/tokens';
 import { useSpEditor, type SpAreaId } from './spContext';
 import { Button, Section } from './spForm';
@@ -31,22 +39,23 @@ export const SP_GUIDED_EARNS_EXAMPLE = 'This plot started from an example band, 
 export const SP_GUIDED_EARNS_UNKNOWN = 'This plot is for practice: only a plot started from a blank stage completes this lab.';
 export const spGuidedEarns = (p: { startedBlank: boolean; startedFrom: string }): string => (p.startedBlank ? SP_GUIDED_EARNS_BLANK : p.startedFrom ? SP_GUIDED_EARNS_EXAMPLE : SP_GUIDED_EARNS_UNKNOWN);
 
-/** Open or closed, remembered while the app is open: a visit to another
- *  area (often through a step's GO) does not close the steps (S3-07). */
-let stepsOpen = false;
+/** The user's own SHOW / HIDE, remembered while the app is open: a visit to
+ *  another area (often through a step's GO) does not undo it (S3-07). null
+ *  until they press the button: the default above then decides. */
+let stepsChoice: boolean | null = null;
 
 export function GuidedTask() {
   const ed = useSpEditor();
-  const [open, setOpenState] = useState(stepsOpen);
+  const [open, setOpenState] = useState(stepsChoice ?? spGuidedOpenByDefault(ed.project));
   const setOpen = (next: (o: boolean) => boolean) =>
     setOpenState((o) => {
-      stepsOpen = next(o);
-      return stepsOpen;
+      stepsChoice = next(o);
+      return stepsChoice;
     });
   // Worked out only while the steps are on screen.
   const steps = useMemo(() => (open ? spGuidedSteps(ed.project, ed.exported) : []), [open, ed.project, ed.exported]);
   return (
-    <Section title="GUIDED TASK (OPTIONAL)" hint={`Five steps from an empty stage to a packet. ${spGuidedEarns(ed.project)} Working on a real gig? Skip this and build what you need.`}>
+    <Section title={SP_GUIDED_TITLE} hint={`Five steps from an empty stage to a packet. ${spGuidedEarns(ed.project)} Working on a real gig? Skip this and build what you need.`}>
       <Button label={open ? 'HIDE THE STEPS' : 'SHOW THE STEPS'} onPress={() => setOpen((o) => !o)} a11yLabel={open ? 'Hide the guided task steps' : 'Show the guided task steps'} />
       {open
         ? steps.map((s) => {

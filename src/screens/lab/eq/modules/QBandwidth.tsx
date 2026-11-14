@@ -39,6 +39,11 @@ const CHECK: CheckSpec = {
   correctIdx: 0,
   reveal:
     'Higher Q = narrower bandwidth. It’s the counterintuitive part: a BIGGER Q number affects a SMALLER frequency region. Q = center frequency ÷ bandwidth.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    1: 'Q works the opposite way to the width it sounds like. Watch the bell as you move Q down.',
+    2: 'Gain changes how much, not how wide.',
+  },
   wrongHint: 'Q works opposite the apparent width — and gain changes amount, not width.',
 };
 
@@ -79,8 +84,8 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
         badge: 'ghosts: Q 0.5 · Q 8',
         bezel: [
           // The live dual readout, then the deliberately frozen parameters.
-          { k: 'Q', v: q.toFixed(2) },
-          { k: 'BW', v: `${bwOct.toFixed(2)} oct` },
+          { k: 'Q', caption: 'how wide', v: q.toFixed(2) },
+          { k: 'BW', caption: 'width, octaves', v: `${bwOct.toFixed(2)} oct` },
           { k: 'FREQ', v: fmtHz(FREQ), tint: '#7a7f8a' },
           { k: 'GAIN', v: `+${GAIN_DB.toFixed(1)} dB`, tint: '#7a7f8a' },
         ],

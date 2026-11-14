@@ -206,7 +206,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.create, bezel, params, initialParam: 'length', hideDragTag: true }}
-      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's color. Tap VIEW on the readouts to switch between plan and side view."
+      caption="Drag a corner to reshape the room, or slide LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's color. Tap VIEW on the readouts to switch between plan and side view."
       wellTop={
         <View style={styles.summary}>
           <Text style={styles.summaryLine}>

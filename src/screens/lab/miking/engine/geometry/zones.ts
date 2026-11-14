@@ -156,9 +156,17 @@ export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boole
   return true;
 }
 
-/** The first zone (lesson order) the pose is in, or null. */
-export function zoneFor(zones: DocumentedZone[], ctx: ZoneCtx, pose: MicPose): string | null {
+/** The first zone (lesson order) the pose is in, or null. `prefer` (fix round
+ *  2026-11-14, F9 item 3): the zone the learner last PICKED with the ZONE key
+ *  wins while the pose is still inside it. Zones overlap (Foley Footsteps:
+ *  "Farther back" sits inside "In front, a little to one side"), and the first
+ *  zone in lesson order used to swallow the pick, so the words, the ZONE cell
+ *  and the activity ignored the zone the learner had just chosen. */
+export function zoneFor(zones: DocumentedZone[], ctx: ZoneCtx, pose: MicPose, prefer?: string | null): string | null {
   'worklet';
+  if (prefer) {
+    for (let i = 0; i < zones.length; i++) if (zones[i].id === prefer && inZone(zones[i], ctx, pose)) return prefer;
+  }
   for (let i = 0; i < zones.length; i++) if (inZone(zones[i], ctx, pose)) return zones[i].id;
   return null;
 }

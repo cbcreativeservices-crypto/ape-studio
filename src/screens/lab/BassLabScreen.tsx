@@ -50,6 +50,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -391,6 +392,8 @@ export function BassLabScreen() {
   return (
     <LabShell
       labId="bass"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the note (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="bass" labTitle="Bass Guitar Lab" onOpen={stopNote} />}
       title="BASS GUITAR LAB"
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
@@ -418,6 +421,8 @@ export function BassLabScreen() {
         initialParam: 'fret',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? FRET and NODE still show the note, the length and the interval.',
           size: 'L', // the fretboard IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'FRETS AT REAL SPACING FROM THE FRET EQUATION — BRIDGE ← NUT',
@@ -492,7 +497,10 @@ export function BassLabScreen() {
                 // watch the vibrating length shrink by the same RATIO each step.
                 value: fret / NUM_FRETS,
                 onChange: (v) => setFret(Math.min(NUM_FRETS, Math.max(0, Math.round(v * NUM_FRETS)))),
-                format: () => (fret === 0 ? 'OPEN' : `FRET ${fret} of ${NUM_FRETS}`),
+                // The lane and the drag bubble print the LABEL beside this value
+                // ("FRET  3 of 12"), so the value never repeats the word
+                // (novice audit 2026-11-14: the bubble read "FRET FRET 3 of 12").
+                format: () => (fret === 0 ? 'OPEN' : `${fret} of ${NUM_FRETS}`),
                 formatShort: () => (fret === 0 ? 'OPEN' : `${fret}/${NUM_FRETS}`),
                 helpKey: 'fret',
               }

@@ -38,6 +38,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachine';
 import { HarmonographViewer } from './HarmonographViewer';
 import { harmonographScreenGuide } from './harmonographScreenGuides';
@@ -423,6 +424,8 @@ export function HarmonographLabScreen() {
   return (
     <LabShell
       labId="harmonograph"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the interval (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="harmonograph" labTitle="Harmonograph Lab" onOpen={stopInterval} />}
       title="HARMONOGRAPH LAB"
       subtitle="Frequency Ratios · Intervals · Beating"
       intro={INTRO}
@@ -445,6 +448,8 @@ export function HarmonographLabScreen() {
         initialParam: 'osc1',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? The figure still draws every ratio you pick.',
           size: 'L', // the figure IS the lab — earns the tall glass
           // The rack's ⤢ FULL SCREEN (full-screen build 2026-09-30). The
           // machine is one fixed viewBox, so it zooms whole; the share/print
@@ -456,7 +461,8 @@ export function HarmonographLabScreen() {
           // tag). The bezel is READ-ONLY (owner rule 2026-10-10): the pen
           // controls — FREEZE and a fresh sheet — are in the SHAPE tray.
           bezel: [
-            { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock' },
+            // Plain-word caption on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock', caption: 'swing ratio' },
             { k: 'INTERVAL', v: ratio.interval, flex: 1.5, helpKey: 'ratio_lock' },
             {
               k: 'PEN',

@@ -100,6 +100,11 @@ const CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Zoom in = see less of the room = a narrower frequency region = HIGHER Q. Remember: Q works opposite the apparent width.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'Zooming in shows less of the room, not more. Think about which way the band’s width moves.',
+    2: 'The analogy never maps gain: the camera only aims and zooms.',
+  },
   wrongHint: 'The analogy never maps gain — and zooming IN sees LESS of the room.',
 };
 
@@ -286,10 +291,10 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
         fullScreen: true,
         badge: 'REAL PEAKING RESPONSE AT A FIXED +9 dB — GAIN IS NOT PART OF THE ANALOGY',
         bezel: [
-          { k: 'EQ TYPE', v: STAGE_SHORT[stage], flex: 1.1 },
+          { k: 'EQ TYPE', caption: 'kind of EQ', v: STAGE_SHORT[stage], flex: 1.1 },
           { k: 'FREQ', v: fmtHz(eqFreq) },
-          { k: 'Q', v: stage === 0 ? 'FIXED' : q.toFixed(2) },
-          { k: 'WIDTH', v: stage === 0 ? 'FIXED' : `${bwOct.toFixed(2)} oct` },
+          { k: 'Q', caption: 'how wide', v: stage === 0 ? 'FIXED' : q.toFixed(2) },
+          { k: 'WIDTH', caption: 'zoom', v: stage === 0 ? 'FIXED' : `${bwOct.toFixed(2)} oct` },
         ],
         // One figure, two pixel-aligned panels: the room over the response, on
         // a shared log-frequency axis — held to its own shape and centred so

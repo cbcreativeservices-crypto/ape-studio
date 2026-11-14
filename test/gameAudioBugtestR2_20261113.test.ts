@@ -223,7 +223,11 @@ describe('R2-GA2-01: fault 5 counts only after the removal is tested again, and 
     const h = faultDef('orphan').hints[2];
     assert.match(h, /Press ■ STOP to silence the stray loop\. Then test again: ADD GENERATOR 2, switch it on, REMOVE GENERATOR 2/);
     assert.doesNotMatch(h, /\b(must|always|never)\b/i);
-    assert.match(G19.changes.join(' '), /Fault 5 also needs the stray loop stopped and the removal tested again\./);
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." Every fault now needs its action run again (beginner audit G5b,
+    // page 19: faults 1-4 counted without a re-run, fault 5 needed one), so the guide says that of all
+    // five and keeps only the stray loop as fault 5's own.
+    assert.match(G19.changes.join(' '), /you have run the same action once more\. Fault 5 also needs the stray loop stopped first\./);
   });
 });
 

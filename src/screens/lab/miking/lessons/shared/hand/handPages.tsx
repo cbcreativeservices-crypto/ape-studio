@@ -45,6 +45,7 @@ import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startS
 import { HandPlan, type HandPlanItem, type HandScene } from './HandPlan';
 import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
+import { zoneActivityLine } from '../../../engine/progress/zoneActivity.ts';
 
 export function useFocusedSafe(): boolean {
   try {
@@ -493,7 +494,7 @@ function HandPlacement(spec: HandSpec) {
           const z = lesson.zones.find((q) => q.id === id);
           if (z) {
             rig.setSurfaceId(z.refSurface);
-            rig.jumpTo('A', z.start);
+            rig.jumpTo('A', z.start, z.id);
           }
         },
         options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
@@ -547,7 +548,7 @@ function HandPlacement(spec: HandSpec) {
             <NowLine text={nowLine(rig, ['A'], spec.outside)} />
             {shown.blocked ? <Note tone="warn">{`It would touch ${shown.blocked.label} — the mic stops there. The player’s space comes first.`}</Note> : null}
             {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
-            <Body>{`Activity: rest the mic in 2 zones, clear of the player — done: ${visited.size}${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+            <Body>{zoneActivityLine([...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id), 'the mic', 'clear of the player')}</Body>
             {tried && predicted ? <Note tone="ok">{spec.place.tried(predicted)}</Note> : null}
             {spec.place.notes ? spec.place.notes(rig) : null}
           </>

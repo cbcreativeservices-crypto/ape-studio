@@ -27,7 +27,7 @@ import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuning
 import { holdTuningProgress, isTuningProgressUnreadable, loadTuningProgress, saveTuningProgress, setTuningChapterCount, tuningResetForPractice, type TuningProgress } from '../../../features/tuning/tuningProgress';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { peekSessionWork } from '../../../features/lab/sessionCarry';
-import { CHAPTERS, CHAPTER_COUNT } from './chapters';
+import { CHAPTERS, CHAPTER_COUNT, CHAPTER_FINISH } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
@@ -287,11 +287,21 @@ export function TuningLabScreen() {
     [progress],
   );
   const navGo = useCallback((i: number) => goTo(CHAPTERS[i]?.index ?? 0), [goTo]);
+  // NEXT / FINISH off a chapter that completes on a plain acknowledgement
+  // (ChapterDef.ackDone) is that acknowledgement (novice audit 2026-11-14).
+  // Every other chapter still completes only on its own task.
+  const beforeAdvance = useCallback(
+    (from: number) => {
+      if (CHAPTERS[from]?.ackDone && CHAPTERS[from].index === chapter) markDone();
+    },
+    [chapter, markDone],
+  );
   const nav = useLabNav({
     units,
     index: CHAPTERS.findIndex((c) => c.index === chapter),
     ending,
     go: navGo,
+    beforeAdvance,
     finish,
     unEnd,
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
@@ -330,9 +340,13 @@ export function TuningLabScreen() {
 
       {ending ? (
         <LabEndScreen
+          labId="tuning"
           labTitle="Tuning & Temperament Lab"
           unreadable={unreadable}
-          units={CHAPTERS.map((c) => ({ id: String(c.index), label: c.title }))}
+          // Each unfinished row names its own task (fix round 2026-11-14, S2 §4); a
+          // finished row carries none, and the rule they share is said once.
+          units={CHAPTERS.map((c) => ({ id: String(c.index), label: c.title, detail: endCleared.has(String(c.index)) ? undefined : CHAPTER_FINISH[c.index] }))}
+          howItCounts="A chapter counts once its own task is done, not when it is opened; the line under each chapter names that task."
           cleared={endCleared}
           mode="progress"
           noun="chapter"

@@ -166,7 +166,10 @@ describe('3. every TRY THIS number is what the screen prints', () => {
   });
   it('PROXIMITY: 1 in → +10 dB, 12 in → NONE, OMNI → FLAT', () => {
     assert.match(M, /const t = Math\.max\(0, Math\.min\(1, \(12 - inches\) \/ 11\)\);\s*return Math\.round\(10 \* Math\.pow\(t, 1\.4\) \* 10\) \/ 10;/);
-    assert.match(M, /const inches = Math\.round\(\(12 - d01 \* 11\) \* 10\) \/ 10;/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): DISTANCE runs the same way as
+    // Module 3 (right = farther), still 1–12 in, still starting at 12 in.
+    assert.match(M, /const \[d01, setD01\] = useState\(1\);[\s\S]{0,80}const inches = Math\.round\(\(1 \+ d01 \* 11\) \* 10\) \/ 10;/);
     assert.match(M, /v: directional \? \(boostDb > 0 \? `\+\$\{boostDb\} dB` : 'NONE'\) : 'FLAT'/);
     const t = MIC.proximity.tryThis.join('\n');
     for (const s of ['DIST reads 1 in', 'BOOST reads +10 dB', 'BOOST reads FLAT', '12 in: BOOST reads NONE']) assert.ok(t.includes(s), s);

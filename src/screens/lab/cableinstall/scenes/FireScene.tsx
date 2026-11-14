@@ -58,7 +58,10 @@ import { clamp100 } from '../engine/score';
 import type { CiModuleProps } from '../registry';
 
 /* ── the five-question penetration flow (one rated-wall attempt) ────────── */
-type FlowQ = { id: string; q: string; options: string[]; correctIdx: number; reveal: string; ruleId: string };
+/** `why` = each wrong option's own reason (phase 2 check card, 2026-11-14):
+ *  a wrong pick shows its reason and stays open for another try; the
+ *  `reveal` comes on the right answer or after a second different miss. */
+type FlowQ = { id: string; q: string; options: string[]; correctIdx: number; reveal: string; ruleId: string; why: Record<number, string> };
 
 const FLOW_SPEC =
   'SIMULATED PROJECT DOCUMENTS — Drawing A-401 marks the equipment-room wall as a fire-resistance-rated assembly, slab to slab. The cable schedule lists this run\'s cable as rated for every space on the route. On the truck: a tube of generic "fire-rated" sealant. In the submittals (product documents sent in for approval): a listed firestop system matched to this wall type and this cable bundle.';
@@ -68,11 +71,15 @@ const FLOW: FlowQ[] = [
     id: 'f-assembly',
     q: 'What space/assembly are you about to penetrate?',
     options: [
-      'A fire-resistance-rated assembly — the drawings mark it',
+      'A fire-rated assembly — the drawings mark it',
       'An ordinary partition — treat it like drywall',
       'No way to know, so assume whichever is faster',
     ],
     correctIdx: 0,
+    why: {
+      1: 'The drawings mark this wall. Read them before treating it like drywall.',
+      2: 'Look at the SIMULATED PROJECT DOCUMENTS card: the documents say what this wall is.',
+    },
     reveal: 'The drawings identify it. Reading the assembly from the documents is the step that makes every later decision possible.',
     ruleId: 'wall-verify-assembly',
   },
@@ -80,11 +87,15 @@ const FLOW: FlowQ[] = [
     id: 'f-cable',
     q: 'Does the cable have the right rating for these spaces?',
     options: [
-      'Check the schedule/listing — here the cable is listed for the spaces this run crosses',
+      'Check the schedule: it is listed for every space',
       '"Low voltage" needs no rating anywhere',
       'The jacket color decides',
     ],
     correctIdx: 0,
+    why: {
+      1: '“Low voltage” cable still needs a rating for each space it crosses.',
+      2: 'Color identifies a cable; it never proves its listing.',
+    },
     reveal: 'The space dictates the cable. The schedule confirms this cable\'s listing — without that check the route can be perfect and the installation still wrong.',
     ruleId: 'plan-environment',
   },
@@ -92,11 +103,15 @@ const FLOW: FlowQ[] = [
     id: 'f-listed',
     q: 'Is a listed penetration/firestop system required here?',
     options: [
-      'Yes — a rated-assembly penetration is protected by a tested, listed system',
+      'Yes — a tested, listed system protects it',
       'No — a tight hole seals itself',
       'Only if an inspector is scheduled',
     ],
     correctIdx: 0,
+    why: {
+      1: 'A tight hole still lets fire and smoke through a rated wall.',
+      2: 'The requirement travels with the wall, whoever is watching.',
+    },
     reveal: 'Rated assembly = listed system. The requirement travels with the wall, not with who happens to be watching.',
     ruleId: 'fire-system-not-sealant',
   },
@@ -104,11 +119,15 @@ const FLOW: FlowQ[] = [
     id: 'f-compat',
     q: 'The truck offers the tube of generic "fire-rated" sealant. Compatible and tested for this assembly?',
     options: [
-      'Not verifiable as a system — use the listed system matched to THIS assembly and THESE penetrants',
-      'Yes — the label says fire rated',
-      'Yes, if applied extra thick',
+      'Not as a system — use the listed one for THIS wall',
+      'Yes — the label on the tube says fire rated',
+      'Yes, if it is applied extra thick',
     ],
     correctIdx: 0,
+    why: {
+      1: 'A label on one component is not a tested system for this wall and these cables.',
+      2: 'Thickness does not turn a tube into a listed system.',
+    },
     reveal: 'A tube is a component. The listing covers the assembly, the penetrating items, the annular space (the gap around them) and the materials together — outside its tested system, "fire rated" on a label means nothing.',
     ruleId: 'fire-system-not-sealant',
   },
@@ -116,11 +135,15 @@ const FLOW: FlowQ[] = [
     id: 'f-verify',
     q: 'Submittals in hand, one detail still unclear. Is professional / AHJ verification required?',
     options: [
-      'When anything is unclear — yes: documents, the project team, or the AHJ, before the work',
+      'Yes, when unclear — ask the team or the AHJ first',
       'Never — installers self-certify firestop',
       'Only on government projects',
     ],
     correctIdx: 0,
+    why: {
+      1: 'Firestop is life-safety work: an unclear detail gets checked, not assumed.',
+      2: 'Rated walls are on every kind of project, not only government ones.',
+    },
     reveal: 'Life-safety construction is never a guess. Verification is not weakness — it is the professional behavior the industry\'s documents assume.',
     ruleId: 'fire-when-unsure',
   },
@@ -662,6 +685,16 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
   const spaceAnsRef = useRef(spaceAns);
   const flowAnsRef = useRef(flowAns);
   const firedRef = useRef(completed);
+  // Every pick, in order (phase 2 check card, 2026-11-14). The FIRST pick is
+  // still the scored answer (spaceAns / flowAns, unchanged); later picks are
+  // retries: a wrong pick shows ITS reason and the card stays open; the
+  // explanation comes on the right answer or after a second different miss.
+  const [tries, setTries] = useState<Record<string, number[]>>({});
+  const addTry = (key: string, idx: number) =>
+    setTries((t) => {
+      const prev = t[key] ?? [];
+      return prev.includes(idx) ? t : { ...t, [key]: [...prev, idx] };
+    });
 
   const spacesDone = CI_FIRE_SPACES.every((s) => spaceAns[s.id] != null);
   const flowDone = flowAns.length >= FLOW.length;
@@ -681,6 +714,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
   };
 
   const answerSpace = (id: string, idx: number) => {
+    addTry(id, idx);
     if (spaceAnsRef.current[id] != null) return;
     const next = { ...spaceAnsRef.current, [id]: idx };
     spaceAnsRef.current = next;
@@ -689,6 +723,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
   };
 
   const answerFlow = (qi: number, idx: number) => {
+    addTry(FLOW[qi].id, idx);
     if (flowAnsRef.current.length !== qi) return;
     const next = [...flowAnsRef.current, idx];
     flowAnsRef.current = next;
@@ -713,6 +748,23 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
     value: sel === sp.id,
     onToggle: () => setSel((cur) => (cur === sp.id ? null : sp.id)),
   }));
+
+  /** The learner's latest pick on a card (the first pick when no retry yet). */
+  const lastTry = (key: string, first: number) => {
+    const t = tries[key];
+    return t && t.length ? t[t.length - 1] : first;
+  };
+  /** Right on the first pick or on a retry. */
+  const solvedBy = (key: string, first: number, correct: number) => first === correct || (tries[key] ?? []).includes(correct);
+  /** Right: the explanation. Wrong: that pick's own reason, plus the
+   *  explanation from the second different miss; the card stays open. */
+  const verdictText = (key: string, first: number, correct: number, reveal: string, why: Record<number, string>) => {
+    if (solvedBy(key, first, correct)) return reveal;
+    const t = tries[key] ?? [first];
+    const last = t[t.length - 1];
+    const reason = why[last] ?? 'Look back at the section and the project documents.';
+    return t.length >= 2 ? `${reason} ${reveal}` : `${reason} Try another answer.`;
+  };
 
   const selIdx = sel ? CI_FIRE_SPACES.findIndex((s) => s.id === sel) : -1;
   const selSpace = selIdx >= 0 ? CI_FIRE_SPACES[selIdx] : null;
@@ -809,15 +861,18 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
                   // wrong pick lit up the correct chip and the learner could
                   // not see what they had actually chosen — while the banner
                   // below told them they were wrong.
-                  active={selAns != null && oi === selAns}
-                  disabled={selAns != null}
+                  active={selAns != null && oi === lastTry(selSpace.id, selAns)}
+                  disabled={selAns != null && (solvedBy(selSpace.id, selAns, selSpace.correctIdx) || (tries[selSpace.id] ?? [selAns]).includes(oi))}
                   onPress={() => answerSpace(selSpace.id, oi)}
                 />
               ))}
             </View>
             {selAns != null ? (
               <Appear style={{ gap: 8 }}>
-                <VerdictBanner verdict={selAns === selSpace.correctIdx ? 'correct' : 'wrong'} text={selSpace.reveal} />
+                <VerdictBanner
+                  verdict={solvedBy(selSpace.id, selAns, selSpace.correctIdx) ? 'correct' : 'wrong'}
+                  text={verdictText(selSpace.id, selAns, selSpace.correctIdx, selSpace.reveal, selSpace.why)}
+                />
                 <RuleFeedback ruleId={selSpace.ruleId} verdict={selAns === selSpace.correctIdx ? 'good' : 'bad'} openSources={openSources} />
               </Appear>
             ) : null}
@@ -879,15 +934,18 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
                         key={oi}
                         label={opt}
                         // The learner's own pick (fix 2026-08-28) — see above.
-                        active={answered && oi === ans}
-                        disabled={answered}
+                        active={answered && oi === lastTry(q.id, ans)}
+                        disabled={answered && (solvedBy(q.id, ans, q.correctIdx) || (tries[q.id] ?? [ans]).includes(oi))}
                         onPress={() => answerFlow(qi, oi)}
                       />
                     ))}
                   </View>
                   {answered ? (
                     <Appear style={{ gap: 8 }}>
-                      <VerdictBanner verdict={ans === q.correctIdx ? 'correct' : 'wrong'} text={q.reveal} />
+                      <VerdictBanner
+                        verdict={solvedBy(q.id, ans, q.correctIdx) ? 'correct' : 'wrong'}
+                        text={verdictText(q.id, ans, q.correctIdx, q.reveal, q.why)}
+                      />
                       <RuleFeedback ruleId={q.ruleId} verdict={ans === q.correctIdx ? 'good' : 'bad'} openSources={openSources} />
                     </Appear>
                   ) : null}

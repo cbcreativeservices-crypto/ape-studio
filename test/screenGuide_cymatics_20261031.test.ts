@@ -296,8 +296,13 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(code('src/features/cymatics/materials.ts'), /id: 'wood', label: 'Solid wood', E: 12, Eperp: 0\.9/);
     assert.match(textOf(MODS.change), /Double the size and every mode drops to a quarter; double the thickness and every mode doubles\. A new material moves them too \(Solid wood also re-orders them\)/);
   });
-  it('CHECK: a wrong pick shows the same explanation as a right one — never called a "hint"', () => {
-    assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{got \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>\s*<Text style=\{s\.explainBody\}>\{q\.explanation\}<\/Text>/);
+  it('CHECK: a right pick shows the explanation, a wrong one a reason first — never called a "hint"', () => {
+    // Lab fix round 2026-11-14 (S2, report section 3 row 4), owner approval: "Begin fixing all bugs found and do
+    // obvious ... fixes as you suggested in the report". A FIRST wrong pick no longer shows the explanation (it
+    // usually names the answer): it shows that option's reason / the hint / a nudge; the explanation follows a
+    // SECOND miss, and every right answer. Both heads stay word for word in the card.
+    assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{feedback\.right \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>/);
+    assert.match(code('src/features/lab/checkFeedback.ts'), /return misses\.length >= MISSES_BEFORE_EXPLANATION\s*\? \{ right: false, line, explanation: q\.explanation \}\s*: \{ right: false, line \};/);
     assert.doesNotMatch(textOf(G.CYMATICS_CHECK_GUIDE as unknown as Guide), /\bhint\b/);
   });
   it('ART STUDIO: SYM rotates the tap by 360°/k whatever the figure, so the guide names a fold that matches (4-fold on a square)', () => {

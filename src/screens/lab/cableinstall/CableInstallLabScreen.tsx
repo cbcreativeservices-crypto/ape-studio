@@ -75,6 +75,7 @@ import { MODULE_BODIES } from './scenes';
 import { cardColumn } from '../../../theme/readingColumn';
 import { ScrollLockProvider } from '../scrollLock';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabRecapNext } from '../cable/labEndExtras';
 
 const STEP_KEY = 'ape:ciStep';
 const STATE_KEY = 'ape:ciState';
@@ -448,6 +449,22 @@ export function CableInstallLabScreen() {
    *  it gets the full height and no ScrollView of ours; its well appends the
    *  in-flow NEXT itself (RackUnit under LabNavProvider). */
   const rackStage = !!(mod && Body && mod.rack && !myth);
+  // The INTRO drawing installs itself in about 1.5 s (introSceneArt: last
+  // reveal 740 + 620 ms after a 120 ms start). The guide card waits for it, so
+  // its "watch the drawing install itself" is not read over the drawing
+  // (S1 SN5, 2026-11-14). Reduce Motion draws it at once: no wait.
+  const ciMotion = useCiMotion();
+  const onIntro = step === INTRO_STEP && !myth;
+  const [introAnimating, setIntroAnimating] = useState(onIntro && !ciMotion.reduce);
+  useEffect(() => {
+    if (!onIntro || ciMotion.reduce) {
+      setIntroAnimating(false);
+      return;
+    }
+    setIntroAnimating(true);
+    const id = setTimeout(() => setIntroAnimating(false), 1600);
+    return () => clearTimeout(id);
+  }, [onIntro, ciMotion.reduce]);
   /** The screen the ⓘ explains: the myth card stands in for its stage; the
    *  end screen and its field check each have their own guide. */
   const guideKey: CiScreenKey = myth
@@ -478,7 +495,7 @@ export function CableInstallLabScreen() {
       {/* The guide overlay wraps the root's whole content (its overlay is the
           root's last child); a screen change closes an open guide. Regions
           only on the Rack Unit stage (Stage 11). */}
-      <ScreenGuideHost resetKey={guideKey} regions={rackStage}>
+      <ScreenGuideHost resetKey={guideKey} regions={rackStage} hold={introAnimating}>
       <LabHeader title={CI_TITLE.toUpperCase()} subtitle={CI_SUBTITLE} guide={ciScreenGuide(guideKey)} guideTitle={guideTitle} />
       <LabNavBar nav={nav} />
 
@@ -692,6 +709,16 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
   const overall = useCountUp(overallScore(dims), CI_MOTION.reveal);
   const rows = CI_DIMS.filter((d) => dims[d] != null);
   const worst = weakestDim(dims);
+  // Nothing scored yet: say so, never "OVERALL 0" (beginner audit
+  // 2026-11-14: a learner who walked every page read a big zero).
+  if (rows.length === 0) {
+    return (
+      <View style={styles.profileCard}>
+        <Text style={styles.profileHead}>KNOWLEDGE PROFILE · NOT SCORED YET</Text>
+        <Text style={styles.reviewLine}>Each stage you finish adds its areas here, with a score out of 100.</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.profileCard}>
       <Text style={styles.profileHead}>KNOWLEDGE PROFILE · OVERALL {overall}</Text>
@@ -820,6 +847,9 @@ function CompleteStage({
         </View>
       ) : null}
       <MasteryProfile dims={dims} />
+      {/* The recap and the next-lab card (labEndContent.ts af_cable_install, S4),
+          as the shared end screen draws them. */}
+      <LabRecapNext labId="af_cable_install" complete={done} />
       <Appear delay={CI_MOTION.base} style={{ gap: 8 }}>
         <GlassButton label="VIEW FIELD CHECK" tint="green" height={46} fontSize={13} onPress={onFieldCheck} />
         {canReview ? (

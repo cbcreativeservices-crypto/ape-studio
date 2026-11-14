@@ -274,7 +274,7 @@ const VDROP: Workspace = {
     'modeled (reactance matters on large AC conductors). AWG area from the ASTM B258 definition.',
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
-    { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
+    { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], rangeMsg: 'WIRE GAUGE must be from 40 AWG up to 4/0. Type 1/0 as 0, 2/0 as −1, 3/0 as −2 and 4/0 as −3.', placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
     { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
     { key: 'current', name: 'CURRENT', quantity: 'current', meaning: 'current:load', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', positive: true, warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
     { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },

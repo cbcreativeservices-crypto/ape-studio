@@ -8,7 +8,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { loadPagedProgress } from '../../../features/lab/pagedProgress';
+import { heldPaged, loadPagedProgress, withHeldPages } from '../../../features/lab/pagedProgress';
+import { useLabKeysDone } from '../../../features/lab/labCompletion';
+import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, OpenLabLink, useMixPlayback, useMixPriorities, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
@@ -17,19 +19,37 @@ import { AuxArt, GroupsArt, RoutingMapArt, groupsPullReadout, type GroupComp, ty
 /* ════ 1 · BEFORE YOU BEGIN (the prerequisite gate) ═══════════════════════ */
 
 const BML_PAGE_COUNT = 16;
+/** Beginning Mixing's per-page credit keys (the lab's own PAGE_KEYS). */
+const BML_PAGE_KEYS = Array.from({ length: BML_PAGE_COUNT }, (_, i) => mixingPageKeyAt('beg', i));
+
+/**
+ * Is each Beginning Mixing page done? A page counts when its mark is stored,
+ * held for this session (a guest), or its credit key is banked. The gate used
+ * to read the stored marks alone, so a learner who had pressed START OVER
+ * (PRACTICE) after finishing, or a guest who had just walked it, was told it
+ * was not done (novice audit G4, 2026-11-14). Pure.
+ */
+export function beginningPagesDone(completed: readonly number[], banked: ReadonlySet<string>): number {
+  let n = 0;
+  for (let i = 0; i < BML_PAGE_COUNT; i++) if (completed.includes(i) || banked.has(BML_PAGE_KEYS[i])) n++;
+  return n;
+}
 
 function PageGate({ ctx }: { ctx: PageCtx }) {
-  const [bmlDone, setBmlDone] = useState<boolean | null>(null);
+  const [bmlMarks, setBmlMarks] = useState<number[] | null>(null);
+  const banked = useLabKeysDone(BML_PAGE_KEYS);
   const [passed, setPassed] = useState(0);
   useEffect(() => {
     let alive = true;
     void loadPagedProgress('mixing-beg').then((p) => {
-      if (alive) setBmlDone(p.completed.length >= BML_PAGE_COUNT);
+      if (alive) setBmlMarks(withHeldPages(p, heldPaged('mixing-beg')).completed);
     });
     return () => {
       alive = false;
     };
   }, []);
+  const bmlPagesDone = bmlMarks == null ? null : beginningPagesDone(bmlMarks, banked);
+  const bmlDone = bmlPagesDone == null ? null : bmlPagesDone >= BML_PAGE_COUNT;
   const unlocked = bmlDone === true || passed >= 3;
   const goals = [{ label: bmlDone ? 'Beginning Mixing complete' : 'Prove the foundations (3 checks)', hit: unlocked }];
   const latched = useVisitGoals(ctx, goals);
@@ -45,7 +65,11 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
         <>
           <Card tone="note">
             <Eyebrow>TWO WAYS IN</Eyebrow>
-            <Body>Finish the Beginning Mixing lab (suggested — this lab leans on it constantly), or prove the foundations right here with three checks.</Body>
+            <Body>
+              {bmlPagesDone
+                ? 'You have started Beginning Mixing, and some of its pages still have goals open on this device (its WHAT’S LEFT screen names them). Finish those pages (suggested — this lab leans on them constantly), or prove the foundations right here with three checks.'
+                : 'Finish the Beginning Mixing lab (suggested — this lab leans on it constantly), or prove the foundations right here with three checks.'}
+            </Body>
             <OpenLabLink route="BeginningMixingLab" label="OPEN BEGINNING MIXING" />
           </Card>
           <UnderstandingCheck
@@ -117,6 +141,9 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
   const [seen, setSeen] = useState<Set<string>>(new Set());
   const [checkDone, setCheckDone] = useState(false);
   const [priorities, togglePriority] = useMixPriorities();
+  // A fourth pick is refused by the list (three at most) — and now SAYS so;
+  // it used to do nothing at all (novice audit G4, 2026-11-14).
+  const [overPick, setOverPick] = useState(false);
   const goals = [
     { label: 'Open every planning move', hit: seen.size >= PLANNING.length },
     { label: 'Commit to three priorities', hit: priorities.length >= 3 },
@@ -132,14 +159,22 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>COMMIT — YOUR THREE PRIORITIES</Eyebrow>
-        <Prompt>Not a quiz: a contract with yourself. Pick the THREE things this lab’s session must do — the final page will hold you to them.</Prompt>
+        <Prompt>Not a quiz: a contract with yourself. Pick the THREE things this lab’s session must do — page 20, the final repair, puts them in front of you before you start it.</Prompt>
         <Row>
           {PRIORITY_CHOICES.map((p) => {
             const on = priorities.includes(p.id);
-            return <Btn key={p.id} label={on ? `✓ ${p.name}` : p.name} tone={on ? 'primary' : 'plain'} selected={on} onPress={() => togglePriority(p.id)} a11y={`${on ? 'Remove' : 'Choose'} priority ${p.name}`} />;
+            const press = () => {
+              if (!on && priorities.length >= 3) {
+                setOverPick(true);
+                return;
+              }
+              setOverPick(false);
+              togglePriority(p.id);
+            };
+            return <Btn key={p.id} label={on ? `✓ ${p.name}` : p.name} tone={on ? 'primary' : 'plain'} selected={on} onPress={press} a11y={`${on ? 'Remove' : 'Choose'} priority ${p.name}`} />;
           })}
         </Row>
-        <Body>{priorities.length === 3 ? '✓ Three named. Every decision from here negotiates around these.' : `${priorities.length}/3 chosen — a priority list longer than three is a wish list.`}</Body>
+        <Body>{priorities.length === 3 ? (overPick ? 'Three is the limit. Tap one of your three to drop it, then pick the new one.' : '✓ Three named. Every decision from here negotiates around these.') : `${priorities.length}/3 chosen — a priority list longer than three is a wish list.`}</Body>
       </Card>
       <UnderstandingCheck
         question="Halfway through a dense mix you realize the drums, percussion and two loops all need the same treatment. The planning lesson:"

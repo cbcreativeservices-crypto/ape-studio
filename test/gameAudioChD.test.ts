@@ -48,6 +48,7 @@ import {
   faultActions,
   faultFixed,
   faultOpen,
+  faultRetest,
   faultSet,
   faultStatus,
   faultsOpen,
@@ -225,13 +226,18 @@ describe('page 16 — the bus lane and the words for a bus', () => {
 /* ── 17 · budgets ───────────────────────────────────────────────────────── */
 
 describe('page 17 — the BUDGET lane', () => {
-  it('stops at 1, 2, 4, 8, 12, 16 and no limit, and steps one stop at a time', () => {
-    assert.deepEqual([...BUDGET_STOPS], [1, 2, 4, 8, 12, 16, 0]);
+  it('stops at 1, 2, 4, 8, 16 and no limit, and steps one stop at a time', () => {
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." The stop at 12 is gone (beginner audit G5b, page 17: "BUDGET
+    // moves in steps of 4 (16 → 12 → 8 …), so 'set BUDGET to 8' takes two taps and the learner sees 12
+    // first"): each stop is now half the one above it.
+    assert.deepEqual([...BUDGET_STOPS], [1, 2, 4, 8, 16, 0]);
     for (const n of BUDGET_STOPS) assert.equal(laneToBudget(budgetToLane(n)), n);
     assert.equal(laneToBudget(0), 1);
     assert.equal(laneToBudget(1), 0);
     assert.equal(budgetStep(8, -1), 4);
-    assert.equal(budgetStep(8, 1), 12);
+    assert.equal(budgetStep(8, 1), 16);
+    assert.equal(budgetStep(16, -1), 8, 'one press from the page’s start to the 8 that step 2 asks for');
     assert.equal(budgetStep(16, 1), 0);
     assert.equal(budgetStep(0, 1), 0);
     assert.equal(budgetStep(1, -1), 1);
@@ -614,6 +620,17 @@ const REPRODUCE: Record<FaultId, GaAction[]> = {
   orphan: [{ type: 'addMachine' }, { type: 'machine', id: 'generator-2', on: true }, { type: 'removeMachine', id: 'generator-2' }],
 };
 
+/** The same action run again after the repair, from wherever REPRODUCE left
+ *  the scene: the door key, GUIDE LINE (after ■ STOP, so the line is free),
+ *  STEP: GUIDE twice, STEP: GUIDE, and the whole add-run-remove. */
+const RERUN: Record<FaultId, GaAction[]> = {
+  missingFile: [{ type: 'door' }],
+  wrongBus: [{ type: 'stopAll' }, { type: 'post', event: 'vo_greeting', owner: 'guide' }],
+  repeat: [GUIDE_STEP, GUIDE_STEP],
+  scope: [GUIDE_STEP],
+  orphan: [{ type: 'stopAll' }, ...REPRODUCE.orphan],
+};
+
 describe('page 19 — five faults, each one wrong setting', () => {
   it('there are five, in the brief’s order, each with a title, a symptom, hints and a reason', () => {
     assert.deepEqual([...FAULT_IDS], ['missingFile', 'wrongBus', 'repeat', 'scope', 'orphan']);
@@ -671,6 +688,11 @@ describe('page 19 — five faults, each one wrong setting', () => {
     r = plant(r, 'missingFile');
     assert.equal(faultStatus('missingFile', r.b, r.s), 'active');
     r = repair(drive(r, ...REPRODUCE.missingFile), 'missingFile');
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." Every fault is proved by a re-run (beginner audit G5b, page
+    // 19: faults 1-4 counted as fixed the moment the setting changed, fault 5 needed a re-run).
+    assert.equal(faultStatus('missingFile', r.b, r.s), 'active', 'corrected, not yet run again');
+    r = drive(r, ...RERUN.missingFile);
     assert.equal(faultStatus('missingFile', r.b, r.s), 'fixed');
     assert.equal(nextFault('orphan', r.b, r.s), 'wrongBus', 'a fixed fault is skipped');
     // started and switched straight back: not started again, so it can be started again
@@ -678,9 +700,9 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(faultStatus('scope', back.b, back.s), 'idle');
     for (const id of FAULT_IDS.slice(1)) r = repair(drive(plant(r, id), ...REPRODUCE[id]), id);
     r = drive(r, { type: 'stopAll' });
-    // round 2 (R2-GA2-01): fault 5 also needs the removal tested again
-    assert.equal(faultStatus('orphan', r.b, r.s), 'active');
-    r = drive(r, ...REPRODUCE.orphan);
+    // round 2 (R2-GA2-01): fault 5 also needs the removal tested again; since 2026-11-14 so does each of the others
+    for (const id of FAULT_IDS.slice(1)) assert.equal(faultStatus(id, r.b, r.s), 'active', id);
+    for (const id of FAULT_IDS.slice(1)) r = drive(r, ...RERUN[id]);
     for (const id of FAULT_IDS) assert.equal(faultStatus(id, r.b, r.s), 'fixed', id);
     assert.equal(nextFault('scope', r.b, r.s), null);
   });
@@ -705,9 +727,14 @@ describe('page 19 — five faults, each one wrong setting', () => {
         assert.ok(!faultFixed(id, r.b, r.s), 'the stray loop is still playing');
         r = drive(r, { type: 'stopAll' });
         assert.ok(!faultFixed(id, r.b, r.s), 'silenced, but the removal is not tested again (round 2, R2-GA2-01)');
-        r = drive(r, ...REPRODUCE.orphan);
       }
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." The setting put right is not yet FIXED: the same action has
+      // to run again (before, only fault 5 asked for it).
+      assert.ok(!faultFixed(id, r.b, r.s) && faultOpen(id, r.b, r.s) && faultRetest(id, r.b, r.s), `${id}: corrected, the re-run is owed`);
+      r = drive(r, ...RERUN[id]);
       assert.ok(faultFixed(id, r.b, r.s), `${id}: fixed`);
+      assert.ok(!faultRetest(id, r.b, r.s));
       // no other fault was touched
       for (const other of FAULT_IDS) if (other !== id) assert.ok(!faultFixed(other, r.b, r.s) && r.b[other].seen === 0, `${id} does not count for ${other}`);
     }
@@ -765,14 +792,21 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.ok(gaPlaying(r.s, 'vo_greeting'), 'the line still speaks');
     assert.equal(gaFact(r.s, 'duck'), ducks);
     assert.ok(!texts(r.s, n).some((t) => t.startsWith('DUCK')));
-    assert.ok(faultFixed('wrongBus', r.b, r.s));
-    // the same line again while it speaks is ignored; after it ends, it ducks (the card's reason)
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." Corrected is not yet fixed: the line has to be played again
+    // (it was `faultFixed` here, and the card's reason ended "When the line has ended, play it again").
+    assert.ok(!faultFixed('wrongBus', r.b, r.s) && faultRetest('wrongBus', r.b, r.s));
+    // the same line again while it speaks is ignored, and proves nothing; after it ends, it ducks
     r = drive(r, { type: 'post', event: 'vo_greeting', owner: 'guide' });
     assert.equal(gaFact(r.s, 'duck'), ducks);
-    r = { s: endOneShots(r.s), b: r.b };
+    assert.ok(!faultFixed('wrongBus', r.b, r.s), 'an ignored press is not a re-run');
+    const ended = endOneShots(r.s);
+    r = { s: ended, b: benchAdvance(r.b, r.s, ended) };
     r = drive(r, { type: 'post', event: 'vo_greeting', owner: 'guide' });
     assert.equal(gaFact(r.s, 'duck'), ducks + 1);
-    assert.match(FAULTS[1].why, /When the line has ended, play it again/);
+    assert.ok(faultFixed('wrongBus', r.b, r.s));
+    assert.match(FAULTS[1].retest, /if the guide is still speaking, wait until the line ends/);
+    assert.match(FAULTS[1].why, /Played again after the fix, the line went to the DIALOGUE bus/);
   });
   it('fault 3: every step names take 1, and two steps are not yet a pattern', () => {
     let r = drive(plant(open(), 'repeat'), GUIDE_STEP, GUIDE_STEP);
@@ -783,7 +817,13 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(steps.length, 3);
     for (const t of steps) assert.ok(t.includes('take 1 of 4'), t);
     r = repair(r, 'repeat');
-    assert.ok(r.s.options.variation && faultFixed('repeat', r.b, r.s));
+    // Lab fix round 2026-11-14. Owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report." The takes have to be heard to change: two steps with variation on.
+    assert.ok(r.s.options.variation && !faultFixed('repeat', r.b, r.s));
+    r = drive(r, GUIDE_STEP);
+    assert.ok(!faultFixed('repeat', r.b, r.s), 'one step cannot show that the take changes');
+    r = drive(r, GUIDE_STEP);
+    assert.ok(faultFixed('repeat', r.b, r.s));
   });
   it('fault 4: the guide’s step uses YOUR surface, and cannot show when you share a surface', () => {
     let r = drive(plant(open(), 'scope'), GUIDE_STEP);
@@ -814,7 +854,9 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(settingsWrong(r.s), 5);
     r = drive(r, { type: 'door' }, { type: 'post', event: 'vo_greeting', owner: 'guide' }, ...REPRODUCE.repeat, ...REPRODUCE.orphan);
     for (const id of FAULT_IDS) r = repair(r, id);
-    r = drive(r, { type: 'stopAll' }, ...REPRODUCE.orphan);
+    r = drive(r, { type: 'stopAll' });
+    for (const id of FAULT_IDS) assert.ok(!faultFixed(id, r.b, r.s), `${id}: corrected, not run again`);
+    for (const id of FAULT_IDS) r = drive(r, ...RERUN[id]);
     for (const id of FAULT_IDS) assert.ok(faultFixed(id, r.b, r.s), id);
   });
   it('a fault left in on another page is not this visit’s: the page opens with the settings reset', () => {
@@ -876,7 +918,11 @@ describe('page 19 — five faults, each one wrong setting', () => {
     r = drive(step.r, GUIDE_STEP);
     assert.equal(r.b.scope.seen, 1);
     assert.ok(texts(r.s).includes('TRIGGER foot contact · GUIDE · SWITCH surface = stone'));
-    assert.ok(faultFixed('scope', repair(r, 'scope').b, repair(r, 'scope').s));
+    // 2026-11-14: corrected, then the guide steps again on its own floor
+    assert.ok(!faultFixed('scope', repair(r, 'scope').b, repair(r, 'scope').s));
+    const again = drive(repair(r, 'scope'), GUIDE_STEP);
+    assert.ok(texts(again.s).includes('TRIGGER foot contact · GUIDE · SWITCH surface = wood'));
+    assert.ok(faultFixed('scope', again.b, again.s));
     // from the gravel (neither chip is marked) the same holds
     r = drive(open(), { type: 'move', who: 'player', x: 4.2, y: 7.5 });
     assert.equal(standingOn(r.s), null);

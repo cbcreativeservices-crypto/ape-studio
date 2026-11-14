@@ -295,7 +295,9 @@ describe('2. the guest save reminder before they begin', () => {
       ['src/screens/lab/wave/WaveLabHomeScreen.tsx', /<GuestStartReminder activity="lab:af_wave_physics" \/>/],
       ['src/screens/lab/wave/WaveModuleScreen.tsx', /<GuestStartReminder activity="lab:af_wave_physics"/],
       ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', /<GuestStartReminder activity=\{`lab:\$\{FOUNDATIONS_LAB_KEY\}`\} \/>/],
-      ['src/screens/lab/amplitude/AmplitudeOrientation.tsx', /<GuestStartReminder activity="lab:af_amplitude" \/>\s*<AmplitudeColorBody alsoReviewLab \/>/],
+      // // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+      // (my decision is not required) fixes"): the body reports the passed check.
+      ['src/screens/lab/amplitude/AmplitudeOrientation.tsx', /<GuestStartReminder activity="lab:af_amplitude" \/>\s*<AmplitudeColorBody alsoReviewLab onCheckPassed=\{\(\) => setCheckPassed\(true\)\} \/>/],
       ['src/screens/startHere/StartHereScreen.tsx', /<GuestStartReminder activity="startHere" kind="progress"/],
     ];
     for (const [file, re] of sites) assert.match(read(file), re, file);
@@ -424,10 +426,12 @@ describe('3. Career Finder data on createLocalStore', () => {
     assert.match(read('src/screens/careerfinder/CareerFinderQuizScreen.tsx'), /const hydrated = useCareerFinderFace\(\) !== 'loading';/);
     const res = read('src/screens/careerfinder/CareerFinderResultsScreen.tsx');
     assert.match(res, /'Loading your results…'/);
-    assert.match(res, /'Your saved answers and results could not be read on this phone, so there is nothing to show yet\. Go back and open the Career Finder again to retry\.'/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(res, /'Your saved answers and results could not be read on this device, so there is nothing to show yet\. Go back and open the Career Finder again to retry\.'/);
     assert.match(res, /'No results yet — answer the questions first\.'/);
     // Hunt 13's ★ honesty is kept.
     assert.match(res, /saved \? \(saving \? '★ SAVED' : '★ NOT SAVED'\) : '☆ SAVE'/);
-    assert.match(read('src/screens/careerfinder/CareerFamilyScreen.tsx'), /STARRED — NOT SAVED ON THIS PHONE/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(read('src/screens/careerfinder/CareerFamilyScreen.tsx'), /STARRED — NOT SAVED ON THIS DEVICE/);
   });
 });

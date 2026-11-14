@@ -159,7 +159,8 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(CFG, /\{ label: 'STEREO', value: 0 \},\s*\{ label: 'MONO CHECK', value: 1 \},/);
     assert.match(FX, /label: 'SOURCE',/);
     // bezel readouts WIDTH · PAN · BASS · FOLD; the FOLD cell shortens 'MONO CHECK' to 'MONO' (shortChoice)
-    assert.match(CFG, /bezel: \[\s*\{ k: 'WIDTH', paramId: P\.widthPct \},\s*\{ k: 'PAN', paramId: P\.pan \},\s*\{ k: 'BASS', paramId: P\.bassMonoHz \},\s*\{ k: 'FOLD', paramId: P\.monoFold \},\s*\],/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(CFG, /bezel: \[\s*\{ k: 'WIDTH', paramId: P\.widthPct(?:, caption: '[^']*')? \},\s*\{ k: 'PAN', paramId: P\.pan(?:, caption: '[^']*')? \},\s*\{ k: 'BASS', paramId: P\.bassMonoHz(?:, caption: '[^']*')? \},\s*\{ k: 'FOLD', paramId: P\.monoFold(?:, caption: '[^']*')? \},\s*\],/);
     const shortChoice = (label: string) => {
       if (label.length <= 8) return label;
       const parts = label.split(' ');

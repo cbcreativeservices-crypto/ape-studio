@@ -26,6 +26,13 @@ import {
   useShuffled,
 } from './bits';
 
+/** One wrong pick's own line: what that category is, then the question to ask. */
+export function wrongPickLine(picked: string | null, from: string): string {
+  const c = CARRIED_CATEGORIES.find((x) => x.id === picked);
+  if (!c) return 'Think about the LEVEL and the KIND of what leaves the source, then try again.';
+  return `${c.label}: ${c.blurb.split(/(?<=\.)\s/)[0]} Is that what leaves the ${from.toLowerCase()}?`;
+}
+
 export function Lesson01Body() {
   // ── category explorer ──────────────────────────────────────────────────
   const [cat, setCat] = useState<CarriedType>('mic_level');
@@ -111,7 +118,10 @@ export function Lesson01Body() {
               ))}
             </View>
           </DetailCard>
-          {verdict ? <VerdictBanner verdict={verdict} text={verdict === 'wrong' ? 'Think about the LEVEL and the KIND of what leaves the source — then try again.' : pair.explain} /> : null}
+          {/* A wrong pick gets ITS OWN reason (phase 2 check card, 2026-11-14):
+              what that category really is, so the learner can compare it with
+              the source, never the answer. */}
+          {verdict ? <VerdictBanner verdict={verdict} text={verdict === 'wrong' ? wrongPickLine(picked, pair.from) : pair.explain} /> : null}
           {solvedThis ? (
             <OptionChip label={pairIdx >= CARRY_PAIRS.length - 1 ? 'FINISH CHECK ✓' : 'NEXT PAIR ›'} active action onPress={next} />
           ) : null}

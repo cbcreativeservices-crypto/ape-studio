@@ -39,7 +39,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How two ears place a sound left or right: the far ear hears it later (ITD) and quieter and darker (the head shadow), and why front and back stay vague.',
-      start: 'Put on headphones and tap ▶. Slide AZ from 0° to +90° and watch ITD climb to 656 µs. Then drag object 1 toward your head and hear it get louder.',
+      start: 'Slide AZ from 0° to +90°, or drag object 1 round the head, and watch ITD climb to 656 µs. Then put on headphones and tap ▶ to hear it move.',
     },
     seeing: [
       'You’re looking down on your head, facing FRONT 0° (up). BEHIND ±180° is at the bottom, +90° right, −90° left. Rings mark each meter out to 4 m.',
@@ -112,17 +112,17 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING and the lab’s title, then four questions: what ITD is, the head shadow, why headphones, and why no up or down.',
-      'Each card has a question and its choices. A right answer turns green and its number becomes ✓; CORRECT or NOT QUITE — TRY ANOTHER heads the explanation.',
+      'Each card has a question and its choices. A right answer turns green and its number becomes ✓; CORRECT heads the explanation, NOT QUITE — TRY ANOTHER a pointer.',
       'When all are right: Every question answered correctly — the check is passed.',
     ],
     control: [
-      'Tap a choice. A wrong one shows its explanation in amber; pick another straight away. Nothing is lost and there is no score.',
+      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away. Nothing is lost and there is no score.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. If you leave the lab before every answer is right, the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what’s left in this lab, and the way back to labs.',
     ],
     changes: [
-      'Every answer shows its explanation, right or wrong, so each question teaches you something.',
+      'A right answer shows its explanation; a wrong one points you back to what to look at, so each question teaches you something.',
       'Get all four right and the check is passed.',
       'A pass is kept: come back later and the check shows as already cleared.',
     ],
@@ -147,7 +147,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
 export const BINAURAL_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Where you stand in the Binaural Panner lab: whether the check is passed, what is left, and how to get back to the stage to keep listening.',
-    start: 'Read WHAT’S LEFT. If the check’s row is still there, tap it to go back to CHECK. Otherwise tap ‹ BACK TO THE LAB and keep exploring.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'Under Where you are: the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once you pass the check. If your saved progress can’t be read, it says YOUR PROGRESS.',

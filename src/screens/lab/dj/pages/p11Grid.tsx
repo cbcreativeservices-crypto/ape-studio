@@ -29,6 +29,7 @@ import { beatAt, phaseOffset, playedBpm } from '../model/djTime';
 import { deckPos, type DeckState, type GridMode } from '../model/djModel';
 import { useBoothKit } from './shared';
 import { halfBpmFaultFixed, loopRealBeats } from './gridFault';
+import { beatAligned, beatOffsetText } from './fixGuards';
 
 const TERMS = [
   { term: 'Beatgrid', def: 'The software’s map of the beats, made when it analyzes a track ahead of time: a thin line on every beat and a bold bar line on the “one” — where a crash, a chord change or a new part lands, and straight after a drum fill. It is an interpretation, and you can edit it.' },
@@ -59,14 +60,24 @@ function GridTray({ onScenario, onLoop, loopMsg }: { onScenario: (g: GridMode) =
   const tb = d.track ? TRACKS[d.track].bpm : 122;
   const scen = SCEN_OF(tb);
   const edit = (patch: Parameters<typeof setGrid>[3]) => updateBooth((x, t) => setGrid(x, t, 'B', patch));
+  // The scenario row RESTARTS deck B's analysis, so it sits behind its own
+  // fold, closed each time the tray opens: a stray tap in the tray (meant
+  // for SHOW A HINT under it) put the fault's HALF BPM back and undid BPM ×2
+  // (lab fix round 2026-11-14, F2).
+  const [scenOpen, setScenOpen] = useState(false);
   return (
     <View style={styles.tray}>
-      <Text style={styles.head}>DECK B’S ANALYSIS (start a scenario)</Text>
-      <View style={styles.row}>
-        {scen.map((s) => (
-          <LabChip key={s.id} label={s.label} selected={d.gridMode === s.id && d.gridShiftBeats === 0 && d.bpmFix === 1} onPress={() => onScenario(s.id)} compact />
-        ))}
-      </View>
+      <LabChip label={scenOpen ? 'PRACTICE SCENARIOS ▾' : 'PRACTICE SCENARIOS ▸'} selected={scenOpen} onPress={() => setScenOpen((o) => !o)} compact />
+      {scenOpen ? (
+        <>
+          <Text style={styles.head}>DECK B’S ANALYSIS (each one restarts deck B’s grid and loop)</Text>
+          <View style={styles.row}>
+            {scen.map((s) => (
+              <LabChip key={s.id} label={s.label} selected={d.gridMode === s.id && d.gridShiftBeats === 0 && d.bpmFix === 1} onPress={() => onScenario(s.id)} compact />
+            ))}
+          </View>
+        </>
+      ) : null}
       <Text style={styles.head}>{`EDIT THE GRID · ${g ? g.bpm.toFixed(1) : '—'} BPM · ${gridCorrect(d) ? 'ON THE BEAT' : 'NOT YET'}`}</Text>
       <View style={styles.row}>
         <LabChip label="◀ ½ BEAT" selected={false} onPress={() => edit({ gridShiftBeats: d.gridShiftBeats - 0.5 })} compact />
@@ -216,10 +227,10 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'B GRID BPM', v: gB ? gB.bpm.toFixed(1) : '—', tint: gridCorrect(B) ? colors.green : colors.amber },
-          { k: 'GRID', v: gridWord(B), vA11y: gridWord(B) === 'BEAT 1 OFF' ? 'first beat off' : gridWord(B).toLowerCase(), tint: gridCorrect(B) ? colors.green : '#ff8a7e', flex: 1.4 },
-          { k: 'REAL BEATS', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
-          { k: 'B BPM', v: bpmB.toFixed(1), tint: colors.textPrimary },
+          { k: 'B GRID BPM', caption: 'software read', v: gB ? gB.bpm.toFixed(1) : '—', tint: gridCorrect(B) ? colors.green : colors.amber },
+          { k: 'GRID', caption: 'beat lines', v: gridWord(B), vA11y: gridWord(B) === 'BEAT 1 OFF' ? 'first beat off' : gridWord(B).toLowerCase(), tint: gridCorrect(B) ? colors.green : '#ff8a7e', flex: 1.4 },
+          { k: 'REAL BEATS', caption: '+ = B is early', v: both ? beatOffsetText(off) : '—', tint: both && beatAligned(off) ? colors.green : colors.amber },
+          { k: 'B BPM', caption: 'beats a minute', v: bpmB.toFixed(1), tint: colors.textPrimary },
         ],
         params: [
           {
@@ -270,7 +281,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="Every kick in a house track is equally loud. How do you find where the grid’s bold bar line — the “one” — belongs?"
-          options={['From the music’s structure: where a crash, a chord change or a new part lands, straight after a fill', 'On the loudest kick', 'On the very first sound in the file', 'Anywhere — bar lines are only decoration']}
+          options={['From the music’s structure: where a new part lands', 'On the loudest kick in the track', 'On the very first sound in the file', 'Anywhere — bar lines are only decoration']}
           correct={0}
           explain="In four-on-the-floor music the kicks are all the same, so loudness cannot find the one. The arrangement does: new parts, crashes and chord changes land on the one, and a drum fill leads into it. Put the bold line there, and loops, jumps and sync count bars correctly."
           wrong={[undefined, 'Every kick is equally strong here — there is no loudest one to find.', 'Many files start with silence or a pickup; the first sound is not always beat 1.', 'Bar lines drive loops, phrases and sync — a wrong one puts all of them off.']}

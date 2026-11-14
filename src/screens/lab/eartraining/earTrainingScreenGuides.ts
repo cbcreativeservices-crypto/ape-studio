@@ -66,7 +66,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
 export const EAR_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which kinds of sound change you can already name reliably, and which still need more listening practice.',
-    start: 'Read each row’s level and number of answers. Tap the module still left with the lowest level, and play one ten-trial round.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Each row shows its level and number of answers.',
   },
   seeing: [
     'WHAT’S LEFT lists every module that doesn’t count yet. Each row is a link with its state: not tried yet, or tried, with its level and number of answers.',

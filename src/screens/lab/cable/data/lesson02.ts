@@ -263,6 +263,11 @@ export const L02_CHECKS: CheckSpec[] = [
     question: 'Inside a cable, which layer exists to stop outside interference before it reaches the conductors?',
     options: ['The jacket', 'The shield', 'The insulation', 'The strain relief'],
     correctIdx: 1,
+    why: {
+      0: 'The jacket protects against scuffs and weather, not electrical interference.',
+      2: 'Insulation keeps each conductor from touching the others. Peel again: what wraps around everything?',
+      3: 'Strain relief is at the plug, stopping the cable from being pulled out.',
+    },
     reveal:
       'The shield — braid, foil, or both — is the conductive layer wrapped around the conductors that stops electric-field noise (the twist and a balanced input reject magnetic hum). The jacket protects mechanically, insulation keeps conductors apart, and strain relief protects the termination.',
     wrongHint: 'Which layer is CONDUCTIVE and wraps around everything that carries signal?',
@@ -272,10 +277,15 @@ export const L02_CHECKS: CheckSpec[] = [
     options: [
       'A single conductor inside a shield',
       'Two heavy unshielded conductors',
-      'A shielded twisted pair — two conductors plus an overall shield',
+      'A shielded twisted pair: two wires plus a shield',
       'A light-carrying core inside cladding',
     ],
     correctIdx: 2,
+    why: {
+      0: 'One conductor in a shield is instrument cable. A mic signal is carried on two.',
+      1: 'Unshielded heavy conductors are built for speaker current, not a tiny mic signal.',
+      3: 'A light core is fiber, for data. A mic sends an electrical signal.',
+    },
     reveal:
       'Conventional microphone cable is a shielded twisted pair: two conductors for the balanced pair, plus an overall shield. One conductor in a shield is instrument cable; heavy unshielded conductors are speaker cable.',
     wrongHint: 'A mic signal travels as a balanced PAIR — count the conductors.',
@@ -290,6 +300,11 @@ export const L02_CHECKS: CheckSpec[] = [
       'The direction it was plugged in',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Lesson 4 showed two cables with the SAME plug built completely differently.',
+      2: 'Jacket colors are a maker’s choice, not a standard. They prove nothing.',
+      3: 'Most audio cables work either way round; direction does not reveal what is inside.',
+    },
     reveal:
       'The plug does not tell you which one you are holding — the jacket printing and the construction do. That is this lesson’s rule at work: the connector does not define the cable.',
     wrongHint: 'The plug is the one thing the two cables SHARE. Look at what differs.',

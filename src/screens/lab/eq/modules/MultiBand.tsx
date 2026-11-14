@@ -462,13 +462,18 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
           spec={{
             question: 'Two +6 dB bells are both centered at 1 kHz. What does the signal experience there?',
             options: [
-              'More than +6 dB — the skirts add on top of each other',
-              'Exactly +6 dB — the louder band wins',
-              '+3 dB — they average',
+              'More than +6 dB: the two add up',
+              'Exactly +6 dB: the louder band wins',
+              '+3 dB: the two bands average out',
             ],
             correctIdx: 0,
             reveal:
               'Band responses SUM. Where two boosts overlap, the composite rises above either one — which is how polite-looking bands quietly stack into an ugly bump. Read the combined curve, not the knobs.',
+            // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+            why: {
+              1: 'Bands do not compete; each one acts on the sound. Watch the bold combined curve.',
+              2: 'Band responses do not average. Drag two bells onto one frequency and watch the combined curve.',
+            },
             wrongHint: 'Drag two bells onto the same frequency and watch the composite line.',
           }}
         />

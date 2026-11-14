@@ -42,7 +42,8 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
   fretted: {
     intro: {
       learning: 'Why pitch rises as the vibrating string gets shorter: half the length doubles the frequency, and simple fractions of the string give the octave, fifth and fourth.',
-      start: 'Pick STRING E and tap ▶. Slide FRET to 12 and watch FREQ double while LENGTH reads 50%. Then try FRET 7 and FRET 5 and read INTERVAL.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Pick STRING E, slide FRET to 12 and watch FREQ double while LENGTH reads 50%. Try FRET 7 and FRET 5 and read INTERVAL. Then tap ▶ to hear each one.',
     },
     seeing: [
       'You’re looking at an electric bass with its frets spaced as on a real one: BRIDGE on the left, HEADSTOCK on the right, low E on top. Your string glows amber.',
@@ -152,7 +153,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'When every answer is right, it reads “the check is passed”.',
     ],
     control: [
-      'Tap an answer. If it’s right, you see CORRECT and why. If not, you see NOT QUITE — TRY ANOTHER with the reason, and you can pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'There’s no score, and a wrong pick costs nothing. Test an idea on EXPLORE and come back: answers already right stay right until you leave the lab.',
     ],
     changes: [

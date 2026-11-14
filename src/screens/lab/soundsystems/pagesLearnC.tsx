@@ -62,7 +62,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         stage: (w, h) => <ChainMeterStage chain={chain} settings={settings} w={w} h={h} highlight={stage} />,
         params,
       }}
-      caption="The lane is the PREAMP. Ride it up and watch the haze fall — then tap the key, pick each later stage, and bring it back to unity (double-tap the lane to land there). Finish on the preamp: leave 12 dB of headroom, HEADROOM green."
+      caption="The slider is the PREAMP. Slide it up and watch the haze fall — then tap the key, pick each later stage, and bring it back to unity (double-tap the slider to land there). Finish on the preamp: leave 12 dB of headroom, HEADROOM green."
       wellTop={<VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy' || verdict === 'tight'}>{gainReadingCopy(verdict, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>GAIN STRUCTURE AND SIGNAL LEVELS</ChapterTag>
@@ -162,7 +162,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'COVERAGE', v: `${cover}°`, tint: colors.amber },
           { k: 'AIM', v: aim === 0 ? 'STRAIGHT' : `${aim}° IN`, tint: colors.amber },
-          { k: 'RIG', v: flown ? 'FLOWN' : 'STACKED' },
+          { k: 'RIG', caption: 'flown or stack', v: flown ? 'FLOWN' : 'STACKED' },
           { k: 'FILLS', v: fills ? 'ON' : 'OFF', tint: fills ? colors.greenBright : undefined, flex: 0.8 },
         ],
         stage: (w, h) => (
@@ -172,7 +172,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride COVERAGE and AIM and read the floor. Fly the mains: the front rows go dark. Add front fills: they come back."
+      caption="Slide COVERAGE and AIM and read the floor. Fly the mains: the front rows go dark. Add front fills: they come back."
     >
       <ChapterTag n={11}>LOUDSPEAKER PLACEMENT, COVERAGE AND ALIGNMENT</ChapterTag>
       <Body>Two mains at the deck corners, each drawn with its nominal (−6 dB) coverage sector; the floor is the two summed. Hatched floor is where both arrive and comb-filter.</Body>
@@ -311,7 +311,7 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride DELAY up until the ring reaches the towers and the two arrivals fuse. Then move the towers with DISTANCE and do it again."
+      caption="Slide DELAY up until the ring reaches the towers and the two arrivals fuse. Then move the towers with DISTANCE and do it again."
       wellTop={
         <>
           <ArrivalTimeline needMs={need} setMs={setMs} />
@@ -450,8 +450,8 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
         hideDragTag: true,
         bezel: [
           { k: 'SEND', v: `${send > 0 ? '+' : ''}${send} dB`, tint: levelColorForDb(send, -30, 6) },
-          { k: 'LOOP LIMIT', v: `${gbf > 0 ? '+' : ''}${gbf} dB`, tint: colors.red, flex: 1.1 },
-          { k: 'MARGIN', v: ringing ? `${-margin} dB OVER` : `${margin} dB`, tint: ringing ? colors.red : colors.green, flex: 1.1 },
+          { k: 'LOOP LIMIT', caption: 'where it rings', v: `${gbf > 0 ? '+' : ''}${gbf} dB`, tint: colors.red, flex: 1.1 },
+          { k: 'MARGIN', caption: 'room to ring', v: ringing ? `${-margin} dB OVER` : `${margin} dB`, tint: ringing ? colors.red : colors.green, flex: 1.1 },
           { k: 'LOOP', v: ringing ? 'RINGING' : 'STABLE', tint: ringing ? colors.red : colors.green },
         ],
         stage: (w, h) => (
@@ -461,7 +461,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride SEND up until the loop rings. Then move the WEDGE into the null and try again."
+      caption="Slide SEND up until the loop rings. Then move the WEDGE into the null and try again."
       wellTop={
         <View style={styles.gbfWrap} accessible accessibilityLabel={`Monitor send ${send} dB; gain before feedback ${gbf} dB; ${ringing ? 'ringing' : `${margin} dB of margin`}`}>
           <View style={styles.gbfBar}>
@@ -571,7 +571,7 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride WALK forward one station at a time and watch where the reading changes — or press RUN and watch the walk happen."
+      caption="Slide WALK forward one station at a time and watch where the reading changes — or press RUN and watch the walk happen."
       wellTop={
         done ? (
           <VerdictLine ok>Console in: healthy. Console out: healthy. Processor: nothing. Three probes, one answer, no boxes swapped.</VerdictLine>

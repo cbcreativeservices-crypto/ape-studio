@@ -661,6 +661,26 @@ export function unitTags(text: string): string[] {
   }
   return out;
 }
+
+/** Level references a 'db' answer may name in its label. */
+const LEVEL_REFS: ReadonlySet<string> = new Set(['dBu', 'dBV', 'dBFS', 'dBTP', 'dBm', 'LUFS', 'LU', 'dBV/Pa']);
+
+/**
+ * The unit a one-unit 'db' or 'number' answer prints when its LABEL names one:
+ * "SAME LEVEL IN dBV" prints dBV, "OUTPUT LEVEL (dBu)" dBu, "CAPACITOR (µF)" µF —
+ * never a bare "dB" beside a dBV level, or no unit at all (beginner audit
+ * 2026-11-14: "SAME LEVEL IN dBV 1.782 dB"). The value is unchanged; a label
+ * with no tag, or two, keeps the kind's own unit. Compressor Math works in dBFS
+ * (its fields' help says so): its level answers carry that in their meaning.
+ */
+export function namedOutputUnit(o: { label: string; quantity: string; meaning?: string }): string | null {
+  if (o.quantity !== 'db' && o.quantity !== 'number') return null;
+  if (o.quantity === 'db' && (o.meaning === 'db:dbfs-level' || o.meaning === 'db:comp-threshold')) return 'dBFS';
+  const tags = unitTags(o.label);
+  if (tags.length !== 1) return null;
+  if (o.quantity === 'db' && !LEVEL_REFS.has(tags[0])) return null;
+  return tags[0];
+}
 /**
  * The KIND + UNIT rule: may a value (`label`, `quantity`) fill `field` as far
  * as its kind and unit go? The kinds must match. On 'db', two NAMED references

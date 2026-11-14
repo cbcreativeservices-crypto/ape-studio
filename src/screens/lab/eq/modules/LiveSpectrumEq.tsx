@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import type { BandsFrame, EngineConfig } from '../../../../../modules/ape-dsp';
-import { useDspEngine, useToolAutoStart } from '../../../../features/tools/engine/useDspEngine';
+import { useDspEngine, useReleaseMicOnBackground } from '../../../../features/tools/engine/useDspEngine';
 import { LOUDNESS_STOPS } from '../../../../features/tools/levelColor';
 import { eqResponseDb } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -310,9 +310,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
     setMicPaused(true);
     stop();
   }, [stop]);
-  // `stop` opts into the tools' background release + resume (pattern hunt
-  // P20, 2026-10-02): without it Home left the mic open behind the app.
-  useToolAutoStart(state, onStart, stop);
+  // ⛔ THE MIC OPENS ONLY ON A TAP (lab fix round 2026-11-14, F7 item 1) —
+  // see SeeingFrequency: useToolAutoStart (the tools' auto-start rule) opened
+  // the microphone the moment this lesson mounted. Now only the MIC button
+  // in the VIEW tray or a tap on the display starts it. Home still releases
+  // a running mic (pattern hunt P20, 2026-10-02) and nothing reopens it.
+  useReleaseMicOnBackground(state, stop);
 
   const bands = frames.bands;
   const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);
@@ -403,7 +406,11 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
               still toggles it too (standing rule 2026-07-31). */}
           <Text style={styles.trayHead}>MICROPHONE</Text>
           <View style={styles.btnRow}>
-            <MiniBtn label={state === 'running' ? 'MIC LIVE — PAUSE' : 'MIC PAUSED — RESUME'} active={state === 'running'} onPress={state === 'running' ? onStop : onStart} />
+            <MiniBtn
+              label={state === 'running' ? 'MIC LIVE — PAUSE' : micPaused ? 'MIC PAUSED — RESUME' : 'MIC OFF — START'}
+              active={state === 'running'}
+              onPress={state === 'running' ? onStop : onStart}
+            />
           </View>
         </View>
       ),
@@ -427,12 +434,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
               ? 'AMBER = DESIGNED RESPONSE — ANALYTIC'
               : 'dBFS · UNCALIBRATED APPROXIMATE',
         bezel: [
-          { k: 'VIEW', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB' },
+          { k: 'VIEW', caption: 'what is drawn', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB' },
           { k: 'LOW CUT', v: hpfHz != null ? `${hpfHz}Hz·${slope}` : 'OFF' },
-          { k: 'BAND', v: bellOn ? fmtHz(bellF) : 'OFF' },
+          { k: 'BAND', caption: 'bell at', v: bellOn ? fmtHz(bellF) : 'OFF' },
           {
             k: 'MIC',
-            v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
+            v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : 'OFF',
             tint: state === 'running' ? undefined : '#7a7f8a',
           },
         ],
@@ -467,9 +474,11 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
         </GlossaryText>
 
         <EngineGate state={state} lastError={lastError} onRetry={onStart} />
-        {!micPaused && (state === 'idle' || state === 'starting') && (
-          <Text style={styles.starting}>Starting the analyzer…</Text>
+        {/* Mic OFF until a tap (F7 item 1). */}
+        {!micPaused && state === 'idle' && (
+          <Text style={styles.starting}>The microphone is off. Tap the display, or VIEW › MIC OFF — START, to let it listen to your room.</Text>
         )}
+        {!micPaused && state === 'starting' && <Text style={styles.starting}>Starting the analyzer…</Text>}
         {anyUnresolvable && <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>}
 
         <Text style={styles.sectionTitle}>GUIDED CHALLENGES</Text>

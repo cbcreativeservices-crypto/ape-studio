@@ -39,7 +39,8 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'Unlike Oscillators’ pitched tones, noise has no pitch: its color is a slope in dB per octave, which decides whether it sounds like rumble, an even wash or hiss.',
-      start: 'Tap COLOR, pick PINK and tap ▶. Tap WHITE while it plays and hear the hiss rise. Then step through BROWN, BLUE and VIOLET and watch SLOPE change.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Tap COLOR and step through BROWN, PINK, WHITE, BLUE and VIOLET: watch the line tilt and SLOPE change. Then pick PINK, tap ▶, and tap WHITE while it plays to hear the hiss rise.',
     },
     seeing: [
       'Level per hertz against frequency: 20 Hz at the left, 20k at the right. Five straight lines, one per color, cross at the dot at 1 kHz.',
@@ -114,7 +115,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
       'They ask why white noise sounds bright, how fast pink falls, which color is the rumble, and why pink is the standard test noise.',
     ],
     control: [
-      'Tap an answer. Right: CORRECT and the reason, and its number turns to ✓. Wrong: NOT QUITE — TRY ANOTHER, with the reason — pick again.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [

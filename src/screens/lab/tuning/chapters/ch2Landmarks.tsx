@@ -120,11 +120,11 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
         initialParam: 'ratio',
         hideDragTag: true,
         bezel: [
-          { k: 'RATIO', v: card.value.exactLabel, tint: colors.gold },
-          { k: 'CENTS', v: `${card.value.cents.toFixed(2)} ¢` },
+          { k: 'RATIO', v: card.value.exactLabel, tint: colors.gold, caption: 'upper ÷ lower' },
+          { k: 'CENTS', v: `${card.value.cents.toFixed(2)} ¢`, caption: 'interval size' },
           // Two decimals like every cents cell: at one decimal the solved
           // marker read "702.0 ¢" while the target is 701.96 ¢.
-          { k: 'MARKER', v: `${challenge.toFixed(2)} ¢`, tint: solved ? colors.green : colors.cyanBright },
+          { k: 'MARKER', v: `${challenge.toFixed(2)} ¢`, tint: solved ? colors.green : colors.cyanBright, caption: 'your marker' },
           soundCell(status),
         ],
         stage: (w, h) => (

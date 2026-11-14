@@ -82,6 +82,56 @@ export function gaFaultHints(hints: readonly string[], seen: boolean, before: st
   return { shown: list.slice(0, n), more: n < list.length };
 }
 
+/* ── phase 2 of the lab fix round (2026-11-14): the shared frame, filled in ─ */
+
+/** The frame's "Sound off?" line (rack/silentPath), in this lab's words. It
+ *  is true of every page: goals are judged from what the scene did, and the
+ *  log prints "(not heard: sound is off)" on each START. */
+export const GA_SOUND_OFF_LINE = 'Sound off? You can still do every step. The activity log and the rings show what you would hear.';
+
+/** First-visit captions for the readouts under the scene (rack `BezelItem.
+ *  caption`): one to three plain words for what the cell MEANS, by the
+ *  cell's own key. The frame allows 14 characters; this lab keeps to 12,
+ *  because its row has FIVE cells and at 390 wide "things playing" (14) was
+ *  cut to "things play…" (seen). A key that is already a plain
+ *  word (DOOR, SPEED, LEVEL, SCENE, SOUND, MUSIC, ALARM, FIXED) has none.
+ *  The beginner audit (G5) named these: "VOICES 0/16" on page 1 with no word
+ *  on what a voice is, PLAYING 1 beside VOICES 2, GEN PAN, DUCK, BEDS. */
+export const GA_READOUT_CAPTION: Readonly<Record<string, string>> = {
+  // six letters: on pages 5 and 6 a wide page cell leaves PLAYING about 50 points ("sounds now" was cut, seen)
+  PLAYING: 'sounds',
+  // "0/16" = used/max; on page 8 the cell is 62 points wide and "used / limit" (48 points of text) did not fit
+  VOICES: 'used/max',
+  CARD: 'platform',
+  LISTEN: 'heard on',
+  LISTENER: 'whose ears',
+  'GEN PAN': 'left / right',
+  PAN: 'left / right',
+  SOLO: 'heard alone',
+  'IN PROJECT': 'door file',
+  'IN BUILD': 'door file',
+  'GEN 1': 'generator 1',
+  'GEN 2': 'generator 2',
+  VARIATION: 'takes change',
+  'LAST TAKE': 'version',
+  ZONE: 'your place',
+  BEDS: 'loops on',
+  OUTPUT: 'format',
+  PENDING: 'waiting',
+  PRIORITY: 'higher wins',
+  DUCK: 'others dip',
+  STOLEN: 'voices taken',
+  REFUSED: 'not started',
+  'ID CHECK': 'drops copies',
+  'LAST ID': 'last action',
+  FAULTS: 'still open',
+  SURFACE: 'your floor',
+};
+/** This lab's own cap (the frame's is 14). */
+export const GA_CAPTION_MAX = 12;
+/** A readout with its caption, when its key has one and the page gave none. */
+export const gaWithCaption = <T extends { k: string; caption?: string }>(it: T): T => (it.caption == null && GA_READOUT_CAPTION[it.k] ? { ...it, caption: GA_READOUT_CAPTION[it.k] } : it);
+
 /** A readout under the scene: the frame's cell, plus what it becomes on a
  *  NARROW phone (window under GA_NARROW_W wide). At 320 wide five even cells
  *  cut "PLAYING" to "PLAYI…" and "YOUR FLOOR" to "YOUR FL…" (bug test
@@ -116,6 +166,18 @@ export function gaFitReadouts<T extends GaReadout>(items: readonly T[], winW: nu
 
 /** "1 instance", "2 instances": a count with the right word. */
 export const gaCount = (n: number, one: string, many: string = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
+
+/** The line under a page's goal chips: when the page counts. `all` = every
+ *  goal is ✓ on this visit; `doneBefore` = the page was already counted
+ *  when the visit began (the chips then carry their own "that is kept"
+ *  line, so nothing is added until this visit's goals are all met too).
+ *  No number in it: the lab shows no "N of total" (owner rule D117). */
+export const GA_GOALS_PENDING = 'This page counts once every goal here is ✓ in one visit. Moving on before then does not count it, and these marks start empty when you come back.';
+export const GA_GOALS_COUNTED = '✓ Every goal here is done, so this page is counted.';
+export function gaGoalsNote(all: boolean, doneBefore: boolean): string | null {
+  if (all) return GA_GOALS_COUNTED;
+  return doneBefore ? null : GA_GOALS_PENDING;
+}
 
 /** A PLANTED FAULT NEVER NAMES OR MARKS ITSELF (owner's rule; round-2 bug
  *  test 2026-11-13, R2-GA1-01). The pure half of chbBits `usePlantedFault`:

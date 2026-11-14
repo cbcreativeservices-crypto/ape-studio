@@ -43,7 +43,7 @@ export const SMART_PROCESSORS_HOME_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap the De-Esser & Sibilance Control row to open the lab. ‹ goes back to the Dynamics list.',
-    'In the check, tap the answer you think is right. CORRECT explains why. NOT QUITE — TRY ANOTHER explains the miss, and you can pick again right away. Nothing is scored.',
+    'In the check, tap the answer you think is right. CORRECT explains why. NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is scored.',
     'Inside the de-esser lab, tap ⓘ beside any page title to have that page explained.',
   ],
   changes: [
@@ -123,7 +123,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     control: [
       'Tap STATIC EQ CUT · −8 dB or DE-ESSER to switch between the two fixes. ⤢ FULL SCREEN enlarges the drawing with both buttons docked.',
-      'In the UNDERSTANDING CHECK below, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK below, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The EQ cut never switches off, so every frame loses 8 dB of hiss: vowels, breaths and gaps too.',
@@ -155,7 +155,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     control: [
       'Tap a block, or tap NEXT BLOCK › to step through them. WALK THE SIGNAL steps on its own; STOP halts it.',
       '⤢ FULL SCREEN enlarges the diagram with the card docked. The diagram follows the BROADBAND / SPLIT-BAND choice you make on Broadband vs Split-Band.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The band-pass filter sits in the side chain, not the main path. It only shapes what the detector hears.',
@@ -187,7 +187,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     control: [
       'Drag the Threshold slider from −40 to 0 dB. ⤢ FULL SCREEN docks the readout and slider under the enlarged trace.',
       'The lab keeps one set of de-esser settings while it’s open, so the threshold you set here carries to the other pages.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'Above the line the de-esser turns down; below it, nothing happens at all. This de-esser has a hard knee: no gentle in-between zone.',
@@ -219,7 +219,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Detector frequency slider: 2.0–10.0 kHz. Band width: Q 0.7 (wide) to Q 4.0 (narrow). The higher the Q, the narrower the band.',
       'The sibilant buttons pick the sound to look at: “s” · 6.5k, “z” · 6.0k, “sh” · 4.0k, “s” · 7.0k, “s” · 6.8k.',
       'A STARTING POINTS button moves the detector to a suggested place and shows a short note. ⤢ FULL SCREEN docks the controls under the spectrum.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The band hears most at its center and less on either side. Aim it too low and it hears the voice; too high and it misses the S.',
@@ -284,7 +284,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'BROADBAND or SPLIT-BAND sets what gets turned down. Step frames with ‹ and ›; AUTO-STEP runs through them; JUMP TO AN S skips to the next sibilant.',
       '⤢ FULL SCREEN under either drawing docks the same buttons.',
       'The mode you choose here carries to The Detection Path and Over-De-Essing.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'Same decision, different action: broadband turns the whole frame down, split-band only the hiss band.',
@@ -316,7 +316,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     control: [
       'The How hard slider runs 0–100%. It lowers the threshold from 0 to −24 dB with the range wide open.',
       'RESET RACK TO DEFAULTS puts every de-esser setting back where the lab started. ⤢ FULL SCREEN docks the slider.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'Pushing harder takes more off each S: first tamed, then softened, then blurred, then gone.',
@@ -345,7 +345,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     control: [
       'Tap OPEN › on a row to open that lab. Going back returns you here.',
-      'Tap an answer to the closing question to see its explanation. FINISH · SEE WHAT’S LEFT lists any page you haven’t done yet.',
+      'Tap an answer to the closing question: a right one shows its explanation, a wrong one a hint. FINISH · SEE WHAT’S LEFT lists any page you haven’t done yet.',
     ],
     changes: [
       'Each link shows the same idea from another side. Compression has the same detector, threshold and gain computer; Gate / Expander uses the threshold the other way around.',
@@ -370,7 +370,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
 export const DEESSER_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the de-esser: where sibilance sits, how the detector hears it, and how threshold, frequency, range and mode decide what gets turned down.',
-    start: 'Tap the first page still listed under WHAT\'S LEFT and work down in order. Then tap the CHECK row and answer the five questions.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT\'S LEFT lists each page you haven’t done, then a CHECK row: the five Smart Processors questions. LAB COMPLETE shows once every page is done and the check is passed.',

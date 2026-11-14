@@ -1214,7 +1214,6 @@ export function VenueView(p: VenueViewProps) {
             <G key={s}>
               <Circle cx={x} cy={y} r={13} fill={colors.amber} opacity={0.08} />
               <Circle cx={x} cy={y} r={13} fill="none" stroke={colors.amber} strokeWidth={1} strokeDasharray="3 3" opacity={0.85} />
-              <Circle cx={x} cy={y} r={18} fill="transparent" onPress={() => p.onTapSlot?.(s)} accessibilityLabel={`Place at ${def.label}`} />
             </G>
           );
         })}
@@ -1273,6 +1272,23 @@ export function VenueView(p: VenueViewProps) {
               <Circle cx={px} cy={py} r={22} fill="transparent" onPress={() => p.onTapPlaced?.(x.id)} accessibilityLabel={`${spec.name} at ${slotDef(x.slot).label}${sel ? ', selected' : ''}${spec.radiates ? (live ? ', live' : ', silent') : ''}`} />
             </G>
           );
+        })}
+
+        {/* The target rings' tap areas, drawn AFTER the placed gear so a
+            free position wins over a neighbour's 22-unit tap circle while a
+            part is in hand (lab fix round 2026-11-14, F2: capstone 2's
+            "Sub · center" sits 18 units under the Center cluster box, and
+            the box swallowed every tap meant for the sub). Only the ring
+            itself (13 units) is the target, so the box's own glyph centre,
+            18 units away, still selects the box. */}
+        {(p.targets ?? []).map((s) => {
+          if (occupied.has(s)) return null;
+          const { x, y } = xy(s);
+          const near = placed.some((q) => {
+            const o = xy(q.slot);
+            return Math.hypot(o.x - x, o.y - y) < 18 + 22;
+          });
+          return <Circle key={`hit-${s}`} cx={x} cy={y} r={near ? 14 : 18} fill="transparent" onPress={() => p.onTapSlot?.(s)} accessibilityLabel={`Place at ${slotDef(s).label}`} />;
         })}
 
         {p.overlay}

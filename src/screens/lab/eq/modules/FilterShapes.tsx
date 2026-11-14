@@ -55,6 +55,11 @@ const CHECK: CheckSpec = {
   correctIdx: 0,
   reveal:
     'A HIGH-PASS filter PASSES the highs and CUTS the lows — the same device a console labels “low-cut”. The two names describe the same filter from opposite ends.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    1: 'A low-pass keeps the lows and removes the highs: the opposite end.',
+    2: 'A shelf lowers the lows by a set amount; it does not remove them on a slope.',
+  },
   wrongHint: 'Name the filter by what it PASSES, not what it removes.',
 };
 
@@ -149,14 +154,14 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
             ? 'Drawn at 12 dB/octave — slopes get their own lesson next.'
             : undefined,
         bezel: [
-          { k: 'SHAPE', v: SHAPE_SHORT[shape] },
-          { k: 'FREQ', v: fmtHz(freq) },
+          { k: 'SHAPE', caption: 'shape', v: SHAPE_SHORT[shape] },
+          { k: 'FREQ', caption: 'where', v: fmtHz(freq) },
           {
             k: 'GAIN',
             v: hasGain ? `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB` : '—',
             tint: hasGain ? gc : '#7a7f8a',
           },
-          { k: 'Q', v: hasQ ? Math.max(qLaneMin(shape === 'notch'), q).toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
+          { k: 'Q', caption: 'how wide', v: hasQ ? Math.max(qLaneMin(shape === 'notch'), q).toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>

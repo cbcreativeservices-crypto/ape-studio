@@ -43,6 +43,7 @@ import {
   stageAddPerformer,
   stageAddWithDevice,
   stageAddWithPackage,
+  stageDefaultWho,
   stageDeviceChoices,
   stageDeviceTypesFor,
   stageFreeSpot,
@@ -76,8 +77,12 @@ export function StagePalette({
   onGoInputs,
   onGoMonitors,
   maxHeight,
+  selectedPerformerId = null,
 }: {
   project: SpProject;
+  /** The performer whose figure is selected on the stage, if one is: a new
+   *  source is offered to them first (stageLinks `stageDefaultWho`). */
+  selectedPerformerId?: SpId | null;
   /** Make the edit (one undo step) and select what was added. The parent
    *  hands in the place the user is looking at; the palette finds the nearest
    *  place there that is free for the kind being added. */
@@ -144,7 +149,8 @@ export function StagePalette({
   };
   const openPackage = (item: SpPaletteItem, pkg: SpPackage) => {
     setTicked(pkg.rows.map(() => true));
-    setWho(NOBODY);
+    // the selected performer, or the band's only one; never a guess among several
+    setWho(stageDefaultWho(p, selectedPerformerId) ?? NOBODY);
     setStep({ at: 'package', item, pkg });
   };
   const openDevice = (item: SpPaletteItem) => {

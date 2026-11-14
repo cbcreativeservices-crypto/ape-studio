@@ -122,16 +122,16 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     seeing: [
       'CHECK YOUR UNDERSTANDING asks four questions: where sidebands sit, what the index changes, what a ratio that isn’t a whole number (1.41 ✳) does, and what index 0 leaves.',
       'Above them you see how many are still to get right. A ✓ replaces a question’s number once it’s right.',
-      'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
+      'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
-      'Tap an answer. If it’s wrong, pick again straight away. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'A right answer locks in, and its explanation stays open to read.',
       'Use the tabs under the title to look something up on LEARN or EXPLORE; answers already right stay right when you return. Leave the lab before every answer is right and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     changes: [
-      'Every explanation gives the reason, right or wrong, so a wrong pick still shows you how FM behaves.',
+      'A wrong pick points you back at the SIDEBAND SPECTRUM; a second wrong pick shows the full explanation too.',
       'Get all four right and the check is passed.',
       'A pass is kept: the questions show as done, and you never need to take the check twice.',
     ],
@@ -155,7 +155,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
 export const FM_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Where you stand in the FM lab: whether the check is passed, what is left, and how to get back to the rack to keep exploring sidebands.',
-    start: 'Read WHAT’S LEFT. If the check’s row is still there, tap it to go back to CHECK. Otherwise tap ‹ BACK TO THE LAB to keep exploring.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. ‹ BACK TO THE LAB returns to the rack.',
   },
   seeing: [
     'Under Where you are: the lab’s name, then WHAT’S LEFT, or LAB COMPLETE once you’ve passed the check. If saved progress can’t be read, it says YOUR PROGRESS.',

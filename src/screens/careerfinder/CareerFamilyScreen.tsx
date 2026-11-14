@@ -27,7 +27,7 @@ import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
 import { CAREER_INDEX_VERSION, CENTRALITY, careersInFamily, centralitySplit, entryPoints, familyFieldOf, familyView, type Career } from '../../features/careerfinder/careerIndex';
 import { answeredCount, toggleSavedFamily, useCareerFinder, useCareerFinderSaving } from '../../features/careerfinder/store';
-import { educationChip } from '../../features/careerfinder/educationNote';
+import { EDUCATION_NOT_REPLACED, LICENSED_WARNING, PREPARATION_ROUTES_NOTE, educationChip, prepForDisplay } from '../../features/careerfinder/educationNote';
 import { Body, Card, CentralityChip, CtaButton, DimChip, FinderShell, Lead, LinkRow, SaveStar, SectionLabel, TextLink } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
 
@@ -166,7 +166,7 @@ export function CareerFamilyScreen() {
       {/* The ★ on an UNREADABLE record is kept in memory only (hunt 13,
           2026-10-04; K2): the store writes nothing over a record it could not
           read, so the filled star must not pass for a saved family. */}
-      {saved && !saving ? <Text style={[styles.rankLine, { color: colors.amber }]}>STARRED — NOT SAVED ON THIS PHONE</Text> : null}
+      {saved && !saving ? <Text style={[styles.rankLine, { color: colors.amber }]}>STARRED — NOT SAVED ON THIS DEVICE</Text> : null}
       <Lead>{fam.description}</Lead>
 
       {result ? (
@@ -177,7 +177,8 @@ export function CareerFamilyScreen() {
         </Card>
       ) : (
         <Card>
-          <SectionLabel>THE ACTIVITIES IT LEANS ON</SectionLabel>
+          {/* "leans on" → "draws on" (Comp A text review 2026-11-14, Pattern 1, CF-A0173). */}
+          <SectionLabel>THE ACTIVITIES IT DRAWS ON</SectionLabel>
           <View style={styles.chips}>{fam.dimensions.map((c, i) => <DimChip key={c} code={c} primary={i === 0} />)}</View>
           <Body muted>Main activity first. Take the Career Finder to see how your own interests line up with them.</Body>
         </Card>
@@ -186,13 +187,16 @@ export function CareerFamilyScreen() {
       {licensed ? (
         <Card tone="amber">
           <SectionLabel>LICENSED OR CREDENTIALED PROFESSIONS IN THIS FAMILY</SectionLabel>
-          <Body>Some titles here are licensed, credentialed or restricted-entry occupations (marked LICENSED below). Academy topics build the audio and acoustics knowledge those fields draw on; they are not a route to any license, clinical credential, bar admission or security clearance, and completing them does not qualify anyone to practice. Check the licensing body where you live.</Body>
+          {/* Split into short sentences (Comp A 2026-11-14, CF-A0176); every requirement word is kept. */}
+          <Body>Some titles here are licensed, credentialed or restricted-entry occupations (marked LICENSED below). Academy topics teach the audio and acoustics knowledge those fields draw on. They are not a route to any license, clinical credential, bar admission or security clearance. Completing them does not qualify anyone to practice. Check the licensing body where you live.</Body>
         </Card>
       ) : null}
 
       <Card tone="ok">
         <SectionLabel tone="green">{licensed ? 'AUDIO KNOWLEDGE THAT SUPPORTS THIS FAMILY' : 'START LEARNING IN THE ACADEMY'}</SectionLabel>
-        <Text style={styles.pathLine}>{fam.field} › {fam.subject}</Text>
+        {/* One name when field and subject match: "AI Audio › AI Audio" read like a glitch
+            (Comp A 2026-11-14, CF-D0101). Which field/subject a family maps to is the owner's call. */}
+        <Text style={styles.pathLine}>{fam.field === fam.subject ? fam.field : `${fam.field} › ${fam.subject}`}</Text>
         {fam.topicGs.length ? (
           <>
             {/* CORRECTED 2026-09-17. This said "the first free topics are open to
@@ -237,7 +241,8 @@ export function CareerFamilyScreen() {
       </Card>
 
       <Card>
-        <SectionLabel>REPRESENTATIVE CAREERS</SectionLabel>
+        {/* The list holds job titles (Comp A 2026-11-14, Pattern 3, CF-A0192). */}
+        <SectionLabel>EXAMPLE TITLES</SectionLabel>
         {/* DISCLOSE THE GATED ONES (2026-09-17, pass 5). These are canonical
             titles — Audiologist, Speech-Language Pathologist, Entertainment
             Rigger, Music Therapist — and ten of them across the families are
@@ -251,18 +256,14 @@ export function CareerFamilyScreen() {
             {isRegulatedTitle(e) || furtherEducationForTitle(e) ? <Text style={styles.exampleGated}> ⚠</Text> : null}
           </Text>
         ))}
-        {fam.examples.some(isRegulatedTitle) ? (
-          <Text style={styles.exampleGatedNote}>
-            ⚠ Licensed or credentialed occupation. Academy study supports it but does not lead to that
-            license or credential — check what is required where you live.
-          </Text>
-        ) : null}
+        {/* The one licensing warning (Comp A 2026-11-14, Pattern 6) — see LICENSED_WARNING. */}
+        {fam.examples.some(isRegulatedTitle) ? <Text style={styles.exampleGatedNote}>{LICENSED_WARNING}</Text> : null}
         {/* Degrees and the PE licence too (full-app run 1, 2026-10-01). */}
         {fam.examples.map((e) => {
           const need = furtherEducationForTitle(e);
           return need ? (
             <Text key={`edu-${e}`} style={styles.exampleGatedNote}>
-              ⚠ {e}: {need} Academy study does not replace it — check what is required where you live.
+              ⚠ {e}: {need} {EDUCATION_NOT_REPLACED}
             </Text>
           ) : null;
         })}
@@ -272,7 +273,7 @@ export function CareerFamilyScreen() {
         <View style={styles.chips}>
           {(['core', 'specialized', 'enabled'] as const).filter((k) => split[k] > 0).map((k) => <CentralityChip key={k} value={k} count={split[k]} />)}
         </View>
-        {fam.sources.length ? <Text style={styles.sources}>Titles cross-checked against public listings from {fam.sources.join(', ')}. None of them reviewed or endorsed this index — see How this works.</Text> : null}
+        {fam.sources.length ? <Text style={styles.sources}>Titles cross-checked against public listings from {fam.sources.join(', ')}. None of them reviewed or endorsed this index. See How this works.</Text> : null}
       </Card>
 
       {entries.length ? (
@@ -284,8 +285,10 @@ export function CareerFamilyScreen() {
       ) : null}
 
       <View style={{ gap: 8 }}>
-        <SectionLabel>BROWSE CAREERS IN THIS FAMILY</SectionLabel>
-        <Body muted>{careers.length} titles from the Grand Audio Career Index. Some are the same occupation under different names, seniority levels or employers — that is how the industry actually talks.</Body>
+        {/* Comp A 2026-11-14: CF-A0201 ("titles", as the next line says) and CF-A0202 ("Grand Audio
+            Career Index" appeared nowhere else; filler "actually"). */}
+        <SectionLabel>BROWSE TITLES IN THIS FAMILY</SectionLabel>
+        <Body muted>{careers.length} titles in this family. Some are the same job under different names, seniority levels or employers, because that is how people in the industry name them.</Body>
         {careers.slice(0, shown).map((c) => <CareerRow key={c.id} c={c} open={openId === c.id} onToggle={() => setOpenId(openId === c.id ? null : c.id)} />)}
         {shown < careers.length ? (
           <CtaButton label={`SHOW ${Math.min(PAGE * 2, careers.length - shown)} MORE · ${careers.length - shown} LEFT`} onPress={() => setShown(shown + PAGE * 2)} />
@@ -335,11 +338,15 @@ function CareerRow({ c, open, onToggle }: { c: Career; open: boolean; onToggle: 
           {c.alternates.length ? <Text style={styles.detail}><Text style={styles.detailLabel}>ALSO CALLED  </Text>{c.alternates.join(' · ')}</Text> : null}
           <Text style={styles.detail}><Text style={styles.detailLabel}>KIND OF ROLE  </Text>{c.titleClass} · {c.orientation}</Text>
           <Text style={styles.detail}><Text style={styles.detailLabel}>HOW PEOPLE WORK  </Text>{c.workModel}</Text>
-          <Text style={styles.detail}><Text style={styles.detailLabel}>TYPICAL PREPARATION  </Text>{c.preparation}</Text>
+          <Text style={styles.detail}><Text style={styles.detailLabel}>TYPICAL PREPARATION  </Text>{prepForDisplay(c.preparation)}</Text>
           <Text style={styles.detail}><Text style={styles.detailLabel}>AUDIO IN THIS ROLE  </Text>{CENTRALITY[c.centrality].explain}</Text>
-          {c.regulated ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ Licensed, credentialed or restricted-entry occupation in many places. Academy study does not lead to that license or credential — verify requirements with the licensing body or employer where you live.</Text> : null}
+          {c.regulated ? <Text style={[styles.detail, { color: '#ffb060' }]}>{LICENSED_WARNING}</Text> : null}
           {c.professionalEngineer ? <Text style={[styles.detail, { color: '#ffb060' }]}>⚠ In many places, offering engineering services to the public or stamping reports with an engineer’s seal requires a Professional Engineer license.</Text> : null}
-          <Text style={[styles.detail, { color: colors.textMuted }]}>{c.status}. Common pathways are described, not mandatory requirements.</Text>
+          {/* "Common pathways are described, not mandatory requirements" could be read as softening a
+              required credential (Comp A 2026-11-14, CF-A0219). Owner rule: "we must be clear when
+              other education — degrees, certifications, etc. — is required for careers. always.
+              every time." The line now says plainly that a stated requirement IS required. */}
+          <Text style={[styles.detail, { color: colors.textMuted }]}>{c.status}. {PREPARATION_ROUTES_NOTE}</Text>
         </View>
       ) : null}
     </View>

@@ -471,6 +471,7 @@ export function DrumTuningLabScreen() {
     const cleared = new Set<string>([...doneIds, ...DRUM_CHAPTERS.filter((x) => endState.modules[x.id]?.done).map((x) => x.id)]);
     end = (
       <LabEndScreen
+        labId="drum-tuning"
         labTitle={`${DRUM_LAB_TITLE}: ${SUBTITLE}`}
         units={DRUM_CHAPTERS.map((x) => ({ id: x.id, label: x.title, detail: x.credit }))}
         cleared={cleared}

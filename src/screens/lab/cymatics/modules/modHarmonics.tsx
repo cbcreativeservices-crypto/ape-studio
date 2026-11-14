@@ -132,10 +132,10 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
         onGuide: () => help('harmonics'),
         initialParam: 'mode',
         bezel: [
-          { k: 'LADDER', v: (LADDER_SHORT[ladder.id] ?? ladder.name).toUpperCase(), helpKey: 'harmonics' },
-          { k: 'RATIO', v: sel ? `${sel.ratio.toFixed(2)}×` : '—', helpKey: 'harmonics' },
+          { k: 'LADDER', v: (LADDER_SHORT[ladder.id] ?? ladder.name).toUpperCase(), helpKey: 'harmonics', caption: 'which object' },
+          { k: 'RATIO', v: sel ? `${sel.ratio.toFixed(2)}×` : '—', helpKey: 'harmonics', caption: 'times the base' },
           { k: 'FREQ', v: sel ? formatHz(hz) : '—', helpKey: 'harmonics' },
-          { k: 'FAMILY', v: ladder.harmonic ? 'HARMONIC' : 'INHARM.', tint: ladder.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2 },
+          { k: 'FAMILY', v: ladder.harmonic ? 'HARMONIC' : 'INHARM.', tint: ladder.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2, caption: 'evenly spaced?' },
         ],
         stage: (w, h) => <LadderStage w={w} h={h} ladders={ladders} active={ladder.id} sel={sel} />,
         params,

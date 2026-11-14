@@ -322,8 +322,8 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
         ),
         bezel: [
           { k: 'DECK A', v: leader == null ? '—' : leader.toFixed(1), sub: 'BPM', tint: colors.amber },
-          { k: 'MACHINE', v: bpm == null ? (dm.sync === 'EXT' ? 'NO CLOCK' : '—') : bpm.toFixed(1), sub: bpm == null ? undefined : dm.sync === 'EXT' ? 'BPM · EXT' : 'BPM · INT', tint: dm.sync === 'EXT' && !arrives ? PEAK_RED : colors.amber },
-          { k: 'ITS BAR 1', v: phaseText, sub: drift ? 'DRIFT · INT' : undefined, tint: onTheOne || (drift && Math.abs(drift.barBeats) <= 0.125) ? colors.green : colors.amber },
+          { k: 'MACHINE', caption: 'drum machine', v: bpm == null ? (dm.sync === 'EXT' ? 'NO CLOCK' : '—') : bpm.toFixed(1), sub: bpm == null ? undefined : dm.sync === 'EXT' ? 'BPM · EXT' : 'BPM · INT', tint: dm.sync === 'EXT' && !arrives ? PEAK_RED : colors.amber },
+          { k: 'ITS BAR 1', caption: 'machine’s one', v: phaseText, sub: drift ? 'DRIFT · INT' : undefined, tint: onTheOne || (drift && Math.abs(drift.barBeats) <= 0.125) ? colors.green : colors.amber },
           { k: 'IN THE ROOM', v: ch2Live ? 'AUDIBLE' : dm.audio ? (booth.ch[2].fader > 0.3 ? 'SILENT' : 'CH 2 DOWN') : 'NOT PATCHED', tint: ch2Live ? colors.green : colors.textSub },
         ],
         params: [
@@ -347,7 +347,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
         {startNote ? <Note tone="try">{startNote}</Note> : null}
       </Step>
       <Step n={3}>
-        <P>Clock sets the tempo, not the bar. Press PLAY NOW off the beat and read ITS BAR 1: in tempo, out of phase. STOP, and use START ON THE NEXT BAR. Then ride TEMPO A: the drum machine follows, tick for tick.</P>
+        <P>Clock sets the tempo, not the bar. Press PLAY NOW off the beat and read ITS BAR 1: in tempo, out of phase. STOP, and use START ON THE NEXT BAR. Then slide TEMPO A: the drum machine follows, tick for tick.</P>
         <Note>Real setups differ: which device leads, whether start and stop are sent, how many ticks a beat an analog sync uses, and whether sync runs over MIDI, USB through a computer, or a network. Check both manuals. A clock from a mixer’s beat counter is only as good as its BPM reading: if the counter reads half or double time (Screen 11), the follower does too.</Note>
       </Step>
       <Step n={4}>

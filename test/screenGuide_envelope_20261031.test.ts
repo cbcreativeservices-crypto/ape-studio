@@ -452,7 +452,9 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(s, /<G key=\{e\.name\} onPress=\{\(\) => pick\(i\)\}>/); // page 4's numbered markers
     assert.match(END.changes[0], /^Pages 1–5 count as done once you move a slider, tap a choice button or numbered marker, or tap NEXT ›/);
     // page 6: GOT IT › or NEXT
-    assert.match(s, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : null\}/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // once tapped, the page says it is done instead of the button vanishing.
+    assert.match(s, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : <Text style=\{styles\.loaded\}>✓ THIS PAGE IS DONE · NEXT MOVES ON<\/Text>\}/);
     assert.match(END.changes[0], /Envelope vs Propagation counts with GOT IT › or NEXT ›/);
     // page 7 (manualDone): all six; the check (manualDone): all four
     assert.match(s, /\{ title: 'Check Yourself', short: 'Check', Component: PageChecks, manualDone: true \}/);

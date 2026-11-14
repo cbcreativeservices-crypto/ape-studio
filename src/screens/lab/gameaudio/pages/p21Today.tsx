@@ -143,6 +143,11 @@ export const P21_TOPICS: readonly { id: P21Topic; label: string; hud: GaHudId; s
  *  (GA2 B-01). Every other topic has no slider. */
 export const P21_SPEED_TOPICS: readonly P21Topic[] = ['rules', 'space', 'test'];
 
+/** The line at the top of the well before a topic is chosen. It names the
+ *  key where the key is: it said "under the picture", where the strip is
+ *  and no TOPIC control (beginner audit 2026-11-14, G5 page 21). */
+export const P21_NO_TOPIC = 'Press the TOPIC key at the bottom of the screen and choose a topic. The scene then shows what this lab really has of it.';
+
 /** The SPEED key on this topic: absent where the generator does not run;
  *  locked, with the reason, while it is stopped (RULES can stop it). */
 export function p21SpeedKey(topic: P21Topic | null, s: ReturnType<typeof gaGet>): DockParam | null {
@@ -207,7 +212,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
     <View style={styles.page}>
       {/* with the generator stopped, the topic's sentence would claim it runs */}
-      <Note>{!t ? 'Choose a TOPIC under the picture. The scene then shows what this lab really has of it.' : speed?.kind === 'fader' && speed.locked ? `${speed.locked}.` : t.says}</Note>
+      <Note>{!t ? P21_NO_TOPIC : speed?.kind === 'fader' && speed.locked ? `${speed.locked}.` : t.says}</Note>
       <Caption state={s} />
       {topic === 'test' ? <ActivityLog state={s} lines={5} only={['stop', 'refused']} /> : null}
 

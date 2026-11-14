@@ -321,10 +321,10 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="The PA speakers are on. You switch the MIXER off. What can happen, and what is the safe habit?"
           options={[
-            'A loud thump through the PA — switch the speakers off first, and on last',
+            'A loud thump in the PA: speakers off first, on last',
             'Nothing — speakers ignore what is upstream',
             'The mixer saves the PA by muting itself, always',
-            'Only the booth monitors are affected',
+            'Only the booth monitors are affected by it',
           ]}
           correct={0}
           explain="An amplified speaker that is on will reproduce whatever bang a source makes as it switches. Speakers go on LAST and off FIRST, with the levels down, so nothing upstream can reach them while it switches."

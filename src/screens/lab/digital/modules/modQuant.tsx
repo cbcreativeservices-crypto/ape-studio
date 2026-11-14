@@ -128,6 +128,11 @@ const CHECK_BITDEPTH: CheckSpec = {
   question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL SNR (6.02·N + 1.76 dB, undithered)?',
   options: ['256 levels · ≈ 49.9 dB', '65,536 levels · ≈ 96 dB', '8 levels · ≈ 8 dB', '256 levels · ≈ 96 dB'],
   correctIdx: 0,
+  why: {
+    1: 'That is 16-bit. Count the levels for 8 bits: 2 to the 8th power.',
+    2: 'Levels double with each bit; 8 bits gives far more than 8.',
+    3: 'The level count fits 8 bits, but the SNR belongs to 16 bits. Use 6.02 × 8 + 1.76.',
+  },
   reveal: 'Levels = 2⁸ = 256, and 6.02×8 + 1.76 ≈ 49.9 dB — theoretical. Real converters land below their formula number (analog noise, linearity), and remember: bits set AMPLITUDE resolution, never frequency response.',
   wrongHint: 'Levels = 2ᴺ, and each bit is worth ≈ 6 dB of theoretical SNR.',
 };
@@ -135,12 +140,17 @@ const CHECK_BITDEPTH: CheckSpec = {
 const CHECK_DITHER: CheckSpec = {
   question: 'What does dither actually do when you reduce bit depth?',
   options: [
-    'Linearizes quantization and preserves low-level behavior — at the cost of a controlled noise increase',
+    'Keeps low-level detail linear, for a little steady added noise',
     'Adds resolution, recovering detail below the last bit for free',
     'Removes quantization noise entirely',
     'Boosts high frequencies to mask the distortion',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Dither adds no information. Look at the histogram: the error changes shape, not size.',
+    2: 'There is still noise after dither; it is just steady instead of distorted.',
+    3: 'Dither is a tiny noise added before rounding, not an EQ.',
+  },
   reveal: 'Dither does not add resolution — it linearizes quantization and preserves low-level behavior at the cost of a controlled noise increase: the correlated distortion becomes benign, steady noise, and fades stay smooth.',
   wrongHint: 'Think trade: what does dither buy, and what does it cost?',
 };
@@ -256,8 +266,8 @@ export function QuantModule(p: DigitalModuleProps) {
               ]
             : [
                 { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
-                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels' },
-                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
+                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels', caption: 'how many steps' },
+                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth', caption: 'signal vs hiss' },
                 { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
               ],
         render: (w, h) =>
@@ -387,6 +397,11 @@ const CHECK_MSB: CheckSpec = {
     'Nothing much — the MSB is the least valuable bit',
   ],
   correctIdx: 0,
+  why: {
+    1: 'In two’s complement the top bit counts as negative. Flip SIGN and read DECIMAL.',
+    2: 'Flipping one bit is not a sign change. Look at the weight printed under the MSB.',
+    3: 'MSB means most significant bit: the biggest weight of all.',
+  },
   reveal: 'The MSB carries the only NEGATIVE weight: −32,768. So +1 becomes −32,768 + 1 = −32,767 — a full-scale jump from one bit. The MSB is the most valuable bit; the LSB (worth 1) is the least.',
   wrongHint: 'The MSB’s weight is negative under two’s complement.',
 };
@@ -468,8 +483,17 @@ export function BinaryModule(p: DigitalModuleProps) {
         bezel: [
           { k: 'SAMPLE', v: `#${sel}`, helpKey: 'binary_sample' },
           { k: 'DECIMAL', v: fmtGroup(v), helpKey: 'binary_sample' },
-          { k: 'HEX', v: fmtHex16(v), helpKey: 'binary_sample' },
-          { k: 'LEVEL', v: fmtDb(sampleDb(v)), helpKey: 'binary_sample' },
+          { k: 'HEX', v: fmtHex16(v), helpKey: 'binary_sample', caption: 'short code' },
+          // Number on the value line, dBFS on the unit line: LEVEL keeps its
+          // key at 390 (beginner audit 2026-11-14: the card names LEVEL and its
+          // key was the one dropped).
+          {
+            k: 'LEVEL',
+            v: Number.isFinite(sampleDb(v)) ? sampleDb(v).toFixed(1) : '−∞',
+            sub: 'dBFS',
+            vA11y: fmtDb(sampleDb(v)),
+            helpKey: 'binary_sample',
+          },
         ],
         render: (w, h) =>
           viz ? (
@@ -552,7 +576,7 @@ export function BinaryModule(p: DigitalModuleProps) {
             helpKey="bit_toggle"
             items={[
               { k: 'DECIMAL', v: fmtGroup(reg) },
-              { k: 'HEX', v: fmtHex16(reg) },
+              { k: 'HEX', v: fmtHex16(reg), caption: 'short code' },
               { k: 'NORMALIZED', v: (reg / 32768).toFixed(5) },
               { k: 'LEVEL', v: fmtDb(sampleDb(reg)) },
             ]}

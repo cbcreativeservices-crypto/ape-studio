@@ -26,6 +26,7 @@ import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { CYMATICS_MODULES, type CymaticsModuleId } from './modules/registry';
+import { useCymaticsEnd } from './useCymaticsEnd';
 import { IntroModule } from './modules/modIntro';
 import { NodesModule } from './modules/modNodes';
 import { HarmonicsModule } from './modules/modHarmonics';
@@ -119,15 +120,22 @@ export function CymaticsModuleScreen() {
     unEnd: () => setEnding(false),
     reset: { label: 'START OVER (PRACTICE)', run: () => goToModule(0) },
   });
+  // The lab's check (its certificate credit) is listed and drawn on the end
+  // screen too, so the module path reaches it (useCymaticsEnd).
+  const end = useCymaticsEnd(visited, progressUnreadable);
   const endScreen = ending ? (
     <LabEndScreen
+      labId="cymatics"
       labTitle="Cymatics Lab: Sound Made Visible"
-      units={CYMATICS_MODULES.map((m) => ({ id: m.id, label: m.title }))}
-      cleared={visited}
-      unreadable={progressUnreadable}
+      units={end.units}
+      cleared={end.cleared}
+      unreadable={end.unreadable}
       mode="progress"
       completeTitle="ALL MODULES OPENED"
-      onJump={(id) => goToModule(CYMATICS_MODULES.findIndex((m) => m.id === id))}
+      onJump={(id) => { if (id !== end.shownHereId) goToModule(CYMATICS_MODULES.findIndex((m) => m.id === id)); }}
+      shownHereId={end.shownHereId}
+      extra={end.extra}
+      howItCounts={end.howItCounts}
       onPracticeAgain={() => goToModule(0)}
       onDone={() => safeGoBack(navigation)}
       bottomInset

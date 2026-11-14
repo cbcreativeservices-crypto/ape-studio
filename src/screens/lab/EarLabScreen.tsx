@@ -13,7 +13,7 @@
  * Fully data-driven from labCatalog.
  */
 import { useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
@@ -42,6 +42,11 @@ import { GlassPanel, GlassTile } from '../tools/GlassTile';
 import { labTileArt } from './labTileArt';
 import { fitValue } from '../../theme/legibility';
 import { safeGoBack } from '../../lib/safeGoBack';
+// The ✓ on a finished lab's tile (lab fix round 1, 2026-11-14): READ-ONLY
+// from the existing lab-credit store, the same "done" the old category
+// screen's rows showed (LabCategoryScreen useLabDone). Nothing is written.
+import { useLabDone } from '../../features/lab/labCompletion';
+import { trainingKeyFor } from '../../features/lab/trainingLabKeys';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
@@ -269,37 +274,16 @@ export function EarLabScreen({ navigation, route }: Props) {
                         {secLocked && !cat.alwaysFree ? <Text style={styles.tileTagLock}>🔒 MEMBERS</Text> : null}
                       </GlassTile>
                     ) : (
-                      categoryEntries(cat).map((leaf) => {
-                        const locked = leafLocked(leaf, sec.key) && leaf.status !== 'development';
-                        const free = freeIncluded(leaf, sec.key);
-                        const dev = leaf.status === 'development';
-                        return (
-                          <GlassTile
-                            key={`${cat.id}:${leaf.name}`}
-                            style={tablet ? tabletTile : styles.tileHalf}
-                            glassStyle={styles.tileFace}
-                            backgroundImage={labTileArt(leaf.name)}
-                            onPress={() => openLeaf(leaf, sec.key)}
-                            accessibilityLabel={`${leaf.name}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
-                          >
-                            <Text style={styles.tileName} numberOfLines={2}>{leaf.name}</Text>
-                            <Text style={styles.tileSub} numberOfLines={3}>{leaf.blurb}</Text>
-                            {/* A count (the Miking family tiles' "17 Miking Lab
-                                Lessons"): never cut short — its words wrap,
-                                and it never shrinks under 9 pt. */}
-                            {leaf.countLine ? (
-                              <Text style={styles.tileCount} {...fitValue(12)} numberOfLines={2}>{leaf.countLine}</Text>
-                            ) : null}
-                            {dev ? (
-                              <Text style={styles.soon}>PLANNED</Text>
-                            ) : locked ? (
-                              <Text style={styles.tileTagLock}>🔒 MEMBERS</Text>
-                            ) : free ? (
-                              <Text style={styles.freeTag}>FREE</Text>
-                            ) : null}
-                          </GlassTile>
-                        );
-                      })
+                      categoryEntries(cat).map((leaf) => (
+                        <LeafTile
+                          key={`${cat.id}:${leaf.name}`}
+                          leaf={leaf}
+                          style={tablet ? tabletTile : styles.tileHalf}
+                          locked={leafLocked(leaf, sec.key) && leaf.status !== 'development'}
+                          free={freeIncluded(leaf, sec.key)}
+                          onPress={() => openLeaf(leaf, sec.key)}
+                        />
+                      ))
                     )}
                   </GlassPanel>
                 </View>
@@ -312,6 +296,67 @@ export function EarLabScreen({ navigation, route }: Props) {
         <View style={{ height: insets.bottom }} />
       </ScrollView>
     </View>
+  );
+}
+
+/** The credit key a tile's ✓ reads: the Fundamentals lab's own key, else
+ *  the training lab's (by route); '' (never done) for anything else, such as
+ *  a Miking family tile, which holds many lessons. Pure. */
+export function tileDoneKey(leaf: Pick<LabLeaf, 'key' | 'route'>): string {
+  return leaf.key ?? (leaf.route ? trainingKeyFor(leaf.route) : '');
+}
+
+/**
+ * One lab tile (glass tiles, owner 2026-09-30). Lab fix round 1 (2026-11-14,
+ * quick win 12 and section 7; owner: "Begin fixing all bugs found and do
+ * obvious ... fixes as you suggested in the report"):
+ *   • START HERE on the first Fundamentals lab — a marker, never a lock;
+ *   • the tile's short blurb (LabLeaf.tileBlurb) where the full one was cut at
+ *     three lines (34 of 65 at 390 wide); the full blurb is still read aloud;
+ *   • a quiet ✓ DONE once the lab's credit is done (read-only).
+ */
+function LeafTile({
+  leaf,
+  style,
+  locked,
+  free,
+  onPress,
+}: {
+  leaf: LabLeaf;
+  style: StyleProp<ViewStyle>;
+  locked: boolean;
+  free: boolean;
+  onPress: () => void;
+}) {
+  const dev = leaf.status === 'development';
+  const done = useLabDone(tileDoneKey(leaf)) && !dev;
+  return (
+    <GlassTile
+      style={style}
+      glassStyle={styles.tileFace}
+      backgroundImage={labTileArt(leaf.name)}
+      onPress={onPress}
+      accessibilityLabel={`${leaf.startHere ? 'Start here. ' : ''}${leaf.name}${done ? ', done' : ''}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
+    >
+      {leaf.startHere ? <Text style={styles.startHere}>START HERE</Text> : null}
+      <Text style={styles.tileName} numberOfLines={2}>{leaf.name}</Text>
+      <Text style={styles.tileSub} numberOfLines={3}>{leaf.tileBlurb ?? leaf.blurb}</Text>
+      {/* A count (the Miking family tiles' "17 Miking Lab
+          Lessons"): never cut short — its words wrap,
+          and it never shrinks under 9 pt. */}
+      {leaf.countLine ? (
+        <Text style={styles.tileCount} {...fitValue(12)} numberOfLines={2}>{leaf.countLine}</Text>
+      ) : null}
+      {dev ? (
+        <Text style={styles.soon}>PLANNED</Text>
+      ) : locked ? (
+        <Text style={styles.tileTagLock}>🔒 MEMBERS</Text>
+      ) : done ? (
+        <Text style={styles.doneTag}>✓ DONE</Text>
+      ) : free ? (
+        <Text style={styles.freeTag}>FREE</Text>
+      ) : null}
+    </GlassTile>
   );
 }
 
@@ -487,6 +532,21 @@ const styles = StyleSheet.create({
   tileSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flexGrow: 1 },
   tileTagLock: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
   tileCount: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, color: colors.amberLabel },
+  /** START HERE (2026-11-14): a small amber pill over the first lab's name. */
+  startHere: {
+    alignSelf: 'flex-start',
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    letterSpacing: 1.2,
+    color: '#0c0c0c',
+    backgroundColor: colors.amber,
+    borderRadius: 4,
+    overflow: 'hidden',
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  /** ✓ DONE (2026-11-14): quiet, no counts. */
+  doneTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.green },
 
   // Subject header (its labs are the tappable rows beneath).
   catLabel: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 2 },

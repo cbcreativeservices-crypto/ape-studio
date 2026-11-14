@@ -79,6 +79,10 @@ export function ReviewLabEnd({
             unreadable={unreadable}
             mode="credit"
             noun="step"
+            // Lab fix round 2026-11-14 (S2): recap / next lab by labKey
+            // (features/lab/labEndContent); the next-lab card closes this layer first.
+            labId={labKey}
+            beforeLeave={close}
             extra={complete || !offerReview ? undefined : <LabReviewButton labKey={labKey} />}
             onJump={close}
             onPracticeAgain={close}

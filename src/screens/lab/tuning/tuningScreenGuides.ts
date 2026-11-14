@@ -42,7 +42,8 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
   {
     intro: {
       learning: 'Every tuning system keeps the octave at exactly 2:1, then has to decide where the notes inside it go. That choice is what this lab is about.',
-      start: 'Turn your volume down, then press HEAR IT: the root C sounds, then its octave. Read ROOT and OCTAVE, and tap SCOPE ⓘ before BEGIN LAB ›.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Read ROOT and OCTAVE: the octave is exactly double the root. Then turn your volume down and press HEAR IT: the root C sounds, then its octave. Tap SCOPE ⓘ before BEGIN LAB ›.',
     },
     seeing: [
       'The pitch rail runs from the root C (1:1) on the left to its octave (2:1) on the right. The eleven faint marks between are the notes still to be placed; after HEAR IT they turn to question marks.',
@@ -488,7 +489,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
 export const TUNING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the lab’s ideas fit together: intervals are ratios, pure fifths don’t close the circle, and each tuning system decides where that leftover goes.',
-    start: 'Tap any chapter still listed under WHAT’S LEFT to open it, or open REVIEW ▾ to see the chapters you’ve finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Each row still listed says what finishes it.',
   },
   seeing: [
     'WHAT’S LEFT lists one row per chapter still to do, with its number. When every chapter is done, it reads LAB COMPLETE.',

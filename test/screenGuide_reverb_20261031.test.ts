@@ -176,7 +176,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(REVERB, /label: 'RT60 \(DECAY TIME\)', short: 'RT60'/);
     assert.match(REVERB, /label: 'PRE-DELAY', short: 'PRE-DLY'/);
     assert.match(REVERB, /label: 'HF DAMPING', short: 'DAMP'/);
-    assert.match(REVERB, /bezel: \[\s*\{ k: 'RT60', paramId: P\.rt60 \},\s*\{ k: 'PRE', paramId: P\.preDelayMs \},\s*\{ k: 'MIX', paramId: P\.reverbMix \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(REVERB, /bezel: \[\s*\{ k: 'RT60', paramId: P\.rt60(?:, caption: '[^']*')? \},\s*\{ k: 'PRE', paramId: P\.preDelayMs(?:, caption: '[^']*')? \},\s*\{ k: 'MIX', paramId: P\.reverbMix(?:, caption: '[^']*')? \},\s*\]/);
     // the glass labels the guide describes: 100 ms ticks, a "0.5 s" mark, guides every 30 dB
     assert.match(ANIM, /for \(let ms = 100; ms < 5000; ms \+= 100\)/);
     assert.match(ANIM, /const major = ms % 500 === 0;/);

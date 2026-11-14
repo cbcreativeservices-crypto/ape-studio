@@ -50,7 +50,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a delay works: TIME sets the gap between repeats, FEEDBACK sets how long the trail lasts, and a delay time can match the song’s tempo.',
-      start: 'Set SOURCE to CLICK 90 and tap ▶. Watch the repeats leave on ▸ OUT. Then step FDBK from 25% to 75% and see the trail grow while the spacing stays the same.',
+      start: 'Set FDBK to 0% and watch ▸ OUT: each gray click comes back once. Then step FDBK to 75% and see the trail grow while the spacing stays the same. Tap ▶ with CLICK 90 to hear it.',
     },
     seeing: [
       'Your source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. OUT’s ruler: seconds since a sound passed the stage.',
@@ -132,7 +132,8 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
-      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work out the answer.',
+      'A wrong one shows NOT QUITE — TRY ANOTHER and a pointer; a second wrong pick adds the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed: a green card says so.',
     ],
     teaches: [

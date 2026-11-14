@@ -17,6 +17,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
+import { PredictCheck } from './predictCheck';
 import { useRef, useState } from 'react';
 import { PATCH_PAIR_GLASS_ASPECT, PairStatus, PatchPairDrawing, PatchPairView } from './art/PatchPairView';
 import { JACK_ASPECT, JACK_BADGE, JackCutawayDrawing, useContactAnnounce } from './art/JackCutaway';
@@ -308,7 +309,7 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
   const flow = resolvePair(state);
   const [predicted, setPredicted] = useState(false);
   const goals = [
-    { label: 'PREDICT IT (answer below)', hit: predicted },
+    { label: 'PREDICT IT (answer above)', hit: predicted },
     { label: 'THEN DO IT (patch the top)', hit: flow.isSplit },
   ];
   const latched = useVisitGoals(ctx, goals);
@@ -328,7 +329,8 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
             bottomPatchLabel="DRUM MACHINE"
             // The jacks stay INERT until the prediction is committed — the whole
             // point of predict-first is that the commitment precedes the evidence
-            // (cognition pass 2026-09-10).
+            // (cognition pass 2026-09-10). ANY committed pick unlocks them, right
+            // or wrong, so a wrong guess can be tested (beginner audit 2026-11-14).
             onToggleJack={predicted ? toggle : undefined}
             reduceMotion={ctx.reduceMotion}
           />
@@ -343,7 +345,7 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
         Same untouched starting picture as full-normal: source flowing to destination through the normal. But this bay is
         HALF-NORMALLED. So — what’s different? Commit to a prediction before you touch anything.
       </Lead>
-      <UnderstandingCheck
+      <PredictCheck
         eyebrow="PREDICT BEFORE PATCHING"
         question="You plug a cable into the TOP front jack of this half-normal pair. What happens to the destination?"
         options={[
@@ -354,11 +356,11 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
         correct={1}
         explain="That is the half-normal difference: the TOP insertion does NOT break the normal. The top jack becomes a tap of the source."
         wrong={[
-          'Reasonable guess — that is exactly what full-normal would do. Try the top jack below and watch the normal.',
+          'Reasonable guess — that is exactly what full-normal would do. The jacks are unlocked: patch the TOP jack and watch the normal.',
           undefined,
-          'Cables patched into the TOP carry signal OUT. It is the BOTTOM jack that feeds this destination from a cable.',
+          'Cables patched into the TOP carry signal OUT; it is the BOTTOM jack that feeds this destination from a cable. The jacks are unlocked: patch the TOP jack and see.',
         ]}
-        onCorrect={() => setPredicted(true)}
+        onCommit={() => setPredicted(true)}
       />
       <PairStatus
         state={state}

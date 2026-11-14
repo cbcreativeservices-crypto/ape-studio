@@ -166,6 +166,9 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
   const [depth, setDepth] = useState<null | '16' | '24'>(null);
   const [named, setNamed] = useState(false);
   const [inspected, setInspected] = useState(false);
+  // The inspection inspects a BOUNCE, so it waits for one: it used to pass
+  // with no sample rate chosen (novice audit G4, 2026-11-14).
+  const [tooEarly, setTooEarly] = useState(false);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Choose rate & depth', hit: rate != null && depth != null },
@@ -204,8 +207,9 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
         <Prompt>Every export gets opened and checked before it ships. The list:</Prompt>
         <Body>Play the START (clipped count-in? missing pickup?), the END (cut reverb tail? truncation?), scan the waveform for clipping, confirm the duration, and listen for anything missing — a muted return, a bypassed insert, a dead side.</Body>
         <BounceArt rate={rate} depth={depth} named={named} inspected={inspected} />
-        <Btn label={inspected ? '✓ BOUNCE INSPECTED' : 'RUN THE INSPECTION'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => setInspected(true)} a11y="Run the bounce inspection" />
+        <Btn label={inspected ? '✓ BOUNCE INSPECTED' : 'RUN THE INSPECTION'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => (rate && depth ? setInspected(true) : setTooEarly(true))} a11y="Run the bounce inspection" />
         {inspected ? <Body>✓ Start clean · end tail complete · no clipped samples · length correct · all parts present. THIS pass, every time, is what “professional” mostly means.</Body> : null}
+        {!inspected && tooEarly && !(rate && depth) ? <Body>No bounce yet: choose a SAMPLE RATE and a BIT DEPTH above first. You inspect the file you actually exported.</Body> : null}
       </Card>
       <UnderstandingCheck
         question="Your bounce plays fine, then stops at 3:40 — but the song runs 3:55. Most likely story?"

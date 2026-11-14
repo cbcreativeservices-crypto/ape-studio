@@ -117,7 +117,9 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
         })}
       </View>
       {picked != null ? (
-        <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>{correct ? `✓ ${s.explain}` : `✗ ${whyOf(picked)} Choose again.`}</Text>
+        // First miss: that option's reason only; a SECOND different miss adds
+        // the explanation (the S2 check-card rule, fix round 2026-11-14, F9).
+        <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>{correct ? `✓ ${s.explain}` : `✗ ${whyOf(picked)} ${wrong.length >= 2 ? s.explain : 'Choose again.'}`}</Text>
       ) : null}
     </Card>
   );

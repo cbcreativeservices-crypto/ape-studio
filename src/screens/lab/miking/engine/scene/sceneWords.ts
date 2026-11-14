@@ -48,7 +48,9 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     patternLabel: t.patterns.find((p) => p.id === m.pattern)?.label ?? PATTERN_LABELS[m.pattern],
     readouts: r,
     ...refLabels(rig, slot),
-    zoneLabel: z ? `${z.label}, ${z.band}` : null,
+    // The band is a sentence ending in a full stop; the NOW line adds its own
+    // ("resting on the cushioning..", fix round 2026-11-14, F9 item 4).
+    zoneLabel: z ? `${z.label}, ${z.band.replace(/[.\s]+$/, '')}` : null,
     showAim: t.mount !== 'surface',
     where: where ?? { inside: W.inside, outside: W.outside },
     axisWords: W.axis,

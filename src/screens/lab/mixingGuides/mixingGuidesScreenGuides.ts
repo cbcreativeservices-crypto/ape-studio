@@ -104,7 +104,7 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
 export const MIXING_GUIDES_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the styles you’ve read and those still to read: every audience listens for something different, and every value stays a suggested starting point.',
-    start: 'Tap a style still listed to read it next, or tap REVIEW ▾ on the ✓ DONE line to reopen one you’ve read. DONE · BACK TO THE GUIDES returns to the menu.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. DONE · BACK TO THE GUIDES returns to the menu.',
   },
   seeing: [
     'Where you are in the Mixing Guides: the title reads WHAT’S LEFT, or LAB COMPLETE once every guide is read.',

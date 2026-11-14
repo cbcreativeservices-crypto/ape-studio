@@ -19,6 +19,16 @@ import { REQUIRED_EAR_LEVEL } from '../../../features/lab/trainingLabKeys.ts';
 
 export type EarEndModule = { id: string; title: string; levels: number };
 
+/** The words under the drill header's score pill. The score is the average of
+ *  up to the last 20 answers; with fewer, it said "last 20" under a 100 % that
+ *  rested on ONE answer (novice audit 2026-11-14, G7_EarTrainingLab). It now
+ *  says how many answers it rests on until there are 20. */
+export function earScoreWindowLabel(answers: number, window = 20): { sub: string; a11y: string } {
+  if (answers >= window) return { sub: `last ${window}`, a11y: `over the last ${window} trials` };
+  const n = Math.max(0, Math.floor(answers));
+  return { sub: n === 1 ? '1 answer' : `${n} answers`, a11y: n === 1 ? 'over 1 answer so far' : `over ${n} answers so far` };
+}
+
 /** True when the module already counts (the lab's existing credit rule). */
 export function earModuleCredited(p: EarModuleProgress | undefined): boolean {
   return (p?.mastered ?? 0) >= REQUIRED_EAR_LEVEL;

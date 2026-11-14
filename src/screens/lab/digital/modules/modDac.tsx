@@ -254,7 +254,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
                   tint: isp.clipRisk ? colors.red : undefined,
                   helpKey: 'isp',
                 },
-                { k: 'MISSED', v: `${isp.missDb.toFixed(2)} dB`, helpKey: 'isp' },
+                { k: 'MISSED', v: `${isp.missDb.toFixed(2)} dB`, helpKey: 'isp', caption: 'meter misses' },
               ]
             : stageView === 'images'
               ? [
@@ -263,9 +263,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
                   { k: 'FILTER', v: `20→${os * 48 - 20} kHz`, helpKey: 'oversampling' },
                 ]
               : [
-                  { k: 'FS', v: '48 kHz', helpKey: 'reconstruction' },
+                  // RATE, never FS: FS means FULL SCALE in this lab (beginner audit 2026-11-14).
+                  { k: 'RATE', v: '48 kHz', helpKey: 'reconstruction' },
                   { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
-                  { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction' },
+                  { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction', caption: 'shown on/off' },
                 ],
         render: (w, h) =>
           viz && stageView === 'isp' ? (
@@ -390,9 +391,13 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             options: [
               'Stair steps matching the held sample values',
               'Straight lines connecting the sample dots',
-              'A continuous band-limited waveform passing through the sample values',
+              'One smooth, band-limited curve through the sample values',
             ],
             correctIdx: 2,
+            why: {
+              0: 'Stair steps are the ZOH layer, the held values. Turn it off and compare.',
+              1: 'Straight lines would add corners full of high frequencies the filter removes.',
+            },
             reveal:
               'The samples describe exactly one band-limited signal, and the DAC + reconstruction filter produce it — a continuous analog waveform via band-limited interpolation. The steps are an intermediate stage; connect-the-dots never happens at all.',
             wrongHint: 'Look at the main display: the bright output curve never touches a step corner and is never a straight segment.',
@@ -407,6 +412,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
               'Only if the file is floating point',
             ],
             correctIdx: 1,
+            why: {
+              0: 'The DAC draws a curve through the samples; between them it can swing higher.',
+              2: 'Float or fixed, the curve between samples is the same. Look at the INTER-SAMPLE PEAKS view.',
+            },
             reveal:
               'Yes. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
             wrongHint: 'The explorer above shows legal samples with the reconstruction glowing red above the 0 dBFS line.',
@@ -519,8 +528,9 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
         badge: 'TIMING DEVIATION EXAGGERATED ×1000 FOR VISIBILITY — ILLUSTRATIVE MODEL',
         onGuide: () => help('jitter'),
         bezel: [
-          { k: 'INTERVAL', v: '20.83 µs @48k', helpKey: 'jitter' },
-          { k: 'PEAK DEV', v: `±${peakDevNs.toFixed(1)} ns`, helpKey: 'jitter' },
+          // Unit on its own line so INTERVAL keeps its key at 390 (beginner audit 2026-11-14).
+          { k: 'INTERVAL', v: '20.83', sub: 'µs @48k', vA11y: '20.83 µs at 48 kHz', helpKey: 'jitter' },
+          { k: 'PEAK DEV', v: `±${peakDevNs.toFixed(1)} ns`, helpKey: 'jitter', caption: 'timing wobble' },
           { k: 'MODE', v: jitMode.toUpperCase(), helpKey: 'jitter' },
         ],
         render: (w, h) =>
@@ -613,6 +623,10 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
               'mic → preamp → ADC → anti-aliasing → DSP → DAC → amp → reconstruction → speaker',
             ],
             correctIdx: 1,
+            why: {
+              0: 'The preamp has to raise the mic level before conversion. Check where the ADC sits.',
+              2: 'The anti-aliasing filter has to act BEFORE sampling, and reconstruction right after the DAC.',
+            },
             reveal:
               'Analog gain and the anti-aliasing filter must come BEFORE the ADC (nothing above Nyquist may reach the sampler), and the reconstruction filter comes right AFTER the DAC — before amplification.',
             wrongHint: 'In the classic model drawn here, two anchors: anti-aliasing comes right before the ADC; reconstruction comes right after the DAC.',
@@ -624,9 +638,13 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
             options: [
               'The reconstruction filter smoothing too hard',
               'Jitter on the DAC clock',
-              'The analog input or converter driven past full scale — clipping at/before the ADC',
+              'Clipping at or before the ADC: driven past full scale',
             ],
             correctIdx: 2,
+            why: {
+              0: 'Reconstruction rounds and smooths. It does not slice peaks flat.',
+              1: 'Jitter makes tiny timing errors, not a flat ceiling on every peak.',
+            },
             reveal:
               'Flat-topped peaks are clipping: the signal hit the ceiling of the analog stage or the converter’s full scale. The information above the ceiling was never stored — no later stage can bring it back.',
             wrongHint: 'The reconstruction filter and clock change timing/smoothness — neither slices amplitude flat.',
@@ -641,6 +659,11 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
             question: 'fs = 44.1 kHz, no anti-aliasing filter, and a 26 kHz tone reaches the sampler. What frequency lands in the file?',
             options: ['26 kHz', '22.05 kHz', '18.1 kHz', 'Nothing — it disappears'],
             correctIdx: 2,
+            why: {
+              0: '26 kHz is above Nyquist for 44.1 kHz, so it cannot be stored as itself.',
+              1: '22.05 kHz is Nyquist itself, the limit, not where 26 kHz lands.',
+              3: 'Without a filter, nothing removes it: it folds to another frequency.',
+            },
             reveal:
               'Above Nyquist (22.05 kHz) the tone folds: alias = |26 − 44.1| = 18.1 kHz. The samples fit an 18.1 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
             wrongHint: 'Fold it around Nyquist: alias = |f − nearest multiple of fs|.',
@@ -655,6 +678,10 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
               'Spoken word 192 kHz for sibilance; music 44.1 kHz / 16-bit to save space',
             ],
             correctIdx: 1,
+            why: {
+              0: 'Higher settings cost space and buy nothing a voice can use.',
+              2: 'Speech does not need 192 kHz, and 16-bit leaves masters little headroom to work with.',
+            },
             reveal:
               'Match the format to the content: speech stays clear with far less bandwidth than music, but wants headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
             wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',

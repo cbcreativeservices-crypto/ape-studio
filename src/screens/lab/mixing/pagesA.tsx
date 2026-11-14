@@ -277,7 +277,13 @@ function PageGainStaging({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>WHY HEADROOM</Eyebrow>
         <Body>Digital zero is a hard ceiling at the output and in a fixed-point file: anything past it there is clipped, permanently. And peaks GANG UP — two identical −6 dB peaks landing together can reach {sum.toFixed(1)} dB. Eight tracks each “safely” hot leave a mix bus with nowhere to live. Peaks comfortably below zero on every track is the whole rule.</Body>
         <HeadroomArt measured={pb.measured} />
-        <Body>Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play — B’s bar sits 3 dB higher with nothing else changed.</Body>
+        {/* The answer waits for the blind vote (novice audit G4, 2026-11-14:
+            the caption gave the vote away before it was cast). */}
+        <Body>
+          {verdict == null
+            ? 'Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play. Vote with your ears first, before you read the bars.'
+            : 'Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play — B’s bar sits 3 dB higher with nothing else changed.'}
+        </Body>
       </Card>
       <Card>
         <Eyebrow>A OR B — BLIND</Eyebrow>

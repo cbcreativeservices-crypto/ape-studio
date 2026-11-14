@@ -126,6 +126,71 @@ export const TROUBLE_SCENARIOS: readonly DrumScenario[] = [
 
 export const ALL_DRUM_SCENARIOS: readonly DrumScenario[] = [...SOUND_SCENARIOS, ...WHOLE_SCENARIOS, ...TYPES_SCENARIOS, ...TROUBLE_SCENARIOS];
 
+/** One reason per WRONG option, keyed by scenario id and the option's exact
+ *  text (lab fix round 2026-11-14, phase 2; the shared check card's rule,
+ *  SHARED_API S2 §1). A first miss shows the reason; a second DIFFERENT miss
+ *  adds the explanation. A reason never states the right option: it says why
+ *  this one is not it, or where to look. */
+export const DRUM_SCENARIO_WHY: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  s1: {
+    'Only the pitch near that rod — the rest of the head is untouched': 'The head is one piece of film: tighten it at one rod and the whole head feels it. Watch SPREAD and BEAT on the Turn one rod step.',
+    'Nothing until every rod has been turned the same amount': 'A rod changes the tension the moment it turns. On the Turn one rod step, watch that rod’s wedge change color.',
+  },
+  s2: {
+    'The drum is out of tune — fix it until the app settles': 'Even a perfectly even head makes the app jump. On the Tension and pitch step, how are the notes spaced?',
+    'The app is broken': 'A good tuner does the same on any drum. On the Tension and pitch step, how are the notes spaced?',
+  },
+  s3: {
+    'The air inside the shell': 'The enclosed air links the two heads; it is one of the parts PART lights up on the first step.',
+    'The bearing edge': 'The bearing edge is where the head meets the shell, and it shapes the note. Look back at the Shell and bearing edge step.',
+  },
+  s4: {
+    'A loose lug': 'A loose lug makes the head uneven, so it warbles; it does not glide down. Look at BEND on the Four qualities step.',
+    'The resonant head slipping': 'A slipping head drifts flat and stays there between hits. This glide happens inside every single hit.',
+  },
+  w1: {
+    'Resonant higher than the batter': 'That is one of three sounds the chapter compares. Did the chapter call any one of them the rule?',
+    'Both heads equal': 'That is one of three sounds the chapter compares. Did the chapter call any one of them the rule?',
+  },
+  w2: {
+    'Cancel each other and shorten the note': 'Look at SUSTAIN on the Compare head relationships step when the two heads are equal.',
+    'Make the drum impossible to tune': 'Equal heads are a common setup that tunes fine. Look at SUSTAIN when you pick Both heads equal.',
+  },
+  w3: {
+    'The method was wrong': 'The same method works on both drums; only the result differs. Think about what is different between the two drums.',
+    'Floor toms cannot be tuned': 'A floor tom tunes like any tom, just lower. Think about what is different between the two drums.',
+  },
+  y1: {
+    'The batter head tension': 'The wires never touch the batter. On the snare drawing, what do the wires lie against?',
+    'The shell': 'The shell is the same for soft and hard strokes. Look at what the wires lie against, and at STRAINER.',
+  },
+  y2: {
+    'Sounds the same but quieter': 'Damping changes how long the note lasts and its color, not only its level. Watch SUSTAIN as PILLOW goes up.',
+    'Loses its pitch entirely': 'A damped kick still has a low note; it just ends sooner. Watch SUSTAIN and the wave as PILLOW goes up.',
+  },
+  y3: {
+    'Gets brighter and better': 'Brighter, yes, but the chapter warns about forcing a drum out of its range. Reread the Toms cards.',
+    'Gains sustain': 'Past its range a tom loses tone and length. Reread the Toms cards on what happens up there.',
+  },
+  r1: {
+    'Trust the device — the drum is fine': 'The drum still sounds wrong, and the sound is what people hear. What does a device leave out?',
+    'Replace the device': 'A new device would read the same even numbers. What does a device leave out?',
+  },
+  r2: {
+    'A rod backing out under vibration': 'A rod backing out is a classic cause of drift: one lug drops. Which option has nothing to do with tension?',
+    'A worn washer or a damaged lug': 'A worn washer or a damaged lug lets a rod move, a real cause. Which option has nothing to do with tension?',
+  },
+};
+
+/** What a wrong pick shows on a decision card. The first different miss:
+ *  that option's own reason. From the second different miss on: the reason
+ *  and the explanation. */
+export function drumWrongLine(s: Pick<DrumScenario, 'id' | 'explain'>, picked: string, distinctMisses: number): string {
+  const why = DRUM_SCENARIO_WHY[s.id]?.[picked];
+  const reason = why ? `✗ ${why}` : `✗ "${picked}" is not the best fit here. Choose again.`;
+  return distinctMisses >= 2 ? `${reason} ${s.explain}` : reason;
+}
+
 export const scenariosForChapter = (id: DrumChapterId): readonly DrumScenario[] => ALL_DRUM_SCENARIOS.filter((s) => s.chapterId === id);
 
 /* ── preparation checklist (Chapter 2) ───────────────────────────────────── */
@@ -138,6 +203,43 @@ export const PREP_ITEMS: readonly { id: PrepFault; label: string; where: string;
   { id: 'debris', label: 'Debris near the bearing edge', where: 'Look where the head meets the shell', why: 'Grit between head and bearing edge stops the head seating evenly — a buzz or a dead spot that no rod will fix. Clean the edge.' },
   { id: 'uneven', label: 'Tuning problem — lugs at clearly different pitches', where: 'Read the tension map', why: 'An uneven head warbles. It is a tuning job, not a hardware job — but check hardware first, because a loose rod LOOKS like a tuning problem.' },
 ];
+
+/** What a revealed checklist means, in the learner's own terms: faults they
+ *  FOUND (flagged and there), faults they MISSED (there, not flagged) and
+ *  EXTRA flags (flagged, not there). A correctly UN-flagged line is not a
+ *  "right answer" the learner gave, so it is never counted as one (novice
+ *  audit 2026-11-14: "2 of 4 right" after a single tick read as a trick). */
+export function prepResult(flags: ReadonlySet<string>, present: ReadonlySet<PrepFault>): { found: number; missed: number; extra: number; perfect: boolean } {
+  let found = 0;
+  let missed = 0;
+  let extra = 0;
+  for (const it of PREP_ITEMS) {
+    const f = flags.has(it.id);
+    const p = present.has(it.id);
+    if (f && p) found++;
+    else if (p) missed++;
+    else if (f) extra++;
+  }
+  return { found, missed, extra, perfect: missed === 0 && extra === 0 };
+}
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+/** One line for a revealed drum: "You found 1 fault and missed 1." */
+export function prepResultLine(r: { found: number; missed: number; extra: number; perfect: boolean }): string {
+  if (r.perfect) return 'Every fault found and nothing flagged that was not there. This drum is ready for the method.';
+  const parts = [`You found ${plural(r.found, 'fault', 'faults')}`];
+  if (r.missed) parts.push(`missed ${r.missed}`);
+  const head = parts.join(' and ');
+  const extra = r.extra ? `${r.missed ? ', ' : ' and '}flagged ${plural(r.extra, 'line', 'lines')} that ${r.extra === 1 ? 'was' : 'were'} not there` : '';
+  return `${head}${extra} — no credit yet.`;
+}
+
+/** The ✓ REVEAL KEY gate: the key opens only after every spot has been looked
+ *  at, because a fault is drawn only where the learner has looked. */
+export function revealWaitLine(notLooked: number): string {
+  return `Walk the whole drum first: ${plural(notLooked, 'spot has', 'spots have')} not been looked at yet. A fault is drawn only where you have looked, so ride INSPECT to each one, then ✓ REVEAL KEY.`;
+}
 
 /** The CAUTION card (Chapters 2 and 3): the ways a drum gets damaged while
  *  being tuned. One card, two places. */

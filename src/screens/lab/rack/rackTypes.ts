@@ -31,7 +31,9 @@ export type BezelItem = {
   vA11y?: string;
   /** Optional second value line in the unit style (e.g. the imperial
    *  "(9.8 in)" under "≈ 25 cm"), so a dual-unit value fits its cell and the
-   *  cell keeps its key (D36 drops the key of a value too wide to fit). */
+   *  cell keeps its key (D36 drops the key of a value too wide to fit). Read
+   *  aloud after the value unless `vA11y` already says it (the "−8.4 dBFS
+   *  dBFS" fix, 2026-11-14). */
   sub?: string;
   /** Value tint (e.g. levelColor ramp); default amber. */
   tint?: string;
@@ -49,6 +51,17 @@ export type BezelItem = {
   leavesFull?: boolean;
   /** Relative width of this cell (default 1). */
   flex?: number;
+  /** ADDITIVE (lab fix round 1, 2026-11-14, row 7): 1-3 plain words under the
+   *  value saying what the number MEANS ("where", "how much", "how wide"),
+   *  shown on the learner's FIRST visit to this stage only (RackStage
+   *  `captionsId`; BezelReadouts). At most 14 characters. */
+  caption?: string;
+  /** ADDITIVE (2026-11-14, row 3, the silent learner): what this cell reads
+   *  while SOUND IS OFF — a stored, last-heard or modelled value instead of a
+   *  bare "—". Swapped in automatically while the app's sound output is off;
+   *  read aloud with "(not heard: sound is off)". `sub` = an optional short
+   *  tag (MODEL, LAST). */
+  silent?: { v: string; sub?: string; vA11y?: string };
 };
 
 /** The pinned display. `render` receives the glass's inner width/height —
@@ -94,6 +107,16 @@ export type RackStage = {
    *  that do not set it look exactly as before. `onEnlarge` still works for
    *  a host that wants its own modal. */
   fullScreen?: boolean;
+  /** ADDITIVE (lab fix round 1, 2026-11-14, row 3): while SOUND IS OFF the
+   *  rack prints a line at the top of its well. `true` = the shared words
+   *  (silentPath SOUND_OFF_LINE: "Sound off? You can still do every step. The
+   *  readouts show what you would hear."); a string = the lab's own. Only for
+   *  a stage where that is true. Omitted = nothing, as before. */
+  soundOffLine?: boolean | string;
+  /** ADDITIVE (2026-11-14, row 7): the id under which this stage's bezel
+   *  captions (BezelItem.caption) count as seen. Default: the captions
+   *  joined. Two stages that teach the same strip may share one id. */
+  captionsId?: string;
 };
 
 /** One option inside an options tray. LabChip semantics preserved

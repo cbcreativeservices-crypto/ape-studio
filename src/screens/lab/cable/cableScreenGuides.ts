@@ -162,7 +162,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   // ── Lesson 5 ──────────────────────────────────────────────────────────────
   l05_loudspeaker: {
     intro: {
-      learning: 'Line level, speaker level and AC power are three separate jobs around one loudspeaker, and a powered loudspeaker is fed differently from a passive one.',
+      learning: 'Line level, speaker level and AC power are three separate jobs around one loudspeaker, met in four connections, and a powered loudspeaker is fed differently from a passive one.',
       start: 'Read THE FOUR DIFFERENT CONNECTIONS first. Then compare the two cut ends under INSTRUMENT CABLE VS LOUDSPEAKER CABLE, and work the first scenario in ROUTING PICKS.',
     },
     seeing: [

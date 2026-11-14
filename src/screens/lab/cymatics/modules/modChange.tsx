@@ -162,9 +162,9 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
         onGuide: () => help('change_one'),
         initialParam: 'a', // no fader: the drive is locked on purpose
         bezel: [
-          { k: 'LOCKED', v: formatHz(hz), helpKey: 'change_one', flex: 1.1 },
-          { k: `A · ${optA.short}`, v: A.res.state.toUpperCase(), tint: RES_TINT[A.res.state], helpKey: 'resonance', flex: 1.2 },
-          { k: `B · ${optB.short}`, v: B.res.state.toUpperCase(), tint: RES_TINT[B.res.state], helpKey: 'resonance', flex: 1.2 },
+          { k: 'LOCKED', v: formatHz(hz), helpKey: 'change_one', flex: 1.1, caption: 'the one tone' },
+          { k: `A · ${optA.short}`, v: A.res.state.toUpperCase(), tint: RES_TINT[A.res.state], helpKey: 'resonance', flex: 1.2, caption: 'plate A' },
+          { k: `B · ${optB.short}`, v: B.res.state.toUpperCase(), tint: RES_TINT[B.res.state], helpKey: 'resonance', flex: 1.2, caption: 'plate B' },
         ],
         stage: (w, h) => (
           <PairStage w={w} h={h} tagA={`A · ${optA.label.toUpperCase()}`} tagB={`B · ${optB.label.toUpperCase()}`} plateA={(pw, ph) => plate(pw, ph, specA, A)} plateB={(pw, ph) => plate(pw, ph, specB, B)} />

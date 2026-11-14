@@ -27,7 +27,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import type { PageCtx } from '../kit/PagedLab';
 import { useMarkWhen } from '../tuning/components/primitives';
-import { gaFaultHints, gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime } from './bitsLogic';
+import { gaFaultHints, gaGoalsNote, gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime } from './bitsLogic';
 import type { GaLogEntry, GaLogKind, GaState } from './model/gaModel';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
@@ -97,9 +97,18 @@ export function useVisitGoals(ctx: PageCtx, goals: Goal[]): VisitLatch {
 
 /** The goal chips. On a page that was finished on an earlier visit the
  *  chips start empty again (a fresh practice run), so one line says the
- *  credit is kept (audit 2, W2-20). */
+ *  credit is kept (audit 2, W2-20).
+ *
+ *  THE PAGE SAYS WHEN IT COUNTS (lab fix round 2026-11-14). The end screen
+ *  told a learner who had done most of the practice "21 pages not done
+ *  yet" (beginner audit G5): the count was true, because a page counts only
+ *  when every goal, the check among them, is met in one visit, but no page
+ *  said so. One line under the chips now does, and says so when it counts
+ *  (bitsLogic `gaGoalsNote`). */
 export function GoalChips({ goals, latched }: { goals: Goal[]; latched: VisitLatch }) {
-  const again = latched.doneBefore === true && !latched.every(Boolean);
+  const all = latched.every(Boolean);
+  const again = latched.doneBefore === true && !all;
+  const counts = gaGoalsNote(all, latched.doneBefore === true);
   return (
     <View style={styles.goals}>
       {again ? <Text style={styles.goalsNote}>You finished this page before, and that is kept. These marks are for this visit.</Text> : null}
@@ -113,6 +122,11 @@ export function GoalChips({ goals, latched }: { goals: Goal[]; latched: VisitLat
           </View>
         ))}
       </View>
+      {counts ? (
+        <Text style={[styles.goalsNote, all && { color: colors.green }]} accessibilityLiveRegion="polite">
+          {counts}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -224,7 +238,7 @@ export function Caption({ state }: { state: GaState }) {
 
 /** TROUBLESHOOT: plant one wrong setting, let the learner find it with the
  *  log and the scene, and judge the fix from the scene's state. */
-export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, seen = true, firstHint }: {
+export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, seen = true, firstHint, retest }: {
   title: string;
   symptom: string;
   /** The fault is planted right now. */
@@ -244,6 +258,10 @@ export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, s
   seen?: boolean;
   /** The one hint allowed before the symptom, in the page's words. */
   firstHint?: string;
+  /** Page 19 (lab fix round 2026-11-14): the setting is corrected and the
+   *  proof is still owed. The card then stops asking for the cause (and
+   *  offers no hint toward it) and says which action to run again. */
+  retest?: string;
 }) {
   const [shownBefore, setShownBefore] = useState(0);
   const [shownAfter, setShownAfter] = useState(0);
@@ -257,7 +275,14 @@ export function FaultCard({ title, symptom, armed, fixed, onStart, hints, why, s
           <Text style={styles.faultBtnText}>START THE FAULT</Text>
         </Pressable>
       ) : null}
-      {armed ? (
+      {armed && retest ? (
+        <View style={styles.faultWhy} accessibilityLiveRegion="polite">
+          <Text style={[styles.faultHead, { color: colors.amber }]}>SETTING CORRECTED · NOW TEST IT AGAIN</Text>
+          <Text style={styles.do}>{retest}</Text>
+          <Text style={styles.noteText}>The fault counts as fixed when the same action comes out right.</Text>
+        </View>
+      ) : null}
+      {armed && !retest ? (
         <>
           <Text style={styles.do}>
             {seen

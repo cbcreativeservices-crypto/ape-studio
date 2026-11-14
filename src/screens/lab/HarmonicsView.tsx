@@ -145,6 +145,7 @@ import {
   midiToHz,
   normalizeSet,
   noteInfo,
+  pickMarkerLabels,
   PRESETS,
   PRESET_BLURBS,
   synthWaveform,
@@ -711,12 +712,13 @@ function HarmonicStage({
   // LOG axis high harmonics crowd (log2(12/11) of an octave apart), so
   // labels that would collide are greedily dropped low-n-first; the marker
   // LINES still show every harmonic.
+  // In the MODEL view only the harmonics that sound get a label
+  // (pickMarkerLabels): after a preset change the labels follow the lit rows.
+  const litKey = view === 'model' ? modelLevels.map((m) => m.n).join(',') : '';
   const markerLabels = useMemo(() => {
     const out: ReactElement[] = [];
-    let lastY = Number.POSITIVE_INFINITY;
-    for (const m of markers) {
-      if (lastY - m.y < labelGap) continue;
-      lastY = m.y;
+    const lit = view === 'model' ? new Set(litKey ? litKey.split(',').map(Number) : []) : undefined;
+    for (const m of pickMarkerLabels(markers, labelGap, lit)) {
       const c = m.note.cents;
       out.push(
         <Text
@@ -729,7 +731,7 @@ function HarmonicStage({
       );
     }
     return out;
-  }, [markers, labelGap, gutterW, ts]);
+  }, [markers, labelGap, gutterW, ts, view, litKey]);
 
   /** PIANO GUTTER (LOG axis only) — one key per semitone in [fLo, fHi]; log
    *  spacing makes every octave (and so every key) equal height, RX-style.
@@ -1657,9 +1659,12 @@ export function HarmonicsView({
   const bezel: BezelItem[] =
     view === 'model'
       ? [
-          { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency' },
+          // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4);
+          // SLOPE already carries its unit line, so it has none.
+          { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency', caption: 'the pitch' },
           {
             k: 'THD',
+            caption: 'overtone share',
             v: modelThd.pct != null ? `${modelThd.pct.toFixed(1)} %` : '—',
             // Read-only (owner rule 2026-10-10): the breakdown sheet opens
             // from the THD CALC dock key.
@@ -1668,10 +1673,16 @@ export function HarmonicsView({
             k: 'CREST',
             v: modelCrestDb != null ? `${modelCrestDb.toFixed(1)} dB` : '—',
             helpKey: 'crest',
+            caption: 'how spiky',
           },
           {
             k: 'SLOPE',
+            // The unit rides with the number (novice audit 2026-11-14: a bare
+            // "−6.0" read as nothing), in the Noise Lab's own form "dB/OCT",
+            // on the unit line (`sub`) so the cell keeps its SLOPE key at 390.
             v: slopeInfo.slope != null ? slopeInfo.slope.toFixed(1) : '—',
+            sub: slopeInfo.slope != null ? 'dB/OCT' : undefined,
+            vA11y: slopeInfo.slope != null ? `${slopeInfo.slope.toFixed(1)} dB per octave` : undefined,
             helpKey: 'slope',
           },
         ]
@@ -1766,6 +1777,8 @@ export function HarmonicsView({
     initialParam: 'f0',
     onHelp: openLesson,
     stage: {
+      // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+      soundOffLine: 'Sound off? The bands, THD and the wave still show every change you make.',
       size: 'L', // the three linked panels ARE the lab — earns the tall glass
       fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
       // INTEGRITY BADGE — permanent, per mode (TRAINING DEMO badge idiom):

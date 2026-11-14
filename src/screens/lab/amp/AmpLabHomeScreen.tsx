@@ -161,6 +161,8 @@ export function AmpLabHomeScreen() {
       />
       {ending ? (
         <LabEndScreen
+          // The recap and next-lab card (labEndContent.ts, S4).
+          labId="amp"
           labTitle="Amplifier Principles Lab"
           units={endModel.units}
           cleared={endModel.cleared}

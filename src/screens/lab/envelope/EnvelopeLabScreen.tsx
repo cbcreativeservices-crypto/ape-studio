@@ -417,7 +417,9 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one meter or twenty — what changes with distance and the room is propagation, the Wave Physics Laboratory’s subject, in Audio Fundamentals.</Body>
       <Body>The classic mix-up: a long reverb tail is NOT a long release. Release is the source stopping; the tail is the room still returning energy after it has.</Body>{/* NEW COPY */}
-      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
+      {/* The button used to vanish with no word of what it did (novice audit
+          2026-11-14): the page now says it is done. */}
+      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.loaded}>✓ THIS PAGE IS DONE · NEXT MOVES ON</Text>}
     </View>
   );
 }
@@ -427,18 +429,22 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
 /** Correct answers deliberately land on different positions (2,0,1,3,1,2) and
  *  distractors are written to similar lengths — no position or length cue.
  *  Each check targets a named misconception; the explanation names it. */
-const CHECKS: { q: string; options: string[]; correct: number; explain: string }[] = [
+const CHECKS: { q: string; options: string[]; correct: number; explain: string; wrong?: (string | undefined)[] }[] = [
   {
     q: 'Which part of an envelope is the transient?',
     options: ['The steady sustain', 'The fading release', 'The fast-changing onset', 'The silence between notes'], // NEW COPY (rebalanced)
     correct: 2,
     explain: 'The transient is the brief, fast-changing onset — the part the ear uses to place and identify the sound.',
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['The sustain is the held part, where little changes. On the Transient Explorer, where does the shape change fastest?', 'The release is the fade at the end, after the energy stops. Look at the other end of the shape.', undefined, 'Silence has no sound to place or identify. Look for the part of the shape that changes fastest.'],
   },
   {
     q: 'A piano note has a fast attack, a natural decay and…',
     options: ['No true sustain — it can only decay', 'A long, true sustain', 'No decay at all', 'A slow, swelling attack'], // NEW COPY (rebalanced)
     correct: 0,
     explain: 'A struck string can only lose energy. The pedal lets that decay run longer, but nothing keeps supplying energy the way a bow does.', // NEW COPY
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: [undefined, 'A true sustain needs energy supplied the whole time, like a bow. Once the hammer strikes, does anything keep feeding the string?', 'Look at the Piano shape in Common Sound Shapes: after the hit, the level never holds flat.', 'A hammer hits the string in an instant. Compare the Piano and Violin shapes in Common Sound Shapes.'],
   },
   {
     // NEW COPY — rise time objective
@@ -446,12 +452,16 @@ const CHECKS: { q: string; options: string[]; correct: number; explain: string }
     options: ['Zero — rise time only applies to percussion', 'Less than 40 ms — it skips the slow start and the final approach', 'Exactly 40 ms — rise time and attack time are the same thing', 'More than 40 ms — it includes the decay as well'],
     correct: 1,
     explain: 'Rise time is measured between the 10 % and 90 % crossings, so it is always shorter than the attack: about 32 ms for a linear 40 ms attack, shorter still for a snap. Attack time and rise time are related but not the same.',
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['Rise time applies to any onset, not just percussion. Look at the two gold dots on the Explorer chart.', undefined, 'Watch the two gold dots on the Explorer: they do not sit at silence and at the peak.', 'Rise time ends before the peak, so the decay never enters it. Look where the second gold dot sits.'],
   },
   {
     q: 'Why can a peak meter and an average meter disagree about a snare hit?',
     options: ['One of the two meters must be miscalibrated', 'Both read the same level, just on different scales', 'Average meters are built to ignore percussion', 'The hit sets the peak; the short body keeps the average low'], // NEW COPY (rebalanced)
     correct: 3,
     explain: 'The hit spends almost all its time far below its peak — a large crest factor — so the peak reads high while the average stays low. Both meters are right; they measure different things.', // NEW COPY
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['Nothing is broken: on Peak vs Average both lines come from the same snare. Look at how far apart they sit.', 'They do not read the same level: on a snare the peak line and the average line sit far apart.', 'An average meter counts every sound. Compare where most of the snare’s time is spent with its peak.', undefined],
   },
   {
     // NEW COPY — dynamic range objective
@@ -459,12 +469,16 @@ const CHECKS: { q: string; options: string[]; correct: number; explain: string }
     options: ['Two names for the same span, used by different manufacturers', 'Two different spans — one sound’s peak-to-average versus loudest-to-quietest overall', 'Two ways of reading the same peak meter, in dBFS and in VU', 'Two settings on a compressor — the ratio and the threshold'],
     correct: 1,
     explain: 'Crest factor is peak minus average of ONE sound. Dynamic range is loudest minus quietest — across a performance, or from a system’s clipping point down to its noise floor.',
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['They answer different questions: one is about a single sound, the other about a whole performance or system.', undefined, 'dBFS and VU are meter scales. This question is about two spans of level, not two meters.', 'Ratio and threshold are compressor controls. These two terms describe the sound itself, not a processor.'],
   },
   {
     q: 'Does ADSR describe how sound travels through a room?',
     options: ['Only for percussive sounds, where the room matters most', 'Yes — the release stage is the room’s decay, which is why long halls sound sustained', 'No — ADSR describes the source over time; travel through space is propagation', 'Only outdoors, where there are no reflections to shape it'], // NEW COPY (rebalanced)
     correct: 2,
     explain: 'ADSR, transients and duration describe the sound at its source. The room’s decay is reverberation — propagation, the Wave Physics lab’s subject. A snare’s release at the source is the same in any room.', // NEW COPY
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['Percussive or not, ADSR is drawn at the source. The Envelope vs Propagation page keeps the two subjects apart.', 'A hall’s long ring comes after the source has stopped. Reread Envelope vs Propagation.', undefined, 'Reflections or none, an envelope belongs to the sound where it starts. Reread Envelope vs Propagation for the other subject.'],
   },
 ];
 
@@ -484,7 +498,7 @@ function PageChecks({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>{n} OF {CHECKS.length} CORRECT</Eyebrow>
         <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This page is already complete — answer again for practice.' : 'All six — this page is complete.') : 'This page completes when all six are answered correctly.'}</Body>{/* NEW COPY — evening hunt 1 (2026-10-02): FINISH is never locked and records nothing (kit/PagedLab: the what's-left screen lists this page until it is done); the old lines said FINISH "unlocks" and "records it", and called the LAB complete when only this page was. */}
       </Card>
-      {CHECKS.map((c, i) => <UnderstandingCheck key={i} question={c.q} options={c.options} correct={c.correct} explain={c.explain} onCorrect={onCorrect(i)} />)}
+      {CHECKS.map((c, i) => <UnderstandingCheck key={i} question={c.q} options={c.options} correct={c.correct} explain={c.explain} wrong={c.wrong} onCorrect={onCorrect(i)} />)}
     </View>
   );
 }
@@ -510,6 +524,9 @@ export function EnvelopeLabScreen() {
       // check included, and on the what's-left screen (WHERE YOU ARE).
       pageGuide={envelopePageGuide}
       endGuide={ENVELOPE_END_GUIDE}
+      // WHAT'S LEFT (fix round 2026-11-14, S2 §4): the one hands-on page names
+      // what is missing; reading pages get the shared NEXT rule once.
+      pageDetail={(i) => (i === 6 ? 'Still to do: get all six questions on this page right.' : undefined)}
       // A CONCEPT lab (owner rule 2026-10-31): visual only, nothing is
       // measured — every chart carries its own ILLUSTRATIVE MODEL badge — so
       // no accuracy note; the ⓘ takes its spot.

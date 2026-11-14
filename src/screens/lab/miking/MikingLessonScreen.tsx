@@ -49,6 +49,7 @@ import { forgetFirstMisses } from './engine/progress/firstTryMemo';
 import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, recordPlace, recordQuickCheck, recordQuickPick, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { creditedPages } from './engine/progress/creditMap.ts';
+import { MIKING_HOW_IT_COUNTS, missingLine } from './engine/progress/missingLine.ts';
 import { lessonById } from './data/lessonLoader';
 import { isFoundation, journeyPageOf, pageGate, setupsTitle, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
 import { meetKeep, pageOf, restructureLesson } from './engine/restructure.ts';
@@ -61,9 +62,11 @@ import { lessonArt } from './data/lessonArtLoader';
 import type { LessonArt } from './engine/scene/sceneTypes.ts';
 import type { PageProps } from './pages/pageTypes';
 // Screen Guide (owner 2026-10-31): the header ⓘ explains the step on screen.
-// The calibration chip STAYS beside it: every lesson prints real-world
-// distances (measured as its ‘about these starting points’ note says) and
-// carries the owner's one starting-points note behind it (LESSON_JOURNEY §12).
+// Beside it, the ABOUT chip opens the owner's one starting-points note
+// (LESSON_JOURNEY §12) and nothing else (fix round 2026-11-14, F9 item 5,
+// D37): the phone-calibration and light-meter text belongs to live tools and
+// measuring labs, and in a silent drawing lesson it read as "am I supposed to
+// be measuring something?".
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { enginePageOf, MIKING_END_GUIDE, mikingFoundationsGuide, mikingScreenGuide, stepInfoKey, type MikingStepInfo } from './mikingScreenGuides';
 import { PInstrument } from './pages/PInstrument';
@@ -232,7 +235,12 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   const dev = useMemo(() => devStartPage(startPage), [startPage]);
   const [pageIdx, setPageIdx] = useState(() => (dev ? PAGE_IDS.indexOf(dev) : 0));
   const [step, setStepRaw] = useState(() => Number(devParam('step') ?? 0) || 0);
-  const [stepTitles, setStepTitles] = useState<string[]>([]);
+  // The step titles, held WITH the page that reported them (fix round
+  // 2026-11-14, F9 item 1): CONTENTS → the module already open used to clear
+  // them, the mounted page never re-reported (same titles), and the strip fell
+  // back to its estimate ("1 / 7" on Hi-Hat) with a FINISH · SEE WHAT'S LEFT
+  // button on every step. Titles from another page are simply not used.
+  const [reported, setReported] = useState<{ page: PageId; titles: string[] } | null>(null);
   // The step on screen, as its page reports it (engine/steps.tsx).
   const [stepInfo, setStepInfo] = useState<MikingStepInfo | null>(null);
   const onStepInfo = useCallback((i: MikingStepInfo) => setStepInfo((prev) => (stepInfoKey(prev) === stepInfoKey(i) ? prev : i)), []);
@@ -244,6 +252,9 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   });
   const page = PAGE_IDS[pageIdx];
   const content = pageOf(lesson, page);
+  const stepTitles = useMemo(() => (reported && reported.page === page ? reported.titles : []), [reported, page]);
+  const pageIdxNow = useRef(pageIdx);
+  pageIdxNow.current = pageIdx;
 
   // RESUME once, for a learner whose record is theirs to restore (never a
   // guest or a preview), and never over a move already made.
@@ -261,11 +272,13 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     (i: number, atStep = 0) => {
       moved.current = true;
       const p = PAGE_IDS[Math.max(0, Math.min(PAGE_IDS.length - 1, i))];
+      const samePage = PAGE_IDS.indexOf(p) === pageIdxNow.current;
       setEnding(false);
       setPageIdx(PAGE_IDS.indexOf(p));
       setStepRaw(atStep);
-      setStepTitles([]);
-      setStepInfo(null);
+      // The page that stays mounted keeps what it reported (it will not report
+      // the same thing twice); a new page reports its own.
+      if (!samePage) setStepInfo(null);
       void recordPlace(lesson.id, p, atStep);
     },
     [lesson.id],
@@ -278,7 +291,11 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     },
     [lesson.id, pageIdx],
   );
-  const onSteps = useCallback((t: string[]) => setStepTitles((prev) => (prev.length === t.length && prev.every((x, i) => x === t[i]) ? prev : t)), []);
+  const onSteps = useCallback(
+    (t: string[]) =>
+      setReported((prev) => (prev && prev.page === page && prev.titles.length === t.length && prev.titles.every((x, i) => x === t[i]) ? prev : { page, titles: t })),
+    [page],
+  );
 
   const onAnswered = useCallback(
     (id: string, ok: boolean) => {
@@ -452,15 +469,19 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
         <LabHeader
           title={ending ? lesson.title.toUpperCase() : content.title.toUpperCase()}
           subtitle={ending ? 'What’s left' : `${lesson.title}: ${lesson.subtitle}${done ? ' · credited' : ''}`}
-          right={<AccuracyNote compact detail={lesson.accuracyDetail} />}
+          right={<AccuracyNote variant="about" label="ABOUT THESE STARTING POINTS" detail={aboutNote(lesson.accuracyDetail)} />}
           guide={guide}
         />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
           <LabEndScreen
+            labId={`miking-${lesson.labId}`}
             labTitle={`Miking: ${lesson.title}`}
-            units={PAGE_IDS.map((id) => ({ id, label: pageOf(lesson, id).title, detail: `${pageOf(lesson, id).credit.note}${firstTry(id)}${quick?.pass && isFoundation(id) && !doneIds.has(id) ? ' Skipped with the quick check — open it to earn its credit.' : ''}` }))}
+            // Each row names what is still missing on it (fix round 2026-11-14,
+            // F9 phase 2); the rule every row shares is said once (howItCounts).
+            units={PAGE_IDS.map((id) => ({ id, label: pageOf(lesson, id).title, detail: `${missingLine(pageOf(lesson, id).credit, answers, interactiveDone)}${firstTry(id)}${quick?.pass && isFoundation(id) && !doneIds.has(id) ? ' Skipped with the quick check — open it to earn its credit.' : ''}` }))}
+            howItCounts={MIKING_HOW_IT_COUNTS}
             cleared={doneIds}
             unreadable={unreadable}
             mode="progress"
@@ -498,6 +519,12 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
       </View>
     </LabNavProvider>
   );
+}
+
+/** The note under its own title: the chip's sheet already says ABOUT THESE
+ *  STARTING POINTS, so the note's first words are not printed twice. */
+export function aboutNote(detail: string): string {
+  return detail.replace(/^ABOUT THESE STARTING POINTS\.\s*/, '');
 }
 
 /** In place of a later page's activity while the foundations are not met

@@ -435,17 +435,17 @@ function MembraneStudio() {
   const ex = modes.filter((m) => m.drive > 0.05);
   const bezel = isSpeaker
     ? [
-        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
-        { k: 'fs', v: formatHz(driver.fs), helpKey: 'cone' },
-        { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone' },
-        { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1 },
+        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', caption: 'tone fed in' },
+        { k: 'fs', v: formatHz(driver.fs), helpKey: 'cone', caption: 'cone rings at' },
+        { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone', caption: 'cone vs wave' },
+        { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1, caption: 'breakup stage' },
       ]
     : [
-        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
-        { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2 },
-        { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes' },
+        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', caption: 'tone fed in' },
+        { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2, caption: 'lowest note' },
+        { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes', caption: 'which pattern' },
         // Read-only (owner rule 2026-10-10): LAND ON is in the FREQ tray.
-        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance' },
+        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance', caption: 'how much moves' },
       ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
@@ -487,7 +487,10 @@ function MembraneStudio() {
         guide={cymaticsStudioGuide('membrane')}
         accuracy={false}
         checkTitle={CYMATICS_CHECK_TITLE}
-        title="MEMBRANE & LOUDSPEAKER STUDIO"
+        // Two lines at most beside the header keys: "…STUDIO" made a third
+        // line and was cut at 390 wide (novice audit 2026-11-14). The home's
+        // OPEN THE MEMBRANE & LOUDSPEAKER STUDIO › keeps the full name.
+        title="MEMBRANE & LOUDSPEAKER"
         subtitle="Cymatics Lab: Sound Made Visible"
         intro="A drumhead is a membrane: it has almost no stiffness of its own, only tension, so its modes follow the Bessel patterns — and their frequencies are NOT a harmonic series, which is why a bare drumhead has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
         exploreCaption="Tune the head, move the mallet, sweep the modes. Then show the loudspeaker and sweep from its resonance up through breakup."

@@ -173,6 +173,20 @@ export function DockButton({
   // A shrunk label keeps its tracking in proportion; a shrunk value keeps its
   // line height, so the key (and the dock) never changes height.
   const labelSize = labelFs !== LABEL_FS ? { fontSize: labelFs, letterSpacing: tracked ? (LABEL_SPACING * labelFs) / LABEL_FS : 0 } : null;
+  /**
+   * TWO LINES, NEVER "…" (lab fix round 1, 2026-11-14, section 3 row 8; owner:
+   * "Begin fixing all bugs found and do obvious ... fixes as you suggested in
+   * the report"): "POSITI…", "SIDE…" on six-key Miking docks (G8). Two parts:
+   *   • a value key's label is not drawn until its fit is MEASURED (the key
+   *     and the label's natural width), so the authored-size first frame
+   *     never shows a cut word while the drawing and the strip settle;
+   *   • a label that no size down to 9 pt can hold on one line (the strip
+   *     already gave its key all the room it can) wraps to two lines at 9 pt
+   *     instead of ending in "…". The key grows only in that case.
+   */
+  const labelMeasured = isKey || (btnW > 0 && labelW > 0);
+  const labelWraps = fitsLabel && !isKey && inner > 0 && labelW > 0 && labelFs === LABEL_FS && !tight && labelW > inner + 0.5 && /\s/.test(label.trim());
+  const wrapSize = labelWraps ? { fontSize: MIN_LABEL_WRAP_FS, lineHeight: MIN_LABEL_WRAP_FS + 2, letterSpacing: 0, textAlign: 'center' as const } : null;
   const valueSize = valueFs !== VALUE_FS ? { fontSize: valueFs, ...(valueH > 0 ? { lineHeight: valueH } : null) } : null;
 
   // The least width that holds these words (dockKeyNeed). A fader's value is
@@ -244,7 +258,7 @@ export function DockButton({
         </View>
       ) : (
         <>
-          <Text style={[styles.label, labelSize, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
+          <Text style={[styles.label, labelSize, wrapSize, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null, !labelMeasured && styles.unmeasured]} numberOfLines={labelWraps ? 2 : 1}>
             {tight ? `${label} ` : label}
             {glyph ? (
               <Text style={[styles.glyph, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]}>
@@ -313,6 +327,8 @@ const WEB = Platform.OS === 'web';
 const LABEL_FS = 12;
 const LABEL_SPACING = 0.5;
 const VALUE_FS = 14;
+/** A label that wraps (row 8) is drawn at the 9 pt floor. */
+const MIN_LABEL_WRAP_FS = 9;
 
 /** A zero-size, clipped, invisible box: what is inside is laid out but never
  *  seen, touched or read aloud. */
@@ -379,6 +395,8 @@ const styles = StyleSheet.create({
   ledDotOn: { backgroundColor: colors.green },
   label: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.textSub },
   labelSel: { color: colors.amber },
+  /** Not measured yet: laid out (so it can be measured) but not shown. */
+  unmeasured: { opacity: 0 },
   // The verb glyph is load-bearing (▪ binds, ▸ opens) — MIN_FONT 12, never 9.
   glyph: { fontSize: 12, color: colors.textSub },
   value: { fontFamily: fonts.mono, fontSize: 14, color: colors.amber },

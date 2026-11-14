@@ -211,7 +211,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
           </Scene>
         ),
         bezel: [
-          { k: 'ROUND TRIP', v: `${rt.toFixed(1)} ms`, vA11y: `${rt.toFixed(1)} milliseconds`, sub: `${booth.laptop?.buffer ?? 256} SMP`, tint: '#8fbcff' },
+          { k: 'ROUND TRIP', caption: 'in + out delay', v: `${rt.toFixed(1)} ms`, vA11y: `${rt.toFixed(1)} milliseconds`, sub: `${booth.laptop?.buffer ?? 256} SMP`, tint: '#8fbcff' },
           { k: 'SIGNAL', v: `${Math.round(q * 100)} %`, sub: lock, tint: lock === 'LOCKED' ? colors.green : lock === 'UNSTABLE' ? colors.amber : lock === 'IGNORED' ? colors.textSub : '#ff5a48' },
           { k: 'DECK 1', v: A.playing ? 'PLAYING' : 'STOPPED', sub: `${A.pitch >= 0 ? '+' : '−'}${Math.abs(A.pitch).toFixed(0)} %`, tint: A.playing ? colors.green : colors.textSub },
           { k: 'CROWD', v: tone ? 'TONE!' : musicLive ? 'MUSIC' : 'NOTHING', tint: tone ? '#ff5a48' : musicLive ? colors.green : colors.textSub },

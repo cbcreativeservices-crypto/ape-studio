@@ -68,8 +68,8 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
         size: 'S',
         initialParam: 'hear',
         bezel: [
-          { k: 'ROOT', v: `${ctx.rootHz.toFixed(2)} Hz`, tint: stage >= 1 ? colors.cyanBright : undefined, flex: 1.2 },
-          { k: 'OCTAVE', v: `${(ctx.rootHz * 2).toFixed(2)} Hz`, tint: stage >= 2 ? colors.blue : undefined, flex: 1.2 },
+          { k: 'ROOT', v: `${ctx.rootHz.toFixed(2)} Hz`, tint: stage >= 1 ? colors.cyanBright : undefined, flex: 1.2, caption: 'starting note' },
+          { k: 'OCTAVE', v: `${(ctx.rootHz * 2).toFixed(2)} Hz`, tint: stage >= 2 ? colors.blue : undefined, flex: 1.2, caption: 'twice the root' },
           soundCell(status),
         ],
         stage: (w, h) => (

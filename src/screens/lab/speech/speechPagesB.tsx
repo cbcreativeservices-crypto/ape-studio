@@ -364,7 +364,9 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
         </Card>
       ))}
       <Body>For the engineer: a lower fundamental puts more energy in the bottom octaves (mind the proximity effect and the high-pass filter); higher formants push the presence region up — sibilance sits a little higher too.</Body>
-      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
+      {/* The button used to vanish with no word of what it did (novice audit
+          2026-11-14): the page now says it is done. */}
+      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.doneLine}>✓ THIS PAGE IS DONE · NEXT MOVES ON</Text>}
     </View>
   );
 }
@@ -446,6 +448,7 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
 const styles = StyleSheet.create({
   foot: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15 },
   readout: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, paddingHorizontal: 2 },
+  doneLine: { color: colors.green, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.5 },
 });
 
 /** A dB bar that glides to its new length (a Path, so it animates natively —

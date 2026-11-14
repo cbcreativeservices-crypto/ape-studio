@@ -184,7 +184,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p5: {
     intro: {
       learning: 'Why a mix starts with balance: you choose an anchor, then set faders, pan, mute and polarity before any plugin, and judge it at matched level.',
-      start: 'Play ▶ THE WALL to hear every track at the same level. Pick an anchor under STEP 2, then pull the other faders down around it on the console.',
+      start: 'Pick an anchor under STEP 2, then pull the other faders down around it on the console and watch the picture spread out. With sound on, play ▶ THE WALL first to hear every track at one level.',
     },
     seeing: [
       'STEP 1 — HEAR THE PROBLEM: THE WALL plays every track at the same level; MY MIX plays your console.',
@@ -287,7 +287,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p8: {
     intro: {
       learning: 'When two parts fight in the same frequency range, EQ is one fix among several, and every EQ move is judged in the mix, not alone.',
-      start: 'Play ▶ THE CLASH and hear the guitar step on the lead. Then play each of the five fixes and read the trade-off named under the picture.',
+      start: 'Tap each of the five fixes and watch the picture and the trade-off line under it change, even with sound off. With sound on, play ▶ THE CLASH first and hear the guitar step on the lead.',
     },
     seeing: [
       'THE PROBLEM — LISTEN FIRST: THE CLASH, guitar stabs playing in the same range as the lead line.',
@@ -304,7 +304,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'THE CLASH · GTR +4 dB ON THE LEAD: the guitar sits hot and centered, on top of the lead.',
       'LEVEL lowers the guitar; PAN splits guitar left and keys right; ARRANGEMENT mutes the guitar.',
       'EQ draws a 6 dB cut at 2.6 kHz on GTR EQ, inside the lead’s range. FILTER draws a 350 Hz high-pass on GTR HPF, just inside the low edge of the lead’s range.',
-      'The line under the picture names the last fix heard and what it costs.',
+      'The line under the picture names that fix and what it costs.',
     ],
     teaches: [
       'In a mix, EQ is about making parts fit together, not making each sound good alone.',
@@ -354,7 +354,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p10: {
     intro: {
       learning: 'How reverb and delay create depth, and what one shared reverb fed by sends does to a band.',
-      start: 'Play ▶ BONE DRY, then ▶ ONE SHARED ROOM, then ▶ DROWNED. Watch the green send knobs in the drawing change while the plate reverb stays the same.',
+      start: 'Tap ▶ BONE DRY, then ▶ ONE SHARED ROOM, then ▶ DROWNED. The green send knobs in the drawing change even with sound off, while the plate reverb stays the same.',
     },
     seeing: [
       'THE DEPTH VOCABULARY: dry/wet, pre-delay, decay, and delays locked to the tempo.',
@@ -526,7 +526,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     control: [
       'SAMPLE RATE: 44.1 kHz or 48 kHz (session rate). BIT DEPTH: 16-BIT or 24-BIT.',
       'BUILD: OurSong_Mix_v3_2026-09-11.wav builds the file name.',
-      'RUN THE INSPECTION checks the start, the end, clipping, the length and any missing parts.',
+      'RUN THE INSPECTION checks the start, the end, clipping, the length and any missing parts, once a rate and a depth are chosen.',
       'Answer the check below.',
     ],
     changes: [
@@ -594,11 +594,11 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const BEGINNING_MIXING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The mixing process as one ordered path, from preparing a session to exporting it, and which of its steps you’ve already heard and tried for yourself.',
-    start: 'Read the pages still listed under WHAT\'S LEFT and tap one to jump to it. To revisit a finished page, tap REVIEW ▾ on the ✓ line.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Tap any row to jump to it.',
   },
   seeing: [
     'The title reads WHAT\'S LEFT, or LAB COMPLETE once every page is done.',
-    'Each page still to do is listed: it counts once the goals at the foot of the page are done; NEXT moves on without counting it.',
+    'HOW A PAGE COUNTS says once how a page is credited. Each page still to do is listed with its own goals.',
     'Finished pages fold into one ✓ CREDITED line (✓ DONE if you aren’t signed in, or in a members-only preview). If your progress can’t load, the title reads YOUR PROGRESS and every page stays open.',
   ],
   control: [
@@ -609,7 +609,7 @@ export const BEGINNING_MIXING_END_GUIDE: ScreenGuide = {
     '‹ PREV on the strip returns to the page you came from. WHAT\'S LEFT in the strip opens CONTENTS.',
   ],
   changes: [
-    'A page counts only when every goal chip at its foot shows ✓. On most pages one chip is Pass the check. NEXT and FINISH move on without counting it.',
+    'A page counts only when every goal chip at its foot shows ✓ (sound off: a ▶ tap counts as looked at). NEXT and FINISH move on without counting it.',
     'As a member, each credited page stays with your account, and practicing again never removes it. A members-only preview saves nothing.',
     'START OVER (PRACTICE) in CONTENTS clears the page marks on this device for a fresh run. Credit you’ve already earned stays.',
   ],

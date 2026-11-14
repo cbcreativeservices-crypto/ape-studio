@@ -69,7 +69,7 @@ export const GAIN_HOME_GUIDE: ScreenGuide = {
 export const GAIN_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab’s core ideas: a healthy level at every stage, noise and clipping that travel downstream, and fixing a problem where it starts.',
-    start: 'Tap any module still listed to open it. Tap REVIEW ▾ to see the ones you’ve finished, or PRACTICE AGAIN FROM THE START to begin again with What Gain Staging Is.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT’S LEFT lists the Gain Staging modules you haven’t finished yet, each with a › to jump straight in. Once nothing is left, the title reads LAB COMPLETE.',
@@ -347,7 +347,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'Readouts: MASTER, STATUS (the MASTER’s state), INSPECT (the stage you opened) and FOUND (✓ once you open the faulty stage).',
     ],
     control: [
-      'Tap a hidden column (marked INSPECT) to open its meter, or use the INSPECT key: Source, Preamp, EQ, Compressor, Channel Fader or Bus. One stage opens at a time.',
+      'Tap a hidden column (marked INSPECT) to open its meter, or use the INSPECT key: Source, Preamp, EQ, Compressor, Channel Fader or Bus. One stage opens at a time; one you checked keeps its word (✓ OK, CLIP).',
       'Once FOUND reads ✓, the open stage’s fader appears in the dock (PREAMP, EQ, COMP, FADER, BUS or MASTER), and Master Output joins the INSPECT list.',
       'Fix the chain and a TRY AGAIN key appears with a new fault.',
     ],
@@ -362,7 +362,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'The fault is fixed where it starts, not at the output.',
     ],
     tryThis: [
-      'Search from either end: forward from the Preamp, or back from the Bus as the notes suggest. The fault is the CLIP stage nearest the Source; the rest only inherit it.',
+      'Search from either end: forward from the Preamp, or back from the Bus. The fault is the CLIP stage nearest the Source; the rest only inherit it.',
       'Found it? Lower that stage until its meter leaves CLIP and sits in HEALTHY: STATUS turns OK and the green frame appears.',
       'Press TRY AGAIN for a new fault, picked at random from Preamp, EQ, Compressor, Channel Fader or Bus. It may be the same stage again.',
     ],

@@ -45,12 +45,17 @@ const CHECK: CheckSpec = {
   question: 'The line the SLIDER POSITIONS draw across a graphic EQ is…',
   options: [
     'Exactly the frequency response you get',
-    'A control setting — the real response comes from overlapping filters and can differ',
-    'The phase response',
+    'A setting; the real curve can differ',
+    'The phase response of the whole EQ',
   ],
   correctIdx: 1,
   reveal:
     'An EQ slider is a CONTROL, not a drawing of the result. Each band is a real filter with finite bandwidth; their responses overlap and combine — and minimum-phase filters also shift phase around the regions they touch.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'If the sliders were the response, this lesson would not exist. Compare the line through the caps with the bold curve.',
+    2: 'PHASE is its own VIEW; the line through the slider caps is not drawn from phase.',
+  },
   wrongHint: 'If the sliders WERE the response, this lesson wouldn’t exist.',
 };
 

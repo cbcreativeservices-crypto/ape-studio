@@ -62,6 +62,10 @@ const INTRO_CHECK: CheckSpec = {
     'Turning the final output all the way up',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Push SOURCE up and watch: past the healthy band every stage after it clips.',
+    2: 'Maxing the output only raises the last stage. A problem earlier in the chain stays.',
+  },
   reveal:
     'Gain staging keeps the signal comfortably within the usable range of EACH stage — enough level to stay above the noise, enough headroom to avoid overload. It is not a race to be loud.',
   wrongHint: 'Louder isn’t the goal — a healthy, consistent level from stage to stage is.',
@@ -165,7 +169,7 @@ export function InputGainModule(_p: GainModuleComponentProps) {
         badge: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(preNode.level), tint: stageTint(preNode) },
-          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB` },
+          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB`, caption: 'room to clip' },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           { k: 'STATUS', ...stageStatus(preNode) },
         ],
@@ -207,6 +211,10 @@ const FOLLOW_CHECK: CheckSpec = {
   question: 'You set the preamp too hot and it clipped. Turning the processor after it DOWN will…',
   options: ['Fix the distortion it caused', 'Lower the level, not the distortion', 'Do nothing at all downstream'],
   correctIdx: 1,
+  why: {
+    0: 'The flattened shape was made at the preamp. A later stage only scales what it is handed.',
+    2: 'Turning the processor down does lower everything after it. Watch PROC and OUTPUT move.',
+  },
   reveal:
     'Turning a later stage down only changes LEVEL. Once a stage clips, the distortion is part of the signal and travels downstream — you have to fix it at the stage where it happened.',
   wrongHint: 'Downstream controls move level up and down — they can’t un-clip a signal.',
@@ -223,6 +231,11 @@ export function FollowModule(_p: GainModuleComponentProps) {
     [pre],
   );
   const nodes = computeChain(-30, stages);
+  // Which stage clipped FIRST (beginner audit 2026-11-14: past about +30 dB
+  // every column reads CLIP — the model is right, a full-scale signal hits
+  // each later stage's ceiling and lights its clip light too — so the card's
+  // "which stage reaches CLIP first" is now said in words).
+  const firstClip = nodes.find((n) => n.stageClipped) ?? null;
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -260,6 +273,15 @@ export function FollowModule(_p: GainModuleComponentProps) {
       }}
     >
       <View style={styles.well}>
+        {firstClip ? (
+          <View style={[styles.note, styles.noteBad]}>
+            <Text style={styles.noteText}>
+              {`First stage to clip: ${firstClip.key === 'pre' ? 'PREAMP' : firstClip.key === 'proc' ? 'PROC (the processor)' : 'OUTPUT'}. ${
+                firstClip.key === 'out' ? 'It is the last stage.' : 'Every stage after it sits on the ceiling and lights CLIP too, but the damage started here.'
+              }`}
+            </Text>
+          </View>
+        ) : null}
         <GlossaryText style={styles.body}>
           A chain is a sequence — each stage feeds the next. Only the PREAMP moves here; the
           processor and output are FIXED. Sweep the preamp and follow the signal across: a weak
@@ -289,6 +311,10 @@ const LOWHIGH_CHECK: CheckSpec = {
     'The signal is now polarity inverted',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Watch the gray band at the bottom of the meters as the late gain rises.',
+    2: 'Gain changes level, never polarity. Nothing here flipped the wave.',
+  },
   reveal:
     'Every dB of gain lifts the noise a stage was handed along with the signal. Boost late and you boost the accumulated hiss of everything upstream — the meter reads healthy, the recording hisses. Set a healthy level EARLY instead.',
   wrongHint: 'Run the TOO LOW scenario and watch the gray band at the bottom of the meters.',
@@ -377,7 +403,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           // Magnitude readout for the new hiss-fill; amber only when the
           // noise genuinely intrudes.
-          { k: 'NOISE', v: fmtLv(nodes[2].noise), tint: nodes[2].noise > -30 ? '#e8c341' : undefined },
+          { k: 'NOISE', v: fmtLv(nodes[2].noise), tint: nodes[2].noise > -30 ? '#e8c341' : undefined, caption: 'hiss level' },
           { k: 'STATUS', ...stageStatus(nodes[2]) },
         ],
         render: (w, h) => <ChainStage w={w} h={h} cols={cols} />,
@@ -421,6 +447,10 @@ const FADER_CHECK: CheckSpec = {
     'You didn’t pull the fader down far enough to clean it up',
   ],
   correctIdx: 1,
+  why: {
+    0: 'The fader works: OUTPUT went down. Look at where the DIST tag first appeared.',
+    2: 'Pull FADER all the way down: the output gets quieter, and DIST still reads YES.',
+  },
   reveal:
     'A fader sets LEVEL, not quality. The clip happened at the preamp; the fader after it makes the distorted signal quieter, but the distortion is already part of the waveform. Fix clipping where it occurs — at the input gain.',
   wrongHint: 'The order matters: the damage is upstream of the fader.',

@@ -26,6 +26,8 @@ import { gainBezel, gainReading, gainReadingCopy, gainStageParam, HEADROOM_GOOD_
 import { flipFader, SoundSystemsRackLayout, StageBox, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { usePageMemory } from './pageMemory';
+// The rack's spoken label from the drawing's own test (lab fix round 2026-11-14, F2).
+import { rackA11y, rackLit } from './fixHelpers';
 
 function useOperateCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -113,9 +115,9 @@ function PowerRack({ on, direction, w, h }: { on: ReadonlySet<string>; direction
   const size = Math.round(Math.min(64, Math.max(36, Math.min(h * 0.4, (w - 40) / 5 - 8))));
   return (
     <StageBox w={w} h={h}>
-      <View style={styles.glyphRow} accessible accessibilityLabel={`The rack: ${RACK.map((r) => `${r.label} ${on.has(r.step) ? 'on' : 'off'}`).join(', ')}`}>
+      <View style={styles.glyphRow} accessible accessibilityLabel={rackA11y(RACK, on, direction)}>
         {RACK.map((r, i) => {
-          const lit = direction === 'up' ? on.has(r.step) : !on.has(r.step);
+          const lit = rackLit(on, direction, r.step);
           return (
             <View key={i} style={styles.rackItem}>
               <GearGlyph kind={r.kind} size={size} label={r.label} power={lit ? 'on' : 'off'} dim={!lit} legends={false} />
@@ -291,7 +293,7 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride LINE across the outputs, then the inputs. PROBE each one, read the LED against the meter, and MARK it honestly — three of these are faults."
+      caption="Slide LINE across the outputs, then the inputs. PROBE each one, read the LED against the meter, and MARK it honestly — three of these are faults."
       wellTop={
         <Card tone={m ? (right ? 'ok' : 'warn') : probed && !it.healthy ? 'warn' : 'math'}>
           <View style={styles.lineHead}>
@@ -345,13 +347,15 @@ function PageGainStructure({ ctx }: { ctx: PageCtx }) {
         stage: (w, h) => <ChainMeterStage chain={chain} settings={settings} w={w} h={h} highlight={stage} />,
         params,
       }}
-      caption="The lane is the PREAMP: ride it down until its bracket shows headroom. Then tap the key, pick each later stage, return it to unity (double-tap), and attenuate the AMP so it is the last thing to clip."
+      caption="The slider is the PREAMP: slide it down until its bracket shows headroom. Then tap the key, pick each later stage, return it to unity (double-tap), and attenuate the AMP so it is the last thing to clip."
       wellTop={<VerdictLine ok={reading === 'ok'} warn={reading === 'quiet' || reading === 'noisy' || reading === 'tight'}>{gainReadingCopy(reading, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>OPERATE · ESTABLISH GAIN STRUCTURE</ChapterTag>
       <Body>The opposite fault from the LEARN chapter: the preamp is cranked and every later stage is pulling it back down. The first CLIP indicator is lit at the preamp, and every meter after it carries the ↑ — the distortion is inherited.</Body>
       <Prompt>Bring the preamp down until its bracket shows headroom, return the faders and trims to unity, and attenuate the amplifier so it is the last thing to clip.</Prompt>
-      <GoalChips goals={goals} latched={latched} />
+      {/* A met goal that is no longer true NOW says so (lab fix round
+          2026-11-14, F2: "✓ No stage clipping" beside VERDICT CLIPPING). */}
+      <GoalChips goals={goals} latched={latched} now={goals.map((g) => g.hit)} />
       <ChainMeterKey />
       <Card>
         <Eyebrow>THE PROCEDURE</Eyebrow>
@@ -443,7 +447,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Pick a WEDGE, then ride SEND up to what its performer will need. If it rings: POSITION into the null first, NOTCH only the frequency that rings, and only then level. Every wedge to −6 dB or louder."
+      caption="Pick a WEDGE, then slide SEND up to what its performer will need. If it rings: POSITION into the null first, NOTCH only the frequency that rings, and only then level. Every wedge to −6 dB or louder."
       wellTop={
         <>
           <Text style={[styles.wedgeState, ring && { color: colors.red }]}>{w.name.toUpperCase()} · {ring ? `RINGING at ~2.5 kHz — ${-margin} dB over` : `${margin} dB of margin`}</Text>
@@ -454,7 +458,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
       <ChapterTag n={13}>OPERATE · RING-OUT, THEN SOUNDCHECK</ChapterTag>
       <Body>Four wedges, one for each performer. The stage draws the one you pick under WEDGE, with its microphone’s pattern; all four are listed below and on the readout strip. Three start off to the side, inside the live angle. The ring-out comes BEFORE the band plays: bring each send up to what its performer will need, without a ring.</Body>
       <Prompt>Reposition first, notch only the frequency that rings, and only then level. Every wedge to −6 dB or louder.</Prompt>
-      <GoalChips goals={goals} latched={latched} />
+      <GoalChips goals={goals} latched={latched} now={goals.map((g) => g.hit)} />
       <Card tone="math">
         <Eyebrow>THE FOUR WEDGES</Eyebrow>
         {wedges.map((x) => (

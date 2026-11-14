@@ -39,7 +39,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
   explore: {
     intro: {
       learning: 'Every classic wave is a recipe of harmonics: which multiples of the fundamental are present, and how strong, sets the timbre, while F0 alone sets the pitch.',
-      start: 'Tap ▶, then open WAVE and switch between SINE, SQUARE and SAW while it plays. Watch the bars change and listen: the tone color shifts, but the pitch stays put.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Open WAVE and switch between SINE, SQUARE and SAW, and watch which bars light up: SQUARE empties every even bar. Then tap ▶ and switch again to hear the tone color change while the pitch stays put.',
     },
     seeing: [
       'On top, the wave: two cycles traveling left to right, colored by level — redder toward full scale.',
@@ -115,7 +116,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'They ask which wave holds every harmonic, why a triangle sounds softer than a square, what a pulse’s duty cycle changes, and why harmonics above Nyquist are left out.',
     ],
     control: [
-      'Tap an answer. Right: CORRECT and the reason, and its number turns to ✓. Wrong: NOT QUITE — TRY ANOTHER, with the reason — pick again.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
       'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [

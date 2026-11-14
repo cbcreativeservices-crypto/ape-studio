@@ -493,19 +493,37 @@ function newBoxM(p: SpProject, kind: SpObjectKind, at: Pt, choir?: SpChoir): { w
   return turned ? { w: sym.h, h: sym.w } : { w: sym.w, h: sym.h };
 }
 
+/** The air a NEW object is given round its box, in meters: first a clear gap
+ *  (`STAGE_NEW_AIR`), and only on a stage too full for that, the least gap
+ *  that still keeps two boxes apart (`STAGE_MIN_AIR`). */
+export const STAGE_NEW_AIR = 0.3;
+export const STAGE_MIN_AIR = 0.1;
+/** How much farther a step up or down the stage counts than a step across,
+ *  when the nearest free place is chosen: a new object goes BESIDE what is
+ *  there, in the same row, before it goes in front of it or behind it. */
+export const STAGE_ROW_BIAS = 2;
+
 /** A free place ON the stage near `at` for a new object of `kind`. A place
- *  is free when the new object's own BOX, with 0.1 m of air round it, touches
- *  no other object's box: a sidefill is not dropped over the congas because
+ *  is free when the new object's own BOX, with air round it, touches no
+ *  other object's box: a sidefill is not dropped over the congas because
  *  their centers are a little apart (visual review 2, B7). With snap on, the
  *  place is a point of the grid, so the typed position reads as a whole
  *  step. The nearest free place is taken; a platform or a labeled box under
- *  the new object does not count (things stand on a riser). */
+ *  the new object does not count (things stand on a riser).
+ *
+ *  A NEW OBJECT IS SEEN APART FROM THE LAST ONE (lab fix round 2026-11-14;
+ *  beginner audit G5: "both the performer and the amplifier I added landed
+ *  at the same spot (downstage center), on top of each other"). They did not
+ *  share a place: the amplifier was put 0.1 m in front of the performer, the
+ *  nearest free grid point, which on a phone is 8 points of gap, under the
+ *  performer's name. So the gap is 0.3 m where the stage has the room, and
+ *  "nearest" counts a step up or down the stage double: the new object
+ *  stands beside the last one, as a front line does. */
 export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generic', choir?: SpChoir): Pt {
   const snap = p.stage.snap;
   const step = snap ? spGridStep(p) : { x: 0.02, y: 0.02 };
   const st = spStageMeters(p);
   const mine = newBoxM(p, kind, at, choir);
-  const air = 0.1;
   // every other object's box, upright (a quarter turn swaps its sides)
   const others = p.objects
     .filter((o) => !spIsSized(o.kind))
@@ -514,7 +532,7 @@ export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generi
       const turned = Math.abs(Math.sin((b.rot * Math.PI) / 180)) > 0.7;
       return { cx: b.cx, cy: b.cy, hw: (turned ? b.h : b.w) / 2, hh: (turned ? b.w : b.h) / 2 };
     });
-  const busy = (q: Pt): boolean => {
+  const busy = (q: Pt, air: number): boolean => {
     const cx = q.x * st.width;
     const cy = q.y * st.depth;
     return others.some((o) => Math.abs(o.cx - cx) < o.hw + mine.w / 2 + air && Math.abs(o.cy - cy) < o.hh + mine.h / 2 + air);
@@ -533,13 +551,25 @@ export function stageFreeSpot(p: SpProject, at: Pt, kind: SpObjectKind = 'generi
       if (q.x < mx - 1e-9 || q.x > 1 - mx + 1e-9 || q.y < my - 1e-9 || q.y > 1 - my + 1e-9) continue;
       // a round stage: inside the circle, its box as well as its center
       if (!spInPerformance(q, p.stage) || !spInPerformance({ x: q.x + (q.x < 0.5 ? -mx : mx), y: q.y + (q.y < 0.5 ? -my : my) }, p.stage)) continue;
-      // distances in meters, so "nearest" means the same across and deep
-      tries.push({ q, d: Math.hypot((q.x - at.x) * st.width, (q.y - at.y) * st.depth), k });
+      // distances in meters; a step up or down the stage counts double, so
+      // the same row is tried before the rows in front and behind
+      tries.push({ q, d: Math.hypot((q.x - at.x) * st.width, (q.y - at.y) * st.depth * STAGE_ROW_BIAS), k });
     }
   tries.sort((m, n) => m.d - n.d || m.k - n.k);
-  for (const t of tries) if (!busy(t.q)) return t.q;
+  for (const air of [STAGE_NEW_AIR, STAGE_MIN_AIR]) for (const t of tries) if (!busy(t.q, air)) return t.q;
   // a full stage: the nearest point all the same (never off the stage)
   return tries[0]?.q ?? { x: Math.max(0.04, Math.min(0.96, at.x)), y: Math.max(0.04, Math.min(0.96, at.y)) };
+}
+
+/** Who a new source is given to in "Who plays or sings it", before the user
+ *  chooses (lab fix round 2026-11-14; beginner audit G5: it "defaulted to
+ *  'Nobody (shared source)' although Performer 1 exists"). The performer
+ *  whose figure is selected on the stage, if one is; otherwise the band's
+ *  ONLY performer. With several performers and none selected nobody is
+ *  guessed: null, which the palette shows as "Nobody (shared source)". */
+export function stageDefaultWho(p: SpProject, selectedPerformerId: SpId | null = null): SpId | null {
+  if (selectedPerformerId && p.performers.some((x) => x.id === selectedPerformerId)) return selectedPerformerId;
+  return p.performers.length === 1 ? p.performers[0].id : null;
 }
 
 /** The way a NEW object faces (0° = toward the audience). A monitor never

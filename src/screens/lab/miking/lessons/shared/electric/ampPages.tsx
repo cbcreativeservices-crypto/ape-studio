@@ -72,6 +72,7 @@ import { StringDisplay, HARMONICS } from './StringDisplay';
 import { atNode, barFor, barHz, pickupWeight } from './stringModel.ts';
 import { openHz, type ElectricSpec } from './electricSpec.ts';
 import { viewToggle } from '../../../engine/scene/viewToggle.ts';
+import { zoneActivityLine } from '../../../engine/progress/zoneActivity.ts';
 
 const G = GRILLE_X.mm;
 
@@ -902,7 +903,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         selectedId: zone?.id ?? null,
         onSelect: (id) => {
           const z = rig.lesson.zones.find((q) => q.id === id);
-          if (z) rig.jumpTo('A', z.start);
+          if (z) rig.jumpTo('A', z.start, z.id);
         },
         options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
       },
@@ -955,7 +956,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             <NowLine text={now(rig, ['A'])} />
             {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.`}</Note> : null}
             {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
-            <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+            <Body>{zoneActivityLine([...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id))}</Body>
             {tried ? <Note tone="ok">{`You predicted “${predicted}”. Across the cone at the same distance, toward the edge most often sounds smoother and darker — and speakers vary, so “it depends on this speaker” is fair too.`}</Note> : null}
             <Note>{spec.notes.place}</Note>
           </>

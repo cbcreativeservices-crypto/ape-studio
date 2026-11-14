@@ -142,3 +142,11 @@ The owner's report: `C:\Users\profe\Downloads\2026-11-13_STAGE_PLOT_NEW_FEATURES
 - phone label layouts on every plot.
 
 **Not verified:** a real phone (waits for the owner's OTA); anything heard.
+
+## 12. Lab fix round 1 (2026-11-14, owner approved quick win 13)
+
+- The guided task is open on a plot started from a blank stage, headed GUIDED TASK.
+- Every PLACE ON THE STAGE button places the row in one edit and opens the stage with it selected.
+- A new object gets 0.3 m of air beside the last one (0.1 m on a full stage).
+- A new source is offered to the selected performer, or to the only one.
+- Report: docs/labs/novice_audit_2026_11_14/fixes/F3_REPORT.md.

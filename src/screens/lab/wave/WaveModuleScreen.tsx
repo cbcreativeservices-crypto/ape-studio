@@ -20,6 +20,7 @@ import { ScrollLockProvider } from '../LabShell';
 import { LabPhotoLightbox } from '../labPhoto';
 import { WAVE_MODULES, type WaveModuleId } from './modules/registry';
 import { WAVE_SCREEN_GUIDES } from './waveScreenGuides';
+import { notOpenedDetail, visitCounts } from '../foundations/endRows';
 import {
   ReflectionModule, AbsorptionModule, DiffusionModule, RefractionModule,
   DiffractionModule, InterferenceModule, CombModule, StandingWaveModule,
@@ -144,7 +145,9 @@ export function WaveModuleScreen() {
   const endScreen = ending ? (
     <LabEndScreen
       labTitle="Wave Physics Laboratory"
-      units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      labId="af_wave_physics"
+      units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: notOpenedDetail(WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+      howItCounts={visitCounts('module')}
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"

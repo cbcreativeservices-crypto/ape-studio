@@ -39,7 +39,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How one EQ band reshapes a sound: TYPE picks the shape, FREQ where it acts, GAIN how far it lifts or cuts, and Q how wide it reaches.',
-      start: 'Set SOURCE to PINK NOISE and tap ▶. Sweep the FREQ fader from bottom to top and listen to the boost travel. Then switch Q between 0.7 WIDE and 8 NARROW.',
+      start: 'Drag the FREQ fader and watch the bump slide along the EQ CURVE strip as the dots grow and shrink. Switch Q between 0.7 WIDE and 8 NARROW. To hear it, set SOURCE to PINK NOISE and tap ▶.',
     },
     seeing: [
       'The moving picture is a model, not the SOURCE you hear: a test wave of three tones goes IN ▸, through the green EQ stage, and comes ▸ OUT reshaped. Compare IN with OUT.',
@@ -55,8 +55,8 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     changes: [
       'FREQ moves the filter; the dots show which tones it lifts or lowers.',
-      'GAIN sets how far a bell or shelf rises or falls. HIGH-PASS and LOW-PASS ignore it — they cut on a fixed slope.',
-      'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff (where the cut starts); this HIGH-PASS ignores Q.',
+      'GAIN sets how far a bell or shelf rises or falls. HIGH-PASS and LOW-PASS lock it: they cut on a fixed slope.',
+      'Q sets a bell’s width, 0.7 broad to 8 narrow. On LOW-PASS a high Q adds a bump before the cutoff (where the cut starts); this HIGH-PASS locks Q.',
       'The curve shows what the band is set to do, not what your speaker plays.',
     ],
     teaches: [
@@ -67,7 +67,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Set Q to 8 NARROW: the bell turns thin and the caption under DESIGNED RESPONSE reads +6 dB at 1 kHz, Q 8.',
-      'Switch TYPE to HIGH-PASS, then tap through GAIN: the curve does not move — a pass filter has no gain.',
+      'Switch TYPE to HIGH-PASS: GAIN and Q turn gray and read LOCKED. Tap GAIN to read why — a pass filter has no gain.',
       'Pick PINK NOISE, tap ▶ and sweep FREQ from bottom to top: you hear the boost travel from low to high. For the low end use headphones or full-range speakers: a phone speaker can’t reproduce deep bass.',
     ],
   },
@@ -114,7 +114,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'There is no score, and a wrong answer costs nothing. A right answer stays right.',
       'The tabs under the title go to LEARN or EXPLORE at any time.',
     ],

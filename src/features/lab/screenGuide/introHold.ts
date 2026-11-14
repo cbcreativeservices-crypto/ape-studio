@@ -19,7 +19,12 @@
  */
 import { createContext, useContext, useEffect, useState } from 'react';
 
-/** The host's ear: `on` while the reporting view has work under way. */
+/** The host's ear: `on` while the reporting view has work under way. The host
+ *  also publishes it app-wide (setScreenWork in intro/screenIntros.ts,
+ *  2026-11-14), so the lab term popup and the Sound Safety arrival ask never
+ *  open over an open tray either (audit row 1: "It never opens on top of an
+ *  open tray or console"). This file stays import-free of app modules: the
+ *  node tests import it directly. */
 export type IntroWorkReport = (id: number, on: boolean) => void;
 export const IntroWorkContext = createContext<IntroWorkReport | null>(null);
 

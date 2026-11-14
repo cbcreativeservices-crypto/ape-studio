@@ -117,14 +117,14 @@ export function Ch8Compare({ ctx }: ChapterProps) {
         hideDragTag: true,
         bezel: compared
           ? [
-              { k: `PYTH ${sel}`, v: `${pyC.toFixed(2)} ¢`, tint: colors.gold },
-              { k: `JUST ${sel}`, v: `${juC.toFixed(2)} ¢`, tint: colors.green },
-              { k: '81/80', v: `${SYNTONIC_COMMA.cents.toFixed(2)} ¢` },
+              { k: `PYTH ${sel}`, v: `${pyC.toFixed(2)} ¢`, tint: colors.gold, caption: 'by fifths' },
+              { k: `JUST ${sel}`, v: `${juC.toFixed(2)} ¢`, tint: colors.green, caption: 'by small ratio' },
+              { k: '81/80', v: `${SYNTONIC_COMMA.cents.toFixed(2)} ¢`, caption: 'comma size' },
               soundCell(status),
             ]
           : [
-              { k: 'PYTHAGOREAN', v: PY.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5 },
-              { k: 'JUST', v: JU.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5 },
+              { k: 'PYTHAGOREAN', v: PY.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5, caption: 'fifths-built' },
+              { k: 'JUST', v: JU.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5, caption: 'small ratios' },
               soundCell(status),
             ],
         stage: (w, h) => (

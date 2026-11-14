@@ -217,9 +217,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="A friend’s phone shows its volume at 60 %. Is that a safe level for a two-hour session?"
           options={[
-            'You cannot tell from the setting: it depends on the headphones and the phone, so keep it low and limit the time',
-            'Yes — anything under 70 % is safe',
-            'No — anything over 50 % is dangerous',
+            'You cannot tell: it depends on the phone and the headphones',
+            'Yes — anything under 70 % is safe for that long',
+            'No — anything over 50 % is dangerous to the ear',
             'Yes, as long as the music is quiet at the start',
           ]}
           correct={0}

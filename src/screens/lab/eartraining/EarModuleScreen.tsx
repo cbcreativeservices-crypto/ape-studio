@@ -27,7 +27,8 @@ import { EAR_MODULES, earModuleById } from '../../../features/ear/modules/regist
 import type { EarModuleId, EarTrial } from '../../../features/ear/earTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
-import { earCreditedIds, earEndUnits } from './earLabEnd';
+import { earCreditedIds, earEndUnits, earScoreWindowLabel } from './earLabEnd';
+import { NeedsSoundTag } from '../rack/silentPath';
 import {
   applyTrial, emptyModuleProgress, isEarProgressUnreadable, loadEarProgress, recentAccuracy, saveEarProgress, setEarSaveBlocked,
   type EarProgressState,
@@ -185,6 +186,8 @@ export function EarModuleScreen() {
   const [plays, setPlays] = useState<number[]>([]);
   const [streak, setStreak] = useState(0);
   const [accuracy, setAccuracy] = useState<number | null>(null);
+  // How many answers the score pill rests on (earScoreWindowLabel).
+  const [scoreAnswers, setScoreAnswers] = useState(0);
   const [levelMsg, setLevelMsg] = useState<string | null>(null);
   const [fatigued, setFatigued] = useState(false);
   const [subBassOk, setSubBassOk] = useState(true);
@@ -332,6 +335,7 @@ export function EarModuleScreen() {
       setLevel(lvl);
       setStreak(p.streak);
       setAccuracy(recentAccuracy(p));
+      setScoreAnswers(p.trials.length);
       setSubBassOk(s.subBassOk);
       void beginTrial(lvl, s.subBassOk);
     })();
@@ -434,6 +438,7 @@ export function EarModuleScreen() {
       if (next.mastered >= REQUIRED_EAR_LEVEL) reportTrainingComplete(earModuleKey(mod.id));
       setStreak(next.streak);
       setAccuracy(recentAccuracy(next));
+      setScoreAnswers(next.trials.length);
       setLevel(next.level);
       setRoundAnswered((n) => n + 1);
       setRoundScore((v) => v + score);
@@ -590,12 +595,12 @@ export function EarModuleScreen() {
             <View
               style={styles.statPill}
               accessible
-              accessibilityLabel={accuracy != null ? `Accuracy ${Math.round(accuracy * 100)} percent over the last 20 trials` : 'No trials yet'}
+              accessibilityLabel={accuracy != null ? `Accuracy ${Math.round(accuracy * 100)} percent ${earScoreWindowLabel(scoreAnswers).a11y}` : 'No trials yet'}
             >
               <Text style={styles.statText}>
                 {accuracy != null ? `${Math.round(accuracy * 100)}%` : '—'}
               </Text>
-              <Text style={styles.statSub}>last 20</Text>
+              <Text style={styles.statSub}>{accuracy != null ? earScoreWindowLabel(scoreAnswers).sub : 'last 20'}</Text>
             </View>
           </>
         }
@@ -608,6 +613,7 @@ export function EarModuleScreen() {
             const unread = !s || isEarProgressUnreadable(s);
             return (
               <LabEndScreen
+                labId="ear-training"
                 labTitle="Ear Training Lab"
                 units={unread ? EAR_MODULES.map((m) => ({ id: m.id, label: m.title })) : earEndUnits(EAR_MODULES, s.modules)}
                 cleared={unread ? new Set<string>() : earCreditedIds(EAR_MODULES, s.modules)}
@@ -706,10 +712,11 @@ export function EarModuleScreen() {
               <Text style={styles.rendering}>Rendering the clips…</Text>
             ) : (
               <>
+                {/* Every drill is a listening task (fix round 2026-11-14, S3 §2): the question's NEEDS SOUND tag turns amber while sound is off. */}
                 <Text style={styles.roundLine}>
                   Trial {trialNo} of {ROUND} · Streak {streak}
                 </Text>
-                <Text style={styles.question}>{trial.question}</Text>
+                <Text style={styles.question}>{trial.question} <NeedsSoundTag /></Text>
                 {transport}
                 {clipError ? (
                   <Text style={styles.clipError} accessibilityRole="alert">

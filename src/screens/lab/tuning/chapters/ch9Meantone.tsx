@@ -116,35 +116,35 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
   const errTint = exact ? colors.green : Math.abs(slider.err) < 8 ? colors.gold : colors.orange;
   const bezel: BezelItem[] =
     part === 'A' ? [
-      { k: 't = √5/2', v: MEANTONE_TONE.decimalLabel, tint: colors.gold, flex: 1.2 },
-      { k: 'D', v: `${MEANTONE_TONE.cents.toFixed(2)} ¢`, tint: colors.gold },
-      { k: 'E = t²', v: `${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢`, tint: colors.green },
+      { k: 't = √5/2', v: MEANTONE_TONE.decimalLabel, tint: colors.gold, flex: 1.2, caption: 'whole tone' },
+      { k: 'D', v: `${MEANTONE_TONE.cents.toFixed(2)} ¢`, tint: colors.gold, caption: 'D above C' },
+      { k: 'E = t²', v: `${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢`, tint: colors.green, caption: 'E above C' },
     ]
     : part === 'B' ? [
-      { k: 'g = ⁴√5', v: `${MEANTONE_FIFTH.cents.toFixed(2)} ¢`, tint: colors.gold },
-      { k: 'PURE 3/2', v: `${PURE_FIFTH.cents.toFixed(2)} ¢` },
-      { k: 'NARROWER', v: `${(PURE_FIFTH.cents - MEANTONE_FIFTH.cents).toFixed(2)} ¢`, tint: colors.gold },
+      { k: 'g = ⁴√5', v: `${MEANTONE_FIFTH.cents.toFixed(2)} ¢`, tint: colors.gold, caption: 'tempered fifth' },
+      { k: 'PURE 3/2', v: `${PURE_FIFTH.cents.toFixed(2)} ¢`, caption: 'pure fifth' },
+      { k: 'NARROWER', v: `${(PURE_FIFTH.cents - MEANTONE_FIFTH.cents).toFixed(2)} ¢`, tint: colors.gold, caption: 'fifth shrinks' },
       soundCell(status),
     ]
     : part === 'C' ? [
-      { k: 'FIFTH', v: `${fifthCents.toFixed(2)} ¢`, tint: colors.cyanBright },
-      { k: 'g⁴/4', v: `${slider.thirdCents.toFixed(2)} ¢` },
-      { k: 'FROM 5/4', v: exact ? '0 ¢' : `${slider.err > 0 ? '+' : ''}${slider.err.toFixed(2)} ¢`, tint: errTint },
+      { k: 'FIFTH', v: `${fifthCents.toFixed(2)} ¢`, tint: colors.cyanBright, caption: 'your fifth' },
+      { k: 'g⁴/4', v: `${slider.thirdCents.toFixed(2)} ¢`, caption: 'third it makes' },
+      { k: 'FROM 5/4', v: exact ? '0 ¢' : `${slider.err > 0 ? '+' : ''}${slider.err.toFixed(2)} ¢`, tint: errTint, caption: 'off pure third' },
       soundCell(status),
     ]
     : part === 'D' ? [
       // The spelling rides on the KEY line: "B 5^(5/4)/4" is 11 mono characters
       // and cropped at a raised font size — a cropped readout may drop its
       // label, never its number (D36).
-      { k: `NOTE ${MT.notes[revealed - 1].spelling}`, v: MT.notes[revealed - 1].value.exactLabel, tint: colors.gold, flex: 1.3 },
-      { k: 'CENTS', v: `${MT.notes[revealed - 1].value.cents.toFixed(2)} ¢` },
-      { k: 'Hz', v: `${hz(MT.notes[revealed - 1].value.numericRatio).toFixed(2)} Hz`, flex: 1.1 },
+      { k: `NOTE ${MT.notes[revealed - 1].spelling}`, v: MT.notes[revealed - 1].value.exactLabel, tint: colors.gold, flex: 1.3, caption: 'its ratio' },
+      { k: 'CENTS', v: `${MT.notes[revealed - 1].value.cents.toFixed(2)} ¢`, caption: 'its position' },
+      { k: 'Hz', v: `${hz(MT.notes[revealed - 1].value.numericRatio).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
       soundCell(status),
     ]
     : [
-      { k: 'WOLF', v: `${wolf.wolfCents.toFixed(2)} ¢`, tint: colors.red },
-      { k: 'NORMAL', v: `${wolf.normalFifthCents.toFixed(2)} ¢` },
-      { k: 'WIDER BY', v: `${wolf.widerThanNormalBy.toFixed(2)} ¢`, tint: colors.red },
+      { k: 'WOLF', v: `${wolf.wolfCents.toFixed(2)} ¢`, tint: colors.red, caption: 'the bad fifth' },
+      { k: 'NORMAL', v: `${wolf.normalFifthCents.toFixed(2)} ¢`, caption: 'usual fifth' },
+      { k: 'WIDER BY', v: `${wolf.widerThanNormalBy.toFixed(2)} ¢`, tint: colors.red, caption: 'how much worse' },
       soundCell(status),
     ];
 

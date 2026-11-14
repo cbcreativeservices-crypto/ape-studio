@@ -224,9 +224,11 @@ describe('explanations', () => {
     const some = dimensionScores({ ...profile(['RC', 'ER'], 4, 2), CP01: 3, CP02: 2 }); // 0.625 → "some"
     assert.match(explainFamily(rec, some), /some interest in Create & Perform/);
   });
-  it('a top-two card opens with what the family leans on', () => {
+  it('a top-two card opens with what the family draws most on', () => {
     const dims = dimensionScores(profile(['RC', 'ER'], 4, 1));
-    assert.equal(explainFamily(rec, dims, { rank: 1 }), 'Leans on Record & Capture and Edit & Refine — your strongest interests. It also draws on Create & Perform, which you rated lower — as you compare families, notice how big a part of each one that is.');
+    // Updated for the Comp A Career Finder text review (2026-11-14), applied on the owner's word: "assign an agent in the background to work on this".
+    // "lean on" → "draw most on" (Pattern 1); the dash-joined sentences split (CF-A0580, A0585).
+    assert.equal(explainFamily(rec, dims, { rank: 1 }), 'Draws most on Record & Capture and Edit & Refine, your strongest interests. It also draws on Create & Perform, which you rated lower. When you compare families, check how big a part of each one that is.');
   });
   it('names the main activity when the user rated it lower', () => {
     const dims = dimensionScores(profile(['ER', 'CP'], 4, 1)); // RC (primary) low

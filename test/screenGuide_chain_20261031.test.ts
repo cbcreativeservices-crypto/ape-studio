@@ -114,7 +114,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       // unit captions (lab defaults) and the rack's own controls
       '−30 dB · 4:1', 'opens −35 dB', 'drive +12 dB', 'HIDE DISPLAY', 'GR', '⟲',
       // the SCENE short name the guide quotes, and LAB NOTES' contents
-      'SQUASH', 'LAB NOTES', 'MARK AS REVIEWED', 'FINISH · SEE WHAT’S LEFT',
+      'HOT→LIMIT', 'SILENT', 'LAB NOTES', 'MARK AS REVIEWED', 'FINISH · SEE WHAT’S LEFT',
     ],
     // 'LEARN' (the tab's own name) and the old lesson's mistake titles ('Gain-staging into the limiter', 'EQ→comp') dropped:
     // the approved rewrite (2026-11-08) refers to the COMMON MISTAKES lines by topic, and the Part A lesson rewrite retitles them.
@@ -132,10 +132,13 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
-  it('SCENE shows the scenario’s short name: SQUASH is HOT INTO LIMITER’s, and the guide says so', () => {
-    assert.match(code(SCREEN), /key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH',/);
+  // Changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do
+  // obvious (my decision is not required) fixes as you suggestted in the report."): SCENE read
+  // "SQUASH" while the button said HOT INTO LIMITER; one name now.
+  it('SCENE shows the scenario’s short name: HOT→LIMIT is HOT INTO LIMITER’s, and the guide says so', () => {
+    assert.match(code(SCREEN), /key: 'squash', label: 'HOT INTO LIMITER', short: 'HOT→LIMIT',/);
     assert.match(code(SCREEN), /\{ k: 'SCENE', v: scenario\?\.short \?\? \(anyOn \? 'CUSTOM' : '—'\)/);
-    assert.match(CHAIN_SCREEN_GUIDES.explore.seeing.join(' '), /SCENE \(short name, e\.g\. SQUASH for HOT INTO LIMITER; else CUSTOM\)/);
+    assert.match(CHAIN_SCREEN_GUIDES.explore.seeing.join(' '), /SCENE \(the scenario, e\.g\. HOT→LIMIT; else CUSTOM\)/);
   });
   it('the LEARN TRY THIS topics are COMMON MISTAKES lines in the chain lesson (EQ before the compressor; hot stages into the limiter)', () => {
     // holds before and after the Part A lesson load (old titles, or the rewrite's wording)

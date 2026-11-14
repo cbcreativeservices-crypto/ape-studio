@@ -43,7 +43,9 @@ export function ReadoutGrid({
   help,
   helpKey,
 }: {
-  items: { k: string; v: string; helpKey?: string }[];
+  /** `caption` is accepted and not drawn here: a readout in the well already
+   *  sits under its own reading (the first-visit caption is a bezel feature). */
+  items: { k: string; v: string; helpKey?: string; caption?: string }[];
   help?: (k: string) => void;
   helpKey?: string;
 }) {

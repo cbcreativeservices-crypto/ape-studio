@@ -122,11 +122,11 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
         initialParam: 'fifths',
         hideDragTag: true,
         bezel: [
-          { k: 'STEP', v: `${revealed}/12`, tint: revealed >= 12 ? colors.red : undefined, flex: 0.8 },
+          { k: 'STEP', v: `${revealed}/12`, tint: revealed >= 12 ? colors.red : undefined, flex: 0.8, caption: 'fifths added' },
           // The spelling only: the fraction (up to 13 characters) rides on
           // the lane readout and the step card, where it cannot be cropped.
-          { k: 'NEWEST', v: newest.spelling, tint: revealed === 12 ? colors.red : colors.gold, flex: 0.9 },
-          { k: 'CENTS', v: `${newest.cents.toFixed(2)} ¢`, flex: 1.2 },
+          { k: 'NEWEST', v: newest.spelling, tint: revealed === 12 ? colors.red : colors.gold, flex: 0.9, caption: 'latest note' },
+          { k: 'CENTS', v: `${newest.cents.toFixed(2)} ¢`, flex: 1.2, caption: 'its position' },
           soundCell(status),
         ],
         stage: (w, h) => (

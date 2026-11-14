@@ -122,7 +122,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <P>In the strip the fountain slides along the line between your ears. Ahead and behind land on the same point.</P>
       </Step>
       <Step n={3}>
-        <Do>Put on headphones and choose HEADPHONE 3D. Turn again. Then choose MONO.</Do>
+        <Do>Put on headphones and choose HEADPHONE 3D. Turn again. Then choose MONO. No headphones? Read the strip instead.</Do>
         <P>For HEADPHONE 3D your device filters each sound the way a head and outer ears would. That filter is called an HRTF. In the strip the fountain now moves on a circle around your head: front and back differ. The filter suits some ears better than others.</P>
         <P>In MONO both bars stay equal; to one side, both fold up to 3 dB quieter (the pan law).</P>
         <ActivityLog state={p13Log(s)} lines={3} empty="No output change yet. This log shows your OUTPUT choices." />

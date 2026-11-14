@@ -360,3 +360,14 @@ export function bezelKeyFit(avail: number, key: number, narrow?: number, web = t
 export function isLabelOnly(p: DockParam): boolean {
   return p.kind === 'options' && !p.locked && p.options.length <= 1 && !p.onReset && !p.helpKey && !p.options[0]?.onLongPress;
 }
+
+/**
+ * A LOCKED key's reason, ready to end a sentence (lab fix round 1, 2026-11-14,
+ * F2's shared need; owner: "Begin fixing all bugs found and do obvious ...
+ * fixes as you suggested in the report"): the spoken label is
+ * "<LABEL>: locked — <reason>." and a reason that already ended in a full
+ * stop read "DCA cell.." (Sound Systems ROUTE 5). Trailing . ! ? and spaces go.
+ */
+export function lockedReason(reason: string): string {
+  return reason.trim().replace(/[.!?]+$/, '');
+}

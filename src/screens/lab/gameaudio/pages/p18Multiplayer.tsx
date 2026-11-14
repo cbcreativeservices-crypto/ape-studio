@@ -199,7 +199,9 @@ function Page({ ctx }: { ctx: PageCtx }) {
   return (
     <GaRack
       spec={{
-        keys: [sendKey, checkKey, masterKey(s)],
+        // the slider first, as on every other page: with SEND first a habit tap
+        // on "the second key" switched ID CHECK off (beginner audit G5, page 18)
+        keys: [masterKey(s), sendKey, checkKey],
         initialParam: 'master',
         hud: 'net',
         // the guide's ears: the other player's listener (W2-05)

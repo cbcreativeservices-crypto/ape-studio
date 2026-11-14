@@ -119,6 +119,9 @@ export function Mod1What({ onAnswered }: ModuleProps) {
               { kind: 'action', id: 'stop', label: '■ STOP', onPress: pb.stop, tint: colors.green },
             ],
             initialParam: 'match',
+            // The silent learner (S3, phase 2): the numbers are offline renders, so
+            // they read with sound off; only the listening needs sound.
+            soundOffLine: 'Sound off? The PLR cell and the GAIN REDUCTION graph still show what LOUDER spends; the comparison by ear needs sound.',
             hideDragTag: true,
           },
           well: (

@@ -114,7 +114,10 @@ export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZon
     // so the key spends its width on the head it is measured from.
     { k: `${r.distance >= 0 ? w.plusKey ?? 'FROM' : w.minusKey ?? 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.4 },
     { k: offKey, v: off.v, sub: off.sub, flex: 1.5 },
-    { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', flex: 0.8 },
+    // "off target" (fix round 2026-11-14, F9 item 3, Part E3): this AIM is
+    // the angle off what the mic is measured toward; the dock's AIM key is the
+    // tilt / turn (↑ ↓ ← →). Two numbers for one mic now say what each is.
+    { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', sub: w.showAim ? 'off target' : undefined, flex: 0.8 },
     // The stop names the PART (its short name), in red, with the ✕ in the
     // key — colour is never the only signal (charter §8).
     r.blocked

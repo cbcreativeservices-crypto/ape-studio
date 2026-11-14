@@ -60,7 +60,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'What reverb’s main controls do: RT60 sets how long the tail takes to fall 60 dB, PRE-DELAY when it starts, damping how dark it gets, MIX how loud.',
-      start: 'Tap ▶ with SOURCE on CLICK 60 and watch the amber wash fall on OUT. Then drag RT60 from 0.40 s to 6.0 s and watch the slope change.',
+      start: 'Drag RT60 from 0.40 s to 6.0 s and watch the slope of the amber wash on OUT change. Then tap ▶ with SOURCE on CLICK 60 to hear the room grow.',
     },
     seeing: [
       'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',
@@ -142,7 +142,8 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
-      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work the answer out.',
+      'A wrong one shows NOT QUITE — TRY ANOTHER and a pointer; a second wrong pick adds the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed: a green card says so.',
     ],
     teaches: [

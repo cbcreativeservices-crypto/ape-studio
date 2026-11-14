@@ -20,6 +20,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { GuidedStep, LessonContent } from './types';
 import { readingColumn } from '../../../theme/readingColumn';
+// S3's silent-path tag (lab fix round 2026-11-14): a step only the ear can do.
+import { NeedsSoundTag } from '../../../screens/lab/rack/silentPath';
 
 /** A titled block of bullet lines. */
 function BulletBlock({ title, items, accent }: { title: string; items: string[]; accent?: boolean }) {
@@ -48,7 +50,10 @@ function StepsBlock({ steps }: { steps: GuidedStep[] }) {
         <View key={i} style={styles.stepRow}>
           <Text style={styles.stepNum}>{i + 1}</Text>
           <View style={styles.stepBody}>
-            <Text style={styles.stepDo}>{st.do}</Text>
+            <Text style={styles.stepDo}>
+              {st.do}
+              {st.needsSound ? <NeedsSoundTag /> : null}
+            </Text>
             <Text style={styles.stepLine}>
               <Text style={styles.stepLabel}>NOTICE  </Text>
               {st.notice}

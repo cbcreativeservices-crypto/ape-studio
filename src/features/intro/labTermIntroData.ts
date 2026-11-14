@@ -131,16 +131,25 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     status: 'wired',
     lab: "Audio Connectors & Cable Selection",
     term: "Connector",
+    // REWORDED 2026-11-14 (audit quick win 9; owner approval "Begin fixing
+    // all bugs found and do obvious ... fixes"): the old line "Each family
+    // fits its own jack and carries its own kind of signal" taught the very
+    // misconception this lab removes ("A connector's shape does not determine
+    // the signal"). The app text leads; the glossary row update is proposed
+    // in docs/labs/novice_audit_2026_11_14/fixes/S1_REPORT.md (server change).
     plainEnglish:
-      "A connector is the plug-and-socket hardware on the end of a cable. It makes a firm electrical contact you can also undo. Each family fits its own jack and carries its own kind of signal. The right connector matches the signal and the job.",
+      "A connector is the plug-and-socket hardware on the end of a cable. It makes a firm electrical contact you can also undo. Its shape tells you what it fits, not what it carries: the same plug can carry a mic, line, speaker or digital signal. The right connector and cable match the signal and the job.",
     glossaryId: "8538ff6d-d841-50b7-a36b-25ba4d86a137",
   },
   CableInstallLab: {
     status: 'wired',
     lab: "Cable Dressing & Installation",
     term: "Cable dressing",
+    // REWORDED 2026-11-14 (audit quick win 9): "neat and tidy" contradicted
+    // the lab's first sentence ("not 'make the wires look neat'"). Glossary
+    // row update proposed in S1_REPORT.md (server change).
     plainEnglish:
-      "Cable dressing means arranging cables so they are neat and tidy. You route them along clear paths and tie them gently in place. This protects the plugs and makes cables easy to follow. It also keeps power and audio lines apart to avoid noise.",
+      "Cable dressing means routing, supporting and protecting cables, not just making them look neat. You run them along clear paths, tie them gently in place and label them. This protects the plugs, keeps walkways safe and makes every cable easy to trace and service. It also keeps power and audio lines apart to avoid noise.",
     glossaryId: "2cd72ce8-81c7-472d-8e37-33468dcf4a74",
   },
   PatchbayLab: {
@@ -330,10 +339,16 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
   NoiseLab: {
     status: 'wired',
     lab: "Noise",
-    term: "Noise",
+    // RE-WIRED 2026-11-14 (audit quick win 9; owner approval "Begin fixing
+    // all bugs found and do obvious ... fixes"): the "Noise" row (dec16fab…,
+    // "everything you didn't want in the signal") contradicted a lab that
+    // plays noise ON PURPOSE and teaches its colors first. The live row
+    // "noise color" is copied VERBATIM (the coordinator's read-only glossary
+    // query of 2026-11-14), so the card agrees with the lab AND the glossary.
+    term: "noise color",
     plainEnglish:
-      "Noise is everything you didn't want in the signal - electronic hiss and hum, or acoustic background. The goal is a high signal-to-noise ratio so the wanted sound dominates.",
-    glossaryId: "dec16fab-229e-46fe-8715-51fc8af9b21a",
+      "Noise color tells you how a noise spreads its energy across pitches. White noise sounds hissy, while pink noise sounds fuller and more balanced.",
+    glossaryId: "c4bfb4c2-1bd8-45fc-aebd-33b35b3890de",
   },
   HarmonicLab: {
     status: 'wired',

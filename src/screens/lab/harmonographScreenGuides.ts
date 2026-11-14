@@ -109,7 +109,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'Each question turns to ✓ once you get it right.',
     ],
     control: [
-      'Tap an answer. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
     ],
     changes: [
       'Get all four right and the check is passed. A wrong answer costs nothing, and there is no score.',
@@ -119,7 +119,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
     ],
     tryThis: [
       'Unsure? Switch to LEARN and reread the CONTROLS entry on the idea the question is about. Then come back and answer.',
-      'A wrong pick shows the explanation. Read it before you try again.',
+      'A wrong pick says what to look at again. Look at the figure on EXPLORE before you try again.',
     ],
   },
 };

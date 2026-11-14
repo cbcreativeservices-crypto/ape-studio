@@ -27,6 +27,7 @@ import { Children, createContext, isValidElement, useContext, useEffect, useRef,
 import { AppState, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal, useAfterModalsClose } from '../../../components/DimModal';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
+import { useScreenGuideWork } from '../../../features/lab/screenGuide/introHold';
 import type { SpIssue, SpIssueAction, SpIssueLevel } from '../../../features/stageplot/spReview';
 import { fitValue } from '../../../theme/legibility';
 import { colors, fonts } from '../../../theme/tokens';
@@ -460,6 +461,11 @@ export function FocusMark(p: { k: string; children: ReactNode }) {
 }
 
 export function Sheet(p: { visible: boolean; title: string; onClose: () => void; children: ReactNode; scroll?: boolean }) {
+  // An open popup is work under way (lab fix round 2026-11-14, phase 2,
+  // arrival order): the screen's intro card never opens over it. A review
+  // answer can open Monitors with ADD A MIX already up, on the visit that
+  // would also bring that area's first-visit card.
+  useScreenGuideWork(p.visible);
   const scrollRef = useRef<ScrollView>(null);
   const contentRef = useRef<View>(null);
   const scroller = useRef<SheetScroller>({

@@ -38,3 +38,8 @@ export const GAIN_MODULES: GainModuleDef[] = [
   { id: 'freeplay', title: 'Free Practice', blurb: 'Even the source is yours — feed the rig anything, nothing is graded.', section: 'explore' },
   { id: 'troubleshoot', title: 'Troubleshooting Challenge', blurb: 'Only the master is visible — and it’s clipping. Inspect stage by stage and find it.', section: 'challenge' },
 ];
+
+/** The Troubleshooting Challenge's own "what is missing" line on the
+ *  what's-left list (phase 2 end screen, 2026-11-14): it is the one module
+ *  that counts on a pass, not on opening. */
+export const GAIN_TROUBLESHOOT_LEFT = 'Still to do: find the first stage that clips and fix it, until the green frame appears.';

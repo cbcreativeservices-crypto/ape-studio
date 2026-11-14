@@ -47,20 +47,22 @@ const METER_KINDS: readonly { key: MeterKind; label: string; short: string; blur
  *  at 390 wide two faces side by side would be unreadable, so the three
  *  numbers share the BEZEL instead). The loudness meter is drawn WITHOUT its
  *  −14 target line (targetLufs null) and WITH the lab's additive gain. */
-function MetersStage({ width, height, signal, gainDb, kind }: { width: number; height: number; signal: SignalKey; gainDb: number; kind: MeterKind }) {
+function MetersStage({ width, height, signal, gainDb, kind, truePeakDbtp }: { width: number; height: number; signal: SignalKey; gainDb: number; kind: MeterKind; truePeakDbtp?: number }) {
   const viz = requireVizMeters();
   const focused = useIsFocused();
   if (!viz) return <View style={{ width, height, justifyContent: 'center' }}><VizUnavailableCard /></View>;
-  return <MetersStageInner viz={viz} width={width} height={height} signal={signal} gainDb={gainDb} focused={focused} kind={kind} />;
+  return <MetersStageInner viz={viz} width={width} height={height} signal={signal} gainDb={gainDb} focused={focused} kind={kind} truePeakDbtp={truePeakDbtp} />;
 }
-function MetersStageInner({ viz, width, height, signal, gainDb, focused, kind }: { viz: NonNullable<ReturnType<typeof requireVizMeters>>; width: number; height: number; signal: SignalKey; gainDb: number; focused: boolean; kind: MeterKind }) {
+function MetersStageInner({ viz, width, height, signal, gainDb, focused, kind, truePeakDbtp }: { viz: NonNullable<ReturnType<typeof requireVizMeters>>; width: number; height: number; signal: SignalKey; gainDb: number; focused: boolean; kind: MeterKind; truePeakDbtp?: number }) {
   const phase = viz.usePhaseClock(focused, 0.6);
   return (
     <View style={{ width, height }}>
       {kind === 'peak' ? (
         <viz.PeakMeterView width={width} height={height} signal={signal} gain={Math.pow(10, gainDb / 20)} phase={phase} />
       ) : (
-        <viz.LoudnessView width={width} height={height} signal={signal} phase={phase} targetLufs={null} gainDb={gainDb} />
+        // The face's TP reads the bezel's TRUE PK (F4/F6 fix round 2026-11-14:
+        // Kick's face said −5.0 dBTP beside the bezel's corrected value).
+        <viz.LoudnessView width={width} height={height} signal={signal} phase={phase} targetLufs={null} gainDb={gainDb} truePeakDbtp={truePeakDbtp} />
       )}
     </View>
   );
@@ -119,7 +121,14 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
   const teach = useMemo(() => {
     const sim = simulateLoudness(signal);
     const peak = linDb(peakOf(renderSignal(signal)));
-    return { peak, tp: sim.truePeakDbtp, lufs: sim.integratedLufs };
+    // True peak is the waveform reconstructed BETWEEN the samples, so it can
+    // never read below the sample peak. TRUE PK used to be the loudness
+    // story's own number, built on a different peak from the PEAK beside it:
+    // Kick read PEAK +1.6 / TRUE PK −5.0, Organ −5.7 / −8.8, Speech −2.6 /
+    // −7.6 (novice audit G4, 2026-11-14). The story's inter-sample overshoot
+    // now rides on the sample peak this bezel shows.
+    const overshoot = Math.max(0, sim.truePeakDbtp - sim.samplePeakDbfs);
+    return { peak, tp: peak + overshoot, lufs: sim.integratedLufs };
   }, [signal]);
   // The programme's third-octave-ish spectrum for the translation picture —
   // free if a LISTEN page already rendered it; DRAW MIX renders it on request
@@ -150,14 +159,14 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
         {
           key: 'numbers', title: 'The four numbers', kind: 'LEARN', layout: 'rack',
           rack: {
-            render: (w, h) => <MetersStage width={w} height={h} signal={signal} gainDb={meterGain} kind={meterKind} />,
+            render: (w, h) => <MetersStage width={w} height={h} signal={signal} gainDb={meterGain} kind={meterKind} truePeakDbtp={teach.tp} />,
             aspect: 360 / 230,
             size: 'L',
             badge: 'SYNTHESIZED TEACHING SIGNAL · MODEL meters (Visual Audio Analysis lab)',
             bezel: [
-              { k: 'PEAK', v: `${(teach.peak + meterGain).toFixed(1)}`, tint: levelTint(teach.peak + meterGain) },
-              { k: 'TRUE PK', v: `${(teach.tp + meterGain).toFixed(1)}`, tint: levelTint(teach.tp + meterGain) },
-              { k: 'LUFS', v: `${(teach.lufs + meterGain).toFixed(1)}`, tint: lufsTint(teach.lufs + meterGain) },
+              { k: 'PEAK', v: `${(teach.peak + meterGain).toFixed(1)}`, tint: levelTint(teach.peak + meterGain), caption: 'highest sample' },
+              { k: 'TRUE PK', v: `${(teach.tp + meterGain).toFixed(1)}`, tint: levelTint(teach.tp + meterGain), caption: 'smoothed peak' },
+              { k: 'LUFS', v: `${(teach.lufs + meterGain).toFixed(1)}`, tint: lufsTint(teach.lufs + meterGain), caption: 'how loud' },
               { k: 'GAIN', v: `${meterGain > 0 ? '+' : ''}${meterGain.toFixed(1)} dB`, tint: colors.amber },
               { k: 'FACE', v: meterKind === 'peak' ? 'PEAK' : 'LUFS' },
             ],
@@ -201,6 +210,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               { kind: 'action', id: 'stop', label: '■ STOP', onPress: pb.stop, tint: colors.green },
             ],
             initialParam: 'drive',
+            soundOffLine: 'Sound off? Push DRIVE and watch GR and PLR change; the comparison by ear needs sound.',
           },
           well: (
             <>
@@ -249,7 +259,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
             badge: MODEL_BADGE,
             bezel: [
               { k: 'SYSTEM', v: system.name.toUpperCase().split(' (')[0], flex: 2 },
-              { k: 'FOLD', v: system.mono ? 'MONO' : 'STEREO', tint: system.mono ? colors.orange : colors.green },
+              { k: 'FOLD', caption: 'one speaker?', v: system.mono ? 'MONO' : 'STEREO', tint: system.mono ? colors.orange : colors.green },
             ],
             params: [
               flipFader({ id: 'sys', label: 'SYSTEM', items: PLAYBACK_SYSTEMS, selectedId: systemId, onSelect: setSystemId, name: (s) => s.name, short: (s) => s.name.split(' ')[0].toUpperCase(), blurb: (s) => s.note, title: 'PLAYBACK SYSTEM', sticky: true }),

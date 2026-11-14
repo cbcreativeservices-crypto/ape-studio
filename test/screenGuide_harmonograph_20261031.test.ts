@@ -236,8 +236,13 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.match(M, /if \(m\.azr > 0\) \{\s*const g = m\.azr \* phi \* \(1 \+ m\.det\);/);
     assert.match(M, /sB = AMP \* Math\.sin\(m\.ayr \* phi \* \(1 \+ m\.det\) \+ Math\.PI \/ 2\) \* env;/);
     assert.match(textOf(GUIDES.explore), /DETUNE moves OSC 2 in LATERAL, the platform in ROTARY \(so PLAT must be on\)/);
-    // A wrong pick shows the same q.explanation as a right one — never called a "hint".
-    assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{got \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>\s*<Text style=\{s\.explainBody\}>\{q\.explanation\}<\/Text>/);
+    // The check card's wrong-pick feedback — never called a "hint" in the guide.
+    // Lab fix round 2026-11-14 (S2, report section 3 row 4), owner approval: "Begin fixing all bugs found and do
+    // obvious ... fixes as you suggested in the report". A FIRST wrong pick no longer shows the explanation (it
+    // usually names the answer): it shows that option's reason / the hint / a nudge; the explanation follows a
+    // SECOND miss, and every right answer. Both heads stay word for word in the card.
+    assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{feedback\.right \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>/);
+    assert.match(code('src/features/lab/checkFeedback.ts'), /return misses\.length >= MISSES_BEFORE_EXPLANATION\s*\? \{ right: false, line, explanation: q\.explanation \}\s*: \{ right: false, line \};/);
     assert.doesNotMatch(textOf(GUIDES.check), /\bhint\b/);
   });
   it('ROTARY with PLAT OFF: DETUNE draws nothing, so the caption and TUNE key never claim a detune', () => {

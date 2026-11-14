@@ -15,6 +15,7 @@ import { RackUnit } from '../../../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize } from '../../../rack/rackTypes';
 import { mikingGlassHeight } from './glassHeight.ts';
 import { dockShort } from './dockWords.ts';
+import { bezelCaption } from './bezelCaptions.ts';
 
 export type MikingRackSpec = {
   render: (w: number, h: number) => ReactNode;
@@ -46,7 +47,11 @@ export function shortDockParams(params: DockParam[]): DockParam[] {
 export function shortBezel(bezel: BezelItem[]): BezelItem[] {
   return bezel.map((b) => {
     const v = dockShort(b.v);
-    return v === b.v ? b : { ...b, v, vA11y: b.vA11y ?? b.v };
+    // A code label gets its plain-word caption on first visit (fix round
+    // 2026-11-14, F9 phase 2: engine/rack/bezelCaptions.ts).
+    const caption = b.caption ?? bezelCaption(b.k);
+    const c = caption && !b.caption ? { ...b, caption } : b;
+    return v === b.v ? c : { ...c, v, vA11y: b.vA11y ?? b.v };
   });
 }
 

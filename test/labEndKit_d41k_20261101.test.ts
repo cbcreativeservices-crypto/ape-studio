@@ -189,7 +189,10 @@ describe('K7 LabCheckEnd: BACK closes the open guide first', () => {
   });
   it('ScreenGuideHost: optional backRef closes an open guide and answers true, else false; omitted = unchanged', () => {
     assert.match(host, /backRef\?: MutableRefObject<\(\(\) => boolean\) \| null>;/);
-    assert.match(host, /useEffect\(\(\) => \{\s*if \(!backRef\) return;\s*backRef\.current = \(\) => \{\s*if \(!shownRef\.current\) return false;\s*shownRef\.current = false;\s*(?:claimIntro\(claimRef\.current\);\s*)?setShown\(null\);\s*return true;\s*\};\s*return \(\) => \{\s*backRef\.current = null;\s*\};\s*\}, \[backRef\]\);/);
+    // The carried lab term (2026-11-14, lab fix round S1; owner approval
+    // "Begin fixing all bugs found and do obvious ... fixes", report row 1:
+    // "Merge the term card into the intro card") is read on BACK too.
+    assert.match(host, /useEffect\(\(\) => \{\s*if \(!backRef\) return;\s*backRef\.current = \(\) => \{\s*if \(!shownRef\.current\) return false;\s*shownRef\.current = false;\s*(?:claimIntro\(claimRef\.current\);\s*)?(?:const t = termRef\.current;\s*if \(t\) finishCarriedLabTerm\(t\.key\);\s*)?setShown\(null\);\s*return true;\s*\};\s*return \(\) => \{\s*backRef\.current = null;\s*\};\s*\}, \[backRef\]\);/);
     assert.match(host, /shownRef\.current = shown != null;/);
   });
 });

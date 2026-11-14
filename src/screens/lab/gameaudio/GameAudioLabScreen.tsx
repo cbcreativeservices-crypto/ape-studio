@@ -32,12 +32,15 @@ import { PagedLab } from '../kit/PagedLab';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { GaLabProvider } from './GaLab';
 import { GA_PAGES } from './pages';
+import { GA_HANDS_ON, GA_PAGE_LEFT } from './pages/data/gaPageLeft';
 import { GA_END_GUIDE } from './pages/guides/end';
 
 export const GA_LAB_ID = 'game-audio';
 export const GA_LAB_TITLE = 'Game Audio Lab';
 
-const HANDS_ON = 'Counts once its practice goals and its check are done; NEXT moves on without counting it.';
+/** The rule the hands-on pages share. The shared end screen prints it ONCE,
+ *  above the list, under HOW A PAGE COUNTS (never under a row). */
+const HANDS_ON = GA_HANDS_ON;
 
 /** The end screen's line for a page that is not done yet. Three pages count
  *  by a different rule from the rest, and each says its own (by page index:
@@ -51,7 +54,10 @@ const PAGE_DETAIL: Readonly<Record<number, string>> = {
   20: 'Counts once its two checks are done; NEXT moves on without counting it.',
   21: 'Counts once its seven goals are done in one visit. Its check is optional, and FINISH moves on without counting it.',
 };
-const pageDetail = (i: number): string | undefined => PAGE_DETAIL[i];
+/** Every row that is not done names what THAT page still needs (phase 2 of
+ *  the lab fix round, 2026-11-14): pages 1 to 19 from pages/data/gaPageLeft
+ *  (their own goals and their check), pages 20 to 22 from PAGE_DETAIL. */
+const pageDetail = (i: number): string | undefined => PAGE_DETAIL[i] ?? GA_PAGE_LEFT[i];
 /** No page is optional. Passed so that PagedLab's "lab done" rule checks
  *  EVERY page index 0…21 (`every(i => completed.includes(i))`), not the
  *  number of stored entries: an index from an older layout or a corrupt

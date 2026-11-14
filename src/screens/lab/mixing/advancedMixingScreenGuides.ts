@@ -103,9 +103,9 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Answer the check below.',
     ],
     changes: [
-      'You can choose only three. A fourth tap adds nothing until you remove one.',
+      'You can choose only three. A fourth tap adds nothing, and the line says “Three is the limit.” until you remove one.',
       'With three chosen, the line reads “✓ Three named. Every decision from here negotiates around these.”',
-      'Your three are kept. The final page reads them back and asks whether your repair honored them.',
+      'Your three are kept. The final page shows them at its top and asks, once the repair is delivered, whether it honored them.',
     ],
     teaches: [
       'Professional mixes start from a decision list, before the first fader moves.',
@@ -113,7 +113,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Shared buses and reverbs are planned before the session sprawls, so every later move has a reason.',
     ],
     tryThis: [
-      'Choose three priorities, then tap a fourth. Nothing is added until you remove one: that limit is the point.',
+      'Choose three priorities, then tap a fourth. The line says “Three is the limit.”: nothing is added until you remove one, and that limit is the point.',
       'Open Reference analysis, then think of a song you know well. Where does its vocal sit, how wide is it, and how much low end does it have?',
     ],
   },
@@ -153,7 +153,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p4: {
     intro: {
       learning: 'How a subgroup fader and a VCA both turn drums down but act at different points, and why one compressor on the whole kit glues differently from one per drum.',
-      start: 'Play ▶ KIT, NO COMP, then ▶ ONE BUS COMP and ▶ PER-TRACK COMP. Then tap PULL VCA −6 and PULL SUBGROUP −6 and read the line under the drawing.',
+      start: 'Tap PULL VCA −6 and PULL SUBGROUP −6 and read the line under the drawing: where does each cut act? With sound on, play ▶ KIT, NO COMP, ▶ ONE BUS COMP and ▶ PER-TRACK COMP too.',
     },
     seeing: [
       'GLUE, HEARD plays the drums only, three ways, matched in level: “KIT, NO COMP”, ONE BUS COMP and PER-TRACK COMP.',
@@ -216,7 +216,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p6: {
     intro: {
       learning: 'How parallel compression differs from an insert: the dry kit keeps its peaks on top while a crushed copy adds weight underneath, which the crest factor shows.',
-      start: 'Play ▶ KIT DRY, then ▶ INSERT COMP, then ▶ PARALLEL (NY). After each, read PEAK, RMS and CREST on the measured line.',
+      start: 'Tap ▶ KIT DRY, ▶ INSERT COMP and ▶ PARALLEL (NY): the drawing redraws each path, even with sound off. With sound on, read PEAK, RMS and CREST on the measured line after each.',
     },
     seeing: [
       'INSERT VS PARALLEL, HEARD plays the kit three ways, matched in level: KIT DRY, INSERT COMP and PARALLEL (NY).',
@@ -247,7 +247,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p7: {
     intro: {
       learning: 'How masking happens when parts share the same frequencies, and how complementary EQ clears a pocket for the lead vocal without touching its fader.',
-      start: 'Play ▶ CROWDED, then ▶ COMPLEMENTARY, and watch the curves inside LEAD’S PRESENCE. Then open each tool in THE ADVANCED TOOLKIT.',
+      start: 'Tap ▶ CROWDED, then ▶ COMPLEMENTARY, and watch the curves inside LEAD’S PRESENCE: they draw even with sound off. Then open each tool in THE ADVANCED TOOLKIT.',
     },
     seeing: [
       'COMPLEMENTARY EQ, HEARD plays two versions, matched in level: CROWDED and COMPLEMENTARY.',
@@ -281,7 +281,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p8: {
     intro: {
       learning: 'How a compressor can be triggered by a different signal: the kick ducks the bass for a moment on each hit, so the two take turns in the low end.',
-      start: 'Play ▶ NO DUCK, then ▶ KICK DUCKS BASS, and watch the gain line under the kick dip on each hit. Then open each tool in THE ADVANCED TOOLKIT.',
+      start: 'Tap ▶ NO DUCK, then ▶ KICK DUCKS BASS, and watch the gain line under the kick dip on each hit, even with sound off. Then open each tool in THE ADVANCED TOOLKIT.',
     },
     seeing: [
       'SIDECHAIN, HEARD plays kick and bass only: NO DUCK and KICK DUCKS BASS, deliberately not level-matched.',
@@ -346,7 +346,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p10: {
     intro: {
       learning: 'How depth is built with shared reverbs: a longer decay pushes parts back, pre-delay and filtering shape distance, and each part gets its own place front to back.',
-      start: 'Play ▶ TIGHT ROOM, then ▶ BIG HALL, and compare the two decay curves. Then open Pre-delay as position and Filtered ambience in THE SET-DESIGN TOOLKIT.',
+      start: 'Compare the two decay curves, drawn before anything plays. With sound on, play ▶ TIGHT ROOM, then ▶ BIG HALL. Then open Pre-delay as position and Filtered ambience in THE SET-DESIGN TOOLKIT.',
     },
     seeing: [
       'THE SIZE OF THE ROOM, HEARD sends the same parts into two shared spaces, matched in level: TIGHT ROOM and BIG HALL.',
@@ -378,7 +378,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p11: {
     intro: {
       learning: 'What saturation adds to a mix, how gentle and hard drive differ, and how to compare drive settings fairly.',
-      start: 'Play ▶ CLEAN, then ▶ GENTLE DRIVE, then ▶ HARD DRIVE, and watch the drive plot change with each. Then open What saturation adds in THE TOOLKIT.',
+      start: 'Tap ▶ CLEAN, then ▶ GENTLE DRIVE, then ▶ HARD DRIVE, and watch the drive plot change with each, even with sound off. Then open What saturation adds in THE TOOLKIT.',
     },
     seeing: [
       'THE DRIVE, HEARD runs the full session through a soft saturator (it rounds peaks off gently): CLEAN, GENTLE DRIVE and HARD DRIVE, matched in level so loudness can’t fool you.',
@@ -410,7 +410,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p12: {
     intro: {
       learning: 'How mid/side splits a mix into center and difference, and why width added to the side can thin out or vanish when the mix folds to mono.',
-      start: 'Play ▶ AS MIXED, then ▶ WIDENED 1.6×. Then play ▶ WIDENED → MONO and read the right-hand column to see which parts lose the most.',
+      start: 'Read the right-hand column first: it shows which parts lose the most in mono, even with sound off. With sound on, play ▶ AS MIXED, then ▶ WIDENED 1.6×, then ▶ WIDENED → MONO.',
     },
     seeing: [
       'WIDTH AND ITS INVOICE, HEARD plays the session three ways, matched in level: AS MIXED, WIDENED 1.6× and WIDENED → MONO (the widened mix folded to one channel).',
@@ -473,7 +473,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p14: {
     intro: {
       learning: 'Why processing on the mix bus usually stays gentle: it touches everything at once, and pushing it for loudness starts mastering before the mix is finished.',
-      start: 'Play ▶ CONSERVATIVE CHAIN, then ▶ NO BUS CHAIN, and ask yourself whether you miss it. Then play ▶ OVERCOOKED and listen for pumping.',
+      start: 'Tap ▶ CONSERVATIVE CHAIN, ▶ NO BUS CHAIN and ▶ OVERCOOKED and watch the drawing change, even with sound off. With sound on, ask whether you miss the chain, and listen for pumping.',
     },
     seeing: [
       'THE BUS CHAIN, THREE WAYS plays the mix with NO BUS CHAIN, CONSERVATIVE CHAIN and OVERCOOKED, matched in level, so you judge tone and movement, not loudness.',
@@ -630,7 +630,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p19: {
     intro: {
       learning: 'How diagnosis works: hear a symptom, name its real cause and choose the smallest repair, across three classic mix complaints.',
-      start: 'Play ▶ MUDDY FLAWED and decide what’s wrong before you hear the repair. Answer the case’s check, then play ▶ MUDDY REPAIRED and compare.',
+      start: 'Read the complaint in CASE 1 — “IT’S MUDDY” and decide what’s wrong; answer the case’s check. With sound on, play ▶ MUDDY FLAWED first and ▶ MUDDY REPAIRED after, and compare.',
     },
     seeing: [
       'Three cases: CASE 1 — “IT’S MUDDY”, CASE 2 — “IT’S HARSH”, CASE 3 — “THE VOCAL IS BURIED”.',
@@ -662,10 +662,10 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p20: {
     intro: {
       learning: 'The whole job on a mix someone else started: diagnose it, repair it, add gentle glue, check in mono, and ask whether it honors your priorities.',
-      start: 'Play ▶ THE HANDOFF and answer THE HANDOFF — YOUR DIAGNOSIS. Then work on THE REPAIR CONSOLE and watch THE STEPS turn ✓ as you go.',
+      start: 'Answer THE HANDOFF — YOUR DIAGNOSIS from the description at the top (with sound on, play ▶ THE HANDOFF first). Then work on THE REPAIR CONSOLE and watch THE STEPS turn ✓ as you go.',
     },
     seeing: [
-      'THE MIXER’S MANTRA opens the page. STEP 1 — DIAGNOSE THE HANDOFF plays THE HANDOFF, someone else’s flawed mix, with a check.',
+      'THE MIXER’S MANTRA opens the page; if you chose three priorities on page 2, YOUR PAGE-2 CONTRACT shows them. STEP 1 — DIAGNOSE THE HANDOFF plays THE HANDOFF, someone else’s flawed mix, with a check.',
       'THE REPAIR CONSOLE: eight channels set to the handoff’s flawed mix.',
       'LISTEN — HANDOFF VS YOUR REPAIR: THE HANDOFF, YOUR REPAIR and REPAIR, MONO.',
       'THE STEPS — VERIFIED AS YOU WORK: seven rows that turn ✓ as you go.',
@@ -707,11 +707,11 @@ export function advancedMixingPageGuide(index: number): ScreenGuide | undefined 
 export const ADVANCED_MIXING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Where you stand in the advanced mixing workflow: which stages, from planning and routing to delivery and repair, you have worked through and which are still ahead.',
-    start: 'Read the pages still listed and tap one to jump to it. Or tap REVIEW ▾ to reopen a finished page and practice it again.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Tap any row to jump to it.',
   },
   seeing: [
     'This is WHAT’S LEFT. Once every page is done, the title changes to LAB COMPLETE.',
-    'Each page you haven’t finished is listed by number and name. It counts once the goal chips at the foot of that page are done.',
+    'Each page you haven’t finished is listed by number and name, with its own goals. HOW A PAGE COUNTS says once how a page is credited.',
     'Finished pages fold into one ✓ CREDITED line, or ✓ DONE if you’re not signed in.',
   ],
   control: [
@@ -722,7 +722,7 @@ export const ADVANCED_MIXING_END_GUIDE: ScreenGuide = {
     'On the strip, ‹ PREV returns to the page you were on and ⏮ opens page 1. The WHAT’S LEFT readout lists every page, with ✓ on the ones you’ve done.',
   ],
   changes: [
-    'A page is done when every goal chip at its foot shows ✓. NEXT and FINISH move you on, but they don’t mark the page done.',
+    'A page is done when every goal chip at its foot shows ✓; with sound off, a ▶ tap counts as looked at. NEXT and FINISH don’t mark a page done.',
     'Before You Begin counts as soon as you open it with Beginning Mixing finished on this device, or once you pass its three checks.',
     'Signed in, your finished pages are saved to your account. They still read ✓ CREDITED after START OVER (PRACTICE) in the strip’s page list.',
   ],

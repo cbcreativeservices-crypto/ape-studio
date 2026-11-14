@@ -56,7 +56,14 @@ describe('#16 every Mixing page is hands-on: it marks ITSELF, NEXT never does', 
   });
   it('the what’s-left screen says why an un-done hands-on page is still listed', () => {
     const shell = read('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(shell, /\{ id: String\(i\), label: p\.title, \.\.\.\(handsOnDetail && p\.manualDone \? \{ detail: handsOnDetail \} : null\) \}/);
+    // Lab fix round 2026-11-14 (S2, quick win 17), owner approval: "Begin fixing
+    // all bugs found and do obvious ... fixes as you suggested in the report".
+    // The shared HANDS_ON_DETAIL is now said ONCE above the list (howItCounts),
+    // and a row names its own missing piece only through the lab's pageDetail —
+    // Beginning Mixing printed the full sentence under all 13 rows.
+    assert.match(shell, /: \{ id: String\(i\), label: p\.title \},/);
+    assert.match(shell, /leftPages\.some\(\(p\) => p\.manualDone\) \? handsOnDetail \?\? PAGE_TASK_RULE : null,/);
+    assert.match(shell, /howItCounts=\{howItCounts\}/);
     const kit = read('src/screens/lab/mixing/kit.tsx');
     assert.match(kit, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
     for (const s of ['BeginningMixingLabScreen', 'AdvancedMixingLabScreen']) {

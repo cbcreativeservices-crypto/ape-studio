@@ -114,9 +114,12 @@ describe('T2 — the header ⓘ and ? are easy to find', () => {
     assert.match(s, /style=\{\[styles\.chip, isCalc && styles\.chipCalc, style\]\}/);
   });
 
-  test('HelpKey "?" wears the amber ring at the same 24-pt size', () => {
+  test('HelpKey wears the amber ring at the same 24-pt height', () => {
     const s = code('src/components/HelpKey.tsx');
-    assert.match(s, /width: 24,\s+height: 24,/);
+    // Lab fix round 1 (2026-11-14; owner: "Begin fixing all bugs found and do
+    // obvious ... fixes as you suggested in the report", quick win 6): the key
+    // reads HELP in words, so its width follows the word (never under 24).
+    assert.match(s, /minWidth: 24,\s+height: 24,/);
     assert.match(s, /borderColor: 'rgba\(255,198,77,\.75\)'/);
     assert.match(s, /color: colors\.amber,/);
     assert.match(s, /hitSlop=\{10\}/);

@@ -80,7 +80,9 @@ describe('R3-MT-01 — 60 Hz is one mains frequency, not every mains', () => {
   const c = read('src/screens/lab/meter/modules/modMeterC.tsx');
   const b = read('src/screens/lab/meter/modules/modMeterB.tsx');
   it('Meter C hum card: the answer option and hint speak of the mains frequency', () => {
-    assert.match(c, /'Spikes at the power-line frequency and its exact multiples',/);
+    // Shortened 2026-11-14 (F6, option-length balance: the right answer is never
+    // more than 1.4x the next-longest option); still the mains frequency, never "60 Hz".
+    assert.match(c, /'Spikes at power-line multiples',/);
     assert.match(c, /60 Hz in North America \(drawn here\) and 50 Hz in most other countries/);
     assert.match(c, /wrongHint: 'What in every studio oscillates at the power-line frequency, forever\?'/);
     assert.match(c, /50\/100\/150 Hz in most other countries/);

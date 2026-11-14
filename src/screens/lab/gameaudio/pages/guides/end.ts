@@ -21,7 +21,7 @@ import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.
 export const GA_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How a game asks for sound, and how the audio side answers: what plays, where it goes and what is stopped first.',
-    start: 'Tap the first page still listed to go straight to it. Or tap REVIEW ▾ on the ✓ DONE line to reopen a page you have finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Tap any page in the list to open it.',
   },
   seeing: [
     'This screen is headed Where you are. Its list is titled WHAT’S LEFT while pages are still to do, and LAB COMPLETE once every page is done. If your saved progress cannot be read, it reads YOUR PROGRESS.',

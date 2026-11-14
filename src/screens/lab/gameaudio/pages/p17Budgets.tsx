@@ -42,7 +42,7 @@ import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { footstepId, gaAsset, gaSound } from '../sounds/gaSoundBank';
 import { FOOTSTEP_TAKES, GA_SURFACES } from '../sounds/gaSynth';
 import { InfoCard, Tray, TrayChip, TrayGrid, onOff, speaking } from './chdKit';
-import { BURST_COUNT, MEMORY_IDS, P17_LOG_KINDS, budgetHeld, budgetLaneWords, budgetShort, budgetStep, budgetToLane, burstSpoken, burstTheftWords, fmtInt, laneToBudget, lastBurst, memoryRow, memoryRowSpoken, protectedSounding, type MemoryRow } from './data/gaBudget';
+import { BURST_COUNT, MEMORY_IDS, P17_LOG_KINDS, budgetHeld, budgetLaneWords, budgetShort, budgetStep, budgetToLane, burstSpoken, burstTheftWords, burstTotalWords, fmtInt, laneToBudget, lastBurst, memoryRow, memoryRowSpoken, protectedKept, protectedKeptWords, protectedSounding, type MemoryRow } from './data/gaBudget';
 import { G17 } from './guides/p17';
 import { useSince } from './shared';
 
@@ -142,8 +142,11 @@ function LastBurstCard({ s }: { s: GaState }) {
   // (stolen) or refused one when they started (waiting)
   const waiting = s.voices.filter((v) => v.state === 'virtual' && (v.stolen || v.waiting)).length;
   const now = waiting ? `${waiting} loop ${waiting === 1 ? 'voice is' : 'voices are'} virtual now, waiting for a free voice.` : 'No loop is waiting: every loop that is on has its voice.';
+  // a protected sound is not in the list of voices taken: the card names it,
+  // so nobody has to notice that it is missing (beginner audit 2026-11-14)
+  const kept = r ? protectedKeptWords(protectedKept(s)) : '';
   return (
-    <InfoCard head="SINCE THE LAST BURST · VOICES TAKEN, IN ORDER" a11y={`Since the last burst. ${burstSpoken(r)} ${now}`}>
+    <InfoCard head="SINCE THE LAST BURST · VOICES TAKEN, IN ORDER" a11y={`Since the last burst. ${burstSpoken(r)} ${kept ? `${kept} ` : ''}${now}`}>
       {!r ? <Text style={styles.memNote}>No burst yet. Press BURST.</Text> : null}
       {r && r.thefts.length === 0 ? <Text style={styles.memNote}>No voice was taken.</Text> : null}
       {r
@@ -153,11 +156,9 @@ function LastBurstCard({ s }: { s: GaState }) {
             </Text>
           ))
         : null}
-      {r ? (
-        <Text style={styles.memSum}>
-          TAKEN {r.stolen} · REFUSED {r.refused}
-        </Text>
-      ) : null}
+      {/* the total with its sum: six rows stood over "TAKEN 9" (G5b page 17) */}
+      {r ? <Text style={styles.memSum}>{burstTotalWords(r)}</Text> : null}
+      {kept ? <Text style={styles.memName}>{kept}</Text> : null}
       <Text style={styles.memNote}>{now}</Text>
     </InfoCard>
   );

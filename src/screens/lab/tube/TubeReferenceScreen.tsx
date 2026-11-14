@@ -21,7 +21,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useMemberGate } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { Image } from 'expo-image';
-import { TUBE_FAMILY_META, fetchTubePageUri, searchTubes, type TubeRef } from './tubeRefs';
+import { TUBE_FAMILY_META, fetchTubePageUri, searchTubes, type TubeRef, tubeListNum } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 // Screen Guide (owner 2026-10-31): the header ⓘ explains this screen.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
@@ -102,7 +102,7 @@ export function TubeReferenceScreen() {
         {/* The ratings on these cards are the kind of number someone wires a
             high-voltage circuit from. VacuumTubeLabScreen carries the note;
             the reference library that shows the actual figures did not. */}
-        <AccuracyNote compact detail="These cards are a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
+        <AccuracyNote compact variant="about" label="ABOUT THESE CARDS" detail="These cards are a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
         {/* The chip STAYS (owner rule 2026-10-31: real-world numbers — these
             cards carry published data-sheet ratings); the ⓘ sits beside it. */}
         <ScreenGuideKey title="TUBE REFERENCE" guide={TUBE_REFERENCE_GUIDE} />
@@ -168,7 +168,7 @@ export function TubeReferenceScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`${r.short} — ${r.role}${unlocked ? '' : ' (Academy membership required)'}`}
                 >
-                  <Text style={styles.rowNum}>{String(r.num).padStart(2, '0')}</Text>
+                  <Text style={styles.rowNum}>{String(tubeListNum(r)).padStart(2, '0')}</Text>
                   <View style={{ flex: 1, gap: 1 }}>
                     <Text style={styles.rowName}>
                       {r.short}

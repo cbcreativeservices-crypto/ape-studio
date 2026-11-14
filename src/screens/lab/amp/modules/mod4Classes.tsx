@@ -227,10 +227,10 @@ export function Mod4Classes() {
           rack: {
             rig: pic,
             bezel: [
-              { k: 'CONDUCT.', v: `${Math.round(sim.conductionDeg)}°`, tint: AMP_COLORS.pos },
-              { k: 'IDLE', v: `${Math.round(sim.idleCurrent * 100)}%`, tint: AMP_COLORS.supply },
+              { k: 'CONDUCT.', v: `${Math.round(sim.conductionDeg)}°`, tint: AMP_COLORS.pos, caption: 'on-time' },
+              { k: 'IDLE', v: `${Math.round(sim.idleCurrent * 100)}%`, tint: AMP_COLORS.supply, caption: 'resting draw' },
               ...rigStatusBezel(pic, ['eff', 'heat']),
-              { k: 'DISTORT.', v: distortionWord, tint: distortionWarn ? colors.red : colors.green },
+              { k: 'DISTORT.', v: distortionWord, tint: distortionWarn ? colors.red : colors.green, caption: 'clean or not' },
             ],
             params: [
               optionsParam<Explorable>({

@@ -61,6 +61,7 @@ import { FigureHeadAt } from '../../../features/lab/figureHead';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 import { HEAT_SETTLE_MS, heatGridDims } from './heatGrid';
+import { sceneNameTags, type NameTags } from './sceneNameTags';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import {
@@ -456,6 +457,13 @@ export type RoomSceneProps = {
    *  wire this to their scroll-lock so the drag beats the ScrollView. Usually
    *  unneeded: RoomSceneView also locks via the ScrollLockProvider context. */
   onDragActive?: (active: boolean) => void;
+  /** ON-PICTURE NAMES (lab fix round 2026-11-14, G1/G1b S3 + S10: "speaker and
+   *  mic/listener are ~6 px marks with no labels"; Module 12's labels are the
+   *  model). By default every visible source and the listener carry a short
+   *  name beside the glyph (sceneNameTags). `sources[id]` renames one source
+   *  (null hides its tag, e.g. when the module draws its own label);
+   *  `listener` renames the listener (null hides it). `false` = no tags. */
+  nameTags?: NameTags;
 };
 
 // ── Room geometry: meters → px ───────────────────────────────────────────────
@@ -1926,7 +1934,9 @@ export function RoomSceneView(p: RoomSceneProps) {
       const relRounded = Math.round(Math.abs(relDb));
       rows.push({
         ms: `${(a.t * 1000).toFixed(1)} ms`,
-        db: i === 0 ? 'direct' : scattered ? 'scattered' : `${relRounded > 0 && relDb < 0 ? '−' : ''}${relRounded} dB`,
+        // 'spread', not 'scattered' (G1 module 3): "15.5 ms" + "scattered" was
+        // 16 mono characters in an 86 px row and wrapped over the next line.
+        db: i === 0 ? 'direct' : scattered ? 'spread' : `${relRounded > 0 && relDb < 0 ? '−' : ''}${relRounded} dB`,
         color,
       });
     }
@@ -2461,6 +2471,68 @@ export function RoomSceneView(p: RoomSceneProps) {
             </RNText>
           );
         })}
+        {/* ON-PICTURE NAMES (lab fix round 2026-11-14): SPEAKER / SUB / MIC /
+            YOU beside each object, right of it, or left when the room's right
+            wall is too close. 10 pt × ts on the dark plate, like Module 12. */}
+        {(() => {
+          const tags = sceneNameTags(scene, { nameTags: p.nameTags, listenerKind: p.listenerKind, draggableListener: !!p.onDragListener });
+          const fs = 10 * ts;
+          const gap = 13 * ts;
+          const tagH = 15 * ts;
+          // Right of the object, else left, else below, else above: the first
+          // spot inside the room that does not cover a tag already placed
+          // (two speakers 3 m apart once put both tags on one spot).
+          // The objects themselves count as taken: a tag never covers another glyph.
+          const glyphR = 11 * ts;
+          const placed: { l: number; t: number; r: number; b: number }[] = [...scene.sources.filter((s) => !s.muted), scene.listener].map((o) => {
+            const ox = geo.x0 + o.x * geo.pxPerM;
+            const oy = geo.y0 + o.y * geo.pxPerM;
+            return { l: ox - glyphR, t: oy - glyphR, r: ox + glyphR, b: oy + glyphR };
+          });
+          const place = (xm: number, ym: number, text: string, color: string, key: string) => {
+            const gx = geo.x0 + xm * geo.pxPerM;
+            const gy = geo.y0 + ym * geo.pxPerM;
+            const estW = text.length * fs * 0.62 + 6 * ts;
+            const spots = [
+              { l: gx + gap, t: gy - 7 * ts },
+              { l: gx - gap - estW, t: gy - 7 * ts },
+              { l: gx - estW / 2, t: gy + gap },
+              { l: gx - estW / 2, t: gy - gap - tagH },
+              { l: gx + gap, t: gy + gap },
+              { l: gx + gap, t: gy - gap - tagH },
+              { l: gx - estW / 2, t: gy + gap + tagH },
+              { l: gx - estW / 2, t: gy - gap - 2 * tagH },
+            ];
+            const free = (s: { l: number; t: number }) => placed.every((q) => s.l + estW <= q.l || s.l >= q.r || s.t + tagH <= q.t || s.t >= q.b);
+            // Inside the room first; in a small room (Echo's 60 m canyon on a
+            // phone) anywhere on the glass rather than on another tag.
+            const inRoom = (s: { l: number; t: number }) => s.l >= geo.x0 && s.l + estW <= geo.x1 && s.t >= geo.y0 - 2 && s.t + tagH <= geo.y1 + 2;
+            const onGlass = (s: { l: number; t: number }) => s.l >= 0 && s.l + estW <= w && s.t >= 0 && s.t + tagH <= h;
+            const spot =
+              spots.find((s) => inRoom(s) && free(s)) ??
+              spots.find((s) => onGlass(s) && free(s)) ?? { l: Math.max(geo.x0, Math.min(geo.x1 - estW, spots[0].l)), t: spots[0].t };
+            placed.push({ l: spot.l, t: spot.t, r: spot.l + estW, b: spot.t + tagH });
+            const left = spot.l;
+            return (
+              <RNText
+                key={key}
+                style={[styles.wallLabel, styles.labelPlate, { fontSize: fs, color, paddingHorizontal: 3 * ts, borderRadius: 3 * ts, left, top: spot.t }]}
+              >
+                {text}
+              </RNText>
+            );
+          };
+          const byId = new Map(scene.sources.map((s) => [s.id, s]));
+          return (
+            <>
+              {tags.sources.map((t) => {
+                const s = byId.get(t.id);
+                return s ? place(s.x, s.y, t.text, '#dfe4ee', `name-${t.id}`) : null;
+              })}
+              {tags.listener ? place(scene.listener.x, scene.listener.y, tags.listener, '#9fe6b0', 'name-listener') : null}
+            </>
+          );
+        })()}
         <RNText style={[styles.wallLabel, { fontSize: 10 * ts, left: midX - 50 * ts, top: geo.y0 - wallPx - 15 * ts, width: 100 * ts, textAlign: 'center' }]}>
           {matLabel(0)}
         </RNText>

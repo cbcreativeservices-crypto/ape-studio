@@ -527,10 +527,10 @@ function LiquidStudio() {
   ];
 
   const bezel = [
-    { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency' },
-    { k: 'RESP', v: st.subharmonic ? `${formatHz(fr.responseHz)} f/2` : `${formatHz(freq)} f`, helpKey: 'faraday' },
-    { k: 'SHAKE', v: `${accel.toFixed(2)} g`, helpKey: 'acceleration' },
-    { k: 'a/a꜀', v: ratioLabel, tint, helpKey: 'threshold', flex: 1.1 },
+    { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency', caption: 'tone fed in' },
+    { k: 'RESP', v: st.subharmonic ? `${formatHz(fr.responseHz)} f/2` : `${formatHz(freq)} f`, helpKey: 'faraday', caption: 'waves move at' },
+    { k: 'SHAKE', v: `${accel.toFixed(2)} g`, helpKey: 'acceleration', caption: 'how hard' },
+    { k: 'a/a꜀', v: ratioLabel, tint, helpKey: 'threshold', flex: 1.1, caption: 'vs threshold' },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());

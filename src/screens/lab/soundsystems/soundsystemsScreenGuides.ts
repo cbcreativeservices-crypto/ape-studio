@@ -57,10 +57,10 @@ export const SS_HUB_GUIDE: ScreenGuide = {
 export const SS_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which parts of this mode’s view of the live system you’ve explored, and which links in the source-to-listener chain you haven’t met yet.',
-    start: 'Tap the first page still listed to jump straight to it. Or tap REVIEW ▾ on the ✓ line and reopen a page you’ve finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of this mode. The title reads WHAT\'S LEFT, or LAB COMPLETE once every page is done.',
+    'You’ve reached the end of this mode. The title reads WHAT\'S LEFT, or the mode’s name with COMPLETE (TROUBLESHOOT COMPLETE, for example) once every page in this mode is done. The other four modes keep their own lists on the lab’s home.',
     'Pages you haven’t finished are listed by name. The pages you have finished fold into one ✓ line.',
   ],
   control: [
@@ -89,7 +89,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'The complete system': {
     intro: {
       learning: 'What each part of a live sound system does, and the order signal passes through them: source, stage input, console, processing, amplification, loudspeaker, listener.',
-      start: 'Ride STATION along the path and read each card’s IN and OUT. Then switch STAGE IN to Digital stagebox and HOUSE to Powered boxes, and watch which parts change.',
+      start: 'Slide STATION along the path and read each card’s IN and OUT. Then switch STAGE IN to Digital stagebox and HOUSE to Powered boxes, and watch which parts change.',
     },
     seeing: [
       'The whole system on one map, in three columns read top to bottom: STAGE, CONSOLE · RACKS and LOUDSPEAKERS. Where a cable crosses columns, one section hands the signal on.',
@@ -97,7 +97,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'STAGE IN and HOUSE show your two choices; STATION names the part you’re on.',
     ],
     control: [
-      'Ride STATION along the signal path, or tap any station on the map, to see what it does.',
+      'Slide STATION along the signal path, or tap any station on the map, to see what it does.',
       'STAGE IN: Analog snake (a multicore cable carries every mic to the console at mic level) or Digital stagebox (the preamps sit on stage, and one network cable carries audio both ways).',
       'HOUSE: Passive + amps (processor → amplifiers → passive boxes, which have no amplifier of their own) or Powered boxes (the amplifier is inside the cabinet).',
       'Open LAB NOTES for the chapter text and the goal chips that show what this page asks of you.',
@@ -146,7 +146,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Ten kinds of system': {
     intro: {
       learning: 'Why venues need different kinds of live sound system, and how each kind is the right answer in some places and the wrong one in others.',
-      start: 'Ride TYPE through TEN KINDS OF SYSTEM. For each one, see where the beams land on the floor, then read WHEN and NOT WHEN on the card.',
+      start: 'Slide TYPE through TEN KINDS OF SYSTEM. For each one, see where the beams land on the floor, then read WHEN and NOT WHEN on the card.',
     },
     seeing: [
       'You’re looking down on one system, stage at the top, with its name and scale above it.',
@@ -154,7 +154,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'The card below gives the system’s chain, WHEN it’s the right answer and NOT WHEN. TYPE names the system and BOXES counts its loudspeakers.',
     ],
     control: [
-      'Ride TYPE through TEN KINDS OF SYSTEM, or open the list and pick one. Each entry says whether it is CHOSEN BY THE VENUE or A WAY TO BUILD ANY OF THEM.',
+      'Slide TYPE through TEN KINDS OF SYSTEM, or open the list and pick one. Each entry says whether it is CHOSEN BY THE VENUE or A WAY TO BUILD ANY OF THEM.',
     ],
     changes: [
       'Each type redraws the plan with its own boxes and positions, and BOXES counts them.',
@@ -179,7 +179,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'The goal chip at the top fills once you’ve matched every venue.',
     ],
     control: [
-      'Tap the system you would carry in for each venue. The first wrong pick asks you to try again; from the second miss on, the explanation shows. Try until it is right.',
+      'Tap the system you would carry in for each venue. A wrong pick says what that system is built for, so you can compare it with the venue; the explanation shows once you pick the right one.',
     ],
     changes: [
       'Each answer shows why that system does or doesn’t suit the venue. A correct one locks the card with a ✓.',
@@ -196,7 +196,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Output configurations': {
     intro: {
       learning: 'The ways a console’s outputs can feed a room, from mono to stereo, LCR and separate subs, and what each one gains or costs.',
-      start: 'Ride CONFIG through THIRTEEN OUTPUT CONFIGURATIONS. For each one, find the hatched floor where two boxes overlap, and read FEEDS and SUBS.',
+      start: 'Slide CONFIG through THIRTEEN OUTPUT CONFIGURATIONS. For each one, find the hatched floor where two boxes overlap, and read FEEDS and SUBS.',
     },
     seeing: [
       'One output configuration from above. Each box shows its coverage sector (edge = −6 dB), a tag for what it carries, and where it lands.',
@@ -204,7 +204,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'CONFIG names it; POSITIONS, FEEDS and SUBS (NONE, MONO or STEREO) describe it.',
     ],
     control: [
-      'Ride CONFIG through THIRTEEN OUTPUT CONFIGURATIONS, from Mono to Lobby, recording and broadcast feeds.',
+      'Slide CONFIG through THIRTEEN OUTPUT CONFIGURATIONS, from Mono to Lobby, recording and broadcast feeds.',
       'Open the notes to see each feed and the console bus that carries it (BUSES).',
     ],
     changes: [
@@ -228,7 +228,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Six briefs: a lecture hall, a musical, a DJ bar, a field, flown main speakers and a conference. Each offers four configurations to choose from.',
     ],
     control: [
-      'Tap the configuration that fits each brief. The first wrong answer asks you to try again; from the second miss on, the explanation shows.',
+      'Tap the configuration that fits each brief. A wrong answer says what that configuration is made for; the explanation shows once you pick the right one.',
     ],
     changes: [
       'A correct answer shows why: the room or the brief decides, not the gear.',
@@ -296,14 +296,14 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Subwoofer placement and arrays': {
     intro: {
       learning: 'Why subwoofer placement decides where the bass is even: separated subs add in some places and cancel in others, and delay can keep bass from spilling behind the stage.',
-      start: 'Ride LAYOUT from Left / right to Center cluster and watch the blue glow down the middle of the floor. Then try Cardioid stacks and read PATTERN.',
+      start: 'Slide LAYOUT from Left / right to Center cluster and watch the blue glow down the middle of the floor. Then try Cardioid stacks and read PATTERN.',
     },
     seeing: [
       'You’re looking down on the venue: the two main speakers and the subs. The blue glow is a rough picture of where the bass is strong, not a measurement of a real room.',
       'SUBS shows how many subs there are. PATTERN shows how they spread their bass (OMNI, CARDIOID or END-FIRE). RIG shows whether they stand on the GROUND or are FLOWN.',
     ],
     control: [
-      'Ride LAYOUT through SUBWOOFER ARRANGEMENTS: Left / right, Center cluster, Cardioid stacks, End-fire array and Flown subs.',
+      'Slide LAYOUT through SUBWOOFER ARRANGEMENTS: Left / right, Center cluster, Cardioid stacks, End-fire array and Flown subs.',
       'On each arrangement, compare the glow in front of the subs with the glow behind them, and across the middle of the floor.',
     ],
     changes: [
@@ -324,14 +324,14 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Stage monitors': {
     intro: {
       learning: 'Monitors are a second sound system aimed at the performers. Each type, from floor wedge to in-ears, needs its own kind of feed from the console.',
-      start: 'Ride MONITOR from Floor wedge to In-ear monitors, or tap a monitor on the stage. Read FED BY for each one.',
+      start: 'Slide MONITOR from Floor wedge to In-ear monitors, or tap a monitor on the stage. Read FED BY for each one.',
     },
     seeing: [
       'You’re looking down on the stage: a wedge at the lip (the front edge), a side fill at the wing, a drum fill beside the drum riser and a performer wearing in-ears.',
       'The card names the monitor you picked and where it stands. FED BY shows which console send drives it; SEEN shows the types you have opened.',
     ],
     control: [
-      'Ride MONITOR through THE MONITOR WORLD: Floor wedge, Side fill, Drum fill and In-ear monitors. Or tap a monitor on the stage.',
+      'Slide MONITOR through THE MONITOR WORLD: Floor wedge, Side fill, Drum fill and In-ear monitors. Or tap a monitor on the stage.',
       'For each one, read the card: where it stands, who it is for, and its FED BY.',
     ],
     changes: [
@@ -352,7 +352,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Monitor console, splits and talkback': {
     intro: {
       learning: 'How one microphone feeds two consoles, front of house and monitors, and why a monitor engineer’s gain change must never change the house mix.',
-      start: 'With SPLIT on Analog split, ride MON GAIN to +6 dB and read FOH HEARS. Then switch SPLIT to Digital gain sharing and read it again.',
+      start: 'With SPLIT on Analog split, slide MON GAIN to +6 dB and read FOH HEARS. Then switch SPLIT to Digital gain sharing and read it again.',
     },
     seeing: [
       'Three sources feed two consoles: front of house (FOH), where the audience mix is made, and the monitor console at side stage, which makes the performers’ mixes.',
@@ -374,7 +374,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Talkback is a mic at each console routed to the monitor mixes, never the main mix, so the engineers can speak to the stage.',
     ],
     tryThis: [
-      'Ride MON GAIN to +6 dB on Analog split, then switch SPLIT to Digital gain sharing: FOH HEARS changes from UNCHANGED to TRIM −6.',
+      'Slide MON GAIN to +6 dB on Analog split, then switch SPLIT to Digital gain sharing: FOH HEARS changes from UNCHANGED to TRIM −6.',
       'Answer both questions in the notes. If one stalls you, switch SPLIT again and watch what FOH HEARS does.',
     ],
   },
@@ -499,8 +499,8 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'The verdict line says what is wrong. AT SPEAKER is the level reaching the end of the chain, ABOVE NOISE how far it clears the noise, HEADROOM the space left before clipping.',
     ],
     control: [
-      'The lane starts on PREAMP. Tap its key (WHICH STAGE) to pick FADER, MAIN, PROC IN, PROC OUT or AMP.',
-      'Double-tap the lane to land on that stage’s unity.',
+      'The slider starts on PREAMP. Tap its key (WHICH STAGE) to pick FADER, MAIN, PROC IN, PROC OUT or AMP.',
+      'Double-tap the slider to land on that stage’s unity.',
     ],
     changes: [
       'At the start the preamp is starved, so every later stage adds gain to make up, and lifts its own noise floor with the signal: VERDICT NOISY.',
@@ -521,7 +521,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Coverage and aim': {
     intro: {
       learning: 'How a loudspeaker’s coverage angle and aim decide who hears it, where two loudspeakers overlap and comb-filter, and why flown loudspeakers need front fills.',
-      start: 'Ride COVERAGE from 60° to 120° and watch the hatched overlap grow. Then turn FLOWN on and look at the front rows.',
+      start: 'Slide COVERAGE from 60° to 120° and watch the hatched overlap grow. Then turn FLOWN on and look at the front rows.',
     },
     seeing: [
       'Two main speakers at the corners of the deck (the stage), each with its coverage sector: where it is no more than 6 dB below its level straight ahead. The floor shows the two summed.',
@@ -543,15 +543,15 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Height reaches the back rows but misses the front, so flown systems need front fills.',
     ],
     tryThis: [
-      'Ride COVERAGE from 60° to 120° and watch the hatched overlap grow.',
+      'Slide COVERAGE from 60° to 120° and watch the hatched overlap grow.',
       'Turn FLOWN on: the front rows go dark. Then turn FILLS on: they come back.',
-      'Ride AIM toward 35° and watch where the hatched overlap moves.',
+      'Slide AIM toward 35° and watch where the hatched overlap moves.',
     ],
   },
   'Delay and alignment': {
     intro: {
       learning: 'How delay loudspeakers far from the stage are timed to the main speakers from distance and the speed of sound, and why warmer air needs less delay.',
-      start: 'At 30 m and 20 °C, NEEDED reads 87.4 ms. Ride DELAY until ERROR is within 2 ms and watch the ring just touch the towers.',
+      start: 'At 30 m and 20 °C, NEEDED reads 87.4 ms. Slide DELAY until ERROR is within 2 ms and watch the ring just touch the towers.',
     },
     seeing: [
       'Main speakers at the stage and delay towers on poles farther back. The ring is the main speakers’ wavefront at the moment the towers fire.',
@@ -573,7 +573,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Many engineers then add a few ms more, so the stage sound arrives first and the sound still seems to come from the stage.',
     ],
     tryThis: [
-      'At 30 m and 20 °C NEEDED reads 87.4 ms. Ride DELAY until ERROR is within 2 ms and the ring reaches the towers.',
+      'At 30 m and 20 °C NEEDED reads 87.4 ms. Slide DELAY until ERROR is within 2 ms and the ring reaches the towers.',
       'Switch DISTANCE to 60 m: NEEDED jumps to 174.8 ms. Then set AIR to 35 °C: 170.5 ms.',
     ],
   },
@@ -637,7 +637,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'The source-forward method': {
     intro: {
       learning: 'How to find a fault without guessing: start where the symptom leaves doubt, read each station going forward, and stop at the first reading that changes.',
-      start: 'Read the symptom: the PA is dead, but every channel meter is dancing. Then ride WALK forward one station at a time and watch READ.',
+      start: 'Read the symptom: the PA is dead, but every channel meter is dancing. Then slide WALK forward one station at a time and watch READ.',
     },
     seeing: [
       'These are the nine stations a signal passes, source to listener. The symptom: “the PA is dead, but every channel meter is dancing”.',
@@ -658,7 +658,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'A symptom is evidence: what already works tells you where not to look, so you read instead of swapping boxes.',
     ],
     tryThis: [
-      'Ride WALK forward one step at a time and say what you expect before each reading appears.',
+      'Slide WALK forward one step at a time and say what you expect before each reading appears.',
       'Press ▶ RUN and count the probes: three readings, one answer, no boxes swapped.',
     ],
   },
@@ -693,24 +693,24 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
 export const SS_CHECK_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the ideas from LEARN connect: system types, outputs, routing, subs, monitors, wiring, loads, gain, coverage, alignment, feedback and the source-forward walk.',
-    start: 'Read the first question and tap the option you think is right. If NOT QUITE — TRY ANOTHER appears, read the explanation before you choose again.',
+    start: 'Read the first question and tap the option you think is right. If NOT QUITE — TRY ANOTHER appears, read what it says to look at again before you choose.',
   },
   seeing: [
     'This is the understanding check: every question from LEARN on one page, each with its options.',
     'When you answer a question correctly, a ✓ replaces its number.',
   ],
   control: [
-    'Tap an option. You’ll see CORRECT, or NOT QUITE — TRY ANOTHER, with an explanation. Keep trying until it’s right.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
   ],
   changes: [
-    'A wrong answer costs you nothing, and there is no score. Every explanation says why, so a wrong pick still teaches you something. Once every question is correct, the check is passed.',
+    'A wrong answer costs you nothing, and there is no score. Every wrong option has its own reason, so a wrong pick still teaches you something. Once every question is correct, the check is passed.',
   ],
   teaches: [
     'System types, outputs, routing, subs, monitors, wiring, amplifier loads and gain are all links in one chain, from source to listener.',
     'Coverage, alignment and feedback control shape how that chain sounds; the source-forward walk finds where it breaks.',
   ],
   tryThis: [
-    'After a wrong answer, read the explanation before you choose again.',
+    'After a wrong answer, read its reason and look back at that chapter before you choose again.',
     'If a question stalls you, tap the page readout ▾ in the strip, pick its chapter from the list, then return.',
   ],
 };
@@ -971,14 +971,14 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
   'Anatomy of a channel': {
     intro: {
       learning: 'What each block of a console channel does to the signal: most pass it through, sends make copies, and the assignment decides where the main path goes.',
-      start: 'Ride STATION from Input and preamp down the strip, or tap a block. Before AUDIO answers, say whether that block is THROUGH, A COPY or THE PATH.',
+      start: 'Slide STATION from Input and preamp down the strip, or tap a block. Before AUDIO answers, say whether that block is THROUGH, A COPY or THE PATH.',
     },
     seeing: [
       'One channel strip, drawn top to bottom in the order the signal flows. Sends leave as copies at the PRE and POST tap points; the main path ends at the assignment.',
       'STATION names the block you’re on, AUDIO says what it does to the signal, and SEEN tracks the blocks you’ve looked at. The notes show the same channel on the console, read-only.',
     ],
     control: [
-      'STATION: ride THE CHANNEL, TOP TO BOTTOM — input and preamp, high-pass filter, EQ, insert, fader, pan and mute, aux sends, assignment, direct output — or tap a block on the strip.',
+      'STATION: slide THE CHANNEL, TOP TO BOTTOM — input and preamp, high-pass filter, EQ, insert, fader, pan and mute, aux sends, assignment, direct output — or tap a block on the strip.',
     ],
     changes: [
       'AUDIO tells you what each block does to the signal: THROUGH (the whole channel passes it), A COPY (a send or direct out), or THE PATH (where the main path goes).',
@@ -990,7 +990,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
       'The assignment decides where the main path goes; a DCA or mute group only controls channels, with no audio in it. Through, copy, path, control: four words that end most routing confusion.',
     ],
     tryThis: [
-      'Ride STATION from Input and preamp down to Assignment and say THROUGH, A COPY or THE PATH before AUDIO does.',
+      'Slide STATION from Input and preamp down to Assignment and say THROUGH, A COPY or THE PATH before AUDIO does.',
       'Open the Fader, pan and mute block and read what this console’s MUTE does to pre-fader sends. Consoles differ here, so it’s worth knowing.',
     ],
   },
@@ -1013,7 +1013,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
       'On this console the channel MUTE also silences its pre-fader sends. Not every console works that way.',
     ],
     teaches: [
-      'Monitor sends are pre-fader: when the house engineer rides the vocal, the singer’s wedge must stay the same.',
+      'Monitor sends are pre-fader: when the house engineer moves the vocal fader, the singer’s wedge must stay the same.',
       'Effect sends are post-fader: pull the vocal down and its reverb comes down with it, instead of hanging on by itself.',
     ],
     tryThis: [
@@ -1049,7 +1049,7 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
   'Four monitor mixes': {
     intro: {
       learning: 'How one console gives four performers four different monitor mixes, and why every monitor send is taken before the channel fader.',
-      start: 'Pick a CHANNEL, ride SEND, then tap the lane’s key to open TO WHICH WEDGE and choose W1 · SINGER. Tap PRE to light the pre-fader tap.',
+      start: 'Pick a CHANNEL, slide SEND, then tap the slider’s key to open TO WHICH WEDGE and choose W1 · SINGER. Tap PRE to light the pre-fader tap.',
     },
     seeing: [
       'Each wedge is its own mix on its own bus: W1 · SINGER, W2 · GUITAR, W3 · BASS and W4 · DRUMS. Each one lists the channels that performer hears.',
@@ -1058,13 +1058,13 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'Pick a source with CHANNEL. That’s the channel you’re about to send to a wedge.',
-      'Ride the SEND lane to set how much of it goes out. Tap the lane’s key to open TO WHICH WEDGE and choose the wedge.',
+      'Ride the SEND lane to set how much of it goes out. Tap the slider’s key to open TO WHICH WEDGE and choose the wedge.',
       'Tap PRE to light the pre-fader tap, so the copy leaves before the channel fader.',
       'Open CONSOLE to see the whole desk. ▲/▼ step a send up or down, PRE lights that send’s tap, and ALL PRE sets a whole wedge column to pre-fader at once.',
     ],
     changes: [
       'Every send you raise shows up on that wedge’s bus at the level you set. The same channels build four different lists.',
-      'With PRE lit, the copy leaves before the fader. When the house engineer rides a fader, the performer’s wedge stays exactly as it was.',
+      'With PRE lit, the copy leaves before the fader. When the house engineer moves a fader, the performer’s wedge stays exactly as it was.',
     ],
     teaches: [
       'One console can build a separate mix for every performer: each aux bus takes its own copy of each channel, at its own level.',
@@ -1080,14 +1080,14 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
   'Subgroups and DCAs': {
     intro: {
       learning: 'The difference between a subgroup, which sums real audio into one bus, and a DCA, which carries no audio and only moves faders by remote.',
-      start: 'Open CONSOLE and tap GROUP on kick, snare and overheads to put them in DRUMS. Then tap DCA on the kick and ride BAND DCA down.',
+      start: 'Open CONSOLE and tap GROUP on kick, snare and overheads to put them in DRUMS. Then tap DCA on the kick and slide BAND DCA down.',
     },
     seeing: [
       'Three buses: DRUMS SUBGROUP, MAIN MIX and AUX 4 · DRUMMER, the drummer’s wedge mix. Each shows what reaches it.',
       'KICK → MAIN and KICK → WEDGE show how loud the kick arrives in the house and in the drummer’s wedge. BAND DCA shows the DCA level; DRUMS GRP shows where the subgroup goes.',
     ],
     control: [
-      'Ride BAND DCA from −60 to +10 dB. A DCA (digitally controlled amplifier) is a remote control for the faders assigned to it.',
+      'Slide BAND DCA from −60 to +10 dB. A DCA (digitally controlled amplifier) is a remote control for the faders assigned to it.',
       'Open CONSOLE to see three drum channels and the bass. Tap GROUP to cycle a channel into DRUMS, which also takes it off L/R. Tap DCA to assign that channel to BAND.',
     ],
     changes: [
@@ -1095,13 +1095,13 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
       'A DCA carries none. It moves each member’s fader by remote, so anything tapped before the fader, like the drummer’s wedge, never feels it.',
     ],
     teaches: [
-      'A subgroup is a real bus: the whole kit flows through it as one signal you can ride or process together.',
+      'A subgroup is a real bus: the whole kit flows through it as one signal you can turn up, turn down or process together.',
       'A DCA only moves faders, so pre-fader sends ignore it. Pulling it down quiets the house and leaves the monitors alone.',
       'A channel sent to a subgroup should leave L/R, or it reaches the main mix twice and jumps in level.',
     ],
     tryThis: [
       'In CONSOLE route kick, snare and overheads into DRUMS, then check DRUMS GRP reads → L/R.',
-      'Assign the kick to BAND and ride BAND DCA to −10 dB: KICK → MAIN drops, KICK → WEDGE does not. The wedge copy leaves before the fader.',
+      'Assign the kick to BAND and slide BAND DCA to −10 dB: KICK → MAIN drops, KICK → WEDGE does not. The wedge copy leaves before the fader.',
     ],
   },
   'Mute groups, solo and direct outs': {
@@ -1135,14 +1135,14 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
   'Matrix outputs': {
     intro: {
       learning: 'How a matrix builds extra outputs from finished buses, so front fills, a lobby and a recording follow the house mix at their own levels.',
-      start: 'In MATRICES, tap the crosspoint where MAIN meets Matrix 2 to give the front fills the main mix. Then ride MC → AUX 7 up.',
+      start: 'In MATRICES, tap the crosspoint where MAIN meets Matrix 2 to give the front fills the main mix. Then slide MC → AUX 7 up.',
     },
     seeing: [
       'Three matrix buses, each a separate output: MX 2 · FRONT FILLS, MX 3 · LOBBY and MX 4 · RECORDING. Each lists what reaches it.',
       'FILLS TAKE, LOBBY TAKES and REC TAKES name the buses each matrix is taking. MC → AUX 7 shows the announce mic’s send.',
     ],
     control: [
-      'Ride MC → AUX 7 to send the announce mic to Aux 7. That aux is kept for this job, so no wedge hears it.',
+      'Slide MC → AUX 7 to send the announce mic to Aux 7. That aux is kept for this job, so no wedge hears it.',
       'In MATRICES, tap a crosspoint, the cell where a bus meets a matrix, to cycle it off → 0 dB → −6 dB.',
       'Open CONSOLE to see the announce mic, the vocal and the kick, with their L/R and Aux 7 cells.',
     ],
@@ -1157,20 +1157,20 @@ export const SS_ROUTE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In MATRICES give Matrix 2 and Matrix 4 MAIN and watch FILLS TAKE and REC TAKES read MAIN.',
-      'Ride MC → AUX 7 up, then let Matrix 3 take MAIN and AUX 7. Watch LOBBY TAKES change: the announce mic now reaches the lobby twice.',
+      'Slide MC → AUX 7 up, then let Matrix 3 take MAIN and AUX 7. Watch LOBBY TAKES change: the announce mic now reaches the lobby twice.',
     ],
   },
   'Output patching': {
     intro: {
       learning: 'Why every console output has to leave the right stagebox socket, and what the room hears when a bus lands on the wrong loudspeaker.',
-      start: 'Ride SOCKET to the first line output and read its tape and where its cable runs. Use BUS to choose what feeds it, and watch FED FROM turn green or red.',
+      start: 'Slide SOCKET to the first line output and read its tape and where its cable runs. Use BUS to choose what feeds it, and watch FED FROM turn green or red.',
     },
     seeing: [
       'The stagebox’s seven line outputs. Above each socket is a strip of tape naming its bus, and you can see where its cable runs.',
       'Nothing is patched yet. SOCKET names the output you’ve picked, FED FROM shows the bus feeding it, and PATCHED tracks the sockets you’ve patched.',
     ],
     control: [
-      'Ride SOCKET along THE STAGEBOX’S LINE OUTPUTS, or tap a socket on the panel.',
+      'Slide SOCKET along THE STAGEBOX’S LINE OUTPUTS, or tap a socket on the panel.',
       'Use BUS to choose what that socket carries: Main L, Main R, Aux 1, Aux 2, Aux 6, Matrix 2 or Matrix 3.',
     ],
     changes: [
@@ -1222,7 +1222,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
   'Line check': {
     intro: {
       learning: 'How a line check proves every path before the band arrives: outputs first, then each input, and how two readings tell a patch fault from a cable fault.',
-      start: 'Ride LINE through OUTPUTS FIRST, THEN EVERY INPUT. Tap PROBE on each line, compare its two readings, then tap MARK OK or MARK FAULT.',
+      start: 'Slide LINE through OUTPUTS FIRST, THEN EVERY INPUT. Tap PROBE on each line, compare its two readings, then tap MARK OK or MARK FAULT.',
     },
     seeing: [
       'Two strips of LEDs: the processor outputs above, the stagebox inputs below. Each probe gives you two readings to compare.',
@@ -1230,7 +1230,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
       'LINE names the line you’re on; MARKED shows your verdicts.',
     ],
     control: [
-      'LINE: ride OUTPUTS FIRST, THEN EVERY INPUT, one line at a time.',
+      'LINE: slide OUTPUTS FIRST, THEN EVERY INPUT, one line at a time.',
       'PROBE reads the selected line.',
       'MARK OK or MARK FAULT records your verdict. Decide from the two readings, not from a hunch.',
     ],
@@ -1252,7 +1252,7 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
   'Establish gain structure': {
     intro: {
       learning: 'How gain is set through a whole system, mic to loudspeaker: preamp first, unity through the middle, and headroom at every stage. Distortion can only be fixed where it starts.',
-      start: 'Find the first CLIP indicator: it’s at the preamp. Tap the lane’s key (WHICH STAGE) to look at each stage, then bring PREAMP down and watch VERDICT.',
+      start: 'Find the first CLIP indicator: it’s at the preamp. Tap the slider’s key (WHICH STAGE) to look at each stage, then bring PREAMP down and watch VERDICT.',
     },
     seeing: [
       'The gain chain, one meter per stage. The preamp is turned up too far: its CLIP indicator lights first, and every later meter shows ↑, the distortion it inherited.',
@@ -1260,8 +1260,8 @@ export const SS_OPERATE_GUIDES: Record<string, ScreenGuide> = {
       'This is the opposite fault from LEARN’s gain chapter, which starts with the preamp too low.',
     ],
     control: [
-      'The lane starts on PREAMP. Tap its key (WHICH STAGE) to pick FADER, MAIN, PROC IN, PROC OUT or AMP.',
-      'Double-tap the lane to set that stage to its unity mark. AMP’s mark is −18 dB.',
+      'The slider starts on PREAMP. Tap its key (WHICH STAGE) to pick FADER, MAIN, PROC IN, PROC OUT or AMP.',
+      'Double-tap the slider to set that stage to its unity mark. AMP’s mark is −18 dB.',
     ],
     changes: [
       'Turning a later stage down only makes the clipped signal quieter. The distortion happened at the preamp, and only the preamp can prevent it.',

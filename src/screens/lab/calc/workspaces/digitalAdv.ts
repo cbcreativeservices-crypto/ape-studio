@@ -23,6 +23,13 @@ const tcRateRefusal = (fps: number): string | null =>
 /** TPDF dither (the standard choice) adds twice the quantization noise power:
  *  10·log10(3) = 4.77 dB more noise (Lipshitz, Wannamaker & Vanderkooy, JAES
  *  1992). A properly dithered converter's ideal SNR is therefore 6.02·N − 3.01. */
+/** A level count of 10 million or more, written out for a reader: "16,777,216 levels (about 16.8 million)". Null below 1e7 or past exact integers. */
+function levelsInWords(x: number): string | null {
+  if (!(x >= 1e7) || x > Number.MAX_SAFE_INTEGER) return null;
+  const grouped = String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const approx = x >= 1e9 ? `about ${(x / 1e9).toFixed(1)} billion` : `about ${(x / 1e6).toFixed(1)} million`;
+  return `${grouped} levels (${approx})`;
+}
 const TPDF_NOISE_DB = 10 * Math.log10(3);
 
 /** Audio bytes one standard Ethernet packet can carry: a 1500-byte MTU less
@@ -437,6 +444,10 @@ const FIRLEN: Workspace = {
           { label: 'FILTER TAPS (N)', value: N, quantity: 'number', meaning: 'number:taps' },
           { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
+          // A half sample is real here, not a rounding slip (beginner audit
+          // 2026-11-14: "654.5 samples" puzzled a learner who thinks samples are
+          // whole): an even tap count puts the filter's centre between two taps.
+          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s centre falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
         ];
       },
       steps: (v) => {
@@ -467,6 +478,10 @@ const FIRLEN: Workspace = {
         return [
           { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
+          // A half sample is real here, not a rounding slip (beginner audit
+          // 2026-11-14: "654.5 samples" puzzled a learner who thinks samples are
+          // whole): an even tap count puts the filter's centre between two taps.
+          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s centre falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
         ];
       },
       steps: (v) => {
@@ -640,6 +655,9 @@ const BITDEPTH: Workspace = {
           { label: 'DYNAMIC RANGE', value: DB_PER_BIT * N, quantity: 'db', chainable: false },
           { label: 'SNR WITH TPDF DITHER', value: DB_PER_BIT * N + FULL_SCALE_SINE_DB - TPDF_NOISE_DB, quantity: 'db', chainable: false },
           { label: 'QUANTIZATION LEVELS 2^N', value: Math.pow(2, N), quantity: 'number', chainable: false },
+          // Past 10 million the number above prints in calculator notation
+          // ("1.678e7"); it is also written out (beginner audit 2026-11-14).
+          ...(levelsInWords(Math.pow(2, N)) ? [{ label: 'THAT IS', text: levelsInWords(Math.pow(2, N))! }] : []),
         ];
       },
       steps: (v) => {

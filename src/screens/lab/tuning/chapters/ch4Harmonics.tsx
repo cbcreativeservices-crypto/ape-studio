@@ -141,9 +141,9 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
         initialParam: 'third',
         hideDragTag: true,
         bezel: [
-          { k: 'THIRD', v: `${cents.toFixed(2)} ¢`, tint: aligned ? colors.green : colors.cyanBright },
-          { k: 'FROM 5/4', v: aligned ? '0 ¢' : `${fromJust > 0 ? '+' : ''}${fromJust.toFixed(2)} ¢`, tint: aligned ? colors.green : Math.abs(fromJust) < 8 ? colors.gold : colors.orange },
-          { k: 'PARTIALS Δ', v: aligned ? '0 Hz' : `${diff > 0 ? '+' : ''}${diff.toFixed(2)} Hz`, tint: aligned ? colors.green : undefined, flex: 1.15 },
+          { k: 'THIRD', v: `${cents.toFixed(2)} ¢`, tint: aligned ? colors.green : colors.cyanBright, caption: 'size of third' },
+          { k: 'FROM 5/4', v: aligned ? '0 ¢' : `${fromJust > 0 ? '+' : ''}${fromJust.toFixed(2)} ¢`, tint: aligned ? colors.green : Math.abs(fromJust) < 8 ? colors.gold : colors.orange, caption: 'off pure third' },
+          { k: 'PARTIALS Δ', v: aligned ? '0 Hz' : `${diff > 0 ? '+' : ''}${diff.toFixed(2)} Hz`, tint: aligned ? colors.green : undefined, flex: 1.15, caption: 'overtone gap' },
           soundCell(status),
         ],
         stage: (w, h) => (

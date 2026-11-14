@@ -99,3 +99,11 @@ The five reports, in `docs/labs/gameaudio/reviews/`:
 | `AUDIT2_WALK_P12_P22_2026_11_12.md` | Hands-on walk of pages 12 to 22 and the end screen | W2-01 to W2-34 |
 
 What the fix round changed in this record: the sound list and its count (section 2), the generator's distances, the pan width, the wall's filter wording and the no-line-of-sight row, the voice rule and the stolen loop, the voice count, where the speed is kept, the network delay, the birds and the burst (section 3), and which glossary terms are shown (section 1). The tool map's record is `SOURCES_TOOLS.md`, which has its own "Audit 2" section.
+
+## 7. Lab fix round 1 (2026-11-14, owner: "Begin fixing all bugs found and do obvious ... fixes")
+
+- Page 17: the BUDGET stops are 1, 2, 4, 8, 16 and no limit. The burst card prints its sum ("TAKEN 9 = 5 loops + 4 one-shots") and names a protected sound that kept its voice.
+- Page 19: FIX opens on no setting, and all five faults need the action run again after the fix (RE-TEST).
+- Page 11: the SOURCES key says ALL OFF, GEN 1 ON, SCENE ON or BOTH ON. Page 10: the key is WIND.
+- Every page says under its goal chips when it counts toward the lab.
+- Report: docs/labs/novice_audit_2026_11_14/fixes/F3_REPORT.md.

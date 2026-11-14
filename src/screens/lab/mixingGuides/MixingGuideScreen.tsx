@@ -151,12 +151,16 @@ export function MixingGuideScreen() {
         <LabNavBar nav={nav} />
         {ending ? (
           <LabEndScreen
+            labId="mixing-guides"
             labTitle="Mixing Guides"
             units={MIXING_GUIDE_INDEX.map((g) => ({ id: g.id, label: g.title }))}
             cleared={readIds}
             unreadable={unreadable}
             mode="progress"
             noun="guide"
+            // Said ONCE above the list (phase 2, 2026-11-14): every row would
+            // repeat it, so no row carries a line of its own.
+            howItCounts="A guide counts as read when you leave it with NEXT › or FINISH ›, or tap MARK AS READ at its foot. Opening it, or jumping away with ‹ PREV or the list, does not count."
             onJump={(id) => go(MIXING_GUIDE_INDEX.findIndex((g) => g.id === id))}
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}

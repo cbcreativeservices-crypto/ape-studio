@@ -84,11 +84,11 @@ export const CYMATICS_HOME_GUIDE: ScreenGuide = {
 export const CYMATICS_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which parts of the lab’s story are still ahead: plates and their modes, harmonic series, musical ratios, other vibrating systems, and evidence versus myth.',
-    start: 'Tap any row to open that module, or tap REVIEW ▾ to see the ones you’ve opened. PRACTICE AGAIN FROM THE START reopens What Is Cymatics? and clears nothing.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. PRACTICE AGAIN FROM THE START reopens What Is Cymatics? and clears nothing.',
   },
   seeing: [
-    'WHAT’S LEFT lists the Cymatics modules you haven’t opened yet. Each row has a › to jump straight in.',
-    'Modules you’ve opened fold into one ✓ DONE line; REVIEW ▾ shows them. Once you’ve opened every module, the title reads ALL MODULES OPENED.',
+    'WHAT’S LEFT lists the modules you haven’t opened yet, then the check. Each module row has a › to jump in.',
+    'Opened modules fold into one ✓ DONE line; REVIEW ▾ shows them. With every module opened and the check passed, the title reads ALL MODULES OPENED.',
   ],
   control: [
     'Tap a row to open that module.',
@@ -97,14 +97,14 @@ export const CYMATICS_END_GUIDE: ScreenGuide = {
   ],
   changes: [
     'A module counts as done once you open it. Nothing here is graded or timed.',
-    'The studios aren’t rows here. To complete the lab, answer CHECK YOUR UNDERSTANDING, on the lab home or on any studio’s CHECK tab.',
+    'The studios aren’t rows here. To complete the lab, answer CHECK YOUR UNDERSTANDING, drawn on this screen below the list.',
   ],
   teaches: [
     'What decides the figure a vibrating object makes? The object, not the tone: a frequency has no shape of its own.',
   ],
   tryThis: [
     'Is Change One Thing still listed? Open it first: it is where you test whether the plate or the tone decides the figure.',
-    'Every module opened? Answer CHECK YOUR UNDERSTANDING on the lab home to complete the lab.',
+    'Every module opened? Answer CHECK YOUR UNDERSTANDING below the list to complete the lab.',
   ],
 };
 
@@ -549,17 +549,17 @@ export const CYMATICS_LEARN_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
 export const CYMATICS_CHECK_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the lab’s five core ideas fit together: what sets a figure, where sand settles, what drive level changes, how a shaken liquid answers, and what damping does.',
-    start: 'Read the first question and settle on your answer before you tap. If you see NOT QUITE — TRY ANOTHER, read the explanation, then pick again.',
+    start: 'Read the first question and settle on your answer before you tap. If you see NOT QUITE — TRY ANOTHER, look again where it points, then pick again.',
   },
   seeing: [
     'You’re at CHECK YOUR UNDERSTANDING: five questions on what sets a figure, where sand gathers, what drive level changes, the liquid’s half-frequency waves, and damping.',
     'Each question turns to ✓ once you get it right. The same check sits on the lab home.',
   ],
   control: [
-    'Tap the answer you think is right. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
   ],
   changes: [
-    'Each explanation points back to something you can see in the studios, so a wrong pick shows you where to look. Answer every question correctly and the check is passed. A wrong answer costs nothing, and there is no score.',
+    'A wrong pick points back to something you can see in the studios. Answer every question correctly and the check is passed. A wrong answer costs nothing, and there is no score.',
   ],
   teaches: [
     'What decides which figure appears on a plate at a given tone.',
@@ -568,7 +568,7 @@ export const CYMATICS_CHECK_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Unsure about one? Switch to EXPLORE, test that exact idea in the studio, then come back to CHECK and answer from what you saw.',
-    'A wrong pick shows the explanation. Read it before you try again: it names the clue you missed.',
+    'A wrong pick says what to look at again. Look there before you try again; a second wrong pick also shows the explanation.',
   ],
 };
 
@@ -588,7 +588,9 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
   browse: {
     intro: {
       learning: 'Why a saved pattern is a repeatable experiment: each card is redrawn from the exact settings it came from, so two saves can be compared fairly.',
-      start: 'Tap a card to open it, or long-press it to make it a favorite. To compare, tap Compare…, pick two to four cards, then tap COMPARE ›.',
+      // An empty gallery opens on NOTHING SAVED YET; the card no longer names
+      // cards that are not there yet (novice audit 2026-11-14).
+      start: 'No cards yet? Open a studio from NOTHING SAVED YET and press SAVE with a figure on show. With cards: tap one to open it, long-press for a favorite, or tap Compare… and pick two to four.',
     },
     seeing: [
       'This is the PATTERN GALLERY & ART STUDIO: every pattern you’ve saved from the three studios, each as a card of line art.',

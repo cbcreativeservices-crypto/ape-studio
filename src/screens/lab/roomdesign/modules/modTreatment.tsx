@@ -232,6 +232,12 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
             <TrayButton label="DIFFUSER (REAR WALL)" onPress={() => addKind('diffuser')} />
             <TrayButton label="FREESTANDING PANEL" onPress={() => addKind('gobo')} />
           </View>
+          {/* G1 module 5 (lab fix round 2026-11-14): after the traps "TREATED
+              stays 0/14" read as "it didn't work". TREATED counts reflection
+              paths that land on a panel; corner traps rarely sit on one. */}
+          {design.treatment.some((t) => t.kind === 'basstrap') ? (
+            <Caption>{`Bass traps work on the low notes: watch RT60 125 ≈ fall. TREATED counts only the reflection paths that land on a panel (now ${treated}/${total}); corner traps rarely sit on one, so TREATED may not move.`}</Caption>
+          ) : null}
           <Caption>{`The suggested spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. ABSORB NEXT names its target${next ? ` — now ${next.speaker} → ${reflectionSurfaceName(next)}` : ''}. The desk bounce is not in the list: nothing in the kit treats a desk top. Drag any item afterwards.`}</Caption>
         </View>
       ),

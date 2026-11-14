@@ -365,7 +365,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       control: [
         'INSPECT: walk the drum — HEAD, ROD 1 to ROD 10, EDGE and MAP.',
         'Tap a checklist line to flag that fault (tap again to unflag).',
-        '✓ REVEAL KEY shows the answers; ↺ NEW DRUM deals another drum.',
+        '✓ REVEAL KEY shows the answers once every spot has been looked at; ↺ NEW DRUM deals another drum.',
       ],
       changes: [
         'Each place you inspect says what is there. The map shows only when you look at it.',
@@ -732,7 +732,10 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'How tuning and damping work together to set a drum’s pitch, sustain and bend, and how a stated sound decides which way you move each one.',
-        start: 'Pick GOAL BEND with the rack tom. Lower BATTER a little, tap ▶ STRIKE, then tap ✓ CHECK and read which way it tells you to move.',
+        // The step opens on GOAL SHORT (ch5Types.tsx useState('short')), so the
+        // first instruction is the goal on screen (novice audit 2026-11-14:
+        // the intro said GOAL BEND while the page showed SHORT).
+        start: 'The step opens on GOAL SHORT: raise DAMPING, tap ✓ CHECK and read which way it tells you to move. Then tap GOAL, pick BEND with the rack tom and lower BATTER a little.',
       },
       seeing: [
         'You’re tuning toward a stated sound. The shaded zone shows where the green died-away mark has to land to meet the goal.',
@@ -991,7 +994,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'Before you tap the device card, say what a device can tell you about a drum and what only your ears can judge.',
-        'Before the drift card, say your answer first. Then read the explanation, right or wrong.',
+        'Before the drift card, say your answer first. Then read what the card says: the reason on a wrong pick, the explanation on the right one.',
       ],
     },
     // REVIEW
@@ -1025,7 +1028,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
 export const DRUM_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the seven chapters build one method: hear what a drum does, prepare it, even each head, balance both heads, tune each drum and the kit, then diagnose by ear.',
-    start: 'Tap a row under WHAT’S LEFT to open that chapter, or tap REVIEW ▾ to see the chapters marked ✓ DONE. ‹ PREV takes you back to the step you came from.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. ‹ PREV takes you back to the step you came from.',
   },
   seeing: [
     'WHAT’S LEFT lists each chapter you haven’t completed, with what you still need to do in it. Once every chapter is complete, the title reads LAB COMPLETE.',

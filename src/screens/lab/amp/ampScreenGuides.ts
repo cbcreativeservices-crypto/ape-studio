@@ -67,7 +67,7 @@ export const AMP_HOME_GUIDE: ScreenGuide = {
 export const AMP_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which of the lab’s ideas you still need to revisit: bias and classes, Class D, supply limits, loads and gain structure.',
-    start: 'Read the WHAT’S LEFT list and tap the first row to open it. Then answer CHECK YOUR UNDERSTANDING on this screen. A wrong pick explains itself.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT’S LEFT lists the modules you haven’t marked complete, the Final assessment (your best score once you submit) and, last, the CHECK row for Check your understanding.',

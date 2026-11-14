@@ -383,7 +383,11 @@ describe('review items — one vocabulary, an honest "Not started", BLOCKED firs
     const m = read('src/screens/lab/production/ReadinessMeter.tsx');
     assert.doesNotMatch(m, /BADGE_WORD|READINESS_LABEL/);
     assert.match(m, /STAGE_WORD\[sig\.state\]\)\.toUpperCase\(\)/);
-    assert.match(read('src/features/production/packet.ts'), /\$\{STAGE_WORD\[sr\.state\]\} — \$\{sr\.answeredRequired\} required decisions made/);
+    // Pin moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and
+    // do obvious (my decision is not required) fixes as you suggestted in the
+    // report"): the count now goes through decisionsMadeText, so "1 required
+    // decision made" reads singular (novice audit G4).
+    assert.match(read('src/features/production/packet.ts'), /\$\{STAGE_WORD\[sr\.state\]\} — \$\{decisionsMadeText\(sr\.answeredRequired\)\}/);
   });
 
   it('a stage with only optional answers is under way, not "not started"', () => {

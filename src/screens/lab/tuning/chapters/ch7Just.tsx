@@ -197,15 +197,15 @@ export function Ch7Just({ ctx }: ChapterProps) {
         hideDragTag: true,
         bezel: keyStage
           ? [
-              { k: 'TONIC', v: tonic, tint: colors.cyanBright, flex: 0.8 },
-              { k: 'MODE', v: mode === 'keep' ? 'KEEP' : 'RETUNE', tint: mode === 'retune' ? colors.gold : undefined },
+              { k: 'TONIC', v: tonic, tint: colors.cyanBright, flex: 0.8, caption: 'home note' },
+              { k: 'MODE', v: mode === 'keep' ? 'KEEP' : 'RETUNE', tint: mode === 'retune' ? colors.gold : undefined, caption: 'keep or retune' },
               { k: mode === 'keep' ? 'IMPURE' : 'MOVED', v: mode === 'keep' ? `${keyDemo.checks.filter((c) => !c.ok).length} of 4` : `${keyDemo.moved.length} + ${keyDemo.added.length} new`, tint: colors.gold, flex: 1.1 },
               soundCell(status),
             ]
           : [
-              { k: 'NOTE', v: `${newest.spelling} ${newest.value.exactLabel}`, tint: colors.gold, flex: 1.1 },
-              { k: 'CENTS', v: `${newest.value.cents.toFixed(2)} ¢` },
-              { k: 'Hz', v: `${hz(newest.value.numericRatio).toFixed(2)} Hz`, flex: 1.1 },
+              { k: 'NOTE', v: `${newest.spelling} ${newest.value.exactLabel}`, tint: colors.gold, flex: 1.1, caption: 'latest note' },
+              { k: 'CENTS', v: `${newest.value.cents.toFixed(2)} ¢`, caption: 'its position' },
+              { k: 'Hz', v: `${hz(newest.value.numericRatio).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
               soundCell(status),
             ],
         stage: (w, h) => (

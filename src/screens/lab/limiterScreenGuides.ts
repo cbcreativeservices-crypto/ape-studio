@@ -44,7 +44,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a limiter sets a ceiling: peaks over it are pulled down to it, anything under passes untouched, and GR shows how far over the ceiling the input sits.',
-      start: 'Set SOURCE to SINE 440 Hz, tap ▶ and drag CEILING to −25 dB: GR reads about 5 dB. Then switch to CLICK 120 and watch GR jump and recover.',
+      start: 'Drag CEILING down and watch OUT: the tone is held under the dashed ceiling lines. Then, with SINE 440 Hz, tap ▶ and drag CEILING to −25 dB: GR reads about 5 dB.',
     },
     seeing: [
       'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint gray outline is the signal before limiting.',
@@ -118,11 +118,12 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
       'A ✓ replaces a question’s number once it is right. The line under the title says how many you still need to get right.',
     ],
     control: [
-      'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look something up.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick still teaches.',
+      'A first wrong pick gets a pointer, not the answer, so you still work it out.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [

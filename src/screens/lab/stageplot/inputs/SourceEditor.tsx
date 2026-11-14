@@ -15,6 +15,7 @@ import { spBadge } from '../../../../features/stageplot/spDerive';
 import { spAddInput, spObjectOfSource, spRemoveSource, spSource, spUpdateSource } from '../../../../features/stageplot/spModel';
 import type { SpCategory, SpId } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
+import { placeOnStage } from '../spIssueActions';
 import { Button, Choice, Note, Switch, TextField } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
 import { spPeopleOptions, spUniqueLabel } from './inputsLogic';
@@ -76,7 +77,9 @@ export function SourceEditor({
   };
   const locate = () => {
     onLeaveForStage();
-    ed.goTo('stage', object ? { kind: 'object', id: object.id } : { kind: 'source', id: sourceId });
+    // PLACE really places (2026-11-14): one edit, then the stage with the symbol selected
+    if (object) ed.goTo('stage', { kind: 'object', id: object.id });
+    else placeOnStage(ed, { kind: 'source', id: sourceId });
   };
   const remove = () => {
     ed.apply((q) => spRemoveSource(q, sourceId));
@@ -149,7 +152,7 @@ export function SourceEditor({
       <View style={bitStyles.gap}>
         <SubTitle>On the stage</SubTitle>
         <Small>{object ? 'It has a place on the drawing.' : source.offstage ? 'Off the stage on purpose.' : 'Not on the stage yet.'}</Small>
-        <Button label={object ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'} onPress={locate} a11yLabel={object ? `Locate ${source.label} on the stage` : `Go to the stage to place ${source.label}`} />
+        <Button label={object ? 'LOCATE ON THE STAGE' : 'PLACE ON THE STAGE'} onPress={locate} a11yLabel={object ? `Locate ${source.label} on the stage` : `Place ${source.label} on the stage and show it there`} />
         <Switch
           label="Off the stage on purpose"
           value={source.offstage}

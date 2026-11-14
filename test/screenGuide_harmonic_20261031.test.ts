@@ -185,7 +185,9 @@ describe('4. the TRY THIS numbers are what the bezel prints', () => {
     assert.match(v, /slope: qualifying >= MIN_SLOPE_HARMONICS \? envelopeSlopeDbPerOct\(model\) : null/);
     assert.match(v, /v: modelThd\.pct != null \? `\$\{modelThd\.pct\.toFixed\(1\)\} %` : '—'/);
     assert.match(v, /v: modelCrestDb != null \? `\$\{modelCrestDb\.toFixed\(1\)\} dB` : '—'/);
-    assert.match(v, /v: slopeInfo\.slope != null \? slopeInfo\.slope\.toFixed\(1\) : '—'/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // the SLOPE value carries its unit, in the Noise Lab's form.
+    assert.match(v, /v: slopeInfo\.slope != null \? slopeInfo\.slope\.toFixed\(1\) : '—',\s*sub: slopeInfo\.slope != null \? 'dB\/OCT' : undefined,/);
   });
   type H = { n: number; amp: number; phaseDeg: number; enabled: boolean; muted: boolean };
   const read3 = (set: H[]) => {

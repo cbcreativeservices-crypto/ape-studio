@@ -17,13 +17,13 @@ export const G19: ScreenGuide = {
   control: [
     'TEST opens the actions that reproduce a symptom: the door, GUIDE LINE, STEP: GUIDE and STEP: YOU. Its other rows hold GENERATOR 1, ADD GENERATOR 2 and REMOVE GENERATOR 2.',
     'YOU: STONE PATH and YOU: WORKSHOP, in the same tray, put you in one of two places. With the door closed you stop at the door.',
-    'FIX opens the five settings. Choose one in the first row: its two values appear under it, and a filled dot marks the one in use. Tap the other value to change it.',
+    'FIX opens the five settings, with none chosen. Choose one in the first row: its two values appear under it, and a filled dot marks the one in use. Tap the other value to change it.',
     'On a fault’s card, the start button puts one wrong setting in, and the hint button gives one hint at a time. NEXT goes on to a fault that is not fixed yet.',
     'LEVEL is the lab’s playback level, on the slider.',
   ],
   changes: [
     'Starting a fault changes one setting and nothing you can see. The symptom appears only when you repeat the right action.',
-    'A card turns to FIXED after its symptom has happened and its setting is correct again. Fault 5 also needs the stray loop stopped and the removal tested again.',
+    'A card turns to FIXED after its symptom has happened, its setting is correct again, and you have run the same action once more. Fault 5 also needs the stray loop stopped first.',
     'After a repair, the same action prints the normal pattern again: GAME lines, then START.',
   ],
   teaches: [

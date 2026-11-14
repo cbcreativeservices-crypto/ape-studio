@@ -227,13 +227,18 @@ describe('5. when it shows, and the wiring', () => {
   const ctl = block(SG, 'function IntroCardController(');
   it('gated like the hint: Low-Light / kill switch, focus, the lab term popup, any open DimModal and its closing fade, the host’s hold', () => {
     assert.ok(ctl, 'controller found');
-    for (const re of [/useOverlaysSuppressed\(\)/, /useIsFocused\(\)/, /useLabTermIntroOwed\(\)/, /useModalHostOpen\(\)/, /rootModalHoldMs\(\)/]) {
+    // 2026-11-14 (lab fix round S1; owner approval "Begin fixing all bugs
+    // found and do obvious ... fixes", report row 1): the card waits on the
+    // TERM popup only when it is not carrying the term inside itself
+    // (useLabTermOnlyOwed), and it presents WITH the page: no quiet wait and
+    // no closing-fade wait (it is in the screen's own tree, never a Modal).
+    for (const re of [/useOverlaysSuppressed\(\)/, /useIsFocused\(\)/, /useLabTermOnlyOwed\(\)/, /useModalHostOpen\(\)/]) {
       assert.match(ctl, re);
     }
     assert.match(ctl, /const clear = seen === false && focused && !suppressed && !labTermFirst && !hold && \(inModal \|\| !modalUp\);/);
     // Low-Light re-checked at the moment it would present.
     assert.match(ctl, /if \(areOverlaysSuppressed\(\)\) return;/);
-    assert.match(ctl, /SCREEN_INTRO_SETTLE_MS \+ rootModalHoldMs\(\)/);
+    assert.match(ctl, /\}, SCREEN_INTRO_SETTLE_MS\);/);
   });
   it('once per device: a read still out keeps it owed; UNREADABLE shows nothing; written when the student CLOSES it', () => {
     assert.match(ctl, /const owed = seen === 'loading' \|\| seen === false;/);
@@ -241,9 +246,10 @@ describe('5. when it shows, and the wiring', () => {
     // (left, rebuilt) comes back next time.
     assert.doesNotMatch(ctl, /markScreenIntroSeen/);
     const host = block(SG, 'export function ScreenGuideHost(');
-    assert.match(host, /setShown\(\{ title: offer\.title, guide: offer\.guide, mode: 'intro', claim: offer\.id \}\);/);
+    // `term` (2026-11-14, S1): the lab term carried inside the card.
+    assert.match(host, /setShown\(\{ title: offer\.title, guide: offer\.guide, mode: 'intro', claim: offer\.id, term: term \?\? undefined \}\);/);
     // Every way out claims it: close (✕, GOT IT, the dim, BACK), EXPLAIN, the end-layer BACK.
-    assert.match(host, /const close = useCallback\(\(\) => \{\s*claimIntro\(claimRef\.current\);\s*setShown\(null\);/);
+    assert.match(host, /const close = useCallback\(\(\) => \{\s*claimIntro\(claimRef\.current\);\s*(?:const t = termRef\.current;\s*if \(t\) finishCarriedLabTerm\(t\.key\);\s*)?setShown\(null\);/);
     assert.match(host, /onExplain=\{\(\) => \{\s*claimIntro\(shown\.claim\);/);
     assert.match(host, /backRef\.current = \(\) => \{[\s\S]*?claimIntro\(claimRef\.current\);/);
     // The dev bypass mirrors useScreenIntro: every visit, nothing persisted.

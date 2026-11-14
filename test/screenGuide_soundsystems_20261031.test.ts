@@ -157,7 +157,11 @@ describe('2. each guide quotes its screen’s real names', () => {
   const CAP = ['PART', 'OUTPUT', 'PLACED', 'CABLES', 'LIVE', 'REQS', 'PASS'];
   const NAMES: Record<string, { exact: string[]; upper?: string[] }> = {
     hub: { exact: ['LEARN', 'BUILD', 'ROUTE', 'OPERATE', 'TROUBLESHOOT', 'WHAT IS LEFT', 'UNDERSTANDING CHECK', 'START OVER (PRACTICE)', 'SOUND SYSTEMS LAB — COMPLETE'] },
-    end: { exact: ["WHAT'S LEFT", 'LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
+    // Lab fix round 2026-11-14 (F2), owner: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the
+    // report." — a finished MODE reads "<MODE> COMPLETE" (SsPagedLab
+    // modeCompleteTitle), never "LAB COMPLETE" after one of five modes.
+    end: { exact: ["WHAT'S LEFT", 'COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
     check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER'] },
     'The complete system': { exact: ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS', 'STAGE IN', 'HOUSE', 'STATION', 'Analog snake', 'Digital stagebox', 'Passive + amps', 'Powered boxes', 'LAB NOTES', 'MULTICORE', 'NETWORK', 'Powered tops', 'Powered sub', 'SUB OUT', 'MAIN L/R', 'Snake', 'Stagebox', 'Processor', 'Amps'] },
     'Trace the signal': { exact: ['NEXT', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },

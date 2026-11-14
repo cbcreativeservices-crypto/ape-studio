@@ -15,9 +15,11 @@
  * step is on screen (`inactive`) — the part stays mounted, so its state
  * survives, and still reports its step titles.
  */
-import { createContext, Fragment, useContext, useEffect, type ReactNode } from 'react';
+import { createContext, Fragment, useContext, useEffect, useLayoutEffect, type ReactNode } from 'react';
 import { ScrollView } from 'react-native';
 import { MikingRack, type MikingRackSpec } from './rack/MikingRack';
+import { Note } from './kit';
+import { LISTEN_LINES, mentionsListening } from './listenLine.ts';
 // Screen Guide (owner 2026-10-31): the step on screen, in its on-screen words.
 import { stepInfoKey, stepInfoOf, type MikingStepInfo } from '../mikingScreenGuides';
 
@@ -67,7 +69,10 @@ export function PageSteps({ steps: raw }: { steps: MikingStep[] }) {
   const onSteps = host?.onSteps;
   const steps = keptSteps(all, host?.keep);
   const titleKey = steps.map((s) => (s.kind === s.title.toUpperCase() ? s.title : `${s.kind} · ${s.title}`)).join('\u0001');
-  useEffect(() => {
+  // A LAYOUT effect (fix round 2026-11-14, F9 item 2): the strip learns this
+  // page's steps before the first paint, so a module never opens with a
+  // "FINISH · SEE WHAT'S LEFT ›" button that belongs to no step.
+  useLayoutEffect(() => {
     onSteps?.(titleKey ? titleKey.split('\u0001') : []);
   }, [onSteps, titleKey]);
   const n = steps.length;
@@ -84,10 +89,15 @@ export function PageSteps({ steps: raw }: { steps: MikingStep[] }) {
   const s = steps[i];
   const head = i === 0 ? host?.head : null;
   const tail = i === n - 1 ? host?.tail : null;
+  // "Can't listen now?" (fix round 2026-11-14, F9 phase 2): a step whose
+  // words say "listen" in this silent lab gets one line, by its kind, that
+  // points at what the display shows instead (engine/listenLine.ts).
+  const listen = mentionsListening(s.layout === 'rack' ? s.well : s.body) ? <Note>{LISTEN_LINES[s.kind]}</Note> : null;
   if (s.layout === 'rack') {
     return (
       <MikingRack key={s.key} spec={s.rack}>
         {head}
+        {listen}
         {s.well}
         {tail}
       </MikingRack>
@@ -96,6 +106,7 @@ export function PageSteps({ steps: raw }: { steps: MikingStep[] }) {
   const body = (
     <>
       {head}
+      {listen}
       {s.body}
       {tail}
     </>

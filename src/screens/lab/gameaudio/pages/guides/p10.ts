@@ -19,7 +19,7 @@ export const G10: ScreenGuide = {
     'FACING turns you, from 0° to 360°; 0° is toward the top of the picture. STEP walks one step the way you face.',
     'SOUNDS opens a tray. Its SCENE chip switches the two beds and the fountain on or off. OPEN DOOR is beside it.',
     'In the same tray, ONCE, WITH THE SCENE and ON EVERY UPDATE choose when a bed starts. A ✓ marks the rule in use: IN PROJECT, or IN BUILD once a fault has shown itself.',
-    'WIND FILE chooses the courtyard wind: PREPARED LOOP or RAW CUT.',
+    'WIND chooses the courtyard wind’s file: PREPARED LOOP or RAW CUT.',
   ],
   changes: [
     'With the scene running, a crossing prints one ZONE line: the wind fades down while the room tone fades up, over 1.5 seconds.',

@@ -122,8 +122,12 @@ export function DigitalModuleScreen() {
   });
   const endScreen = ending ? (
     <LabEndScreen
+      // The recap and next-lab card (labEndContent.ts, S4).
+      labId="af_digital_audio"
       labTitle="Digital Audio Sampling & Conversion Lab"
       units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+      howItCounts="A module counts once you open it. Opening it again, or practicing, never removes it."
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"

@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { isRefused, type CalcFunction, type CalcTable, type CalcValues, type FieldDef, type OutputVal } from './calcTypes';
-import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
+import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, namedOutputUnit, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
 
 /** Keyboard for a calculator number field (owner 2026-10-14: numbers only, never
@@ -125,7 +125,9 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
 export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: number, unitOffset: number): string {
   const units = outputUnits(o.quantity, o.unit);
   const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
-  const u = units[(startIdx + unitOffset) % units.length];
+  const u0 = units[(startIdx + unitOffset) % units.length];
+  const named = units.length === 1 ? namedOutputUnit(o) : null;
+  const u = named ? { ...u0, label: named } : u0;
   // A whole-number COUNT is exact, never rounded to sig figs (night bug pass 2,
   // 2026-10-01): at the default 4 figures a 65536-point MINIMUM FFT SIZE read
   // "65540 samples" and 00:59:56 at 30 fps read "107900" TOTAL FRAMES instead
@@ -143,7 +145,8 @@ export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: numb
 export function outputUnitLabel(o: Extract<OutputVal, { value: number }>, unitOffset: number): string {
   const units = outputUnits(o.quantity, o.unit);
   const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
-  return units[(startIdx + unitOffset) % units.length].label;
+  const named = units.length === 1 ? namedOutputUnit(o) : null;
+  return named ?? units[(startIdx + unitOffset) % units.length].label;
 }
 
 // ---------------------------------------------------------------------------

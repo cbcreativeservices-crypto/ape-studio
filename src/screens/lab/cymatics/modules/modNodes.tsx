@@ -127,11 +127,12 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
         initialParam: 'freq',
         hideDragTag: true,
         bezel: [
-          { k: 'MODE', v: res.state === 'at' && res.dominant ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: 1.5 },
-          { k: 'DRIVE', v: formatHz(hz), helpKey: 'frequency' },
-          { k: 'LINES', v: res.state === 'at' && res.dominant ? `${res.dominant.nodalLines}` : '—', helpKey: 'modes', flex: 0.8 },
+          { k: 'MODE', v: res.state === 'at' && res.dominant ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: 1.5, caption: 'which pattern' },
+          { k: 'DRIVE', v: formatHz(hz), helpKey: 'frequency', caption: 'tone fed in' },
+          { k: 'LINES', v: res.state === 'at' && res.dominant ? `${res.dominant.nodalLines}` : '—', helpKey: 'modes', flex: 0.8, caption: 'still lines' },
           {
             k: 'RES',
+            caption: 'on a mode?',
             v: res.state.toUpperCase(),
             tint: RES_TINT[res.state],
             helpKey: 'resonance',

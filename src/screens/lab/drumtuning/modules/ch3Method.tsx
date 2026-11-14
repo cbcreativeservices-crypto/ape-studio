@@ -49,6 +49,11 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
   const [guess, setGuess] = useState<number | null>(null);
   const [mapShown, setMapShown] = useState(false);
   const [revealNote, setRevealNote] = useState<string | null>(null);
+  // The silent path (novice audit 2026-11-14): a learner whose tap did not
+  // sound (sound off, the prompt kept off) can still see the map and learn
+  // from the picture. It never counts toward credit (this step has none).
+  const [noSound, setNoSound] = useState(false);
+  const [mapSilent, setMapSilent] = useState(false);
   // TUNE: two passes with hidden offsets, a fresh seed per NEW HEADS.
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 0x7fffffff));
   const [batterPass, setBatterPass] = useState<Pass>(() => freshPass(2400, seed));
@@ -95,17 +100,25 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
     const at = hearLug;
     void hearTap.play().then((ok) => {
       if (ok) setTapped((s) => (s.has(at) ? s : new Set([...s, at])));
+      else setNoSound(true);
     });
   };
   const revealMap = () => {
     if (tapped.size < SPEC.lugs) {
       setRevealNote(`Tap every lug first — ${tapped.size} of ${SPEC.lugs} so far. The map comes after the ear.`);
+      setNoSound(true);
       return;
     }
     setMapShown(true);
     if (guess == null) setRevealNote(`The map says lug ${hearHighest + 1} is the highest. Tap it and its opposite back to back and hear the gap.`);
     else if (guess === hearHighest) setRevealNote(`You said ${guess + 1}; the map says ${hearHighest + 1} — your ears were right.`);
     else setRevealNote(`You said ${guess + 1}; the map says ${hearHighest + 1}. Tap ${guess + 1} and ${hearHighest + 1} again back to back.`);
+  };
+  /** CAN'T LISTEN NOW: the map without the ear's turn — the picture teaches. */
+  const showMapSilently = () => {
+    setMapShown(true);
+    setMapSilent(true);
+    setRevealNote(`Shown without listening: the map says lug ${hearHighest + 1} is the highest and its colors show how far each lug sits from the others. When you can listen, tap lug ${hearHighest + 1} and its opposite back to back.`);
   };
 
   /** A learner move: the fader sets THIS RUN's cumulative move on the rod. */
@@ -229,6 +242,9 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
               <Landing looking="an uneven head with its color map hidden; ● is where the stick taps." prompt="▶ TAP each LUG and listen for the odd ones; then say which sounded highest and ◉ REVEAL MAP." />
               <DrumStatus playing={hearTap.playing} pending={hearTap.pending} failed={hearTap.failed} rendering={hearTap.status === 'rendering'} idle="stopped · pick a LUG and press ▶ TAP; go around the head" label={`the tap at lug ${hearLug + 1}`} />
               {revealNote ? <Feedback tone={mapShown ? (guess == null || guess === hearHighest ? 'ok' : 'warn') : 'info'}>{revealNote}</Feedback> : null}
+              {noSound && !mapShown && tapped.size < SPEC.lugs ? (
+                <KeyButton label="◉ CAN'T LISTEN NOW · SHOW THE MAP" onPress={showMapSilently} tint={colors.amber} />
+              ) : null}
               {tapped.size >= SPEC.lugs && !mapShown ? (
                 <Card tone="accent">
                   <Point title="WHICH LUG SOUNDED HIGHEST?">Pick one, then ◉ REVEAL MAP. This only checks your ears — it doesn’t count toward credit.</Point>
@@ -298,7 +314,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
               <YourRun lines={[
                 `Batter: ${batterPass.startSpread.toFixed(0)} → ${spreadCents(batter).toFixed(0)} ¢ in ${batterPass.moves} move${batterPass.moves === 1 ? '' : 's'}${batterEven ? ' — even.' : ' — not yet even.'}`,
                 `Resonant: ${resoPass.startSpread.toFixed(0)} → ${spreadCents(reso).toFixed(0)} ¢ in ${resoPass.moves} move${resoPass.moves === 1 ? '' : 's'}${resoEven ? ' — even.' : ' — not yet.'}`,
-                mapShown ? `Tap around the head: you ${guess == null ? 'did not name a lug' : guess === hearHighest ? 'named the highest lug by ear' : `named lug ${guess + 1}; the map said ${hearHighest + 1}`}.` : 'Tap around the head: the map is still hidden — go back and tap every lug.',
+                mapShown && mapSilent ? 'Tap around the head: you looked at the map without listening — when you can, tap every lug before you look.' : mapShown ? `Tap around the head: you ${guess == null ? 'did not name a lug' : guess === hearHighest ? 'named the highest lug by ear' : `named lug ${guess + 1}; the map said ${hearHighest + 1}`}.` : 'Tap around the head: the map is still hidden — go back and tap every lug.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="What do you tap, and where?" a="Near each tension rod, about an inch in from the rim, the same spot and the same light stroke every time." />

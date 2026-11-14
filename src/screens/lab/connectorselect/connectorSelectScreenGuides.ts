@@ -571,7 +571,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
 export const CONNECTOR_SELECT_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of how every connection is judged — fit, signal, construction, safety — and which pages of this lab you still have to work through.',
-    start: 'Read the list under WHAT\'S LEFT and tap the first page’s row to open it. Or tap REVIEW ▾ to reopen a page you’ve already finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT\'S LEFT lists, by name, every page you haven’t finished yet. When none are left, the title reads LAB COMPLETE.',

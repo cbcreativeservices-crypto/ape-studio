@@ -67,7 +67,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Turn SOUND on. Press OPEN DOOR. Then switch GEN 1 on to start the generator.</Do>
+        {/* the first step works with sound off (lab fix round 2026-11-14: a silent learner needs a first step) */}
+        <Do>Press OPEN DOOR and read the log. Then switch GEN 1 on to start the generator. Turn SOUND on first if you can listen.</Do>
         <P>Each press posts an event: the game calls out a name, and the audio side starts the sounds behind that name. The door’s one event plays an opening take or a closing take.</P>
         <ActivityLog state={s} lines={5} />
       </Step>

@@ -2858,7 +2858,10 @@ export function EqualLoudnessView({
           {t.label}
         </OText>
       ))}
-      <OText style={[tickText, { left: AX * ts, top: 0, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
+      {/* The axis's left end, on the axis with the other ticks (lab fix round
+          2026-11-14, G1 module 9: at the top-left corner "40Hz" ran into the
+          colour scale's "0dB"). */}
+      <OText style={[tickText, { left: (AX + 4) * ts, top: (gh - 12) * ts, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
       {/* Named lines — SEND (amber, flat) vs HEAR (ramp-coloured curve). SEND's
           name sits at the LEFT end of its line (2026-09-25): at the right end it
           sat on the curve's high-frequency fall; at the left the curve is 20–40 dB
@@ -2866,7 +2869,7 @@ export function EqualLoudnessView({
       <OText style={[tickText, { left: (AX + 2) * ts, top: Math.max(0, ySend - 12) * ts, color: WAVE }]} numberOfLines={1}>
         YOU SEND — same at every Hz
       </OText>
-      <OText style={[tickText, { left: (AX + 2) * ts, top: Math.min(gh - 22, yDb(heard(fLo)) - 12) * ts, color: stops[0] }]} numberOfLines={1}>
+      <OText style={[tickText, { left: (AX + 2) * ts, top: Math.min(gh - 26, yDb(heard(fLo)) - 12) * ts, color: stops[0] }]} numberOfLines={1}>
         YOU HEAR
       </OText>
       {/* The ear's cut at the tone — solid ground so it's always legible. */}
@@ -3038,6 +3041,12 @@ export function PhaseOverlayView({
       </Canvas>
       <OText style={[tickText, { left: 4 * ts, top: 2 * ts }]}>INPUTS</OText>
       <OText style={[tickText, { left: 4 * ts, top: h * 0.52 + 3 * ts }]}>SUM = A + B</OText>
+      {/* The red flat line is the owner's "bad, they cancelled" signal
+          (2026-08-05), but the Amplitude lab taught red = MORE. The word on
+          the line says what it is (lab fix round 2026-11-14, G1 module 10). */}
+      {cancelled ? (
+        <OText style={[tickText, { right: 6 * ts, top: midBot - 17 * ts, color: '#ff8d7a' }]}>CANCELED — SILENT</OText>
+      ) : null}
     </View>
   );
 }

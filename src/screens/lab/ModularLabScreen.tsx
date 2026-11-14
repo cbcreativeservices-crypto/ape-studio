@@ -365,6 +365,8 @@ export function ModularLabScreen() {
         initialParam: 'cutoff',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? The cables and the readouts still show what each patch does.',
           size: 'L', // the live signal path IS the lab — earns the tall glass
           // …but not at the well's expense (follow-up 2026-10-15): on a
           // 411 × 731 phone this five-window bezel, two-line badge and
@@ -383,16 +385,18 @@ export function ModularLabScreen() {
               flex: 1.4,
               helpKey: patchIdea ? `patch_${patchIdea.key}` : 'display',
             },
-            { k: 'VCO', v: shapeLabel, helpKey: 'vco' },
+            // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'VCO', v: shapeLabel, helpKey: 'vco', caption: 'tone shape' },
             // RES on the bezel (emulator pass 2026-10-14): it was readable only
             // inside the MOD tray, unlike every other patch setting.
-            { k: 'RES', v: resShort, helpKey: 'vcf' },
-            { k: 'LFO', v: lfoShort, tint: lfoLive ? LFO_COLOR : undefined, helpKey: 'lfo' },
+            { k: 'RES', v: resShort, helpKey: 'vcf', caption: 'filter peak' },
+            { k: 'LFO', v: lfoShort, tint: lfoLive ? LFO_COLOR : undefined, helpKey: 'lfo', caption: 'wobbler' },
             {
               k: 'SEQ',
               v: patch.seqOn ? `${patch.seqRate}/s` : 'OFF',
               tint: patch.seqOn ? SEQ_COLOR : undefined,
               helpKey: 'sequencer',
+              caption: 'steps a second',
             },
           ],
           render: (w, h) => (
@@ -750,6 +754,9 @@ function ModularLabEnd({ onOpen }: { onOpen: () => void }) {
             <Text style={styles.endTitle} accessibilityRole="header">Where you are</Text>
           </View>
           <LabEndScreen
+            labId="modular"
+            // The next-lab card closes this Modal before it leaves.
+            beforeLeave={close}
             labTitle="Modular Synth Lab"
             units={MODULAR_END_UNITS}
             cleared={cleared}

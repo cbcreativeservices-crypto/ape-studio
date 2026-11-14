@@ -197,8 +197,8 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
         ),
         bezel: [
           { k: 'DEVICE', v: l.device === 'MIXER USB' ? 'MIXER' : 'BUILT-IN', tint: l.device === 'MIXER USB' ? colors.green : '#ff8a7e' },
-          { k: 'LATENCY', v: `${outputLatencyMs(l.buffer, l.rate).toFixed(1)} ms`, sub: `${l.buffer} smp`, tint: '#8fbcff' },
-          { k: 'DROPOUTS', v: String(run.current.count), sub: `${Math.min(20, Math.round(run.current.clean))} s CLEAN`, tint: run.current.count ? '#ff8a7e' : colors.green },
+          { k: 'LATENCY', caption: 'output delay', v: `${outputLatencyMs(l.buffer, l.rate).toFixed(1)} ms`, sub: `${l.buffer} smp`, tint: '#8fbcff' },
+          { k: 'DROPOUTS', caption: 'audio gaps', v: String(run.current.count), sub: `${Math.min(20, Math.round(run.current.clean))} s CLEAN`, tint: run.current.count ? '#ff8a7e' : colors.green },
           { k: 'CH2 GETS', kNarrow: 'CH2', v: l.device !== 'MIXER USB' ? 'NOTHING' : (['A', 'B'] as DeckId[]).filter((d) => l.assign[d] === 'USB 3/4').map((d) => (d === 'A' ? 'DECK 1' : 'DECK 2')).join('+') || 'NOTHING', tint: ch2Silent ? '#ff8a7e' : colors.textPrimary },
         ],
         params: [

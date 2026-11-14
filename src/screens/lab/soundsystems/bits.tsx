@@ -6,12 +6,14 @@
  * labels with prose beneath, colours always paired with words. Prose
  * primitives come from tuning/components/primitives (the de-facto lab kit).
  */
-import { useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { navigationRef } from '../../../navigation/navigationRef';
 import type { PageCtx } from '../kit/PagedLab';
 import { Btn, useMarkWhen } from '../tuning/components/primitives';
+import { goalChipText } from './fixHelpers';
+import { goalsScopeOf, setGoalsLeft } from './pageMemory';
 
 /** Sticky exploration goals: each latches once its predicate has been true;
  *  when ALL have latched the page marks itself done. */
@@ -33,20 +35,30 @@ export function useVisitGoals(ctx: PageCtx, goals: { label: string; hit: boolean
   useMarkWhen(all, () => {
     if (!ctx.isDone) ctx.markDone();
   });
+  // The end screen names this page's own missing goals (lab fix round
+  // 2026-11-14, phase 2, F2; pageMemory.goalsLeftLine).
+  const scope = goalsScopeOf(ctx);
+  const leftKey = goals.filter((_, i) => !seen.current[i]).map((g) => g.label).join('|');
+  useEffect(() => {
+    setGoalsLeft(scope, leftKey ? leftKey.split('|') : []);
+  }, [scope, leftKey]);
   return [...seen.current];
 }
 
-export function GoalChips({ goals, latched }: { goals: { label: string }[]; latched: boolean[] }) {
+export function GoalChips({ goals, latched, now }: { goals: { label: string }[]; latched: boolean[]; now?: boolean[] }) {
   return (
     <View style={styles.chips} accessibilityRole="list">
-      {goals.map((g, i) => (
-        <View key={g.label} style={[styles.chip, latched[i] && styles.chipDone]} accessible accessibilityLabel={`${g.label}: ${latched[i] ? 'done' : 'not yet'}`}>
-          <Text style={[styles.chipText, latched[i] && { color: colors.green }]}>
-            {latched[i] ? '✓ ' : '○ '}
-            {g.label}
-          </Text>
-        </View>
-      ))}
+      {goals.map((g, i) => {
+        const c = goalChipText(g.label, latched[i], now?.[i]);
+        return (
+          <View key={g.label} style={[styles.chip, latched[i] && (c.lost ? styles.chipLost : styles.chipDone)]} accessible accessibilityLabel={`${g.label}: ${c.lost ? 'met earlier, not true now' : latched[i] ? 'done' : 'not yet'}`}>
+            <Text style={[styles.chipText, latched[i] && { color: c.lost ? colors.amber : colors.green }]}>
+              {c.mark}
+              {c.text}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -166,6 +178,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 9, paddingVertical: 6, minHeight: 32, justifyContent: 'center', maxWidth: '100%', flexShrink: 1 },
   chipDone: { borderColor: colors.green, backgroundColor: '#0f2416' },
+  chipLost: { borderColor: colors.amber, backgroundColor: '#1a1409' },
   chipText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8 },
   deeper: { gap: 6, marginTop: 2 },
   deeperEyebrow: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 2 },
