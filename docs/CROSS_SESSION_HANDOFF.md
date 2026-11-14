@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 04:21 · ccode · 0423bc53
+changed: docs: beginner audit — G8 Part E (Miking zones) + report addendum [MD:D62]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-14 04:09 · ccode · b0424169
 changed: docs: beginner orientation audit of every lab (overnight, audit only) + must-do D61 brief sent, D62 [MD:D62]
 affects other side: nothing on the server. docs only: audit files + report in docs/labs/novice_audit_2026_11_14/, must-do D61/D62, live-server snapshot date (0 changes since 11-12).
