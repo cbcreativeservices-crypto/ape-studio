@@ -1,0 +1,40 @@
+# G6b · DistortionLab — LEARN and CHECK walked (G6 judged them from source)
+
+Walked 2026-11-14, sound OFF, tab-5 at 390 x 844. **How reached:** full app → OPEN LABS → EXPLORE ADVANCED LABS → Distortion & Saturation → Distortion (no lock). SOUND SAFETY WARNING on arrival again (KEEP SOUND OFF); the first tap on LEARN afterwards was again ignored, the second worked. G6 walked EXPLORE (G6_DistortionLab.md).
+
+---
+
+## Page 2 · LEARN (walked)
+
+| Field | Finding |
+|---|---|
+| Page | Distortion Lab · LEARN tab |
+| First look | Text page, no picture. Eye lands on "Distortion bends the shape of a wave. A bent wave contains new frequencies called harmonics: whole-number multiples of the note you play." — clear, and "Turning up the level or using EQ can't create them; only reshaping can" is a strong, memorable contrast. Then "−20 dBFS", "shaper", and "You met aliasing in Digital Audio Systems: frequencies above half the sample rate fold back off-key" — a second lab assumed in the opening paragraph. Popup ~1 s later. |
+| Overwhelm | **4 / 5.** Opening paragraph has three hard ideas (harmonics, dBFS, aliasing). CONTROLS uses "TANH", "ASYM", "Oversampling… internal sample rate", "PARALLEL". COMMON MISTAKES add "Nyquist", "quantization noise", "DC offset", "headroom". FORMULA has g(−x) = −g(x), |f − k·fs|, THD. |
+| Knows what it is learning? | **Partly.** "Distortion adds new frequencies" lands; "odd vs even" and "aliasing" (the subtitle's other two words) do not, without sound. |
+| Knows what to do first? | **Partly.** WHERE TO START: "Read what distortion is first. Then **read the COMMON MISTAKES line on odd and even harmonics**, and on EXPLORE switch TYPE between HARD CLIP and TUBE (ASYM)." **No COMMON MISTAKES line mentions "odd" or "even"** — the nearest one ("All distortion sounds the same") talks about "whether the top and bottom bend alike"; odd/even appear only in Guided steps 2–3 and the FORMULA. A beginner hunting for the words will not find them. |
+| Words they would not know | "harmonics" (defined — good) · "dBFS" · "shaper" · "aliasing" ("fold back off-key" — defined via another lab) · "sample rate", "half the sample rate", "Nyquist" · "TANH", "ASYM" (on the TYPE values) · "Oversampling" · "PARALLEL" · "warm", "hollow" · "quantization noise", "DC offset", "headroom" (defined inline — good), "high-pass" · "THD", "RMS", "fundamental". |
+| Follows / continues? | **I tried Guided steps 1 and 3 silently on EXPLORE.** Step 1 (DRIVE down toward +12 dB; my drag landed at +9): the LAB NOTES caption updates in plain words — "DRIVE +9 dB lifts the −20 dBFS sine to −11 dBFS — still under the 0 dBFS ceiling, so the hard clipper has nothing to cut yet: so far DRIVE is just gain. Push past +20 dB to flatten the tops." Excellent live feedback. Step 3 (TYPE → TUBE (ASYM) at +25 dB): the OUT wave turns rounded and lopsided, and the caption says "Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics join the odd ones — the 'warm' sound…". The difference is visible but small on a phone (the top flattens slightly lower than the bottom). Step 4 (aliasing) explicitly says "The display doesn't change" — sound-only, so a silent learner cannot do it. Nothing at the end of LEARN points onward. |
+| What works | "Turning up the level or using EQ can't create them; only reshaping can"; DRIVE's live caption ("so far DRIVE is just gain"), which teaches the gain-vs-distortion line better than any paragraph; COMMON MISTAKE "More drive just means more distortion… Match levels, then judge" (real-world habit); honest step 4 ("The display doesn't change"); PRO TIP on distorting only the mids. |
+| Suggestions | 1. **Fix WHERE TO START's pointer**: point to Guided step 3 (which really is about odd/even), or add "odd" and "even" to the "All distortion sounds the same" mistake. **S.** 2. **Start with the DRIVE caption experiment**: "On EXPLORE, drag DRIVE slowly up from the left and read the line under the wave — watch the moment it says the tops start to flatten." That is the clearest silent "aha" in this lab. **S.** 3. **Move aliasing out of the opening paragraph** into its own later step (it is sound-only and needs another lab). **S.** 4. **Plain-word TYPE labels first**: "HARD (flat tops) · SOFT (rounded) · TUBE (lopsided)"; keep TANH/ASYM as small print. **S.** 5. **Show the harmonics, not only the wave**: a tiny bar row (220 · 440 · 660 · 880 Hz) that lights odd bars for HARD and adds even bars for TUBE would make "odd vs even" visible without sound. **M, this lab.** 6. **End: "Next: try steps 1–3 on EXPLORE, then CHECK."** **S, SHARED.** |
+| Hobbyist | Will like the level-matching warning and the mids-only tip; will want the harmonic bars; THD and fold-back formula are the right depth for them. |
+
+---
+
+## Page 3 · CHECK (walked: every question wrong first, then right)
+
+| Field | Finding |
+|---|---|
+| Page | Distortion Lab · CHECK tab |
+| First look | Same calm frame; popup: "Unsure about a question? Reread its entry on LEARN, or try that control on EXPLORE, then come back." |
+| Overwhelm | **3 / 5** — Q3 uses "Nyquist" and Q4 "50% PARALLEL". |
+| Knows what it is learning? | **Yes.** |
+| Knows what to do first? | **Yes.** |
+| Words they would not know | "harmonics" · "symmetric" (explained inside Q2 — good) · "odd / even harmonics" · "OVERSAMPLING", "Aliasing", "Nyquist limit" (Q3) · "parallel distortion", "body" (Q4). |
+| Follows / continues? | Yes. Wrong picks → replies: Q1 "Only volume" → "Reshaping a wave creates harmonics… Distortion creates frequencies; EQ cannot." (answer given). Q2 "Even harmonics only" → "Symmetric clipping adds only odd harmonics… the TUBE (ASYM) type — adds even harmonics too." (answer given). Q3 "Nothing — oversampling only affects the display" → "Distortion creates harmonics that can reach past half the sample rate. Without oversampling they fold back…" (a beginner might reasonably have picked "only affects the display", because LEARN step 4 says "The display doesn't change" — a trap the lab set itself). Q4 "Doubling the number of harmonics" → a 3-sentence reply that explains parallel works when the distorted copy is turned DOWN, and that "On EXPLORE it is the other way round… so 50% PARALLEL sounds about 5 dB quieter and nearly as gritty." Honest, but it tells the learner that the lab's own parallel demo does not show what parallel is for — confusing at the moment of being corrected. After the 4th ✓: "Check passed." and nothing else. Answer-length tell on Q1, Q3, Q4 (Q4's right answer is two lines; the others are three words). **Duplication:** EXPLORE's CHECK YOURSELF "Distortion makes a pure sine tone sound 'rich'. What was added?" is CHECK Q1 almost verbatim; its DRIVE-and-MIX card overlaps Q4. |
+| What works | Q2 explains "symmetric" inside the question; Q1–Q3 match the LEARN bullets; feedback ties back to TYPE names the learner used. |
+| Suggestions | 1. **Q3: acknowledge the trap** — reword the distractor ("Nothing — it only changes the picture") and say in feedback "The picture doesn't change, but the sound does — that's why step 4 needs your ears." **S.** 2. **Q4: make EXPLORE able to show parallel working** (e.g. a "DIST LEVEL" or a 25 % option where the distorted copy sits under the clean one), or reword the question to what the learner saw. **M, this lab.** 3. **Balance answer lengths** (Q1, Q3, Q4). **S.** 4. **Different EXPLORE CHECK YOURSELF cards** from the CHECK tab. **S.** 5. **End of check: next step.** **S, SHARED.** |
+| Hobbyist | Good; Q4's honest note will interest them. |
+
+## Lab verdict addendum — DistortionLab LEARN + CHECK
+LEARN's live DRIVE caption is one of the best silent teaching moments in the app ("so far DRIVE is just gain"), and TUBE vs HARD is visible on the wave. But the starting instruction points to a COMMON MISTAKES line that does not exist, the opening paragraph front-loads aliasing from another lab, and odd/even harmonics are told, never shown. CHECK repeats EXPLORE's card, contains a question the lab's own step 4 makes ambiguous (Q3), and a Q4 whose feedback admits the lab's parallel demo shows the opposite case.
