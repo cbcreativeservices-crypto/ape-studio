@@ -715,6 +715,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 04:09 · ccode · b0424169
+changed: docs: beginner orientation audit of every lab (overnight, audit only) + must-do D61 brief sent, D62 [MD:D62]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-14 00:49 · ccode · bcffb8a7
 changed: docs: rule 32 copy (HELD needs a real blocker); lessons 2026-11-13/14; Stage Plot SOURCES section 11 (shapes, boxes, symbols, sources, owner decisions) [MD:D60]
 affects other side: nothing on the server. docs only: PROTOCOL rule 32 copy (HELD needs a real blocker), lessons, Stage Plot SOURCES [MD:D60].
