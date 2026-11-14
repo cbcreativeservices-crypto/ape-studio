@@ -30,7 +30,8 @@ import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, mark
 import { gaTerms } from '../gaTerms';
 import { gaCopies, type GaMachine } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
-import { TrayBox, TrayChip, TrayLocked, TrayRow, onOff, useCountWhen } from './chbBits';
+import { TrayBox, TrayChip, TrayNote, TrayRow, onOff, useCountWhen, useFreshProof, usePlantedFault } from './chbBits';
+import { gaPlantedWhere, type GaWhere } from '../bitsLogic';
 import { chbOrphans } from './data/chbScene';
 import { G07 } from './guides/p07';
 import { gaFact, pct, speedKey, useSince } from './shared';
@@ -49,11 +50,17 @@ const setOrphanRule = (on: boolean) => {
  *  decision 15). With generator 2 in the scene the first row takes two
  *  lines: about 188 pt in all. No note says that an instance has lost its
  *  owner: that is the planted fault's symptom, read from PLAYING and the
- *  log (lead's decision 10). */
-function GeneratorsTray({ unnamed }: { unnamed: boolean }) {
+ *  log (lead's decision 10). The rule row shows `leave`, the rule as the
+ *  page shows it: while a planted fault is not yet found, the rule that was
+ *  in use before START (R2-GA1-01); `pick` makes the learner's choice;
+ *  `where` says whose rule that is, the project's or the build's (checker
+ *  C-4). While a stray loop still holds generator 2's place, ADD is refused
+ *  by the model, and the tray says so where it is pressed (checker C-3). */
+function GeneratorsTray({ leave, pick, where }: { leave: boolean; pick: (on: boolean) => void; where: GaWhere }) {
   const s = useGa();
   const m1 = s.machines.find((m) => m.id === G1);
   const m2 = s.machines.find((m) => m.id === G2);
+  const strayHolds2 = !m2 && s.inst.some((i) => i.event === 'generator' && i.owner === G2);
   return (
     <TrayBox>
       <TrayRow head="ONE EVENT, PLAY_GENERATOR, FOR BOTH">
@@ -61,15 +68,11 @@ function GeneratorsTray({ unnamed }: { unnamed: boolean }) {
         {m2 ? <TrayChip label={onOff('GENERATOR 2', m2.on)} selected={m2.on} onPress={() => gaDispatch({ type: 'machine', id: G2, on: !m2.on })} /> : null}
         {m2 ? <TrayChip label="REMOVE GENERATOR 2" onPress={() => gaDispatch({ type: 'removeMachine', id: G2 })} /> : <TrayChip label="ADD GENERATOR 2" onPress={() => gaDispatch({ type: 'addMachine' })} />}
       </TrayRow>
-      {unnamed ? (
-        // the fault is planted and its symptom not yet met: the ✓ on the wrong rule would name it (bug test B-S3-11)
-        <TrayLocked head="WHEN A GENERATOR IS REMOVED" note="Remove a running generator 2 first and watch PLAYING. Then this rule opens." />
-      ) : (
-        <TrayRow head="WHEN A GENERATOR IS REMOVED">
-          <TrayChip label={marked('STOP ITS LOOP', !s.faults.orphanLoop)} selected={!s.faults.orphanLoop} onPress={() => setOrphanRule(false)} />
-          <TrayChip label={marked('LEAVE IT PLAYING', s.faults.orphanLoop)} selected={s.faults.orphanLoop} onPress={() => setOrphanRule(true)} />
-        </TrayRow>
-      )}
+      {strayHolds2 ? <TrayNote>■ STOP first: a stray loop still holds generator 2.</TrayNote> : null}
+      <TrayRow head={`WHEN A GENERATOR IS REMOVED · ${where === 'project' ? 'IN PROJECT' : 'IN BUILD'}`}>
+        <TrayChip label={marked('STOP ITS LOOP', !leave)} selected={!leave} onPress={() => pick(false)} />
+        <TrayChip label={marked('LEAVE IT PLAYING', leave)} selected={leave} onPress={() => pick(true)} />
+      </TrayRow>
     </TrayBox>
   );
 }
@@ -95,14 +98,17 @@ function Page({ ctx }: { ctx: PageCtx }) {
   // the planted fault's symptom happened on this visit: a removal left a loop with no owner
   const orphanCount = since('orphan');
   const orphanSeen = orphanCount > 0;
-  // THE CARD (bug test 2026-11-13, B-S3-10 / B-S3-11). `startedAt` = how many
-  // orphan lines the visit had when START THE FAULT was pressed; until one
-  // more happens the rule row is locked and names nothing. FIXED needs a
-  // removal that really stopped its loop AFTER the rule was corrected, not
-  // only the rule flipped back (page 6 likewise needs the door to play again).
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const unnamed = startedAt !== null && s.faults.orphanLoop && orphanCount <= startedAt;
-  const repaired = useCountWhen(gaFact(s, 'cleanRemove'), orphanSeen && !s.faults.orphanLoop) > 0;
+  // THE CARD (bug test 2026-11-13, B-S3-10 / B-S3-11; round 2, R2-GA1-01).
+  // Until one more orphan line than at START THE FAULT, the rule row shows
+  // the rule that was in use before the start: no "?", no lock, no moved ✓.
+  // FIXED needs a removal that really stopped its loop AFTER the rule was
+  // corrected, not only the rule flipped back (page 6 likewise needs the
+  // door to play again).
+  const plant = usePlantedFault(orphanCount, s.faults.orphanLoop);
+  const { unnamed } = plant;
+  // a removal that stopped its loop AFTER THE NEWEST orphan (checker C-1)
+  const repaired = useFreshProof(orphanCount, gaFact(s, 'cleanRemove'), orphanSeen && !s.faults.orphanLoop);
+  const where = gaPlantedWhere(unnamed, orphanSeen);
   const fixed = orphanSeen && !s.faults.orphanLoop && orphans === 0 && repaired;
   // the card is active while the rule is wrong, and afterward until a removal proves the repair
   const faultArmed = s.faults.orphanLoop || (orphanSeen && !fixed);
@@ -122,7 +128,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     label: 'GENERATORS',
     valueLabel: `${running} ON`,
     valueA11y: `${genA11y(1, m1)}; ${genA11y(2, m2)}`,
-    render: () => <GeneratorsTray unnamed={unnamed} />,
+    render: () => <GeneratorsTray leave={plant.shown} pick={(on) => plant.pick(on, setOrphanRule)} where={where} />,
   };
 
   return (
@@ -168,7 +174,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
           seen={!unnamed && orphanSeen}
           firstHint="First make the problem happen: open GENERATORS, add generator 2, switch it on, then remove it, and watch PLAYING."
           onStart={() => {
-            setStartedAt(orphanCount);
+            plant.start(gaGet().faults.orphanLoop);
             setOrphanRule(true);
           }}
           hints={[

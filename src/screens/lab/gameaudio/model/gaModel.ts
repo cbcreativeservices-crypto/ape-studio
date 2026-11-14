@@ -440,7 +440,9 @@ export type GaAction =
   | { type: 'net'; id: string; what: 'door' | 'alert'; to: 'world' | 'me' | 'them' }
   /** A page opened: put the SETTINGS back to the standard setup (see the
    *  reducer). What is playing, where people stand and the door stay. */
-  | { type: 'enterPage' }
+  /** `keepClock`: the same page starts its scene again (page 4's GAMES): the
+   *  log's clock keeps counting from the page's opening (B-S3-05). */
+  | { type: 'enterPage'; keepClock?: boolean }
   | { type: 'engine'; evt: GaEvt }
   | { type: 'expire'; v: string }
   /** ■ STOP, or SOUND switched off. `why: 'app'` = the APP stopped every
@@ -944,7 +946,9 @@ function post(c: Ctx, event: GaEventId, owner: string, pos: GaPoint | null, opts
     if (v.state !== 'virtual') seat(c.s, v);
     inst.chose.push(asset);
     const take = list.length > 1 ? ` take ${idx + 1} of ${list.length}` : '';
-    const late = delayS ? `, ${round(delayS, 2)} s later` : '';
+    // a late layer is logged when it is ASKED for, so the line says what its
+    // time and VOICES mean (bug test 2026-11-13, B-S3-03)
+    const late = delayS ? `, ${round(delayS, 2)} s later (its voice is held from now)` : '';
     if (v.state === 'virtual') {
       if (!virtualSaid) {
         log(c, 'state', noVoice ? `${def.label} has no voice yet: it WAITS (tracked, not played) and plays when a voice is free` : `${def.label} is out of range: VIRTUAL (tracked, not played)`, { inst: inst.id, owner, bus });
@@ -958,7 +962,11 @@ function post(c: Ctx, event: GaEventId, owner: string, pos: GaPoint | null, opts
     const named = event in GA_LINES || (event === 'door_open' && layer.id === 'door');
     const file = named ? ` · ${record.file}` : '';
     const unheard = c.s.soundOn ? '' : ' (not heard: sound is off)';
-    const text = `${def.label} · ${layer.id}${take}${late}${file} → ${GA_BUS_NAME[bus]} bus${unheard}`;
+    // a layer named like its event, whose FILE is printed, is said once:
+    // "Door · door_open.wav", not "Door · door · door_open.wav" (bug test
+    // 2026-11-13, B-S3-02)
+    const layerWord = file && layer.id === def.label.toLowerCase() ? '' : ` · ${layer.id}`;
+    const text = `${def.label}${layerWord}${take}${late}${file} → ${GA_BUS_NAME[bus]} bus${unheard}`;
     const last = c.s.log[c.s.log.length - 1];
     if (opts.ambient && last && last.kind === 'start' && last.owner === owner && inst.quiet) {
       const count = (last.count ?? 1) + 1;
@@ -977,7 +985,16 @@ function post(c: Ctx, event: GaEventId, owner: string, pos: GaPoint | null, opts
       pitchCents: round(cents, 1),
       gainDb: round(varyDb, 2),
     });
-    if (takes.length > GA_TAKES_MAX) takes.splice(0, takes.length - GA_TAKES_MAX);
+    // keep the last GA_TAKES_MAX choices AMONG SEVERAL takes (what the strip
+    // draws): a one-take layer (the door, the rattle) no longer pushes a
+    // footstep out (round-2 bug test 2026-11-13, R2-GA1-03 / -10). One-take
+    // entries are still recorded, the oldest dropped first past twice that.
+    const several = (x: GaTake) => x.of > 1;
+    while (takes.filter(several).length > GA_TAKES_MAX) takes.splice(takes.findIndex(several), 1);
+    while (takes.length > 2 * GA_TAKES_MAX) {
+      const k = takes.findIndex((x) => !several(x));
+      takes.splice(k >= 0 ? k : 0, 1);
+    }
     c.s.recentTakes = takes;
   }
   // only the voices that are still held: nothing is started that was taken
@@ -1263,6 +1280,9 @@ function beginStinger(c: Ctx): void {
   s.voices.push({ v: st.req, inst: inst.id, asset: GA_STINGER_ASSET, layer: def.layers[0].id, bus: 'music', priority: def.priority, protected: false, born: s.t, loop: false, base: GA_STINGER_GAIN, rate: 1, state: 'playing', delayS: 0, music: true });
   log(c, 'music', `STINGER played ${BOUNDARY_LANDED[st.boundary]}${st.boundary === 'now' ? '' : ' (its hit lands on the line)'} → ${GA_BUS_NAME.music} bus${s.soundOn ? '' : ' (not heard: sound is off)'}`, { bus: 'music', inst: inst.id, owner: 'music' });
   fact(c, 'stingerPlayed');
+  // one that waited for a beat, bar or phrase line (not NOW): page 14's goal
+  // (round-2 bug test 2026-11-13, R2-GA2-04)
+  if (st.boundary !== 'now') fact(c, 'stingerOnLine');
   fact(c, 'inst:stinger');
 }
 /** The music stops (or everything does) while something waits for a
@@ -1479,9 +1499,18 @@ export function gaReduce(prev: GaState, a: GaAction, now?: number): { state: GaS
       // the free place: generator 2 below, or generator 1 if it was removed
       const id = s.machines.some((m) => m.id === 'generator-2') ? 'generator-1' : 'generator-2';
       const at = id === 'generator-1' ? PLACES.generator : PLACES.generator2;
-      // an orphan loop left under this id is this machine's sound again, at its speed
+      // A loop left playing with no owner under this id is NOT taken over by
+      // a new generator (round-2 bug test 2026-11-13, R2-GA2-01: the new one
+      // came in ON, silently, and fault 5 counted as fixed with no removal
+      // tested). This scene has one place for generator 2, so it is placed
+      // again only once that loop is gone, and the log says why.
       const orphan = s.inst.find((x) => x.event === 'generator' && x.owner === id);
-      s.machines.push({ id, x: at.x, y: at.y, on: !!orphan, speed: orphan?.speed ?? 0.4 });
+      if (orphan) {
+        log(c, 'refused', `${gaOwnerName(id)} is not placed again: its old loop, instance ${orphan.id}, still plays with no owner. ■ STOP silences it; then place the generator again`, { owner: id, inst: orphan.id });
+        fact(c, 'addRefused');
+        break;
+      }
+      s.machines.push({ id, x: at.x, y: at.y, on: false, speed: 0.4 });
       log(c, 'note', 'A second generator was placed in the workshop (the same event will serve both)', { owner: id });
       fact(c, 'machineAdded');
       break;
@@ -1732,7 +1761,7 @@ export function gaReduce(prev: GaState, a: GaAction, now?: number): { state: GaS
       fresh.soundOn = s.soundOn;
       fresh.master = s.master;
       fresh.t = s.t;
-      fresh.tPage = s.t;
+      fresh.tPage = a.keepClock ? s.tPage : s.t;
       fresh.seq = s.seq;
       fresh.logN = s.logN;
       fresh.facts = { ...s.facts };

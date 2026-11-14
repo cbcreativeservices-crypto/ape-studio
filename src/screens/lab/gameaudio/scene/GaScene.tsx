@@ -1022,7 +1022,27 @@ function Labels({ s, select, showNames, show, sounding, you, guide, foot }: { s:
   if (shown('fountain')) put({ key: 'fountain', x: PLACES.fountain.x, y: PLACES.fountain.y + 1.85, text: 'FOUNTAIN', color: white, size: tag, align: 'center' });
   if (shown('crate')) put({ key: 'crate', x: PLACES.crate.x, y: PLACES.crate.y - 0.85, text: 'CRATE', color: white, size: tag, align: 'center' });
   // right-aligned: it ends before the wall
-  if (shown('door')) put({ key: 'door', x: WALL_X - 0.42, y: DOOR_Y0 - 0.3, text: s.doorOpen ? 'DOOR OPEN' : 'DOOR CLOSED', color: white, size: tag, align: 'right' });
+  // above the doorway, or below it while YOU or the GUIDE stand on the words
+  // (page 22 at 320 wide, after GO: GRAVEL; round 2, R2-GA2-13)
+  if (shown('door')) {
+    const doorLine: Line = { key: 'door', x: WALL_X - 0.42, y: DOOR_Y0 - 0.3, text: s.doorOpen ? 'DOOR OPEN' : 'DOOR CLOSED', color: white, size: tag, align: 'right' };
+    const figure = (c: GaPoint): GaBox => ({ x0: c.x - 0.7, x1: c.x + 0.7, y0: c.y - 0.7, y1: c.y + 0.7 });
+    const covered = (l: Line) => [p, g].some((c) => gaBoxesHit(boxOf(l), figure(c)));
+    // a little room around each name, so two never touch ("CLOSEDGENERATOR 1")
+    const crowded = (l: Line) => {
+      const b = boxOf(l);
+      const near = { x0: b.x0 - 0.25, x1: b.x1 + 0.25, y0: b.y0 - 0.1, y1: b.y1 + 0.1 };
+      return still.some((o) => gaBoxesHit(o, near));
+    };
+    const below: Line = { ...doorLine, y: DOOR_Y1 + 0.3 + tag };
+    // the first place clear of the figures and of every name already placed
+    // (CRATE sits under the doorway, GENERATOR 1 over it in the workshop),
+    // else one clear of the figures: over the doorway on the courtyard side,
+    // under it, then the same two on the workshop side
+    const roomSide: Line = { ...doorLine, x: WALL_X + 0.42, align: 'left' };
+    const spots = [doorLine, below, roomSide, { ...below, x: WALL_X + 0.42, align: 'left' as const }];
+    put(spots.find((l) => !covered(l) && !crowded(l)) ?? spots.find((l) => !covered(l)) ?? doorLine);
+  }
   if (s.listenerMode === 'camera') put({ key: 'camera', x: WALL_X - 0.42, y: WORLD_H / 2 + 0.95 + tag, text: 'CAMERA · LISTENER', color: '#ffc64d', size: tag, align: 'right' });
 
   // a bird is named while it calls (it is in the picture only then)

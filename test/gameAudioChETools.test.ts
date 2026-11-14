@@ -282,8 +282,9 @@ describe('page 20: the checks need the tool names (audit 2, L-05, B10, L-16, W2-
 describe('page 21: true to the lab, short, and its checks are fair (audit 2, L-06, L-20)', () => {
   const src = readFileSync(join(PAGES_DIR, 'p21Today.tsx'), 'utf8');
   const text = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-  it('it never says the lab is procedural, and says every sound is a file made ahead of time', () => {
-    assert.match(text, /Nothing in this lab is procedural: every sound is a file made ahead of time\./);
+  it('it never says the lab is procedural, and says how its sounds are really made (round 2, R2-GA2-09: built in the app)', () => {
+    assert.match(text, /No sound in this lab is procedural: each is built once in the app, before it first plays, then played as a fixed file that does not follow the game\./);
+    assert.doesNotMatch(text, /made ahead of time/);
     assert.ok(!/generator is procedural|procedural generator in this lab/i.test(text));
   });
   it('nothing dated, no statistics, no hype, no career promise', () => {

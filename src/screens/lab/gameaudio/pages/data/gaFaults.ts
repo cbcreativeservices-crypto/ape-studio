@@ -18,9 +18,13 @@
  * learner's own change and is logged like any other setting.
  *
  * So a learner who starts a fault and switches it straight back has fixed
- * nothing: finding comes before fixing. The orphan loop needs one thing
- * more, the stray loop itself gone, because correcting the setting does
- * not stop a loop that already lost its owner.
+ * nothing: finding comes before fixing. The orphan loop needs two things
+ * more: the stray loop itself gone, because correcting the setting does
+ * not stop a loop that already lost its owner, and the removal TESTED
+ * AGAIN (a running generator removed with the rule correct, its loop
+ * stopped with it: `proved`), as on page 7. A new generator never takes the
+ * stray loop over (the model refuses to place it while that loop plays),
+ * so ADD alone proves nothing (round-2 bug test 2026-11-13, R2-GA2-01).
  *
  * EVERY SYMPTOM CAN BE MADE FROM THE CLEAN SCENE with the page's own TEST
  * tray, as often as the learner likes (the test walks each one). So the
@@ -150,7 +154,7 @@ export const FAULTS: readonly FaultDef[] = [
     hints: [
       'The newest log line is marked FAULT and contains the word ORPHAN.',
       'PLAYING still counts the loop, although its generator is gone.',
-      'Open FIX, choose REMOVAL and correct the setting. Then stop the stray loop: press ADD GENERATOR 2 and REMOVE GENERATOR 2 again, or press ■ STOP.',
+      'Open FIX, choose REMOVAL and correct the setting. Press ■ STOP to silence the stray loop. Then test again: ADD GENERATOR 2, switch it on, REMOVE GENERATOR 2, and watch PLAYING go down.',
     ],
     why: 'Removing the generator did not stop its loop, so the loop kept its voices with no owner. Cleanup is part of a sound’s design: whatever starts a loop also needs a way to stop it.',
     need: 1,
@@ -257,7 +261,9 @@ export function standingOn(s: GaState): StandId | null {
 
 /* ── the bench: what was planted, and what was seen ─────────────────────── */
 
-export type FaultProgress = { planted: boolean; seen: number };
+/** `proved`: the orphan only — how many removals stopped their loop after
+ *  the symptom was seen, with the rule correct (the re-test). */
+export type FaultProgress = { planted: boolean; seen: number; proved?: number };
 export type Bench = Record<FaultId, FaultProgress>;
 
 /** An empty bench. A page opens on a clean scene (the model's `enterPage`),
@@ -299,20 +305,27 @@ export function benchAdvance(b: Bench, prev: GaState, next: GaState): Bench {
   let out = b;
   for (const id of FAULT_IDS) {
     const planted = b[id].planted || faultSet(id, next);
-    const seen = b[id].seen + symptomCount(id, prev, next);
-    if (planted !== b[id].planted || seen !== b[id].seen) {
+    const now = symptomCount(id, prev, next);
+    const seen = b[id].seen + now;
+    const was = b[id].proved ?? 0;
+    // a NEW orphan clears the proof: the re-test has to come after the newest
+    // symptom, so a second round on one visit needs its own (checker C-1)
+    const proved = id === 'orphan' && now > 0 ? 0 : was + (id === 'orphan' && planted && b[id].seen > 0 && !faultSet(id, next) ? Math.max(0, delta(prev, next, 'cleanRemove')) : 0);
+    if (planted !== b[id].planted || seen !== b[id].seen || proved !== was) {
       if (out === b) out = { ...b };
-      out[id] = { planted, seen };
+      out[id] = id === 'orphan' ? { planted, seen, proved } : { planted, seen };
     }
   }
   return out;
 }
 
 /** The fault is still open: its setting is wrong, or (the orphan) the stray
- *  loop it left behind is still playing. */
+ *  loop it left behind is still playing, or its symptom was seen and the
+ *  removal has not been tested again since. */
 export function faultOpen(id: FaultId, b: Bench, s: GaState): boolean {
   if (faultSet(id, s)) return true;
-  return id === 'orphan' && b.orphan.planted && strayLoops(s).length > 0;
+  if (id !== 'orphan' || !b.orphan.planted) return false;
+  return strayLoops(s).length > 0 || (b.orphan.seen > 0 && !((b.orphan.proved ?? 0) > 0));
 }
 
 /** Fixed: planted on this visit, its symptom seen, and nothing left open. */

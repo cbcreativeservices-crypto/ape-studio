@@ -2102,7 +2102,7 @@ describe('check M — found by the walk rerun on the fixed code', () => {
 });
 
 describe('check M — N7, N9, N11, N13', () => {
-  it('N7: an orphan loop keeps its machine’s last speed, in the engine and on the meter; a new machine adopts it at that speed', () => {
+  it('N7: an orphan loop keeps its machine’s last speed, in the engine and on the meter; a new machine does not adopt it', () => {
     let s = heard(run(on(), { type: 'move', who: 'player', x: 12, y: 6 }, { type: 'addMachine' }, { type: 'machine', id: 'generator-2', on: true }, { type: 'speed', id: 'generator-2', value: 1 }).s);
     const meter = (st: GaState) => gaBusMeter(st, st.t + 1).find((b) => b.bus === 'sfx')!.gain;
     const before = meter(s);
@@ -2113,8 +2113,10 @@ describe('check M — N7, N9, N11, N13', () => {
     const set = sets(turn.cmds).find((c) => c.v === hum.v)!;
     const out = gaVoiceOut(turn.s, hum, turn.s.t + 1);
     near1(set.gain!, out.gain / turn.s.master);
+    // round 2 (R2-GA2-01): a new generator never takes the orphan over
     const back = run(turn.s, { type: 'addMachine' }).s;
-    assert.deepEqual(back.machines.map((m) => [m.id, m.on, m.speed]), [['generator-1', false, 0.4], ['generator-2', true, 1]]);
+    assert.deepEqual(back.machines.map((m) => [m.id, m.on, m.speed]), [['generator-1', false, 0.4]]);
+    assert.equal(back.voices.find((v) => v.asset === 'gen_hum')?.v, hum.v, 'the orphan plays on at its speed');
     function near1(a: number, b: number) {
       assert.ok(Math.abs(a - b) < 1e-9, `${a} vs ${b}`);
     }

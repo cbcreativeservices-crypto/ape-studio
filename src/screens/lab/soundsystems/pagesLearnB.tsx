@@ -400,7 +400,7 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
           { k: 'SPLIT', v: mode === 'analog' ? 'ANALOG' : 'GAIN SHARE', tint: colors.cyanBright, flex: 1.3 },
           { k: 'MON PREAMP', v: gainMove ? `+${gainDb} dB` : 'AS SET', flex: 1.1 },
           { k: 'FOH HEARS', v: !gainMove ? 'AS SET' : mode === 'analog' ? 'UNCHANGED' : `TRIM −${gainDb}`, tint: colors.green, flex: 1.2 },
-          { k: 'CHECKS', v: `${solved}/2`, flex: 0.8 },
+          { k: 'CHECKS', kNarrow: 'DONE', v: `${solved}/2`, flex: 0.8 },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / 160}>
@@ -666,7 +666,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
         initialParam: 'count',
         hideDragTag: true,
         bezel: [
-          { k: 'TOTAL LOAD', v: fmtOhms(load.ohms), tint: loadTint, flex: 1.2 },
+          { k: 'TOTAL LOAD', kNarrow: 'LOAD', v: fmtOhms(load.ohms), tint: loadTint, flex: 1.2 },
           { k: 'AMP MIN', v: `${min} Ω` },
           { k: 'INTO LOAD', v: watts == null ? '—' : `${watts} W` },
           { k: 'VERDICT', v: verdict.toUpperCase(), tint: loadTint, flex: 1.2 },
@@ -818,7 +818,7 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
           { k: 'MATCH', v: match === 'ok' ? (amp > CABINET.program ? 'JUST OVER' : 'IN BAND') : match === 'under' ? 'UNDER' : 'OVER', tint },
           { k: 'CONTINUOUS', v: `${CABINET.continuous} W`, flex: 1.1 },
           { k: 'PROGRAM', v: `${CABINET.program} W` },
-          { k: `SPL @ ${dist} m`, v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },
+          { k: `SPL @ ${dist} m`, kNarrow: 'SPL', v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },
         ],
         stage: (w, h) => <PowerBand amp={amp} match={match} dist={dist} spl={spl} w={w} h={h} />,
         params,

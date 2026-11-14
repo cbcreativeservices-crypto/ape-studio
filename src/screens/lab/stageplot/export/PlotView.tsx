@@ -84,13 +84,13 @@ export function PlotView({ plot, width }: { plot: SpDocPlot; width: number }) {
   const count = plot.items.length;
   const about = `Stage plot drawing, seen from above, with the audience at the bottom: ${count} ${count === 1 ? 'object' : 'objects'}. ${plot.sizeNote}.`;
   const also = 'Every object is also listed in the text view of the packet.';
-  if (!parts.scrolls) return <Scene scene={parts.stage} label={`${about} A key under the stage names each kind of symbol. ${also}`} />;
+  if (!parts.scrolls) return <Scene scene={parts.stage} label={`${about} ${plot.key.length ? 'A key under the stage names each kind of symbol. ' : ''}${also}`} />;
   return (
     <View style={styles.wrap}>
       <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={styles.scrollBody}>
         <Scene scene={parts.stage} label={`${about} ${also}`} />
       </ScrollView>
-      <Text style={styles.hint}>The plot is shown at its printed size so the names stay readable. Scroll sideways to see all of it. The key under it stays in view.</Text>
+      <Text style={styles.hint}>The plot is shown at its printed size so the names stay readable. Scroll sideways to see all of it.{parts.key ? ' The key under it stays in view.' : ''}</Text>
       {parts.key ? <Scene scene={parts.key} label={`Key: ${plot.key.map((k) => k.name).join('; ')}.`} /> : null}
     </View>
   );

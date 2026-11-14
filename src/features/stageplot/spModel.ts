@@ -71,6 +71,7 @@ export function spNewProject(opts: { id: SpId; band?: string; title?: string; no
     contact: { name: '', role: '', email: '', phone: '', show: { name: true, role: true, email: true, phone: true } },
     revision: 1,
     frozenRevision: 0,
+    packetRevision: 0,
     status: 'draft',
     venueConfirmed: false,
     modifiedAt: opts.now,
@@ -90,6 +91,8 @@ export function spNewProject(opts: { id: SpId; band?: string; title?: string; no
     objects: [],
     seq: 0,
     startedFrom: opts.startedFrom ?? '',
+    // never assumed: only spFromTemplate('blank') says so
+    startedBlank: false,
   };
 }
 
@@ -458,7 +461,12 @@ export function spMonoLabel(p: SpProject, inputId: SpId): string {
   const x = p.inputs.find((i) => i.id === inputId);
   if (!x) return '';
   const base = stripSide(x.label);
-  const others = p.inputs.filter((i) => i.id !== x.id && !(x.pairId && i.pairId === x.pairId)).map((i) => i.label.trim().toLowerCase());
+  // …and among the OTHER sources' names: "Keys 2" was taken by a package's
+  // source, and the review then named the wrong thing (R2-SP2-05)
+  const others = [
+    ...p.inputs.filter((i) => i.id !== x.id && !(x.pairId && i.pairId === x.pairId)).map((i) => i.label.trim().toLowerCase()),
+    ...p.sources.filter((s) => s.id !== x.sourceId).map((s) => s.label.trim().toLowerCase()),
+  ];
   if (!others.includes(base.toLowerCase())) return base;
   for (let n = 2; n < 100; n += 1) if (!others.includes(`${base} ${n}`.toLowerCase())) return `${base} ${n}`;
   return base;
@@ -483,7 +491,11 @@ export function spPairRestore(p: SpProject, remainingId: SpId): { p: SpProject; 
     if (!x || !x.pairId || !x.side || d.inputs.some((y) => y.pairId === x.pairId && y.id !== x.id)) return;
     id = newId(d, 'in');
     const side = x.side === 'L' ? 'R' : 'L';
-    d.inputs.push({ ...clone(x), id, side, label: `${stripSide(x.label)} ${side}` });
+    // beside its partner in the input rows too (L first), so every list made
+    // from the rows (the review, the packet's questions) says L before R
+    // (R2-SP2-11)
+    const xi = d.inputs.indexOf(x);
+    d.inputs.splice(side === 'L' ? xi : xi + 1, 0, { ...clone(x), id, side, label: `${stripSide(x.label)} ${side}` });
     for (const m of d.mixes) if (m.needs[x.id] !== undefined) m.needs[id] = m.needs[x.id];
     // The side comes back BESIDE its partner, on the number next to it when
     // that number is free (L just below, R just above); otherwise on the
@@ -555,20 +567,27 @@ export const spAssignDi = (p: SpProject, inputId: SpId, deviceId: SpId | null): 
 /* ── channel order and numbers ──────────────────────────────────────────── */
 
 /** Number a patch 1, 2, 3… in its current order. `keepReserved` skips the
- *  channel numbers the band keeps free. */
-function renumber(patch: SpPatch, keepReserved: boolean): void {
+ *  channel numbers the band keeps free, and then a stereo pair (two
+ *  neighbours in the order) moves on to the next TWO free neighbouring
+ *  channels, never split around a reserved one (R2-SP2-08). */
+function renumber(patch: SpPatch, keepReserved: boolean, inputs: readonly SpInput[] = []): void {
+  const pairOf = new Map(inputs.filter((i) => i.pairId).map((i) => [i.id, i.pairId] as const));
   let n = 0;
-  for (const id of patch.order) {
+  patch.order.forEach((id, k) => {
+    const next = patch.order[k + 1];
+    const startsPair = !!next && !!pairOf.get(id) && pairOf.get(id) === pairOf.get(next);
+    const prev = patch.order[k - 1];
+    const endsPair = !!prev && !!pairOf.get(id) && pairOf.get(id) === pairOf.get(prev) && patch.numbers[prev] === n;
     n += 1;
-    while (keepReserved && patch.reserved.includes(n)) n += 1;
+    if (keepReserved && !endsPair) while (patch.reserved.includes(n) || (startsPair && patch.reserved.includes(n + 1))) n += 1;
     patch.numbers[id] = n;
-  }
+  });
 }
 
 export const spRenumber = (p: SpProject, patchId: SpPatchId, opts: { keepReserved: boolean }): SpProject =>
   spEdit(p, (d) => {
     const patch = spPatch(d, patchId);
-    if (patch) renumber(patch, opts.keepReserved);
+    if (patch) renumber(patch, opts.keepReserved, d.inputs);
   });
 
 export const spSetReserved = (p: SpProject, patchId: SpPatchId, reserved: number[]): SpProject =>
@@ -621,7 +640,7 @@ export const spMoveInput = (p: SpProject, patchId: SpPatchId, inputId: SpId, by:
     const [mine] = blocks.splice(from, 1);
     blocks.splice(to, 0, mine);
     patch.order = blocks.flat();
-    if (opts.renumber) renumber(patch, opts.keepReserved ?? true);
+    if (opts.renumber) renumber(patch, opts.keepReserved ?? true, d.inputs);
   });
 
 /** Sort a patch into the conventional order (drums, percussion, bass,
@@ -650,7 +669,7 @@ export const spSortConventional = (p: SpProject, patchId: SpPatchId, opts: { kee
       else out.push(id);
     }
     patch.order = out;
-    renumber(patch, opts.keepReserved);
+    renumber(patch, opts.keepReserved, d.inputs);
   });
 
 /* ── monitor mixes and devices ──────────────────────────────────────────── */
@@ -1037,6 +1056,8 @@ export function spDuplicateProject(p: SpProject, opts: { id: SpId; kind: 'master
   if (opts.title != null) q.title = opts.title;
   q.revision = 1;
   q.frozenRevision = 0;
+  // a copy has no packet of its own yet; it keeps where it started (startedBlank)
+  q.packetRevision = 0;
   q.status = 'draft';
   q.venueConfirmed = false;
   q.createdAt = opts.now;
@@ -1060,6 +1081,20 @@ export function spMigrate(raw: unknown): SpProject | null {
   for (const k of ['performers', 'sources', 'inputs', 'diDevices', 'patches', 'mixes', 'devices', 'extras', 'objects'] as const) if (!Array.isArray(q[k])) (q as Record<string, unknown>)[k] = [];
   q.patches = q.patches.filter((x) => x && (x.id === 'house' || x.id === 'band')).map((x) => ({ ...emptyPatch(x.id), ...x }));
   if (typeof q.seq !== 'number') q.seq = 10000;
+  // R2-SP1-01 / R2-SP1-04 (2026-11-13): a plot saved before these fields
+  // existed has made no packet that can be proven, and did not certainly
+  // start from a blank stage.
+  // A damaged row never earns anything: the revision is a whole number from
+  // 1, the frozen one is between 0 and it, and the packet one between 0 and
+  // the frozen one (a packet always freezes its revision). Anything else is
+  // brought back to the safe value: nothing exported (checker R2, P1).
+  // (an unreadable revision says nothing about what was shared or packed)
+  const revisionRead = Number.isInteger(q.revision) && q.revision >= 1;
+  if (!revisionRead) q.revision = 1;
+  if (!revisionRead || !Number.isInteger(q.frozenRevision) || q.frozenRevision < 0) q.frozenRevision = 0;
+  q.frozenRevision = Math.min(q.frozenRevision, q.revision);
+  q.packetRevision = Number.isInteger(q.packetRevision) ? Math.min(Math.max(0, q.packetRevision), q.frozenRevision) : 0;
+  if (typeof q.startedBlank !== 'boolean') q.startedBlank = false;
   for (const i of q.inputs) if (typeof i.cueAudienceOk !== 'boolean') i.cueAudienceOk = false;
   for (const o of q.objects) {
     if (typeof o.visualOnly !== 'boolean') o.visualOnly = false;

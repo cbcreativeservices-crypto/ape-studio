@@ -23,6 +23,9 @@ import { spDiTotals, spSummary } from './spDerive.ts';
 import { spBrokenRefs, spObjectOfSource, spOnStage, spPartner, spPatch } from './spModel.ts';
 
 const hasText = (s: string): boolean => s.trim().length > 0;
+/** A phone number has at least five digits (the Setup field's warning uses
+ *  the same test). */
+export const spLooksLikePhone = (s: string): boolean => (s.match(/\d/g) ?? []).length >= 5;
 import type { SpId, SpMix, SpObjectKind, SpPatchId, SpProject } from './spTypes.ts';
 
 export type SpIssueLevel = 'block' | 'ask' | 'open';
@@ -134,7 +137,9 @@ export function spReview(p: SpProject): SpIssue[] {
     const named = c.show.name && hasText(c.name);
     // an email counts only when it looks like one (the same test as the
     // Setup field's warning): "ana-at-example" reaches nobody
-    const reachable = (c.show.phone && hasText(c.phone)) || (c.show.email && c.email.trim().includes('@'));
+    // …and a phone only when it has the digits of one: "abc" reaches nobody
+    // either (R2-SP1-07, the rest of round-1 S2-05)
+    const reachable = (c.show.phone && spLooksLikePhone(c.phone)) || (c.show.email && c.email.trim().includes('@'));
     if ((p.performers.length || p.inputs.length) && (!named || !reachable)) {
       add({ key: 'contact', rule: 'no-contact', level: 'ask', text: 'The packet shows no technical contact with a phone number or an email. The venue’s engineer has nobody to ask.', packetText: 'No technical contact is listed for this band.', area: 'setup', target: { kind: 'project', id: null }, actions: ['edit'] });
     }
@@ -187,7 +192,14 @@ export function spReview(p: SpProject): SpIssue[] {
       add({ key: `noinput:${s.id}`, rule: 'source-no-input', level: 'ask', text: `${s.label} has no input. Is it acoustic, is it self-contained, or does it still need its inputs?`, area: 'inputs', target: { kind: 'source', id: s.id }, actions: ['mark-acoustic', 'mark-self-contained', 'add-inputs'] });
     }
     if (inputs.length && !s.offstage && !spObjectOfSource(p, s.id)) {
-      add({ key: `unplaced:${s.id}`, rule: 'source-unplaced', level: 'ask', text: `${s.label} is in the input list but not on the stage.`, area: 'stage', target: { kind: 'source', id: s.id }, actions: ['locate', 'mark-offstage'] });
+      // Named from the SOURCE with its own rows: "Keys 2 is in the input
+      // list" was false when the row called Keys 2 was another source's
+      // (R2-SP2-05). The short sentence only when the one row has its name.
+      const rows = inputs.map((i) => i.label);
+      const same = rows.length === 1 && rows[0].trim().toLowerCase() === s.label.trim().toLowerCase();
+      const list = rows.length > 1 ? `${rows.slice(0, -1).join(', ')} and ${rows[rows.length - 1]}` : rows[0];
+      const text = same ? `${s.label} is in the input list but not on the stage.` : `${s.label} is not on the stage, and its ${rows.length === 1 ? 'input' : 'inputs'} ${list} ${rows.length === 1 ? 'is' : 'are'} in the input list.`;
+      add({ key: `unplaced:${s.id}`, rule: 'source-unplaced', level: 'ask', text, area: 'stage', target: { kind: 'source', id: s.id }, actions: ['locate', 'mark-offstage'] });
     }
   }
 
@@ -203,10 +215,12 @@ export function spReview(p: SpProject): SpIssue[] {
     add({ key: `cue:${i.id}`, rule: 'cue-to-audience', level: 'ask', text: `${i.label} is a click or cue, and it is set to go to the AUDIENCE mix. Is the audience meant to hear it?`, area: 'inputs', target: { kind: 'input', id: i.id }, actions: ['cue-audience-ok', 'edit'] });
   }
 
-  // DI devices asked to carry more than they have (a capacity that was entered)
+  // DI devices asked to carry more than they have (a capacity that was
+  // entered). A packet cannot say both, so it must be corrected before Ready,
+  // as a duplicate channel is (round-1 bug 18, still open in round 2).
   for (const o of spDiTotals(p).overloaded) {
     const d = p.diDevices.find((x) => x.label === o.label);
-    add({ key: `dicap:${d?.id ?? o.label}`, rule: 'capacity', level: 'ask', text: `${o.label} has ${o.channels} channel${o.channels === 1 ? '' : 's'} and is asked to carry ${o.used}.`, area: 'inputs', target: { kind: 'di', id: d?.id ?? null }, actions: ['edit'] });
+    add({ key: `dicap:${d?.id ?? o.label}`, rule: 'capacity', level: 'block', text: `${o.label} has ${o.channels} channel${o.channels === 1 ? '' : 's'} and is asked to carry ${o.used}. Move a channel to another DI device, or correct its number of channels.`, area: 'inputs', target: { kind: 'di', id: d?.id ?? null }, actions: ['edit'] });
   }
 
   // DI devices: one that carries nothing, and a contradiction the band typed

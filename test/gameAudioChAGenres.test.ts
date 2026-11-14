@@ -127,7 +127,8 @@ describe('page 4: GAMES moves the scene, and each line says only what is true', 
     assert.equal(new Set(GA_GENRES.map((g) => g.demo.line)).size, 12);
   });
   it('the page runs a pick as: a clean scene, then that kind’s actions', () => {
-    assert.match(PAGE4, /gaDispatch\(\{ type: 'enterPage' \}\);\n\s+for \(const a of g\.demo\.actions\) gaDispatch\(a\);/);
+    // round 2 (B-S3-05): the clean scene keeps the page's log clock
+    assert.match(PAGE4, /gaDispatch\(\{ type: 'enterPage', keepClock: true \}\);\n\s+for \(const a of g\.demo\.actions\) gaDispatch\(a\);/);
     assert.match(PAGE4, /runDemo\(next\);/);
     const clean = demo('puzzle');
     assert.equal(clean.listenerMode, 'player', 'what the learner left (the camera) does not carry into a demonstration');
@@ -170,7 +171,9 @@ describe('page 4: GAMES moves the scene, and each line says only what is true', 
     assert.equal(gaFact(s, 'speedWhilePlaying') - gaFact(run(gaInitial()), 'speedWhilePlaying'), 1);
     // the page has no SPEED readout: the line names what the picture shows (bug test B-S2-03)
     assert.doesNotMatch(gaGenre('racing')!.demo.line, /SPEED/);
-    assert.match(gaGenre('racing')!.demo.line, /rings crowd closer.*without starting again/);
+    // round 2 (R2-GA1-13): both actions land at once, so no "then" and no "closer"
+    assert.match(gaGenre('racing')!.demo.line, /rings crowd close\b.*without starting again/);
+    assert.doesNotMatch(gaGenre('racing')!.demo.line, /\bthen\b|closer|faster/);
   });
   it('SPORTS: an impact, then a voice', () => {
     const s = demo('sports');

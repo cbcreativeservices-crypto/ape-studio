@@ -440,7 +440,7 @@ export const spmNewDeviceLabel = (p: SpProject, type: SpDeviceType): string => n
  *  a performer's name; a pack or a headphone amplifier is LINKED to the
  *  performer who uses it. Only a transmitter is marked wireless: the radio
  *  frequency coordination is recorded once for a transmitter and its packs. */
-export function spmUsualDevices(p: SpProject, f: { delivery: SpDelivery; recipients: readonly SpId[] }): SpmDeviceRow[] {
+export function spmUsualDevices(p: SpProject, f: { delivery: SpDelivery; recipients: readonly SpId[]; provider?: SpMixProvider }): SpmDeviceRow[] {
   const used = usedLabels(p);
   const people = f.recipients.filter((id) => p.performers.some((x) => x.id === id));
   const row = (type: SpDeviceType, label: string, performerId: SpId | null, n: number): SpmDeviceRow => ({ key: `${type}:${performerId ?? n}`, type, label, performerId, wireless: type === 'iem-tx' });
@@ -449,7 +449,9 @@ export function spmUsualDevices(p: SpProject, f: { delivery: SpDelivery; recipie
     case 'wedge':
       return [row('wedge', newLabel('wedge', used), null, 0)];
     case 'wired-iem':
-      return personal('hp-amp');
+      // A personal mixer drives the earphones itself: no separate headphone
+      // amplifier is taught or listed (R2-SP2-06).
+      return personal(f.provider === 'personal-mixer' ? 'personal-mixer' : 'hp-amp');
     case 'wireless-iem':
       return [row('iem-tx', newLabel('iem-tx', used), null, 0), ...personal('iem-pack')];
     case 'drum-fill':

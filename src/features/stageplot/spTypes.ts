@@ -303,6 +303,11 @@ export type SpProject = {
   revision: number;
   /** The revision last frozen (exported, or marked ready); 0 = never. */
   frozenRevision: number;
+  /** The revision a real PACKET was last made from (DOWNLOAD PDF, SHARE,
+   *  PRINT); 0 = never. Ready and COPY TECHNICAL SUMMARY freeze a revision
+   *  but never set this (bug test R2-SP1-01). A plot saved before this field
+   *  existed reads 0: nothing is taken as exported. */
+  packetRevision: number;
   status: SpStatus;
   /** Recorded only if the user says so; separate from `status`. */
   venueConfirmed: boolean;
@@ -327,6 +332,11 @@ export type SpProject = {
   seq: number;
   /** Which template it started from ('' = blank), shown as an assumption. */
   startedFrom: string;
+  /** True only for a plot started from the BLANK stage (or a duplicate or
+   *  gig copy of one). Only such a plot earns the lab's credit (owner
+   *  2026-11-13, R2-SP1-04). A plot saved before this field existed reads
+   *  false: where it started cannot be known for certain. */
+  startedBlank: boolean;
 };
 
 /** What the export is asked to make. */

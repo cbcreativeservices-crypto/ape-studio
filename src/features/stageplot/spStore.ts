@@ -183,6 +183,8 @@ export function spDayFromText(text: string): string | null {
 export function spStageSizeFromText(text: string): number | null | 'unread' | 'zero' | 'big' {
   const t = text.trim();
   if (!t) return null;
+  // −5 IS a number: it is answered "must be more than 0" (R2-SP1-08)
+  if (/^[-−]\s*\d+([.,]\d+)?$/.test(t)) return 'zero';
   if (!/^\d+([.,]\d+)?$/.test(t)) return 'unread';
   const n = Number(t.replace(',', '.'));
   if (!Number.isFinite(n)) return 'unread';

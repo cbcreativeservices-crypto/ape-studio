@@ -8,11 +8,11 @@
  * at the MIN_FONT 12 floor.
  */
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { fitValue } from '../../../theme/legibility';
 import type { BezelItem } from './rackTypes';
-import { bezelKeyFit } from './dockFit';
+import { bezelKeyFit, dockValueFitSize } from './dockFit';
 
 export function BezelReadouts({
   items,
@@ -53,6 +53,12 @@ const CELL_PAD = 16;
 const TAP_CARET = ' ›';
 /** The smallest a value may be drawn (owner: lab display text ≥ 9 pt). */
 const V_MIN_FS = 9;
+/** The sub line's authored size (styles.unit). */
+const SUB_FS = 11;
+/** The web reports whole-pixel widths, so its key and sub fits keep a margin
+ *  (dockFit, frame round 2); a phone's widths are fractional, and there the
+ *  bezel fits exactly as before (checker follow-up, 2026-11-13). */
+const WEB = Platform.OS === 'web';
 
 /** Split "−15.9 LUFS" / "-15.9LUFS" / "2.8LU" into its number and its unit,
  *  so a cropped value can stack them instead of losing its tail. */
@@ -97,12 +103,23 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
   // not: the key line is measured off screen at its natural width (the tap
   // caret included) against the cell's inner width; it shortens to `kNarrow`
   // when the readout has one that fits, else it goes and the value keeps the
-  // cell. A key that fits is drawn exactly as before.
+  // cell. A key that fits is drawn exactly as before. It must fit with
+  // BEZEL_KEY_MARGIN_PX to spare (frame round 2): both widths are whole-pixel
+  // measures on the web, and a key "fitting" within half a pixel was cut.
   const [keyW, setKeyW] = useState(0);
   const [narrowW, setNarrowW] = useState(0);
   const keyAvail = cellW > 0 ? cellW - CELL_PAD - (it.frame ? 2 : first ? 0 : 1) : 0;
-  const keyFit = bezelKeyFit(keyAvail, keyW, it.kNarrow ? narrowW : undefined);
+  const keyFit = bezelKeyFit(keyAvail, keyW, it.kNarrow ? narrowW : undefined, WEB);
   const keyText = keyFit === 'narrow' && it.kNarrow ? it.kNarrow : it.k;
+  // ⛔ THE SUB LINE SHRINKS, NEVER "…" (frame round 2, 2026-11-13: DJ Systems
+  // at 320 drew "USE A SCAL…", "dBA (MOD…", "SETTING U…"). fitValue's
+  // shrink-to-fit is native only; on the web the line was simply cut. It is
+  // measured like the dock's values and drawn at the largest size that fits
+  // with VALUE_FIT_MARGIN_PX to spare, never under 9 pt; a sub that fits is
+  // drawn exactly as before, and one that cannot fit even at 9 pt as before.
+  // Web only: on a phone fitValue's own shrink-to-fit already does this.
+  const [subW, setSubW] = useState(0);
+  const subFs = WEB && it.sub ? (dockValueFitSize(SUB_FS, subW, keyAvail) ?? SUB_FS) : SUB_FS;
   return (
     <Pressable
       style={[styles.cell, { flex: it.flex ?? 1 }, first && styles.cellFirst, it.onPress && styles.cellTappable, it.frame ? [styles.cellFramed, { borderColor: it.frame, borderLeftColor: it.frame }] : null]}
@@ -112,7 +129,10 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
       disabled={!it.onPress && !it.helpKey}
       accessibilityRole={it.onPress ? 'button' : 'text'}
       accessibilityLabel={`${it.k}: ${it.vA11y ?? it.v}${it.sub ? ` ${it.sub}` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`}
-      onLayout={(e) => setCellW(Math.round(e.nativeEvent.layout.width))}
+      // On the web floored, never rounded up (frame round 2): the width arrives
+      // as a whole pixel already (63.58 as 64), and BEZEL_KEY_MARGIN_PX covers
+      // that. On a phone rounded, as before (checker follow-up).
+      onLayout={(e) => setCellW(WEB ? Math.floor(e.nativeEvent.layout.width) : Math.round(e.nativeEvent.layout.width))}
     >
       {/* The key line's natural widths (invisible, never read aloud). */}
       <View style={styles.measureBox} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
@@ -127,6 +147,13 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
             <Text style={styles.k} onLayout={(e) => setNarrowW(e.nativeEvent.layout.width)}>
               {it.kNarrow}
               {it.onPress ? <Text style={styles.tapMark}>{TAP_CARET}</Text> : null}
+            </Text>
+          </View>
+        ) : null}
+        {it.sub ? (
+          <View style={styles.measureRow}>
+            <Text style={[styles.v, styles.unit]} onLayout={(e) => setSubW(e.nativeEvent.layout.width)}>
+              {it.sub}
             </Text>
           </View>
         ) : null}
@@ -163,7 +190,7 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
         </Text>
       )}
       {it.sub ? (
-        <Text style={[styles.v, styles.unit, it.tint ? { color: it.tint } : null]} {...fitValue(11)}>
+        <Text style={[styles.v, styles.unit, it.tint ? { color: it.tint } : null, subFs !== SUB_FS ? { fontSize: subFs } : null]} {...fitValue(subFs)}>
           {it.sub}
         </Text>
       ) : null}

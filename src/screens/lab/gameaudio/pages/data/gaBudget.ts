@@ -80,7 +80,7 @@ export function memoryRow(id: string, label: string, file: string, sound: Memory
 
 /** One row as a spoken sentence (the card's accessibility label). */
 export const memoryRowSpoken = (r: MemoryRow): string =>
-  `${r.label}: ${r.seconds} seconds at ${fmtInt(r.sr)} samples per second, ${r.channels === 1 ? 'one channel' : `${r.channels} channels`}, ${fmtInt(r.bytes)} bytes when decoded.`;
+  `${r.label}: ${r.seconds} ${r.seconds === 1 ? 'second' : 'seconds'} at ${fmtInt(r.sr)} samples per second, ${r.channels === 1 ? 'one channel' : `${r.channels} channels`}, ${fmtInt(r.bytes)} bytes when decoded.`;
 
 /* ── the floor under the budget ─────────────────────────────────────────── */
 

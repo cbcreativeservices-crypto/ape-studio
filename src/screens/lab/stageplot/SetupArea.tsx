@@ -38,7 +38,7 @@ import {
   spUpdateMix,
   spUpdatePerformer,
 } from '../../../features/stageplot/spModel';
-import { spCanMarkReady } from '../../../features/stageplot/spReview';
+import { spCanMarkReady, spLooksLikePhone } from '../../../features/stageplot/spReview';
 import { spDateWords, spDayFromText, spLooksLikeTime as looksLikeTime, spProjectName, spStageSizeFromText as sizeFromText, useSpProjects } from '../../../features/stageplot/spStore';
 import { SP_TEMPLATES } from '../../../features/stageplot/spTemplates';
 import type { SpContact, SpPerformer, SpProject, SpStatus } from '../../../features/stageplot/spTypes';
@@ -119,11 +119,13 @@ export function SetupArea() {
     select(null);
   }, [asked, select]);
   // A review question about a Setup FIELD ("Go to" from another area): the
-  // rule is left by spIssueActions and taken once here. The band name and
-  // the title are on the first screen; the contact block and the performers
-  // are scrolled to when they have been laid out.
-  const wanted = useRef<'contact' | 'performers' | null>(null);
+  // rule is left by spIssueActions and taken once here. Each block is
+  // scrolled to when it has been laid out: the band name and the title too,
+  // because the open guided steps push them below a phone's first screen
+  // (R2-SP1-03).
+  const wanted = useRef<'contact' | 'band' | null>(null);
   const contactY = useRef<number | null>(null);
+  const bandY = useRef<number | null>(null);
   useEffect(() => {
     const field = spSetupField(takeSpSetupAsk());
     if (field === 'performers') {
@@ -132,6 +134,9 @@ export function SetupArea() {
     } else if (field === 'contact') {
       if (contactY.current != null) scrollRef.current?.scrollTo({ y: Math.max(0, contactY.current - 8), animated: false });
       else wanted.current = 'contact';
+    } else if (field === 'band' || field === 'title') {
+      if (bandY.current != null) scrollRef.current?.scrollTo({ y: Math.max(0, bandY.current - 8), animated: false });
+      else wanted.current = 'band';
     }
   }, []);
   const [removing, setRemoving] = useState<string | null>(null);
@@ -139,6 +144,9 @@ export function SetupArea() {
    *  corrects it instead of typing it again (bug test S3-08). */
   const [dateRefused, setDateRefused] = useState<string | null>(null);
   const [sizeSaid, setSizeSaid] = useState<string | null>(null);
+  /** A refused stage size is KEPT in its field with the note, as a refused
+   *  date is, so it is corrected and not typed again (R2-SP1-08). */
+  const [sizeRefused, setSizeRefused] = useState<{ width?: string; depth?: string }>({});
 
   /** One edit of the project's own fields. */
   const set = (change: (d: SpProject) => void) => ed.apply((q) => spEdit(q, change));
@@ -183,12 +191,17 @@ export function SetupArea() {
   const commitSize = (key: 'width' | 'depth', text: string, how?: SpCommitHow) => {
     const n = sizeFromText(text);
     if (typeof n === 'string') {
-      if (how !== 'paused') setSizeSaid(SIZE_SAID[n]);
+      if (how !== 'paused') {
+        setSizeSaid(SIZE_SAID[n]);
+        setSizeRefused((r) => ({ ...r, [key]: text }));
+      }
       return;
     }
+    setSizeRefused((r) => ({ ...r, [key]: undefined }));
     setSizeSaid(null);
     if (n !== p.stage[key]) set((d) => (d.stage[key] = n));
   };
+  const sizeShown = (key: 'width' | 'depth'): string => sizeRefused[key] ?? (p.stage[key] == null ? '' : String(p.stage[key]));
 
   // RENAMING A PERFORMER RENAMES WHAT WAS NAMED AFTER THEM, in the same edit:
   // their mixes ("Leo, wedge") and the monitor devices they use or that play
@@ -261,6 +274,15 @@ export function SetupArea() {
 
           <GuidedTask />
 
+          <View
+            onLayout={(e) => {
+              bandY.current = e.nativeEvent.layout.y;
+              if (wanted.current === 'band') {
+                wanted.current = null;
+                scrollRef.current?.scrollTo({ y: Math.max(0, e.nativeEvent.layout.y - 8), animated: false });
+              }
+            }}
+          >
           <Section title="THE BAND">
             <TextField label="Band or artist name" value={p.band} onCommit={(band) => set((d) => (d.band = band))} />
             {noBandName ? <Note tone="warning">{noBandName.text} Type it above.</Note> : null}
@@ -275,6 +297,7 @@ export function SetupArea() {
               <Note>{master ? `A gig copy of “${spProjectName(master)}”. What you change here does not change the master.` : 'A gig copy. Its master is no longer on this device.'}</Note>
             ) : null}
           </Section>
+          </View>
 
           <View
             onLayout={(e) => {
@@ -355,6 +378,8 @@ export function SetupArea() {
               <View key={f.key} style={styles.pair}>
                 <TextField label={f.label} value={p.contact[f.key]} keyboard={f.keyboard} placeholder={f.placeholder} onCommit={(text) => setContact((c) => (c[f.key] = text))} />
                 {f.key === 'email' && email && !email.includes('@') ? <Note tone="warning">This does not look like an email address. It is kept as typed.</Note> : null}
+                {/* the same test the review uses (R2-SP1-07) */}
+                {f.key === 'phone' && p.contact.phone.trim() && !spLooksLikePhone(p.contact.phone) ? <Note tone="warning">This does not look like a phone number. It is kept as typed.</Note> : null}
                 <Switch label={`Show the ${f.word} in the packet`} value={p.contact.show[f.key]} onChange={(on) => setContact((c) => (c.show[f.key] = on))} />
               </View>
             ))}
@@ -398,8 +423,8 @@ export function SetupArea() {
 
           <Section title="STAGE SIZE" hint="Optional. Type it if the venue told you, or if you measured it.">
             <Fields>
-              <TextField label="Width" value={p.stage.width == null ? '' : String(p.stage.width)} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('width', t, how)} hint="Side to side." />
-              <TextField label="Depth" value={p.stage.depth == null ? '' : String(p.stage.depth)} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('depth', t, how)} hint="Front to back." />
+              <TextField label="Width" value={sizeShown('width')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('width', t, how)} hint="Side to side." />
+              <TextField label="Depth" value={sizeShown('depth')} keyboard="numeric" width="half" onCommit={(t, how) => commitSize('depth', t, how)} hint="Front to back." />
             </Fields>
             {sizeSaid ? <Note tone="warning">{sizeSaid}</Note> : null}
             <Choice label="Measured in" value={p.stage.unit} options={UNIT_OPTIONS} onChange={(unit) => set((d) => (d.stage.unit = unit))} hint="Changing the unit does not convert the numbers." />
@@ -458,7 +483,7 @@ export function SetupArea() {
                   • {plural(links.devices.length, 'monitor device', 'monitor devices')} that only they use ({links.devices.map((d) => d.label.trim() || 'no name').join(', ')}).
                 </Text>
               ) : null}
-              {links.objects.length > ownObjects.length ? <Text style={styles.link}>• The object that stands for them on the stage. It is removed with them in both choices.</Text> : null}
+              {links.objects.length > ownObjects.length ? <Text style={styles.link}>{`• The object that stands for them on the stage. It is removed with them${hasOwn ? ' in both choices' : ''}.`}</Text> : null}
               {ownObjects.length ? (
                 <Text style={styles.link}>
                   • {plural(ownObjects.length, 'more object', 'more objects')} on the stage, drawn for their sources, inputs and monitor devices ({ownObjects.map((o) => o.label.trim() || 'no name').join(', ')}).

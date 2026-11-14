@@ -225,7 +225,7 @@ export function LabEndScreen({
             accessibilityRole="button"
             accessibilityState={{ expanded: showCredited }}
             aria-expanded={showCredited}
-            accessibilityLabel={`${w.credited.length} ${tag.toLowerCase()}. ${showCredited ? 'Hide' : 'Show'} them to review`}
+            accessibilityLabel={`${w.credited.length} ${tag.toLowerCase()}. ${showCredited ? 'Hide them' : 'Show them to review'}`}
           >
             {/* What is done, never "n OF N" (owner rule D117; D41 K1). */}
             <Text style={styles.creditedText}>

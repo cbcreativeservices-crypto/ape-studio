@@ -27,8 +27,10 @@
  * A PLANTED FAULT DOES NOT NAME ITSELF (lead's decision 10). From START THE
  * FAULT until a guide step has really used the wrong surface, the GUIDE
  * FLOOR readout and the table keep the guide's own surface (the value its
- * last footstep sent), the table carries no mark, and SCOPE is locked. After
- * that step they show what the switch reads and say where it came from.
+ * last footstep sent), the table carries no mark, and SCOPE shows the scope
+ * in use before the start, with no "?" and no lock (round 2, R2-GA1-01). After
+ * that step they show what the switch reads and say where it came from. The
+ * common-mistake note sits below the card: above it, it was the answer.
  *
  * Common mistake taught against: applying a character's surface to everyone.
  */
@@ -42,7 +44,8 @@ import { gaTerms } from '../gaTerms';
 import { surfaceOf, type GaCharId, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { SURFACE_NAME, surfaceAt, type GaSurfaceId } from '../model/gaWorld';
-import { SyncTable, TrayBox, TrayChip, TrayRow, onOff, useCountWhen, type SyncRow } from './chbBits';
+import { SyncTable, TrayBox, TrayChip, TrayRow, onOff, useCountWhen, useFreshProof, usePlantedFault, type SyncRow } from './chbBits';
+import { gaPlantedWhere } from '../bitsLogic';
 import { CHB_FOOTSTEP_ASSETS, CHB_P08_LOG, chbGuideOwnSurface, chbGuideSurfaceShown, chbPlaceOf, chbRoute, chbSteps, type ChbPlaceId } from './data/chbScene';
 import { G08 } from './guides/p08';
 import { pct, speedKey, useSince } from './shared';
@@ -134,13 +137,21 @@ function Page({ ctx }: { ctx: PageCtx }) {
 
   // THE CARD. `startedAt` = how many wrong-surface steps the visit had when
   // START THE FAULT was pressed; until one more happens, nothing names the fault.
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const unnamed = startedAt !== null && global && wrongSteps <= startedAt;
+  const plant = usePlantedFault(wrongSteps, global);
+  const { unnamed } = plant;
+  // SCOPE as the page shows it: while the fault is not yet found, the scope
+  // in use before START, with no "?" and no lock (round 2, R2-GA1-01)
+  const shownGlobal = plant.shown;
+  // whose scope that is: the project's, or the build's once a guide step has
+  // shown what the build does (checker C-4: never a lie on screen)
+  const where = gaPlantedWhere(unnamed, wrongSeen);
+  const inWhere = where === 'project' ? 'In the project' : 'In the build';
   const guideShown = chbGuideSurfaceShown(s, !unnamed);
   // FIXED needs a guide step AFTER the scope was corrected, not only the
   // setting flipped back (bug test 2026-11-13, B-S3-10; page 6 likewise needs
   // the door to play again)
-  const repaired = useCountWhen(guideSteps, wrongSeen && !global) > 0;
+  // a guide step on its own surface AFTER THE NEWEST wrong one (checker C-1)
+  const repaired = useFreshProof(wrongSteps, guideSteps, wrongSeen && !global);
   const fixed = wrongSeen && !global && repaired;
 
   const goals = [
@@ -176,15 +187,14 @@ function Page({ ctx }: { ctx: PageCtx }) {
     kind: 'options',
     id: 'scope',
     label: 'SCOPE',
-    valueLabel: unnamed ? '?' : global ? 'GLOBAL' : 'LOCAL',
-    valueA11y: unnamed ? 'how the surface switch is set has not been tested since the fault began: press STEP: GUIDE' : global ? 'the surface switch is set for everyone: global' : 'the surface switch is set for each character: local',
+    valueLabel: shownGlobal ? 'GLOBAL' : 'LOCAL',
+    valueA11y: `${inWhere.toLowerCase()}, ${shownGlobal ? 'the surface switch is set for everyone: global' : 'the surface switch is set for each character: local'}`,
     options: [
-      { id: 'local', label: 'FOR EACH CHARACTER', blurb: 'The surface switch is local. Each character holds its own value: the surface under its own feet.' },
-      { id: 'global', label: 'FOR EVERYONE', blurb: 'The surface switch is global. Every character uses one value: the surface under YOU.' },
+      { id: 'local', label: 'FOR EACH CHARACTER', blurb: `${inWhere}, the surface switch is local. Each character holds its own value: the surface under its own feet.` },
+      { id: 'global', label: 'FOR EVERYONE', blurb: `${inWhere}, the surface switch is global. Every character uses one value: the surface under YOU.` },
     ],
-    selectedId: global ? 'global' : 'local',
-    onSelect: (id) => setGlobalSurface(id === 'global'),
-    locked: unnamed ? 'Press STEP: GUIDE in the STEP tray first and read the log. Then SCOPE opens.' : undefined,
+    selectedId: shownGlobal ? 'global' : 'local',
+    onSelect: (id) => plant.pick(id === 'global', setGlobalSurface),
   };
 
   const rows: SyncRow[] = [
@@ -229,7 +239,6 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <Do>Tap SPEED, choose GENERATOR 1 · ON and move the slider. In MOOD, choose ALERT. Then start the fault on the TROUBLESHOOT card.</Do>
         <P>Speed is local too: it is kept on one generator, and its instance follows it. MOOD is a state: one STATE line changes it for every object, and the whole picture shows it. The question “one object or the whole game?” is called scope.</P>
-        <Note tone="mistake">Setting a switch for everyone when it belongs to one character. Then everyone sounds as if on the same ground.</Note>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>
@@ -242,7 +251,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
           seen={!unnamed}
           firstHint="First make the problem happen: open STEP, choose GRAVEL, press STEP: GUIDE, then read the newest GAME lines of the log."
           onStart={() => {
-            setStartedAt(wrongSteps);
+            plant.start(gaGet().faults.globalSurface);
             setGlobalSurface(true);
           }}
           hints={[
@@ -253,6 +262,9 @@ function Page({ ctx }: { ctx: PageCtx }) {
           why="A switch belongs to one game object. Here it was set once for everyone, so every character used the surface under you. Set for each character, the footstep event reads the surface under the feet that stepped."
         />
         {global || (wrongSeen && !fixed) ? <ActivityLog state={s} lines={4} only={CHB_P08_LOG} /> : null}
+        {/* below the card, so it is not the card's answer before the card (R2-GA1-01) */}
+        {/* shown before START and once the fault has been met, never while it hides (checker C-2) */}
+        {!unnamed ? <Note tone="mistake">Setting a switch for everyone when it belongs to one character. Then everyone sounds as if on the same ground.</Note> : null}
       </Step>
       <Step n={5}>
         <UnderstandingCheck

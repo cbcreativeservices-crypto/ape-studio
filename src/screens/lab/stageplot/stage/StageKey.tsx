@@ -22,7 +22,8 @@
  * Laid out in glass units by stageGeom's `stageKeyLayout` (node-tested) and
  * painted through one viewBox, so it grows with FULL SCREEN like the stage.
  */
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { spKeyRot, spKeySymbol, type SpKeyEntry } from '../../../../features/stageplot/spSymbols';
 import type { SpObject, SpObjectKind, SpProject } from '../../../../features/stageplot/spTypes';
@@ -85,20 +86,30 @@ export function StageKey({
   shownH?: number;
 }) {
   const h = (layout.height * w) / Math.max(1, gw);
+  /** How far the key is scrolled: "▼ MORE" fades out at the end, where END OF
+   *  THE KEY says it (R2-SP1-05). Not a touch: the key still takes none. */
+  const scrolled = useRef(new Animated.Value(0)).current;
   const label = layout.note ? `${stageKeyWords(entries)} ${scaleWords(layout.note.text)}` : stageKeyWords(entries);
   if (shownH != null && shownH < h - 0.5) {
     // A LONG KEY ON A SHORT PHONE: its own scroller, inside the display. The
     // last line says that more of the key is below, so nothing reads as cut.
     return (
       <View style={{ width: w, height: shownH }} accessible accessibilityRole="text" accessibilityLabel={label}>
-        <ScrollView style={{ width: w, height: shownH }} nestedScrollEnabled showsVerticalScrollIndicator persistentScrollbar>
+        <Animated.ScrollView
+          style={{ width: w, height: shownH }}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator
+          persistentScrollbar
+          scrollEventThrottle={32}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrolled } } }], { useNativeDriver: false })}
+        >
           <View pointerEvents="none">{keyArt(project, layout, w, h, gw)}</View>
           {/* room under the last row, so the tag below never covers a name */}
           <Text style={keyStyles.more}>END OF THE KEY</Text>
-        </ScrollView>
-        <View pointerEvents="none" style={keyStyles.tag}>
+        </Animated.ScrollView>
+        <Animated.View pointerEvents="none" style={[keyStyles.tag, { opacity: scrolled.interpolate({ inputRange: [Math.max(0, h + MORE_H - shownH - 12), Math.max(1, h + MORE_H - shownH - 2)], outputRange: [1, 0], extrapolate: 'clamp' }) }]}>
           <Text style={keyStyles.tagText}>▼ MORE</Text>
-        </View>
+        </Animated.View>
       </View>
     );
   }
@@ -146,8 +157,11 @@ function keyArt(project: SpProject, layout: StageKeyLayout<SpObjectKind>, w: num
   );
 }
 
+/** The height of the END OF THE KEY line under the last row. */
+const MORE_H = 18;
+
 const keyStyles = StyleSheet.create({
-  more: { height: 18, paddingLeft: 6, paddingTop: 2, fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: '#6e7280', backgroundColor: GLASS },
+  more: { height: MORE_H, paddingLeft: 6, paddingTop: 2, fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: '#6e7280', backgroundColor: GLASS },
   tag: { position: 'absolute', right: 0, bottom: 0, paddingHorizontal: 6, paddingVertical: 1, backgroundColor: 'rgba(12,12,16,0.92)', borderTopLeftRadius: 4 },
   tagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.amber },
 });

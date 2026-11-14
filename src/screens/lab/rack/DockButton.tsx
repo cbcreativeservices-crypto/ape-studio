@@ -13,9 +13,9 @@
  * a label and its value with nothing to press (a chooser with one choice).
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import { DOCK_KEY_PAD, LABEL_FIT_MARGIN_PX, VALUE_FIT_MARGIN_PX, dockFitSize, dockKeyNeed, dockLabelFit, dockStripFit } from './dockFit';
+import { DOCK_KEY_PAD, LABEL_FIT_MARGIN_PX, dockKeyNeed, dockLabelFit, dockStripFit, dockValueFitSize } from './dockFit';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
@@ -70,6 +70,7 @@ export function DockButton({
   dim,
   plain,
   fit,
+  valueSpan,
 }: {
   label: string;
   /** Current value (mono amber). Key-variant buttons pass ''. */
@@ -102,6 +103,11 @@ export function DockButton({
   plain?: boolean;
   /** This key's place in the row (DockStrip). */
   fit?: DockKeyFit;
+  /** ADDITIVE (frame round 2, 2026-11-13): the widest value this key can
+   *  show (a chooser-fader's value over its whole lane, RackUnit). The key
+   *  asks for room for THAT, not for today's value, so it does not widen
+   *  under a drag ("SPEED 40%" → "SPEED 100%" moved every key sideways). */
+  valueSpan?: string;
 }) {
   const isKey = variant === 'key';
   // Toggles and actions share the flat KEY skin; only a toggle carries an LED.
@@ -149,6 +155,7 @@ export function DockButton({
   const [spacedGlyphW, setSpacedGlyphW] = useState(0);
   const [valueW, setValueW] = useState(0);
   const [valueH, setValueH] = useState(0);
+  const [spanW, setSpanW] = useState(0);
   // Inner width: the 1 px border and 4 px padding each side (less on a narrow
   // dock that tightened its chrome: DockKeyFit.padX); a key's LED dot (8) and
   // its gap (6) sit beside its label.
@@ -159,7 +166,10 @@ export function DockButton({
   const { fs: labelFs, tight, tracked } = fitsLabel
     ? dockLabelFit(LABEL_FS, labelW, inner, hasGlyph ? spacedW : 0, hasGlyph ? spacedGlyphW : 0, (label.length + 1) * LABEL_SPACING, LABEL_FIT_MARGIN_PX)
     : { fs: LABEL_FS, tight: false, tracked: true };
-  const valueFs = (value ? dockFitSize(VALUE_FS, valueW, inner) : VALUE_FS) ?? VALUE_FS;
+  // On the web a value keeps VALUE_FIT_MARGIN_PX inside the key, as authored
+  // or shrunk (frame round 2: "FACE 9…", "UNRE…" fitted by the half-pixel
+  // measures); on a phone, whose widths are fractional, the rule as before.
+  const valueFs = (value ? dockValueFitSize(VALUE_FS, valueW, inner, WEB) : VALUE_FS) ?? VALUE_FS;
   // A shrunk label keeps its tracking in proportion; a shrunk value keeps its
   // line height, so the key (and the dock) never changes height.
   const labelSize = labelFs !== LABEL_FS ? { fontSize: labelFs, letterSpacing: tracked ? (LABEL_SPACING * labelFs) / LABEL_FS : 0 } : null;
@@ -167,6 +177,8 @@ export function DockButton({
 
   // The least width that holds these words (dockKeyNeed). A fader's value is
   // left out: it changes under the drag, and the keys must not shift with it.
+  // A key with a `valueSpan` asks for its widest value instead (never less
+  // than today's), which holds still under the drag just the same.
   // Always at the authored padding: the strip takes a tightened row's padding
   // off itself (dockTightRow), so the need never moves with it.
   const need = dockKeyNeed({
@@ -178,7 +190,8 @@ export function DockButton({
     trackPx: (label.length + 1) * LABEL_SPACING,
     lines: fitsLabel ? 1 : 2,
     valueBase: VALUE_FS,
-    value: glyph === '▪' ? 0 : valueW,
+    web: WEB,
+    value: glyph === '▪' ? 0 : valueSpan ? Math.max(valueW, spanW) : valueW,
   });
   const onNeed = fit?.onNeed;
   useEffect(() => {
@@ -209,8 +222,13 @@ export function DockButton({
           </>
         ) : null}
         {!isKey && value ? (
-          <MeasureLine style={styles.value} onWidth={(w) => setValueW(w + VALUE_FIT_MARGIN_PX)} onHeight={setValueH}>
+          <MeasureLine style={styles.value} onWidth={setValueW} onHeight={setValueH}>
             {value}
+          </MeasureLine>
+        ) : null}
+        {!isKey && value && valueSpan ? (
+          <MeasureLine style={styles.value} onWidth={setSpanW}>
+            {valueSpan}
           </MeasureLine>
         ) : null}
       </Measure>
@@ -286,6 +304,10 @@ export function DockButton({
     </Pressable>
   );
 }
+
+/** The web's whole-pixel measures need the value margins (dockFit, frame round
+ *  2); on a phone the value fits exactly as before. */
+const WEB = Platform.OS === 'web';
 
 /** The authored sizes (styles.label / styles.value) and the label's spacing. */
 const LABEL_FS = 12;

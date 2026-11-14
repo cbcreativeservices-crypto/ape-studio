@@ -20,20 +20,25 @@ import { SP_MAX_CHANNEL, spInSentence, spParseReserved, spReservedText, spShared
 
 /** "Keep reserved channels free" is a choice of this screen, not of the
  *  document: it is remembered while the app is open, so a visit to another
- *  area does not turn it back on. */
-const keepReservedChoice: Partial<Record<SpPatchId, boolean>> = {};
+ *  area does not turn it back on. Kept PER STAGE PLOT and per list: OFF on
+ *  one plot never follows into another (R2-SP2-07). */
+const keepReservedChoice: Partial<Record<string, boolean>> = {};
 
 export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
   const ed = useSpEditor();
   const p = ed.project;
   const patch = spPatch(p, patchId);
-  const [keepReserved, setKeepReservedState] = useState(keepReservedChoice[patchId] ?? true);
+  const choiceKey = `${p.id}:${patchId}`;
+  const [keepReserved, setKeepReservedState] = useState(keepReservedChoice[choiceKey] ?? true);
   const setKeepReserved = (on: boolean) => {
-    keepReservedChoice[patchId] = on;
+    keepReservedChoice[choiceKey] = on;
     setKeepReservedState(on);
   };
   const [rejected, setRejected] = useState<string[]>([]);
-  if (!patch || !patch.order.length) return null;
+  if (!patch) return null;
+  // An empty list still takes its reserved channels: a band that knows "keep
+  // 1-2 free" sets it before the first input (R2-SP2-13).
+  const empty = !patch.order.length;
 
   const shared = spSharedNotice(p);
   const inStep = spNumbersFollowOrder(p, patchId);
@@ -57,6 +62,26 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
     ed.apply((q) => spSetReserved(q, patchId, read.numbers));
   };
 
+  const reservedField = (
+    <>
+      <TextField
+        label="Reserved channels"
+        value={reserved}
+        onCommit={commitReserved}
+        placeholder="7, 15-16"
+        hint="Channel numbers you keep free on purpose. Type numbers and ranges, such as 7, 15-16."
+      />
+      {rejected.length ? <Note tone="warning">Not read as a channel number: {rejected.join(', ')}. Use whole numbers from 1 to {SP_MAX_CHANNEL}.</Note> : null}
+    </>
+  );
+  if (empty) {
+    return (
+      <Section title="RESERVED CHANNELS" hint={`For the ${spInSentence(patch.name)} list. Inputs you add later skip these numbers.`}>
+        {reservedField}
+      </Section>
+    );
+  }
+
   return (
     <Section title="ORDER OF THE INPUT LIST" hint={`For the ${spInSentence(patch.name)} list. Use the ▲ and ▼ buttons on a row to move one input. The buttons below change the whole list.`}>
       {shared ? <Note tone="warning">{shared}</Note> : null}
@@ -67,7 +92,7 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
       <View style={bitStyles.gap}>
         <Button label="RENUMBER" onPress={renumber} a11yLabel={`Renumber the ${spInSentence(patch.name)} list from 1 in its present order`} />
         <Small>
-          Numbers the list 1, 2, 3 in its present order. {inStep ? 'The numbers follow the order now.' : 'Some numbers do not follow the order now, or are missing.'} Gaps you typed are closed; reserved channels can stay free.
+          Numbers the list 1, 2, 3 in its present order. {inStep ? 'The numbers follow the order now.' : 'Some numbers do not follow the order now, or are missing.'} Gaps you typed are closed; reserved channels can stay free, and a stereo pair then takes the next two neighbouring free channels.
         </Small>
         <Switch
           label="Keep reserved channels free"
@@ -76,14 +101,7 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
           hint={!patch.reserved.length ? 'No channel is reserved yet.' : keepReserved ? `SORT IN THE USUAL ORDER and RENUMBER skip ${reserved}.` : `Reserved: ${reserved}. They are not kept free while this is off. An input given one of them is a review question, to settle before Ready to advance.`}
         />
       </View>
-      <TextField
-        label="Reserved channels"
-        value={reserved}
-        onCommit={commitReserved}
-        placeholder="7, 15-16"
-        hint="Channel numbers you keep free on purpose. Type numbers and ranges, such as 7, 15-16."
-      />
-      {rejected.length ? <Note tone="warning">Not read as a channel number: {rejected.join(', ')}. Use whole numbers from 1 to {SP_MAX_CHANNEL}.</Note> : null}
+      {reservedField}
     </Section>
   );
 }

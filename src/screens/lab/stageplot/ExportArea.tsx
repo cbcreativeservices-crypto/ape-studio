@@ -54,7 +54,7 @@ import {
   type SpFramePrintOutcome,
   type SpPdfVia,
 } from '../../../features/stageplot/spExport';
-import { SP_PACKET_WORD, SP_PAPER_WORD, spAfterExport, spBuildDoc, spBuildSnapshot, spDocText, spEmailText, spEquipmentSplit, spShownContact } from '../../../features/stageplot/spPacket';
+import { SP_PACKET_WORD, SP_PAPER_WORD, SP_PLOT_ONLY_WORDS, spAfterExport, spBuildDoc, spBuildSnapshot, spDocText, spEmailText, spEquipmentSplit, spShownContact } from '../../../features/stageplot/spPacket';
 import { SP_PAGES, spPacketHtml } from '../../../features/stageplot/spPacketHtml';
 import { spPdfPageCount } from '../../../features/stageplot/spPdf';
 import { spCanExport } from '../../../features/stageplot/spReview';
@@ -200,7 +200,7 @@ export function ExportArea() {
     // NOW (it may have been edited in another area while the output was made)
     let untouched = false;
     now.apply((p) => {
-      const next = spAfterExport(p, snap);
+      const next = spAfterExport(p, snap, packetMade);
       untouched = next.revision === snap.project.revision;
       return next;
     });
@@ -379,6 +379,8 @@ export function ExportArea() {
       <View style={[cardColumn, styles.column]}>
         <Section title="WHAT TO MAKE" hint="These two choices are for the packet you make now. They are not saved in your stage plot.">
           <Choice label="Packet" value={packet} options={PACKETS} onChange={(v) => patch({ packet: v })} hint="The compact packet leaves out what the plot and the other tables already say, and forces no page break. The text is never made smaller." />
+          {/* the plot-only page still works; it is not the packet (owner 2026-11-13) */}
+          {packet === 'plot' ? <Note>{SP_PLOT_ONLY_WORDS}</Note> : null}
           <Choice label="Paper" value={paper} options={PAPERS} onChange={(v) => patch({ paper: v })} />
           {shown ? <Note>{`${pages ? `The PDF has ${plural(pages, 'page')} on ${SP_PAPER_WORD[paper]}. ` : ''}File name: ${shown.doc.fileName}`}</Note> : null}
           <Note>{`Contact shown in the packet: ${contactShown.join(', ') || 'none'}. Change it in SETUP.`}</Note>

@@ -115,7 +115,9 @@ function LinesStrip({ W, s, m, now, smooth }: { W: number; s: GaState; m: BMemo;
             ) : null}
             {wasCut ? <RoundedRect x={x0} y={y} width={Math.max(0, cutX - x0)} height={ROW_H} r={2.5} color={B.muted} opacity={0.34} /> : null}
             <RoundedRect x={x0} y={y} width={boxLen} height={ROW_H} r={2.5} style="stroke" strokeWidth={speaking ? 1.3 : 1} color={speaking ? B.guide : B.rule} />
-            {wasCut ? <Cross x={cutX} y={mid} /> : null}
+            {/* while the row reads REFUSED its words run from the start, so the
+                old cut's cross would sit on them (round 2, R2-GA2-05) */}
+            {wasCut && !refused ? <Cross x={cutX} y={mid} /> : null}
             {refused ? <Cross x={x0 + 7} y={mid} /> : null}
             <BText x={wordX} y={base} text={word} color={refused || wasCut ? B.refuse : speaking ? B.ink : B.sub} />
           </Group>

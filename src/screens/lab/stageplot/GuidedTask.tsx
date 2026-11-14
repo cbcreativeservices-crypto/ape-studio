@@ -20,8 +20,16 @@ const WHERE: Record<SpGuidedStep['id'], { area: SpAreaId; go: string; how: strin
   sources: { area: 'inputs', go: 'Inputs', how: 'In Inputs, add what each performer plays or sings. For someone who plays nothing that reaches the sound system, add a source with no sound system connection.' },
   monitors: { area: 'monitors', go: 'Monitors', how: 'In Monitors, put each performer on a mix, or say they need none.' },
   review: { area: 'export', go: 'Export', how: 'The tab bar marks each area that has a question. Export lists them all.' },
-  export: { area: 'export', go: 'Export', how: 'In Export, print or share the packet.' },
+  export: { area: 'export', go: 'Export', how: 'In Export, download, print or share the full or compact packet. A plot-only page does not complete this step, and marking it Ready or copying the summary does not make a packet.' },
 };
+
+/** What the task earns, said plainly (owner 2026-11-13): only a plot started
+ *  from a blank stage completes this lab; an example band is for practice. */
+export const SP_GUIDED_EARNS_BLANK = 'All five steps on a plot started from a blank stage complete this lab.';
+export const SP_GUIDED_EARNS_EXAMPLE = 'This plot started from an example band, so it is for practice. A plot started from a blank stage completes this lab.';
+/** A plot saved before the lab recorded where a plot starts. */
+export const SP_GUIDED_EARNS_UNKNOWN = 'This plot is for practice: only a plot started from a blank stage completes this lab.';
+export const spGuidedEarns = (p: { startedBlank: boolean; startedFrom: string }): string => (p.startedBlank ? SP_GUIDED_EARNS_BLANK : p.startedFrom ? SP_GUIDED_EARNS_EXAMPLE : SP_GUIDED_EARNS_UNKNOWN);
 
 /** Open or closed, remembered while the app is open: a visit to another
  *  area (often through a step's GO) does not close the steps (S3-07). */
@@ -38,7 +46,7 @@ export function GuidedTask() {
   // Worked out only while the steps are on screen.
   const steps = useMemo(() => (open ? spGuidedSteps(ed.project, ed.exported) : []), [open, ed.project, ed.exported]);
   return (
-    <Section title="GUIDED TASK (OPTIONAL)" hint="Five steps from an empty stage to a packet. All five done on one stage plot complete this lab. Working on a real gig? Skip this and build what you need.">
+    <Section title="GUIDED TASK (OPTIONAL)" hint={`Five steps from an empty stage to a packet. ${spGuidedEarns(ed.project)} Working on a real gig? Skip this and build what you need.`}>
       <Button label={open ? 'HIDE THE STEPS' : 'SHOW THE STEPS'} onPress={() => setOpen((o) => !o)} a11yLabel={open ? 'Hide the guided task steps' : 'Show the guided task steps'} />
       {open
         ? steps.map((s) => {

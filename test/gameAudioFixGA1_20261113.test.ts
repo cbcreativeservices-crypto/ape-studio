@@ -55,13 +55,17 @@ describe('B-S1-01 / B-S3-11: a rule row names nothing while its planted fault is
     ['pages/p10Loops.tsx', 'A BED STARTS'],
     ['pages/p07Instances.tsx', 'WHEN A GENERATOR IS REMOVED'],
   ] as const) {
-    it(`${p}: START THE FAULT records the count, and the tray draws ${head} locked until one more`, () => {
+    // round 2 (R2-GA1-01): the row is no longer locked with "?" (that singled
+    // the setting out); it shows the rule in use before START, through
+    // usePlantedFault, until one more symptom line than at the start
+    it(`${p}: START THE FAULT records the count, and the tray draws ${head} as it was before the start until one more`, () => {
       const c = code(p);
-      assert.match(c, /const \[startedAt, setStartedAt\] = useState<number \| null>\(null\);/);
-      assert.match(c, /const unnamed = startedAt !== null && s\.faults\.\w+ && \w+Count <= startedAt;/);
-      assert.match(c, new RegExp(`\\{unnamed \\? \\(\\s*<TrayLocked head="${head}"`));
-      assert.match(c, /render: \(\) => <\w+Tray unnamed=\{unnamed\} \/>/);
-      assert.match(c, /setStartedAt\(\w+Count\);/);
+      assert.match(c, /const plant = usePlantedFault\(\w+Count, s\.faults\.\w+\);/);
+      assert.match(c, /render: \(\) => <\w+Tray \w+=\{plant\.shown\} pick=\{\(on\) => plant\.pick\(on, set\w+\)\} where=\{where\} \/>/);
+      assert.match(c, /plant\.start\(gaGet\(\)\.faults\.\w+\);/);
+      // checker C-4: the head says whose rule it is, the project's or the build's
+      assert.ok(c.includes('<TrayRow head={`' + head + " · ${where === 'project' ? 'IN PROJECT' : 'IN BUILD'}`}>"), head);
+      assert.doesNotMatch(c, /TrayLocked/);
     });
   }
   it('page 10’s guide names the symptom, not the rule that causes it', () => {
@@ -169,7 +173,8 @@ describe('B-S2-06: at 320 wide a key shortens and no cell is cut', () => {
   });
   it('pages 4, 6, 8, 9 and 11 give their long keys a short form; the strips shorten a legend that would be cut', () => {
     assert.match(code('pages/p08GameSyncs.tsx'), /k: 'YOUR FLOOR', kNarrow: 'YOU'/);
-    assert.match(code('pages/p06Pipeline.tsx'), /k: 'DOOR FILE', kNarrow: 'FILE'/);
+    // round 2, checker C-4: the key names where the value is true
+    assert.match(code('pages/p06Pipeline.tsx'), /k: where === 'project' \? 'IN PROJECT' : 'IN BUILD', kNarrow: where === 'project' \? 'PROJECT' : 'BUILD'/);
     assert.match(code('pages/p04Games.tsx'), /k: 'LISTENER', kNarrow: 'EARS'/);
     assert.match(code('pages/p11Distance.tsx'), /k: 'DISTANCE', kNarrow: 'DIST\.'/);
     assert.equal(aLegendFit('GENERATOR 1 · OFF', 'GEN 1 · OFF', 59, 1), 'GEN 1 · OFF');
@@ -195,9 +200,10 @@ describe('B-S3-09: page 11 never says "straight behind" beside a PAN that is not
 
 describe('B-S3-10: FIXED needs the repair proven, not only the setting flipped back', () => {
   it('page 7 needs a clean removal after the rule is corrected; page 8 a guide step after the scope is', () => {
-    assert.match(code('pages/p07Instances.tsx'), /const repaired = useCountWhen\(gaFact\(s, 'cleanRemove'\), orphanSeen && !s\.faults\.orphanLoop\) > 0;/);
+    // round 2, checker C-1: the proof is fresh, after the newest symptom
+    assert.match(code('pages/p07Instances.tsx'), /const repaired = useFreshProof\(orphanCount, gaFact\(s, 'cleanRemove'\), orphanSeen && !s\.faults\.orphanLoop\);/);
     assert.match(code('pages/p07Instances.tsx'), /const fixed = orphanSeen && !s\.faults\.orphanLoop && orphans === 0 && repaired;/);
-    assert.match(code('pages/p08GameSyncs.tsx'), /const repaired = useCountWhen\(guideSteps, wrongSeen && !global\) > 0;/);
+    assert.match(code('pages/p08GameSyncs.tsx'), /const repaired = useFreshProof\(wrongSteps, guideSteps, wrongSeen && !global\);/);
     assert.match(code('pages/p08GameSyncs.tsx'), /fixed=\{fixed\}/);
   });
 });

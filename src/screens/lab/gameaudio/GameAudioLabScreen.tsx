@@ -52,11 +52,18 @@ const PAGE_DETAIL: Readonly<Record<number, string>> = {
   21: 'Counts once its seven goals are done in one visit. Its check is optional, and FINISH moves on without counting it.',
 };
 const pageDetail = (i: number): string | undefined => PAGE_DETAIL[i];
+/** No page is optional. Passed so that PagedLab's "lab done" rule checks
+ *  EVERY page index 0…21 (`every(i => completed.includes(i))`), not the
+ *  number of stored entries: an index from an older layout or a corrupt
+ *  copy cannot stand in for a page not done (round-2 bug test 2026-11-13,
+ *  R2-GA1-15). Nothing else changes: the END screen marks a page optional
+ *  only when this returns true. */
+const noPageOptional = (_i: number): boolean => false;
 
 export function GameAudioLabScreen() {
   return (
     <GaLabProvider>
-      <PagedLab labId={GA_LAB_ID} title={GA_LAB_TITLE} subtitle="How a game asks for sound, and how the audio side answers." pages={GA_PAGES} handsOnDetail={HANDS_ON} pageDetail={pageDetail} accuracy={false} endGuide={GA_END_GUIDE} labDoneKey={trainingKeyFor('GameAudioLab')} />
+      <PagedLab labId={GA_LAB_ID} title={GA_LAB_TITLE} subtitle="How a game asks for sound, and how the audio side answers." pages={GA_PAGES} handsOnDetail={HANDS_ON} pageDetail={pageDetail} accuracy={false} endGuide={GA_END_GUIDE} optionalPage={noPageOptional} labDoneKey={trainingKeyFor('GameAudioLab')} />
     </GaLabProvider>
   );
 }

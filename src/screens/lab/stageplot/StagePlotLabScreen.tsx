@@ -50,7 +50,7 @@
  * (Stage is a Rack Unit; the others scroll themselves).
  */
 import { Component, useCallback, useEffect, useMemo, useState, type ErrorInfo, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { holdAllowed, persistAllowed } from '../../../features/commercial/tier';
 import { useTier } from '../../../features/commercial/useTier';
@@ -107,6 +107,21 @@ const SAVE_WORDS: Record<SpSaveState, string> = {
   'session-only': 'Not saved: kept only until you close the app',
   failed: '! Not saved',
 };
+/** The same, on a phone narrower than 360: the full sentence is on the list
+ *  of stage plots and is what a screen reader hears (R2-SP1-06). */
+const SAVE_WORDS_SHORT: Record<SpSaveState, string> = {
+  saved: '✓ Saved',
+  saving: 'Saving…',
+  'session-only': 'Not saved',
+  failed: '! Not saved',
+};
+/** Below this width the revision line goes under the bar's buttons, on one
+ *  line, instead of wrapping into six between them (R2-SP1-06). */
+const SP_BAR_NARROW = 360;
+/** Below this width, or on a phone shorter than this, the bar says "Not
+ *  saved" in short: every point it does not take goes to the stage. */
+const SP_BAR_SHORT_W = 400;
+const SP_BAR_SHORT_H = 760;
 
 type Open = { project: SpProject; saveState: SpSaveState; at: number };
 
@@ -215,7 +230,9 @@ function Editor({ onClose }: { onClose: () => void }) {
   // only once the packet is made (the last step needs it), so ordinary edits
   // never pay for it. Reported once per time it becomes true; the report is
   // idempotent and nothing ever takes it back.
-  const guidedDone = useMemo(() => ed.exported && spGuidedSteps(ed.project, true).every((s) => s.done), [ed.exported, ed.project]);
+  // Only a plot started from a BLANK stage earns it (owner 2026-11-13,
+  // R2-SP1-04): an example band is open for practice and never reports it.
+  const guidedDone = useMemo(() => ed.exported && ed.project.startedBlank && spGuidedSteps(ed.project, true).every((s) => s.done), [ed.exported, ed.project]);
   useEffect(() => {
     if (guidedDone) reportTrainingComplete(trainingKeyFor('StagePlotLab'));
   }, [guidedDone]);
@@ -252,6 +269,27 @@ function Editor({ onClose }: { onClose: () => void }) {
   // screen reader hears.
   const statusWord = p.status === 'ready' ? 'Ready' : 'Draft';
   const statusSaid = p.status === 'ready' ? 'ready to advance' : 'draft';
+  const win = useWindowDimensions();
+  const narrow = win.width < SP_BAR_NARROW;
+  const shortWords = win.width < SP_BAR_SHORT_W || win.height < SP_BAR_SHORT_H;
+  const stateBox = (
+    <View style={narrow ? styles.stateNarrow : styles.state}>
+      {/* The revision is on screen in every area: the first change after a
+          revision was shared moves it on, and the user must see that. */}
+      {/* No one-line limit here: a browser cannot shrink a line to fit, it
+          cuts it with "…". If it does not fit, it wraps. */}
+      <Text style={styles.rev} maxFontSizeMultiplier={1.35} accessibilityLabel={`Revision ${p.revision}, ${statusSaid}.`}>
+        Revision {p.revision} · {statusWord}
+      </Text>
+      <Text
+        style={[styles.save, ed.saveState === 'failed' && styles.saveFailed, ed.saveState === 'session-only' && styles.saveSession]}
+        accessibilityLiveRegion="polite"
+        accessibilityLabel={SAVE_WORDS[ed.saveState]}
+      >
+        {shortWords ? SAVE_WORDS_SHORT[ed.saveState] : SAVE_WORDS[ed.saveState]}
+      </Text>
+    </View>
+  );
 
   return (
     // Regions only where a Rack Unit registers them (the Stage area).
@@ -268,18 +306,7 @@ function Editor({ onClose }: { onClose: () => void }) {
         <Pressable onPress={onClose} style={styles.barKey} accessibilityRole="button" accessibilityLabel="Back to all stage plots.">
           <Text style={styles.barKeyText}>‹ ALL PLOTS</Text>
         </Pressable>
-        <View style={styles.state}>
-          {/* The revision is on screen in every area: the first change after a
-              revision was shared moves it on, and the user must see that. */}
-          {/* No one-line limit here: a browser cannot shrink a line to fit, it
-              cuts it with "…". If it does not fit, it wraps. */}
-          <Text style={styles.rev} maxFontSizeMultiplier={1.35} accessibilityLabel={`Revision ${p.revision}, ${statusSaid}.`}>
-            Revision {p.revision} · {statusWord}
-          </Text>
-          <Text style={[styles.save, ed.saveState === 'failed' && styles.saveFailed, ed.saveState === 'session-only' && styles.saveSession]} accessibilityLiveRegion="polite">
-            {SAVE_WORDS[ed.saveState]}
-          </Text>
-        </View>
+        {narrow ? <View style={styles.barGap} /> : stateBox}
         <Pressable onPress={ed.undo} disabled={!ed.canUndo} style={[styles.barKey, !ed.canUndo && styles.barKeyOff]} accessibilityRole="button" accessibilityState={{ disabled: !ed.canUndo }} aria-disabled={!ed.canUndo} accessibilityLabel="Undo the last change">
           <Text style={styles.barKeyText}>↶ UNDO</Text>
         </Pressable>
@@ -287,6 +314,7 @@ function Editor({ onClose }: { onClose: () => void }) {
           <Text style={styles.barKeyText}>REDO ↷</Text>
         </Pressable>
       </View>
+      {narrow ? stateBox : null}
 
       <View style={styles.tabs} accessibilityRole="tablist">
         {SP_AREAS.map((a) => {
@@ -340,6 +368,8 @@ const styles = StyleSheet.create({
   barKeyOff: { opacity: 0.4 },
   barKeyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textPrimary },
   state: { flex: 1, alignItems: 'center', gap: 1 },
+  stateNarrow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'baseline', columnGap: 8, paddingHorizontal: 12, paddingBottom: 6 },
+  barGap: { flex: 1 },
   rev: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary, textAlign: 'center' },
   save: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.textSub, textAlign: 'center' },
   saveSession: { color: colors.amber },

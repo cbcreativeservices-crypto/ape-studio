@@ -258,7 +258,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={5}>
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question="The budget is 2. The protected alarm and a warning line hold both voices. A crate impact, which is less important, is posted. What happens by this lab’s rule?"
+          question="The budget is 2. The alarm and the warning line, both protected, hold both voices. A crate impact, which is less important, is posted. What happens by this lab’s rule?"
           options={[
             'The impact is refused, and both sounds continue',
             'The alarm is stopped, because it is the oldest voice',
@@ -266,12 +266,12 @@ function Page({ ctx }: { ctx: PageCtx }) {
             'The warning line is stopped, because a line is short',
           ]}
           correct={0}
-          explain="No voice can be taken: one is protected and the other is more important than the impact. So the new sound is refused and the count stays at the limit."
+          explain="No voice can be taken: both are protected, as the strip and HELD: 2 PROTECTED show. So the new sound is refused and the count stays at the limit."
           wrong={[
             undefined,
             'Age decides only between sounds of equal importance, and a protected voice is not taken at all.',
             'Then the limit would not be a limit. A new sound is not added past the budget.',
-            'Length is not part of the rule. The line is more important than the impact, so it keeps its voice.',
+            'Length is not part of the rule. The line is protected, so it keeps its voice.',
           ]}
           onCorrect={() => setCheck(true)}
         />

@@ -114,12 +114,15 @@ describe('the credit', () => {
   });
   it('Stage Plot: the editor reports it when all five guided steps are done, and never takes it back', () => {
     const src = code(LABS[1].screen);
-    assert.match(src, /const guidedDone = useMemo\(\(\) => ed\.exported && spGuidedSteps\(ed\.project, true\)\.every\(\(s\) => s\.done\), \[ed\.exported, ed\.project\]\);/);
+    // only a REAL packet (ed.exported = packetRevision, R2-SP1-01) on a plot
+    // started from a BLANK stage (owner 2026-11-13, R2-SP1-04)
+    assert.match(src, /const guidedDone = useMemo\(\(\) => ed\.exported && ed\.project\.startedBlank && spGuidedSteps\(ed\.project, true\)\.every\(\(s\) => s\.done\), \[ed\.exported, ed\.project\]\);/);
     assert.match(src, /if \(guidedDone\) reportTrainingComplete\(trainingKeyFor\('StagePlotLab'\)\);/);
     assert.doesNotMatch(src, /removeTraining|unmarkTraining|clearTraining/);
     // the steps it reads are the ones the GUIDED TASK list shows
     assert.match(code('src/screens/lab/stageplot/GuidedTask.tsx'), /spGuidedSteps\(ed\.project, ed\.exported\)/);
-    assert.match(read('src/screens/lab/stageplot/GuidedTask.tsx'), /All five done on one stage plot complete this lab\./);
+    assert.match(read('src/screens/lab/stageplot/GuidedTask.tsx'), /All five steps on a plot started from a blank stage complete this lab\./);
+    assert.match(read('src/screens/lab/stageplot/GuidedTask.tsx'), /This plot started from an example band, so it is for practice\. A plot started from a blank stage completes this lab\./);
   });
 });
 

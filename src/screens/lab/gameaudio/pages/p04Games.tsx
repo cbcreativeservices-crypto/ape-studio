@@ -60,8 +60,15 @@ const ASSETS = ['gen_hum', 'gen_air', 'fountain'] as const;
 const TERMS = gaTerms('Audio listener', 'Listener position', 'Listener orientation', 'Split-screen audio');
 
 /** Where the generator sits, left to right, for whoever is listening now:
- *  the model's own stereo pan, in words and a number (never color alone). */
+ *  the model's own stereo pan, in words and a number (never color alone).
+ *  A generator that is not played (off, or VIRTUAL past its maximum
+ *  distance, as OPEN WORLD shows) has no pan: "—", as page 11 prints it
+ *  (round-2 bug test 2026-11-13, R2-GA1-07). */
 function genPan(s: GaState): { v: string; a11y: string } {
+  const inst = s.inst.find((i) => i.event === 'generator' && i.owner === 'generator-1');
+  const voices = inst ? s.voices.filter((v) => v.inst === inst.id) : [];
+  if (!voices.length) return { v: '—', a11y: 'no pan: generator 1 is not playing' };
+  if (voices.every((v) => v.state === 'virtual')) return { v: '—', a11y: 'no pan: generator 1 is virtual, tracked and not played' };
   const pan = stereoPan(listenerOf(s), PLACES.generator);
   const n = Math.round(Math.abs(pan) * 100);
   if (n < 3) return { v: 'CENTER', a11y: 'the generator is in the center' };
@@ -74,7 +81,7 @@ const LISTENER_NOTE: Record<GaState['listenerMode'], string> = {
 };
 
 /** The LISTENER tray: whose ears, and one sound to judge them by. */
-function ListenerTray() {
+function ListenerTray({ onCamera }: { onCamera: () => void }) {
   const s = useGa();
   const gen = s.machines.find((m) => m.id === 'generator-1');
   const on = !!gen?.on;
@@ -84,7 +91,15 @@ function ListenerTray() {
         head="WHOSE EARS"
         chips={[
           { label: 'YOUR EARS', mark: true, on: s.listenerMode === 'player', onPress: () => gaDispatch({ type: 'listener', mode: 'player' }) },
-          { label: 'OVERHEAD CAMERA', mark: true, on: s.listenerMode === 'camera', onPress: () => gaDispatch({ type: 'listener', mode: 'camera' }) },
+          {
+            label: 'OVERHEAD CAMERA',
+            mark: true,
+            on: s.listenerMode === 'camera',
+            onPress: () => {
+              onCamera();
+              gaDispatch({ type: 'listener', mode: 'camera' });
+            },
+          },
         ]}
       />
       <ChATrayNote>{LISTENER_NOTE[s.listenerMode]}</ChATrayNote>
@@ -97,7 +112,9 @@ function ListenerTray() {
 function runDemo(id: GaGenreId): void {
   const g = gaGenre(id);
   if (!g) return;
-  gaDispatch({ type: 'enterPage' });
+  // the scene starts again, but the log's clock keeps the page's time: each
+  // pick no longer reads 0.0 s (bug test 2026-11-13, B-S3-05)
+  gaDispatch({ type: 'enterPage', keepClock: true });
   for (const a of g.demo.actions) gaDispatch(a);
 }
 
@@ -138,9 +155,14 @@ function Page({ ctx }: { ctx: PageCtx }) {
     turnsSeen.current = turns;
   }
 
+  // the camera chosen BY THE LEARNER in the LISTENER tray: STRATEGY's
+  // demonstration hands the listener over too, and that is not the goal
+  // (round-2 bug test 2026-11-13, R2-GA1-06)
+  const [choseCamera, setChoseCamera] = useState(false);
+
   const goals = [
     { label: 'Open three kinds of game', hit: opened.length >= GA_GENRES_TO_OPEN },
-    { label: 'Listen from the overhead camera', hit: since('listener:camera') > 0 },
+    { label: 'Listen from the overhead camera', hit: choseCamera && since('listener:camera') > 0 },
     { label: 'Move FACING while the camera listens', hit: turnedUnderCamera.current },
     { label: 'Choose YOUR EARS again', hit: since('listener:player') > 0 },
     { label: 'Pass both checks', hit: check && check2 },
@@ -155,7 +177,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     label: 'LISTENER',
     valueLabel: camera ? 'CAMERA' : 'YOU',
     valueA11y: camera ? 'the overhead camera is listening' : 'you, the player, are listening',
-    render: () => <ListenerTray />,
+    render: () => <ListenerTray onCamera={() => setChoseCamera(true)} />,
   };
   const pickGenre = (next: GaGenreId) => {
     setGenre(next);
@@ -219,7 +241,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <P>One thing changes with the perspective: where the game puts its listener.</P>
         <Do>Open LISTENER and switch GENERATOR 1 on. Move FACING to 0°, so YOU face the top of the picture, and read GEN PAN. Then choose OVERHEAD CAMERA and read it again.</Do>
-        <P>For your ears the generator is far to the right. For the camera it sits nearer the center, because the camera is high above the scene. Now move FACING: YOU turn, and GEN PAN stays still. The character is not the listener.</P>
+        <P>At 0°, for your ears the generator is far to the right. For the camera it sits nearer the center, because the camera is high above the scene. Now move FACING: YOU turn, and GEN PAN stays still. The character is not the listener.</P>
         <P>Level follows the listener too: for the camera, each sound’s level depends on its distance from the middle of the scene, not from YOU.</P>
         <Do>Then choose YOUR EARS again.</Do>
         <Note tone="mistake">Placing every sound on the visible player character in every camera mode. The team chooses where the listener goes.</Note>
@@ -244,7 +266,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
           wrong={[
             undefined,
             'No file changed. The same sound kept playing; only the place it is measured from moved.',
-            'Sounds still sit to the left or the right of the camera. They sit less far to the side, because the camera is high above them.',
+            'Sounds still sit to the left or the right of the camera, as the picture shows them. Their pan is now measured from the camera, not from YOU.',
             'That is the common mistake. The character did not turn, and with the camera listening, turning the character changes nothing.',
           ]}
           onCorrect={() => setCheck(true)}

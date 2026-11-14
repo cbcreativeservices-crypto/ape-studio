@@ -580,7 +580,9 @@ export function GaToolsStage({ w, h, tool, win, state }: GaToolsStageProps) {
           <View style={[styles.dot, { backgroundColor: '#5bff85' }]} />
         </View>
         <Text style={[text(sz, sz.small, C_FACE.sub, fonts.oswaldMedium, { letterSpacing: 0.7, lineHeight: capH }), styles.grow]} allowFontScaling={false} {...fitValue(sz.small)}>
-          SIMPLIFIED · NOT ONE REAL PRODUCT
+          {/* a 320-wide phone cut the long form to "SIMPLIFIED · NOT ONE …"
+              (round 2, R2-GA2-10); the spoken label keeps the whole idea */}
+          {w < 360 ? 'SIMPLIFIED' : 'SIMPLIFIED · NOT ONE REAL PRODUCT'}
         </Text>
         {anyNone ? (
           <View style={styles.legend}>

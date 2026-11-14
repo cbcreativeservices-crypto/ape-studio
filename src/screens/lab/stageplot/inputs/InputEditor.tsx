@@ -217,6 +217,12 @@ export function InputEditor({
                 Channel {n} is also given to {spListWords(same)}. Give each its own number.
               </Note>
             ) : null}
+            {/* said HERE, beside the field, as a duplicate is (R2-SP2-09) */}
+            {n != null && patch?.reserved.includes(n) ? (
+              <Note tone="warning">
+                Channel {n} is kept free on purpose in the {spInSentence(patch.name)} list. Give this input another number, or stop keeping channel {n} free in ORDER OF THE INPUT LIST.
+              </Note>
+            ) : null}
           </View>
         );
       })}

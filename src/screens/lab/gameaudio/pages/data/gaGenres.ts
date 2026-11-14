@@ -140,7 +140,9 @@ export const GA_GENRES: readonly GaGenreCard[] = [
       actions: [{ type: 'machine', id: 'generator-1', on: true }, { type: 'speed', id: 'generator-1', value: GA_DEMO_SPEED }],
       // the page has no SPEED readout, and one dispatch is a jump, not a rise
       // (bug test 2026-11-13, B-S2-03): the line says what the picture shows
-      line: 'The generator starts, then runs faster: its rings crowd closer. One sound, changed without starting again.',
+      // both actions land in one moment, so the line promises no "then"
+      // (round 2, R2-GA1-13: there was no slower moment to compare)
+      line: 'The generator starts at high speed: its rings crowd close. An engine follows its speed without starting again.',
     },
   },
   {
@@ -166,7 +168,8 @@ export const GA_GENRES: readonly GaGenreCard[] = [
       // a hit asked for at once waits for the next bar line, and PLAYING
       // shows the moment it lands (heard or not, on the same line)
       actions: [{ type: 'musicStart' }, { type: 'stinger' }],
-      line: 'Music runs on a clock of bars. A hit asked for now waits for the next bar line: PLAYING reads 1 when it lands.',
+      // the stinger is an instance with no voice counted (round 2, R2-GA1-12)
+      line: 'A hit asked for now waits for the next bar line. PLAYING reads 1 when it lands. VOICES leaves music out.',
     },
   },
   {

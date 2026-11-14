@@ -11,12 +11,12 @@ export const G06: ScreenGuide = {
   },
   seeing: [
     'The door stands in the wall between the courtyard and the workshop. It is the one sound this page follows.',
-    'The strip under the picture follows the chain: the EVENT posted, each LAYER and its FILE, the VOICE. RATTLE starts 1 s after DOOR. Cards in the lesson spell it out.',
-    'DOOR shows OPEN or CLOSED. DOOR FILE shows FOUND or MISSING, and a question mark while a fault you started has not been found yet.',
+    'The strip under the picture follows the chain: the EVENT posted, each LAYER and its FILE, the VOICE. RATTLE starts 1 s after DOOR.',
+    'DOOR shows OPEN or CLOSED. IN PROJECT: does the project hold the file the door layer asks for? Once a FAULT line names a missing file, it reads IN BUILD.',
   ],
   control: [
     'OPEN DOOR posts the door event. After a press the key reads CLOSE DOOR, and it posts the same event.',
-    'DOOR FILE sets which file name the door layer asks for. It stays locked until you have pressed the door key once with the fault in.',
+    'DOOR FILE sets which file name the door layer asks for.',
     'On the TROUBLESHOOT card, START THE FAULT plants one wrong setting. Nothing on the screen names it until you have made the problem happen.',
     'LEVEL sets how loud the lab plays the door, from 0 to 100%. The slider controls it when the page opens.',
   ],

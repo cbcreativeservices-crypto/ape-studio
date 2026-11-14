@@ -558,7 +558,8 @@ describe('page 14 — music (chcMusicVoice)', () => {
     assert.ok(s.inst.some((i) => i.event === 'stinger'), 'PLAYING counts the stinger while it sounds');
     assert.equal(gaVoiceCount(s), 0, 'VOICES leaves the music out (decision 5)');
     assert.match(pageSrc('p14Music.tsx'), /PLAYING counts a stinger while it sounds\. VOICES leaves the music out: this scene simplifies\. A real engine counts each music layer as a voice\./);
-    assert.match(pageSrc('p14Music.tsx'), /since\('stingerPlayed'\)/, 'the goal waits for the stinger to PLAY, not for the press');
+    // round 2 (R2-GA2-04): and only one that waited for a line, not CHANGE AT ▸ NOW
+    assert.match(pageSrc('p14Music.tsx'), /since\('stingerOnLine'\)/, 'the goal waits for the stinger to PLAY on a line, not for the press');
   });
 
   it('W2-15: STOP MUSIC with a change waiting logs it withdrawn and puts the layers back', () => {

@@ -132,7 +132,7 @@ export type StagePlanProps = {
    *  numbers alone, or nothing), and how many performers are named without
    *  their mix code: told when a count changes, so the screen can say so in
    *  words. */
-  onNamesLeftOut?: (count: number, codesLeftOut: number) => void;
+  onNamesLeftOut?: (count: number, codesLeftOut: number, crowded?: number, numbersOut?: number) => void;
 };
 
 type Drag = {
@@ -264,7 +264,7 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // ── names and numbers ─────────────────────────────────────────────────────
   const frame = useMemo(() => stageFrameBoxes(gw, gh), [gw, gh]);
   const plan = useMemo(() => {
-    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [] };
+    if (!showNames && !showNumbers && !selectedId) return { labels: [], dropped: [], bare: [], numbersOut: [], crowded: [] };
     const items: StageLabelIn[] = order.map((o, i) => ({
       id: o.id,
       // the selected object is always named on the drawing (there is no
@@ -283,12 +283,15 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   const leftOut = showNames ? plan.dropped.length : 0;
   // performers named without their mix code (the code is on their monitor)
   const codesOut = showNumbers ? plan.bare.length : 0;
+  // names that touch another label, and numbers left out (R2-SP1-02)
+  const crowded = plan.crowded.length;
+  const numbersOut = showNumbers ? plan.numbersOut.length : 0;
   const leftOutRef = useRef(onNamesLeftOut);
   leftOutRef.current = onNamesLeftOut;
   useEffect(() => {
     // the copy that is on screen reports: the glass, or the FULL SCREEN one
-    leftOutRef.current?.(leftOut, codesOut);
-  }, [leftOut, codesOut, inFull]);
+    leftOutRef.current?.(leftOut, codesOut, crowded, numbersOut);
+  }, [leftOut, codesOut, crowded, numbersOut, inFull]);
 
   const grid = useMemo(() => (p.stage.grid ? stageGridLines(p, T) : { xs: [], ys: [], every: 1 }), [p, T]);
 

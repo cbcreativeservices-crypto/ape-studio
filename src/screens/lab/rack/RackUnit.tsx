@@ -33,7 +33,7 @@ import { ScrollLockProvider } from '../scrollLock';
 import { BezelReadouts } from './BezelReadouts';
 import { DockButton, DockStrip } from './DockButton';
 import { DockTray } from './DockTray';
-import { DOCK_KEY_GAP, isLabelOnly } from './dockFit';
+import { DOCK_KEY_GAP, isLabelOnly, widestLaneValue } from './dockFit';
 import { ParamLane } from './ParamLane';
 import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
 import { StageFullScreen } from './StageFullScreen';
@@ -490,6 +490,10 @@ export function RackUnit({
                   fit={fit}
                   label={p.label}
                   value={(p.formatShort ?? p.format)(p.value)}
+                  // A chooser-fader's key shows the value the drag changes: it
+                  // asks for room for the widest one, so it never moves
+                  // sideways under the finger (frame round 2, 2026-11-13).
+                  valueSpan={p.chooser ? widestLaneValue(p.formatShort ?? p.format, (p.formatShort ?? p.format)(p.value)) : undefined}
                   // A chooser-fader opens a tray first, so it wears the
                   // OPEN verb glyph, not the bind glyph (the two-verb rule).
                   glyph={p.chooser ? '▸' : '▪'}

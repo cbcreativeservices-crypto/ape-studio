@@ -10,9 +10,9 @@ export const G04: ScreenGuide = {
     start: 'Open GAMES and pick a kind of game: the scene shows one thing it cares about. Then open LISTENER, switch GENERATOR 1 on, move FACING to 0° and compare GEN PAN for YOUR EARS and OVERHEAD CAMERA.',
   },
   seeing: [
-    'You are looking down on the scene, the way a strategy game shows its map. The amber wedge on YOU marks the listener. With the overhead camera, the mark CAMERA · LISTENER in the middle takes its place.',
-    'LISTENER names whose ears are in use. GEN PAN shows how far left or right the generator sits for that listener.',
-    'The card in step 2 is the kind of game you picked, with the sounds it often puts first.',
+    'You look down on the scene, as on a strategy game’s map. The amber wedge on YOU marks the listener. With the overhead camera, the mark CAMERA · LISTENER in the middle takes its place.',
+    'LISTENER names whose ears are in use. GEN PAN shows how far left or right the generator sits for that listener; — means it is not played.',
+    'Step 2’s card is the kind of game you picked, with the sounds it often puts first.',
   ],
   control: [
     'FACING turns YOU through a full circle, in steps of 5°. At 0° you face the top of the picture.',
@@ -21,7 +21,7 @@ export const G04: ScreenGuide = {
   ],
   changes: [
     'With your ears, GEN PAN follows FACING: as you turn, the generator moves from one side to the other.',
-    'From the camera the generator sits nearer the center, because the camera is high above the scene. FACING no longer changes GEN PAN.',
+    'From the camera, left and right follow the picture, so FACING no longer changes GEN PAN. At 0° the generator sits nearer the center.',
     'Level follows the listener too. For the camera, each sound is as loud as its distance from the middle makes it. YOUR ring turns gray and dashed: you are not listening.',
   ],
   teaches: [
@@ -32,6 +32,6 @@ export const G04: ScreenGuide = {
   tryThis: [
     'As YOUR EARS, move FACING to 0° and read GEN PAN: far to the right. Choose OVERHEAD CAMERA and it moves toward the center.',
     'With OVERHEAD CAMERA chosen, move FACING from end to end. YOU turn in the picture and GEN PAN does not move.',
-    'In GAMES pick STRATEGY: the camera becomes the listener. Then pick RACING: the generator starts, then runs faster without starting again, as an engine would.',
+    'In GAMES pick STRATEGY: the camera becomes the listener. Then pick RACING: the generator starts at high speed, and its rings crowd close.',
   ],
 };

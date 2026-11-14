@@ -107,7 +107,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <P>Game audio is every sound a game makes. It is interactive: it reacts to what the player does.</P>
         <P>Every sound in this lab is made in the app, not recorded. People and objects are drawn larger than their real size. Positions and distances are true.</P>
         <P>The activity log lists what the game asked for (GAME) and what the audio side answered (START).</P>
-        <P>PLAYING and VOICES count what is sounding now. Page 7 explains them. SOUND says whether you can hear it.</P>
+        <P>PLAYING and VOICES count what is sounding now. Page 7 explains them. SOUND says whether you can hear it. On a narrow phone they read PLAYS and SND.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>

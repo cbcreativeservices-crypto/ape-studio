@@ -163,7 +163,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
     { label: 'Add a layer while the music plays', hit: addedLayer },
     { label: 'Change MOOD while the music plays', hit: moodInMusic },
     { label: 'Change your mind while a change waits', hit: since('musicWithdrawn') > 0 },
-    { label: 'Play a stinger on a boundary', hit: since('stingerPlayed') > 0 },
+    // a stinger asked for with CHANGE AT ▸ NOW waits for no line (R2-GA2-04)
+    { label: 'Play a stinger on a boundary', hit: since('stingerOnLine') > 0 },
     { label: 'Pass the check', hit: check },
   ];
   const latched = useVisitGoals(ctx, goals);

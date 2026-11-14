@@ -23,7 +23,7 @@ export const G19: ScreenGuide = {
   ],
   changes: [
     'Starting a fault changes one setting and nothing you can see. The symptom appears only when you repeat the right action.',
-    'A card turns to FIXED after its symptom has happened and its setting is correct again. Fault 5 also needs the stray loop stopped.',
+    'A card turns to FIXED after its symptom has happened and its setting is correct again. Fault 5 also needs the stray loop stopped and the removal tested again.',
     'After a repair, the same action prints the normal pattern again: GAME lines, then START.',
   ],
   teaches: [

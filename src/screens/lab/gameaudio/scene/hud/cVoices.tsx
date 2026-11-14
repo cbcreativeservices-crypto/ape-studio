@@ -84,7 +84,10 @@ const Slot = memo(function Slot({ slot, taken, kind, box, type, flash }: { slot:
       {box.compact ? (
         <View style={styles.lineRow}>
           <View style={styles.grow}>{name}</View>
-          {slot.protected ? <Lock size={lockSize} color={C_FACE.amber} /> : pri}
+          {/* a narrow orphan slot drops its priority so the name stays whole
+              ("HUM…" beside "40"; its red rim and NO OWNER say what it is:
+              round 2, R2-GA2-08) */}
+          {slot.protected ? <Lock size={lockSize} color={C_FACE.amber} /> : slot.orphan ? null : pri}
         </View>
       ) : (
         <>

@@ -72,6 +72,9 @@ function TestTray() {
   const m1 = s.machines.find((m) => m.id === 'generator-1');
   const m2 = s.machines.find((m) => m.id === 'generator-2');
   const here = standingOn(s);
+  // ADD is refused while generator 2's old loop plays: say so where it is
+  // pressed, not only in the log under the tray (checker C-3)
+  const strayHolds2 = !m2 && s.inst.some((i) => i.event === 'generator' && i.owner === 'generator-2');
   const stand = (to: StandId) => {
     const now = gaGet();
     const r = standMoves(now.chars.player, now.doorOpen, to);
@@ -100,7 +103,7 @@ function TestTray() {
       <TrayGrid cols={3}>
         <TrayChip label={onOff('GENERATOR 1', !!m1?.on)} selected={!!m1?.on} onPress={() => toggle('generator-1')} />
         {m2 ? <TrayChip label={onOff('GENERATOR 2', m2.on)} selected={m2.on} onPress={() => toggle('generator-2')} /> : <TrayChip label="ADD GENERATOR 2" onPress={() => gaDispatch({ type: 'addMachine' })} />}
-        {m2 ? <TrayChip label="REMOVE GENERATOR 2" onPress={() => gaDispatch({ type: 'removeMachine', id: 'generator-2' })} /> : <TrayNote>No second generator yet.</TrayNote>}
+        {m2 ? <TrayChip label="REMOVE GENERATOR 2" onPress={() => gaDispatch({ type: 'removeMachine', id: 'generator-2' })} /> : <TrayNote>{strayHolds2 ? '■ STOP first: a stray loop still holds generator 2.' : 'No second generator yet.'}</TrayNote>}
       </TrayGrid>
     </Tray>
   );

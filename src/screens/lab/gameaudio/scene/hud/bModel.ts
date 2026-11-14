@@ -586,7 +586,7 @@ export function bMusicSummary(s: GaState, tNow: number): string {
   const change = bChange(s, tNow);
   const wait = change
     ? ` A change waits for ${change.boundary === 'now' ? 'no boundary' : `the ${B_BOUNDARY_WORD[change.boundary].toLowerCase()}`}: ${Math.max(0, change.landAt - tNow).toFixed(1)} seconds to go.`
-    : ` Nothing is waiting. A change asked for now would land ${s.options.musicBoundary === 'now' ? 'immediately' : `on the ${B_BOUNDARY_WORD[s.options.musicBoundary].toLowerCase()}`}.`;
+    : ` No layer or mood change is waiting. A change asked for now would land ${s.options.musicBoundary === 'now' ? 'immediately' : `on the ${B_BOUNDARY_WORD[s.options.musicBoundary].toLowerCase()}`}.`;
   const sting = bStingers(s, tNow);
   const st = sting.length ? ` A stinger ${sting[0].sounding ? 'is sounding' : 'waits for its line'}.` : '';
   return `The music’s four bars, with a play line from the music’s clock: bar ${c.bar + 1}, beat ${c.beat + 1}. ${lanes}.${wait}${st}`;

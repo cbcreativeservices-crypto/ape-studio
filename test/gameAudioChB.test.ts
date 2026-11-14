@@ -402,12 +402,15 @@ describe('the log lines pages 6, 7 and 9 describe', () => {
     assert.ok(s.log.some((l) => l.kind === 'start' && l.text.includes('rattle')));
     assert.ok(s.log.some((l) => l.kind === 'trigger' && l.text.startsWith('EVENT Play_Door')), 'the event was still posted');
   });
-  it('page 7: adding generator 2 back under an orphan loop makes it that machine’s sound again', () => {
+  it('page 7: generator 2 is not placed again over an orphan loop; after ■ STOP it comes in OFF (round 2, R2-GA2-01)', () => {
     let s = run(fresh(), { type: 'addMachine' }, { type: 'machine', id: 'generator-2', on: true }, { type: 'fault', patch: { orphanLoop: true } }, { type: 'removeMachine', id: 'generator-2' });
     assert.equal(chbOrphans(s).length, 1);
     s = run(s, { type: 'addMachine' });
-    assert.equal(chbOrphans(s).length, 0);
-    assert.equal(s.machines.find((m) => m.id === 'generator-2')?.on, true, 'the tray shows it running, so STOP 2 reaches the loop');
+    assert.equal(chbOrphans(s).length, 1, 'the orphan is not taken over');
+    assert.equal(s.machines.length, 1);
+    assert.equal(s.log[s.log.length - 1].kind, 'refused');
+    s = run(s, { type: 'stopAll' }, { type: 'addMachine' });
+    assert.equal(s.machines.find((m) => m.id === 'generator-2')?.on, false, 'a new generator starts OFF');
   });
   it('page 9: each setting prints a MIX line when it really changes; a step with variation off reads take 1 of 4', () => {
     let s = run(fresh(), { type: 'option', patch: { variation: false } });
@@ -473,13 +476,14 @@ describe('pages 6–10 as the learner reads them (audit 2)', () => {
       assert.match(code, /seen=\{/, `${f}: the card is told whether the symptom was seen (decision 10)`);
     }
   });
-  it('page 6’s and page 8’s keys and readouts stay neutral until the symptom (decision 10)', () => {
+  it('page 6’s and page 8’s keys and readouts stay as they were until the symptom (decision 10; round 2, R2-GA1-01: no "?", no lock)', () => {
     const p6 = src('p06Pipeline');
-    assert.match(p6, /const fileWord = unnamed \? '\?' : missing \? 'MISSING' : 'FOUND'/);
-    assert.match(p6, /locked: unnamed \?/);
+    assert.match(p6, /const fileWord = shownMissing \? 'MISSING' : 'FOUND'/);
+    assert.doesNotMatch(p6, /locked: unnamed|'\?'/);
     const p8 = src('p08GameSyncs');
     assert.match(p8, /wrong: !unnamed && guideRead !== guideTrue/);
-    assert.match(p8, /valueLabel: unnamed \? '\?'/);
+    assert.match(p8, /valueLabel: shownGlobal \? 'GLOBAL' : 'LOCAL'/);
+    assert.doesNotMatch(p8, /locked: unnamed|'\?'/);
   });
   it('no check has its correct option as the longest (L-16)', () => {
     let checks = 0;

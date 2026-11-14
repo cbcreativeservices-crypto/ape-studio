@@ -249,8 +249,10 @@ export function SpEditorProvider({
       issues,
       saveState,
       markExported,
-      // Also true after a restart: a revision that was shared stays shared.
-      exported: exportedRev === project.revision || project.frozenRevision >= project.revision,
+      // Only a REAL packet (DOWNLOAD PDF, SHARE, PRINT) of this revision, and
+      // also after a restart (the project records it). "Ready" and COPY
+      // TECHNICAL SUMMARY freeze a revision but make no packet (R2-SP1-01).
+      exported: exportedRev === project.revision || project.packetRevision >= project.revision,
       flush: saveNow,
     }),
     [project, apply, undo, redo, hist, liveSelection, area, goTo, issues, saveState, markExported, exportedRev, saveNow],

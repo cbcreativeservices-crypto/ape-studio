@@ -37,8 +37,9 @@ import { gaTerms } from '../gaTerms';
 import { gaPlaying, listenerOf } from '../model/gaModel';
 import { gaDispatch, gaGet, gaNow, useGa } from '../model/gaStore';
 import { zoneAt } from '../model/gaWorld';
-import { TrayBox, TrayChip, TrayLocked, TrayRow, onOff, useCountWhen } from './chbBits';
-import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbJoinsPassed, chbLoops, chbRawBed } from './data/chbScene';
+import { TrayBox, TrayChip, TrayRow, onOff, useCountWhen, useFreshProof, usePlantedFault } from './chbBits';
+import { gaPlantedWhere, type GaWhere } from '../bitsLogic';
+import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbJoinsPassed, chbLoops, chbRawBed, chbSteps } from './data/chbScene';
 import { G10 } from './guides/p10';
 import { facingKey, gaFact, stepKey, useSince } from './shared';
 
@@ -53,8 +54,10 @@ const setPileUp = (on: boolean) => {
 };
 
 /** The SOUNDS tray: the background and the door, and the rule for when a
- *  bed starts. Two one-line rows and nothing else. */
-function SoundsTray({ unnamed }: { unnamed: boolean }) {
+ *  bed starts. Two one-line rows and nothing else. The rule row shows
+ *  `pile`, the rule as the page shows it: while a planted fault is not yet
+ *  found, the rule in use before START (R2-GA1-01). */
+function SoundsTray({ pile, pick, where }: { pile: boolean; pick: (on: boolean) => void; where: GaWhere }) {
   const s = useGa();
   const beds = chbBeds(s);
   const sceneOn = beds.room + beds.yard > 0 || gaPlaying(s, 'fountain');
@@ -64,15 +67,11 @@ function SoundsTray({ unnamed }: { unnamed: boolean }) {
         <TrayChip label={onOff('SCENE', sceneOn)} selected={sceneOn} onPress={() => gaDispatch({ type: 'scene', on: !sceneOn })} />
         <TrayChip label={s.doorOpen ? 'CLOSE DOOR' : 'OPEN DOOR'} onPress={() => gaDispatch({ type: 'door' })} />
       </TrayRow>
-      {unnamed ? (
-        // the fault is planted and its symptom not yet met: the ✓ on the wrong rule would name it (bug test B-S1-01)
-        <TrayLocked head="A BED STARTS" note="Switch SCENE on and take a few steps without crossing the doorway first. Then this rule opens." />
-      ) : (
-        <TrayRow head="A BED STARTS">
-          <TrayChip label={marked('ONCE, WITH THE SCENE', !s.faults.bedPileUp)} selected={!s.faults.bedPileUp} onPress={() => setPileUp(false)} />
-          <TrayChip label={marked('ON EVERY UPDATE', s.faults.bedPileUp)} selected={s.faults.bedPileUp} onPress={() => setPileUp(true)} />
-        </TrayRow>
-      )}
+      {/* whose rule: the project's, or the build's once it has shown itself (checker C-4) */}
+      <TrayRow head={`A BED STARTS · ${where === 'project' ? 'IN PROJECT' : 'IN BUILD'}`}>
+        <TrayChip label={marked('ONCE, WITH THE SCENE', !pile)} selected={!pile} onPress={() => pick(false)} />
+        <TrayChip label={marked('ON EVERY UPDATE', pile)} selected={pile} onPress={() => pick(true)} />
+      </TrayRow>
     </TrayBox>
   );
 }
@@ -127,13 +126,21 @@ function Page({ ctx }: { ctx: PageCtx }) {
   // the planted fault's symptom happened on this visit: an update started a bed again
   const pileCount = since('bedPileUp');
   const pileSeen = pileCount > 0;
-  // `startedAt` = how many pile-up lines the visit had when START THE FAULT
-  // was pressed; until one more happens, the rule row names nothing (bug
-  // test 2026-11-13, B-S1-01: the tray showed "✓ ON EVERY UPDATE")
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const unnamed = startedAt !== null && s.faults.bedPileUp && pileCount <= startedAt;
-  // the card is active while the rule is wrong, and afterward while the stacked copies still play
-  const faultArmed = s.faults.bedPileUp || (pileSeen && (beds.room > 1 || beds.yard > 1));
+  // until one more pile-up line than at START THE FAULT, the rule row shows
+  // the rule in use before the start: no "?", no lock, no moved ✓ (bug test
+  // 2026-11-13, B-S1-01; round 2, R2-GA1-01)
+  const plant = usePlantedFault(pileCount, s.faults.bedPileUp);
+  const { unnamed } = plant;
+  // FIXED needs proof, as on pages 6 to 8 (round 2, R2-GA1-05): a step taken
+  // with the scene running AFTER the rule was corrected, with no copy
+  // stacked. ■ STOP alone empties the beds but proves nothing.
+  const clean = beds.room <= 1 && beds.yard <= 1;
+  // ...AFTER THE NEWEST pile-up: a second round needs its own step (checker C-1)
+  const proved = useFreshProof(pileCount, chbSteps(s, 'player'), pileSeen && !s.faults.bedPileUp && sceneOn && clean);
+  const where = gaPlantedWhere(unnamed, pileSeen);
+  const fixed = pileSeen && !s.faults.bedPileUp && clean && proved;
+  // the card is active while the rule is wrong, and afterward until a step proves the repair
+  const faultArmed = s.faults.bedPileUp || (pileSeen && !fixed);
 
   const goals = [
     { label: 'Cross the doorway twice with the scene running', hit: crossings >= 2 },
@@ -151,7 +158,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     // key's own label, SOUNDS, says what is on
     valueLabel: sceneOn ? 'ON' : 'OFF',
     valueA11y: `the scene’s background is ${sceneOn ? 'on' : 'off'}; the door is ${s.doorOpen ? 'open' : 'closed'}`,
-    render: () => <SoundsTray unnamed={unnamed} />,
+    render: () => <SoundsTray pile={plant.shown} pick={(on) => plant.pick(on, setPileUp)} where={where} />,
   };
   const windKey: DockParam = {
     kind: 'options',
@@ -198,7 +205,6 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <Do>In the courtyard, set WIND FILE to RAW CUT. Under the picture, JUMPS counts each pass of the join. Then choose PREPARED LOOP and start the fault on the TROUBLESHOOT card.</Do>
         <P>The raw cut was not prepared as a loop. It ends in a gust and begins in a lull, so it jumps every 10 s.</P>
-        <Note tone="mistake">Starting a background loop again on every position update in one area. The copies stack, get louder and use voices.</Note>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>
@@ -208,21 +214,24 @@ function Page({ ctx }: { ctx: PageCtx }) {
           symptom="Start the fault and switch SCENE on. Take several steps without crossing the doorway. The background becomes louder with each step, and BEDS, PLAYING and VOICES climb."
           // still active after the rule is corrected, while the stacked copies play on
           armed={faultArmed}
-          fixed={pileSeen && !s.faults.bedPileUp && beds.room <= 1 && beds.yard <= 1}
+          fixed={fixed}
           seen={pileSeen && !unnamed}
           firstHint="First make the problem happen: open SOUNDS, switch SCENE on, close the tray, then take several steps without crossing the doorway. Watch BEDS and PLAYING."
           onStart={() => {
-            setStartedAt(pileCount);
+            plant.start(gaGet().faults.bedPileUp);
             setPileUp(true);
           }}
           hints={[
             'With SCENE on, take several steps without crossing the doorway. Watch BEDS and PLAYING in the readouts.',
             'The FAULT lines in the log say a bed was STARTED AGAIN by a position update, and count the copies.',
-            'Open SOUNDS and change the rule under A BED STARTS. The extra copies are still playing: ■ STOP silences everything, then switch SCENE on again.',
+            'Open SOUNDS and change the rule under A BED STARTS. The extra copies are still playing: ■ STOP silences everything. Then switch SCENE on again and take a step: BEDS stays at 2.',
           ]}
           why="The game reported your position many times while you stayed in one zone, and each report started the bed again. A bed needs one start. Here both beds start once, with the scene, and a crossing only changes their levels. A change of rule does not remove copies that are already playing, so they had to be stopped."
         />
         {faultArmed ? <ActivityLog state={s} lines={4} only={CHB_P10_LOG} /> : null}
+        {/* below the card, so it is not the card's answer before the card (R2-GA1-01) */}
+        {/* shown before START and once the fault has been met, never while it hides (checker C-2) */}
+        {!unnamed ? <Note tone="mistake">Starting a background loop again on every position update in one area. The copies stack, get louder and use voices.</Note> : null}
       </Step>
       <Step n={5}>
         <UnderstandingCheck

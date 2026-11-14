@@ -1180,7 +1180,7 @@ describe('the Export area: its guide, its memory and its wiring', async () => {
   });
   it('every output is made from one snapshot, after the latest edit is saved, and an export only freezes the revision', () => {
     assert.match(area, /edRef\.current\.flush\(\);\s+const p = edRef\.current\.project;[\s\S]{0,300}?spBuildSnapshot\(p, \{ paper, packet \}, Date\.now\(\)\)/);
-    assert.match(area, /now\.apply\(\(p\) => \{\s+const next = spAfterExport\(p, snap\);/);
+    assert.match(area, /now\.apply\(\(p\) => \{\s+const next = spAfterExport\(p, snap, packetMade\);/);
     assert.match(area, /now\.markExported\(\)/);
     assert.ok(!/spUpdate|spSet[A-Z]|spAdd|spRemove|spMark|spEdit\(|spFreeze/.test(area), 'the Export area makes no other edit');
   });

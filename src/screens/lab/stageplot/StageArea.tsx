@@ -54,7 +54,7 @@
  * shows are this screen's own and are never saved: zoom and screen size
  * cannot change a position.
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { spGridStep, spMoveObject, spObject, spSetStageView, spToScale, spUpdateObject } from '../../../features/stageplot/spModel';
 import type { SpId, SpProject } from '../../../features/stageplot/spTypes';
@@ -88,6 +88,9 @@ type Panel = 'add' | 'object';
 /** VIEW's two screen-only switches, remembered while the app is open: a
  *  visit to another area does not turn them back on (bug test S3-07). */
 const drawingShows = { names: true, numbers: true };
+/** ZOOM and the slide of the drawing, remembered the same way, per stage plot
+ *  (the rest of S3-07, R2-SP1-10). Never saved: a screen preference. */
+const stageViews: Record<string, StageView> = {};
 
 /** A name short enough for the second line of a dock button. */
 const dockName = (name: string): string => (name.length > 12 ? `${name.slice(0, 11).trimEnd()}…` : name);
@@ -97,7 +100,10 @@ export function StageArea() {
   const p = ed.project;
   const { height: winH, width: winW } = useWindowDimensions();
 
-  const [view, setView] = useState<StageView>(STAGE_VIEW_FIT);
+  const [view, setView] = useState<StageView>(stageViews[p.id] ?? STAGE_VIEW_FIT);
+  useEffect(() => {
+    stageViews[p.id] = view;
+  }, [p.id, view]);
   // screen preferences, remembered while the app is open (S3-07)
   const [names, setNamesState] = useState(drawingShows.names);
   const [numbers, setNumbersState] = useState(drawingShows.numbers);
@@ -119,6 +125,10 @@ export function StageArea() {
   const [leftOut, setLeftOut] = useState(0);
   /** How many performers are named without their mix code at this size. */
   const [codesOut, setCodesOut] = useState(0);
+  /** Performers whose name touches another label, and equipment whose
+   *  numbers are left out, at this size (R2-SP1-02). */
+  const [crowded, setCrowded] = useState(0);
+  const [numbersOut, setNumbersOut] = useState(0);
   /** FULL SCREEN: the object whose details are open in the OBJECT tray. */
   const [detailsFor, setDetailsFor] = useState<SpId | null>(null);
 
@@ -179,9 +189,11 @@ export function StageArea() {
       onMove={(id, to) => ed.apply((q) => spMoveObject(q, id, to))}
       onResize={(id, size) => ed.apply((q) => spUpdateObject(q, id, { w: size.w, h: size.h }))}
       onFullScreen={setInFull}
-      onNamesLeftOut={(n, codes) => {
+      onNamesLeftOut={(n, codes, crowd = 0, nums = 0) => {
         setLeftOut(n);
         setCodesOut(codes);
+        setCrowded(crowd);
+        setNumbersOut(nums);
       }}
     />
   );
@@ -381,10 +393,13 @@ export function StageArea() {
           <Text style={styles.status} accessibilityLiveRegion="polite">
             {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel)}, ${stageFacingWord(sel.rot)}).` : 'Nothing is selected.'}`}
           </Text>
-          {leftOut > 0 || codesOut > 0 ? (
+          {leftOut > 0 || codesOut > 0 || crowded > 0 || numbersOut > 0 ? (
             <Note>
               {[
-                leftOut > 0 ? `At this size ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} not shown, to keep the names apart. The equipment keeps its channel numbers and mix codes, and every performer is named.` : '',
+                // "every performer is named" only while no name is covered (R2-SP1-02)
+                leftOut > 0 ? `At this size ${leftOut === 1 ? '1 equipment name is' : `${leftOut} equipment names are`} not shown, to keep the names apart.${numbersOut > 0 ? '' : ' The equipment keeps its channel numbers and mix codes.'}${crowded > 0 ? '' : ' Every performer is named.'}` : '',
+                numbersOut > 0 ? `${numbersOut === 1 ? '1 piece of equipment is' : `${numbersOut} pieces of equipment are`} shown without ${numbersOut === 1 ? 'its' : 'their'} channel numbers or mix codes at this size, so no name is covered.` : '',
+                crowded > 0 ? `${crowded === 1 ? '1 performer’s name touches' : `${crowded} performers’ names touch`} another label at this size.` : '',
                 codesOut > 0 ? `${codesOut === 1 ? '1 performer is' : `${codesOut} performers are`} named without ${codesOut === 1 ? 'their mix code' : 'their mix codes'} at this size. Each code is still on that performer’s monitor.` : '',
                 'Press ZOOM IN to see every name. In FULL SCREEN, turn the phone sideways for a larger stage.',
               ]

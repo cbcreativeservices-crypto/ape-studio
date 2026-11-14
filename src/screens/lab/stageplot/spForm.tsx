@@ -201,13 +201,22 @@ export function TextField(p: {
 export function NumberField(p: { label: string; value: number | null; onCommit: (n: number | null) => void; min?: number; max?: number; hint?: string; width?: FieldWidth }) {
   const { value, onCommit, min, max } = p;
   const shown = value == null || !Number.isFinite(value) ? '' : String(Math.round(value));
+  /** Said under the field when a typed number was brought into range: never
+   *  silently (a riser's "How many" 0 became 1 with no word, round-1 bug 18). */
+  const [moved, setMoved] = useState('');
   const d = useDraft(shown, (raw, how) => {
     const t = raw.trim();
-    if (t === shown) return;
+    if (t === shown) {
+      setMoved('');
+      return;
+    }
     if (t === '') {
       // An emptied field is "no number" only once it is left: after a pause
       // the user is most likely about to type the new one.
-      if (how === 'left') onCommit(null);
+      if (how === 'left') {
+        setMoved('');
+        onCommit(null);
+      }
       return;
     }
     // Whole numbers only; anything else leaves the value as it was.
@@ -216,8 +225,10 @@ export function NumberField(p: { label: string; value: number | null; onCommit: 
     // A number out of range is brought into range when the field is left,
     // never in the middle of typing it.
     if (how === 'paused' && ((min != null && n < min) || (max != null && n > max))) return;
+    const typed = n;
     if (min != null) n = Math.max(min, n);
     if (max != null) n = Math.min(max, n);
+    setMoved(n === typed ? '' : max != null ? `${typed} is not taken here: a number from ${min ?? 0} to ${max} is, so it is ${n}.` : `${typed} is not taken here: the least is ${min}, so it is ${n}.`);
     if (n !== value) onCommit(n);
   });
   return (
@@ -236,6 +247,11 @@ export function NumberField(p: { label: string; value: number | null; onCommit: 
         accessibilityLabel={p.hint ? `${p.label}. ${p.hint}` : p.label}
       />
       {p.hint ? <Text style={styles.hint}>{p.hint}</Text> : null}
+      {moved ? (
+        <Text style={[styles.hint, styles.hintMoved]} accessibilityLiveRegion="polite">
+          {moved}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -587,6 +603,7 @@ const styles = StyleSheet.create({
   field: { gap: 6 },
   label: { fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 19, color: colors.textPrimary },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  hintMoved: { color: colors.amber },
   input: {
     fontFamily: fonts.barlowRegular,
     fontSize: 16,

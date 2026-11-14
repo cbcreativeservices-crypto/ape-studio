@@ -228,12 +228,16 @@ describe('section 5: the word stays whole at 320 and 375, at least 9 pt', () => 
       const widths = row?.widths ?? SIX.map(() => (strip - DOCK_KEY_GAP * gaps) / SIX.length);
       const gap = row?.gap ?? DOCK_KEY_GAP;
       assert.ok(sum(widths) + gap * gaps <= strip + 0.01, 'the row stays on the screen');
+      // The key's chrome at the row's own padding (frame round 2, 2026-11-13:
+      // at 320 these keys now take a tightened row, so no key is under 44).
+      const rowChrome = 2 + 2 * (row?.padX ?? 4);
       keys.forEach((k, i) => {
-        const f = dockLabelFit(12, k.label, widths[i] - chrome, k.spaced, k.spacedGlyph, k.trackPx);
+        assert.ok(widths[i] >= 44, `${SIX[i]}: ${widths[i]} wide`);
+        const f = dockLabelFit(12, k.label, widths[i] - rowChrome, k.spaced, k.spacedGlyph, k.trackPx);
         assert.ok(f.fs >= MIN_DISPLAY_PT, `${SIX[i]} at ${f.fs}`);
         const trackFree = f.tracked ? 0 : k.trackPx;
         const line = ((k.spaced - trackFree) * f.fs) / 12 + (f.tight ? GLYPH : k.spacedGlyph - k.spaced);
-        assert.ok(line <= widths[i] - chrome + 0.5, `${SIX[i]}: ${line} in ${widths[i] - chrome}`);
+        assert.ok(line <= widths[i] - rowChrome + 0.5, `${SIX[i]}: ${line} in ${widths[i] - rowChrome}`);
       });
     });
   }

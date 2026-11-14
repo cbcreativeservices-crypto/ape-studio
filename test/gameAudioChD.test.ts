@@ -678,6 +678,9 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(faultStatus('scope', back.b, back.s), 'idle');
     for (const id of FAULT_IDS.slice(1)) r = repair(drive(plant(r, id), ...REPRODUCE[id]), id);
     r = drive(r, { type: 'stopAll' });
+    // round 2 (R2-GA2-01): fault 5 also needs the removal tested again
+    assert.equal(faultStatus('orphan', r.b, r.s), 'active');
+    r = drive(r, ...REPRODUCE.orphan);
     for (const id of FAULT_IDS) assert.equal(faultStatus(id, r.b, r.s), 'fixed', id);
     assert.equal(nextFault('scope', r.b, r.s), null);
   });
@@ -701,6 +704,8 @@ describe('page 19 — five faults, each one wrong setting', () => {
       if (id === 'orphan') {
         assert.ok(!faultFixed(id, r.b, r.s), 'the stray loop is still playing');
         r = drive(r, { type: 'stopAll' });
+        assert.ok(!faultFixed(id, r.b, r.s), 'silenced, but the removal is not tested again (round 2, R2-GA2-01)');
+        r = drive(r, ...REPRODUCE.orphan);
       }
       assert.ok(faultFixed(id, r.b, r.s), `${id}: fixed`);
       // no other fault was touched
@@ -732,7 +737,7 @@ describe('page 19 — five faults, each one wrong setting', () => {
     const n = r.s.logN;
     r = drive(repair(r, 'missingFile'), { type: 'door' });
     // the START line names the door's file, as the card's reason says (the second press closes it)
-    assert.ok(starts(r.s, n).some((t) => t.includes('Door · door · door_close.wav')));
+    assert.ok(starts(r.s, n).some((t) => t.includes('Door · door_close.wav')));
   });
   it('fault 2: the line goes to the EFFECTS bus and nothing ducks; planting it switches the duck on', () => {
     let r = open(run(gaInitial(), { type: 'option', patch: { duck: false } }));
@@ -790,15 +795,17 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(r.b.scope.seen, 0);
     assert.ok(!faultFixed('scope', repair(r, 'scope').b, repair(r, 'scope').s));
   });
-  it('fault 5: the loop plays on with no owner until it is stopped; adding and removing again also stops it', () => {
+  it('fault 5: the loop plays on with no owner until it is stopped; then the removal is tested again (round 2, R2-GA2-01)', () => {
     let r = drive(plant(open(), 'orphan'), ...REPRODUCE.orphan);
     assert.equal(strayLoops(r.s).length, 1);
     assert.ok(texts(r.s).some((t) => t.includes('ORPHAN')));
     assert.ok(r.s.inst.length > 0, 'PLAYING still counts it');
     r = repair(r, 'orphan');
     assert.ok(faultOpen('orphan', r.b, r.s) && !faultFixed('orphan', r.b, r.s));
-    r = drive(r, { type: 'addMachine' }, { type: 'removeMachine', id: 'generator-2' });
+    r = drive(r, { type: 'stopAll' });
     assert.equal(strayLoops(r.s).length, 0);
+    assert.ok(faultOpen('orphan', r.b, r.s) && !faultFixed('orphan', r.b, r.s), 'silenced is not tested');
+    r = drive(r, ...REPRODUCE.orphan);
     assert.ok(faultFixed('orphan', r.b, r.s));
   });
   it('all five can be in at once and repaired one by one', () => {
@@ -807,7 +814,7 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(settingsWrong(r.s), 5);
     r = drive(r, { type: 'door' }, { type: 'post', event: 'vo_greeting', owner: 'guide' }, ...REPRODUCE.repeat, ...REPRODUCE.orphan);
     for (const id of FAULT_IDS) r = repair(r, id);
-    r = drive(r, { type: 'stopAll' });
+    r = drive(r, { type: 'stopAll' }, ...REPRODUCE.orphan);
     for (const id of FAULT_IDS) assert.ok(faultFixed(id, r.b, r.s), id);
   });
   it('a fault left in on another page is not this visit’s: the page opens with the settings reset', () => {
@@ -832,13 +839,13 @@ describe('page 19 — five faults, each one wrong setting', () => {
     assert.equal(r.s.machines.length, 1);
     assert.ok(!faultOpen('orphan', r.b, r.s) && !faultFixed('orphan', r.b, r.s));
   });
-  it('fault 5 on this page: adding generator 2 again takes the stray loop back, and the chip reads ON', () => {
+  it('fault 5 on this page: ADD GENERATOR 2 does not take the stray loop over and fixes nothing (round 2, R2-GA2-01)', () => {
     let r = repair(drive(plant(open(), 'orphan'), ...REPRODUCE.orphan), 'orphan');
     assert.equal(strayLoops(r.s).length, 1);
     r = drive(r, { type: 'addMachine' });
-    assert.equal(r.s.machines.find((m) => m.id === 'generator-2')?.on, true);
-    assert.equal(strayLoops(r.s).length, 0);
-    assert.ok(faultFixed('orphan', r.b, r.s));
+    assert.equal(r.s.machines.find((m) => m.id === 'generator-2'), undefined, 'not placed while its old loop plays');
+    assert.equal(strayLoops(r.s).length, 1);
+    assert.ok(!faultFixed('orphan', r.b, r.s));
   });
   it('fault 4 can be shown from anywhere: STONE PATH and WORKSHOP, through the door', () => {
     const go = (r: Run, to: 'path' | 'workshop'): { r: Run; blocked: boolean } => {

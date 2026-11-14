@@ -176,7 +176,8 @@ describe('SP1 S2-02: removing an instrument symbol asks about its inputs', () =>
     const q = spRemoveObjects(p, [kit.id]);
     const ask = spReview(q).find((i) => i.rule === 'source-unplaced');
     assert.ok(ask, 'the review asks');
-    assert.match(ask.text, /^Drum kit is in the input list but not on the stage\./);
+    // round 2 (R2-SP2-05): named from the source WITH its own rows
+    assert.match(ask.text, /^Drum kit is not on the stage, and its inputs Kick, .+ are in the input list\./);
     assert.ok(stageUnplaced(q).some((u) => u.kind === 'source' && u.name === 'Drum kit'), 'NOT ON THE STAGE YET offers it');
     // a voice is carried by its singer: the figure stands for it
     const mic = p.objects.find((o) => o.kind === 'vocal-mic');
@@ -455,7 +456,8 @@ describe('SP1 S3: Setup and Library words', () => {
     // screen switches are remembered while the app is open
     assert.match(src(`${SP}/StageArea.tsx`), /const drawingShows = \{ names: true, numbers: true \};/);
     assert.match(src(`${SP}/GuidedTask.tsx`), /let stepsOpen = false;/);
-    assert.match(src(`${SP}/inputs/OrderPanel.tsx`), /const keepReservedChoice: Partial<Record<SpPatchId, boolean>> = \{\};/);
+    // round 2 (R2-SP2-07): kept per stage plot and per list
+    assert.match(src(`${SP}/inputs/OrderPanel.tsx`), /const keepReservedChoice: Partial<Record<string, boolean>> = \{\};/);
   });
 });
 

@@ -92,8 +92,10 @@ function WallStrip({ W, t, cur }: { W: number; t: ReturnType<typeof bTreatment>;
   // the readout's words, measured: the title (a shorter one if the full one
   // does not fit), and the widest value line
   const shortName = t.name.replace(/^GENERATOR /, 'GEN ');
-  const fullTitle = would0 ? `IF ${t.name} PLAYED` : `${t.name} · PLAYING`;
-  const shortTitle = would0 ? `IF ${shortName} PLAYED` : `${shortName} · PLAYING`;
+  // two spaces after the name: the label font draws "1 P" with no visible
+  // gap ("IF GEN 1PLAYED", round 2, R2-GA2-11)
+  const fullTitle = would0 ? `IF ${t.name}  PLAYED` : `${t.name} · PLAYING`;
+  const shortTitle = would0 ? `IF ${shortName}  PLAYED` : `${shortName} · PLAYING`;
   const fullW = useTextWidthMm(fullTitle, B_TEXT);
   const shortW = useTextWidthMm(shortTitle, B_TEXT);
   const levelW = useTextWidthMm(acting0 ? `−${Math.abs(Math.round(t.wallDb))} dB` : 'NO CHANGE', B_TEXT, acting0 ? 'mono' : 'label');

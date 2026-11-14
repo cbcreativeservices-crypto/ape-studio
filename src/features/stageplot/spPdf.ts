@@ -1124,11 +1124,31 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
         const info = plotInfo(b.plot);
         return { h: h + plotLeast(info.natural) + info.notes.length * BODY_LEAD + 4, table: false };
       }
-      if (b.t === 'facts') return { h: h + BODY_LEAD, table: false };
-      if (b.t === 'list') return { h: h + 2 * BODY_LEAD, table: false };
+      // The first lines of a list or of facts, never every block read on the
+      // way to it: an uncapped sum here made a sub-heading ask for its whole
+      // section and leave the section heading alone at a page foot (R2-SP2-02).
+      if (b.t === 'facts') return { h: Math.min(h + BODY_LEAD, 3 * BODY_LEAD), table: false };
+      if (b.t === 'list') {
+        // A list RIGHT UNDER the heading: its first two ITEMS stay with it
+        // (an item is never split, so two lines could be one item and a
+        // heading stood at a page foot over one short item: checker P6)
+        if (j === from) {
+          const items = b.items.map((it) => E(it)).filter(Boolean).slice(0, 2);
+          const firstTwo = items.reduce((sum, t) => sum + spPdfWrap(t, PT.body, false, W - 12).length * BODY_LEAD + AFTER.item, 0);
+          if (firstTwo) return { h: firstTwo, table: false };
+        }
+        return { h: Math.min(h + 2 * BODY_LEAD, 3 * BODY_LEAD), table: false };
+      }
       if (b.t === 'heading') {
         const box = headingBox(b.text, b.level === 1 ? 1 : 2);
-        if (box.lines.length) h += box.before + box.lines.length * box.lead + box.after;
+        const boxH = box.lines.length ? box.before + box.lines.length * box.lead + box.after : 0;
+        // A heading right under this one: keep everything THAT heading will
+        // ask to keep, so the two never part at a page foot (R2-SP2-02).
+        if (j === from && boxH) {
+          const k = keepAfter(blocks, j + 1, between, at + boxH);
+          return { h: boxH + k.h, table: k.table };
+        }
+        h += boxH;
       } else {
         const n = paraLines(b).length;
         if (n) h += n * BODY_LEAD + AFTER.para;

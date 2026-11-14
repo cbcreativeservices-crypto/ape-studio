@@ -34,6 +34,7 @@ import {
   dockLabelFit,
   dockStripFit,
   dockTightRow,
+  dockValueFitSize,
   trayTitleFit,
 } from '../src/screens/lab/rack/dockFit.ts';
 import { introWorkAction } from '../src/features/lab/screenGuide/introHold.ts';
@@ -61,7 +62,9 @@ const keyOf = (k: (typeof P22)[number]) => ({
   spacedGlyph: k.glyphed,
   trackPx: (k.chars + 1) * 0.5,
   valueBase: 14,
-  value: k.value + VALUE_FIT_MARGIN_PX,
+  // The measured width as it is (frame round 2: DockButton no longer adds a
+  // margin to the measure; dockKeyNeed and dockValueFitSize carry it).
+  value: k.value,
 });
 const P22_NEEDS = [
   ...P22.map((k) => dockKeyNeed(keyOf(k))),
@@ -71,7 +74,8 @@ const P22_NEEDS = [
 
 describe('item 1: a narrow dock tightens its chrome before it wraps', () => {
   it('page 22 at 320: the least widths are the measured ~318 px against a 304 px dock', () => {
-    assert.deepEqual(P22_NEEDS, [51, 55, 48, 53, 52, 40]);
+    // SOUNDS 55 → 56 in frame round 2: a value now keeps VALUE_FIT_MARGIN_PX.
+    assert.deepEqual(P22_NEEDS, [51, 56, 48, 53, 52, 40]);
     assert.ok(sum(P22_NEEDS) + DOCK_KEY_GAP_TIGHT * 5 > dockAt(320), 'at the authored chrome they cannot share one row');
   });
 
@@ -97,7 +101,7 @@ describe('item 1: a narrow dock tightens its chrome before it wraps', () => {
       const line = f.tight ? ((k.spaced - (f.tracked ? 0 : (k.chars + 1) * 0.5)) * f.fs) / 12 + glyph : (k.glyphed * f.fs) / 12;
       assert.ok(f.fs >= MIN_DISPLAY_PT, `${k.name} label at ${f.fs}`);
       assert.ok(line <= inner, `${k.name} label ${line} in ${inner}`);
-      const v = dockFitSize(14, k.value + VALUE_FIT_MARGIN_PX, inner);
+      const v = dockValueFitSize(14, k.value, inner);
       assert.ok(v != null && v >= MIN_DISPLAY_PT, `${k.name} value at ${v}`);
     });
   });
@@ -226,13 +230,17 @@ describe('item 4: a bezel key is whole, short or gone, never "…"', () => {
   });
   it('a key that fits is drawn exactly as before (390), and an unmeasured cell too', () => {
     assert.equal(bezelKeyFit(75, 59.8), 'full');
-    assert.equal(bezelKeyFit(58, 58.3), 'full', 'within half a pixel');
+    // Frame round 2 (2026-11-13): "within half a pixel" was the bug ("SURFA…",
+    // 47.11 px in 46.58). A key now fits with BEZEL_KEY_MARGIN_PX to spare.
+    assert.equal(bezelKeyFit(58, 58.3), 'none', 'within half a pixel is NOT whole');
+    assert.equal(bezelKeyFit(58, 57), 'full', 'a pixel to spare');
     assert.equal(bezelKeyFit(0, 59.8), 'full');
     assert.equal(bezelKeyFit(58, 0), 'full');
   });
   it('the bezel measures the key line and draws the chosen key; kNarrow is additive', () => {
     const src = read('screens/lab/rack/BezelReadouts.tsx');
-    assert.match(src, /const keyFit = bezelKeyFit\(keyAvail, keyW, it\.kNarrow \? narrowW : undefined\);/);
+    // frame round 2 follow-up: the margin is the web's (WEB); a phone fits as before.
+    assert.match(src, /const keyFit = bezelKeyFit\(keyAvail, keyW, it\.kNarrow \? narrowW : undefined, WEB\);/);
     assert.match(src, /\{cropped \|\| keyFit === 'none' \? null : \(/);
     assert.match(src, /accessibilityLabel=\{`\$\{it\.k\}:/, 'read aloud is always the full key');
     assert.match(read('screens/lab/rack/rackTypes.ts'), /kNarrow\?: string;/);

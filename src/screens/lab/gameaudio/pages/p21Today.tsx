@@ -133,7 +133,9 @@ export const P21_TOPICS: readonly { id: P21Topic; label: string; hud: GaHudId; s
     label: 'AI',
     hud: 'mix',
     setUp: () => {},
-    says: 'This lab uses no AI, so there is nothing to show: the scene stays quiet. Every sound here is a file made ahead of time.',
+    // each sound is synthesised in the app on first use (sounds/gaSoundBank),
+    // not a file made ahead of time (round 2, R2-GA2-09)
+    says: 'This lab uses no AI, so there is nothing to show: the scene stays quiet. Each sound here is built once in the app, then played as a fixed file.',
   },
 ];
 
@@ -216,7 +218,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
 
       <DocSection title="Sound made by rules · TOPIC RULES">
         <P>Procedural audio is made while the game runs, from synthesis and rules, so it can follow the game. MetaSounds is a tool built for this work.</P>
-        <P>Nothing in this lab is procedural: every sound is a file made ahead of time. The generator is a fixed loop; SPEED moves its pitch and level.</P>
+        <P>No sound in this lab is procedural: each is built once in the app, before it first plays, then played as a fixed file that does not follow the game. The generator is a fixed loop; SPEED moves its pitch and level.</P>
         <P>Procedural audio is not generative AI. A designer wrote its rules.</P>
       </DocSection>
 

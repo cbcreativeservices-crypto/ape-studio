@@ -125,8 +125,10 @@ const styles = StyleSheet.create({
   tag: { alignSelf: 'flex-start', borderWidth: 2, borderColor: colors.amber, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: '#241c06' },
   tagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amber },
   facts: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  fact: { borderWidth: 1, borderColor: '#3a3a42', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3 },
-  factText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary, textTransform: 'uppercase' },
+  // A long fact WRAPS inside its card, as the Inputs tags do ("WIRELESS: AGREE
+  // RADIO FREQUENCIES WITH THE VENUE" ran off a 320-wide screen, R2-SP2-04).
+  fact: { borderWidth: 1, borderColor: '#3a3a42', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, flexShrink: 1, maxWidth: '100%' },
+  factText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary, textTransform: 'uppercase', flexShrink: 1 },
   buttonRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
   box: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 10, padding: 12, gap: 8, backgroundColor: '#111111' },
 });

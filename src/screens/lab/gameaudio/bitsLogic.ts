@@ -100,14 +100,64 @@ export const GA_VAL_CH = 8.1;
 export const GA_CELL_PAD = 17;
 /** The width a cell needs to show its whole key and its whole value. */
 export const gaReadoutNeed = (k: string, v: string): number => Math.max(k.length * GA_KEY_CH, v.length * GA_VAL_CH) + GA_CELL_PAD;
-export function gaFitReadouts<T extends GaReadout>(items: readonly T[], winW: number): Omit<T, 'kNarrow'>[] {
+export function gaFitReadouts<T extends GaReadout>(items: readonly T[], winW: number): T[] {
   const narrow = Number.isFinite(winW) && winW > 0 && winW < GA_NARROW_W;
-  return items.map(({ kNarrow, ...it }) => {
+  return items.map((it) => {
+    // wider than GA_NARROW_W the short key goes on to the frame, which uses
+    // it when the whole key does not fit its cell: the frame now DROPS a key
+    // that does not fit, so without it p9's VARIATION and LAST TAKE vanished
+    // at 375 (round 2, after the shared-frame fix)
     if (!narrow) return it;
+    const { kNarrow, ...rest } = it;
     const k = kNarrow ?? it.k;
-    return { ...it, k, flex: Math.round(gaReadoutNeed(k, it.v)) / 50 };
+    return { ...rest, k, flex: Math.round(gaReadoutNeed(k, it.v)) / 50 } as T;
   });
 }
 
 /** "1 instance", "2 instances": a count with the right word. */
 export const gaCount = (n: number, one: string, many: string = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
+
+/** A PLANTED FAULT NEVER NAMES OR MARKS ITSELF (owner's rule; round-2 bug
+ *  test 2026-11-13, R2-GA1-01). The pure half of chbBits `usePlantedFault`:
+ *  `plant` is what START THE FAULT recorded (the symptom's count then, the
+ *  setting's value then, and whether the learner has since chosen a value
+ *  for it), `count` the symptom's count now, `real` the setting now. Until
+ *  the symptom happens once more the setting is SHOWN as it was before the
+ *  start (no "?", no lock): `unnamed`. */
+export type GaPlant<T> = { at: number; shown: T; touched: boolean };
+export function gaPlantedView<T>(plant: GaPlant<T> | null, count: number, real: T): { unnamed: boolean; shown: T } {
+  const unnamed = plant !== null && !plant.touched && count <= plant.at && real !== plant.shown;
+  return { unnamed, shown: unnamed && plant ? plant.shown : real };
+}
+/** A choice the learner makes for that setting while it is shown as before:
+ *  the value it shows changes nothing (`apply` false); the other one is the
+ *  learner's own change, and from then on the real value shows (`touch`). */
+export function gaPlantedPick<T>(plant: GaPlant<T> | null, unnamed: boolean, v: T): { apply: boolean; touch: boolean } {
+  if (!unnamed || !plant) return { apply: true, touch: false };
+  if (v === plant.shown) return { apply: false, touch: false };
+  return { apply: true, touch: true };
+}
+
+/** WHERE A CONCEALED VALUE IS TRUE (the checker's C-4: "never a lie on
+ *  screen"). While a planted fault hides, the setting shows what the
+ *  PROJECT says; the build does something else, as in real game-audio work
+ *  when a build is out of step with its project. So the place is named:
+ *  'project' while the fault hides and until a symptom has happened on this
+ *  visit (before START the two agree, so the word is true then too), 'build'
+ *  once a symptom has shown what the build does. The word changes at START
+ *  only on a second round, when the learner already knows the fault. */
+export type GaWhere = 'project' | 'build';
+export const gaPlantedWhere = (unnamed: boolean, symptomSeen: boolean): GaWhere => (unnamed || !symptomSeen ? 'project' : 'build');
+
+/** A PROOF IS FRESH (the checker's C-1). FIXED needs the repair proved AFTER
+ *  THE NEWEST SYMPTOM: a second round of the same fault on one visit needs
+ *  its own proof. One step of the rule: the symptom count rising clears the
+ *  proof; the proof count rising while the repair is in (`ok`) sets it. */
+export type GaProof = { symptom: number; proof: number; proved: boolean };
+export function gaProofStep(prev: GaProof | null, symptom: number, proof: number, ok: boolean): GaProof {
+  if (!prev) return { symptom, proof, proved: false };
+  let proved = prev.proved;
+  if (symptom > prev.symptom) proved = false;
+  else if (proof > prev.proof && ok) proved = true;
+  return { symptom, proof, proved };
+}

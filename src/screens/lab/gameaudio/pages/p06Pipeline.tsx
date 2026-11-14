@@ -14,13 +14,16 @@
  * wrong). The lesson does not walk through the repair: the card is where
  * the learner finds it.
  *
- * A PLANTED FAULT DOES NOT NAME ITSELF (lead's decision 10). From START THE
- * FAULT until the learner has produced the symptom (the model has logged the
- * missing file on a door press since then), nothing announces it: the DOOR
- * FILE readout reads "?", the DOOR FILE key is locked, the chain's door layer
- * reads "?" too, with no mark and no verdict, the screen guide does not name
- * the wrong file, and SHOW A HINT gives only "first make it happen" (bug test
- * 2026-11-13, B-S1-02 / B-S1-03). After the first FAULT line they name it.
+ * A PLANTED FAULT NEVER NAMES OR MARKS ITSELF (owner's rule). From START
+ * THE FAULT until the learner has produced the symptom (the model has logged
+ * the missing file on a door press since then), DOOR FILE looks as it did
+ * before the start: the readout, the key, its chooser and the chain's cards
+ * show the file that was in use then, with no "?", no lock, no mark and no
+ * verdict (`usePlantedFault`; round-2 bug test 2026-11-13, R2-GA1-01). The
+ * screen guide does not name the wrong file, SHOW A HINT gives only "first
+ * make it happen", and the chooser's blurb for the wrong name says nothing
+ * about the build until the log has named a missing file on this visit
+ * (R2-GA1-11). After the first FAULT line every place names it.
  *
  * Common mistake taught against: confusing importing a sound with
  * implementing its behavior.
@@ -34,7 +37,8 @@ import { GaRack, masterKey } from '../GaLab';
 import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaDispatch, useGa } from '../model/gaStore';
-import { ChainCards, useCountWhen } from './chbBits';
+import { ChainCards, useCountWhen, useFreshProof, usePlantedFault } from './chbBits';
+import { gaPlantedWhere } from '../bitsLogic';
 import { CHB_MISSING_FILE, doorChain, doorFile } from './data/chbPipeline';
 import { G06 } from './guides/p06';
 import { doorKey, doorWord, gaFact, useSince } from './shared';
@@ -65,12 +69,19 @@ function Page({ ctx }: { ctx: PageCtx }) {
   // THE CARD. It counts only what happened after START THE FAULT was pressed
   // (`startedAt` = how many missing-file lines the visit had by then), so it
   // never reads FIXED before the learner has started it.
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const started = startedAt !== null;
+  const plant = usePlantedFault(missedCount, missing);
+  const { started, startedAt, unnamed } = plant;
   const seenSinceStart = startedAt !== null && missedCount > startedAt;
-  const repairedSinceStart = useCountWhen(doorStarts, seenSinceStart && !missing) > 0;
-  // planted by the card and not yet found: nothing on the page names it
-  const unnamed = started && missing && !seenSinceStart;
+  // the door played again AFTER THE NEWEST missing-file line: a second round
+  // needs its own repair (checker C-1)
+  const repairedSinceStart = useFreshProof(missedCount, doorStarts, seenSinceStart && !missing);
+  // what every place on the screen shows: the file in use before START while
+  // the planted fault is not yet found
+  const shownMissing = plant.shown;
+  // and WHERE that is true (checker C-4, "never a lie on screen"): the
+  // PROJECT's file while the fault hides or before any missing file was
+  // logged here; the BUILD's once the log has named one
+  const where = gaPlantedWhere(unnamed, sawMissing);
   const armed = started && (missing || (seenSinceStart && !repairedSinceStart));
   const fixed = started && seenSinceStart && repairedSinceStart && !missing;
 
@@ -85,12 +96,15 @@ function Page({ ctx }: { ctx: PageCtx }) {
     if (on !== missing) gaDispatch({ type: 'fault', patch: { missingDoor: on } });
   };
 
-  const fileWord = unnamed ? '?' : missing ? 'MISSING' : 'FOUND';
-  const fileA11y = unnamed
-    ? 'the build has not been asked for the door’s file since the fault began: press the door key'
-    : missing
-      ? `the door event asks for ${CHB_MISSING_FILE}, which is not in the build`
-      : `the door event asks for ${OPEN_FILE} and ${CLOSE_FILE}, which are in the build`;
+  const fileWord = shownMissing ? 'MISSING' : 'FOUND';
+  const fileA11y =
+    where === 'project'
+      ? shownMissing
+        ? `in the project, the door event asks for ${CHB_MISSING_FILE}, which is not in the project. Press the door key to test the build`
+        : `in the project, the door event asks for ${OPEN_FILE} and ${CLOSE_FILE}, which are in the project. Press the door key to test the build`
+      : shownMissing
+        ? `in the build, the door event asks for ${CHB_MISSING_FILE}, which is not in the build`
+        : `in the build, the door event asks for ${OPEN_FILE} and ${CLOSE_FILE}, which are in the build`;
   const fileKey: DockParam = {
     kind: 'options',
     id: 'door-file',
@@ -99,11 +113,12 @@ function Page({ ctx }: { ctx: PageCtx }) {
     valueA11y: fileA11y,
     options: [
       { id: 'ok', label: OPEN_FILE, blurb: `The door layer asks for ${OPEN_FILE} when the door opens and for ${CLOSE_FILE} when it closes. Both files are in the build, so the layer can play.` },
-      { id: 'missing', label: CHB_MISSING_FILE, blurb: `The door layer asks for ${CHB_MISSING_FILE}, whichever way the door moves. No file with that name is in the build. The door, the event name and the scene connection are unchanged.` },
+      // until the log has named a missing file, this blurb does not say the
+      // build lacks it: that was the card's answer before the card (R2-GA1-11)
+      { id: 'missing', label: CHB_MISSING_FILE, blurb: `The door layer asks for ${CHB_MISSING_FILE}, whichever way the door moves.${sawMissing ? ' No file with that name is in the build.' : ''} The door, the event name and the scene connection are unchanged.` },
     ],
-    selectedId: missing ? 'missing' : 'ok',
-    onSelect: (id) => setMissing(id === 'missing'),
-    locked: unnamed ? 'Press the door key first and read the log. Then DOOR FILE opens.' : undefined,
+    selectedId: shownMissing ? 'missing' : 'ok',
+    onSelect: (id) => plant.pick(id === 'missing', setMissing),
   };
 
   return (
@@ -114,7 +129,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         hud: 'chain',
         readouts: [
           { k: 'DOOR', v: doorWord(s) },
-          { k: 'DOOR FILE', kNarrow: 'FILE', v: fileWord, tint: missing && !unnamed ? colors.red : undefined, vA11y: fileA11y },
+          { k: where === 'project' ? 'IN PROJECT' : 'IN BUILD', kNarrow: where === 'project' ? 'PROJECT' : 'BUILD', flex: 1.7, v: fileWord, tint: shownMissing ? colors.red : undefined, vA11y: fileA11y },
         ],
         showNames: true,
         assets: ASSETS,
@@ -129,7 +144,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={2}>
         <Do>Press OPEN DOOR. Read the three cards, then the log under RESULT. Press CLOSE DOOR and read card 1 again.</Do>
         <P>The event asks for files by name. Its two parts are called layers: the door and the latch rattle. The strip under the picture shows the rattle start one second later. The scene connection is where the game posts the event. Closing the door posts the same event, and the door layer asks for a second file.</P>
-        <ChainCards chain={doorChain(missing, { closing, named: !unnamed })} posted={posted} doorWord={doorWord(s)} />
+        <ChainCards chain={doorChain(shownMissing, { closing })} posted={posted} doorWord={doorWord(s)} />
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>
@@ -149,7 +164,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
           seen={seenSinceStart}
           firstHint="First make the problem happen: press the door key (it reads OPEN DOOR or CLOSE DOOR), then read the newest lines of the log."
           onStart={() => {
-            setStartedAt(missedCount);
+            plant.start(missing);
             setMissing(true);
           }}
           hints={[

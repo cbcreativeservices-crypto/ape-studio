@@ -383,7 +383,8 @@ function salsa(b: Build): void {
  *  caller (the model has no clock). */
 export function spFromTemplate(template: SpTemplateId, opts: { id: SpId; now: number; band?: string }): SpProject {
   const base = spNewProject({ id: opts.id, now: opts.now, band: opts.band ?? '', startedFrom: template === 'blank' ? '' : template });
-  if (template === 'blank') return base;
+  // Only a plot started from the blank stage earns the lab (R2-SP1-04).
+  if (template === 'blank') return { ...base, startedBlank: true };
   const b = new Build(base);
   if (template === 'solo') solo(b);
   else if (template === 'duo') duo(b);

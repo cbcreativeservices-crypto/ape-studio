@@ -19,9 +19,10 @@
  * (the model's `enterPage`) takes every planted fault out and puts every
  * setting back before the next page teaches anything.
  */
-import { useRef, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { gaPlantedPick, gaPlantedView, gaProofStep, type GaPlant, type GaProof } from '../bitsLogic';
 import { doorChainSummary, type ChbChain } from './data/chbPipeline';
 
 /* ── hooks ──────────────────────────────────────────────────────────────── */
@@ -35,6 +36,47 @@ export function useCountWhen(count: number, ok: boolean): number {
   if (count > last.current && ok) n.current += 1;
   last.current = count;
   return n.current;
+}
+
+/** The repair was proved AFTER THE NEWEST SYMPTOM (`proof` rose while `ok`,
+ *  and `symptom` has not risen since): a second round of a fault on one
+ *  visit needs its own proof (checker C-1; pure rule: bitsLogic
+ *  `gaProofStep`). */
+export function useFreshProof(symptom: number, proof: number, ok: boolean): boolean {
+  const mem = useRef<GaProof | null>(null);
+  mem.current = gaProofStep(mem.current, symptom, proof, ok);
+  return mem.current.proved;
+}
+
+/** A PLANTED FAULT NEVER NAMES OR MARKS ITSELF (owner's rule; round-2 bug
+ *  test 2026-11-13, R2-GA1-01). From START THE FAULT until the symptom has
+ *  happened once more (`count`, the model's own count of it, went past its
+ *  value at the start), the wrong setting LOOKS AS IT DID BEFORE THE START:
+ *  its key, readout and chooser show `shown`, the value it had then, with no
+ *  "?" and no lock, so no setting stands out from the others. A chooser
+ *  still opens: choosing the value it shows changes nothing, and choosing
+ *  the other one is the learner's own change (from then on the real value
+ *  shows). After the symptom every place shows the real value. */
+export function usePlantedFault<T>(count: number, real: T) {
+  const [plant, setPlant] = useState<GaPlant<T> | null>(null);
+  const { unnamed, shown } = gaPlantedView(plant, count, real);
+  return {
+    /** START THE FAULT was pressed on this visit. */
+    started: plant !== null,
+    /** The symptom's count when START THE FAULT was pressed (null: not yet). */
+    startedAt: plant?.at ?? null,
+    unnamed,
+    /** The value every place on the screen shows for the setting. */
+    shown,
+    /** Call BEFORE planting, with the setting's value now. */
+    start: (before: T) => setPlant({ at: count, shown: before, touched: false }),
+    /** A choice the learner makes for the setting (see above). */
+    pick: (v: T, apply: (v: T) => void) => {
+      const r = gaPlantedPick(plant, unnamed, v);
+      if (r.touch && plant) setPlant({ ...plant, touched: true });
+      if (r.apply) apply(v);
+    },
+  };
 }
 
 /* ── tray furniture ─────────────────────────────────────────────────────── */
@@ -52,18 +94,6 @@ export function TrayRow({ head, children }: { head: string; children: ReactNode 
 }
 export function TrayNote({ children }: { children: ReactNode }) {
   return <Text style={styles.trayNote}>{children}</Text>;
-}
-/** A rule row while a planted fault is still unnamed (lead's decision 10;
- *  bug test 2026-11-13, B-S1-01 / B-S3-11): the ✓ on the wrong rule would be
- *  the answer before the symptom, so the row says "?" and what to do first,
- *  the way page 6 locks DOOR FILE and page 8 locks SCOPE. */
-export function TrayLocked({ head, note }: { head: string; note: string }) {
-  return (
-    <View style={styles.trayGroup} accessible accessibilityLabel={`${head}: not tested since the fault began. ${note}`}>
-      <Text style={styles.trayHead}>{`${head} · ?`}</Text>
-      <Text style={styles.trayNote}>{note}</Text>
-    </View>
-  );
 }
 
 /** `LABEL · ON` / `LABEL · OFF`: a switch chip says its state as a word. */

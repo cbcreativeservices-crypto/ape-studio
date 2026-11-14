@@ -81,6 +81,13 @@ export function spDayWords(ms: number): string {
 const num = (n: number): string => (Number.isInteger(n) ? String(n) : String(Math.round(n * 100) / 100));
 
 export const SP_PACKET_WORD: Record<SpPacketKind, string> = { full: 'Full packet', plot: 'Stage plot only', compact: 'Compact packet' };
+
+/** Which packets complete the guided task's "Make the packet" (owner
+ *  2026-11-13): the full and the compact packet. A plot-only page is still
+ *  made and shared as before; it is not the packet. */
+export const spPacketCounts = (kind: SpPacketKind): boolean => kind === 'full' || kind === 'compact';
+/** Said in Export while "Stage plot only" is chosen, and in the guided task. */
+export const SP_PLOT_ONLY_WORDS = 'A plot-only page does not complete the guided task’s last step: make the full or compact packet.';
 export const SP_PAPER_WORD = { letter: 'US Letter', a4: 'A4' } as const;
 
 /** The band's name as typed; '' when none is typed. A made-up name is never
@@ -107,20 +114,30 @@ export function spBuildSnapshot(p: SpProject, options: SpExportOptions, now: num
   return deepFreeze({ project: JSON.parse(JSON.stringify(p)) as SpProject, options: { paper: options.paper, packet: options.packet }, generatedAt: now });
 }
 
-const sameContent = (a: SpProject, b: SpProject): boolean => JSON.stringify({ ...a, modifiedAt: 0, frozenRevision: 0 }) === JSON.stringify({ ...b, modifiedAt: 0, frozenRevision: 0 });
+const sameContent = (a: SpProject, b: SpProject): boolean => JSON.stringify({ ...a, modifiedAt: 0, frozenRevision: 0, packetRevision: 0 }) === JSON.stringify({ ...b, modifiedAt: 0, frozenRevision: 0, packetRevision: 0 });
 
 /** What a finished export does to the project (pass it to the editor's
  *  `apply`). The revision that was shared is frozen, so the next real edit
  *  moves the revision on. No other field changes.
  *
+ *  `packetMade`: a PACKET left the app (DOWNLOAD PDF, SHARE, PRINT). Only
+ *  then, and only for a full or compact packet (never "Stage plot only"),
+ *  is the revision recorded as the one a packet was made from
+ *  (`packetRevision`, what the guided task's last step reads). COPY
+ *  TECHNICAL SUMMARY freezes the revision and makes no packet (R2-SP1-01).
+ *
  *  If the project was edited WHILE the export was being made, those edits
  *  are not in the pages that went out: they are moved to the next revision
  *  here, so the number that was shared keeps meaning what was shared. */
-export function spAfterExport(current: SpProject, snap: SpSnapshot): SpProject {
+export function spAfterExport(current: SpProject, snap: SpSnapshot, packetMade = false): SpProject {
   const sent = snap.project;
   if (current.id !== sent.id || current.revision !== sent.revision) return current;
-  if (sameContent(current, sent)) return current.frozenRevision >= current.revision ? current : spFreeze(current);
-  return spEdit(spFreeze(current), () => undefined);
+  // only a FULL or COMPACT packet is "the packet" (owner 2026-11-13): a
+  // plot-only page freezes the revision it shows and records no packet
+  const counts = packetMade && spPacketCounts(snap.options.packet);
+  const withPacket = (q: SpProject): SpProject => (counts && q.packetRevision < sent.revision ? { ...q, packetRevision: sent.revision } : q);
+  if (sameContent(current, sent)) return withPacket(current.frozenRevision >= current.revision ? current : spFreeze(current));
+  return spEdit(withPacket(spFreeze(current)), () => undefined);
 }
 
 /* ── names ──────────────────────────────────────────────────────────────── */
@@ -507,6 +524,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const EDGE = 4; // points between a name and the stage outline
   const NEAR = 0.5; // points by which a name is nearer to its own symbol than to any other
   const NEAR_RATIO = 1.6; // how many times farther any other symbol must be
+  const PERSON_CLEAR = 6; // points kept clear around a performer's name (round 2)
   let symbolOver = 0;
   for (const d of drafts) symbolOver = Math.max(symbolOver, -d.box.x0, d.box.x1 - st.width, -d.box.y0, d.box.y1 - st.depth);
   const symbolMargin = Math.max(0.6, Math.round((symbolOver + 0.15) * 100) / 100);
@@ -529,6 +547,10 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     for (const part of o.parts) least = Math.min(least, apart(box, part));
     return least;
   };
+  /** A name's box stands over a performer's head, where every name on the
+   *  plot sits: above it, sharing some of its width, closer than two lines
+   *  of a name (the gap is measured from the box's foot to the head). */
+  const overHead = (box: Box, o: Draft): boolean => box.y1 <= o.box.y0 + 1e-9 && o.box.y0 - box.y1 < 2 * (box.y1 - box.y0) && Math.min(box.x1, o.box.x1) - Math.max(box.x0, o.box.x0) > 0;
   const solid = drafts.filter((d) => !d.sized);
   const platforms = drafts.filter((d) => d.sized);
   for (let pass = 0; pass < 4; pass += 1) {
@@ -536,6 +558,8 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     const gap = 3 / k;
     const pad = PAD / k;
     const taken: Box[] = [];
+    /** The performers' names among them. */
+    const takenPeople: Box[] = [];
     const page: Box = { x0: -marginM, y0: -marginM, x1: st.width + marginM, y1: st.depth + marginM };
     const inside = grow(stageBox, -EDGE / k);
     for (const d of drafts) {
@@ -563,8 +587,15 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
         // NEAR_RATIO times as far ("3–5", the timbales' channels, stood
         // midway between the timbales and the conga player and read as his:
         // bug test, 2026-11-13).
+        // A PERFORMER's name keeps the same clear distance from every other
+        // performer: "Nelson (M5)" stood just nearer Nelson than Chino, above
+        // Chino's head where every other name on the plot sits, and read as
+        // Chino's (bug test round 2, R2-SP2-03).
         const own = away(box, d);
         for (const o of solid) if (o !== d && away(box, o) < (o.person && !d.person && o.who !== d.who ? own * NEAR_RATIO : own) + NEAR / k) return false;
+        // …and never over ANOTHER performer's head, where every name on the
+        // plot is read as that head's (R2-SP2-03)
+        if (d.person && solid.some((o) => o !== d && o.person && overHead(box, o))) return false;
       }
       return true;
     };
@@ -572,6 +603,10 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     const free = (box: Box): boolean => {
       const clear = grow(box, pad);
       for (const x of taken) if (overlap(clear, x) > 0) return false;
+      // a performer's name keeps a clear step (PERSON_CLEAR points) from any
+      // other name or number, so a channel number is never read as part of it
+      const wide = grow(box, PERSON_CLEAR / k);
+      for (const x of takenPeople) if (overlap(wide, x) > 0) return false;
       return true;
     };
 
@@ -652,6 +687,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     const canShorten = (d: Draft): boolean => !d.person && !d.sized && !!d.label && d.badges.length > 0;
     const put = (j: Job, box: Box): void => {
       taken.push(box);
+      if (j.d.person) takenPeople.push(box);
       j.d.labelAt = { x: box.x0 + j.labelW / 2, y: box.y0 };
     };
     // Farther out, for a name with no place beside its symbol (it is placed
@@ -674,6 +710,8 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
           const far = away(box, d);
           if (far >= bestD) continue;
           if (!fits(d, box, false) || !free(box)) continue;
+          // a performer's name on a leader is not put over another head either (R2-SP2-03)
+          if (d.person && solid.some((o) => o !== d && o.person && overHead(box, o))) continue;
           bestD = far;
           best = box;
         }
@@ -869,6 +907,10 @@ function audienceCell(i: SpInput): string {
   return 'Yes';
 }
 
+/** How near (a fraction of the stage) a microphone stands to its performer's
+ *  figure to be "at" that performer. */
+export const SP_MIC_AT_PERFORMER = 0.15;
+
 /** What a kind of stage object is called in a sentence: "guitar amplifier". */
 const kindWords = (kind: SpObject['kind']): string => lower(SP_PALETTE.find((x) => x.kind === kind)?.name ?? '');
 
@@ -887,7 +929,12 @@ function whoCell(p: SpProject, i: SpInput, performerName: string, sourceLabel: s
   let where: string;
   if (!o) where = source?.offstage ? 'Off the stage' : 'Not placed on the stage yet';
   else {
-    const place = spLocationWord(o);
+    // A microphone right at its performer's figure is where that performer
+    // is: one person, one position word (the mic a step downstage of the
+    // singer read "Downstage center" beside "Center stage", round-1 bug 15).
+    const fig = pf && (o.kind === 'vocal-mic' || o.kind === 'mic-stand') ? p.objects.find((x) => x.kind === 'performer' && x.performerId === pf.id) : undefined;
+    const atFigure = !!fig && Math.hypot(fig.x - o.x, fig.y - o.y) <= SP_MIC_AT_PERFORMER;
+    const place = spLocationWord(atFigure && fig ? fig : o);
     // a figure or a microphone needs no "at the…": its place says it
     const thing = o.kind === 'performer' || o.kind === 'vocal-mic' || o.kind === 'mic-stand' ? '' : kindWords(o.kind);
     where = thing ? `at the ${thing}, ${lower(place)}` : place;
@@ -1287,8 +1334,12 @@ function monitorsSection(p: SpProject, s: SpSummary, breakBefore: Break, compact
   } else {
     if (p.mixes.length) {
       blocks.push(para(head, 'strong'));
-      const more = [...apart];
+      // the outputs sentence is about the HOUSE console's channels, so it
+      // follows the house-console line, before the mixes made elsewhere
+      // (it read as part of the personal-mixer line: R2-SP2-10)
+      const more: string[] = [];
       if (m.house.channels) more.push(`If each audio channel is carried on its own analog console output, that is ${plural(m.house.channels, 'output')}. The real number depends on how the venue sends the feeds to the stage: to be confirmed with the venue.`);
+      more.push(...apart);
       if (more.length) blocks.push(para(more.join(' ')));
     }
     if (dev.length) blocks.push(para(`Monitor devices: ${dev.join(', ')}.${wireless ? ` ${wireless}` : ''}`));

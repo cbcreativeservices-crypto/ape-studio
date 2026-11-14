@@ -97,13 +97,15 @@ describe('page 5: what the student reads in the log', () => {
     assert.deepEqual(tail(run(base, PLAY['OPEN DOOR']), base), [
       'trigger|TRIGGER door opened',
       'trigger|EVENT Play_Door posted by DOOR',
-      'start|Door · door · door_open.wav → EFFECTS bus (not heard: sound is off)',
-      'start|Door · rattle, 1 s later → EFFECTS bus (not heard: sound is off)',
+      // round 2: the layer named like its event is said once (B-S3-02); a late
+      // layer says its voice is held from the request (B-S3-03)
+      'start|Door · door_open.wav → EFFECTS bus (not heard: sound is off)',
+      'start|Door · rattle, 1 s later (its voice is held from now) → EFFECTS bus (not heard: sound is off)',
     ]);
     assert.deepEqual(tail(run(base, PLAY.CRATE), base), [
       'trigger|EVENT Play_Crate_Impact posted by CRATE',
       'start|Crate impact · impact → EFFECTS bus (not heard: sound is off)',
-      'start|Crate impact · debris, 0.22 s later → EFFECTS bus (not heard: sound is off)',
+      'start|Crate impact · debris, 0.22 s later (its voice is held from now) → EFFECTS bus (not heard: sound is off)',
     ]);
     // the log speaks the categories' own names: the page has nothing to explain away
     for (const line of [...tail(run(base, PLAY['OPEN DOOR']), base), ...tail(run(base, PLAY.INTERFACE), base)]) assert.ok(!/\b(sfx|ui)\b/.test(line), line);
@@ -129,7 +131,7 @@ describe('page 5: what the student reads in the log', () => {
     assert.ok(s.log.some((l) => l.kind === 'stop'), 'the footstep’s end is in the log');
     s = run(s, PLAY['OPEN DOOR']);
     const rows = chaResultRows(s.log, CHA_RESULT_LINES).map((r) => r.text);
-    assert.deepEqual(rows, ['Door · rattle, 1 s later → EFFECTS bus (not heard: sound is off)', 'Door · door · door_open.wav → EFFECTS bus (not heard: sound is off)']);
+    assert.deepEqual(rows, ['Door · rattle, 1 s later (its voice is held from now) → EFFECTS bus (not heard: sound is off)', 'Door · door_open.wav → EFFECTS bus (not heard: sound is off)']);
   });
   it('STEP is a step in place: sixteen presses leave YOU where the page opened (walk audit W1 F08)', () => {
     let s = run(gaInitial(), PLAY['OPEN DOOR']);

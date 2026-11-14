@@ -45,7 +45,7 @@ function contentKey(p: SpProject): string {
   // are screen preferences there, not what the document says.
   const toScale = !!(p.stage.width && p.stage.depth);
   const stage = { ...p.stage, snap: true, grid: toScale ? p.stage.grid : true };
-  const named: SpProject = { ...p, stage, revision: 0, frozenRevision: 0, status: 'draft', venueConfirmed: false, modifiedAt: 0 };
+  const named: SpProject = { ...p, stage, revision: 0, frozenRevision: 0, packetRevision: 0, status: 'draft', venueConfirmed: false, modifiedAt: 0 };
   return JSON.stringify(named);
 }
 
@@ -80,7 +80,7 @@ export function spHistoryApply(h: SpHistory, next: SpProject): SpHistory {
   if (next.revision !== h.present.revision && next.frozenRevision === h.present.frozenRevision) return h;
   // …and sharing / status is kept, but is not something UNDO steps over.
   // (A switch of Snap, or of an unprinted grid, is kept the same way.)
-  const same = next.frozenRevision === h.present.frozenRevision && next.status === h.present.status && next.venueConfirmed === h.present.venueConfirmed && sameView(next, h.present);
+  const same = next.frozenRevision === h.present.frozenRevision && next.packetRevision === h.present.packetRevision && next.status === h.present.status && next.venueConfirmed === h.present.venueConfirmed && sameView(next, h.present);
   return same ? h : spHistoryReplace(h, next);
 }
 
@@ -88,9 +88,12 @@ export function spHistoryApply(h: SpHistory, next: SpProject): SpHistory {
  *  it was recorded stays shared, and a state that differs from the shared
  *  document takes the next revision number, as a Draft. */
 export function spCarryShared(target: SpProject, current: SpProject): SpProject {
-  if (target.frozenRevision >= current.frozenRevision) return target;
+  // A packet that was made stays made: UNDO never forgets it (R2-SP1-01).
+  const packet = Math.max(target.packetRevision ?? 0, current.packetRevision ?? 0);
+  const t = packet === target.packetRevision ? target : { ...target, packetRevision: packet };
+  if (t.frozenRevision >= current.frozenRevision) return t;
   const frozen = current.frozenRevision;
-  return { ...target, frozenRevision: frozen, revision: Math.max(target.revision, frozen + 1), status: 'draft', venueConfirmed: false };
+  return { ...t, frozenRevision: frozen, revision: Math.max(t.revision, frozen + 1), status: 'draft', venueConfirmed: false };
 }
 
 /** A state from history keeps the screen preferences set NOW (Snap, and an

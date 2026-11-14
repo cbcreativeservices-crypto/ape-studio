@@ -376,7 +376,7 @@ export function aChainSummary(c: AChain | null, s: GaState): string {
     off: 'the layer is switched off',
   };
   const lanes = c.lanes.map((l) => `${l.name.toLowerCase()} layer${l.delayS ? `, ${l.delayS} second later` : ''}: ${word[l.voice]}`).join('. ');
-  return `The door’s chain, ${c.live ? 'now' : 'on the last press'}. The scene posted the event ${GA_EVENTS.door_open.name}. ${lanes}. ${c.live ? `Computed output level ${aLevelSpoken(c.out)}; the lab level is ${aPct(s.master)}.` : ''}`.trim();
+  return `The door’s chain, ${c.live ? 'now' : 'on the last press'}. The scene posted the event ${GA_EVENTS.door_open.name}. ${lanes}. ${c.live ? `Computed output: ${aLevelSpoken(c.out)}; the lab level is ${aPct(s.master)}.` : ''}`.trim();
 }
 
 /* ── page 8: the four kinds of game information ─────────────────────────── */

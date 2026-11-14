@@ -267,9 +267,10 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
   const bezel: BezelItem[] = gaFitReadouts(
     [
       ...(spec.readouts ?? []),
-      { k: 'PLAYING', v: String(s.inst.length), vA11y: `${gaCount(s.inst.length, 'instance')} playing` },
+      // short keys: the frame drops a key that does not fit its cell (round 2)
+      { k: 'PLAYING', kNarrow: 'PLAYS', v: String(s.inst.length), vA11y: `${gaCount(s.inst.length, 'instance')} playing` },
       { k: 'VOICES', v: s.voiceLimit ? `${voices}/${s.voiceLimit}` : String(voices), vA11y: s.voiceLimit ? `${voices} of ${gaCount(s.voiceLimit, 'voice')}` : gaCount(voices, 'voice') },
-      { k: 'SOUND', v: GA_SOUND_WORD[sound], tint: sound === 'on' ? colors.green : sound === 'failed' || sound === 'unavailable' ? colors.red : colors.textSub },
+      { k: 'SOUND', kNarrow: 'SND', v: GA_SOUND_WORD[sound], tint: sound === 'on' ? colors.green : sound === 'failed' || sound === 'unavailable' ? colors.red : colors.textSub },
     ],
     winW,
   );

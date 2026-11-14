@@ -530,6 +530,13 @@ export type StageLabelPlan = {
   /** The performers (and the selection) shown by NAME ALONE at this size:
    *  the name fits where the name with its mix code did not. */
   bare: SpId[];
+  /** Equipment whose channel numbers or mix codes are NOT shown at this size:
+   *  no place for them kept off a performer's name (R2-SP1-02). */
+  numbersOut: SpId[];
+  /** Performers (and the selection) whose name touches another label at
+   *  this size: the screen never says "every performer is named" while one
+   *  is (R2-SP1-02). */
+  crowded: SpId[];
 };
 
 /** How far from its symbol a label may stand, nearest first (glass units). */
@@ -600,6 +607,7 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
   const out = new Map<SpId, StageLabelOut>();
   const dropped: SpId[] = [];
   const bare: SpId[] = [];
+  const numbersOut: SpId[] = [];
 
   const hold = (x0: number, y0: number, m: Block): Spot => {
     // a place that hangs off the picture is first slid back onto it
@@ -761,9 +769,24 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     // own symbol touching nothing; only then the least bad place
     const onItApart = offArt && !placed.some((pl) => shared(onIt.box, pl.box, bare.includes(pl.id) ? LABEL_APART_BARE : 0) > 0);
     const onItClear = offArt && !placed.some((pl) => shared(onIt.box, pl.box, 0) > 0);
-    put(it, nums, first(it, numSpots) ?? first(it, against(it, numSpots), false) ?? (onItApart ? onIt : (first(it, numSpots, false) ?? (onItClear ? onIt : leastBad(it, [onIt, ...numSpots])))), it.badges);
+    const spot = first(it, numSpots) ?? first(it, against(it, numSpots), false) ?? (onItApart ? onIt : (first(it, numSpots, false) ?? (onItClear ? onIt : null)));
+    if (spot) {
+      put(it, nums, spot, it.badges);
+      continue;
+    }
+    // LAST: the numbers on their OWN symbol, even over other art, as long as
+    // they cover no performer's name. Otherwise they are left out and
+    // counted: a badge on a name made "Marisol" read "…isol" (R2-SP1-02).
+    const people = new Set(order.filter(keeps).map((x) => x.id));
+    if (!placed.some((pl) => people.has(pl.id) && shared(onIt.box, pl.box, 0) > 0)) put(it, nums, onIt, it.badges);
+    else numbersOut.push(it.id);
   }
-  return { labels: items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x), dropped, bare };
+  const labels = items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x);
+  const keepIds = new Set(items.filter((i) => keeps(i)).map((i) => i.id));
+  // (closer than 4 units counts: the drawn letters reach a little past the
+  // measured box, and two names that close read as touching on a phone)
+  const crowded = labels.filter((l) => keepIds.has(l.id) && labels.some((o) => o.id !== l.id && shared(l.box, o.box, 2) > 0)).map((l) => l.id);
+  return { labels, dropped, bare, numbersOut, crowded };
 }
 
 /** The labels alone (see stageLabelPlan). */

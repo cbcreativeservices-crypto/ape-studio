@@ -29,10 +29,34 @@ export const FIT_MARGIN_PX = 0;
  *  58.94 in 58.58, and the overrun lost the verb glyph ("POSITION …"). Stays
  *  under dockKeyNeed's 1 px, so a key given its need still reaches 9 pt. */
 export const LABEL_FIT_MARGIN_PX = 0.8;
-/** …except on a value, whose mono digits do not scale quite linearly: at 320
- *  "≈ -10°" came to 11.8 pt, measured 38.23 px in a 38 px key, and the overrun
- *  of a quarter pixel drew it as "≈ -1…". */
-export const VALUE_FIT_MARGIN_PX = 0.3;
+/** …and a value keeps more (frame round 2, 2026-11-13: "FACE 9…", "SPEED 4…"
+ *  at 375, "UNRE…" at 320, each 0.2–0.6 px over its box). A measured width is
+ *  not exact: on the web every onLayout width is a whole pixel (react-native-web
+ *  reads offsetWidth), so the key's width can be half a pixel wider than its
+ *  box and the value's natural width half a pixel narrower than its line; and
+ *  mono digits do not scale quite linearly (at 320 "≈ -10°" at 11.8 pt measured
+ *  38.23 px in a 38 px key). The margin holds all three, on the fits-as-authored
+ *  check as well as on a shrunk value (dockValueFitSize), so no value ends in
+ *  "…". dockKeyNeed carries it, so a key given its need still reaches 9 pt. */
+export const VALUE_FIT_MARGIN_PX = 1.2;
+/** The two half-pixel measures alone: a value drawn at its authored size has
+ *  no scaling error, so it stays as authored with this much to spare (a value
+ *  1.0 px short of its key at 375 is whole, and is not shrunk). */
+export const VALUE_MEASURE_PX = 1;
+/** A bezel key's margin in its cell, for the same two whole-pixel measures
+ *  (frame round 2: "SURFA…" 47.11 px in a 46.58 px box, "LAST TAKE" 54.36 in
+ *  53.81 at 375). Was a half-pixel slack the other way. */
+export const BEZEL_KEY_MARGIN_PX = 1;
+/**
+ * WEB ONLY (checker follow-up, 2026-11-13). The three margins above answer an
+ * error only the web makes: whole-pixel onLayout widths. A phone's widths are
+ * fractional, and there they only cost room (bezel keys needing ~2 px spare,
+ * shrunk values 0.1–0.3 pt smaller). So each fit takes `web` (the components
+ * pass Platform.OS === 'web'), and on native everything is exactly as before
+ * round 2: a value measured + this margin with a half-pixel slack, a bezel key
+ * within a half-pixel slack. The pure functions default to the web rules.
+ */
+export const VALUE_FIT_MARGIN_NATIVE_PX = 0.3;
 
 export function dockFitSize(base: number, natural: number, avail: number, fixed = 0, margin = FIT_MARGIN_PX): number | null {
   // Not measured yet (or nothing to draw): the authored size, as today.
@@ -42,6 +66,22 @@ export function dockFitSize(base: number, natural: number, avail: number, fixed 
   // drew as "MAKEUP …".
   if (natural + fixed <= avail + (margin > 0 ? -FIT_SLACK_PX : FIT_SLACK_PX)) return base;
   const room = avail - fixed - margin;
+  if (!(room > 0)) return null;
+  const fs = Math.floor(((base * room) / natural) * 10) / 10;
+  if (fs >= base) return base;
+  return fs >= MIN_DISPLAY_PT ? fs : null;
+}
+
+/** A dock VALUE's size: as dockFitSize, but with a margin, never a slack (a
+ *  value measured to fit within half a pixel was drawn with "…"). As authored
+ *  it keeps VALUE_MEASURE_PX inside the key; shrunk, VALUE_FIT_MARGIN_PX.
+ *  `natural` is the line's measured width at `base`, with nothing added.
+ *  Native (`web` false): the pre-round-2 rule, unchanged. */
+export function dockValueFitSize(base: number, natural: number, avail: number, web = true): number | null {
+  if (!web) return dockFitSize(base, natural > 0 ? natural + VALUE_FIT_MARGIN_NATIVE_PX : natural, avail);
+  if (!(natural > 0) || !(avail > 0) || !(base > 0)) return base;
+  if (natural <= avail - VALUE_MEASURE_PX) return base;
+  const room = avail - VALUE_FIT_MARGIN_PX;
   if (!(room > 0)) return null;
   const fs = Math.floor(((base * room) / natural) * 10) / 10;
   if (fs >= base) return base;
@@ -85,8 +125,14 @@ export const DOCK_KEY_GAP_TIGHT = 4;
  * the keys with room to spare.
  *
  * `value` is 0 for a fader key: its value changes under the drag, and the keys
- * must not shift while it does. A two-line key wraps at its authored size, so
- * it asks for about half its one-line width.
+ * must not shift while it does. A chooser-fader key (▸, a value on the key)
+ * reports its WIDEST value over the lane instead (DockButton `valueSpan`), so
+ * it too holds still under the drag. A two-line key wraps at its authored
+ * size, so it asks for about half its one-line width.
+ *
+ * `value` is the line's measured width with nothing added: the +1 below holds
+ * a label's LABEL_FIT_MARGIN_PX, and a value adds the rest of its wider
+ * VALUE_FIT_MARGIN_PX, so a key given its need draws its value at 9 pt or more.
  */
 export function dockKeyNeed(k: {
   chrome: number;
@@ -98,6 +144,8 @@ export function dockKeyNeed(k: {
   lines?: 1 | 2;
   valueBase?: number;
   value?: number;
+  /** The web's margin (default) or native's, as dockValueFitSize. */
+  web?: boolean;
 }): number {
   if (!(k.label > 0)) return 0;
   const spaced = k.spaced ?? 0;
@@ -109,9 +157,37 @@ export function dockKeyNeed(k: {
       : spaced > 0 && spacedGlyph > spaced
         ? (spaced - (k.trackPx ?? 0)) * atFloor + (spacedGlyph - spaced)
         : k.label * atFloor;
-  const value = k.value && k.valueBase ? (k.value * MIN_DISPLAY_PT) / k.valueBase : 0;
+  const value = !(k.value && k.valueBase)
+    ? 0
+    : k.web === false
+      ? ((k.value + VALUE_FIT_MARGIN_NATIVE_PX) * MIN_DISPLAY_PT) / k.valueBase // as before round 2
+      : (k.value * MIN_DISPLAY_PT) / k.valueBase + (VALUE_FIT_MARGIN_PX - LABEL_FIT_MARGIN_PX);
   // +1: dockFitSize floors to 0.1 pt, and a hair under 9 would be refused.
   return Math.ceil(k.chrome + Math.max(label, value)) + 1;
+}
+
+/**
+ * A CHOOSER-FADER KEY HOLDS STILL UNDER THE DRAG (frame round 2, 2026-11-13:
+ * Game Audio p22 at 320, SOUNDS "SPEED 40%" → "SPEED 100%" widened its key
+ * 51 → 55 and moved every key beside it sideways mid-drag). The key's value is
+ * the fader's own, so it changes as the finger moves; the key asks for room
+ * for the WIDEST value its lane can show (sampled along the lane, and never
+ * less than today's). The value font is mono, so the most characters is the
+ * widest. A format that throws is skipped: today's value still stands.
+ */
+export const VALUE_SPAN_STEPS = 20;
+export function widestLaneValue(format: (v: number) => string, now: string): string {
+  let widest = now;
+  for (let i = 0; i <= VALUE_SPAN_STEPS; i++) {
+    let s: string;
+    try {
+      s = format(i / VALUE_SPAN_STEPS);
+    } catch {
+      continue;
+    }
+    if (typeof s === 'string' && s.length > widest.length) widest = s;
+  }
+  return widest;
 }
 
 /**
@@ -178,21 +254,38 @@ export type DockStripRow = {
  *  one row at the tight gap, the keys' chrome tightens (DOCK_TIGHT_STEPS); when
  *  even that cannot hold them (the six keys of a conga page at 320), the keys
  *  take two rows: a whole word in a taller dock beats a cut one. Floored to
- *  0.01 px, so that rounding can never push a key onto a third row. */
+ *  0.01 px, so that rounding can never push a key onto a third row.
+ *
+ *  EVERY KEY AT LEAST DOCK_MIN_KEY_W, ON EVERY PATH (frame round 2,
+ *  2026-11-13: at 320 Game Audio p10's STEP was 33 and ■ STOP 40 wide, p9's
+ *  LEVEL / STEP / ■ STOP 43). A short word needs little, and the keys that
+ *  needed more kept it, so the short keys shared what was left and fell under
+ *  the 44 pt touch target; only the tightened row checked it. A row whose
+ *  narrowest key would be under 44 (the widths share out the room so the
+ *  narrowest is as wide as it can be) is now treated as a row that does not
+ *  fit: the chrome tightens, and only then do the keys take two rows. Equal
+ *  keys narrower than 44 (seven or more keys at 320) go the same way. */
 export function dockStripFit(needs: readonly number[], stripW: number): DockStripRow | null {
-  const gaps = needs.length - 1;
-  if (dockKeyWidths(needs, stripW - DOCK_KEY_GAP * gaps) == null) return null;
+  const n = needs.length;
+  const gaps = n - 1;
+  if (n < 2 || !(stripW > 0)) return null;
+  const evenAvail = stripW - DOCK_KEY_GAP * gaps;
+  if (dockKeyWidths(needs, evenAvail) == null && evenAvail / n >= DOCK_MIN_KEY_W) return null;
   const across = (row: readonly number[], gap: number = DOCK_KEY_GAP_TIGHT) => {
     const avail = stripW - gap * (row.length - 1);
     return (dockKeyWidths(row, avail) ?? row.map(() => avail / row.length)).map((w) => Math.floor(w * 100) / 100);
   };
   const sum = (row: readonly number[]) => row.reduce((a, b) => a + b, 0);
-  const wrap = needs.length > 3 && sum(needs) + DOCK_KEY_GAP_TIGHT * gaps > stripW;
-  if (!wrap) return { gap: DOCK_KEY_GAP_TIGHT, widths: across(needs), wrap, padX: DOCK_KEY_PAD };
+  const touchable = (widths: readonly number[]) => widths.every((w) => w >= DOCK_MIN_KEY_W);
+  const fitsOneRow = !(n > 3 && sum(needs) + DOCK_KEY_GAP_TIGHT * gaps > stripW);
+  const one = fitsOneRow ? across(needs) : null;
+  if (one && touchable(one)) return { gap: DOCK_KEY_GAP_TIGHT, widths: one, wrap: false, padX: DOCK_KEY_PAD };
   const tight = dockTightRow(needs, stripW);
   if (tight) return tight;
-  const half = Math.ceil(needs.length / 2);
-  return { gap: DOCK_KEY_GAP_TIGHT, widths: [...across(needs.slice(0, half)), ...across(needs.slice(half))], wrap, padX: DOCK_KEY_PAD };
+  // Three keys or fewer never wrap (no second row to give them): as before.
+  if (one && n <= 3) return { gap: DOCK_KEY_GAP_TIGHT, widths: one, wrap: false, padX: DOCK_KEY_PAD };
+  const half = Math.ceil(n / 2);
+  return { gap: DOCK_KEY_GAP_TIGHT, widths: [...across(needs.slice(0, half)), ...across(needs.slice(half))], wrap: true, padX: DOCK_KEY_PAD };
 }
 
 /** The first DOCK_TIGHT_STEPS step that holds every key on one row (each key at
@@ -246,11 +339,15 @@ export function trayTitleFit(avail: number, withFull: number, withShort: number,
  * tap caret when the cell has one) and the cell's inner width.
  */
 export type BezelKeyFit = 'full' | 'narrow' | 'none';
-export function bezelKeyFit(avail: number, key: number, narrow?: number): BezelKeyFit {
+export function bezelKeyFit(avail: number, key: number, narrow?: number, web = true): BezelKeyFit {
   // Not measured yet: as drawn today.
   if (!(avail > 0) || !(key > 0)) return 'full';
-  if (key <= avail + FIT_SLACK_PX) return 'full';
-  if (narrow != null && narrow > 0 && narrow <= avail + FIT_SLACK_PX) return 'narrow';
+  // On the web a margin, not a slack (frame round 2): a key measured within
+  // half a pixel of its cell overran it by that much and was drawn "SURFA…".
+  // Native widths are fractional: the half-pixel slack, as before.
+  const room = web ? avail - BEZEL_KEY_MARGIN_PX : avail + FIT_SLACK_PX;
+  if (key <= room) return 'full';
+  if (narrow != null && narrow > 0 && narrow <= room) return 'narrow';
   return 'none';
 }
 
