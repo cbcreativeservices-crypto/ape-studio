@@ -625,9 +625,11 @@ type Spot = { x0: number; y0: number; box: Box };
  * past the edge, and less than a third of it showing) has no label either:
  * there is no room beside what is not there, and its name comes back as the
  * drawing slides. What does show of it is still art a name keeps off.
- * `keepOut`: more boxes no label may sit on.
+ * `keepOut`: more boxes no label may sit on. `opts.numbersClear` (a shaped
+ * stage): numbers printed on their own symbol as the last resort never cover
+ * another label either; they are left out and counted instead.
  */
-export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = []): StageLabelPlan {
+export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: number, keepOut: readonly Box[] = [], opts: { numbersClear?: boolean } = {}): StageLabelPlan {
   const glass: Box = { x0: STAGE_FRAME.side, y0: STAGE_FRAME.top, x1: Math.max(STAGE_FRAME.side + 1, gw - STAGE_FRAME.side), y1: Math.max(STAGE_FRAME.top + 1, gh - STAGE_FRAME.bottom) };
   const shown = items.filter((it) => shared(stageBoxBounds(it.box), glass, 0) > 0);
   // every symbol's art (a platform is not art a name must keep off: a name
@@ -807,8 +809,13 @@ export function stageLabelPlan(items: readonly StageLabelIn[], gw: number, gh: n
     // LAST: the numbers on their OWN symbol, even over other art, as long as
     // they cover no performer's name. Otherwise they are left out and
     // counted: a badge on a name made "Marisol" read "…isol" (R2-SP1-02).
+    // On a SHAPED stage (`numbersClear`, fix 2026-11-13) there is no such
+    // last resort: numbers that have no place clear of every label and every
+    // other symbol are left out and counted (a thrust drawn small on a phone
+    // printed "12" on Wedge 2's "M2" and "14" on the headphone amplifier's
+    // "M4"). They come back as the user zooms in.
     const people = new Set(order.filter(keeps).map((x) => x.id));
-    if (!placed.some((pl) => people.has(pl.id) && shared(onIt.box, pl.box, 0) > 0)) put(it, nums, onIt, it.badges);
+    if (!opts.numbersClear && !placed.some((pl) => people.has(pl.id) && shared(onIt.box, pl.box, 0) > 0)) put(it, nums, onIt, it.badges);
     else numbersOut.push(it.id);
   }
   const labels = items.map((i) => out.get(i.id)).filter((x): x is StageLabelOut => !!x);

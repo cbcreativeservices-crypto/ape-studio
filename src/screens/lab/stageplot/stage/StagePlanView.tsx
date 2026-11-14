@@ -345,7 +345,8 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
       person: o.kind === 'performer',
       selected: o.id === selectedId,
     }));
-    return stageLabelPlan(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right]);
+    // a shaped stage: a number never covers another label (fix 2026-11-13)
+    return stageLabelPlan(items, gw, gh, [frame.top, frame.bottom, frame.left, frame.right], { numbersClear: spShapeOf(p.stage) !== 'rect' });
   }, [order, boxes, p, livePos, showNames, showNumbers, selectedId, gw, gh, frame]);
   const labels = plan.labels;
   // names left out because the stage is crowded at this size (not because the

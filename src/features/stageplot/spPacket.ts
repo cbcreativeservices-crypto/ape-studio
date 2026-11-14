@@ -43,6 +43,7 @@ import {
 import { spAllInputsInOrder, spBadge, spBoxSizeWords, spBoxUse, spBoxUseWords, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
 import type { SpDoc, SpDocBlock, SpDocColumn, SpDocDeck, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
 import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spObjectOfInput, spOnStage, spPerformer } from './spModel.ts';
+import { spPdfEncode, spPdfWidth } from './spPdfFonts.ts';
 import { spFrontEdges, spIsCircle, spRoundRef, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
 import { spReview, type SpIssue } from './spReview.ts';
 import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
@@ -346,6 +347,30 @@ export function spLabelBlock(item: Pick<SpDocPlotItem, 'label' | 'badges' | 'per
   return { w: labelW + gap + badgesW, h, labelW, badgesW, gap };
 }
 
+/** The same row as `spLabelBlock`, with every word as wide as the PDF prints
+ *  it (Helvetica's own widths, never less than the estimate): what spPdf.ts
+ *  draws. Names on a shaped stage are placed with it. */
+export function spLabelBlockPrinted(item: Pick<SpDocPlotItem, 'label' | 'badges' | 'person'>): { w: number; h: number; labelW: number; badgesW: number; gap: number } {
+  const T = SP_PLOT_TYPE;
+  const fs = item.person ? T.person : T.label;
+  const wide = (text: string, size: number, bold: boolean): number => Math.max(spTextW(text, size, bold), spPdfWidth(spPdfEncode(text), size, bold));
+  const labelW = item.label ? wide(item.label, fs, item.person) : 0;
+  const badgesW = item.badges.reduce((w, b) => w + wide(b, T.badge, true) + T.badgePad * 2, 0) + Math.max(0, item.badges.length - 1) * T.badgeGap;
+  const gap = labelW && badgesW ? 4 : 0;
+  const h = item.badges.length ? T.badgeH + 2 : item.label ? fs + 3 : 0;
+  return { w: labelW + gap + badgesW, h, labelW, badgesW, gap };
+}
+
+/** The size a SHAPED stage's names are placed for: the narrowest page (A4:
+ *  595 pt less two 43.2 pt margins) at the drawing's usual height (a roomy
+ *  plot is only ever drawn larger), times `give`. The PDF never draws a
+ *  shaped stage smaller than this (spPdf.ts `SP_PDF_PLOT.shapedW` and
+ *  `shapedGive` mirror it): where a rectangle's drawing would give way to
+ *  keep its legend on the page, a shaped stage's legend runs on instead.
+ *  (A smaller `give` keeps those pages but prints more equipment by its
+ *  number alone.) */
+export const SP_PLOT_SHAPED_K = { width: 508, give: 1 } as const;
+
 /** Points per meter for a plot drawn `width` points wide. With the plot's
  *  `items` it applies the small-stage rule (`spPlotMaxH`). */
 export function spPlotScale(plot: Pick<SpDocPlot, 'widthM' | 'depthM' | 'marginM'> & { items?: readonly { person: boolean }[]; roomy?: boolean }, width: number, maxH: number = spPlotMaxH(plot)): number {
@@ -571,13 +596,92 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
   const overHead = (box: Box, o: Draft): boolean => box.y1 <= o.box.y0 + 1e-9 && o.box.y0 - box.y1 < 2 * (box.y1 - box.y0) && Math.min(box.x1, o.box.x1) - Math.max(box.x0, o.box.x0) > 0;
   const solid = drafts.filter((d) => !d.sized);
   const platforms = drafts.filter((d) => d.sized);
+  // A SHAPED STAGE (thrust, round, wings; fix 2026-11-13): its drawing is
+  // taller than a rectangle's, so the PDF often drew it SMALLER than the
+  // size names were placed for (it gave way by up to 15% to keep its legend
+  // on the page, and a roomy plot is drawn only as tall as the page has),
+  // while the words keep their size: names then ran into each other and into
+  // symbols. Its names are placed for the smallest drawing any renderer
+  // makes (`SP_PLOT_SHAPED_K`), each word as wide as the PDF prints it. Drawn
+  // larger, a name's box only shrinks toward its own anchor, so a place that
+  // was clear stays clear. A rectangle keeps its rule (its layouts are pinned).
+  const shaped = spShapeOf(p.stage) !== 'rect';
+  // …and a shaped stage's own lines (its outline, the thrust's walls, the
+  // wings' dashed edges) are not inside a plain box, so a name keeps off them
+  // too: "Keys" ended on the wing wall with its "9–10" in the wing, and
+  // "Wedge 2" broke the circle (review of this fix). A leader is a line as
+  // well: a later name never sits on it, and it never runs through a name.
+  type Seg = [number, number, number, number];
+  const lines: Seg[] = [];
+  let ring: { cx: number; cy: number; r: number } | null = null;
+  if (shaped) {
+    const mx = (f: number): number => f * st.width + ox;
+    const my = (f: number): number => f * st.depth + oy;
+    const ol = spShapeOutline(p.stage);
+    if (ol.t === 'circle') ring = { cx: mx(ol.cx), cy: my(ol.cy), r: ol.r * st.width };
+    else for (let n = 0; n + 1 < ol.pts.length; n += 2) lines.push([mx(ol.pts[n]), my(ol.pts[n + 1]), mx(ol.pts[(n + 2) % ol.pts.length]), my(ol.pts[(n + 3) % ol.pts.length])]);
+    for (const w of spWingRects(p.stage)) {
+      const r = w.r;
+      lines.push([mx(r.x0), my(r.y0), mx(r.x1), my(r.y0)], [mx(r.x1), my(r.y0), mx(r.x1), my(r.y1)], [mx(r.x1), my(r.y1), mx(r.x0), my(r.y1)], [mx(r.x0), my(r.y1), mx(r.x0), my(r.y0)]);
+    }
+  }
+  /** Does a line from (x1, y1) to (x2, y2) pass through a box? */
+  const cuts = (b: Box, [x1, y1, x2, y2]: Seg): boolean => {
+    let t0 = 0;
+    let t1 = 1;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    for (const [q, r] of [[-dx, x1 - b.x0], [dx, b.x1 - x1], [-dy, y1 - b.y0], [dy, b.y1 - y1]] as [number, number][]) {
+      if (Math.abs(q) < 1e-12) {
+        if (r < 0) return false;
+      } else {
+        const t = r / q;
+        if (q < 0) t0 = Math.max(t0, t);
+        else t1 = Math.min(t1, t);
+        if (t0 > t1) return false;
+      }
+    }
+    return true;
+  };
+  /** Does a box lie across one of the shape's own lines? */
+  const onLine = (b: Box): boolean => {
+    if (ring) {
+      const near = Math.hypot(Math.max(0, b.x0 - ring.cx, ring.cx - b.x1), Math.max(0, b.y0 - ring.cy, ring.cy - b.y1));
+      const far = Math.hypot(Math.max(Math.abs(b.x0 - ring.cx), Math.abs(b.x1 - ring.cx)), Math.max(Math.abs(b.y0 - ring.cy), Math.abs(b.y1 - ring.cy)));
+      if (near <= ring.r && ring.r <= far) return true;
+    }
+    return lines.some((s) => cuts(b, s));
+  };
+  /** Is a point on the shape's floor (inside its outline)? An on-stage
+   *  object's name stays there, not in a corner beside a thrust. */
+  const outlinePts: number[] = [];
+  if (shaped && !ring) {
+    const ol = spShapeOutline(p.stage);
+    if (ol.t === 'poly') ol.pts.forEach((v, n) => outlinePts.push(n % 2 ? v * st.depth + oy : v * st.width + ox));
+  }
+  const wingBoxes: Box[] = shaped ? spWingRects(p.stage).map((w) => ({ x0: w.r.x0 * st.width + ox, y0: w.r.y0 * st.depth + oy, x1: w.r.x1 * st.width + ox, y1: w.r.y1 * st.depth + oy })) : [];
+  const onFloor = (x: number, y: number): boolean => {
+    if (ring) return Math.hypot(x - ring.cx, y - ring.cy) <= ring.r;
+    // (a wing is floor too: a name may stand wholly in it, never across its wall)
+    if (wingBoxes.some((w) => x >= w.x0 && x <= w.x1 && y >= w.y0 && y <= w.y1)) return true;
+    let inPoly = false;
+    for (let a = 0, b = outlinePts.length - 2; a < outlinePts.length; b = a, a += 2) {
+      const [xa, ya, xb, yb] = [outlinePts[a], outlinePts[a + 1], outlinePts[b], outlinePts[b + 1]];
+      if (ya > y !== yb > y && x < ((xb - xa) * (y - ya)) / (yb - ya) + xa) inPoly = !inPoly;
+    }
+    return inPoly;
+  };
   for (let pass = 0; pass < 4; pass += 1) {
-    const k = spPlotScale({ widthM: plotW, depthM: plotD, marginM, items: drafts, roomy }, SP_PLOT_NOMINAL_W);
+    const k = shaped
+      ? spPlotScale({ widthM: plotW, depthM: plotD, marginM, items: drafts }, SP_PLOT_SHAPED_K.width) * SP_PLOT_SHAPED_K.give
+      : spPlotScale({ widthM: plotW, depthM: plotD, marginM, items: drafts, roomy }, SP_PLOT_NOMINAL_W);
     const gap = 3 / k;
     const pad = PAD / k;
     const taken: Box[] = [];
     /** The performers' names among them. */
     const takenPeople: Box[] = [];
+    /** The leader lines drawn so far (a shaped stage keeps names off them). */
+    const leads: Seg[] = [];
     const page: Box = { x0: -marginM, y0: -marginM, x1: plotW + marginM, y1: plotD + marginM };
     const inside = grow(stageBox, -EDGE / k);
     for (const d of drafts) {
@@ -591,6 +695,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     const fits = (d: Draft, box: Box, beside: boolean): boolean => {
       if (!within(box, d.onStage ? inside : page)) return false;
       const clear = grow(box, pad);
+      if (shaped && (onLine(clear) || (d.onStage && !onFloor((box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2)))) return false;
       for (const o of solid) if (o !== d && lies(clear, o)) return false;
       if (!d.sized && lies(clear, d)) return false;
       for (const r of platforms) {
@@ -625,6 +730,8 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       // other name or number, so a channel number is never read as part of it
       const wide = grow(box, PERSON_CLEAR / k);
       for (const x of takenPeople) if (overlap(wide, x) > 0) return false;
+      // (a shaped stage: never on a leader line already drawn)
+      if (shaped) for (const s of leads) if (cuts(clear, s)) return false;
       return true;
     };
 
@@ -685,7 +792,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
 
     type Job = { d: Draft; w: number; h: number; labelW: number; all: Box[]; ok: Box[] };
     const jobFor = (d: Draft): Job => {
-      const size = spLabelBlock(d);
+      const size = shaped ? spLabelBlockPrinted(d) : spLabelBlock(d);
       const w = size.w / k;
       const h = size.h / k;
       const all = beside(d, w, h);
@@ -720,8 +827,31 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
       const area = d.onStage ? inside : page;
       const stepX = 3 / k;
       const stepY = 2 / k;
+      // from the edge of the row that faces the symbol, to the symbol's center
+      const leadFrom = (b: Box): { x: number; y: number } => ({ x: Math.max(b.x0, Math.min(b.x1, d.at.x)), y: Math.max(b.y0, Math.min(b.y1, d.at.y)) });
+      /** A shaped stage's leader runs through no name and no other symbol,
+       *  and its name does not hug another symbol (6 pt of air, unless it is
+       *  nearer its own): "8" on a leader stood against Leo's head. */
+      const crossesName = (b: Box): boolean => {
+        const f = leadFrom(b);
+        const s: Seg = [f.x, f.y, d.at.x, d.at.y];
+        return taken.some((x) => cuts(grow(x, pad), s));
+      };
+      const clearLead = (b: Box): boolean => {
+        const f = leadFrom(b);
+        const s: Seg = [f.x, f.y, d.at.x, d.at.y];
+        const own = away(b, d);
+        return !solid.some((o) => o !== d && (away(b, o) < Math.min(own, 6 / k) || o.parts.some((part) => cuts(grow(part, pad), s))));
+      };
       let best: Box | null = null;
       let bestD = Infinity;
+      // (on a shaped stage, a place whose leader crosses a symbol, or whose
+      // name hugs one, is kept only when no place has a clear leader; one
+      // whose leader runs through a name, only when nothing else is free)
+      let fallback: Box | null = null;
+      let fallbackD = Infinity;
+      let last: Box | null = null;
+      let lastD = Infinity;
       for (let y = area.y0; y + h <= area.y1 + 1e-9; y += stepY) {
         for (let x = area.x0; x + w <= area.x1 + 1e-9; x += stepX) {
           const box: Box = { x0: x, y0: y, x1: x + w, y1: y + h };
@@ -730,14 +860,29 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
           if (!fits(d, box, false) || !free(box)) continue;
           // a performer's name on a leader is not put over another head either (R2-SP2-03)
           if (d.person && solid.some((o) => o !== d && o.person && overHead(box, o))) continue;
+          if (shaped && crossesName(box)) {
+            if (far < lastD) {
+              lastD = far;
+              last = box;
+            }
+            continue;
+          }
+          if (shaped && !clearLead(box)) {
+            if (far < fallbackD) {
+              fallbackD = far;
+              fallback = box;
+            }
+            continue;
+          }
           bestD = far;
           best = box;
         }
       }
+      best = best ?? fallback ?? last;
       if (best) {
-        // from the edge of the row that faces the symbol, to the symbol's center
-        const from = { x: Math.max(best.x0, Math.min(best.x1, d.at.x)), y: Math.max(best.y0, Math.min(best.y1, d.at.y)) };
+        const from = leadFrom(best);
         d.leader = { from, to: { x: d.at.x, y: d.at.y } };
+        leads.push([from.x, from.y, d.at.x, d.at.y]);
         put(j, best);
         return;
       }
@@ -764,10 +909,17 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     // place another has. (Between equals: platforms, then the longest name.)
     const rank = (j: Job): number => (j.d.person ? 0 : j.d.sized ? 1 : 2);
     let waiting = [...jobs];
+    // A SHAPED stage sends a name farther out only after every name of its
+    // kind (people, or equipment) that still has a place beside its own
+    // symbol has taken it: Iván's name, on a leader, took the place beside
+    // Carmen, and hers went across the stage (review of this fix).
+    const later = new Set<Job>();
+    const othersFirst = (j: Job): boolean => waiting.some((o) => o !== j && !later.has(o) && o.d.person === j.d.person);
     while (waiting.length) {
       let pick: Job | null = null;
       let pickLeft: Box[] = [];
       for (const j of waiting) {
+        if (later.has(j) && othersFirst(j)) continue;
         const left = j.ok.filter(free);
         j.ok = left;
         const first = (j.d.person ? 0 : 1) - (pick?.d.person ? 0 : 1);
@@ -784,6 +936,9 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
         // is a few characters wide and nearly always has a place there
         pick.d.label = '';
         waiting.push(jobFor(pick.d));
+      } else if (shaped && !later.has(pick) && othersFirst(pick)) {
+        later.add(pick);
+        waiting.push(pick);
       } else farOut(pick);
     }
     // room around the stage, so anything off the stage (and its name) shows
@@ -879,7 +1034,9 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     return { kind: e.kind, name: e.name, w: sym.w, h: sym.h, shapes: sym.shapes, tag: sym.tag };
   });
 
-  const out: SpDocPlot = { widthM: plotW, depthM: plotD, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, roomy, key };
+  // (a shaped stage is drawn at the size its names were placed for, never
+  // larger for being roomy: drawn larger, each name drifted from its symbol)
+  const out: SpDocPlot = { widthM: plotW, depthM: plotD, toScale: st.toScale, sizeNote, marginM, gridM: grid.stepM, items, viewNote: p.viewNote.trim(), legend: said, roomy: roomy && !shaped, key };
   if (deck) out.deck = deck;
   return out;
 }

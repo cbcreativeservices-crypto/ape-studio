@@ -416,6 +416,11 @@ export const SP_PDF_PLOT = {
    *  can be one sheet. The same rule for every packet kind. */
   smallH: 240,
   smallPeople: 2,
+  /** A shaped stage is never drawn smaller than its names were placed for:
+   *  `SP_PLOT_SHAPED_K` in spPacket.ts (width, give), mirrored. Its drawing
+   *  does not give way for the legend: the legend runs on instead. */
+  shapedW: 508,
+  shapedGive: 1,
   top: 18,
   bottom: 20,
   note: 16,
@@ -547,15 +552,22 @@ function layoutKey(items: SpDocKeyItem[], W: number): { height: number; draw: (p
 
 /** The plot, `W` points wide. `shrink` (1 = the usual size) makes the drawing
  *  smaller when a page cannot hold it; the words keep their size. */
-function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0): PlotLayout {
+function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0, floor = true): PlotLayout {
   const P = SP_PDF_PLOT;
   const widthM = Math.max(0.1, fin(plot.widthM, 7.2));
   const depthM = Math.max(0.1, fin(plot.depthM, 4.5));
   const m = plotMargin(plot, widthM, depthM);
   const people = (plot.items ?? []).filter((i) => i.person).length;
   // `tall` (a roomy plot) = the height the page has for the drawing, in place of the usual cap
-  const tallest = tall > 0 ? tall : people <= P.smallPeople ? P.smallH : P.maxH;
-  const k = Math.min((W - 2 * P.side) / (widthM + 2 * m), tallest / (depthM + 2 * m)) * shrink;
+  const usual = people <= P.smallPeople ? P.smallH : P.maxH;
+  const tallest = tall > 0 ? tall : usual;
+  const natural = Math.min((W - 2 * P.side) / (widthM + 2 * m), tallest / (depthM + 2 * m));
+  // A SHAPED stage's names were placed for a drawing this large (fix
+  // 2026-11-13: `SP_PLOT_SHAPED_K` in spPacket.ts): it is never drawn smaller,
+  // or its names would run into each other. `floor` = false only for a plot
+  // that cannot fit even an empty page.
+  const least = plot.deck && floor ? Math.min(natural, Math.min((P.shapedW - 2 * P.side) / (widthM + 2 * m), usual / (depthM + 2 * m)) * P.shapedGive) : 0;
+  const k = Math.max(least, natural * shrink);
   const drawW = (widthM + 2 * m) * k;
   const drawH = (depthM + 2 * m) * k;
   const left = (W - drawW) / 2;
@@ -722,13 +734,13 @@ function buildPlot(plot: SpDocPlot, W: number, shrink: number, tall = 0): PlotLa
 /** The plot at its usual size, or with a smaller DRAWING when the whole
  *  block (drawing, key, size note) must be no taller than `maxH`: the key and
  *  every word keep their size. */
-function layoutPlot(plot: SpDocPlot, W: number, maxH: number, tall = 0): PlotLayout {
+function layoutPlot(plot: SpDocPlot, W: number, maxH: number, tall = 0, floor = true): PlotLayout {
   let shrink = 1;
-  let lay = buildPlot(plot, W, shrink, tall);
+  let lay = buildPlot(plot, W, shrink, tall, floor);
   for (let n = 0; n < 6 && lay.height > maxH + 0.01 && shrink > 0.2; n++) {
     const wanted = lay.drawH - (lay.height - maxH);
     shrink = Math.max(0.2, shrink * Math.min(0.985, (wanted / lay.drawH) * 0.995));
-    lay = buildPlot(plot, W, shrink, tall);
+    lay = buildPlot(plot, W, shrink, tall, floor);
   }
   return lay;
 }
@@ -1020,7 +1032,11 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
     const fit = (): PlotLayout | null => {
       const room = bottom - y - notesH;
       if (natural.height + legendH <= room) return natural;
-      if (natural.height + legendH - room <= 0.15 * natural.drawH) return layoutPlot(plot, W, room - legendH);
+      if (natural.height + legendH - room <= 0.15 * natural.drawH) {
+        const given = layoutPlot(plot, W, room - legendH);
+        // (a shaped stage gives way only down to its floor: then the legend runs on)
+        if (!plot.deck || given.height <= room) return given;
+      }
       return natural.height <= room ? natural : null;
     };
     // A ROOMY plot (a plot-only packet, six or more performers) is drawn as
@@ -1039,7 +1055,7 @@ function layoutDoc(d: SpDoc, paper: { w: number; h: number }): Laid {
       newPage();
       lay = fit();
     }
-    if (!lay) lay = layoutPlot(plot, W, bottom - y - notesH);
+    if (!lay) lay = layoutPlot(plot, W, bottom - y - notesH, 0, false);
     lay.draw(pen, left, y);
     y += lay.height + 4;
     flow(notes, { size: PT.body, lead: BODY_LEAD });
