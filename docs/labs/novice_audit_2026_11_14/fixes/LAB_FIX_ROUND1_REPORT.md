@@ -65,7 +65,7 @@
 - **One serious fail was caught by the checkers:** the new − / + slider keys jumped to the end. They now move one step.
 - **The ⚡ button** on two pages comes from the browser pane, not the app.
 
-**Tests:** the full gate is GREEN at each commit (22,628 tests at the first; the final count is in the commit message). tsc: 0 errors.
+**Tests:** the full gate is GREEN at each commit: 22,628 tests at the first (cb52560c) and 22,668 at the final one (b2fb526e), with 0 failures. tsc: 0 errors. Both are pushed.
 
 ## 4. HELD: your decisions (nothing was built for these)
 
