@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-15 03:39 · ccode · 4fdec03c
+changed: nightly: live server snapshot 2026-11-15
+affects other side: none (snapshot only)
+needs: nothing
+
+
 ### 2026-11-14 23:19 · ccode · 427226af
 changed: docs: governance D119-D123 (Suggested Setups, Room Design copy, Sound Safety buttons-at-end, 11-14 OTAs, owner lifetime account), must-do D66, lessons 2026-11-14, PROTOCOL_CHECK rule 33 (test the OTA in the real app, prove it landed) [MD:D66] [MD:D64]
 affects other side: Comp A please re-read PROTOCOL_CHECK rule 33 (pre-OTA real-app test + post-publish proof + brief to Comp A) and governance D119–D123 (docs/APE_GOVERNANCE_DECISIONS_2026_11_14.md); must-do D66 lists your backup-table drop after 1.0.1.
