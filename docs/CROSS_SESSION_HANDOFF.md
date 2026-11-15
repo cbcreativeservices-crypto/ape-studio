@@ -734,6 +734,11 @@ affects other side: app only, no server change. Four lab first cards (Phaser, Di
 needs: nothing now. [MD:D62]
 
 
+### 2026-11-15 · ccode · f246b8a8 + 499fd2e5 (beginner waves 1-3)
+changed: 226 beginner-audit items built across every lab (owner "build waves 1 thru 3"), then 12 independent checkers on screen and every FAIL fixed. App only; no server change; no native change. Gate GREEN 23,446/0. Report Downloads/2026-11-15_WAVES_1_3_REPORT. [MD:D62]
+affects other side: no server change. Proposed (NOT run) glossary SQL for 4 rewritten lab first cards (Phaser, Distortion, Phase, Chorus) is in docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md section 3: owner decides. One builder ran ONE read-only SELECT on the glossary row 'Audio levels' (3ff09ee6) to copy its wording into the Cable Fundamentals card. Not published: OTA only on the owner's word.
+needs: nothing now. [MD:D62]
+
 ### 2026-11-15 09:25 · ccode · D62 adoption plan
 changed: docs only. Must-do D62 records the adoption plan for the beginner audit: 295 open items sorted by their effect on the screen, in four waves (subtract and fix first, features last and off by default). Downloads/2026-11-15_D62_ADOPTION_PLAN.html. Nothing in the app changed. [MD:D62]
 affects other side: nothing.
