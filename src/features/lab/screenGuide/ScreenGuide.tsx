@@ -112,6 +112,7 @@ import {
   SCREEN_GUIDE_KEY_LABEL,
   SCREEN_GUIDE_SECTIONS,
   SCREEN_GUIDES_ON,
+  SCREEN_INTRO_GUIDE_NOTE,
   SCREEN_INTRO_TEXT,
   screenGuideStepLabel,
   screenIntroId,
@@ -282,8 +283,9 @@ function GuideCard({
 
 /**
  * The intro card: what this screen teaches and the first thing to do. Two
- * labelled parts (types.ts SCREEN_INTRO_TEXT), ✕ + GOT IT to close, and
- * EXPLAIN THIS SCREEN into the stepped guide. Written to fit without
+ * labelled parts (types.ts SCREEN_INTRO_TEXT), ✕ + GOT IT to close, and one
+ * line saying the header ⓘ explains the screen step by step (no button for it
+ * on a popup: owner 2026-11-14). Written to fit without
  * scrolling (SCREEN_INTRO_WORDS); the ScrollView is a safety net for a very
  * short screen or a large accessibility text size.
  */
@@ -291,14 +293,12 @@ function IntroCard({
   title,
   intro,
   onClose,
-  onExplain,
   maxHeight,
   term,
 }: {
   title: string;
   intro: ScreenIntro;
   onClose: () => void;
-  onExplain: () => void;
   maxHeight?: number;
   /** CARRY (2026-11-14): the lab's glossary term, drawn on top so the lab
    *  opens with ONE card instead of a term popup and then this one. */
@@ -334,15 +334,11 @@ function IntroCard({
           <Text style={styles.introStart}>{intro.start}</Text>
         </View>
       </ScrollView>
+      {/* No EXPLAIN THIS SCREEN button on a popup (owner 2026-11-14: "an extra
+          option that does not make sense for a pop up message"; chose "Remove
+          from all popups"). The header ⓘ still opens the stepped guide. */}
+      <Text style={styles.introGuideNote}>{SCREEN_INTRO_GUIDE_NOTE}</Text>
       <View style={styles.navRow}>
-        <Pressable
-          onPress={onExplain}
-          style={[styles.navBtn, styles.introExplain]}
-          accessibilityRole="button"
-          accessibilityLabel={SCREEN_GUIDE_KEY_LABEL}
-        >
-          <Text style={styles.navText}>ⓘ {SCREEN_INTRO_TEXT.explain}</Text>
-        </Pressable>
         <Pressable onPress={onClose} style={[styles.navBtn, styles.navPrimary]} accessibilityRole="button" accessibilityLabel="Got it">
           <Text style={[styles.navText, styles.navPrimaryText]}>{SCREEN_INTRO_TEXT.dismiss}</Text>
         </Pressable>
@@ -714,14 +710,6 @@ export function ScreenGuideHost({
           regions={regions}
           term={shown.term}
           onClose={close}
-          onExplain={() => {
-            claimIntro(shown.claim);
-            if (shown.term) finishCarriedLabTerm(shown.term.key);
-            void markScreenGuideHintSeen();
-            // The term was read with the card; ‹ INTRO shows the card again
-            // without re-claiming it.
-            setShown({ title: shown.title, guide: shown.guide, mode: 'guide' });
-          }}
         />
       ) : shown ? (
         <ScreenGuideOverlay
@@ -750,21 +738,18 @@ function ScreenIntroOverlay({
   regions,
   term,
   onClose: closeNow,
-  onExplain: explainNow,
 }: {
   title: string;
   intro: ScreenIntro;
   regions: boolean;
   term?: CarriedLabTerm;
   onClose: () => void;
-  onExplain: () => void;
 }) {
   // Never takes a tap in its first moment (POPUP_ARM_MS); BACK is not a
   // stray tap and closes at once.
   const guard = useArmGuard();
   const armedTouches = useArmedTouches();
   const onClose = useMemo(() => guard(closeNow), [guard, closeNow]);
-  const onExplain = useMemo(() => guard(explainNow), [guard, explainNow]);
   const insets = useSafeAreaInsets();
   const rootRef = useRef<View>(null);
   const alive = useRef(true);
@@ -839,7 +824,7 @@ function ScreenIntroOverlay({
         : null}
       {place ? (
         <View pointerEvents="box-none" style={[styles.introSlot, { top: place.slot.top, height: place.slot.height }]}>
-          <IntroCard title={title} intro={intro} term={term} onClose={onClose} onExplain={onExplain} maxHeight={place.slot.height} />
+          <IntroCard title={title} intro={intro} term={term} onClose={onClose} maxHeight={place.slot.height} />
         </View>
       ) : null}
     </View>
@@ -1066,13 +1051,6 @@ export function ScreenGuidePopup({
               title={title}
               intro={intro}
               onClose={onClose}
-              onExplain={() => {
-                // Using the guide in any way retires the ⓘ hint (quick win 5).
-                void markScreenGuideHintSeen();
-                setStep(0);
-                setExp(0);
-                setMode('guide');
-              }}
             />
           ) : (
             <GuideCard
@@ -1390,7 +1368,7 @@ const styles = StyleSheet.create({
   introLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.amber },
   introLearning: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20, color: colors.textPrimary },
   introStart: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 20, color: colors.textSecondary },
-  introExplain: { flex: 1.45 },
+  introGuideNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
 
   // ── fallback modal ──
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.66)', alignItems: 'center', justifyContent: 'center', padding: 12 },

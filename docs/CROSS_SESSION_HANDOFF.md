@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 17:30 · ccode · 4832107b
+changed: web: LinkedIn in the Organization sameAs (in Comp A's SEO handoff, missed in bb16c61c; NOT deployed); must-do: SEO live check, OTA readiness + Pixel test, owner 'Not yet' [MD:D65] [MD:D64]
+affects other side: nothing yet. The LinkedIn sameAs reaches www only with the next web deploy, on the owner's word. [MD:D65]
+needs: Comp A's current work to finish (owner: "wait for comp a to finish") before the OTA; the owner decides the Source-filter model rewording. [MD:D64]
+
+
 ### 2026-11-14 16:30 · ccode · 1b4f991b
 changed: Career Finder: the 11 family examples now name a job from that same family (owner "fix the 11 career finder job listings") [MD:D63]
 affects other side: nothing on the server (Career Finder lists are app-only). [MD:D63]

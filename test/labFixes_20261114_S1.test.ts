@@ -313,7 +313,6 @@ describe('arrival: the intro card carries the term, comes WITH the page, and is 
     assert.match(host, /carry=\{backRef == null\}/);
     assert.match(host, /mode: 'intro', claim: offer\.id, term: term \?\? undefined/);
     assert.match(host, /if \(t\) finishCarriedLabTerm\(t\.key\);\s*setShown\(null\);/, 'closing the card reads the term');
-    assert.match(host, /if \(shown\.term\) finishCarriedLabTerm\(shown\.term\.key\);/, 'EXPLAIN THIS SCREEN reads it too');
     const card = block(SG, 'function IntroCard(');
     assert.match(card, /\{term \? \(/);
     assert.match(card, /\{term\.plainEnglish\}/);
@@ -345,10 +344,10 @@ describe('the "New: tap ⓘ" hint', () => {
     assert.match(hint, /if \(!focused\) setCrowded\(false\);\s*else if \(busyNow\) setCrowded\(true\);/);
     assert.match(hint, /&& !crowded;/);
   });
-  it('retires once used in ANY way (the key, EXPLAIN THIS SCREEN), and after 8 s on screen', () => {
+  it('retires once used in ANY way (the key, the inline note’s MORE), and after 8 s on screen', () => {
+    // The popup's EXPLAIN THIS SCREEN button is gone (owner 2026-11-14, "Remove from all popups").
     assert.equal((SG.match(/void markScreenGuideHintSeen\(\)/g) ?? []).length >= 5, true);
     assert.match(block(SG, 'export function ScreenGuideHost('), /void markScreenGuideHintSeen\(\);\s*setShown\(\{ title, guide, mode: 'guide' \}\);/);
-    assert.match(block(SG, 'export function ScreenGuidePopup('), /void markScreenGuideHintSeen\(\);\s*setStep\(0\);/);
     assert.match(SG, /export const SCREEN_GUIDE_HINT_LIFE_MS = 8000;/);
     assert.match(hint, /setTimeout\(\(\) => void markScreenGuideHintSeen\(\), SCREEN_GUIDE_HINT_LIFE_MS\)/);
   });

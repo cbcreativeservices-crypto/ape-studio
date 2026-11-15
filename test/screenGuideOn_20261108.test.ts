@@ -248,9 +248,10 @@ describe('5. when it shows, and the wiring', () => {
     const host = block(SG, 'export function ScreenGuideHost(');
     // `term` (2026-11-14, S1): the lab term carried inside the card.
     assert.match(host, /setShown\(\{ title: offer\.title, guide: offer\.guide, mode: 'intro', claim: offer\.id, term: term \?\? undefined \}\);/);
-    // Every way out claims it: close (✕, GOT IT, the dim, BACK), EXPLAIN, the end-layer BACK.
+    // Every way out claims it: close (✕, GOT IT, the dim, BACK), the end-layer BACK.
+    // (No EXPLAIN on the popup since 2026-11-14, owner: "Remove from all popups".)
     assert.match(host, /const close = useCallback\(\(\) => \{\s*claimIntro\(claimRef\.current\);\s*(?:const t = termRef\.current;\s*if \(t\) finishCarriedLabTerm\(t\.key\);\s*)?setShown\(null\);/);
-    assert.match(host, /onExplain=\{\(\) => \{\s*claimIntro\(shown\.claim\);/);
+    assert.doesNotMatch(host, /onExplain/);
     assert.match(host, /backRef\.current = \(\) => \{[\s\S]*?claimIntro\(claimRef\.current\);/);
     // The dev bypass mirrors useScreenIntro: every visit, nothing persisted.
     assert.match(ctl, /const bypass = devBypass\('alwaysShowIntros'\);/);
@@ -271,9 +272,9 @@ describe('5. when it shows, and the wiring', () => {
     // No intro, nothing: the key offers only when the guide has one.
     assert.match(key, /if \(!host \|\| !intro \|\| !id\) return;/);
   });
-  it('re-openable: EXPLAIN THIS SCREEN goes into the guide; the guide’s first step leads back with ‹ INTRO', () => {
+  it('re-openable: the header ⓘ goes into the guide; the guide’s first step leads back with ‹ INTRO', () => {
     const host = block(SG, 'export function ScreenGuideHost(');
-    assert.match(host, /setShown\(\{ title: shown\.title, guide: shown\.guide, mode: 'guide' \}\);/);
+    assert.match(host, /setShown\(\{ title, guide, mode: 'guide' \}\);/);
     assert.match(host, /onIntro=\{shown\.guide\.intro \? \(\) => setShown\(\{ title: shown\.title, guide: shown\.guide, mode: 'intro' \}\) : undefined\}/);
     const card = block(SG, 'function GuideCard(');
     assert.match(card, /\{step === 0 && onIntro \? \(\s*<Pressable onPress=\{onIntro\}/);
@@ -283,11 +284,13 @@ describe('5. when it shows, and the wiring', () => {
     const host = block(SG, 'export function ScreenGuideHost(');
     assert.match(host, /if \(o\) \{\s*claimIntro\(o\.id\);\s*handle\(o\.id\);/);
   });
-  it('the card: two labelled parts, ✕, GOT IT, EXPLAIN THIS SCREEN', () => {
+  it('the card: two labelled parts, ✕, GOT IT, and a line pointing to the header ⓘ (no EXPLAIN button: owner 2026-11-14 "Remove from all popups")', () => {
     const card = block(SG, 'function IntroCard(');
     assert.match(card, /\{SCREEN_INTRO_TEXT\.learning\}<\/Text>\s*<Text style=\{styles\.introLearning\}>\{intro\.learning\}<\/Text>/);
     assert.match(card, /\{SCREEN_INTRO_TEXT\.start\}<\/Text>\s*<Text style=\{styles\.introStart\}>\{intro\.start\}<\/Text>/);
-    assert.match(card, /ⓘ \{SCREEN_INTRO_TEXT\.explain\}/);
+    assert.doesNotMatch(card, /SCREEN_INTRO_TEXT\.explain/);
+    assert.match(card, /<Text style=\{styles\.introGuideNote\}>\{SCREEN_INTRO_GUIDE_NOTE\}<\/Text>/);
+    assert.equal(T.SCREEN_INTRO_GUIDE_NOTE, 'Tap ⓘ at the top of the screen to have it explained step by step.');
   });
   it('no host: the key presents the card itself, intro and guide sharing ONE DimModal (never close-then-present)', () => {
     const popup = block(SG, 'export function ScreenGuidePopup(');

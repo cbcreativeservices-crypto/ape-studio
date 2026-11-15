@@ -34,6 +34,10 @@ export const SCREEN_INTRO_TEXT = {
   reopen: '‹ INTRO',
 } as const;
 
+/** The intro popup's last line, in place of an EXPLAIN THIS SCREEN button
+ *  (owner 2026-11-14: "Remove from all popups"). */
+export const SCREEN_INTRO_GUIDE_NOTE = 'Tap ⓘ at the top of the screen to have it explained step by step.';
+
 /**
  * The intro's "seen" id: a short hash of its two lines, so every screen that
  * shows a guide gets its own once-per-device card with no per-screen id
