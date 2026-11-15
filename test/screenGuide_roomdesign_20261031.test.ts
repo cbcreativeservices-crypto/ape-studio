@@ -56,7 +56,7 @@ const textOf = (gd: Guide) => SECTION_KEYS.map((k) => gd[k].join('\n')).join('\n
 describe('1. every Room Design screen has a complete guide', () => {
   it('every RoomModuleId has a guide — and no guide is for a module that does not exist', () => {
     const ids = ROOM_MODULES.map((m: { id: string }) => m.id).sort();
-    assert.equal(ids.length, 6);
+    assert.equal(ids.length, 7); // + SUGGESTED SETUPS (owner 2026-11-14)
     assert.deepEqual(Object.keys(GUIDES).sort(), ids);
   });
   for (const [id, gd] of allGuides) {
@@ -112,6 +112,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     `${DIR}/modules/modCreate.tsx`,
     `${DIR}/modules/modMonitoring.tsx`,
     `${DIR}/modules/modExplore.tsx`,
+    `${DIR}/modules/modSuggest.tsx`,
+    `${DIR}/SetupReport.tsx`,
     `${DIR}/modules/modTreatment.tsx`,
     `${DIR}/modules/modReview.tsx`,
     `${DIR}/RoomPlanView.tsx`,
@@ -130,6 +132,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     create: ['FRONT', 'VIEW', 'PLAN', 'SIDE', 'AREA', 'VOLUME', 'RATIO S:M:L', 'LENGTH', 'WIDTH', 'CEILING', 'SIDE VIEW', 'SHAPE', 'FINISH', 'TYPE THE DIMENSIONS', 'UNITS', 'WALL SHAPE', 'RECTANGLE', 'ANGLED', 'IRREGULAR', 'CURVED', 'FLAT', 'SLOPED', 'VAULTED', 'MIXED', '+ DOOR', '+ WINDOW', '+ OPENING', '+ DESK', '+ SOFA', '+ SHELF', '+ RACK', 'NEW ROOM', 'FLOOR', 'WALLS', 'LESS reliable'],
     monitoring: ['NEARFIELD', 'MIDFIELD', 'DIST L', 'DIST R', 'ANGLE', 'NONE', 'L−R', 'SPREAD', 'FRONT', 'SEAT', 'HEIGHT', 'WHICH HEIGHT', 'SETUP', 'CONFIGURATION', 'STEREO', 'STEREO + SUB', 'MULTICHANNEL', 'LISTENING DISTANCE CLASS', 'OTHER', 'TOE-IN', 'STRAIGHT', 'TOE-IN 15°', 'TOE-IN 30°'],
     explore: ['MODE PRESSURE', 'RED', 'BLUE', 'MODE', 'AT EARS', 'EARLY <15ms', '1ST', 'ROOM MODE TO MAP', 'axial', 'tangential', 'oblique', 'LAYERS', 'TRIANGLE', 'WALL DISTANCES', 'REFLECTIONS', 'TREATMENT', 'TRACE', 'LAYOUT', 'START', 'EDITED', 'OPTION A', 'OPTION B', 'SAVE', 'WHAT CHANGED'],
+    suggest: ['SETUP', 'DIPS+PEAKS', 'STRONG <15ms', 'WARNINGS !', 'REPORT', 'TRY THIS SETUP', 'WHAT TO MOVE', 'BEFORE → AFTER', 'WHY IT IS BETTER', 'TRADE-OFFS', 'OPTION A', 'OPTION B', 'START', 'OPEN EXPLORE'],
     treatment: ['TREATED', 'RT60 500', 'RT60 125 ≈', 'VS BARE', 'ADD', 'ABSORB NEXT', 'BASS TRAPS IN THE CORNERS', 'CEILING CLOUD', 'RUG', 'DIFFUSER (REAR WALL)', 'FREESTANDING PANEL', 'THICK', 'SIZE', 'ITEM ON', 'ITEM OFF', 'ITEMS', 'SELECT', 'SWITCH OFF', 'REMOVE', 'ALL OFF (COMPARE)', 'ALL ON', 'FLOOR RUG'],
     review: ['ROOM AND LAYOUT', 'LIKELY ACOUSTIC BEHAVIOR', 'THE PLAN AS REVIEWED', 'SUGGESTED NEXT STEPS', 'MEASURE VERSUS ESTIMATE', 'SAVED DESIGNS — BEFORE AND AFTER', 'FULL SCREEN', 'MEASURED RT60 (MID)', 'RESONANCE FOUND', 'CLEAR MEASURED VALUES', 'SAVE THIS DESIGN', 'LOAD', 'DELETE', 'TRY FIRST'],
   };
@@ -208,8 +211,10 @@ describe('4. TRY THIS numbers are what the model prints for the default design',
     for (const s of ['~101.9 Hz', '~77.0 Hz', '0.8–1.8 m', '30 cm']) assert.ok(t('monitoring').includes(s), s);
     assert.equal(M.SYM_TOL, 0.05);
     const plan = code('src/screens/lab/roomdesign/RoomPlanView.tsx');
-    assert.match(plan, /midfield: \[1\.8, 4\.2\]/);
-    assert.match(plan, /nearfield: \[0\.8, 1\.8\]/);
+    // The classes live in roomModel since 2026-11-14 (Suggested setups reads them too).
+    const model = code('src/screens/lab/roomdesign/roomModel.ts');
+    assert.match(model, /midfield: \[1\.8, 4\.2\]/);
+    assert.match(model, /nearfield: \[0\.8, 1\.8\]/);
     assert.match(plan, /\$\{fits \? '' : ' \?'\}/);
     assert.ok(t('monitoring').includes('MIDFIELD · 1.60 m ?'));
     assert.ok(GUIDES.monitoring.seeing.join(' ').includes('1.60 m on each side'));
@@ -294,7 +299,7 @@ describe('5. wiring: LabHeader takes the guide, ScreenGuideHost wraps the conten
     assert.match(SCR, /<\/ScreenGuideHost>\s*<\/View>\s*<\/LabNavProvider>/);
     // The rack modules are the ones RackUnit registers regions for.
     const rackIds = ROOM_MODULES.filter((m: { rack: boolean }) => m.rack).map((m: { id: string }) => m.id);
-    assert.deepEqual(rackIds, ['create', 'monitoring', 'explore', 'treatment']);
+    assert.deepEqual(rackIds, ['create', 'monitoring', 'explore', 'suggest', 'treatment']);
     assert.match(code('src/screens/lab/roomdesign/rackLayout.tsx'), /<RackUnit/);
   });
 });

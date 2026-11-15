@@ -134,6 +134,11 @@ export const ROOM_CAPTIONS: Readonly<Record<string, string>> = {
   'RT60 125 ≈': 'lows ring',
   'VS BARE': 'vs empty room',
   'L−R': 'left vs right',
+  // SUGGESTED SETUPS (2026-11-14)
+  SETUP: 'which setup',
+  'DIPS+PEAKS': 'bass at you',
+  'STRONG <15ms': 'strong echoes',
+  'WARNINGS !': 'look at first',
 };
 
 /** Adds the caption for each cell from a dictionary; a cell's own caption wins. */

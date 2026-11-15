@@ -21,7 +21,7 @@ const ROOT = new URL('../', import.meta.url);
 const read = (p: string) => readFileSync(new URL(p, ROOT), 'utf8').replace(/\r\n/g, '\n');
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
 const LAB = 'src/screens/lab/roomdesign/';
-const MODULES = ['modIntro', 'modCreate', 'modMonitoring', 'modExplore', 'modTreatment', 'modReview'];
+const MODULES = ['modIntro', 'modCreate', 'modMonitoring', 'modExplore', 'modSuggest', 'modTreatment', 'modReview'];
 const labFiles = () => [...readdirSync(new URL(LAB, ROOT)).filter((f) => /\.tsx?$/.test(f)).map((f) => LAB + f), ...MODULES.map((m) => `${LAB}modules/${m}.tsx`)];
 
 describe('registration', () => {
@@ -52,8 +52,9 @@ describe('registration', () => {
     assert.match(wipe, /resetRoomDesigns\(\);/);
   });
   it('the module registry is the app flow, in order', () => {
-    assert.deepEqual(ROOM_UNITS, ['intro', 'create', 'monitoring', 'explore', 'treatment', 'review']);
-    assert.deepEqual(ROOM_MODULES.map((m) => m.rack), [false, true, true, true, true, false]);
+    // SUGGESTED SETUPS joined after Explore (owner 2026-11-14).
+    assert.deepEqual(ROOM_UNITS, ['intro', 'create', 'monitoring', 'explore', 'suggest', 'treatment', 'review']);
+    assert.deepEqual(ROOM_MODULES.map((m) => m.rack), [false, true, true, true, true, true, false]);
   });
 });
 
@@ -93,13 +94,13 @@ describe('rack + full screen', () => {
     assert.match(w, /fullScreen: rack\.fullScreen \?\? true/);
     assert.match(w, /size: rack\.size \?\? 'L'/);
   });
-  for (const m of ['modCreate', 'modMonitoring', 'modExplore', 'modTreatment']) {
+  for (const m of ['modCreate', 'modMonitoring', 'modExplore', 'modSuggest', 'modTreatment']) {
     it(`${m} is a RoomRackLayout with a badge, a bezel, a dock and an initialParam, and never opts out of full screen`, () => {
       const s = strip(read(`${LAB}modules/${m}.tsx`));
       assert.match(s, /<RoomRackLayout/);
       assert.match(s, /badge: /);
       assert.match(s, /bezel/);
-      assert.match(s, /initialParam: (?:'|rugSel \? ')/); // TREATMENT binds SIZE for a rug (toddler pass 3)
+      assert.match(s, /initialParam: (?:'|rugSel \? '|setups\.length \? ')/); // TREATMENT binds SIZE for a rug (toddler pass 3)
       assert.doesNotMatch(s, /fullScreen:\s*false/);
     });
   }
@@ -280,7 +281,8 @@ describe('the display is a working surface (owner standards 2026-10-01)', () => 
     assert.match(plan, /\n  drywall: WALL,/);
     for (const k of ['concrete', 'glass', 'wood', 'curtain', 'acoustictile']) assert.match(plan, new RegExp(`\\b${k}: '#[0-9a-f]{6}'`), `SURFACE_TINT.${k}`);
     assert.match(plan, /stroke=\{SURFACE_TINT\[room\.walls\] \?\? WALL\} strokeWidth=\{3\}/);
-    assert.match(plan, /export const FIELD_RANGE_M/);
+    // The classes moved to roomModel (Suggested setups reads them too, 2026-11-14); the plan re-exports them.
+    assert.match(plan, /export \{ FIELD_RANGE_M \};/);
     assert.match(plan, /\$\{design\.monitoring\.field\.toUpperCase\(\)\} · \$\{fmtLen\(d, units\)\}/);
     const side = strip(read(`${LAB}RoomSideView.tsx`));
     assert.match(side, /import \{ SURFACE_TINT, type PlanHandle \} from '\.\/RoomPlanView';/);

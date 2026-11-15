@@ -227,6 +227,14 @@ export type Layout = {
 
 export type MonitoringConfig = 'stereo' | 'stereo_sub' | 'multichannel';
 export type MonitoringField = 'nearfield' | 'midfield' | 'other';
+/** Where the lab says each listening-distance class is heard from (metres):
+ *  nearfield about 1–1.5 m, midfield about 2–4 m (modMonitoring's prose).
+ *  The plan's distance check and the Suggested setups search both read it. */
+export const FIELD_RANGE_M: Record<string, [number, number] | null> = {
+  nearfield: [0.8, 1.8],
+  midfield: [1.8, 4.2],
+  other: null,
+};
 
 export type TreatmentKind = 'absorber' | 'basstrap' | 'cloud' | 'diffuser' | 'rug' | 'gobo';
 

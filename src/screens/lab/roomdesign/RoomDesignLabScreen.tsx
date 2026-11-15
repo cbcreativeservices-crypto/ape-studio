@@ -6,8 +6,8 @@
  * adjust treatment, review — every result labelled CALCULATED, ESTIMATED or
  * MEASURED. Observations and next steps; never a room score.
  *
- * Six modules on the SHARED LAB NAVIGATION strip (kit/LabNavBar): the four
- * live ones are Rack Units with FULL SCREEN (rackLayout.tsx); the intro and
+ * Seven modules on the SHARED LAB NAVIGATION strip (kit/LabNavBar): the five
+ * live ones (SUGGESTED SETUPS added 2026-11-14) are Rack Units with FULL SCREEN (rackLayout.tsx); the intro and
  * the review are document pages. FINISH › opens the shared what's-left end
  * screen; the header ‹ always leaves.
  *
@@ -46,6 +46,7 @@ import { IntroModule } from './modules/modIntro';
 import { CreateModule } from './modules/modCreate';
 import { MonitoringModule } from './modules/modMonitoring';
 import { ExploreModule } from './modules/modExplore';
+import { SuggestModule } from './modules/modSuggest';
 import { TreatmentModule } from './modules/modTreatment';
 import { ReviewModule } from './modules/modReview';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -130,6 +131,7 @@ export function RoomDesignLabScreen() {
     () => ({
       design,
       update,
+      markWork: () => markWorkRef.current(),
       analysis,
       units: design.room.units,
       guest: !resolved ? false : guest,
@@ -206,6 +208,8 @@ export function RoomDesignLabScreen() {
         return <MonitoringModule ctx={ctx} />;
       case 'explore':
         return <ExploreModule ctx={ctx} />;
+      case 'suggest':
+        return <SuggestModule ctx={ctx} />;
       case 'treatment':
         return <TreatmentModule ctx={ctx} />;
       case 'review':
@@ -234,7 +238,7 @@ export function RoomDesignLabScreen() {
           <LabEndScreen
             labTitle="Room Design & Monitoring Lab"
             labId="room-design"
-            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail(m.rack ? 'work' : 'next', ROOM_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail(m.id === 'suggest' ? 'report' : m.rack ? 'work' : 'next', ROOM_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
             howItCounts={roomCounts()}
             cleared={visited}
             unreadable={visitsUnreadable}

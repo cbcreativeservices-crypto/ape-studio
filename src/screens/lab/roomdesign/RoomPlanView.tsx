@@ -32,6 +32,7 @@ import {
   bounds,
   distToEdge,
   edgePoint,
+  FIELD_RANGE_M,
   fmtLen,
   modePressure,
   planReflections,
@@ -39,6 +40,7 @@ import {
   type Analysis,
   type Pt,
   type Reflection,
+  type Layout,
   type RoomDesign,
   type Speaker,
   type Treatment,
@@ -76,13 +78,9 @@ export const SURFACE_TINT: Record<string, string> = {
   curtain: '#9a6f8f',
   acoustictile: '#8e9a90',
 };
-/** Where the lab says each listening-distance class is heard from (metres):
- *  nearfield about 1–1.5 m, midfield about 2–4 m (modMonitoring's prose). */
-export const FIELD_RANGE_M: Record<string, [number, number] | null> = {
-  nearfield: [0.8, 1.8],
-  midfield: [1.8, 4.2],
-  other: null,
-};
+/** The listening-distance classes now live in roomModel (FIELD_RANGE_M), so
+ *  the Suggested setups search reads the same numbers the plan draws. */
+export { FIELD_RANGE_M };
 /** The floor fill by material. Still dark (the heat map and the paths read
  *  over it) but each a distinct hue: the old four near-blacks differed by 2–4
  *  levels a channel, so a FLOOR pick changed nothing a learner could see
@@ -119,6 +117,7 @@ export function RoomPlanView({
   onDragEnd,
   trace = null,
   highlight = null,
+  ghost = null,
 }: {
   w: number;
   h: number;
@@ -135,6 +134,10 @@ export function RoomPlanView({
   trace?: Trace;
   /** A just-added item (`tr_<id>` / `op_<id>`) wears a ring for a moment. */
   highlight?: string | null;
+  /** SUGGESTED SETUPS: the learner's CURRENT positions drawn faintly under
+   *  the suggested ones (and the desk where it stands now, dashed), with a
+   *  dashed line from the current seat to the suggested one. */
+  ghost?: { layout: Layout; desk?: { x: number; y: number; w: number; d: number } | null } | null;
 }) {
   const s = useStageTextScale();
   const gw = w / s;
@@ -616,6 +619,29 @@ export function RoomPlanView({
               );
             })
           : null}
+
+        {/* Suggested setups: where everything stands NOW, faint and dashed */}
+        {ghost ? (
+          <G opacity={0.4}>
+            {ghost.desk ? (
+              <Rect
+                x={T.toPx({ x: ghost.desk.x - ghost.desk.w / 2, y: ghost.desk.y - ghost.desk.d / 2 }).x}
+                y={T.toPx({ x: ghost.desk.x - ghost.desk.w / 2, y: ghost.desk.y - ghost.desk.d / 2 }).y}
+                width={ghost.desk.w * T.k}
+                height={ghost.desk.d * T.k}
+                fill="none"
+                stroke={HEAD_LINE}
+                strokeWidth={1.2}
+                strokeDasharray="4 4"
+              />
+            ) : null}
+            {ghost.layout.speakers.map((sp) =>
+              sp.role === 'SUB' ? <SubTop key={`g_${sp.role}`} sp={sp} T={T} fs={fs} selected={false} /> : <SpeakerTop key={`g_${sp.role}`} sp={sp} T={T} fs={fs} selected={false} label="none" />,
+            )}
+            <ListenerTop p={T.toPx(ghost.layout.listener)} size={Math.max(MIN_GLYPH, 0.22 * T.k)} selected={false} />
+            <Line x1={T.toPx(ghost.layout.listener).x} y1={T.toPx(ghost.layout.listener).y} x2={lisPx.x} y2={lisPx.y} stroke={GREEN} strokeWidth={1.4} strokeDasharray="3 4" />
+          </G>
+        ) : null}
 
         {/* Speakers */}
         {lay.speakers.map((sp) =>

@@ -35,7 +35,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     seeing: [
       'This page is for reading; there’s no drawing yet. It takes Wave Physics and Speaker Placement & Coverage into your own room.',
       'Start with THREE KINDS OF NUMBER: CALCULATED (exact arithmetic), ESTIMATED (a model built on simple physics) and MEASURED (taken in the real room).',
-      'HEARING FIRST gives the safe-level rule for monitoring. HOW THE LAB RUNS lists the five modules that follow, in order.',
+      'HEARING FIRST gives the safe-level rule for monitoring. HOW THE LAB RUNS lists the six modules that follow, in order.',
     ],
     control: [
       'Nothing to set here. Scroll to read.',
@@ -168,7 +168,40 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
   },
 
-  // ── 5 · Add treatment ────────────────────────────────────────────────────
+  // ── 5 · Suggested setups ─────────────────────────────────────────────────
+  suggest: {
+    intro: {
+      learning: 'How your room’s own numbers point to better positions: the bass at your seat, a matched stereo triangle, and the smallest moves that clear a warning.',
+      start: 'Tap SETUP A to open its report. Compare WHAT TO MOVE with the faint current positions on the drawing, then open SETUP B and SETUP C.',
+    },
+    seeing: [
+      'The stage draws the selected setup in bright; the faint, dashed shapes are where everything stands now.',
+      'Each card names its goal, draws its layout and lists what it improves. Readouts, each as now → setup: SETUP (the one shown), DIPS+PEAKS (bass dips and peaks at your seat), STRONG <15ms (strong early wall reflections) and WARNINGS ! (Review warnings to look at first).',
+    ],
+    control: [
+      'Tap a card, or REPORT, to open its full report: WHAT TO MOVE, BEFORE → AFTER, WHY IT IS BETTER and TRADE-OFFS.',
+      'SETUP flips the drawing between the setups.',
+      'TRY (or TRY THIS SETUP in the report) puts a setup in OPTION A or OPTION B beside START and shows it. START is never touched.',
+      'OPEN EXPLORE takes you to Explore placement, to drag the setup and TRACE its reflections.',
+    ],
+    changes: [
+      'Smoother bass counts the length modes up to 150 Hz whose dip or peak your seat sits in, the lowest first.',
+      'Clearer stereo image keeps a 60° triangle on the center line and cuts strong early wall reflections.',
+      'Least change makes the smallest moves that clear the Review page’s “!” warnings; the desk stays put.',
+    ],
+    teaches: [
+      'The 38 % rule (the seat at 35–40 % of the length) is a starting point; your room’s own modes decide.',
+      'Every gain has a cost, and the report lists what gets worse.',
+      'A model points to positions worth trying; a measurement settles them.',
+    ],
+    tryThis: [
+      'In the starting room open SETUP A: DIPS+PEAKS reads 3→1. The seat moves to 35 % of the length and the speakers to 36 cm from the front wall.',
+      'Open SETUP B: STRONG <15ms reads 2→0, and the triangle is still 60°, matched left and right.',
+      'Open SETUP C: the chair and both speakers move 30 cm toward the front wall, the desk stays, and WARNINGS ! reads 1→0.',
+    ],
+  },
+
+  // ── 6 · Add treatment ────────────────────────────────────────────────────
   treatment: {
     intro: {
       learning: 'Where each kind of treatment works: absorbers at reflection points for mids and highs, traps in corners for bass. Also why thickness, not more thin panels, reaches low frequencies.',
@@ -204,7 +237,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
   },
 
-  // ── 6 · Review the room (report page) ────────────────────────────────────
+  // ── 7 · Review the room (report page) ────────────────────────────────────
   review: {
     intro: {
       learning: 'How to read a room as observations and next steps, not a grade: which seat problems are worth moving for, and why a measurement outranks the model.',

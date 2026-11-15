@@ -9,12 +9,15 @@
  * answered right; for a module with no card, moving on from it with NEXT;
  * for Room Design's hands-on modules, a change made to the room there.
  */
-export type ModuleGoal = 'check' | 'next' | 'work';
+export type ModuleGoal = 'check' | 'next' | 'work' | 'report';
 
 const GOAL_LINE: Record<ModuleGoal, string> = {
   check: 'answer its CHECK YOURSELF right.',
   next: 'read it through and press NEXT at its foot.',
   work: 'change the room on it.',
+  // Room Design's SUGGESTED SETUPS (2026-11-14): its work is reading a
+  // setup's report or trying one.
+  report: 'open a setup’s report, or try one.',
 };
 
 /** One row's line: what is still to do, then what the module holds. */
@@ -33,5 +36,5 @@ export function goalCounts(opts: { next?: boolean } = {}): string {
 
 /** Room Design: reading modules count on NEXT, hands-on ones on a change. */
 export function roomCounts(): string {
-  return 'A reading module counts when you move on from it with NEXT; a hands-on module counts once you change the room on it. Opening a module does not count it, and nothing already counted is taken away.';
+  return 'A reading module counts when you move on from it with NEXT; a hands-on module counts once you change the room on it, and Suggested setups once you open a setup’s report or try one. Opening a module does not count it, and nothing already counted is taken away.';
 }
