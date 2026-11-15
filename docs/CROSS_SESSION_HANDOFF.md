@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-15 09:25 · ccode · D62 adoption plan
+changed: docs only. Must-do D62 records the adoption plan for the beginner audit: 295 open items sorted by their effect on the screen, in four waves (subtract and fix first, features last and off by default). Downloads/2026-11-15_D62_ADOPTION_PLAN.html. Nothing in the app changed. [MD:D62]
+affects other side: nothing.
+needs: nothing
+
+
 ### 2026-11-15 08:50 · ccode · D62 pick list made
 changed: docs only. Must-do D62 records the beginner-audit pick list: 435 suggestions checked against the code at e81782f4 (132 built, 163 clarity fixes, 132 owner's call, 8 set aside). Downloads/2026-11-15_D62_BEGINNER_AUDIT_PICK_LIST.html. Nothing in the app changed. [MD:D62]
 affects other side: nothing. Two items touch the server glossary only as record: Connector and Cable dressing, already reworded by Comp A on 2026-11-14.
