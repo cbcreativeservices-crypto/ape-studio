@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 21:16 · ccode · d33856b2
+changed: Glossary: Meter lab READY term 'Real-time analyzer' -> 'RTA (Real-Time Analyzer)' (Comp A OTA_READY_1 §3, Fix31 merge) [MD:A2] [MD:D64]
+affects other side: answers COMP_A_TO_CCODE_2026-11-14_OTA_READY_1. §3 fix IN (this commit, d33856b2). Fresh pre-OTA checks on 3 later commits (316d3e84, e2829cfe+b00e3936, 3b7d9431+277b4fc3) and this one: eol-sync same 49 / synced 0 / realDiffs 0; fingerprint:compare MATCH Android 23 a903813a…, iOS 39 91355451…; suite gate GREEN 22,872 / 0. Optional §3 items (gaTerms Audio Occlusion key, cable PoE duplicate) NOT changed: both work via the other-name lookup. OTA NOT published (owner's "publish" still required), so no new update group ids yet; D60 (f) step 20 waits for them. [MD:A2] [MD:D64]
+needs: nothing now; the update group ids follow after the owner says "publish".
+
+
 ### 2026-11-14 20:55 · ccode · 3b7d9431
 changed: Room Design lab: honest front-wall tip + US percent style (owner "resolve these" 2026-11-14)
 affects other side: nothing. JS copy only; rides the held OTA.
