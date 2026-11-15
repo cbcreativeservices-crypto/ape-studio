@@ -44,9 +44,19 @@
  * owner: "Begin fixing all bugs found and do obvious ... fixes"). A pinned
  * ENABLE SOUND cannot be tapped before the text has moved: it stays disabled
  * until the box at the end of the text is ticked.
+ *
+ * ── …AND THEY APPEAR ONLY AT THE END (owner 2026-11-14, on the iPhone) ───────
+ *
+ * "Do not show the I UNDERSTAND / KEEP SOUND OFF area until the user scrolls
+ * all the way down to the bottom." The footer stays below the scroll, but it
+ * is not drawn until the reader has reached the end of the warning once
+ * (`reachedEnd`, sticky for this request). A warning short enough to fit
+ * without scrolling (a tablet) counts as read at once. A screen reader user
+ * gets the footer at once (they move through the text by focus, not by a
+ * scroll position). BACK still declines at any time, so the sheet never traps.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type NativeScrollEvent } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { isIntroCardOwed, isScreenWorkUnderway, popupArming } from '../intro/screenIntros';
@@ -145,6 +155,41 @@ export function SoundSafetyWarning({
     setChecked(false);
   }, [openId]);
 
+  // THE BUTTONS APPEAR AT THE END (owner 2026-11-14): sticky once reached for
+  // this request; the box view's height and the text's height decide a
+  // warning that fits without scrolling.
+  const [reachedEnd, setReachedEnd] = useState(false);
+  useEffect(() => {
+    setReachedEnd(false);
+  }, [openId]);
+  const [readerOn, setReaderOn] = useState(false);
+  useEffect(() => {
+    // react-native-web answers `true` always, so on the web the screen-reader
+    // exception would show the buttons at once; phones answer truthfully.
+    if (Platform.OS === 'web') return undefined;
+    let live = true;
+    AccessibilityInfo.isScreenReaderEnabled()
+      .then((on) => {
+        if (live) setReaderOn(on);
+      })
+      .catch(() => {});
+    const sub = AccessibilityInfo.addEventListener('screenReaderChanged', (on: boolean) => setReaderOn(on));
+    return () => {
+      live = false;
+      sub?.remove?.();
+    };
+  }, []);
+  const boxH = useRef(0);
+  const textH = useRef(0);
+  const checkFits = () => {
+    if (boxH.current > 0 && textH.current > 0 && textH.current <= boxH.current + END_SLACK_PX) setReachedEnd(true);
+  };
+  const onScroll = (e: { nativeEvent: NativeScrollEvent }) => {
+    if (reachedEnd) return;
+    if (atScrollEnd(e.nativeEvent)) setReachedEnd(true);
+  };
+  const showButtons = reachedEnd || readerOn;
+
   // The arm window starts when the sheet is really shown.
   const shownAt = useRef<number | null>(null);
   useEffect(() => {
@@ -192,6 +237,16 @@ export function SoundSafetyWarning({
             contentContainerStyle={styles.scrollBody}
             showsVerticalScrollIndicator
             nestedScrollEnabled
+            onScroll={onScroll}
+            scrollEventThrottle={64}
+            onLayout={(e) => {
+              boxH.current = e.nativeEvent.layout.height;
+              checkFits();
+            }}
+            onContentSizeChange={(_w, h) => {
+              textH.current = h;
+              checkFits();
+            }}
           >
             <Text style={styles.intro}>{SOUND_SAFETY_INTRO}</Text>
 
@@ -243,7 +298,14 @@ export function SoundSafetyWarning({
             <Text style={styles.footNote}>{SOUND_SAFETY_FOOTNOTE}</Text>
           </ScrollView>
 
-          {/* PINNED: both buttons always on screen (see the header). */}
+          {/* Below the scroll, drawn only once the end of the warning has been
+              reached (owner 2026-11-14; see the header). Until then one quiet
+              line says where the buttons are. */}
+          {!showButtons ? (
+            <View style={styles.footer}>
+              <Text style={styles.scrollHint}>{SCROLL_HINT}</Text>
+            </View>
+          ) : (
           <View style={styles.footer}>
             <Pressable
               style={[styles.acceptBtn, acceptOff && styles.acceptBtnOff]}
@@ -273,6 +335,7 @@ export function SoundSafetyWarning({
               <Text style={styles.declineText}>{SOUND_SAFETY_DECLINE}</Text>
             </Pressable>
           </View>
+          )}
         </View>
       </View>
   );
@@ -295,6 +358,15 @@ export function SoundSafetyWarning({
     </Modal>
   );
 }
+
+/** How close to the bottom counts as "the end" (a fling rarely lands on the
+ *  last pixel). */
+export const END_SLACK_PX = 24;
+/** The scroll position is at the end of the warning. */
+export function atScrollEnd(n: Pick<NativeScrollEvent, 'contentOffset' | 'contentSize' | 'layoutMeasurement'>): boolean {
+  return n.contentOffset.y + n.layoutMeasurement.height >= n.contentSize.height - END_SLACK_PX;
+}
+export const SCROLL_HINT = 'Scroll to the end of the warning to continue ↓';
 
 const RED = '#ff6b5e';
 const GREEN = colors.green;
@@ -392,6 +464,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     gap: 8,
   },
+  scrollHint: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center', paddingVertical: 6 },
   acceptBtn: {
     borderRadius: 9,
     backgroundColor: 'rgba(55,224,95,.12)',
