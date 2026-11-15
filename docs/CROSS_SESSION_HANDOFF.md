@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 20:30 · ccode · e2829cfe
+changed: Room Design lab: Suggested Setups module (owner request 2026-11-14; plan + 4 choices agreed; "Include it in the OTA", bug-tested)
+affects other side: nothing. JS only, no server, no store text; the module rides the held OTA on the owner's word (no new lab key, no requirement rows).
+needs: nothing.
+
+
 ### 2026-11-14 17:30 · ccode · 4832107b
 changed: web: LinkedIn in the Organization sameAs (in Comp A's SEO handoff, missed in bb16c61c; NOT deployed); must-do: SEO live check, OTA readiness + Pixel test, owner 'Not yet' [MD:D65] [MD:D64]
 affects other side: nothing yet. The LinkedIn sameAs reaches www only with the next web deploy, on the owner's word. [MD:D65]
