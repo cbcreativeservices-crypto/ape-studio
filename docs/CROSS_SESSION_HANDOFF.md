@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 16:30 · ccode · 1b4f991b
+changed: Career Finder: the 11 family examples now name a job from that same family (owner "fix the 11 career finder job listings") [MD:D63]
+affects other side: nothing on the server (Career Finder lists are app-only). [MD:D63]
+needs: Comp A runs the after-deploy SEO check and re-index in Downloads/2026-11-14_FOR_COMP_A_AFTER_SEO_DEPLOY.zip, and does a read-only check of the "Source-filter model" glossary row. [MD:D65]
+
+
 ### 2026-11-14 15:49 · ccode · 4f878ed1
 changed: Lab fix round 2 (D64): owner's 8 decisions + checker fixes; SEO web finish (D65, matches deploy bb16c61c)
 affects other side: app registry Miking titles now match the labs rows Comp A renamed (mk_A08b "Miking: Bass Clarinet", mk_SPK "Miking: Amplified Speakers and Leslie"); docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql regenerated to match, no server change needed. Website files on this branch now equal the live deploy bb16c61c. [MD:D64] [MD:D65]
