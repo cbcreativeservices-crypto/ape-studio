@@ -162,7 +162,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
       'Reflections within about 15 ms change image and tone; a mode’s null can make a bass note almost vanish.',
     ],
     tryThis: [
-      'Flip LAYOUT to START. MODE 34.3 Hz, the first length mode: AT EARS reads 13 %. Drag the listener back: 0 % at mid-room (2.50 m), the null, then up toward 100 % (red) by the rear wall.',
+      'Flip LAYOUT to START. MODE 34.3 Hz, the first length mode: AT EARS reads 13%. Drag the listener back: 0% at mid-room (2.50 m), the null, then up toward 100% (red) by the rear wall.',
       'Flip LAYOUT back to START. 1ST reads +0.7 ms: the bounce off the desk top, the earliest reflection here. Tap TRACE and the pulse rides that path first.',
       'In SAVE tap OPTION A, then drag the listener. WHAT CHANGED lists the difference between START and OPTION A.',
     ],
@@ -190,12 +190,12 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
       'Least change makes the smallest moves that clear the Review page’s “!” warnings; the desk stays put.',
     ],
     teaches: [
-      'The 38 % rule (the seat at 35–40 % of the length) is a starting point; your room’s own modes decide.',
+      'The 38% rule (the seat at 35–40% of the length) is a starting point; your room’s own modes decide.',
       'Every gain has a cost, and the report lists what gets worse.',
       'A model points to positions worth trying; a measurement settles them.',
     ],
     tryThis: [
-      'In the starting room open SETUP A: DIPS+PEAKS reads 3→1. The seat moves to 35 % of the length and the speakers to 36 cm from the front wall.',
+      'In the starting room open SETUP A: DIPS+PEAKS reads 3→1. The seat moves to 35% of the length and the speakers to 36 cm from the front wall.',
       'Open SETUP B: STRONG <15ms reads 2→0, and the triangle is still 60°, matched left and right.',
       'Open SETUP C: the chair and both speakers move 30 cm toward the front wall, the desk stays, and WARNINGS ! reads 1→0.',
     ],
@@ -268,7 +268,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     tryThis: [
       'On the default design, the TRY FIRST row says your seat sits near a null of the 34.3 Hz length mode: that note nearly disappears there.',
       'Type 34 in RESONANCE FOUND. The nearest modeled mode is axial (1,0,0) at 34.3 Hz, 0.3 Hz above: a close match for a simple model.',
-      'On the untreated default (Create the room › SHAPE › NEW ROOM), type 0.45 in MEASURED RT60 (MID). Against the 0.55 s estimate, the room is 18 % deader than the model.',
+      'On the untreated default (Create the room › SHAPE › NEW ROOM), type 0.45 in MEASURED RT60 (MID). Against the 0.55 s estimate, the room is 18% deader than the model.',
     ],
   },
 };

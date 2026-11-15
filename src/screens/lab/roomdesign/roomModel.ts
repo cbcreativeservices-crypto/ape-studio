@@ -965,7 +965,7 @@ export function modePressure(L: number, W: number, H: number, m: Pick<RoomMode, 
   return Math.abs(Math.cos((m.nx * Math.PI * x) / L) * Math.cos((m.ny * Math.PI * y) / W) * Math.cos((m.nz * Math.PI * z) / H));
 }
 
-/** Pairs of modes within 5 % of each other (the calculator's own rule):
+/** Pairs of modes within 5% of each other (the calculator's own rule):
  *  coincident modes pile up at one frequency. Restricted the way the
  *  calculator restricts it (audio review 10): at least one of the pair is
  *  AXIAL and both sit at or below `maxHz` (≈150 Hz) — above that the modes
@@ -1722,7 +1722,7 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
     const frontNotch = (role: SpeakerRole) => a.sbir.find((n) => n.speaker === role && n.surface === 'front wall');
     const nL = frontNotch('L');
     const nR = frontNotch('R');
-    const sbirText = (who: string, dist: number, hz: string) => `${who} ${len(dist)} from the front wall (measured to the woofer, not the back of the cabinet); the front-wall bounce estimates a first cancellation at the seat near ${hz}, in the bass. Either tight to the wall (under about 0.5 m — the notch moves up, where directivity and ordinary panels tame it) or well away (over about 2 m) is worth testing.`;
+    const sbirText = (who: string, dist: number, hz: string) => `${who} ${len(dist)} from the front wall (measured to the woofer, not the back of the cabinet); the front-wall bounce estimates a first cancellation at the seat near ${hz}, in the bass. Either tight to the wall (under about ${len(0.5)}: the cancellation moves up out of the low bass, where thick absorption — ${fmtLen(0.1, u, { small: true })} or more — behind the speakers can reduce it; keep the rear-port clearance the maker gives) or well away (over about ${u === 'metric' ? '2 m' : len(2)}: it drops low, often below what nearfield monitors play) is worth testing.`;
     const inBand = (w: { front: number }) => w.front > 0.4 && w.front < 1.4;
     if (inBand(s.wallL) && inBand(s.wallR) && Math.abs(s.wallL.front - s.wallR.front) < 0.05 && nL && nR) {
       out.push({ tier: 'ESTIMATED', level: 'try', text: sbirText('Both speakers are', s.wallL.front, Math.abs(nL.notchHz - nR.notchHz) < 1 ? fmtHz(nL.notchHz) : `${fmtHz(Math.min(nL.notchHz, nR.notchHz))}–${fmtHz(Math.max(nL.notchHz, nR.notchHz))}`) });
@@ -1742,8 +1742,8 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
   for (const z of a.listenerZones) {
     const name = `${z.mode.axis}-axis mode ${fmtHz(z.mode.f)}`;
     if (z.mode.axis === 'L') {
-      if (z.zone === 'peak') out.push({ tier: zoneTier, level: 'check', text: `The listener sits at a pressure maximum of the ${name}: bass at that frequency will sound heavy there. Move fore/aft — try the seat at roughly 35–40 % of the room length and compare.` });
-      if (z.zone === 'null') out.push({ tier: zoneTier, level: 'check', text: `The listener sits near a null of the ${name}: that frequency nearly disappears at the seat, and no EQ fixes a null. Move fore/aft — try the seat at roughly 35–40 % of the room length and compare.` });
+      if (z.zone === 'peak') out.push({ tier: zoneTier, level: 'check', text: `The listener sits at a pressure maximum of the ${name}: bass at that frequency will sound heavy there. Move fore/aft — try the seat at roughly 35–40% of the room length and compare.` });
+      if (z.zone === 'null') out.push({ tier: zoneTier, level: 'check', text: `The listener sits near a null of the ${name}: that frequency nearly disappears at the seat, and no EQ fixes a null. Move fore/aft — try the seat at roughly 35–40% of the room length and compare.` });
     } else if (z.mode.axis === 'W') {
       if (z.zone === 'null' && onCentre) out.push({ tier: zoneTier, level: 'ok', text: `On the center line you sit in the null of every odd width mode (here ${fmtHz(z.mode.f)}). That is true of every symmetrical room and is the accepted trade — a centered stereo pair barely drives those modes. Keep the symmetry; only the sub's position and the width-mode peaks at the side walls are worth working.` });
       else if (z.zone === 'null') out.push({ tier: zoneTier, level: 'info', text: `The seat sits near a null of the ${name} — expected near the center line, where every odd width mode nulls. Keep left/right symmetry rather than chasing it.` });
@@ -1910,7 +1910,7 @@ export function compareMeasured(d: RoomDesign, a: Analysis): MeasuredCompare {
     out.push({ tier: 'MEASURED', text: `Measured RT60 ${m.rt60Mid} s — ${MEASURED_OUT_OF_RANGE} (${MEASURED_RANGE.rt60Mid.min}–${MEASURED_RANGE.rt60Mid.max} s). Check the reading, or the units.` });
   } else if (m.rt60Mid != null && Number.isFinite(m.rt60Mid) && Number.isFinite(a.rt60Mid)) {
     const ratio = m.rt60Mid / a.rt60Mid;
-    out.push({ tier: 'MEASURED', text: `Measured mid-band RT60 ${m.rt60Mid.toFixed(2)} s vs the Sabine estimate ${a.rt60Mid.toFixed(2)} s (${ratio > 1 ? 'the room is more live' : 'the room is deader'} than the model by ${Math.abs(ratio - 1) * 100 < 1 ? 'under 1' : (Math.abs(ratio - 1) * 100).toFixed(0)} %). A gap means the surfaces absorb differently from the typical values the model uses — the measurement wins.` });
+    out.push({ tier: 'MEASURED', text: `Measured mid-band RT60 ${m.rt60Mid.toFixed(2)} s vs the Sabine estimate ${a.rt60Mid.toFixed(2)} s (${ratio > 1 ? 'the room is more live' : 'the room is deader'} than the model by ${Math.abs(ratio - 1) * 100 < 1 ? 'under 1' : (Math.abs(ratio - 1) * 100).toFixed(0)}%). A gap means the surfaces absorb differently from the typical values the model uses — the measurement wins.` });
   }
   if (m.modeHz != null && Number.isFinite(m.modeHz) && !measuredInRange('modeHz', m.modeHz)) {
     out.push({ tier: 'MEASURED', text: `Resonance ${m.modeHz} Hz — ${MEASURED_OUT_OF_RANGE} (${MEASURED_RANGE.modeHz.min}–${MEASURED_RANGE.modeHz.max} Hz, where room modes live).` });

@@ -144,13 +144,13 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
         {a.modes.slice(0, 12).map((m, i) => (
           <KV key={i} k={`${m.kind} (${m.nx},${m.ny},${m.nz})`} v={fmtHz(m.f)} tint={a.rectangular ? colors.cyanBright : colors.amber} />
         ))}
-        {a.coincident.length > 0 ? <Caption>{`Near-coincident modes (at least one axial, both ≤ 150 Hz, within 5 % of each other): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
+        {a.coincident.length > 0 ? <Caption>{`Near-coincident modes (at least one axial, both ≤ 150 Hz, within 5% of each other): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
         <Text style={styles.sub}>WHERE THE MODEL PREDICTS STRONGER OR WEAKER PRESSURE AT THE SEAT</Text>
         {a.listenerZones.map((z, i) => {
           const centred = !st || Math.abs(st.axisOffset) < 0.1;
           const note = z.mode.axis === 'W' && z.zone === 'null' && centred ? ' · center line: expected, keep it' : z.mode.axis === 'H' && z.zone === 'null' ? ' · ⓘ normal at seated ear height' : z.mode.axis === 'L' && z.zone !== 'between' ? ' · move fore/aft to test' : '';
           const tint = z.mode.axis !== 'L' && z.zone === 'null' ? colors.textSub : z.zone === 'peak' ? '#ff5a48' : z.zone === 'null' ? '#2f74ff' : colors.green;
-          return <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)} % — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}${note}`} tint={tint} />;
+          return <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)}% — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}${note}`} tint={tint} />;
         })}
         <Caption>Mode shape only — not how strongly the speakers excite each mode. A centered pair barely drives the odd width modes; the length axis is the one worth moving along.</Caption>
         <Text style={styles.sub}>LIKELY EARLY REFLECTIONS (FIRST ORDER, IMAGE-SOURCE)</Text>

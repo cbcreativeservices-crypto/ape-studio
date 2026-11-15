@@ -5,7 +5,7 @@
  *   1. the default room gets three setups — bass, image, least change — each
  *      beating the current layout on its own goal, adding no new "!" item and
  *      no new placement problem, and standing ≥ 25 cm from the others;
- *   2. the worked example in the plan: the default seat (46 %) lands on 3
+ *   2. the worked example in the plan: the default seat (46%) lands on 3
  *      length-mode peaks/nulls up to 150 Hz; the bass setup lands on 1;
  *   3. every position is usable: inside the walls, speakers ≥ 20 cm clear,
  *      nothing in furniture; the desk moves only in A/B, never in least change;
@@ -109,7 +109,7 @@ describe('1. the default room: three genuinely different, genuinely better setup
 describe('2. the plan’s worked example (default room, 4 × 5 × 2.5 m)', () => {
   const d = M.defaultDesign();
   const r = suggestSetups(d);
-  it('now: seat at 46 %, 3 of 4 length modes ≤ 150 Hz hit — 34.3 Hz null, 68.6 Hz peak, 137.3 Hz peak', () => {
+  it('now: seat at 46%, 3 of 4 length modes ≤ 150 Hz hit — 34.3 Hz null, 68.6 Hz peak, 137.3 Hz peak', () => {
     assert.equal(Math.round(r.base.seatPct), 46);
     assert.equal(r.base.bassModes, 4);
     assert.deepEqual(r.base.bassHits.map((h) => `${M.fmtHz(h.f)} ${h.zone}`), ['34.3 Hz null', '68.6 Hz peak', '137.3 Hz peak']);
@@ -277,21 +277,21 @@ describe('5. one physics, one set of constants', () => {
 });
 
 describe('6. the screen guide’s TRY THIS numbers are what the search prints for the default design', () => {
-  it('A: DIPS+PEAKS 3→1, seat 35 %, speakers 36 cm from the front wall · B: STRONG <15ms 2→0 at 60° · C: chair and speakers 30 cm toward the front wall, WARNINGS ! 1→0', async () => {
+  it('A: DIPS+PEAKS 3→1, seat 35%, speakers 36 cm from the front wall · B: STRONG <15ms 2→0 at 60° · C: chair and speakers 30 cm toward the front wall, WARNINGS ! 1→0', async () => {
     const { ROOM_SCREEN_GUIDES } = await import('../src/screens/lab/roomdesign/roomdesignScreenGuides.ts');
     const t = ROOM_SCREEN_GUIDES.suggest.tryThis.join('\n');
     const r = suggestSetups(M.defaultDesign());
     const [a, b, c] = r.setups;
     const checks = (f: string[]) => checksOf(f).length;
     assert.equal(`${r.base.bassHits.length}→${a.metrics.bassHits.length}`, '3→1');
-    assert.equal(`${Math.round(a.metrics.seatPct)} %`, '35 %');
+    assert.equal(`${Math.round(a.metrics.seatPct)}%`, '35%');
     assert.equal(M.fmtLen(a.metrics.frontDist, 'metric', { small: true }), '36 cm');
     assert.equal(`${r.base.earlyStrong}→${b.metrics.earlyStrong}`, '2→0');
     assert.equal(Math.round(b.metrics.stereo!.angleDeg), 60);
     assert.deepEqual(c.moves, ['Move your chair 30 cm toward the front wall.', 'Move the left speaker 30 cm toward the front wall.', 'Move the right speaker 30 cm toward the front wall.']);
     assert.equal(c.deskMoved, null);
     assert.equal(`${checks(r.base.flags)}→${checks(c.metrics.flags)}`, '1→0');
-    for (const s of ['DIPS+PEAKS reads 3→1', '35 %', '36 cm', 'STRONG <15ms reads 2→0', '60°', '30 cm toward the front wall', 'WARNINGS ! reads 1→0']) assert.ok(t.includes(s), s);
+    for (const s of ['DIPS+PEAKS reads 3→1', '35%', '36 cm', 'STRONG <15ms reads 2→0', '60°', '30 cm toward the front wall', 'WARNINGS ! reads 1→0']) assert.ok(t.includes(s), s);
   });
 });
 
@@ -302,7 +302,7 @@ describe('7. audio review (2026-11-14): no win by a hair, and the near-wall cave
     ['5 × 7 midfield', M.resizeDesign({ ...M.defaultDesign(), monitoring: { config: 'stereo', field: 'midfield', model: '' } }, 5, 7)],
     ['3 × 4', M.resizeDesign(M.defaultDesign(), 3, 4)],
   ];
-  it('a setup that claims the first length mode cleared sits at 30–70 % of its pressure, not just past 20 %', async () => {
+  it('a setup that claims the first length mode cleared sits at 30–70% of its pressure, not just past 20%', async () => {
     const { DIP_BELOW, PEAK_ABOVE } = await import('../src/screens/lab/roomdesign/suggestSetups.ts');
     for (const [name, d] of rooms) {
       for (const s of suggestSetups(d).setups) {

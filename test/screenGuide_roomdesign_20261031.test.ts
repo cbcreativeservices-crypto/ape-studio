@@ -220,19 +220,19 @@ describe('4. TRY THIS numbers are what the model prints for the default design',
     assert.ok(GUIDES.monitoring.seeing.join(' ').includes('1.60 m on each side'));
   });
 
-  it('explore: MODE 34.3 Hz, AT EARS 13 %, 1ST +0.7 ms from the desk, and TRACE starts on that path', () => {
+  it('explore: MODE 34.3 Hz, AT EARS 13%, 1ST +0.7 ms from the desk, and TRACE starts on that path', () => {
     const m0 = a.modes[0];
     assert.equal(M.fmtHz(m0.f), '34.3 Hz');
     assert.deepEqual([m0.nx, m0.ny, m0.nz], [1, 0, 0]);
     const p = M.modePressure(a.modalDims.L, a.modalDims.W, a.modalDims.H, m0, lay.listener.y - b.minY, lay.listener.x - b.minX, lay.listener.earZ);
-    assert.equal(`${Math.round(p * 100)} %`, '13 %');
+    assert.equal(`${Math.round(p * 100)}%`, '13%');
     const first = a.reflections[0];
     assert.equal(`+${first.delayMs.toFixed(1)} ms`, '+0.7 ms');
     assert.equal(first.surface.kind, 'desk');
     const shown = M.planReflections(a.reflections, lay.speakers, 'listener');
     assert.equal(M.nextTraceKey(shown, null), M.reflectionKey(first));
-    for (const s of ['34.3 Hz', '13 %', '+0.7 ms']) assert.ok(t('explore').includes(s), s);
-    // Dragging back: 0 % at mid-room (2.50 m), then toward 100 % by the rear wall.
+    for (const s of ['34.3 Hz', '13%', '+0.7 ms']) assert.ok(t('explore').includes(s), s);
+    // Dragging back: 0% at mid-room (2.50 m), then toward 100% by the rear wall.
     const pAt = (y: number) => Math.round(100 * M.modePressure(a.modalDims.L, a.modalDims.W, a.modalDims.H, m0, y - b.minY, lay.listener.x - b.minX, lay.listener.earZ));
     assert.equal(pAt(2.5), 0);
     assert.ok(pAt(4.85) >= 99);
@@ -278,13 +278,13 @@ describe('4. TRY THIS numbers are what the model prints for the default design',
     assert.ok(GUIDES.treatment.changes.join(' ').includes('858 Hz at 10 cm'));
   });
 
-  it('review: TRY FIRST = the 34.3 Hz length null; 34 Hz → axial (1,0,0) 0.3 Hz above; 0.45 s → deader by 18 %; 0.55 s estimate', () => {
+  it('review: TRY FIRST = the 34.3 Hz length null; 34 Hz → axial (1,0,0) 0.3 Hz above; 0.45 s → deader by 18%; 0.55 s estimate', () => {
     const firstCheck = a.suggestions.find((s: { level: string }) => s.level === 'check')!;
     assert.match(firstCheck.text, /near a null of the L-axis mode 34\.3 Hz/);
     const cmp = M.compareMeasured({ ...d, measured: { rt60Mid: 0.45, modeHz: 34 } }, a).map((x: { text: string }) => x.text);
-    assert.match(cmp[0], /vs the Sabine estimate 0\.55 s \(the room is deader than the model by 18 %\)/);
+    assert.match(cmp[0], /vs the Sabine estimate 0\.55 s \(the room is deader than the model by 18%\)/);
     assert.match(cmp[1], /axial \(1,0,0\) at 34\.3 Hz, 0\.3 Hz above what you measured\. That is a close match for a simple model\./);
-    for (const s of ['34.3 Hz', 'axial (1,0,0)', '0.3 Hz above', '0.55 s', '18 %', 'NEW ROOM']) assert.ok(t('review').includes(s), s);
+    for (const s of ['34.3 Hz', 'axial (1,0,0)', '0.3 Hz above', '0.55 s', '18%', 'NEW ROOM']) assert.ok(t('review').includes(s), s);
   });
 });
 

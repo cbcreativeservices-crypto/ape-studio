@@ -12,7 +12,7 @@
  *
  * Three goals, each its own search over positions inside the learner's room:
  *   bass   the fewest length modes up to 150 Hz with the seat in a null or on
- *          a peak (the lab's own < 20 % / > 80 % zones); the desk may move
+ *          a peak (the lab's own < 20% / > 80% zones); the desk may move
  *          with the chair; a sub flagged "mid-room" goes to a front corner.
  *   image  the imaging checks the Review page makes (center line, L/R match,
  *          side walls, 50–70°, tweeter height), then the fewest strong early
@@ -66,8 +66,8 @@ const WALL_CLEAR_M = 0.2;
  *  port needs the clearance its maker gives. */
 export const FRONT_CLEAR_M = 0.35;
 /** The search's dip and peak zones carry a MARGIN over the Review page's
- *  20 % / 80 % (audio review 2026-11-14): the seat counts as out of a mode's
- *  dip only above 30 % of its pressure and out of its peak only below 70 %,
+ *  20% / 80% (audio review 2026-11-14): the seat counts as out of a mode's
+ *  dip only above 30% of its pressure and out of its peak only below 70%,
  *  so no setup wins by a hair (0.134 → 0.224 is still a deep dip). */
 export const DIP_BELOW = 0.3;
 export const PEAK_ABOVE = 0.7;
@@ -112,7 +112,7 @@ const IMAGE_FLAGS: FlagKey[] = ['no-triangle', 'lr-mismatch', 'side-mismatch', '
  *  in the low bass at the seat. */
 const inFrontBand = (front: number) => front > 0.4 && front < 1.4;
 /** …and what suggest() says IS worth testing: tight to the wall (under about
- *  0.5 m — the notch moves up, where directivity and ordinary panels tame it)
+ *  0.5 m — the notch moves up, out of the low bass)
  *  or well away (over about 2 m). The bass goal scores against this, the
  *  stricter of the two, so "out of the band" by a centimetre never counts. */
 export const frontWallOk = (front: number) => front < 0.5 || front > 2.0;
@@ -577,7 +577,7 @@ function missingText(goal: SetupGoal, bm: SetupMetrics, why: MissingWhy): string
 
 /* ───────────────────────────── words and rows ───────────────────────────── */
 
-const pct = (v: number) => (Number.isFinite(v) ? `${Math.round(v)} %` : '—');
+const pct = (v: number) => (Number.isFinite(v) ? `${Math.round(v)}%` : '—');
 const zoneWord = (z: 'peak' | 'null' | 'between') => (z === 'peak' ? 'on a peak' : z === 'null' ? 'in a null' : 'between peak and null');
 
 function hitsWord(m: SetupMetrics): string {
@@ -601,7 +601,7 @@ function rowsFor(bm: SetupMetrics, m: SetupMetrics, u: Units): SetupRow[] {
   const lower = (a: number, b: number, tol = 1e-6): boolean | null => (Math.abs(a - b) <= tol ? null : b < a);
   const rows: SetupRow[] = [];
   if (bm.bassModes > 0) rows.push({ label: 'Bass dips and peaks at your seat (length modes up to 150 Hz)', before: hitsWord(bm), after: hitsWord(m), tier: modeTier, better: lower(bm.bassHits.length, m.bassHits.length) });
-  rows.push({ label: 'Seat along the room (front wall = 0 %; the usual guide is 35–40 %)', before: pct(bm.seatPct), after: pct(m.seatPct), tier: 'CALCULATED', better: null });
+  rows.push({ label: 'Seat along the room (front wall = 0%; the usual guide is 35–40%)', before: pct(bm.seatPct), after: pct(m.seatPct), tier: 'CALCULATED', better: null });
   if (bm.firstLength && m.firstLength) {
     const bad = (z: string) => (z === 'between' ? 0 : 1);
     rows.push({ label: `At the first length mode (${fmtHz(bm.firstLength.f)})`, before: zoneWord(bm.firstLength.zone), after: zoneWord(m.firstLength.zone), tier: modeTier, better: lower(bad(bm.firstLength.zone), bad(m.firstLength.zone)) });
@@ -703,7 +703,7 @@ function betterLines(goal: SetupGoal, bm: SetupMetrics, m: SetupMetrics, u: Unit
   // Cleared only by the search's margin (the Review page never flagged it):
   // say what moved, or a card that won on it has no line at all.
   const marginLine = firstModeBad(bm) && !firstModeBad(m) && !bm.flags.includes('length-mode') && bm.firstLengthP != null && m.firstLengthP != null && bm.firstLength
-    ? `First length mode (${fmtHz(bm.firstLength.f)}): your seat moves clear of its ${bm.firstLengthP < DIP_BELOW ? 'dip' : 'peak'} (${Math.round(bm.firstLengthP * 100)} % → ${Math.round(m.firstLengthP * 100)} % of its full pressure)`
+    ? `First length mode (${fmtHz(bm.firstLength.f)}): your seat moves clear of its ${bm.firstLengthP < DIP_BELOW ? 'dip' : 'peak'} (${Math.round(bm.firstLengthP * 100)}% → ${Math.round(m.firstLengthP * 100)}% of its full pressure)`
     : null;
   const order: [boolean, string][] =
     goal === 'bass'
@@ -739,7 +739,7 @@ function whyLines(goal: SetupGoal, bm: SetupMetrics, m: SetupMetrics, u: Units):
   if (goal === 'bass') {
     out.push(`Now your seat sits in a null or on a peak of ${bm.bassHits.length} of the ${bm.bassModes} length modes up to 150 Hz${bm.bassHits.length ? ` (${list(bm.bassHits)})` : ''}. At ${pct(m.seatPct)} of the room length it is ${m.bassHits.length === 0 ? 'none' : m.bassHits.length} of ${m.bassModes}${m.bassHits.length ? ` (${list(m.bassHits)})` : ''}. In a dip that note drops sharply at the seat, and EQ cannot fill it; on a peak it booms. (A dip here means under ${Math.round(DIP_BELOW * 100)}% of the mode's full pressure and a peak over ${Math.round(PEAK_ABOVE * 100)}% — a little stricter than the Review page, so no setup wins by a hair.)`);
     const p = m.seatPct;
-    out.push(p >= 35 && p <= 40 ? 'This seat is inside the usual 35–40 % starting point (the “38 % rule”).' : `The usual starting point is about 35–40 % of the length (the “38 % rule”). In this room the model finds fewer dips and peaks at ${pct(p)}, so it suggests that instead — the rule is a starting point, not a law.`);
+    out.push(p >= 35 && p <= 40 ? 'This seat is inside the usual 35–40% starting point (the “38% rule”).' : `The usual starting point is about 35–40% of the length (the “38% rule”). In this room the model finds fewer dips and peaks at ${pct(p)}, so it suggests that instead — the rule is a starting point, not a law.`);
     if (m.stereo && frontWallOk(m.frontDist)) {
       out.push(
         m.frontDist < 0.5
