@@ -106,6 +106,8 @@ const SITE_JSON_LD = {
         "https://www.facebook.com/profile.php?id=61591525156755",
         "https://www.instagram.com/proaudiotrainingacademy/",
         "https://www.youtube.com/channel/UCgyT9oaRJvYLKAc-_cHuZ5A",
+        // In Comp A's SEO handoff (2026-11-14), missed in bb16c61c; found by its live check.
+        "https://www.linkedin.com/company/pro-audio-training-academy/",
       ],
     },
     {
