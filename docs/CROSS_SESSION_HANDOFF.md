@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 22:25 · ccode · OTA PUBLISHED (632f9828)
+changed: production OTA published on the owner's word ("Publish") after the Pixel dev-build test passed (Downloads/2026-11-14_PIXEL_TEST_BEFORE_OTA_REPORT). Commit 632f9828. iOS group fc9a721c-b147-410e-befe-c0459c6e6763 (runtime 91355451…), Android group 874669d0-eda5-41fc-a7be-8f83f40a7fb1 (runtime a903813a…); sourcemaps uploaded for both. Pre-publish: eol-sync same 49/0/0, both fingerprint:compare MATCH. Proven on the Pixel Play app: manifest 874669d0 downloaded, Game Audio category present, lab opens for the owner as a member. Undo = republish 11-11 groups (iOS f2a75bfb…, Android 0332a5d1…). [MD:A2] [MD:D60] [MD:D64]
+affects other side: Comp A may now run D60 (f) step 20 (20_APPLY_REQUIREMENTS) once phones are proven; iPhone sound check still pending. ALSO (owner "you run it", 2026-11-14 22:19): owner account APE-C-32CDEBDA8E entitlements row set to active / admin_grant / plan lifetime / expires 2099-12-31 (was refunded play_store test purchase); backup table public.entitlements_backup_20261114 (RLS on); files Downloads/2026-11-14_OWNER_LIFETIME_MEMBERSHIP_SupabaseDB.
+needs: Comp A: confirm the backup table can stay or drop it when convenient; run D60 (f) step 20 on your schedule.
+
 ### 2026-11-14 21:16 · ccode · d33856b2
 changed: Glossary: Meter lab READY term 'Real-time analyzer' -> 'RTA (Real-Time Analyzer)' (Comp A OTA_READY_1 §3, Fix31 merge) [MD:A2] [MD:D64]
 affects other side: answers COMP_A_TO_CCODE_2026-11-14_OTA_READY_1. §3 fix IN (this commit, d33856b2). Fresh pre-OTA checks on 3 later commits (316d3e84, e2829cfe+b00e3936, 3b7d9431+277b4fc3) and this one: eol-sync same 49 / synced 0 / realDiffs 0; fingerprint:compare MATCH Android 23 a903813a…, iOS 39 91355451…; suite gate GREEN 22,872 / 0. Optional §3 items (gaTerms Audio Occlusion key, cable PoE duplicate) NOT changed: both work via the other-name lookup. OTA NOT published (owner's "publish" still required), so no new update group ids yet; D60 (f) step 20 waits for them. [MD:A2] [MD:D64]
