@@ -111,16 +111,17 @@ describe('2. every step fits its no-scroll budget', () => {
 });
 
 describe('3. each guide quotes its chapter’s real names', () => {
-  const SHARED = [`${DIR}/rackLayout.tsx`, `${DIR}/TuningLabScreen.tsx`, `${DIR}/components/octaveElevator.tsx`, `${DIR}/components/stageFigures.tsx`, `${DIR}/components/harmonicLadder.tsx`, 'src/screens/lab/kit/LabNavBar.tsx', 'src/screens/lab/kit/labNav.ts', 'src/screens/lab/rack/RackUnit.tsx', 'src/screens/lab/LabShell.tsx'].map(code).join('\n');
+  const SHARED = [`${DIR}/rackLayout.tsx`, `${DIR}/TuningLabScreen.tsx`, `${DIR}/components/octaveElevator.tsx`, `${DIR}/components/stageFigures.tsx`, `${DIR}/components/harmonicLadder.tsx`, 'src/screens/lab/kit/LabNavBar.tsx', 'src/screens/lab/kit/labNav.ts', 'src/screens/lab/rack/RackUnit.tsx', 'src/screens/lab/LabShell.tsx', `${DIR}/chapters/index.ts`].map(code).join('\n');
   const NAMES: string[][] = [
-    ['ROOT', 'OCTAVE', 'SOUND', 'STOPPED', 'HEAR IT', '■ STOP', 'SCOPE ⓘ', 'BEGIN LAB ›', 'IN THIS CHAPTER', 'BASIC', 'MATH', '‹ PREV', 'NEXT ›'],
+    ['ROOT', 'OCTAVE', 'SOUND', 'STOPPED', 'HEAR IT', '■ STOP', 'SCOPE ⓘ', 'BEGIN LAB ›', 'To finish:', 'BASIC', // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-03): To finish: replaces the IN THIS CHAPTER kicker
+ 'MATH', '‹ PREV', 'NEXT ›'],
     ['RATIO', 'CENTS', 'INTERVAL', 'UPPER', 'ROOT', 'UPPER NOTE', 'TOGETHER', 'C3–C4', 'C4–C5', 'SHOW ME', 'TWO OCTAVES, TWO REGISTERS', 'minor 3rd', 'major 3rd', 'fourth', 'fifth', 'between'],
     ['RATIO', 'CENTS', 'MARKER', 'SHOW ME', '3:2 · YOUR ANSWER', 'WHOLE-NUMBER RELATIONSHIP'],
     ['RATIO', 'VALUE', 'REGION', 'NEXT OP', 'BELOW', 'INSIDE', 'ABOVE', 'COMPARISON OCTAVE', 'VIEW', 'Demo A · reduce 9/4', 'Demo B · raise 3/4', 'Your turn', 'SHOW OP', 'MOVE ÷2', 'MOVE ×2', 'REPLAY', 'SHOW ME', 'RESET'],
     ['THIRD', 'FROM 5/4', 'PARTIALS Δ', 'LISTEN', 'Full tones', 'Isolated partials', '▶ PLAY', 'SHOW ME', 'Just 5/4', 'Equal-tempered 2^(1/3)', 'Pythagorean 81/64', 'BEATING MODEL', 'LOG-FREQUENCY AXIS'],
     ['STEP', 'NEWEST', 'CENTS', 'ADD FIFTH', 'FIFTHS', 'BY PITCH'],
     ['EXPECTED C', 'ACTUAL B♯', 'GAP', 'HEAR', 'A · EXPECTED C', 'B · ACTUAL B♯', 'A → B', 'TOGETHER', 'PYTHAGOREAN COMMA', 'EXPECTED C · ACTUAL B♯'],
-    ['NOTE', 'CENTS', 'Hz', 'TONIC', 'MODE', 'KEEP', 'RETUNE', 'IMPURE', 'MOVED', 'NOTES', 'PLAY', 'LOCKED', 'E 5/4', 'G 3/2', 'CHORD 4:5:6', 'ALIGNED PARTIALS'],
+    ['NOTE', 'CENTS', 'Hz', 'TONIC', 'MODE', 'KEEP', 'RETUNE', 'IMPURE', 'MOVED', 'NOTES', 'PLAY', 'after 2 notes', 'after all', /* owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-04): not-yet keys read their own words, not LOCKED */ 'E 5/4', 'G 3/2', 'CHORD 4:5:6', 'ALIGNED PARTIALS'],
     ['RATIOS', 'NOTE', 'EXAMPLE', 'A / B', 'A · PYTHAGOREAN', 'B · JUST', 'A → B', 'PYTH', 'JUST', '81/80', 'C–E major third', 'C–E–G triad', 'F–A major third', 'G–B major third', 'C-major phrase'],
     ['PART', 'FIFTH', 'g⁴/4', 'FROM 5/4', 'WOLF', 'NORMAL', 'WIDER BY', 'SHOW ME', '▶ C–E–G', 'NOTES', '▶ SCALE', 'PURE FIFTH 3/2', 'MEANTONE FIFTH ⁴√5'],
     ['STEP', 'RATIO', 'Hz', 'ADD ×r', 'OCTAVE ✓', 'STEPS', 'A / B', 'A · PATTERN IN C', 'B · STARTING ON F', 'A → B'],

@@ -171,7 +171,9 @@ describe('3. each guide quotes its screen’s real names', () => {
     'bias.bias': ["label: 'BIAS'", "k: 'REGION'", "'CUTOFF'", "'SATUR.'", "'LINEAR'", "k: 'IDLE'", 'DEVICE CURRENT (gold)', 'TOO LITTLE BIAS', 'APPROPRIATE LINEAR BIAS', 'EXCESSIVE BIAS'],
     'bias.angle': ["label: 'ANGLE'", "k: 'CLASS'", "label: '90° · C'", "label: '180° · B'", "label: '270° · AB'", "label: '360° · A'"],
     'bias.pushpull': ["k: 'HANDOFF'", "'NOTCH'", "'OVERBIAS'", "'CLEAN'", 'YOUR TASK', 'ZERO CROSS', '×3.2'],
-    'classes.explorer': ["label: 'CLASS'", "label: 'LEVEL'", "label: 'SIGNAL'", "label: 'AB BIAS'", "label: 'TUNE'", "k: 'CONDUCT.'", "k: 'IDLE'", "k: 'DISTORT.'", "'NOTCH'", "'DETUNED'", "'CLEAN'", 'SIDE BY SIDE', 'ZERO CROSS', 'after the tuned circuit'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AMPL-02): module 4's bezel
+    // shows CONDUCT., EFFIC. and DISTORT.; IDLE CURRENT is in the card under the display.
+    'classes.explorer': ["label: 'CLASS'", "label: 'LEVEL'", "label: 'SIGNAL'", "label: 'AB BIAS'", "label: 'TUNE'", "k: 'CONDUCT.'", 'IDLE CURRENT', "k: 'DISTORT.'", "'NOTCH'", "'DETUNED'", "'CLEAN'", 'SIDE BY SIDE', 'ZERO CROSS', 'after the tuned circuit'],
     'classd.pwm': ["label: 'LEVEL'", "label: 'VIEW'", "k: 'AT TROUGH'", "k: 'AT PEAK'", "label: 'Raw switching'", "label: 'Filter action'", "label: 'Recovered audio'", 'CLASS D'],
     'classd.bridge': ["k: 'AT PEAK'", "k: 'TO LOAD'", "k: 'AS HEAT'", '+RAIL', '−RAIL', 'HIGH SIDE', 'LOW SIDE', 'LOAD', '0 V', 'DEAD TIME', 'WHERE THE ENERGY GOES'],
     'supply.rails': ["k: 'STATE'", "k: 'RAILS'", "k: 'OUTPUT'", "k: 'CURRENT'", "k: 'POWER'", "'V-CLIP'", "'I-LIMIT'", "'PROTECT'", "label: 'RAIL'", "label: 'LOAD'", "label: 'SUPPLY'", "label: 'Linear supply'", "label: 'Switch-mode supply'"],

@@ -481,7 +481,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         },
         seeing: [
           'IN THIS MODULE gives the module’s goal. Below it are seven cards, one per tool group, each with the decision it serves.',
-          'They run from Playback and editing (hear it, cut it, export it) to Analog equipment (optional).',
+          'They run from Editing (hear it, cut it, export it) to Analog (optional).',
         ],
         control: [
           'Scroll to read. NEXT › goes on to the tool shelf, where you can try each group.',
@@ -495,7 +495,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         ],
         tryThis: [
           'For each group, name a problem you would reach for it to solve.',
-          'Find the one group that exists only to verify: Meters and analysis. It changes nothing in the sound; it tells you what is there.',
+          'Find the one group that exists only to verify: Meters. It changes nothing in the sound; it tells you what is there.',
         ],
       },
     },

@@ -32,6 +32,10 @@ export type ChainUnit = {
   label: string;
   /** The teaching default, as printed under the unit. */
   setting: string;
+  /** SC-03 (owner 2026-11-15: "build waves 1 thru 3", D62): a few plain words for what the unit is
+   *  ("distortion", "loudness ceiling"), printed in the bypassed word's place while the unit is dark,
+   *  so a first look at the rack reads in words, not codes. Lit, it shows `setting` as before. */
+  plain?: string;
   /** Knob pointer positions 0..1 (the default settings on this unit's
    *  teaching range), left to right. */
   knobs: number[];
@@ -247,7 +251,7 @@ export function ChainRack({
               {u.label}
             </Text>
             <Text style={[st.setting, showGr && st.grLive]}>
-              {showGr ? (grv >= 0.05 ? `GR −${grv.toFixed(1)} dB` : 'GR 0.0 dB') : on ? u.setting : 'bypassed'}
+              {showGr ? (grv >= 0.05 ? `GR −${grv.toFixed(1)} dB` : 'GR 0.0 dB') : on ? u.setting : (u.plain ?? 'bypassed')}
             </Text>
           </View>
         );

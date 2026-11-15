@@ -49,7 +49,7 @@ import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from '
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
 import { goalsScopeOf, setGoalsLeft, usePageMemory } from './pageMemory';
-import { venueSentence, leftWord } from './fixHelpers';
+import { venueSentence, leftWord, CONSOLE_STEPS, consoleStepHeader, openConsoleStep } from './fixHelpers';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
 
@@ -529,6 +529,12 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   // fold under MORE CHANNELS. Nothing is removed.
   const core = ui && !ui.channels && capstone.id === 'monitors' ? MONITOR_CORE_CHANNELS : null;
   const [moreChannels, setMoreChannels] = useState(false);
+  // SS-10 (owner 2026-11-15: "build waves 1 thru 3"): capstones 7, 8 and 10
+  // open the desk one step at a time (fixHelpers CONSOLE_STEPS); the first
+  // unmet step is open, the others are one-line headers.
+  const steps = ui ? CONSOLE_STEPS[capstone.id] : undefined;
+  const [pickedStep, setPickedStep] = useState<number | null>(null);
+  const openStep = steps ? openConsoleStep(steps, grade.met, pickedStep) : -1;
   const buildReqs = capstone.requirements.filter((r) => r.kind === 'build');
   const routeReqs = capstone.requirements.filter((r) => r.kind === 'route');
   const routeMet = routeReqs.filter((r) => grade.met.includes(r.id)).length;
@@ -543,7 +549,33 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
           <View style={{ gap: 10 }}>
             <Body>▲/▼ step a level; PRE lights the pre-fader tap. Check the buses below for who hears what — worked out from your settings. The plot above stays live.</Body>
             {core ? <Body>Start with WEDGE 1 · SINGER: tap ▲ on Lead vocal, then give each musician their own instrument.</Body> : null}
-            <ConsolePanel cs={cs} onChange={setCs} channels={core ?? ui.channels} columns={ui.columns} sendNames={SEND_NAMES} />
+            {steps ? (
+              steps.map((st, i) => {
+                const isOpen = i === openStep;
+                return (
+                  <View key={st.label} style={{ gap: 10 }}>
+                    <Pressable onPress={() => setPickedStep(i)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: isOpen }} accessibilityLabel={`${consoleStepHeader(st, grade.met, isOpen)}. ${isOpen ? 'Open' : 'Tap to open'}`}>
+                      <Text style={styles.moreText}>{consoleStepHeader(st, grade.met, isOpen)}</Text>
+                    </Pressable>
+                    {isOpen ? (
+                      <>
+                        {st.columns.length ? <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={st.columns as readonly ConsoleColumn[]} sendNames={SEND_NAMES} /> : null}
+                        {st.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
+                        {st.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
+                        {ui.matrices?.filter((m) => st.matrices?.includes(m.id)).map((m) => (
+                          <MatrixStrip key={m.id} cs={cs} onChange={setCs} matrixId={m.id} sources={m.sources} />
+                        ))}
+                        {hearsShown(ui.hears, b.system, b.walk).filter((h) => st.hears.includes(h.title)).map((h) => (
+                          <BusHears key={h.title} title={h.title} list={hearsList(cs, h)} />
+                        ))}
+                      </>
+                    ) : null}
+                  </View>
+                );
+              })
+            ) : (
+              <ConsolePanel cs={cs} onChange={setCs} channels={core ?? ui.channels} columns={ui.columns} sendNames={SEND_NAMES} />
+            )}
             {core ? (
               <>
                 <Pressable onPress={() => setMoreChannels((o) => !o)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: moreChannels }} accessibilityLabel={moreChannels ? 'Hide the other channels' : 'Show the other channels: snare, overheads, backing vox, announce and playback'}>
@@ -552,12 +584,12 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
                 {moreChannels ? <ConsolePanel cs={cs} onChange={setCs} channels={cs.channels.map((c) => c.id).filter((id) => !core.includes(id))} columns={ui.columns} sendNames={SEND_NAMES} /> : null}
               </>
             ) : null}
-            {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
-            {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
-            {ui.matrices?.map((m) => (
+            {!steps && ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
+            {!steps && ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
+            {steps ? null : ui.matrices?.map((m) => (
               <MatrixStrip key={m.id} cs={cs} onChange={setCs} matrixId={m.id} sources={m.sources} />
             ))}
-            {hearsShown(ui.hears, b.system, b.walk).map((h) => (
+            {steps ? null : hearsShown(ui.hears, b.system, b.walk).map((h) => (
               <BusHears key={h.title} title={h.title} list={hearsList(cs, h)} />
             ))}
             {routeReqs.length ? (

@@ -435,7 +435,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a horn’s sound leave the instrument?', options: ['From the bell, pointing back', 'From the whole coil at once', 'From the valves, forward'], after: 'Now STEP through (or PLAY ONCE) and follow the sound from the lips to the room.' },
+  sound: { prompt: 'Before you step through: where does a horn’s sound leave the instrument?', options: ['From the bell, pointing back', 'From the whole coil at once', 'From the valves, forward'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and follow the sound from the lips to the room.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from behind the bell to in front of the player. What changes?', options: ['More edge and level swings', 'More of the room, softer and blended', 'It depends on this horn and room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'A side-fill sits on the floor behind the horn section. Where will a cardioid behind the horn, aimed toward the bell, reject it best?', options: ['Straight behind the mic', 'Off to the mic’s side', 'In front of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

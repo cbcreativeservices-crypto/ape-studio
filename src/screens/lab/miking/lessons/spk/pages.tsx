@@ -188,7 +188,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
                 if (p) pick(p.id);
               },
               format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
-              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
             },
             parts.length,
             parts.findIndex((p) => p.id === livePart),
@@ -252,7 +252,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
               setLView(p.view);
             },
             format: () => (lp ? lp.title : 'step through the parts'),
-            formatShort: () => (lp ? lp.title.split(' ')[0].slice(0, 9) : 'STEP'),
+            formatShort: () => (lp ? lp.title.split(' ')[0].slice(0, 9) : 'PICK'),
           },
           {
             kind: 'options',
@@ -387,7 +387,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
             {
               kind: 'fader',
               id: 'step',
-              label: 'STEP',
+              label: 'EVENT',
               value: (shown - 1) / Math.max(1, n - 1),
               onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
               format: () => `${stage.title.toLowerCase()}`,
@@ -398,7 +398,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
             (i) => `${i + 1} · ${S.stages[i].title}`,
             (i) => goTo(i + 1),
           ),
-          { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+          { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
           {
             kind: 'options',
             id: 'back',
@@ -417,7 +417,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`Side view · the 1 × 12 cut open · ${back} back`} prompt="STEP through the four events, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking={`Side view · the 1 × 12 cut open · ${back} back`} prompt="Go EVENT by EVENT through the four events, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
           </Card>
@@ -623,7 +623,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
                 if (it) pickChain(it.id);
               },
               format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-              formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
+              formatShort: () => (cs ? cs.short.slice(0, 9) : 'PICK'),
             },
             chainItems.length,
             chainItems.findIndex((q) => q.id === chainSel),
@@ -682,7 +682,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
                 if (it) setSel(it.id);
               },
               format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-              formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
+              formatShort: () => (ps ? ps.short.slice(0, 9) : 'PICK'),
             },
             planItems.length,
             planItems.findIndex((q) => q.id === sel),
@@ -1001,7 +1001,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: [
-          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
+          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
           ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
         ],
         initialParam: 'piece',

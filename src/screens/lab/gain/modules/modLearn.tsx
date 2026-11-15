@@ -41,7 +41,8 @@ export function ZoneLegend() {
     <View style={styles.legend}>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#2f74ff' }]} /><Text style={styles.legendText}>TOO LOW</Text></View>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#3fae52' }]} /><Text style={styles.legendText}>HEALTHY</Text></View>
-      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>OVERLOAD</Text></View>
+      {/* GN-02 (owner 2026-11-15, D62): the key uses STATUS's words — red is HOT, then CLIP at the line. */}
+      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>HOT · CLIP</Text></View>
       {/* The grey band at a meter's foot is the stage's hiss — the noise floor
           every stage amplifies (art grading 2026-10-16: it had no key). */}
       <View style={[styles.legendItem]}>
@@ -148,13 +149,15 @@ export function InputGainModule(_p: GainModuleComponentProps) {
   useMetWhen(done);
   const params: DockParam[] = [
     {
+      // GN-02 (owner 2026-11-15, D62): one name for the control, PREAMP, as in every other module
+      // (was INPUT GAIN here). GN-01: the lane says it is the knob's gain.
       kind: 'fader',
       id: 'pre',
-      label: 'INPUT GAIN',
+      label: 'PREAMP',
       level: true,
       value: pre / 40,
       onChange: (t) => setPre(Math.round(t * 40)),
-      format: () => fmtDb(pre),
+      format: () => `${fmtDb(pre)} gain (the knob)`,
       formatShort: () => fmtG(pre),
       tint: stageTint(preNode),
     },
@@ -173,7 +176,8 @@ export function InputGainModule(_p: GainModuleComponentProps) {
         size: 'M',
         modelNote: BADGE,
         bezel: [
-          { k: 'PREAMP', v: fmtLv(preNode.level), tint: stageTint(preNode) },
+          // GN-01: the level that comes OUT, named as a level (the dock key holds the knob's gain).
+          { k: 'PREAMP LEVEL', kNarrow: 'LEVEL', v: fmtLv(preNode.level), tint: stageTint(preNode) },
           { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB`, caption: 'until clip' },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           { k: 'STATUS', ...stageStatus(preNode) },
@@ -187,9 +191,10 @@ export function InputGainModule(_p: GainModuleComponentProps) {
           strong enough to work with, but not so hot that it clips.
         </GlossaryText>
         <ZoneLegend />
+        {/* GN-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the knob and the level, named, in the
+            instruction's place (a line in, a line out). */}
         <Text style={styles.instruction}>
-          ONLY the PREAMP fader is yours on this screen — the source and output are FIXED. Raise the
-          input gain until the preamp meter sits in the healthy green without touching overload.
+          {`The knob adds gain; the level is what comes out. Here the PREAMP knob adds ${fmtDb(pre)} and the PREAMP LEVEL reads ${fmtLv(preNode.level)}. Raise it until that level sits in the healthy green, short of CLIP.`}
         </Text>
         <View style={[styles.goal, done && styles.goalDone]}>
           <Text style={[styles.goalText, done && styles.goalTextDone]}>
@@ -270,7 +275,8 @@ export function FollowModule(_p: GainModuleComponentProps) {
         modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
-          { k: 'PROC', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
+          // SH-26 (owner 2026-11-15, D62): the code spelled out where it fits (the audit: PROC was never spelled out).
+          { k: 'PROCESSOR', kNarrow: 'PROC', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           { k: 'OUTPUT', v: fmtLv(nodes[3].level), tint: stageTint(nodes[3]) },
           { k: 'STATUS', ...stageStatus(nodes[3]) },
         ],

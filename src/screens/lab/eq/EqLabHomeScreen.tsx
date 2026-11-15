@@ -114,9 +114,11 @@ export function EqLabHomeScreen() {
             </View>
           ))}
         </View>
+        {/* EQL-05 (owner 2026-11-15: "build waves 1 thru 3", D62): the top line says
+            where to start and what to do first, in the space of the old one. */}
         <Text style={styles.body}>
-          Start by seeing the real frequency content of the room you’re in — then learn to shape
-          it. Modules build in a deliberate order: each one introduces only what the next needs.
+          Start at module 1 and take the modules in order; each one is short. New to EQ? Try the
+          one-band Equalizer lab first (EQUALIZER EFFECT LAB, under RELATED TOOLS).
         </Text>
 
         {EQ_SECTION_META.map((sec) => {

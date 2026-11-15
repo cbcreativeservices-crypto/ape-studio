@@ -33,7 +33,8 @@ export const M7_LOUDNESS: EarModule = {
   title: 'Loudness Recognition',
   blurb: 'The same sound at two levels — which is louder, and by about how much?',
   phones: 'any',
-  playbackNote: 'Relative levels survive any transducer.',
+  // Plain words (owner 2026-11-15, D62 ET-03): was "any transducer".
+  playbackNote: 'Level differences come through on any speaker or headphones.',
   // NEW COPY
   listenFor: 'Trust the first impression — A or B jumps out. Then judge the size: 6 dB is "obviously", 1 dB is "I think".',
   levels: 4,
@@ -234,7 +235,7 @@ export const M14_CLIPPING: EarModule = {
   // NEW COPY
   listenFor: 'Clipping adds crunch or buzz on the loudest hits only — the softer material between hits stays clean.',
   levels: 4,
-  levelNames: ['Clean vs severe', 'Clean / moderate / severe', 'All four severities', 'ABX on mild'],
+  levelNames: ['Clean vs severe', 'Clean / moderate / severe', 'All four severities', 'Mild only: which one is X?'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     if (level === 1) {

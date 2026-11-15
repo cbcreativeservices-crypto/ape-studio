@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does each panelist’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then turn a panelist and open more mics.' },
+  sound: { prompt: 'Before you step through: where does each panelist’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then turn a panelist and open more mics.' },
   microphone: { prompt: 'Before you move anything: is every boundary mic an omni?', options: ['Yes', 'No', 'Only on a table'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the lectern gooseneck moves from 35 cm to 25 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this presenter'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a supercardioid lectern mic reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

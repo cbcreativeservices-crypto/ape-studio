@@ -534,7 +534,9 @@ describe('C3 F-2: first-visit bezel captions fit their cell at 390 and 320 (neve
     ['src/screens/lab/digital/modules/modQuant.tsx', ['step count', 'over hiss']],
     ['src/screens/lab/gain/modules/modLearn.tsx', ['until clip']],
     ['src/screens/lab/amp/AmpRig.tsx', ['power in', 'wasted', 'useful %']],
-    ['src/screens/lab/amp/modules/mod4Classes.tsx', ['at rest', 'clean?']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AMPL-02): module 4's IDLE
+    // cell ('at rest') left the bezel; IDLE CURRENT stays in the card under the display.
+    ['src/screens/lab/amp/modules/mod4Classes.tsx', ['clean?']],
     ['src/screens/lab/SignalChainLabScreen.tsx', ['sound in']],
   ];
   const CUT = ['whole program', 'loud-soft span', 'top in between', 'times clipped', 'average level', 'peak vs avg', 'off-center', 'over the top?', 'highest yet',

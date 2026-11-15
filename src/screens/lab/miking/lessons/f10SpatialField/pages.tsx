@@ -1042,7 +1042,7 @@ function F10Placement(p: PageProps) {
           { k: ex === 2 ? '▸ FRONT' : 'FRONT', v: 'SCENE FRONT', tint: ex === 2 ? AMBER : undefined, flex: 1.2 },
           { k: ex >= 3 ? '▸ FOR' : 'FOR', v: 'HEADPHONES', tint: ex >= 3 ? AMBER : undefined, flex: 1.1 },
         ],
-        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
         initialParam: 'piece',
       },
       well: (

@@ -542,7 +542,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what makes most of a harp’s sound?', options: ['The string itself', 'The soundboard', 'The pillar'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch the board.' },
+  sound: { prompt: 'Before you step through: what makes most of a harp’s sound?', options: ['The string itself', 'The soundboard', 'The pillar'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch the board.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from 30 cm to 60 cm from the soundboard. What changes?', options: ['More boom', 'More of the whole harp', 'It depends on this harp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid, facing the harp, reject the harpist’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

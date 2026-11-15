@@ -2011,6 +2011,7 @@ export function DualDomainView({
   running,
   frozen = false,
   scale = 1,
+  showRoom = true,
 }: {
   width: number;
   visHz: number;
@@ -2026,6 +2027,10 @@ export function DualDomainView({
    *  laid out at width ÷ scale and painted through a Skia Group scaled by
    *  it, so FULL SCREEN zooms the drawing crisply; overlay labels move with it. */
   scale?: number;
+  /** false = THE MIC'S OUTPUT alone (the recording view), before the learner
+   *  taps for the room (owner 2026-11-15, "build waves 1 thru 3", D62 item
+   *  FO-01: the answer shows in two steps). The physics is unchanged. */
+  showRoom?: boolean;
 }) {
   // Phase clock: continuous through the 110/220 chip switches.
   const phase = usePhaseClock(running, visHz);
@@ -2252,6 +2257,8 @@ export function DualDomainView({
 
   return (
     <View style={{ gap: 3 * k }}>
+      {showRoom ? (
+      <>
       <View style={ddStyles.labelRow}>
         <OText style={twStyles.winLabel}>THE ROOM — CAMERA FLASH</OText>
         <OText style={[ddStyles.measured, { color: '#7fd4ff' }]}>MEASURED: every point · one instant</OText>
@@ -2363,6 +2370,8 @@ export function DualDomainView({
           </View>
         </View>
       </View>
+      </>
+      ) : null}
       <View style={ddStyles.labelRow}>
         <OText style={twStyles.winLabel}>THE MIC&#8217;S OUTPUT</OText>
         <OText style={[ddStyles.measured, { color: WAVE }]}>MEASURED: at the mic only · over time</OText>

@@ -47,14 +47,15 @@ import { PatchTray, PowerTray, type PowerEvent } from '../trays';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { armTake, closeTake, takeOpen, writeChunk } from '../booth/takeStore';
-import { load } from '../model/djDeck';
-import { BUILT_PLUGS, POWERED, deviceLive, dbStr, speakerFeed, trimDb, trimPos, xfGainFor, type Booth, type ChannelId, type DeviceId, type XfAssign } from '../model/djModel';
+import { load, seek } from '../model/djDeck';
+import { BUILT_PLUGS, POWERED, deckPos, deviceLive, dbStr, speakerFeed, trimDb, trimPos, xfGainFor, type Booth, type ChannelId, type DeviceId, type XfAssign } from '../model/djModel';
 import { evOf, micGainPos, recGainDb, recGainPos, withEv, withMic, withRec } from '../model/djEvent';
 import { DEBRIEF_PARTS, FAULTS, TRANSITION_FRESH, allFixed, debriefOptions, hintsFor, plant, scenarioFor, transitionStep, type DebriefPart, type FaultId, type Scenario, type TransitionState } from '../model/djCapstone';
 import { DJ_COVERS, isOptionalNo } from './registry';
 import { getDjRegistry } from './registryRuntime';
 import { announce, EventListen, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceIn, withFreshEvent } from './eventShared';
-import { holdDoneUnlessFresh } from './eventGuards';
+import { holdDoneUnlessFresh, repeatPhrasePos } from './eventGuards';
+import { barSec, trackSeconds } from '../engine/djMusic';
 import { trimStillHot } from './fixGuards';
 import { PEAK_RED } from './shared';
 import type { BoothRender } from '../engine/djRender';
@@ -417,6 +418,23 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
     },
     [],
   );
+  // DJ-08 (owner 2026-11-15: "build waves 1 thru 3"): a playing deck near its
+  // end jumps back whole phrases, so the on-air track never runs out while
+  // the learner fixes the faults and the transition can always be tried.
+  useEffect(() => {
+    const b = getBooth();
+    const t = boothNow();
+    for (const id of ['A', 'B'] as const) {
+      const d = b.decks[id];
+      if (!d.playing || !d.track) continue;
+      const tk = d.track;
+      if (repeatPhrasePos(deckPos(d, t), trackSeconds(tk) - 1, barSec(tk)) == null) continue;
+      updateBooth((x, tt) => {
+        const p = repeatPhrasePos(deckPos(x.decks[id], tt), trackSeconds(tk) - 1, barSec(tk));
+        return p == null ? x : seek(x, tt, id, p);
+      });
+    }
+  }, [last]);
   const allOn = POWERED.every((d) => deviceLive(booth, d));
   // the power goal re-arms once everything is OFF again (learning #4)
   if (POWERED.every((d) => !booth.power[d])) thumped.current = false;
@@ -516,8 +534,9 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
             ],
           },
           { kind: 'group', id: 'mixer', label: 'MIXER', valueLabel: booth.ch[2].input, valueA11y: `channel 1 input ${booth.ch[1].input}, channel 2 input ${booth.ch[2].input}`, render: () => <MixerTray /> },
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: decksValue(booth), render: () => <DecksTray tr={tr} /> },
+          // SH-35 (owner 2026-11-15: "build waves 1 thru 3"): DECKS sits just before ■ STOP, as on every other screen.
           { kind: 'group', id: 'event', label: 'EVENT', valueLabel: doorsOpen ? 'LIVE' : 'SET UP', render: () => <EventTray lead={audio.leadSec} onPower={onPower} lastPower={lastPower} view={view} setView={setView} onNew={() => restart(1 + Math.floor(Math.random() * 9999))} onReplay={() => restart(seed)} seed={seed} doorsOpen={doorsOpen} onDoors={openDoors} /> },
+          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: decksValue(booth), render: () => <DecksTray tr={tr} /> },
           stopKey(tr),
         ],
         initialParam: 'fader',
@@ -536,7 +555,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         {trans.current.failed ? <Note tone="try">{`${trans.current.failed}${faultLive ? ' — fix the event’s fault first.' : ''} Bring CH 1 back up and CH 2 down to try again.`}</Note> : null}
       </Step>
       <Step n={3}>
-        <P>The board is the method: every card’s meter is a tap of the real signal. A dark card after a live one is where to look. The tempos are matched for you, with key lock on — the lesson here is the system.</P>
+        <P>The board is the method: every card’s meter is a tap of the real signal. A dark card after a live one is where to look. The tempos are matched for you, with key lock on, and a playing track repeats its last phrases instead of running out — the lesson here is the system.</P>
         <Note tone="safety">Real faults at real events: turn the MASTER down before you touch an output cable, never remove a safety ground, and keep your ears protected while you troubleshoot. A hum here is 60 Hz from the power line (50 Hz in many countries).</Note>
       </Step>
       <Step n={4}>

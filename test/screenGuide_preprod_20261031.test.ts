@@ -18,6 +18,8 @@
  * The shared checks live in test/_productionScreenGuides.ts; this file is the
  * lab's own experiments.
  */
+// owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-71): gap findings are
+// asked as questions ("… Is that intended?"), so the titles pinned here carry the question.
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
@@ -51,12 +53,12 @@ runProductionGuideSuite({
     {
       guide: 'define', at: 0,
       steps: [
-        { set: {}, stage: 'define', in: ['Nobody can end this project'] },
-        { set: { 'define.approver': 'Sam Lee' }, stage: 'define', out: ['Nobody can end this project', 'More than one person has the final yes'] },
+        { set: {}, stage: 'define', in: ['Nobody can end this project. Is that intended?'] },
+        { set: { 'define.approver': 'Sam Lee' }, stage: 'define', out: ['Nobody can end this project. Is that intended?', 'More than one person has the final yes'] },
         { set: { 'define.approver': 'Sam Lee and Alex Ray' }, stage: 'define', in: ['More than one person has the final yes'] },
       ],
       labels: [['define', 'approver']],
-      says: ['Nobody can end this project', 'More than one person has the final yes'],
+      says: ['Nobody can end this project. Is that intended?', 'More than one person has the final yes'],
     },
     {
       guide: 'define', at: 1,
@@ -67,8 +69,8 @@ runProductionGuideSuite({
     {
       guide: 'define', at: 2,
       steps: [
-        { set: { 'define.platform': ['livestream'] }, stage: 'define', in: ['A livestream destination with no livestream feed in scope'] },
-        { set: { 'define.services': ['livestream_feed'] }, stage: 'define', out: ['A livestream destination with no livestream feed in scope'] },
+        { set: { 'define.platform': ['livestream'] }, stage: 'define', in: ['A livestream destination with no livestream feed in scope. Is that intended?'] },
+        { set: { 'define.services': ['livestream_feed'] }, stage: 'define', out: ['A livestream destination with no livestream feed in scope. Is that intended?'] },
       ],
       labels: [['define', 'platform'], ['define', 'services']],
       options: [['define', 'platform', 'livestream'], ['define', 'services', 'livestream_feed']],
@@ -76,12 +78,12 @@ runProductionGuideSuite({
     {
       guide: 'deliver', at: 0,
       steps: [
-        { set: {}, stage: 'deliver', in: ['No deliverables are defined', 'There is no archival master anywhere in the plan'] },
-        { set: { 'deliver.deliverable_list': [{ item_name: 'Album master', item_type: 'mastered_program' }] }, stage: 'deliver', out: ['No deliverables are defined'], in: ['There is no archival master anywhere in the plan'] },
+        { set: {}, stage: 'deliver', in: ['No deliverables are defined. Is that intended?', 'There is no archival master anywhere in the plan'] },
+        { set: { 'deliver.deliverable_list': [{ item_name: 'Album master', item_type: 'mastered_program' }] }, stage: 'deliver', out: ['No deliverables are defined. Is that intended?'], in: ['There is no archival master anywhere in the plan'] },
       ],
       labels: [['deliver', 'deliverable_list']],
       options: [['deliver', 'deliverable_list', 'mastered_program', 'item_type']],
-      says: ['No deliverables are defined', 'There is no archival master anywhere in the plan'],
+      says: ['No deliverables are defined. Is that intended?', 'There is no archival master anywhere in the plan'],
     },
     {
       guide: 'deliver', at: 1,
@@ -98,8 +100,8 @@ runProductionGuideSuite({
     {
       guide: 'deliver', at: 2,
       steps: [
-        { set: { 'deliver.silence_means': 'undecided' }, stage: 'deliver', in: ['Nothing says what happens when approval is late'] },
-        { set: { 'deliver.silence_means': 'escalate' }, stage: 'deliver', out: ['Nothing says what happens when approval is late'] },
+        { set: { 'deliver.silence_means': 'undecided' }, stage: 'deliver', in: ['Nothing says what happens when approval is late. Is that intended?'] },
+        { set: { 'deliver.silence_means': 'escalate' }, stage: 'deliver', out: ['Nothing says what happens when approval is late. Is that intended?'] },
       ],
       labels: [['deliver', 'silence_means']],
       options: [['deliver', 'silence_means', 'undecided']],
@@ -107,11 +109,11 @@ runProductionGuideSuite({
     {
       guide: 'people', at: 0,
       steps: [
-        { set: { 'people.wireless_channels': 8 }, stage: 'people', in: ['Wireless channels with nobody coordinating them'] },
-        { set: { 'people.rf_coordinator': 'Jo Park' }, stage: 'people', out: ['Wireless channels with nobody coordinating them'] },
+        { set: { 'people.wireless_channels': 8 }, stage: 'people', in: ['Wireless channels with nobody coordinating them. Is that intended?'] },
+        { set: { 'people.rf_coordinator': 'Jo Park' }, stage: 'people', out: ['Wireless channels with nobody coordinating them. Is that intended?'] },
       ],
       labels: [['people', 'wireless_channels'], ['people', 'rf_coordinator']],
-      says: ['Wireless channels with nobody coordinating them', '8'],
+      says: ['Wireless channels with nobody coordinating them. Is that intended?', '8'],
     },
     {
       guide: 'people', at: 1,
@@ -153,7 +155,7 @@ runProductionGuideSuite({
         {
           set: { 'schedule.budget_total': 5000, 'schedule.budget_lines': [{ bl_category: 'personnel', bl_amount: 4000 }, { bl_category: 'venue', bl_amount: 1500 }] },
           stage: 'schedule',
-          in: ['The lines add up to more than the budget', 'No contingency in the budget'],
+          in: ['The lines add up to more than the budget', 'No contingency in the budget. Is that intended?'],
         },
         // Why the item says "no Contingency line": file the 1500 as
         // Contingency and only the over-budget finding is left (5500 > 5000).
@@ -161,12 +163,12 @@ runProductionGuideSuite({
           set: { 'schedule.budget_lines': [{ bl_category: 'personnel', bl_amount: 4000 }, { bl_category: 'contingency', bl_amount: 1500 }] },
           stage: 'schedule',
           in: ['The lines add up to more than the budget'],
-          out: ['No contingency in the budget'],
+          out: ['No contingency in the budget. Is that intended?'],
         },
       ],
       labels: [['schedule', 'budget_total']],
       options: [['schedule', 'budget_lines', 'contingency', 'bl_category']],
-      says: ['5000', '4000', '1500', 'no Contingency line', 'The lines add up to more than the budget', 'No contingency in the budget'],
+      says: ['5000', '4000', '1500', 'no Contingency line', 'The lines add up to more than the budget', 'No contingency in the budget. Is that intended?'],
     },
     {
       guide: 'technical', at: 0,
@@ -209,11 +211,11 @@ runProductionGuideSuite({
     {
       guide: 'readiness', at: 1,
       steps: [
-        { set: {}, stage: 'readiness', in: ['Nobody is named to decide whether the production continues'] },
-        { set: { 'readiness.decision_authority': 'Sam Lee' }, stage: 'readiness', out: ['Nobody is named to decide whether the production continues'] },
+        { set: {}, stage: 'readiness', in: ['Nobody is named to decide whether the production continues. Is that intended?'] },
+        { set: { 'readiness.decision_authority': 'Sam Lee' }, stage: 'readiness', out: ['Nobody is named to decide whether the production continues. Is that intended?'] },
       ],
       labels: [['readiness', 'decision_authority']],
-      says: ['Nobody is named to decide whether the production continues'],
+      says: ['Nobody is named to decide whether the production continues. Is that intended?'],
     },
   ],
   activityExperiments: [
@@ -366,7 +368,7 @@ describe('Production guides: the challenged claims, checked against the screens 
     assert.match(S, /findingBlocker: \{ borderLeftColor: colors\.red \}/);
     const st = g.stages.define as { seeing: string[]; control: string[] };
     assert.ok(st.seeing.join(' ').includes('amber flagged or optional left blank') && st.seeing.join(' ').includes('dark gray not applicable'));
-    assert.ok(st.control.join(' ').includes('WHAT THIS PLAN IS STILL MISSING (red edge: a blocker; amber: flagged)'));
+    assert.ok(st.control.join(' ').includes('OPEN QUESTIONS IN THIS PLAN (red edge: a blocker; amber: flagged)'));
   });
   it('SCORE: each attention finding costs 0.02 (2 points), capped at 0.2 and at 40% of what is earned; a blocker caps the score at 99', () => {
     const R = code('src/features/production/readiness.ts');

@@ -116,8 +116,11 @@ describe('3. each guide quotes its screen’s real names', () => {
       // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
       'is a model', 'DRUM-HIT MODEL',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Drive', 'RLS', 'Attack', 'Lookahead', 'True-Peak', 'CLICK 120', 'CEILING', 'dBTP'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'CEILING', 'True-Peak'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item LIM-06): the
+    // off-screen controls (Drive, Attack, Lookahead, True-Peak, …) are now ONE last row,
+    // "On real limiters (for later)", so the guides name that row instead of each entry.
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'On real limiters (for later)', 'Drive', 'RLS', 'Lookahead', 'CLICK 120', 'CEILING', 'dBTP'],
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'CEILING', 'COMMON MISTAKES'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(GUIDES).sort()));
   for (const [id, names] of Object.entries(NAMES)) {

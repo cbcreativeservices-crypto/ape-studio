@@ -36,6 +36,7 @@ import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { GoalCheck } from '../moduleGoal';
 import { CollapsibleSection } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
+import { useFirstLabVisit } from '../../rack/learnFirstStore';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSpectral, type VizSpectralModule } from '../skiaGate';
 import {
@@ -308,9 +309,12 @@ export function SpectrumModule(p: MeterModuleProps) {
         onGuide: () => p.help('spectrum_read'),
         bezel: [
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
-          { k: 'PEAK', v: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
-          { k: 'LEVEL', v: `${(Math.abs(scan.peakDb) < 0.05 ? 0 : scan.peakDb).toFixed(1)} dB rel`, helpKey: 'spectrum_read' },
-          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read', caption: 'top vs low' },
+          // MT-01: PEAK too ('1.7 kHz' was a hair wider than its cell at 390): number over unit, key kept.
+          { k: 'PEAK', v: fmtHz(scan.peakF).split(' ')[0], sub: fmtHz(scan.peakF).split(' ')[1], vA11y: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
+          // MT-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the number on the value line, the unit on
+          // the sub line, so LEVEL and TILT keep their names at phone width (D36 dropped them).
+          { k: 'LEVEL', v: (Math.abs(scan.peakDb) < 0.05 ? 0 : scan.peakDb).toFixed(1), sub: 'dB rel', helpKey: 'spectrum_read' },
+          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}`, sub: '/oct', helpKey: 'spectrum_read', caption: 'top vs low' },
         ],
         render: (w, h) =>
           viz ? (
@@ -467,10 +471,12 @@ export function SpectrogramModule(p: MeterModuleProps) {
         onGuide: () => p.help('spectrogram_axes'),
         // AXES FIRST (the module's charter) — printed permanently on the bezel.
         bezel: [
-          { k: 'TIME', v: 'new → right', helpKey: 'spectrogram_axes' },
-          { k: 'FREQ', v: '↑ up', helpKey: 'spectrogram_axes' },
-          { k: 'LEVEL', v: '= color', helpKey: 'spectrogram_axes' },
-          { k: 'MODE', v: snapshot ? 'SNAP' : 'SCROLL', helpKey: 'spectrogram_axes' },
+          // MT-01 (owner 2026-11-15: "build waves 1 thru 3", D62): TIME's value is the longest, so its cell
+          // takes the room the short '↑ up' does not need, and TIME keeps its name at phone width.
+          { k: 'TIME', v: 'new → right', helpKey: 'spectrogram_axes', flex: 1.5 },
+          { k: 'FREQ', v: '↑ up', helpKey: 'spectrogram_axes', flex: 0.75 },
+          { k: 'LEVEL', v: '= color', helpKey: 'spectrogram_axes', flex: 1.05 },
+          { k: 'MODE', v: snapshot ? 'SNAP' : 'SCROLL', helpKey: 'spectrogram_axes', flex: 0.95 },
         ],
         render: (w, h) =>
           viz ? (
@@ -650,6 +656,13 @@ export function WaterfallModule(p: MeterModuleProps) {
   // Bumping this restarts the waterfall build (REPLAY, and any scene change).
   const [replay, setReplay] = useState(0);
   const [reverb, setReverb] = useState<ReverbKey>('none');
+  // MT-03 (owner 2026-11-15: "build waves 1 thru 3", D62; the waterfall scored Overwhelm 5): on the
+  // learner's FIRST visit (per device, the shared ape:intro:* first-visit list) the dock opens with
+  // only REPLAY and Q RING, the card's first step; the other four keys join after the first move.
+  // While the read is out the dock stays short; a failed read shows every key.
+  const firstVisit = useFirstLabVisit('meter-waterfall', true);
+  const [moved, setMoved] = useState(false);
+  const simpleDock = firstVisit !== false && !moved;
   const eqGain = eqGains[eqFilter] ?? 0;
   // How many OTHER bands are doing something — surfaced on the lane so a band
   // sitting at 0 dB never looks like "the EQ is off" when another is boosted.
@@ -795,7 +808,10 @@ export function WaterfallModule(p: MeterModuleProps) {
       kind: 'action',
       id: 'replay',
       label: 'REPLAY',
-      onPress: () => setReplay((n) => n + 1),
+      onPress: () => {
+        setReplay((n) => n + 1);
+        setMoved(true);
+      },
       tint: colors.green, // green key — it re-runs the build, it changes nothing
     },
     {
@@ -803,7 +819,10 @@ export function WaterfallModule(p: MeterModuleProps) {
       id: 'qring',
       label: 'Q RING',
       value: qRing,
-      onToggle: () => setQRing((v) => !v),
+      onToggle: () => {
+        setQRing((v) => !v);
+        setMoved(true);
+      },
       helpKey: 'eq_ridge',
     },
   ];
@@ -811,7 +830,7 @@ export function WaterfallModule(p: MeterModuleProps) {
   return (
     <RackUnit
       initialParam="damping"
-      params={params}
+      params={simpleDock ? params.filter((q) => q.id === 'replay' || q.id === 'qring') : params}
       onHelp={p.help}
       stage={{
         size: 'L', // the flagship — the collapsing range IS the module

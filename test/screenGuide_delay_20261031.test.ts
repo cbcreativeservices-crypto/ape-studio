@@ -158,7 +158,9 @@ describe('3. each guide quotes its screen’s real names', () => {
     // Labels built from templates, so the literal is not in the source.
     assert.match(CONFIGS, /const srcClick = \(bpm: number\) => \(\{ label: `CLICK \$\{bpm\}`/);
     assert.match(CONFIGS, /const srcSine = \(hz: number\) => \(\{ label: `SINE \$\{hz\} Hz`/);
-    assert.match(DELAY, /sources: \[srcClick\(90\), SRC_PINK, srcSine\(220\)\]/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DL-02): one tempo, the CLICK at 120 BPM.
+    assert.match(CONFIGS, /const DELAY_BPM = 120;/);
+    assert.match(DELAY, /sources: \[srcClick\(DELAY_BPM\), SRC_PINK, srcSine\(220\)\]/);
     assert.match(DELAY, /choices: \[0, 0\.25, 0\.5, 0\.75\]\.map\(\(f\) => \(\{ label: `\$\{f \* 100\}%`, value: f \}\)\)/);
     assert.match(DELAY, /fader: \{ min: 80, max: 500, log: true, snap: Math\.round, format: \(v\) => `\$\{Math\.round\(v\)\} ms` \}/);
     assert.match(DELAY, /\{ label: '25%', value: 0\.25 \},\s*\{ label: '50%', value: 0\.5 \},/);
@@ -166,7 +168,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(ex, /TIME fader, 80 to 500 ms/);
     assert.match(ex, /FDBK \(FEEDBACK: 0%, 25%, 50% or 75%\)/); // the dock abbreviation spelled out once, with its four choices
     assert.match(ex, /MIX \(25%, 50%, 100% WET\)/);
-    assert.match(ex, /SOURCE \(CLICK 90, PINK NOISE, SINE 220 Hz\)/);
+    assert.match(ex, /SOURCE \(CLICK 120, PINK NOISE, SINE 220 Hz\)/);
     // dock keys in order: the TIME fader, FDBK, MIX, COLOR (ping-pong + damping folded), SOURCE
     assert.match(DELAY, /label: 'DELAY TIME', short: 'TIME'/);
     assert.match(DELAY, /label: 'FEEDBACK', short: 'FDBK'/);
@@ -184,9 +186,10 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(VIZ, /let amp = mix;\s*for \(let n = 1; n <= 12 && amp > 0\.02 && n \* timeMs <= spanMs; n\+\+\) \{\s*out\.push\(\{ ms: n \* timeMs, amp, side: pingpong \? \(n % 2 === 1 \? 'L' : 'R'\) : 'C' \}\);\s*amp \*= feedback;/);
     assert.match(VIZ, /`\$\{Math\.round\(spanMs\)\} ms`/); // the "3250 ms" axis end
     assert.match(DELAY, /<EchoTimelineGraph timeMs=\{v\[P\.timeMs\]\} feedback=\{v\[P\.delayFeedback\]\} mix=\{v\[P\.delayMix\]\} pingpong=\{v\[P\.pingpong\] > 0\.5\} \/>/);
-    // the defaults the steps start from: TIME 375, FDBK 50 %, MIX 50 %, ping-pong off
-    assert.match(DELAY, /initial: 375,/);
-    assert.match(DELAY, /paramId: P\.delayFeedback[\s\S]*?initial: 0\.5,/);
+    // the defaults the steps start from: TIME 250, FDBK 0 %, MIX 50 %, ping-pong off
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DL-01 and DL-02): FDBK opens at 0 %, TIME at 250 ms (an eighth at 120 BPM).
+    assert.match(DELAY, /initial: 250,/);
+    assert.match(DELAY, /paramId: P\.delayFeedback[\s\S]*?initial: 0,/);
     assert.match(DELAY, /paramId: P\.delayMix[\s\S]*?initial: 0\.5,/);
     assert.match(DELAY, /paramId: P\.pingpong[\s\S]*?initial: 0,/);
   });
@@ -212,16 +215,20 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
   });
   it('EXPLORE + LEARN: TIME 500 ms → the caption names a quarter-note at 120 BPM (FDBK under 75%)', () => {
     // A BPM only from TIME 250 ms up (≤ 240 BPM); slapback / short TIMEs name no tempo.
-    assert.match(DELAY, /\(v\[P\.delayFeedback\] >= 0\.75 \? 'High feedback — a long trail; runaway starts near 100%\.'\s*: v\[P\.timeMs\] <= 150 \? 'Slapback range[^']*not tied to the tempo\.'\s*: v\[P\.timeMs\] < 250 \? 'A short echo[^']*'\s*: `That spacing = a quarter-note at \$\{Math\.round\(60000 \/ v\[P\.timeMs\]\)\} BPM/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DL-02): the tempo line moved into delayTempoPhrase,
+    // which names the CLICK's own note values at 120 BPM and keeps the quarter-note law for every other TIME.
+    assert.match(DELAY, /\(v\[P\.delayFeedback\] >= 0\.75 \? 'High feedback — a long trail; runaway starts near 100%\.'\s*: v\[P\.timeMs\] <= 150 \? 'Slapback range[^']*not tied to the tempo\.'\s*: v\[P\.timeMs\] < 250 \? 'A short echo[^']*'\s*: delayTempoPhrase\(v\[P\.timeMs\]\)\)/);
+    assert.match(CONFIGS, /const bpm = Math\.round\(60000 \/ timeMs\);\s*return bpm === DELAY_BPM\s*\? `That spacing = a quarter-note at \$\{bpm\} BPM, the CLICK’s tempo: each repeat lands on the next click\.`\s*: `That spacing = a quarter-note at \$\{bpm\} BPM/);
     assert.ok(60000 / 250 <= 240 && 60000 / 249 > 240, 'the 250 ms cut keeps every named BPM at 240 or under');
     assert.equal(Math.round(60000 / 500), 120);
     assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[0], /slide TIME to the top: 500 ms[\s\S]*quarter-note at 120 BPM \(60,000 ÷ 500\)/);
-    assert.match(DELAY_SCREEN_GUIDES.learn.tryThis[0], /slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DL-03): LEARN puts the formula last, so its BPM step is TRY THIS 2.
+    assert.match(DELAY_SCREEN_GUIDES.learn.tryThis[1], /slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM/);
     // At FDBK 75% the caption swaps the BPM for "a long trail", and the
     // rack stays mounted across tabs (LabShell), so FDBK 75% from EXPLORE
     // TRY THIS 2 carries into LEARN / CHECK: every BPM step names the condition.
     assert.match(code('src/screens/lab/LabShell.tsx'), /<View style=\{mode === 'explore' \? styles\.rackFill : styles\.rackHidden\}/);
-    for (const t of [DELAY_SCREEN_GUIDES.explore.tryThis[0], DELAY_SCREEN_GUIDES.learn.tryThis[0], DELAY_SCREEN_GUIDES.check.tryThis[0]]) {
+    for (const t of [DELAY_SCREEN_GUIDES.explore.tryThis[0], DELAY_SCREEN_GUIDES.learn.tryThis[1], DELAY_SCREEN_GUIDES.check.tryThis[0]]) {
       assert.match(t, /with FDBK under 75%/i, 'a BPM step without the FDBK condition: ' + t.slice(0, 50));
       assert.doesNotMatch(t, /for any TIME/);
     }
@@ -237,15 +244,16 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.doesNotMatch(all, /keep their spacing|how long the trail lasts/i);
     // damping: the answer ("sit back behind the source") is not stated
     assert.doesNotMatch(all, /sit (back )?behind|where they sit/i);
-    // the new line tests the same law on a different note: 375 ms → 160 BPM (the TIME default, in range)
-    assert.equal(Math.round(60000 / 375), 160);
-    assert.ok(375 >= 80 && 375 <= 500 && 375 >= 250, '375 ms is on the fader and gets a BPM caption');
-    assert.match(ck.tryThis[0], /set TIME to 375 ms\. The caption under DESIGNED RESPONSE names 160 BPM/);
+    // the new line tests the same law on a different note: 375 ms, a dotted eighth at the CLICK's 120 BPM.
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DL-02): one tempo, so the line no longer names 160 BPM; it names no BPM at all.
+    assert.ok(375 >= 80 && 375 <= 500 && 375 >= 250, '375 ms is on the fader and gets a tempo caption');
+    assert.match(ck.tryThis[0], /set TIME to 375 ms and read the caption under DESIGNED RESPONSE/);
+    assert.doesNotMatch(ck.tryThis[0], /BPM/);
     assert.match(ck.tryThis[1], /On LEARN, each CONTROLS entry says what that control does/);
   });
   it('LEARN: slapback — TIME 80 ms, FDBK 0% → one stem after the dry one', () => {
     assert.equal(stems(80, 0, 0.5).n, 1);
-    assert.match(DELAY_SCREEN_GUIDES.learn.tryThis[1], /TIME to 80 ms and FDBK to 0%: DESIGNED RESPONSE shows one stem/);
+    assert.match(DELAY_SCREEN_GUIDES.learn.tryThis[0], /TIME to 80 ms and FDBK to 0%: DESIGNED RESPONSE shows one stem/);
   });
   it('EXPLORE: ping-pong — L lane over R, repeat 1 left, 2 right (engine 10 cross-feed, the glass and the stems agree)', () => {
     // engine: mono input into the LEFT line, each side's repeat feeds the other
@@ -257,11 +265,11 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[2], /an L lane over an R lane, odd repeats left, even right\. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L/);
     // the letters are drawn by the DESIGNED RESPONSE stems (LAB NOTES), not the glass
     assert.match(VIZ, /pingpong \? \(\s*<SvgText key=\{`s\$\{i\}`\}[\s\S]*?\{t\.side\}/);
-    // why the order is read on the stems: at CLICK 90 (667 ms) and TIME 375 ms,
-    // click 1's first repeat (1042 ms) lands in the L lane between click 0's
-    // repeats 1 and 3 (375, 1125 ms) — the trails interleave on OUT.
-    const firstOfNext = 60000 / 90 + 375;
-    assert.ok(firstOfNext > 375 && firstOfNext < 3 * 375);
+    // why the order is read on the stems: at CLICK 120 (500 ms) and TIME 250 ms,
+    // click 1's first repeat (750 ms) lands in the L lane on click 0's
+    // repeat 3 (750 ms), between its repeats 1 and 5 — the trails interleave on OUT.
+    const firstOfNext = 60000 / 120 + 250;
+    assert.ok(firstOfNext > 250 && firstOfNext < 5 * 250);
   });
   it('EXPLORE changes: the physics the bullets state is the engine’s', () => {
     // MIX: out = dry·(1 − mix) + repeat·mix, so 100 % WET drops the dry click from OUT

@@ -270,7 +270,8 @@ export function RecognitionStrip({ rec, title }: { rec: ConnectorRecord[]; title
           </Pressable>
         ))}
       </View>
-      {selected ? <ConnectorCard rec={selected} /> : null}
+      {/* Folded like every record (CF-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+      {selected ? <ConnectorCard rec={selected} folded /> : null}
     </View>
   );
 }

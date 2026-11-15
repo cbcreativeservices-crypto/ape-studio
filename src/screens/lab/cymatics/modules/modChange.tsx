@@ -47,11 +47,12 @@ const VARIABLES: Variable[] = [
     { label: 'Low', short: 'Low', patch: { damping: 0.1 } }, { label: 'Medium', short: 'Med', patch: { damping: 0.4 } }, { label: 'High', short: 'High', patch: { damping: 0.85 } },
   ] },
 ];
-const VIEWS: { id: PlateViewMode; label: string; short: string }[] = [
-  { id: 'overlay', label: 'Sand + heat', short: 'S+H' },
-  { id: 'heat', label: 'Heat map', short: 'Heat' },
-  { id: 'nodes', label: 'Node lines', short: 'Nodes' },
-  { id: 'particles', label: 'Sand', short: 'Sand' },
+// Each choice carries a one-line meaning (owner 2026-11-15, D62 SH-76), in the Plate studio's words.
+const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
+  { id: 'overlay', label: 'Sand + heat', short: 'Sand+heat', blurb: 'Both at once: the heat map under the sand.' },
+  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves: dark = still, red = the most.' },
+  { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The still lines of the nearest mode, where sand would gather.' },
+  { id: 'particles', label: 'Sand', short: 'Sand', blurb: 'Sand on the plate, settling on the still lines.' },
 ];
 const BASE: PlateSpec = { ...DEFAULT_PLATE };
 
@@ -141,7 +142,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
     },
     { kind: 'options', id: 'a', label: 'A', valueLabel: optA.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${a}`, onSelect: (id) => setA(Number(id)), sticky: true, helpKey: 'change_one' },
     { kind: 'options', id: 'b', label: 'B', valueLabel: optB.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${b}`, onSelect: (id) => { setB(Number(id)); setBMoved(true); }, sticky: true, helpKey: 'change_one' },
-    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label })), selectedId: view, onSelect: (id) => setView(id as PlateViewMode), sticky: true, helpKey: 'display' },
+    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })), selectedId: view, onSelect: (id) => setView(id as PlateViewMode), sticky: true, helpKey: 'display' },
   ];
 
   const plate = (w: number, h: number, spec: PlateSpec, side: ReturnType<typeof useSide>) =>
@@ -149,7 +150,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       <viz.PlateView width={w} height={h} spec={spec} grid={side.grid} N={N} strength={side.res.strength} amplitude={0.8} view={view} running={focused} slowMo={false} particleCount={1100} particleSize={0.4} friction={0.4} resetToken={0} sectionY={0.5} dragTarget={null} />
     ) : (
       <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={P.caption}>Update the app to see this plate.</Text>
+        <Text style={P.caption}>This plate can’t be drawn on this device.</Text>
       </View>
     );
 

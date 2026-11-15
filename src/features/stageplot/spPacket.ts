@@ -47,7 +47,7 @@ import { spPdfEncode, spPdfWidth } from './spPdfFonts.ts';
 import { spChoirCountWords, spChoirOf, spChoirRiserNote } from './spChoir.ts';
 import { spFrontEdges, spHasWings, spIsCircle, spIsShaped, spRoundRef, spRoundSides, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
 import { spReview, type SpIssue } from './spReview.ts';
-import { spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
+import { SP_KEY_BADGE_MIX, SP_KEY_BADGE_NUMBER, spIsSized, spKeySymbol, spObjectBoxM, spPlacedShapes, spPlotKey, spStageMeters, spSymbol, type SpShape } from './spSymbols.ts';
 import type { SpDeviceType, SpExportOptions, SpId, SpInput, SpMix, SpMixNeed, SpObject, SpPacketKind, SpProject, SpSnapshot } from './spTypes.ts';
 
 /* ── small words ────────────────────────────────────────────────────────── */
@@ -1248,7 +1248,7 @@ export function spPlotDoc(p: SpProject, how: boolean | { brief?: boolean; roomy?
     if (spIsShaped(p.stage)) legend.push(spShapeWords(p.stage, unit));
   }
   if (badges.length) {
-    const lines = [brief ? 'A number in a box is an input channel. A code in a rounded box, such as M1, is a monitor mix.' : 'A number in a box is an input channel in the input list. A code in a rounded box, such as M1, is a monitor mix.'];
+    const lines = [brief ? `${SP_KEY_BADGE_NUMBER} ${SP_KEY_BADGE_MIX}` : `A number in a box is an input channel in the input list. ${SP_KEY_BADGE_MIX}`];
     if (badges.some((b) => /^B\d/.test(b))) lines.push('A number with B is a channel of the band monitor rig.');
     // a crowded stage: equipment printed with its reference alone
     if (items.some((i) => !i.label && i.badges.length)) lines.push(brief ? 'A number or a code with no name beside it: the key shows what the symbol is.' : 'Where a number or a code has no name beside it, the key shows what the symbol is, and the input list or the monitor plan names it.');

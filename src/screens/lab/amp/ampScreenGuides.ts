@@ -35,14 +35,14 @@ export const AMP_HOME_GUIDE: ScreenGuide = {
     start: 'Tap a module’s name in the MODULE MAP to read what it covers. New to amplifiers? Tap START · MODULE 1 › and take the modules in order.',
   },
   seeing: [
-    'You’re on the Amplifier Principles Lab menu. One question runs through every module: what is the amplifier doing, what load does it see, and where does the extra energy come from?',
+    'You’re on the Amplifier Principles Lab menu. Its first line is the lab in one sentence: the power supply pays, your signal steers.',
     'At the top: your progress line, and a START or RESUME button for your next unfinished module.',
-    'Below: the MODULE MAP (✓ on each finished module), CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT ›, a safety note and RESET LAB PROGRESS.',
+    'Below: the MODULE MAP (✓ on each finished module), ▸ FINAL CHECK: AFTER THE MODULES, SEE WHAT’S LEFT ›, a safety note and RESET LAB PROGRESS.',
   ],
   control: [
     'Tap a module’s name to read its one-line description, or tap OPEN to start it.',
     'START or RESUME · MODULE › opens the module you were in, or the first one you haven’t finished.',
-    'CHECK YOUR UNDERSTANDING is a short quiz on the whole lab.',
+    '▸ FINAL CHECK: AFTER THE MODULES opens CHECK YOUR UNDERSTANDING, a short quiz on the whole lab, for when you have done the modules.',
     'SEE WHAT’S LEFT › lists what you still have to do. RESET LAB PROGRESS starts a fresh practice run: it clears your answered checks and latest final attempt, and keeps your completed modules and best final result.',
     '‹ leaves the lab. Inside a module, tap ⓘ beside its title to have that screen explained.',
   ],
@@ -109,12 +109,12 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         seeing: [
           'INPUT (signal) is on top and OUTPUT (to load) below. The red dashed lines are the rail limits: the furthest the power supply lets the output swing.',
           'Color shows size, blue near zero to red at the rails. A clipped peak is drawn heavier.',
-          'Readouts: OUTPUT (CLEAN or CLIP), SUPPLY (energy drawn), HEAT, EFFIC. (illustrative efficiency) and LOAD (how hard the speaker is driven).',
+          'Readouts: OUTPUT (CLEAN or CLIP) and SUPPLY (energy drawn from the power supply). HEAT, efficiency and load come in later modules.',
         ],
         control: [
           'LEVEL fader (0–100%) sets the input signal. The output is 1.5 times the input, up to the rails.',
           RUN_SLOW,
-          'Scroll below the display for IN THIS MODULE, PREDICT, THEN TRY, the SIGNAL PATH figure, three kinds of gain and an APPLIED COMPARISON.',
+          'Scroll below the display for PREDICT, THEN TRY, the SIGNAL PATH figure and an APPLIED COMPARISON; ▸ LEARN MORE holds the three kinds of gain and the watts worked out.',
           STRIP,
         ],
         changes: [
@@ -332,7 +332,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         },
         seeing: [
           'The rig for the class you pick: INPUT, DEVICE CURRENT(S) and OUTPUT. In Class C, OUTPUT shows raw pulses; the dashed line is after the tuned circuit.',
-          'Readouts: CONDUCT. (degrees each device conducts), IDLE (current with no signal), EFFIC. (illustrative, at this level), HEAT and DISTORT.',
+          'Readouts: CONDUCT. (degrees each device conducts), EFFIC. (illustrative) and DISTORT. IDLE CURRENT is in the card below.',
           'Below: the same numbers explained, a ZERO CROSS zoom for B and AB, and SIDE BY SIDE fact cards for A, B, AB, C and D.',
         ],
         control: [
@@ -343,10 +343,10 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           STRIP,
         ],
         changes: [
-          'A: one device conducts all 360°. With no signal IDLE stays 100%, HEAT hot: low efficiency.',
-          'B: each device ideally conducts half the cycle (180°). CONDUCT. reads 165°, as each needs a small turn-on voltage; that gap is the NOTCH. IDLE 0%, higher efficiency.',
+          'A: one device conducts all 360°. With no signal IDLE CURRENT stays 100%, heat high: low efficiency.',
+          'B: each device ideally conducts half the cycle (180°). CONDUCT. reads 165°, as each needs a small turn-on voltage; that gap is the NOTCH. Idle 0%, more efficient.',
           'AB: more AB BIAS overlaps the devices past zero: the notch closes, idle rises.',
-          'C: pulses ring a tuned circuit into a sine, only near its tuned frequency.',
+          'C: pulses ring a tuned circuit into a sine, only near its tuning.',
         ],
         teaches: [
           'Each class trades efficiency, heat and distortion. There is no “best” class.',

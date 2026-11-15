@@ -310,7 +310,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air on a resonator?', options: ['The strings themselves', 'A metal cone, driven by the bridge', 'The wooden back'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air on a resonator?', options: ['The strings themselves', 'A metal cone, driven by the bridge', 'The wooden back'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you move the mic from about 30 cm out to about 20 cm from the coverplate. What changes?', options: ['More of the cone’s metallic voice', 'More of the room', 'It depends on this resonator'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

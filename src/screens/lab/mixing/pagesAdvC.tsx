@@ -275,6 +275,8 @@ function PageMixBus({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>THE MASTERING BORDER</Eyebrow>
+        {/* AM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain sentence first. */}
+        <Body>The mix ends at the mix bus; mastering starts after it.</Body>
         <Body>Mix-bus processing serves THIS mix while you can still reach every fader underneath it. Mastering serves the finished stereo file against the outside world — loudness targets, translation, sequencing. The moment your bus chain chases a LUFS number, you have started mastering with a mix engineer’s hands. Stop; leave headroom; finish the mix.</Body>
       </Card>
       <UnderstandingCheck

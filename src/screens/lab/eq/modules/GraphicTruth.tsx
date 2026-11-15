@@ -115,7 +115,8 @@ export function GraphicTruthModule(p: EqModuleComponentProps) {
         { id: 'phase', label: 'PHASE', blurb: // Phase shift is SIGNED — a minimum-phase boost leads on one side of
     // centre and lags on the other, which is why this plot swings ±180°.
     // "Delay per frequency" is GROUP delay, the derivative of phase.
-    'How far each frequency is shifted in phase — ahead on one side of the band, behind on the other. Every minimum-phase boost or cut applies some, yet EQ plugins rarely plot it — it’s the hidden cost of every move.' },
+    // EQL-03 (owner 2026-11-15, D62): what phase IS, in one plain sentence first.
+    'Phase is timing: how far each frequency’s wave is shifted ahead or behind in its cycle. Every boost or cut does some of it, yet EQ plugins rarely draw it.' },
       ],
       selectedId: view,
       onSelect: (id) => setView(id as 'mag' | 'phase'),
@@ -137,7 +138,7 @@ export function GraphicTruthModule(p: EqModuleComponentProps) {
         badge:
           view === 'mag'
             ? 'Real overlapping 1-octave bells, their dB responses added — not the line through the caps.'
-            : 'A conventional (minimum-phase) EQ shifts phase around every region it touches — it never changes “only amplitude.”',
+            : 'Phase is timing: each frequency’s wave is shifted a little ahead or behind. Every boost or cut does it; the sliders never show it.',
         bezel: [
           { k: 'VIEW', v: view === 'mag' ? 'MAG' : 'PHASE ±180°' },
           { k: 'FILTERS', v: showIndividual ? 'SHOWN' : 'HIDDEN' },

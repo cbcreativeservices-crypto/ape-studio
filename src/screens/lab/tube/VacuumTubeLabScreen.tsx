@@ -41,7 +41,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { GoalCheck, ModuleGoalProvider, useMetWhen } from '../meter/moduleGoal';
 import { RackUnit } from '../rack/RackUnit';
-import type { DockParam } from '../rack/rackTypes';
+import type { DockParam, LaneNudge } from '../rack/rackTypes';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
@@ -116,6 +116,8 @@ type SectionProps = {
   openReference: () => void;
   title: string;
   blurb: string;
+  /** Opens the next module (TB-05's "Next: warm it up ›"). */
+  onNext?: () => void;
 };
 
 /** The shared dock tail: ⚡ ELECTRON VIEW toggle (sections that use it) + the
@@ -178,7 +180,9 @@ function SectionWell({ title, blurb, help, children }: { title: string; blurb: s
         accessibilityRole="button"
         accessibilityLabel="Open the guided lesson"
       >
-        <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+        {/* TB-01 (owner 2026-11-15: "build waves 1 thru 3"): visible help, not
+            long-press. A tray's own ⓘ opens that control's entry. */}
+        <Text style={styles.lessonRowText}>{TUBE_LESSON_ROW}</Text>
       </Pressable>
       <Text style={styles.futureNote}>🔈 This lab teaches visually — no audio playback.</Text>
     </>
@@ -186,6 +190,17 @@ function SectionWell({ title, blurb, help, children }: { title: string; blurb: s
 }
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
+
+/** The well's guided-lesson row (TB-01): a tap here, or the ⓘ in an open tray. */
+export const TUBE_LESSON_ROW = 'ⓘ GUIDED LESSON · tap here, or the ⓘ in an open tray, for each control';
+
+/** Module 1's one opening line (TB-04): what a tube is, then one instruction. */
+export const TUBE_INSIDE_BLURB =
+  'A tube is a valve for electrons: a tiny voltage controls a big flow. Open PARTS and tap a part to take it out and see what stops working.';
+
+/** Removing the control grid, said big (TB-05): the module's payoff. */
+export const NO_GRID_RESULT = 'No grid → the flow can’t be controlled → no amplifier';
+export const NO_GRID_NEXT = 'NEXT: WARM IT UP ›';
 
 // ── 1 · What's inside ───────────────────────────────────────────────────────
 
@@ -243,7 +258,8 @@ function InsideSection(p: SectionProps) {
       kind: 'group',
       id: 'parts',
       label: 'PARTS',
-      valueLabel: `${visible.length}/${ALL_PART_KEYS.length}`,
+      // "Start here" on the key until a part is tapped (TB-04), then the count.
+      valueLabel: touched.size === 0 ? 'START HERE' : `${visible.length}/${ALL_PART_KEYS.length}`,
       helpKey: 'cutaway',
       // Part chips carry the reference-card INK CODE (owner 2026-08-10): each
       // chip is the same color as its element in the drawing AND on the Tube
@@ -310,11 +326,26 @@ function InsideSection(p: SectionProps) {
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
-        {physics ? <Text style={styles.readout}>{physics}</Text> : null}
+        {/* TB-05 (owner 2026-11-15: "build waves 1 thru 3"): taking out the
+            control grid is the module's payoff, so it reads in large type with
+            the way on; every other missing part keeps its plain line. */}
+        {firstMissing?.key === 'grid' ? (
+          <View style={{ gap: 6 }}>
+            <Text style={styles.bigResult} accessibilityRole="header">{NO_GRID_RESULT}</Text>
+            <Text style={styles.readout}>{`▸ Tap ${firstMissing.label} to add it back.`}</Text>
+            {p.onNext ? (
+              <Pressable onPress={p.onNext} accessibilityRole="button" accessibilityLabel="Next: warm it up. Opens Electron Flow" hitSlop={{ top: 8, bottom: 8 }} style={styles.nextLink}>
+                <Text style={styles.nextLinkText}>{NO_GRID_NEXT}</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ) : physics ? <Text style={styles.readout}>{physics}</Text> : null}
         <Text style={styles.caption}>
           {sel
             ? `${sel.note}${visible.includes(sel.key) ? '' : '  (Hidden — tap its chip again to bring it back.)'}`
-            : 'Open PARTS and tap a part to REMOVE it — then turn on ⚡ E-VIEW and watch what the electrons do without it: every piece is there for a reason, and the drawing shows you why. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
+            : // TB-04: the second instruction that disagreed with the blurb is gone;
+              // what is left adds only what the blurb does not say.
+              'Turn on ⚡ E-VIEW to watch what the electrons do without a part. Each part wears the same color it has on the Tube Reference cards.'}
         </Text>
       </SectionWell>
     </RackUnit>
@@ -403,6 +434,15 @@ const GRID_CHECK: CheckSpec = {
   wrongHint: 'Slide the GRID V fader and watch — do the grid wires move, or does something invisible change?',
 };
 
+/** GRID V's lane ends, in words (TB-02): tap = one 5 % step, hold = that end. */
+export function gridNudges(v: number, set: (x: number) => void): LaneNudge[] {
+  const step = (d: number) => set(Math.max(0, Math.min(1, Math.round((v + d) * 100) / 100)));
+  return [
+    { label: '◂ CLOSES', onPress: () => step(-0.05), onLongPress: () => set(0), a11y: 'Grid closes the flow: more negative by 5 percent; hold for fully closed' },
+    { label: 'OPENS ▸', onPress: () => step(0.05), onLongPress: () => set(1), a11y: 'Grid opens the flow: less negative by 5 percent; hold for fully open' },
+  ];
+}
+
 function GridSection(p: SectionProps) {
   const [v, setV] = useState(0.5);
   // At cutoff the readout says "cut off — no current flows" (owner hold #10,
@@ -419,9 +459,13 @@ function GridSection(p: SectionProps) {
       value: v,
       onChange: setV,
       // Percentage first (slider pass 2026-10-14): the word alone sat still
-      // over 70 % of the travel, so the lane looked dead.
-      format: (x) => `${pct(x)} · ${word(x)}`,
+      // over 70 % of the travel, so the lane looked dead. TB-02 (owner
+      // 2026-11-15: "build waves 1 thru 3"): the % now says what it measures,
+      // OPEN, so a low number reads as "closed", and the lane's ends read in
+      // words (◂ CLOSES / OPENS ▸) instead of − / +. Same lane, same model.
+      format: (x) => `${pct(x)} open · ${word(x)}`,
       formatShort: (x) => pct(x),
+      nudges: gridNudges(v, setV),
       helpKey: 'grid_voltage',
     },
     ...tailParams(p, true),
@@ -927,7 +971,7 @@ export const TUBE_HOW_IT_COUNTS =
   'A module counts once its own task is done: a CHECK YOURSELF answered right, or its goal reached. Opening it again, or practicing, never removes it.';
 
 const SECTIONS: { key: TubeSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
-  { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: 'Glass, metal, wire, and nothing at all — open PARTS and tap each piece to learn its job.', Comp: InsideSection },
+  { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: TUBE_INSIDE_BLURB, Comp: InsideSection },
   { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Slide the WARM-UP fader and watch heat become electrons, and electrons become current.', Comp: FlowSection },
   { key: 'grid', label: 'GRID', title: 'THE CONTROL GRID', blurb: 'The heart of amplification: a whisper of voltage gating a river of current.', Comp: GridSection },
   { key: 'amplify', label: 'AMPLIFY', title: 'SIGNAL AMPLIFICATION', blurb: 'Your signal never touches the big current — it drives the GRID (blue). The grid is a valve: its tiny wiggle opens and chokes the tube’s much larger cathode→plate stream, and that gated stream leaves the PLATE (amber) as a big, flipped copy of the input.', Comp: AmplifySection },
@@ -1008,6 +1052,7 @@ export function VacuumTubeLabScreen() {
     openReference: () => navigation.navigate('TubeReference'),
     title: s.title,
     blurb: s.blurb,
+    onNext: sectionIdx < SECTIONS.length - 1 ? () => openSection(sectionIdx + 1) : undefined,
   };
 
   // THE SHARED LAB NAVIGATION (kit/LabNavBar, owner 2026-09-30): the nine
@@ -1115,6 +1160,9 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, lineHeight: 18, color: colors.amber },
+  bigResult: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.4, lineHeight: 25, color: colors.amber },
+  nextLink: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
+  nextLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.green },
   readoutBad: { color: '#ff6b5e' },
   futureNote: {
     fontFamily: fonts.barlowMedium,

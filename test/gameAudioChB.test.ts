@@ -436,8 +436,11 @@ describe('the log lines pages 6, 7 and 9 describe', () => {
 // joins). Both are held to this group's rules.
 const PAGES = ['p06Pipeline', 'p07Instances', 'p08GameSyncs', 'p09Variation', 'p10Loops', 'p24LoopJoin'] as const;
 const src = (f: string) => readFileSync(join(process.cwd(), 'src/screens/lab/gameaudio/pages', `${f}.tsx`), 'utf8').replace(/\r\n/g, '\n');
+/** A step's lettered parts read as one Do line. owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-04): a step
+ *  of three or four actions is now `<Do parts={['…', '…']} />`, one action per part; the words are the same. */
+const doParts = (s: string): string => s.replace(/<Do parts=\{\[([\s\S]*?)\]\} \/>/g, (_m, list: string) => `<Do>${[...list.matchAll(/'([^']*)'/g)].map((x) => x[1]).join(' ')}</Do>`);
 /** The lesson prose (P, Do, Look, Note), as the learning audit counted it. */
-const prose = (f: string): string[] => [...src(f).replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/<(P|Do|Look|Note)(\s[^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[3].replace(/\{[^}]*\}/g, 'X').replace(/\s+/g, ' ').trim());
+const prose = (f: string): string[] => [...doParts(src(f)).replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/<(P|Do|Look|Note)(\s[^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[3].replace(/\{[^}]*\}/g, 'X').replace(/\s+/g, ' ').trim());
 const words = (t: string) => t.split(/\s+/).filter(Boolean).length;
 
 describe('pages 6–10 as the learner reads them (audit 2)', () => {

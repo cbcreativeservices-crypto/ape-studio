@@ -31,7 +31,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the bridge and the top around it — the lab accepts your aim while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bow’s full sweep, the bow arm out to the tip of a stroke, the player’s head and the violin itself. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer tends to bring more of the bow — articulation, and some scratch; farther, more of the whole violin and the room. Violins and rooms vary, so “it depends on this violin” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more of the bow — articulation, and some scratch; farther, more of the whole violin and the room. Violins and rooms vary, so “it depends on this violin” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin in front and a little above, aimed at the bridge; then move one thing at a time — the distance, the height, the angle — and play the G and the E strings each time.',
       strMini: 'Ideas to try with a miniature: keep its clip or holder where it is made to go, then change only the capsule’s angle — toward the bridge for more brightness, toward an f-hole for more level and a duller color.',

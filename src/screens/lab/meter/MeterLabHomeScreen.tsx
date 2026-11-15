@@ -85,10 +85,11 @@ export function MeterLabHomeScreen() {
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
+        {/* MT-04 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain idea instead of nine
+            display names a beginner has never heard. */}
         <Text style={styles.body}>
-          Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
-          phase, scope — tells a story to the engineer who can read it. The Academy’s measurement
-          tools MEASURE; this lab teaches you to INTERPRET what they show.
+          Every meter answers one question about a sound. In 11 short modules you will learn which
+          question each one answers, then prove it in Signal Detective.
         </Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
             no ✓ on a row is a stand-in when the banked units could not be

@@ -68,7 +68,9 @@ import { GA_TOOLS, GA_TOOL_WINDOWS, type GaToolId } from './data/gaToolMap';
 import { G20 } from './guides/p20';
 import { speedKey } from './shared';
 
-const TERMS = gaTerms('Audio Middleware', 'Game engine', 'Wwise', 'FMOD', 'Unity (game engine)', 'Unreal Engine');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Unity and Unreal
+// Engine are kept unshown here (the page's engine cards name them and say what each engine's audio is)
+const TERMS = gaTerms('Audio Middleware', 'Game engine', 'Wwise', 'FMOD');
 /** How many checks the page has. GameAudioLabScreen's end-screen line for
  *  this page says the same number in words (the test holds both). */
 export const P20_CHECKS = 6;

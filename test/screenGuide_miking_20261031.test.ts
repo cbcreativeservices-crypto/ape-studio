@@ -262,7 +262,8 @@ describe('2. every hand-written name is on the screen it describes', () => {
     'LEARN|On the instrument': [[P('PMicOnIt'), P('PMicrophone')], ['TYPE', 'PATTERN', 'POWER', 'powerOf(t).word', 'PHANTOM', 'NONE', 'BATTERY', 'OWN SUPPLY', 'VARIES', 'MOUNT']],
     'COMPARE|Patterns': [[P('PMicrophone')], ['SOURCE ANGLE', 'TYPE', 'PATTERN', 'PICKUP', 'DEEP NULL', 'NULL']],
     'LEARN|By property, not brand': [[P('PMicrophone')], ['No brand is required', 'SPEC DETAILS ▾']],
-    'WATCH|Worked example': [[P('PPlacement')], ['STEP', 'WHERE TO BEGIN', 'THE DISTANCE', 'CLEARANCE', '▸ ', 'FRONT']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MK-02): the dock key is PIECE, not STEP.
+    'WATCH|Worked example': [[P('PPlacement')], ['PIECE', 'WHERE TO BEGIN', 'THE DISTANCE', 'CLEARANCE', '▸ ', 'FRONT']],
     'PLACE|Place the mic': [[P('PPlacement')], ['START', 'ZONE', 'SETUP', 'MIC TYPE', 'MEASURE FROM', 'POSITION', 'AIM', 'twoZones', 'C.variantKey', '<ZoneCard']],
     'LIVE|Aim the rejection': [[P('PContext')], ['AIM', 'PATTERN', 'MONITOR', 'LIVE', 'STUDIO', 'PICKUP', 'REJECTION', 'IN NULL', 'NULL', 'X.badgeWhere', 'Studio: no monitor.']],
     'PAIR|Pair and polarity': [[P('PTwoMic')], ['EDIT MIC ${slot}', 'MIC B POLARITY', 'SOURCE', 'PATH Δd B−A', 'DELAY Δt B−A', '1ST NOTCH', 'NO COMB', 'POLARITY', 'OVER 20 kHz', 'rear lobe: −', 'heads: −', "'switch'"]],
@@ -341,7 +342,10 @@ describe('2. every hand-written name is on the screen it describes', () => {
     const E = code('src/screens/lab/kit/LabEndScreen.tsx') + code('src/screens/lab/kit/labEnd.ts');
     for (const n of ['LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS']) assert.ok(E.includes(n), n);
     const H = code(HUB_SCREEN);
-    for (const n of ['pagesWord} done`', "'✓ '", 'ProgressUnreadableNote', 'starting points, not rules']) assert.ok(H.includes(n), n);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items MK-04 / MK-06): the note
+    // and the start line are drawn from data/registry.ts (HUB_NOTE, hubStartLine).
+    for (const n of ['pagesWord} done`', "'✓ '", 'ProgressUnreadableNote', '{HUB_NOTE}', 'hubStartLine(lab.id)']) assert.ok(H.includes(n), n);
+    assert.ok(code(`${MIKING}/data/registry.ts`).includes('starting points, not rules'));
     const gt = textOf(G.MIKING_END_GUIDE as unknown as Guide) + textOf(G.mikingFoundationsGuide({ pageNum: 3, pageTitle: 'Choose the microphone', prevTitle: 'Starting setups', nextTitle: 'Placement Studio' }) as unknown as Guide);
     for (const n of ['LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'BUILT ON THE FIRST TWO PAGES', 'I ALREADY MIC', 'QUICK CHECK', 'OPEN', '‹ PREV']) assert.ok(gt.includes(n), n);
   });

@@ -52,7 +52,9 @@ import { G14 } from './guides/p14';
 import { useSince } from './shared';
 
 const ASSETS = ['mu_calm', 'mu_pulse', 'mu_drive', 'mu_stinger'] as const;
-const TERMS = gaTerms('Adaptive music', 'Vertical layering', 'Horizontal resequencing', 'Bar-aligned transition', 'Music transition rule', 'Musical stinger', 'Music state');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Adaptive music is
+// on the capstone; Music state (MOOD is page 9's Audio state) and Music transition rule are kept unshown
+const TERMS = gaTerms('Vertical layering', 'Horizontal resequencing', 'Bar-aligned transition', 'Musical stinger');
 const LAYERS = ['calm', 'pulse', 'drive'] as const;
 
 const BOUNDARIES: { id: ChcBoundary; label: string; short: string; blurb: string }[] = [
@@ -193,19 +195,19 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>The strip under the picture is the music’s clock, with a mark where a waiting change lands.</Look>
-        <P>This piece is one four-bar phrase at 96 BPM (beats per minute) in three layers: CALM, PULSE and DRIVE. They start together on one clock. A layer that is off still plays, at zero level, so the layers stay in time.</P>
+        <P>This piece is one four-bar phrase (a bar is four beats) at 96 BPM (beats per minute) in three layers: CALM, PULSE and DRIVE. They start together on one clock. A layer that is off still plays, at zero level, so the layers stay in time.</P>
         <LayerCard state={s} t={t} />
         <P>Switching layers is vertical layering. Choosing which section plays next is horizontal resequencing. Both use music a composer wrote.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open MUSIC and press START. Switch PULSE on and watch PENDING in the tray until it reads “Nothing is waiting.” Switch PULSE off and wait again. Then press MOOD ALERT.</Do>
+        <Do parts={['Open MUSIC and press START.', 'Switch PULSE on and watch PENDING in the tray until it reads “Nothing is waiting.”', 'Switch PULSE off and wait again.', 'Press MOOD ALERT.']} />
         <P>Each change waits as PENDING for the next bar: the log says QUEUED, then APPLIED. MOOD is a game state. ALERT asks for PULSE and DRIVE.</P>
         <P>PLAYING counts a stinger while it sounds. VOICES leaves the music out: this scene simplifies. A real engine counts each music layer as a voice.</P>
         <ActivityLog state={p14Log(s)} lines={6} empty="No music line yet. This log shows the music, MOOD and CHANGE AT." />
       </Step>
       <Step n={3}>
-        <Do>Set CHANGE AT to NEXT PHRASE. Press MOOD CALM, then MOOD ALERT again before the phrase ends. Then press STINGER.</Do>
+        <Do parts={['Set CHANGE AT to NEXT PHRASE.', 'Press MOOD CALM, then MOOD ALERT again before the phrase ends.', 'Press STINGER.']} />
         <P>The log says the first request is WITHDRAWN. The newest request wins, so a transition rule must cover a change of mind.</P>
         <P>A stinger is a short phrase played once over the music. Here a half-beat swell leads to a hit on the boundary.</P>
         <Note tone="mistake">Starting music files from separate timers and expecting them to stay in time. Timers are not exact, so the files start slightly apart.</Note>

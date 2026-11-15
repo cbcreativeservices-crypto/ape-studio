@@ -39,7 +39,7 @@ import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { PAGE_IDS } from './engine/model/types.ts';
 import { creditedCount } from './engine/progress/creditMap.ts';
 import { lessonProgress, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
-import { lessonsOf, readyLabs, type MikingLabMeta } from './data/registry';
+import { HUB_NOTE, hubStartLine, lessonsOf, readyLabs, type MikingLabMeta } from './data/registry';
 // Screen Guide (owner 2026-10-31): the header ⓘ explains this menu. A menu
 // prints no measurement, so there is no calibration chip here.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
@@ -75,10 +75,16 @@ export function MikingHubScreen() {
       />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         {unreadable ? <ProgressUnreadableNote /> : null}
+        {/* MK-06 (2026-11-15): the starting-points note sits under the
+            heading, not under every tile. */}
+        <Text style={styles.note}>{HUB_NOTE}</Text>
         {shown.map((lab) => (
           <View key={lab.id} style={styles.family}>
             {one ? null : <Text style={styles.familyHead}>{lab.family.toUpperCase()}</Text>}
-            <Text style={styles.blurb}>{lab.blurb}</Text>
+            {/* MK-04 (2026-11-15): the family's short line in place of its long
+                list-style paragraph, then ONE line saying where to begin. */}
+            <Text style={styles.blurb}>{lab.familyBlurb}</Text>
+            {hubStartLine(lab.id) ? <Text style={styles.start}>{hubStartLine(lab.id)}</Text> : null}
             <GlassPanel style={[styles.tileGrid, !tablet && styles.tilePanelPhone]}>
               {lessonsOf(lab.id).map((ls) => {
                 const lp = lessonProgress(progress, ls.id);
@@ -106,7 +112,6 @@ export function MikingHubScreen() {
             </GlassPanel>
           </View>
         ))}
-        <Text style={styles.note}>After our research, these lessons suggest where to begin — starting points, not rules. Move the mic, listen, and trust your ears and the room. Place real mics with the player stopped.</Text>
       </ScrollView>
       </ScreenGuideHost>
     </View>
@@ -119,6 +124,7 @@ const styles = StyleSheet.create({
   family: { gap: 10 },
   familyHead: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1 },
   blurb: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
+  start: { color: colors.amberLabel, fontFamily: fonts.barlowSemiBold, fontSize: 13.5, lineHeight: 19 },
   // The Labs menu's tile grid (EarLabScreen): the panel, its thinner phone
   // margin, the tile widths and the tile face.
   tileGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: 8, rowGap: 10 },

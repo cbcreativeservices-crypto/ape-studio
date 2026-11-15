@@ -28,8 +28,16 @@
  *     still counted. That is this scene's simplification (accuracy audit A5,
  *     lead's decision 5): the page says so, and says what a real engine does.
  *
- * Instances and voices are NOT explained here (learning audit L-12): page 7
- * teaches the first and page 17 the second.
+ * Instances are NOT explained here (learning audit L-12): page 7 teaches
+ * them. A VOICE is named here in one plain line, because VOICES is under the
+ * picture from this page on (beginner waves 2026-11-15, GA-12), and so is dB,
+ * because the strip prints it (GA-02, the shared words of features/lab/
+ * plainTerms).
+ *
+ * THE PICTURE CARRIES ITS OWN CAPTION (GA-11): what it is, that a game asks
+ * for sounds when things happen, and the one first instruction, pinned with
+ * the display (GaRack `caption`). The step-1 line under the display now only
+ * names YOU and the listener.
  *
  * Common mistake taught against: raising the level first and starting the
  * sound second.
@@ -45,11 +53,18 @@ import { gaDispatch, useGa } from '../model/gaStore';
 import type { DockParam } from '../../rack/rackTypes';
 import { NeedsSoundTag } from '../../rack/silentPath';
 import { G01 } from './guides/p01';
+import { termWithShort } from '../../../../features/lab/plainTerms';
 import { useCountWhen } from './chbBits';
 import { gaFact, pct, useSince } from './shared';
 
 const ASSETS = ['amb_room', 'amb_yard', 'fountain'] as const;
 const TERMS = gaTerms('Game audio', 'Interactive audio', 'Audio listener');
+
+/** The caption pinned with the picture (GA-11): what it is, what a game does,
+ *  and the one first instruction. */
+export const P01_CAPTION = 'A game world from above. A game asks for sounds when things happen. Set LEVEL low, then turn SCENE on.';
+/** What a voice is, in one plain line, where VOICES is first met (GA-12). */
+export const P01_VOICE_LINE = 'VOICES counts voices: a voice is one sound playing right now.';
 
 /** The level this page calls low, in percent as the LEVEL readout prints it. */
 const LOW_LEVEL_PCT = 40;
@@ -101,18 +116,19 @@ function Page({ ctx }: { ctx: PageCtx }) {
         ],
         showNames: true,
         assets: ASSETS,
+        caption: P01_CAPTION,
       }}
     >
       <Step n={1}>
-        <Look>You are looking down on a courtyard and a workshop. The figure marked YOU is the player. The amber wedge marks the listener: the game’s ears.</Look>
+        <Look>The figure marked YOU is the player. The amber wedge marks the listener: the game’s ears.</Look>
         <P>Game audio is every sound a game makes. It is interactive: it reacts to what the player does.</P>
         <P>Every sound in this lab is made in the app, not recorded. People and objects are drawn larger than their real size. Positions and distances are true.</P>
         <P>The activity log lists what the game asked for (GAME) and what the audio side answered (START).</P>
-        <P>PLAYING and VOICES count what is sounding now. Page 8 explains them. SOUND says whether you can hear it. On a narrow phone they read PLAYS and SND.</P>
+        <P>{P01_VOICE_LINE} PLAYING counts what the game asked to play: page 8 explains how the two differ. SOUND says whether you can hear it. On a narrow phone they read PLAYS and SND.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Move the LEVEL slider down to 40% or lower. Turn SOUND on. Then switch SCENE on.</Do>
+        <Do parts={['Move the LEVEL slider down to 40% or lower.', 'Turn SOUND on.', 'Switch SCENE on.']} />
         <P>Three sounds start: the courtyard wind, the fountain and the workshop’s room tone. PLAYING shows 3. When a bird calls, it shows 4 for a moment.</P>
         <P>The room tone stays at zero level until the listener is inside. This scene counts it anyway. A real engine usually does not.</P>
         <ActivityLog state={s} lines={6} />
@@ -122,7 +138,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Do>
           Raise LEVEL slowly until the scene is comfortable. <NeedsSoundTag /> Then press ■ STOP.
         </Do>
-        <P>LEVEL moves every bar on the strip under the picture. With sound off, watch the bars rise instead.</P>
+        <P>LEVEL moves every bar on the strip under the picture. Each bar’s number is its level in {termWithShort('db')}. With sound off, watch the bars rise instead.</P>
         <P>■ STOP is always the last key in the dock. It stops everything immediately.</P>
         <P>LEVEL is the lab’s own level. Your device’s volume control is separate: keep it low too.</P>
         <Note tone="mistake">Raising the level first and starting the sound second. A sound you have not heard yet can be louder than you expect.</Note>

@@ -12,7 +12,9 @@ const CASES: { id: string; file: string; now: string; gone: string | null }[] = 
   {"id": "R000076", "file": "src/features/lab/guidedLessons/content.ts", "now": "FDBK works on the spaces between the notches, not the notches", "gone": "'deepens the notches. Evenly-spaced"},
   {"id": "R000110", "file": "src/features/lab/guidedLessons/content.ts", "now": "RES lifts the peaks between the dips, and the dips actually get shallower.", "gone": "definition: 'Sharpens and deepens the notches.' }"},
   {"id": "R000156", "file": "src/features/lab/guidedLessons/content.ts", "now": "A minimum open time, a gentler close or hysteresis calms it.", "gone": "definition: 'Minimum open time after the signal drops below threshold, before release — the primary anti-chatter control.' }"},
-  {"id": "R000191", "file": "src/features/lab/guidedLessons/content.ts", "now": "a little attack keeps more punch, but if it is longer than the lookahead, short peaks slip past.", "gone": "definition: 'A hair of attack lets transient \"punch\" through before catching it.'"},
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item LIM-06): the limiter's off-screen controls are one
+  // "On real limiters (for later)" row; its attack/lookahead line is the new wording here.
+  {"id": "R000191", "file": "src/features/lab/guidedLessons/content.ts", "now": "Lookahead and a short attack catch a sharp peak in time.", "gone": "definition: 'A hair of attack lets transient \"punch\" through before catching it.'"},
   {"id": "R000209", "file": "src/features/lab/guidedLessons/content.ts", "now": "so out ≤ CEILING, as long as the lookahead covers the attack.", "gone": "Ceiling is a hard cap: out ≤ ceiling always.'"},
   {"id": "R000264", "file": "src/features/lab/guidedLessons/content.ts", "now": "ANALYTIC MODEL shows the recipe you’re editing, worked out exactly from the math. REAL SIGNAL listens through the mic", "gone": "ANALYTIC = drawn from the model; REAL = your live mic."},
   {"id": "R000292", "file": "src/features/lab/guidedLessons/content.ts", "now": "adding one pair of sidebands at fc ± fm; at slow rates you hear it as tremolo.", "gone": "'amplitude (tremolo).',"},

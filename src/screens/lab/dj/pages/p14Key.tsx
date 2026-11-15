@@ -18,6 +18,7 @@ import { TempoColumnStage } from '../art/tempoColumn';
 import { KeyStrip, PitchPlot } from '../art/keyArt';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { ChipRow, boothKey, stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -103,7 +104,19 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
   // STRETCH readout warns AUDIBLE
   if (ready && check && B.playing && B.keyLock && B.pitch <= -11.5 && audible) h.current.check = true;
   const hits = [h.current.flat, h.current.lock, h.current.stretch, h.current.shift, h.current.own, faultFixed, h.current.check];
-  const goals = GOALS_KEY.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): each goal set up right
+  // with its deck stopped says to press PLAY, instead of a silent ○.
+  const bStopped = !B.playing;
+  const waits = [
+    waitIf(matched && !B.keyLock && rel === 'OUT OF TUNE', !both, 'both'),
+    waitIf(!staged.current.lock && matched && !!B.keyLock && rel !== 'OUT OF TUNE', !both, 'both'),
+    waitIf(!!B.keyLock && B.pitch <= -12, bStopped, 'B'),
+    waitIf(!staged.current.shift && (B.keyShift ?? 0) !== 0, bStopped, 'B'),
+    waitIf(!!B.keyLock && Math.abs(B.pitch - 4) <= 0.3 && Math.abs(B.keyShift ?? 0) < 0.01, bStopped, 'B'),
+    undefined,
+    waitIf(check && !!B.keyLock && B.pitch <= -11.5 && audible, bStopped, 'B'),
+  ];
+  const goals = GOALS_KEY.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'KEY', ready);
   const tempoKey = {
     kind: 'fader' as const,

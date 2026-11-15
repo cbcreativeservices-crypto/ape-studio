@@ -1524,6 +1524,10 @@ export type StageKeyLayout<K extends string = string> = {
   /** The scale words ("NOT TO SCALE", or the stage's size) at the RIGHT end
    *  of the heading row: its right edge and its baseline. Null when none. */
   note: { text: string; x: number; y: number } | null;
+  /** (beginner waves 2026-11-15, PLOT-15) The line under the kinds that says
+   *  what the small boxes mean, wrapped to the strip's width: each line's
+   *  left edge and baseline. Empty when the stage shows no number or code. */
+  foot: { text: string; x: number; y: number }[];
 };
 
 const keyTextW = (text: string): number => text.length * STAGE_KEY_FS * STAGE_KEY_CHAR_W;
@@ -1627,7 +1631,7 @@ function keyLayoutWith<K extends string>(entries: readonly { kind: K; name: stri
     }
     y += h + (r < rows.length - 1 ? KEY_ROW_GAP : 0);
   });
-  return { height: y + KEY_PAD_BOTTOM, rows: rows.length, heading: { text: 'KEY', x: KEY_PAD_X, y: headingY }, cells, empty: null, note: note ? { text: note, x: right, y: headingY } : null };
+  return { height: y + KEY_PAD_BOTTOM, rows: rows.length, heading: { text: 'KEY', x: KEY_PAD_X, y: headingY }, cells, empty: null, note: note ? { text: note, x: right, y: headingY } : null, foot: [] };
 }
 
 /** Ways to set the names, tried in this order: each on one line where it
@@ -1637,7 +1641,7 @@ const KEY_WRAPS: readonly number[] = [Number.POSITIVE_INFINITY, 135, 110, 95, 80
 
 /** `note`: the scale words printed at the right end of the heading row
  *  ("NOT TO SCALE", or the stage's size): see stageScaleNote. */
-export function stageKeyLayout<K extends string>(entries: readonly { kind: K; name: string }[], gw: number, note = ''): StageKeyLayout<K> {
+export function stageKeyLayout<K extends string>(entries: readonly { kind: K; name: string }[], gw: number, note = '', foot = ''): StageKeyLayout<K> {
   if (!entries.length) {
     const y = KEY_PAD_TOP + (KEY_ROW_H - KEY_LINE_H) / 2 + STAGE_KEY_FS * 0.82;
     const right = Math.max(KEY_PAD_X + KEY_HEADING_W + 60, gw - KEY_PAD_X);
@@ -1648,6 +1652,7 @@ export function stageKeyLayout<K extends string>(entries: readonly { kind: K; na
       cells: [],
       empty: { text: STAGE_KEY_EMPTY, x: KEY_PAD_X + KEY_HEADING_W, y },
       note: note ? { text: note, x: right, y } : null,
+      foot: [],
     };
   }
   // The shortest strip wins (the earlier way, on a tie): the key takes its
@@ -1657,7 +1662,32 @@ export function stageKeyLayout<K extends string>(entries: readonly { kind: K; na
     const tryIt = keyLayoutWith(entries, gw, wrapW, note);
     if (tryIt.height < best.height - 1e-6) best = tryIt;
   }
-  return best;
+  return foot ? withKeyFoot(best, foot, gw) : best;
+}
+
+/** THE BOXES ARE IN THE KEY (PLOT-15): on a plot whose symbols carry channel
+ *  numbers or mix codes, the key ends with one more line saying what the two
+ *  kinds of box mean (features/stageplot/spSymbols SP_KEY_BADGE_*), so the
+ *  key explains everything drawn, not only the symbols. The strip grows by
+ *  the line; it is laid out with the rest, so it scrolls with the rest. */
+function withKeyFoot<K extends string>(lay: StageKeyLayout<K>, foot: string, gw: number): StageKeyLayout<K> {
+  const maxW = Math.max(60, gw - 2 * KEY_PAD_X);
+  const lines: string[] = [];
+  let line = '';
+  for (const word of foot.split(' ')) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && keyTextW(next) > maxW) {
+      lines.push(line);
+      line = word;
+    } else line = next;
+  }
+  if (line) lines.push(line);
+  const top = lay.height - KEY_PAD_BOTTOM + KEY_ROW_GAP + 2;
+  return {
+    ...lay,
+    height: top + lines.length * KEY_LINE_H + KEY_PAD_BOTTOM + 1,
+    foot: lines.map((text, k) => ({ text, x: KEY_PAD_X, y: top + k * KEY_LINE_H + STAGE_KEY_FS * 0.82 })),
+  };
 }
 
 /** THE STAGE KEEPS ITS ROOM (bug test S1-01, 2026-11-13). The key is part

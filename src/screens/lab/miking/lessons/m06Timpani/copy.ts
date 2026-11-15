@@ -119,7 +119,7 @@ export const TIMP_COPY: LessonCopy = {
     workedAim: 'Aim the mic down at the heads — the starting point counts while the mic points within {tol}° of straight down. Height and angle are separate things to try.',
     workedClear: 'Clear of the mallets’ whole reach, the player’s arms and the pedals — and out of the player’s sightline to the conductor. Clearance comes first, and the player stops before a real stand moves.',
     blocked: {},
-    reveal: 'Farther tends to bring more of both drums and the room; closer, more attack from one drum and less of the room — and drums, halls and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Farther tends to bring more of both drums and the room; closer, more attack from one drum and less of the room — and drums, halls and players vary, so “it depends” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: { smallDynCard: 'A dynamic can work too: choose by response, pattern, maximum level, power and mount, and compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real stand. About 1 m is a starting height for a shared spot, not a safety clearance — check the whole passage with the player.',
     availableLead: 'Starting points for this mic and set',

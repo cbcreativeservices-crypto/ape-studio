@@ -51,6 +51,7 @@
  * notes in learner text.
  */
 import type { ScreenGuide } from '../../features/lab/screenGuide/types';
+import { termWithShort } from '../../features/lab/plainTerms.ts';
 
 /** The LabShell tabs this lab offers. */
 export type ReverbScreenId = 'explore' | 'learn' | 'check';
@@ -60,12 +61,14 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'What reverb’s main controls do: RT60 sets how long the tail takes to fall 60 dB, PRE-DELAY when it starts, damping how dark it gets, MIX how loud.',
-      start: 'Drag RT60 from 0.40 s to 6.0 s and watch the slope of the amber wash on OUT change. Then tap ▶ with SOURCE on CLICK 60 to hear the room grow.',
+      // Rooms a beginner knows (owner 2026-11-15: "build waves 1 thru 3", D62
+      // item RV-04); the words for RT60 are the shared ones (plainTerms.ts).
+      start: `Drag ${termWithShort('rt60')} up, from a small room toward a big hall, and watch the amber wash on OUT last longer. Then tap ▶ with SOURCE on CLICK 60 to hear the room grow.`,
     },
     seeing: [
       'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',
       'On OUT: the gray dry click, then the amber wash (reverb) falling as a straight slope. Dashed guides sit 30 dB apart; the dim line is the previous sweep.',
-      'RT60, PRE, MIX: your settings. The line below says the picture is a model, not a meter.',
+      'DECAY TIME (RT60), PRE-DLY, MIX: your settings. The line below: the picture is a model.',
     ],
     control: [
       'Tap ▶ in the header, or tap the glass, to play the source through the reverb; ■ stops it. Every control works while it plays.',
@@ -86,7 +89,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'With SOURCE on CLICK 60, slide RT60 down to 0.40 s: on OUT the wash sinks to the bottom near the 0.5 s mark. At 6.0 s it falls only a little before the next click, and the tails pile up.',
-      'Open PRE-DLY and pick 60 ms: the wash now jumps up nearly one 100 ms tick mark after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it jumps up about a third of a tick after.',
+      'Open PRE-DLY and pick 60 ms: the GAP bracket over OUT stretches to nearly one 100 ms tick mark after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it shrinks to about a third of a tick.',
       'Bring RT60 to about 1.5 s, open DAMP and pick DARK 2k: the wash nearly reaches the bottom by the 1 s mark. DESIGNED RESPONSE stays put, because it draws RT60 alone.',
     ],
   },
@@ -137,7 +140,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap an option to answer. Scroll down for every card.',
-      'A wrong answer costs nothing: pick again straight away. There is no score.',
+      'A wrong answer costs nothing: pick again straight away.',
       'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. If you leave the lab before the last right answer, they clear.',
     ],
     changes: [

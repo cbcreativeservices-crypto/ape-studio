@@ -680,7 +680,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
               {accuracy ? <AccuracyNote style={styles.accuracy} detail={accuracyDetail} variant={accuracyVariant} /> : null}
               {holdPageBody ? null : (
                 <>
-                  {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+                  {/* No subtitle, no line: an empty Text can keep a line of
+                      height on Android (SN-3 from F4, 2026-11-15; Beginning
+                      Mixing passes subtitle=""). */}
+                  {page === 0 && subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
                   {page === 0 && proNote ? <ProNoteButton /> : null}
                   <Page ctx={ctx} />
                   {/* The in-flow NEXT / FINISH at the end of the reading (nothing is

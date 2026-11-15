@@ -24,6 +24,7 @@ import { ArmSide, PhonoChain, RoomView, type PhonoCount } from '../art/vinylArt'
 import { TT, TT_D, TT_W } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { stopKey, pct } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
@@ -195,7 +196,19 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
     if (h.current.howled && tt.playing && G < 0.6 && booth.mixer.booth >= 0.7) h.current.howlFixed = true;
   }
   const hits = [h.current.set, h.current.scale, h.current.as, h.current.gnd, h.current.howlFixed, faultFixed, check];
-  const goals = GOALS_VINYL.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): the hum and howl goals
+  // count only while the record turns; set up right with it stopped, the
+  // chip says to start the turntable instead of a silent ○.
+  const ttStopped = !tt.playing;
+  const waits = [
+    undefined,
+    undefined,
+    undefined,
+    // loose first (hear the buzz), then connected again: both halves need the record turning
+    waitIf(!h.current.humHeard ? !v.gnd && booth.ch[1].fader > 0.3 : v.gnd, ttStopped, 'tt'),
+    waitIf(h.current.howled && G < 0.6 && booth.mixer.booth >= 0.7, ttStopped, 'tt'),
+  ];
+  const goals = GOALS_VINYL.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'VINYL', ready);
   const wf = wallForce(v);
   const trk = { l: trackAbility(wf.L) >= 1, r: trackAbility(wf.R) >= 1 };

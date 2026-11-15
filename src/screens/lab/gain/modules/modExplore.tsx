@@ -86,7 +86,9 @@ const MULTI_START: Gains = { pre: 8, eq: -6, comp: 0, fad: 6, bus: 6, out: 0 };
 
 export function MultiStageModule(_p: GainModuleComponentProps) {
   const [g, setG] = useState<Gains>(MULTI_START);
-  const [xray, setXray] = useState(false);
+  // GN-03 (owner 2026-11-15: "build waves 1 thru 3", D62; audit G2 M6 suggestion 1): X-RAY starts ON,
+  // so the meters are understood before the small SIG / CLIP lights are needed (X-RAY off).
+  const [xray, setXray] = useState(true);
   const stages = useMemo(() => fullChain(g), [g]);
   const nodes = computeChain(-30, stages);
   const healthy = chainIsHealthy(nodes);
@@ -127,7 +129,8 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'proc',
       label: 'PROCESS',
-      valueLabel: `${g.eq}·${g.comp} dB`,
+      // GN-03 (owner 2026-11-15, D62): the key names what it opens, not "-6·0 dB".
+      valueLabel: '2 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('eq', 'EQ GAIN')}
@@ -139,7 +142,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'lvl',
       label: 'LEVELS',
-      valueLabel: `${g.fad}·${g.bus}·${g.out} dB`,
+      valueLabel: '3 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('fad', 'CHANNEL FADER')}
@@ -267,7 +270,8 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'proc',
       label: 'PROCESS',
-      valueLabel: `${g.eq}·${g.comp} dB`,
+      // GN-03 (owner 2026-11-15, D62): the key names what it opens, not "-6·0 dB".
+      valueLabel: '2 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('eq', 'EQ GAIN')}
@@ -279,7 +283,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'lvl',
       label: 'LEVELS',
-      valueLabel: `${g.fad}·${g.bus}·${g.out} dB`,
+      valueLabel: '3 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('fad', 'CHANNEL FADER')}
@@ -356,6 +360,17 @@ const FAULT_EXPLAIN: Record<FaultKey, string> = {
 
 const INSPECT_NAMES: Record<string, string> = {
   source: 'Source', pre: 'Preamp', eq: 'EQ', comp: 'Compressor', fad: 'Channel Fader', bus: 'Bus', out: 'Master Output',
+};
+/** SH-76 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain line per INSPECT choice, so a
+ *  beginner knows what each stage is before opening it. Says what the stage IS, never its state. */
+const INSPECT_BLURBS: Record<string, string> = {
+  source: 'The mic’s own level, before any gain is added.',
+  pre: 'The first gain stage: it lifts the quiet mic to a working level.',
+  eq: 'The tone control; here its gain moves the whole signal up or down.',
+  comp: 'Evens out loud and soft parts; its output level is what counts here.',
+  fad: 'The channel’s own volume fader.',
+  bus: 'Where channels are added together into a group.',
+  out: 'The last stage, feeding the speakers.',
 };
 
 /** A sane chain (≈ −10 at every point) with ONE stage hot enough to clip —
@@ -457,9 +472,9 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
       label: 'INSPECT',
       valueLabel: revealed ? SHORT[revealed] : '—',
       options: [
-        { id: 'source', label: INSPECT_NAMES.source },
-        ...FAULT_KEYS.map((k) => ({ id: k, label: INSPECT_NAMES[k] })),
-        ...(found ? [{ id: 'out', label: INSPECT_NAMES.out }] : []),
+        { id: 'source', label: INSPECT_NAMES.source, blurb: INSPECT_BLURBS.source },
+        ...FAULT_KEYS.map((k) => ({ id: k, label: INSPECT_NAMES[k], blurb: INSPECT_BLURBS[k] })),
+        ...(found ? [{ id: 'out', label: INSPECT_NAMES.out, blurb: INSPECT_BLURBS.out }] : []),
       ],
       selectedId: revealed,
       onSelect: inspect,
@@ -559,8 +574,10 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
 
 /** The verdict word an inspected, still-hidden column keeps (StageColSpec.checked). */
 function checkedWord(node: Parameters<typeof stageStatus>[0]): { v: string; tint: string } {
+  // GN-02 (owner 2026-11-15, D62): the STATUS word itself (HEALTHY, was "✓ OK"), so the column says
+  // what the meters and the color key say.
   const st = stageStatus(node);
-  return { v: st.v === 'OK' ? '✓ OK' : st.v, tint: st.tint };
+  return { v: st.v, tint: st.tint };
 }
 
 const styles = StyleSheet.create({

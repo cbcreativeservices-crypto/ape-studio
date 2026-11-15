@@ -277,7 +277,7 @@ export function makeBrassSettingPage(cfg: BrassSettingConfig): (p: PageProps) =>
             if (it) pick(it.id);
           },
           format: () => (sel ? `${byId(sel)?.short ?? sel} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((q) => q.id === sel),

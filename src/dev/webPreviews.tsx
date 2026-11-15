@@ -42,7 +42,10 @@ import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
 import { ToolDemoPreview } from '../screens/tools/ToolDemoPreview';
 import { CalcWorkspaceScreen } from '../screens/lab/calc/CalcWorkspaceScreen';
 import { EqModuleScreen } from '../screens/lab/eq/EqModuleScreen';
-import { CompressionLabScreen, GateLabScreen, StereoLabScreen } from '../screens/lab/fxLabConfigs';
+import { CompressionLabScreen, GateLabScreen, LimiterLabScreen, StereoLabScreen } from '../screens/lab/fxLabConfigs';
+// Beginner waves (F7a, 2026-11-15): the Smart Processors hub and the EQ Lab menu at 390.
+import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
+import { EqLabHomeScreen } from '../screens/lab/eq/EqLabHomeScreen';
 import { GrLadderPreview } from '../screens/lab/GrLadderPreview';
 import { CalcLabScreen } from '../screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from '../screens/lab/cableinstall/CableInstallLabScreen';
@@ -81,6 +84,11 @@ import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { GainModuleScreen } from '../screens/lab/gain/GainModuleScreen';
+// Beginner waves 2026-11-15 (F6a): the Digital and Gain lab homes and the Signal Chain Builder by
+// name, so their first screens can be checked at 390 (`#labpreview/DigitalLab`, `/GainLabHome`, `/SignalChainLab`).
+import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
+import { GainLabHomeScreen } from '../screens/lab/gain/GainLabHomeScreen';
+import { SignalChainLabScreen } from '../screens/lab/SignalChainLabScreen';
 import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
 import { MembraneStudioScreen } from '../screens/lab/cymatics/MembraneStudioScreen';
@@ -220,6 +228,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   CompressionLab: CompressionLabScreen as ComponentType,
   GateLab: GateLabScreen as ComponentType,
   StereoLab: StereoLabScreen as ComponentType,
+  LimiterLab: LimiterLabScreen as ComponentType,
+  SmartProcessorsLab: SmartProcessorsLabScreen as ComponentType,
+  EqLabHome: EqLabHomeScreen as ComponentType,
   // Start Here (2026-09-29): the free beginner experience + its words.
   StartHere: StartHereScreen as ComponentType,
   StartHereTerms: StartHereTermsScreen as ComponentType,
@@ -244,6 +255,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   // only); the rack chrome and the Gain chain columns measure here.
   DigitalModule: DigitalModuleScreen as ComponentType,
   GainModule: GainModuleScreen as ComponentType,
+  DigitalLab: DigitalLabHomeScreen as ComponentType,
+  GainLabHome: GainLabHomeScreen as ComponentType,
+  SignalChainLab: SignalChainLabScreen as ComponentType,
   MasteringLab: MasteringLabScreen as ComponentType,
   DrumTuningLab: DrumTuningLabScreen as ComponentType,
   DJSystemsLab: DJSystemsLabScreen as ComponentType,

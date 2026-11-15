@@ -556,7 +556,7 @@ const setupTasks: SetupTask[] = [
 
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: on most keys, what stops a piano note when the key comes up?', options: ['The hammer presses the string', 'A damper falls onto the strings', 'The soundboard stops by itself'], after: 'Now STEP through the key (or PLAY ONCE) and watch the hammer and the damper.' },
+  sound: { prompt: 'Before you step through: on most keys, what stops a piano note when the key comes up?', options: ['The hammer presses the string', 'A damper falls onto the strings', 'The soundboard stops by itself'], after: 'Now go EVENT by EVENT through the key (or PLAY ONCE) and watch the hammer and the damper.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic back along the strings, away from the hammers. What changes?', options: ['More attack', 'A softer attack', 'It depends on this piano'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this mic, looking down into the piano, reject a side-fill speaker best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

@@ -541,7 +541,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: a close snare mic. Does it hear the hi-hat?', options: ['No — it is too close to the snare', 'Yes, a little later and quieter', 'Only if it is aimed at the hi-hat'], after: 'Now STEP through the cymbal’s stroke (or PLAY ONCE), then see who arrives first at each mic.' },
+  sound: { prompt: 'Before you step through: a close snare mic. Does it hear the hi-hat?', options: ['No — it is too close to the snare', 'Yes, a little later and quieter', 'Only if it is aimed at the hi-hat'], after: 'Now go EVENT by EVENT through the cymbal’s stroke (or PLAY ONCE), then see who arrives first at each mic.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you add a close tom mic to a four-mic base. What else gets louder in that new channel?', options: ['The rest of the kit, later and quieter', 'Only the tom it is aimed at', 'It depends on the tom’s tuning'], after: 'Now build the two plans and count what each added channel costs.' },
   context: { prompt: 'Predict: on a loud small stage, which drum channels does the PA need first?', options: ['The ones the audience cannot already hear', 'Every drum and cymbal, all equally', 'Only the overhead pair'], after: 'Now route each channel and read where it goes.' },

@@ -55,11 +55,11 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p1: {
     intro: {
       learning: 'What a patchbay is, and the one rule this lab builds on: signal leaves gear on the top row and enters gear on the bottom row.',
-      start: 'Read the cards from the top down. Say THE PATCHBAY MANTRA aloud, then tap NEXT at the end to meet your first pair.',
+      start: 'Look at the bay first: OUT on top, IN below. Read the cards from the top down, say THE PATCHBAY MANTRA aloud, then tap NEXT at the end to meet your first pair.',
     },
     seeing: [
-      'These cards set the one rule every bay in this lab follows. There’s nothing to patch yet.',
-      'TOP ROW = SOURCES · OUTPUTS: where signal leaves gear. BOTTOM ROW = DESTINATIONS · INPUTS: where signal enters gear.',
+      'The picture is a real studio bay, its first 8 pairs, with the top row marked OUT and the bottom row IN. There’s nothing to patch yet.',
+      'WHAT PLUGS INTO EACH ROW opens TOP ROW = SOURCES · OUTPUTS (signal leaves gear) and BOTTOM ROW = DESTINATIONS · INPUTS (signal enters gear).',
       'Read “Signal falls downhill. Top → Bottom.”, then the four questions every pair asks, and THE PATCHBAY MANTRA.',
     ],
     control: [
@@ -441,10 +441,10 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'This page closes part one. One card answers the four questions from the first page: the source, the destination, the path with no cord, and what changes when you plug in.',
-      'Below it: THE PATCHBAY MANTRA, SOURCES BEHIND THIS LAB, and PART TWO STARTS ON THE NEXT PAGE.',
+      'Below it: THE PATCHBAY MANTRA, GOOD PLACE TO STOP, SOURCES BEHIND THIS LAB (folded) and PART TWO STARTS ON THE NEXT PAGE.',
     ],
     control: [
-      'There’s nothing to patch or answer here. Read the card, then tap NEXT to start part two; leaving with NEXT also marks this page done.',
+      'There’s nothing to patch or answer here. Read the card, then tap NEXT to start part two; leaving with NEXT also marks this page done. STOP HERE · BACK TO THE LABS › leaves without marking it.',
     ],
     changes: [
       'Nothing moves on this page. It pulls part one together: source on top, destination below, the normal between them, and what a plug in each jack does to it.',

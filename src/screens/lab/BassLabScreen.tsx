@@ -137,6 +137,13 @@ export function BassLabScreen() {
   const [mode, setMode] = useState<Mode>('fretted');
   const [stringIdx, setStringIdx] = useState(0); // E
   const [fret, setFret] = useState(0); // open
+  // The first thing to try, marked on the board (owner 2026-11-15: "build
+  // waves 1 thru 3", D62 BA-04): a ring at fret 12 until the learner first
+  // lands there on this visit, then it goes for good. Never a lock.
+  const [reached12, setReached12] = useState(false);
+  useEffect(() => {
+    if (fret === 12) setReached12(true);
+  }, [fret]);
   const [nodeIdx, setNodeIdx] = useState(0); // ½
   const [running, setRunning] = useState(false);
   // TEMP (owner 2026-09-29): ▶ shows "…" while a start is in flight, so a
@@ -450,6 +457,7 @@ export function BassLabScreen() {
               mode={mode}
               stringIdx={stringIdx}
               fret={fret}
+              target={mode === 'fretted' && !reached12 ? 12 : null}
               harmonicN={node.n}
               width={w}
               height={h}
@@ -586,7 +594,7 @@ export function BassLabScreen() {
                 ? mode === 'fretted'
                   ? ` The string model is a simplified tone: harmonic n has ≈ 1/n of the fundamental’s amplitude (a real pluck falls off faster), output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
                   : ` The string model plays only the exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                : ' This version of the app plays a pure sine at the target pitch here; update the app to hear the string tone.'
+                : ' On this device it plays a pure sine at the target pitch.'
               : ''}
           </Text>
         ) : null}
@@ -703,6 +711,7 @@ function Fretboard({
   mode,
   stringIdx,
   fret,
+  target,
   harmonicN,
   width,
   height,
@@ -711,6 +720,8 @@ function Fretboard({
   mode: Mode;
   stringIdx: number;
   fret: number;
+  /** A fret to try first (D62 BA-04): a dashed ring on the selected string. */
+  target: number | null;
   harmonicN: number;
   width: number;
   height: number;
@@ -1085,6 +1096,10 @@ function Fretboard({
                 </Fragment>
               );
             })}
+            {/* The first fret to try (D62 BA-04): a calm dashed ring, no motion. */}
+            {mode === 'fretted' && target != null && target !== fret ? (
+              <Circle cx={fretPos(target) * w} cy={selY} r={11} fill="none" stroke={colors.amber} strokeWidth={2} strokeDasharray="4 3" opacity={0.9} />
+            ) : null}
             {/* FRETTED: dim the dead length (nut → fret) + domed finger dot. */}
             {mode === 'fretted' && fret > 0 ? (
               <>

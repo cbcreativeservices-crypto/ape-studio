@@ -92,8 +92,9 @@ describe('1. every Phase screen has a complete guide', () => {
     const next = LESSON_PH.slice(d0 + 5).search(/key: ["']/);
     const entry = LESSON_PH.slice(d0, next < 0 ? undefined : d0 + 5 + next);
     assert.match(entry, /name: ["']What the display shows["']/);
-    assert.match(entry, /the same (tone|sound) enters L and R at IN ▸[\s\S]*R: Ø · DLY stage[\s\S]*L \(amber\) and R \(blue\)/i);
-    for (const name of ['IN ▸', '▸ OUT', "'SAME TONE IN L AND R'", "'R: Ø · DLY'", "{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }"]) assert.ok(ANIM.includes(name), `fxAnim: ${name}`);
+    assert.match(entry, /the same (tone|sound) enters L and R at IN ▸[\s\S]*FLIP · DELAY stage[\s\S]*L \(amber\) and R \(blue\)/i);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-01): the stage label in words.
+    for (const name of ['IN ▸', '▸ OUT', "'SAME TONE IN L AND R'", "'FLIP · DELAY'", "{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }"]) assert.ok(ANIM.includes(name), `fxAnim: ${name}`);
     // FOLD pulls both traces onto (L+R)/2; INVERTED Ø + MONO is a flat line
     assert.match(FLOW, /const mono = \(lp \+ rp\) \/ 2;/);
     assert.doesNotMatch(entry, /DLY R slides R later/, 'the drawn shift direction is not claimed');
@@ -186,13 +187,15 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, [string, string, string?][]> = {
     explore: [
       // the flow display (fxAnim StereoFlow + FlowScene)
-      ['IN ▸', ANIM], ['▸ OUT', ANIM], ["'R: Ø · DLY'", ANIM, 'R: Ø · DLY'], ['SAME TONE IN L AND R', FLOW, 'as SAME TONE IN L AND R'],
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-01): the stage label and the keys in words.
+      ['IN ▸', ANIM], ['▸ OUT', ANIM], ["'FLIP · DELAY'", ANIM, 'FLIP · DELAY'], ['SAME TONE IN L AND R', FLOW, 'as SAME TONE IN L AND R'],
       ["{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }", FLOW, 'L is amber and R is blue'],
       // the readouts, the dock keys and their choices
-      ["k: 'POL'", PH, 'POL'], ["k: 'DLY R'", PH, 'DLY R'], ["k: 'FOLD'", PH, 'FOLD'],
-      ["label: 'NORMAL'", PH, 'NORMAL'], ['INVERTED Ø', PH], ["label: 'STEREO'", PH, 'STEREO'], ['MONO (L+R)', PH],
+      ["k: 'FLIP R'", PH, 'FLIP R'], ["k: 'DELAY R'", PH, 'DELAY R'], ["k: 'LISTEN'", PH, 'LISTEN'],
+      ["label: 'NORMAL'", PH, 'NORMAL'], ['FLIPPED Ø', PH], ['Ø means flipped upside down', PH], ["label: 'STEREO'", PH, 'STEREO'], ['MONO (L+R)', PH],
       ["label: 'SOURCE'", FXSCREEN, 'SOURCE picks'], ['PINK NOISE', CONFIGS], ['SINE ${hz} Hz', CONFIGS, 'SINE 440 Hz'],
-      ['min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10', PH, '0 to 10 ms, in 0.1 ms steps'], ['home: 0', PH, 'Double-tap the lane for 0 ms'], ['now - lastTapRef.current < DOUBLE_TAP_MS && homeRef.current != null', RACK, 'Double-tap the lane'],
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-06): the lane's − / + keys step exactly 0.1 ms.
+      ['min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10', PH, '0 to 10 ms'], ['steps: 100', PH, 'step exactly 0.1 ms'], ['home: 0', PH, 'Double-tap it for 0 ms'], ['now - lastTapRef.current < DOUBLE_TAP_MS && homeRef.current != null', RACK, 'Double-tap it'],
       // the scope in the well
       ['DESIGNED RESPONSE', FXSCREEN], ['CORRELATION', SCOPE], ['toneHz={440}', PH, '440 Hz phase scope'], ['>M<', SCOPE, 'M (mid, L+R) up'], ['>S<', SCOPE, 'S (side, L−R) across'],
       ['ANTI-PHASE — cancels in mono', SCOPE, 'ANTI-PHASE'],
@@ -208,14 +211,17 @@ describe('3. each guide quotes its screen’s real names', () => {
       // CONTROLS names = the on-screen labels (decision 1, 2026-11-08): Polarity (invert) / Delay one
       // channel / Mono-fold became POL / DLY R / FOLD — pinned from the dock config. Lesson tokens
       // below are ones the old lesson and the Part A rewrite share, so the check holds across that load.
-      ['name: "What the display shows"', LESSON_PH, 'What the display shows'], ["k: 'POL'", PH, 'POL (polarity)'],
-      ['min: 0, max: 10', PH, 'DLY R (0–10 ms)'], ["k: 'FOLD'", PH, 'FOLD (mono-fold)'],
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-01).
+      ['name: "What the display shows"', LESSON_PH, 'What the display shows'], ["k: 'FLIP R'", PH, 'FLIP R (polarity)'],
+      ['min: 0, max: 10', PH, 'DELAY R (0–10 ms)'], ["k: 'LISTEN'", PH, 'LISTEN (mono-fold)'],
       ['φ(f) = −2πfτ', LESSON_PH], ['goniometer', LESSON_PH], ['(+1)', LESSON_PH, 'upright line = in phase (+1)'],
       ['anti-phase (−1', LESSON_PH, 'flat line = anti-phase (−1)'], ['a ball', LESSON_PH, 'round ball = wide'], ["'▶'", SHELL, '▶'],
-      ["k: 'POL'", PH, 'POL'], ["k: 'DLY R'", PH, 'DLY R'], ["k: 'FOLD'", PH, 'FOLD'],
+      ["k: 'FLIP R'", PH, 'FLIP R'], ["k: 'DELAY R'", PH, 'DELAY R'], ["k: 'LISTEN'", PH, 'LISTEN'],
     ],
     check: [
-      ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['no score', UNDERSTAND], ['✓', UNDERSTAND],
+      // 'no score' dropped (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan, item SH-75): the shared
+      // check card now says "Nothing is lost and there is no score." itself, so the guide no longer repeats it.
+      ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['✓', UNDERSTAND],
       // 'certificate and program' dropped (decision 5: no credit bookkeeping in student text);
       // DLY R / NORMAL dropped: the CHECK TRY THIS no longer walks to the answering readings (decision 6).
       ['the check is passed', UNDERSTAND, 'the check is passed'],
@@ -242,8 +248,9 @@ describe('3. each guide quotes its screen’s real names', () => {
   });
   it('the sources, keys and readouts are exactly the ones the guide lists', () => {
     assert.match(PH, /sources: \[srcSine\(440\), SRC_PINK\],/);
-    assert.deepEqual([...PH.matchAll(/^\s{6}label: '([^']+)', short: '([^']+)', paramId:/gm)].map((m) => m[2]), ['DLY R', 'POL', 'FOLD']);
-    assert.deepEqual([...PH.matchAll(/\{ k: '([A-Z ]+)', paramId:/g)].map((m) => m[1]), ['POL', 'DLY R', 'FOLD']);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-01).
+    assert.deepEqual([...PH.matchAll(/^\s{6}label: '([^']+)', short: '([^']+)', paramId:/gm)].map((m) => m[2]), ['DELAY R', 'FLIP R', 'LISTEN']);
+    assert.deepEqual([...PH.matchAll(/\{ k: '([A-Z ]+)', paramId:/g)].map((m) => m[1]), ['FLIP R', 'DELAY R', 'LISTEN']);
     // the flow always draws a tone; the source only switches its IN note
     // (2026-10-31: it had said "SAME TONE" with PINK playing)
     assert.doesNotMatch(FLOW, /\bsrc\b/);
@@ -255,7 +262,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(PHASE_SCREEN_GUIDES.explore.seeing.join(' '), /With PINK NOISE the label reads PART OF THE NOISE · L = R\./);
     // the scope takes no FOLD: it shows the channels before the sum
     assert.match(PH, /Hero: \(v\) => <LissajousGraph widthPct=\{100\} invertR=\{v\[PHASE_INV\] > 0\.5\} delayRms=\{v\[PHASE_DLY\]\} toneHz=\{440\} \/>,/);
-    assert.match(PHASE_SCREEN_GUIDES.explore.changes.join(' '), /The scope shows the channels before FOLD\./);
+    assert.match(PHASE_SCREEN_GUIDES.explore.changes.join(' '), /The scope shows L and R before LISTEN\./);
   });
 });
 
@@ -323,7 +330,7 @@ describe('4. the numbers: what the scope prints, and what the engine plays', () 
     assert.ok(traceH(1.1, false) < 0.06, `drawn MONO at 1.1 ms: ${traceH(1.1, false).toFixed(3)}`);
     assert.ok(traceH(1.1, true) > 0.99, `drawn MONO flipped at 1.1 ms: ${traceH(1.1, true).toFixed(3)}`);
     assert.ok(traceH(1000 / 440, false) > 0.999, 'one whole 440 Hz cycle (2.27 ms) lines up again, as the scope reads +1.00');
-    assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[1], /DLY R to 1\.1 ms\. CORRELATION reads −0\.99; the tone and the OUT trace nearly vanish/);
+    assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[1], /DELAY R to 1\.1 ms\. CORRELATION reads −0\.99; the tone and the OUT trace nearly vanish/);
     assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[1], /\+0\.99, the tone is back, for this one frequency/);
   });
   it('EXPLORE TRY THIS 3: PINK NOISE in MONO with a delay combs; a flip moves the notches but cannot remove them', () => {
@@ -347,13 +354,13 @@ describe('4. the numbers: what the scope prints, and what the engine plays', () 
       assert.ok(monoDb(0, false, fs) > -1e-9, 'NORMAL + 0 ms: the tone at full level');
       assert.ok(monoDb(0, true, fs) < -150, 'INVERTED + 0 ms: silence, not "cleared"');
     }
-    assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[2], /With POL on NORMAL, DLY R back to 0 ms clears them\./);
+    assert.match(PHASE_SCREEN_GUIDES.explore.tryThis[2], /With FLIP R on NORMAL, DELAY R back to 0 ms clears them\./);
   });
   it('LEARN TRY THIS 1: DLY R 2.3 ms reads +1.00 again — one whole 440 Hz cycle (2.27 ms)', () => {
     assert.equal(shown(corr(2.3, false)), '+1.00');
     assert.equal(hint(corr(2.3, false)), 'mono / in phase');
     assert.ok(Math.abs(1000 / 440 - 2.27) < 0.005);
-    assert.match(PHASE_SCREEN_GUIDES.learn.tryThis[0], /DLY R to 2\.3 ms with SINE 440 Hz: the scope stands upright again at \+1\.00/);
+    assert.match(PHASE_SCREEN_GUIDES.learn.tryThis[0], /DELAY R to 2\.3 ms with SINE 440 Hz: the scope stands upright again at \+1\.00/);
   });
   it('DESIGNED RESPONSE delay captions never contradict the 440 Hz meter (fix 2026-10-31)', () => {
     // Inverted + delay: the meter reaches −1.00 again (2.3, 9.1 ms) and +0.99

@@ -83,3 +83,21 @@ export function twoCopiesResult(b: Booth, oneRel: number | null, r: BoothRender 
   const delta = now - oneRel;
   return { delta, met: fullBothSides(b) && delta >= 5.5 && delta <= 6.5 };
 }
+
+/**
+ * DJ-13 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): the
+ * screen-6 gain target as a green band on the channel meter, the way screen
+ * 19 marks the mic target. The meter is a column of LED segments at fixed dB
+ * steps; a dB value between two segments sits between their centres. Returns
+ * the fractional segment index (0 = the lowest segment), clamped to the
+ * column. Pure, so the test reaches it.
+ */
+export function ledIndexAt(db: number, leds: readonly number[]): number {
+  if (db <= leds[0]) return 0;
+  const last = leds.length - 1;
+  if (db >= leds[last]) return last;
+  for (let i = 0; i < last; i++) {
+    if (db >= leds[i] && db <= leds[i + 1]) return i + (db - leds[i]) / (leds[i + 1] - leds[i]);
+  }
+  return last;
+}

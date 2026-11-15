@@ -27,7 +27,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Welcome and safe operation': {
     intro: {
       learning: 'Why safe listening comes first in a DJ booth: start low, keep STOP in reach, and see how level and time together use up a day’s hearing allowance.',
-      start: 'In the A LOUD NIGHT, IN NUMBERS tile, pick a 4 h set at 88 dBA, then 91 dBA, and compare. Then press PLAY A and switch LISTEN from CROWD to BOOTH.',
+      // DJ-05 (owner 2026-11-15: "build waves 1 thru 3"): the same first move as the page's step 2 (STOP, then PLAY A).
+      start: 'Find ■ STOP in the dock, then press PLAY A and switch LISTEN from CROWD to BOOTH. Then, in the A LOUD NIGHT, IN NUMBERS tile, compare a 4 h set at 88 dBA with 91 dBA.',
     },
     seeing: [
       'You’re looking down on a DJ booth: deck A on the left, the two-channel mixer in the middle, deck B on the right. The line under it shows whose ears you’re listening with.',
@@ -61,7 +62,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Meet the DJ equipment': {
     intro: {
       learning: 'The four jobs every DJ setup does (play the music, mix it, let the DJ hear the next track, let the room hear the mix) and which device does each.',
-      start: 'Step through EQUIPMENT to meet each piece of gear. Then pick a SYSTEM and use FIND to spot which device does each of the four jobs.',
+      // DJ-05: the same first move as the page's step 2 (FIND names a job; EQUIPMENT picks the device).
+      start: 'FIND on the readout strip names a job. Open EQUIPMENT and pick the device that does it, for each of the four jobs. Then open SYSTEM to compare whole setups.',
     },
     seeing: [
       'You see a drawing of the gear or the whole system you picked, with its sockets and cables.',
@@ -90,7 +92,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Connections and signal types': {
     intro: {
       learning: 'How to read a socket by its direction, connector, signal, level and channels, and why a turntable needs a PHONO input rather than LINE.',
-      start: 'Use PATCH to plug deck A’s white and red plugs into CH1 LINE, then press PLAY. Pull the red plug and watch CH1 R GETS.',
+      // DJ-05: the same first move as the page's step 2 (IDENTIFY first, then PATCH).
+      start: 'Open IDENTIFY and pick each socket the step asks for: a halo shows it on the drawing. Then use PATCH to plug deck A’s white and red plugs into CH1 LINE, and press PLAY.',
     },
     seeing: [
       'You’re behind the gear: the back of deck A (or the turntable) above the back of the mixer, with the source’s white and red RCA plugs. Seen from behind, the mixer is mirrored.',
@@ -125,7 +128,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Open PATCH and connect each cable: tap the end already in its source, then where its loose end goes. Then use POWER: decks and mixer first, speakers last.',
     },
     seeing: [
-      'You’re looking at the whole booth from BEHIND, so it’s mirrored. At the top is the room: PA speakers on stands, the table, decks, mixer, headphones and booth monitors.',
+      // DJ-11: the layout moved here from the screen's step 1.
+      'You’re looking at the booth from BEHIND, so it’s mirrored. At the top, the room at 1:5 scale: the PA speakers (PA L on your left), the decks, mixer, headphones and booth monitors.',
       'Below it, full size, is everything you plug in. A cable glows blue while audio flows through it. CABLES (left to plug in), POWERED (devices on) and PA L · R track your wiring, the power and what reaches each PA speaker.',
     ],
     control: [
@@ -213,7 +217,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Headphone cue and booth monitoring': {
     intro: {
       learning: 'How you hear the next track privately in your headphones, and how the booth monitor feed is separate from what the crowd hears.',
-      start: 'In CUE press ▶ PLAY B, then CUE 2 with the CH2 fader down. Listen as PHONES, then as the CROWD, and compare what each one hears.',
+      // SH-11 (owner 2026-11-15: "build waves 1 thru 3"): the first step can be seen with sound off (the readouts).
+      start: 'In CUE press ▶ PLAY B, then CUE 2 with the CH2 fader down. Watch CUE BUS and PHONES L light while the crowd hears nothing of B; then listen as PHONES and as the CROWD.',
     },
     seeing: [
       'You see part of the mixer: its booth, headphone and CUE controls, with your headphones in the PHONES jack. Beside them are the output meters and a booth monitor at half scale.',
@@ -337,7 +342,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Beatgrids, sync and quantize': {
     intro: {
       learning: 'Why SYNC and QUANTIZE follow the beatgrid, not the music, so a wrong grid gives matching tempos with kicks that still land apart.',
-      start: 'Play both decks with DECKS, press SYNC B and listen as the CROWD: B’s kicks fall between A’s. Then fix deck B’s grid in GRID and sync again.',
+      // SH-11: a step that can be seen with sound off (REAL BEATS), before the listening.
+      start: 'Play both decks with DECKS and press SYNC B: REAL BEATS shows B’s kicks landing between A’s (listen as the CROWD to hear it). Then fix deck B’s grid in GRID and sync again.',
     },
     seeing: [
       'You see deck A’s and deck B’s waveforms, about two bars each, with their beatgrids: thin white beat lines and bold amber bar lines. The kicks are tinted violet.',
@@ -462,7 +468,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Stems and source separation': {
     intro: {
       learning: 'What stems are: a track’s drums, bass, chords and melody as separate parts. And why stems pulled out of a finished mix are never as clean as the originals.',
-      start: 'Play deck A and open STEMS. With SOURCE on ORIGINAL STEMS, switch MELODY off. Then switch SOURCE to SEPARATED (SIMULATED) and listen for what is left.',
+      // SH-11: what is left is read on MELODY LEFT, so the step works with sound off.
+      start: 'Play deck A and open STEMS. With SOURCE on ORIGINAL STEMS, switch MELODY off. Then switch SOURCE to SEPARATED (SIMULATED) and read MELODY LEFT: what is still there.',
     },
     seeing: [
       'Each lane is one stem of the track (drums, bass, chords and melody), all under one playhead. A muted part turns hatched.',

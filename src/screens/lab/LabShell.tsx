@@ -481,8 +481,12 @@ export function LabShell({
      *  disclosure — for the task the learner arrived to perform (the guided
      *  experiment). Owner 2026-09-17: a step sheet folded inside LAB NOTES is a
      *  step sheet the learner hunts for, leaves, and comes back to. Keep this
-     *  slot short; everything that is reading, not doing, belongs in the notes. */
-    wellTop?: ReactNode;
+     *  slot short; everything that is reading, not doing, belongs in the notes.
+     *  ADDITIVE (beginner waves 2026-11-15, SN-4 from F8a HAR-01): like the
+     *  children, it may be a FUNCTION of the shell API, so a drag surface here
+     *  (Harmonics' stems) can lock the well's scroll. A plain node renders
+     *  as before. */
+    wellTop?: ReactNode | ((api: LabShellExploreApi) => ReactNode);
   };
   /** The lab's interactive Explore content. A function child receives the
    *  shell API (scroll-lock control for drag editors); a plain node renders
@@ -509,6 +513,12 @@ export function LabShell({
   }, [firstVisit]);
   const modes = modesFor(labId);
   const hasCheck = modes.some((m) => m.key === 'check');
+  /** "Done here? Try CHECK ›" (SN-5): exactly what pressing the CHECK tab does. */
+  const openCheck = () => {
+    pickedTabRef.current = true;
+    setScrollLocked(false);
+    setMode('check');
+  };
   const shownGuide = typeof guide === 'function' ? guide(mode) : mode === 'explore' ? guide : undefined;
   /**
    * Already passed on an earlier visit?
@@ -786,10 +796,13 @@ export function LabShell({
           {mode === 'learn' ? (
             <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>
               <View style={styles.panel}>
-                <Text style={styles.caption}>
-                  What this lab teaches — definitions, common mistakes, pro tips, and the formula.
-                </Text>
+                {/* SN-5 (F7a EQ-05; owner 2026-11-15: "build waves 1 thru 3",
+                    D62): a line in, a line out. The caption that only repeated
+                    the section heads below it ("definitions, common mistakes,
+                    pro tips, and the formula") is gone; the reading ends on
+                    one step to the CHECK tab instead. */}
                 <GuidedLessonBody lesson={lesson} />
+                {hasCheck ? <TryCheckLine onPress={openCheck} /> : null}
               </View>
             </ScrollView>
           ) : null}
@@ -810,7 +823,7 @@ export function LabShell({
                   {/* The first-move instruction stays OUTSIDE the disclosure
                       (house rule, design pass 2026-08-31): an instruction
                       inside a collapsed section is an instruction unread. */}
-                  {rack.wellTop}
+                  {typeof rack.wellTop === 'function' ? rack.wellTop(api) : rack.wellTop}
                   <Text style={styles.caption}>{exploreCaption}</Text>
                   <CollapsibleSection title="LAB NOTES" keepMounted>
                     <Text style={styles.intro}>{intro}</Text>
@@ -824,6 +837,9 @@ export function LabShell({
                     >
                       <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — long-press any control for its own entry</Text>
                     </Pressable>
+                    {/* SN-5: the notes end on one step to CHECK. Inside the
+                        disclosure, so the open well gains nothing. */}
+                    {hasCheck ? <TryCheckLine onPress={openCheck} /> : null}
                   </CollapsibleSection>
                 </View>
               )}
@@ -835,9 +851,9 @@ export function LabShell({
           <ScrollView contentContainerStyle={[styles.scroll, scrollPad]} scrollEnabled={!scrollLocked}>
             {mode === 'learn' ? (
               <View style={styles.panel}>
-                <Text style={styles.caption}>
-                  What this lab teaches — definitions, common mistakes, pro tips, and the formula.
-                </Text>
+                {/* SN-5: the caption that repeated the section heads is gone
+                    here too. No CHECK line: this (non-rack) branch draws no
+                    CHECK view. */}
                 <GuidedLessonBody lesson={lesson} />
               </View>
             ) : null}
@@ -873,6 +889,18 @@ export function LabShell({
       <GuidedLessonSheet visible={lessonOpen} lesson={lesson} onClose={() => setLessonOpen(false)} />
       </ScreenGuideHost>
     </View>
+  );
+}
+
+/** One short step from the end of LEARN or of LAB NOTES to the CHECK tab
+ *  (SN-5 from F7a EQ-05, beginner waves 2026-11-15; owner: "build waves 1
+ *  thru 3", D62). Drawn in the CHECK tab's own blue. Only in a lab that has a
+ *  CHECK tab. */
+function TryCheckLine({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable style={styles.tryCheck} onPress={onPress} hitSlop={6} accessibilityRole="button" accessibilityLabel="Done here? Open the CHECK tab">
+      <Text style={styles.tryCheckText}>Done here? Try CHECK ›</Text>
+    </Pressable>
   );
 }
 
@@ -967,6 +995,9 @@ const styles = StyleSheet.create({
   // Rack mode: the frame fills the shell; hidden (not unmounted) during LEARN.
   rackFill: { flex: 1 },
   rackHidden: { display: 'none' },
+  /** SN-5: "Done here? Try CHECK ›", in the CHECK tab's blue. */
+  tryCheck: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
+  tryCheckText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: MODE_COLORS.check },
 
   section: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },

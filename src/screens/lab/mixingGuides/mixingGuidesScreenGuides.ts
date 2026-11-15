@@ -72,9 +72,10 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
     start: 'Read WHAT THE AUDIENCE EXPECTS and MIX PRIORITY #1 first. Then open EQ starting points, or tap OPEN ALL ▾ to read the whole guide.',
   },
   seeing: [
-    'This is one style’s guide. Start at the top: WHAT THE AUDIENCE EXPECTS and MIX PRIORITY #1, then the starting-points line.',
-    'AT A GLANCE: Origin / region, Typical tempo, Typical ensemble size, Live SPL (FOH, average) with a hearing note, Studio / streaming loudness.',
-    'THE GUIDE: numbered sections, from Purpose & audience expectations to Reference recordings. The first starts open.',
+    'At the top: WHAT THE AUDIENCE EXPECTS, MIX PRIORITY #1, the starting-points line.',
+    'AT A GLANCE: Origin / region, Typical tempo, Typical ensemble size.',
+    'THE GUIDE: numbered sections from Purpose & audience expectations; the first starts open. START HERE marks three to read first, REFERENCE the four tables.',
+    'SPL & loudness opens with Live SPL (FOH, average), a hearing note and Studio / streaming loudness.',
   ],
   control: [
     'Tap a section’s header to open or close it. OPEN ALL ▾ opens every section; CLOSE ALL ▴ closes them.',

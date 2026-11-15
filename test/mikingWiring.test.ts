@@ -121,7 +121,10 @@ describe('the family tiles (owner 2026-10-06: a tile per family on the Labs menu
     // `count` = n once the record is read, '—' before / when unreadable (2026-10-13).
     assert.match(hub, /\{\.\.\.fitValue\(12\)\}>\{`\$\{count\} \$\{pagesWord\} done`\}/);
     assert.match(hub, /\{unreadable \? <ProgressUnreadableNote \/> : null\}/);
-    assert.match(hub, /starting points, not rules/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MK-06): the note moved to
+    // the top of the hub, its words in data/registry.ts (HUB_NOTE).
+    assert.match(hub, /<Text style=\{styles\.note\}>\{HUB_NOTE\}<\/Text>/);
+    assert.match(readFileSync('src/screens/lab/miking/data/registry.ts', 'utf8'), /starting points, not rules/);
   });
 });
 

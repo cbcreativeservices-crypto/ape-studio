@@ -152,8 +152,11 @@ describe('3. each guide quotes its screen’s real names', () => {
   type Name = string | [string, string];
   const PIN: Record<string, { files: string[]; names: Name[] }> = {
     home: {
-      files: [`${D}CymaticsHomeScreen.tsx`, `${D}modules/registry.ts`, 'src/components/LabUnderstandingCheck.tsx', 'src/screens/lab/ModuleAccordionRow.tsx'],
-      names: ['SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTER-DRIVEN', 'NEW HERE? START HERE ›', ['LEARN & EXPERIMENT', 'LEARN &amp; EXPERIMENT'], 'CHECK YOUR UNDERSTANDING', 'SEE WHAT’S LEFT ›', 'GUIDED LESSON', 'OPEN', 'What Is Cymatics?', ['OPEN THE … STUDIO ›', 'OPEN THE CHLADNI PLATE STUDIO ›']],
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items CY-01, CY-02, CY-04):
+      // the caps badge, START HERE row and OPEN THE … STUDIO › buttons became a plain note,
+      // a numbered path and STUDIOS, FREE PLAY below the modules (words in homePath.ts).
+      files: [`${D}CymaticsHomeScreen.tsx`, `${D}homePath.ts`, `${D}modules/registry.ts`, 'src/components/LabUnderstandingCheck.tsx', 'src/screens/lab/ModuleAccordionRow.tsx'],
+      names: ['Does a note have a shape?', 'Watch sand find the still lines', 'Change One Thing', ['LEARN & EXPERIMENT', 'LEARN &amp; EXPERIMENT'], 'CHECK YOUR UNDERSTANDING', 'SEE WHAT’S LEFT ›', 'STUDIOS, FREE PLAY', 'GUIDED LESSON', 'OPEN', 'What Is Cymatics?', 'Chladni Plate Studio'],
     },
     end: {
       files: ['src/screens/lab/kit/LabEndScreen.tsx', 'src/screens/lab/kit/labEnd.ts', `${D}modules/registry.ts`, `${D}CymaticsHomeScreen.tsx`, `${D}CymaticsModuleScreen.tsx`],
@@ -178,7 +181,7 @@ describe('3. each guide quotes its screen’s real names', () => {
     },
     'module.harmony': {
       files: [`${D}modules/modHarmony.tsx`],
-      names: ['Wave addition', 'Lissajous figure', 'Spectrum', 'BASE', 'DETUNE', 'RATIO', 'VIEW', 'PLAY', 'INTERVAL', 'BEAT', 'locked — no beats', '1 : 1', 'unison', '5 : 7', 'tritone (near)', '1 : 2', 'octave', 'P5', 'A + B'],
+      names: ['Wave addition', 'Lissajous figure', 'Spectrum', 'BASE', 'DETUNE', 'RATIO', 'VIEW', 'PLAY', 'INTERVAL', 'BEAT', 'locked — no beats', '1 : 1', 'unison', '5 : 7', 'tritone (near)', '1 : 2', 'octave', 'fifth', 'A + B'], // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CY-03): P5 reads fifth
     },
     'module.systems': {
       files: [`${D}modules/modSystems.tsx`],
@@ -194,11 +197,12 @@ describe('3. each guide quotes its screen’s real names', () => {
     },
     'studio.plate': {
       files: [`${D}PlateStudioScreen.tsx`, `${D}DriveHint.tsx`, 'src/features/cymatics/plateBezel.ts', 'src/features/cymatics/materials.ts', 'src/screens/lab/LabShell.tsx'],
-      names: ['SAVE', 'FREQ', 'JUMP TO A MODE', 'LAND ON', '‹ −0.1%', '+0.1% ›', 'PLATE', 'SOLVED SHAPES', 'MATERIAL', 'DRIVE', 'Sweep the modes', 'Slow motion', 'Silent drive', 'SECOND TONE', 'VIEW', 'Particles', 'Heat map', 'Particles + heat', 'Phase', 'Node lines', '3D plate', 'Cross-section', 'LEVEL', 'SAND', '⟲ Reset sand', 'RESPONSE', 'MODE', 'RES', 'AT', 'NEAR', 'BETWEEN', 'BELOW', 'WHAT THIS PLATE IS', 'SIMULATION', 'Steel', 'LAB NOTES', ['PRESS ▶ PLAY TO DRIVE THE PLATE', 'PRESS ▶ PLAY TO DRIVE THE ${what.toUpperCase()}']],
+      names: ['SAVE', 'FREQ', 'JUMP TO A MODE', 'LAND ON', '‹ −0.1%', '+0.1% ›', 'PLATE', 'SOLVED SHAPES', 'MATERIAL', 'DRIVE', 'Sweep the modes', 'Slow motion', 'Silent drive', 'SECOND TONE', 'VIEW', 'Sand', 'Heat map', 'Sand + heat', /* owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-36): Particles reads Sand, one name per view */ 'Phase', 'Node lines', '3D plate', 'Cross-section', 'LEVEL', 'SAND', '⟲ Reset sand', 'RESPONSE', 'MODE', 'RES', 'AT', 'NEAR', 'BETWEEN', 'BELOW', 'WHAT THIS PLATE IS', 'SIMULATION', 'Steel', 'LAB NOTES', ['PRESS ▶ PLAY TO DRIVE THE PLATE', 'PRESS ▶ PLAY TO DRIVE THE ${what.toUpperCase()}']],
     },
     'studio.liquid': {
       files: [`${D}LiquidStudioScreen.tsx`, 'src/features/cymatics/faraday.ts', 'src/features/cymatics/liquids.ts', 'src/screens/lab/LabShell.tsx'],
-      names: ['DRIVE', 'RESP', 'SHAKE', 'a/a꜀', 'f/2', 'FLAT SURFACE', 'SPLASHING', 'THRESHOLD', 'WHAT THIS RIG IS', 'RIG SAFETY', '‹ −5%', '+5% ›', 'FREQ', 'DRIVE AT TWICE A DISH MODE', 'LIQUID', 'DISH', 'Sweep 15 → 150 Hz', 'Slow motion', 'Silent drive', 'SECOND FREQUENCY', 'The rig', 'Liquid surface', 'Height map', 'Contours', 'Refraction', '3D surface', 'Cross-section', 'Glycerin–water 50/50', 'STABLE STANDING PATTERN', 'SMALL RIPPLES', 'UNSTABLE MOTION', 'SAVE', 'LAB NOTES'],
+      names: ['DRIVE', 'RESP', 'SHAKE', 'ENOUGH', 'f/2', // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CY-03): a/a꜀ reads ENOUGH
+         'FLAT SURFACE', 'SPLASHING', 'THRESHOLD', 'WHAT THIS RIG IS', 'RIG SAFETY', '‹ −5%', '+5% ›', 'FREQ', 'DRIVE AT TWICE A DISH MODE', 'LIQUID', 'DISH', 'Sweep 15 → 150 Hz', 'Slow motion', 'Silent drive', 'SECOND FREQUENCY', 'The rig', 'Liquid surface', 'Height map', 'Contours', 'Refraction', '3D surface', 'Cross-section', 'Glycerin–water 50/50', 'STABLE STANDING PATTERN', 'SMALL RIPPLES', 'UNSTABLE MOTION', 'SAVE', 'LAB NOTES'],
     },
     'studio.membrane': {
       files: [`${D}MembraneStudioScreen.tsx`, 'src/features/cymatics/membrane.ts', 'src/screens/lab/LabShell.tsx'],
@@ -418,7 +422,8 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     const H = code('src/screens/lab/cymatics/modules/modHarmony.tsx');
     assert.match(H, /useState\('fifth'\)/);
     assert.match(H, /useState\(110\)/);
-    assert.match(H, /\{ id: 'fifth', n1: 2, n2: 3, label: '2 : 3', interval: 'perfect fifth', short: 'P5' \}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CY-03): the INTERVAL readout says fifth, not P5.
+    assert.match(H, /\{ id: 'fifth', n1: 2, n2: 3, label: '2 : 3', interval: 'perfect fifth', short: 'fifth' \}/);
     assert.match(H, /const beatHz = Math\.abs\(ratio\.n1 \* f2 - ratio\.n2 \* f1\);/);
     const pair = (base: number, d = 0) => [base * 2, base * 3 * (1 + d)];
     assert.deepEqual(pair(110).map(MU.formatHz), ['220 Hz', '330 Hz']);
@@ -436,7 +441,8 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.match(H, /const beatWindow = tone\.detuned \? 2\.5 \/ Math\.max\(0\.2, beatHz\) : 0;/);
     const t = textOf(MODS.harmony);
     assert.match(t, /A 220 Hz, B 330 Hz/);
-    assert.match(t, /A goes from 220 to 440 Hz, B from 330 to 660 Hz, and INTERVAL is still P5/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CY-03): P5 reads fifth.
+    assert.match(t, /A goes from 220 to 440 Hz, B from 330 to 660 Hz, and INTERVAL is still fifth/);
     assert.match(t, /Set VIEW to Lissajous figure, then ride DETUNE to about \+1\.00 %\. At BASE 220 Hz, BEAT reads about 13\.2 Hz/);
     assert.match(t, /Ride DETUNE back to locked, then pick RATIO 1 : 2/);
     assert.match(t, /about two and a half beats/);
@@ -500,7 +506,8 @@ describe('4. the numbers in TRY THIS are what the models print', () => {
     assert.ok(FA.readFaraday(L0, 80, 0.25).thresholdG > d.fr.thresholdG);
     assert.ok(FA.readFaraday(L0, 80, 0.25).lambdaMm < d.fr.lambdaMm);
     const t = textOf(STUDIOS.liquid);
-    assert.match(t, /40\.0 Hz and 0\.25 g: STABLE STANDING PATTERN, a\/a꜀ 1\.59×, RESP 20\.0 Hz f\/2/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CY-03): a/a꜀ reads ENOUGH.
+    assert.match(t, /40\.0 Hz and 0\.25 g: STABLE STANDING PATTERN, ENOUGH 1\.59×, RESP 20\.0 Hz f\/2/);
     assert.match(t, /about 0\.15 g: SMALL RIPPLES, and RESP reads 40\.0 Hz f/);
     assert.match(t, /about 0\.60 g: UNSTABLE MOTION/);
     assert.match(t, /about 0\.53 g/);

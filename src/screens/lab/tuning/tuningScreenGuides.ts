@@ -48,7 +48,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     seeing: [
       'The pitch rail runs from the root C (1:1) on the left to its octave (2:1) on the right. The eleven faint marks between are the notes still to be placed; after HEAR IT they turn to question marks.',
       'ROOT reads 261.63 Hz and OCTAVE 523.25 Hz. SOUND says ♪ PLAYING or STOPPED.',
-      'Below: IN THIS CHAPTER, a volume note, SCOPE ⓘ and BEGIN LAB ›.',
+      'Below: what the chapter is about with its To finish: line, a volume note, SCOPE ⓘ and BEGIN LAB ›.',
     ],
     control: [
       'Press HEAR IT to hear the root, then its octave; the rail lights each one as it sounds. ■ STOP silences it.',
@@ -275,8 +275,8 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     ],
     control: [
       'Ride the NOTES fader to reveal the mapping one note at a time.',
-      'The PLAY tray is LOCKED until a second note is out. Then it plays C with the newest note. From G it adds C, E 5/4, G 3/2, CHORD 4:5:6 and ALIGNED PARTIALS, then each pure third you reveal.',
-      'TONIC (C, F, G, D) and RETUNE stay LOCKED until all eight notes are out. RETUNE rebuilds the set around the tonic. ■ STOP silences.',
+      'The PLAY key reads after 2 notes, dimmed, until a second note is out. Then it plays C with the newest note. From G it adds C, E 5/4, G 3/2, CHORD 4:5:6 and ALIGNED PARTIALS, then each pure third you reveal.',
+      'TONIC (C, F, G, D) and RETUNE read after all 8 until all eight notes are out. RETUNE rebuilds the set around the tonic. ■ STOP silences.',
     ],
     changes: [
       'Small ratios give pure chords: C, E, G = 4 : 5 : 6.',

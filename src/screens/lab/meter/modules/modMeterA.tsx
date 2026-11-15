@@ -38,6 +38,7 @@ import { ListeningSoonCard, MythReality, PanelCard, ReadoutGrid, dstyles } from 
 import { levelColor } from '../../../../features/tools/levelColor';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RackUnit } from '../../rack/RackUnit';
+import { useFirstLabVisit } from '../../rack/learnFirstStore';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import {
   SIGNAL_LABELS,
@@ -825,7 +826,17 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
 
 export function LoudnessModule(p: MeterModuleProps) {
   const viz = useState(() => requireVizMeters())[0];
-  const [signal, setSignal] = useState<SignalKey>('music');
+  const [signal, setSignalRaw] = useState<SignalKey>('music');
+  // MT-03 (owner 2026-11-15: "build waves 1 thru 3", D62): on the learner's FIRST visit (per device,
+  // the shared ape:intro:* first-visit list) the strip opens on the one big INTEGRATED number; LRA,
+  // SAMPLE PK, TRUE PK and TP GAP join after the first move (a SIGNAL pick). A failed read shows all five.
+  const firstVisit = useFirstLabVisit('meter-loudness', true);
+  const [moved, setMoved] = useState(false);
+  const oneNumber = firstVisit !== false && !moved;
+  const setSignal = (k: SignalKey) => {
+    setSignalRaw(k);
+    setMoved(true);
+  };
 
   const sim = useMemo(() => simulateLoudness(signal), [signal]);
   const momMin = Math.min(...sim.momentary);
@@ -871,7 +882,7 @@ export function LoudnessModule(p: MeterModuleProps) {
         size: 'L', // taller face + bigger fonts (owner 2026-08-05)
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
         modelNote: LOUDNESS_MODEL_NOTE,
-        bezel,
+        bezel: oneNumber ? [bezel[0]] : bezel,
         onGuide: () => p.help('lufs'),
         render: (w, h) =>
           viz ? (

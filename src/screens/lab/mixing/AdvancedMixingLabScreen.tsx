@@ -80,5 +80,5 @@ export function AdvancedMixingLabScreen() {
   // header chip only on rack pages, and this lab has none); the ⓘ has the
   // header to itself.
   // The note's first line says what THIS lab measures (novice audit G4, 2026-11-14).
-  return <PagedLab labId="mixing-adv" unitNoun="page" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={ADV_ACCURACY_DETAIL} pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  return <PagedLab labId="mixing-adv" unitNoun="page" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} pageGuide={advancedMixingPageGuide} endGuide={ADVANCED_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={ADV_ACCURACY_DETAIL} pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

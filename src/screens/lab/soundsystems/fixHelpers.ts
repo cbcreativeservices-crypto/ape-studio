@@ -107,3 +107,84 @@ export function leftWord(done: number, total: number, doneWord = 'ALL DONE'): st
   const left = Math.max(0, total - done);
   return left === 0 ? doneWord : `${left} LEFT`;
 }
+
+/* ── BUILD · the console tray in steps (beginner waves 2026-11-15) ──────── */
+
+/** SS-10 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan):
+ *  capstones 7, 8 and 10 opened the whole desk in one tray (40 to 80 small
+ *  controls, three routing ideas at once). The tray now shows ONE step at a
+ *  time: the first step whose console requirements are not met yet is open;
+ *  every other step is a one-line header that opens on a tap. Nothing is
+ *  removed: each column, strip and readout is in exactly one step. */
+export type ConsoleStep = {
+  /** The step's name on its header (GROUP, EFFECTS, DCA…). */
+  label: string;
+  /** What the step is for, in a few words. */
+  blurb: string;
+  /** The capstone's route requirement ids this step meets. */
+  reqs: readonly string[];
+  /** The desk columns shown in this step (ConsoleColumn ids). */
+  columns: readonly string[];
+  subgroups?: boolean;
+  dcas?: boolean;
+  /** Matrix strips shown in this step (ids). */
+  matrices?: readonly string[];
+  /** "Who hears" readouts shown in this step (their titles). */
+  hears: readonly string[];
+};
+
+export const CONSOLE_STEPS: Readonly<Record<string, readonly ConsoleStep[]>> = {
+  'groups-fx': [
+    { label: 'GROUP', blurb: 'the drums on their subgroup, and the subgroup into the main mix', reqs: ['drumsSub', 'drumsMain'], columns: ['main', 'sub'], subgroups: true, hears: ['MAIN MIX HEARS', 'DRUMS SUBGROUP HEARS'] },
+    { label: 'EFFECTS', blurb: 'both vocals to the reverb on Aux 5, post-fader', reqs: ['reverb'], columns: ['send:aux5'], hears: ['AUX 5 · REVERB HEARS'] },
+    { label: 'DCA', blurb: 'every band channel on the BAND DCA', reqs: ['dca'], columns: ['dca'], dcas: true, hears: [] },
+  ],
+  matrices: [
+    { label: 'FILLS AND SUBS', blurb: 'Matrix 2 and Matrix 1 take the main mix', reqs: ['fills', 'subs'], columns: ['main'], matrices: ['mx-fills', 'mx-subs'], hears: ['MATRIX 2 · FRONT FILLS HEAR', 'MATRIX 1 · SUBS HEAR'] },
+    { label: 'LOBBY', blurb: 'the announce mic to Aux 7, and Matrix 3 taking the main mix and Aux 7', reqs: ['lobby'], columns: ['send:aux7'], matrices: ['mx-lobby'], hears: ['MATRIX 3 · LOBBY HEARS'] },
+    { label: 'SUB AUX', blurb: 'nothing vocal sent to Aux 6', reqs: ['noVox'], columns: ['send:aux6'], hears: [] },
+  ],
+  festival: [
+    { label: 'MONITORS', blurb: 'four wedge mixes on Aux 1 to 4, all pre-fader', reqs: ['fourMixes'], columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4'], hears: ['AUX 1 · WEDGE 1 HEARS'] },
+    { label: 'IN-EARS', blurb: 'the singer’s vocal to the in-ears, pre-fader', reqs: ['iemMix'], columns: ['send:aux8', 'send:aux9', 'send:aux10'], hears: ['AUX 8 · THE IN-EARS HEAR', 'AUX 9 · IN-EARS L HEARS', 'AUX 10 · IN-EARS R HEARS'] },
+    { label: 'RECORDING', blurb: 'Matrix 4 takes the main mix', reqs: ['rec'], columns: [], matrices: ['mx-rec'], hears: ['MATRIX 4 · RECORDING HEARS'] },
+    { label: 'SUBS', blurb: 'only kick, bass and keys on Aux 6', reqs: ['subs'], columns: ['send:aux6'], hears: ['AUX 6 · THE SUBS HEAR'] },
+  ],
+};
+
+/** Which step is open: the learner's own pick when they tapped a header,
+ *  else the first step with a requirement still unmet; -1 when every step
+ *  is met and nothing was picked (all headers show ✓). */
+export function openConsoleStep(steps: readonly ConsoleStep[], met: readonly string[], picked: number | null): number {
+  if (picked != null && picked >= 0 && picked < steps.length) return picked;
+  return steps.findIndex((s) => s.reqs.some((r) => !met.includes(r)));
+}
+
+/** A step's header line: "✓ GROUP · …" once its requirements are met. */
+export function consoleStepHeader(step: ConsoleStep, met: readonly string[], open: boolean): string {
+  const done = step.reqs.every((r) => met.includes(r));
+  return `${done ? '✓ ' : ''}${step.label}${open ? ' ▴' : ' ▾'} · ${step.blurb}`;
+}
+
+/* ── the home page (beginner waves 2026-11-15) ──────────────────────────── */
+
+/** SS-04 (owner 2026-11-15: "build waves 1 thru 3"): the whole signal chain
+ *  in one line at the top of the home page, and where to start. The names
+ *  are the lab's own station names (types.ts STATION_LABEL: console, not
+ *  mixer; processor; loudspeaker), so one part keeps one name (SH-36). */
+export const SS_CHAIN: readonly string[] = ['SOURCE', 'STAGE INPUT', 'CONSOLE', 'PROCESSOR', 'AMPLIFIER', 'LOUDSPEAKER', 'LISTENER'];
+export const SS_START_LINE = 'Every live system is this one chain. Start with LEARN: it teaches the chain, and the other four modes, in any order, put it to work.';
+
+/** SH-76 (owner 2026-11-15: "build waves 1 thru 3"): every tray choice
+ *  carries a one-line meaning. The ROUTE patch page's BUS tray listed bare
+ *  bus names; each now says what that bus carries (in general, never which
+ *  socket it belongs to). */
+export const BUS_BLURB: Readonly<Record<string, string>> = {
+  'Main L': 'The main mix, left side: the mix the house faders control.',
+  'Main R': 'The main mix, right side.',
+  'Aux 1': 'An auxiliary send: a separate mix, built from each channel’s own send level.',
+  'Aux 2': 'Another auxiliary send, with a separate mix of its own.',
+  'Aux 6': 'An auxiliary send; on this console it is the sub aux, for the low sources.',
+  'Matrix 2': 'A matrix: a blend of the console’s buses (the main mix, an aux) with its own level, EQ and delay.',
+  'Matrix 3': 'Another matrix, with its own level and its own blend of buses.',
+};

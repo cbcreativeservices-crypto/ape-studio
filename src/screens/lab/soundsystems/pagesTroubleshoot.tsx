@@ -209,14 +209,18 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
       {grade && !grade.correct ? <VerdictLine ok={false}>{gradeText}</VerdictLine> : null}
       {grade && grade.correct ? (
         <>
-          <VerdictLine ok>{gradeText}</VerdictLine>
+          {/* SH-69 (owner 2026-11-15: "build waves 1 thru 3"): the fault ends
+              on its rule, as the DJ lab's "Fixed." lines do; the grade line
+              (probes against the minimum) moved into THE WALK, so the screen
+              gains no line. */}
+          <VerdictLine ok>{`Fixed. ${c.rule}`}</VerdictLine>
           <Card tone="ok">
             <Eyebrow>WHY</Eyebrow>
             <Body>{c.explain}</Body>
             <Eyebrow>THE FIX</Eyebrow>
             <Body>{c.fix}</Body>
             <Eyebrow>THE WALK</Eyebrow>
-            <Body>{c.forward}</Body>
+            <Body>{`${gradeText} ${c.forward}`}</Body>
           </Card>
         </>
       ) : null}

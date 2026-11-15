@@ -232,19 +232,20 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   m7: {
     intro: {
       learning: 'A waveform display shows time at one point, while a room view shows space at one instant. distance = speed × time links the two.',
-      start: 'Follow the three steps: 1 · WATCH, 2 · FREEZE, 3 · DRAG THE PROBE. Read the PROBE slider at 220 Hz, then switch FREQ to 110 Hz and read it again.',
+      // FO-01 (owner 2026-11-15, "build waves 1 thru 3", D62): two steps on the display, FREEZE first; the room on a tap.
+      start: 'Follow the two steps on the display: 1 · FREEZE, then 2 · DRAG THE PROBE. Then tap SAME WAVE, IN THE ROOM › and read the PROBE slider at 220 Hz and at 110 Hz.',
     },
     seeing: [
-      'Top: THE ROOM — CAMERA FLASH. Pressure everywhere at one instant, with a ruler in meters. The ringed mic is the one point the lower graph hears.',
-      'Bottom: THE MIC’S OUTPUT. Pressure at the mic only, drawn into MIC INPUT at the NOW line, with a ruler in milliseconds.',
+      'First THE MIC’S OUTPUT alone: pressure at the mic only, drawn into MIC INPUT at the NOW line, with a ruler in milliseconds.',
+      'SAME WAVE, IN THE ROOM › adds THE ROOM — CAMERA FLASH on top: pressure everywhere at one instant, ruler in meters. The ringed mic is the point the lower graph hears.',
       'The green PROBE line marks one spot through the ROOM and MIC INPUT. The SAME SPOT chip names it in time and distance.',
     ],
     control: [
-      'Move the PROBE fader to slide the green bookmark. Its slider reads that spot in meters and milliseconds.',
       'Tap FREEZE to stop the display like a camera flash. MODE reads FROZEN instead of RUN.',
+      'Move the PROBE fader to slide the green bookmark. Its slider reads that spot in meters and milliseconds.',
       'Use the FREQ key to pick 110 Hz or 220 Hz (where you start).',
       'Tap PLAY to hear the chosen frequency. Tap it again to stop.',
-      'Under the first lines of text, follow three steps: 1 · WATCH while it runs, 2 · FREEZE, 3 · DRAG THE PROBE. The highlight follows what you’re doing.',
+      'The two steps at the top of the display light up in turn: 1 · FREEZE, then 2 · DRAG THE PROBE. Tap SAME WAVE, IN THE ROOM › to add the room view.',
     ],
     changes: [
       'THE MIC’S OUTPUT slides left because it’s recording: new sound lands at NOW and older sound moves left. Left means earlier.',
@@ -267,17 +268,17 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   m8: {
     intro: {
       learning: 'Frequency is the measured number and pitch is what you hear. Pitch follows ratios: every doubling of frequency is one octave.',
-      start: 'Tap 440 Hz · +2 8ve on the OCTAVES key and read ABOVE 110. Then drag one full turn clockwise around the spiral and see where you land.',
+      start: 'Tap 440 Hz · +2 octaves on the OCTAVES key and read ABOVE 110. Then drag one full turn clockwise around the spiral and see where you land.',
     },
     seeing: [
       'A spiral where one full turn is one octave, which is twice the frequency. The upward ray marks 110, 220, 440 and 880 Hz.',
       'The green marker and its orbiting dot sit at the current frequency. The orbit is slowed.',
-      'FREQ is the frequency. ABOVE 110 is how many octaves above 110 Hz you are, written 8ve. TONE shows when sound plays.',
+      'FREQ is the frequency. ABOVE 110 is how many octaves above 110 Hz you are. TONE shows when sound plays.',
     ],
     control: [
       'Drag around the spiral. Clockwise glides the pitch up, one turn per octave, from 110 to 880 Hz.',
       'The PITCH fader does the same glide on a slider and reads Hz and octaves.',
-      'The OCTAVES key jumps to 110 Hz, 220 Hz · +1 8ve, 440 Hz · +2 8ve or 880 Hz · +3 8ve. It starts at 220 Hz.',
+      'The OCTAVES key jumps to 110 Hz, 220 Hz · +1 octave, 440 Hz · +2 octaves or 880 Hz · +3 octaves. It starts at 220 Hz.',
       'Tap PLAY to hear the current frequency. It follows every glide.',
     ],
     changes: [
@@ -291,7 +292,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
       'Equal steps in pitch are equal ratios in Hz, so each higher octave spans more Hz than the one below it.',
     ],
     tryThis: [
-      'Tap 440 Hz · +2 8ve. ABOVE 110 reads +2.00 8ve. Then tap 880 Hz · +3 8ve: it reads +3.00 8ve.',
+      'Tap 440 Hz · +2 octaves. ABOVE 110 reads +2.00 octaves. Then tap 880 Hz · +3 octaves: it reads +3.00 octaves.',
       'From 220 Hz, drag clockwise one full turn. You land on 440 Hz, not on 220 + 110.',
       'Press PLAY and tap 110 → 220 → 440 → 880. Each step sounds the same size, though the jumps in Hz keep growing. (Needs sound. Sound off? Each tap moves one ring out.)',
     ],
@@ -361,7 +362,8 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     tryThis: [
       'Tap PRESET 0°. SUM reads ALIGNED, and the bottom wave is twice as tall as either input.',
       'Tap PRESET 180°. SUM reads CANCELED and the bottom line goes flat and red, while both inputs keep moving.',
-      'On the HEAR key, pick HEAR DRIFTING — 220 / 222 Hz. OUT reads 220/222 and the phone speaker swells and fades twice a second. On headphones the tones never mix in the air, so it’s much fainter.',
+      // SH-14 (owner 2026-11-15, "build waves 1 thru 3", D62): the listening step carries its sound-off way past it.
+      'Pick HEAR DRIFTING — 220 / 222 Hz: OUT reads 220/222 and the speaker swells and fades twice a second (fainter on headphones). (Needs sound. Sound off? PRESET 180° shows the moment they cancel.)',
     ],
   },
 
@@ -492,7 +494,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     tryThis: [
       'Answer all three CHECK YOURSELF questions before you read any explanation.',
       'Open the Playground and rebuild Module 4: move LEVEL and watch every view grow and shrink together.',
-      'In the Playground, pick SAW, then FUNDAMENTAL under HARMONIC RICHNESS. It’s Module 11 in reverse: the harmonics go, and a pure sine is left.',
+      'In the Playground, pick SAW, then FUNDAMENTAL under MORE CONTROLS › HARMONIC RICHNESS. It’s Module 11 in reverse: the harmonics go, and a pure sine is left.',
     ],
   },
 };
@@ -511,10 +513,10 @@ export const FOUNDATIONS_M7_COVER_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap TIME or SPACE on the display. Either answer opens the full display. A wrong guess is fine, and nothing is scored.',
-    'The dock already works: PROBE, FREEZE, FREQ (110 Hz or 220 Hz) and PLAY.',
+    'FREEZE, PROBE and FREQ (110 Hz or 220 Hz) wait for your answer; PLAY already works.',
   ],
   changes: [
-    'Your answer opens two graphs of one wave and the text that explains them.',
+    'Your answer opens a graph of one wave, then a second view of it on a tap, and the text that explains them.',
     'Calling it first, then checking, is how a wrong idea gets replaced by the right one.',
   ],
   teaches: [
@@ -523,7 +525,7 @@ export const FOUNDATIONS_M7_COVER_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Say your answer out loud, and why, before you tap it.',
-    'Press PLAY first and listen while you decide.',
+    'Press PLAY first and listen while you decide. (Needs sound. Sound off? The picture is enough.)',
   ],
 };
 
@@ -559,7 +561,8 @@ export const FOUNDATIONS_END_GUIDE: ScreenGuide = {
 /** The Sound Playground (route FoundationsPlayground) — one screen. */
 export const PLAYGROUND_SCREEN_GUIDE: ScreenGuide = {
   intro: {
-    learning: 'How every property from Foundations of Sound acts on one sound at once, and which changes you can hear and which you can only see.',
+    // PG-01 (owner 2026-11-15, "build waves 1 thru 3", D62): the same line as the page's subtitle.
+    learning: 'Best after Foundations of Sound; every control here was taught there. Here they all act on one sound at once: some changes you can hear, some you can only see.',
     start: 'Note λ at 290 Hz, then slide FREQ to about 580 Hz. Next, pick SQUARE in the SOURCE tray and count the lines in the SPECTRUM.',
   },
   seeing: [
@@ -569,8 +572,8 @@ export const PLAYGROUND_SCREEN_GUIDE: ScreenGuide = {
   ],
   control: [
     'FREQ fader: 55 Hz–3.5 kHz, starting at 290 Hz. LEVEL fader: −48 to −16 dBFS, starting at −38.',
-    'SOURCE tray: SINE, SQUARE, SAW or TRIANGLE; WHITE, PINK or BROWN NOISE; SLOW SWEEP or FAST SWEEP. For a wave you also get HARMONIC RICHNESS (ALL HARMONICS, FIRST 3, FUNDAMENTAL) and PHASE · POLARITY.',
-    'FX tray: STEREO BALANCE, DELAY (DELAY OFF, 30 ms, 120 ms, 400 ms) and EQ LOW-PASS (EQ OFF, LPF 2 kHz, LPF 500 Hz). Q 0.7 (smooth) or Q 4 (peaked) work once a low-pass is on.',
+    'SOURCE tray: SINE, SQUARE, SAW or TRIANGLE. Its MORE CONTROLS fold holds WHITE, PINK or BROWN NOISE, SLOW SWEEP or FAST SWEEP, and for a wave HARMONIC RICHNESS (ALL HARMONICS, FIRST 3, FUNDAMENTAL) and PHASE · POLARITY.',
+    'Then FX: STEREO BALANCE, DELAY (DELAY OFF, 30 ms, 120 ms, 400 ms) and EQ LOW-PASS (EQ OFF, LPF 2 kHz, LPF 500 Hz). Q 0.7 (smooth) or Q 4 (peaked) work once a low-pass is on.',
     'PLAY / STOP: you hear every change live, after a hearing reminder. Long-press any control for its guided-lesson entry.',
   ],
   changes: [
@@ -585,7 +588,7 @@ export const PLAYGROUND_SCREEN_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Note λ at 290 Hz (1.18 m). Then slide FREQ to about 580 Hz: λ reads about 0.59 m. Double the frequency, half the wavelength.',
-    'Pick SQUARE. The SPECTRUM shows 6 lines (odd harmonics only). Tap FIRST 3: only 2 remain, and the WAVEFORM’s corners round off.',
-    'Press PLAY and flip POLARITY + to POLARITY −. The WAVEFORM turns upside down, but the sound doesn’t change. (Needs sound. Sound off? The SPECTRUM stays the same.)',
+    'Pick SQUARE. The SPECTRUM shows 6 lines (odd harmonics only). Open MORE CONTROLS and tap FIRST 3: only 2 remain, and the corners round off.',
+    'Press PLAY and, in MORE CONTROLS, flip POLARITY + to POLARITY −. The WAVEFORM turns upside down, but the sound doesn’t change. (Needs sound. Sound off? The SPECTRUM stays the same.)',
   ],
 };

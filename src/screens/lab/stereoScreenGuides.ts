@@ -6,8 +6,8 @@
  * fxLabConfigs.tsx) with three tabs, so the guides are keyed by the shell's
  * tab id:
  *   explore — the rack: the animated signal-flow display (IN ▸ · M/S WIDTH ·
- *             ▸ OUT), the WIDTH / PAN / BASS / FOLD readouts, the WIDTH fader and the
- *             PAN / BASS / FOLD / SOURCE keys, LAB NOTES (DESIGNED RESPONSE:
+ *             ▸ OUT), the WIDTH / PAN / BASS / MONO CHECK readouts, the WIDTH fader and the
+ *             PAN / BASS / MONO CHECK / SOURCE keys, LAB NOTES (DESIGNED RESPONSE:
  *             goniometer + CORRELATION, THE AUDIO PATH, two CHECK YOURSELF);
  *   learn   — the reading page (the guided lesson 'stereo' in full);
  *   check   — CHECK YOUR UNDERSTANDING (understandingChecks.ts STEREO),
@@ -47,18 +47,20 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How stereo splits into MID (what L and R share) and SIDE (what differs), why widening turns up the SIDE, and why the SIDE cancels in mono.',
-      start: 'Tap ▶ and open LAB NOTES. Slide WIDTH from 0% to 200% and watch CORRELATION fall. Then set FOLD to MONO CHECK and watch the OUT traces merge.',
+      // ST-04 + SH-11 (owner 2026-11-15: "build waves 1 thru 3", D62): a silent first move on
+      // WIDTH, then MONO CHECK named for what it is: how a phone speaker hears the mix.
+      start: 'Drag WIDTH from 0% to 200% and watch the OUT traces pull apart. Then turn MONO CHECK on: that is how a phone speaker hears your mix, and the two traces merge into one line.',
     },
     seeing: [
       'Signal flow: IN ▸, the green M/S WIDTH stage, ▸ OUT. MID is what L and R share; SIDE is what differs. Amber: L. Blue: R.',
       'IN shows a test tone, not your source: STEREO TEST TONE · L ≠ R (R lags L); with SOURCE MONO, SAME TONE IN L AND R.',
-      'Readouts: WIDTH, PAN, BASS and FOLD (STEREO or MONO).',
+      'Readouts: WIDTH, PAN, BASS and MONO CHECK (OFF or ON).',
       'LAB NOTES, DESIGNED RESPONSE: a goniometer, L plotted against R (M up, S across), and a CORRELATION meter, −1 to +1.',
     ],
     control: [
       'Slide WIDTH (0–200%) to scale the SIDE against the MID. 100% is the image as recorded; double-tap the lane to return there.',
       'PAN: L, CENTER or R, a balance control. At L the right channel is muted and the left is lifted 3 dB. BASS: OFF or 120 Hz. At 120 Hz the SIDE is filtered out below about 120 Hz, so the lows go mono.',
-      'FOLD: STEREO or MONO CHECK, which adds left and right together, as a single speaker would.',
+      'MONO CHECK: OFF or ON. ON adds left and right together, the way a phone speaker hears your mix.',
       'SOURCE: PINK NOISE · STEREO, SINE 440 Hz · STEREO, or PINK NOISE · MONO (nothing to widen).',
       'Tap ▶ (top right) or the display to play the source. Long-press any key or readout to read about it. LAB NOTES end with two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
@@ -76,8 +78,8 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Open LAB NOTES and slide WIDTH: CORRELATION reads +1.00 at 0%, +0.45 at 100% and −0.20 at 200%. The goniometer’s vertical line opens out sideways.',
-      'At WIDTH 200%, set FOLD to MONO CHECK: the two OUT traces glide onto one line. The extra width is gone in mono.',
-      'With FOLD on STEREO, set PAN to L: the blue R trace on OUT goes flat and the amber one grows. The right channel is muted, not moved.',
+      'At WIDTH 200%, turn MONO CHECK on: the two OUT traces glide onto one line. The extra width is gone in mono.',
+      'Back in stereo, set PAN to L: the blue R trace on OUT goes flat and the amber one grows. The right channel is muted, not moved.',
     ],
   },
 
@@ -89,17 +91,17 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the Stereo Imaging guided lesson as one page to read. ▶ in the header still plays the source you set on EXPLORE.',
-      'It starts with what stereo imaging is, then CONTROLS: the display, PAN, WIDTH, Mid gain (M) and Side gain (S), FOLD, BASS and three ADV (advanced) entries.',
+      'It starts with what stereo imaging is, then CONTROLS: the display, PAN, WIDTH, Mid gain (M) and Side gain (S), MONO CHECK, BASS and three ADV (advanced) entries.',
       'Then come COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT: the Mid/Side sums and what correlation measures.',
     ],
     control: [
       'Scroll to read. Use the tabs under the title to switch between LEARN, EXPLORE and CHECK; EXPLORE is the live rack.',
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet over the rack.',
-      'On EXPLORE, long-press WIDTH, PAN, BASS, FOLD or a readout to read just its entry. Long-press a SOURCE choice for that test signal’s own note.',
+      'On EXPLORE, long-press WIDTH, PAN, BASS, MONO CHECK or a readout to read just its entry. Long-press a SOURCE choice for that test signal’s own note.',
     ],
     changes: [
       'Nothing on this page moves. Use it to explain what the OUT traces and CORRELATION show you on EXPLORE.',
-      'Mid gain (M), Side gain (S) and the ADV entries describe controls you won’t find on EXPLORE. There you have WIDTH, PAN, BASS and FOLD.',
+      'Mid gain (M), Side gain (S) and the ADV entries describe controls you won’t find on EXPLORE. There you have WIDTH, PAN, BASS and MONO CHECK.',
       'The FORMULA builds MID from L + R and SIDE from L − R. WIDTH scales the SIDE, then the two are turned back into L and R.',
     ],
     teaches: [
@@ -117,7 +119,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A review of stereo imaging: what WIDTH really changes, what a mono fold does to a wide mix, why bass is kept mono, and what correlation warns of.',
-      start: 'Read each question and tap a choice. Unsure? Switch to EXPLORE, try the idea with WIDTH and FOLD while watching CORRELATION, then come back.',
+      start: 'Read each question and tap a choice. Unsure? Switch to EXPLORE, try the idea with WIDTH and MONO CHECK while watching CORRELATION, then come back.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING and the lab’s title, then four questions: what WIDTH changes, a fold to mono at 200%, why bass goes mono, and a correlation near −1.',
@@ -125,7 +127,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
       'When all are right, it reads: Every question answered correctly — the check is passed.',
     ],
     control: [
-      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away. Nothing is lost and there is no score.',
+      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. Leave the lab before the last one and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
@@ -177,7 +179,7 @@ export const STEREO_END_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'If the check is still listed, tap its row to go back to CHECK. Answer all four, then FINISH · SEE WHAT’S LEFT › shows LAB COMPLETE.',
-    'Once it’s passed, tap ‹ BACK TO THE LAB. On EXPLORE, set WIDTH 200% and FOLD to MONO CHECK again, and listen to what happens to the width.',
+    'Once it’s passed, tap ‹ BACK TO THE LAB. On EXPLORE, set WIDTH 200% and turn MONO CHECK on again, and listen to what happens to the width.',
   ],
 };
 

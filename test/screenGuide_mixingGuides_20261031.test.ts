@@ -157,7 +157,11 @@ describe('4. wiring', () => {
   it('the hub hands its guide to LabHeader inside a ScreenGuideHost', () => {
     assert.match(HUB, /import \{ MIXING_GUIDES_HUB_GUIDE \} from '\.\/mixingGuidesScreenGuides';/);
     assert.match(HUB, /<ScreenGuideHost regions=\{false\} resetKey="hub">\s*<LabHeader title="MIXING GUIDES"[^>]*guide=\{MIXING_GUIDES_HUB_GUIDE\} \/>/);
-    assert.match(HUB, /<\/ScreenGuideHost>\s*(\{\})?\s*<ProNoteIntro \/>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BM-04):
+    // the pro note no longer opens by itself on the hub; its link stays.
+    assert.match(HUB, /<\/ScreenGuideHost>/);
+    assert.doesNotMatch(HUB, /<ProNoteIntro/);
+    assert.match(HUB, /<ProNoteButton \/>/);
   });
   it('the reader hands its guide to LabHeader; the what’s-left screen hands the END guide, titled WHERE YOU ARE', () => {
     assert.match(READER, /import \{ MIXING_GUIDE_READER_GUIDE, MIXING_GUIDES_END_GUIDE \} from '\.\/mixingGuidesScreenGuides';/);

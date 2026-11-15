@@ -83,7 +83,7 @@ const CLOCKDRIFT: Workspace = {
     '(ppm×10⁻⁶) × time. Real clocks also jitter and wander; this is the steady-state drift only.',
   glossary: ['Sample Rate', 'Word Clock', 'Jitter', 'Synchronization'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of the digital link.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Sample rate of the digital link.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     // 0 ppm is a real answer ("never slips"), so no zero warning (audit R2).
     { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', nonNegative: true, placeholder: '50', help: 'Frequency error in parts per million between the two clocks (0 = locked to the same clock).' },
     { key: 'dur', name: 'DURATION', quantity: 'time', meaning: 'time:duration', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', positive: true, warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
@@ -180,7 +180,7 @@ const NETAUDIO: Workspace = {
   glossary: ['Sample Rate', 'Bit Depth', 'Bandwidth', 'Latency', 'Packet'],
   fields: [
     { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '64', help: 'Number of audio channels in one direction.', positive: true, warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of each channel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Sample rate of each channel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', integer: true, placeholder: '24', help: 'Bits per sample carried on the wire.', positive: true, warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
     { key: 'packetms', name: 'PACKET TIME', quantity: 'time', defaultUnit: 'ms', placeholder: '1', help: 'Audio time carried per packet — smaller = lower latency, more overhead.', positive: true, warn: { test: (x) => x <= 0, msg: 'Packet time must be greater than zero.' } },
   ],
@@ -416,7 +416,7 @@ const FIRLEN: Workspace = {
     '(N−1)/2 samples, exactly. A transition band wider than half the sample rate is refused.',
   glossary: ['FIR Filter', 'Linear Phase', 'Latency', 'Sample Rate', 'Transition Band'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', positive: true, warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
     { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
     { key: 'taps', name: 'TAP COUNT', quantity: 'number', meaning: 'number:taps', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for “Latency from a tap count”.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
@@ -525,7 +525,7 @@ const CONVOLUTION: Workspace = {
   glossary: ['Convolution', 'Impulse Response', 'Latency', 'Sample Rate', 'FFT'],
   fields: [
     { key: 'irSec', name: 'IR LENGTH', quantity: 'time', defaultUnit: 's', placeholder: '2', help: 'Duration of the impulse response.', positive: true, warn: { test: (x) => x <= 0, msg: 'IR length must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '2', help: 'Number of channels processed.', positive: true, warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
     { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', integer: true, placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
   ],

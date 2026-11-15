@@ -22,6 +22,7 @@ import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, MIXER, PLAYER, PLAYER_D, PLAYER_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { tempoHalfway } from '../goalWords';
 import { boothKey, stopKey, tempoKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -310,6 +311,8 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
             });
           }}
           fixed={both && fault.current.pulled && Math.abs(bpmA - bpmB) < 0.05 && Math.abs(off) < 1 / 16 && booth.ch[2].fader >= 0.5}
+          // DJ-10 (owner 2026-11-15: "build waves 1 thru 3"): the second half, said at the moment the first is done
+          halfway={tempoHalfway({ faultOn: fault.current.on && both, pulled: fault.current.pulled, bpmMatch: Math.abs(bpmA - bpmB) < 0.05, inPhase: Math.abs(off) < 1 / 16, ch2Fader: booth.ch[2].fader })}
           hints={['First pull B out of the mix (JOG B → CH2 FADER DOWN) and fix it in your headphones — the crowd should not hear the clash. The BPMs match, so this is not drift.', 'Look at the PHASE strip: B sits about half a beat away from A. Two BIG PUSHes (¼ beat each) cover most of it, or re-drop B on the one.', 'Finish with small nudges until the line sits in the green, then bring CH2 back UP.']}
           why="The tempos matched exactly, but deck B was half a beat late — an offset, not drift. You took B out of the mix, fixed it in your headphones and brought it back. A big offset is quickest fixed by restarting B on the one (or a firm push); small nudges are for the last few milliseconds. The tempo fader would only have made them slide."
           onFixed={() => setFaultFixed(true)}

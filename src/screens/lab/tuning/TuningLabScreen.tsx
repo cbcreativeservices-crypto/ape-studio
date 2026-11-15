@@ -27,7 +27,8 @@ import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuning
 import { holdTuningProgress, isTuningProgressUnreadable, loadTuningProgress, saveTuningProgress, setTuningChapterCount, tuningResetForPractice, type TuningProgress } from '../../../features/tuning/tuningProgress';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { peekSessionWork } from '../../../features/lab/sessionCarry';
-import { CHAPTERS, CHAPTER_COUNT, CHAPTER_FINISH } from './chapters';
+import { CHAPTERS, CHAPTER_COUNT, CHAPTER_FINISH, DEEPER_CHAPTERS, DEEPER_MARK, chapterFinishLine } from './chapters';
+import { ChapterObjective } from './rackLayout';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
@@ -255,7 +256,8 @@ export function TuningLabScreen() {
   const def = CHAPTERS.find((c) => c.index === chapter) ?? CHAPTERS[0];
   const isDone = !!progress?.completed.includes(chapter);
 
-  const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone, objective: def.objective };
+  // The chapter names its own task until it is done (D62 TU-03).
+  const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone, objective: def.objective, finish: isDone ? undefined : chapterFinishLine(def.index) };
   const Chapter = def.Component;
   // RACK CHAPTERS (owner, TestFlight build 32, 2026-09-30: "poor arrangement
   // of controls above displays … do a proper rack system"): a chapter that
@@ -283,7 +285,8 @@ export function TuningLabScreen() {
   // 1-based (MODULE 3 / 14); `chapter` stays the 0-based registry index. The
   // hook persists nothing — `goTo` keeps the stop-on-leave and the save.
   const units = useMemo(
-    () => CHAPTERS.map((c) => ({ id: String(c.index), title: c.title, done: !!progress?.completed.includes(c.index) })),
+    // CONTENTS marks the deeper chapter (D62 TU-05); it still counts like every chapter.
+    () => CHAPTERS.map((c) => ({ id: String(c.index), title: DEEPER_CHAPTERS.has(c.index) ? `${c.title} · ${DEEPER_MARK}` : c.title, done: !!progress?.completed.includes(c.index) })),
     [progress],
   );
   const navGo = useCallback((i: number) => goTo(CHAPTERS[i]?.index ?? 0), [goTo]);
@@ -369,12 +372,7 @@ export function TuningLabScreen() {
         </View>
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 24 }]}>
-        {def.objective ? (
-          <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${def.objective}`}>
-            <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
-            <Text style={styles.objectiveText}>{def.objective}</Text>
-          </View>
-        ) : null}
+        {def.objective ? <ChapterObjective objective={def.objective} finish={ctx.finish} /> : null}
         <Chapter ctx={ctx} />
         {/* The reading chapter has no rack, so it draws the in-flow NEXT itself. */}
         <LabNextButton />
@@ -415,9 +413,6 @@ const styles = StyleSheet.create({
   rackFill: { flex: 1 },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
   creditKept: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
-  objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
-  objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
-  objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.hairlineDim, backgroundColor: colors.screenBgDeep },
   sound: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
   stopBtn: { minHeight: 44, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: '#4a2020', justifyContent: 'center', backgroundColor: '#1a0f10' },

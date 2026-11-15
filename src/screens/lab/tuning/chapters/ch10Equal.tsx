@@ -101,7 +101,8 @@ export function Ch10Equal({ ctx }: ChapterProps) {
     >
       <Lead>What if every semitone used exactly the same frequency ratio?</Lead>
       <Body>Twelve positions on a logarithmic cents rail — equal spacing here means equal ratios, not equal hertz.</Body>
-      <EquationStage
+      {/* The derivation folds under MATH (owner 2026-11-15, D62 TU-01). */}
+      {ctx.mathView ? <EquationStage
         title="TWELVE IDENTICAL STEPS"
         reduceMotion={ctx.reduceMotion}
         steps={[
@@ -111,14 +112,14 @@ export function Ch10Equal({ ctx }: ChapterProps) {
           { text: `r ≈ ${ET_SEMITONE.decimalLabel}` },
           { text: 'each step = 1200 ÷ 12 = 100 cents', note: 'exactly, by construction' },
         ]}
-      />
+      /> : <Body>Twelve identical steps must land exactly on the octave, so each step is the same small ratio: 100 cents. MATH (top right) shows the derivation.</Body>}
       <Prompt>Build the scale one step at a time and watch the hertz increase grow.</Prompt>
       <Card tone="math">
         {built === 0 ? (
           <MathLine>start = 1 · {root.toFixed(2)} Hz</MathLine>
         ) : (
           <>
-            <MathLine>{CHROMA[built].value.exactLabel} = {CHROMA[built].value.decimalLabel} · {CHROMA[built].value.cents.toFixed(0)} ¢ · {hz(built).toFixed(2)} Hz</MathLine>
+            <MathLine>{ctx.mathView ? `${CHROMA[built].value.exactLabel} = ` : `step ${built} · ×`}{CHROMA[built].value.decimalLabel} · {CHROMA[built].value.cents.toFixed(0)} ¢ · {hz(built).toFixed(2)} Hz</MathLine>
             <MathLine emphasis>this step: {hz(built - 1).toFixed(2)} → {hz(built).toFixed(2)} Hz = +{(hz(built) - hz(built - 1)).toFixed(2)} Hz, ratio {ET_SEMITONE.decimalLabel}, 100 ¢</MathLine>
             {built >= 2 ? <MathLine>previous step: +{(hz(built - 1) - hz(built - 2)).toFixed(2)} Hz — same ratio, more hertz</MathLine> : null}
           </>

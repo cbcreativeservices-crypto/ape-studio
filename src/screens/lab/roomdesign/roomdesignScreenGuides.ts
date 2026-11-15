@@ -26,20 +26,22 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 import type { RoomModuleId } from './registry';
 
 export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
-  // ── 1 · What a room model can tell you (reading page) ────────────────────
+  // ── 2 · What a room model can tell you (reading page) ────────────────────
+  // RO-06 (owner 2026-11-15, "build waves 1 thru 3", D62): the lab opens on
+  // Create the room; this reading page follows it, before Monitoring setup.
   intro: {
     intro: {
       learning: 'Every number in this lab is one of three kinds: CALCULATED, ESTIMATED or MEASURED. A model shows where problems are likely; only a measurement describes your real room.',
-      start: 'Read THREE KINDS OF NUMBER, then HEARING FIRST. Before you check, guess which kind a speaker-to-ear distance is. Then tap NEXT to open Create the room.',
+      start: 'Read THREE KINDS OF NUMBER, then HEARING FIRST. Before you check, guess which kind a speaker-to-ear distance is. Then tap NEXT to open Monitoring setup.',
     },
     seeing: [
-      'This page is for reading; there’s no drawing yet. It takes Wave Physics and Speaker Placement & Coverage into your own room.',
+      'This page is for reading, between your room and its speakers. It takes Wave Physics and Speaker Placement & Coverage into your own room.',
       'Start with THREE KINDS OF NUMBER: CALCULATED (exact arithmetic), ESTIMATED (a model built on simple physics) and MEASURED (taken in the real room).',
-      'HEARING FIRST gives the safe-level rule for monitoring. HOW THE LAB RUNS lists the six modules that follow, in order.',
+      'HEARING FIRST gives the safe-level rule for monitoring. HOW THE LAB RUNS lists the live modules, in order.',
     ],
     control: [
       'Nothing to set here. Scroll to read.',
-      'Tap NEXT at the bottom to open Create the room. Use the strip under the title to jump to any module, or ‹ to leave the lab.',
+      'Tap NEXT at the bottom to open Monitoring setup. Use the strip under the title to jump to any module, or ‹ to leave the lab.',
       'Tap ⓘ on any module whenever you want that screen explained.',
     ],
     changes: [
@@ -59,11 +61,11 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
   },
 
-  // ── 2 · Create the room ──────────────────────────────────────────────────
+  // ── 1 · Create the room (the lab opens here: RO-06, owner 2026-11-15) ────
   create: {
     intro: {
-      learning: 'How a room is described for acoustics: size, height, surfaces and furniture. Also why dimensions that are simple multiples of each other stack bass resonances on one note.',
-      start: 'Read AREA, VOLUME and RATIO S:M:L on the default room. Then slide CEILING and watch the side view open and RATIO change. Open FINISH to compare materials.',
+      learning: 'Build a model of your room in steps: size, speakers, where you sit, suggested setups, panels, your report. First, the size: how a room is described for acoustics.',
+      start: 'Drag a corner of the room to reshape it. Then read AREA, VOLUME and RATIO S:M:L, and slide CEILING to watch the side view open.',
     },
     seeing: [
       'Your room from above (PLAN), FRONT wall at the top. Width runs across, length up the left side. Doors and windows carry their wall’s tag (W2, W3).',

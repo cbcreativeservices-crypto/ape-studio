@@ -114,7 +114,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking="From the player’s right · the dayan in front, the bayan behind" prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking="From the player’s right · the dayan in front, the bayan behind" prompt="Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stage.text}</Point>
           </Card>

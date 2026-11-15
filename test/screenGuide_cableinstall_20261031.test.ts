@@ -350,7 +350,11 @@ describe('5. the chip decision: a concept / decision lab drops the AccuracyNote'
     assert.match(code(`${DIR}/scenes/MechScene.tsx`), /Conceptual meter for judgment training — not an engineering pull calculation\./);
     assert.match(code(`${DIR}/scenes/EmiScene.tsx`), /Not measured values\./);
   });
-  it('the code / safety boundary stays on the intro (CI_GOVERN_NOTE)', () => {
-    assert.match(code(`${DIR}/CableInstallLabScreen.tsx`), /<Text style=\{styles\.governNote\}>\{CI_GOVERN_NOTE\}<\/Text>/);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CI-04): the code note
+  // moved from the intro page to the top of SOURCES / STANDARDS opened from the intro.
+  it('the code / safety boundary rides on top of SOURCES / STANDARDS from the intro (CI_GOVERN_NOTE)', () => {
+    const scr = code(`${DIR}/CableInstallLabScreen.tsx`);
+    assert.match(scr, /const CI_INTRO_SOURCES_LEAD: readonly string\[\] = \[CI_INTRO_LEAD, CI_GOVERN_NOTE\];/);
+    assert.match(scr, /<SourceSheet sourceIds=\{sourceIds\} lead=\{sourceLead \? CI_INTRO_SOURCES_LEAD : undefined\}/);
   });
 });

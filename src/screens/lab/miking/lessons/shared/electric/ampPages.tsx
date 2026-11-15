@@ -204,7 +204,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                         if (p) pick(p.id);
                       },
                       format: () => (shown ? shown.title : 'step through the parts'),
-                      formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
+                      formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'PICK'),
                     },
                     parts.length,
                     parts.findIndex((p) => p.id === partId),
@@ -267,7 +267,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   if (p) aPick(p.id);
                 },
                 format: () => (aShown ? aShown.short.toUpperCase() : 'step through the parts'),
-                formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'STEP'),
+                formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'PICK'),
               },
               aParts.length,
               aParts.findIndex((p) => p.id === aPart),
@@ -490,8 +490,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             { k: 'BACK AIR', v: shown >= 3 ? (coneBack === 'open' ? 'PULLED · OUT' : 'PULLED · IN BOX') : '—', flex: 1.4 },
           ],
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${stage.title.toLowerCase()}`, formatShort: () => `${shown}` }, n, shown - 1, (i) => `${i + 1} · ${S.stages[i].title}`, (i) => goTo(i + 1)),
-            { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+            tapsWhenFew({ kind: 'fader', id: 'step', label: 'EVENT', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${stage.title.toLowerCase()}`, formatShort: () => `${shown}` }, n, shown - 1, (i) => `${i + 1} · ${S.stages[i].title}`, (i) => goTo(i + 1)),
+            { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
             {
               kind: 'options',
               id: 'back',
@@ -509,7 +509,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         },
         well: (
           <>
-            <Landing looking={`Side view · a speaker cut open · ${coneBack} back`} prompt="STEP through the four events, or PLAY ONCE — it stops at the end." />
+            <Landing looking={`Side view · a speaker cut open · ${coneBack} back`} prompt="Go EVENT by EVENT through the four events, or PLAY ONCE — it stops at the end." />
             <Card>
               <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
             </Card>
@@ -674,7 +674,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   if (it) pickC(it.id);
                 },
                 format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-                formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (cs ? cs.short.slice(0, 9) : 'PICK'),
               },
               chainItems.length,
               chainItems.findIndex((q) => q.id === cSel),
@@ -735,7 +735,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   if (it) setSel(it.id);
                 },
                 format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-                formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (ps ? ps.short.slice(0, 9) : 'PICK'),
               },
               planItems.length,
               planItems.findIndex((q) => q.id === sel),
@@ -927,7 +927,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
+            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
             ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
           ],
           initialParam: 'piece',

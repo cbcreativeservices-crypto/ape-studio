@@ -17,6 +17,9 @@ import ts from 'typescript';
 
 const FILE = fileURLToPath(new URL('../src/screens/lab/FmLabScreen.tsx', import.meta.url));
 const nodeRequire = createRequire(import.meta.url);
+// owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-03): the screen draws faint
+// in-tune lines from its own pure helper, so the real one stands in here (its lines are 1 px, never a stick).
+const FM_GRID = await import('../src/screens/lab/fmGrid.ts');
 const W = 353; // the glass at a 375-wide phone
 const H = 190;
 const PAD = 14;
@@ -58,6 +61,7 @@ function openLab() {
     },
     '../../features/audio/AudioOutputGate': { useAudioOutputGate: () => ({ requestAudioOutput: async () => false }) },
     './rack/stageAspect': { useStageTextScale: () => 1 },
+    './fmGrid': FM_GRID,
     './LabShell': {
       HeaderPlayButton: () => null,
       LabShell: (p: { rack: { params: Param[]; stage: { render: (w: number, h: number) => React.ReactNode } } }) => {

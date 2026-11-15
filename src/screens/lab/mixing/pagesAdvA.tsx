@@ -12,6 +12,7 @@ import { heldPaged, loadPagedProgress, withHeldPages } from '../../../features/l
 import { useLabKeysDone } from '../../../features/lab/labCompletion';
 import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
+import { ProNoteButton } from '../../../features/lab/ProNote';
 import { AbPlayer, ConceptList, GoalChips, OpenLabLink, useMixPlayback, useMixPriorities, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { AuxArt, GroupsArt, RoutingMapArt, groupsPullReadout, type GroupComp, type GroupPull } from './advFigures';
@@ -55,7 +56,16 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>This lab assumes the Beginning lab’s foundations: the channel path, level-matched judgment, the six routing terms. The boundary rule: Beginning asked “can you make a clear, balanced stereo mix?” — Advanced asks “can you manage, refine, troubleshoot and DELIVER a complex one?” The five dimensions still rule — balance, frequency, pan and width, depth, movement — Advanced pursues the same five at scale.</Lead>
+      {/* BM-04 (owner 2026-11-15: "build waves 1 thru 3", D62): the note no
+          longer opens by itself on arrival; this small link on page 1 is
+          where it lives now (it was PagedLab's `proNote` link).
+          AM-02 (same go): the Lead under it is one plain sentence; the
+          boundary rule and the foundations follow as plain lines instead of
+          one dense bold block. */}
+      <ProNoteButton />
+      <Lead>The same five mix questions as Beginning Mixing, asked of a bigger, busier session.</Lead>
+      <Body>The five dimensions still rule: balance, frequency, pan and width, depth, movement. Beginning asked “can you make a clear, balanced stereo mix?” Advanced asks “can you manage, refine, troubleshoot and DELIVER a complex one?”</Body>
+      <Body>This lab assumes the Beginning lab’s foundations: the channel path, level-matched judgment, the six routing terms.</Body>
       {bmlDone === true ? (
         <Card tone="ok">
           <Eyebrow>PREREQUISITE MET</Eyebrow>
@@ -300,7 +310,14 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>WHEN EACH TOOL WINS</Eyebrow>
-        <Body>SUBGROUP: shared processing — the summed audio passes the bus inserts, then one fader trims the processed result (drive INTO those inserts is set by the channel faders feeding it). VCA/DCA: one fader for many channels with NO summed path — perfect for level control that must not touch each channel’s own processing (though it does change the drive into a bus compressor downstream, and it also scales the channels’ post-fader sends, which a subgroup fader does not). CONTROL GROUP: linked controls for editing convenience. Advanced mixes use all three, on purpose.</Body>
+        {/* AM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): a plain
+            first sentence, then one short line per tool; the two bracketed
+            asides are their own lines. Same facts, no nesting. */}
+        <Body>Each tool wins at a different job. Advanced mixes use all three, on purpose.</Body>
+        <Body>SUBGROUP: shared processing. The summed audio passes the bus inserts, then one fader trims the processed result. The channel faders feeding it set the drive INTO those inserts.</Body>
+        <Body>VCA/DCA: one fader for many channels, with NO summed path. Right for level control that must not touch each channel’s own processing.</Body>
+        <Body>A VCA does still change the drive into a bus compressor downstream, and it scales the channels’ post-fader sends, which a subgroup fader does not.</Body>
+        <Body>CONTROL GROUP: linked controls for editing convenience.</Body>
       </Card>
       <UnderstandingCheck
         question="You pull a VCA down 6 dB versus pulling a drum subgroup’s fader down 6 dB. One difference that matters:"

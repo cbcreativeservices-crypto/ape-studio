@@ -35,7 +35,7 @@ export const CI_HOME_GUIDE: ScreenGuide = {
   seeing: [
     'Watch the drawing install a whole job: stage box, a floor run under a protector, wall raceway, conduit, ceiling tray and rack.',
     'Find the power feed. It runs on its own path, kept apart from the signal cables; Stage 10 shows why.',
-    'Below the drawing you read what professional installation involves. Local codes always govern the real job.',
+    'SOURCES / STANDARDS › opens what professional installation involves and the codes this lab draws on. Local codes always govern the real job.',
   ],
   control: [
     'Tap the big button to open the first stage you haven’t finished. It reads START LAB while that is Stage 1, otherwise RESUME — STAGE and its number. With every stage done, START LAB reopens Stage 1.',
@@ -65,11 +65,11 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
   why: {
     intro: {
       learning: 'Why a neat-looking install can still be wrong: an installation is judged on safety, reliability, signal, service, protection and workmanship together.',
-      start: 'Open all six cards under SIX THINGS RIDING ON EVERY RUN. Then study the four close-ups and approve the one you would sign off.',
+      start: 'Study the four close-ups under WHICH INSTALLATION WOULD YOU APPROVE? and approve the one you would sign off. Then open all six cards under SIX THINGS RIDING ON EVERY RUN.',
     },
     seeing: [
-      'SIX THINGS RIDING ON EVERY RUN: what every cable run puts at stake — SAFETY, RELIABILITY, SIGNAL INTEGRITY, SERVICEABILITY, MECHANICAL PROTECTION, PROFESSIONAL WORKMANSHIP.',
-      'WHICH INSTALLATION WOULD YOU APPROVE? shows four close-ups, A to D, each with a plain look at it and no hint of its verdict.',
+      'WHICH INSTALLATION WOULD YOU APPROVE? comes first: four close-ups, A to D, each with a plain look at it and no hint of its verdict.',
+      'SIX THINGS RIDING ON EVERY RUN, below: what every run puts at stake — SAFETY, RELIABILITY, SIGNAL INTEGRITY, SERVICEABILITY, MECHANICAL PROTECTION, PROFESSIONAL WORKMANSHIP.',
       'After a pick, each close-up shows its nickname and verdict, and the NEAT ≠ CORRECT card appears.',
     ],
     control: [
@@ -109,7 +109,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     control: [
       'Tap a cable’s name to open or close its card; a ✓ marks it read. Browse as much as you like; it isn’t scored, but the drill below draws on it.',
       'For each run in the drill, answer 1 · WHAT CABLE IS THIS?, 2 · TEMPORARY OR PERMANENT?, 3 · THE LIKELY PATHWAY? and 4 · THE KEY RISK?',
-      'Each answer locks when you make it; the next question opens under its verdict.',
+      'Your first call on each question is the one that scores, so it locks; its verdict names the right call, and the next question opens under it.',
       'Answer all three runs to finish the stage. Its score comes from your own calls.',
     ],
     changes: [
@@ -240,9 +240,9 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       start: 'In PHASE A — INSPECT, tap the amber rings or open ▸ SUSPECT LIST and find what’s wrong. Ten finds unlock PHASE B — DRESS.',
     },
     seeing: [
-      'RACK is a rear view: patch panel between horizontal cable managers, switch, DSP (digital signal processor), interface, amplifier, power distribution, vertical cable managers.',
+      'RACK, rear view: patch panel between horizontal managers, switch, DSP (digital signal processor), interface, amplifier, power distribution, vertical managers.',
       'You work through four phases: PHASE A — INSPECT, PHASE B — DRESS, PHASE C — SERVICE, PHASE D — MAINTAIN.',
-      'In Phase A amber rings mark places to inspect. A find shows ⚑, its rule and a FIX line, and a counter tracks finds.',
+      'Phase A: amber rings mark places to inspect. A find shows ⚑, its rule and a FIX line under the drawing. COLOR KEY, at the foot, names the colors.',
     ],
     control: [
       'A: tap a spot on the rack, or open ▸ SUSPECT LIST and go location by location. 10 finds unlock RACK CONDEMNED — NOW DRESS IT RIGHT ›.',
@@ -310,7 +310,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     },
     seeing: [
       'CEILING is a cutaway of a suspended ceiling: deck, joists, hanger wires, grid and tiles, a duct, the sprinkler main, conduit, a light, a tray, J-hooks.',
-      'ABOVE CEILING · AS FOUND shows a previous contractor’s work; FINISHED VIEW shows the same section done right.',
+      'ABOVE CEILING · AS FOUND: a previous contractor’s work, in this scene’s OWN COLORS (key below). FINISHED VIEW: done right.',
       'EXERCISE 1 · FIND THE PROBLEMS: eight marked defects. EXERCISE 2 · INSTALL THE ROUTE: a new run you place.',
     ],
     control: [

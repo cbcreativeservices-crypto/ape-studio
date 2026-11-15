@@ -69,7 +69,7 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
             if (p) pick(p.id);
           },
           format: () => (shown ? shown.label.toUpperCase() : 'step through the parts'),
-          formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+          formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
         },
         parts.length,
         parts.findIndex((p) => p.id === live),

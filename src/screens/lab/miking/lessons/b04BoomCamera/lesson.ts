@@ -525,7 +525,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the camera goes to a wider shot. The boom…', options: ['Comes closer', 'Stays the same', 'Moves farther away'], after: 'Now STEP through (or PLAY ONCE), then switch the shot, turn the head and cue the second talker.' },
+  sound: { prompt: 'Before you step through: the camera goes to a wider shot. The boom…', options: ['Comes closer', 'Stays the same', 'Moves farther away'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then switch the shot, turn the head and cue the second talker.' },
   microphone: { prompt: 'Before you choose: which mic is as far from the talker as the camera?', options: ['The boom', 'The camera’s own mic', 'The lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the boom from above the frame to below it. What changes?', options: ['A different perspective', 'Nothing at all', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a hypercardioid boom mic reject it best?', options: ['Straight in front', 'Off to the rear, about 110°', 'At its side'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

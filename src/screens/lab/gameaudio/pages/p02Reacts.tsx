@@ -32,7 +32,9 @@ import { G02 } from './guides/p02';
 import { doorKey, doorWord, machineKey, pct, speedKey, useSince } from './shared';
 
 const ASSETS = ['door', 'door_rattle', 'gen_hum', 'gen_air'] as const;
-const TERMS = gaTerms('Interactive audio', 'Audio event (game)', 'Event-driven audio', 'Audio parameter', 'Playback instance');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Interactive audio
+// stays on page 1, Event-driven audio moved to the mix page, whose duck is event-driven
+const TERMS = gaTerms('Audio event (game)', 'Audio parameter', 'Playback instance');
 
 function Page({ ctx }: { ctx: PageCtx }) {
   const s = useGa();
@@ -69,7 +71,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={2}>
         {/* the first step works with sound off (lab fix round 2026-11-14: a silent learner needs a first step) */}
         <Do>Press OPEN DOOR and read the log. Then switch GEN 1 on to start the generator. Turn SOUND on first if you can listen.</Do>
-        <P>Each press posts an event: the game calls out a name, and the audio side starts the sounds behind that name. The door’s one event plays an opening take or a closing take.</P>
+        <P>Each press posts an event: the game calls out a name, and the audio side starts the sounds behind that name. The door’s one event plays an opening take or a closing take: a take is one version of a sound.</P>
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>

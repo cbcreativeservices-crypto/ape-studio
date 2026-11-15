@@ -1058,6 +1058,7 @@ export function MiniConsole({
   value,
   onChange,
   show = { fader: true, pan: true, mute: true, pol: false },
+  focus = null,
 }: {
   tracks: readonly TrackId[];
   value: MixSettings;
@@ -1067,7 +1068,26 @@ export function MiniConsole({
    *  hunt 2026-09-29). Every caller passes its useState setter. */
   onChange: Dispatch<SetStateAction<MixSettings>>;
   show?: ConsoleShow;
+  /** BM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): the channel the
+   *  page asks the learner to move. On a phone only about three strips show,
+   *  so the row scrolls to it (once per channel named, never fighting a
+   *  swipe): the anchor on page 5, GTR and KEYS on page 7. */
+  focus?: TrackId | null;
 }) {
+  const scrollRef = useRef<ScrollView>(null);
+  const stripX = useRef<Partial<Record<TrackId, number>>>({});
+  /** The channel the row last scrolled to: each named channel scrolls once. */
+  const scrolledTo = useRef<TrackId | null>(null);
+  const scrollToFocus = useCallback(() => {
+    if (!focus || scrolledTo.current === focus) return;
+    const x = stripX.current[focus];
+    if (x == null) return;
+    scrolledTo.current = focus;
+    // Instant, not animated: a smooth scroll can be dropped mid-way (seen in
+    // the web preview), and a jump never fights the learner's own swipe.
+    scrollRef.current?.scrollTo({ x: Math.max(0, x - 8), animated: false });
+  }, [focus]);
+  useEffect(scrollToFocus, [scrollToFocus]);
   const change = (id: TrackId, next: Partial<TrackSettings>) =>
     onChange((prev) => ({ ...prev, [id]: { ...FLAT, ...(prev[id] ?? {}), ...next } }));
   const anySolo = tracks.some((id) => !!value[id]?.solo);
@@ -1083,6 +1103,7 @@ export function MiniConsole({
           axes separate, so a fader's vertical pull cannot creep the channel
           row sideways while the page itself is frozen by the drag lock. */}
       <ScrollView
+        ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator
         directionalLockEnabled
@@ -1090,15 +1111,22 @@ export function MiniConsole({
         contentContainerStyle={styles.console}
       >
         {tracks.map((id) => (
-          <Strip
+          <View
             key={id}
-            id={id}
-            value={{ ...FLAT, ...(value[id] ?? {}) }}
-            onChange={change}
-            show={show}
-            anySolo={anySolo}
-            onPanGesture={setPanBusy}
-          />
+            onLayout={(e) => {
+              stripX.current[id] = e.nativeEvent.layout.x;
+              if (id === focus) scrollToFocus();
+            }}
+          >
+            <Strip
+              id={id}
+              value={{ ...FLAT, ...(value[id] ?? {}) }}
+              onChange={change}
+              show={show}
+              anySolo={anySolo}
+              onPanGesture={setPanBusy}
+            />
+          </View>
         ))}
       </ScrollView>
       {show.pol && tracks.some((id) => value[id]?.polarity) ? (

@@ -32,7 +32,7 @@ import type { MeterModuleId } from './modules/registry';
 export const METER_HOME_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Why every display answers a different question about the same sound (peak, average, loudness, frequency, decay, stereo), and why you read any display’s axes first.',
-    start: 'Tap Waveform, read its one-line description, then tap OPEN to start Module 1. Take the modules in order; Signal Detective at the end hides each meter’s name.',
+    start: 'Tap Waveform and read the question it answers, then tap OPEN to start Module 1. Take the modules in order; Signal Detective at the end hides each meter’s name.',
   },
   seeing: [
     'This lab teaches you to read the ten displays engineers look at every day, one module each. Then Signal Detective puts them to work.',
@@ -40,13 +40,13 @@ export const METER_HOME_GUIDE: ScreenGuide = {
     'The measurement tools measure; this lab shows you what their pictures mean. USE WHAT YOU LEARNED links to those tools and the ⓘ GUIDED LESSON.',
   ],
   control: [
-    'Tap a module’s name to read its one-line description, then tap OPEN to start it.',
+    'Tap a module’s name to read the question that meter answers, then tap OPEN to start it.',
     'Every module is laid out the same way: the display on top, live numbers on its frame, your controls in the dock at the bottom, and notes and check questions to scroll below.',
     'To move on, use the strip under a module’s title (‹ PREV, NEXT ›) instead of coming back here. ‹ at the top left steps out: from a module to this menu, from this menu out of the lab.',
     'OPEN THE MEASUREMENT TOOLS › takes you to the tools that show your real sound. Stuck on any screen? Tap ⓘ beside its title, or long-press a control for its guided-lesson entry.',
   ],
   changes: [
-    'Open a module and its ✓ appears here, and the list behind SEE WHAT’S LEFT gets shorter.',
+    'Answer a module’s checks right and its ✓ appears here, and the list behind SEE WHAT’S LEFT gets shorter.',
     'Whatever you set inside a module stays in that module. Nothing you do there reaches another display.',
     'The order builds: Modules 1–4 are level (each a different “how loud?”), 5–7 frequency, 8–10 stereo and raw voltage, and Module 11 mixes them.',
   ],
@@ -413,7 +413,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     control: [
       'SIGNAL draws SINE, SQUARE, TRIANGLE, SAW, SPEECH or MUSIC, and the tray stays open so you can compare traces. Picking one in X-Y goes back to TIME: X-Y draws its own stereo pair.',
       'The X-Y key switches between TIME and X-Y.',
-      'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0. Moving either one switches X-Y on, so tap X-Y to get back to TIME.',
+      'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0 and stay greyed in TIME: tap X-Y first, and tap it again to get back to TIME.',
     ],
     changes: [
       'Each wave’s shape comes from its harmonics: a sine has none, a square has fast edges, this saw ramps down, then snaps back up.',
@@ -436,7 +436,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   detective: {
     intro: {
       learning: 'How each fault leaves its own picture in level, frequency, time or stereo, and why you name the display and read its axes before judging what’s wrong.',
-      start: 'Answer WHAT METER IS THIS? first: say what runs across and what runs up before you tap. Then work through the other three questions and use CASE › for the next case.',
+      start: 'The meter’s name is hidden. Look at the picture: what runs left to right? What runs up? Then answer WHAT METER IS THIS? Wrong answers show you the clue. CASE › brings the next case.',
     },
     seeing: [
       'You’re the detective here. Each case gives you a meter with its name hidden and a real-world fault in the signal. You’ve met every one of these meters in Modules 1–10.',
@@ -445,8 +445,8 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     ],
     control: [
       '‹ CASE and CASE › at the bottom of the screen move you between the seven cases. A new case starts at its first question.',
-      'Tap an answer. A wrong one gives you a hint and another try; the right one opens the explanation. The answers are shuffled each time.',
-      'Under the question, ‹ PREVIOUS steps back and NEXT QUESTION › steps on. After the last question it becomes NEXT CASE ›.',
+      'Tap an answer. A wrong one gives you a hint and another try; the right one opens the explanation. The answers come in a mixed order, so their place is no clue.',
+      'Between the case keys, ‹ PREVIOUS steps back and NEXT QUESTION › steps on. After the last question it becomes NEXT CASE ›. Each new question opens at the top.',
     ],
     changes: [
       'Each case swaps in a different display and fault, so your first job is always to name the display.',

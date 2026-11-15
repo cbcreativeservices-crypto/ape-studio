@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the hand moves the shaker one way. What does the fill inside do at first?', options: ['It lags behind, then catches up', 'It moves exactly with the shell', 'It stays stuck to one end'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the fill.' },
+  sound: { prompt: 'Before you step through: the hand moves the shaker one way. What does the fill inside do at first?', options: ['It lags behind, then catches up', 'It moves exactly with the shell', 'It stays stuck to one end'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the fill.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the player switches from side to side to toward and away from the mic. What changes at the mic?', options: ['The forward strokes jump in level', 'Nothing much', 'It depends on this shaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

@@ -516,7 +516,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a commentator’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then turn the head and read how much lower your partner’s voice arrives in your mic.' },
+  sound: { prompt: 'Before you step through: where does a commentator’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then turn the head and read how much lower your partner’s voice arrives in your mic.' },
   microphone: { prompt: 'Before you move anything: which mic keeps one distance as the head turns?', options: ['A headset boom', 'A desk-arm mic', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the headset capsule from the mouth corner to straight in front of the lips. What changes?', options: ['More pops and breath', 'More crowd', 'It depends on this commentator'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'A figure-8 lip mic faces the mouth. Where is it least sensitive to the PA?', options: ['Straight behind it', 'At its sides', 'In front of it'], after: 'Now turn or tilt the mic with AIM and watch REJECTION.' },

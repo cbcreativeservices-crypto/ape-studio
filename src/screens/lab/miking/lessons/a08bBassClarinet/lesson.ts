@@ -389,7 +389,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does most of a bass clarinet’s middle note leave?', options: ['The bell only', 'The holes and the bell together', 'The neck'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: where does most of a bass clarinet’s middle note leave?', options: ['The bell only', 'The holes and the bell together', 'The neck'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the blend view toward the bell. What changes?', options: ['More low-note weight', 'More key detail', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the instrument reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -491,7 +491,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the middle of the instrument — the lab counts it while the mic points within about {tol}° of it — so the holes and the bell are heard together.',
     workedClear: 'Clear of every part — the peg and its path, the chair and the feet, the neck, the hands and the bell. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the bell tends to bring more low-note weight; toward the keys, more articulation and clicks; the blend view, both. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the bell tends to bring more low-note weight; toward the keys, more articulation and clicks; the blend view, both. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin 0.6–1.2 m in front at the middle; then the blend view and the bell view — one change at a time, low, middle and high phrases each time.',
       wwMini: 'Ideas to try with a miniature: keep its clip on the bell’s rim; change only the capsule’s angle between the bell and the keys while the player plays the whole part.',

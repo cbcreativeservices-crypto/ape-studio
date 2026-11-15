@@ -362,7 +362,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air when a veena string is plucked?', options: ['The string itself', 'The top plate, driven by the bridge', 'The gourd under the neck'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air when a veena string is plucked?', options: ['The string itself', 'The top plate, driven by the bridge', 'The gourd under the neck'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: at the same distance, you turn the mic toward the bridge. What changes?', options: ['More body', 'More articulation and buzz', 'It depends on this veena'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
   context: { prompt: 'This mic looks DOWN at the veena. Where can its rejection reach a monitor?', options: ['A floor wedge in front', 'A side-fill at head height', 'Anywhere, by turning the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION — try both monitors.' },

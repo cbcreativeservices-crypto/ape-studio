@@ -129,7 +129,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
       learning: 'Every miking lesson follows one journey, from where the sound leaves to a mic placed and checked; the map shows that order before you begin.',
       start: 'Look over THE JOURNEY map. Then choose New to miking … to go in order, or I already mic … to take the six-question quick check.',
     },
-    seeing: 'THE JOURNEY map lists every stage of this lesson in order. Below it, “How would you like to start?” offers you two paths.',
+    seeing: 'THE JOURNEY map lists the eight modules in order, numbered as the strip numbers them; modules 1 and 2 are the foundation. Below it, “How would you like to start?” offers you two paths.',
     control: 'Tap New to miking … to work through the lesson in order, or I already mic … to take the six-question quick check, right here on this step.',
     changes: 'Your path only changes what is suggested next. Passing the quick check opens every activity now, but it finishes nothing: you still complete the first two modules yourself.',
     tryThis: [
@@ -239,10 +239,10 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     engineOnly: true,
     intro: {
       learning: 'How a suggested starting point is read: where to begin, the distance from a named surface, the aim, and the clearance that comes first.',
-      start: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit readout (▸) and the part the drawing marks.',
+      start: 'Use PIECE to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit readout (▸) and the part the drawing marks.',
     },
     seeing: 'A worked example: the mic is placed for you at one suggested starting point (blue). The lit readout (▸) is the piece you’re reading.',
-    control: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. The drawing marks the part each piece is about.',
+    control: 'Use PIECE to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. The drawing marks the part each piece is about.',
     changes: 'Each distance runs from a named surface to the mic’s FRONT. The same number measured from another surface would put the mic somewhere else.',
     tryThis: [
       'Step to THE DISTANCE: the lit readout reads inside the suggested range written in the card.',
@@ -711,12 +711,11 @@ export function mikingHubGuide(family?: { family: string }): ScreenGuide {
     // round 2026-11-14): the lab term rides on top of it.
     intro: {
       learning: 'One silent, drawn lesson per instrument or source. Every lesson runs the same journey, from where the sound leaves to a mic placed clear of everything.',
-      start: 'Tap the instrument or source you are curious about. Every lesson opens, in any order.',
+      start: 'New to miking? Open the lesson the amber line names; modules 1 and 2 give you the foundation. Every lesson opens, in any order.',
     },
     seeing: [
-      `${where}. The line at the top says what the lessons cover.`,
+      `${where}. Under the heading, a short reminder (suggested starting points, not rules; silent drawings), then a line saying what the lessons cover and, in amber, the lesson to start with if you are new.`,
       'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done. ✓ marks a finished lesson.',
-      'At the bottom, a reminder: these lessons suggest where to begin — starting points, not rules.',
     ],
     control: [
       'Tap a tile to open that lesson. When your progress is saved, it opens where you left off.',

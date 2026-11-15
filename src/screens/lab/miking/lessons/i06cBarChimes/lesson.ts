@@ -426,7 +426,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the hand sweeps from the long bars to the short. Which bars are still ringing at the end?', options: ['All the struck bars', 'Only the last bar', 'None of them'], after: 'Now STEP through the sweep (or PLAY ONCE), then try one bar’s shapes and lengths.' },
+  sound: { prompt: 'Before you step through: the hand sweeps from the long bars to the short. Which bars are still ringing at the end?', options: ['All the struck bars', 'Only the last bar', 'None of them'], after: 'Now go EVENT by EVENT through the sweep (or PLAY ONCE), then try one bar’s shapes and lengths.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 40 cm to 80 cm. What changes most?', options: ['A more even row, more room', 'More attack, less room', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

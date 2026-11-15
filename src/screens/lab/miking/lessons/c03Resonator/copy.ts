@@ -49,7 +49,7 @@ export const C03_COPY = stringsCopy({
   workedZone: { lap: 'cover.lap', round: 'cover.round' },
   workedAim: 'Face the coverplate and the upper body — your aim counts as long as the mic’s axis, traced forward, meets the body within about 17 cm of {head}. Aiming straight at the coverplate’s center is one experiment, not a rule.',
   clearWhat: 'the bar hand, the picking hand, the player’s arms and their view of the neck',
-  placementReveal: 'Closer to the cone region tends to give more of its distinct, metallic projection; farther back, a more combined sound. Resonators differ, so “it depends on this one” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+  placementReveal: 'Closer to the cone region tends to give more of its distinct, metallic projection; farther back, a more combined sound. Resonators differ, so “it depends on this one” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
   typeNotes: {
     sdcCard: 'Ideas to try: listen around the instrument first, then move a few centimeters at a time — toward the cone, toward the neck and strings, a little farther back.',
     instDynCard: 'Ideas to try with a dynamic: a robust close option on a loud stage. Watch the proximity bass and keep it off the coverplate.',

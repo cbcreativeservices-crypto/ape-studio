@@ -10,8 +10,8 @@ export const G01: ScreenGuide = {
     start: 'Move LEVEL down to 40% or lower, turn SOUND on, then switch SCENE on. Raise LEVEL slowly until the scene is comfortable, and find ■ STOP at the end of the dock.',
   },
   seeing: [
-    'You are looking down on a courtyard and a workshop. The figure marked YOU is the player, and the amber wedge marks the listener.',
-    'LEVEL and SCENE show your two controls. PLAYING and VOICES count what is sounding now, and SOUND says whether you can hear it.',
+    'A courtyard and a workshop, seen from above. YOU is the player, and the amber wedge marks the listener.',
+    'LEVEL and SCENE are your two controls. VOICES counts voices: a voice is one sound playing right now. SOUND says whether you can hear it.',
     'The strip under the picture has a bar for each background sound. LEVEL moves every bar.',
     'The activity log lists each request and each answer, newest first.',
   ],

@@ -400,7 +400,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: half a flute’s length — how high does a piccolo sound?', options: ['An octave higher', 'A fifth higher', 'The same'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: half a flute’s length — how high does a piccolo sound?', options: ['An octave higher', 'A fifth higher', 'The same'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from close to a meter in front. What changes?', options: ['Fewer clicks, more room', 'More breath', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the piccolo reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -502,7 +502,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim between the lip plate and the first keys — the lab counts it while the mic points within about {tol}° of that spot — angled out of the air jet. It is the flute’s figure, a comparison to begin with.',
     workedClear: 'Clear of every part — the air jet, the head’s turn and the hands. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Farther tends to bring more room with fewer clicks and gusts; closer, more detail, breath and key action. Players vary, so “nothing changes” is the one answer to rule out. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Farther tends to bring more room with fewer clicks and gusts; closer, more detail, breath and key action. Players vary, so “nothing changes” is the one answer to rule out. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin close, between the lip plate and the first keys, off the jet; then behind the head, or farther in front in a good room — at matched level, low to high.',
       wwHeadset: 'Ideas to try with a headset: keep the capsule beside the lips, out of the jet; change only its angle — and check the whole register.',

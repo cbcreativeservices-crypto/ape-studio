@@ -165,7 +165,7 @@ export function Mod4Classes() {
 
   // The zoom figure's control for ITS full-screen dock (the same bias the
   // lane sets) — docked under the zoom there, never drawn on the page.
-  const abBiasSlider = <ControlSlider label="Output-stage bias — 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />;
+  const abBiasSlider = <ControlSlider label="AB BIAS · 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />;
   // The class's own control, on the dock beside CLASS and LEVEL: the Class A
   // signal switch, the Class AB bias, the Class C tuning.
   const classParam: DockParam | null =
@@ -226,10 +226,11 @@ export function Mod4Classes() {
           kind: 'rack',
           rack: {
             rig: pic,
+            // AMPL-02 (owner 2026-11-15: "build waves 1 thru 3"): the three readouts
+            // the lesson names first; IDLE CURRENT is in the card under the drawing.
             bezel: [
               { k: 'CONDUCT.', v: `${Math.round(sim.conductionDeg)}°`, tint: AMP_COLORS.pos, caption: 'on-time' },
-              { k: 'IDLE', v: `${Math.round(sim.idleCurrent * 100)}%`, tint: AMP_COLORS.supply, caption: 'at rest' },
-              ...rigStatusBezel(pic, ['eff', 'heat']),
+              ...rigStatusBezel(pic, ['eff']),
               { k: 'DISTORT.', v: distortionWord, tint: distortionWarn ? colors.red : colors.green, caption: 'clean?' },
             ],
             params: [

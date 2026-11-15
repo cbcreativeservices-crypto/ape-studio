@@ -507,7 +507,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does the coach’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then look at the body mic from the front and the side, and turn the head.' },
+  sound: { prompt: 'Before you step through: where does the coach’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then look at the body mic from the front and the side, and turn the head.' },
   microphone: { prompt: 'Before you move anything: which mic keeps one distance as the head turns?', options: ['A chest mic', 'A headset boom', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the chest mic from the breastbone down to the belt. What changes?', options: ['More distance, more crowd', 'A closer voice', 'It depends on this person'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is high in front of the official. Where will a supercardioid headset reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the capsule with AIM (or change PATTERN) and watch REJECTION.' },

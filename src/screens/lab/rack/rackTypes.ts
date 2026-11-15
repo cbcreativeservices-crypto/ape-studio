@@ -217,6 +217,11 @@ export type DockParam =
        *  WITH a `chooser` still opens its chooser on a tap (2026-10-18), so
        *  the learner can pick an option that is not locked. */
       locked?: string;
+      /** ADDITIVE (beginner waves 2026-11-15, SN-1 from F8b TU-04 / SH-64):
+       *  what a `locked` key reads instead of LOCKED, for a key that is only
+       *  "not yet" (e.g. 'after 2 notes'). Set, the spoken label and the
+       *  tapped reason say "not yet" instead of "locked". Unset: unchanged. */
+      lockedValue?: string;
       /** Bind the lane to this fader the moment it APPEARS in the dock (opt-in,
        *  slider pass 2026-10-14). For a fader that a flip-through key reveals
        *  (Tuning: PART → Part C shows FIFTH): without it the lane stayed on
@@ -258,6 +263,11 @@ export type DockParam =
        *  nothing in this state — the key shows LOCKED, dimmed, does not open,
        *  and a tap prints this reason under the keys (as a locked fader). */
       locked?: string;
+      /** ADDITIVE (beginner waves 2026-11-15, SN-1 from F8b TU-04 / SH-64):
+       *  what a `locked` key reads instead of LOCKED, for a key that is only
+       *  "not yet" (e.g. 'after 2 notes'). Set, the spoken label and the
+       *  tapped reason say "not yet" instead of "locked". Unset: unchanged. */
+      lockedValue?: string;
     }
   | {
       kind: 'group';
@@ -301,6 +311,11 @@ export type DockParam =
        *  under the keys (as a locked options key). Foundations M7 before the
        *  TIME / SPACE call, Room Design's item key with no item. */
       locked?: string;
+      /** ADDITIVE (beginner waves 2026-11-15, SN-1 from F8b TU-04 / SH-64):
+       *  what a `locked` key reads instead of LOCKED, for a key that is only
+       *  "not yet" (e.g. 'after 2 notes'). Set, the spoken label and the
+       *  tapped reason say "not yet" instead of "locked". Unset: unchanged. */
+      lockedValue?: string;
     }
   | {
       kind: 'action';

@@ -80,6 +80,18 @@ export type P21Topic = 'rules' | 'space' | 'music' | 'access' | 'test' | 'ai';
  *  up (from a clean scene) and the one sentence that says what is on the
  *  glass now. Nothing here claims the lab does what it does not: every
  *  sound is a file made ahead of time, and the lab has no AI. */
+/** Each TOPIC chip's one-line meaning in the tray (beginner waves 2026-11-15,
+ *  SH-76; owner 2026-11-15: "build waves 1 thru 3"): the chips were bare
+ *  words. Each line names the page's own section for that topic. */
+export const P21_TOPIC_BLURB: Readonly<Record<P21Topic, string>> = {
+  rules: 'Sound made by rules while the game runs: procedural audio.',
+  space: 'Space and acoustics: where a sound is, and what is in its way.',
+  music: 'Adaptive music: music that follows the action.',
+  access: 'Access: a sign in the picture and a caption for what is heard.',
+  test: 'Testing: reading what the audio side really did.',
+  ai: 'Where AI fits in game audio. This lab uses none.',
+};
+
 export const P21_TOPICS: readonly { id: P21Topic; label: string; hud: GaHudId; setUp: () => void; says: string }[] = [
   {
     id: 'rules',
@@ -193,7 +205,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
     label: 'TOPIC',
     valueLabel: t ? t.label : 'CHOOSE',
     valueA11y: t ? t.label.toLowerCase() : 'not chosen yet',
-    options: P21_TOPICS.map((x) => ({ id: x.id, label: x.label })),
+    options: P21_TOPICS.map((x) => ({ id: x.id, label: x.label, blurb: P21_TOPIC_BLURB[x.id] })),
     selectedId: topic,
     onSelect: (id) => choose(id as P21Topic),
   };

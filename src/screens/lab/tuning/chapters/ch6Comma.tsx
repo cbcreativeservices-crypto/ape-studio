@@ -97,7 +97,9 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         <Body>After twelve fifths, B♯ should represent the same pitch class as C seven octaves higher. The seven ÷2 reductions you made in Build With Pure Fifths are those seven octaves.</Body>
       </Card>
 
-      <EquationStage
+      {/* THE DERIVATION folds under MATH (owner 2026-11-15, D62 TU-01); BASIC
+          says the result in one plain line. */}
+      {ctx.mathView ? <EquationStage
         title="THE DERIVATION"
         reduceMotion={ctx.reduceMotion}
         steps={[
@@ -107,7 +109,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
           { text: `≈ ${PYTHAGOREAN_COMMA.decimalLabel}`, note: 'decimal, for reading only' },
           { text: `≈ ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents`, note: '1200 · log₂(531441/524288)', emphasis: true },
         ]}
-      />
+      /> : <Body>Worked out with whole numbers only, the gap is exact: about {PYTHAGOREAN_COMMA.cents.toFixed(2)} cents. MATH (top right) shows the derivation.</Body>}
 
       <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. After seven octave reductions the expected normalized result is 1/1; the actual result is {fracLabel(CHAIN[12].normalized)}.</Body>
 
@@ -131,7 +133,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         correct={1}
         explain="No. 3¹² = 531441 and 2¹⁹ = 524288 are different whole numbers; no power of 3/2 can ever equal a power of 2. The mismatch is exact."
         wrong={[
-          'The derivation above used whole numbers only — 531441 and 524288 — and never rounded. Where would the error come from?',
+          'Every step uses whole numbers only (MATH shows them: 531441 and 524288), and nothing is rounded. Where would the error come from?',
           undefined,
           'The chain is the same ratios from any start: 3¹² ÷ 2¹⁹ does not depend on which note you call C.',
           'Cents are only a way of READING the gap. The ratio 531441/524288 is exact before any cents are computed.',

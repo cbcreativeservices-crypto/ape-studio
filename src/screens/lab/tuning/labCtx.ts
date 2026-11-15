@@ -19,6 +19,9 @@ export type LabCtx = {
   /** The chapter's one-line objective — a rack chapter prints it at the top
    *  of its own scroll well (the shell has no scroll of its own there). */
   objective?: string;
+  /** "To finish: <task>" while the chapter's own task is not done, else
+   *  undefined (owner 2026-11-15, D62 TU-03). Printed under the objective. */
+  finish?: string;
 };
 
 export type ChapterProps = { ctx: LabCtx };

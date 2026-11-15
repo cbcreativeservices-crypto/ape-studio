@@ -58,7 +58,7 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
       {
         kind: 'fader',
         id: 'step',
-        label: 'STEP',
+        label: 'EVENT',
         value: (s.shown - 1) / Math.max(1, n - 1),
         onChange: (v) => s.goTo(1 + Math.round(v * (n - 1))),
         format: () => `${stage.title.toLowerCase()}`,
@@ -69,7 +69,7 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
       (i) => `${i + 1} · ${W.stages[i].title}`,
       (i) => s.goTo(i + 1),
     ),
-    { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: s.play, tint: colors.green },
+    { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: s.play, tint: colors.green },
     ...(variants.length > 1
       ? [
           {

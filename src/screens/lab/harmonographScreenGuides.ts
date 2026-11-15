@@ -37,8 +37,9 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
   // ── EXPLORE — the machine ─────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'Musical intervals are frequency ratios. A simple ratio such as 3:2 draws a figure that closes; a ratio slightly off slowly turns, which is beating made visible.',
-      start: 'Watch the pen draw at the opening 3:2. Open TUNE and tap LOCKED RATIO to see the figure close. Then tap 2:1 OCTAVE, and press ▶ to hear the interval.',
+      // The plain picture first (owner 2026-11-15: "build waves 1 thru 3", D62 HG-04).
+      learning: 'This old machine draws music. Two swinging arms move the pen. When their speeds make a musical interval, the drawing closes into a neat shape.',
+      start: 'Tap TUNE, then 2:1 OCTAVE, and watch. Tap LOCKED RATIO too and the drawing closes. Press ▶ to hear the interval.',
     },
     seeing: [
       'This is a harmonograph: two pendulums move the pen (OSC 1 cyan, OSC 2 violet). In ROTARY the paper platform swings too (PLAT, the amber ring).',
@@ -109,10 +110,10 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'Each question turns to ✓ once you get it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
     ],
     changes: [
-      'Get all four right and the check is passed. A wrong answer costs nothing, and there is no score.',
+      'Get all four right and the check is passed.',
     ],
     teaches: [
       'How a frequency ratio, a locked or detuned ratio, and damping each show up in a harmonograph figure.',

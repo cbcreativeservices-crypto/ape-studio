@@ -49,6 +49,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { STUDIO_RELATION } from './homePath';
 import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 import { makeFreqFader } from '../../../features/cymatics/freqFader';
 import { BEZEL_RES_WORD, PLATE_BEZEL_FLEX, bezelModeLabel } from '../../../features/cymatics/plateBezel';
@@ -94,9 +95,11 @@ const MULTI: { id: string; label: string; ratio: number | null }[] = [
 ];
 const SAND_AMOUNTS = [1500, 3000, 5000];
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
-  { id: 'particles', label: 'Particles', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
+  // One name per view across the lab (owner 2026-11-15, D62 SH-36): Sand and
+  // Sand + heat, as in Change One Thing and on the key (was Particles).
+  { id: 'particles', label: 'Sand', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
   { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the amplitude ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
-  { id: 'overlay', label: 'Particles + heat', short: 'S+H', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
+  { id: 'overlay', label: 'Sand + heat', short: 'Sand+heat', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
   { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while violet regions fall — opposite sides of a nodal line move in opposite directions. Neither color is on the amplitude ramp: this view shows DIRECTION, not level. Fades between resonances.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal pattern of the nearest mode — the Chladni figure that WOULD form. Fades between resonances.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
@@ -564,6 +567,13 @@ function PlateStudio() {
     : spec.shape === 'circle'
       ? 'SIMULATION · APPROXIMATED — Bessel disc modes, published values'
       : 'SIMULATION · APPROXIMATED — Ritz free-plate modes';
+  // The disclosure in plain words on screen (owner 2026-11-15, D62 CY-03: no
+  // "Ritz" or "Bessel" for a beginner). `badge` still rides with a saved pattern.
+  const modelNote = lib
+    ? `A simulation: this shape’s modes are calculated${lib.validated ? ' and checked' : ''}.`
+    : spec.shape === 'circle'
+      ? 'An approximate simulation of a round plate, from published values.'
+      : 'An approximate simulation of a plate with free edges.';
   // SAVE → the Pattern Gallery (Phase 4): numbers, not a picture — the full
   // state, so the figure is reproducible; the badge it carried rides along.
   // One save per press: SAVE stays disabled until the write settles, and the
@@ -598,7 +608,8 @@ function PlateStudio() {
         checkTitle={CYMATICS_CHECK_TITLE}
         title="CHLADNI PLATE STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
-        intro="Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns snap in only near the plate’s own resonances — and which resonances those are depends on the whole plate, not on the frequency alone."
+        // The first sentence says how the studio relates to the modules (owner 2026-11-15, D62 CY-02); the rest is shorter to make room.
+        intro={`${STUDIO_RELATION.plate} Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns form only near the plate’s own resonances, and the whole plate decides where those are.`}
         exploreCaption="Sweep the frequency, or jump straight to a mode from the FREQ key. Change the plate and watch the same frequency stop being a resonance."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -612,6 +623,9 @@ function PlateStudio() {
           stage: {
             size: 'L',
             badge,
+            // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+            soundOffLine: 'Sound off? Turn on Silent drive in DRIVE: the figure and every readout still work.',
+            modelNote,
             onGuide: () => openLesson('display'),
             bezel,
             hideDragTag: true,
@@ -650,7 +664,7 @@ function PlateStudio() {
                 </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>This version of the app can’t show the live plate yet; controls and readouts still work. Update the app to see it.</Text>
+                  <Text style={styles.noSkiaText}>The live plate can’t be drawn on this device. Controls and readouts still work.</Text>
                 </View>
               ),
           },

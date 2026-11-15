@@ -33,9 +33,10 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
     start: 'Tap Frequency Recognition to read its description, then tap OPEN. Play one ten-trial round, then come back with ‹ and pick your next module.',
   },
   seeing: [
-    'This is the Ear Training menu: fourteen listening drills. Each plays clips, asks what changed, then shows the change measured. Two can use a recorded piano or guitar chord.',
-    'Under MODULES, each row is a drill. A tried row shows its level and recent score (for example L2 · 85% · tried). A ✓ marks a module that counts, and “tried” drops away.',
-    'FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
+    'This is the Ear Training menu: fourteen listening drills. Each plays clips, asks what changed, then shows it measured. Two can use a recorded piano or guitar chord.',
+    // Four groups, not one MODULES list (owner 2026-11-15: "build waves 1 thru 3", D62 ET-02).
+    'Drills sit in four groups: TONE, LEVEL AND DYNAMICS, TIME AND SPACE, FAULTS AND PITCH; module 1 says START HERE. A tried row shows L2 · 85% · tried.',
+    'A ✓ marks a module that counts. FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
   ],
   control: [
     'Tap a module’s name to read its description and playback note, then tap OPEN to start the drill.',
@@ -45,7 +46,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
     'Tap FINISH · SEE WHAT’S LEFT › to see the modules that don’t count yet. Any row there opens its module.',
   ],
   changes: [
-    'By what you hear: 1–4 tone; 5 defects; 6 stereo; 7, 10, 14 level, compression, clipping; 8, 9, 12, 13 time and phase (delay, reverb, polarity, comb filtering); 11 pitch.',
+    'The groups follow what you hear. Comb Filtering sits after Delay and Polarity & Phase in TIME AND SPACE because it builds on both.',
     'Each drill has a level ladder, judged only on answers at your current level: 80 % over your last 20 answers moves you up; under 50 % drops you back one.',
     'A module counts once you clear level 2 at 80 % over 20 answers; then it stays counted.',
   ],

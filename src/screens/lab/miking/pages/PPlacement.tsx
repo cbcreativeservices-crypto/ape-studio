@@ -213,7 +213,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       {
         kind: 'fader',
         id: 'piece',
-        label: 'STEP',
+        label: 'PIECE',
         value: exStep / (worked.length - 1),
         onChange: (v) => setExStep(Math.round(v * (worked.length - 1))),
         format: () => `${wk.title.toLowerCase()}`,

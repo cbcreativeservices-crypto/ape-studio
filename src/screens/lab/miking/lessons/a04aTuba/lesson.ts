@@ -432,7 +432,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a tuba’s sound leave the instrument?', options: ['From the bell’s opening', 'From the whole body at once', 'From the valves'], after: 'Now STEP through (or PLAY ONCE) and follow the sound from the lips to the bell.' },
+  sound: { prompt: 'Before you step through: where does a tuba’s sound leave the instrument?', options: ['From the bell’s opening', 'From the whole body at once', 'From the valves'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and follow the sound from the lips to the bell.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from about 30 cm to about 60 cm from the bell. What changes?', options: ['More attack and valve noise', 'More of the whole tuba and the room', 'It depends on this tuba'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid facing back at a front bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

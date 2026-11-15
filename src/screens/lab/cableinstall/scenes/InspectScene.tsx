@@ -56,6 +56,7 @@ import { LabPhoto } from '../../kit/LabPhoto';
 import { CI_INSPECTION_DRAW, CI_INSPECTION_POOL, CI_QUIZ_BANK, CI_QUIZ_DRAW, type CiInspectionDefect } from '../data/scenarios';
 import { inspectionDimScores, type CiDimScores } from '../engine/score';
 import { CI_FINAL_CHECK_UNIT, CI_INSPECT_PASS_UNIT, type CiModuleProps } from '../registry';
+import { splitTapRects } from '../tapRects';
 
 const LAB_KEY = 'af_cable_install' as const;
 
@@ -153,6 +154,10 @@ function RunIn({ d, len: typed, color, delay, run }: { d: string; len: number; c
   return <JacketPath d={d} color={color} width={2.4} pv={progress} len={len} />;
 }
 
+/** An unfound marker's ring and fill (SH-49): bright enough to find on the dark drawing. */
+export const MARKER_OPEN_TINT = '#ff7a66';
+export const MARKER_OPEN_FILL = 'rgba(255,106,90,0.32)';
+
 /** A defect marker's whole life: it arrives, it BREATHES until it is found
  *  (each on its own phase, so the scene never pulses in lockstep), it springs
  *  when opened, and it settles green with a drawn check once corrected. */
@@ -212,8 +217,10 @@ function DefectMarker({
   const ring = useAnimatedProps(() => ({ r: (r.value + 3) * (1 + 0.5 * b.value), opacity: breathing ? 0.5 * (1 - b.value) * t.value : 0 }));
   const label = useAnimatedProps(() => ({ opacity: corrected ? 0 : t.value }));
 
-  const tint = corrected ? colors.green : found ? colors.amber : '#8a4a44';
-  const fill = corrected ? 'rgba(55,224,95,0.25)' : found ? 'rgba(255,198,77,0.3)' : 'rgba(255,90,72,0.16)';
+  // SH-49: an unfound marker reads as a bright ring on the dark drawing
+  // (it was a dull #8a4a44 ring that beginners read as a grey dot).
+  const tint = corrected ? colors.green : found ? colors.amber : MARKER_OPEN_TINT;
+  const fill = corrected ? 'rgba(55,224,95,0.25)' : found ? 'rgba(255,198,77,0.3)' : MARKER_OPEN_FILL;
   return (
     <>
       <ACircle cx={cx} cy={cy} r={0} fill="none" stroke={tint} strokeWidth={1.4} opacity={0} animatedProps={ring} />
@@ -468,15 +475,17 @@ export function FacilityScene({
         })}
         <SignOffSweep run={passed} reduce={m.reduce} />
       </Svg>
-      {/* tap overlays (≥44dp) */}
-      {defects.map((d, i) => {
-        const left = (d.x / 100) * w - 22;
-        const top = (d.y / 100) * h - 22;
+      {/* tap overlays (44 pt; SH-49, owner 2026-11-15: "build waves 1 thru 3"):
+          two close markers used to share overlapping squares, and the one
+          drawn last took both taps. splitTapRects cuts neighbours at their
+          midline, so every marker can be hit. */}
+      {splitTapRects(defects.map((d) => ({ x: (d.x / 100) * w, y: (d.y / 100) * h }))).map((r, i) => {
+        const d = defects[i];
         return (
           <Pressable
             key={d.id}
             onPress={() => onTap(d.id)}
-            style={{ position: 'absolute', left, top, width: 44, height: 44 }}
+            style={{ position: 'absolute', left: r.left, top: r.top, width: r.width, height: r.height }}
             accessibilityRole="button"
             accessibilityLabel={`Finding ${i + 1}${states[d.id]?.found ? ', opened' : ''}`}
           />

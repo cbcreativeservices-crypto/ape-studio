@@ -106,7 +106,7 @@ export function useStepper(n: number, hidden: boolean, titles?: readonly string[
       {
         kind: 'fader',
         id: 'step',
-        label: 'STEP',
+        label: 'EVENT',
         value: (shown - 1) / Math.max(1, n - 1),
         onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
         format: () => titles?.[shown - 1] ?? `step ${shown}`,
@@ -117,7 +117,7 @@ export function useStepper(n: number, hidden: boolean, titles?: readonly string[
       (i) => (titles?.[i] ? `${i + 1} · ${titles[i]}` : `step ${i + 1}`),
       (i) => goTo(i + 1),
     ),
-    { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+    { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
   ];
   return { shown, playing, goTo, play, params };
 }
@@ -208,7 +208,7 @@ function HandInstrument(spec: HandSpec) {
                   if (p) pick(p.id);
                 },
                 format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
-                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
               },
               parts.length,
               parts.findIndex((p) => p.id === partId),
@@ -293,7 +293,7 @@ function HandSetting(spec: HandSpec) {
                   if (p) setSel(p.id);
                 },
                 format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${planItems.length} items`),
-                formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (it ? it.short.slice(0, 9) : 'PICK'),
               },
               planItems.length,
               planItems.findIndex((q) => q.id === sel),
@@ -519,7 +519,7 @@ function HandPlacement(spec: HandSpec) {
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep),
+            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep),
             ...viewToggle({ view: exView, setView: setExView, stage: 'dual', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
           ],
           initialParam: 'piece',
@@ -877,7 +877,7 @@ function HandTwoMic(spec: HandSpec) {
             </Text>
             <NowLine text={pairNow} />
             <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
-            <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: ${region.label} reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference, no comb: ${region.label} reaches both mics at the same instant.`) : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+            <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: ${region.label} reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference, no comb: ${region.label} reaches both mics at the same instant.`) : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'Added together, the two copies cancel at a row of evenly spaced pitches: the dips in the comb drawing. The 1ST NOTCH readout is the lowest one.' : 'Added together with one copy inverted, the lowest notes thin out and the dips sit at other pitches: see the comb drawing and the 1ST NOTCH readout.'}`}</Body>
             {rearFlip ? <Note>{`${region.label} is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches fall where the ${sEff === 1 ? 'same-polarity' : 'inverted'} sum puts them, even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
             {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             <Note tone="warn">{T.warn}</Note>

@@ -21,6 +21,7 @@ import Animated, { Easing, useAnimatedProps, useSharedValue, withTiming } from '
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { DistanceScene } from './distanceViz';
 import { useLoopClock } from './speechMotion';
+import { PLAIN_TERMS } from '../../../features/lab/plainTerms';
 
 const APath = Animated.createAnimatedComponent(Path);
 const ACircle = Animated.createAnimatedComponent(Circle);
@@ -322,7 +323,11 @@ export function PageDistance({ ctx }: { ctx: PageCtx }) {
       {picker}
       <DistanceScene inches={inches} a11y={`To scale: the talker and a microphone ${inches} inch${inches === 1 ? "" : "es"} from the lips. The direct sound fades as it spreads; the room reflections reach the mic from every direction at the same strength wherever it stands.`} />
       <DbBars rows={rows} controls={<View style={{ gap: 8 }}>{distRead}{picker}</View>} a11y={`At ${inches} inches: direct voice ${d.directDb.toFixed(0)} dB, room ${d.roomDb} dB, plosive air ${d.plosiveDb.toFixed(0)} dB, proximity bass ${d.proximityDb.toFixed(0)} dB, voice over noise ${d.snrDb.toFixed(0)} dB, all relative and illustrative.`} />
-      <Text style={styles.foot}>Relative, illustrative values — inverse-square for the voice, a much steeper fall for the air jet, a typical cardioid proximity curve, a fixed room and noise floor.</Text>
+      {/* How big a dB change is, next to the bars, in the ONE shared wording
+          (owner 2026-11-15: "build waves 1 thru 3", D62 VOX-02; guardrail 3,
+          plainTerms.ts). A line in, a line out: the model list it replaces
+          is now one short disclosure. */}
+      <Text style={styles.foot}>{PLAIN_TERMS.db.term}: {PLAIN_TERMS.db.sentence} Relative, illustrative values from a simple model.</Text>
       <Notice>Switch between 12", 6" and 1" and watch two bars: the room never moves, and the plosive bar moves far faster than the voice.</Notice>
       <Card>
         <Eyebrow>{inches}" · WHAT CHANGES</Eyebrow>

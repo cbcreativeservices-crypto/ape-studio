@@ -660,7 +660,7 @@ export const STAGE1_DEFINE: StageDef = {
       // test suite pins.
       severity: "attention",
       kind: "missing",
-      title: "Nobody can end this project",
+      title: "Nobody can end this project. Is that intended?",
       detail: "Without a named approver there is no moment when the work is finished. Revisions continue until someone runs out of money or patience, and which of those happens first is not planning.",
       fixHint: "Name the one person whose approval ends the project. If several people must agree, name who decides when they disagree."
     },
@@ -685,7 +685,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "Success has not been defined",
+      title: "Success has not been defined. Is that intended?",
       detail: "This is the question most often skipped and the one that decides whether the project ever feels finished. A definition you can check on the day protects you and the client equally.",
       fixHint: "Write one sentence you could hold up on delivery day and agree on."
     },
@@ -696,7 +696,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "No audience named",
+      title: "No audience named. Is that intended?",
       detail: "The audience decides the platform, the platform decides the technical requirements, and those decide a good deal of the gear list. Leaving it blank pushes guesswork into every later stage.",
       fixHint: "Describe who experiences this and how they will hear it."
     },
@@ -720,7 +720,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "mismatch",
-      title: "A live project with no live destination",
+      title: "A live project with no live destination. Is that intended?",
       detail: "The plan describes a performance, but no venue, livestream or broadcast destination is selected. Whichever is missing carries its own requirements, and they are usually the ones with deadlines attached.",
       fixHint: "Select every destination this performance reaches, including any recording or stream.",
       needsLogic: true,
@@ -736,7 +736,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "The amount of work is unknown",
+      title: "The amount of work is unknown. Is that intended?",
       detail: "Until the count exists, no schedule, budget or storage estimate in this lab can be checked against reality.",
       fixHint: "Enter how many finished pieces you owe."
     },
@@ -771,7 +771,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "A reference has been named without saying what it is for",
+      title: "A reference has been named without saying what it is for. Is that intended?",
       detail: "A track or show on its own tells the mixer nothing they can act on. The client may mean the vocal sound, you may hear the drum balance, and the mastering engineer will match its loudness. Three people will chase three different things and none of them will be wrong.",
       fixHint: "For each reference, select at least one aspect you are pointing at, and add a short note saying specifically what to listen for.",
       needsLogic: true,
@@ -784,7 +784,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "Nobody has said which services are included",
+      title: "Nobody has said which services are included. Is that intended?",
       detail: "The client will assume everything is included, and the quote was written assuming it was not. The gap between those two assumptions is the argument at delivery.",
       fixHint: "Select every service you are responsible for. Then write what is excluded, in words the client will read."
     },
@@ -796,7 +796,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "mismatch",
-      title: "A livestream destination with no livestream feed in scope",
+      title: "A livestream destination with no livestream feed in scope. Is that intended?",
       detail: "Livestream is selected as a destination, but no livestream feed is among the included services. A stream needs its own mix, its own output and usually its own person, and none of that is in the plan yet.",
       fixHint: "Add the livestream feed to the included services, or record in the exclusions that someone else is providing the stream mix and say who.",
       needsLogic: true,
@@ -809,7 +809,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "The number of sources is unknown",
+      title: "The number of sources is unknown. Is that intended?",
       detail: "The source count decides the console, the stage box, the recorder, the cable count and how many people it takes to set up. Every one of those is booked from this number, so leaving it blank means booking blind.",
       fixHint: "Count every microphone, DI, line and playback source in the largest simultaneous setup, and enter the total.",
       onlyFor: [
@@ -824,7 +824,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "attention",
       kind: "missing",
-      title: "The number of revision rounds is not written down",
+      title: "The number of revision rounds is not written down. Is that intended?",
       detail: "When nothing is agreed, the client's number is unlimited and yours is whatever you can afford. Every round after the one you priced is paid for by the next project's start date.",
       fixHint: "Enter the number of rounds agreed with the client. If it has not been agreed, that is the conversation to have before the first session."
     },
@@ -835,7 +835,7 @@ export const STAGE1_DEFINE: StageDef = {
       ],
       severity: "info",
       kind: "missing",
-      title: "Nobody has agreed who keeps the files afterwards",
+      title: "Nobody has agreed who keeps the files afterwards. Is that intended?",
       detail: "Multitracks and project files are asked for months or years later, for a remix, a license or a re-release. If nobody agreed to keep them, they are on a drive that has since been reused.",
       fixHint: "Agree who holds the session files and for how long, and write it into the scope.",
       needsLogic: true,

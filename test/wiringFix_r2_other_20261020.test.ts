@@ -55,7 +55,9 @@ describe('DG-R2-01 — the digital path ends in an amplifier and a loudspeaker',
   it('banner and body', () => {
     const s = read('src/screens/lab/digital/DigitalLabHomeScreen.tsx');
     assert.match(s, /'RECONSTRUCTION', 'AMPLIFIER', 'LOUDSPEAKER', 'SOUND'/);
-    assert.match(s, /reconstruction → amplifier → loudspeaker → sound/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DG-04): the 13-arrow paragraph
+    // became one plain lead; the way out still ends in an amplifier and a loudspeaker.
+    assert.match(s, /on the way out a converter, an amplifier and a loudspeaker turn the numbers back into air/);
   });
 });
 
@@ -72,9 +74,10 @@ describe('FX-R2-01..03 — true-peak margin agrees; gate key controls are not in
   });
   it('Gate: sidechain, key filter and listen are marked not in this lab', () => {
     const c = read('src/features/lab/guidedLessons/content.ts');
-    for (const key of ['sidechain', 'key_filter', 'sc_listen']) {
-      assert.match(c, new RegExp(`key: ["']${key}["'], name: [^\\n]*definition: ["']Not on this screen; found on many gates\\.`), key);
-    }
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GATE-05): the
+    // five off-screen gate controls are now ONE "On real gates (for later)" row, still
+    // marked not on this screen, still naming sidechain, key filter and listen.
+    assert.match(c, /key: "real_gates", name: "On real gates \(for later\)", definition: "Not on this screen; found on many gates\.[^"\n]*sidechain[^"\n]*key filter[^"\n]*sidechain listen/);
   });
   it('2:1 is a common gentle mix-bus starting point, not THE setting', () => {
     const f = read('src/screens/lab/fxLabConfigs.tsx');

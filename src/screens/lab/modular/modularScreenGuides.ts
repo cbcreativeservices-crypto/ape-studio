@@ -42,14 +42,15 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How a subtractive synth voice works: the VCO makes a bright wave, the VCF carves harmonics away, the VCA sets loudness, and control cables decide what moves what.',
+      // MOD-04 (owner 2026-11-15, "build waves 1 thru 3"): the plain path first: the amber cable, TONE → FILTER → VOLUME → OUT.
+      learning: 'Sound flows along the amber cable: TONE, FILTER, VOLUME, OUT. The colored cables turn knobs for you, and what they turn makes each classic synth sound.',
       // A first step that needs no sound (novice audit 2026-11-14), then the sound.
       start: 'Tap PATCH → WOBBLE and watch a blue LFO cable run to the VCF. Then tap ▶ to hear the drone, and drag CUTOFF down to hear it darken.',
     },
     seeing: [
-      'THE PATCH: seven modules. CONTROL SOURCES (CV): SEQ, LFO, ENV. AUDIO PATH → OUT: VCO, VCF, VCA, OUT.',
+      'THE PATCH: seven modules. CONTROL SOURCES (CV): SEQ, LFO, ENV. Sound: TONE, FILTER, VOLUME, OUT.',
       'Amber cables carry sound; a cable in its source’s color (SEQ red, LFO blue, ENV green) carries control. When it runs, the ENV light shows the envelope; the lit SEQ step is sounding.',
-      'LAB NOTES › THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve. Gray bars: filtered out.',
+      'Under the case, THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve. Gray bars: filtered out.',
     ],
     control: [
       '▶ in the header plays the drone (SEQ off) or runs the sequence (SEQ on); ■ stops it. The CUTOFF fader sets the filter’s cutoff, 250 Hz to 8.0 kHz.',
@@ -71,7 +72,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'A filter can only remove what is there: a sine has no harmonics above its note.',
     ],
     tryThis: [
-      'Tap ▶, pick VCO SINE and drag CUTOFF from 8.0 kHz to 250 Hz: the one bar in THE VOICE, AS SOUND (LAB NOTES) drops only about 1.5 dB. On SAW, the filtered bars go gray.',
+      'Tap ▶, pick VCO SINE and drag CUTOFF from 8.0 kHz to 250 Hz: the one bar in THE VOICE, AS SOUND (under the case) drops only about 1.5 dB. On SAW, the filtered bars go gray.',
       'In MOD tap RES MAX: in THE VOICE, AS SOUND the dashed filter curve now peaks about 8 dB above 0 dB at the CUTOFF line. At RES 0 it sits 6 dB below.',
       'Tap PATCH → WOBBLE: LFO reads →CUT and a blue cable runs to the VCF. In MOD tap →PITCH: the cable moves to the VCO, LFO reads →PIT and PATCH reads CUSTOM.',
     ],
@@ -121,7 +122,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Below them, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'A right answer locks in, and its explanation stays to read.',
       'Use the tabs under the title to go back to LEARN or EXPLORE to look something up; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],

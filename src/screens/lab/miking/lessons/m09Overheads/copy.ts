@@ -131,7 +131,7 @@ export const M09_STRIKE: StrikeWords = {
   title: 'Strike to sound',
   badge: 'The order of events, not their speed · motion drawn much larger than it really is · silent',
   looking: 'Side view · a 16 in crash, cut through the stick’s line',
-  prompt: 'STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound.',
+  prompt: 'Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound.',
   stages: [
     { title: 'The stick meets the bow', text: 'The stick strikes the cymbal on its bow — the wide middle between the bell and the edge — for a moment, then leaves.' },
     { title: 'The plate bends', text: 'The thin bronze plate bends under the stick. The felts hold the cymbal at its center, so the bend spreads out from where the stick landed.' },

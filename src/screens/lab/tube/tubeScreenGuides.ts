@@ -25,10 +25,14 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 export type TubeSectionId = 'inside' | 'flow' | 'grid' | 'amplify' | 'highv' | 'types' | 'bias' | 'sat' | 'versus';
 
 /** The shared tail every module's dock carries (TUBE REF ›, FULL SCREEN), one
- *  wording for all; `control` names the module's own long-press control
- *  ('a control' where a module has several). */
-const dockTail = (control: string) =>
-  `TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing. Long-press ${control} to read its Guided Lesson entry.`;
+ *  wording for all; `control` names the module's own control ('a control'
+ *  where a module has several). TB-01 (owner 2026-11-15: "build waves 1 thru
+ *  3"): the help it points at is VISIBLE: the ⓘ beside an open tray's ✕, or,
+ *  for a fader (no tray), the ⓘ GUIDED LESSON row under the lesson. */
+const dockTail = (control: string, tray = false) =>
+  tray
+    ? `TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing. Open ${control} and tap the ⓘ beside its ✕ to read its Guided Lesson entry.`
+    : `TUBE REF › opens the Tube Reference library, and ⤢ FULL SCREEN enlarges the drawing. Tap ⓘ GUIDED LESSON under the lesson to read about ${control}.`;
 
 export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
   // ── 1 · What's inside ────────────────────────────────────────────────────
@@ -43,10 +47,10 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
       'Hide a part and the line below names what broke; under it, a note on the last part you tapped.',
     ],
     control: [
-      'Use the PARTS key: one chip per part, in build order — GLASS, VACUUM, HEATER, CATHODE, PLATE, CONTROL GRID, SCREEN GRID, SUPPRESSOR. Tap a chip to hide or show that part.',
+      'Use the PARTS key (it reads START HERE until you tap a part): one chip per part, in build order — GLASS, VACUUM, HEATER, CATHODE, PLATE, CONTROL GRID, SCREEN GRID, SUPPRESSOR. Tap a chip to hide or show it.',
       'HIDE ALL leaves only the glass. SHOW ALL puts every part back.',
       'Tap ⚡ E-VIEW to swap the drawing for the Electron View: the electron cloud, its flow and the grid’s field.',
-      dockTail('a control'),
+      dockTail('PARTS', true),
       'Use the strip under the title to move between modules. ‹ leaves the lab.',
     ],
     changes: [
@@ -111,7 +115,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
       'Below the drawing, CHECK YOURSELF asks how the grid does its job.',
     ],
     control: [
-      'Slide the GRID V fader (0–100%) to set the grid’s voltage. 0% is the most negative, 100% the least. Its readout adds cut off — no current flows, partly negative, or barely negative — full flow.',
+      'Slide the GRID V fader to set how far the grid lets the stream through: 0% open is the most negative, 100% open the least. ◂ CLOSES and OPENS ▸ step it. Its readout adds cut off — no current flows, partly negative, or barely negative — full flow.',
       'Tap ⚡ E-VIEW to add the grid’s repelling field lines.',
       dockTail('GRID V'),
     ],
@@ -176,7 +180,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     ],
     control: [
       'Open the SUPPLY key and choose SMALL SUPPLY or HIGH-VOLTAGE SUPPLY (B+). The tray stays open, so you can switch back and forth and watch the drawing react.',
-      dockTail('SUPPLY'),
+      dockTail('SUPPLY', true),
     ],
     changes: [
       'A small plate voltage makes a weak field. Few electrons cross, and slowly: there’s too little current, and no room for a big signal to swing.',
@@ -208,7 +212,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
     control: [
       'Open the TYPE key: TRIODE · 1 GRID, TETRODE · 2 GRIDS or PENTODE · 3 GRIDS. Each option shows that type’s strength, and the tray stays open while the drawing rebuilds.',
       'Tap ⚡ E-VIEW to see the electron cloud and its flow instead of the physical drawing.',
-      dockTail('TYPE'),
+      dockTail('TYPE', true),
     ],
     changes: [
       'TRIODE: one control grid. Simple and linear, but the plate’s field reaches back through the grid, limiting gain.',

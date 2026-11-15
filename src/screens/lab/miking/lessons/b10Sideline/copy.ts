@@ -82,7 +82,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     workedZone: { sideline: 'b10.hand', twoMics: 'b10.hand', postEvent: 'b10.lav' },
     workedAim: 'Aim it at the speaking mouth — the lab counts it while the mic points within about {tol}° of the lips.',
     workedClear: 'Clear of both people: the mic and its flag off the faces and out of the lens’s way, comfortable clearance from the lips. Clearance comes first, before any number.',
-    reveal: 'Closer tends to bring more voice against the crowd, and more breath and handling; farther, or between two people, more crowd and a distant first word. Voices and stadiums vary, so “it depends on this guest” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more voice against the crowd, and more breath and handling; farther, or between two people, more crowd and a distant first word. Voices and stadiums vary, so “it depends on this guest” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       bcFlagOmni: 'Ideas to try with the omni handheld: keep it close and follow the mouth; it forgives a little aim, not distance.',
       bcFlagCard: 'Ideas to try with a cardioid handheld: keep its front on the speaking mouth — a mouth off its front is a duller, quieter voice.',

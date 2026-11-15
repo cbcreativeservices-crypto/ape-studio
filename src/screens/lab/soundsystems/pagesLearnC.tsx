@@ -24,7 +24,7 @@ import { slotDef } from '../../../features/soundsystems/system';
 import { STATION_LABEL, STATION_ORDER, type Placed, type Station } from '../../../features/soundsystems/types';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import type { DockParam } from '../rack/rackTypes';
-import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, PickTile, ToolLink, useVisitGoals, VerdictLine } from './bits';
+import { CalcLink, ChapterTag, DeeperRow, FormulaFold, GoalChips, KeyFact, LabLink, PickTile, ToolLink, useVisitGoals, VerdictLine } from './bits';
 import { ChainMeterKey, ChainMeterStage } from './art/ChainMeter';
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode } from './art/SystemMap';
 import { FieldKey, PLOT_FS, PLOT_H, PLOT_W, PlotLabel, VenueView, type PlotBeam } from './art/VenueView';
@@ -322,11 +322,12 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={11}>DELAY TIME, TIME ALIGNMENT AND POLARITY</ChapterTag>
+      {/* SS-01: the idea in plain words first; the formula is folded under GO DEEPER. */}
+      <Body>The idea: sound takes time to travel, so a loudspeaker far from the stage must wait until the sound from the stage reaches it.</Body>
       <Body>{`Mains at the stage, delay towers on poles ${dist} m back. The ring is the mains’ wavefront at the instant the towers fire: aligned means it has just reached them.`}</Body>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
-        <Eyebrow>FROM THE CALCULATOR</Eyebrow>
-        <Text style={styles.path}>t = d ÷ c · c = 331.3 × √(1 + T/273.15)</Text>
+        <Eyebrow>HOW LONG TO WAIT · FROM THE CALCULATOR</Eyebrow>
         <Body>Sound travels about {speedOfSound(temp).toFixed(0)} m/s at {temp} °C — roughly 2.9 ms per meter. Acoustic delay is the distance; electronic delay is what you add to match it. Warm air is faster, so a delay set at soundcheck in the afternoon drifts by evening — measure again.</Body>
         <Body>Many engineers then add 5–10 ms MORE on purpose: with the mains arriving first, the ear localizes to the stage and the delay tower disappears (the precedence effect). Align first, then decide.</Body>
       </Card>
@@ -334,11 +335,11 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>POLARITY, PHASE AND THE SUBWOOFER CROSSOVER</Eyebrow>
         <Body>Polarity is a flip (the whole waveform inverted); phase is a time offset that varies with frequency. Two tops in opposite polarity cancel their low end down the center. Subs and tops are aligned at the crossover frequency so their outputs add there: a path difference of just {pathDiff} m puts the first cancellation at about {Math.round(firstNull)} Hz — the crossover region is exactly where a small misalignment costs the most.</Body>
       </Card>
-      <DeeperRow>
+      <FormulaFold formula="t = d ÷ c · c = 331.3 × √(1 + T/273.15)">
         <CalcLink id={CALC_LINKS.delay.workspace} label="Delay from distance" />
         <CalcLink id={CALC_LINKS.comb.workspace} label="Comb filter from a path difference" />
         <CalcLink id="phase" label="Phase from time and distance" />
-      </DeeperRow>
+      </FormulaFold>
     </SoundSystemsRackLayout>
   );
 }

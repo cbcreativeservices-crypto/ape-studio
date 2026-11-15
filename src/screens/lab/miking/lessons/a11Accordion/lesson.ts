@@ -451,7 +451,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves the air through the reeds?', options: ['The bellows', 'The player’s breath', 'A fan inside'], after: 'Now STEP through the reed (or PLAY ONCE), then try its shapes and the bellows’ cycle.' },
+  sound: { prompt: 'Before you step through: what moves the air through the reeds?', options: ['The bellows', 'The player’s breath', 'A fan inside'], after: 'Now go EVENT by EVENT through the reed (or PLAY ONCE), then try its shapes and the bellows’ cycle.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the bellows open fully. What happens to a fixed mic’s distance to the bass side?', options: ['It changes', 'It stays the same', 'Only the treble side moves'], after: 'Rest the mic in two zones, then switch BELLOWS and watch the bass side move.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

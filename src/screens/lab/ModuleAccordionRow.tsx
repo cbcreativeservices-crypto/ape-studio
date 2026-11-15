@@ -16,6 +16,7 @@ export function ModuleAccordionRow({
   name,
   blurb,
   num,
+  subtitle,
   expanded,
   done,
   onToggle,
@@ -24,6 +25,9 @@ export function ModuleAccordionRow({
   name: string;
   blurb: string;
   num?: number | string;
+  /** Optional few plain words under the name, always shown (owner 2026-11-15,
+   *  "build waves 1 thru 3", D62 item WA-06: Wave Physics). Omit = as before. */
+  subtitle?: string;
   expanded: boolean;
   /** Optional viewed/passed tick (categorical state -> stoplight green). */
   done?: boolean;
@@ -52,6 +56,7 @@ export function ModuleAccordionRow({
         >
           {name}
         </Text>
+        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         {expanded ? <Text style={styles.blurb}>{blurb}</Text> : null}
       </View>
       {done ? <Text style={styles.done}>{'\u2713'}</Text> : null}
@@ -88,6 +93,7 @@ const styles = StyleSheet.create({
   num: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textSub, minWidth: 14, textAlign: 'center' },
   name: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   blurb: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 17, color: colors.textSecondary },
   openBtn: {
     borderRadius: 8,
     borderWidth: 1,

@@ -415,7 +415,7 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
             <Text style={styles.readout}>e = B · l · v (field × wire length × speed) — voltage tracks the coil’s VELOCITY</Text>
             <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
               <Text style={styles.caption}>
-                A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt (felt that slows sound coming in the rear port) are what make it directional — the same parts you meet again in POLAR, PROXIMITY, and the cupping cutaway.
+                A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt (felt that slows sound coming in the rear port) are what make it directional — the same parts behind POLAR, PROXIMITY and the cupping cutaway you met earlier.
               </Text>
             </CollapsibleSection>
           </View>
@@ -527,8 +527,8 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       {wellTop}
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('polar_pattern')}>
         <Text style={styles.caption}>
-          The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear (monitor
-          wedges live there). Figure-8 has two lobes and two deep side nulls. Omni hears everything —
+          The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear, where the monitor
+          wedge (a floor speaker pointing back at the performer) lives. Figure-8 has two lobes and two deep side nulls. Omni hears everything —
           no up-close bass boost (proximity effect), no null to aim. These shapes are drawn as if no
           wall reflected any sound. In a real room, reflections reach the null too, so a cardioid’s
           rear is often only 10–20 dB down, not silent.
@@ -545,7 +545,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
           why: { 0: 'In front is where the mic hears best, so the wedge would feed straight back. Drag the speaker there and read PICKUP.', 2: 'Drag the speaker around: PICKUP changes with direction, so the mic hears a wedge almost everywhere.' },
           correctIdx: 1,
           reveal:
-            'Cardioid’s null points straight behind the mic — that is where the wedge lives, which is why cardioid rules the stage. Cover the rear ports (HAND GRIP shows how) and that null disappears.',
+            'Cardioid’s null points straight behind the mic — that is where the wedge lives, which is why cardioid rules the stage. Cover the rear ports (the small openings behind the grille that make it directional; HAND GRIP shows how) and that null disappears.',
           wrongHint: 'Drag the speaker behind the mic and watch the PICKUP cell hit NULL.',
         }}
       />
@@ -1559,9 +1559,11 @@ function SpotTheMistake({ viz }: { viz: MsVizModule }) {
 
 // `reading`: a plain-scroll page (no RackUnit), so the host's wellBottom draws
 // the in-flow NEXT / FINISH that a rack would append itself.
+// MI-04 (owner 2026-11-15, "build waves 1 thru 3", D62): the lab opens on the
+// hands-on PICKUP PATTERNS; INSIDE THE CAPSULE moves to the end, "for the
+// curious". Units are key-based, so banked credit is untouched by the order.
 const SECTIONS: { key: MicSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element; reading?: boolean }[] = [
-  { key: 'capsule', label: 'CAPSULE', title: 'INSIDE THE CAPSULE', blurb: 'Before the patterns: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
-  { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone doesn’t hear equally in every direction — the pattern is its map of sensitivity.', Comp: PolarSection },
+  { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone hears some directions better than others. Drag the speaker around the mic and watch PICKUP: the pattern is its map of sensitivity.', Comp: PolarSection },
   { key: 'distance', label: 'DISTANCE', title: 'DISTANCE & THE ROOM', blurb: 'Move in and the direct sound wins; back off and the room takes over.', Comp: DistanceSection },
   { key: 'proximity', label: 'PROXIMITY', title: 'PROXIMITY EFFECT', blurb: 'Directional mics get bassier as you move in — a tool AND a trap.', Comp: ProximitySection },
   { key: 'offaxis', label: 'OFF-AXIS', title: 'OFF-AXIS RESPONSE', blurb: 'Turn the mic away and the sound gets quieter — and duller.', Comp: OffAxisSection },
@@ -1574,6 +1576,7 @@ const SECTIONS: { key: MicSectionId; label: string; title: string; blurb: string
   { key: 'shock', label: 'HANDLING', title: 'HANDLING NOISE & ISOLATION', blurb: 'Vibration travels through solids into the capsule — decouple it.', Comp: ShockSection },
   { key: 'hand', label: 'HAND GRIP', title: 'HOW YOUR HAND CHANGES THE MIC', blurb: 'Everyone has seen a singer cup the mic. Here is exactly what that does.', Comp: HandSection },
   { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection, reading: true },
+  { key: 'capsule', label: 'CAPSULE', title: 'FOR THE CURIOUS: INSIDE THE CAPSULE', blurb: 'For the curious: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
 ];
 
 if (__DEV__ && SECTIONS.map((x) => x.key).join(',') !== MIC_PRINCIPLES_UNITS.join(',')) {
@@ -1619,8 +1622,8 @@ export function MicPrinciplesLabScreen() {
    * with a 'what's left' screen"; keep credit, always allow a redo). FINISH ›
    * on the strip (MISTAKES), the WHAT'S LEFT row in CONTENTS and the in-flow
    * FINISH at the foot of MISTAKES swap LabEndScreen in for the section:
-   * sections not yet credited, a jump to each, PRACTISE AGAIN from CAPSULE
-   * (clears nothing) and DONE.
+   * sections not yet credited, a jump to each, PRACTISE AGAIN from PICKUP
+   * PATTERNS (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(MIC_PRINCIPLES_LAB_KEY);
@@ -1643,7 +1646,12 @@ export function MicPrinciplesLabScreen() {
       if (i === sectionIdx + 1 && MIC_NO_CHECK.has(SECTIONS[sectionIdx].key)) creditSection(sectionIdx);
       openSection(i);
     },
-    finish: () => setEnding(true),
+    // CAPSULE, now the last module, has no card: FINISH at its foot counts it,
+    // as NEXT does on any other module without one (MI-04).
+    finish: () => {
+      if (sectionIdx === SECTIONS.length - 1 && MIC_NO_CHECK.has(SECTIONS[sectionIdx].key)) creditSection(sectionIdx);
+      setEnding(true);
+    },
     unEnd: () => setEnding(false),
   });
 

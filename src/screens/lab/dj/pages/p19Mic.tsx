@@ -41,6 +41,7 @@ import { SceneText, useLabelMm } from '../art/sceneText';
 import { fitView, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { micHalfway } from '../goalWords';
 import { stopKey, type Transport } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -773,6 +774,8 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
           // only a voice rendered AFTER the fault began: the voice still sounding
           // from before it fixed it on the spot (toddler hunt 2026-10-19)
           fixed={renderedSince(last, faultAt.current) && voiceIn(last, 'rec')}
+          // DJ-10 (owner 2026-11-15: "build waves 1 thru 3"): the second half, said at the moment the first is done
+          halfway={micHalfway(evOf(booth).mic.toRec, renderedSince(last, faultAt.current) && voiceIn(last, 'rec'))}
           hints={['Read VOICE IN on the strip: which feeds carry the mic?', 'The CROWD has it; the recording does not. What decides which outputs carry the mic?', 'Open ROUTE: the mic’s sends. Then TALK again and watch the REC meter.']}
           why="On this mixer, as on many, the mic is NOT sent to the record output (or the booth) until you switch it in. The crowd hearing the mic proves nothing about the recording: check the feed you are recording, on its own meter."
           onFixed={() => setFaultFixed(true)}

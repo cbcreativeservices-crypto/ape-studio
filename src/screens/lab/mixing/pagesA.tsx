@@ -10,10 +10,12 @@ import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row, useStableShuffle } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
+import { ProNoteButton } from '../../../features/lab/ProNote';
 import { AbPlayer, ConceptList, GoalChips, MixMantra, useFocalChoice, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { DIMENSIONS, FOCAL_CHOICES, correlatedSumPeakDb, type DimensionId } from './engine/mixModel.ts';
 import { FlowArt, HeadroomArt, MixMapArt, PrepArt } from './begArt';
 import { AUTO_BASE } from './pagesD';
+import { STORED_P4_LEVELS } from './storedLevels';
 import type { MixSettings } from './audio/mixAudio.ts';
 
 /** Page 1's picture: the demo balance the later pages build (AUTO_BASE),
@@ -41,6 +43,10 @@ function PageWhatMixingDoes({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
+      {/* BM-04 (owner 2026-11-15: "build waves 1 thru 3", D62): the note no
+          longer opens by itself on arrival; this small link on page 1 is
+          where it lives now (it was PagedLab's `proNote` link). */}
+      <ProNoteButton />
       <MixMantra />
       <Lead>A mix is not a stack of plugins. It is a SEQUENCE OF DECISIONS about what the listener should notice — made by listening, checked by listening.</Lead>
       <Card>
@@ -62,7 +68,10 @@ function PageWhatMixingDoes({ ctx }: { ctx: PageCtx }) {
           title={lastDim === 'movement' ? 'A MIX · THE CHORUS (BARS 3–4)' : 'A MIX · THE VERSE (BARS 1–2)'}
           state={lastDim === 'movement' ? 'LEAD +3 · BGV IN' : 'ALL FIVE AT ONCE'}
         />
-        <Body>Every track of this lab’s session, drawn where the mix puts it: up the page by the range it plays in, across by its pan, wide by its level, glowing by its reverb. Open MOVEMENT to see the chorus.</Body>
+        {/* SH-26 (owner 2026-11-15: "build waves 1 thru 3", D62): the three
+            short track names a beginner cannot guess are spelled out where
+            they first appear, in the sentence that already explains the picture. */}
+        <Body>Every track of this lab’s session (PERC = percussion, GTR = guitar, BGV = backing vocals), drawn where the mix puts it: up the page by the range it plays in, across by its pan, wide by its level, glowing by its reverb. Open MOVEMENT to see the chorus.</Body>
       </Card>
       <Card>
         <Eyebrow>YOUR FIRST DECISION</Eyebrow>
@@ -122,13 +131,16 @@ function PagePrepare({ ctx }: { ctx: PageCtx }) {
       <Lead>Mixing starts before mixing. Ten minutes of preparation prevents an hour of trying to solve ORGANIZATIONAL problems with plugins.</Lead>
       <Card>
         <Eyebrow>THE PREP CHECKLIST</Eyebrow>
+        {/* BM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): the session
+            window sits ABOVE the seven steps, so each tap tidies it in sight on
+            a phone (it was drawn under all seven opened steps, off screen). */}
+        <PrepArt opened={seen} />
+        <Body>The session updates as you open each step: names and colors, the junk gone, the quiet clip leveled, headroom on the master meter, references parked, an untouched copy saved.</Body>
         <ConceptList
           items={PREP_ITEMS.map((p) => ({ id: p.id, name: p.name, blurb: p.why }))}
           opened={seen}
           onOpen={(id) => setSeen((s) => new Set(s).add(id))}
         />
-        <PrepArt opened={seen} />
-        <Body>The session updates as you open each step: names and colors, the junk gone, the quiet clip leveled, headroom on the master meter, references parked, an untouched copy saved.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>SEPARATE THE JOBS</Eyebrow>
@@ -190,7 +202,8 @@ function PageSignalFlow({ ctx }: { ctx: PageCtx }) {
 
   return (
     <View style={styles.page}>
-      <Lead>One path, most mixers, most DAWs. Audio flows through a channel in a set order — some digital desks and DAWs let you change it, so check the one you use — and every later lesson in this lab hangs on knowing it cold.</Lead>
+{/* BM-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain first line; the lede is trimmed so the page reads no longer. */}
+      <Lead>A channel is the path one sound takes through the mixer, from input to output. Audio flows through it in a set order — some digital desks and DAWs let you change it, so check the one you use — and every later lesson in this lab hangs on knowing it cold.</Lead>
       <Card>
         <Eyebrow>THE EIGHT STATIONS — STUDY THEM (ORDER HIDDEN)</Eyebrow>
         {shuffled.map((s) => (
@@ -276,7 +289,7 @@ function PageGainStaging({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>WHY HEADROOM</Eyebrow>
         <Body>Digital zero is a hard ceiling at the output and in a fixed-point file: anything past it there is clipped, permanently. And peaks GANG UP — two identical −6 dB peaks landing together can reach {sum.toFixed(1)} dB. Eight tracks each “safely” hot leave a mix bus with nowhere to live. Peaks comfortably below zero on every track is the whole rule.</Body>
-        <HeadroomArt measured={pb.measured} />
+        <HeadroomArt measured={pb.measured} stored={Object.fromEntries(pb.studied.filter((id): id is 'a' | 'b' => id === 'a' || id === 'b').map((id) => [id, STORED_P4_LEVELS[id]]))} />
         {/* The answer waits for the blind vote (novice audit G4, 2026-11-14:
             the caption gave the vote away before it was cast). */}
         <Body>

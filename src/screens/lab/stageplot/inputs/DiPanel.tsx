@@ -14,7 +14,7 @@ import { spDiTotals } from '../../../../features/stageplot/spDerive';
 import { spAddDiDevice, spRemoveDiDevice, spUpdateDiDevice } from '../../../../features/stageplot/spModel';
 import type { SpDiDevice, SpId, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, Count, FocusMark, Note, RowCard, Section, TextField } from '../spForm';
+import { Button, Choice, Count, FocusMark, Note, RowCard, Section, TextField, type SectionFold } from '../spForm';
 import { RemoveStep, SheetBody, Small, SubTitle, TickRow, bitStyles } from './bits';
 import { SP_DI_KIND_WORD, SP_SUPPLIERS, SP_TBC_PRINTED, spDiChannelRows, spDiDeviceLine, spDiToggle } from './inputsLogic';
 
@@ -26,7 +26,7 @@ const CHANNELS: { value: Channels; label: string }[] = [
 ];
 const KIND: { value: SpDiDevice['kind']; label: string }[] = (['passive', 'active', 'unknown'] as const).map((value) => ({ value, label: SP_DI_KIND_WORD[value] }));
 
-export function DiPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOpen: (deviceId: SpId) => void }) {
+export function DiPanel({ selectedId, onOpen, fold }: { selectedId: SpId | null; onOpen: (deviceId: SpId) => void; fold?: SectionFold }) {
   const ed = useSpEditor();
   const p = ed.project;
   const totals = spDiTotals(p);
@@ -38,7 +38,7 @@ export function DiPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOpe
   };
 
   return (
-    <Section title="DI DEVICES" hint="The DI devices, listed apart from the DI channels they carry. A mono device carries one DI channel, a stereo device two.">
+    <Section title="DI DEVICES" hint="The DI devices, listed apart from the DI channels they carry. A mono device carries one DI channel, a stereo device two." fold={fold}>
       {totals.channels || totals.devices ? (
         <View style={bitStyles.counts}>
           {totals.channels ? <Count value={totals.channels} label={totals.channels === 1 ? 'DI channel' : 'DI channels'} /> : null}

@@ -19,7 +19,7 @@ import { bestView, guideFor } from '../engine/geometry/guides.ts';
 import { hasBothViews, viewToggle } from '../engine/scene/viewToggle.ts';
 import { SetupStage } from '../engine/scene/SetupStage';
 import { MicCloseUp } from '../engine/scene/MicCloseUp';
-import { isModelled, PATTERN_LABELS } from '../engine/physics/polar.ts';
+import { isModelled, PATTERN_BLURBS, PATTERN_LABELS } from '../engine/physics/polar.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../engine/kit';
 import { MIC_TYPES, micType } from '../data/micTypes';
@@ -84,7 +84,7 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
       selectedId: pat,
       onSelect: (id) => setPattern(id as MicPattern),
       sticky: true,
-      options: t.patterns.map((p) => ({ id: p.id, label: p.label })),
+      options: t.patterns.map((p) => ({ id: p.id, label: p.label, blurb: PATTERN_BLURBS[p.id] })),
     },
     ...viewToggle({ view, setView, stage: 'dual', both }),
   ];

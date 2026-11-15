@@ -34,8 +34,10 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How pitch correction works: error is counted in cents, 100 to a semitone. AMOUNT sets how far a note is pulled toward the correct pitch, SPEED how fast.',
-      start: 'Tap PLAY and listen to the out-of-tune melody. Slide AMOUNT to OFF and back to 100%. Then switch SPEED between FAST — SNAP and SLOW — GLIDE and watch ENDS, where the most out-of-tune note finishes.',
+      // AUT-04 (owner 2026-11-15, "build waves 1 thru 3"): how to read the marks first, a silent step, play second.
+      // In the code GRAY is the note as sung and the GRIDLINE is the right note (the target).
+      learning: 'Each row is one sung note: gray is the note as sung; its amber curve bends toward the gridline, the right note. AMOUNT sets how far, SPEED how fast.',
+      start: 'Slide AMOUNT to OFF and watch each amber curve lie on its gray line, then back to 100% and watch it bend onto the gridline. Then tap PLAY and switch SPEED to hear snap and glide.',
     },
     seeing: [
       'The cents grid has one vertical line per semitone, note names along the top. A cent is 1/100 of a semitone. Each row is one note of a six-note demo melody, sung out of tune on purpose.',
@@ -108,7 +110,7 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
       'A ✓ replaces a card’s number once you get it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Use the tabs under the title to go back to LEARN or EXPLORE at any time; a right answer stays right.',
     ],
     changes: [

@@ -38,11 +38,8 @@ describe('one registry name on screen', () => {
   });
 });
 
-describe('Limiter popup = the glossary’s plain English', () => {
-  it('matches Comp A’s live text', () => {
-    assert.match(
-      read('features/intro/labTermIntroData.ts'),
-      /"A limiter is an extreme compressor with a very high or infinite ratio\. You set a threshold, and signal above it is held from going much higher\. This protects against surprise clipping\. Very fast peaks can still slip a little past unless the limiter uses lookahead\. Limiters are common on the master bus and as a safety net on inputs\. Used right, they are invisible\. Used wrong, they squash the sound\."/,
-    );
+describe('Limiter popup = the lab’s own two sentences', () => {
+  it('owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item LIM-01)', () => {
+    assert.match(read('features/intro/labTermIntroData.ts'), /"A limiter is a ceiling for loudness\. Peaks that reach the line you set are pulled back down to it\."/);
   });
 });

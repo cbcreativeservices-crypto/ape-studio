@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the wrist moves the egg one way. What do the grains inside do at first?', options: ['They lag behind', 'They move exactly with the shell', 'They stay stuck to the shell’s wall'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the grains.' },
+  sound: { prompt: 'Before you step through: the wrist moves the egg one way. What do the grains inside do at first?', options: ['They lag behind', 'They move exactly with the shell', 'They stay stuck to the shell’s wall'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the grains.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: two eggs, hands wide apart. Can one mic still serve?', options: ['Yes, from farther back', 'No — two mics are needed', 'It depends on the part'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

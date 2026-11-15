@@ -23,8 +23,9 @@ import type { SpId, SpStageBox, SpSupplier } from '../../../../features/stageplo
 import { spmBoxReturnLines } from '../monitors/monitorPlan';
 import { useSpEditor } from '../spContext';
 import { placeOnStage } from '../spIssueActions';
-import { Button, Choice, Count, FocusMark, HelpTip, Note, NumberField, RowCard, Section, Switch, TextField } from '../spForm';
+import { Button, Choice, Count, FocusMark, HelpTip, Note, NumberField, RowCard, Section, Switch, TextField, type SectionFold } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
+import { spBoxNeedsFix } from './inputsFolds';
 import { SP_SUPPLIERS, spBoxSocketLines } from './inputsLogic';
 
 const SUPPLIER: { value: SpSupplier; label: string }[] = SP_SUPPLIERS.map((value) => ({ value, label: SP_SUPPLIER_WORD[value] }));
@@ -52,7 +53,7 @@ export const SP_SUB_HINT =
 export const SP_SUB_RETURNS_HINT =
   'The sub-snake’s cable also brings monitor mixes out to it from the main box. Each return of the sub-snake is wired to one return of the main box, so those main-box returns cannot carry another mix.';
 
-export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOpen: (boxId: SpId) => void }) {
+export function BoxPanel({ selectedId, onOpen, fold }: { selectedId: SpId | null; onOpen: (boxId: SpId) => void; fold?: SectionFold }) {
   const ed = useSpEditor();
   const p = ed.project;
   const uses = spBoxUse(p);
@@ -72,7 +73,7 @@ export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOp
       [
         `${r.placed === 1 ? '1 input has' : `${r.placed} inputs have`} a socket chosen by AUTO-ASSIGN SOCKETS.${uses.length > 1 ? ' Each input goes to the box nearest it, so the list can move between boxes.' : ''}`,
         r.left ? `${r.left === 1 ? '1 input still has' : `${r.left} inputs still have`} no socket: every box is full. Add a box, or choose a box with more sockets.` : '',
-        r.wireless ? `${r.wireless === 1 ? '1 wireless input was' : `${r.wireless} wireless inputs were`} left for you: a receiver plugs in where its rack is, not where the singer stands. Choose the box by the rack in the input’s editor, or Console direct when the receivers are at FOH.` : '',
+        r.wireless ? `${r.wireless === 1 ? '1 wireless input was' : `${r.wireless} wireless inputs were`} left for you: a receiver plugs in where its rack is, not where the singer stands. Choose the box by the rack in the input’s editor, or Console direct when the receivers are at front of house (FOH).` : '',
         'UNDO puts every socket back.',
       ]
         .filter(Boolean)
@@ -83,7 +84,7 @@ export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOp
   const free = uses.reduce((n, u) => n + u.free, 0);
 
   return (
-    <Section title="STAGE BOXES" hint="The boxes on the stage that your input cables plug into, and which socket each input uses.">
+    <Section title="STAGE BOXES" hint="The boxes on the stage that your input cables plug into, and which socket each input uses." fold={fold}>
       <HelpTip title="Stage boxes, snakes and sockets" body={SP_BOX_HELP} />
       {uses.length ? (
         <View style={bitStyles.counts}>
@@ -102,7 +103,7 @@ export function BoxPanel({ selectedId, onOpen }: { selectedId: SpId | null; onOp
             key={u.box.id}
             title={spBoxName(u.box)}
             subtitle={`${spBoxSizeWords(u.box)} · ${spBoxUseWords(u)}${u.fedBy.map((f) => ` · sockets ${f.first}–${f.last} from ${spBoxName(f.box)}`).join('')}${u.retFedBy.map((f) => ` · returns ${f.first === f.last ? f.first : `${f.first}–${f.last}`} to ${spBoxName(f.box)}`).join('')}${u.box.feed ? ` · ${spBoxFeedWords(p, u.box)}` : ''} · ${where}`}
-            badges={u.doubled.length || u.over.length || u.feedClash.length || u.feedPast.length || u.feedShort.length || u.returnsDoubled.length || u.returnsOver.length || u.retFeedClash.length || u.retFeedPast.length || u.retFeedShort.length ? ['NEEDS A CORRECTION'] : undefined}
+            badges={spBoxNeedsFix(u) ? ['NEEDS A CORRECTION'] : undefined}
             selected={selectedId === u.box.id}
             onPress={() => onOpen(u.box.id)}
             a11yLabel={`${spBoxLine(u, p)}. ${where}. Opens this stage box to edit it.`}

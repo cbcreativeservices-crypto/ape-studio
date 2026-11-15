@@ -198,7 +198,10 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
     {
       kind: 'options',
       id: 'next',
-      label: 'NEXT',
+      // SS-11 (owner 2026-11-15: "build waves 1 thru 3"): the dock key was
+      // NEXT, the same word as the page's own NEXT, so a beginner left the
+      // page by mistake. It is STATION, as on page 1.
+      label: 'STATION',
       valueLabel: last ? STATION_LABEL[last].split(' ')[0] : 'Pick',
       options: bin.map((id) => ({
         id,
@@ -232,7 +235,7 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Open NEXT and tap the stations in the order the signal travels — the map lights as you go, and stays open for the next one."
+      caption="Open STATION and tap the stations in the order the signal travels — the map lights as you go, and stays open for the next one."
       wellTop={
         wrongAt >= 0 ? (
           <VerdictLine ok={false}>{wrongText}</VerdictLine>
@@ -432,7 +435,7 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
       caption="Slide CONFIG through the thirteen ways the console’s outputs can reach a room: the plan shows where each loudspeaker stands, the tag beside it says what it carries, and the floor shows where that lands."
     >
       <ChapterTag n={3}>OUTPUT CONFIGURATIONS</ChapterTag>
-      <Body>The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor shows a simplified sum of them. Hatched floor is where two arrivals overlap and comb-filter.</Body>
+      <Body>The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor shows a simplified sum of them. Hatched floor is where two arrivals overlap: they add at some pitches and cancel at others (comb filtering), so the sound there is uneven.</Body>
       <FieldKey />
       <ReadoutRow>
         {bars.map(([feed, n]) => (

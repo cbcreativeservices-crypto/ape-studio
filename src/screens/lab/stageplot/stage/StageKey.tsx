@@ -90,7 +90,8 @@ export function StageKey({
   /** How far the key is scrolled: "▼ MORE" fades out at the end, where END OF
    *  THE KEY says it (R2-SP1-05). Not a touch: the key still takes none. */
   const scrolled = useRef(new Animated.Value(0)).current;
-  const label = layout.note ? `${stageKeyWords(entries)} ${scaleWords(layout.note.text)}` : stageKeyWords(entries);
+  const foot = layout.foot.map((l) => l.text).join(' ');
+  const label = `${layout.note ? `${stageKeyWords(entries)} ${scaleWords(layout.note.text)}` : stageKeyWords(entries)}${foot ? ` ${foot}` : ''}`;
   if (shownH != null && shownH < h - 0.5) {
     // A LONG KEY ON A SHORT PHONE: its own scroller, inside the display. The
     // last line says that more of the key is below, so nothing reads as cut.
@@ -154,6 +155,12 @@ function keyArt(project: SpProject, layout: StageKeyLayout<SpObjectKind>, w: num
           </SvgText>
         )),
       )}
+      {/* the key's last line: what the small boxes mean (PLOT-15) */}
+      {layout.foot.map((ln, k) => (
+        <SvgText key={`f${k}`} x={ln.x} y={ln.y} fill={NOTE_INK} fontSize={STAGE_KEY_FS} fontFamily={fonts.oswaldSemiBold}>
+          {ln.text}
+        </SvgText>
+      ))}
     </Svg>
   );
 }

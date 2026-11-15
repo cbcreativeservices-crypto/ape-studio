@@ -13,10 +13,29 @@ import { NOT_HEARD } from './silentRules.ts';
  * it: DJ Systems' dB cells pass `vA11y: "-8.4 dBFS"` AND `sub: "dBFS"`, and
  * the label read "-8.4 dBFS dBFS" (G5b, G5c screens 7 and 21).
  */
-export function bezelCellSaid(it: Pick<BezelItem, 'v' | 'vA11y' | 'sub' | 'helpKey'>, silentNote = false): string {
+export function bezelCellSaid(it: Pick<BezelItem, 'v' | 'vA11y' | 'sub' | 'helpKey' | 'onPress'>, silentNote = false): string {
   const said = it.vA11y ?? it.v;
   const sub = it.sub && !said.toLowerCase().includes(it.sub.trim().toLowerCase()) ? ` ${it.sub}` : '';
-  return `${said}${sub}${silentNote ? ` (${NOT_HEARD})` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`;
+  // A cell with no tap job of its own opens its lesson on a tap (SN-2,
+  // 2026-11-15), so it says "tap"; a tap-to-reset cell keeps "long-press".
+  const lesson = it.helpKey ? (it.onPress ? ' — long-press for its lesson' : ' — tap for its lesson') : '';
+  return `${said}${sub}${silentNote ? ` (${NOT_HEARD})` : ''}${lesson}`;
+}
+
+/**
+ * What a plain TAP on a bezel cell does about its lesson (pure; beginner
+ * waves 2026-11-15, SN-2 from F6b TB-01). Help must not hide behind
+ * long-press, so a cell with a `helpKey` opens it on a tap too — but ONLY
+ * when the tap has no job: a cell's own `onPress` (tap-to-reset) always
+ * wins, and with no `onHelp` there is nothing to open. The long-press stays.
+ */
+export function bezelTapHelp(
+  it: Pick<BezelItem, 'helpKey' | 'onPress'>,
+  onHelp: ((helpKey?: string) => void) | undefined,
+): (() => void) | undefined {
+  if (it.onPress || !it.helpKey || !onHelp) return undefined;
+  const key = it.helpKey;
+  return () => onHelp(key);
 }
 
 /** The cell as drawn: a `silent` value replaces the live one while sound is

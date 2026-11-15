@@ -39,7 +39,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
-import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
+import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, ProNote, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { surfaceOf, type GaCharId, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
@@ -51,7 +51,10 @@ import { G08 } from './guides/p08';
 import { pct, speedKey, useSince } from './shared';
 
 const ASSETS: readonly string[] = [...CHB_FOOTSTEP_ASSETS, 'gen_hum', 'gen_air', 'door', 'door_close', 'door_rattle'];
-const TERMS = gaTerms('Audio trigger', 'Switch group', 'Real-Time Parameter Control (RTPC)', 'Audio state', 'Game Syncs');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01, GA-07): the row keeps the lab's own words; Wwise's three go
+// with the Wwise paragraph into the PRO NOTE at the end of step 1, closed until opened
+const TERMS = gaTerms('Audio trigger', 'Audio parameter', 'Audio state');
+const PRO_TERMS = gaTerms('Switch group', 'Real-Time Parameter Control (RTPC)', 'Game Syncs');
 const SURFACE_KEY: Record<GaSurfaceId, string> = { wood: 'WOOD', stone: 'STONE', gravel: 'GRAVEL' };
 
 const stepInPlace = (who: GaCharId) => gaDispatch({ type: 'step', who, dx: 0, dy: 0 });
@@ -227,17 +230,20 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>You stand on the stone path, the guide on the workshop’s wood floor.</Look>
         <P>A game sends the audio side four kinds of information. A trigger is one thing that happens: a foot touches the ground. A switch is one choice from a list, held by each object: the surface under each character. A parameter is a changing number: the generator’s speed. A state is a mode for the whole game: calm or alert.</P>
-        <P>These words are general. Wwise groups switches, states and parameters as Game Syncs. Its link from a game number to a sound setting is an RTPC, and its list of switch choices is a Switch Group. FMOD Studio does these jobs with parameters. A Wwise Trigger starts a music stinger. A footstep there is an Event.</P>
         <Terms items={TERMS} />
+        <ProNote hint="Pro note: what Wwise and FMOD call these four.">
+          <P>These words are general. Wwise groups switches, states and parameters as Game Syncs. Its link from a game number to a sound setting is an RTPC, and its list of switch choices is a Switch Group. FMOD Studio does these jobs with parameters. A Wwise Trigger starts a music stinger. A footstep there is an Event.</P>
+          <Terms items={PRO_TERMS} />
+        </ProNote>
       </Step>
       <Step n={2}>
-        <Do>Open STEP. Press STEP: YOU and STEP: GUIDE. Choose GRAVEL and press both again. Close the tray and read the log.</Do>
+        <Do parts={['Open STEP. Press STEP: YOU and STEP: GUIDE.', 'Choose GRAVEL and press both again.', 'Close the tray and read the log.']} />
         <P>Each press is one trigger. One footstep event answers both characters, and the switch decides which sound plays. Yours reads gravel. The guide’s still reads wood: a switch is local.</P>
         <SyncTable rows={rows} state={s.mood.toUpperCase()} />
         <ActivityLog state={s} lines={8} only={CHB_P08_LOG} />
       </Step>
       <Step n={3}>
-        <Do>Tap SPEED, choose GENERATOR 1 · ON and move the slider. In MOOD, choose ALERT. Then start the fault on the TROUBLESHOOT card.</Do>
+        <Do parts={['Tap SPEED, choose GENERATOR 1 · ON and move the slider.', 'In MOOD, choose ALERT.', 'Start the fault on the TROUBLESHOOT card.']} />
         <P>Speed is local too: it is kept on one generator, and its instance follows it. MOOD is a state: one STATE line changes it for every object, and the whole picture shows it. The question “one object or the whole game?” is called scope.</P>
       </Step>
       <Step n={4}>

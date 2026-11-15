@@ -634,7 +634,7 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
           {
             kind: 'fader',
             id: 'step',
-            label: 'STEP',
+            label: 'EVENT',
             value: (shown - 1) / Math.max(1, n - 1),
             onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
             format: () => `${stage.title.toLowerCase()}`,
@@ -645,7 +645,7 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
           (i) => `${i + 1} · ${S.stages[i].title}`,
           (i) => goTo(i + 1),
         ),
-        { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+        { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
         ...(opts.variantKey !== false && lesson.model.variants.length > 1
           ? [
               {
@@ -778,7 +778,7 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking={C.sound.looking[variant] ?? 'The instrument from the front'} prompt="STEP through the pluck, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+            <Landing looking={C.sound.looking[variant] ?? 'The instrument from the front'} prompt="Go EVENT by EVENT through the pluck, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
             <Card>
               <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
             </Card>

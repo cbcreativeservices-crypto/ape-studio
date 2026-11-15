@@ -140,14 +140,19 @@ export const TOOL_SCENARIOS: readonly Scenario[] = [
   { id: 'k7', moduleId: 'tools', prompt: 'Goal: you are not sure whether the low end is really heavy or the room is flattering it.', options: TOOL_OPTIONS, correct: 'Listen on another system first', explain: 'When the doubt is about the ROOM, the next step is a check, not a tool. Verification before processing.' },
 ];
 
+/** ONE NAME PER GROUP (MA-02, owner 2026-11-15: "build waves 1 thru 3", D62):
+ *  each title is the dock / readout name (mod4Tools TOOL_SHORT) in sentence
+ *  case, so the card, the tray, the dock and the TOOL readout agree. The words
+ *  the old titles carried ("playback", "chain", "spatial", "analysis") live in
+ *  the decision line and the items. */
 export const TOOL_GROUPS: readonly { id: string; title: string; decision: string; items: readonly string[] }[] = [
-  { id: 'playback', title: 'Playback and editing', decision: 'Hear it, cut it, export it', items: ['DAW or mastering editor', 'Session management and versioning', 'Playback, editing, fades', 'Export and render'] },
-  { id: 'monitor', title: 'Monitoring chain', decision: 'Trust what you hear', items: ['Converters', 'Monitor controller', 'Loudspeakers in a treated room', 'Headphones (supplementary)'] },
+  { id: 'playback', title: 'Editing', decision: 'Hear it, cut it, export it', items: ['DAW or mastering editor', 'Session management and versioning', 'Playback, editing, fades', 'Export and render'] },
+  { id: 'monitor', title: 'Monitors', decision: 'Trust what you hear, through the whole monitoring chain', items: ['Converters', 'Monitor controller', 'Loudspeakers in a treated room', 'Headphones (supplementary)'] },
   { id: 'eq', title: 'EQ', decision: 'Tonal balance and correction', items: ['Broad shelves and tilt', 'Narrow correction', 'Dynamic / linear-phase variants'] },
   { id: 'dyn', title: 'Dynamics', decision: 'Density, control, peaks', items: ['Compression (gentle, program)', 'Limiting (peak / true-peak ceiling)', 'Multiband and other dynamics tools'] },
-  { id: 'stereo', title: 'Stereo / spatial', decision: 'Width and balance, checked in mono', items: ['Mid/side width', 'Channel balance', 'Mono-compatibility check'] },
-  { id: 'meters', title: 'Meters and analysis', decision: 'Verify, never guess', items: ['Sample-peak and true-peak meters', 'Loudness meter (BS.1770 family)', 'Phase correlation', 'Spectrum analyzer'] },
-  { id: 'analog', title: 'Analog equipment (optional)', decision: 'Color and a different hand on the same decisions', items: ['Analog EQ and compressors', 'Converters and routing', 'Neither analog nor digital is "better" — they are different'] },
+  { id: 'stereo', title: 'Stereo', decision: 'Width and balance, checked in mono', items: ['Mid/side width', 'Channel balance', 'Mono-compatibility check'] },
+  { id: 'meters', title: 'Meters', decision: 'Verify by analysis, never guess', items: ['Sample-peak and true-peak meters', 'Loudness meter (BS.1770 family)', 'Phase correlation', 'Spectrum analyzer'] },
+  { id: 'analog', title: 'Analog (optional)', decision: 'Color and a different hand on the same decisions', items: ['Analog EQ and compressors', 'Converters and routing', 'Neither analog nor digital is "better" — they are different'] },
 ];
 
 /** Module 5 — "Ready, or revision?" the delivered-mix inspection */
@@ -282,10 +287,14 @@ export const PROJECT_CHECKS: readonly { id: string; label: string; needed: boole
 /** `short` is the bezel / dock name: ≤ 12 characters so the ORDER cell never
  *  crops (a cropped readout drops its label, never its number — and a
  *  cropped NAME has no number to keep). */
+/*  ONE NAME PER ORDER (MA-02, owner 2026-11-15: "build waves 1 thru 3", D62):
+ *  `label` (the tray and the card title) is `short` (the dock key and the
+ *  ORDER readout) in sentence case; the plain sentence the old label was now
+ *  opens `why`, so its meaning still shows in the tray and the card. */
 export const PROJECT_SEQUENCES: readonly { id: string; label: string; short: string; order: readonly string[]; why: string }[] = [
-  { id: 's1', label: 'Opener first, quiet song last', short: 'OPENER→QUIET', order: ['p1', 'p4', 'p3', 'p2'], why: 'Starts with the statement, closes on the heart. The loudness step down into "Tide Table" is deliberate and final.' },
-  { id: 's2', label: 'Quiet song in the middle', short: 'QUIET MID', order: ['p1', 'p2', 'p3', 'p4'], why: 'A breath in the center, then back up. The step DOWN and the step UP both need gaps that feel intended.' },
-  { id: 's3', label: 'Build to the opener', short: 'BUILD UP', order: ['p4', 'p3', 'p2', 'p1'], why: 'Ends on the loudest track — strong finish, but the first song is the one listeners hear most. Discuss with the client.' },
+  { id: 's1', label: 'Opener→quiet', short: 'OPENER→QUIET', order: ['p1', 'p4', 'p3', 'p2'], why: 'Opener first, quiet song last. Starts with the statement, closes on the heart. The loudness step down into "Tide Table" is deliberate and final.' },
+  { id: 's2', label: 'Quiet mid', short: 'QUIET MID', order: ['p1', 'p2', 'p3', 'p4'], why: 'Quiet song in the middle. A breath in the center, then back up. The step DOWN and the step UP both need gaps that feel intended.' },
+  { id: 's3', label: 'Build up', short: 'BUILD UP', order: ['p4', 'p3', 'p2', 'p1'], why: 'Build to the opener. Ends on the loudest track — strong finish, but the first song is the one listeners hear most. Discuss with the client.' },
 ];
 
 export const PROJECT_QC: readonly { id: string; label: string }[] = [

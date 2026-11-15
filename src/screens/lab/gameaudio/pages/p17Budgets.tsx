@@ -35,7 +35,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
-import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { ActivityLog, Do, GoalChips, Look, Note, P, ProNote, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
@@ -57,7 +57,10 @@ const ASSETS: readonly string[] = [
   'gen_air',
   ...GA_SURFACES.flatMap((surface) => Array.from({ length: FOOTSTEP_TAKES }, (_, take) => footstepId(surface, take))),
 ];
-const TERMS = gaTerms('Playback limit', 'Playback priority', 'Virtual voice', 'Voice Stealing', 'Audio memory budget', 'Audio CPU budget');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01, GA-07): the row keeps the voice words; memory and processing
+// time go with the memory card into the PRO NOTE at the end of step 3
+const TERMS = gaTerms('Playback limit', 'Playback priority', 'Virtual voice', 'Voice Stealing');
+const PRO_TERMS = gaTerms('Audio memory budget', 'Audio CPU budget');
 
 const sceneOn = (s: GaState): boolean => gaPlaying(s, 'bed_room') || gaPlaying(s, 'bed_yard') || gaPlaying(s, 'fountain');
 const alarmOn = (s: GaState): boolean => gaPlaying(s, 'alarm');
@@ -237,7 +240,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Set BUDGET to 8. In SOUNDS, switch on SCENE and GENERATOR 1. Press BURST.</Do>
+        <Do parts={['Set BUDGET to 8.', 'In SOUNDS, switch on SCENE and GENERATOR 1.', 'Press BURST.']} />
         <P>Twelve crate impacts arrive within 0.3 s. The card lists whose voice was taken: voice stealing.</P>
         <P>This lab’s teaching rule: at the limit, a new sound takes the voice of the least important sound playing. Of several equal ones, the oldest is taken. A protected sound keeps its voice, and so does a more important one. If no voice can be taken, the new sound is REFUSED.</P>
         <P>A stolen one-shot stops. A stolen loop becomes virtual: tracked and silent until a voice is free. GENERATOR 1 and SCENE stay on: their sounds return when the impacts end.</P>
@@ -247,10 +250,13 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={6} only={P17_LOG_KINDS} />
       </Step>
       <Step n={3}>
-        <Do>With BUDGET at 8, switch ALARM on in SOUNDS and press BURST. Then lower BUDGET to 1 and press BURST again.</Do>
+        <Do parts={['With BUDGET at 8, switch ALARM on in SOUNDS and press BURST.', 'Lower BUDGET to 1 and press BURST again.']} />
         <P>At a budget of 1 the protected alarm holds the only voice, so every impact is REFUSED.</P>
-        <MemoryCard />
         <Note tone="mistake">Reading every number as a measurement. The voice counts and decoded sizes here are exact. This lab measures no processing time.</Note>
+        <ProNote hint="Pro note: memory, the other budget, worked out for three sounds.">
+          <MemoryCard />
+          <Terms items={PRO_TERMS} />
+        </ProNote>
       </Step>
       <Step n={4}>
         <P>Each goal is marked done when it really happens in the scene.</P>

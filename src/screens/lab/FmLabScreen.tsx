@@ -45,6 +45,7 @@ import { LabShell, HeaderPlayButton } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { FM_END_GUIDE, fmScreenGuide } from './fmScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
+import { fmNoteGrid, fmNoteStep } from './fmGrid';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -56,6 +57,12 @@ const RESTRIKE_MS = 150;
 const NYQUIST = 24000; // display Nyquist (48 kHz engine rate)
 
 const CARRIERS = [110, 220, 440] as const;
+/** SH-76 (owner 2026-11-15, "build waves 1 thru 3"): each FC choice says what it is, in one line. */
+const CARRIER_BLURBS: Record<number, string> = {
+  110: 'A low A: the note the new tones gather around.',
+  220: 'The A one octave above 110 Hz. The starting note.',
+  440: 'The A that orchestras tune to, one octave above 220 Hz.',
+};
 const MAX_CARRIER = CARRIERS[CARRIERS.length - 1];
 // Tray blurbs (owner 2026-08-28): the WHOLE FM lesson lives in this choice —
 // integer ratios land the sidebands ON the harmonic series (pitched), while
@@ -239,7 +246,8 @@ export function FmLabScreen() {
     <LabShell
       labId="fm"
       title="FM SYNTH LAB"
-      subtitle="Carrier · Modulator · Ratio · Index · Sidebands"
+      // FM-01 (owner 2026-11-15, "build waves 1 thru 3"): plain words, not five jargon words.
+      subtitle="One tone shakes another · new tones appear"
       intro={INTRO}
       // Screen Guide (owner 2026-10-31): the ⓘ on every tab, per tab.
       guide={fmScreenGuide}
@@ -253,10 +261,12 @@ export function FmLabScreen() {
       // PLUCK/BELL decay the voice's index after each strike (Generator.hpp
       // fmSample: I = index × e^(−t/τ)) while the graph draws the fader's
       // index — so on those envelopes it is the spectrum AT THE STRIKE.
+      // FM-01 (owner 2026-11-15, "build waves 1 thru 3"): no Bessel; the rare dashed and red sticks
+      // are explained in the ⓘ lesson, not here.
       exploreCaption={
         env.decaySec > 0
-          ? 'Pick a ratio and index, watch the Bessel sidebands, then strike the voice — the sticks show each sideband at the strike; PLUCK and BELL then let the index fall, so the sound dulls toward the carrier.'
-          : 'Pick a ratio and index, watch the Bessel sidebands, then strike the voice — each stick is one sideband; a dashed one merges with the stick it lands on.'
+          ? 'Drag INDEX and watch new tones spread out around the note, then strike the voice. The sticks show the strike; PLUCK and BELL then let the sound dull toward the note.'
+          : 'Drag INDEX and watch new tones spread out around the note: each stick is one tone. Then strike the voice to hear them.'
       }
       headerAction={
         <HeaderPlayButton
@@ -279,15 +289,17 @@ export function FmLabScreen() {
               ? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · AT THE STRIKE'
               : 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ(I) · EACH AT FC ± k·FM',
           // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          // FM-01 (owner 2026-11-15, "build waves 1 thru 3"): the same disclosure, in plain words.
           modelNote:
             env.decaySec > 0
-              ? 'Each line’s height comes from the Bessel math, at the moment of the strike.'
-              : 'Each line’s height comes from the Bessel math; each sits at FC ± k·FM.',
+              ? 'Worked out from the math: each stick is one tone, as tall as it is strong, at the strike.'
+              : 'Worked out from the math: each stick is one tone, as tall as it is strong.',
           onGuide: () => openLesson('display'),
           bezel: [
             // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
             { k: 'FC', v: `${carrier} Hz`, helpKey: 'carrier', caption: 'the note' },
-            { k: 'FM', v: `${fm.toFixed(0)} Hz`, helpKey: 'ratio', caption: 'the shaker' },
+            // FM-02 (owner 2026-11-15, "build waves 1 thru 3"): MOD, so "FM" only ever means the technique.
+            { k: 'MOD', v: `${fm.toFixed(0)} Hz`, helpKey: 'ratio', caption: 'the shaker' },
             { k: 'I', v: index.toFixed(1), helpKey: 'index', caption: 'how hard' },
             {
               k: 'BW',
@@ -306,7 +318,7 @@ export function FmLabScreen() {
               accessibilityRole={fmReady ? 'button' : undefined}
               accessibilityLabel={fmReady ? (running ? 'Tap to stop' : 'Tap to strike the FM voice') : undefined}
             >
-              <SidebandGraph fc={carrier} fm={fm} index={index} w={w} h={h} />
+              <SidebandGraph fc={carrier} fm={fm} index={index} inharmonic={isInharmonic} w={w} h={h} />
             </Pressable>
           ),
         },
@@ -328,7 +340,7 @@ export function FmLabScreen() {
             id: 'carrier',
             label: 'FC',
             valueLabel: `${carrier} Hz`,
-            options: CARRIERS.map((c) => ({ id: String(c), label: `${c} Hz` })),
+            options: CARRIERS.map((c) => ({ id: String(c), label: `${c} Hz`, blurb: CARRIER_BLURBS[c] })),
             selectedId: String(carrier),
             onSelect: (id) => setCarrier(Number(id)),
             helpKey: 'carrier',
@@ -402,7 +414,7 @@ export function FmLabScreen() {
             <Text style={styles.caption}>
               {__DEV__
                 ? 'FM audio needs the v7 engine build — this dev client predates it. The sideband graph and lessons are fully functional; install the v7 build to hear the voice.'
-                : 'This version of the app cannot play the FM voice yet. The sideband graph and lessons work fully; update the app to hear the voice.'}
+                : 'This version of the app cannot play the FM voice yet. The sideband graph and lessons work fully.'}
             </Text>
           )
         ) : null}
@@ -497,7 +509,7 @@ function sidebandSticks(fc: number, fm: number, index: number) {
 
 /** The sideband stick spectrum, honest about aliasing rather than hiding it.
  *  Sized by the stage glass (w × h) — never self-measured on the stage. */
-function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index: number; w: number; h: number }) {
+function SidebandGraph({ fc, fm, index, inharmonic, w, h }: { fc: number; fm: number; index: number; inharmonic: boolean; w: number; h: number }) {
   // FULL SCREEN (2026-09-30, D35 "everything zooms"): the graph is authored
   // in GLASS pixels and painted through a viewBox of (w ÷ ts) × (gh ÷ ts), so
   // the sticks, baseline, pads and the two SVG labels are all × the step; the
@@ -533,11 +545,17 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
   const base = lgh - 24; // baseline y
   const ampH = lgh - 54; // |J| = 1 height
   const hzLabel = (f: number) => (f === 0 ? '0' : f >= 1000 ? `${+(f / 1000).toFixed(2)}k` : `${f}`);
+  // FM-03 (owner 2026-11-15, "build waves 1 thru 3"): faint lines at the in-tune spots (fmGrid.ts).
+  // Sticks ON them = a clear note; sticks BETWEEN them = a bell. Hidden when too dense to read.
+  const noteLines = fmNoteGrid(fmNoteStep(fc, ratio, inharmonic), fMax, (lw - 2 * PAD) / fMax);
 
   return (
     <View style={{ width: w, height: h }}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={gh} viewBox={`0 0 ${lw} ${lgh}`}>
         <Rect x={0} y={0} width={lw} height={lgh} fill="#0c0c0f" />
+        {noteLines.map((f) => (
+          <Line key={`n${f}`} x1={xOf(f)} y1={base} x2={xOf(f)} y2={base - ampH} stroke="#2b2d3a" strokeWidth={1} />
+        ))}
         {/* Amplitude guides: |J| = 1 and 0.5 (the stick heights are exact
             Bessel magnitudes, so the scale is real). */}
         {[1, 0.5].map((a) => (
@@ -609,7 +627,9 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
           red trace. It was truncating at the DESIGN text size, not just a
           large one. It wraps now. */}
       <Text style={[styles.legend, ts !== 1 ? { fontSize: 11.5 * ts, lineHeight: 15 * ts, paddingTop: 2 * ts } : null]}>
-        green = carrier · amber = sidebands · dim dashed = reflected below 0 Hz · red dashed = ALIASED past Nyquist
+        {/* FM-01 + FM-03 (owner 2026-11-15, "build waves 1 thru 3"): the key in plain words; the
+            rare dim-dashed and red-dashed sticks are explained in the ⓘ lesson. */}
+        {'green = the note · amber = new tones FM adds\nfaint lines = in-tune spots for a clear note'}
       </Text>
     </View>
   );

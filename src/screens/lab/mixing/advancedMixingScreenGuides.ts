@@ -507,7 +507,7 @@ export const ADVANCED_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Tap TRIM 0 dB, then MEASURE. Tap TRIM −3 dB and MEASURE again, and compare the LOUDNESS and TRUE PEAK tiles. Then play ▶ THE MIX and ▶ MONO.',
     },
     seeing: [
-      'MEASURE — BS.1770-STYLE ESTIMATES gives you a master trim, a MEASURE button and two delivery meters.',
+      'MEASURE — LOUDNESS AND TRUE PEAK gives you a master trim, a MEASURE button and two delivery meters.',
       'After you measure, the LOUDNESS tile shows LUFS (loudness units relative to full scale) at that trim. The TRUE PEAK tile shows dBTP (peak level, counting peaks between samples) and whether it is clear of −1 or above −1.',
       'THE TRANSLATION CHECKS let you hear THE MIX against MONO.',
     ],

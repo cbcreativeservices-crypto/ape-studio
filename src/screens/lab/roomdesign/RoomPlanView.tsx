@@ -28,6 +28,7 @@ import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import { fingerAt, fingerOffset, pickHandle, planTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
 import { boxAround, CAPS_W, MONO_W, pickSpot, textBox, type Anchor, type Box } from './planLabels';
+import { modeCaptionLines } from './modeCaption';
 import {
   bounds,
   distToEdge,
@@ -661,19 +662,21 @@ export function RoomPlanView({
         {/* Dimensions */}
         {layers.dims !== false ? <DimensionLabels b={b} T={T} units={units} fs={fs} rectangular={analysis.rectangular} frontAt={frontSpot ?? undefined} /> : null}
 
-        {/* Mode caption — two lines on a narrow glass so nothing is cropped */}
-        {heat && gw < 300 ? (
+        {/* Mode caption in plain words (owner 2026-11-15, "build waves 1 thru 3",
+            D62 item RO-02; modeCaption.ts): two lines on a phone-width glass so
+            nothing is cropped, one line on a wide glass. */}
+        {heat && gw < 480 ? (
           <G>
             <SvgText x={6} y={gh - fs - 8} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-              {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()}`}
+              {modeCaptionLines(heat.mode)[0]}
             </SvgText>
             <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-              PRESSURE AT EAR HEIGHT · SHAPE, NOT EXCITATION
+              {modeCaptionLines(heat.mode)[1]}
             </SvgText>
           </G>
         ) : heat ? (
           <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-            {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()} · PRESSURE AT EAR HEIGHT · SHAPE, NOT EXCITATION`}
+            {modeCaptionLines(heat.mode).join(' · ')}
           </SvgText>
         ) : null}
       </Svg>

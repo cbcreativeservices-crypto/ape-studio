@@ -52,7 +52,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap ▶ at the top right, or tap the display, to play the source through the chorus; ■ stops it.',
-      'Drag the RATE fader (0.10–3.00 Hz, starts at 0.25 Hz) to set how fast the LFO, a low-frequency oscillator, wobbles the copy’s delay.',
+      'Drag the RATE fader (0.10–3.00 Hz, starts at 0.50 Hz) to set how fast the LFO, a low-frequency oscillator, wobbles the copy’s delay.',
       'DEPTH (SUBTLE, CLASSIC or DEEP) sets how far that delay swings. DELAY (VOICE DELAY: 15, 20 or 35 ms) sets how far behind your sound the copy sits.',
       'MIX (30%, 50% or 100% = VIBRATO) sets how much copy you hear. SOURCE picks SINE 440 Hz or PINK NOISE. Compare DELAY on PINK NOISE: on a sine, each setting should sound the same.',
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
@@ -118,7 +118,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
-      'There is no score, and a wrong answer costs nothing. A right answer stays right.',
+      'A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one is right, the check starts over.',
     ],
     changes: [

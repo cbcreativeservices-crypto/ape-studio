@@ -15,6 +15,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { getBooth, updateBooth } from './booth/boothStore';
+import { patchCodeKey } from './goalWords';
 import { connect, deviceLive, hotPatchSpeakers, JACK_NAMES, PHONES_MONITOR, PLUGS, powerThump, wrongJob, type Booth, type DeviceId, type JackId, type PlugId, type SpeakerId } from './model/djModel';
 
 /**
@@ -44,9 +45,12 @@ export function PatchTray({ plugs, onPatched, onSelect, onHot, initial }: {
     updateBooth((b) => connect(b, sel, j));
     onPatched?.(sel, j);
   };
+  // SH-26 (owner 2026-11-15: "build waves 1 thru 3"): the chips' codes, spelled out once
+  const codeKey = patchCodeKey(plugs.map((p) => PLUGS[p].short));
   return (
     <View style={styles.tray}>
       <Text style={styles.head}>1 · PICK A CABLE (its other end is already in its source)</Text>
+      {codeKey ? <Text style={styles.codeKey}>{codeKey}</Text> : null}
       <View style={styles.row}>
         {plugs.map((p) => (
           <LabChip
@@ -143,6 +147,7 @@ export function PowerTray({ onEvent, lastEvent }: { onEvent: (e: PowerEvent) => 
 const styles = StyleSheet.create({
   tray: { gap: 8 },
   head: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2 },
+  codeKey: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   note: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   powerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44, paddingVertical: 2 },

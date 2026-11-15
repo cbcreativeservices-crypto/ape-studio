@@ -33,6 +33,10 @@ import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
 // VERIFIED chip stays (calculators keep AccuracyNote variant "calc").
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
+import { CALC_START_JOBS, CALC_START_TITLE, calcBrowseTitle, type CalcStartJob } from './startJobs';
+
+/** Every calculator (each function = one calculator): the 166 the app quotes. */
+const CALC_TOTAL = WORKSPACES.reduce((n, w) => n + w.functions.length, 0);
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
@@ -98,11 +102,21 @@ export function CalcLabScreen() {
     );
   };
   const onNewWorkflow = () => gateWorkflow(() => navigation.navigate('CalcWorkflowEdit', {}));
+  // CA-04: a member runs the job's whole guided workflow; anyone else opens
+  // its first calculator (calculators are open to everyone), never an upsell.
+  // An unconfirmed tier gets the gate's honest "one moment" words.
+  const runJob = (j: CalcStartJob) => {
+    if (workflowsAllowed) navigation.navigate('CalcWorkflowRun', { id: j.templateId });
+    else if (tierUnconfirmed) gateWorkflow(() => {});
+    else navigation.navigate('CalcWorkspace', { id: j.firstWorkspaceId });
+  };
 
   // Collapsible sections (owner 2026-08-09): workflows + description. The
   // calculator categories are a container grid + popup (owner 2026-09-30).
   const [wfOpen, setWfOpen] = useState(false); // default collapsed (owner 2026-08-09)
-  const [descOpen, setDescOpen] = useState(true);
+  // Folded by default since CA-04 (owner 2026-11-15: "build waves 1 thru 3"):
+  // the start-here block above the tiles takes its room.
+  const [descOpen, setDescOpen] = useState(false);
   // The category whose calculators are showing in the centred popup.
   const [openSec, setOpenSec] = useState<CalcSectionId | null>(null);
   const openMeta = openSec ? SECTION_META.find((m) => m.id === openSec) ?? null : null;
@@ -170,6 +184,24 @@ export function CalcLabScreen() {
       </View>
       </ScreenGuideHintAnchor>
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
+        {/* START HERE (CA-04, owner 2026-11-15: "build waves 1 thru 3"): three
+            jobs, each a built-in workflow, before the topic tiles. */}
+        <View style={{ gap: 8 }}>
+          <Text style={[styles.sectionTitle, { color: colors.green }]}>{CALC_START_TITLE}</Text>
+          {CALC_START_JOBS.map((j) => (
+            <Pressable
+              key={j.templateId}
+              style={[styles.wfBtn, styles.wfBtnGreen, styles.jobBtn]}
+              onPress={() => runJob(j)}
+              accessibilityRole="button"
+              accessibilityLabel={`${j.label}. ${j.steps}`}
+            >
+              <Text style={[styles.wfBtnText, { color: colors.green }]}>{`${j.label} ›`}</Text>
+              <Text style={styles.jobSteps}>{j.steps}</Text>
+            </Pressable>
+          ))}
+        </View>
+
         {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
             2026-08-09). templates + my workflows + new + recent. */}
         <View style={{ gap: 8 }}>
@@ -278,6 +310,7 @@ export function CalcLabScreen() {
             (owner 2026-09-30: "instead of 10 expandable bullet list points …
             2 column of 5 rows of containers"). A tap opens that category's
             calculators in a centred popup — popups, never pulldowns. */}
+        <Text style={styles.sectionTitle}>{calcBrowseTitle(CALC_TOTAL)}</Text>
         <GlassPanel style={tablet ? undefined : styles.panelPhone}>
         <View style={styles.catGrid}>
           {SECTION_META.map((sec) => {
@@ -443,6 +476,8 @@ const styles = StyleSheet.create({
   soonText: { fontFamily: fonts.barlowMedium, fontSize: 11.5, color: '#5c5d66' },
   // Calculator Workflows section (owner spec 2026-08-06).
   wfRow: { flexDirection: 'row', gap: 8 },
+  jobBtn: { flex: 0, alignItems: 'flex-start', gap: 2 },
+  jobSteps: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   wfBtn: {
     flex: 1,
     borderRadius: 10,

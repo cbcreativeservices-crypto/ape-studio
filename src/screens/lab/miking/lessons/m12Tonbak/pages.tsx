@@ -127,7 +127,7 @@ function TonbakSound({ lesson, answers, onAnswered, onInteractive, interactiveDo
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking="From above · the tonbak across the lap, the head to the player’s right" prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking="From above · the tonbak across the lap, the head to the player’s right" prompt="Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stage.text}</Point>
           </Card>

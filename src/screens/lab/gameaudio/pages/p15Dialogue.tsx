@@ -52,7 +52,9 @@ import { G15 } from './guides/p15';
 import { useSince } from './shared';
 
 const ASSETS = ['vo_greeting', 'vo_greeting_long', 'vo_warning', 'vo_warning_long'] as const;
-const TERMS = gaTerms('Dialogue systems', 'NPC bark', 'Playback priority', 'Closed Captioning', 'Subtitles for the deaf and hard of hearing');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; the subtitles term
+// is kept unshown (Closed Captioning carries the idea here)
+const TERMS = gaTerms('Dialogue systems', 'NPC bark', 'Playback priority', 'Closed Captioning');
 const LANGUAGES: { id: GaLanguage; label: string }[] = [
   { id: 'en', label: 'ENGLISH' },
   { id: 'es', label: 'SPANISH' },
@@ -194,7 +196,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open LINES. Press GREETING. While it speaks, press WARNING. Then press GREETING again immediately.</Do>
+        <Do parts={['Open LINES and press GREETING.', 'While it speaks, press WARNING.', 'Press GREETING again immediately.']} />
         <CaptionSlot state={s} />
         <P>The log and the strip show the greeting INTERRUPTED, then REFUSED while the warning speaks.</P>
         <ActivityLog state={p15Log(s)} lines={6} empty="No speech line yet. This log shows the lines, and the LANGUAGE setting." />

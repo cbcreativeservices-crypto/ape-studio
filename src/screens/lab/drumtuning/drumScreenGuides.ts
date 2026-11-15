@@ -88,7 +88,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why more tension raises a drum’s pitch, with four times the tension giving one octave, and why a drum’s overtones never line up into a clean musical note.',
-        start: 'Tap ▶ STRIKE and read PITCH 233 Hz and 1ST OVERTONE 371 Hz. Then ride TENSION all the way left and strike again.',
+        start: 'Read PITCH 233 Hz and 1ST OVERTONE 371 Hz, then ride TENSION all the way left and watch both fall. Tap ▶ STRIKE to hear each.',
       },
       seeing: [
         'Each bar is a note the head makes, lowest on the left. The tall bar is the pitch you hear; the bars to its right are overtones.',
@@ -141,7 +141,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'The four things a tuner listens for in every hit, pitch, overtones, sustain and pitch bend, and how a harder stroke or more damping changes them.',
-        start: 'Tap ▶ STRIKE at STRIKE 80 % and read BEND +35 ¢. Then ride STRIKE to 20 % and strike again: the glide almost disappears.',
+        start: 'At STRIKE 80 % read BEND +35 ¢. Ride STRIKE to 20 % and watch BEND shrink: the glide almost disappears. Tap ▶ STRIKE to hear it.',
       },
       seeing: [
         'One hit, left to right in real time. The white line in the strip below is how loud it is; a green mark shows where it has died away.',
@@ -170,7 +170,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why turning one rod changes both the pitch near its lug and the evenness of the whole head, and how an uneven head makes a slow warble called beating.',
-        start: 'On ROD 1, set TURN to +⅛ turn and tap ▶ STRIKE. Read SPREAD and BEAT, then try +¼ turn and listen for a faster warble.',
+        start: 'On ROD 1, set TURN to +⅛ turn and read SPREAD and BEAT. Try +¼ turn and watch BEAT get faster. Tap ▶ STRIKE to hear the warble.',
       },
       seeing: [
         'You’re looking down on the drum. Each colored wedge is one rod’s pitch: blue low, yellow even, red high. The drum key sits on the rod you chose.',

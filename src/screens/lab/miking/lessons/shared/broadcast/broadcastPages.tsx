@@ -695,7 +695,7 @@ export function makeBroadcastSound(spec: BroadcastSoundSpec): PageFn {
           render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
           badge: 'A simplified picture: a cut through the middle of the head · the order of events, not their speed or size · silent',
           bezel: [
-            { k: 'STEP', v: `${st.shown}`, flex: 0.8 },
+            { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },
             { k: 'EVENT', v: stage.title.toUpperCase(), flex: 2 },
           ],
           params: st.params,
@@ -704,7 +704,7 @@ export function makeBroadcastSound(spec: BroadcastSoundSpec): PageFn {
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking="Side view · the talker from the right, cut through the middle" prompt="STEP through how breath becomes speech — or PLAY ONCE. It stops at the end." />
+            <Landing looking="Side view · the talker from the right, cut through the middle" prompt="Go EVENT by EVENT through how breath becomes speech — or PLAY ONCE. It stops at the end." />
             <Card>
               <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stage.text}</Point>
             </Card>

@@ -14,7 +14,7 @@ import { spNumbersFollowOrder } from '../../../../features/stageplot/spReview';
 import type { SpPatchId } from '../../../../features/stageplot/spTypes';
 import { confirmDialog } from '../../../../lib/confirm';
 import { useSpEditor } from '../spContext';
-import { Button, Note, Section, Switch, TextField } from '../spForm';
+import { Button, Note, Section, Switch, TextField, type SectionFold } from '../spForm';
 import { Small, bitStyles } from './bits';
 import { SP_MAX_CHANNEL, spInSentence, spParseReserved, spReservedText, spSharedNotice } from './inputsLogic';
 
@@ -24,7 +24,8 @@ import { SP_MAX_CHANNEL, spInSentence, spParseReserved, spReservedText, spShared
  *  one plot never follows into another (R2-SP2-07). */
 const keepReservedChoice: Partial<Record<string, boolean>> = {};
 
-export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
+/** `fold`: the part is a closed row until opened (INPUTS, PLOT-02 2026-11-15). */
+export function OrderPanel({ patchId, fold }: { patchId: SpPatchId; fold?: SectionFold }) {
   const ed = useSpEditor();
   const p = ed.project;
   const patch = spPatch(p, patchId);
@@ -76,14 +77,14 @@ export function OrderPanel({ patchId }: { patchId: SpPatchId }) {
   );
   if (empty) {
     return (
-      <Section title="RESERVED CHANNELS" hint={`For the ${spInSentence(patch.name)} list. Inputs you add later skip these numbers.`}>
+      <Section title="RESERVED CHANNELS" hint={`For the ${spInSentence(patch.name)} list. Inputs you add later skip these numbers.`} fold={fold}>
         {reservedField}
       </Section>
     );
   }
 
   return (
-    <Section title="ORDER OF THE INPUT LIST" hint={`For the ${spInSentence(patch.name)} list. Use the ▲ and ▼ buttons on a row to move one input. The buttons below change the whole list.`}>
+    <Section title="ORDER OF THE INPUT LIST" hint={`For the ${spInSentence(patch.name)} list. Use the ▲ and ▼ buttons on a row to move one input. The buttons below change the whole list.`} fold={fold}>
       {shared ? <Note tone="warning">{shared}</Note> : null}
       <View style={bitStyles.gap}>
         <Button label="SORT IN THE USUAL ORDER" onPress={sort} a11yLabel={`Sort the ${spInSentence(patch.name)} list in the usual order`} />

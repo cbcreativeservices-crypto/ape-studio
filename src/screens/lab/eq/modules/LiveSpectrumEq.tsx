@@ -393,14 +393,15 @@ export function LiveSpectrumEqModule(p: EqModuleComponentProps) {
       kind: 'group',
       id: 'view',
       label: 'VIEW',
-      valueLabel: `${mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB'}${bellOn ? '·B' : ''}`,
+      // EQL-03 (D62): BOTH, not COMB (which reads like a comb filter).
+      valueLabel: `${mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'BOTH'}${bellOn ? '·B' : ''}`,
       render: () => (
         <View style={{ gap: 10 }}>
           <Text style={styles.trayHead}>VIEW</Text>
           <View style={styles.btnRow}>
             <MiniBtn label="SPECTRUM ONLY" active={mode === 'spectrum'} onPress={() => setMode('spectrum')} />
             <MiniBtn label="EQ ONLY" active={mode === 'eq'} onPress={() => setMode('eq')} />
-            <MiniBtn label="COMBINED" active={mode === 'combined'} onPress={() => setMode('combined')} />
+            <MiniBtn label="BOTH" active={mode === 'combined'} onPress={() => setMode('combined')} />
           </View>
           <Text style={styles.trayHead}>PARAMETRIC BAND</Text>
           <View style={styles.btnRow}>
@@ -447,7 +448,7 @@ export function LiveSpectrumEqModule(p: EqModuleComponentProps) {
               ? 'Amber is the EQ’s designed curve, worked out from its math.'
               : 'Levels from an uncalibrated phone mic: compare them, don’t read them as true levels.',
         bezel: [
-          { k: 'VIEW', caption: 'what is drawn', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB' },
+          { k: 'VIEW', caption: 'what is drawn', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'BOTH' },
           { k: 'LOW CUT', v: hpfHz != null ? `${hpfHz}Hz·${slope}` : 'OFF' },
           { k: 'BAND', caption: 'bell at', v: bellOn ? fmtHz(bellF) : 'OFF' },
           {
@@ -504,7 +505,7 @@ export function LiveSpectrumEqModule(p: EqModuleComponentProps) {
 
         <Text style={styles.caveat}>
           A phone microphone is an educational measurement source, not a calibrated reference. 1/3-octave
-          bands · FFT size {FFT_SIZE}.
+          bands.
         </Text>
       </View>
     </RackUnit>

@@ -1567,7 +1567,8 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     const area = code(`${SP}/StageArea.tsx`);
     const plan = code(`${SP}/stage/StagePlanView.tsx`);
     // the area tells the rack: the usual display height PLUS the key's height
-    assert.match(area, /const keyHeight = Math\.ceil\(stageKeyLayout\(stageKeyEntries\(p\.objects\), stageGlassWidthGuess\(winW\), scaleNote\)\.height\);/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PLOT-15): the key's height counts its last line, what the boxes mean
+    assert.match(area, /const keyHeight = Math\.ceil\(stageKeyLayout\(stageKeyEntries\(p\.objects\), stageGlassWidthGuess\(winW\), scaleNote, stageKeyFoot\(p, numbers\)\)\.height\);/);
     // the key asks the rack for no more than its share (bug test S1-01)
     assert.match(area, /const phoneHeight = stageBase \+ Math\.min\(keyHeight, Math\.round\(\(stageBase \* STAGE_KEY_SHARE\) \/ \(1 - STAGE_KEY_SHARE\)\)\);/);
     // …and nothing else: no readout row and no line under the glass, so the
@@ -1576,7 +1577,8 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     assert.doesNotMatch(area, /\bbezel\b|\bbadge\b|BezelItem/);
     // the drawing lays the same key out for its real width, and the stage takes the height above it
     assert.match(plan, /const keyEntries = useMemo\(\(\) => stageKeyEntries\(p\.objects\), \[p\.objects\]\);/);
-    assert.match(plan, /const keyLayout = useMemo\(\(\) => stageKeyLayout\(keyEntries, gw, scaleNote\), \[keyEntries, gw, scaleNote\]\);/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PLOT-15): the key's last line says what the boxes mean
+    assert.match(plan, /const keyLayout = useMemo\(\(\) => stageKeyLayout\(keyEntries, gw, scaleNote, keyFoot\), \[keyEntries, gw, scaleNote, keyFoot\]\);/);
     assert.match(plan, /const split = stageKeySplit\(ghAll, keyLayout\.height\);/);
   });
 
@@ -1636,7 +1638,8 @@ describe('the key under the stage (owner: it is always there, in the drawing)', 
     assert.match(plan, /\{\.\.\.pan\.panHandlers\} accessible accessibilityLabel=\{a11y\}>\s*(?:\{\}\s*)?<GestureExclusionZone maxHeightDp=\{STAGE_BAND_DP\} \/>/);
     assert.match(key, /<View pointerEvents="none">\s*<Svg aria-hidden \{\.\.\.SVG_HIDDEN_NATIVE\}/);
     // one labeled element: "Key: Performer, Drum kit, …"
-    assert.match(key, /const label = layout\.note \? `\$\{stageKeyWords\(entries\)\} \$\{scaleWords\(layout\.note\.text\)\}` : stageKeyWords\(entries\);/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PLOT-15): the one sentence also reads the key's last line
+    assert.match(key, /const label = `\$\{layout\.note \? `\$\{stageKeyWords\(entries\)\} \$\{scaleWords\(layout\.note\.text\)\}` : stageKeyWords\(entries\)\}\$\{foot \? ` \$\{foot\}` : ''\}`;/);
     assert.equal((key.match(/accessible accessibilityRole="text" accessibilityLabel=\{label\}/g) ?? []).length, 2, 'one sentence, whether the strip scrolls or not');
     // a long key on a short phone SCROLLS inside the display (bug test S1-01): never cut, never a popup
     assert.match(key, /if \(shownH != null && shownH < h - 0\.5\) \{/);

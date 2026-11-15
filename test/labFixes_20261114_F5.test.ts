@@ -122,7 +122,8 @@ describe('Wave home · 15 vs 16', () => {
   it('the home numbers the Room Builder as module 16, as the strip inside does', () => {
     const home = code(`${W}WaveLabHomeScreen.tsx`);
     assert.doesNotMatch(home, /THE 15 MODULES/);
-    assert.match(home, /MODULES 1–15/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item WA-06): four plain groups replace "MODULES 1–15".
+    assert.match(read(`${W}modules/registry.ts`), /title: 'SOUND MEETS A WALL'/);
     assert.match(home, /PUT IT ALL TOGETHER · MODULE 16/);
     assert.match(read(`${W}modules/registry.ts`), /\{ id: 'builder', num: '16',/);
   });
@@ -359,7 +360,8 @@ describe('Shared check card · a reason per wrong option (CheckSpec.why)', () =>
   it('CheckQuestion shows it, and CheckSpec carries the optional field', () => {
     const bits = code(`${F}bits.tsx`);
     assert.match(bits, /why\?: Record<number, string>;/);
-    assert.match(bits, /<Text style=\{styles\.checkHint\}>\{checkWrongText\(spec, picked\)\}<\/Text>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, SN-F6a-1 for F6a SD-01): the words sit under the tapped option (its index i).
+    assert.match(bits, /\{bad \? \(\s*<>\s*<Text style=\{styles\.checkHint\}>\{checkWrongText\(spec, i\)\}<\/Text>/);
     assert.doesNotMatch(bits, /\{spec\.wrongHint \?\? 'Not quite — try again\.'\}/);
   });
 });

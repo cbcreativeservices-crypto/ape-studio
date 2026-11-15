@@ -34,15 +34,15 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 export const SMART_PROCESSORS_HOME_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Smart processors listen, decide, then act. The de-esser lab shows you which parts do the listening and deciding, and how they tame the harsh S sounds in a voice.',
-    start: 'Tap the De-Esser & Sibilance Control row and work through its pages in order. When you’re done, come back here and answer the five CHECK YOUR UNDERSTANDING questions.',
+    start: 'Tap START › on the De-Esser & Sibilance Control row and work through its pages in order. When you’re done, come back here and answer the five CHECK YOUR UNDERSTANDING questions.',
   },
   seeing: [
-    'This is the Smart Processors menu. Every processor here listens first, decides, then acts. Each is built from a detector, a threshold, a gain computer and a choice of what to change.',
-    'One lab is here: De-Esser & Sibilance Control, marked OPEN.',
-    'Below it, CHECK YOUR UNDERSTANDING holds five questions on the de-esser.',
+    'This is the Smart Processors menu. Every processor here listens first: a detector and a threshold decide when to turn the sound down, and by how much.',
+    'One lab is here: De-Esser & Sibilance Control. START › on its row opens it.',
+    'Below it, under AFTER THE DE-ESSER LAB, CHECK YOUR UNDERSTANDING holds five questions on the de-esser.',
   ],
   control: [
-    'Tap the De-Esser & Sibilance Control row to open the lab. ‹ goes back to the Dynamics list.',
+    'Tap START › on the De-Esser & Sibilance Control row to open the lab. ‹ goes back to the Dynamics list.',
     'In the check, tap the answer you think is right. CORRECT explains why. NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is scored.',
     'Inside the de-esser lab, tap ⓘ beside any page title to have that page explained.',
   ],
@@ -149,18 +149,18 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     },
     seeing: [
       'SIGNAL PATH shows two routes. The MAIN PATH carries the voice to a gain element. The SIDE CHAIN listens to a copy: BAND-PASS, DETECTOR, THRESHOLD, GAIN COMP.',
-      'In split-band mode, where the lab starts, the main path adds a BAND SPLIT and a SUM.',
+      'Until you reach Broadband vs Split-Band it shows the plain BROADBAND wiring. After that page it follows your choice there: SPLIT-BAND adds a BAND SPLIT and a SUM.',
       'The card under the diagram names the lit block and tells you what it does.',
     ],
     control: [
       'Tap a block, or tap NEXT BLOCK › to step through them. WALK THE SIGNAL steps on its own; STOP halts it.',
-      '⤢ FULL SCREEN enlarges the diagram with the card docked. The diagram follows the BROADBAND / SPLIT-BAND choice you make on Broadband vs Split-Band.',
+      '⤢ FULL SCREEN enlarges the diagram with the card docked.',
       'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The band-pass filter sits in the side chain, not the main path. It only shapes what the detector hears.',
       'So the decision is made on the hiss alone, and the voice passes untouched until the gain moves.',
-      'In split-band, only the hiss band meets the gain element. With no reduction, the two bands add back up to the voice as it came in.',
+      'Broadband vs Split-Band adds a second wiring, where only the hiss band meets the gain element. With no reduction, the two bands add back up to the voice as it came in.',
     ],
     teaches: [
       'A de-esser is a compressor with a filtered ear. It uses the detector, threshold and gain computer you met in Compression.',
@@ -168,8 +168,8 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap BAND-PASS, then GAIN. The filter sits in the side chain; the voice itself never passes through it.',
-      'In split-band, tap WALK THE SIGNAL. The lit block runs INPUT, BAND SPLIT, around the side chain, then GAIN, SUM, OUTPUT.',
-      'On Broadband vs Split-Band choose BROADBAND, then walk the signal here again: no BAND SPLIT or SUM, so the whole voice meets the gain. Set it back to SPLIT-BAND after.',
+      'Tap WALK THE SIGNAL. The lit block runs INPUT, around the side chain (BAND-PASS, DETECTOR, THRESHOLD, GAIN COMP), then GAIN, OUTPUT.',
+      'After Broadband vs Split-Band, with SPLIT-BAND chosen there, walk the signal here again: a BAND SPLIT before the gain and a SUM after it join the main path.',
     ],
   },
 
@@ -273,7 +273,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
   mode: {
     intro: {
       learning: 'Broadband and split-band de-essers make the same decision but act differently: broadband turns the whole sound down, split-band only the hiss band.',
-      start: 'Tap JUMP TO AN S, then switch between BROADBAND and SPLIT-BAND. Watch the cyan body bar: does it drop with the hiss, or stay put?',
+      start: 'The page opens on an S. Switch between BROADBAND and SPLIT-BAND and watch the cyan body bar: does it drop with the hiss, or stay put?',
     },
     seeing: [
       'Two buttons choose the mode: BROADBAND or SPLIT-BAND. The strip shows the output frame by frame, with the input as a ghost.',
@@ -297,7 +297,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'The mode never changes when the de-esser acts, only what it turns down.',
     ],
     tryThis: [
-      'Set detector 6.5 kHz, Q 1.4, Threshold −10 dB, Range 8.0 dB. JUMP TO AN S lands on frame 3, “s”, at −7.2 dB reduction. In BROADBAND its body bar drops too; in SPLIT-BAND it stays.',
+      'Set detector 6.5 kHz, Q 1.4, Threshold −10 dB, Range 8.0 dB. The page opens on frame 3, “s”, at −7.2 dB reduction. In BROADBAND its body bar drops too; in SPLIT-BAND it stays.',
       'Step to frame 8, “a”: no reduction, so both modes pass it untouched.',
       'In BROADBAND, tap AUTO-STEP and watch the body bars dip on each S. That dip is the duck you’d hear on the whole voice.',
     ],

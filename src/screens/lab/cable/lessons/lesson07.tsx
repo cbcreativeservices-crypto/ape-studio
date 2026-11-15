@@ -46,6 +46,19 @@ import {
   lessonStyles as s,
 } from './bits';
 import { ConnectorCard, InkLegend, usePrefetchConnectorImages } from './connectorCard';
+import { GoDeeper } from '../../foundations/GoDeeper';
+
+/** How many never-list rules show before the fold (CF-01). */
+export const NEVER_SHOWN = 4;
+
+function NeverRow({ text }: { text: string }) {
+  return (
+    <View style={st.neverRow}>
+      <Text style={st.neverGlyph}>✕</Text>
+      <Text style={st.neverText}>{text}</Text>
+    </View>
+  );
+}
 
 export function Lesson07Body() {
   // ── (a) conductor-role explorer — the mains_wall record is the ONE source ──
@@ -172,7 +185,9 @@ export function Lesson07Body() {
         ))}
       </View>
       <InkLegend inks={L07_INKS} />
-      {rec ? <ConnectorCard rec={rec} /> : null}
+      {/* Folded on its photo, name and cautions; the ⚠ cautions stay open
+          (CF-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+      {rec ? <ConnectorCard rec={rec} folded /> : null}
 
       {/* ── (c) the never list ─────────────────────────────────────────────── */}
       <Eyebrow text="THE NEVER LIST" />
@@ -181,12 +196,16 @@ export function Lesson07Body() {
           THESE ARE NEVER ACCEPTABLE
         </Text>
         <Text style={st.neverSub}>{'No exceptions, no workarounds, and no “just this once.”'}</Text>
-        {NEVER_ITEMS.map((t) => (
-          <View key={t} style={st.neverRow}>
-            <Text style={st.neverGlyph}>✕</Text>
-            <Text style={st.neverText}>{t}</Text>
-          </View>
+        {/* The first four rules show; the others fold under GO DEEPER, all
+            still one tap away (CF-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+        {NEVER_ITEMS.slice(0, NEVER_SHOWN).map((t) => (
+          <NeverRow key={t} text={t} />
         ))}
+        <GoDeeper hint={`${NEVER_ITEMS.length - NEVER_SHOWN} more rules on this list`}>
+          {NEVER_ITEMS.slice(NEVER_SHOWN).map((t) => (
+            <NeverRow key={t} text={t} />
+          ))}
+        </GoDeeper>
       </View>
 
       {/* ── (d) qualified-person recognition — viewing only ────────────────── */}
@@ -197,7 +216,7 @@ export function Lesson07Body() {
           <OptionChip key={e.id} label={e.chip} active={e.id === qpId} onPress={() => setQpId(e.id)} />
         ))}
       </View>
-      {qpRec ? <ConnectorCard rec={qpRec} /> : null}
+      {qpRec ? <ConnectorCard rec={qpRec} folded /> : null}
 
       {/* ── knowledge check (unit gate) ─────────────────────────────────────── */}
       <Eyebrow text={`KNOWLEDGE CHECK · ${L07_CHECKS.length} QUESTIONS`} />

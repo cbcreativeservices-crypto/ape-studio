@@ -42,6 +42,7 @@ import {
   type Arrival, type MaterialKey, type WaveScene, type WaveSource,
 } from '../waveEngine';
 import type { WaveModuleProps } from '../WaveModuleScreen';
+import { PLAIN_TERMS } from '../../../../features/lab/plainTerms';
 import { bezelMs, cyclesOff, sumVerdict, vsOnAxisReadout } from '../bezelWords';
 import type { NameTags } from '../sceneNameTags';
 
@@ -1094,15 +1095,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
           />
         ),
         params: [
-          {
-            kind: 'fader',
-            id: 'delay',
-            label: 'DELAY',
-            value: delayV,
-            onChange: setDelayV,
-            format: () => `${rearDelayMs.toFixed(2)} ms`,
-            helpKey: 'cardioid_sub',
-          },
+          // SH-35 (owner 2026-11-15, "build waves 1 thru 3", D62): FREQ first, LAYERS last, on every Wave page that has them.
           {
             kind: 'fader',
             id: 'freq',
@@ -1110,6 +1103,15 @@ export function CardioidSubModule(p: WaveModuleProps) {
             value: freqV,
             onChange: setFreqV,
             format: () => `${freq} Hz`,
+            helpKey: 'cardioid_sub',
+          },
+          {
+            kind: 'fader',
+            id: 'delay',
+            label: 'DELAY',
+            value: delayV,
+            onChange: setDelayV,
+            format: () => `${rearDelayMs.toFixed(2)} ms`,
             helpKey: 'cardioid_sub',
           },
           {
@@ -1310,15 +1312,7 @@ export function BeamSteerModule(p: WaveModuleProps) {
           />
         ),
         params: [
-          {
-            kind: 'fader',
-            id: 'steer',
-            label: 'STEER',
-            value: steerV,
-            onChange: setSteerV,
-            format: () => `${steer}°`,
-            helpKey: 'beam_steer',
-          },
+          // SH-35 (owner 2026-11-15, "build waves 1 thru 3", D62): FREQ first, LAYERS last, on every Wave page that has them.
           {
             kind: 'fader',
             id: 'freq',
@@ -1326,6 +1320,15 @@ export function BeamSteerModule(p: WaveModuleProps) {
             value: freqV,
             onChange: setFreqV,
             format: () => `${freq} Hz`,
+            helpKey: 'beam_steer',
+          },
+          {
+            kind: 'fader',
+            id: 'steer',
+            label: 'STEER',
+            value: steerV,
+            onChange: setSteerV,
+            format: () => `${steer}°`,
             helpKey: 'beam_steer',
           },
           {
@@ -1799,6 +1802,12 @@ export function ReverbModule(p: WaveModuleProps) {
       }}
       readouts={
         <PanelCard>
+          {/* WA-05 (owner 2026-11-15, "build waves 1 thru 3", D62): the top of the
+              module says once what RT60 is, in the ONE shared sentence
+              (plainTerms.ts); the paragraph moved up and lost a clause to make room. */}
+          <Text style={dstyles.caption}>
+            {PLAIN_TERMS.rt60.sentence} Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Fiberglass shortens 2 kHz far more than 125 Hz.
+          </Text>
           <FoldedReadoutGrid
             help={p.help}
             helpKey="reverb_field"
@@ -1811,9 +1820,6 @@ export function ReverbModule(p: WaveModuleProps) {
             ]}
           />
           <PlainModelNote>ABSORB is how many walls swap concrete for fiberglass. A Sabine model, assuming a 3 m ceiling.</PlainModelNote>
-          <Text style={dstyles.caption}>
-            Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: thin porous absorption barely touches the lows.
-          </Text>
         </PanelCard>
       }
       secondary={
@@ -2043,6 +2049,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             <VizUnavailableCard />
           ),
         params: [
+          // SH-35 (owner 2026-11-15, "build waves 1 thru 3", D62): LAYERS last, as on every Wave page.
           {
             kind: 'fader',
             id: 'freq',
@@ -2073,14 +2080,6 @@ export function RoomBuilderModule(p: WaveModuleProps) {
                 </View>
               </View>
             ),
-          },
-          {
-            kind: 'group',
-            id: 'layers',
-            label: 'LAYERS',
-            valueLabel: layersShort,
-            helpKey: 'layers',
-            render: () => <LayerChips layers={layers} onLayers={setLayers} help={p.help} />,
           },
           {
             kind: 'group',
@@ -2210,20 +2209,22 @@ export function RoomBuilderModule(p: WaveModuleProps) {
               </View>
             ),
           },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort,
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onLayers={setLayers} help={p.help} />,
+          },
         ],
       }}
       explain={
         <PanelCard>
-          {/* Accuracy note, first thing under the display (owner rule: every
-              lab/tool says "learn here, measure with a calibrated instrument";
-              the outside view added a model that needs it — 2026-09-26). */}
-          <Text style={dstyles.eyebrow}>OUTSIDE THE ROOM — WHAT THE NEIGHBORS HEAR</Text>
-          <Text style={dstyles.body}>
-            The rings beyond the walls show what each wall lets through at the frequency you are viewing. Each
-            material is treated as the whole partition: heavy concrete stops almost everything, glass and drywall let
-            the bass out, curtains and foam barely stop anything. Sweep the frequency down and watch more escape.
-          </Text>
-          <PlainModelNote>What gets through uses a teaching mass-law model (transmission loss TL ≈ 20·log10(m·f) − 47 dB, m = wall mass per m²) with exaggerated fading. Real isolation depends on construction, gaps and flanking: measure it with a calibrated meter.</PlainModelNote>
+          {/* WHAT TO TRY first (owner 2026-11-15: "build waves 1 thru 3", D62 item WA-09): the
+              page opens on the three recipes the intro promised; the neighbors view, which no
+              earlier module taught, follows with its model note (still on screen, owner rule:
+              "learn here, measure with a calibrated instrument", 2026-09-26). */}
           <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
           <Text style={dstyles.body}>
             • Build a cardioid: two SUBs 1.2 m apart (SRC key), rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
@@ -2234,6 +2235,13 @@ export function RoomBuilderModule(p: WaveModuleProps) {
           <Text style={dstyles.body}>
             • Meet your room modes: shrink the room to ~4 × 3 m (ROOM key), view 40–120 Hz with the FREQ fader, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
           </Text>
+          <Text style={dstyles.eyebrow}>OUTSIDE THE ROOM — WHAT THE NEIGHBORS HEAR</Text>
+          <Text style={dstyles.body}>
+            The rings beyond the walls show what each wall lets through at the frequency you are viewing. Each
+            material is treated as the whole partition: heavy concrete stops almost everything, glass and drywall let
+            the bass out, curtains and foam barely stop anything. Sweep the frequency down and watch more escape.
+          </Text>
+          <PlainModelNote>What gets through uses a teaching mass-law model (transmission loss TL ≈ 20·log10(m·f) − 47 dB, m = wall mass per m²) with exaggerated fading. Real isolation depends on construction, gaps and flanking: measure it with a calibrated meter.</PlainModelNote>
         </PanelCard>
       }
       readouts={

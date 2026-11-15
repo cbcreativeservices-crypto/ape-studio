@@ -955,7 +955,9 @@ describe('chapter 5 — lesson text', () => {
   const PAGES = ['p16Mix', 'p17Budgets', 'p18Multiplayer', 'p19Testing'];
   const src = (p: string) => readFileSync(new URL(`../src/screens/lab/gameaudio/pages/${p}.tsx`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   /** The words inside <P>, <Look>, <Do> and <Note> in the five steps. */
-  const lesson = (p: string): string => [...src(p).matchAll(/<(P|Look|Do|Note)(?: [^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[2].replace(/\{[^}]*\}/g, 'x')).join(' ');
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-04): a step's lettered parts read as one Do line
+  const doParts = (s: string): string => s.replace(/<Do parts=\{\[([\s\S]*?)\]\} \/>/g, (_m, list: string) => `<Do>${[...list.matchAll(/'([^']*)'/g)].map((x) => x[1]).join(' ')}</Do>`);
+  const lesson = (p: string): string => [...doParts(src(p)).matchAll(/<(P|Look|Do|Note)(?: [^>]*)?>([\s\S]*?)<\/\1>/g)].map((m) => m[2].replace(/\{[^}]*\}/g, 'x')).join(' ');
   it('each page’s lesson prose is inside the approved plan’s 150–260 words (decision 12)', () => {
     for (const p of PAGES) {
       const n = lesson(p).trim().split(/\s+/).length;

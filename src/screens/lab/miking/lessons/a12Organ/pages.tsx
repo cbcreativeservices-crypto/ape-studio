@@ -276,7 +276,7 @@ function OrganSetting(p: PageProps) {
                 if (q) setSel(q.id);
               },
               format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${items.length} items`),
-              formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
+              formatShort: () => (it ? it.short.slice(0, 9) : 'PICK'),
             },
             items.length,
             items.findIndex((q) => q.id === sel),

@@ -46,7 +46,7 @@ export const C05A_COPY = stringsCopy({
   workedZone: { reso: 'joint.reso', open: 'joint.open' },
   workedAim: 'Aim it at the junction of the neck and the pot — the lab counts it while the line the mic points along meets the banjo within about 12 cm of {head}. Distance, position and angle are separate things to try.',
   clearWhat: 'the picking hand and forearm, the fretting hand, the swinging neck and the player’s view',
-  placementReveal: 'Close in front of the head tends to bring attack and the head’s punch; at the neck junction, more of a blend with the strings and fingers. Banjos differ, so “it depends on this banjo” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+  placementReveal: 'Close in front of the head tends to bring attack and the head’s punch; at the neck junction, more of a blend with the strings and fingers. Banjos differ, so “it depends on this banjo” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
   typeNotes: {
     sdcCard: 'Ideas to try: begin at the neck junction, then move between the junction, the head and a broader front view — one change at a time, the same phrase, at matched levels.',
     instDynCard: 'Ideas to try with a dynamic: close in front of the head, watching for a hard, papery head sound and the picking hand.',

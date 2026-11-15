@@ -79,7 +79,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     workedZone: { studio: 'b1.dyn', twoHosts: 'b1.dyn', live: 'b1.close' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips. The host speaks into its end.',
     workedClear: 'Clear of the host: the mic, its windscreen and the arm keep off the face, out of the line to the laptop’s screen, and away from the hands on the desk. Clearance comes first, before any number.',
-    reveal: 'Closer tends to bring more bass (on a directional mic), breath and pops and less of the room; farther, more room and more of the other host; a little above the mouth’s line, softer pops. Hosts and rooms vary, so “it depends on this host” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more bass (on a directional mic), breath and pops and less of the room; farther, more room and more of the other host; a little above the mouth’s line, softer pops. Hosts and rooms vary, so “it depends on this host” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       bcDynArm: 'Ideas to try with the broadcast dynamic: speak into its END; start about 10–15 cm away, then move a little closer and farther with the host sitting naturally, comparing at matched loudness.',
       bcDynSuper: 'Ideas to try with a supercardioid: its rear lobe hears straight behind it, so put a loudspeaker behind it well off to one side — check the actual pattern.',

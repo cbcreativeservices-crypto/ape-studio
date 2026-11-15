@@ -45,6 +45,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
+import { GoDeeper } from './foundations/GoDeeper';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 import { StageAspectReport, useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
@@ -341,7 +342,8 @@ export function ModularLabScreen() {
     <LabShell
       labId="modular"
       title="MODULAR SYNTH LAB"
-      subtitle="VCO · VCF · VCA · LFO · Envelope · Sequencer"
+      // MOD-01 (owner 2026-11-15, "build waves 1 thru 3"): plain words, not six acronyms.
+      subtitle="Tone → Filter → Volume, patched with cables"
       intro={INTRO}
       // Screen Guide (owner 2026-10-31): the ⓘ on every tab, per tab.
       guide={modularScreenGuide}
@@ -351,7 +353,9 @@ export function ModularLabScreen() {
       // real gear with a calibrated analyzer" line) — so no accuracy chip;
       // the ⓘ takes its spot.
       accuracy={false}
-      exploreCaption="Route the modulators and watch the patch cables move — the case is patched exactly like the sound you hear."
+      // MOD-02 (owner 2026-11-15, "build waves 1 thru 3"): the line under the case says the boxes open
+      // their own help (it replaces the old caption, so no line is added).
+      exploreCaption="Tap any box to learn what it does. The case is patched exactly like the sound you hear."
       checkEnd={<ModularLabEnd onOpen={stop} />}
       headerAction={
         <HeaderPlayButton
@@ -364,6 +368,17 @@ export function ModularLabScreen() {
       rack={{
         initialParam: 'cutoff',
         onHelp: openLesson,
+        // MOD-03 (owner 2026-11-15, "build waves 1 thru 3"): THE VOICE, AS SOUND, the clearest
+        // sound-off picture of what CUTOFF does, moves up from deep in LAB NOTES to straight under
+        // the case, outside the fold: drag CUTOFF and watch the bars turn gray, with sound off.
+        wellTop: (
+          <View style={{ gap: 6 }}>
+            <Text style={styles.sectionHead}>THE VOICE, AS SOUND</Text>
+            {/* The RESULT, computed (lab-art fix 2026-10-16): the VCO's harmonics
+                and what the VCF leaves of them, from the patch's own numbers. */}
+            <ModularSpectrum shape={patch.shape} f0={BASE_FREQ} cutoff={patch.cutoff} res={patch.res} cutLabel={fmtCut(patch.cutoff)} />
+          </View>
+        ),
         stage: {
           // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
           soundOffLine: 'Sound off? The cables and the readouts still show what each patch does.',
@@ -616,38 +631,10 @@ export function ModularLabScreen() {
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
+      {/* MOD-03 (owner 2026-11-15): THE VOICE, AS SOUND itself is pinned under the case (rack
+          wellTop); its notes stay here, first in LAB NOTES. */}
       <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>READING THE CASE</Text>
-        <Text style={styles.caption}>
-          Seven modules in one row of a Eurorack case. Right side, AMBER cables: the audio path —
-          the VCO’s waveform output into the VCF, then the VCA, then OUT. Left side: the control
-          sources. Each control cable takes its source’s color (the line under the module’s
-          name: SEQ red, LFO blue, ENV green). It carries control voltage (CV) — it turns a
-          setting for you and makes no sound itself. The envelope always opens the VCA; every
-          other cable is a routing you choose. Tap any module for what it does.
-        </Text>
-        <Text style={styles.caption}>
-          Labels sit above each jack; outputs are in the shaded boxes; each knob sits at your
-          setting. V/OCT and PITCH = pitch inputs · GATE = note on/off · MAN = the envelope’s
-          hand gate, held down for the drone when the sequencer is off · CV1 / CV2 = control
-          inputs (the VCF’s CV1 knob sets how far the envelope moves the filter) · the ENV has
-          two OUT jacks carrying the same envelope, so it can feed two places · the VCA is two
-          gain stages in series inside one module, so it has one IN and one OUT: OFS 1 closed
-          (the envelope opens it), OFS 2 open (the LFO can only dip it) ·
-          LVL = output level.
-        </Text>
-        <Text style={styles.caption}>
-          Every cable is a live routing — nothing decorative. While the voice runs, the ENV light
-          glows with the real envelope level, the lit SEQ step button is the real sequencer step
-          and OUT’s ON light is lit.
-        </Text>
-      </View>
-
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>THE VOICE, AS SOUND</Text>
-        {/* The RESULT, computed (lab-art fix 2026-10-16): the VCO's harmonics
-            and what the VCF leaves of them, from the patch's own numbers. */}
-        <ModularSpectrum shape={patch.shape} f0={BASE_FREQ} cutoff={patch.cutoff} res={patch.res} cutLabel={fmtCut(patch.cutoff)} />
+        <Text style={styles.sectionHead}>THE BARS, IN DETAIL</Text>
         <Text style={styles.caption}>
           Each bar is one harmonic of the {BASE_FREQ} Hz note — taller is louder. Gray shows
           what the VCF removed; drag CUTOFF and watch the bars right of the line turn gray.
@@ -670,10 +657,41 @@ export function ModularLabScreen() {
           ) : (
             <Text style={styles.caption}>
               This version of the app cannot play the modular voice yet. The patched case and
-              lessons work fully; update the app to hear the voice.
+              lessons work fully.
             </Text>
           )
         ) : null}
+      </View>
+
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>READING THE CASE</Text>
+        <Text style={styles.caption}>
+          Seven modules in one row of a Eurorack case. Right side, AMBER cables: the audio path —
+          the VCO’s waveform output into the VCF, then the VCA, then OUT. Left side: the control
+          sources. Each control cable takes its source’s color (the line under the module’s
+          name: SEQ red, LFO blue, ENV green). It carries control voltage (CV) — it turns a
+          setting for you and makes no sound itself. The envelope always opens the VCA; every
+          other cable is a routing you choose.
+        </Text>
+        <Text style={styles.caption}>
+          Every cable is a live routing — nothing decorative. While the voice runs, the ENV light
+          glows with the real envelope level, the lit SEQ step button is the real sequencer step
+          and OUT’s ON light is lit.
+        </Text>
+        {/* MOD-01 / MOD-03 (owner 2026-11-15): the jack-by-jack legend folds under GO DEEPER, nothing
+            removed; it pays for THE VOICE, AS SOUND now pinned under the case. */}
+        <GoDeeper hint="What every jack and label on the panels means.">
+          <Text style={styles.caption}>
+            Labels sit above each jack; outputs are in the shaded boxes; each knob sits at your
+            setting. V/OCT and PITCH = pitch inputs · GATE = note on/off · MAN = the envelope’s
+            hand gate, held down for the drone when the sequencer is off · CV1 / CV2 = control
+            inputs (the VCF’s CV1 knob sets how far the envelope moves the filter) · the ENV has
+            two OUT jacks carrying the same envelope, so it can feed two places · the VCA is two
+            gain stages in series inside one module, so it has one IN and one OUT: OFS 1 closed
+            (the envelope opens it), OFS 2 open (the LFO can only dip it) ·
+            LVL = output level.
+          </Text>
+        </GoDeeper>
       </View>
 
 {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
@@ -950,6 +968,8 @@ const RACK: ModuleSpec[] = [
   },
 ];
 const RACK_HP = RACK.reduce((s, m) => s + m.hp, 0); // 58 HP
+/** MOD-01 / MOD-04 (owner 2026-11-15): the sound path in plain words, TONE → FILTER → VOLUME → OUT. */
+const PLAIN_NAME: Partial<Record<string, string>> = { vco: 'TONE', vcf: 'FILTER', vca: 'VOLUME', out: 'OUT' };
 /** The glass's own shape — full screen opens at it, so 1× is the glass drawing. */
 const CASE_ASPECT = 1.5;
 
@@ -1238,9 +1258,16 @@ function PatchDiagram({
           CONTROL SOURCES (CV)
         </SvgText>
         <Path d={`M${mx(0) + 2} ${TOP - 2} L${mx(0) + 2} ${TOP - 5} L${ctrlEnd - 2} ${TOP - 5} L${ctrlEnd - 2} ${TOP - 2}`} stroke={colors.textSub} strokeOpacity={0.7} strokeWidth={1} fill="none" />
-        <SvgText x={(audioStart + audioEnd) / 2} y={10} fill={colors.amber} fontSize={9.5} fontFamily={fonts.oswaldSemiBold} letterSpacing={0.8} textAnchor="middle">
-          AUDIO PATH → OUT
-        </SvgText>
+        {/* MOD-01 (owner 2026-11-15, "build waves 1 thru 3"): the sound path's boxes in plain
+            words, each over its own module (still above the case, never on a panel); the amber
+            bracket's arrow below them shows the way the sound flows. */}
+        {RACK.map((m, i) =>
+          PLAIN_NAME[m.key] ? (
+            <SvgText key={`pn${m.key}`} x={mx(i) + (m.hp * hpPx) / 2} y={10} fill={colors.amber} fontSize={9.5} fontFamily={fonts.oswaldSemiBold} letterSpacing={0.5} textAnchor="middle">
+              {PLAIN_NAME[m.key]}
+            </SvgText>
+          ) : null,
+        )}
         <Path d={`M${audioStart + 2} ${TOP - 2} L${audioStart + 2} ${TOP - 5} L${audioEnd - 6} ${TOP - 5}`} stroke={colors.amber} strokeOpacity={0.8} strokeWidth={1} fill="none" />
         <Path d={`M${audioEnd - 7} ${TOP - 8} L${audioEnd - 2} ${TOP - 5} L${audioEnd - 7} ${TOP - 2} Z`} fill={colors.amber} fillOpacity={0.85} />
 

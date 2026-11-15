@@ -166,6 +166,18 @@ export const GA_TERMS_KEPT_UNSHOWN: readonly GaTermName[] = [
   'Music segment',
   'Audio level of detail (audio LOD)',
   'Prefetch streaming',
+  // BEGINNER WAVES 2026-11-15, GA-01 (owner 2026-11-15: "build waves 1 thru 3"): a page's row of words keeps only the
+  // 2 to 4 words its own text uses. These came off a row and no other page's text uses them, so no row shows them now.
+  // Each stays a verified glossary entry; a page whose text comes to use one may show it again.
+  'Foley', // kinds of sound: the Movement family's line already says "steps, clothing, equipment"
+  'Audio implementer', // the pipeline: a job title, not a word the page uses
+  'Cone attenuation', // distance: the page's text does not use it (its screen guide does)
+  'Music transition rule', // music: the page says "a transition rule" in passing; Bar-aligned transition is its word
+  'Music state', // music: MOOD is the game state of the triggers page (Audio state)
+  'Subtitles for the deaf and hard of hearing', // dialogue: Closed Captioning carries the idea on that page
+  'Snapshot (Game Mix State)', // the mix: the page's text does not use it (Dynamic mixing stays on the capstone's row)
+  'Unity (game engine)', // the tools page: its engine cards name both engines and say what each one's audio is
+  'Unreal Engine',
 ];
 
 /** The Terms list for a page: names only; the meanings come from here. */

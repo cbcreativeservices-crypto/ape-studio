@@ -15,6 +15,14 @@
  * (preview rows, typed reserved channels, moves, summary text) is in the pure
  * inputs/inputsLogic.ts, tested by test/stagePlotInputs.test.ts.
  *
+ * BEGINNER CORE FIRST (beginner waves 2026-11-15, PLOT-02; the owner's
+ * decision 5 of 2026-11-14, as Setup does it). The questions about the inputs
+ * lead, then the input list with ADD A SOURCE. The five advanced parts under
+ * it (the list's order, DI devices, stage boxes, equipment, listed items) are
+ * one closed row each, with what each holds now in a line, until opened
+ * (inputs/inputsFolds). Nothing is removed. A part with something to correct
+ * says so on its closed row.
+ *
  * EVERY REVIEW CARD LEADS TO ITS ROW. A question, a correction or a "to be
  * confirmed" detail about an input, a source, a DI device or a listed item
  * opens that row here, whichever area the card was pressed in. An answer
@@ -35,12 +43,13 @@ import { SheetBody, Small, bitStyles } from './inputs/bits';
 import { DiEditor, DiPanel } from './inputs/DiPanel';
 import { InputEditor, PairMonoStep } from './inputs/InputEditor';
 import { InputBlock } from './inputs/InputRow';
-import { SP_EXTRA_WORD, spBrokenPairDi, spInSentence, spInputQuestions, spMoveRow, spRowBlocks, spSharedNotice, spSourcesWithoutInputs } from './inputs/inputsLogic';
+import { SP_EXTRA_WORD, spBrokenPairDi, spInSentence, spInputQuestions, spMoveRow, spOpenIssues, spRowBlocks, spSharedNotice, spSourcesWithoutInputs } from './inputs/inputsLogic';
 import { OrderPanel } from './inputs/OrderPanel';
+import { SP_INPUTS_DEEPER_LINE, spInputsFoldLine, type SpInputsFoldId } from './inputs/inputsFolds';
 import { SourceEditor } from './inputs/SourceEditor';
 import { ExtraEditor, ExtrasPanel, SummaryPanel } from './inputs/SummaryPanel';
 import { useSpEditor } from './spContext';
-import { Button, Choice, Count, HelpTip, IssueList, Note, RowCard, Section, Sheet } from './spForm';
+import { Button, Choice, Count, HelpTip, IssueList, Note, RowCard, Section, Sheet, type SectionFold } from './spForm';
 import { runIssueAction } from './spIssueActions';
 
 type Popup =
@@ -66,6 +75,11 @@ const isMine = (kind: string): kind is (typeof MINE)[number] => (MINE as readonl
  *  is not drawn yet): it is not opened again when the user comes back. */
 let sentAway = '';
 
+/** Which folded parts are open, for each stage plot, remembered while the
+ *  app is open, as Setup's are: a visit to another area does not fold them
+ *  again. Never saved: a screen preference. */
+const openFolds: Record<string, ReadonlySet<SpInputsFoldId>> = {};
+
 export function InputsArea() {
   const ed = useSpEditor();
   const p = ed.project;
@@ -85,6 +99,22 @@ export function InputsArea() {
   const quiet = useMemo(() => spSourcesWithoutInputs(p), [p]);
   const questions = useMemo(() => spInputQuestions(ed.issues), [ed.issues]);
   const rowCount = patch?.order.length ?? 0;
+
+  // the five advanced parts: closed rows until opened (PLOT-02)
+  const [folds, setFolds] = useState<ReadonlySet<SpInputsFoldId>>(() => openFolds[p.id] ?? new Set());
+  const openHere = useMemo(() => spOpenIssues(ed.issues).here.length, [ed.issues]);
+  const fold = (id: SpInputsFoldId): SectionFold => ({
+    ...spInputsFoldLine(p, id, patchId, openHere),
+    open: folds.has(id),
+    onToggle: () =>
+      setFolds((cur) => {
+        const next = new Set(cur);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        openFolds[p.id] = next;
+        return next;
+      }),
+  });
 
   const openInput = (id: SpId) => {
     const input = spInput(p, id);
@@ -349,11 +379,12 @@ export function InputsArea() {
             </Section>
           ) : null}
 
-          <OrderPanel patchId={patchId} />
-          <DiPanel selectedId={popup?.k === 'di' ? popup.id : ([...marked][0] ?? null)} onOpen={openDi} />
-          <BoxPanel selectedId={popup?.k === 'box' ? popup.id : ([...marked][0] ?? null)} onOpen={openBox} />
-          <SummaryPanel onOpenIssue={goToIssue} />
-          <ExtrasPanel onOpen={openExtra} />
+          <Small>{SP_INPUTS_DEEPER_LINE}</Small>
+          <OrderPanel patchId={patchId} fold={fold('order')} />
+          <DiPanel selectedId={popup?.k === 'di' ? popup.id : ([...marked][0] ?? null)} onOpen={openDi} fold={fold('di')} />
+          <BoxPanel selectedId={popup?.k === 'box' ? popup.id : ([...marked][0] ?? null)} onOpen={openBox} fold={fold('box')} />
+          <SummaryPanel onOpenIssue={goToIssue} fold={fold('summary')} />
+          <ExtrasPanel onOpen={openExtra} fold={fold('extras')} />
         </View>
       </ScrollView>
       <Sheet visible={!!body} title={title} onClose={close}>

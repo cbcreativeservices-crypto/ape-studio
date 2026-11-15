@@ -170,7 +170,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open PLATFORM and pick a card. The tray shows its one test. Close the tray to read the whole card, just below. Compare at least MOBILE, DESKTOP, CONSOLE and BROWSER.</Do>
+        <Do parts={['Open PLATFORM and pick a card. The tray shows its one test.', 'Close the tray to read the whole card, just below.', 'Compare at least MOBILE, DESKTOP, CONSOLE and BROWSER.']} />
         {card ? (
           <ChACard eyebrow="PLATFORM CARD" title={card.label} sub={card.name}>
             <ChARow label="AN EXAMPLE">{card.example}</ChARow>

@@ -41,59 +41,25 @@ import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
 import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
-import { gaReverbAvailable, listenerOf, type GaState } from '../model/gaModel';
+import { gaReverbAvailable, listenerOf } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
 import { zoneAt } from '../model/gaWorld';
 import { GA_ASSETS } from '../sounds/gaSoundBank';
 import { ReadCard, TrayChip, onOff, tray } from './chcBits';
-import { WALK_Y, WALL_DB, WALL_FILTER_SLOPE, WALL_HZ, chcSpace, statusWord, walkLine, walkPlace, walkV, walkX, wallRows } from './data/chcSpace';
+import { WALL_DB, WALL_FILTER_SLOPE, WALL_HZ, chcSpace, statusWord, wallRows } from './data/chcSpace';
 import { G12 } from './guides/p12';
-import { doorKey, doorWord, useSince } from './shared';
+// Hz is first met here: its plain words are the app's one shared definition (owner 2026-11-15, SH-26)
+import { termWithShort } from '../../../../features/lab/plainTerms';
+// WALK is the lab's one walking control (pages/shared, GA-05 2026-11-15): the
+// zones page and the distance page walk with it too
+import { WALK_KEY_WORD, doorKey, doorWord, useSince, walkKey } from './shared';
+export { WALK_KEY_WORD };
 
 const ASSETS: readonly string[] = ['door', 'door_rattle', 'gen_hum', 'gen_air', 'ir_room', ...GA_ASSETS.filter((a) => a.id.startsWith('fs_')).map((a) => a.id)];
 const TERMS = gaTerms('Audio Occlusion', 'Obstruction', 'Reverb zone', 'Acoustic portal');
-const STEP_M = 0.7;
 /** Step 3's paragraph on a device that could not load the room reverb (the
  *  model says so: `gaReverbAvailable`). The page does not pretend. */
 const NO_REVERB = 'REVERB would send sounds made in the workshop to a reverb. This device could not load the room reverb, so REVERB and DRY sound the same here. The note in ROOM and the log still show your choice.';
-
-/** Walk one step east or west, turning to face that way first. */
-function stepAlong(dx: number): void {
-  const facing = dx > 0 ? 90 : 270;
-  if (gaGet().chars.player.facing !== facing) gaDispatch({ type: 'face', who: 'player', facing });
-  gaDispatch({ type: 'step', who: 'player', dx, dy: 0 });
-}
-
-/** The WALK key's short word (bug test GA2 B-03: "WORKSHOP" was cut to
- *  "WORKSH…" in a key that holds about six letters at 390 wide, fewer at
- *  320). The place keeps its full name on the lane's line above the keys
- *  (`walkLine`: COURTYARD · … / WORKSHOP · …); the key says the same place
- *  in four letters. */
-export const WALK_KEY_WORD: Record<ReturnType<typeof walkPlace>, string> = { COURTYARD: 'YARD', WORKSHOP: 'SHOP' };
-
-/** WALK: your place along the stone path, west to east. The model keeps you
- *  out of the wall and stops you at a closed door, so the lane shows where
- *  you really are, not where the finger asked to go. */
-const walkKey = (s: GaState): DockParam => ({
-  kind: 'fader',
-  id: 'walk',
-  label: 'WALK',
-  value: walkV(s.chars.player.x),
-  onChange: (v) => {
-    const p = gaGet().chars.player;
-    const x = walkX(v);
-    if (x === p.x && p.y === WALK_Y) return;
-    const facing = x >= p.x ? 90 : 270;
-    if (x !== p.x && p.facing !== facing) gaDispatch({ type: 'face', who: 'player', facing });
-    gaDispatch({ type: 'move', who: 'player', x, y: WALK_Y });
-  },
-  format: () => walkLine(gaGet()),
-  formatShort: () => WALK_KEY_WORD[walkPlace(gaGet())],
-  nudges: [
-    { label: '‹ STEP WEST', onPress: () => stepAlong(-STEP_M), a11y: 'Walk one step west, toward the courtyard' },
-    { label: 'STEP EAST ›', onPress: () => stepAlong(STEP_M), a11y: 'Walk one step east, toward the workshop' },
-  ],
-});
 
 /** What the ROOM setting does now, in words (the tray covers the card and
  *  the log, so the tray says it too). */
@@ -181,7 +147,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={2}>
         <Do>Open ROOM and switch GENERATOR 1 on. Press the door key several times.</Do>
         <P>
-          Closed, the door turns the generator down by {Math.abs(WALL_DB)} dB. A low-pass filter at about {WALL_HZ} Hz ({WALL_FILTER_SLOPE}) also turns down its high part. The strip’s curve shows both. Open, both are gone.
+          Closed, the door turns the generator down by {Math.abs(WALL_DB)} dB. A low-pass filter at about {WALL_HZ} {termWithShort('hz')} also turns down its high part ({WALL_FILTER_SLOPE}). The strip’s curve shows both. Open, both are gone.
         </P>
         <P>This scene tests no line of sight, only a different room and a closed door. A real game also tests the straight line to the source.</P>
         <ReadCard
@@ -199,7 +165,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={4} />
       </Step>
       <Step n={3}>
-        <Do>Open the door, drag WALK into the workshop and press a STEP key. In ROOM, compare REVERB with DRY.</Do>
+        <Do parts={['Open the door, drag WALK into the workshop and press a STEP key.', 'In ROOM, compare REVERB with DRY.']} />
         {reverbOk ? <P>REVERB sends sounds made in the workshop to a reverb too. After a footstep, listen for a short, quiet tail of room sound. With SOUND off, watch the strip’s REVERB window: DRY flattens the tail.</P> : <P>{NO_REVERB}</P>}
         <Note tone="mistake">Believing a muffled sound behind a wall is calculated acoustics. A designer chose this level change and filter.</Note>
       </Step>

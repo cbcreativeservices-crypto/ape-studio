@@ -71,7 +71,7 @@ export const A05B_LESSON: Lesson = buildSaxLesson({
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A player steps forward for solos: a closer, aimed mic — or a clip on the bell that moves with the horn — helps against the stage and feedback.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A little distance can carry the whole horn and the room; in a section, a main pair may carry it already.',
-  placementReveal: 'Toward the key stack tends to bring warmth and more key noise; toward the bell, brightness and focus; farther, more of the whole horn and the room. Horns and players vary, so “it depends on this horn” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+  placementReveal: 'Toward the key stack tends to bring warmth and more key noise; toward the bell, brightness and focus; farther, more of the whole horn and the room. Horns and players vary, so “it depends on this horn” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
   typeNotes: {
     saxDynCard: 'Ideas to try: begin a few centimeters above the bell, aimed at the holes; then move one thing at a time — toward the bell, toward the holes, a little farther — and play low and high notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',

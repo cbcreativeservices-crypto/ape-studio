@@ -114,7 +114,7 @@ export const CI_MODULES: CiModuleDef[] = [
     id: 'fire',
     tag: 'STAGE 11 · BUILDING',
     title: 'Penetrations, Fire & Building Spaces',
-    intro: 'Recognize when code requirements are triggered: rated assemblies, air-handling spaces, risers — and what "verify first" means.',
+    intro: 'Recognize when code requirements are triggered: rated assemblies (walls and floors built to hold back fire), air-handling spaces (where building air flows), risers (shafts between floors) — and what "verify first" means.',
     unit: 'm_fire',
     rack: true,
   },

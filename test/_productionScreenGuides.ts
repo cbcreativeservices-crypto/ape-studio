@@ -289,8 +289,10 @@ export function runProductionGuideSuite(opts: {
       }
     });
     it('the stage, home, exercise and packet screens really carry the names the guides use', () => {
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items SH-71 and PO-02):
+      // the findings list is headed OPEN QUESTIONS; the n/a link reads "Not applicable?".
       const names = [
-        'WHY THIS MATTERS', 'SEE THEM ↓', 'WHAT THIS PLAN IS STILL MISSING', 'WHAT THIS PROJECT IS STILL MISSING', '+ ADD ROW', 'Not applicable to this project', 'UNDO', 'SAVE',
+        'WHY THIS MATTERS', 'SEE THEM ↓', 'OPEN QUESTIONS IN THIS PLAN', 'OPEN QUESTIONS IN THIS PROJECT', '+ ADD ROW', 'Not applicable?', 'UNDO', 'SAVE',
         "WHAT'S LEFT IN THE WHOLE PLAN", "WHAT'S LEFT IN THE WHOLE PROJECT", 'START A PROJECT', '+ NEW PROJECT', 'DUPLICATE', 'DELETE', 'PICK UP WHERE YOU LEFT OFF', 'NEXT OUTSTANDING',
         'PRODUCTION READINESS', 'EXERCISES', 'ACCEPT A CONDITION', 'RECORD IT', 'PROCEEDING WITH ACCEPTED CONDITIONS', 'ONE THING BLOCKS THIS PROJECT',
         'OPEN THE PLAN AND FIX IT', 'OPEN THE PROJECT AND FIX IT', 'REVIEW YOUR WORK', 'READ THE REASONING', 'READ THE DEBRIEF', 'START AGAIN', 'SOLVED', ' · EXERCISE',

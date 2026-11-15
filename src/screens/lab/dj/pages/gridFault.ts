@@ -23,3 +23,9 @@ export function loopRealBeats(d: DeckState): number {
 export function halfBpmFaultFixed(d: DeckState): boolean {
   return d.gridMode === 'HALF_BPM' && gridCorrect(d) && Math.abs(loopRealBeats(d) - 4) < 0.01;
 }
+
+/** DJ-10: the first half of the repair is done (the grid is doubled back to
+ *  the true one) but the loop running is still the old, wrong-grid one. */
+export function halfBpmFirstHalf(d: DeckState): boolean {
+  return d.gridMode === 'HALF_BPM' && gridCorrect(d) && Math.abs(loopRealBeats(d) - 4) >= 0.01;
+}

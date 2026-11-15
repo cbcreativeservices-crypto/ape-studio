@@ -667,19 +667,23 @@ function PeakLadder({ x, y, h, db, rmsDb, name, sub }: { x: number; y: number; h
 
 /** Left: identical −6 dB peaks landing together (correlatedSumPeakDb).
  *  Right: the page's A / B renders as measured (peak bars, RMS tick). */
-export function HeadroomArt({ measured }: { measured: Record<string, { peakDb: number; rmsDb: number }> }) {
+export function HeadroomArt({ measured, stored = {} }: { measured: Record<string, { peakDb: number; rmsDb: number }>; stored?: Record<string, { peakDb: number; rmsDb: number }> }) {
   const y = 44;
   const h = 150;
   const yOf = (v: number) => y + h - ((v - M_LO) / (M_HI - M_LO)) * h;
   const one = -6;
   const two = correlatedSumPeakDb(-6, 2);
   const four = correlatedSumPeakDb(-6, 4);
-  const a = measured.a;
-  const b = measured.b;
+  // SH-15 (owner 2026-11-15, D62): a mix looked at with sound off shows its
+  // stored measurement (storedLevels.ts), labeled NOT HEARD.
+  const a = measured.a ?? stored.a;
+  const b = measured.b ?? stored.b;
+  const aStored = !measured.a && !!stored.a;
+  const bStored = !measured.b && !!stored.b;
   return (
     <ArtFrame
       h={246}
-      a11y={`Peak meters in dBFS. One track peaking at −6. Two identical −6 dB peaks landing together reach ${two.toFixed(1)}, right at the ceiling. Four reach +${four.toFixed(1)}: clipped, the red LED lit. ${a && b ? `Measured: mix A peaks at ${a.peakDb.toFixed(1)} dBFS, mix B at ${b.peakDb.toFixed(1)}, ${(b.rmsDb - a.rmsDb).toFixed(1)} dB louder.` : 'Mix A and B appear once played.'}`}
+      a11y={`Peak meters in dBFS. One track peaking at −6. Two identical −6 dB peaks landing together reach ${two.toFixed(1)}, right at the ceiling. Four reach +${four.toFixed(1)}: clipped, the red LED lit. ${a && b ? `${aStored || bStored ? 'Stored, not heard (sound is off)' : 'Measured'}: mix A peaks at ${a.peakDb.toFixed(1)} dBFS, mix B at ${b.peakDb.toFixed(1)}, ${(b.rmsDb - a.rmsDb).toFixed(1)} dB louder.` : 'Mix A and B appear once played.'}`}
     >
       <T x={12} y={16} anchor="start" color={ART.ink} ls={1}>
         PEAK METERS · dBFS
@@ -700,8 +704,8 @@ export function HeadroomArt({ measured }: { measured: Record<string, { peakDb: n
       <PeakLadder x={100} y={y} h={h} db={two} name="2 AT ONCE" sub="AT 0 dBFS" />
       <PeakLadder x={154} y={y} h={h} db={four} name="4 AT ONCE" sub="CLIPPED" />
       <Line x1={202} y1={30} x2={202} y2={226} stroke="#232833" strokeWidth={0.8} />
-      <PeakLadder x={228} y={y} h={h} db={a ? a.peakDb : null} rmsDb={a?.rmsDb} name="MIX A" sub={a ? 'MEASURED' : 'PLAY IT'} />
-      <PeakLadder x={288} y={y} h={h} db={b ? b.peakDb : null} rmsDb={b?.rmsDb} name="MIX B" sub={b ? (a ? `+${(b.rmsDb - a.rmsDb).toFixed(1)} dB` : 'MEASURED') : 'PLAY IT'} />
+      <PeakLadder x={228} y={y} h={h} db={a ? a.peakDb : null} rmsDb={a?.rmsDb} name="MIX A" sub={a ? (aStored ? 'NOT HEARD' : 'MEASURED') : 'PLAY IT'} />
+      <PeakLadder x={288} y={y} h={h} db={b ? b.peakDb : null} rmsDb={b?.rmsDb} name="MIX B" sub={b ? (a ? `+${(b.rmsDb - a.rmsDb).toFixed(1)} dB` : bStored ? 'NOT HEARD' : 'MEASURED') : 'PLAY IT'} />
       <T x={268} y={30} color={ART.inkDim} ls={0.4}>
         BAR = PEAK · TICK = RMS
       </T>
@@ -797,7 +801,7 @@ export function CompArt({ settings }: { settings: CompSettings | null }) {
           : 'The snare compressor, bypassed. One real snare hit, dry; the gain line is flat at 0 dB.'
       }
     >
-      <CompFace x={40} y={22} w={292} settings={settings} title="SNARE COMPRESSOR" />
+      <CompFace x={40} y={22} w={292} settings={settings} title="SNARE COMPRESSOR" offTitle="COMPRESSOR OFF: THE DRY HIT" />
       <Rect x={x0} y={lane.y} width={HIT_COLS} height={lane.h} fill="#0b0c10" stroke="#232833" strokeWidth={0.7} />
       <Line x1={x0} y1={mid} x2={x0 + HIT_COLS} y2={mid} stroke="#2f74ff" strokeWidth={0.6} opacity={0.5} />
       {settings && data

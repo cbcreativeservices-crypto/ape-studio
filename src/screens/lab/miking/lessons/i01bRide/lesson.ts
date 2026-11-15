@@ -356,7 +356,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the tip strikes the ride’s bow. What do you expect to hear first?', options: ['A clear ping, then the wash', 'A big wash at once', 'A short click and nothing after'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate.' },
+  sound: { prompt: 'Before you step through: the tip strikes the ride’s bow. What do you expect to hear first?', options: ['A clear ping, then the wash', 'A big wash at once', 'A short click and nothing after'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the plate.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the spot mic’s aim from the bow toward the bell. What changes?', options: ['More of the wash', 'A brighter, cutting sound', 'It depends on this ride'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the ride points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

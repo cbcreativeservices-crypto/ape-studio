@@ -153,7 +153,7 @@ function DecayGraph({ w, h, samples, floorDb, fits, focus, label }: { w: number;
         <Text key={t} style={[styles.axis, { top: B + 3, left: xOf(t) - 8 * k, width: 16 * k, textAlign: 'center', fontSize: 9 * k }]} {...fitValue(9 * k)}>{`${t}`}</Text>
       ))}
       <Text style={[styles.axis, { top: B + 3, right: 8, fontSize: 9 * k }]} {...fitValue(9 * k)}>3 SECONDS</Text>
-      <Text style={[styles.axis, { top: 0, left: L + 4, fontSize: 9 * k, color: '#aab0bd' }]} {...fitValue(9 * k)}>dB · A SIMPLIFIED EXAMPLE, NOT A MEASUREMENT</Text>
+      <Text style={[styles.axis, { top: 0, left: L + 4, fontSize: 9 * k, color: '#aab0bd' }]} {...fitValue(9 * k)}>dB · a simplified example, not a measurement</Text>
       <Text style={[styles.tag, { top: yOf(floorDb) + 2, left: L + 6, fontSize: 9.5 * k, color: '#b8bcc6' }]} {...fitValue(9.5 * k)}>NOISE FLOOR</Text>
       <Text style={[styles.tag, { top: yOf(floorDb + FLOOR_MARGIN_DB) - 15 * k, right: 12, fontSize: 9.5 * k, color: '#ff6b5e' }]} {...fitValue(9.5 * k)}>10 dB ABOVE IT</Text>
     </View>

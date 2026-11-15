@@ -8,18 +8,20 @@ export type MeterModuleId =
   | 'spectrum' | 'spectrogram' | 'waterfall'
   | 'phase' | 'stereo' | 'scope' | 'detective';
 
+// MT-05 (owner 2026-11-15: "build waves 1 thru 3", D62): each blurb opens with the plain question
+// that meter answers ("Will it clip?"), then a few plain words: no jargon list.
 export const METER_MODULES: { id: MeterModuleId; num: string; title: string; blurb: string }[] = [
-  { id: 'waveform', num: '1', title: 'Waveform', blurb: 'Amplitude, polarity, clipping, transients, DC offset — the picture every DAW shows you.' },
-  { id: 'peak', num: '2', title: 'Peak Meter', blurb: 'Instantaneous peaks, peak hold, OVER lamps — and why peak alone isn’t the story.' },
-  { id: 'vu', num: '3', title: 'VU / RMS Meter', blurb: 'The classic needle: too slow for transients BY DESIGN — it shows average, like your ears.' },
-  { id: 'loudness', num: '4', title: 'Loudness Meter', blurb: 'LUFS: momentary, short-term, integrated, LRA, true peak — broadcast & streaming language.' },
-  { id: 'spectrum', num: '5', title: 'Spectrum Analyzer', blurb: 'Read the shapes: speech, cymbal, kick, hum, feedback — what does this curve tell me?' },
-  { id: 'spectrogram', num: '6', title: 'Spectrogram', blurb: 'Time →, frequency ↑, color = level. The most misunderstood display, decoded.' },
-  { id: 'waterfall', num: '7', title: 'Waterfall (CSD)', blurb: 'Frequency × amplitude × time: watch the mountain range collapse — and find what rings.' },
-  { id: 'phase', num: '8', title: 'Phase Meter', blurb: 'Correlation, normal vs. inverted polarity, mono compatibility — read it before the mono bus bites.' },
-  { id: 'stereo', num: '9', title: 'Stereo Image', blurb: 'Mono to wide to hard L/R to mid-side — SEE width instead of guessing.' },
-  { id: 'scope', num: '10', title: 'Oscilloscope', blurb: 'The raw voltage picture — plus X-Y Lissajous mode for stereo relationships.' },
-  { id: 'detective', num: '11', title: 'Signal Detective', blurb: 'Unknown meter, unknown problem: identify it, read it, prescribe the fix.' },
+  { id: 'waveform', num: '1', title: 'Waveform', blurb: 'What does the sound look like? The wave itself: how far it swings, where the hits are, where it clips.' },
+  { id: 'peak', num: '2', title: 'Peak Meter', blurb: 'Will it clip? The highest points of the signal, and the lamp that lights when one goes over.' },
+  { id: 'vu', num: '3', title: 'VU / RMS Meter', blurb: 'How loud does it feel? A slow needle that shows the average, closer to what your ears hear.' },
+  { id: 'loudness', num: '4', title: 'Loudness Meter', blurb: 'How loud is the whole song? One number that streaming and broadcast use to match programs.' },
+  { id: 'spectrum', num: '5', title: 'Spectrum Analyzer', blurb: 'Where is the energy: low, middle or high? Read the shape of the curve.' },
+  { id: 'spectrogram', num: '6', title: 'Spectrogram', blurb: 'How do the pitches change over time? Time runs across, pitch up, and color shows level.' },
+  { id: 'waterfall', num: '7', title: 'Waterfall (CSD)', blurb: 'What keeps ringing after the sound stops? Every pitch fading away, drawn in 3-D.' },
+  { id: 'phase', num: '8', title: 'Phase Meter', blurb: 'Will it survive mono? Whether left and right move together or cancel out, as normal vs. inverted polarity shows.' },
+  { id: 'stereo', num: '9', title: 'Stereo Image', blurb: 'How wide is it? From one center point to wide, hard left and right, and mid-side.' },
+  { id: 'scope', num: '10', title: 'Oscilloscope', blurb: 'What is the voltage doing right now? The raw wave, plus left drawn against right.' },
+  { id: 'detective', num: '11', title: 'Signal Detective', blurb: 'Which meter is it, and what is wrong? Name the display, read it, then pick the fix.' },
 ];
 
 /** "Done = work done" (owner's decision 1, phase 3, 2026-11-14): modules 1–10

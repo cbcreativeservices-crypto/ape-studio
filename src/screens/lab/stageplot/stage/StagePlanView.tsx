@@ -96,7 +96,7 @@ import {
   type StageTransform,
   type StageView,
 } from './stageGeom';
-import { stageBadges, stageKeyEntries, stageListName, stageName } from './stageLinks';
+import { stageBadges, stageKeyEntries, stageKeyFoot, stageListName, stageName } from './stageLinks';
 
 const GLASS = '#0c0c10';
 const WORD = '#c9ccd5';
@@ -266,7 +266,9 @@ export function StagePlanView({ w, h, project, selectedId, view, onView, showNam
   // in the height above it (never under a third of the glass).
   const keyEntries = useMemo(() => stageKeyEntries(p.objects), [p.objects]);
   const scaleNote = stageScaleNote(p);
-  const keyLayout = useMemo(() => stageKeyLayout(keyEntries, gw, scaleNote), [keyEntries, gw, scaleNote]);
+  // the key's last line: what the small boxes mean, on a stage that shows them (PLOT-15)
+  const keyFoot = stageKeyFoot(p, showNumbers);
+  const keyLayout = useMemo(() => stageKeyLayout(keyEntries, gw, scaleNote, keyFoot), [keyEntries, gw, scaleNote, keyFoot]);
   const ghAll = h / s;
   // the key takes its share of the display at most, and scrolls past it:
   // the stage keeps the rest (stageKeySplit)

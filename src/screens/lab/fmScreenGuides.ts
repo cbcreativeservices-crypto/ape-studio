@@ -48,13 +48,14 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How one sine wobbling another creates sidebands: the ratio sets where they land, pitched or bell-like, and the index sets how many are strong.',
-      start: 'Tap ▶, then ride INDEX from 0 to 8 and watch amber sideband pairs spread out from the green carrier. Then switch RATIO between 1 and 1.41 ✳ and listen.',
+      // FM-04 (owner 2026-11-15, "build waves 1 thru 3"): the plain idea first; drag INDEX first, play second.
+      learning: 'FM shakes one tone with another, which makes new tones. RATIO sets where they land, in tune or bell-like; INDEX sets how many are strong.',
+      start: 'Drag INDEX from 0 to 8 and watch amber sticks, the new tones, spread out from the green note. Then tap ▶ and switch RATIO between 1 and 1.41 ✳ to hear in tune turn to bell.',
     },
     seeing: [
-      'The SIDEBAND SPECTRUM: a stick per frequency. Height is strength, from Bessel math (the curves FM follows): |J| 1 is full, 0.5 half.',
-      'Green: the carrier (fc). Amber: sidebands. Dim dashed: a sideband reflected below 0 Hz, folded up; on a stick, they combine. Red dashed: ALIASED past Nyquist, 24 kHz (half of 48 kHz).',
-      'FC: carrier. FM: modulator. I: index. BW: estimated spread, red once its top passes 24 kHz.',
+      'The SIDEBAND SPECTRUM: a stick per tone, height = strength (Bessel math): |J| 1 is full, 0.5 half.',
+      'Green: the note (fc). Amber: new tones FM adds. Faint lines: in-tune spots. Dim dashed: reflected below 0 Hz, folded up; on a stick, they combine. Red dashed: ALIASED past Nyquist, 24 kHz (half of 48 kHz).',
+      'FC: the note. MOD: the shaker’s pitch. I: index. BW: estimated spread, red once its top passes 24 kHz.',
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to strike the voice; ■ stops it. STRIKE in the dock strikes it again.',
@@ -64,9 +65,9 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'Long-press INDEX, FC, RATIO, ENV or a readout to read about it. LAB NOTES below hold two quick questions; ▴ HIDE DISPLAY gives them room.',
     ],
     changes: [
-      'Sidebands sit at FC ± 1, 2, 3… × FM, so FM sets their spacing. Simple ratios put them on a harmonic series, a clear pitch; 1.41 ✳ puts them in between, a bell.',
+      'The sidebands sit at FC ± 1, 2, 3… × MOD, so MOD sets their spacing. Simple ratios put them on the faint lines, a clear pitch; 1.41 ✳ puts them in between, a bell.',
       'Raise INDEX and energy spreads into more pairs. Bessel heights rise and fall, so one stick can shrink as I grows.',
-      'BW = 2 × FM × (I + 1) estimates where most energy sits. Weaker sticks reach past it, and any past 24 kHz fold back: aliasing.',
+      'BW = 2 × MOD × (I + 1) estimates where most energy sits. Weaker sticks reach past it, and any past 24 kHz fold back: aliasing.',
     ],
     teaches: [
       'In FM, one sine (the modulator) wobbles the phase of another (the carrier) and creates a whole family of new frequencies.',
@@ -76,7 +77,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap ▶ (FC 220, RATIO 2, I 2.0: BW 2.6 kHz). Ride INDEX to 0: one green stick, the carrier alone. Then ride up to 8: amber pairs spread out and BW reaches 7.9 kHz.',
-      'At I 2.0, switch RATIO between 1 and 1.41 ✳: FM reads 220 Hz, then 310 Hz. At 1 the sticks land on multiples of 220 Hz; at 1.41 ✳ they fall between, and the tone turns to a clang.',
+      'At I 2.0, switch RATIO between 1 and 1.41 ✳: MOD reads 220 Hz, then 310 Hz. At 1 the sticks land on multiples of 220 Hz; at 1.41 ✳ they fall between, and the tone turns to a clang.',
       'Set RATIO 1.41 ✳ and INDEX to I = 2.4: the green carrier stick vanishes, because its Bessel height is almost zero there. More index is not more of every part.',
     ],
   },
@@ -105,7 +106,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     teaches: [
       'The words of FM: carrier, modulator, ratio, index, sideband, Bessel amplitude, Carson bandwidth, aliasing.',
       'Why FM is neither distortion nor vibrato.',
-      'Carson’s rule, BW = 2 × FM × (I + 1), estimates how far most of an FM tone’s energy spreads.',
+      'Carson’s rule, BW = 2 × MOD × (I + 1), estimates how far most of an FM tone’s energy spreads.',
     ],
     tryThis: [
       'Read the COMMON MISTAKES line on more index and louder sidebands. Then on EXPLORE set RATIO 1.41 ✳ and INDEX to I = 2.4: the carrier stick disappears, as the line says.',
@@ -125,7 +126,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'A right answer locks in, and its explanation stays open to read.',
       'Use the tabs under the title to look something up on LEARN or EXPLORE; answers already right stay right when you return. Leave the lab before every answer is right and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
@@ -140,7 +141,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'Each of these shows directly in an FM tone’s spectrum: sideband spacing, sideband height, and how many sidebands there are.',
     ],
     tryThis: [
-      'Unsure where sidebands sit? Try a different pair on EXPLORE: FC 440 and RATIO 0.5, so FM reads 220 Hz. Find the amber pair nearest the green carrier and read where it sits.',
+      'Unsure where sidebands sit? Try a different pair on EXPLORE: FC 440 and RATIO 0.5, so MOD reads 220 Hz. Find the amber pair nearest the green carrier and read where it sits.',
       'Unsure about index 0? On LEARN, read the INDEX entry under CONTROLS, then come back.',
     ],
   },

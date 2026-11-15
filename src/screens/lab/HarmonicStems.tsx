@@ -131,6 +131,7 @@ export function HarmonicStems({
   soloN,
   canSolo,
   onToggleSolo,
+  hint,
 }: {
   set: HarmonicSet;
   f0: number;
@@ -155,6 +156,9 @@ export function HarmonicStems({
   /** False when the measurement engine is absent — solo needs the tone path. */
   canSolo: boolean;
   onToggleSolo: (n: number) => void;
+  /** HAR-04 (owner 2026-11-15, "build waves 1 thru 3"): a first-move hint that takes the
+   *  heading's place ("DRAG H3 UP") until the learner edits; no new line. */
+  hint?: string;
 }) {
   const [detailN, setDetailN] = useState<number | null>(null);
   const [phaseTrackW, setPhaseTrackW] = useState(0);
@@ -363,7 +367,7 @@ export function HarmonicStems({
 
   return (
     <View style={styles.card}>
-      <Text style={styles.head}>HARMONIC STEMS — EDITABLE MODEL</Text>
+      <Text style={styles.head}>HARMONIC STEMS — {hint ?? 'EDITABLE MODEL'}</Text>
 
       {/* Interval names across the TOP — the musical equivalent of each
           harmonic (owner 2026-08-05), aligned above each stem. */}
@@ -653,10 +657,10 @@ export function HarmonicStems({
                         // Same split as HarmonicsView's SOLO status: engine ≥ 3 has the additive mixture.
                         ApeDsp.engineVersion() >= 3
                           ? 'the header ▶ sounds the full mixture.'
-                          : 'update the app to hear the full mixture.'
+                          : 'this version of the app can’t play the full mixture.'
                       }`
                     : 'SOLO plays this harmonic alone as a real sine at its exact frequency.'
-                  : 'This version of the app can’t play SOLO yet; update the app to hear it.'}
+                  : 'This version of the app can’t play SOLO yet.'}
               </Text>
 
               <Pressable

@@ -132,7 +132,7 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
         {
           kind: 'fader',
           id: 'step',
-          label: 'STEP',
+          label: 'EVENT',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
           format: () => `${stage.title.toLowerCase()}`,
@@ -143,7 +143,7 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
         (i) => `${i + 1} · ${S.stages[i].title}`,
         (i) => goTo(i + 1),
       ),
-      { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+      { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [
       { k: 'EVENT', v: `${shown}`, flex: 0.8 },
@@ -250,7 +250,7 @@ export function makeLowBrassSoundPage(cfg: LowBrassSoundConfig): (p: PageProps) 
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking="From the player’s right side" prompt="STEP through it, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+            <Landing looking="From the player’s right side" prompt="Go EVENT by EVENT through it, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
             <Card>
               <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText}</Point>
             </Card>

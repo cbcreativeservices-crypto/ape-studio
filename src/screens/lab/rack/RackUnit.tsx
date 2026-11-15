@@ -564,12 +564,13 @@ export function RackUnit({
           ))}
         </View>
       ) : null}
-      {/* A tapped LOCKED key's reason (rackTypes `locked`). */}
+      {/* A tapped LOCKED key's reason (rackTypes `locked`). A key with a
+          `lockedValue` is only "not yet", and says so (SN-1, 2026-11-15). */}
       {(() => {
         const lp = lockedNoteId ? params.find((p) => p.id === lockedNoteId) : null;
         return lp && (lp.kind === 'fader' || lp.kind === 'toggle' || lp.kind === 'options') && lp.locked ? (
           <Text style={styles.lockedNote} accessibilityLiveRegion="polite">
-            {lp.label} — locked: {lp.locked}
+            {lp.label} — {lp.lockedValue ? 'not yet' : 'locked'}: {lp.locked}
           </Text>
         ) : null;
       })()}
@@ -585,7 +586,8 @@ export function RackUnit({
                     key={p.id}
                     fit={fit}
                     label={p.label}
-                    value="LOCKED"
+                    // `lockedValue`: a key that is only "not yet" reads its own words, not LOCKED (SN-1, 2026-11-15).
+                    value={p.lockedValue ?? 'LOCKED'}
                     glyph="▪"
                     dim
                     selected={lockedNoteId === p.id || (!!p.chooser && openTrayId === p.id)}
@@ -596,7 +598,9 @@ export function RackUnit({
                     }}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                     // The reason loses its own end stop, so it never reads ".." (dockFit lockedReason, 2026-11-14).
-                    a11y={`${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.${p.chooser ? ' Tap to choose another.' : ''}`}
+                    a11y={p.lockedValue
+                      ? `${p.label}: not yet — ${p.locked.trim().replace(/[.!?]+$/, '')}.${p.chooser ? ' Tap to choose another.' : ''}`
+                      : `${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.${p.chooser ? ' Tap to choose another.' : ''}`}
                   />
                 );
               }
@@ -637,13 +641,15 @@ export function RackUnit({
                     key={p.id}
                     fit={fit}
                     label={p.label}
-                    value="LOCKED"
+                    value={p.lockedValue ?? 'LOCKED'}
                     glyph="▸"
                     dim
                     selected={lockedNoteId === p.id}
                     onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.`}
+                    a11y={p.lockedValue
+                      ? `${p.label}: not yet — ${p.locked.trim().replace(/[.!?]+$/, '')}.`
+                      : `${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.`}
                   />
                 );
               }
@@ -688,12 +694,14 @@ export function RackUnit({
                     key={p.id}
                     fit={fit}
                     label={p.label}
-                    value="LOCKED"
+                    value={p.lockedValue ?? 'LOCKED'}
                     dim
                     selected={lockedNoteId === p.id}
                     onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.`}
+                    a11y={p.lockedValue
+                      ? `${p.label}: not yet — ${p.locked.trim().replace(/[.!?]+$/, '')}.`
+                      : `${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.`}
                   />
                 );
               }

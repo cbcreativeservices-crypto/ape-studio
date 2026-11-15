@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where will the struck clave move least?', options: ['A little way in from each end', 'At its exact middle', 'At its two very ends'], after: 'Now STEP through the strike (or PLAY ONCE) and watch the blue still points.' },
+  sound: { prompt: 'Before you step through: where will the struck clave move least?', options: ['A little way in from each end', 'At its exact middle', 'At its two very ends'], after: 'Now go EVENT by EVENT through the strike (or PLAY ONCE) and watch the blue still points.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: from 30 cm to 60 cm away — what grows?', options: ['The room and the spill', 'The click', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

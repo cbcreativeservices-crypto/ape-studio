@@ -356,7 +356,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: compared with a crash, how does a China ring?', options: ['Harsher and shorter', 'Smoother and longer', 'Exactly the same'], after: 'Now STEP through the stroke (or PLAY ONCE), then switch SETUP to turn it over.' },
+  sound: { prompt: 'Before you step through: compared with a crash, how does a China ring?', options: ['Harsher and shorter', 'Smoother and longer', 'Exactly the same'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE), then switch SETUP to turn it over.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the aim from the lip toward the cup. What changes?', options: ['More of the trashy edge', 'A harder, focused tone', 'It depends on this China'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the China points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

@@ -98,7 +98,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the Gate / Expander guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays the sound.',
-      'It starts with what a gate is. Then CONTROLS: THRESH, Attack, HOLD, RLS, RANGE, the GR meter and more. Attack is fixed at 1 ms here; Hysteresis, Lookahead, sidechain and key filter are on real gates, not in this lab.',
+      'It starts with what a gate is. Then CONTROLS: THRESH, Attack (fixed at 1 ms here), HOLD, RLS, RANGE and the GR meter. The last row, On real gates (for later), sums up Hysteresis, Lookahead, sidechain and key filter.',
       'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [

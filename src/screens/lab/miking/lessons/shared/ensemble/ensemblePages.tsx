@@ -251,7 +251,7 @@ export function EnsembleMeet(p: PageProps) {
                 if (q) pick(q.id);
               },
               format: () => (sec ? `${sec.short} · ${players.length} ${players.length === 1 ? who : `${who}s`}` : `step through the ${secs.length} sections`),
-              formatShort: () => (sec ? sec.short.slice(0, 9) : 'STEP'),
+              formatShort: () => (sec ? sec.short.slice(0, 9) : 'PICK'),
             },
             secs.length,
             secs.findIndex((q) => q.id === secId),
@@ -800,7 +800,7 @@ export function EnsemblePlacement(p: PageProps) {
           { k: `${exStep === 3 ? '▸ ' : ''}${exC.z >= 0 ? 'IN FRONT' : 'BEHIND'}`, v: fmtM(Math.abs(exC.z)), tint: exStep === 3 ? '#ffc64d' : undefined, flex: 0.9 },
           { k: exStep >= 4 ? '▸ NEAR / FAR' : 'NEAR / FAR', v: `${exBias.toFixed(0)} dB`, tint: exStep >= 4 ? '#ffc64d' : undefined, flex: 1 },
         ],
-        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep)],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep)],
         initialParam: 'piece',
       },
       well: (

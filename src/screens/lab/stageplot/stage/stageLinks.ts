@@ -42,7 +42,7 @@ import {
 } from '../../../../features/stageplot/spModel.ts';
 import type { SpCategory, SpChoir, SpDeviceType, SpId, SpObject, SpObjectKind, SpProject, SpTimpaniSetup } from '../../../../features/stageplot/spTypes.ts';
 import { spInPerformance } from '../../../../features/stageplot/spShape.ts';
-import { spIsSized, spObjectBoxM, spObjectSymbol, spPlotKey, spStageMeters, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
+import { SP_KEY_BADGE_MIX, SP_KEY_BADGE_NUMBER, spIsSized, spObjectBoxM, spObjectSymbol, spPlotKey, spStageMeters, type SpKeyEntry } from '../../../../features/stageplot/spSymbols.ts';
 import { SP_CHOIR_DEFAULT, spChoirLayout, spChoirMics, spChoirPackageId } from '../../../../features/stageplot/spChoir.ts';
 import { spPackagePreview, spUniqueLabel } from '../inputs/inputsLogic.ts';
 import { spmAddDevice } from '../monitors/monitorPlan.ts';
@@ -147,6 +147,18 @@ export function stageBadges(p: SpProject, o: SpObject, at: Pt = o): string[] {
  *  one side, so the screen says "speaker side". */
 export function stageKeyEntries(objects: readonly { kind: SpObjectKind }[]): SpKeyEntry[] {
   return spPlotKey(objects).map((e) => (e.kind === 'wedge' ? { ...e, name: 'Wedge monitor (speaker side faces the performer)' } : e));
+}
+
+/** THE KEY'S LAST LINE (beginner waves 2026-11-15, PLOT-15; owner 2026-11-15:
+ *  "build waves 1 thru 3"): what the small boxes beside the symbols mean, on
+ *  a stage that shows them (NUMBERS on, and a symbol with a channel number or
+ *  a mix code). Only the kinds of box that are drawn are explained, in the
+ *  printed packet's own words. Empty when there is none. */
+export function stageKeyFoot(p: SpProject, showNumbers: boolean): string {
+  if (!showNumbers) return '';
+  const nums = p.objects.some((o) => stageInputBadges(p, o).length > 0);
+  const mixes = p.objects.some((o) => stageMixBadges(p, o).length > 0);
+  return [nums ? SP_KEY_BADGE_NUMBER : '', mixes ? SP_KEY_BADGE_MIX : ''].filter(Boolean).join(' ');
 }
 
 /* ── selection ──────────────────────────────────────────────────────────── */

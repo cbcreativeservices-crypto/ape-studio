@@ -511,7 +511,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: one omni sits midway between two people. Whose voice will it favor?', options: ['The guest’s', 'The reporter’s', 'Neither'], after: 'Now STEP through (or PLAY ONCE), then slide the mic between them.' },
+  sound: { prompt: 'Before you step through: one omni sits midway between two people. Whose voice will it favor?', options: ['The guest’s', 'The reporter’s', 'Neither'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then slide the mic between them.' },
   microphone: { prompt: 'Before you move anything: does a dynamic mic, by itself, pick out one voice from a crowd?', options: ['Yes', 'No', 'Only when held close'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the omni moves from the shared place to 20 cm from the guest. What changes?', options: ['More of the guest, less of the street', 'More of the street', 'It depends on this street'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The loudspeaker is beyond the reporter. Where will a cardioid held at the guest’s mouth reject it best?', options: ['Straight behind the mic', 'In front of the mic', 'At the mic’s sides'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

@@ -48,7 +48,9 @@ import { G05 } from './guides/p05';
 import { useSince } from './shared';
 
 const ASSETS = ['amb_room', 'amb_yard', 'fountain', 'fs_stone_1', 'fs_stone_2', 'fs_stone_3', 'fs_stone_4', 'door', 'door_rattle', 'impact', 'debris', 'vo_greeting', 'ui_confirm', 'alarm'] as const;
-const TERMS = gaTerms('Ambient loop', 'Gameplay sound effect', 'Interface sound', 'NPC bark', 'Diegetic Sound', 'Non-Diegetic Sound', 'Foley');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Ambient loop is on
+// the loop page, NPC bark on the dialogue page; Foley is kept unshown (the Movement family says steps, clothing, equipment)
+const TERMS = gaTerms('Diegetic Sound', 'Non-Diegetic Sound', 'Gameplay sound effect', 'Interface sound');
 
 const sceneRunning = (s: GaState): boolean => gaPlaying(s, 'bed_yard') || gaPlaying(s, 'bed_room') || gaPlaying(s, 'fountain');
 
@@ -170,13 +172,13 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open PLAY. Switch SCENE on, then press STEP, OPEN DOOR, CRATE, GUIDE LINE and INTERFACE. The tray’s top shows the guide’s words and the newest log lines.</Do>
+        <Do parts={['Open PLAY and switch SCENE on.', 'Press STEP, OPEN DOOR, CRATE, GUIDE LINE and INTERFACE. The tray’s top shows the guide’s words and the newest log lines.']} />
         <P>After OPEN DOOR and after CRATE, one press starts two parts: the door and, one second later, its loose latch; the impact, then its debris. One designed sound can be several files and several voices.</P>
         <Caption state={s} />
         <ActivityLog state={s} lines={6} />
       </Step>
       <Step n={3}>
-        <Do>In PLAY, switch ALARM on. Then open SOLO and pick AMBIENCE, then EFFECTS.</Do>
+        <Do parts={['In PLAY, switch ALARM on.', 'Open SOLO and pick AMBIENCE.', 'In SOLO, pick EFFECTS.']} />
         <P>SOLO plays one category alone: AMBIENCE, EFFECTS, DIALOGUE or INTERFACE. A category is also called a bus. On the strip, a kind the solo shuts out entirely reads SILENT. The ALARM readout shows the alarm’s own level, and SILENT when the solo shuts it out.</P>
         <P>With AMBIENCE alone, the wind and the fountain stay and the alarm is gone. The alarm comes from one object, the generator, so it is in EFFECTS.</P>
         <P>Where you stand, the alarm is quieter than the fountain. With the door closed it is also dull. Yet its message matters most: the generator is overheating. Importance comes from what a sound tells the player, not from its loudness or its family.</P>

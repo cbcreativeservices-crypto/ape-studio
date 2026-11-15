@@ -21,11 +21,16 @@ const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g,
 describe('the clocking card lives in the jitter module (Errors & Limits)', () => {
   const s = read('src/screens/lab/digital/modules/modDac.tsx');
   const errors = s.slice(s.indexOf('export function ErrorsModule'), s.indexOf('const local = StyleSheet.create'));
-  it('ErrorsModule renders the card and its check, after the jitter reading and before the charter', () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DG-01): the myth summary now
+  // comes BEFORE the cable and clock detail, which folds last (PART 3 · CLOCKING, FOR WHEN YOU WIRE
+  // REAL GEAR). The card and its check are unchanged.
+  it('ErrorsModule renders the card and its check, after the jitter reading and after the charter, in its own fold', () => {
     assert.ok(errors.length > 0);
     const card = errors.indexOf('<PanelHead title={CLOCKING_CARD.title}');
     assert.ok(card > errors.indexOf('Jitter is timing variation of the sampling instants'), 'after the jitter reading');
-    assert.ok(card < errors.indexOf('MODULE 8 · MYTH vs REALITY'), 'before the charter panel');
+    assert.ok(card > errors.indexOf('MODULE 8 · MYTH vs REALITY'), 'after the charter panel');
+    const fold = errors.indexOf('<CollapsibleSection title="PART 3 · CLOCKING, FOR WHEN YOU WIRE REAL GEAR" startOpen={false}>');
+    assert.ok(fold > 0 && fold < card, 'inside the PART 3 fold');
     assert.match(errors, /\{CLOCKING_CARD\.intro\}/);
     assert.match(errors, /CLOCKING_CARD\.ways\.map/);
     assert.match(errors, /\{CLOCKING_CARD\.wrong\}/);

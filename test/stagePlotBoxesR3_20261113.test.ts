@@ -485,7 +485,10 @@ describe('round 3: screens', () => {
     assert.match(panel, /label: `Returns of \$\{spBoxName\(main\)\}`/);
     assert.match(panel, /<SubTitle>Where its returns come from<\/SubTitle>/);
     assert.match(panel, /spSetBoxReturnFeed\(q, boxId, v \? \{\} : null\)/);
-    assert.match(panel, /u\.retFeedClash\.length \|\| u\.retFeedPast\.length \|\| u\.retFeedShort\.length/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PLOT-02): the NEEDS A CORRECTION test is one
+    // function now, shared by the badge and the folded part's closed row
+    assert.match(panel, /badges=\{spBoxNeedsFix\(u\) \? \['NEEDS A CORRECTION'\] : undefined\}/);
+    assert.match(read('src/screens/lab/stageplot/inputs/inputsFolds.ts'), /u\.retFeedClash\.length \|\| u\.retFeedPast\.length \|\| u\.retFeedShort\.length/);
   });
 });
 

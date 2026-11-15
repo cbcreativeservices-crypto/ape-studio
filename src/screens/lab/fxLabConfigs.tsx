@@ -51,6 +51,7 @@ import type { CheckSpec } from './foundations/bits';
 import { FxLabScreen, type FxLabConfig, type FxSourceSpec } from './FxLabScreen';
 import type { DynSignal, FxSrc } from './fxAnim';
 import { fmt2sig, snap2sig } from '../../features/lab/sliderMaps';
+import { PLAIN_TERMS } from '../../features/lab/plainTerms';
 // Screen Guides (owner 2026-10-31): every effect lab is a CONCEPT lab (built-in
 // test sources, badged teaching models, no mic, no real-world measurement), so
 // each passes its per-tab guide and accuracy: false — the ⓘ takes the chip's spot.
@@ -334,6 +335,25 @@ function delayDampPhrase(dampHz: number, feedback: number): string {
   return ` REPEAT DAMPING: each pass after the first loses ${onePoleLossDb(dampHz, 1000).toFixed(1)} dB at 1 kHz, the CLICK’s pitch, and higher frequencies lose more, so it is easier to hear on PINK.`;
 }
 
+/** The Delay lab's one tempo (DL-02): the CLICK source, LEARN's example and
+ *  the caption all use it. One beat = 60,000 ÷ 120 = 500 ms. */
+const DELAY_BPM = 120;
+
+/** The caption's tempo line for a TIME of 250 ms or more. The note values the
+ *  CLICK's own tempo gives (an eighth, a dotted eighth, a quarter) are named
+ *  at 120 BPM; any other TIME keeps the quarter-note law, the formula LEARN
+ *  teaches. Within 2 ms counts as on the note (the fader rounds to 1 ms). */
+function delayTempoPhrase(timeMs: number): string {
+  const beatMs = 60000 / DELAY_BPM;
+  const near = (beats: number) => Math.abs(timeMs - beats * beatMs) <= 2;
+  if (near(0.5)) return `${timeMs} ms = an eighth note at the CLICK’s ${DELAY_BPM} BPM: each repeat lands halfway between two clicks.`;
+  if (near(0.75)) return `${timeMs} ms = a dotted eighth at the CLICK’s ${DELAY_BPM} BPM, a classic delay rhythm.`;
+  const bpm = Math.round(60000 / timeMs);
+  return bpm === DELAY_BPM
+    ? `That spacing = a quarter-note at ${bpm} BPM, the CLICK’s tempo: each repeat lands on the next click.`
+    : `That spacing = a quarter-note at ${bpm} BPM — match the delay to the song's tempo and repeats land ON the beat.`;
+}
+
 // ──────────────────────────────────────────────────────── LAB 2 · Delay ──
 const delayConfig: FxLabConfig = {
   labId: 'delay',
@@ -353,24 +373,31 @@ const delayConfig: FxLabConfig = {
     'Display: each click (gray) crosses the stage and its repeats follow it out — the gap is the delay TIME, each ' +
     'repeat smaller by the FEEDBACK. The ruler under OUT counts seconds since the click reached the stage. Use the CLICK source: a ' +
     'steady tone or noise hides its repeats.',
-  sources: [srcClick(90), SRC_PINK, srcSine(220)],
+  // ONE TEMPO (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan,
+  // item DL-02): the click, the TIME default, the caption and LEARN all work
+  // at 120 BPM. TIME opens at 250 ms, an eighth note at 120 BPM, so each
+  // echo lands halfway between two clicks and is seen on its own; at 500 ms
+  // it would hide under the next click, and FEEDBACK's trail with it.
+  sources: [srcClick(DELAY_BPM), SRC_PINK, srcSine(220)],
   params: [
     {
       label: 'DELAY TIME', short: 'TIME', paramId: P.timeMs, lessonKey: 'delay_time',
       choices: [
         { label: '80 ms SLAP', value: 80 },
         { label: '150 ms', value: 150 },
-        { label: '375 ms', value: 375 },
+        { label: '250 ms', value: 250 },
         { label: '500 ms', value: 500 },
       ],
-      initial: 375,
+      initial: 250,
       // The teaching fader: ride the time and hear/see the spacing stretch.
       fader: { min: 80, max: 500, log: true, snap: Math.round, format: (v) => `${Math.round(v)} ms` },
     },
     {
       label: 'FEEDBACK', short: 'FDBK', paramId: P.delayFeedback, lessonKey: 'feedback',
       choices: [0, 0.25, 0.5, 0.75].map((f) => ({ label: `${f * 100}%`, value: f })),
-      initial: 0.5,
+      // Opens at 0% (DL-01): each click comes back ONCE, so the first picture
+      // is one gray click and one blue echo, not overlapping trails.
+      initial: 0,
     },
     {
       label: 'MIX', paramId: P.delayMix, lessonKey: 'wet_dry',
@@ -404,6 +431,11 @@ const delayConfig: FxLabConfig = {
     { k: 'FDBK', paramId: P.delayFeedback, caption: 'trail length' },
     { k: 'MIX', paramId: P.delayMix, caption: 'echo level' },
   ],
+  // SH-64 (owner 2026-11-15, "build waves 1 thru 3"): at FDBK 0% the one
+  // repeat is the raw input (Effects.hpp: line = in + fb·LP(line)), so REPEAT
+  // DAMPING has nothing to filter; its tray section grays with the reason.
+  ignoredBy: (paramId, v) =>
+    paramId === P.dampHz && v[P.delayFeedback] <= 0 ? 'needs FDBK above 0%: one repeat is not filtered' : undefined,
   // Ping-pong + damping share one tray (the repeats' character) — dock ≤5.
   dockGroups: [
     {
@@ -439,7 +471,7 @@ const delayConfig: FxLabConfig = {
     (v[P.delayFeedback] >= 0.75 ? 'High feedback — a long trail; runaway starts near 100%.'
       : v[P.timeMs] <= 150 ? 'Slapback range (about 60–150 ms) — a quick repeat just behind the source, not tied to the tempo.'
       : v[P.timeMs] < 250 ? 'A short echo — too quick to be a quarter-note at a usual song tempo.'
-      : `That spacing = a quarter-note at ${Math.round(60000 / v[P.timeMs])} BPM — match the delay to the song's tempo and repeats land ON the beat.`) +
+      : delayTempoPhrase(v[P.timeMs])) +
     delayDampPhrase(v[P.dampHz], v[P.delayFeedback]),
   checks: [
     {
@@ -483,6 +515,8 @@ const delayConfig: FxLabConfig = {
 export const DelayLabScreen = () => <FxLabScreen config={delayConfig} />;
 
 // ─────────────────────────────────────────────────────── LAB 3 · Reverb ──
+/** RT60's plain words, from the one shared definition: 'DECAY TIME'. */
+const REVERB_RT60_WORDS = PLAIN_TERMS.rt60.short.toUpperCase();
 const reverbConfig: FxLabConfig = {
   labId: 'reverb',
   guide: reverbScreenGuide,
@@ -491,7 +525,9 @@ const reverbConfig: FxLabConfig = {
   soundOffLine: 'Sound off? The display draws each click and the fading wash you would hear: drag RT60 and watch the tail stretch.',
   fxId: FX.reverb,
   title: 'REVERB LAB',
-  subtitle: 'RT60 · Pre-delay · Damping',
+  // The words lead, the code beside them (owner 2026-11-15: "build waves 1
+  // thru 3", D62 item RV-01), in the shared words of plainTerms.ts.
+  subtitle: `${REVERB_RT60_WORDS[0]}${REVERB_RT60_WORDS.slice(1).toLowerCase()} (${PLAIN_TERMS.rt60.term}) · Pre-delay · Damping`,
   intro:
     'Reverb is thousands of reflections blurring into a decaying wash. The graph below is the ' +
     'decay: RT60 is WHERE the slope crosses −60 dB — a time, not an amount.',
@@ -506,7 +542,7 @@ const reverbConfig: FxLabConfig = {
   sources: [srcClick(60), { label: 'BURST 1 kHz', short: 'BURST', gen: { mode: GEN_MODES.burst, frequency: 1000 } }, SRC_PINK],
   params: [
     {
-      label: 'RT60 (DECAY TIME)', short: 'RT60', paramId: P.rt60, lessonKey: 'decay',
+      label: `${REVERB_RT60_WORDS} (${PLAIN_TERMS.rt60.term})`, short: 'RT60', paramId: P.rt60, lessonKey: 'decay',
       choices: [
         { label: '0.4 s BOOTH', value: 0.4 },
         { label: '0.8 s ROOM', value: 0.8 },
@@ -527,10 +563,12 @@ const reverbConfig: FxLabConfig = {
     },
     {
       label: 'HF DAMPING', short: 'DAMP', paramId: P.reverbDampHz, lessonKey: 'hf_damping',
+      // SH-76 (owner 2026-11-15, "build waves 1 thru 3"): a one-line meaning per
+      // tray choice, shown for the selected one only.
       choices: [
-        { label: 'DARK 2k', value: 2000 },
-        { label: 'NATURAL 5.5k', value: 5500 },
-        { label: 'BRIGHT 12k', value: 12000 },
+        { label: 'DARK 2k', value: 2000, blurb: 'The tail’s highs fade fastest, like a room full of curtains and seats.' },
+        { label: 'NATURAL 5.5k', value: 5500, blurb: 'The tail’s highs fade at a middle rate.' },
+        { label: 'BRIGHT 12k', value: 12000, blurb: 'The tail keeps its highs longest, like a hard, bare room.' },
       ],
       initial: 5500,
     },
@@ -545,8 +583,11 @@ const reverbConfig: FxLabConfig = {
     },
   ],
   bezel: [
-    { k: 'RT60', paramId: P.rt60, caption: 'decay time' },
-    { k: 'PRE', paramId: P.preDelayMs, caption: 'wait to start' },
+    // RV-01: the readout leads with DECAY TIME, RT60 beside it (DECAY TIME
+    // alone in a narrow cell). No caption: the key now says it in words.
+    { k: `${REVERB_RT60_WORDS} (${PLAIN_TERMS.rt60.term})`, kNarrow: REVERB_RT60_WORDS, paramId: P.rt60 },
+    // SH-36: the same name as its dock key (it read PRE here, PRE-DLY there).
+    { k: 'PRE-DLY', paramId: P.preDelayMs, caption: 'wait to start' },
     { k: 'MIX', paramId: P.reverbMix, caption: 'reverb level' },
   ],
   // A FIXED 7.5 s window (D41 fix 2026-11-01), like the Delay graph's: a
@@ -640,10 +681,12 @@ const chorusConfig: FxLabConfig = {
   fxId: FX.mod,
   title: 'CHORUS LAB',
   subtitle: 'Detuned voices · Thickening',
+  // CH-03 (owner 2026-11-15, "build waves 1 thru 3"): the notes no longer lean
+  // on the flanger, which comes in the next lab.
   intro:
     'Chorus mixes you with a slightly delayed, pitch-wobbling copy of yourself — like two ' +
     'players who can never be perfectly together. The long delay makes the comb notches so ' +
-    'close they blur into shimmer, not a flanger’s sweeping “jet”.',
+    'close they blur into shimmer.',
   // NEW COPY 2026-10-16 (grading fix) — owner review. The old line described
   // the comb graph, not the display above it, and named a CENTER control this
   // lab does not have (its delay key is DELAY).
@@ -670,11 +713,14 @@ const chorusConfig: FxLabConfig = {
       label: 'RATE', paramId: P.rateHz, lessonKey: 'rate',
       choices: [
         { label: '0.1 Hz', value: 0.1 },
-        { label: '0.25 Hz', value: 0.25 },
+        { label: '0.5 Hz', value: 0.5 },
         { label: '1 Hz', value: 1 },
         { label: '3 Hz SEASICK', value: 3 },
       ],
-      initial: 0.25,
+      // 0.5 Hz (CH-02, owner 2026-11-15, "build waves 1 thru 3"): at 0.25 Hz one
+      // wobble took 4 s, so a quick look saw a still wave; at 0.5 Hz it moves
+      // within 2 s and is still a gentle chorus (under the 0.87 Hz SLOWED cap).
+      initial: 0.5,
       // The teaching fader: lazy shimmer → seasick on one log sweep.
       fader: {
         min: 0.1, max: 3, log: true, snap: (v) => Math.round(v * 100) / 100,
@@ -683,16 +729,21 @@ const chorusConfig: FxLabConfig = {
     },
     {
       label: 'DEPTH', paramId: P.depth, lessonKey: 'depth',
+      // SH-76: one line per choice (the copy's delay swings ±6 ms × DEPTH).
       choices: [
-        { label: 'SUBTLE', value: 0.2 },
-        { label: 'CLASSIC', value: 0.5 },
-        { label: 'DEEP', value: 1.0 },
+        { label: 'SUBTLE', value: 0.2, blurb: 'The copy’s timing wobbles a little: a gentle shimmer.' },
+        { label: 'CLASSIC', value: 0.5, blurb: 'A middle wobble: the usual chorus.' },
+        { label: 'DEEP', value: 1.0, blurb: 'A wide wobble: the pitch drift is easy to hear.' },
       ],
       initial: 0.5,
     },
     {
       label: 'VOICE DELAY', short: 'DELAY', paramId: P.centerMs, lessonKey: 'delay',
-      choices: [15, 20, 35].map((ms) => ({ label: `${ms} ms`, value: ms })),
+      // CH-02 + SH-76: the tray says why DELAY seems dead on the default SINE.
+      choices: [15, 20, 35].map((ms) => ({
+        label: `${ms} ms`, value: ms,
+        blurb: 'How late the copy runs. On SINE 440 Hz this barely changes the sound: switch SOURCE to PINK NOISE to hear it.',
+      })),
       initial: 20,
     },
     {
@@ -840,16 +891,20 @@ const flangerConfig: FxLabConfig = {
     },
     {
       label: 'MIX', paramId: P.modMix, lessonKey: 'mix',
+      // SH-76: one line per choice.
       choices: [
-        { label: '50% EVEN', value: 0.5 },
-        { label: '100%', value: 1.0 },
+        { label: '50% EVEN', value: 0.5, blurb: 'Your dry sound and the delayed copy at equal level, so the notches cut deep.' },
+        { label: '100%', value: 1.0, blurb: 'Only the delayed copy: no dry sound is left for it to cancel against.' },
       ],
       initial: 0.5,
     },
   ],
   bezel: [
     { k: 'CENTER', paramId: P.centerMs, caption: 'notch spacing' },
-    { k: 'RATE', paramId: P.rateHz, caption: 'sweep speed' },
+    // One name (owner 2026-11-15: "build waves 1 thru 3", D62 item FL-03): the
+    // cell is named for the SWEEP key whose RATE it shows (RATE and DEPTH sit
+    // in that tray), never RATE here and SWEEP on the dock.
+    { k: 'SWEEP', paramId: P.rateHz, caption: 'sweep speed' },
     { k: 'FDBK', paramId: P.modFeedback, caption: 'ring amount' },
   ],
   // The LFO pair shares one tray (rate × depth = the sweep) — dock ≤5.
@@ -944,14 +999,17 @@ const phaserConfig: FxLabConfig = {
   guide: phaserScreenGuide,
   accuracy: false,
   // Phase 2 (S3 silent path): the lab’s own line says what to watch with sound off.
-  soundOffLine: 'Sound off? OUT shows the dips you would hear: step STAGES and count them.',
+  // PS-03 (owner 2026-11-15, "build waves 1 thru 3"): every counting step
+  // holds the dips still first, or a moving dip gets counted twice or missed.
+  soundOffLine: 'Sound off? OUT shows the dips you would hear: set DEPTH (SWEEP) to STATIC, then step STAGES and count them.',
   fxId: FX.mod,
   title: 'PHASER LAB',
   subtitle: 'All-pass stages · Uneven notches',
+  // PS-02 (owner 2026-11-15, "build waves 1 thru 3"): what a phaser is on its
+  // own first; the flanger comparison second, for a learner who met it.
   intro:
-    'A phaser shifts PHASE, not time: all-pass stages (filters that shift phase without changing level) create a few notches where the shifted ' +
-    'copy cancels the dry. Compare the sparse, UNEVEN notches below with the flanger’s even ' +
-    'comb — that difference is the whole lesson.',
+    'A phaser makes a few UNEVEN dips in the sound and sweeps them up and down. It shifts PHASE, not time: all-pass stages ' +
+    '(filters that shift phase without changing level) cancel the dry sound at those dips. If you met the flanger: its short delay makes an even comb instead.',
   // NEW COPY 2026-10-16 (art fix wave) — owner review: says what the display is.
   exploreCaption:
     'Display: the noise’s spectrum going in and coming out — a few UNEVEN notches (≈ stages ÷ 2) sweep as the LFO ' +
@@ -1024,6 +1082,9 @@ const phaserConfig: FxLabConfig = {
     { k: 'CENTER', paramId: P.centerHz, caption: 'where dips sit' },
     { k: 'RES', paramId: P.modFeedback, caption: 'ring amount' },
   ],
+  // SH-64 (owner 2026-11-15, "build waves 1 thru 3"): at DEPTH (SWEEP) STATIC
+  // the LFO moves nothing, so RATE grays in the SWEEP tray with the reason.
+  ignoredBy: (paramId, v) => (paramId === P.rateHz && v[P.depth] <= 0 ? 'nothing moves at STATIC' : undefined),
   // The LFO pair shares one tray (rate × depth = the sweep) — dock ≤5.
   dockGroups: [
     {
@@ -1069,8 +1130,8 @@ const phaserConfig: FxLabConfig = {
         'Each PAIR of all-pass stages creates one notch where the shifted copy cancels the dry — so 6 stages ≈ 3 notches, unevenly spaced. More stages = a thicker sweep.',
       // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
       why: {
-        0: 'Stages and notches are not one-to-one: each notch takes more than one stage. Step STAGES and count the dips on OUT.',
-        2: 'More notches than stages is too many. Set STAGES to 6 and count the dips on OUT.',
+        0: 'Stages and notches are not one-to-one: each notch takes more than one stage. Set the sweep to STATIC, step STAGES and count the dips on OUT.',
+        2: 'More notches than stages is too many. Set the sweep to STATIC and STAGES to 6, then count the dips on OUT.',
       },
       wrongHint: 'Tap through STAGES and count the dips in the curve.',
     },
@@ -1109,10 +1170,10 @@ const compConfig: FxLabConfig = {
     'Push the source over the threshold and watch measured GR appear. On the display the sound flows left → right ' +
     'through COMP; each CLICK is a 5 ms spike, and the dotted outline is the hit untouched. The amber strip under OUT is the ' +
     'gain reduction on each click: RATIO and THRESH change how deep it hangs.',
-  // A steady source holds GR still, so the ATK/REL tray has nothing to show.
+  // A steady source holds GR still, so the SPEED tray has nothing to show.
   exploreCaptionBySource: {
-    'SINE 440 Hz': 'SINE 440 Hz source: a steady tone at −20 dBFS. Push it over the threshold and GR settles at one value and stays there; the dotted outline is the signal untouched. ATK/REL only show clearly on a transient: choose CLICK 120.',
-    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS, with no hits, so GR hovers around one value; the dotted outline is the signal untouched. ATK/REL only show clearly on a transient: choose CLICK 120.',
+    'SINE 440 Hz': 'SINE 440 Hz source: a steady tone at −20 dBFS. Push it over the threshold and GR settles at one value and stays there; the dotted outline is the signal untouched. SPEED only shows clearly on a transient: choose CLICK 120.',
+    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS, with no hits, so GR hovers around one value; the dotted outline is the signal untouched. SPEED only shows clearly on a transient: choose CLICK 120.',
   },
   // CLICK FIRST (owner 2026-09-11). A steady 440 Hz sine against a fixed
   // threshold produces CONSTANT gain reduction, so the GR meter lights and then
@@ -1147,16 +1208,18 @@ const compConfig: FxLabConfig = {
     },
     {
       label: 'RATIO', paramId: P.ratio, lessonKey: 'ratio',
+      // CMP-02 (owner 2026-11-15: "build waves 1 thru 3", D62): plain words, not
+      // studio slang (GLUE, LIMIT, "workhorse", "squash").
       choices: [
-        { label: '2:1 GLUE', value: 2, blurb: 'Gentle — 2 dB in over the threshold becomes 1 dB out. Transparent — a common gentle mix-bus starting point.' },
-        { label: '4:1', value: 4, blurb: 'The workhorse — obvious control without obvious squash. Most channel compression lives here.' },
-        { label: '8:1', value: 8, blurb: 'Heavy — the level barely rises past the threshold. You HEAR this one working.' },
-        { label: '20:1 LIMIT', value: 20, blurb: 'Effectively a ceiling — at this ratio a compressor IS a limiter.' },
+        { label: '2:1 GENTLE', value: 2, blurb: 'Gentle: 2 dB over the threshold comes out 1 dB over, a common gentle mix-bus starting point.' },
+        { label: '4:1 MEDIUM', value: 4, blurb: 'Medium: clear control that still sounds natural. Many channels start here.' },
+        { label: '8:1 STRONG', value: 8, blurb: 'Strong: the level barely rises past the threshold. You can hear this one working.' },
+        { label: '20:1 ALMOST A WALL', value: 20, blurb: 'Almost a wall: very little gets past the threshold. Here a compressor acts like a limiter.' },
       ],
       initial: 4,
     },
     {
-      label: 'ATTACK', paramId: P.attackMs, lessonKey: 'attack',
+      label: 'ATTACK', paramId: P.attackMs, lessonKey: 'attack', hint: 'how fast it grabs',
       choices: [
         { label: '0.5 ms FAST', value: 0.5, blurb: 'Clamps instantly — transients are caught, but the attack of a drum dulls.' },
         { label: '5 ms', value: 5, blurb: 'Quick but not instant — most of the transient survives.' },
@@ -1166,7 +1229,7 @@ const compConfig: FxLabConfig = {
       initial: 5,
     },
     {
-      label: 'RELEASE', paramId: P.releaseMs, lessonKey: 'release',
+      label: 'RELEASE', paramId: P.releaseMs, lessonKey: 'release', hint: 'how fast it lets go',
       choices: [
         { label: '30 ms', value: 30 },
         { label: '120 ms', value: 120 },
@@ -1192,7 +1255,9 @@ const compConfig: FxLabConfig = {
     {
       // "ATK/REL 5/120ms" — the readout names both times and their unit
       // ("ENV 5·120" was shorthand; art grading 2026-10-16).
-      id: 'env', label: 'ATK/REL', paramIds: [P.attackMs, P.releaseMs], lessonKey: 'attack',
+      // CMP-02 (owner 2026-11-15, D62): the key says what the pair is (SPEED);
+      // each section head in the tray says what its half does (`hint`).
+      id: 'env', label: 'SPEED', paramIds: [P.attackMs, P.releaseMs], lessonKey: 'attack',
       valueLabel: (v) => `${v[P.attackMs]}/${v[P.releaseMs]}ms`,
     },
   ],
@@ -1272,7 +1337,7 @@ const compConfig: FxLabConfig = {
         0: 'The fastest attack clamps the very first instant too, so the hit itself gets dulled.',
         2: 'Attack is exactly the control that decides what happens to the start of each hit.',
       },
-      wrongHint: 'Open the ATK/REL tray and A/B FAST against PUNCH on the click.',
+      wrongHint: 'Open the SPEED tray and A/B FAST against PUNCH on the click.',
     },
   ],
 };
@@ -1293,8 +1358,11 @@ const gateConfig: FxLabConfig = {
     'click source you hear it open on every hit and close in the silence between.',
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
-    'CLICK source (90 BPM): the gate opens on each hit. The sound is only a 5 ms click, so RANGE, HOLD and RELEASE barely change ' +
-    'what you hear: to hear those three, choose PINK NOISE. The sound flows ' +
+    // GATE-02 (owner 2026-11-15: "build waves 1 thru 3", D62): say WHERE the three
+    // keys show on the click (the drawn tail, GR between hits) instead of saying
+    // they change almost nothing. Same length; PINK NOISE stays the way to hear them.
+    'CLICK source (90 BPM): the gate opens on each hit. On OUT, HOLD and RELEASE set how soon each hit’s tail is cut; ' +
+    'RANGE shows on GR between the hits. To hear those three, choose PINK NOISE. The sound flows ' +
     'left → right, so a hit’s start leads and its tail trails; the dotted outline is the hit untouched, the gap is what the gate took.',
   exploreCaptionBySource: {
     'PINK NOISE': 'PINK NOISE source: a steady hiss. Set THRESH above its level and the gate shuts; below it, the gate stays open.',
@@ -1447,12 +1515,13 @@ const limiterConfig: FxLabConfig = {
     'SINE 440 Hz': 'The source peaks at −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. A steady tone holds GR still, so RLS has nothing to recover from: it only shows on a transient. Choose CLICK 120.',
     'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. With no hits, GR hovers around one value, so RLS only shows clearly on a transient: choose CLICK 120.',
   },
-  // SINE stays first: the ratified caption above and this lab's "constant gain
-  // reduction" lesson both depend on a steady tone, and CEILING is expressible
-  // on it. But RELEASE is NOT — a steady tone holds the peak follower at a
-  // constant envelope, so GR never recovers and the release chips move nothing.
-  // A transient is now one tap away, which is what RELEASE needs to be visible.
-  sources: [srcSine(440), srcClick(120), SRC_PINK],
+  // CLICK FIRST (LIM-05, owner 2026-11-15: "build waves 1 thru 3", D62; this
+  // replaces the earlier "SINE first" decision): the lab opens on drum hits, so
+  // the tops of the hits visibly flatten at the dashed ceiling and RLS has
+  // something to recover from. The steady tone, which the GR sums and the
+  // "constant gain reduction" steps use, is one tap away and every step that
+  // needs it says "Set SOURCE to SINE 440 Hz".
+  sources: [srcClick(120), srcSine(440), SRC_PINK],
   params: [
     {
       label: 'CEILING', paramId: P.ceilingDb, lessonKey: 'ceiling',
@@ -1561,7 +1630,7 @@ export const LimiterLabScreen = () => <FxLabScreen config={limiterConfig} />;
  *  generator's own sine, so no native change. 5 kHz at 48 kHz: the harmonics
  *  past Nyquist fold onto 3, 7, 13 kHz, none of them multiples of 5 kHz. On the
  *  engine's path (Effects.hpp shapeOversampled, re-run sample by sample in
- *  test/dec_A03) HARD CLIP's folded tones total −29 dBFS OFF, −46 dBFS ON at
+ *  test/dec_A03) HARD (FLAT TOPS)'s folded tones total −29 dBFS OFF, −46 dBFS ON at
  *  +24 dB, and −14 / −36 dBFS at +36 dB. Computed, not heard. */
 const DIST_OS_HZ = 5000;
 const SRC_SINE_5K = {
@@ -1571,13 +1640,13 @@ const SRC_SINE_5K = {
   blurb: 'A high tone: its harmonics soon pass the top of the audio range, so OVERSAMPLING can be heard on it.',
 };
 
-/** Under the rack: the only place the OS key shows, since neither drawing
+/** Under the rack: the only place the OVERSAMPLING key shows, since neither drawing
  *  takes it. Which source reveals it, and what OFF should do. */
 function distOsCaption(v: Record<number, number>, src: FxSourceSpec): string {
   if (src.gen.frequency !== DIST_OS_HZ) return 'OVERSAMPLING barely shows on this source: choose SINE 5 kHz to hear it.';
   return v[P.oversample] > 0.5
-    ? 'OS ON (CLEAN): most harmonics past the top of the audio range are filtered out. Now try OS OFF (ALIASING) on HARD CLIP at DRIVE +36 dB.'
-    : 'OS OFF (ALIASING): harmonics past the top of the audio range fold back as new tones that are not harmonics of 5 kHz, so this should sound rougher than ON (CLEAN) once DRIVE clips the wave.';
+    ? 'OVERSAMPLING ON (CLEAN): most harmonics past the top of the audio range are filtered out. Now try OFF (ALIASING) on HARD (FLAT TOPS) at DRIVE +36 dB.'
+    : 'OVERSAMPLING OFF (ALIASING): harmonics past the top of the audio range fold back as new tones that are not harmonics of 5 kHz, so this should sound rougher than ON (CLEAN) once DRIVE clips the wave.';
 }
 
 const distConfig: FxLabConfig = {
@@ -1585,7 +1654,7 @@ const distConfig: FxLabConfig = {
   guide: distortionScreenGuide,
   accuracy: false,
   // Phase 2 (S3 silent path): the lab’s own line says what to watch with sound off.
-  soundOffLine: 'Sound off? The wave on OUT shows what you would hear: drag DRIVE and watch the tops flatten. Only the OS (aliasing) step needs your ears.',
+  soundOffLine: 'Sound off? The wave on OUT shows what you would hear: drag DRIVE and watch the tops flatten. Only the OVERSAMPLING step needs your ears.',
   fxId: FX.dist,
   title: 'DISTORTION LAB',
   subtitle: 'Clipping · Odd vs Even · Aliasing',
@@ -1611,14 +1680,14 @@ const distConfig: FxLabConfig = {
     {
       label: 'TYPE', paramId: P.distType, lessonKey: 'hard_clip',
       choices: [
-        { label: 'HARD CLIP', value: 0 },
-        { label: 'SOFT (TANH)', value: 1 },
-        { label: 'TUBE (ASYM)', value: 2 },
+        { label: 'HARD (FLAT TOPS)', value: 0 },
+        { label: 'SOFT (ROUNDED)', value: 1 },
+        { label: 'TUBE (LOPSIDED)', value: 2 },
       ],
       initial: 0,
     },
     {
-      label: 'OVERSAMPLING', short: 'OS', paramId: P.oversample, lessonKey: 'oversampling',
+      label: 'OVERSAMPLING', paramId: P.oversample, lessonKey: 'oversampling',
       choices: [
         { label: 'ON (CLEAN)', value: 1 },
         { label: 'OFF (ALIASING)', value: 0 },
@@ -1718,7 +1787,7 @@ const phaseConfig: FxLabConfig = {
   accuracy: false,
   // Silent learner (S3 example, 2026-11-14): the report's counter-proof,
   // "Phase, Stereo and Distortion have silent recipes that work".
-  soundOffLine: 'Sound off? The picture shows what you would hear: flip POL, then FOLD to mono, and watch the two channels cancel.',
+  soundOffLine: 'Sound off? The picture shows what you would hear: set FLIP R to FLIPPED Ø, then LISTEN to MONO, and watch the two channels cancel.',
   fxId: FX.stereo,
   title: 'PHASE LAB',
   subtitle: 'Polarity vs Phase · Cancellation',
@@ -1726,7 +1795,7 @@ const phaseConfig: FxLabConfig = {
     'POLARITY flips the whole wave (180° at every frequency). PHASE is a frequency-dependent ' +
     'time shift. They are not the same — the Lissajous and correlation below make the ' +
     'difference visible; mono-fold makes it audible.',
-  exploreCaption: 'Sine + POL INVERTED Ø + FOLD MONO (L+R) = silence. That is total cancellation — the two channels erase each other.',
+  exploreCaption: 'Sine + FLIP R on FLIPPED Ø + LISTEN on MONO (L+R) = silence. That is total cancellation — the two channels erase each other.',
   sources: [srcSine(440), SRC_PINK],
   // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
   // only sets param 0 (enabled) to 0 — every other atomic keeps its last
@@ -1746,7 +1815,9 @@ const phaseConfig: FxLabConfig = {
     {
       // The teaching fader FIRST: sweep the inter-channel delay and watch the
       // Lissajous ellipse tumble — phase as a frequency-dependent time shift.
-      label: 'DELAY R (PHASE)', short: 'DLY R', paramId: PHASE_DLY, lessonKey: 'delay_one_channel',
+      // Keys in words (owner 2026-11-15: "build waves 1 thru 3", D62 item
+      // PH-01): DELAY R, FLIP R, LISTEN, never DLY R, POL, FOLD.
+      label: 'DELAY R (PHASE)', short: 'DELAY R', paramId: PHASE_DLY, lessonKey: 'delay_one_channel',
       choices: [
         { label: '0 ms', value: 0 },
         { label: '0.5 ms', value: 0.5 },
@@ -1756,29 +1827,33 @@ const phaseConfig: FxLabConfig = {
       initial: 0,
       // 0 ms IS the neutral state here — the two channels time-aligned. One of
       // only two teaching faders in the whole effect set with an honest home.
-      fader: { min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms`, home: 0 },
+      // steps: 100 → the lane's − / + keys move exactly 0.1 ms per tap (PH-06),
+      // so 1.1 ms and 2.3 ms are 11 and 23 taps from 0.
+      fader: { min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms`, home: 0, steps: 100 },
     },
     {
-      label: 'POLARITY (R)', short: 'POL', paramId: PHASE_INV, lessonKey: 'invert_polarity',
+      label: 'FLIP R (POLARITY)', short: 'FLIP R', paramId: PHASE_INV, lessonKey: 'invert_polarity',
       choices: [
         { label: 'NORMAL', value: 0 },
-        { label: 'INVERTED Ø', value: 1 },
+        // Ø explained once, in the tray (PH-01).
+        { label: 'FLIPPED Ø', value: 1, blurb: 'Ø means flipped upside down: every value of R is multiplied by −1, at every frequency at once.' },
       ],
       initial: 0,
     },
     {
-      label: 'MONO-FOLD', short: 'FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
+      label: 'LISTEN (MONO-FOLD)', short: 'LISTEN', paramId: P.monoFold, lessonKey: 'mono_fold',
       choices: [
         { label: 'STEREO', value: 0 },
-        { label: 'MONO (L+R)', value: 1 },
+        // SH-76: what MONO means, once, in the tray.
+        { label: 'MONO (L+R)', value: 1, blurb: 'L and R added into one channel, as a single speaker plays them.' },
       ],
       initial: 0,
     },
   ],
   bezel: [
-    { k: 'POL', paramId: PHASE_INV, caption: 'upside down?' },
-    { k: 'DLY R', paramId: PHASE_DLY, caption: 'R arrives late' },
-    { k: 'FOLD', paramId: P.monoFold, caption: 'listen as' },
+    { k: 'FLIP R', paramId: PHASE_INV, caption: 'upside down?' },
+    { k: 'DELAY R', paramId: PHASE_DLY, caption: 'R arrives late' },
+    { k: 'LISTEN', paramId: P.monoFold, caption: 'one speaker?' },
   ],
   Hero: (v) => <LissajousGraph widthPct={100} invertR={v[PHASE_INV] > 0.5} delayRms={v[PHASE_DLY]} toneHz={440} />,
   anim: (v, src) => ({
@@ -1794,7 +1869,9 @@ const phaseConfig: FxLabConfig = {
   heroBadge: 'LISSAJOUS + CORRELATION — CALCULATED (440 Hz model)',
   // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
   modelNote: 'This picture is a model of the two channels, from the audio’s math, not a meter.',
-  curveNote: 'The scope and CORRELATION are worked out from a 440 Hz model, not measured.',
+  // PH-02 (owner 2026-11-15, "build waves 1 thru 3"): the note above the scope
+  // now also says what its line means; one line in place of one line.
+  curveNote: 'Scope: L against R, upright = same, flat = opposite. It and CORRELATION are modeled, not measured.',
   // Delay captions scoped 2026-10-31 (two verifiers): on the 440 Hz model the
   // meter reads cos(2π·440·τ), negated when flipped — inverted it is −1.00
   // again at 2.3 ms and +0.99 at 1.1 ms — so a delay caption never claims a
@@ -1809,11 +1886,11 @@ const phaseConfig: FxLabConfig = {
         : 'Identical channels: a vertical line, correlation +1.',
   checks: [
     {
-      question: 'You set POL to INVERTED Ø and FOLD to MONO (L+R) — silence. Why?',
+      question: 'You set FLIP R to FLIPPED Ø and LISTEN to MONO (L+R) — silence. Why?',
       options: [
         'Equal and opposite channels cancel when added',
         'MONO always lowers the level of any sound',
-        'POL INVERTED mutes one of the two sides',
+        'FLIP R mutes one of the two sides',
       ],
       correctIdx: 0,
       reveal:
@@ -1821,9 +1898,9 @@ const phaseConfig: FxLabConfig = {
       // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
       why: {
         1: 'Folding two matching channels to MONO keeps the sound at full strength. The flip is what changes things here.',
-        2: 'Both sides still sound with POL INVERTED. Look at the two traces: R is turned over, not muted.',
+        2: 'Both sides still sound with R flipped. Look at the two traces: R is turned over, not muted.',
       },
-      wrongHint: 'Set POL to INVERTED Ø and FOLD to MONO (L+R), then watch the OUT side of the flow go flat.',
+      wrongHint: 'Set FLIP R to FLIPPED Ø and LISTEN to MONO (L+R), then watch the OUT side of the flow go flat.',
     },
     {
       question: 'Polarity (Ø) and phase are often confused. What\u2019s the difference?',
@@ -1837,10 +1914,10 @@ const phaseConfig: FxLabConfig = {
         'The Ø button multiplies by −1 — every frequency flips at once, no time involved. Phase shift is a per-frequency timing offset. The button fixes a polarity problem (a miswired cable, two mics facing each other); it cannot fix an alignment problem.',
       // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
       why: {
-        1: 'Try POL and then DLY R and watch the scope: they do not change the picture in the same way.',
-        2: 'Phase matters across the whole range, lows included. Play PINK NOISE in mono and move DLY R.',
+        1: 'Try FLIP R and then DELAY R and watch the scope: they do not change the picture in the same way.',
+        2: 'Phase matters across the whole range, lows included. Play PINK NOISE in mono and move DELAY R.',
       },
-      wrongHint: 'The lab\u2019s intro names the distinction — and the DLY R fader is the phase side.',
+      wrongHint: 'The lab\u2019s intro names the distinction — and the DELAY R fader is the phase side.',
     },
   ],
 };
@@ -1866,14 +1943,16 @@ const stereoConfig: FxLabConfig = {
   guide: stereoScreenGuide,
   accuracy: false,
   // Phase 2 (S3 silent path): the lab’s own line says what to watch with sound off.
-  soundOffLine: 'Sound off? The two traces show what you would hear: widen, then set FOLD to MONO CHECK and watch them merge.',
+  soundOffLine: 'Sound off? The two traces show what you would hear: widen, then turn MONO CHECK on and watch them merge.',
   fxId: FX.stereo,
   title: 'STEREO IMAGING LAB',
   subtitle: 'Width · M/S · Mono safety',
   intro:
     'Width scales the SIDE (difference) signal against the MID. Wider sounds bigger — until ' +
     'you fold to mono and the sides vanish. The correlation meter is the safety gauge.',
-  exploreCaption: 'Widen, then hit MONO-FOLD: what survives is what a mono listener gets.',
+  // ST-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one name, MONO CHECK, on the
+  // key, the caption, the tray and the readout (it was MONO-FOLD, FOLD and MONO CHECK).
+  exploreCaption: 'Widen, then turn MONO CHECK on: what survives is what a mono listener gets.',
   sources: [SRC_PINK, srcSine(440)],
   // Engine 10 (next-build queue item 11): every source above is MONO (L = R),
   // so the side is zero and WIDTH changes nothing you can hear. A build that
@@ -1906,26 +1985,29 @@ const stereoConfig: FxLabConfig = {
     },
     {
       label: 'PAN', paramId: P.pan, lessonKey: 'pan',
+      // SH-76 (owner 2026-11-15: "build waves 1 thru 3", D62): a one-line meaning per tray choice.
       choices: [
-        { label: 'L', value: -1 },
-        { label: 'CENTER', value: 0 },
-        { label: 'R', value: 1 },
+        { label: 'L', value: -1, blurb: 'The right channel is muted and the left is lifted 3 dB.' },
+        { label: 'CENTER', value: 0, blurb: 'Both channels stay as they are.' },
+        { label: 'R', value: 1, blurb: 'The left channel is muted and the right is lifted 3 dB.' },
       ],
       initial: 0,
     },
     {
       label: 'BASS-MONO', short: 'BASS', paramId: P.bassMonoHz, lessonKey: 'bass_mono',
       choices: [
-        { label: 'OFF', value: 0 },
-        { label: '120 Hz', value: 120 },
+        { label: 'OFF', value: 0, blurb: 'The lows keep their width.' },
+        { label: '120 Hz', value: 120, blurb: 'Below about 120 Hz the SIDE is filtered out, so the lows go mono.' },
       ],
       initial: 0,
     },
     {
-      label: 'MONO-FOLD', short: 'FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
+      // ST-01 + ST-04 (owner 2026-11-15, D62): the phone-speaker reason sits on the
+      // control itself, as the ON choice's one-line meaning.
+      label: 'MONO CHECK', paramId: P.monoFold, lessonKey: 'mono_fold',
       choices: [
-        { label: 'STEREO', value: 0 },
-        { label: 'MONO CHECK', value: 1 },
+        { label: 'OFF', value: 0, blurb: 'You hear the stereo mix: left and right stay apart.' },
+        { label: 'ON', value: 1, blurb: 'Left and right are added into one, the way a phone speaker hears your mix.' },
       ],
       initial: 0,
     },
@@ -1934,8 +2016,16 @@ const stereoConfig: FxLabConfig = {
     { k: 'WIDTH', paramId: P.widthPct, caption: 'how wide' },
     { k: 'PAN', paramId: P.pan, caption: 'left ↔ right' },
     { k: 'BASS', paramId: P.bassMonoHz, caption: 'mono below' },
-    { k: 'FOLD', paramId: P.monoFold, caption: 'listen as' },
+    { k: 'MONO CHECK', kNarrow: 'MONO', paramId: P.monoFold, caption: 'one speaker' },
   ],
+  // SH-64 (owner 2026-11-15: "build waves 1 thru 3", D62): BASS-MONO filters the
+  // SIDE below its crossover (Effects.hpp StereoEffect), so with MONO CHECK on
+  // or WIDTH at 0% there is no SIDE left and it changes nothing: the key grays
+  // with the reason (as the Equalizer's do). The value is kept.
+  ignoredBy: (paramId, v) =>
+    paramId === P.bassMonoHz && (v[P.monoFold] > 0.5 || v[P.widthPct] === 0)
+      ? 'no SIDE is left (MONO CHECK on or WIDTH 0%), so there is nothing to make mono'
+      : undefined,
   // The MONO comparison source draws as it sounds: L = R, a vertical line at
   // every width (engine 10). Every other source is the stereo test tone.
   Hero: (v, src) => (
@@ -1982,7 +2072,7 @@ const stereoConfig: FxLabConfig = {
       // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
       why: {
         0: 'Mono adds L and R together, so how the two relate is exactly what decides the result.',
-        2: 'Opposite channels do not add up when summed. Watch the OUT traces with FOLD on MONO CHECK.',
+        2: 'Opposite channels do not add up when summed. Watch the OUT traces with MONO CHECK on.',
       },
       wrongHint: 'Push WIDTH to 200%: the needle crosses zero to −0.20. The further it travels toward −1, the more of the mix cancels in mono.',
     },

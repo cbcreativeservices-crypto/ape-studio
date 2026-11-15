@@ -95,8 +95,11 @@ const CONVENTION_BODY =
   'Pro Audio Training Academy uses it consistently as a learning aid so you can recognize ' +
   'level and amplitude quickly across different tools and labs.';
 
+// EQL-02 + SC-02, built once (owner 2026-11-15: "build waves 1 thru 3", D62):
+// the same one line now says this is a one-time, one-minute stop and that the
+// lesson the learner chose opens right after (it replaced the lab unannounced).
 const GATE_INTRO =
-  'Before using our audio visualizers, learn the color language you will see throughout the Academy.';
+  'A one-time stop, about a minute: the color language our audio visualizers use. Your lesson opens right after.';
 
 const HONESTY_LINE = 'Illustrative training graphics — not live measurements.';
 
@@ -242,19 +245,28 @@ function useMeasuredWidth(): [number, (w: number) => void] {
 function VizCard({
   title,
   caption,
+  lookFor,
   a11y,
   children,
 }: {
   title: string;
   caption: string;
+  /** AMP-01 (owner 2026-11-15, "build waves 1 thru 3", D62): what to notice on
+   *  this card, in the caption's own text (no new element on the card). */
+  lookFor: string;
   a11y: string;
   children: React.ReactNode;
 }) {
   return (
-    <View style={styles.card} accessible accessibilityLabel={a11y}>
+    <View style={styles.card} accessible accessibilityLabel={`${a11y}. Look for: ${lookFor}`}>
       <Text style={styles.cardTitle}>{title}</Text>
       <View style={styles.cardViz}>{children}</View>
-      <Text style={styles.cardCaption}>{caption}</Text>
+      <Text style={styles.cardCaption}>
+        {caption}
+        {'\n'}
+        <Text style={styles.cardLookFor}>Look for: </Text>
+        {lookFor}
+      </Text>
     </View>
   );
 }
@@ -923,9 +935,10 @@ export function AmplitudeColorBody({
             PEAK −3 drawn orange looked like it broke "warmer = more". The
             mapping is the house standard (levelColor on each display's own
             window: SPL 40–100 dB, the meter −48–0 dBFS); the words now say so. */}
+        {/* AMP-01 (a line in, a line out): the 78-vs-PEAK example moved to the
+            SPL METER card's "Look for" line; this sentence keeps the rule. */}
         <Text style={styles.sixViewsSub}>
-          Each display colors its OWN scale: near the top of that scale is warm, whatever the number. That is
-          why 78 dB SPL (mid-way up its 40–100 scale) is green-yellow while PEAK −3 (near the top of its meter) is orange.
+          Each display colors its OWN scale: near the top of that scale is warm, whatever the number.
         </Text>
       </View>
 
@@ -933,6 +946,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="WAVEFORM"
           caption="Amplitude over time"
+          lookFor="taller = louder; the tall spot is the burst"
           a11y="Waveform example: signal amplitude drawn over time; taller bars are hotter colors"
         >
           <WaveformCard />
@@ -940,6 +954,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="OSCILLOSCOPE"
           caption="Instantaneous amplitude"
+          lookFor="warmer at every crest, top and bottom"
           a11y="Oscilloscope example: the waveform trace; far from the zero line the trace turns hotter"
         >
           <OscilloscopeCard />
@@ -947,6 +962,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="LEVEL METER"
           caption="Peak vs RMS (a kind of average) — same signal"
+          lookFor="PEAK sits higher and warmer than RMS"
           a11y="Level meter example: two meters for one signal — PEAK reads higher and hotter, RMS (a kind of average) reads lower and cooler"
         >
           <LevelMeterCard />
@@ -954,6 +970,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPL METER"
           caption="Sound-pressure level (illustrative)"
+          lookFor="a big number, a cool color: its own scale"
           a11y="SPL meter example: a horizontal sound pressure level bar reading 78 dB SPL"
         >
           <SplCard />
@@ -961,6 +978,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPECTRUM (RTA)"
           caption="Spectral magnitude across frequency"
+          lookFor="the tallest, warmest bar is the low tone"
           a11y="Spectrum analyzer example: magnitude across frequency bands; the strong band is red, the weak band green"
         >
           <RtaCard />
@@ -968,6 +986,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPECTROGRAM"
           caption="Magnitude across frequency × time"
+          lookFor="the bright upright streak is the burst"
           a11y="Spectrogram example: frequency over time; the strong tone is a hot stripe, quiet regions are dark blue"
         >
           <SpectrogramCard />
@@ -1253,6 +1272,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },
   cardViz: { height: VIZ_H + 14 },
   cardCaption: { fontFamily: fonts.barlowRegular, fontSize: 10.5, lineHeight: 13, color: colors.textSub },
+  cardLookFor: { fontFamily: fonts.barlowSemiBold, color: colors.textSecondary },
   vizFill: { flex: 1 },
   // The axis caption is the ONE thing that differs between the six cards —
   // the discriminative feature the recognition task depends on — so it must

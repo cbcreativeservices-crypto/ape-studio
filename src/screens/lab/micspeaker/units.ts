@@ -23,7 +23,8 @@ export const MIC_PRINCIPLES_LAB_KEY = 'af_mic_principles' as const;
 
 /** SECTIONS keys in MicPrinciplesLabScreen.tsx, in order. */
 export const MIC_PRINCIPLES_UNITS: readonly string[] = [
-  'capsule',
+  // MI-04 (owner 2026-11-15, "build waves 1 thru 3", D62): CAPSULE moved to the
+  // end. The ids are unchanged, so nothing banked is orphaned.
   'polar',
   'distance',
   'proximity',
@@ -33,6 +34,7 @@ export const MIC_PRINCIPLES_UNITS: readonly string[] = [
   'shock',
   'hand',
   'mistakes',
+  'capsule',
 ];
 
 export const SPEAKER_COVERAGE_LAB_KEY = 'af_speaker_coverage' as const;

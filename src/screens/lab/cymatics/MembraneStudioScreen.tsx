@@ -68,6 +68,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { STUDIO_RELATION } from './homePath';
 import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 
 const F_MIN = 20;
@@ -453,8 +454,8 @@ function MembraneStudio() {
   const badge = isSpeaker
     ? `A simulation: fs, ka and the 1/f² excursion are calculated; ${cone.label === 'CALCULATED' ? 'this cone stage is calculated too.' : 'this cone stage is illustrative.'}`
     : spec.kettle
-      ? 'A simulation: the head’s Bessel modes are calculated; the kettle loading is approximated from real timpani.'
-      : 'A simulation: the clamped head’s Bessel modes, calculated.';
+      ? 'A simulation: the drumhead’s modes are calculated; the kettle loading is approximated from real timpani.'
+      : 'A simulation: the clamped drumhead’s modes, calculated.';
   // SAVE → the Pattern Gallery (Phase 4): the full state, never a picture.
   // One save per press: SAVE stays disabled until the write settles, and the
   // ref catches a same-frame double tap before the re-render (bug hunt
@@ -493,7 +494,8 @@ function MembraneStudio() {
         // OPEN THE MEMBRANE & LOUDSPEAKER STUDIO › keeps the full name.
         title="MEMBRANE & LOUDSPEAKER"
         subtitle="Cymatics Lab: Sound Made Visible"
-        intro="A drumhead is a membrane: it has almost no stiffness of its own, only tension, so its modes follow the Bessel patterns — and their frequencies are NOT a harmonic series, which is why a bare drumhead has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
+        // The first sentence says how the studio relates to the modules (owner 2026-11-15, D62 CY-02); "the Bessel patterns" became plain drumhead modes (CY-03).
+        intro={`${STUDIO_RELATION.membrane} A drumhead has almost no stiffness of its own, only tension, so its modes are drumhead modes whose frequencies are NOT a harmonic series: a bare drumhead has no clear pitch, and a timpani (with its kettle) does. A loudspeaker cone is the opposite: a stiff shell that moves as one piston until, at its breakup frequency, it stops obeying.`}
         exploreCaption="Tune the head, move the mallet, sweep the modes. Then show the loudspeaker and sweep from its resonance up through breakup."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -508,6 +510,8 @@ function MembraneStudio() {
             size: 'L',
             badge,
             modelNote: badge,
+            // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+            soundOffLine: 'Sound off? Turn on Silent drive in STRIKE: the figure and every readout still work.',
             onGuide: () => openLesson('membrane_display'),
             bezel,
             hideDragTag: true,
@@ -546,7 +550,7 @@ function MembraneStudio() {
                 </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>This version of the app can’t draw the drum. Controls and readouts still work; update the app to see it.</Text>
+                  <Text style={styles.noSkiaText}>The drum can’t be drawn on this device. Controls and readouts still work.</Text>
                 </View>
               ),
           },

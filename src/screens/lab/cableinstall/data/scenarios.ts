@@ -129,7 +129,7 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
         flags: [
           { ruleId: 'plan-defined-pathways', dim: 'routing', cost: 0.4, positive: true, note: 'Uses the pathway built for exactly this — supported, documented, expandable.' },
           { ruleId: 'plan-service-access', dim: 'serviceability', cost: 0.4, positive: true, note: 'Every foot reachable from the corridor — future service is easy.' },
-          { ruleId: 'plan-capacity', dim: 'routing', cost: 0.1, note: 'Tray has room today — record the added fill.' },
+          { ruleId: 'plan-capacity', dim: 'routing', cost: 0.1, note: 'Tray has room today — record the added fill (how much of its space cable now takes).' },
         ],
       },
       {

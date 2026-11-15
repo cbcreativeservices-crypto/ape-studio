@@ -72,7 +72,7 @@ export function makeWindSettingPage(cfg: WindSettingConfig): (p: PageProps) => R
             if (it) pick(it.id);
           },
           format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((i) => i.id === sel),

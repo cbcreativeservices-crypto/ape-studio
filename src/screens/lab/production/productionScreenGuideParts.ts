@@ -51,9 +51,9 @@ export type PlanWord = 'PLAN' | 'PROJECT';
 export function stageControl(packetName: string, word: PlanWord = 'PLAN'): string[] {
   return [
     'Answer by typing, tapping chips (some take several) or filling a table: + ADD ROW, ✕ removes a row, UNDO restores it.',
-    'Tap “Not applicable to this project”, type why, then SAVE. A skip with a reason counts as a decision; UNDO undoes it.',
+    'Tap “Not applicable?”, type why, then SAVE. A skip with a reason counts as a decision; UNDO undoes it.',
     'Answers save as you go. If one fails, a red warning stays on top until a later one saves.',
-    `SEE THEM ↓ opens WHAT THIS ${word} IS STILL MISSING (red edge: a blocker; amber: flagged). The bottom link opens WHAT’S LEFT IN THE WHOLE ${word} · ${packetName.toUpperCase()}.`,
+    `SEE THEM ↓ opens OPEN QUESTIONS IN THIS ${word} (red edge: a blocker; amber: flagged). The bottom link opens WHAT’S LEFT IN THE WHOLE ${word} · ${packetName.toUpperCase()}.`,
     `‹ goes back to where you came from: the lab home, the ${packetName} or an exercise. ${CHIPS_LINE}`,
   ];
 }
@@ -64,7 +64,7 @@ export function stageControl(packetName: string, word: PlanWord = 'PLAN'): strin
 export function activitySeeing(stageNum: number, title: string, offeredOn: string): string[] {
   return [
     `This is STAGE ${stageNum} · EXERCISE: “${title}”, offered on ${offeredOn}.`,
-    'Read the brief first: it describes a job that has already gone wrong. Under it is the project type this attempt uses.',
+    'Read the brief first: it describes a job that has already gone wrong. Under it: the project type, and the exercise’s setting if it differs.',
     'The checklist shows ✓ for each check you’ve passed and ○ for each one still open. It reads SOLVED once every check passes.',
   ];
 }

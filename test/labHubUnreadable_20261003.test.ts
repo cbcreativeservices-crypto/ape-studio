@@ -207,7 +207,8 @@ describe('(B) one shared note, in every hub, before the "not started" face', () 
   it('Ear Training hub', () => {
     const src = read('src/screens/lab/eartraining/EarTrainingLabScreen.tsx');
     assert.match(src, /isEarProgressUnreadable\(progress\)/);
-    before(src, NOTE, '{EAR_MODULES.map(', 'Ear');
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item ET-02): the rows are drawn per group.
+    before(src, NOTE, '{EAR_HUB_GROUPS.map(', 'Ear');
     assert.match(src, /const p = unreadable \? undefined : progress\?\.modules\[m\.id\]/);
   });
 

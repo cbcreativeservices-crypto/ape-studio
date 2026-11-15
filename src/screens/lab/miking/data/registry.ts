@@ -190,6 +190,34 @@ export const LESSONS: readonly LessonMeta[] = [
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
+/**
+ * Where a newcomer begins in each family (beginner waves 2026-11-15, MK-04;
+ * owner: "build waves 1 thru 3"). A family hub opened on a long paragraph and
+ * never said where to start; ONE line under its heading now names this lesson.
+ * A suggestion only: every lesson stays open, in any order.
+ */
+export const START_LESSON: Readonly<Record<MikingLabId, string>> = {
+  drums: 'M01',
+  percussion: 'I01a',
+  winds: 'A01',
+  strings: 'C01',
+  ensembles: 'E01',
+  field: 'F01',
+  broadcast: 'B01',
+};
+
+/** The hub's start line for a family, or '' when its start lesson is not ready. */
+export function hubStartLine(labId: MikingLabId): string {
+  const id = START_LESSON[labId];
+  const l = LESSONS.find((x) => x.id === id && x.labId === labId && x.status === 'ready');
+  return l ? `New to miking? Start with ${l.title}; modules 1 and 2 give you the foundation.` : '';
+}
+
+/** The hub's one note, right under its heading (MK-06): it used to sit under
+ *  every tile, where a beginner never scrolls, and told a silent learner to
+ *  listen. The safety point (real mics placed with the player stopped) stays. */
+export const HUB_NOTE = 'Suggested starting points, not rules. Silent drawings: no sound plays. Place real mics with the player stopped.';
+
 export function readyLabs(): MikingLabMeta[] {
   return MIKING_LABS.filter((l) => LESSONS.some((x) => x.labId === l.id && x.status === 'ready'));
 }

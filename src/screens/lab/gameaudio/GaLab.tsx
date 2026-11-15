@@ -181,6 +181,12 @@ export type GaRackSpec = {
   /** A page whose display is NOT the scene (page 20's tool windows) draws
    *  its own glass. Read-only, like everything on the glass. */
   glass?: (w: number, h: number) => ReactNode;
+  /** ONE plain caption pinned with the picture (beginner waves 2026-11-15,
+   *  GA-11; owner 2026-11-15: "build waves 1 thru 3"): what the picture is,
+   *  in the rack's own one-sentence line under the display (rack
+   *  `stage.modelNote`), inline and in full screen. Page 1 only: the first
+   *  thing a beginner sees had no word on it saying what it was. */
+  caption?: string;
 };
 
 /** The glass of a scene page: the scene at its own aspect, centered, and the
@@ -328,6 +334,8 @@ export function GaRack({ spec, children }: { spec: GaRackSpec; children: ReactNo
         soundOffLine: GA_SOUND_OFF_LINE,
         // "drawing…" on the glass until the picture has had its first frames (phase 3)
         drawing: !painted,
+        // page 1's caption, pinned with the picture (GA-11)
+        ...(spec.caption ? { modelNote: spec.caption } : null),
         render: (w, h) => (spec.glass ? spec.glass(w, h) : <GaGlass w={w} h={h} spec={spec} state={s} />),
       }}
     >

@@ -17,7 +17,7 @@ import { PagedLab } from '../kit/PagedLab';
 import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { retainSessionStems } from './audio/mixAudio';
-import { HANDS_ON_DETAIL, MIX_MANTRA } from './kit';
+import { HANDS_ON_DETAIL } from './kit';
 import { MIXING_PAGES_A } from './pagesA';
 import { MIXING_PAGES_B } from './pagesB';
 import { MIXING_PAGES_C } from './pagesC';
@@ -85,5 +85,11 @@ export function BeginningMixingLabScreen() {
   // every screen"; the chip stays for labs with REAL-WORLD numbers): this
   // lab's meters read its own rendered mixes, so the chip is the ABOUT
   // variant, which shows only BEG_ACCURACY_DETAIL.
-  return <PagedLab labId="mixing-beg" unitNoun="page" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={BEG_ACCURACY_DETAIL} accuracyVariant="about" pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  // BM-06 (owner 2026-11-15: "build waves 1 thru 3", D62): page 1 already
+  // shows the mantra in THE MIXER'S MANTRA box (pagesA), so the grey subtitle
+  // line that repeated it word for word is empty here (it read as a glitch).
+  // BM-04 (same go): no `proNote`, so "Knowing When to Bring In a Pro" no
+  // longer opens by itself on arrival; page 1 keeps its small link
+  // (pagesA, ProNoteButton).
+  return <PagedLab labId="mixing-beg" unitNoun="page" title="Beginning Mixing" subtitle="" pages={PAGES} pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={BEG_ACCURACY_DETAIL} accuracyVariant="about" pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

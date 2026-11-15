@@ -83,6 +83,7 @@ import { GaRack } from '../GaLab';
 import { ActivityLog, Caption, Do, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaPlaying, surfaceOf, type GaState } from '../model/gaModel';
+import type { GaLogView } from '../bitsLogic';
 import { gaDispatch, gaGet, gaResetScene, useGa } from '../model/gaStore';
 import { DOOR_POS, WALL_X, zoneAt, type GaPoint } from '../model/gaWorld';
 import { GA_ASSETS } from '../sounds/gaSoundBank';
@@ -111,12 +112,20 @@ export const P22_SOUNDS_TITLE = 'SOUNDS · CLOSE THIS: THE SLIDER IS SPEED';
 const sceneOn = (s: GaState): boolean => gaPlaying(s, 'bed_room') || gaPlaying(s, 'bed_yard');
 const alarmOn = (s: GaState): boolean => gaPlaying(s, 'alarm');
 const SURFACE_WORD = { wood: 'WOOD', stone: 'STONE', gravel: 'GRAVEL' } as const;
-/** Two logs, each showing the lines its step talks about (a step prints
- *  four lines, and moving SPEED prints many: unfiltered, they push the
- *  ZONE line and the DUCK line out of view). Step 2: what the game asked
- *  and what started, with the ZONE line. Step 3: the mix and the music. */
+/** ONE LOG WITH TWO VIEWS (beginner waves 2026-11-15, GA-17; owner
+ *  2026-11-15: "build waves 1 thru 3"). The page drew two log boxes, one
+ *  in step 2 and one in step 3, and a beginner did not know which to read.
+ *  It is one log now, with a choice of view at its head: each view shows
+ *  the lines one part of the brief talks about (a step prints four lines,
+ *  and moving SPEED prints many: unfiltered, they push the ZONE line and the
+ *  DUCK line out of view). SCENE: what the game asked and what started,
+ *  with the ZONE line. MIX AND MUSIC: the mix and the music. */
 const LOG_KINDS = ['trigger', 'start', 'state', 'refused', 'failed', 'note'] as const;
 const MIX_KINDS = ['mix', 'music', 'refused', 'failed'] as const;
+export const P22_LOG_VIEWS: readonly GaLogView[] = [
+  { id: 'scene', label: 'SCENE', only: LOG_KINDS },
+  { id: 'mix', label: 'MIX AND MUSIC', only: MIX_KINDS },
+];
 
 /* ── MOVE: places to go without walking every step ──────────────────────── */
 // (a STEP that cannot move, against the closed door or the edge, prints a
@@ -384,14 +393,13 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={2}>
         <Do>Build one scene that shows all seven goals in step 4. Plan it first: which sound each goal needs, and what starts it. Any order works. Everything you need is in MOVE, SOUNDS and MUSIC.</Do>
         <P>MOVE and SOUNDS stay open while you choose. The slider changes to their control only when you close the tray.</P>
-        <P>After each action, read the log.</P>
-        <ActivityLog state={s} lines={8} only={LOG_KINDS} />
+        <P>After each action, read the log. SCENE and MIX AND MUSIC at its top choose which lines it shows.</P>
+        <ActivityLog state={s} lines={8} views={P22_LOG_VIEWS} />
       </Step>
       <Step n={3}>
         <P>For each step, a GAME line names the surface and a START line names the take. The door starts two layers. Crossing the doorway prints one STATE line that begins ZONE.</P>
-        <P>A guide line ducks the other buses: a MIX line begins DUCK on, then DUCK off. A music change waits for the next bar. The alarm has a sign in the picture, for a player who cannot hear it.</P>
+        <P>A guide line ducks the other buses: under MIX AND MUSIC, a MIX line begins DUCK on, then DUCK off. A music change waits for the next bar. The alarm has a sign in the picture, for a player who cannot hear it.</P>
         <Caption state={s} />
-        <ActivityLog state={s} lines={5} only={MIX_KINDS} />
         <Note tone="mistake">Judging a scene by the keys you pressed. A key press is only a request. The log shows what the audio side did with it.</Note>
       </Step>
       <Step n={4}>

@@ -104,8 +104,10 @@ describe('2. each guide quotes its screen’s real names', () => {
   const SPK_SRC = [SPK_SCREEN, VIZ, 'src/features/lab/guidedLessons/toolHelp.tsx'].map(code).join('\n');
   const END_SRC = ['src/screens/lab/kit/LabEndScreen.tsx', 'src/screens/lab/kit/labEnd.ts'].map(code).join('\n');
   const NAMES: Record<string, [string, string[]]> = {
-    'mic.capsule': [MIC_SRC, ['e = B · l · v', 'VELOCITY', '⊗/⊙', 'FULL SCREEN', 'WHAT THE DISPLAY SHOWS', '‹ PREV', 'NEXT ›']],
-    'mic.polar': [MIC_SRC, ['PATTERN', 'SOURCE', 'PICKUP', 'NULL ≤−26 dB', 'DRAG THE SPEAKER — ANYWHERE', 'OMNI', 'CARDIOID', 'SUPER', 'HYPER', 'FIGURE-8']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): POLAR opens the lab (the strip is explained
+    // there); CAPSULE is the last module, ended by FINISH ›.
+    'mic.capsule': [MIC_SRC, ['e = B · l · v', 'VELOCITY', '⊗/⊙', 'FULL SCREEN', 'WHAT THE DISPLAY SHOWS', 'FINISH ›']],
+    'mic.polar': [MIC_SRC, ['‹ PREV', 'NEXT ›', 'PATTERN', 'SOURCE', 'PICKUP', 'NULL ≤−26 dB', 'DRAG THE SPEAKER — ANYWHERE', 'OMNI', 'CARDIOID', 'SUPER', 'HYPER', 'FIGURE-8']],
     'mic.distance': [MIC_SRC, ['DIST', 'LEVEL', 'DIRECT', 'ROOM', 'DISTANCE']],
     'mic.proximity': [MIC_SRC, ['DIST', 'BOOST', 'MIC', 'DISTANCE', 'CARDIOID', 'OMNI', 'FLAT', 'NONE', 'GAP']],
     'mic.offaxis': [MIC_SRC, ['ANGLE', '@100 Hz', '@8 kHz', 'PRESET']],

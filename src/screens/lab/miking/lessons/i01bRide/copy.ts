@@ -49,7 +49,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the bow — or at the bell for bell accents; the lab counts it while the mic’s axis meets the ride inside its edge band. Height, the spot over the plate and the angle are separate things to try.',
     workedClear: 'Clear of every part — the stick’s side of the ride, the swing, the crash beside it, the ride’s boom and the player’s right arm. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the bell tends to bring a brighter, cutting sound; toward the edge more of the wash — and every ride is different, so “it depends on this ride” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    reveal: 'Toward the bell tends to bring a brighter, cutting sound; toward the edge more of the wash — and every ride is different, so “it depends on this ride” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try: over the bow, slide the aim from the bow toward the bell, then separately change the height. A foot or two above covers the other cymbals as well — a different job from a spot mic.',
       smallDynCard: 'Ideas to try: a dynamic over the bow, on the side away from the player. Listen for how much of the wash and the floor tom it takes in compared with a condenser.',
@@ -119,7 +119,7 @@ export const RIDE_CYM: CymbalExtra = {
     title: 'Strike to sound',
     badge: 'The order of events, not their speed · motion drawn much larger than it really is · silent',
     looking: 'Side view · the ride cut through the stick’s line',
-    prompt: 'STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound.',
+    prompt: 'Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound.',
     rFrac: STRIKE.bow / RIDE_R,
     stages: [
       { title: 'The tip strikes the bow', text: 'The tip of the stick strikes the bow — the ride area. That brief contact is the “ping”: the ATTACK, and the ride’s definition.' },

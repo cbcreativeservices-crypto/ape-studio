@@ -61,6 +61,7 @@ import {
 import { usePhaseClock } from '../foundations/viz';
 import { useStageTextScale } from '../rack/stageAspect';
 import { fonts } from '../../../theme/tokens';
+import { fitValue } from '../../../theme/legibility';
 import { heatColor } from '../../../features/tools/levelColor';
 import { CondenserMic, HandheldMic } from '../../../features/lab/micDrawings';
 import { HeadIcon } from '../../../features/lab/headIcons';
@@ -83,6 +84,10 @@ const ACCENT_GREEN = '#5bff85';
 const ACCENT_BLUE = '#6fa8ff';
 const ACCENT_RED = '#ff6b5e';
 const ACCENT_YELLOW = '#ffd76b';
+/** Speaker 1's identity color: the dock slider's default amber (colors.amber). */
+const SPK1_RING = '#ffc64d';
+/** SPK-01: the side view's name, drawn on the display. */
+export const SIDE_VIEW_LABEL = 'SIDE VIEW: stage on the left, back wall on the right';
 const GRID = '#3a3b46';
 const GHOST = '#2e2f38';
 const BG = '#0c0c0f';
@@ -3291,6 +3296,7 @@ function CabinetTop({
   small,
   scale = 1,
   tint,
+  ring,
 }: {
   x: number;
   y: number;
@@ -3300,9 +3306,12 @@ function CabinetTop({
   /** Identity outline (owner 2026-08-31): speaker 2 = blue, fills = green —
    *  matches the dock slider's tint so slider ↔ cabinet read as one thing. */
   tint?: string;
+  /** The box the sliders move now (owner 2026-11-15, "build waves 1 thru 3",
+   *  D62 item SPK-03): a still ring in the slider's own color around it. */
+  ring?: string;
 }) {
   const s = (small ? 0.62 : 1) * scale;
-  const { path, grille, lid } = useMemo(() => {
+  const { path, grille, lid, ringPath } = useMemo(() => {
     const bw = 7.6 * s; // back half-width (250 mm)
     const fw = 11.5 * s; // front half-width (380 mm)
     const d = 22 * s; // depth (370 mm)
@@ -3325,7 +3334,11 @@ function CabinetTop({
     l.lineTo(-fw + 1.2 * s, -2.2 * s);
     l.addCircle(0, -d * 0.3, 0.7 * s);
     l.addCircle(0, -d * 0.8, 0.7 * s);
-    return { path: p, grille: g, lid: l };
+    // The selection ring: 3 pt clear of the box on every side.
+    const pad = 3;
+    const r = Skia.Path.Make();
+    r.addRRect(Skia.RRectXY(Skia.XYWHRect(-fw - pad, -d - pad, 2 * fw + 2 * pad, d + 2 * pad), pad + 1, pad + 1));
+    return { path: p, grille: g, lid: l, ringPath: r };
   }, [s]);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (-aimDeg * Math.PI) / 180 }]}>
@@ -3336,6 +3349,12 @@ function CabinetTop({
       <Path path={path} color={tint ?? '#7a7f8c'} style="stroke" strokeWidth={tint ? 1.2 : 0.8} />
       <Path path={grille} color="#0c0d10" />
       <Path path={lid} color="#8a8f9c" style="stroke" strokeWidth={0.6} opacity={0.5} />
+      {ring ? (
+        <>
+          <Path path={ringPath} color={ring} style="stroke" strokeWidth={4} opacity={0.22} />
+          <Path path={ringPath} color={ring} style="stroke" strokeWidth={1.4} />
+        </>
+      ) : null}
     </Group>
   );
 }
@@ -3449,6 +3468,7 @@ export function TopCoverageView({
   hDeg,
   frontFills,
   fillSpread01 = 0.375,
+  selected,
 }: {
   width: number;
   height?: number;
@@ -3463,6 +3483,10 @@ export function TopCoverageView({
    *  pair always sits symmetric about center; 0 = tight pair, 1 = full lip.
    *  The screen starts it at 0.125 (fills at 0.4 / 0.6, inboard of the mains). */
   fillSpread01?: number;
+  /** What the POSITION / AIM sliders move now (owner 2026-11-15, "build waves
+   *  1 thru 3", D62 item SPK-03): that box (or the fill pair) wears a ring in
+   *  the slider's color, so a tap on SPKR 2 shows on the map. */
+  selected?: 'spk1' | 'spk2' | 'fills';
 }) {
   // FULL SCREEN (2026-09-30, hard rule D35): glass-point layout, one outer
   // <Group> scaled by StageTextScale — the plan, its seats, the cabinets, the
@@ -3493,15 +3517,15 @@ export function TopCoverageView({
     // the lip in front of them — so a fill slid under a main sits in front
     // of it in plan, never inside it.
     const mainY = stageH - 0.3 * COVER_MPP;
-    const spks: { x: number; y: number; aim: number; hd: number; refD: number; scale: number; s: number; small?: boolean; tint?: string }[] = [
-      { x: spk1x01 * (w - 40) + 20, y: mainY, aim: spk1AimDeg, hd: hDeg, refD, scale: dg, s: mainS },
+    const spks: { x: number; y: number; aim: number; hd: number; refD: number; scale: number; s: number; small?: boolean; tint?: string; role: 'spk1' | 'spk2' | 'fills' }[] = [
+      { x: spk1x01 * (w - 40) + 20, y: mainY, aim: spk1AimDeg, hd: hDeg, refD, scale: dg, s: mainS, role: 'spk1' },
     ];
-    if (spk2On) spks.push({ x: spk2x01 * (w - 40) + 20, y: mainY, aim: spk2AimDeg, hd: hDeg, refD, scale: dg, s: mainS, tint: ACCENT_BLUE });
+    if (spk2On) spks.push({ x: spk2x01 * (w - 40) + 20, y: mainY, aim: spk2AimDeg, hd: hDeg, refD, scale: dg, s: mainS, tint: ACCENT_BLUE, role: 'spk2' });
     if (frontFills) {
       // Symmetric about the stage's center line, always equidistant.
       const half = 0.05 + 0.4 * Math.max(0, Math.min(1, fillSpread01));
       for (const fx of [0.5 - half, 0.5 + half]) {
-        spks.push({ x: fx * w, y: stageH, aim: 0, hd: 90, refD: 0.2 * fieldH, scale: 0.5, s: fillS, small: true, tint: ACCENT_GREEN });
+        spks.push({ x: fx * w, y: stageH, aim: 0, hd: 90, refD: 0.2 * fieldH, scale: 0.5, s: fillS, small: true, tint: ACCENT_GREEN, role: 'fills' });
       }
     }
     // Fine heat map: 224 × 192 cells — 4× the previous 56 × 48 linear
@@ -3633,7 +3657,15 @@ export function TopCoverageView({
         </Group>
         <SkLine p1={{ x: 0, y: stageH }} p2={{ x: w, y: stageH }} color={GRID} strokeWidth={1.5} />
         {spkList.map((s, i) => (
-          <CabinetTop key={i} x={s.x} y={s.y} aimDeg={s.aim} scale={s.s} tint={s.tint} />
+          <CabinetTop
+            key={i}
+            x={s.x}
+            y={s.y}
+            aimDeg={s.aim}
+            scale={s.s}
+            tint={s.tint}
+            ring={s.role === selected ? (s.tint ?? SPK1_RING) : undefined}
+          />
         ))}
        </Group>
        {/* 5-m scale bar under the room. */}
@@ -4347,6 +4379,23 @@ export function SideCoverageView({
      </Group>
     </Canvas>
     <ScaleBarLabel at={barLabel} ts={ts} text="5 m" />
+    {/* SPK-01 (owner 2026-11-15, "build waves 1 thru 3", D62): name the view, so
+        the side view is never read as the top view, only shorter. Above the
+        ceiling line, where nothing hangs. */}
+    <RNText
+      style={{
+        position: 'absolute',
+        left: 6 * ts,
+        top: 3 * ts,
+        fontFamily: fonts.oswaldSemiBold,
+        fontSize: Math.max(9, 9.5 * ts),
+        letterSpacing: 0.6,
+        color: '#9aa0ad',
+      }}
+      {...fitValue(Math.max(9, 9.5 * ts))}
+    >
+      {SIDE_VIEW_LABEL}
+    </RNText>
     </View>
   );
 }

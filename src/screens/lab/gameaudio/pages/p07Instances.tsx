@@ -26,7 +26,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
-import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
+import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, ProNote, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaCopies, type GaMachine } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
@@ -157,10 +157,13 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={6} />
       </Step>
       <Step n={3}>
-        <Do>Move SPEED 2 only. In GENERATORS, switch GENERATOR 1 off. Then choose REMOVE GENERATOR 2 while it runs. Last, start the fault on the TROUBLESHOOT card.</Do>
+        <Do parts={['Move SPEED 2 only.', 'In GENERATORS, switch GENERATOR 1 off.', 'Choose REMOVE GENERATOR 2 while it runs.', 'Start the fault on the TROUBLESHOOT card.']} />
         <P>The VALUE line names GENERATOR 2 and its instance. Generator 1 keeps its speed. Switching it off fades its instance, and generator 2 runs on. Removing generator 2 stops its instance too: a loop does not end by itself.</P>
-        <P>Here the speed is kept on the generator, and its instance follows it. Some tools keep such a value on the object, others on the playing instance. Check which in the tool you use.</P>
         <Note tone="mistake">One speed for every copy, so all generators change together. Each generator’s speed is kept for that generator, not on the event.</Note>
+        {/* a tool detail, closed at the end of the step (owner 2026-11-15: "build waves 1 thru 3", GA-07) */}
+        <ProNote hint="Pro note: where real tools keep a value like this.">
+          <P>Here the speed is kept on the generator, and its instance follows it. Some tools keep such a value on the object, others on the playing instance. Check which in the tool you use.</P>
+        </ProNote>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>

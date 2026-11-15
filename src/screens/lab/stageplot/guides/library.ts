@@ -8,7 +8,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_LIBRARY: ScreenGuide = {
   intro: {
     learning: 'A stage plot is for a venue’s sound engineer. It says who plays where, what reaches the sound system, and what each performer needs to hear.',
-    start: 'Choose an example band under START A STAGE PLOT, or start with a blank stage. Read what each example assumes before you choose it. You can change everything afterward.',
+    start: 'To learn, press START beside Blank stage: its 5 guided steps complete this lab. Or start from an example band; read what it assumes first. You can change everything afterward.',
   },
   seeing: [
     'The first list holds the starting points: a blank stage and five example bands. Each one says what it assumes.',

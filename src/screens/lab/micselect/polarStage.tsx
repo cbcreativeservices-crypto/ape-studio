@@ -253,7 +253,7 @@ export function PolarStage({ w, h, pattern, verdictFor }: { w: number; h: number
         {/* the handheld vocal mic, grille on the centre, aimed at the singer */}
         <HandheldMic x={cx} y={cy} angleDeg={0} grilleR={MIC_GRILLE_R} bodyLen={MIC_BODY} />
       </Canvas>
-      <Text style={[st.badge, { left: 10, top: 8 }]}>TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE</Text>
+      <Text style={[st.badge, { left: 10, top: 8 }]}>Top view · directions only, not to scale</Text>
       {places.map(({ s, L, at, vd }) => {
         // The tag on the far side of the drawing, away from the pattern.
         const below = at.y > cy - 6;

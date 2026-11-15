@@ -1,5 +1,5 @@
 /**
- * Module 1 — WHAT A ROOM MODEL CAN TELL YOU. A short reading module
+ * Module 2 — WHAT A ROOM MODEL CAN TELL YOU (after Create the room since RO-06, 2026-11-15). A short reading module
  * (document layout: prose only, no live display): the three kinds of number
  * in this lab, what a model can and cannot know, and the hearing-safety rule
  * for monitoring level. Ends on the shared in-flow NEXT.

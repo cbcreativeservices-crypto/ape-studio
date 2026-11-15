@@ -38,7 +38,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'Every classic wave is a recipe of harmonics: which multiples of the fundamental are present, and how strong, sets the timbre, while F0 alone sets the pitch.',
+      // OSC-05 (owner 2026-11-15, "build waves 1 thru 3"): the plain recipe idea first, and bar 1 is the note.
+      learning: 'Every sound shape is built from simple tones stacked up, like a recipe. Bar 1 is the note; bars 2 to 12 set its color.',
       // A first step that needs no sound (novice audit 2026-11-14), then the sound.
       start: 'Open WAVE and switch between SINE, SQUARE and SAW, and watch which bars light up: SQUARE empties every even bar. Then tap ▶ and switch again to hear the tone color change while the pitch stays put.',
     },
@@ -52,7 +53,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'Tap WAVE for SINE, SQUARE, TRIANGLE, SAW or PULSE 25%, each with a one-line description. The tray stays open, so you can switch while it plays. Long-press a choice for its lesson entry.',
       'Tap F0 for 110, 220, 440 or 880 Hz — each step one octave higher.',
       'Tap SPKR to see the signal after the phone speaker’s 150 Hz high-pass, which cuts deep lows; an amber line marks the filter’s effect on each bar. Its light shows it’s on.',
-      'Below the rack, LAB NOTES: what you’re seeing, THE SOUND, two CHECK YOURSELF questions and the ⓘ GUIDED LESSON. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
+      'Below the rack, LAB NOTES: two CHECK YOURSELF questions first, THE SOUND under GO DEEPER, and the ⓘ GUIDED LESSON. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
     ],
     changes: [
       'Each bar is a sine at a whole-number multiple of F0; added up, they make the shape.',
@@ -116,8 +117,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'They ask which wave holds every harmonic, why a triangle sounds softer than a square, what a pulse’s duty cycle changes, and why harmonics above Nyquist are left out.',
     ],
     control: [
-      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
-      'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',

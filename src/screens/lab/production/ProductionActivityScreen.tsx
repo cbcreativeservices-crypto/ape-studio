@@ -25,7 +25,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { checkActivity, seedActivityProject, type ActivityResult } from '../../../features/production/activities';
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject } from '../../../features/production/types';
-import { PATHWAY_LABEL } from '../../../features/production/types';
+import { exerciseSettingLine } from './exerciseSetting';
 import { labDef, stageForActivity } from '../../../features/production/labs';
 import { hiddenKeys } from '../../../features/production/schema';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -165,7 +165,10 @@ export function ProductionActivityScreen() {
         {/* The RESUMED attempt's pathway, not the route's (2026-09-30): an
             exercise started from a Podcast project and reopened from a Music
             one resumes the Podcast work, and must say so. */}
-        <Text style={styles.pathway}>{PATHWAY_LABEL[project?.pathway ?? pathway]}</Text>
+        {/* PO-03 (owner 2026-11-15: "build waves 1 thru 3", D62): the same
+            line names the exercise's own setting when the scenario was written
+            for another project type ("This exercise uses a podcast episode."). */}
+        <Text style={styles.pathway}>{exerciseSettingLine(activityId, project?.pathway ?? pathway)}</Text>
 
         <Pressable
           style={styles.openBtn}

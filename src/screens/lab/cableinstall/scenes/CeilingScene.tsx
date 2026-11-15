@@ -79,6 +79,15 @@ import {
   withTiming,
 } from '../motion';
 import type { CiModuleProps } from '../registry';
+import { CollapsibleSection } from '../../LabShell';
+
+/** This scene's own teaching colors (CI-01): folded under the drawing, which
+ *  carries the OWN COLORS tag so the change from the lab's key is flagged
+ *  where the colors are seen. */
+export const CEILING_COLOR_KEY =
+  'Teaching colors, this scene only: gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect. These colors differ from the cable-type key.';
+/** The tag drawn on the above-ceiling view (CI-01). */
+export const CEILING_OWN_COLORS_TAG = 'OWN COLORS · KEY BELOW';
 
 const VB_W = 360;
 const VB_H = 220;
@@ -937,6 +946,13 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 quietDefects={ex1Done && (pathSolved || confirmed)}
                 ghost={pathOpt && !pathOpt.good ? (pathOpt.id as 'tiles' | 'duct') : null}
               />
+              {/* The scene's colors are not the lab's cable-type key: said ON the
+                  drawing (CI-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+              {above ? (
+                <View pointerEvents="none" style={styles.ownColorsTag}>
+                  <Text style={styles.ownColorsText}>{CEILING_OWN_COLORS_TAG}</Text>
+                </View>
+              ) : null}
               {/* ≥44dp tap overlays for the defect markers */}
               {above
                 ? CI_CEILING_DEFECTS.map((d, i) => {
@@ -989,13 +1005,21 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
           )
         }
       />
+      {/* CI-01 (owner 2026-11-15: "build waves 1 thru 3"): this scene's own
+          colors fold under the drawing, and the drawing itself says they are
+          not the lab's cable-type key (the OWN COLORS tag). */}
+      {above ? (
+        <CollapsibleSection title="COLOR KEY · THIS SCENE’S OWN COLORS" startOpen={false}>
+          <Text style={styles.legend}>{CEILING_COLOR_KEY}</Text>
+        </CollapsibleSection>
+      ) : null}
+      {above ? null : (
       <Text style={styles.legend}>
-        {above
-          ? 'Color key (teaching colors, this scene only): gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect. These colors differ from the cable-type key.'
-          : confirmed
+        {confirmed
             ? 'FINISHED — the same section done right, with your run on your hooks. From the room below, both versions look identical — which is why inspectors lift tiles.'
             : 'FINISHED — the same section done right; the dashed outline is where your run goes in Exercise 2. From the room below, both versions look identical — which is why inspectors lift tiles.'}
       </Text>
+      )}
 
       {/* EXERCISE 1 — FIND THE PROBLEMS */}
       <CiSection title="EXERCISE 1 · FIND THE PROBLEMS">
@@ -1160,7 +1184,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       <Text style={styles.tintNote}>
         Training visualization — colors identify systems and classes here (sprinkler red, existing runs cyan/green, your
         bundle violet); actual field colors vary, and cable diameters are exaggerated so they read. Drawn to scale otherwise
-        (1 m bar). If a ceiling cavity is a return-air plenum, cable run in it must be listed for that space (or run in a raceway the code allows
+        (1 m bar). If a ceiling cavity is a return-air plenum (a space the building’s air flows back through), cable run in it must be listed for that space (or run in a raceway the code allows
         there, such as metal conduit) where the code is adopted — confirm with the plans and the AHJ (the official who approves the work).
       </Text>
     </View>
@@ -1170,6 +1194,8 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
 const styles = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   legend: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15.5, color: colors.textSub },
+  ownColorsTag: { position: 'absolute', left: 6, top: 6, borderRadius: 4, backgroundColor: 'rgba(10,10,13,0.82)', paddingHorizontal: 5, paddingVertical: 2 },
+  ownColorsText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.amber },
   foundLine: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textPrimary },
   suspectRow: {
     minHeight: 44,

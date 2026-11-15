@@ -355,7 +355,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the shoulder of the stick strikes the edge with a glancing blow. What does the plate do?', options: ['Opens up and swings', 'Stops dead', 'Only rings at the edge'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate.' },
+  sound: { prompt: 'Before you step through: the shoulder of the stick strikes the edge with a glancing blow. What does the plate do?', options: ['Opens up and swings', 'Stops dead', 'Only rings at the edge'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the plate.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic’s aim from the edge toward the bell. What changes?', options: ['More of the spread', 'A more focused tone', 'It depends on this crash'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the crash points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

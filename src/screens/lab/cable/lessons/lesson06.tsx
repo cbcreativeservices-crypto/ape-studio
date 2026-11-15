@@ -14,6 +14,7 @@ import type { ConnectorId } from '../cableTypes';
 import { getConnector } from '../data/registry';
 import { L06_CHECKS, L06_GROUPS, L06_INKS, L06_LEAD, L06_LESSON, L06_STRIPS } from '../data/lesson06';
 import { ConnectorCard, InkLegend, RecognitionStrip, usePrefetchConnectorImages } from './connectorCard';
+import { GoDeeper } from '../../foundations/GoDeeper';
 import {
   CheckDoneBanner,
   DetailCard,
@@ -67,8 +68,8 @@ export function Lesson06Body() {
 
       <Eyebrow text="THE CONNECTORS — BROWSE ALL TEN" />
       <Text style={s.body}>
-        Pick a family, then a connector. Every card holds its checked facts: contacts, the cable behind it, direction
-        rules, look-alikes and how to test it.
+        Pick a family, then a connector. A protocol is the data language both devices must speak, and a matching plug
+        never proves it: each card says what its port really carries.
       </Text>
       <View style={s.chipWrap}>
         {L06_GROUPS.map((g, i) => (
@@ -83,18 +84,27 @@ export function Lesson06Body() {
       <InkLegend inks={L06_INKS} />
       {/* ART SLOT: owner-supplied connector artwork mounts inside ConnectorCard
           (its own ART SLOT) once delivered — nothing is drawn here (R3). */}
-      {rec ? <ConnectorCard rec={rec} /> : null}
+      {/* Folded on its photo, name and cautions (CF-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+      {rec ? <ConnectorCard rec={rec} folded /> : null}
       {opticalcon ? <RecognitionStrip rec={[opticalcon]} title="ALSO RECOGNIZE" /> : null}
 
       <Eyebrow text="WHAT THE CARDS TEACH" />
       {L06_STRIPS.map((strip) => (
         <DetailCard key={strip.id}>
           <Text style={s.cardTitle}>{strip.title}</Text>
-          {strip.paras.map((p) => (
-            <Text key={p} style={s.body}>
-              {p}
-            </Text>
-          ))}
+          {/* The first paragraph is the must-know line; the rest folds under
+              GO DEEPER (CF-01, owner 2026-11-15: "build waves 1 thru 3").
+              Nothing is removed. */}
+          <Text style={s.body}>{strip.paras[0]}</Text>
+          {strip.paras.length > 1 ? (
+            <GoDeeper hint={`${strip.paras.length - 1} more ${strip.paras.length === 2 ? 'paragraph' : 'paragraphs'}`}>
+              {strip.paras.slice(1).map((p) => (
+                <Text key={p} style={s.body}>
+                  {p}
+                </Text>
+              ))}
+            </GoDeeper>
+          ) : null}
         </DetailCard>
       ))}
 

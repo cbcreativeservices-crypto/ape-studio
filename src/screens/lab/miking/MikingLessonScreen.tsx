@@ -51,7 +51,7 @@ import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { creditedPages } from './engine/progress/creditMap.ts';
 import { MIKING_HOW_IT_COUNTS, missingLine } from './engine/progress/missingLine.ts';
 import { lessonById } from './data/lessonLoader';
-import { isFoundation, journeyPageOf, pageGate, setupsTitle, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
+import { ADVANCED_CONTENTS_TAG, ADVANCED_GOAL_TAG, isAdvanced, isFoundation, journeyPageOf, pageGate, setupsTitle, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
 import { meetKeep, pageOf, restructureLesson } from './engine/restructure.ts';
 import { ComposedPage, type PagePart } from './engine/compose';
 import { FoundationsCard, type JourneyProps } from './engine/journeyKit';
@@ -337,7 +337,9 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [stepCount, stepIdx, stepTitles, setStep, goPage, pageIdx, art],
   );
-  const units = useMemo(() => PAGE_IDS.map((id) => ({ id, title: pageOf(lesson, id).title, done: doneIds.has(id) })), [lesson, doneIds]);
+  // MK-10 (2026-11-15): modules 5 to 7 say in CONTENTS that they are the
+  // advanced ones (every module stays open).
+  const units = useMemo(() => PAGE_IDS.map((id) => ({ id, title: `${pageOf(lesson, id).title}${isAdvanced(id) ? ADVANCED_CONTENTS_TAG : ''}`, done: doneIds.has(id) })), [lesson, doneIds]);
 
   // START OVER and PRACTISE AGAIN are one fresh practice run (toddler hunt
   // 2026-10-07): the screen resets AT ONCE — it used to wait for the device
@@ -390,7 +392,9 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   const head = (
     <>
       <Text style={styles.objective}>
-        <Text style={styles.objectiveKey}>{`Module ${pageIdx + 1} goal: `}</Text>
+        {/* MK-10 (2026-11-15): an advanced module says, on its goal line, that
+            a first pass may skim it. */}
+        <Text style={styles.objectiveKey}>{isAdvanced(page) ? `Module ${pageIdx + 1} goal (${ADVANCED_GOAL_TAG}): ` : `Module ${pageIdx + 1} goal: `}</Text>
         {content.goal}
       </Text>
       {STANDARD_LINE_PAGES.includes(page) ? <StandardLine text={STANDARD_LINE} /> : null}

@@ -371,6 +371,8 @@ describe('5. the accuracy chip: KEPT — the lab shows measured level readouts',
     assert.match(code('src/screens/lab/kit/PagedLab.tsx'), /pageGuide, endGuide, accuracy = true, accuracyVariant, unitNoun = 'module' \}/);
   });
   it('the reason is on screen: Gain Staging draws measured meters', () => {
-    assert.match(code(`${MX}/begArt.tsx`), /sub=\{a \? 'MEASURED' : 'PLAY IT'\}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-15): a mix looked at with
+    // sound off shows its stored bar as NOT HEARD; a played one still reads MEASURED.
+    assert.match(code(`${MX}/begArt.tsx`), /sub=\{a \? \(aStored \? 'NOT HEARD' : 'MEASURED'\) : 'PLAY IT'\}/);
   });
 });

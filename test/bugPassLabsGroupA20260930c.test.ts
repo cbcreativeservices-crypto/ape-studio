@@ -66,5 +66,8 @@ test('Cymatics home opens one screen per tap', () => {
   const src = read('src/screens/lab/cymatics/CymaticsHomeScreen.tsx');
   assert.match(src, /if \(now - lastOpenAt\.current < 600\) return;/);
   assert.doesNotMatch(src, /onPress=\{\(\) => goToCymatics\(/);
-  assert.equal((src.match(/onPress=\{\(\) => go\('Cymatics[A-Za-z]+', \{\}\)\}/g) ?? []).length, 4);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items CY-01/CY-02): the four
+  // studio buttons are drawn from HOME_STUDIOS, still through the guarded `go`.
+  assert.match(src, /HOME_STUDIOS\.map\(\(st\) => \([\s\S]*?onPress=\{\(\) => go\(st\.route, \{\}\)\}/);
+  assert.equal((read('src/screens/lab/cymatics/homePath.ts').match(/^ {2}\{ route: 'Cymatics[A-Za-z]+'/gm) ?? []).length, 4);
 });

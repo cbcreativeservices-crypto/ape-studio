@@ -15,7 +15,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import {
   CONNECTIONS, DEFAULTS, FREQ_HINTS, FREQ_MAX, FREQ_MIN, OVER_STAGES, OVER_THRESHOLD_SPAN_DB, PATH_MAIN, PATH_SIDECHAIN, PATH_SPLIT, PHRASE,
   bandpassGain, detectorCurve, eqCut, meanSibilantGr, overSettings, overStage, processPhrase, sFrameSpectrum, vowelBrightnessLossDb,
-  type Frame, type FreqHint, type Settings,
+  type Frame, type FreqHint, type Mode, type Settings,
 } from '../../../features/deesser/deEsserModel';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { PagedLab, type PageCtx, type PageDef } from '../kit/PagedLab';
@@ -64,6 +64,14 @@ function useRack(): [Settings, (patch: Partial<Settings>) => void] {
   const set = (patch: Partial<Settings>) => { rack = { ...rack, ...patch }; setS(rack); };
   return [s, set];
 }
+
+/** DES-01 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): The
+ *  Detection Path (page 3) shows the plain wiring, the main path and the side
+ *  chain's "ear", until the learner has reached Broadband vs Split-Band (page
+ *  7), where split-band is taught. From then on page 3 follows the mode chosen
+ *  there, so the BAND SPLIT and the SUM join the diagram after page 7. Reset,
+ *  like the rack, every time the lab is opened. */
+let modeTaught = false;
 
 /** WORK DONE (phase 3, owner's decision 1, 2026-11-14): using a control no
  *  longer counts a page. A page with a check counts when its check is answered
@@ -206,9 +214,11 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
 
 function PagePath({ ctx }: { ctx: PageCtx }) {
   const [rackS] = useRack();
+  // DES-01: the plain wiring until page 7 has taught split-band; then the rack's mode.
+  const mode: Mode = modeTaught ? rackS.mode : 'broadband';
   // Split-band adds the band split and the sum to the walk (DE-R2-01).
-  const ORDER = pathOrder(rackS.mode);
-  const split = rackS.mode === 'split';
+  const ORDER = pathOrder(mode);
+  const split = mode === 'split';
   const [idx, setIdx] = useState(0);
   const [auto, setAuto] = useState(false);
   useEffect(() => {
@@ -242,10 +252,10 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
         ? 'Tap each block, or walk the signal. Notice that the side chain’s band-pass only listens — and that the gain element only ever sees the hiss band.'
         : 'Tap each block, or walk the signal. Notice that the voice itself never passes through the filter.'}</Prompt>
       <ExpandableFigure
-        aspect={VIZ_W / pathHeight(rackS.mode)}
+        aspect={VIZ_W / pathHeight(mode)}
         title="SIGNAL PATH"
         controls={<Dock>{reader}</Dock>}
-        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={rackS.mode} freqHz={rackS.freqHz} onSelect={(id) => { setIdx(Math.max(0, (ORDER as string[]).indexOf(id))); setAuto(false); touch(ctx); }} />}
+        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={mode} freqHz={rackS.freqHz} onSelect={(id) => { setIdx(Math.max(0, (ORDER as string[]).indexOf(id))); setAuto(false); touch(ctx); }} />}
       />
       {reader}
       <Body>{split
@@ -275,7 +285,8 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
   const count = <Text style={styles.read}>{overSib} of {SIB.length} sibilants above threshold · {overOther} other sounds crossing</Text>;
   return (
     <View style={{ gap: 12 }}>
-      <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it does nothing (in this hard-knee model).</Lead>
+      {/* DES-03 (owner 2026-11-15, D62): "(in this hard-knee model)" left the plain sentence. */}
+      <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it does nothing at all.</Lead>
       <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the settings in between where only orange labels sit above the line.</Prompt>
       {thr}
       <ExpandableFigure
@@ -417,8 +428,12 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
 
 function PageMode({ ctx }: { ctx: PageCtx }) {
   const [s, set] = useRack();
-  const [step, setStep] = useState(0);
+  // DES-05 (owner 2026-11-15, D62): open on the first S (frame 3, “s”), not on
+  // “th”, which has no reduction, so the first mode switch shows the difference.
+  const [step, setStep] = useState(SIB[0]);
   const [auto, setAuto] = useState(false);
+  // DES-01: split-band has now been taught; The Detection Path follows the mode from here on.
+  useEffect(() => { modeTaught = true; }, []);
   useEffect(() => {
     if (!auto || ctx.reduceMotion) return;
     const id = setInterval(() => setStep((i) => (i + 1) % PHRASE.length), 700);
@@ -614,6 +629,8 @@ export function DeEsserLabScreen() {
   // A fresh rack every time the lab is opened: settings persist across pages,
   // not across visits (the initializer runs before any page mounts).
   useState(() => { rack = { ...LAB_DEFAULTS }; return true; });
+  // DES-01: page 3 shows the plain wiring again until page 7 is reached on this visit.
+  useState(() => { modeTaught = false; return true; });
   return (
     <PagedLab
       labId="deesser"

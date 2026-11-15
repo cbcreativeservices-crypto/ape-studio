@@ -6,7 +6,7 @@
  * fxLabConfigs.tsx) with three tabs, so the guides are keyed by the shell's
  * tab id:
  *   explore — the rack: two animated spectrum analyzers (fxAnim SpectrumFlow,
- *             flanger), the bezel (CENTER · RATE · FDBK), the dock (CENTER
+ *             flanger), the bezel (CENTER · SWEEP (its RATE) · FDBK), the dock (CENTER
  *             fader · SWEEP tray = RATE + DEPTH · FDBK · MIX · SOURCE), the
  *             header ▶, LAB NOTES (DESIGNED RESPONSE, THE AUDIO PATH, two
  *             CHECK YOURSELF cards, ⓘ GUIDED LESSON);
@@ -51,9 +51,9 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       start: 'Drag CENTER from 2.0 ms down to 0.50 ms and see the notches on OUT spread apart. Then tap ▶ to play PINK NOISE and hear them sweep: the jet.',
     },
     seeing: [
-      'Two spectrum analyzers. Left of the green FLANGER bar (IN ▸) is your source: PINK NOISE draws flat, WHITE NOISE rises to the right. Right of the bar, SPECTRUM (dB) to ▸ OUT shows the same noise after the flanger.',
+      'Left of the green FLANGER bar (IN ▸) is your source: PINK NOISE draws flat, WHITE NOISE rises to the right. Right of it, under DIPS = CANCELED HERE, ▸ OUT shows the noise after the flanger.',
       'On OUT, the amber trace is what you hear: watch its notches sweep. The dotted line is the input, to compare. Ticks mark 100, 1k and 10k Hz.',
-      'CENTER, RATE and FDBK on the frame show your settings.',
+      'CENTER, SWEEP (its RATE) and FDBK on the frame show your settings.',
     ],
     control: [
       'Tap ▶ at the top right, or the display, to play the noise through the flanger; ■ stops it.',
@@ -83,11 +83,13 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The language of flanging (comb filter, notch spacing, LFO, feedback, through-zero) and the formula that places every notch from the delay time.',
-      start: 'Scroll to FORMULA / CONCEPT and read it. Then switch to EXPLORE, open LAB NOTES, set CENTER to 5.0 ms, and check that the notches sit every 200 Hz.',
+      // FL-02 (owner 2026-11-15, "build waves 1 thru 3"): the first paragraph
+      // and the silent CENTER drag first; the formula last.
+      start: 'Read the first paragraph, what a flanger is. Then on EXPLORE drag CENTER from 2.0 ms down to 0.50 ms, no sound needed, and watch the notches on OUT spread apart. Leave FORMULA / CONCEPT for last.',
     },
     seeing: [
       'This is the Flanger guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
-      'It starts with what a flanger is, then CONTROLS: the display, RATE, DEPTH, CENTER, FDBK, MIX, LFO Waveform, Stereo width / LFO phase offset, and Through-Zero (TZF, marked ADV for advanced).',
+      'It starts with what a flanger is, then CONTROLS: the display, RATE, DEPTH, CENTER, FDBK, MIX, and one entry, Other controls you will meet.',
       'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -97,7 +99,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     changes: [
       'Read this beside EXPLORE: most entries are something you can hear or see there.',
       'On EXPLORE, CENTER is the CENTER fader, RATE and DEPTH share the SWEEP key, and FDBK and MIX are keys of their own.',
-      'LFO Waveform and Stereo width are common on flangers; Through-Zero is a specialty. None has a key on this rack, and their entries say so (this rack’s left and right sweeps always sit a quarter cycle apart).',
+      'Other controls you will meet names three that many flangers add: LFO waveform, stereo width and, a specialty, through-zero. None has a key on this rack (its left and right sweeps always sit a quarter cycle apart).',
     ],
     teaches: [
       'The words for a flanger: comb filter (a row of notches evenly spaced in Hz), notch spacing, LFO (the slow wobble that moves the delay), feedback (regeneration), through-zero.',
@@ -123,7 +125,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     control: [
       'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
-      'There is no score, and a wrong answer costs nothing. A right answer stays right.',
+      'A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],
     changes: [

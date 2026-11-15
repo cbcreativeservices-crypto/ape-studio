@@ -120,10 +120,18 @@ export function LabUnderstandingCheck({
     <View style={s.wrap}>
       <Text style={s.eyebrow}>CHECK YOUR UNDERSTANDING</Text>
       <Text style={s.title}>{labTitle}</Text>
+      {/* The no-score line lives HERE, on every check (SH-75, beginner waves
+          2026-11-15; owner 2026-11-15: "build waves 1 thru 3", D62 adoption
+          plan): "Nothing is lost and there is no score." is the wording the
+          lab screen guides already use, as its own plain sentence, so a lab
+          need not say it separately. A line in, a line out: the lead got
+          SHORTER around it ("Get one wrong and you can try it again straight
+          away;" became "Get one wrong? Try again."), so the card does not
+          grow. Still ONE Text element. */}
       <Text style={s.lead}>
         {done
           ? 'Every question answered correctly — the check is passed.'
-          : `Answer all ${questions.length} correctly to pass the check. Get one wrong and you can try it again straight away; nothing is lost and there is no score.`}
+          : `Answer all ${questions.length} correctly to pass the check. Get one wrong? Try again. Nothing is lost and there is no score.`}
       </Text>
 
       {!done ? (

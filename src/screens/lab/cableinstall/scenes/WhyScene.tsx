@@ -107,36 +107,9 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
 
   return (
     <View style={{ gap: 14 }}>
-      <CiSection title="SIX THINGS RIDING ON EVERY RUN — TAP EACH">
-        <View style={{ gap: 8 }}>
-          {CONSEQUENCES.map((c, ci) => {
-            const isOpen = open === c.id;
-            const isSeen = seen.has(c.id);
-            return (
-              <Stagger key={c.id} index={ci}>
-              <Pressable
-                style={[styles.conseq, isSeen && styles.conseqSeen]}
-                onPress={() => {
-                  setOpen(isOpen ? null : c.id);
-                  setSeen((s) => new Set(s).add(c.id));
-                }}
-                accessibilityRole="button"
-                accessibilityState={{ expanded: isOpen }}
-                aria-expanded={isOpen}
-                accessibilityLabel={`${c.title}${isSeen ? ', reviewed' : ''}`}
-              >
-                <Text style={[styles.conseqTitle, isSeen && { color: colors.green }]}>
-                  {isSeen ? '✓ ' : ''}
-                  {c.title}
-                </Text>
-                {isOpen ? <Text style={styles.conseqBody}>{c.body}</Text> : null}
-              </Pressable>
-              </Stagger>
-            );
-          })}
-        </View>
-      </CiSection>
-
+      {/* CI-04 (owner 2026-11-15: "build waves 1 thru 3"): the stage opens on
+          the four close-ups, the task; the six consequence cards follow, and
+          MARK STAGE COMPLETE sits after them. Nothing removed, credit unchanged. */}
       <CiSection title="WHICH INSTALLATION WOULD YOU APPROVE?">
         <Text style={styles.lead}>
           Four closeups from the same job site. Only one earns a professional sign-off — and it isn’t the prettiest.
@@ -217,7 +190,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                 visible way on, which is the opposite of a lab. */}
             {!consequencesDone ? (
               <Text style={styles.pendingNote}>
-                Open all six consequences above to earn credit for this stage. You can move on without them and come
+                Open all six consequences below to earn credit for this stage. You can move on without them and come
                 back — the completion screen tracks what is left.
               </Text>
             ) : null}
@@ -227,21 +200,52 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
           </View>
           </Appear>
         ) : null}
-        {pick === 'b' && consequencesDone && !fired ? (
-          <Pressable
-            style={styles.finishBtn}
-            onPress={() => {
-              setFired(true);
-              announceComplete('Stage 1 complete.');
-              onComplete({ workmanship: firstPick === 'b' ? 100 : 60, serviceability: firstPick === 'b' ? 90 : 60 });
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Complete stage one"
-          >
-            <Text style={styles.finishText}>MARK STAGE COMPLETE ✓</Text>
-          </Pressable>
-        ) : null}
       </CiSection>
+
+      <CiSection title="SIX THINGS RIDING ON EVERY RUN — TAP EACH">
+        <View style={{ gap: 8 }}>
+          {CONSEQUENCES.map((c, ci) => {
+            const isOpen = open === c.id;
+            const isSeen = seen.has(c.id);
+            return (
+              <Stagger key={c.id} index={ci}>
+              <Pressable
+                style={[styles.conseq, isSeen && styles.conseqSeen]}
+                onPress={() => {
+                  setOpen(isOpen ? null : c.id);
+                  setSeen((s) => new Set(s).add(c.id));
+                }}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: isOpen }}
+                aria-expanded={isOpen}
+                accessibilityLabel={`${c.title}${isSeen ? ', reviewed' : ''}`}
+              >
+                <Text style={[styles.conseqTitle, isSeen && { color: colors.green }]}>
+                  {isSeen ? '✓ ' : ''}
+                  {c.title}
+                </Text>
+                {isOpen ? <Text style={styles.conseqBody}>{c.body}</Text> : null}
+              </Pressable>
+              </Stagger>
+            );
+          })}
+        </View>
+      </CiSection>
+
+      {pick === 'b' && consequencesDone && !fired ? (
+        <Pressable
+          style={styles.finishBtn}
+          onPress={() => {
+            setFired(true);
+            announceComplete('Stage 1 complete.');
+            onComplete({ workmanship: firstPick === 'b' ? 100 : 60, serviceability: firstPick === 'b' ? 90 : 60 });
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Complete stage one"
+        >
+          <Text style={styles.finishText}>MARK STAGE COMPLETE ✓</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

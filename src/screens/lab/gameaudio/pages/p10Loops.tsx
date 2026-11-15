@@ -18,10 +18,13 @@
  * The bird calls are one-shots the audio side posts at random times and
  * places while that bed plays, so the background never repeats exactly.
  *
- * Three keys: FACING (the lane) and STEP walk the player for real; the SOUNDS
- * tray holds the scene, the door and the rule for when a bed starts (the
- * fault is that rule set wrong): two rows, so it fits the tray's box on a
- * phone (lead's decision 15).
+ * Two keys: WALK (the lane, with ‹ STEP WEST and STEP EAST › at its ends)
+ * walks the player for real, the same walking control as the distance and
+ * walls pages (pages/shared `walkKey`; GA-05, 2026-11-15: FACING in degrees
+ * plus STEP was where a beginner gave up walking back through the door); the
+ * SOUNDS tray holds the scene, the door and the rule for when a bed starts
+ * (the fault is that rule set wrong): two rows, so it fits the tray's box on
+ * a phone (lead's decision 15).
  *
  * Common mistake taught against: starting a new background loop on every
  * update while the player stays in one area.
@@ -40,7 +43,7 @@ import { TrayBox, TrayChip, TrayRow, onOff, useFreshProof, usePlantedFault } fro
 import { gaPlantedWhere, type GaWhere } from '../bitsLogic';
 import { CHB_FOOTSTEP_ASSETS, CHB_P10_LOG, chbBeds, chbSteps } from './data/chbScene';
 import { G10 } from './guides/p10';
-import { facingKey, stepKey, useSince } from './shared';
+import { useSince, walkKey } from './shared';
 
 const ASSETS: readonly string[] = ['amb_room', 'amb_yard', 'bird_1', 'bird_2', 'bird_3', 'fountain', 'door', 'door_close', 'door_rattle', ...CHB_FOOTSTEP_ASSETS];
 const TERMS = gaTerms('Ambience zone', 'Crossfade', 'Room Tone');
@@ -122,8 +125,8 @@ function Page({ ctx }: { ctx: PageCtx }) {
   return (
     <GaRack
       spec={{
-        keys: [facingKey(s), stepKey('player'), soundsKey],
-        initialParam: 'facing',
+        keys: [walkKey(s), soundsKey],
+        initialParam: 'walk',
         hud: 'beds',
         readouts: [
           // a wider cell: at 320 wide an even cell cut the value to "COURTYA…" (seen)
@@ -142,12 +145,12 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>In SOUNDS, switch SCENE on and choose OPEN DOOR. Close the tray. STEP through the doorway, then set FACING near 270° and walk back.</Do>
+        <Do parts={['In SOUNDS, switch SCENE on and choose OPEN DOOR. Close the tray.', 'Drag WALK through the doorway into the workshop.', 'Drag WALK back into the courtyard.']} />
         <P>Each crossing prints one STATE line that begins ZONE: one crossfade of 1.5 s. No bed starts or stops. Only levels change. This scene counts a silent bed as a voice. A real engine usually makes it virtual.</P>
         <ActivityLog state={s} lines={6} only={CHB_P10_LOG} />
       </Step>
       <Step n={3}>
-        <Do>Read BEDS while you walk inside one zone: it stays at 2. Then start the fault on the TROUBLESHOOT card.</Do>
+        <Do parts={['Press ‹ STEP WEST or STEP EAST › inside one zone and read BEDS: it stays at 2.', 'Start the fault on the TROUBLESHOOT card.']} />
         <P>The next page is about the loop itself: the join where its end meets its start.</P>
       </Step>
       <Step n={4}>

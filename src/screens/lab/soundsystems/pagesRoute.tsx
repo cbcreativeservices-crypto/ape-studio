@@ -25,7 +25,7 @@ import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout'
 import { StageFit } from '../rack/StageFit';
 // Console routing survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
 import { usePageMemory } from './pageMemory';
-import { leftWord } from './fixHelpers';
+import { BUS_BLURB, leftWord } from './fixHelpers';
 
 function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -674,7 +674,7 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
       id: 'bus',
       label: 'BUS',
       valueLabel: actBus ?? '—',
-      options: BUSES.map((b) => ({ id: b, label: b })),
+      options: BUSES.map((b) => ({ id: b, label: b, blurb: BUS_BLURB[b] })),
       selectedId: actBus,
       onSelect: (id) => setPatch((p) => ({ ...p, [act.id]: id as Bus })),
     },

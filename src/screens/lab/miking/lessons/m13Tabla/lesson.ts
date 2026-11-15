@@ -543,7 +543,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: which drum’s pitch can the player bend while it rings?', options: ['The bayan', 'The dayan', 'Neither'], after: 'Now STEP through the stroke (or PLAY ONCE) on each DRUM, then try PRESS on the bayan.' },
+  sound: { prompt: 'Before you step through: which drum’s pitch can the player bend while it rings?', options: ['The bayan', 'The dayan', 'Neither'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) on each DRUM, then try PRESS on the bayan.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one mic in front of the pair, the dayan dominates. What helps most?', options: ['Moving the mic toward the bayan', 'Only turning the mic toward the bayan', 'Moving it farther back'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

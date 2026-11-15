@@ -61,7 +61,7 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 // so the key, the hint anchor and the host are wired here by hand.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { PLAYGROUND_SCREEN_GUIDE } from './foundationsScreenGuides';
-import { LabChip } from '../LabShell';
+import { CollapsibleSection, LabChip } from '../LabShell';
 import { captionedRack } from './captionedRack';
 import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
 
@@ -82,6 +82,8 @@ import { fitValue } from '../../../theme/legibility';
 import { EQ_OTHER_BANDS_OFF } from '../fxLabConfigs';
 
 const ACTIVITY_MS = 500;
+/** PG-01: one line, on the page and in the intro card (foundationsScreenGuides.ts). */
+export const PLAYGROUND_AFTER_LINE = 'Best after Foundations of Sound; every control here was taught there';
 const SPEED_OF_SOUND = 343;
 
 type SourceKind = 'wave' | 'noise' | 'sweep';
@@ -373,18 +375,16 @@ export function FoundationsPlaygroundScreen() {
           ? 'SLOW SWEEP'
           : 'FAST SWEEP';
   const panOn = Math.abs(balance - 0.5) > 0.02;
-  const fxValue =
-    [panOn ? 'PAN' : null, delayMs > 0 ? 'DLY' : null, eqCut > 0 ? 'EQ' : null]
-      .filter(Boolean)
-      .join('·') || 'OFF';
+  /** Anything inside SOURCE's MORE CONTROLS fold in use (PG-02): the fold then opens with the tray. */
+  const moreInUse = source !== 'wave' || keep !== 12 || phase !== 0 || inverted || panOn || delayMs > 0 || eqCut > 0;
 
   // TRY THIS — guided-exploration prompts (learning pass 2026-08-31: the
   // sandbox graded D on scaffolding — free play with no hypotheses to test).
   // Predict → act → where to look; the linked views are the feedback. Filtered
   // per source so a prompt never references a control that is not on stage.
   const TRY_THIS: { when: 'wave' | 'noise' | 'sweep' | 'any'; text: string }[] = [
-    { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
-    { when: 'wave', text: 'LPF 500 Hz on a SAW — count the spectrum lines that should survive before you look.' },
+    { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics (MORE CONTROLS in SOURCE) — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
+    { when: 'wave', text: 'LPF 500 Hz (MORE CONTROLS › FX) on a SAW — count the spectrum lines that should survive before you look.' },
     { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Foundations of Sound, Module 10 (Phase), answers.' },
     { when: 'wave', text: 'Double FREQ and watch the readouts: λ should halve. Does it?' },
     { when: 'noise', text: 'Step WHITE → PINK → BROWN and watch the spectrum tilt. Which end loses energy each step?' },
@@ -404,6 +404,9 @@ export function FoundationsPlaygroundScreen() {
       value: freq01,
       onChange: setFreq01,
       format: () => `${freq} Hz`,
+      // SH-64 (owner 2026-11-15, "build waves 1 thru 3", D62): noise and the sweeps
+      // ignore FREQ, so it greys out with its reason instead of looking live.
+      locked: source === 'wave' ? undefined : 'noise and sweeps have no single pitch: pick a wave shape',
       helpKey: 'frequency',
     },
     {
@@ -443,6 +446,12 @@ export function FoundationsPlaygroundScreen() {
               />
             ))}
           </View>
+          {/* PG-02 (owner 2026-11-15, "build waves 1 thru 3", D62): the tray opens
+              on the four wave shapes; noise, harmonics, phase and the effects
+              (the old FX tray) wait in one fold. It opens by itself while
+              anything inside it is in use, so a choice is never hidden. */}
+          <CollapsibleSection title="MORE CONTROLS" startOpen={moreInUse}>
+          <View style={{ gap: 10 }}>
           <Text style={styles.sectionHead}>NOISE · SWEEP</Text>
           <View style={styles.chipRow}>
             {NOISES.map((nz) => (
@@ -504,17 +513,7 @@ export function FoundationsPlaygroundScreen() {
               </View>
             </>
           ) : null}
-        </View>
-      ),
-    },
-    {
-      kind: 'group',
-      id: 'fx',
-      label: 'FX',
-      valueLabel: fxValue,
-      helpKey: 'eq',
-      render: () => (
-        <View style={{ gap: 10 }}>
+          <Text style={styles.sectionHead}>FX</Text>
           <DragSlider
             value={balance}
             onChange={setBalance}
@@ -569,6 +568,8 @@ export function FoundationsPlaygroundScreen() {
             what you HEAR only — it is not drawn.
             {!fxReady && engineReady ? ' (These effects do not play on this phone; EQ and BALANCE still show in the drawings.)' : ''}
           </Text>
+          </View>
+          </CollapsibleSection>
         </View>
       ),
     },
@@ -605,9 +606,17 @@ export function FoundationsPlaygroundScreen() {
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           {/* The Labs menu tile's name (G1: header and tile disagreed). */}
           <Text style={styles.title}>SOUND PLAYGROUND</Text>
-          {/* Was "Every control drives every view" — an overclaim: BALANCE and
-              DELAY reach the audio but have no drawn twin (fix 2026-08-28). */}
-          <Text style={styles.subtitle}>Drive the views, hear the change — experiment freely</Text>
+          {/* PG-01 (owner 2026-11-15, "build waves 1 thru 3", D62): the subtitle
+              (was "Drive the views, hear the change — experiment freely") says
+              where this lab sits, and is the way to that lab. */}
+          <Pressable
+            onPress={() => navigation.navigate('FoundationsCourse' as never)}
+            hitSlop={6}
+            accessibilityRole="link"
+            accessibilityLabel="Best after Foundations of Sound. Open Foundations of Sound"
+          >
+            <Text style={styles.subtitle}>{PLAYGROUND_AFTER_LINE} ›</Text>
+          </Pressable>
         </View>
         <ScreenGuideKey title="SOUND PLAYGROUND" guide={PLAYGROUND_SCREEN_GUIDE} />
       </View>

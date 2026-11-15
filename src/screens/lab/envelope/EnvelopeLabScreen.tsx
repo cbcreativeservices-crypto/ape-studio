@@ -33,6 +33,7 @@ import { ControlSlider } from '../amp/kit';
 import { CHART_HONESTY, EnvelopeChart } from './EnvelopeChart';
 import { ENVELOPE_END_GUIDE, envelopePageGuide } from './envelopeScreenGuides';
 import { envLogMs, envToLog, fmtEnvMs } from '../../../features/lab/sliderMaps';
+import { termWithShort } from '../../../features/lab/plainTerms';
 
 /** Preset handed from the gallery to the explorer (module-local, consumed once on arrival). */
 let handoff: { name: string; adsr: Adsr } | null = null;
@@ -121,7 +122,8 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>Every sound has a shape in time. Move the sliders and watch the envelope — and the waveform inside it — redraw instantly.</Lead>
-      <Prompt>Try it: drag ATTACK all the way left, then all the way right. Watch the two gold dots — the rise-time markers — and the readout under the chart.</Prompt>{/* NEW COPY */}
+      {/* ENV-04 (owner 2026-11-15, "build waves 1 thru 3"): say what the learner should notice. */}
+      <Prompt>Try it: drag ATTACK all the way left and the sound starts with a snap; drag it right and it fades in slowly. That rise is the attack.</Prompt>
       {loaded ? <Text style={styles.loaded}>LOADED FROM THE GALLERY · {loaded.name.toUpperCase()}</Text> : null}{/* NEW COPY */}
       <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" controls={adsrSliders} readout={explorerRead} />
       {adsrSliders}
@@ -378,9 +380,13 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Lead>Two meters can disagree about the same sound: a peak meter follows the transient, an average meter follows the body.</Lead>
       <Prompt>Switch between the two shapes and watch the gap between the PEAK line and the AVERAGE line. That gap is the crest factor.</Prompt>{/* NEW COPY */}
       {shapes}
-      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the chart’s full scale (the top of the envelope)" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
+      {/* ENV-01 (owner 2026-11-15, "build waves 1 thru 3"): the plain meaning comes BEFORE the dB
+          numbers, and dB is glossed once with the shared words (plainTerms.ts). The chart's own
+          "relative to full scale" caption went: the card's eyebrow already says it (a line out). */}
+      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
       <Card>
         <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO FULL SCALE</Eyebrow>
+        <Body>{`A big gap between the lines means a spiky sound, like a drum; a small gap, a steady sound, like a trumpet. The numbers are in ${termWithShort('db')}.`}</Body>
         {crestRead}
         <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it high; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
       </Card>

@@ -371,7 +371,10 @@ describe('F9-P2-4 · check cards: a reason per wrong option, the answer only aft
   });
   it('the CHECK guide lines say what the cards now do (S2’s sentence on the end check)', () => {
     const G = read('src/screens/lab/micselect/micSelectScreenGuides.ts');
-    assert.match(G, /Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation\. Nothing is lost and there is no score\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-75): the shared check
+    // card now says "Nothing is lost and there is no score." itself, so the guide no longer repeats it.
+    assert.match(G, /Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation\.'/);
+    assert.doesNotMatch(G, /Nothing is lost and there is no score\./);
     assert.match(G, /A wrong one says why that one is not it \(a second wrong pick adds the explanation\)/);
   });
 });

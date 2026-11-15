@@ -1,5 +1,5 @@
 /**
- * Module 2 — CREATE THE ROOM. The room editor on the Rack Unit: the plan (or
+ * Module 1 — CREATE THE ROOM (the lab opens here since RO-06, 2026-11-15). The room editor on the Rack Unit: the plan (or
  * the side view) pinned on the glass, LENGTH / WIDTH / HEIGHT on the lane,
  * SHAPE and SURFACE trays, drag the corners and the furniture on the glass or
  * type the numbers in the tray. Every number here is CALCULATED.

@@ -33,6 +33,18 @@ export function wrongPickLine(picked: string | null, from: string): string {
   return `${c.label}: ${c.blurb.split(/(?<=\.)\s/)[0]} Is that what leaves the ${from.toLowerCase()}?`;
 }
 
+/** The lesson's one opening line (CF-04, CF-02): what cables carry, in
+ *  plain words, and what "level" means, before anything is asked. */
+export const L01_OPENING =
+  'Cables carry a whisper (a mic or a guitar), a shout (an amplifier into a speaker), data, or wall power. How big an audio signal is, is called its level.';
+
+/** The twelve categories in three groups (CF-04). Every category once. */
+export const CARRIED_GROUPS: { title: string; ids: CarriedType[] }[] = [
+  { title: 'AUDIO', ids: ['mic_level', 'instrument_level', 'line_level', 'headphone_level', 'speaker_level'] },
+  { title: 'DATA', ids: ['digital_audio', 'network_audio', 'clock_sync', 'control_data'] },
+  { title: 'POWER', ids: ['dc_power', 'ac_mains', 'hybrid_power_data'] },
+];
+
 export function Lesson01Body() {
   // ── category explorer ──────────────────────────────────────────────────
   const [cat, setCat] = useState<CarriedType>('mic_level');
@@ -83,22 +95,11 @@ export function Lesson01Body() {
     <>
       <PrincipleBanner />
 
-      <Eyebrow text="WHAT CAN TRAVEL THROUGH A CABLE?" />
-      <Text style={s.body}>
-        Twelve different things ride cables in an audio system. Tap each one — these categories, not connector shapes, are
-        how professionals think about a connection.
-      </Text>
-      <View style={s.chipWrap}>
-        {CARRIED_CATEGORIES.map((c) => (
-          <OptionChip key={c.id} label={c.label} active={c.id === cat} onPress={() => setCat(c.id)} />
-        ))}
-      </View>
-      {selected ? (
-        <DetailCard>
-          <Text style={s.cardTitle}>{selected.label}</Text>
-          <Text style={s.body}>{selected.blurb}</Text>
-        </DetailCard>
-      ) : null}
+      {/* The lesson opens on one line and the first question; the twelve
+          categories come after it, grouped (CF-04 and CF-02, owner
+          2026-11-15: "build waves 1 thru 3"). The old twelve-chip opening
+          read like a list to memorize. */}
+      <Text style={s.body}>{L01_OPENING}</Text>
 
       <Eyebrow text={`WHAT MUST TRAVEL HERE? · PAIR ${Math.min(pairIdx + 1, CARRY_PAIRS.length)}`} />
       {!allDone ? (
@@ -129,6 +130,24 @@ export function Lesson01Body() {
       ) : (
         <CheckDoneBanner text="Lesson check complete — every connection identified by WHAT travels, before any connector was named." />
       )}
+
+      <Eyebrow text="WHAT CAN TRAVEL THROUGH A CABLE?" />
+      {CARRIED_GROUPS.map((g) => (
+        <View key={g.title} style={{ gap: 6 }}>
+          <Text style={s.cardHead}>{g.title}</Text>
+          <View style={s.chipWrap}>
+            {g.ids.map((id) => (
+              <OptionChip key={id} label={carriedLabel(id)} active={id === cat} onPress={() => setCat(id)} />
+            ))}
+          </View>
+        </View>
+      ))}
+      {selected ? (
+        <DetailCard>
+          <Text style={s.cardTitle}>{selected.label}</Text>
+          <Text style={s.body}>{selected.blurb}</Text>
+        </DetailCard>
+      ) : null}
 
       <LessonBanner text={L01_LESSON} />
     </>

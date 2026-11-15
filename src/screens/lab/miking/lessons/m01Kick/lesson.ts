@@ -550,7 +550,7 @@ const setupTasks: SetupTask[] = [
 
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: when the beater pushes the batter head into the drum, what does the FRONT head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the beater', 'It stays still — only the struck head moves'], after: 'Now STEP through the strike (or PLAY ONCE) and watch both heads.' },
+  sound: { prompt: 'Before you step through: when the beater pushes the batter head into the drum, what does the FRONT head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the beater', 'It stays still — only the struck head moves'], after: 'Now go EVENT by EVENT through the strike (or PLAY ONCE) and watch both heads.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from near the batter head toward the front head. What changes?', options: ['More attack', 'More resonance', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the downstage wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

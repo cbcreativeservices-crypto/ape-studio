@@ -218,7 +218,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>
-        <Do>Start fault 1 on its card in step 4. Repeat the action, read the log, compare it with the picture, and only then open FIX.</Do>
+        <Do parts={['Start fault 1 on its card in step 4.', 'Repeat the action and read the log.', 'Compare the log with the picture.', 'Only then open FIX.']} />
         <P>Each fault is one wrong setting. Finding comes before fixing, and testing comes after. A fault is fixed once you have seen its symptom, corrected the setting, and run the same action again.</P>
         <Note tone="mistake">Declaring success because the picture changed. An animation shows that the game acted. A START line shows that the audio side started it. Your ears confirm it reached you.</Note>
       </Step>

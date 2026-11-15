@@ -14,7 +14,7 @@
  *  • ConceptBadge — the standing "CONCEPTUAL MODEL — SLOWED FOR VISIBILITY"
  *    disclosure every animated panel carries.
  */
-import { useContext, useEffect, useRef, useState } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { TRACER_CAPTION, TRACER_COLOR } from './tracer';
@@ -110,8 +110,8 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
           const good = solved && i === spec.correctIdx;
           const bad = isPicked && !solved && i !== spec.correctIdx;
           return (
+            <Fragment key={i}>
             <Pressable
-              key={i}
               style={[styles.checkOpt, good && styles.checkOptGood, bad && styles.checkOptBad]}
               onPress={() => pick(i)}
               accessibilityRole="button"
@@ -125,17 +125,20 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
                 {opt}
               </Text>
             </Pressable>
+            {/* SN-F6a-1 (owner 2026-11-15, "build waves 1 thru 3", D62, F6a SD-01):
+                the wrong-answer words sit right under the option just tapped,
+                not after the last option. Same words, same elements. */}
+            {bad ? (
+              <>
+                <Text style={styles.checkHint}>{checkWrongText(spec, i)}</Text>
+                {showRevealAfterMisses(misses) ? <Text style={styles.checkRevealAfterMiss}>{spec.reveal}</Text> : null}
+              </>
+            ) : null}
+            </Fragment>
           );
         })}
       </View>
-      {solved ? (
-        <Text style={styles.checkReveal}>✓ {spec.reveal}</Text>
-      ) : picked != null ? (
-        <>
-          <Text style={styles.checkHint}>{checkWrongText(spec, picked)}</Text>
-          {showRevealAfterMisses(misses) ? <Text style={styles.checkRevealAfterMiss}>{spec.reveal}</Text> : null}
-        </>
-      ) : null}
+      {solved ? <Text style={styles.checkReveal}>✓ {spec.reveal}</Text> : null}
         </>
       )}
     </View>
@@ -458,10 +461,12 @@ export function LevelMeterBar({ levelDb, minDb = -48, maxDb = -12 }: { levelDb: 
 export function VizUnavailableCard() {
   return (
     <View style={styles.unavailCard}>
-      <Text style={styles.unavailTitle}>ANIMATED VIEWS NEED AN APP UPDATE</Text>
+      {/* SH-37 (owner 2026-11-15, "build waves 1 thru 3", D62): no "update the app"
+          line in learner text; say what still works, as the store lines elsewhere do. */}
+      <Text style={styles.unavailTitle}>THE ANIMATED VIEW DOESN’T SHOW ON THIS PHONE</Text>
       <Text style={styles.unavailBody}>
-        This version of the app can’t show the air-particle and speaker animations yet. The lesson
-        text and audio work fully — update the app to see the motion.
+        The air-particle and speaker animations can’t be drawn in this version of the app. The lesson
+        text and audio work fully; only the moving drawing is missing.
       </Text>
     </View>
   );

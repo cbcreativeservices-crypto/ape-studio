@@ -38,12 +38,13 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'Unlike Oscillators’ pitched tones, noise has no pitch: its color is a slope in dB per octave, which decides whether it sounds like rumble, an even wash or hiss.',
+      // NOI-04 (owner 2026-11-15, "build waves 1 thru 3"): a hiss with no note, used on purpose; no dB per octave first.
+      learning: 'Noise here is a hiss with no note; engineers use it on purpose to test speakers and rooms. Its color is its tilt, from rumble to bright hiss.',
       // A first step that needs no sound (novice audit 2026-11-14), then the sound.
       start: 'Tap COLOR and step through BROWN, PINK, WHITE, BLUE and VIOLET: watch the line tilt and SLOPE change. Then pick PINK, tap ▶, and tap WHITE while it plays to hear the hiss rise.',
     },
     seeing: [
-      'Level per hertz against frequency: 20 Hz at the left, 20k at the right. Five straight lines, one per color, cross at the dot at 1 kHz.',
+      'Level per hertz against frequency: 20 Hz at the left, 20k at the right, rumble to hiss; up is louder. Five straight lines, one per color, cross at the dot at 1 kHz.',
       'The selected line is bright; a faint trace on it shimmers while noise plays.',
       'Readouts: COLOR, SLOPE (tilt, dB per octave), OUT (level sent, dBFS). Under the display: idealized slopes, not measured; with SPKR, the 150 Hz high-pass filter.',
     ],
@@ -115,8 +116,8 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
       'They ask why white noise sounds bright, how fast pink falls, which color is the rumble, and why pink is the standard test noise.',
     ],
     control: [
-      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
-      'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',

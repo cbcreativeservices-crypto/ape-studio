@@ -61,7 +61,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
     assert.equal(MIC_PRINCIPLES_LAB_KEY, 'af_mic_principles');
     assert.equal(SPEAKER_COVERAGE_LAB_KEY, 'af_speaker_coverage');
     assert.deepEqual(MIC_PRINCIPLES_UNITS, [
-      'capsule',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): the lab opens on POLAR; CAPSULE moves to the end.
       'polar',
       'distance',
       'proximity',
@@ -71,6 +71,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
       'shock',
       'hand',
       'mistakes',
+      'capsule',
     ]);
     assert.deepEqual(SPEAKER_COVERAGE_UNITS, ['top', 'side', 'read']);
     assert.equal(new Set(MIC_PRINCIPLES_UNITS).size, MIC_PRINCIPLES_UNITS.length);
@@ -87,7 +88,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
         (m) => m[1],
       );
     assert.deepEqual(keysOf('screens/lab/micspeaker/MicPrinciplesLabScreen.tsx'), [
-      'capsule',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): the lab opens on POLAR; CAPSULE moves to the end.
       'polar',
       'distance',
       'proximity',
@@ -97,6 +98,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
       'shock',
       'hand',
       'mistakes',
+      'capsule',
     ]);
     assert.deepEqual(keysOf('screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx'), [
       'top',

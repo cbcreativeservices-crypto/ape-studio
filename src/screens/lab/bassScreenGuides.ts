@@ -41,13 +41,14 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
   // ── EXPLORE · MODE FRETTED ────────────────────────────────────────────────
   fretted: {
     intro: {
-      learning: 'Why pitch rises as the vibrating string gets shorter: half the length doubles the frequency, and simple fractions of the string give the octave, fifth and fourth.',
+      // The plain why first (owner 2026-11-15: "build waves 1 thru 3", D62 BA-04).
+      learning: 'Press a string and less of it can swing, so the note goes up. Half the length doubles the frequency; simple fractions give the octave, fifth and fourth.',
       // A first step that needs no sound (novice audit 2026-11-14), then the sound.
       start: 'Pick STRING E, slide FRET to 12 and watch FREQ double while LENGTH reads 50%. Try FRET 7 and FRET 5 and read INTERVAL. Then tap ▶ to hear each one.',
     },
     seeing: [
-      'You’re looking at an electric bass with its frets spaced as on a real one: BRIDGE on the left, HEADSTOCK on the right, low E on top. Your string glows amber.',
-      'The finger dot marks your fret. The dimmed part, nut to fret, no longer vibrates. One swinging lobe (a single loop of the swing) runs from fret to bridge.',
+      'An electric bass with its frets spaced as on a real one: BRIDGE left, HEADSTOCK right, low E on top. Your string glows amber.',
+      'The finger dot marks your fret; a dashed ring marks fret 12 until you reach it. The dimmed part, nut to fret, no longer vibrates. One lobe, a single loop of swing, runs fret to bridge.',
       'Watch NOTE, FREQ, INTERVAL (above the open string) and LENGTH (how much string still vibrates).',
     ],
     control: [
@@ -78,7 +79,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
   harmonics: {
     intro: {
       learning: 'How a lightly touched string keeps its full length but vibrates in equal parts, sounding one harmonic: a whole-number multiple of the open string’s frequency.',
-      start: 'Pick STRING E and tap ▶. Step NODE through ½, ⅓, ¼ and ⅕, and watch FREQ climb in equal steps of 41.2 Hz. Count the lobes each time.',
+      start: 'Pick STRING E. Step NODE through ½, ⅓, ¼ and ⅕, and watch FREQ climb in equal steps of 41.2 Hz. Count the lobes each time, then tap ▶ to hear them.',
     },
     seeing: [
       'Here the string is touched, not pressed, so it vibrates over its FULL length in equal lobes.',
@@ -112,8 +113,9 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
   // ── LEARN — the reading page ──────────────────────────────────────────────
   learn: {
     intro: {
-      learning: 'The ideas behind this lab in words and formulas: vibrating length, fret ratio, node, harmonic and interval, and the common mix-ups about frets and wavelength.',
-      start: 'Read COMMON MISTAKES first, then FORMULA / CONCEPT. Switch to EXPLORE to test a line: open E reads 41.2 Hz, and fret 12 reads 82.4 Hz.',
+      learning: 'The ideas behind this lab in words first, formulas last: vibrating length, fret ratio, node, harmonic and interval, and the common mix-ups.',
+      // Guided steps first, the formula later (owner 2026-11-15: "build waves 1 thru 3", D62 BA-02).
+      start: 'Read GUIDED STEPS 1 to 3, then switch to EXPLORE and try each one: fret 12 on E reads 82.4 Hz. FORMULA / CONCEPT, at the end, can wait.',
     },
     seeing: [
       'This is the Bass Guitar guided lesson as one page to read. ▶ in the header still plays the note you chose on EXPLORE.',
@@ -153,8 +155,8 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'When every answer is right, it reads “the check is passed”.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
-      'There’s no score, and a wrong pick costs nothing. Test an idea on EXPLORE and come back: answers already right stay right until you leave the lab.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Test an idea on EXPLORE and come back: answers already right stay right until you leave the lab.',
     ],
     changes: [
       'A right answer stays right even when you switch to LEARN or EXPLORE, so you can test an idea on the fretboard and return.',

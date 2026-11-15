@@ -26,7 +26,7 @@ import { SETUP_SEQUENCE } from '../../../features/soundsystems/operate';
 import { rightJudgements } from '../../../features/soundsystems/check';
 import type { GearKind, Placed, SignalLevel, SlotId } from '../../../features/soundsystems/types';
 import type { DockParam } from '../rack/rackTypes';
-import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
+import { CalcLink, ChapterTag, DeeperRow, FormulaFold, GoalChips, KeyFact, LabLink, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph, GearInSvg, INK } from './art/gearArt';
 import { CableLegend, FieldKey, PLOT_H, PLOT_W, VenueView, type PlotBeam } from './art/VenueView';
 import { SplitDiagram, SubFeedRouter, type SubFeedMode } from './art/diagrams';
@@ -690,20 +690,20 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={8}>AMPLIFIERS AND LOUDSPEAKER COMPATIBILITY · LOADS</ChapterTag>
-      <Body>One amplifier channel and the passive cabinets wired across it in parallel. The wire turns gold at the amplifier’s minimum and red below it.</Body>
+      {/* SS-01 (owner 2026-11-15: "build waves 1 thru 3"): the idea in plain words first; the formula is folded under GO DEEPER. */}
+      <Body>The idea: every cabinet you add in parallel makes the load lighter for the amplifier to push against, until it is too low to drive safely. Here, one amplifier channel and its cabinets: the wire turns gold at the amplifier’s minimum and red below it.</Body>
       <Prompt>Add cabinets and watch the load fall. Find the point where the amplifier can no longer drive it.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
-        <Eyebrow>THE ARITHMETIC · FROM THE CALCULATOR</Eyebrow>
-        <Text style={styles.path}>Ztot = 1 ÷ Σ(1/Zi)</Text>
+        <Eyebrow>WHY THE LOAD FALLS</Eyebrow>
         <Body>A passive loudspeaker is a load. Parallel cabinets share the amplifier’s voltage and each draws its own current; the total impedance is always below the lowest cabinet, and the amplifier must deliver the sum of the currents. Bridging joins two channels into one with twice the voltage swing — and DOUBLES the minimum impedance (twice the per-channel minimum, often 8 Ω), so a load below the bridged minimum is the classic mistake.</Body>
         <Body>This amplifier’s ratings — {AMP.at8} W at 8 Ω, {AMP.at4} W at 4 Ω, {AMP.bridged8} W bridged at 8 Ω, {AMP.minOhms} Ω minimum — are an example. Read YOUR amplifier’s table; never assume the ratio.</Body>
       </Card>
-      <DeeperRow>
+      <FormulaFold formula="Ztot = 1 ÷ Σ(1/Zi)">
         <CalcLink id={CALC_LINKS.parallel.workspace} label="Parallel loads" />
         <CalcLink id="cable" label="Speaker cable loss and gauge" />
         <LabLink route="AmpLab" label="Amplifier Principles Lab" />
-      </DeeperRow>
+      </FormulaFold>
     </SoundSystemsRackLayout>
   );
 }
@@ -828,12 +828,12 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
       wellTop={<VerdictLine ok={match === 'ok'} warn={match === 'over'}>{ampMatchCopy(match, amp, CABINET.continuous, CABINET.program)}</VerdictLine>}
     >
       <ChapterTag n={8}>POWER RATINGS, HEADROOM AND PROTECTION</ChapterTag>
-      <Body>The cabinet’s power band — continuous to program — and where the chosen amplifier lands on it.</Body>
+      {/* SS-01: the idea in plain words first; the formula is folded under GO DEEPER. */}
+      <Body>The idea: pick an amplifier inside the cabinet’s power band and run it clean; doubling the watts makes it only a little louder. The band runs from continuous to program, and the mark is where the chosen amplifier lands.</Body>
       <Prompt>Try each side of the band and read what it costs.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>HOW LOUD, WHERE · FROM THE CALCULATOR</Eyebrow>
-        <Text style={styles.path}>SPL = sensitivity + 10·log10(P) − 20·log10(d) − headroom</Text>
         <ReadoutRow>
           <Readout k="SENSITIVITY" v={`${CABINET.sensitivity} dB · 1 W / 1 m`} />
           <Readout k="LISTENER AT" v={`${dist} m`} />
@@ -846,10 +846,10 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>PROTECTING HIGH-FREQUENCY DRIVERS</Eyebrow>
         <Body>Tweeters die from clipped amplifiers and from sustained feedback far more often than from clean power. The processor’s limiter, set for the cabinet; a powered loudspeaker’s input gain left at its nominal mark; and an operator who reduces gain before the clip light stays on — these are the protections. Sensitivity and maximum SPL on the data sheet tell you how loud a cabinet CAN go; headroom tells you how loud you should ASK it to go.</Body>
       </Card>
-      <DeeperRow>
+      <FormulaFold formula="SPL = sensitivity + 10·log10(P) − 20·log10(d) − headroom">
         <CalcLink id={CALC_LINKS.spl.workspace} label="Loudspeaker power and SPL" />
         <CalcLink id={CALC_LINKS.splDistance.workspace} label="SPL at a distance" />
-      </DeeperRow>
+      </FormulaFold>
     </SoundSystemsRackLayout>
   );
 }

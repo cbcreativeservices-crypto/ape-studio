@@ -66,6 +66,23 @@ import { sceneFrame, shapeBox } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
+/**
+ * PHONE-SIZE VISIBILITY (beginner waves 2026-11-15, MK-11; owner: "build
+ * waves 1 thru 3"). On the Placement Studio, the main hands-on step, the blue
+ * starting zones were barely there at phone size: an idle zone was filled at
+ * 3 % with a 32 % edge 2.5 mm wide — in drawing millimetres, so about a third
+ * of a pixel on a phone. And the mic was hard to find on the drawing.
+ *  - An idle zone: a clear tint and a solid edge at least ZONE_EDGE_PX wide on
+ *    the glass at any zoom; the zone a mic sits in is still the brightest.
+ *  - The mic you move: an amber rim on a dark halo, drawn under the mic art,
+ *    a fixed size on the glass (MIC_HALO_PX / MIC_RIM_PX).
+ */
+export const ZONE_IDLE_FILL = 0.12;
+export const ZONE_IDLE_EDGE = 0.8;
+export const ZONE_ON_FILL = 0.28;
+export const ZONE_EDGE_PX = 2;
+export const MIC_HALO_PX = 10;
+export const MIC_RIM_PX = 4;
 /** An idle zone's name on the glass: the zones' blue at 80 % (faint, still
  *  readable on the dark glass). */
 const ZONE_NAME = '#6fa8ffcc';
@@ -693,6 +710,10 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1 }: { pose: Sh
   });
   const ringR = useDerivedValue(() => RING_R_PX / xf.value.s);
   const ringW = useDerivedValue(() => 2.5 / xf.value.s);
+  // MK-11 (2026-11-15): the halo and rim, a fixed size on the glass (the
+  // group is scaled by the fit and the hardware scale).
+  const haloW = useDerivedValue(() => MIC_HALO_PX / (xf.value.s * hk));
+  const rimW = useDerivedValue(() => MIC_RIM_PX / (xf.value.s * hk));
   // A pop screen's gooseneck leaves the hoop on its LOWER side (side view) —
   // which local side that is depends on the mic's turn on the glass.
   const popFlip = useDerivedValue(() => {
@@ -706,6 +727,13 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1 }: { pose: Sh
   return (
     <Group>
       <Group transform={transform}>
+        {focus ? (
+          <>
+            {/* MK-11: a dark halo, then an amber rim, under the mic art. */}
+            <Path path={outlineOf(len, cross, fore)} style="stroke" strokeWidth={haloW} color="#000000" opacity={0.6} />
+            <Path path={outlineOf(len, cross, fore)} style="stroke" strokeWidth={rimW} color={AMBER} opacity={0.95} />
+          </>
+        ) : null}
         {t.pop ? <PopGooseneck pop={t.pop} len={len} flip={popFlip} /> : null}
         <MikingMicArt art={t.art} r={r} len={len} cross={cross} fore={fore} />
         {t.pop ? <PopHoop pop={t.pop} /> : null}
@@ -1858,18 +1886,20 @@ function GuideLabel({ xf, u, v, nx, ny, W, H, text, scale, maxX, maxY }: { xf: S
   );
 }
 
-function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null> }) {
+function ZoneBand({ z, rig, view, zoneSV, xf }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null>; xf: SharedValue<ViewXform> }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const path = useMemo(() => zonePath(z, view, rig), [z, view, rig.lesson, rig.variant]);
   // One consistent style for every suggested starting point (owner ruling
-  // 2026-10-04): the same blue band, the same solid edge.
+  // 2026-10-04): the same blue band, the same solid edge. MK-11 (2026-11-15):
+  // clear at phone size — the edge is a fixed width on the glass.
   const tone = BLUE;
-  const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.03));
-  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.32));
+  const fill = useDerivedValue(() => (zoneSV.value === z.id ? ZONE_ON_FILL : ZONE_IDLE_FILL));
+  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : ZONE_IDLE_EDGE));
+  const edgeW = useDerivedValue(() => Math.max(2.5, ZONE_EDGE_PX / xf.value.s));
   return (
     <>
       <Path path={path} color={tone} opacity={fill} />
-      <Path path={path} style="stroke" strokeWidth={2.5} color={tone} opacity={edge} />
+      <Path path={path} style="stroke" strokeWidth={edgeW} color={tone} opacity={edge} />
     </>
   );
 }
@@ -2777,7 +2807,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <EnvelopeMark key={e.id} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} hatchPath={hatchPath} fadeMs={fadeIn} pinned={highlight === e.id} />
           ))}
           {zones.map((z) => (
-            <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
+            <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} xf={xf} />
           ))}
           {highlightMark ? <Path path={highlightMark.path} style="stroke" strokeWidth={markStroke(base.s)} color={AMBER} /> : null}
           {highlightMark ? <Path path={highlightMark.toward} color={AMBER} /> : null}

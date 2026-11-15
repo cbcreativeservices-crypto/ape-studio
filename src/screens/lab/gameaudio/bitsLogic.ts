@@ -68,6 +68,24 @@ export function gaLogEmpty(only: readonly GaLogKind[] | undefined, total: number
   return `Nothing has happened yet. This log shows only ${kinds} lines.`;
 }
 
+/** ONE ACTION A LINE (beginner waves 2026-11-15, GA-04; owner 2026-11-15:
+ *  "build waves 1 thru 3"). A step that asked for three or four actions in
+ *  one sentence lost the beginner after the first ("Move SPEED 2 only. In
+ *  GENERATORS, switch … Then choose … Last, start the fault …"). Such a
+ *  step is now a short list, one action per part, lettered a, b, c in the
+ *  order they are done. The letter is the part's mark; the words are the
+ *  page's own. */
+export const gaPartLetter = (i: number): string => String.fromCharCode(97 + Math.max(0, Math.min(25, Math.floor(i))));
+/** What a screen reader says for a lettered list of parts. */
+export const gaPartsSpoken = (parts: readonly string[]): string => parts.map((t, i) => `${gaPartLetter(i)}: ${t}`).join(' ');
+
+/** ONE LOG, WITH A FILTER (GA-17, the capstone). A page that needs two views
+ *  of the same log shows ONE log with a choice of view at its head, not two
+ *  log boxes. `only` undefined = every kind of line. */
+export type GaLogView = { id: string; label: string; only?: readonly GaLogKind[] };
+/** The view in force: the chosen one when it exists, else the first. */
+export const gaLogViewOf = (views: readonly GaLogView[], id: string | null | undefined): GaLogView | undefined => views.find((v) => v.id === id) ?? views[0];
+
 /** The hints a TROUBLESHOOT card may give NOW (bug test 2026-11-13,
  *  B-S1-03: SHOW A HINT gave the cause while the fault was still unnamed).
  *  Before the learner has met the symptom (`seen` false) the only hint is

@@ -34,6 +34,10 @@ import { movedFromBaseline } from './physics/twoMic.ts';
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
 const BLUE = '#6fa8ff';
+/** The zone card's label for how a placement tends to sound (beginner waves
+ *  2026-11-15, MK-03; owner: "build waves 1 thru 3"). It read "LISTEN FOR" in
+ *  a lab where nothing makes a sound. The lessons' reveals name it the same. */
+export const ZONE_TENDENCY_LABEL = 'TENDENCY';
 
 /** A suggested starting point, in plain words (owner ruling 2026-10-04). */
 export function ZoneCard({ z }: { z: DocumentedZone }) {
@@ -42,7 +46,9 @@ export function ZoneCard({ z }: { z: DocumentedZone }) {
       <Text style={styles.zoneKey}>SUGGESTED STARTING POINT</Text>
       <Text style={styles.zoneLabel}>{z.label}</Text>
       <Text style={styles.band}>{z.band}</Text>
-      <Text style={styles.tendency}>{`LISTEN FOR · ${z.tendency}`}</Text>
+      {/* MK-03 (2026-11-15): the label no longer asks a silent learner to
+          listen; it names what the line is, a tendency in words. */}
+      <Text style={styles.tendency}>{`${ZONE_TENDENCY_LABEL} · ${z.tendency}`}</Text>
       <Text style={styles.small}>{`CHECK · ${z.checks.join(' · ')}`}</Text>
     </View>
   );

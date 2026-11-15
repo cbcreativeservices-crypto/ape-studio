@@ -45,11 +45,11 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'Why order matters in a signal chain: each unit works on what the one before hands it, so one switch changes what every later unit does.',
-      start: 'Tap SCENARIO → ⟲ CLEAR CHAIN, set SOURCE to SINE 220, tap ▶. Put LIMIT in via MODULES and read its GR, then add DIST and watch GR jump. Sound off? ▶ gives the numbers in a note.',
+      start: 'Sound runs through these boxes left to right, like guitar pedals: each changes what the next receives. Pick SINE 220, turn on LIMIT (a loudness ceiling), tap ▶, then add DIST (distortion): GR jumps. Sound off? ▶ gives the numbers.',
     },
     seeing: [
       'Nine units in a fixed order: EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
-      'Lit units are in and show their setting; dark ones are bypassed. In play, a lit COMP, GATE or LIMIT shows GR (dB turned down) and lights its LEDs.',
+      'Lit units are in and show their setting; dark ones are bypassed and say what they are. Playing, a lit COMP, GATE or LIMIT shows GR (dB turned down).',
       'Readouts: SRC, CHAIN (units in), SCENE (the scenario, e.g. HOT→LIMIT; else CUSTOM), OUT (LIVE, IDLE, or SILENT).',
     ],
     control: [

@@ -47,7 +47,7 @@ import { StepHostContext, type StepHost } from './steps';
 import { KeyButton, RecordedAnswersContext, TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
 import { safeGoBack } from '../../../lib/safeGoBack';
-import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
+import { ProNoteButton } from '../../../features/lab/ProNote';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 // Screen Guide (owner 2026-10-31): "this step, explained" — one guide per step.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
@@ -582,8 +582,10 @@ export function MasteringLabScreen() {
         )}
         </ScreenGuideHost>
       </View>
-      {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
-      <ProNoteIntro />
+      {/* BM-04 (owner 2026-11-15: "build waves 1 thru 3", D62): "Knowing When
+          to Bring In a Pro" no longer opens by itself on arrival (it read as a
+          disclaimer before the learner had done anything); the small link on
+          the first step above opens it. */}
     </LabNavProvider>
   );
 }

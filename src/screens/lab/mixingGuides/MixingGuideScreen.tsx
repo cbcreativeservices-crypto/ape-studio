@@ -44,7 +44,9 @@ import {
   GUIDE_SECTIONS,
   STARTING_POINTS_LINE,
   TABLE_COLUMNS,
+  TABLE_KEYS,
   WHO_LIVE_LEVEL_NOTE,
+  type Glance,
   type GuideSectionKey,
   type GuideText,
   type MixingGuide,
@@ -61,6 +63,26 @@ const ACCURACY_DETAIL =
   'The SPL and loudness figures are typical ranges, for learning. Always follow venue limits and local rules, and measure with a calibrated SPL meter and certified loudness metering.';
 
 const UNITS = MIXING_GUIDE_INDEX.map((g) => ({ id: g.id, title: g.title }));
+
+/**
+ * MG-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the first numbers a
+ * beginner met were "dBA LAeq,15min" and "LUFS-I", right under the two plain
+ * top lines. AT A GLANCE now keeps origin, tempo and ensemble on top; the two
+ * level rows (with the WHO hearing note, still under the live level) open at
+ * the head of the guide's own SPL & loudness section, folded with it. Layout
+ * only: every guide value is shown as written.
+ */
+type GlanceKey = keyof Glance;
+export const LEVEL_GLANCE_KEYS: readonly GlanceKey[] = ['liveSpl', 'studioLoudness'];
+/**
+ * MG-02 (same go): which sections a beginner starts with, and which are the
+ * reference tables. A small tag in the section's header; nothing else moves.
+ */
+export const START_HERE_SECTIONS: readonly GuideSectionKey[] = ['balance', 'notes', 'references'];
+export const REFERENCE_SECTIONS: readonly GuideSectionKey[] = TABLE_KEYS;
+type SectionTag = 'start' | 'reference' | undefined;
+const tagFor = (k: GuideSectionKey): SectionTag => (START_HERE_SECTIONS.includes(k) ? 'start' : REFERENCE_SECTIONS.includes(k) ? 'reference' : undefined);
+const TAG_TEXT = { start: 'START HERE', reference: 'REFERENCE' } as const;
 
 export function MixingGuideScreen() {
   const insets = useSafeAreaInsets();
@@ -190,16 +212,9 @@ export function MixingGuideScreen() {
                 <Text style={styles.startingPoints}>{STARTING_POINTS_LINE}</Text>
 
                 <Text style={styles.blockHead} accessibilityRole="header">AT A GLANCE</Text>
-                <View style={styles.glance}>
-                  {GLANCE_ROWS.filter((r) => r.key !== 'priority').map((r, i) => (
-                    <View key={r.key} style={[styles.glanceRow, i > 0 && styles.rowRule]}>
-                      <Text style={styles.glanceLabel}>{r.label}</Text>
-                      <Text style={styles.glanceValue}>{guide.glance[r.key]}</Text>
-                      {/* The shared WHO hearing note sits once, under the live level (owner ruling 2026-10-22). */}
-                      {r.key === 'liveSpl' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
-                    </View>
-                  ))}
-                </View>
+                {/* MG-01: the level rows open with SPL & loudness (a guide that
+                    had no such section would keep them here). */}
+                <GlanceRows guide={guide} keys={GLANCE_ROWS.filter((r) => r.key !== 'priority' && (!sections.some((s) => s.key === 'loudness') || !LEVEL_GLANCE_KEYS.includes(r.key))).map((r) => r.key)} />
 
                 <View style={styles.sectionsHead}>
                   <Text style={styles.blockHead} accessibilityRole="header">THE GUIDE</Text>
@@ -208,7 +223,7 @@ export function MixingGuideScreen() {
                   </Pressable>
                 </View>
                 {sections.map((s, i) => (
-                  <Section key={s.key} k={s.key} n={i + 1} title={s.title} open={open.has(s.key)} onToggle={toggle} guide={guide} />
+                  <Section key={s.key} k={s.key} n={i + 1} title={s.title} tag={tagFor(s.key)} open={open.has(s.key)} onToggle={toggle} guide={guide} />
                 ))}
 
                 <View style={styles.footer}>
@@ -236,10 +251,29 @@ export function MixingGuideScreen() {
   );
 }
 
+/** Glance rows, in GLANCE_ROWS order. The shared WHO hearing note sits once,
+ *  under the live level (owner ruling 2026-10-22), wherever that row is drawn. */
+function GlanceRows({ guide, keys }: { guide: MixingGuide; keys: readonly GlanceKey[] }) {
+  const rows = GLANCE_ROWS.filter((r) => keys.includes(r.key));
+  if (!rows.length) return null;
+  return (
+    <View style={styles.glance}>
+      {rows.map((r, i) => (
+        <View key={r.key} style={[styles.glanceRow, i > 0 && styles.rowRule]}>
+          <Text style={styles.glanceLabel}>{r.label}</Text>
+          <Text style={styles.glanceValue}>{guide.glance[r.key]}</Text>
+          {r.key === 'liveSpl' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
+        </View>
+      ))}
+    </View>
+  );
+}
+
 const Section = memo(function Section({
   k,
   n,
   title,
+  tag,
   open,
   onToggle,
   guide,
@@ -247,6 +281,7 @@ const Section = memo(function Section({
   k: GuideSectionKey;
   n: number;
   title: string;
+  tag?: SectionTag;
   open: boolean;
   onToggle: (k: GuideSectionKey) => void;
   guide: MixingGuide;
@@ -259,10 +294,11 @@ const Section = memo(function Section({
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
         aria-expanded={open}
-        accessibilityLabel={`${n}. ${title}. ${open ? 'Close' : 'Open'} this section`}
+        accessibilityLabel={`${n}. ${title}.${tag ? ` ${tag === 'start' ? 'Start here' : 'Reference table'}.` : ''} ${open ? 'Close' : 'Open'} this section`}
       >
         <Text style={styles.sectionNum}>{String(n).padStart(2, '0')}</Text>
         <Text style={styles.sectionTitle}>{title}</Text>
+        {tag ? <Text style={[styles.tag, tag === 'start' ? styles.tagStart : styles.tagRef]}>{TAG_TEXT[tag]}</Text> : null}
         <Text style={styles.chev}>{open ? '▴' : '▾'}</Text>
       </Pressable>
       {open ? (
@@ -289,6 +325,14 @@ function SectionBody({ guide, k }: { guide: MixingGuide; k: GuideSectionKey }) {
     );
   }
   if (k === 'eq' || k === 'compression' || k === 'fx' || k === 'liveStudio') return <TableBody guide={guide} k={k} />;
+  if (k === 'loudness') {
+    return (
+      <View style={styles.items}>
+        <GlanceRows guide={guide} keys={LEVEL_GLANCE_KEYS} />
+        <Prose items={guide[k]} />
+      </View>
+    );
+  }
   return <Prose items={guide[k]} />;
 }
 
@@ -365,6 +409,9 @@ const styles = StyleSheet.create({
   sectionNum: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   sectionTitle: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.textPrimary },
   chev: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber },
+  tag: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, borderWidth: 1, overflow: 'hidden' },
+  tagStart: { color: colors.amberLabel, borderColor: 'rgba(255,198,77,.45)' },
+  tagRef: { color: colors.textSub, borderColor: colors.hairline },
   sectionBody: { paddingHorizontal: 12, paddingBottom: 14, borderTopWidth: 1, borderTopColor: colors.hairlineDim, paddingTop: 10 },
   items: { gap: 9 },
   para: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },

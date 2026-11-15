@@ -1009,6 +1009,8 @@ export type HarmonicRackParts = {
     params: DockParam[];
     initialParam: string;
     onHelp?: (helpKey?: string) => void;
+    /** HAR-01: the stems, pinned first in the well (LabShell calls it with the scroll-lock api). */
+    wellTop?: (api: LabShellExploreApi) => ReactNode;
   };
   headerAction: ReactNode;
   renderWell: (api: LabShellExploreApi) => ReactNode;
@@ -1054,9 +1056,11 @@ export function HarmonicsView({
   // THE EDITABLE MODEL (SAW default: all 12 harmonics visible — the
   // reference image's series). The PRESET tray REBUILDS it; the stem editor
   // mutates it per harmonic. presetRef = canonical source for per-stem reset.
-  const [preset, setPreset] = useState<PresetKey>('saw');
-  const presetRef = useRef<PresetKey>('saw');
-  const [model, setModel] = useState<HarmonicSet>(() => buildPreset('saw'));
+  // HAR-04 (owner 2026-11-15, "build waves 1 thru 3"): the lab now opens on SINE, one band and one
+  // stem, so the learner builds a sound by hand from the start ("Drag H3 up").
+  const [preset, setPreset] = useState<PresetKey>('sine');
+  const presetRef = useRef<PresetKey>('sine');
+  const [model, setModel] = useState<HarmonicSet>(() => buildPreset('sine'));
   const [selectedN, setSelectedN] = useState<number | null>(null);
   // Build B UI state — highlight, overlays, A/B snapshot, THD sheet, solo.
   const [oddEvenHl, setOddEvenHl] = useState(false);
@@ -1065,6 +1069,15 @@ export function HarmonicsView({
   const [snapA, setSnapA] = useState<HarmonicSet | null>(null);
   const [abOn, setAbOn] = useState(false);
   const [thdOpen, setThdOpen] = useState(false);
+  // HAR-01 (owner 2026-11-15, "build waves 1 thru 3"): THD, CREST and SLOPE wait behind the MEASURE
+  // key until the learner asks; the bezel shows F0 alone until then.
+  const [showMeasures, setShowMeasures] = useState(false);
+  // HAR-04: while the opening SINE is untouched, the stems' heading says what to do first.
+  const pristineSine = useMemo(() => {
+    if (preset !== 'sine') return false;
+    const ref = buildPreset('sine');
+    return model.every((h, i) => h.amp === ref[i].amp && h.phaseDeg === ref[i].phaseDeg && h.enabled && !h.muted);
+  }, [preset, model]);
   // Guided Lesson sheet (v4 MASTER §5) — long-press a labeled control (dock
   // key, bezel cell, or well chip) opens the lesson focused on that control.
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
@@ -1662,6 +1675,7 @@ export function HarmonicsView({
           // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4);
           // SLOPE already carries its unit line, so it has none.
           { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency', caption: 'the pitch' },
+          ...(showMeasures ? ([
           {
             k: 'THD',
             caption: 'overtone share',
@@ -1685,6 +1699,7 @@ export function HarmonicsView({
             vA11y: slopeInfo.slope != null ? `${slopeInfo.slope.toFixed(1)} dB per octave` : undefined,
             helpKey: 'slope',
           },
+          ] satisfies BezelItem[]) : []),
         ]
       : [
           { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency' },
@@ -1731,6 +1746,15 @@ export function HarmonicsView({
             helpKey: 'wave_shape',
           },
           {
+            // HAR-01: shows THD, CREST and SLOPE on the readout strip (hidden at first).
+            kind: 'toggle',
+            id: 'measure',
+            label: 'MEASURE',
+            value: showMeasures,
+            onToggle: () => setShowMeasures((m) => !m),
+            helpKey: 'crest',
+          },
+          {
             // The THD breakdown sheet — was a tap on the bezel's THD cell
             // (owner rule 2026-10-10: the bezel is read-only; controls dock).
             // hunt 13: the sheet is a Modal — in full screen the rack leaves
@@ -1773,12 +1797,66 @@ export function HarmonicsView({
     },
   ];
 
+  /** HAR-01 (owner 2026-11-15, "build waves 1 thru 3"): the stems, the hands-on part, PINNED
+   *  as the first thing in the well (the shell's wellTop, above the caption and LAB NOTES),
+   *  with the shell's scroll-lock api so a stem drag still wins over the well's scroll.
+   *  Analytic mode only; REAL SIGNAL has no stems. */
+  const renderStems = (api: LabShellExploreApi): ReactNode => (
+    <View style={{ gap: 12 }}>
+      {/* STEM EDITOR + IDENTITY CARD — analytic mode only. Edits mutate
+          the model state; the live capture path renders from history/
+          frames and is untouched by them. The editor's drags lock the
+          well's scroll (shell api → onDragActive), so the gesture wins. */}
+      <HarmonicStems
+        set={model}
+        f0={f0}
+        selectedN={selectedN}
+        onSelect={setSelectedN}
+        onSetAmp={handleSetAmp}
+        onSetPhase={handleSetPhase}
+        onToggleEnabled={handleToggleEnabled}
+        onToggleMuted={handleToggleMuted}
+        onResetHarmonic={handleResetHarmonic}
+        onDragActive={api.setScrollLocked}
+        highlightOddEven={oddEvenHl}
+        showEnvelope={showEnvelope}
+        showSpacing={showSpacing}
+        ghostSet={ghost}
+        soloN={soloN}
+        canSolo={engineReady}
+        onToggleSolo={toggleSolo}
+        hint={pristineSine ? 'DRAG H3 UP' : undefined}
+      />
+      {selectedN != null ? (
+        <HarmonicCard
+          harmonic={model[selectedN - 1]}
+          f0={f0}
+          thdSharePct={
+            selectedN >= 2
+              ? (modelThd.perHarmonic.find((p) => p.n === selectedN)?.pct ?? null)
+              : null
+          }
+          soloActive={soloN === selectedN}
+          canSolo={engineReady}
+          onToggleSolo={() => toggleSolo(selectedN)}
+          // Card close is a solo stop trigger (spec §5) — the tone must
+          // never outlive the UI that says why it is sounding.
+          onClose={() => {
+            setSelectedN(null);
+            if (soloN != null) stopTone();
+          }}
+        />
+      ) : null}
+    </View>
+  );
+
   const rack: HarmonicRackParts['rack'] = {
     initialParam: 'f0',
     onHelp: openLesson,
+    wellTop: view === 'model' ? renderStems : undefined,
     stage: {
       // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
-      soundOffLine: 'Sound off? The bands, THD and the wave still show every change you make.',
+      soundOffLine: 'Sound off? The bands and the wave still show every change you make.',
       size: 'L', // the three linked panels ARE the lab — earns the tall glass
       fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
       // INTEGRITY BADGE — permanent, per mode (TRAINING DEMO badge idiom):
@@ -1869,52 +1947,11 @@ export function HarmonicsView({
 
       {view === 'model' ? (
         <>
-          {/* STEM EDITOR + IDENTITY CARD — analytic mode only. Edits mutate
-              the model state; the live capture path renders from history/
-              frames and is untouched by them. The editor's drags lock the
-              well's scroll (shell api → onDragActive), so the gesture wins. */}
-          <HarmonicStems
-            set={model}
-            f0={f0}
-            selectedN={selectedN}
-            onSelect={setSelectedN}
-            onSetAmp={handleSetAmp}
-            onSetPhase={handleSetPhase}
-            onToggleEnabled={handleToggleEnabled}
-            onToggleMuted={handleToggleMuted}
-            onResetHarmonic={handleResetHarmonic}
-            onDragActive={api.setScrollLocked}
-            highlightOddEven={oddEvenHl}
-            showEnvelope={showEnvelope}
-            showSpacing={showSpacing}
-            ghostSet={ghost}
-            soloN={soloN}
-            canSolo={engineReady}
-            onToggleSolo={toggleSolo}
-          />
-          {selectedN != null ? (
-            <HarmonicCard
-              harmonic={model[selectedN - 1]}
-              f0={f0}
-              thdSharePct={
-                selectedN >= 2
-                  ? (modelThd.perHarmonic.find((p) => p.n === selectedN)?.pct ?? null)
-                  : null
-              }
-              soloActive={soloN === selectedN}
-              canSolo={engineReady}
-              onToggleSolo={() => toggleSolo(selectedN)}
-              // Card close is a solo stop trigger (spec §5) — the tone must
-              // never outlive the UI that says why it is sounding.
-              onClose={() => {
-                setSelectedN(null);
-                if (soloN != null) stopTone();
-              }}
-            />
-          ) : null}
           <Text style={styles.thdnDim}>
-            THD / CREST / SLOPE read in the readouts — tap THD CALC for the calculation. THD+N —
-            live measurement required (the model has no noise).
+            {showMeasures
+              ? 'THD / CREST / SLOPE read in the readouts — tap THD CALC for the calculation.'
+              : 'Tap MEASURE to show THD, CREST and SLOPE in the readouts; THD CALC shows the calculation.'}{' '}
+            THD+N — live measurement required (the model has no noise).
           </Text>
 
           {/* HIGHLIGHT + OVERLAY toggles — they operate ON the stem editor
@@ -2010,7 +2047,7 @@ export function HarmonicsView({
                   {`SOLO H${soloN} · ${soloN * f0} Hz sine — one harmonic alone${
                     additiveReady
                       ? '; the header ▶ sounds the full mixture.'
-                      : '; update the app to hear the full mixture.'
+                      : '; this version of the app can’t play the full mixture.'
                   }`}
                 </Text>
               ) : null}
@@ -2019,7 +2056,7 @@ export function HarmonicsView({
             // No engine → no sound path; the model view stays fully usable.
             <Text style={styles.caption}>
               This version of the app can’t play sound here yet (see the note above). ANALYTIC MODEL
-              still works fully; update the app to hear it.
+              still works fully.
             </Text>
           )}
           {additiveOn ? (
@@ -2035,8 +2072,8 @@ export function HarmonicsView({
             // displayed on a sine-only engine (model-aware: edits can
             // silence or add overtones on any preset).
             <Text style={styles.honestyNote}>
-              Audio plays a pure sine: this version of the app can’t play overtones yet; update the
-              app to hear the ANALYTIC MODEL.
+              Audio plays a pure sine: this version of the app can’t play overtones yet. The picture
+              shows the whole ANALYTIC MODEL.
             </Text>
           ) : null}
         </>
@@ -2095,6 +2132,10 @@ export function HarmonicsView({
             />
             <View style={styles.sheet}>
               <Text style={styles.sheetTitle}>THD — HOW IT IS CALCULATED</Text>
+              {/* HAR-02 (owner 2026-11-15, "build waves 1 thru 3"): the plain idea before the formula. */}
+              <Text style={styles.sheetPlain}>
+                THD compares the harmonics with the main note: 0 % is a pure tone, and the stronger the harmonics, the higher it climbs.
+              </Text>
               <Text style={styles.sheetFormula}>THD % = √(a₂² + a₃² + … + a₁₂²) ÷ a₁ × 100</Text>
               <Text style={styles.sheetFormula}>THD dB = 20 · log₁₀(THD % ÷ 100)</Text>
               {modelThd.pct != null ? (
@@ -2284,6 +2325,7 @@ const styles = StyleSheet.create({
   },
   sheetTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textPrimary },
   sheetFormula: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
+  sheetPlain: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19, color: colors.textPrimary },
   sheetResult: { fontFamily: fonts.mono, fontSize: 13, color: 'rgba(91,255,133,.85)' },
   thdList: { gap: 2 },
   thdItem: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSecondary },

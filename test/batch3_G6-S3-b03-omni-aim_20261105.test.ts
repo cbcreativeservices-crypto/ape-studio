@@ -104,7 +104,10 @@ test('the dock honours `locked` on an options key: dimmed, no tray, the reason o
   const branch = src.slice(src.indexOf("if (p.kind === 'options' && p.locked) {"));
   assert.ok(branch.length < src.length, 'the locked options branch exists');
   const body = branch.slice(0, branch.indexOf('</DockButton') < 0 ? branch.indexOf('/>') : branch.indexOf('</DockButton'));
-  assert.match(body, /value="LOCKED"/);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SN-1 from
+  // F8b TU-04 / SH-64): a key may read its own "not yet" words (`lockedValue`);
+  // without them it still reads LOCKED.
+  assert.match(body, /value=\{p\.lockedValue \?\? 'LOCKED'\}/);
   assert.match(body, /\bdim\b/);
   assert.match(body, /setLockedNoteId/);
   assert.doesNotMatch(body, /setOpenTrayId/);

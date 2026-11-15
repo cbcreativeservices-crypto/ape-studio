@@ -57,7 +57,8 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
   const lastNote = EQ_SOLUTIONS.find((s) => s.id === (pick !== 'clash' ? pick : lastHeardFix));
   return (
     <View style={styles.page}>
-      <Lead>This is the FREQUENCY dimension at mix scale: EQ here is not about making tracks sound good alone — it is about making them FIT. And an EQ move is only one of several fixes for a frequency fight.</Lead>
+{/* BM-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain first line; the lede is trimmed so the page reads no longer. */}
+      <Lead>EQ means turning up or down only some pitches of one sound. In a mix it is about making tracks FIT, not sound good alone, and it is only one of several fixes for a frequency fight.</Lead>
       <Card>
         <Eyebrow>THE PROBLEM — LISTEN FIRST</Eyebrow>
         <Prompt>The guitar stabs and the lead line share the same range, both centered. Play THE CLASH: the lead is still “loudest”, yet it feels buried.</Prompt>
@@ -213,7 +214,8 @@ function PageReverbDelay({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>Reverb and delay answer the DEPTH question: what is close, what is far, what shares a room? The fastest way to a coherent mix: one shared space, fed by sends.</Lead>
+{/* BM-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain first line; the lede is trimmed so the page reads no longer. */}
+      <Lead>Reverb is the sound of a room; delay is a distinct echo. Both answer the DEPTH question: what is close, what is far? The fastest way to a coherent mix: one shared space, fed by sends (copies of each track).</Lead>
       <Card>
         <Eyebrow>THE DEPTH VOCABULARY</Eyebrow>
         <Body>DRY/WET is how much room rides along. On a send-fed return, set the reverb 100 % wet; the send sets how much room. PRE-DELAY is the gap before the room answers — longer keeps the source up front. DECAY is how long the room hangs on. Short ambience places; long ambience romanticizes. Delays locked to the tempo disappear into the groove; unlocked ones float on top.</Body>
@@ -269,9 +271,14 @@ function PageSixTerms({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>Six terms carry most of routing — and they are the six most-confused words in mixing. Learn them by what actually TRAVELS: audio, or just control.</Lead>
+{/* BM-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain first line; the lede is trimmed so the page reads no longer. */}
+      <Lead>Routing means where each sound goes after its channel. Six terms carry most of it, and they are the most-confused words in mixing: learn them by what actually TRAVELS, audio or just control.</Lead>
       <Card>
         <Eyebrow>WHAT EACH ONE ACTUALLY DOES</Eyebrow>
+        {/* BM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): the drawing
+            sits ABOVE the six terms, so the path each tap lights stays in sight
+            on a phone (it was pushed below the fold as the terms opened). */}
+        <TermsArt focus={lastTerm} />
         {PATH_TRUTHS.map((p) => {
           const open = openedTerms.has(p.kind);
           return (
@@ -288,7 +295,6 @@ function PageSixTerms({ ctx }: { ctx: PageCtx }) {
             </View>
           );
         })}
-        <TermsArt focus={lastTerm} />
       </Card>
       <UnderstandingCheck
         question="Drum SUBGROUP vs drum VCA — what is the real difference?"

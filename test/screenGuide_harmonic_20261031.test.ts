@@ -155,7 +155,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.deepEqual(M.PRESETS.map((p: { label: string }) => p.label), ['SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE', 'SYM CLIP', 'ASYM CLIP', 'SOFT SAT', 'HARD CLIP']);
     assert.match(v, /useState<ViewMode>\('model'\)/);
     assert.match(v, /useState<AxisMode>\('log'\)/);
-    assert.match(v, /useState<PresetKey>\('saw'\)/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item HAR-04): the lab opens on SINE.
+    assert.match(v, /useState<PresetKey>\('sine'\)/);
     assert.match(v, /const F0_MIN = 60;\s*const F0_MAX = 300;\s*const DEFAULT_F0 = 100;/);
     // PRESET + THD CALC only in model view; F0 · AXIS · MODE in both
     assert.match(v, /\.\.\.\(view === 'model'\s*\? \(\[\s*\{\s*kind: 'options',\s*id: 'preset'/);

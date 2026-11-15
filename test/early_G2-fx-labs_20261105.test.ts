@@ -121,7 +121,8 @@ describe('3. Compression and Limiter: a steady source points at CLICK', () => {
     assert.doesNotMatch(hit('compressor', 0), /TRY CLICK/);
   });
   it('the words under the display name the transient, keyed on the real source labels', () => {
-    for (const [name, control] of [['compConfig', 'ATK/REL'], ['limiterConfig', 'RLS']] as const) {
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-02): the Compression key is SPEED.
+    for (const [name, control] of [['compConfig', 'SPEED'], ['limiterConfig', 'RLS']] as const) {
       const c = configOf(name);
       for (const label of ['SINE 440 Hz', 'PINK NOISE']) {
         const line = c.match(new RegExp(`'${label}': '([^']+)'`))?.[1];
@@ -137,7 +138,8 @@ describe('3. Compression and Limiter: a steady source points at CLICK', () => {
   });
   it('the source orders stay as recorded', () => {
     assert.match(configOf('compConfig'), /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
-    assert.match(configOf('limiterConfig'), /sources: \[srcSine\(440\), srcClick\(120\), SRC_PINK\]/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item LIM-05): the Limiter now opens on CLICK 120.
+    assert.match(configOf('limiterConfig'), /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
   });
 });
 

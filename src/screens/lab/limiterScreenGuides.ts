@@ -43,8 +43,11 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How a limiter sets a ceiling: peaks over it are pulled down to it, anything under passes untouched, and GR shows how far over the ceiling the input sits.',
-      start: 'Drag CEILING down and watch OUT: the tone is held under the dashed ceiling lines. Then, with SINE 440 Hz, tap ▶ and drag CEILING to −25 dB: GR reads about 5 dB.',
+      learning: 'How a limiter sets a ceiling: peaks over it are pulled down to it, and anything under passes untouched.',
+      // LIM-05 (the lab opens on CLICK 120) + LIM-02 (the Compression pointer);
+      // owner 2026-11-15: "build waves 1 thru 3", D62. The learning line gave up
+      // its GR clause (SEEING says it) for the one new sentence.
+      start: 'Drag CEILING down and watch OUT: the tops of the hits flatten at the dashed ceiling. Then pick SINE 440 Hz, tap ▶ and set CEILING −25 dB: GR reads about 5 dB. New to this? Do Compression first.',
     },
     seeing: [
       'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint gray outline is the signal before limiting.',
@@ -84,7 +87,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
-      'First what a limiter is. Then CONTROLS: CEILING, Threshold / Input Gain (Drive), RLS, Attack, Lookahead, True-Peak and more. EXPLORE has CEILING and RLS; the rest are on real limiters.',
+      'First what a limiter is. Then CONTROLS: CEILING, RLS and GR, all on EXPLORE. The last row, On real limiters (for later), sums up Drive, Lookahead, true peak and the rest.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -132,7 +135,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure about the GR sum? On EXPLORE, play SINE 440 Hz at CEILING −30 dB: GR reads about 10 dB, as the tone peaks at −20 dBFS. Work the question’s numbers the same way.',
-      'Unsure about true peak? Read LEARN’s True-Peak entry: it explains what the real wave does between samples.',
+      'Unsure about true peak? On LEARN, read the COMMON MISTAKES line on 0 dBFS: it explains what the real wave does between samples.',
     ],
   },
 };

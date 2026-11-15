@@ -7,7 +7,7 @@
  * three tabs, so the guides are keyed by the shell's tab id:
  *   explore — the rack: the animated flow display (IN ▸ COMP ▸ OUT) with the GR
  *             ladder, the THRESH / RATIO / GR readouts, the THRESH fader and
- *             the RATIO / ATK/REL / MAKEUP / SOURCE keys, LAB NOTES;
+ *             the RATIO / SPEED / MAKEUP / SOURCE keys, LAB NOTES;
  *   learn   — the guided lesson as one reading page;
  *   check   — CHECK YOUR UNDERSTANDING (understandingChecks.ts COMPRESSION).
  *
@@ -65,11 +65,11 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'The drawing is a model, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole (about 1 dB lower): GR peaks as each click ends.',
     ],
     control: [
-      'Tap ▶ in the header, or tap the display, to play the SOURCE through the compressor; ■ stops it. Drag the THRESH fader from −50 to −10 dB.',
-      'RATIO: 2:1 GLUE, 4:1, 8:1 or 20:1 LIMIT. ATK/REL: ATTACK from 0.5 ms FAST to 100 ms, RELEASE 30, 120 or 500 ms.',
+      'Tap ▶ in the header or the display to play the SOURCE through the compressor; ■ stops it. Drag the THRESH fader from −50 to −10 dB.',
+      'RATIO: 2:1 GENTLE to 20:1 ALMOST A WALL. SPEED: ATTACK, how fast it grabs (0.5 ms FAST to 100 ms); RELEASE, how fast it lets go.',
       'On CLICK, the amber strip under OUT is the drawing’s GR: THRESH and RATIO change how deep it hangs. GR PEAK prints its deepest point; live GR can read lower.',
       'Tap MAKEUP for 0 dB or +6 dB, and SOURCE for CLICK 120, SINE 440 Hz or PINK NOISE.',
-      'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the intro, the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
+      'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [
       'Only level over the threshold is turned down: at 4:1, every 4 dB over comes out as 1 (12 dB over → 3).',
@@ -84,7 +84,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     tryThis: [
       'Set SOURCE to SINE 440 Hz, tap ▶ and put THRESH at −30 dB: GR holds at about 7 dB. Ride THRESH up to −20 dB: GR falls to 0.0, because the tone no longer crosses the threshold.',
-      'Back at −30 dB, step RATIO: 2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9 — never past the 10 dB the tone peaks over the threshold.',
+      'Back at −30 dB, step RATIO: 2:1 GENTLE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 about 9 — never past the 10 dB the tone peaks over the threshold.',
       'On CLICK 120 at THRESH −40 dB, GR kicks on each hit, then falls to 0.0. Pick ATTACK 25 ms PUNCH: GR stays 0.0. The 5 ms click ends before the clamp builds, so the spike passes untouched.',
     ],
   },
@@ -144,7 +144,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'What attack time changes about a drum hit, and what makeup gain is for.',
     ],
     tryThis: [
-      'Stuck on the ratio question? On EXPLORE, play SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB, so less of the overshoot comes out.',
+      'Stuck on the ratio question? On EXPLORE, play SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GENTLE to 20:1 ALMOST A WALL: GR grows from about 5 to 9 dB, so less of the overshoot comes out.',
       'Unsure about below the threshold? Read FORMULA / CONCEPT on LEARN, or long-press THRESH on EXPLORE to open its lesson entry.',
     ],
   },

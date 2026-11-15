@@ -164,7 +164,9 @@ describe('2. each guide quotes its step’s real names', () => {
     'room:path': ['NEXT ›', 'COMPLETE', 'WORKS · MINIMAL', 'CHECK THE CHAIN', 'STAGES', 'TO ADD', 'PATH', 'EMPTY', 'CHECK', 'MINIMAL', 'DEVICE', 'DAW', 'DAC', 'MON CTL', 'AMP', 'PASSIVE', 'ACTIVE', '+ CONNECT', '✓ PLACED', 'SLOTS FULL', '‹ UNDO', 'CLEAR'],
     'room:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
     'room:review': ['KEY IDEAS', 'KEY TERMS', 'TAKEAWAY'],
-    'tools:groups': ['Playback and editing', 'Analog equipment (optional)', 'Meters and analysis'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MA-02):
+    // one name per group, the same as the dock and the TOOL readout.
+    'tools:groups': ['Editing', 'Analog (optional)', 'Meters'],
     'tools:shelf': ['TOOL', 'TILT', 'RATIO', 'WIDTH', 'LEVEL', 'OUT AT 0 IN', 'CORRELATION', 'LUFS (I)', 'MODEL', 'MEASURED', 'EDITING', 'MONITORS', 'EQ', 'DYNAMICS', 'STEREO', 'METERS', 'ANALOG', '▶ DRAW MIX'],
     'tools:analog': ['ANALOG EQUIPMENT (OPTIONAL)', 'What it is', 'What it is not', 'How to compare honestly'],
     'tools:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
@@ -361,7 +363,11 @@ describe('4. wiring: the step’s guide reaches the header; the host wraps the s
   it('LabHeader carries the step’s guide and title — or, on the what’s-left screen, MASTERING_END_GUIDE titled WHAT’S LEFT; the host resets per step and measures regions only on rack steps', () => {
     assert.match(S, /<LabHeader[\s\S]*?guide=\{endState \? MASTERING_END_GUIDE : stepGuide\?\.guide\}\s*guideTitle=\{endState \? 'WHAT’S LEFT' : stepGuide\?\.title\.toUpperCase\(\)\}\s*\/>/);
     assert.match(S, /<ScreenGuideHost resetKey=\{endState \? 'end' : `\$\{mod\.id\}:\$\{stepIdx\}`\} regions=\{!!stepGuide\?\.rack\}>/);
-    assert.match(S, /<\/ScreenGuideHost>\n\s*<\/View>\s*(\{\})?\s*<ProNoteIntro \/>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BM-04):
+    // the pro note no longer opens by itself, so no ProNoteIntro follows the
+    // host; the first-step link (ProNoteButton) stays.
+    assert.match(S, /<\/ScreenGuideHost>\n\s*<\/View>/);
+    assert.doesNotMatch(S, /<ProNoteIntro/);
   });
 });
 

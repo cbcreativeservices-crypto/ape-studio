@@ -211,7 +211,9 @@ function LessonRow({ onPress }: { onPress: () => void }) {
 }
 
 const SECTIONS: { key: SpeakerSectionId; label: string; title: string; blurb: string }[] = [
-  { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their dispersion, aim them — and watch who they reach. Black seats get no useful sound: add SPKR 2 or FILLS. (Stage right is the performers’ right — the left of your screen.)' },
+  // SPK-02 (owner 2026-11-15, "build waves 1 thru 3", D62): each word gets its plain
+  // meaning where modules 1 and 2 first use it (READING IT, the full list, stays last).
+  { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their PATTERN (how wide they spread), aim them — and watch who they reach. Black seats (dead zones) get no useful sound: add SPKR 2 or FILLS (small speakers on the stage lip). (Stage right is the performers’ right — the left of your screen.)' },
   { key: 'side', label: 'SIDE VIEW', title: 'HEIGHT & TILT', blurb: 'Raise, tilt, and shape the room — make the wedge land on every row.' },
   { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.' },
 ];
@@ -348,6 +350,9 @@ export function SpeakerCoverageLabScreen() {
             hDeg={topDisp.hDeg}
             frontFills={fills}
             fillSpread01={fillSpread}
+            // SPK-03 (owner 2026-11-15, "build waves 1 thru 3"): ring the box the
+            // sliders move, once there is more than one to choose from.
+            selected={!twoOn && !fills ? undefined : fillsTarget ? 'fills' : spkEditable2 ? 'spk2' : 'spk1'}
           />
         ) : (
           <VizUnavailableCard />
@@ -701,9 +706,9 @@ export function SpeakerCoverageLabScreen() {
                 Narrow boxes (60°) put the same power into a smaller wedge, so they arrive louder at the
                 back — but they demand careful aim. Wide boxes (120°) spread that power over far more
                 area, so they cover close and wide at a lower level everywhere, not just at the back.
-                Where two speakers overlap, the shared zone runs hotter — about +3 dB on average as energy piles up
-                (in the real world it also combs: up to +6 dB at some frequencies, deep cuts at others). Front fills cover the gap between the mains at the
-                front — and, when the mains fly, the first rows they pass over.
+                Where two speakers overlap (cover the same seats), the shared zone runs hotter — about +3 dB on average as energy piles up
+                (in the real world it also combs: up to +6 dB at some frequencies, deep cuts at others). Front fills cover the gap between the mains (the main
+                speakers) at the front — and, when the mains fly, the first rows they pass over.
               </Text>
             ) : (
               <Text style={styles.caption}>

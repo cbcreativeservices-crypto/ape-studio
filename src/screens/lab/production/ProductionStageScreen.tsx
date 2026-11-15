@@ -33,6 +33,7 @@ import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 // chip, owner rule 2026-10-31); the key sits after it.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { productionStageGuide } from './productionScreenGuides';
+import { stageBriefLine } from './stageBriefLine';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionStage'>;
@@ -393,15 +394,25 @@ export function ProductionStageScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text style={styles.intro}>{stage.intro}</Text>
+          {/* PO-01 (owner 2026-11-15: "build waves 1 thru 3", D62): Stages 3 and
+              7 of Post-Production show the Stage 1 values they are checked
+              against, read-only, in one line. */}
+          {(() => {
+            const line = stageBriefLine(lab, stage.stageId, project.values);
+            return line ? <Text style={styles.briefLine}>{line}</Text> : null;
+          })()}
 
           <View style={styles.why}>
             <Text style={styles.whyHead}>WHY THIS MATTERS</Text>
             <Text style={styles.whyText}>{stage.whyItMatters}</Text>
           </View>
 
-          {stage.notices.map((n, i) => (
-            <Notice key={`stage-${i}`} notice={n} />
-          ))}
+          {/* PP-02 / PO-02 (owner 2026-11-15: "build waves 1 thru 3", D62):
+              the stage's LEGAL / SAFETY / QUALIFIED PERSONNEL boxes no longer
+              stack before the first question. One line names their kinds, in
+              the most serious kind's color; a tap opens them in place. Section
+              notices stay beside the questions they are about. */}
+          {stage.notices.length > 0 ? <StageNotices notices={stage.notices} /> : null}
 
           <View style={styles.progressRow}>
             <View style={[styles.dot, { backgroundColor: STATE_TINT[report.state] }]} />
@@ -527,7 +538,10 @@ export function ProductionStageScreen() {
                 if (focus === 'findings') tryFocus();
               }}
             >
-              <Text style={styles.findingsHead}>{lab === 'postprod' ? 'WHAT THIS PROJECT IS STILL MISSING' : 'WHAT THIS PLAN IS STILL MISSING'}</Text>
+              {/* SH-71 (owner 2026-11-15: "build waves 1 thru 3", D62): gaps are
+                  asked, Stage Plot style ("… Is that intended?"), so the list
+                  is headed as questions, not as what is missing. */}
+              <Text style={styles.findingsHead}>{lab === 'postprod' ? 'OPEN QUESTIONS IN THIS PROJECT' : 'OPEN QUESTIONS IN THIS PLAN'}</Text>
               {report.findings.map((f) => (
                 <View
                   key={f.ruleId}
@@ -560,9 +574,41 @@ export function ProductionStageScreen() {
   );
 }
 
+const noticeTint = (kind: NoticeDef['kind']) => (kind === 'qualified' ? colors.red : kind === 'safety' ? colors.orange : colors.textSub);
+const noticeHead = (kind: NoticeDef['kind']) => (kind === 'qualified' ? 'QUALIFIED PERSONNEL' : kind === 'safety' ? 'SAFETY' : 'LEGAL');
+/** Most serious first: the line's color is the first kind's. */
+const NOTICE_ORDER: readonly NoticeDef['kind'][] = ['qualified', 'safety', 'legal'];
+
+/** The one line for a stage's notices: "SAFETY · LEGAL · NOTES FOR THIS STAGE ▾". Pure. */
+export function stageNoticesLine(notices: readonly NoticeDef[], open: boolean): string {
+  const kinds = NOTICE_ORDER.filter((k) => notices.some((n) => n.kind === k)).map(noticeHead);
+  return `${kinds.join(' · ')} · ${notices.length === 1 ? 'A NOTE' : 'NOTES'} FOR THIS STAGE ${open ? '▴' : '▾'}`;
+}
+
+function StageNotices({ notices }: { notices: readonly NoticeDef[] }) {
+  const [open, setOpen] = useState(false);
+  const first = NOTICE_ORDER.find((k) => notices.some((n) => n.kind === k)) ?? 'legal';
+  const tint = noticeTint(first);
+  return (
+    <View style={{ gap: 8 }}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        style={[styles.notice, styles.noticeLine, { borderLeftColor: tint }]}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${notices.length === 1 ? 'A note' : `${notices.length} notes`} for this stage: ${NOTICE_ORDER.filter((k) => notices.some((n) => n.kind === k)).map((k) => noticeHead(k).toLowerCase()).join(', ')}. ${open ? 'Fold them' : 'Open them'}`}
+      >
+        <Text style={[styles.noticeHead, styles.noticeLineText, { color: tint }]}>{stageNoticesLine(notices, open)}</Text>
+      </Pressable>
+      {open ? notices.map((n, i) => <Notice key={`stage-${i}`} notice={n} />) : null}
+    </View>
+  );
+}
+
 function Notice({ notice }: { notice: NoticeDef }) {
-  const tint = notice.kind === 'qualified' ? colors.red : notice.kind === 'safety' ? colors.orange : colors.textSub;
-  const head = notice.kind === 'qualified' ? 'QUALIFIED PERSONNEL' : notice.kind === 'safety' ? 'SAFETY' : 'LEGAL';
+  const tint = noticeTint(notice.kind);
+  const head = noticeHead(notice.kind);
   return (
     <View style={[styles.notice, { borderLeftColor: tint }]}>
       <Text style={[styles.noticeHead, { color: tint }]}>{head}</Text>
@@ -612,6 +658,9 @@ const styles = StyleSheet.create({
   },
   noticeHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, marginBottom: 3 },
   noticeText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  noticeLine: { minHeight: 44, justifyContent: 'center' },
+  briefLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  noticeLineText: { marginBottom: 0 },
 
   progressRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },

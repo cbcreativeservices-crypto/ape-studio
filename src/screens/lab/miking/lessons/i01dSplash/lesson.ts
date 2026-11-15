@@ -355,7 +355,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: a splash is struck near its edge. Compared with a crash, how long does it ring?', options: ['Shorter', 'About the same', 'Longer'], after: 'Now STEP through the stroke (or PLAY ONCE), then switch SETUP to the splash on the crash.' },
+  sound: { prompt: 'Before you step through: a splash is struck near its edge. Compared with a crash, how long does it ring?', options: ['Shorter', 'About the same', 'Longer'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE), then switch SETUP to the splash on the crash.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic closer to the splash. What changes?', options: ['More of the kit around it', 'More of its quick attack', 'It depends on this splash'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the splash points up. Where will a supercardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

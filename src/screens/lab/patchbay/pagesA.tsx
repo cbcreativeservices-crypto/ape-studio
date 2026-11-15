@@ -24,6 +24,13 @@ import { JACK_ASPECT, JACK_BADGE, JackCutawayDrawing, useContactAnnounce } from 
 import { contactsOpen, resolvePair } from './engine/patchbay';
 import { GoalChips, MantraCard, useStationState, useVisitGoals } from './bits';
 import { PatchbayRack, cutawayBezel, insertionFader, jackKeys, pairBezel } from './rackLayout';
+import { StudioBayView } from './art/StudioBayView';
+import { STUDIO_PAIRS } from './engine/scenariosB';
+import { CollapsibleSection } from '../LabShell';
+
+/** Page 1's lead (PB-01, PB-04): what a patchbay is, the one convention, and the two parts. */
+export const PB_PAGE1_LEAD =
+  'This is a patchbay: every cable in a studio ends here. On most bays, and on every bay in this lab, the top row is OUT and the bottom row is IN; some bays are wired the other way, so check the label. The lab has two parts, and part one ends on page 13: a good place to stop.';
 
 /** The single pair most pages teach on. */
 const SRC = 'CONSOLE OUT 1';
@@ -31,22 +38,25 @@ const DST = 'INTERFACE IN 1';
 
 /* ── 1 · Signal falls downhill ──────────────────────────────────────────── */
 
-function PageDirection(_: { ctx: PageCtx }) {
+function PageDirection({ ctx }: { ctx: PageCtx }) {
+  // PB-01 + PB-04 (owner 2026-11-15: "build waves 1 thru 3", D62), built as one change: page 1 opens
+  // on the bay itself, rows marked OUT and IN, with the plain line and the two-parts line in the lead
+  // it replaces (same length). The two row-lists the picture now shows fold away (a line in, a line
+  // out); their ratified words are kept, unchanged, inside the fold.
   return (
     <View style={{ gap: 12 }}>
-      <Lead>
-        A patchbay puts every important input and output of the studio on one panel. Before any routing tricks, learn the one
-        convention everything else stands on — on most bays, and on every bay in this lab. Some bays are wired the other way:
-        check the label.
-      </Lead>
-      <Card>
-        <Eyebrow>TOP ROW = SOURCES · OUTPUTS</Eyebrow>
-        <Body>Console direct outs · mic preamp outs · interface outs · playback outs · processor outs. Signal LEAVES equipment here.</Body>
-      </Card>
-      <Card>
-        <Eyebrow>BOTTOM ROW = DESTINATIONS · INPUTS</Eyebrow>
-        <Body>Console inputs · interface inputs · recorder inputs · processor inputs · amplifier inputs. Signal ENTERS equipment here.</Body>
-      </Card>
+      <StudioBayView pairs={STUDIO_PAIRS} rowMarks reduceMotion={ctx.reduceMotion} />
+      <Lead>{PB_PAGE1_LEAD}</Lead>
+      <CollapsibleSection title="WHAT PLUGS INTO EACH ROW" startOpen={false}>
+        <Card>
+          <Eyebrow>TOP ROW = SOURCES · OUTPUTS</Eyebrow>
+          <Body>Console direct outs · mic preamp outs · interface outs · playback outs · processor outs. Signal LEAVES equipment here.</Body>
+        </Card>
+        <Card>
+          <Eyebrow>BOTTOM ROW = DESTINATIONS · INPUTS</Eyebrow>
+          <Body>Console inputs · interface inputs · recorder inputs · processor inputs · amplifier inputs. Signal ENTERS equipment here.</Body>
+        </Card>
+      </CollapsibleSection>
       <Card tone="math">
         <Text style={local.hill}>Signal falls downhill. Top → Bottom.</Text>
         <Body>

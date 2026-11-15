@@ -86,7 +86,10 @@ const G = PLACES.generator;
 
 /** A page's source, comments removed (what a learner can read). */
 const PAGES = 'src/screens/lab/gameaudio/pages/';
-const pageSrc = (f: string) => readFileSync(`${PAGES}${f}`, 'utf8').replace(/\r\n/g, '\n').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+/** A step's lettered parts read as one Do line. owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-04): a step
+ *  of three or four actions is now `<Do parts={['…', '…']} />`, one action per part; the words are the same. */
+const doParts = (s: string): string => s.replace(/<Do parts=\{\[([\s\S]*?)\]\} \/>/g, (_m, list: string) => `<Do>${[...list.matchAll(/'([^']*)'/g)].map((x) => x[1]).join(' ')}</Do>`);
+const pageSrc = (f: string) => doParts(readFileSync(`${PAGES}${f}`, 'utf8').replace(/\r\n/g, '\n')).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 /** Lesson prose: the words inside <P>, <Do>, <Look>, <Note> (the learning
  *  audit's measure; an expression counts as one word). */
 function lessonWords(src: string): number {

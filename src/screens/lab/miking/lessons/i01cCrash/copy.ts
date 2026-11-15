@@ -49,7 +49,7 @@ export const CRASH_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the plate — the lab counts it while the mic’s axis meets the crash. On a tilted crash, “above” is measured square to the plate. Height, the spot over the plate and the angle are separate things to try.',
     workedClear: 'Clear of every part — the stick’s side and its follow-through past the edge, the swing after the hardest crash, the other cymbals and the player’s arm. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the edge tends to bring more of the crash’s spread; toward the bell a brighter, more focused tone — and every crash is different, so “it depends on this crash” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the edge tends to bring more of the crash’s spread; toward the bell a brighter, more focused tone — and every crash is different, so “it depends on this crash” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: above the plate on the far side, change the height first, then the aim from the edge toward the bell. Underneath, aimed up, keep below the swing.',
       smallDynCard: 'Ideas to try: a dynamic above the plate on the far side. Listen for how much of the tom below it takes in.',
@@ -120,7 +120,7 @@ export const CRASH_CYM: CymbalExtra = {
     title: 'Strike to sound',
     badge: 'The order of events, not their speed · motion drawn much larger than it really is · silent',
     looking: 'Side view · the crash cut through the stick’s line',
-    prompt: 'STEP through the stroke, or PLAY ONCE — it stops at the end. Switch SETUP for the 18 in crash. Nothing here makes a sound.',
+    prompt: 'Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Switch SETUP for the 18 in crash. Nothing here makes a sound.',
     rFrac: EDGE_FRAC,
     stages: [
       { title: 'A glancing blow on the edge', text: 'The shoulder of the stick strikes the edge with a glancing blow — it carries on past rather than stopping on the plate. The crash responds at once: the ATTACK.' },

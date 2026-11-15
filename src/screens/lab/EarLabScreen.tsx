@@ -55,19 +55,23 @@ const INTRO =
   'start, with the deeper labs unlocked by membership — and the members-only ' +
   'Advanced Training Labs. Choose a lab to hear it, see it, measure it, and take ' +
   'it apart.';
+/**
+ * Where a newcomer begins (beginner waves 2026-11-15, LM-04; owner: "build
+ * waves 1 thru 3"). The opening text listed topics but never said which tile
+ * to open first; the start line takes the topic list's place (a line in, a
+ * line out), and the tiles below show the topics anyway.
+ */
+export const FUNDAMENTALS_START_LINE =
+  'New to audio? Start with the first tile, Understanding Level & Amplitude, then Foundations of Sound.';
 const FUNDAMENTALS_INTRO =
-  'Start free with the essentials — level and amplitude, the foundations of ' +
-  'sound, and wave physics. The deeper Fundamentals labs open with Academy ' +
-  'membership.';
+  `${FUNDAMENTALS_START_LINE} Both are free; the deeper Fundamentals labs open with Academy membership.`;
 // MEMBER copy (owner 2026-09-29): no "free" / "unlocked by membership"
 // marketing to people who already pay.
 const INTRO_MEMBER =
   'A professional audio curriculum in two parts: Audio Fundamentals and the ' +
   'Advanced Training Labs. Choose a lab to hear it, see it, measure it, and take ' +
   'it apart.';
-const FUNDAMENTALS_INTRO_MEMBER =
-  'The essentials — level and amplitude, the foundations of sound, and wave ' +
-  'physics — and the deeper Fundamentals labs that build on them.';
+const FUNDAMENTALS_INTRO_MEMBER = FUNDAMENTALS_START_LINE;
 const TRAINING_INTRO_MEMBER =
   'Your members-only workbench: interactive demonstrations, visualizations, ' +
   'controls and guided experiments across every audio discipline.';
@@ -397,9 +401,16 @@ function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: (
           <Text style={[styles.iconGlyphSm, styles.iconGlyphSmPurple]}>{cat.glyph}</Text>
         </View>
       ) : null}
+      {/* SH-44 = LM-03 (2026-11-15; owner: "build waves 1 thru 3"): the
+          subject's one-line description under its name, so "Signal" or
+          "Modulation" is explained before its tiles. A line in, a line out:
+          the count moved up beside the name. */}
       <View style={{ flex: 1 }}>
-        <Text style={[styles.catName, purple && styles.catNamePurple]}>{cat.name}</Text>
-        <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
+        <View style={styles.catNameRow}>
+          <Text style={[styles.catName, purple && styles.catNamePurple]}>{cat.name}</Text>
+          <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
+        </View>
+        <Text style={styles.catDesc}>{cat.description}</Text>
       </View>
       {onPress ? <Text style={locked ? styles.lock : styles.rowChevron}>{locked ? '🔒' : '›'}</Text> : null}
     </>
@@ -596,6 +607,10 @@ const styles = StyleSheet.create({
   // Sound, Signal, Equalization…
   catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.amber },
   catCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel, marginTop: 1 },
+  /** Name and count on one line (SH-44 / LM-03). */
+  catNameRow: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', columnGap: 10 },
+  /** The subject's one-line description (SH-44 / LM-03). */
+  catDesc: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 1 },
 
   // Uniform lab rows — same size for every topic (hub or single lab).
   row: {

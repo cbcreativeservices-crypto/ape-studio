@@ -10,10 +10,10 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_MONITORS: ScreenGuide = {
   intro: {
     learning: 'A mix is what a performer hears. A monitor device is the equipment that plays it. This area keeps the two apart, so the venue can read each number correctly.',
-    start: 'Read the three counts at the top. Then tap ADD A MIX and choose who hears it, mono or stereo, and who creates it. Its usual devices are listed before anything is added.',
+    start: 'Answer any question at the top first. Then tap ADD A MIX and choose who hears it, mono or stereo, and who creates it. Its usual devices are listed before anything is added.',
   },
   seeing: [
-    'Three counts sit at the top: mixes, monitor feed audio channels requested from the house console, and monitor devices.',
+    'Any questions come first. Then, once there is a mix or a device, three counts: mixes, monitor feed audio channels requested from the house console, and monitor devices.',
     'The mix list is grouped by who creates each mix. The house console’s group comes first.',
     'The device list is a second list, below the mixes. Each device names the mix it is on.',
     'A click, cue or talkback input carries the label MONITOR ONLY.',

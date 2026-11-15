@@ -79,7 +79,9 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
  *  used to recite white's rationale under every colour, and the owner-priority
  *  name-the-colour skill had nothing to hang on. NEW COPY — owner review. */
 const COLOR_CHARACTER: Record<NoiseColor, string> = {
-  white: 'Equal energy per Hz — sounds bright because every higher octave holds twice the bandwidth. The untilted reference.',
+  // NOI-03 (owner 2026-11-15, "build waves 1 thru 3"): why flat still sounds bright, with LEARN's
+  // own example, readable with sound off (this line shows in the tray and in WHAT YOU'RE SEEING).
+  white: 'Flat per Hz, yet it sounds bright: the octave from 5,000 to 10,000 Hz holds 5,000 Hz of noise, the octave from 50 to 100 Hz only 50. The untilted reference.',
   pink: 'Equal energy per OCTAVE — roughly matches how we hear. The mixing and measurement reference.',
   brown: 'Energy piles up toward the bottom — 6 dB more per Hz for every octave down: rumble, surf, distant thunder.',
   // Plain RPDF/TPDF dither is FLAT (white). Only NOISE-SHAPED dither is
@@ -487,7 +489,9 @@ function SlopeChart({
   running: boolean;
 }) {
   const H = 150;
-  const VH = H + 18; // plot + the frequency-label strip
+  // NOI-02 (owner 2026-11-15, "build waves 1 thru 3"): a second label row under the frequency
+  // numbers says what left and right sound like (rumble ← → hiss).
+  const VH = H + 32; // plot + the frequency-label strip + the rumble / hiss row
   const W = Math.max(240, (w / Math.max(1, h)) * VH);
   // FULL SCREEN (2026-09-30): the chart's viewBox follows the box's shape
   // down to 240:166, so in a tall portrait body it would letterbox and leave
@@ -620,6 +624,20 @@ function SlopeChart({
       ))}
       <SvgText x={W - 3} y={H + 13} fill={colors.textSub} fontSize={11.5} textAnchor="end">
         Hz
+      </SvgText>
+      {/* NOI-02: what up and down mean, in the empty space above and below the 1 kHz pivot
+          (every line crosses the middle there, so the words never sit on a line). */}
+      <SvgText x={xAt(0) - 5} y={14} fill={colors.textSecondary} fontSize={11} textAnchor="end">
+        ↑ louder
+      </SvgText>
+      <SvgText x={xAt(0) - 5} y={H - 7} fill={colors.textSecondary} fontSize={11} textAnchor="end">
+        ↓ quieter
+      </SvgText>
+      <SvgText x={2} y={H + 28} fill={colors.textSecondary} fontSize={11.5} textAnchor="start">
+        ← rumble
+      </SvgText>
+      <SvgText x={W - padR} y={H + 28} fill={colors.textSecondary} fontSize={11.5} textAnchor="end">
+        hiss →
       </SvgText>
       {/* the pivot every slope shares: 0 dB at 1 kHz */}
       <Circle cx={xAt(0)} cy={H / 2} r={3.2} fill="#e8e8ec" stroke="#2c2c32" strokeWidth={1} />

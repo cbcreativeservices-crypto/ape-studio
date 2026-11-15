@@ -93,7 +93,7 @@ export const C01_COPY: LessonCopy = {
     workedAim: 'Aim it between the upper top and the nearby strings — it counts as aimed while the mic’s axis, traced forward, meets the top near {head}. Distance, position and angle are separate things to try.',
     workedClear: 'Clear of every part — the strumming arm and the pick’s swing, the fretting hand, the neck and the player’s sight line to it. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: { steel: ' A stand mic keeps out of the strumming arm and the fretting hand — come in from the front.', twelve: ' A stand mic keeps out of the strumming arm and the fretting hand — come in from the front.', nylon: ' A stand mic keeps out of the hands — come in from the front.' },
-    reveal: 'Toward the sound hole tends to bring more body and low end — and more boom close in; toward the neck, more string detail. Every guitar differs, so “it depends on this guitar” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    reveal: 'Toward the sound hole tends to bring more body and low end — and more boom close in; toward the neck, more string detail. Every guitar differs, so “it depends on this guitar” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try: start near the 12th fret, then move one thing at a time — toward the hole, toward the bridge, a little farther back — and listen at matched levels.',
       instDynCard: 'Ideas to try with a dynamic: it is often brought a little closer than a condenser. Watch the bass that proximity adds, and the hands’ clearance.',

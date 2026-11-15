@@ -28,7 +28,8 @@ import { analysedGrid, gridCorrect, loopIn, setGrid, sync, trueBeat } from '../m
 import { beatAt, phaseOffset, playedBpm } from '../model/djTime';
 import { deckPos, type DeckState, type GridMode } from '../model/djModel';
 import { useBoothKit } from './shared';
-import { halfBpmFaultFixed, loopRealBeats } from './gridFault';
+import { halfBpmFaultFixed, halfBpmFirstHalf, loopRealBeats } from './gridFault';
+import { GRID_HALFWAY } from '../goalWords';
 import { beatAligned, beatOffsetText } from './fixGuards';
 
 const TERMS = [
@@ -302,6 +303,8 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
           // real beats (a flag latched earlier made BPM ×2 alone read FIXED
           // with the fault's 8-beat loop still running — toddler pass 10-19)
           fixed={halfBpmFaultFixed(B)}
+          // DJ-10 (owner 2026-11-15: "build waves 1 thru 3"): the second half, said at the moment the first is done
+          halfway={halfBpmFirstHalf(B) ? GRID_HALFWAY : null}
           hints={['Count the kicks between the grid lines on deck B.', `The analysis read ${B.track ? TRACKS[B.track].bpm / 2 : 61} BPM for a ${B.track ? TRACKS[B.track].bpm : 122} BPM track, so every “beat” it counts is two real beats.`, 'GRID → BPM ×2, then set a NEW loop (LOOP EXIT, then LOOP 4 BEATS): the old one was made on the wrong grid.']}
           why="The analysis had read half the real tempo, so the grid had a line on every other kick and a ‘4-beat’ loop was 8 real beats. Doubling the BPM put a line on every kick, and the new loop is 4 real beats; loops, jumps and sync now count real beats."
           onFixed={() => setFaultFixed(true)}

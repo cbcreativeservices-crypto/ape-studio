@@ -175,10 +175,12 @@ function stageLabel(model: FxAnimModel): string {
     // "M/S WIDTH" names what the green stage does in the width lab: L/R →
     // MID + SIDE, SIDE × width, back to L/R (art grading 2026-10-16: a bare
     // "WIDTH" slab read as an unexplained object).
-    // "R: Ø · DLY" names what the phase lab's stage does: it acts on the R
-    // channel only — a polarity flip and/or a delay (art grading 2026-10-16:
-    // a bare "PHASE" slab read as an unexplained object).
-    case 'stereo': return model.flavor === 'phase' ? 'R: Ø · DLY' : 'M/S WIDTH';
+    // "FLIP · DELAY" names what the phase lab's stage does to R: a polarity
+    // flip and/or a delay (art grading 2026-10-16: a bare "PHASE" slab read
+    // as an unexplained object). In words, as its keys FLIP R and DELAY R
+    // read (owner 2026-11-15: "build waves 1 thru 3", D62 item PH-01; it was
+    // the code "R: Ø · DLY").
+    case 'stereo': return model.flavor === 'phase' ? 'FLIP · DELAY' : 'M/S WIDTH';
   }
 }
 
@@ -1019,8 +1021,12 @@ function EchoFlow({
     return { p, marks };
   }, [stageX, msPerPx, outX0, outX1, bot]);
 
+  // The key names what each line IS (owner 2026-11-15: "build waves 1 thru
+  // 3", D62 item DL-01): the lab opens at FDBK 0%, so each gray click comes
+  // back once in blue, and the key says that blue line is its echo. It takes
+  // the old "CLICK · 90 BPM" key's place (the tempo reads on SOURCE).
   const note =
-    sk === 0 ? `CLICK · ${Math.round(60000 / periodMs)} BPM` : sk === 1 ? 'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK';
+    sk === 0 ? (feedback > 0 ? 'GRAY CLICK · BLUE ECHOES' : 'GRAY CLICK · BLUE ECHO') : sk === 1 ? 'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK';
 
   return (
     <FlowScene
@@ -1344,7 +1350,24 @@ function ReverbFlow({
     return { p, marks, g };
   }, [stageX, msPerPx, outX0, outX1, base, top, pxPerDb]);
 
-  const note = sk === 0 ? `CLICK · ${Math.round(60000 / P)} BPM · dB VIEW` : sk === 1 ? 'TONE BURSTS · dB VIEW' : 'STEADY NOISE · TRY CLICK';
+  // THE GAP, MARKED (owner 2026-11-15: "build waves 1 thru 3", D62 item
+  // RV-03): 0 → 60 ms of PRE-DELAY moved the wash only a few pixels, so a
+  // small bracket over OUT spans the click to the wash's start, PRE-DELAY plus
+  // the 31 ms the tank's shortest line takes (revCol), labeled GAP. It glides
+  // with the wash. The click's BPM left the key in its place (it reads on
+  // SOURCE as CLICK 60): a line in, a line out.
+  const gapY = top - 5;
+  const gapPath = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (sk !== 0) return p;
+    const x1 = outX0 + (preG.value + 31) / msPerPx;
+    p.moveTo(outX0, gapY + 3);
+    p.lineTo(outX0, gapY);
+    p.lineTo(x1, gapY);
+    p.lineTo(x1, gapY + 3);
+    return p;
+  }, [preG, sk, outX0, msPerPx, gapY]);
+  const note = sk === 0 ? 'CLICK · dB VIEW' : sk === 1 ? 'TONE BURSTS · dB VIEW' : 'STEADY NOISE · TRY CLICK';
 
   return (
     <FlowScene
@@ -1359,9 +1382,11 @@ function ReverbFlow({
       {ruler.marks.map((m) => (
           <GlassText key={m.s} x={m.x} y={base + 5} text={m.s} w={34} />
         ))}
+        {sk === 0 ? <GlassText x={outX0 + (preDelayMs + 31) / msPerPx + 3} y={gapY - 8} text="GAP" align="left" w={30} color={colors.textPrimary} /> : null}
         </>
       }
     >
+      <Path path={gapPath} color={colors.textPrimary} style="stroke" strokeWidth={1.2} opacity={0.85} />
       <Path path={ruler.g} color={ZERO} style="stroke" strokeWidth={0.8} opacity={0.6}>
         <DashPathEffect intervals={[2, 4]} />
       </Path>
@@ -1627,7 +1652,10 @@ function SpectrumFlow({
           <GlassText key={i} x={m.x} y={yBot + 4} text={m.t} w={28} />
         ))}
         <GlassText x={52} y={6} align="left" w={90} text={white ? 'WHITE NOISE' : 'PINK NOISE'} />
-        <GlassText x={outX0} y={6} align="left" w={90} text="SPECTRUM (dB)" />
+        {/* The flanger's OUT title names what its dips ARE (owner 2026-11-15:
+            "build waves 1 thru 3", D62 item FL-04): a line in for the line
+            out, so "notch" has a picture. The phaser keeps SPECTRUM (dB). */}
+        <GlassText x={outX0} y={6} align="left" w={mode === 'flanger' ? 112 : 90} text={mode === 'flanger' ? 'DIPS = CANCELED HERE' : 'SPECTRUM (dB)'} />
         </>
       }
     >
@@ -2561,6 +2589,13 @@ function StereoFlow({
     return p;
   }, [carrier, widthG, panG, invG, dlyG, foldG, stageX, w, h, kc, lamPx, d0]);
 
+  // The flip + mono moment named ON the flat line (owner 2026-11-15: "build
+  // waves 1 thru 3", D62 item PH-05). Only while it is exact: identical L and
+  // R (the phase lab's input), R flipped, no delay, summed to mono. The L / R
+  // key gives it its place: with both traces flat there is nothing to tell
+  // apart. Placed so that even on two lines (a 390-wide phone) it ends above
+  // the flat line at h / 2.
+  const cancelled = flavor === 'phase' && invertR && monoFold && delayRms === 0;
   return (
     <FlowScene
       w={w}
@@ -2568,8 +2603,14 @@ function StereoFlow({
       label={label}
       note={bassOn ? 'TONE 440 Hz: NO CHANGE' : stereoIn ? 'STEREO TEST TONE · L ≠ R' : flavor === 'phase' && srcIsNoise ? 'PART OF THE NOISE · L = R' : 'SAME TONE IN L AND R'}
       noteColor={colors.textSub}
-      legend={[{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
-      overlay={bassOn ? <GlassText x={stageX + 14} y={h - 16} text={`BASS-MONO ${bassMonoHz} Hz`} align="left" w={96} size={10} color={STAGE_GREEN} /> : undefined}
+      legend={cancelled ? undefined : [{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
+      overlay={
+        bassOn ? (
+          <GlassText x={stageX + 14} y={h - 16} text={`BASS-MONO ${bassMonoHz} Hz`} align="left" w={96} size={10} color={STAGE_GREEN} />
+        ) : cancelled ? (
+          <GlassText x={(stageX + 10 + w - 6) / 2} y={h / 2 - 32} text="SILENCE: THE TWO SIDES ERASED EACH OTHER" w={w - stageX - 22} size={10} color={colors.textPrimary} />
+        ) : undefined
+      }
     >
       <Path path={inR} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.4} />
       <Path path={inL} color={flavor === 'width' ? AMBER : DIM} style="stroke" strokeWidth={1.4} opacity={flavor === 'width' ? 0.5 : 0.85} />

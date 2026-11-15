@@ -149,7 +149,8 @@ describe('2. each guide quotes its page’s real names', () => {
     p12: ['WIDTH AND ITS INVOICE, HEARD', 'AS MIXED', 'WIDENED 1.6×', 'WIDENED → MONO', 'WHERE EACH PART SITS — AND WHAT MONO COSTS IT', 'THE STABLE-CENTER RULE'],
     p13: ['SECTION DESIGN, HEARD', 'STATIC', 'SECTION-DESIGNED', 'BGV PAD', 'VERSE · BARS 1–2', 'CHORUS · BARS 3–4', 'Detailed rides', 'Subgroup & VCA automation', 'Plugin automation', 'Snapshots & sections', '▲ ENTERS'],
     p14: ['THE BUS CHAIN, THREE WAYS', 'NO BUS CHAIN', 'CONSERVATIVE CHAIN', 'OVERCOOKED', 'COMP', 'DRIVE', 'THE MASTERING BORDER'],
-    p15: ['MEASURE — BS.1770-STYLE ESTIMATES', 'TRIM ', 'MEASURE', 'MEASURING…', 'LOUDNESS', 'TRUE PEAK', 'clear of −1', 'above −1', 'THE TRANSLATION CHECKS', 'THE MIX', 'MONO'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AM-02): the plain idea names the card.
+    p15: ['MEASURE — LOUDNESS AND TRUE PEAK', 'TRIM ', 'MEASURE', 'MEASURING…', 'LOUDNESS', 'TRUE PEAK', 'clear of −1', 'above −1', 'THE TRANSLATION CHECKS', 'THE MIX', 'MONO'],
     p16: ['THE DELIVERABLES VOCABULARY', 'Tracks vs multitracks vs stems', 'Alternate mixes', 'Standard stem sets', 'Identical starts & lengths', 'Names & versions'],
     p17: ['RUN IT — REAL MATH ON THE REAL SESSION', 'RUN THE NULL TEST', 'CLEAN BUS', 'BUS COMP ON FULL MIX', 'NULLS ✓', 'BROKEN ✗'],
     p18: ['THE PRACTICES', 'Version control', 'Metadata & documentation', 'Archive & recall', 'THE DELIVERY CHECKLIST — CHECKED, NOT REMEMBERED', '☐', '☑'],
@@ -263,7 +264,9 @@ describe('5. the accuracy chip: KEPT — real measurement numbers on screen', ()
   });
   it('the reason is on screen: LUFS / true-peak estimates and a crest readout', () => {
     const d = code(`${MX}/pagesAdvD.tsx`);
-    assert.match(d, /BS\.1770-STYLE ESTIMATES/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AM-02): the
+    // standard's name moved under the plain idea, on its own line; still on screen.
+    assert.match(d, /on-device estimates of the ITU-R BS\.1770 procedure/);
     assert.match(code(`${MX}/pagesAdvB.tsx`), /CREST \$\{\(m\.peakDb - m\.rmsDb\)\.toFixed\(1\)\} dB/);
   });
 });

@@ -168,7 +168,7 @@ export function MetalInstrument(spec: MeetSpec) {
                   if (q) pick(q.id);
                 },
                 format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
-                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
               },
               parts.length,
               parts.findIndex((q) => q.id === livePart),
@@ -387,7 +387,7 @@ function MetalSound(spec: SoundSpec) {
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking={spec.strikeLooking(variant)} prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+            <Landing looking={spec.strikeLooking(variant)} prompt="Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
             <Card>
               <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stageText(st.shown - 1)}</Point>
             </Card>

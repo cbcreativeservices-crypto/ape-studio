@@ -106,7 +106,7 @@ export const SCENARIOS: readonly Scenario[] = [
   {
     id: 's03_guitar_di',
     title: 'Guitar → DI → mixer',
-    brief: 'An electric guitar plays through a DI box; the DI feeds the mixer. Two cables, two different jobs.',
+    brief: 'An electric guitar plays through a DI box (it turns the guitar’s signal into a balanced mic-level line); the DI feeds the mixer. Two cables, two different jobs.',
     from: { device: 'Electric guitar', port: '1/4-inch output' },
     to: { device: 'DI box → mixer', port: 'DI instrument in · DI XLR out → mic input' },
     choices: [

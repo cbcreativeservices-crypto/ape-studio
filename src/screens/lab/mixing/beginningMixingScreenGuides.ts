@@ -90,7 +90,7 @@ export const BEGINNING_MIXING_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'THE PREP CHECKLIST: seven jobs to do before you mix, from Name, order, color to Save the untouched version.',
-      'Under it, a DAW (recording software) session window tidies itself as you open each step.',
+      'Above the steps, a DAW (recording software) session window tidies itself as you open each step.',
       'SEPARATE THE JOBS names recording, editing, producing, mixing and mastering, so you know which job you’re doing.',
       'Then a check about a quiet verse vocal, and goal chips.',
     ],

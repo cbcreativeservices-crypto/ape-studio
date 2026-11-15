@@ -96,11 +96,11 @@ export function GainLabHomeScreen() {
             </View>
           ))}
         </View>
+        {/* GN-04 (owner 2026-11-15: "build waves 1 thru 3", D62): a picture a beginner can feel, in
+            place of the textbook paragraph about operating levels and headroom. */}
         <Text style={styles.body}>
-          Gain staging is not about making everything as loud as possible — it’s about maintaining
-          an appropriate operating level from one stage to the next: enough signal to stay above
-          the noise, enough headroom to avoid overload. Adjust each stage and watch the signal
-          propagate through the system.
+          Sound travels through several boxes before it reaches a speaker. Each box needs the right
+          amount: too little and you hear hiss, too much and it crunches.
         </Text>
 
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):

@@ -53,8 +53,10 @@ describe('registration', () => {
   });
   it('the module registry is the app flow, in order', () => {
     // SUGGESTED SETUPS joined after Explore (owner 2026-11-14).
-    assert.deepEqual(ROOM_UNITS, ['intro', 'create', 'monitoring', 'explore', 'suggest', 'treatment', 'review']);
-    assert.deepEqual(ROOM_MODULES.map((m) => m.rack), [false, true, true, true, true, true, false]);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RO-06): the lab opens on the floor plan
+    // (Create the room); the reading module follows it, before Monitoring setup.
+    assert.deepEqual(ROOM_UNITS, ['create', 'intro', 'monitoring', 'explore', 'suggest', 'treatment', 'review']);
+    assert.deepEqual(ROOM_MODULES.map((m) => m.rack), [true, false, true, true, true, true, false]);
   });
 });
 

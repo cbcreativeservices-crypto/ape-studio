@@ -68,21 +68,22 @@ const grMoved = (a: { comp: number; gate: number; limiter: number }, b: { comp: 
   Math.abs(a.comp - b.comp) >= GR_EPS_DB || Math.abs(a.gate - b.gate) >= GR_EPS_DB || Math.abs(a.limiter - b.limiter) >= GR_EPS_DB;
 const P = FX_PARAM;
 
-/** The chain modules in this rack's fixed order (matches fx::Id routing),
+/** SC-03 (owner 2026-11-15, D62): each unit's `plain` words show under it while it is dark.
+ *  The chain modules in this rack's fixed order (matches fx::Id routing),
  *  drawn as half-rack units (chainRack.tsx, art fix 2026-10-16): each with
  *  its teaching default printed under it and its knobs set there (pointer
  *  0..1 on the unit's teaching range — log for time, ratio and frequency). */
 const lg = (v: number, lo: number, hi: number) => Math.log(v / lo) / Math.log(hi / lo);
 const MODULES: ChainUnit[] = [
-  { id: FX.eq, label: 'EQ', setting: '+9 dB @150 Hz', knobs: [lg(150, 20, 20000), (9 + 15) / 30, lg(0.7, 0.3, 10)] },
-  { id: FX.comp, label: 'COMP', setting: '−30 dB · 4:1', knobs: [30 / 60, lg(4, 1, 20), lg(5, 0.1, 100), lg(120, 10, 2000)], gr: 'comp', grMax: 24 },
-  { id: FX.gate, label: 'GATE', setting: 'opens −35 dB', knobs: [45 / 80, 70 / 80, lg(100, 10, 2000)], gr: 'gate', grMax: 70 },
-  { id: FX.dist, label: 'DIST', setting: 'drive +12 dB', knobs: [12 / 40, 1] },
-  { id: FX.mod, label: 'MOD', setting: 'chorus 0.25 Hz', knobs: [lg(0.25, 0.05, 10), 0.5, 0.5] },
-  { id: FX.delay, label: 'DELAY', setting: '375 ms · 40 %', knobs: [lg(375, 1, 2000), 0.4, 0.5] },
-  { id: FX.reverb, label: 'REVERB', setting: 'RT60 1.5 s', knobs: [lg(1.5, 0.1, 10), 0.5] },
-  { id: FX.stereo, label: 'STEREO', setting: 'width 150 %', knobs: [150 / 200] },
-  { id: FX.limiter, label: 'LIMIT', setting: 'low ceiling −25 dB', knobs: [5 / 30, lg(120, 10, 2000)], gr: 'limiter', grMax: 24 },
+  { id: FX.eq, label: 'EQ', plain: 'tone control', setting: '+9 dB @150 Hz', knobs: [lg(150, 20, 20000), (9 + 15) / 30, lg(0.7, 0.3, 10)] },
+  { id: FX.comp, label: 'COMP', plain: 'evens out level', setting: '−30 dB · 4:1', knobs: [30 / 60, lg(4, 1, 20), lg(5, 0.1, 100), lg(120, 10, 2000)], gr: 'comp', grMax: 24 },
+  { id: FX.gate, label: 'GATE', plain: 'cuts quiet parts', setting: 'opens −35 dB', knobs: [45 / 80, 70 / 80, lg(100, 10, 2000)], gr: 'gate', grMax: 70 },
+  { id: FX.dist, label: 'DIST', plain: 'distortion', setting: 'drive +12 dB', knobs: [12 / 40, 1] },
+  { id: FX.mod, label: 'MOD', plain: 'chorus shimmer', setting: 'chorus 0.25 Hz', knobs: [lg(0.25, 0.05, 10), 0.5, 0.5] },
+  { id: FX.delay, label: 'DELAY', plain: 'echo', setting: '375 ms · 40 %', knobs: [lg(375, 1, 2000), 0.4, 0.5] },
+  { id: FX.reverb, label: 'REVERB', plain: 'room sound', setting: 'RT60 1.5 s', knobs: [lg(1.5, 0.1, 10), 0.5] },
+  { id: FX.stereo, label: 'STEREO', plain: 'width', setting: 'width 150 %', knobs: [150 / 200] },
+  { id: FX.limiter, label: 'LIMIT', plain: 'loudness ceiling', setting: 'low ceiling −25 dB', knobs: [5 / 30, lg(120, 10, 2000)], gr: 'limiter', grMax: 24 },
 ];
 
 type FxOp = { fx: number; param: number; value: number };

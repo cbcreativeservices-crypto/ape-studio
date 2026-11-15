@@ -15,8 +15,8 @@
  * (anonymous) users always start at step 1 and never resume (owner
  * 2026-08-12 guest rule — same as Foundations).
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/react-native-skia';
@@ -39,9 +39,11 @@ import {
   CHALLENGE_LESSON,
   CHALLENGE_MICS,
   CHALLENGE_VARIANTS,
+  CHAR_GROUPS,
   CHAR_INTRO,
   CHARACTERISTICS,
   CLASS_NOTE,
+  MIC_CLASS_NAMES,
   CURVE_LESSON,
   CURVES,
   ENV_LESSON,
@@ -66,6 +68,8 @@ import {
   SOURCE_TIERS,
   SPL_LESSON,
   SPL_MATCH,
+  TYPES_TAP_LINE,
+  type MicTypeCard,
   type PatternKey,
 } from './micSelectData';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -76,6 +80,8 @@ import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
 import type { LabEndUnit } from '../kit/labEnd';
+import { runSoon } from '../../../lib/afterInteractions';
+import { revealDelta } from './reveal.ts';
 
 const STEP_KEY = 'ape:micSelStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -127,6 +133,35 @@ export const MICSEL_GOALS: Readonly<Record<string, string>> = {
 };
 /** Reading modules count on NEXT at their foot. */
 const MICSEL_READING: ReadonlySet<string> = new Set(['form']);
+
+/**
+ * BRING THE CHANGED CARD INTO VIEW (beginner waves 2026-11-15, MS-02; owner:
+ * "build waves 1 thru 3", D62 adoption plan). A mic photo, a characteristic
+ * chip or CHECK MY REASONING changed a card below the fold with no scroll. A
+ * <Reveal> around that card asks the lab's scroll to show it whenever `on`
+ * changes (not when the module first opens) or, with `onMount`, as soon as it
+ * appears. It only ever scrolls down, and only as far as needed (reveal.ts).
+ */
+const RevealCtx = createContext<(node: View | null) => void>(() => {});
+function Reveal({ on, onMount = false, style, children }: { on: string | null; onMount?: boolean; style?: StyleProp<ViewStyle>; children: ReactNode }) {
+  const ref = useRef<View>(null);
+  const reveal = useContext(RevealCtx);
+  const first = useRef(true);
+  useEffect(() => {
+    const skip = first.current && !onMount;
+    first.current = false;
+    if (skip || on == null) return;
+    // After this commit's layout, so the card is measured as it now is.
+    const h = runSoon(() => reveal(ref.current));
+    return () => h.cancel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by what the card shows
+  }, [on]);
+  return (
+    <View ref={ref} collapsable={false} style={style}>
+      {children}
+    </View>
+  );
+}
 
 function LessonBanner({ text }: { text: string }) {
   return (
@@ -226,7 +261,7 @@ function TypesStep() {
           <MicVisual kind={t.kind} w={64} h={96} />
         </View>
         <Text style={styles.detailName}>{t.name}</Text>
-        <Text style={styles.detailKlass}>{t.klass === 'transducer' ? 'TRANSDUCER PRINCIPLE' : 'DESIGN / FORM FACTOR'}</Text>
+        <Text style={styles.detailKlass}>{MIC_CLASS_NAMES[t.klass]}</Text>
         <Text style={styles.detailHead}>WHAT IT IS</Text>
         <Text style={styles.body}>{t.what}</Text>
         <Text style={styles.detailHead}>MAJOR CHARACTERISTICS</Text>
@@ -241,18 +276,13 @@ function TypesStep() {
     );
   };
 
-  return (
-    <View style={styles.stepGap}>
-      <LessonBanner text={CLASS_NOTE} />
-      <View style={styles.rowBetween}>
-        <Text accessibilityRole="header" style={styles.panelEyebrow}>TAP A MICROPHONE</Text>
-        {/* COMPARE keeps the mic on show as the first pick, and COMPARING
-            goes back to the last one picked (fix round 2026-11-14, F9 item 6:
-            it used to empty the card and drop the current mic). */}
-        <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => toggleCompare()} />
-      </View>
+  // MS-04 (2026-11-15): the photo grid comes first, in its two groups, under
+  // one plain line; the "not equivalent categories" note follows the card.
+  const group = (klass: MicTypeCard['klass']) => (
+    <View key={klass} style={styles.stepGapTight}>
+      <Text accessibilityRole="header" style={styles.panelEyebrow}>{MIC_CLASS_NAMES[klass]}</Text>
       <View style={styles.micGrid}>
-        {MIC_TYPES.map((m) => {
+        {MIC_TYPES.filter((m) => m.klass === klass).map((m) => {
           const active = compare ? pair.includes(m.key) : sel === m.key;
           return (
             <Pressable
@@ -265,28 +295,48 @@ function TypesStep() {
               style={[styles.micCell, active && styles.micCellActive]}
             >
               <MicVisual kind={m.kind} w={44} h={66} zoomable={false} />
-              <Text style={styles.micCellName} numberOfLines={2}>
+              {/* SH-49 / SH-27 (2026-11-15): three lines, so "Large-Diaphragm
+                  Condenser" and "Shotgun / Interference-Tube" are never cut. */}
+              <Text style={styles.micCellName} numberOfLines={3}>
                 {m.name}
               </Text>
             </Pressable>
           );
         })}
       </View>
-      {compare ? (
-        pair.length === 2 ? (
-          <View style={styles.compareRow}>
-            <Detail k={pair[0]} />
-            <View style={styles.compareDivider} />
-            <Detail k={pair[1]} />
+    </View>
+  );
+
+  return (
+    <View style={styles.stepGap}>
+      <View style={styles.rowBetween}>
+        <Text style={[styles.body, styles.rowLead]}>{TYPES_TAP_LINE}</Text>
+        {/* COMPARE keeps the mic on show as the first pick, and COMPARING
+            goes back to the last one picked (fix round 2026-11-14, F9 item 6:
+            it used to empty the card and drop the current mic). */}
+        <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => toggleCompare()} />
+      </View>
+      {group('transducer')}
+      {group('form')}
+      {/* MS-02 (2026-11-15): the card a tap changes scrolls into view. */}
+      <Reveal on={compare ? `pair:${pair.join('|')}` : sel}>
+        {compare ? (
+          pair.length === 2 ? (
+            <View style={styles.compareRow}>
+              <Detail k={pair[0]} />
+              <View style={styles.compareDivider} />
+              <Detail k={pair[1]} />
+            </View>
+          ) : (
+            <Text style={styles.hint}>{pair.length === 1 ? `Pick one more microphone to place beside ${MIC_TYPES.find((m) => m.key === pair[0])?.name ?? 'it'}.` : 'Pick two microphones to place them side by side.'}</Text>
+          )
+        ) : sel ? (
+          <View style={styles.detailCard}>
+            <Detail k={sel} />
           </View>
-        ) : (
-          <Text style={styles.hint}>{pair.length === 1 ? `Pick one more microphone to place beside ${MIC_TYPES.find((m) => m.key === pair[0])?.name ?? 'it'}.` : 'Pick two microphones to place them side by side.'}</Text>
-        )
-      ) : sel ? (
-        <View style={styles.detailCard}>
-          <Detail k={sel} />
-        </View>
-      ) : null}
+        ) : null}
+      </Reveal>
+      <LessonBanner text={CLASS_NOTE} />
     </View>
   );
 }
@@ -304,14 +354,23 @@ function CharsStep() {
       <View style={styles.charHub}>
         <MicVisual kind="condenser" w={48} h={72} />
         {/* flex:1 (P0 fix 2026-08-31): without it this wrap laid all 16 chips
-            on ONE unwrapped row — five rendered off-screen, unreachable. */}
-        <View style={[styles.chipWrap, { flex: 1 }]}>
-          {CHARACTERISTICS.map((x) => (
-            <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
+            on ONE unwrapped row — five rendered off-screen, unreachable.
+            MS-01 (2026-11-15): the chips sit in four small labeled groups. */}
+        <View style={[styles.stepGapTight, { flex: 1 }]}>
+          {CHAR_GROUPS.map((g) => (
+            <View key={g.title} style={styles.stepGapTight}>
+              <Text accessibilityRole="header" style={styles.groupEyebrow}>{g.title}</Text>
+              <View style={styles.chipWrap}>
+                {CHARACTERISTICS.filter((x) => g.keys.includes(x.key)).map((x) => (
+                  <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
+                ))}
+              </View>
+            </View>
           ))}
         </View>
       </View>
-      <View style={styles.detailCard}>
+      {/* MS-01 + MS-02 (2026-11-15): a chip's card scrolls into view. */}
+      <Reveal on={sel} style={styles.detailCard}>
         <Text style={styles.detailName}>{c.name}</Text>
         {c.why.map((wl) => (
           <Text key={wl} style={styles.body}>
@@ -319,7 +378,7 @@ function CharsStep() {
           </Text>
         ))}
         {c.flag ? <LessonBanner text={c.flag} /> : null}
-      </View>
+      </Reveal>
     </View>
   );
 }
@@ -615,7 +674,7 @@ function EnvStep() {
       <Text style={styles.body}>The SAME human voice, three different worlds. Watch the priorities move.</Text>
       <View style={styles.chipWrap}>
         {ENV_SCENARIOS.map((s) => (
-          <Chip key={s.key} label={s.title.split('·')[0].trim()} active={sel === s.key} onPress={() => setSel(s.key)} />
+          <Chip key={s.key} label={s.chip} active={sel === s.key} onPress={() => setSel(s.key)} />
         ))}
       </View>
       <View style={styles.detailCard}>
@@ -836,7 +895,8 @@ function ChallengeStep() {
       ) : null}
 
       {checked && pick != null ? (
-        <View style={styles.detailCard}>
+        // MS-02 (2026-11-15): the verdict scrolls into view as it appears.
+        <Reveal on={`${scenario}:${pick}`} onMount style={styles.detailCard}>
           <Text style={[styles.detailName, { color: correctPick ? colors.green : acceptedPick ? colors.amber : '#ff8a6b' }]}>
             {correctPick
               ? '✓ A defensible professional choice.'
@@ -853,8 +913,7 @@ function ChallengeStep() {
               pick spoiled the retry (learning pass 2026-08-31). It now waits
               for a defensible answer. */}
           {correctPick || acceptedPick ? <Text style={styles.body}>{spec.explain}</Text> : null}
-
-        </View>
+        </Reveal>
       ) : null}
 
       {baseTried || variantsDone.size > 0 ? (
@@ -1049,6 +1108,20 @@ export function MicSelectLabScreen() {
   const navigation = useNavigation();
   const [step, setStep] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+  // MS-02 (2026-11-15): the scroll's window box and offset, so a changed card
+  // can be brought into view (Reveal, reveal.ts).
+  const viewportRef = useRef<View>(null);
+  const scrollY = useRef(0);
+  const reveal = useCallback((node: View | null) => {
+    const vp = viewportRef.current;
+    if (!node || !vp) return;
+    vp.measureInWindow((_vx, vy, _vw, vh) => {
+      node.measureInWindow((_nx, ny, _nw, nh) => {
+        const d = revealDelta({ y: ny, h: nh }, { y: vy, h: vh });
+        if (d > 0) scrollRef.current?.scrollTo({ y: scrollY.current + d, animated: true });
+      });
+    });
+  }, []);
 
   // Guest rule (owner 2026-08-12): anonymous users neither restore nor persist
   // their place — every open starts at the first lesson.
@@ -1083,6 +1156,7 @@ export function MicSelectLabScreen() {
     setEnding(false);
     setStep(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
+    scrollY.current = 0;
     if (!noAccountRef.current) void stepStore.set(n);
   }, []);
 
@@ -1187,16 +1261,27 @@ export function MicSelectLabScreen() {
           extra={<LabUnderstandingBlock labId="micselect" labTitle="Microphone Selection Lab" />}
         />
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
+      <View ref={viewportRef} collapsable={false} style={styles.viewport}>
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}
+        scrollEventThrottle={32}
+        onScroll={(e) => {
+          scrollY.current = e.nativeEvent.contentOffset.y;
+        }}
+      >
         <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
         <Text style={styles.tag}>{s.tag}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>
         <GoalCtx.Provider value={meetGoal}>
-          <s.Body key={s.key} />
+          <RevealCtx.Provider value={reveal}>
+            <s.Body key={s.key} />
+          </RevealCtx.Provider>
         </GoalCtx.Provider>
         <LabNextButton nav={nav} />
       </ScrollView>
+      </View>
       )}
       </ScreenGuideHost>
     </View>
@@ -1234,6 +1319,7 @@ export function micSelEndCleared(visited: ReadonlySet<string>, banked: ReadonlyS
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  viewport: { flex: 1 },
   coreQ: {
     fontFamily: fonts.barlowMediumItalic,
     fontSize: 13,
@@ -1244,11 +1330,16 @@ const styles = StyleSheet.create({
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.amberLabel },
   stepTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1, color: colors.textPrimary },
   stepGap: { gap: 10 },
+  stepGapTight: { gap: 6 },
+  /** The line that shares a row with a chip: takes the room, wraps. */
+  rowLead: { flex: 1, paddingRight: 10 },
 
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   hint: { fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textSub },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSecondary },
+  /** A chip group's small label (MS-01): quieter than a panel heading. */
+  groupEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.3, color: colors.amberLabel },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 
   banner: {

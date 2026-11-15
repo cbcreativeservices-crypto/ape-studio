@@ -525,7 +525,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the anchor turns to the guest. Which mic keeps its distance to the mouth?', options: ['The lav', 'The fixed boom', 'None of them'], after: 'Now STEP through (or PLAY ONCE), then turn the head, switch the shot, try the desk and open both lavs.' },
+  sound: { prompt: 'Before you step through: the anchor turns to the guest. Which mic keeps its distance to the mouth?', options: ['The lav', 'The fixed boom', 'None of them'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then turn the head, switch the shot, try the desk and open both lavs.' },
   microphone: { prompt: 'Before you choose: which mic has no clothing touching it?', options: ['A visible lav', 'A boom outside the frame', 'A hidden lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you hide the lav under one layer of the shirt. What changes?', options: ['It can dull and rub', 'Nothing at all', 'It depends on the shirt'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a supercardioid gooseneck reject it best?', options: ['Straight in front', 'Off to the rear, about 125°', 'At its side'], after: 'Now turn or tilt the gooseneck with AIM (or change PATTERN) and watch REJECTION.' },

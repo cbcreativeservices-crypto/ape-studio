@@ -182,7 +182,7 @@ export function makeSaxSoundPage(cfg: SaxSoundConfig): (p: PageProps) => ReactNo
         {
           kind: 'fader',
           id: 'step',
-          label: 'STEP',
+          label: 'EVENT',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
           format: () => `${stage.title.toLowerCase()}`,
@@ -193,7 +193,7 @@ export function makeSaxSoundPage(cfg: SaxSoundConfig): (p: PageProps) => ReactNo
         (i) => `${i + 1} · ${S.stages[i].title}`,
         (i) => goTo(i + 1),
       ),
-      { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+      { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
     ];
     const strikeBezel: BezelItem[] = [
       { k: 'EVENT', v: `${shown}`, flex: 0.8 },
@@ -270,7 +270,7 @@ export function makeSaxSoundPage(cfg: SaxSoundConfig): (p: PageProps) => ReactNo
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking={`The ${lesson.noun.one} face-on, playing one note`} prompt="STEP through it, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+            <Landing looking={`The ${lesson.noun.one} face-on, playing one note`} prompt="Go EVENT by EVENT through it, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
             <Card>
               <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stage.text}</Point>
             </Card>

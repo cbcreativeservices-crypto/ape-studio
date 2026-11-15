@@ -523,7 +523,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the presenter turns to a guest. Which mic keeps its distance?', options: ['A lav on the chest', 'A headset', 'Both the same'], after: 'Now STEP through (or PLAY ONCE), then turn the head, try the loops and the breath.' },
+  sound: { prompt: 'Before you step through: the presenter turns to a guest. Which mic keeps its distance?', options: ['A lav on the chest', 'A headset', 'Both the same'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then turn the head, try the loops and the breath.' },
   microphone: { prompt: 'Before you choose: which body mic sits closest to the mouth?', options: ['An omni lav', 'A headset', 'A hidden lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the lav from the sternum to the lapel. What changes?', options: ['Turns one way sound different', 'Nothing much', 'It depends on this presenter'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner on the presenter’s right. Where will a directional headset reject it best?', options: ['Straight in front', 'Behind the capsule, past the cheek', 'Above the head'], after: 'Now turn the capsule with AIM and watch REJECTION.' },

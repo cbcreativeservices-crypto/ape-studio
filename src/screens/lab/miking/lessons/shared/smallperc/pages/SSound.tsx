@@ -121,7 +121,7 @@ export function SSound({ lesson, art, answers, onAnswered, onInteractive, intera
         {
           kind: 'fader',
           id: 'step',
-          label: 'STEP',
+          label: 'EVENT',
           value: (shown - 1) / Math.max(1, n - 1),
           onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
           format: () => `${stage.title.toLowerCase()}`,
@@ -132,7 +132,7 @@ export function SSound({ lesson, art, answers, onAnswered, onInteractive, intera
         (i) => `${i + 1} · ${S.stages[i].title}`,
         (i) => goTo(i + 1),
       ),
-      { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+      { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
       ...(ONE_STRIKE_DRAWING.has(lesson.id)
         ? []
         : [
@@ -220,7 +220,7 @@ export function SSound({ lesson, art, answers, onAnswered, onInteractive, intera
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={C.sound.looking[variant] ?? 'Side view'} prompt="STEP through it, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking={C.sound.looking[variant] ?? 'Side view'} prompt="Go EVENT by EVENT through it, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
           </Card>

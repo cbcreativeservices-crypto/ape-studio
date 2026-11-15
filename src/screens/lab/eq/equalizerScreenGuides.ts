@@ -115,7 +115,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
-      'There is no score, and a wrong answer costs nothing. A right answer stays right.',
+      'A right answer stays right.',
       'The tabs under the title go to LEARN or EXPLORE at any time.',
     ],
     changes: [

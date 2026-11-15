@@ -23,6 +23,15 @@
  * The log shows the OUTPUT choices (MIX lines) and ■ STOP; its empty text
  * says so, and never "nothing has happened" while sounds play (W2-22).
  *
+ * THE QUESTION FIRST, THE DEPTH FOLDED (beginner waves 2026-11-15, GA-08 with
+ * GA-01 and GA-07; owner 2026-11-15: "build waves 1 thru 3"). The beginner
+ * audit's heaviest page: four brand names, seven new words and a step that
+ * needs headphones. It now opens with its question (two speakers, yet a sound
+ * from behind you: how?), keeps STEREO, HEADPHONE 3D and MONO open with four
+ * words, and folds object-based audio, the platform renderers' names, the 5.1
+ * picture and their three words into a closed PRO NOTE at the end of step 1.
+ * Nothing is cut.
+ *
  * Common mistakes taught against: thinking headphones need a separate small
  * speaker for each direction; applying a second spatializer to a signal that is
  * already binaural.
@@ -32,7 +41,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
-import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
+import { ActivityLog, Do, GoalChips, Look, Note, P, ProNote, Step, Terms, marked, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { gaFact, gaPlaying, type GaState } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
@@ -43,7 +52,9 @@ import { G13 } from './guides/p13';
 import { facingKey, useSince } from './shared';
 
 const ASSETS = ['fountain', 'amb_room', 'amb_yard', 'gen_hum', 'gen_air', 'ir_room'] as const;
-const TERMS = gaTerms('Channel-based audio', 'Object-Based Audio', 'Binaural rendering', 'HRTF', 'Ambisonics', 'Head tracking', 'Downmix');
+const TERMS = gaTerms('Channel-based audio', 'Binaural rendering', 'HRTF', 'Downmix');
+/** The words of the folded part: surround and object audio (GA-08). */
+const PRO_TERMS = gaTerms('Object-Based Audio', 'Ambisonics', 'Head tracking');
 
 const OUTPUT_WORD: Record<ChcOutput, string> = { stereo: 'STEREO', hrtf: '3D', mono: 'MONO' };
 
@@ -111,18 +122,21 @@ function Page({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>The rings and the dotted line mark the fountain. The strip under the picture shows your head and what reaches each ear.</Look>
+        <Look>Headphones have two speakers, yet a sound can seem to come from behind you. How? The strip shows what reaches each ear.</Look>
         <P>STEREO and MONO are channel-based audio: each sound is mixed into fixed channels, one for each speaker of a known layout. HEADPHONE 3D is binaural rendering: a headphone signal that seems to surround you.</P>
-        <P>Object-based audio is a third idea, not played here. Each sound keeps its position, and a renderer works out the signals as it plays. Game platforms have their own renderers, such as Dolby Atmos, DTS:X, Windows Sonic and Tempest 3D AudioTech.</P>
-        <ChcSpeakerMap />
         <Terms items={TERMS} />
+        <ProNote hint="Pro note: surround speakers, object audio and the platforms’ own names.">
+          <P>Object-based audio is a third idea, not played here. Each sound keeps its position, and a renderer works out the signals as it plays. Game platforms have their own renderers, such as Dolby Atmos, DTS:X, Windows Sonic and Tempest 3D AudioTech.</P>
+          <ChcSpeakerMap />
+          <Terms items={PRO_TERMS} />
+        </ProNote>
       </Step>
       <Step n={2}>
-        <Do>Switch SCENE on. Open OUTPUT and choose STEREO. Move FACING through a full turn.</Do>
+        <Do parts={['Switch SCENE on.', 'Open OUTPUT and choose STEREO.', 'Move FACING through a full turn.']} />
         <P>In the strip the fountain slides along the line between your ears. Ahead and behind land on the same point.</P>
       </Step>
       <Step n={3}>
-        <Do>Put on headphones and choose HEADPHONE 3D. Turn again. Then choose MONO. No headphones? Read the strip instead.</Do>
+        <Do parts={['Put on headphones and choose HEADPHONE 3D. No headphones? Read the strip instead.', 'Turn again.', 'Choose MONO.']} />
         <P>For HEADPHONE 3D your device filters each sound the way a head and outer ears would. That filter is called an HRTF. In the strip the fountain now moves on a circle around your head: front and back differ. The filter suits some ears better than others.</P>
         <P>In MONO both bars stay equal; to one side, both fold up to 3 dB quieter (the pan law).</P>
         <ActivityLog state={p13Log(s)} lines={3} empty="No output change yet. This log shows your OUTPUT choices." />

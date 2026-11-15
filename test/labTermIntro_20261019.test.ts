@@ -181,12 +181,15 @@ describe('2. the right term — and the right meaning — per lab', () => {
       RoomDesignLab: 'Acoustic Treatment',
       MeterLab: 'Audio Analyzer',
       'MeterModule:detective': 'Troubleshooting',
-      CableLab: 'Cables (audio)',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CF-05):
+      // the lab opens on 'what travels', so its card names signal level.
+      CableLab: 'Audio levels',
       ConnectorSelectLab: 'Connector',
       PatchbayLab: 'Patch bay',
       MixingGuides: 'Mixing',
-      CompressionLab: 'Dynamic range compression',
-      GateLab: 'Downward expansion',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items CMP-03 and GATE-01): the cards are titled for the lab tapped.
+      CompressionLab: 'Compressor',
+      GateLab: 'Noise gate',
       SmartProcessorsLab: 'De-esser',
       FmLab: 'Frequency modulation synthesis',
       EnvelopeLab: 'Envelope',
@@ -212,11 +215,11 @@ describe('2. the right term — and the right meaning — per lab', () => {
     assert.equal(Object.keys(want).length, 63, 'every wired lab is pinned here');
   });
   it('the words are the glossary’s, not a paraphrase (spot checks, copied 2026-10-19)', () => {
-    assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
-    assert.equal(
-      wired('LimiterLab')?.plainEnglish,
-      'A limiter is an extreme compressor with a very high or infinite ratio. You set a threshold, and signal above it is held from going much higher. This protects against surprise clipping. Very fast peaks can still slip a little past unless the limiter uses lookahead. Limiters are common on the master bus and as a safety net on inputs. Used right, they are invisible. Used wrong, they squash the sound.',
-    );
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items EQ-06 and LIM-01): the Equalizer
+    // and Limiter cards are the labs' own one- or two-sentence words; the EQ Lab home keeps the row verbatim.
+    assert.equal(wired('EqLabHome')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
+    assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer is the tone knobs of audio, like bass, middle and treble. In this lab you control one of those knobs, and you choose where it works.');
+    assert.equal(wired('LimiterLab')?.plainEnglish, 'A limiter is a ceiling for loudness. Peaks that reach the line you set are pulled back down to it.');
     // A real em dash, as stored — not a replacement character.
     assert.match(wired('ModularLab')?.plainEnglish ?? '', /On most hardware modulars nothing is fixed and nothing is saved \u2014 that is the appeal\.$/);
     for (const e of Object.values(L.LAB_TERM_ENTRIES)) {
@@ -228,11 +231,13 @@ describe('2. the right term — and the right meaning — per lab', () => {
   });
   it('Compression is the DYNAMICS process — never the air-pressure "Compression" or file "Audio compression"', () => {
     const c = wired('CompressionLab');
-    assert.equal(c?.term, 'Dynamic range compression');
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-03): titled "Compressor", the
+    // dynamics device, still on the dynamics row (never the air-pressure "Compression").
+    assert.equal(c?.term, 'Compressor');
     assert.equal(c?.glossaryId, '037a431c-1b1a-418f-b6c1-51e0cea14a9b');
     assert.equal(
       c?.plainEnglish,
-      'A compressor makes loud parts quieter, shrinking the gap between soft and loud. Above a set level (the threshold), it turns the signal down by a chosen ratio. Attack and release set how fast it reacts. Make-up gain restores overall loudness.',
+      'A compressor is an automatic hand on the volume knob. When a sound gets too loud, it turns it down a little.',
     );
   });
   it('miking is the ACTION: every miking lab, the Speech & Voice lab and the Voice & Ensemble tile define "miking"', () => {

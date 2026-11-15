@@ -55,6 +55,9 @@ export type CymaticsRack = {
 };
 
 /** "CALCULATED — pressure standing wave" → "Calculated: pressure standing wave." */
+/** D62 SH-12: the modules' sound-off line (every figure is drawn from the model). */
+export const CYMATICS_SOUND_OFF_LINE = 'Sound off? The figures and readouts still work. A SILENT key drives without sound.';
+
 export function plainBadge(badge: string): string {
   const [head, ...rest] = badge.split(' — ');
   const h = head.trim().toLowerCase();
@@ -88,6 +91,8 @@ export function CymaticsRackLayout({
         onGuide: rack.onGuide,
         hideDragTag: rack.hideDragTag,
         fullScreen: rack.fullScreen ?? true,
+        // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+        soundOffLine: CYMATICS_SOUND_OFF_LINE,
       }}
       params={rack.params}
       initialParam={rack.initialParam}

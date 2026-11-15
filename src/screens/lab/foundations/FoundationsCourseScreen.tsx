@@ -86,6 +86,13 @@ import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { PLAIN_TERMS } from '../../../features/lab/plainTerms';
+
+/** The shared plain dB line (plainTerms.ts, D62 guardrail 3), said once before
+ *  Module 9's readouts use dB (FO-03, owner 2026-11-15, "build waves 1 thru 3"). */
+const DB_LINE = `SEND and HEARD count in ${PLAIN_TERMS.db.term}: ${PLAIN_TERMS.db.sentence.charAt(0).toLowerCase()}${PLAIN_TERMS.db.sentence.slice(1)}`;
+/** "+2.00 octaves" / "+1.00 octave": the word, never "8ve" (FO-03). */
+const octWord = (n: number) => (Math.abs(n - 1) < 0.005 ? 'octave' : 'octaves');
 
 const STEP_KEY = 'ape:fosStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -454,6 +461,9 @@ function FitStage({ w, h, natural, children }: { w: number; h: number; natural: 
 const FIT_REF_W = 320; // the narrowest layout the composites were designed at
 const THREE_WINDOW_NATURAL = 240; // label+cone row (133) + gap + label + gap + graph (84)
 const DUAL_DOMAIN_NATURAL = 262; // 2 labels + 2×100 panels + 26 cable strip + gaps
+const SCOPE_ONLY_NATURAL = 120; // M7 before the room is shown: 1 label + the 100 scope panel + gap
+const M7_STEPS_H = 26; // the 1 · FREEZE / 2 · DRAG THE PROBE row on M7's display
+const M7_ROOM_KEY_H = 34; // room under the SAME WAVE, IN THE ROOM › key
 const HSTACK_NATURAL = 282; // 4 + 6×30 rows + 12 gap + 86 sum
 
 /** Shared TONE bezel cell — the voice state, printed on every audio module. */
@@ -925,22 +935,44 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
   const [cursor, setCursor] = useState(0.69); // ≈ one wavelength/period back
   const [frozen, setFrozen] = useState(false);
   const [f, setF] = useState(220);
+  // FO-01 (owner 2026-11-15, "build waves 1 thru 3", D62): the answer comes in
+  // two steps. First the recording view alone (THE MIC'S OUTPUT: time), then
+  // the room (space) on a tap; and the steps sit on the display, FREEZE first.
+  const [roomShown, setRoomShown] = useState(false);
+  const [dragged, setDragged] = useState(false);
   // Predict-first: the learner CALLS IT before the display reveals — a wrong
   // prediction is the strongest known setup for the correction to stick.
   // State lifted to the screen (see RackProps) so the prose/check can't spoil.
   const predicted = m7Predicted ?? null;
   const setPredicted = (v: 'time' | 'space') => onM7Predict?.(v);
-  const beat = !frozen ? 1 : cursor > 0.03 ? 3 : 2;
+  // Step 1 · FREEZE is the one to do until the display is frozen; then
+  // step 2 · DRAG THE PROBE, until the PROBE has moved while frozen.
+  const step = !frozen ? 1 : dragged ? 3 : 2;
   // The cover hides the display these keys drive, so until the learner has
   // called it they would move nothing anyone can see. (Reads after "— locked:".)
   const m7Lock = predicted == null ? 'call it on the display first: TIME or SPACE' : undefined;
   const params: DockParam[] = [
     {
+      kind: 'toggle',
+      id: 'freeze',
+      label: 'FREEZE',
+      value: frozen,
+      onToggle: () => {
+        if (frozen) setDragged(false); // running again: the steps start over
+        setFrozen(!frozen);
+      },
+      locked: m7Lock,
+      helpKey: 'domain_link',
+    },
+    {
       kind: 'fader',
       id: 'probe',
       label: 'PROBE',
       value: cursor,
-      onChange: setCursor,
+      onChange: (v) => {
+        setCursor(v);
+        if (frozen) setDragged(true);
+      },
       locked: m7Lock,
       autoBind: true, // the lane comes up on PROBE the moment the call is made
       // The readout IS the lesson: the same spot on two rulers. (It was an
@@ -954,7 +986,6 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       tint: '#37e05f',
       helpKey: 'domain_link',
     },
-    { kind: 'toggle', id: 'freeze', label: 'FREEZE', value: frozen, onToggle: () => setFrozen((v) => !v), locked: m7Lock, helpKey: 'domain_link' },
     {
       kind: 'options',
       id: 'freq',
@@ -1025,11 +1056,32 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
                 </View>
               </View>
             ) : (
-              <FitStage w={w} h={h} natural={DUAL_DOMAIN_NATURAL}>
-                {(vw, k) => (
-                  <viz.DualDomainView width={vw} scale={k} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} />
+              <View style={{ width: w, height: h }}>
+                {/* The steps, on the display (FO-01): FREEZE first. */}
+                <View style={styles.beatsRowStage}>
+                  <View style={[styles.beatChip, step === 1 ? styles.beatChipOnAmber : styles.beatChipOnGreen]}>
+                    <Text style={[styles.beatTxt, step === 1 ? styles.beatTxtAmber : styles.beatTxtGreen]}>1 · FREEZE</Text>
+                  </View>
+                  <View style={[styles.beatChip, step === 2 && styles.beatChipOnAmber, step === 3 && styles.beatChipOnGreen]}>
+                    <Text style={[styles.beatTxt, step === 2 && styles.beatTxtAmber, step === 3 && styles.beatTxtGreen]}>2 · DRAG THE PROBE</Text>
+                  </View>
+                </View>
+                <FitStage w={w} h={h - M7_STEPS_H - (roomShown ? 0 : M7_ROOM_KEY_H)} natural={roomShown ? DUAL_DOMAIN_NATURAL : SCOPE_ONLY_NATURAL}>
+                  {(vw, k) => (
+                    <viz.DualDomainView width={vw} scale={k} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} showRoom={roomShown} />
+                  )}
+                </FitStage>
+                {roomShown ? null : (
+                  <Pressable
+                    style={styles.roomKey}
+                    onPress={() => setRoomShown(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Show the same wave in the room"
+                  >
+                    <Text style={styles.roomKeyTxt}>SAME WAVE, IN THE ROOM ›</Text>
+                  </Pressable>
                 )}
-              </FitStage>
+              </View>
             )
           ) : (
             <StageFallback w={w} />
@@ -1037,40 +1089,32 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       }}
     >
       {wellTop}
-      {/* THE GOAL — stated before anything else renders. */}
-      <View style={styles.goalCard}>
-        <Text style={styles.goalEyebrow}>THE GOAL</Text>
-        <Text style={styles.goalBody}>
-          Studio waveforms draw TIME. Sound itself travels through SPACE. Learn to flip between the
-          two views without getting lost.
-        </Text>
-      </View>
       {predicted == null ? null : (
         <>
+          {/* THE GOAL states the answer, so it waits for the guess (FO-02, owner
+              2026-11-15, "build waves 1 thru 3", D62). */}
+          <View style={styles.goalCard}>
+            <Text style={styles.goalEyebrow}>THE GOAL</Text>
+            <Text style={styles.goalBody}>
+              Studio waveforms draw TIME. Sound itself travels through SPACE. Learn to flip between the
+              two views without getting lost.
+            </Text>
+          </View>
           <Text style={styles.predictResult}>
             {predicted === 'time'
               ? 'Called it — TIME. The wavy line is a diary: left is earlier, right is later. Watch the display prove it.'
               : 'It is TIME — and most people guess space. Left is earlier, right is later. The display shows why.'}
           </Text>
-          {/* Guided 3-beat sequence — the screen teaches in order. */}
-          <View style={styles.beatsRow}>
-            <View style={[styles.beatChip, beat === 1 && styles.beatChipOnAmber]}>
-              <Text style={[styles.beatTxt, beat === 1 && styles.beatTxtAmber]}>1 · WATCH</Text>
-            </View>
-            <View style={[styles.beatChip, beat === 2 && styles.beatChipOnGreen]}>
-              <Text style={[styles.beatTxt, beat === 2 && styles.beatTxtGreen]}>2 · FREEZE</Text>
-            </View>
-            <View style={[styles.beatChip, beat === 3 && styles.beatChipOnGreen]}>
-              <Text style={[styles.beatTxt, beat === 3 && styles.beatTxtGreen]}>3 · DRAG THE PROBE</Text>
-            </View>
-          </View>
+          {/* The 1 · 2 steps now sit on the display (FO-01). */}
           <ConceptBadge extra="One wave, two questions: where, and when." />
-          <Text style={styles.caption}>
-            The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
-            in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
-            past the mic); the mic graph&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
-            watch the two readouts move together: distance = speed × time.
-          </Text>
+          {roomShown ? (
+            <Text style={styles.caption}>
+              The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
+              in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
+              past the mic); the mic graph&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
+              watch the two readouts move together: distance = speed × time.
+            </Text>
+          ) : null}
         </>
       )}
       {wellBottom}
@@ -1095,7 +1139,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       // Same log mapping the spiral drag glides: 0..1 = 110 Hz → 3 octaves up.
       value: octAbove / 3,
       onChange: (v) => setFreq(110 * Math.pow(2, Math.max(0, Math.min(3, v * 3)))),
-      format: () => `${Math.round(f)} Hz · ${octAbove.toFixed(2)} 8ve`,
+      format: () => `${Math.round(f)} Hz · ${octAbove.toFixed(2)} ${octWord(octAbove)}`,
       formatShort: () => `${Math.round(f)} Hz`,
       helpKey: 'octave_spiral',
     },
@@ -1104,7 +1148,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       id: 'jump',
       label: 'OCTAVES',
       valueLabel: `${Math.round(f)} Hz`,
-      options: [110, 220, 440, 880].map((hz, i) => ({ id: String(hz), label: i === 0 ? `${hz} Hz` : `${hz} Hz · +${i} 8ve` })),
+      options: [110, 220, 440, 880].map((hz, i) => ({ id: String(hz), label: i === 0 ? `${hz} Hz` : `${hz} Hz · +${i} ${octWord(i)}` })),
       selectedId: [110, 220, 440, 880].includes(Math.round(f)) ? String(Math.round(f)) : null,
       onSelect: (id) => setFreq(Number(id)),
       sticky: true, // A/B the doublings — the whole lesson
@@ -1124,7 +1168,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         onGuide: () => help('octave_spiral'),
         bezel: [
           { k: 'FREQ', v: `${Math.round(f)} Hz`, helpKey: 'octave_spiral' },
-          { k: 'ABOVE 110', v: `+${octAbove.toFixed(2)} 8ve`, flex: 1.3, helpKey: 'octave_spiral' },
+          { k: 'ABOVE 110', v: `+${octAbove.toFixed(2)} ${octWord(octAbove)}`, flex: 1.3, helpKey: 'octave_spiral' },
           toneCell(tone),
         ],
         render: (w, h) => (viz ? <M8Stage viz={viz} w={w} h={h} f={f} focused={focused} onFreq={setFreq} /> : <StageFallback w={w} />),
@@ -1534,7 +1578,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         </Text>
       ) : null}
       <Text style={styles.caption}>
-        H1 (the fundamental) is at the BOTTOM; higher harmonics stack upward. Every layer is a pure
+        H1, the fundamental (F0 on the readouts: the note itself), is at the BOTTOM; higher harmonics stack upward. Every layer is a pure
         sine at a whole-number multiple of {M11_F0} Hz — changing a harmonic's amplitude changes the
         TIMBRE, not the pitch, and its row color tracks the level (blue = quiet → red = loud).
       </Text>
@@ -1921,9 +1965,10 @@ const STEPS: Step[] = [
     tag: 'MODULE 7',
     title: 'ONE WAVE, TWO QUESTIONS',
     paras: [
-      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
+      // FO-01: the recording view first, the room second, as the display now shows them.
       'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW (recording software) is simply where you will meet it most.',
       'Why does it slide LEFT? Because this view is RECORDING, live — exactly what a DAW does when the view follows the playhead (the moving play position): new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
+      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
       'Freeze, then drag the PROBE. The crests pair up: the crest the mic drew one period ago (4.5 ms at 220 Hz) has traveled exactly one wavelength (1.56 m) past it down the room — distance = speed × time ties the two rulers together at every point. One wave, two rulers, one equation.',
     ],
     Rack: M7Rack,
@@ -1968,7 +2013,9 @@ const STEPS: Step[] = [
     paras: [
       'Module 4 said bigger amplitude = louder. True — for one frequency at a time. Across frequencies, the ear applies its own hidden curve.',
       'The COLORED curve is what you actually hear: it peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows. Its color is read off the loudness scale at the left, so warm = loud, cool = faint.',
-      'Sweep the frequency WITHOUT touching the level: the amplitude number stays fixed while the loudness visibly (audibly) changes. Amplitude is physics; loudness is perception wearing that curve.',
+      // FO-03 (a line in, a line out): the plain dB line in; this paragraph shortened.
+      DB_LINE,
+      'Sweep the frequency WITHOUT touching the level: the amplitude stays fixed while the loudness changes. Amplitude is physics; loudness is perception.',
     ],
     Rack: M9Rack,
     check: {
@@ -2548,7 +2595,19 @@ const styles = StyleSheet.create({
   predictBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub },
   predictResult: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: colors.purple },
   predictSub: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center' },
-  beatsRow: { flexDirection: 'row', gap: 6 },
+  beatsRowStage: { flexDirection: 'row', gap: 6, height: 26, paddingHorizontal: 6, paddingTop: 4 },
+  roomKey: {
+    position: 'absolute',
+    right: 8,
+    bottom: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(127,212,255,0.55)',
+    backgroundColor: '#0c0c0f',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  roomKeyTxt: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#7fd4ff' },
   beatChip: { flex: 1, borderWidth: 1, borderColor: '#2c2c33', borderRadius: 8, paddingVertical: 5, alignItems: 'center' },
   beatChipOnAmber: { borderColor: 'rgba(255,198,77,0.55)', backgroundColor: 'rgba(255,198,77,0.08)' },
   beatChipOnGreen: { borderColor: 'rgba(55,224,95,0.55)', backgroundColor: 'rgba(55,224,95,0.08)' },

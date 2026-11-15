@@ -43,7 +43,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     control: [
       'There’s nothing to set here. The drawing moves on its own, so watch it and read the notes below it.',
       'Tap ⤢ FULL SCREEN, under the drawing, to see the coil and the magnet larger. Tap ⓘ WHAT THE DISPLAY SHOWS for a short explanation of the cutaway.',
-      'Use ‹ PREV and NEXT › in the strip under the title to move between the lab’s sections; the strip calls each one a MODULE. Tap the middle of the strip to see the full list.',
+      'This is the lab’s last module, for the curious. FINISH › at its foot counts it and shows what’s left.',
     ],
     changes: [
       'Sound pressure pushes the diaphragm, and the diaphragm drags the coil through the magnet’s gap.',
@@ -64,7 +64,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
   // ── 2 · POLAR ─────────────────────────────────────────────────────────────
   polar: {
     intro: {
-      learning: 'A mic hears some directions better than others. Its polar pattern maps that sensitivity, and a null is a deaf direction you can aim at unwanted sound.',
+      learning: 'A microphone hears some directions better than others. Its polar pattern maps that sensitivity, and a null is a deaf direction you can aim at unwanted sound.',
       start: 'On CARDIOID, drag the speaker behind the mic until PICKUP reads NULL. Then open PATTERN and try FIGURE-8 and OMNI with the speaker in the same spot.',
     },
     seeing: [
@@ -73,6 +73,8 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       'SOURCE is the speaker’s angle from the mic’s front. PICKUP is the level in dB compared with straight ahead, or NULL ≤−26 dB. PATTERN names the pattern in use.',
     ],
     control: [
+      // MI-04 (owner 2026-11-15, "build waves 1 thru 3", D62): POLAR opens the lab, so the strip is explained here.
+      'Use ‹ PREV and NEXT › in the strip under the title to move between the lab’s sections; the strip calls each one a MODULE. Tap the middle of the strip to see the full list.',
       'Drag the speaker anywhere on the display (DRAG THE SPEAKER — ANYWHERE). It can touch the mic but can’t sit on top of it.',
       'Open PATTERN and choose OMNI, CARDIOID (where you start), SUPER, HYPER or FIGURE-8. The tray stays open, so you can flip between them while the field redraws. Each option has a one-line description.',
       'Tap ⤢ FULL SCREEN for a bigger field. You can still drag the speaker there.',
@@ -369,10 +371,10 @@ export const MIC_END_GUIDE: ScreenGuide = {
   ],
   control: [
     'Tap a row to jump straight to that module.',
-    'Tap PRACTICE AGAIN FROM THE START to go back to CAPSULE, or DONE · BACK TO LABS to leave the lab.',
+    'Tap PRACTICE AGAIN FROM THE START to go back to PICKUP PATTERNS, or DONE · BACK TO LABS to leave the lab.',
   ],
   changes: [
-    'A module counts once its CHECK YOURSELF is answered right; CAPSULE and PLOSIVES, which have none, count when you move on with NEXT.',
+    'A module counts once its CHECK YOURSELF is answered right; PLOSIVES and CAPSULE, which have none, count when you move on with NEXT (or FINISH).',
     'Practicing again or reviewing never takes away a module you’ve already done, so you can repeat any mic experiment freely.',
   ],
   teaches: [
@@ -393,8 +395,9 @@ export const SPEAKER_SCREEN_GUIDES: Record<SpeakerSectionId, ScreenGuide> = {
   // ── 1 · TOP VIEW ──────────────────────────────────────────────────────────
   top: {
     intro: {
-      learning: 'A loudspeaker works like a flashlight for sound: where it sits, where it aims and how wide its pattern is decide which seats it covers.',
-      start: 'Tap SPKR 2 and find the hot ridge where the two wedges cross. Then open PATTERN and switch from 90°×60° to 60°×40°.',
+      // SPK-04 (owner 2026-11-15, "build waves 1 thru 3", D62): the card gives the plain job.
+      learning: 'A speaker is a flashlight for sound: where it sits, where it aims and how wide its pattern is decide which seats it lights. Dark seats can’t hear well.',
+      start: 'Your job: light up every seat. Tap SPKR 2 and find the hot ridge where the two wedges cross. Then open PATTERN and switch from 90°×60° to 60°×40°.',
     },
     seeing: [
       'You’re looking down on the room, drawn to scale (the 5 m bar): stage at the top, audience below. Stage right is the left of your screen.',

@@ -67,13 +67,16 @@ export type StudioBayDrawingProps = {
   /** Per-pair front-jack cords to draw (gold stubs). */
   plugs?: BayPlugs;
   reduceMotion?: boolean;
+  /** ADDITIVE (PB-01, owner 2026-11-15: "build waves 1 thru 3", D62): mark the rows OUT and IN on
+   *  the rack ear, for the first page's first look at a bay. Off = the drawing exactly as before. */
+  rowMarks?: boolean;
   w: number;
   h: number;
 };
 
 /** The bay drawing alone at (w, h), column taps included — the Rack Unit's
  *  glass and the page figure both draw this. */
-export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, w, h }: StudioBayDrawingProps) {
+export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, rowMarks = false, w, h }: StudioBayDrawingProps) {
   const phase = useFlowPhase(!!showNormals, reduceMotion);
   const a11y =
     `Studio patchbay, the first eight vertical pairs of a 24-pair bay. ` +
@@ -94,6 +97,13 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
             <Rect key={mm} x={8.75 * MM - 7} y={PY + mm * MM - 3.4} width={14} height={6.8} rx={3.4} fill="#050506" stroke="#3a3b41" strokeWidth={0.8} />
           ))}
           <SvgText x={2} y={10} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.2}>STUDIO BAY · PAIRS 1–8 OF A 24-PAIR, 1U BAY</SvgText>
+          {/* PB-01: OUT over IN on the ear, level with each row, clear of the two slots. */}
+          {rowMarks ? (
+            <G>
+              <SvgText x={EAR / 2} y={ROW_TOP + 3} fontSize={9} fill={PB.source} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>OUT</SvgText>
+              <SvgText x={EAR / 2} y={ROW_BOT + 3} fontSize={9} fill={PB.dest} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>IN</SvgText>
+            </G>
+          ) : null}
           {pairs.map((p, i) => {
             const cx = X0 + i * STEP;
             const isSel = selected === p.n;
@@ -178,8 +188,10 @@ export function BayLegend() {
 }
 
 export function StudioBayView({
-  pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, controls,
+  pairs, selected, onSelect, showNormals, plugs = {}, reduceMotion = false, controls, rowMarks = false,
 }: {
+  /** PB-01: mark the rows OUT and IN (StudioBayDrawing `rowMarks`). */
+  rowMarks?: boolean;
   /** The page's controls (reveal button, goal chips), docked under the bay
    *  in FULL SCREEN (D35, full-screen pass 2026-09-30). */
   controls?: ReactNode;
@@ -207,7 +219,7 @@ export function StudioBayView({
             {controls}
           </View>
         }
-        render={(w, h) => <StudioBayDrawing pairs={pairs} selected={selected} onSelect={onSelect} showNormals={showNormals} plugs={plugs} reduceMotion={reduceMotion} w={w} h={h} />}
+        render={(w, h) => <StudioBayDrawing pairs={pairs} selected={selected} onSelect={onSelect} showNormals={showNormals} plugs={plugs} reduceMotion={reduceMotion} rowMarks={rowMarks} w={w} h={h} />}
       />
       {/* Row legend as real text (the SVG header stays short + readable). */}
       {legend}

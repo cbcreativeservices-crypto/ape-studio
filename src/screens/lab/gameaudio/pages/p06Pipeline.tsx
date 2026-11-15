@@ -44,7 +44,9 @@ import { G06 } from './guides/p06';
 import { doorKey, doorWord, gaFact, useSince } from './shared';
 
 const ASSETS = ['door', 'door_close', 'door_rattle'] as const;
-const TERMS = gaTerms('Audio pipeline', 'Audio asset', 'Audio Middleware', 'Sound bank', 'Implementation', 'Audio implementer');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Audio Middleware is
+// on the tools page; Audio implementer is kept unshown (a job, not a word this page uses)
+const TERMS = gaTerms('Audio pipeline', 'Audio asset', 'Sound bank', 'Implementation');
 /** The two files the door event asks for when the chain is whole. */
 const OPEN_FILE = doorFile(false);
 const CLOSE_FILE = doorFile(true);
@@ -142,7 +144,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Press OPEN DOOR. Read the three cards, then the log under RESULT. Press CLOSE DOOR and read card 1 again.</Do>
+        <Do parts={['Press OPEN DOOR.', 'Read the three cards, then the log under RESULT.', 'Press CLOSE DOOR and read card 1 again.']} />
         <P>The event asks for files by name. Its two parts are called layers: the door and the latch rattle. The strip under the picture shows the rattle start one second later. The scene connection is where the game posts the event. Closing the door posts the same event, and the door layer asks for a second file.</P>
         <ChainCards chain={doorChain(shownMissing, { closing })} posted={posted} doorWord={doorWord(s)} />
         <ActivityLog state={s} lines={5} />

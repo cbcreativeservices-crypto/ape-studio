@@ -472,7 +472,8 @@ export function BinaryModule(p: DigitalModuleProps) {
     },
     // The register panel's RESET — was a chip in the well (owner rule
     // 2026-10-10: every lab control lives in the bottom dock).
-    { kind: 'action', id: 'regreset', label: 'RESET REG', onPress: () => setReg(16384) },
+    // DG-02 (owner 2026-11-15: "build waves 1 thru 3", D62): spelled out (was RESET REG; the register IS the bits).
+    { kind: 'action', id: 'regreset', label: 'RESET BITS', onPress: () => setReg(16384) },
   ];
 
   return (

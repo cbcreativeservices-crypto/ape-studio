@@ -28,7 +28,7 @@ import { reportUnhandledSaveFailure } from '../../../../features/storage/saveFai
 import { registerLocalStoreReset } from '../../../../features/storage/localStoreRegistry';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { holdSessionWork, registerSessionCarry } from '../../../../features/lab/sessionCarry';
-import { LabChip, CollapsibleSection } from '../../LabShell';
+import { CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { GoalCheck, useGoalMet } from '../moduleGoal';
 import { MythReality, dstyles } from '../../digital/bits';
@@ -547,12 +547,11 @@ export function ScopeModule(p: MeterModuleProps) {
     return correlationOf(l, r);
   }, [widthV, phaseDeg]);
 
-  // Riding a Lissajous lane IS entering X-Y mode (cause→effect, zero taps —
-  // the LiveSpectrumEq bellFader idiom).
-  const xyFader = (set: (v: number) => void) => (v: number) => {
-    if (!xy) setXy(true);
-    set(v);
-  };
+  // MT-06 + SH-64 (owner 2026-11-15: "build waves 1 thru 3", D62): WIDTH and PHASE shape only the
+  // X-Y picture, so in TIME they are greyed with a reason and never bind the lane. The dock no longer
+  // opens on PHASE (whose first drag jumped the picture to X-Y, past the card's first step): it opens
+  // on SIGNAL, and PHASE binds the moment X-Y is on.
+  const xyOnly = xy ? undefined : 'it shapes the X-Y picture, so tap X-Y first.';
 
   const params: DockParam[] = [
     {
@@ -579,24 +578,27 @@ export function ScopeModule(p: MeterModuleProps) {
       onToggle: () => setXy((v) => !v),
       helpKey: 'lissajous',
     },
-    {
-      kind: 'fader',
-      id: 'width',
-      label: 'WIDTH',
-      value: widthV,
-      onChange: xyFader(setWidthV),
-      format: () => `${Math.round(widthV * 100)} %`,
-      formatShort: () => `${Math.round(widthV * 100)}%`,
-      helpKey: 'lissajous',
-    },
+    // SH-35 (owner 2026-11-15, D62): PHASE before WIDTH, the order the Phase module's dock uses.
     {
       kind: 'fader',
       id: 'phase',
       label: 'PHASE',
       value: phaseV,
-      onChange: xyFader(setPhaseV),
+      onChange: setPhaseV,
+      locked: xyOnly,
       format: () => `${phaseDeg}° (R vs L)`,
       formatShort: () => `${phaseDeg}°`,
+      helpKey: 'lissajous',
+    },
+    {
+      kind: 'fader',
+      id: 'width',
+      label: 'WIDTH',
+      value: widthV,
+      onChange: setWidthV,
+      locked: xyOnly,
+      format: () => `${Math.round(widthV * 100)} %`,
+      formatShort: () => `${Math.round(widthV * 100)}%`,
       helpKey: 'lissajous',
     },
   ];
@@ -1394,13 +1396,36 @@ export function DetectiveModule(p: MeterModuleProps) {
     setIdx(((next % n) + n) % n);
     setStep(0); // new case → back to its first question
   };
+  // SD-02 (owner 2026-11-15: "build waves 1 thru 3", D62): a new case or question scrolls the well
+  // back to its top, so the new question's title is in sight (the well kept its old scroll spot, and
+  // the top also opens a display the reading had folded). Not on arrival: only after a move.
+  const scrollWellRef = useRef<((y: number) => void) | null>(null);
+  const placeKey = `${idx}-${step}`;
+  const lastPlace = useRef(placeKey);
+  useEffect(() => {
+    if (lastPlace.current === placeKey) return;
+    lastPlace.current = placeKey;
+    scrollWellRef.current?.(0);
+  }, [placeKey]);
 
   // The evidence PINS on the stage (rack law): the unlabeled display stays
   // visible while every question below is read and answered. Case nav = dock
   // action keys; round/score live on the bezel. Named CASE, not PREV / NEXT:
   // those two words mean LAB navigation only (kit/LabNavBar, owner 2026-09-30).
+  // SD-01 (owner 2026-11-15, D62): the question steps moved from a chip row in the well (out of sight
+  // after a wrong answer on a phone) into the dock, inside the case keys, so NEXT QUESTION › is always
+  // in view. Same four words as before; the chip row is gone (a line in, a line out).
   const params: DockParam[] = [
     { kind: 'action', id: 'prev', label: '‹ CASE', onPress: () => goCase(idx - 1) },
+    {
+      kind: 'action',
+      id: 'prevq',
+      label: '‹ PREVIOUS',
+      onPress: () => (step > 0 ? setStep(step - 1) : goCase(idx - 1)),
+    },
+    step < qCount - 1
+      ? { kind: 'action', id: 'nextq', label: 'NEXT QUESTION ›', onPress: () => setStep(step + 1) }
+      : { kind: 'action', id: 'nextq', label: 'NEXT CASE ›', onPress: () => goCase(idx + 1) },
     { kind: 'action', id: 'next', label: 'CASE ›', onPress: () => goCase(idx + 1) },
   ];
 
@@ -1432,22 +1457,13 @@ export function DetectiveModule(p: MeterModuleProps) {
           ),
       }}
     >
+      {(api) => {
+        scrollWellRef.current = api.scrollWellTo;
+        return (
       <View style={styles.well}>
         {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
-            resets cleanly. Move between the case's four questions below. */}
+            resets cleanly. Move between the case's four questions with the dock keys. */}
         <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} onSolved={onSolved} />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="‹ PREVIOUS"
-            selected={false}
-            onPress={() => (step > 0 ? setStep(step - 1) : goCase(idx - 1))}
-          />
-          {step < qCount - 1 ? (
-            <LabChip label="NEXT QUESTION ›" selected={false} onPress={() => setStep(step + 1)} />
-          ) : (
-            <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} />
-          )}
-        </View>
 
         <CollapsibleSection title="THE GRADUATION EXERCISE">
           <Text style={dstyles.body}>
@@ -1466,6 +1482,8 @@ export function DetectiveModule(p: MeterModuleProps) {
         </CollapsibleSection>
         <LessonRow onPress={() => p.help()} />
       </View>
+        );
+      }}
     </RackUnit>
   );
 }

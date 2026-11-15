@@ -425,7 +425,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the hand strikes the head. What else starts to sound?', options: ['The jingles, jolted against each other', 'Nothing else — only the head sounds', 'The player’s other hand on the frame'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the head and the jingles.' },
+  sound: { prompt: 'Before you step through: the hand strikes the head. What else starts to sound?', options: ['The jingles, jolted against each other', 'Nothing else — only the head sounds', 'The player’s other hand on the frame'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the head and the jingles.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you aim the mic from straight at the instrument to edge-on at the rim. What changes?', options: ['More head body', 'More bright jingle', 'It depends on this tambourine'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

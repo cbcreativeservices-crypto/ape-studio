@@ -261,9 +261,12 @@ describe('Phase 2 · end-screen guides start state-neutral', () => {
 describe('Phase 2 · each unfinished row names what is missing', () => {
   it('Tuning: one task line per chapter, shown only while the chapter is not done; the shared rule once', () => {
     const idx = read(`${LAB}/tuning/chapters/index.ts`);
-    const block = idx.slice(idx.indexOf('export const CHAPTER_FINISH'));
-    const keys = [...block.matchAll(/^\s+(\d+): 'Still to do: /gm)].map((m) => Number(m[1]));
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-03): the tasks live once in
+    // CHAPTER_TASK; WHAT'S LEFT prefixes "Still to do: " and the chapter itself "To finish: ".
+    const block = idx.slice(idx.indexOf('export const CHAPTER_TASK'), idx.indexOf('export const CHAPTER_FINISH'));
+    const keys = [...block.matchAll(/^\s+(\d+): '/gm)].map((m) => Number(m[1]));
     assert.deepEqual(keys, [...Array(14).keys()]);
+    assert.match(idx, /\[k, `Still to do: \$\{t\}`\]/);
     const s = read(`${LAB}/tuning/TuningLabScreen.tsx`);
     assert.match(s, /detail: endCleared\.has\(String\(c\.index\)\) \? undefined : CHAPTER_FINISH\[c\.index\]/);
     assert.match(s, /howItCounts="A chapter counts once its own task is done/);

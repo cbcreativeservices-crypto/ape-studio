@@ -57,10 +57,11 @@ type Ratio = { id: string; n1: number; n2: number; label: string; interval: stri
 const RATIOS: Ratio[] = [
   { id: 'unison', n1: 1, n2: 1, label: '1 : 1', interval: 'unison', short: 'unison' },
   { id: 'octave', n1: 1, n2: 2, label: '1 : 2', interval: 'octave', short: 'octave' },
-  { id: 'fifth', n1: 2, n2: 3, label: '2 : 3', interval: 'perfect fifth', short: 'P5' },
-  { id: 'fourth', n1: 3, n2: 4, label: '3 : 4', interval: 'perfect fourth', short: 'P4' },
-  { id: 'majthird', n1: 4, n2: 5, label: '4 : 5', interval: 'major third', short: 'M3' },
-  { id: 'minthird', n1: 5, n2: 6, label: '5 : 6', interval: 'minor third', short: 'm3' },
+  // Words, not codes (owner 2026-11-15, D62 CY-03): was P5, P4, M3, m3.
+  { id: 'fifth', n1: 2, n2: 3, label: '2 : 3', interval: 'perfect fifth', short: 'fifth' },
+  { id: 'fourth', n1: 3, n2: 4, label: '3 : 4', interval: 'perfect fourth', short: 'fourth' },
+  { id: 'majthird', n1: 4, n2: 5, label: '4 : 5', interval: 'major third', short: 'maj 3rd' },
+  { id: 'minthird', n1: 5, n2: 6, label: '5 : 6', interval: 'minor third', short: 'min 3rd' },
   { id: 'tritone', n1: 5, n2: 7, label: '5 : 7', interval: 'tritone (near)', short: 'tritone' },
 ];
 type ViewId = 'waves' | 'lissajous' | 'spectrum';
@@ -425,14 +426,14 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
       </Text>
       <Text style={P.caption}>
         {!tone.engineReady
-          ? 'Update the app to hear this sound.'
+          ? 'This sound can’t play on this device.'
           : tone.detuned
             ? tone.dualReady
               ? 'PLAY: two free sines summed in one channel — the beats you see are the beats you hear.'
               : 'A detuned pair is SHOWN only — this version of the app plays one locked pair at a time, not two free tones. Set DETUNE back to lock to hear the ratio.'
             : tone.additiveReady
               ? `PLAY sounds the pair EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${formatHz(base)}, built by additive synthesis.`
-              : 'Update the app to hear the locked ratios played.'}
+              : 'The locked ratios can’t be played on this device.'}
       </Text>
       {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
       {tone.detuned ? (

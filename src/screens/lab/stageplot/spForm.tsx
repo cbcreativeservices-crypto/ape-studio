@@ -29,7 +29,7 @@ import { Modal, useAfterModalsClose } from '../../../components/DimModal';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import { useScreenGuideWork } from '../../../features/lab/screenGuide/introHold';
 import type { SpIssue, SpIssueAction, SpIssueLevel } from '../../../features/stageplot/spReview';
-import { spFoldRowSay } from '../../../features/stageplot/spSetupFolds';
+import { SP_FOLD_CLOSE_WORD, SP_FOLD_OPEN_WORD, spFoldRowSay } from '../../../features/stageplot/spSetupFolds';
 import { fitValue } from '../../../theme/legibility';
 import { colors, fonts } from '../../../theme/tokens';
 import { spIssueActionLabel } from './spIssueActions';
@@ -46,7 +46,20 @@ const WIDTH: Record<FieldWidth, `${number}%`> = { full: '100%', half: '47.5%', t
 
 /* ── layout ─────────────────────────────────────────────────────────────── */
 
-export function Section(p: { title: string; hint?: string; right?: ReactNode; children: ReactNode }) {
+/** A section that can be FOLDED (beginner waves 2026-11-15, PLOT-02): the
+ *  same closed row as Setup's parts, with what it holds now in a line. */
+export type SectionFold = { summary: string; ask?: string | null; open: boolean; onToggle: () => void };
+
+export function Section(p: { title: string; hint?: string; right?: ReactNode; children: ReactNode; fold?: SectionFold }) {
+  // a folded section is Setup's FoldSection: the title, its line, GO DEEPER ▾
+  if (p.fold) {
+    return (
+      <FoldSection title={p.title} hint={p.hint} summary={p.fold.summary} ask={p.fold.ask} open={p.fold.open} onToggle={p.fold.onToggle} openWord={SP_FOLD_OPEN_WORD} closeWord={SP_FOLD_CLOSE_WORD}>
+        {p.right ? <View style={styles.sectionRight}>{p.right}</View> : null}
+        {p.children}
+      </FoldSection>
+    );
+  }
   return (
     <View style={styles.section}>
       <View style={styles.sectionHead}>

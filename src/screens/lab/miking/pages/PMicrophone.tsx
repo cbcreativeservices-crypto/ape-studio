@@ -22,7 +22,7 @@ import { PolarCompare } from '../engine/scene/PolarCompare';
 import { isDishType } from '../engine/scene/MicCloseUp';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
-import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../engine/physics/polar.ts';
+import { gainDb, isModelled, nullAngles, PATTERN_BLURBS, PATTERN_LABELS } from '../engine/physics/polar.ts';
 import { fmtDb, fmtIdealPickup, isDeepNull } from '../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
@@ -158,7 +158,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
         selectedId: pat,
         onSelect: (id) => setPattern(id as MicPattern),
         sticky: true,
-        options: t.patterns.map((p) => ({ id: p.id, label: p.label })),
+        options: t.patterns.map((p) => ({ id: p.id, label: p.label, blurb: PATTERN_BLURBS[p.id] })),
       },
     ],
     [angle, pickup, t, typeId, pat, lesson.micTypeIds],

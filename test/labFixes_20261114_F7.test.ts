@@ -75,7 +75,8 @@ describe('F7-3 · Equalizer grays out what the filter shape ignores (quick win 1
   const cfg = code('src/screens/lab/fxLabConfigs.tsx');
   it('the frame: an ignored param reads "—" in gray on the bezel and LOCKED in the dock', () => {
     assert.match(fx, /ignoredBy\?: \(paramId: number, values: Record<number, number>\) => string \| undefined;/);
-    assert.match(fx, /\? \{ k: b\.k, v: '—', tint: IGNORED_TINT, helpKey: p\.lessonKey, caption: b\.caption \}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the cell also forwards kNarrow.
+    assert.match(fx, /\? \{ k: b\.k, kNarrow: b\.kNarrow, v: '—', tint: IGNORED_TINT, helpKey: p\.lessonKey, caption: b\.caption \}/);
     assert.equal((fx.match(/locked: ignored\(p\.paramId\),/g) ?? []).length, 2, 'fader and options keys both lock');
   });
   it('eqConfig: GAIN on both pass filters, Q on the high-pass only', () => {
@@ -147,8 +148,10 @@ describe('F7-6 · silent first step in every effect lab’s EXPLORE start', () =
     ['src/screens/lab/compressionScreenGuides.ts', 'COMPRESSION_SCREEN_GUIDES', /^Drag THRESH down and watch the amber strip under OUT/],
     ['src/screens/lab/gateScreenGuides.ts', 'GATE_SCREEN_GUIDES', /^Drag THRESH up to −20 dB/],
     ['src/screens/lab/limiterScreenGuides.ts', 'LIMITER_SCREEN_GUIDES', /^Drag CEILING down and watch OUT/],
-    ['src/screens/lab/delayScreenGuides.ts', 'DELAY_SCREEN_GUIDES', /^Set FDBK to 0% and watch ▸ OUT/],
-    ['src/screens/lab/reverbScreenGuides.ts', 'REVERB_SCREEN_GUIDES', /^Drag RT60 from 0\.40 s to 6\.0 s/],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items DL-01 and RV-04): Delay opens at FDBK 0%,
+    // so its start just watches; Reverb's start names rooms, with RT60 in the shared words.
+    ['src/screens/lab/delayScreenGuides.ts', 'DELAY_SCREEN_GUIDES', /^Watch ▸ OUT: each gray click comes back once, as a blue echo/],
+    ['src/screens/lab/reverbScreenGuides.ts', 'REVERB_SCREEN_GUIDES', /^Drag RT60 \(decay time\) up, from a small room toward a big hall/],
     ['src/screens/lab/chorusScreenGuides.ts', 'CHORUS_SCREEN_GUIDES', /^Watch the bold line on OUT for a few seconds/],
     ['src/screens/lab/flangerScreenGuides.ts', 'FLANGER_SCREEN_GUIDES', /^Drag CENTER from 2\.0 ms down to 0\.50 ms/],
     ['src/screens/lab/binauralScreenGuides.ts', 'BINAURAL_SCREEN_GUIDES', /^Slide AZ from 0° to \+90°, or drag object 1/],
@@ -239,8 +242,14 @@ describe('F7 phase 2 · silent learner (S3 API)', () => {
 describe('F7 phase 2 · first-visit bezel captions (S3 API)', () => {
   it('every effect-lab bezel cell has a caption of at most 14 characters', () => {
     const cfg = read('src/screens/lab/fxLabConfigs.tsx');
-    const cells = [...cfg.matchAll(/\{ k: '[^']+', paramId: [^,}]+(?:, caption: '([^']*)')? \}/g)];
-    assert.ok(cells.length >= 35);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items ST-01 and RV-01): a cell may carry a
+    // shorter kNarrow key (Stereo's MONO CHECK → MONO, Reverb's DECAY TIME) before or after its paramId.
+    const cells = [...cfg.matchAll(/\{ k: '[^']+',(?: kNarrow: '[^']+',)? paramId: [^,}]+(?:, caption: '([^']*)')?(?:, kNarrow: '[^']+')? \}/g)];
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): Reverb's first cell is built
+    // from the shared PLAIN_TERMS.rt60 (a template key, DECAY TIME (RT60)) and its words ARE the plain
+    // meaning, so it carries no caption: a caption would be a second definition of RT60 (guardrail 3).
+    assert.match(cfg, /\{ k: `\$\{REVERB_RT60_WORDS\} \(\$\{PLAIN_TERMS\.rt60\.term\}\)`, kNarrow: REVERB_RT60_WORDS, paramId: P\.rt60 \}/);
+    assert.ok(cells.length >= 34);
     for (const c of cells) {
       assert.ok(c[1], `no caption: ${c[0]}`);
       assert.ok(c[1].length <= 14, c[1]);
@@ -450,7 +459,8 @@ describe('F7 phase 3 · done = work done (decision 1)', () => {
 
 describe('F7 phase 3 · one progress word per lab (decision 3)', () => {
   it('the EQ Lab calls its units modules, never lessons', () => {
-    assert.match(read('src/screens/lab/eq/EqLabHomeScreen.tsx'), /Modules build in a deliberate order/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item EQL-05): the top line was rewritten; still "modules".
+    assert.match(read('src/screens/lab/eq/EqLabHomeScreen.tsx'), /Start at module 1 and take the modules in order/);
     assert.doesNotMatch(read('src/screens/lab/eq/eqScreenGuides.ts'), /the next lesson/);
   });
 });

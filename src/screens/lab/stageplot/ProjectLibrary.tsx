@@ -39,7 +39,7 @@ import {
   useSpLibraryFace,
   useSpProjects,
 } from '../../../features/stageplot/spStore';
-import { SP_TEMPLATES, spFromTemplate, type SpTemplateId } from '../../../features/stageplot/spTemplates';
+import { SP_BLANK_LEARN_LINE, SP_TEMPLATES, spFromTemplate, type SpTemplateId } from '../../../features/stageplot/spTemplates';
 import type { SpProject } from '../../../features/stageplot/spTypes';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
@@ -223,8 +223,10 @@ export function ProjectLibrary({ onOpen }: { onOpen: (project: SpProject, saveSt
           <RowCard
             key={t.id}
             title={t.name}
-            subtitle={t.id === 'blank' ? t.assumes : `Assumes: ${t.assumes}`}
-            right={<Button label="START" tone="primary" disabled={full} onPress={() => start(t.id)} a11yLabel={`Start from ${t.name}`} />}
+            // the learning path is the ONE marked start: its line says so, and
+            // only its START is filled; an example's START is outlined (PLOT-08)
+            subtitle={t.id === 'blank' ? SP_BLANK_LEARN_LINE : `Assumes: ${t.assumes}`}
+            right={<Button label="START" tone={t.id === 'blank' ? 'primary' : 'plain'} disabled={full} onPress={() => start(t.id)} a11yLabel={t.id === 'blank' ? `Start from ${t.name}: recommended for learning, it completes this lab` : `Start from ${t.name}`} />}
           />
         ))}
       </Section>

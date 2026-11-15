@@ -29,7 +29,7 @@ import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { colors } from '../../../../theme/tokens';
 import { GaRack, masterKey } from '../GaLab';
-import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { ActivityLog, Do, GoalChips, Look, Note, P, ProNote, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
 import { GA_TAKES_MAX, type GaOptions } from '../model/gaModel';
 import { gaDispatch, gaGet, useGa } from '../model/gaStore';
@@ -39,7 +39,10 @@ import { G09 } from './guides/p09';
 import { doorKey, useSince } from './shared';
 
 const ASSETS: readonly string[] = [...CHB_FOOTSTEP_ASSETS, 'door', 'door_close', 'door_rattle'];
-const TERMS = gaTerms('Sound variation', 'Random container', 'Sequence container', 'Avoid-repeat setting', 'Machine-gun effect', 'Pitch randomization');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01, GA-07): the row keeps the words of the idea; the two container
+// names are Wwise's, so they go with that sentence into the PRO NOTE at the end of step 1
+const TERMS = gaTerms('Sound variation', 'Avoid-repeat setting', 'Machine-gun effect', 'Pitch randomization');
+const PRO_TERMS = gaTerms('Random container', 'Sequence container');
 
 /** Change one setting, only if it really changes (the model counts each one). */
 function setOption<K extends 'variation' | 'avoidRepeat' | 'doorRattle'>(key: K, value: GaOptions[K]): void {
@@ -129,12 +132,15 @@ function Page({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>Each STEP is one foot contact on the stone path. The strip under the picture shows the last eight takes.</Look>
-        <P>The ear notices an exact repeat immediately, so a footstep event holds several takes. A take is one version of the same sound. The event picks one take each time and changes its level and pitch a little.</P>
-        <P>A holder that picks at random is a random container. One that plays in a set order is a sequence container. These are Wwise’s names: page 22 has the others. Every take must still sound like the same shoe.</P>
+        <P>The ear notices an exact repeat immediately, so a footstep event holds several takes. A take is one version of the same sound. The event picks one take each time and changes its level and pitch a little. Every take must still sound like the same shoe.</P>
         <Terms items={TERMS} />
+        <ProNote hint="Pro note: the names of the holders that pick a take.">
+          <P>A holder that picks at random is a random container. One that plays in a set order is a sequence container. These are Wwise’s names: page 22 has the others.</P>
+          <Terms items={PRO_TERMS} />
+        </ProNote>
       </Step>
       <Step n={2}>
-        <Do>In SETUP, switch VARIATION off. Close the tray and press STEP four times. Switch VARIATION on and step again.</Do>
+        <Do parts={['In SETUP, switch VARIATION off.', 'Close the tray and press STEP four times.', 'Switch VARIATION on and step again.']} />
         <P>With variation off, every START line reads take 1 of 4, and the strip joins the takes as SAME TAKE. With it on, the takes change and none plays twice in a row, unless AVOID REPEAT is off.</P>
         <ActivityLog state={s} lines={5} />
       </Step>

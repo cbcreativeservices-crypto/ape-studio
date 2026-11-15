@@ -200,6 +200,11 @@ export type FxFaderSpec = {
    *  inventing a home for a delay time would teach a relationship that does
    *  not exist. */
   home?: number;
+  /** How many equal steps the lane has (rack `DockParam.steps`): the lane's
+   *  − / + keys then move exactly one step per tap. Phase's DELAY R: 100
+   *  steps of 0.1 ms over 0–10 ms, so the 1.1 ms and 2.3 ms the steps quote
+   *  can be set exactly (owner 2026-11-15: "build waves 1 thru 3", D62 PH-06). */
+  steps?: number;
 };
 
 export type FxParamSpec = {
@@ -210,6 +215,10 @@ export type FxParamSpec = {
   paramId: number;
   /** Guided-lesson control key (content.ts) — omitted = opens the lab lesson. */
   lessonKey?: string;
+  /** A few plain words after the section head inside a GROUP tray, on the same
+   *  line ("ATTACK · how fast it grabs"; owner 2026-11-15: "build waves 1 thru
+   *  3", D62 CMP-02). No new element: it rides inside the head's Text. */
+  hint?: string;
   /** Per-choice tray blurb (owner 2026-08-28) — author for CONCEPTUAL choices
    *  (filter types, modes); numeric teaching values stay label-only. */
   choices: { label: string; value: number; blurb?: string }[];
@@ -282,7 +291,15 @@ export type FxLabConfig = {
   fixed?: { paramId: number; value: number }[];
   /** Bezel legend cells (short ALL-CAPS keys, ≤4 — keep 3 where the LIVE GR
    *  cell auto-appends via `pollGr`; the SOURCE reads on its dock key). */
-  bezel: { k: string; paramId: number; /** First-visit plain words (S3 `BezelItem.caption`, ≤ 14 chars). */ caption?: string }[];
+  bezel: {
+    k: string;
+    paramId: number;
+    /** First-visit plain words (S3 `BezelItem.caption`, ≤ 14 chars). */
+    caption?: string;
+    /** A shorter key for a cell too narrow for `k` (rack `BezelItem.kNarrow`;
+     *  Reverb's DECAY TIME (RT60) → DECAY TIME, owner 2026-11-15 D62 RV-01). */
+    kNarrow?: string;
+  }[];
   /** 2–3 INTERACTING params folded into ONE group tray so the dock stays ≤5
    *  keys. Grouped params drop their individual dock buttons. */
   dockGroups?: {
@@ -657,8 +674,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     ...config.bezel.map((b) => {
       const p = paramById(b.paramId);
       return ignored(b.paramId)
-        ? { k: b.k, v: '—', tint: IGNORED_TINT, helpKey: p.lessonKey, caption: b.caption }
-        : { k: b.k, v: compactValue(p), helpKey: p.lessonKey, caption: b.caption };
+        ? { k: b.k, kNarrow: b.kNarrow, v: '—', tint: IGNORED_TINT, helpKey: p.lessonKey, caption: b.caption }
+        : { k: b.k, kNarrow: b.kNarrow, v: compactValue(p), helpKey: p.lessonKey, caption: b.caption };
     }),
     // LIVE measured GR (dynamics labs) — fxGrStatus, never simulated.
     ...(config.pollGr
@@ -696,10 +713,18 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           <View style={{ gap: 10 }}>
             {g.paramIds.map((pid) => {
               const gp = paramById(pid);
+              // A member the settings ignore (ignoredBy) is grayed with its
+              // reason in the hint's place (owner 2026-11-15: "build waves 1
+              // thru 3", D62 SH-64, as the Equalizer's dock keys do). Its
+              // chips still answer a tap, so the value is ready when it counts.
+              const why = ignored(pid);
               return (
                 <View key={pid} style={{ gap: 8 }}>
-                  <Text style={styles.sectionHead}>{gp.label}</Text>
-                  <View style={styles.chipRow}>
+                  <Text style={styles.sectionHead}>
+                    {gp.label}
+                    {why ? <Text style={styles.sectionHint}> · {why}</Text> : gp.hint ? <Text style={styles.sectionHint}> · {gp.hint}</Text> : null}
+                  </Text>
+                  <View style={[styles.chipRow, why ? styles.chipRowIgnored : null]}>
                     {gp.choices.map((c) => (
                       <LabChip
                         key={c.label}
@@ -727,6 +752,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         format: () => s.format(values[p.paramId]),
         formatShort: s.formatShort ? () => s.formatShort!(values[p.paramId]) : undefined,
         home: s.home != null ? faderPos(s, s.home) : undefined,
+        steps: s.steps,
         helpKey: p.lessonKey,
         locked: ignored(p.paramId),
       });
@@ -959,7 +985,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
 const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chipRowIgnored: { opacity: 0.45 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
+  sectionHint: { fontFamily: fonts.barlowMedium, fontSize: 12.5, letterSpacing: 0, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },

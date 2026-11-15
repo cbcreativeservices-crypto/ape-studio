@@ -163,7 +163,7 @@ const LOUDTP: Workspace = {
     'requires the full gated K-weighted algorithm on the audio; true peak requires oversampling to at least 192 kHz (4× at 48 kHz).',
   glossary: ['LUFS', 'True Peak', 'K-weighting', 'Loudness', 'Gating'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate, to size the measurement windows.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Sample rate, to size the measurement windows.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'lufsA', name: 'LOUDNESS A (LUFS)', quantity: 'number', signed: true, ...lufsField('LOUDNESS A (LUFS)'), placeholder: '-14', help: 'First loudness value to compare, in LUFS.' },
     { key: 'lufsB', name: 'LOUDNESS B (LUFS)', quantity: 'number', signed: true, ...lufsField('LOUDNESS B (LUFS)'), placeholder: '-20', help: 'Second loudness value to compare, in LUFS.' },
     { key: 'samplePeak', name: 'SAMPLE PEAK (dBFS)', quantity: 'number', signed: true, placeholder: '-0.1', help: 'The peak read by a sample-based meter, in dBFS.' },

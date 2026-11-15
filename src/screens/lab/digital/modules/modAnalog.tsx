@@ -318,7 +318,7 @@ export function AnalogModule(p: DigitalModuleProps) {
         bezel: [
           { k: 'FREQ', v: wave === 'noise' ? 'broadband' : `${freq} Hz`, helpKey: 'source' },
           { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms`, helpKey: 'waveform_view', caption: 'one cycle' },
-          { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
+          { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—', helpKey: 'waveform_view', caption: 'top of 1.0' },
           { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—', helpKey: 'waveform_view', caption: 'average' },
         ],
         render: (w, h) =>
@@ -360,16 +360,20 @@ export function AnalogModule(p: DigitalModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <Badge text="Peak, RMS and crest are measured from the wave on screen." />
-        <ReadoutGrid
-          help={p.help}
-          helpKey="waveform_view"
-          items={[
-            { k: 'CREST FACTOR', v: stats ? `${stats.crestDb.toFixed(1)} dB` : '—' },
-            { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
-          ]}
-        />
-        <Badge text="Square, saw, triangle and impulse are band-limited (12 harmonics): real shapes, without perfectly sharp corners." />
+        {/* DG-01 / DG-05 (owner 2026-11-15: "build waves 1 thru 3", D62): the page opens on its one
+            core idea; crest, polarity and the band-limited note fold away under MORE DETAIL. */}
+        <CollapsibleSection title="MORE DETAIL" startOpen={false}>
+          <Badge text="Peak, RMS and crest are measured from the wave on screen." />
+          <ReadoutGrid
+            help={p.help}
+            helpKey="waveform_view"
+            items={[
+              { k: 'CREST FACTOR', v: stats ? `${stats.crestDb.toFixed(1)} dB` : '—' },
+              { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
+            ]}
+          />
+          <Badge text="Square, saw, triangle and impulse are band-limited (12 harmonics): real shapes, without perfectly sharp corners." />
+        </CollapsibleSection>
 
         <MythReality
           myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
@@ -789,6 +793,9 @@ export function SamplingModule(p: DigitalModuleProps) {
         size: 'L', // the sampling scene is the star
         // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
         modelNote: 'Each dot measures the continuous signal; below Nyquist the dots describe it fully.',
+        // SH-12 (owner 2026-11-15: "build waves 1 thru 3", D62): only while sound is off; true here, as the
+        // one listening step (HEAR THE FOLD) is tagged NEEDS SOUND and says what it would play.
+        soundOffLine: 'Sound off? Every step still works: READS AS and the red ALIAS curve show the fold you would hear.',
         onGuide: () => p.help('sample_rate'),
         bezel: [
           // RATE, never FS (beginner audit 2026-11-14): FS means FULL SCALE on

@@ -73,7 +73,7 @@ import { StagePalette } from './stage/StagePalette';
 import { StagePlanView } from './stage/StagePlanView';
 import { StageStepScroll, stageSheetScrollHeight, stageTrayScrollHeight } from './stage/StageStepScroll';
 import { STAGE_KEY_SHARE, STAGE_VIEW_FIT, STAGE_ZOOM_MAX, stageFacingShort, stageFacingWord, stageGlassWidthGuess, stageKeyLayout, stageScaleNote, stageSizeWords, stageZoomTo, type Pt, type StageView } from './stage/stageGeom';
-import { STAGE_NEW_SPOT, stageKeyEntries, stageListName, stageListOrder, stagePlace, stageSelectedObjectId, stageSelectionName, stageUnplaced, stageWhere, type StageAdded } from './stage/stageLinks';
+import { STAGE_NEW_SPOT, stageKeyEntries, stageKeyFoot, stageListName, stageListOrder, stagePlace, stageSelectedObjectId, stageSelectionName, stageUnplaced, stageWhere, type StageAdded } from './stage/stageLinks';
 
 /** The TURN lane moves in 5° steps (0…355). */
 const turnOf = (v: number): number => (Math.round((Math.max(0, Math.min(1, v)) * 360) / 5) * 5) % 360;
@@ -380,7 +380,7 @@ export function StageArea() {
   // THE KEY under the stage is part of the display, so the display grows by
   // the key's height: the stage keeps its room, and the well keeps its
   // minimum (the rack still clamps the glass for the dock and the well).
-  const keyHeight = Math.ceil(stageKeyLayout(stageKeyEntries(p.objects), stageGlassWidthGuess(winW), scaleNote).height);
+  const keyHeight = Math.ceil(stageKeyLayout(stageKeyEntries(p.objects), stageGlassWidthGuess(winW), scaleNote, stageKeyFoot(p, numbers)).height);
   // the key asks for no more than its share: past it, it scrolls inside the
   // display (stageKeySplit), so a long key never takes the stage's room
   const stageBase = Math.max(250, Math.min(320, Math.round(winH * 0.36)));

@@ -145,7 +145,7 @@ function CycleStrip({ w, h, levels, start, len, label }: { w: number; h: number;
         <Path path={trace} style="stroke" strokeWidth={1.4} color="#cfd6e2" />
       </Canvas>
       <Text style={[styles.cap, { top: 3, left: Lx, right: 6, fontSize: 9.5 * k }]} {...fitValue(9.5 * k)}>
-        RELATIVE dB · A MADE-UP CYCLE, NOT A MEASUREMENT
+        Relative dB · a made-up cycle, not a measurement
       </Text>
       {marks.map(([t, word], i) => (
         <Text key={word} style={[styles.mark, { top: T + 2 + (i % 2) * 12 * k, left: xOf(t) + 3, fontSize: 9 * k }]} {...fitValue(9 * k)}>

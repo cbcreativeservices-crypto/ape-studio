@@ -7,7 +7,7 @@ import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.
 export const G11: ScreenGuide = {
   intro: {
     learning: 'How a game places a sound: an emitter, a listener, and a distance rule with a minimum and a maximum. Left and right pan is not complete 3D.',
-    start: 'Open SOURCES, switch GENERATOR 1 and SCENE on and press OPEN DOOR. Move FACING and press STEP, and watch DISTANCE and PAN. Then turn your back to the source and read PAN again.',
+    start: 'Open SOURCES, switch GENERATOR 1 and SCENE on and press OPEN DOOR. Move FACING and drag WALK, and watch DISTANCE and PAN. Then turn your back to the source and read PAN again.',
   },
   seeing: [
     'You are looking down on the scene. Two dashed rings surround the source you chose: MIN, where it is at full level, and MAX, where it becomes silent.',
@@ -16,7 +16,7 @@ export const G11: ScreenGuide = {
   ],
   control: [
     'FACING turns you, in steps of 5°. The slider controls it when the page opens.',
-    'STEP walks you 0.7 m the way you face. If a wall, the closed door or the edge of the scene stops you, a NOTE in the log says why.',
+    'WALK moves you along the stone path, west to east, and turns you the way you walk. ‹ STEP WEST and STEP EAST › at its ends walk 0.7 m, with a footstep. If the wall or the closed door stops you, a NOTE in the log says why.',
     'SOURCES chooses which source the rings and the readouts measure, GENERATOR 1 or FOUNTAIN. It also switches GENERATOR 1 and SCENE on and off, and holds the door key.',
     'On the SOURCES key, ALL OFF, GEN 1 ON, SCENE ON or BOTH ON tells you what is switched on. GEN 1 is short for GENERATOR 1.',
   ],
@@ -32,8 +32,8 @@ export const G11: ScreenGuide = {
     'Pan and level cannot tell front from back or above from below.',
   ],
   tryThis: [
-    'Choose FOUNTAIN and walk toward it. At half the DISTANCE the level on the card is 6 dB higher. Start closer than 7 m and stop before the MIN ring: the rule holds between the two.',
+    'Choose FOUNTAIN and drag WALK toward it. At half the DISTANCE the level on the card is 6 dB higher. Start closer than 7 m and stop before the MIN ring: the rule holds between the two.',
     'Move FACING until DIRECTION on the card says “straight behind”. PAN comes back close to the center, as it does when the source is ahead of you.',
-    'In the courtyard, with GENERATOR 1 on and straight behind you, press STEP until STATUS reads VIRTUAL. Turn around and walk back: the log says it is played again.',
+    'In the courtyard, with GENERATOR 1 on and straight behind you, drag WALK west until STATUS reads VIRTUAL. Walk back east: the log says it is played again.',
   ],
 };

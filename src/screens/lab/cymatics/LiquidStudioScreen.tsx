@@ -60,6 +60,7 @@ import { requireVizLiquid, skiaAvailable } from './skiaGate';
 import type { LiquidViewMode } from './vizLiquid';
 import { useDriveTone } from './useDriveTone';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { STUDIO_RELATION } from './homePath';
 import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 
 const F_MIN = 10;
@@ -474,7 +475,7 @@ function LiquidStudio() {
               ? 'A sine isolates one drive frequency — the cleanest demonstration.'
               : spec.waveform === 'pulse'
                 ? 'Tone bursts (four per second) at the drive frequency — the surface builds and relaxes each burst.'
-                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'you hear them as well as see them' : 'shown only — update the app to hear them'}). Faraday onset still keys on the fundamental.`}
+                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'you hear them as well as see them' : 'shown only, not heard on this device'}). Faraday onset still keys on the fundamental.`}
           </Text>
           <Text style={styles.trayHead}>RUN</Text>
           <View style={styles.chips}>
@@ -530,7 +531,9 @@ function LiquidStudio() {
     { k: 'DRIVE', v: formatHz(freq), helpKey: 'frequency', caption: 'tone fed in' },
     { k: 'RESP', v: st.subharmonic ? `${formatHz(fr.responseHz)} f/2` : `${formatHz(freq)} f`, helpKey: 'faraday', caption: 'waves move at' },
     { k: 'SHAKE', v: `${accel.toFixed(2)} g`, helpKey: 'acceleration', caption: 'how hard' },
-    { k: 'a/a꜀', v: ratioLabel, tint, helpKey: 'threshold', flex: 1.1, caption: 'vs threshold' },
+    // ENOUGH, not "a/a꜀" (owner 2026-11-15, D62 CY-03): your shake as a
+    // multiple of the shake the pattern needs. The number is unchanged.
+    { k: 'ENOUGH', v: ratioLabel, vA11y: ratioLabel === '—' ? 'no threshold in range' : `${st.ratio.toFixed(2)} times the shake needed`, tint, helpKey: 'threshold', flex: 1.1, caption: 'shake needed' },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
@@ -538,6 +541,12 @@ function LiquidStudio() {
     st.stage === 'flat' || st.stage === 'sloshing' || st.stage === 'ripples' || st.stage === 'damped'
       ? 'SIMULATION · CALCULATED dish modes · APPROXIMATED threshold'
       : `SIMULATION · APPROXIMATED — Faraday pattern map (${FAMILY_LABEL[st.family].toLowerCase()})`;
+  // The disclosure in plain words on screen (owner 2026-11-15, D62 CY-03).
+  // `badge` still rides with a saved pattern.
+  const modelNote =
+    st.stage === 'flat' || st.stage === 'sloshing' || st.stage === 'ripples' || st.stage === 'damped'
+      ? 'A simulation: the dish modes are calculated; the threshold is approximate.'
+      : `An approximate simulation: a map of the Faraday pattern (${FAMILY_LABEL[st.family].toLowerCase()}).`;
   // SAVE → the Pattern Gallery (Phase 4): the full state (dualRatio rides in
   // specLive), never a picture; the badge it carried rides along.
   // One save per press: SAVE stays disabled until the write settles, and the
@@ -574,7 +583,8 @@ function LiquidStudio() {
         checkTitle={CYMATICS_CHECK_TITLE}
         title="LIQUID CYMATICS STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
-        intro="A shallow dish on a shaker. Below a threshold the liquid just rides the platform; above it the surface breaks into standing Faraday waves that oscillate at HALF the drive frequency. Which pattern appears depends on the liquid, the depth, the dish and how hard it is shaken — not on the frequency alone."
+        // The first sentence says how the studio relates to the modules (owner 2026-11-15, D62 CY-02); "A shallow dish on a shaker" moved into it.
+        intro={`${STUDIO_RELATION.liquid} Below a threshold the liquid in the dish just rides the shaker; above it the surface breaks into standing Faraday waves that oscillate at HALF the drive frequency. Which pattern appears depends on the liquid, the depth, the dish and how hard it is shaken — not on the frequency alone.`}
         exploreCaption="Raise SHAKE past the threshold and watch the stage ladder climb. Swap the liquid, the depth or the dish and the same drive stops working — or works differently."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -588,6 +598,9 @@ function LiquidStudio() {
           stage: {
             size: 'L',
             badge,
+            // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+            soundOffLine: 'Sound off? Turn on Silent drive in DRIVE: the figure and every readout still work.',
+            modelNote,
             onGuide: () => openLesson('liquid_display'),
             bezel,
             hideDragTag: true, // SHAKE (the bound lane) is printed on the bezel
@@ -620,7 +633,7 @@ function LiquidStudio() {
                 />
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>This version of the app can’t draw the dish. Controls and readouts still work; update the app to see it.</Text>
+                  <Text style={styles.noSkiaText}>The dish can’t be drawn on this device. Controls and readouts still work.</Text>
                 </View>
               ),
           },

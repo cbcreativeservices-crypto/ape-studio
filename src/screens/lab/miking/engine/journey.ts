@@ -30,11 +30,41 @@ export const STAGES: readonly Stage[] = [
   { id: 'setups', title: 'Mic it — where the mics go', line: 'Real mic setups, drawn where the mic goes: one mic, two mics, close and farther back.', pages: ['setups'] },
   { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — seen where the mic goes.', pages: ['microphone'] },
   { id: 'placement', title: 'Placement Studio', line: 'Start from a setup, then move the mic and see what changes.', pages: ['placement'] },
-  { id: 'advanced', title: 'Advanced', line: 'Studio or live, two microphones, troubleshooting.', pages: ['context', 'twoMic', 'troubleshoot'] },
+  { id: 'advanced', title: 'Advanced', line: 'Studio or live, two microphones, troubleshooting. Fine to skim on a first pass.', pages: ['context', 'twoMic', 'troubleshoot'] },
   { id: 'practice', title: 'Practice', line: 'Set up in order, choose and justify a setup, a mixed review.', pages: ['practice'] },
 ];
 
 export const FOUNDATION_PAGES: readonly PageId[] = ['meet', 'setups'];
+
+/**
+ * The module numbers a stage covers, as the journey map prints them: "1",
+ * "5–7" (beginner waves 2026-11-15, MK-02; owner: "build waves 1 thru 3").
+ * The map used to read "THE JOURNEY · 6 STAGES" beside a strip that counts
+ * eight modules; it now numbers each row by its modules. Pure.
+ */
+export function stageModules(stage: Stage): string {
+  const nums = stage.pages.map((p) => PAGE_IDS.indexOf(p) + 1).filter((n) => n > 0);
+  if (!nums.length) return '';
+  const lo = Math.min(...nums);
+  const hi = Math.max(...nums);
+  return lo === hi ? `${lo}` : `${lo}–${hi}`;
+}
+
+/** The ADVANCED modules (5 to 7): every one open, and fine to skim on a first
+ *  pass (beginner waves 2026-11-15, MK-10; owner: "build waves 1 thru 3"). */
+export const ADVANCED_PAGES: readonly PageId[] = STAGES.find((s) => s.id === 'advanced')?.pages ?? [];
+export const isAdvanced = (page: PageId): boolean => ADVANCED_PAGES.includes(page);
+/** Said on an advanced module's goal line. */
+export const ADVANCED_GOAL_TAG = 'advanced: read it, skim the numbers, come back later';
+/** Added to an advanced module's name in CONTENTS. */
+export const ADVANCED_CONTENTS_TAG = ' · advanced';
+
+/**
+ * The lesson's size and where a beginner may stop, said once on START HERE
+ * (beginner waves 2026-11-15, MK-05; owner: "build waves 1 thru 3"). No "it":
+ * a lesson about a person never calls them "it" (Lab 7b review 2026-10-08).
+ */
+export const JOURNEY_LENGTH_LINE = 'Eight modules: 1 and 2 are the foundation, and 3 to 8 go deeper. Stopping after module 2 and coming back later is fine.';
 
 /**
  * PAGE 2's title, per lesson group (owner 2026-11-08: "Starting setups" did
@@ -98,13 +128,15 @@ export function journeyIntro(noun: { one: string; many: string; person?: boolean
   if (noun.person) {
     // A person is never "it" (Lab 7b review 2026-10-08): their voice, them.
     const who = `the ${thing ?? noun.one}`;
-    return `This lesson is about putting a microphone on ${a} ${noun.one}. First, in brief, ${who} and where their voice leaves — the places a mic can hear them best. Then real starting setups drawn on ${who}, the microphones, and the Placement Studio, where you move the mic yourself. Nothing here makes a sound: the lab is silent and shows the physics instead.`;
+    // MK-05 (2026-11-15): the journey sentence (the map below lists it) gives
+    // way to the lesson's size and where a beginner may stop.
+    return `This lesson is about putting a microphone on ${a} ${noun.one}. First, in brief, ${who} and where their voice leaves — the places a mic can hear them best. ${JOURNEY_LENGTH_LINE} Nothing here makes a sound: the lab is silent and shows the physics instead.`;
   }
   const what = plural ? `microphones on ${noun.many}` : `a microphone on ${a} ${noun.one}`;
   const itself = plural ? `the ${thing ?? noun.many} themselves` : `the ${thing ?? noun.one} itself`;
   const its = plural ? 'their' : 'its';
   const it = plural ? 'them' : 'it';
-  return `This lesson is about putting ${what}. First, in brief, ${itself} and where ${its} sound leaves — the places a mic can hear ${it} best. Then real starting setups drawn on ${it}, the microphones, and the Placement Studio, where you move the mic yourself. Nothing here makes a sound: the lab is silent and shows the physics instead.`;
+  return `This lesson is about putting ${what}. First, in brief, ${itself} and where ${its} sound leaves — the places a mic can hear ${it} best. ${JOURNEY_LENGTH_LINE} Nothing here makes a sound: the lab is silent and shows the physics instead.`;
 }
 
 /** Pages that print the standard line under their goal. */

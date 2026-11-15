@@ -41,7 +41,7 @@ export const POSTPROD_START_GUIDE: ScreenGuide = {
     start: 'Tap Podcast or spoken word to start a project, and see where NEXT OUTSTANDING points. Then tap + NEW PROJECT and pick Music recording to compare the two.',
   },
   seeing: [
-    'This is the Audio Post-Production home. The lab covers everything between a folder of recordings and a delivery somebody has accepted.',
+    'This is the Audio Post-Production home. You are handed a folder of recordings; three chapters take it to a delivery somebody has accepted.',
     'Under START A PROJECT, you pick one of three project types: Music recording, Podcast or spoken word, or Live performance or event.',
     'Read the note under them: what you make changes the questions, the documents and the problems, but the process underneath stays the same.',
   ],
@@ -197,7 +197,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'Set “Are the alternates still available” to Removed: “The alternate takes have been removed”. Pick Kept in the session, muted or hidden: it clears.',
-      'On a podcast or live project, set “Is there usable room tone” to None: “Speech edited with no room tone to fill the gaps” appears.',
+      'On a podcast or live project, set “Is there usable room tone” to None: “Speech edited with no room tone to fill the gaps. Is that intended?” appears.',
       'There, set “What happens to breaths” to Removed: “Every breath has been removed” appears. Natural speech has breaths.',
     ],
   },
@@ -298,7 +298,7 @@ export const POSTPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Set “Is the previously approved version preserved” to No: BLOCKED — “Revisions are being made over the approved version”. Pick Yes — saved as a separate version and print: it clears.',
       'Enter 2 in “How many archive copies exist” and leave “Where they are” empty: “One copy is not an archive” appears. A count with no place proves nothing. Fill in “Where they are”: it clears.',
-      'Check items under “The archive contains”, then set “Has a restore been tested” to Only the file list was checked: “The archive has never been restored”.',
+      'Check items under “The archive contains”, then set “Has a restore been tested” to Only the file list was checked: “The archive has never been restored. Is that intended?”.',
     ],
   },
 };
@@ -462,7 +462,7 @@ export const POSTPROD_PACKET_GUIDE: ScreenGuide = {
     'Below: Revision, Revision date, Prepared by, Status; any MUST BE RESOLVED BEFORE PROCEEDING and ACCEPTED CONDITIONS; every stage’s answers.',
   ],
   control: [
-    'Tap a WHAT’S LEFT row (BLOCKER, REQUIRED QUESTION or TO LOOK AT) to open that stage at that question, marked with an amber edge, or at its findings.',
+    'Tap a WHAT’S LEFT row (BLOCKER, REQUIRED QUESTION or TO LOOK AT) to open that stage at that question, marked with an amber edge, or at its findings. NOT STARTED YET shows a stage’s rows.',
     'SHARE AS PDF makes the PDF and records the next revision number. If printing isn’t available on your phone, the screen says so, and this page is then the whole package.',
     `‹ goes back. ${CHIPS_LINE}`,
   ],
@@ -477,7 +477,7 @@ export const POSTPROD_PACKET_GUIDE: ScreenGuide = {
     'Prepared by puts a name on the delivery: whoever receives it knows who is responsible and who to ask.',
   ],
   tryThis: [
-    'On a new project, WHAT’S LEFT opens with STAGE 1 · RECEIVE THE PROJECT, its first row a REQUIRED QUESTION: Project name. Tap it: Stage 1 opens at that question.',
+    'On a new project, every stage under WHAT’S LEFT reads NOT STARTED YET. Tap it under STAGE 1 · RECEIVE THE PROJECT: the first row is a REQUIRED QUESTION, Project name. Tap that to open it.',
     'Type a name in Stage 1’s “Post-production supervisor”, then come back: Prepared by changes from Unattributed to that name.',
     'Set Stage 8’s “Is the previously approved version preserved” to No: STAGE 8 · DELIVER AND ARCHIVE jumps to the top of WHAT’S LEFT, its BLOCKER first.',
   ],

@@ -3,7 +3,8 @@
  *
  * A positioned sound has an emitter (where it comes from) and is measured
  * against the listener (where the ears are and which way they face). The
- * learner picks a source, turns with FACING, walks with STEP, and reads
+ * learner picks a source, turns with FACING, walks with WALK (the lab's one
+ * walking control, pages/shared `walkKey`: GA-05, 2026-11-15), and reads
  * DISTANCE and PAN, worked out from model/gaWorld by pages/data/chcSpace.
  *
  * The distance rule is the model's own (gaWorld.attenuationGain): full level
@@ -15,12 +16,12 @@
  * nothing running), so every step says what to switch on.
  *
  * THE WALK TO VIRTUAL CANNOT GO WRONG (walk audit W1 F01). The generator's
- * maximum is 12 m and the whole west edge of the courtyard is past it. Step 3
- * tells the learner to turn until the card's DIRECTION says "straight behind"
- * (the same test as the goal: chcSpace `isStraightBehind`) and then to press
- * STEP: from anywhere in the courtyard that walk ends past the maximum. A
- * STEP that cannot move logs a NOTE saying why, and this page's log shows
- * NOTE lines as well as STATE lines (chcSpace `P11_LOG`).
+ * maximum is 12 m and the west end of the stone path is past it (chcSpace
+ * `WALK_GEN_RANGE_X`). Step 3 tells the learner to turn until the card's
+ * DIRECTION says "straight behind" (the same test as the goal: chcSpace
+ * `isStraightBehind`) and then to drag WALK west: that walk ends past the
+ * maximum. A walk the door or the wall stops logs a NOTE saying why, and this
+ * page's log shows NOTE lines as well as STATE lines (chcSpace `P11_LOG`).
  *
  * Said plainly, because it is the lesson: what is heard here is LEFT / RIGHT
  * PAN AND LEVEL only. A source straight ahead and one straight behind pan the
@@ -43,10 +44,12 @@ import { GA_ASSETS } from '../sounds/gaSoundBank';
 import { ReadCard, TrayChip, onOff, tray } from './chcBits';
 import { CHC_SOURCES, P11_LOG, chcSpace, directionWord, isStraightBehind, levelWord, panShort, panWord, statusWord, type ChcSource } from './data/chcSpace';
 import { G11 } from './guides/p11';
-import { facingKey, stepKey, useSince } from './shared';
+import { facingKey, useSince, walkKey } from './shared';
 
 const ASSETS: readonly string[] = ['door', 'door_rattle', 'gen_hum', 'gen_air', 'fountain', 'amb_room', 'amb_yard', 'ir_room', ...GA_ASSETS.filter((a) => a.id.startsWith('fs_')).map((a) => a.id)];
-const TERMS = gaTerms('Audio Emitter', 'Attenuation curve', 'Minimum distance', 'Maximum distance', 'Positional audio', 'Cone attenuation');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Positional audio
+// moved to the listener page; Cone attenuation is kept unshown (this page's text does not use it; its guide does)
+const TERMS = gaTerms('Audio Emitter', 'Attenuation curve', 'Minimum distance', 'Maximum distance');
 
 /** The SOURCES key's value: what is SWITCHED ON, said with ON / OFF. It read
  *  "SOURCES ▸ NONE" while the tray showed "✓ GENERATOR 1" chosen to measure,
@@ -110,7 +113,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
   return (
     <GaRack
       spec={{
-        keys: [facingKey(s), stepKey(), sourcesKey],
+        keys: [walkKey(s), facingKey(s), sourcesKey],
         initialParam: 'facing',
         readouts: [
           { k: 'DISTANCE', kNarrow: 'DIST.', v: `${r.distanceM.toFixed(1)} m`, vA11y: `${name.toLowerCase()} is ${r.distanceM.toFixed(1)} meters away` },
@@ -127,7 +130,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open SOURCES. Switch GENERATOR 1 and SCENE on, press OPEN DOOR, and choose a source. Then move FACING and press STEP.</Do>
+        <Do parts={['Open SOURCES. Switch GENERATOR 1 and SCENE on, press OPEN DOOR, and choose a source.', 'Move FACING, then drag WALK.']} />
         <P>DISTANCE follows where you stand. PAN follows the angle between your facing and the source.</P>
         <ReadCard
           title={`${name} · FROM WHERE YOU ARE`}
@@ -143,9 +146,9 @@ function Page({ ctx }: { ctx: PageCtx }) {
         />
       </Step>
       <Step n={3}>
-        <Do>Stand in the courtyard with GENERATOR 1 on and chosen. The picture marks BEHIND YOU from a quarter turn. Keep turning with FACING until DIRECTION on the card says “straight behind” (“almost” counts). Then press STEP until STATUS reads VIRTUAL.</Do>
+        <Do parts={['Stand in the courtyard with GENERATOR 1 on and chosen.', 'Turn with FACING until DIRECTION on the card says “straight behind” (“almost” counts). The picture marks BEHIND YOU from a quarter turn.', 'Drag WALK west until STATUS reads VIRTUAL.']} />
         <P>Straight ahead and straight behind both pan to the center, so they sound the same here.</P>
-        <P>A loop past its maximum distance becomes virtual in this scene: tracked, not played, and played again when you return. If a step cannot move you, a NOTE in the log says why.</P>
+        <P>A loop past its maximum distance becomes virtual in this scene: tracked, not played, and played again when you return. If the door or the wall stops you, a NOTE in the log says why.</P>
         <ActivityLog state={s} lines={4} only={P11_LOG} />
         <Note tone="mistake">Calling ordinary left and right panning complete 3D sound. Pan and level cannot tell front from back, or above from below.</Note>
       </Step>

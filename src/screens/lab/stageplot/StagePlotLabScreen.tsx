@@ -62,6 +62,7 @@ import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { spGuidedSteps } from '../../../features/stageplot/spReview';
+import { spTabMarkLegend } from '../../../features/stageplot/spTabMarks';
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 import { setSpSaveMode, spProjectName, type SpSaveMode } from '../../../features/stageplot/spStore';
@@ -267,6 +268,10 @@ function LabRecap() {
   );
 }
 
+/** The marks' legend is gone for good, while the app is open, once a marked
+ *  tab has been opened (PLOT-10, features/stageplot/spTabMarks). Never saved. */
+let markLegendDone = false;
+
 /** The open project: header, the bar that is in every area, the five tabs,
  *  and the area in view. */
 function Editor({ onClose }: { onClose: () => void }) {
@@ -302,6 +307,10 @@ function Editor({ onClose }: { onClose: () => void }) {
     }
     return out;
   }, [ed.issues]);
+
+  // what "? 1" and "! 1" mean, the first time a mark is on the bar (PLOT-10)
+  const [legendDone, setLegendDone] = useState(markLegendDone);
+  const legend = spTabMarkLegend(Object.values(marks), legendDone);
 
   const tabWord = SP_AREAS.find((a) => a.id === area)?.label ?? '';
   const p = ed.project;
@@ -375,7 +384,13 @@ function Editor({ onClose }: { onClose: () => void }) {
           return (
             <Pressable
               key={a.id}
-              onPress={() => ed.goTo(a.id)}
+              onPress={() => {
+                if (mark.ask || mark.must) {
+                  markLegendDone = true;
+                  setLegendDone(true);
+                }
+                ed.goTo(a.id);
+              }}
               style={[styles.tab, on && styles.tabOn]}
               accessibilityRole="tab"
               accessibilityState={{ selected: on }}
@@ -393,6 +408,11 @@ function Editor({ onClose }: { onClose: () => void }) {
           );
         })}
       </View>
+      {legend ? (
+        <Text style={styles.legend} maxFontSizeMultiplier={1.35}>
+          {legend}
+        </Text>
+      ) : null}
 
       <View style={styles.body}>
         {/* Keyed by the area: another tab is a fresh boundary, so one area
@@ -440,6 +460,7 @@ const styles = StyleSheet.create({
   tabTextOn: { color: colors.amber },
   tabMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, lineHeight: 15, color: colors.amber },
   tabMarkMust: { color: '#ff8a7a' },
+  legend: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSub, paddingHorizontal: 14, paddingVertical: 5, backgroundColor: colors.screenBgAlt, borderBottomWidth: 1, borderColor: colors.hairlineDim },
 
   body: { flex: 1 },
 

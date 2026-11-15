@@ -88,6 +88,8 @@ type CiPersisted = { dims: CiDimScores; myths: string[]; run?: string[] };
 /** Steps: 0 = intro · 1..13 = stages · 14 = completion. A pending myth
  *  interstitial renders INSTEAD of the target stage until dismissed. */
 const INTRO_STEP = 0;
+/** Where a fresh open lands (CI-04): Stage 1. */
+export const FIRST_STAGE_STEP = INTRO_STEP + 1;
 const COMPLETE_STEP = CI_MODULES.length + 1;
 
 export function CableInstallLabScreen() {
@@ -110,11 +112,16 @@ export function CableInstallLabScreen() {
   noAccountRef.current = resolved && entitlement === 'anonymous';
   const noAccount = noAccountRef.current;
 
-  const [step, setStep] = useState(INTRO_STEP);
+  // CI-04 (owner 2026-11-15: "build waves 1 thru 3"): a fresh open lands
+  // straight on Stage 1's four close-ups, not on the intro page. A saved
+  // place still restores below; the intro stays one ‹ PREV away.
+  const [step, setStep] = useState(FIRST_STAGE_STEP);
   const [dims, setDims] = useState<CiDimScores>({});
   const [shownMyths, setShownMyths] = useState<string[]>([]);
   const [pendingMyth, setPendingMyth] = useState<string | null>(null);
   const [sourceIds, setSourceIds] = useState<string[] | null>(null);
+  /** The sheet was opened from the intro: it carries the intro's long lead and the code note on top (CI-04). */
+  const [sourceLead, setSourceLead] = useState(false);
   const [showObjectives, setShowObjectives] = useState(false);
   const [showFieldCheck, setShowFieldCheck] = useState(false);
   const [width, setWidth] = useState(0);
@@ -174,7 +181,7 @@ export function CableInstallLabScreen() {
   // the stored scores and myths with what they did meanwhile. Re-read when
   // the account state changes, so a guest who signs in here gets the same.
   const readRef = useRef<'pending' | 'ok' | 'failed'>('pending');
-  const latestRef = useRef<{ step: number; dims: CiDimScores; myths: string[] }>({ step: INTRO_STEP, dims: {}, myths: [] });
+  const latestRef = useRef<{ step: number; dims: CiDimScores; myths: string[] }>({ step: FIRST_STAGE_STEP, dims: {}, myths: [] });
   latestRef.current = { step, dims, myths: shownMyths };
   // A read that follows a signed-out stretch on this mount (the guest offer's
   // SIGN IN, then back): that run was a guest's — a members-only preview,
@@ -537,7 +544,7 @@ export function CableInstallLabScreen() {
               // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
               progressLine={`${cleared} ${cleared === 1 ? 'unit' : 'units'} complete`}
               unreadable={progressUnreadable}
-              onSources={() => setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs'])}
+              onSources={() => { setSourceLead(true); setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs']); }}
             />
           ) : step === COMPLETE_STEP ? (
             showFieldCheck ? (
@@ -600,13 +607,19 @@ export function CableInstallLabScreen() {
       </ScrollView>
       )}
 
-      <SourceSheet sourceIds={sourceIds} onClose={() => setSourceIds(null)} />
+      <SourceSheet sourceIds={sourceIds} lead={sourceLead ? CI_INTRO_SOURCES_LEAD : undefined} onClose={() => { setSourceIds(null); setSourceLead(false); }} />
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
     </LabNounProvider>
   );
 }
+
+/** What the intro used to print above START LAB; now on top of SOURCES /
+ *  STANDARDS opened from the intro (CI-04). Nothing is lost. */
+export const CI_INTRO_LEAD =
+  'Professional cable installation is not “make the wires look neat.” It is planning the route, using the correct pathway, supporting and protecting the cable, respecting its physical limits, controlling its relationship to other systems, preserving serviceability, identifying everything — and verifying the finished installation.';
+const CI_INTRO_SOURCES_LEAD: readonly string[] = [CI_INTRO_LEAD, CI_GOVERN_NOTE];
 
 /* ── intro stage (spec §7) ──────────────────────────────────────────────── */
 function IntroStage({
@@ -635,12 +648,8 @@ function IntroStage({
   return (
     <View style={{ gap: 14 }}>
       {width > 40 ? <IntroScene w={width} /> : null}
-      <Text style={styles.introLead}>
-        Professional cable installation is not “make the wires look neat.” It is planning the route, using the correct
-        pathway, supporting and protecting the cable, respecting its physical limits, controlling its relationship to
-        other systems, preserving serviceability, identifying everything — and verifying the finished installation.
-      </Text>
-      <Text style={styles.governNote}>{CI_GOVERN_NOTE}</Text>
+      {/* CI-04: the long lead and CI_GOVERN_NOTE moved behind SOURCES /
+          STANDARDS (the sheet opened here shows both on top). */}
       <View style={{ gap: 10 }}>
         <GlassButton label={resumeLabel ?? (unreadable ? 'OPEN THE LAB' : 'START LAB')} tint="green" height={48} fontSize={14} onPress={onStart} />
         <GlassButton label="WHAT YOU’LL LEARN" tint="teal" height={44} fontSize={12.5} onPress={onToggleObjectives} />

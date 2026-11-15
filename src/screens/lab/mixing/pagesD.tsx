@@ -179,7 +179,8 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>The export is the product. A handful of unglamorous decisions — format, name, inspection — decide whether tonight’s work survives contact with the world.</Lead>
+{/* BM-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain first line; the lede is trimmed so the page reads no longer. */}
+      <Lead>The export is the product. Sample rate is how many snapshots of the sound per second; bit depth, how finely each is measured. Those, the name and an inspection decide if tonight’s work survives.</Lead>
       <Card>
         <Eyebrow>FORMAT — MATCH THE SESSION, DELIVER WHAT’S ASKED</Eyebrow>
         <Body>Default: export at the SESSION’s sample rate (no resample without a reason) and 24-bit. 44.1 kHz / 16-bit is the CD legacy target; streaming masters are commonly delivered 24-bit. When a client specifies, the spec wins.</Body>

@@ -154,7 +154,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     gvp: ['BOARD', 'RANGE', '±12 dB', 'BAND', 'LEVEL', '1-OCTAVE · 10 BANDS', '1/3-OCTAVE · 31 BANDS', 'RESET', 'ACTUAL combined response'],
     multiband: ['HPF', 'LOW', 'LMF', 'HMF', 'HIGH', 'LPF', 'BAND', 'FREQ', 'GAIN', 'ACTIVE', 'BYPASS', 'BAND ON', 'BAND OFF', 'RESET', 'BYP', 'COMBINED', 'HEAR IT', 'PINK NOISE', 'SWEEP'],
     graphic: ['VIEW', 'MAG', 'PHASE ±180°', 'FILTERS', 'SHOWN', 'HIDDEN', 'BAND', 'LEVEL', 'MAGNITUDE', 'PHASE', 'EXAMPLE', 'CLEAR', 'THE SLIDERS ARE NOT THE RESPONSE'],
-    liveEq: ['VIEW', 'LOW CUT', 'BAND', 'MIC', 'SPECTRUM ONLY', 'EQ ONLY', 'COMBINED', 'BAND ON', 'BAND OFF', 'MIC LIVE — PAUSE', 'MIC PAUSED — RESUME', /* phase 3 (owner 2026-11-14, decision 3): plain model note */ 'uncalibrated phone mic', 'SLOPE', 'dB/OCT', 'FREQ', 'GAIN'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item EQL-03): BOTH, not COMBINED / COMB.
+    liveEq: ['VIEW', 'LOW CUT', 'BAND', 'MIC', 'SPECTRUM ONLY', 'EQ ONLY', 'BOTH', 'BAND ON', 'BAND OFF', 'MIC LIVE — PAUSE', 'MIC PAUSED — RESUME', /* phase 3 (owner 2026-11-14, decision 3): plain model note */ 'uncalibrated phone mic', 'SLOPE', 'dB/OCT', 'FREQ', 'GAIN'],
     findFreq: ['LVL', 'BAND', 'RESULT', 'PASS', 'MISS', 'LEVEL', 'NEW SIGNAL', 'CHECK', 'NEXT LEVEL ›', 'Target', 'Your selection', 'Difference', 'REFERENCE', 'SIGNAL', 'HEAR IT', 'PINK NOISE', 'SWEEP'],
     matchCurve: ['TARGET', 'MATCH', 'HIDDEN', 'BANDS', 'BAND', 'SCORE', 'HIDE', 'NEW', 'EXCELLENT', 'CLOSE', 'KEEP TRYING'],
     fixSignal: ['CASE', 'SCENARIO', 'RESULT', 'FIXED', 'NOT YET', 'BOOMY KICK', 'HARSH VOCAL', 'STAGE RUMBLE', 'HONKY GUITAR', 'SIBILANT VOCAL', 'CHECK', 'REFERENCE', 'SIGNAL', 'HEAR IT'],
@@ -204,8 +205,9 @@ describe('3. each guide quotes its screen’s real names', () => {
     }
     for (const p of ['EqLabHomeScreen.tsx', 'EqModuleScreen.tsx']) assert.match(code(D + p), /mode="progress"/, p);
     assert.doesNotMatch(gt, /CREDITED/, 'progress mode never reads CREDITED');
-    assert.equal(EQ_MODULES[0].title, 'Seeing Frequency');
-    assert.ok(gt.includes('opens Seeing Frequency'));
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item EQL-01): Why We Use EQ is module 1, Seeing Frequency module 2.
+    assert.equal(EQ_MODULES[0].title, 'Why We Use EQ');
+    assert.ok(gt.includes('opens Why We Use EQ'));
   });
 });
 
@@ -515,8 +517,9 @@ describe('6. chip decision: the accuracy chip stays only on the live-microphone 
   it('the guides carry the honesty line the chip used to: which modules use the uncalibrated mic, and designed vs synthetic', () => {
     assert.match((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /uncalibrated phone mic shows only relative levels/);
     assert.doesNotMatch((EQ_HOME_GUIDE as unknown as Guide).teaches.join(' '), /Modules? \d/);
-    assert.match((EQ_HOME_GUIDE as unknown as Guide).seeing.join(' '), /Modules 1 and 11 use the live mic; the trainers use a made-up spectrum/);
-    assert.equal(EQ_MODULES[0].id, 'spectrum');
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item EQL-01): Why We Use EQ is module 1, Seeing Frequency module 2.
+    assert.match((EQ_HOME_GUIDE as unknown as Guide).seeing.join(' '), /Modules 2 and 11 use the live mic; the trainers use a made-up spectrum/);
+    assert.equal(EQ_MODULES[1].id, 'spectrum');
     assert.equal(EQ_MODULES[10].id, 'liveEq');
     for (const id of ['spectrum', 'liveEq']) assert.match(MODS[id].teaches.join(' '), /uncalibrated/i, id);
     for (const id of ['findFreq', 'fixSignal', 'challenges']) assert.match(MODS[id].seeing.join(' '), /synthetic|made-up/i, id);

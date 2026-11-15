@@ -1022,7 +1022,8 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
       <CiSection title="A · BEND RADIUS — MEET EACH CABLE'S SPEC">
         <Text style={styles.lead}>
           Same corner, four cables. For each one: read its documentation, then set BEND TIGHTNESS until the drawn bend
-          meets THAT cable's minimum radius (the dashed arc is the spec minimum). Tighter than spec = the bend strains.
+          meets THAT cable's minimum radius (the dashed arc is the spec minimum, counted in OD: the cable's outside
+          diameter). Tighter than spec = the bend strains.
         </Text>
         <Text style={styles.tintNote}>Cable colors here are training tints — field colors vary.</Text>
         {CI_BEND_EXERCISES.map((ex, i) => (
@@ -1076,7 +1077,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
           Conceptual meter for judgment training — not an engineering pull calculation. Real pulls are planned from the
           cable's documentation.
         </Text>
-        <Text style={styles.lead}>Try all four pull events and watch what each does to tension:</Text>
+        <Text style={styles.lead}>Try all four pull events (moments while cable is pulled through its route) and watch what each does to tension:</Text>
         <View style={styles.chipWrap}>
           {CI_PULL_SPEC.events.map((ev) => (
             <OptionChip

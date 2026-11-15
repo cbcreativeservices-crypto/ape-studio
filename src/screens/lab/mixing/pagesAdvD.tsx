@@ -74,8 +74,11 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
     <View style={styles.page}>
       <Lead>Translation is the only verdict that counts: does the mix survive OTHER systems, other volumes, other formats? Measurement is part of it — LUFS and true peak are the delivery world’s shared ruler, not an artistic target.</Lead>
       <Card>
-        <Eyebrow>MEASURE — BS.1770-STYLE ESTIMATES</Eyebrow>
-        <Prompt>Set a master trim, then measure the session’s integrated loudness and true peak. (On-device estimates of the ITU-R BS.1770 procedure — teaching numbers, not certified metering.)</Prompt>
+        {/* AM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): the plain
+            idea leads; the standard's name moves under it, on its own line. */}
+        <Eyebrow>MEASURE — LOUDNESS AND TRUE PEAK</Eyebrow>
+        <Prompt>Set a master trim, then measure how loud the whole session is (its integrated loudness) and its highest peak (its true peak).</Prompt>
+        <Text style={styles.statUnit}>These are on-device estimates of the ITU-R BS.1770 procedure: teaching numbers, not certified metering.</Text>
         <Row>
           {[-6, -3, 0].map((db) => (
             <Btn key={db} label={`TRIM ${db === 0 ? '0' : db} dB`} tone={masterDb === db ? 'primary' : 'plain'} selected={masterDb === db} onPress={() => setMasterDb(db)} a11y={`Master trim ${db} dB`} />

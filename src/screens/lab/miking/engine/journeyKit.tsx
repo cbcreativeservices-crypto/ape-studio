@@ -18,7 +18,8 @@ import { useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DiagnosticItem, PageId } from './model/types.ts';
-import { articleFor, FOUNDATION_PAGES, gradeQuickCheck, QUICK_CHECK_PASS, STAGES, type LearnerPath, type QuickCheckResult } from './journey.ts';
+import { articleFor, FOUNDATION_PAGES, gradeQuickCheck, QUICK_CHECK_PASS, stageModules, STAGES, type LearnerPath, type QuickCheckResult } from './journey.ts';
+import { PAGE_IDS } from './model/types.ts';
 import { Card } from './kit';
 import { optionOrder } from './model/itemOrder.ts';
 
@@ -48,15 +49,17 @@ export function JourneyMap({ met, here, titleOf }: { met: ReadonlySet<PageId>; h
   // Page 2's title is the lesson group's own (journey.setupsTitle).
   const stageTitle = (s: (typeof STAGES)[number]) => (s.id === 'setups' && titleOf ? titleOf('setups') : s.title);
   return (
-    <View style={styles.map} accessibilityRole="summary" accessibilityLabel={`The lesson's ${STAGES.length} stages: ${STAGES.map(stageTitle).join(', ')}.`}>
-      <Text style={styles.mapHead}>{`THE JOURNEY · ${STAGES.length} STAGES`}</Text>
-      {STAGES.map((s, i) => {
+    // MK-02 (2026-11-15): the map counts MODULES, as the strip does, and
+    // numbers each row by its modules ("5–7"), never "6 STAGES" beside 8.
+    <View style={styles.map} accessibilityRole="summary" accessibilityLabel={`The lesson's ${PAGE_IDS.length} modules: ${STAGES.map((s) => `module ${stageModules(s).replace('–', ' to ')}, ${stageTitle(s)}`).join('; ')}.`}>
+      <Text style={styles.mapHead}>{`THE JOURNEY · ${PAGE_IDS.length} MODULES`}</Text>
+      {STAGES.map((s) => {
         const done = s.pages.every((p) => met.has(p));
         const on = here ? s.pages.includes(here) : false;
         const foundation = s.pages.every((p) => FOUNDATION_PAGES.includes(p));
         return (
           <View key={s.id} style={styles.mapRow}>
-            <Text style={[styles.mapNum, on && { color: colors.amber }, done && { color: colors.green }]}>{done ? '✓' : `${i + 1}`}</Text>
+            <Text style={[styles.mapNum, on && { color: colors.amber }, done && { color: colors.green }]}>{done ? '✓' : stageModules(s)}</Text>
             <View style={{ flex: 1 }}>
               <Text style={[styles.mapTitle, on && { color: colors.amber }]}>{`${stageTitle(s)}${foundation ? ' · FOUNDATION' : ''}`}</Text>
               <Text style={styles.mapLine}>{s.line}</Text>
@@ -273,7 +276,8 @@ const styles = StyleSheet.create({
   map: { gap: 6, borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, padding: 10, backgroundColor: '#0e0e11' },
   mapHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.4 },
   mapRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
-  mapNum: { width: 18, color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 14, textAlign: 'center' },
+  // Wide enough for "5–7" (MK-02).
+  mapNum: { width: 30, color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 14, textAlign: 'center' },
   mapTitle: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 13.5, lineHeight: 18 },
   mapLine: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   q: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },

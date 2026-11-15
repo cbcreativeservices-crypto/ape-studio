@@ -36,6 +36,21 @@ export const PATTERN_LABELS: Record<MicPattern, string> = {
   halfCardioid: 'half-cardioid (boundary)',
 };
 
+/**
+ * One plain line per pattern for the PATTERN tray (beginner waves 2026-11-15,
+ * SH-76; owner: "build waves 1 thru 3"): its choices were bare names. Said as
+ * the drawn ideal shapes show them (a real mic's pattern varies with pitch).
+ */
+export const PATTERN_BLURBS: Record<MicPattern, string> = {
+  omni: 'Hears all around about equally: no quiet side.',
+  cardioid: 'Hears the front best; quietest straight behind.',
+  supercardioid: 'A tighter front; quietest a little to each side of the back, with a small rear pickup.',
+  hypercardioid: 'Tighter still in front; quiet spots further toward the sides, with a larger rear pickup.',
+  figure8: 'Hears front and back equally; quietest at the sides.',
+  unstated: 'This mic’s pattern is not drawn here.',
+  halfCardioid: 'A boundary mic: hears only above the surface it lies on, best toward its front.',
+};
+
 export function isModelled(p: MicPattern): p is PatternId {
   'worklet';
   return p === 'omni' || p === 'cardioid' || p === 'supercardioid' || p === 'hypercardioid' || p === 'figure8';

@@ -550,7 +550,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the stick strikes the top of the cymbal. Which way does the cymbal send its sound?', options: ['Only upward, toward the ceiling', 'Up and down, from both faces', 'Only out from the edge'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch where the sound leaves.' },
+  sound: { prompt: 'Before you step through: the stick strikes the top of the cymbal. Which way does the cymbal send its sound?', options: ['Only upward, toward the ceiling', 'Up and down, from both faces', 'Only out from the edge'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch where the sound leaves.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the mic over the snare from 1 m to 1.2 m. What changes?', options: ['More cymbals and room', 'More kick and snare', 'It depends on this kit and room'], after: 'Rest a mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The drum fill sits behind and below the side mic. How can its pattern help?', options: ['Turn or tilt the mic so a null faces it', 'It cannot: the fill is behind it', 'Only a louder mic helps'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

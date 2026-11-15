@@ -282,15 +282,15 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   home: {
     intro: {
       learning: 'How the everyday numbers of audio work — level, distance and time, power, rooms, digital — come from short formulas, and how one answer can feed the next.',
-      start: 'Tap WAVES & TIME, open Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows). PERIOD reads 10 ms. Then tap π KEY and find λ (lambda).',
+      start: 'New here? Tap a job under PICK A JOB, GET A NUMBER YOU CAN USE. Or tap WAVES & TIME, open Sound & Wave and type 100 in FREQUENCY: PERIOD reads 10 ms.',
     },
     seeing: [
       'Every calculator sits in one of ten category tiles, from WAVES & TIME to ELECTRONICS; each tile shows how many CALCULATORS it holds.',
-      'Up top: ▸ CUSTOM CALCULATOR WORKFLOWS and ▾ ABOUT THIS LAB. ⛓ CHAIN ACTIVE shows while a result you sent waits to be used.',
+      'Up top: PICK A JOB… (three jobs), ▸ CUSTOM CALCULATOR WORKFLOWS, ▸ ABOUT THIS LAB. ⛓ CHAIN ACTIVE shows while a sent result waits.',
       'π KEY opens the SYMBOL KEY; ✓ opens VERIFIED CALCULATION, how each result is computed. OPEN CALCULATORS on Home brings you back here.',
     ],
     control: [
-      'Tap a category tile to see its calculators in a popup, grouped by job. Tap one to open it; tap ✕ or outside the popup to close it.',
+      'Tap a job to run its calculators in order (members) or open its first calculator. Or tap a category tile under OR BROWSE ALL 166 CALCULATORS BY TOPIC for its popup list; ✕ closes it.',
       'Tap ▸ CUSTOM CALCULATOR WORKFLOWS for ＋ NEW WORKFLOW, MY WORKFLOWS & TEMPLATES ›, SAVED PROJECTS ›, SAVED RESULTS › and your last workflow under RECENT · TAP TO RUN.',
       'When ⛓ CHAIN ACTIVE shows, tap ✕ CLEAR to drop the result you sent.',
       'Tap π KEY to look up the Greek letters and math symbols the calculators use.',

@@ -174,11 +174,14 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(ex, /MIX \(35%, 70%, 100% WET\)/);
     assert.match(ex, /SOURCE picks CLICK 60 \(a short click once a second\), BURST 1 kHz or PINK NOISE/);
     assert.match(REVERB, /sources: \[srcClick\(60\),/); // CLICK 60 = 60 per minute: once a second
-    assert.match(REVERB, /label: 'RT60 \(DECAY TIME\)', short: 'RT60'/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the words lead, from the shared PLAIN_TERMS.rt60.
+    assert.match(CONFIGS, /const REVERB_RT60_WORDS = PLAIN_TERMS\.rt60\.short\.toUpperCase\(\);/);
+    assert.match(REVERB, /label: `\$\{REVERB_RT60_WORDS\} \(\$\{PLAIN_TERMS\.rt60\.term\}\)`, short: 'RT60'/);
     assert.match(REVERB, /label: 'PRE-DELAY', short: 'PRE-DLY'/);
     assert.match(REVERB, /label: 'HF DAMPING', short: 'DAMP'/);
     // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
-    assert.match(REVERB, /bezel: \[\s*\{ k: 'RT60', paramId: P\.rt60(?:, caption: '[^']*')? \},\s*\{ k: 'PRE', paramId: P\.preDelayMs(?:, caption: '[^']*')? \},\s*\{ k: 'MIX', paramId: P\.reverbMix(?:, caption: '[^']*')? \},\s*\]/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the cell reads DECAY TIME (RT60), DECAY TIME when narrow.
+    assert.match(REVERB, /bezel: \[[\s\S]*?\{ k: `\$\{REVERB_RT60_WORDS\} \(\$\{PLAIN_TERMS\.rt60\.term\}\)`, kNarrow: REVERB_RT60_WORDS, paramId: P\.rt60 \},\s*\{ k: 'PRE-DLY', paramId: P\.preDelayMs(?:, caption: '[^']*')? \},\s*\{ k: 'MIX', paramId: P\.reverbMix(?:, caption: '[^']*')? \},\s*\]/);
     // the glass labels the guide describes: 100 ms ticks, a "0.5 s" mark, guides every 30 dB
     assert.match(ANIM, /for \(let ms = 100; ms < 5000; ms \+= 100\)/);
     assert.match(ANIM, /const major = ms % 500 === 0;/);
@@ -265,7 +268,8 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const g0 = onsetAt(0);
     assert.ok(g60 >= 88 && g60 <= 95, `60 ms gap = ${g60}`);
     assert.ok(g0 >= 28 && g0 <= 36, `0 ms gap = ${g0}`);
-    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the wash now jumps up nearly one 100 ms tick mark after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it jumps up about a third of a tick after/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-03): the GAP bracket marks it on the glass.
+    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the GAP bracket over OUT stretches to nearly one 100 ms tick mark after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it shrinks to about a third of a tick/);
   });
   it('EXPLORE 3: RT60 ≈ 1.5 s with DARK 2k → nearly at the floor by the 1 s mark (NATURAL stays well up); DESIGNED RESPONSE ignores damping', () => {
     for (const rt of [1.4, 1.5, 1.6]) {

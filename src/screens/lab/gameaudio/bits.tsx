@@ -27,7 +27,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useGlossaryOpener } from '../../../features/glossary/glossaryLink';
 import type { PageCtx } from '../kit/PagedLab';
 import { useMarkWhen } from '../tuning/components/primitives';
-import { gaFaultHints, gaGoalsNote, gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime } from './bitsLogic';
+import { GoDeeper } from '../foundations/GoDeeper';
+import { gaFaultHints, gaGoalsNote, gaLogEmpty, gaLogRow, gaLogSpoken, gaLogTime, gaLogViewOf, gaPartLetter, type GaLogView } from './bitsLogic';
 import type { GaLogEntry, GaLogKind, GaState } from './model/gaModel';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
@@ -57,9 +58,32 @@ export function Look({ children }: { children: ReactNode }) {
     </View>
   );
 }
-/** A prompt: what to do now. */
-export function Do({ children }: { children: ReactNode }) {
-  return <Text style={styles.do}>{children}</Text>;
+/** A prompt: what to do now. With `parts`, one action per line, lettered
+ *  a, b, c in the order they are done (GA-04, 2026-11-15: a step of three or
+ *  four actions in one sentence lost the beginner after the first). */
+export function Do({ children, parts }: { children?: ReactNode; parts?: readonly ReactNode[] }) {
+  if (!parts) return <Text style={styles.do}>{children}</Text>;
+  return (
+    <View style={styles.parts} accessibilityRole="list">
+      {parts.map((t, i) => (
+        <View key={i} style={styles.part}>
+          <Text style={styles.partLetter} accessibilityLabel={`Part ${gaPartLetter(i)}`}>
+            {gaPartLetter(i)}
+          </Text>
+          <Text style={[styles.do, styles.partText]}>{t}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** PRO NOTE (GA-07, 2026-11-15): a tool's own names and the details a
+ *  professional checks later, kept whole but CLOSED at the end of a step, so
+ *  the beginner reads the idea first. The house fold (foundations GoDeeper,
+ *  also used by Room Design and Wave); nothing inside is cut. */
+export const GA_PRO_NOTE_HINT = 'Pro note: tool names and details for later.';
+export function ProNote({ children, hint = GA_PRO_NOTE_HINT }: { children: ReactNode; hint?: string }) {
+  return <GoDeeper hint={hint}>{children}</GoDeeper>;
 }
 /** A plain note; `mistake` is the page's common mistake; `said-once` is an
  *  honesty note about the model. */
@@ -197,12 +221,31 @@ const KIND_COLOR: Record<GaLogKind, string> = {
  *           kinds it shows, so it never claims "nothing has happened" while
  *           other things have.
  *    empty  a page's own words for its empty log (default: bitsLogic
- *           `gaLogEmpty`). */
-export function ActivityLog({ state, lines = 6, only, empty }: { state: GaState; lines?: number; only?: readonly GaLogKind[]; empty?: string }) {
+ *           `gaLogEmpty`).
+ *    views  ONE log with a choice of view at its head (GA-17, 2026-11-15:
+ *           the capstone drew two log boxes). Each view is a label and the
+ *           kinds it shows; the first is the view the log opens on. */
+export function ActivityLog({ state, lines = 6, only: onlyProp, empty, views }: { state: GaState; lines?: number; only?: readonly GaLogKind[]; empty?: string; views?: readonly GaLogView[] }) {
+  const [viewId, setViewId] = useState<string | null>(null);
+  const view = views ? gaLogViewOf(views, viewId) : undefined;
+  const only = view ? view.only : onlyProp;
   const rows: GaLogEntry[] = (only ? state.log.filter((l) => only.includes(l.kind)) : state.log).slice(-lines).reverse();
   const none = empty ?? gaLogEmpty(only, state.log.length);
   return (
-    <View style={styles.log} accessible accessibilityRole="summary" accessibilityLabel={`Activity log, newest first. ${rows.length ? rows.map((r) => gaLogSpoken(r.kind, r.text)).join('. ') : none}`}>
+    <View style={styles.log}>
+      {views && view ? (
+        <View style={styles.logViews} accessibilityRole="radiogroup" accessibilityLabel="Which lines the log shows">
+          {views.map((v) => {
+            const on = v.id === view.id;
+            return (
+              <Pressable key={v.id} onPress={() => setViewId(v.id)} style={[styles.logView, on && styles.logViewOn]} accessibilityRole="radio" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={`Show ${v.label.toLowerCase()} lines`}>
+                <Text style={[styles.logViewText, on && { color: colors.amber }]}>{on ? `✓ ${v.label}` : v.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+      <View style={styles.logBody} accessible accessibilityRole="summary" accessibilityLabel={`Activity log, newest first. ${rows.length ? rows.map((r) => gaLogSpoken(r.kind, r.text)).join('. ') : none}`}>
       <Text style={styles.logHead}>ACTIVITY LOG · NEWEST FIRST</Text>
       {rows.length === 0 ? <Text style={styles.logEmpty}>{none}</Text> : null}
       {rows.map((r) => {
@@ -219,6 +262,7 @@ export function ActivityLog({ state, lines = 6, only, empty }: { state: GaState;
           </View>
         );
       })}
+      </View>
     </View>
   );
 }
@@ -342,7 +386,16 @@ const styles = StyleSheet.create({
   termDefHead: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1 },
   termLink: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
   termLinkText: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 1.2 },
-  log: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#08090b', padding: 10, gap: 6 },
+  log: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#08090b', padding: 10, gap: 8 },
+  logBody: { gap: 6 },
+  logViews: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  logView: { borderRadius: 8, borderWidth: 1, borderColor: '#34343c', paddingHorizontal: 10, minHeight: 44, justifyContent: 'center' },
+  logViewOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,0.08)' },
+  logViewText: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
+  parts: { gap: 6 },
+  part: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  partLetter: { width: 16, color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 13, lineHeight: 21, textAlign: 'center' },
+  partText: { flex: 1 },
   logHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
   logEmpty: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 13 },
   logRow: { flexDirection: 'row', gap: 7, alignItems: 'flex-start' },

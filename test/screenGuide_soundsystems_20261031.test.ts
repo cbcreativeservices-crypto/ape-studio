@@ -164,7 +164,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     end: { exact: ["WHAT'S LEFT", 'COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
     check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER'] },
     'The complete system': { exact: ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS', 'STAGE IN', 'HOUSE', 'STATION', 'Analog snake', 'Digital stagebox', 'Passive + amps', 'Powered boxes', 'LAB NOTES', 'MULTICORE', 'NETWORK', 'Powered tops', 'Powered sub', 'SUB OUT', 'MAIN L/R', 'Snake', 'Stagebox', 'Processor', 'Amps'] },
-    'Trace the signal': { exact: ['NEXT', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SS-11): the dock key is STATION, not NEXT.
+    'Trace the signal': { exact: ['STATION', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },
     'Ten kinds of system': { exact: ['TYPE', 'BOXES', 'TEN KINDS OF SYSTEM', 'CHOSEN BY THE VENUE', 'A WAY TO BUILD ANY OF THEM', 'WHEN', 'NOT WHEN', 'Large-format line-array system', 'Distributed loudspeaker system', 'Small powered-loudspeaker PA', 'Outdoor performance system'] },
     'Match the venue': { exact: [] },
     'Output configurations': { exact: ['CONFIG', 'POSITIONS', 'FEEDS', 'SUBS', 'NONE', 'MONO', 'STEREO', 'THIRTEEN OUTPUT CONFIGURATIONS', 'BUSES', 'Mono', 'Stereo', 'Stereo mains with mono subwoofers', 'Stereo subwoofers', 'Lobby, recording and broadcast feeds'] },

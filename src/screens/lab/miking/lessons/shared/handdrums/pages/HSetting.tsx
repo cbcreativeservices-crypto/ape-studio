@@ -61,7 +61,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
           if (it) pick(it.id);
         },
         format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-        formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
+        formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'PICK'),
       },
       list.length,
       list.findIndex((q) => q.id === sel),

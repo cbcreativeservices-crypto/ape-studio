@@ -48,9 +48,12 @@ const RAIL_H = 128;
 const N = JUST.notes.length; // 8
 
 /** A dock key that holds its slot but is not usable yet (rackTypes fader
- *  `locked`): it reads LOCKED, never binds the lane, and a tap prints why. */
-function lockedKey(id: string, label: string, reason: string): DockParam {
-  return { kind: 'fader', id, label, locked: reason, value: 0, onChange: () => {}, format: () => '' };
+ *  `locked`): it never binds the lane, and a tap prints why. It reads its
+ *  own "not yet" words, dimmed, never LOCKED, which looked like a
+ *  members-only lock (owner 2026-11-15: "build waves 1 thru 3", D62 TU-04;
+ *  rack `lockedValue`, SN-1). */
+function lockedKey(id: string, label: string, reason: string, lockedValue: string): DockParam {
+  return { kind: 'fader', id, label, locked: reason, lockedValue, value: 0, onChange: () => {}, format: () => '' };
 }
 
 export function Ch7Just({ ctx }: ChapterProps) {
@@ -166,7 +169,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
     // locked-key pattern), and come alive in place.
     clips.length
       ? playTray({ player: ctx.player, last, setLast, clips, short: (c) => c.label.split(' ')[0] })
-      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one'),
+      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one', 'after 2 notes'),
     ...(keyStage
       ? ([
           {
@@ -182,8 +185,8 @@ export function Ch7Just({ ctx }: ChapterProps) {
           { kind: 'toggle', id: 'retune', label: 'RETUNE', value: mode === 'retune', onToggle: () => setMode((m) => (m === 'keep' ? 'retune' : 'keep')) },
         ] as DockParam[])
       : [
-          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`),
-          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`),
+          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`, `after all ${N}`),
+          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`, `after all ${N}`),
         ]),
     stopKey(ctx.player),
   ];
@@ -231,7 +234,8 @@ export function Ch7Just({ ctx }: ChapterProps) {
       {revealed >= 5 ? (
         <>
           <Eyebrow>THE 4:5:6 MAJOR TRIAD</Eyebrow>
-          <EquationStage
+          {/* The fraction chain folds under MATH (D62 TU-01); the paragraph below says it in words. */}
+          {ctx.mathView ? <EquationStage
             reduceMotion={ctx.reduceMotion}
             steps={[
               { text: 'C, E, G = 1, 5/4, 3/2' },
@@ -239,7 +243,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
               { text: '4 × 1, 4 × 5/4, 4 × 3/2', emphasis: true },
               { text: '= 4 : 5 : 6', note: 'the C-major triad as a simple whole-number relationship' },
             ]}
-          />
+          /> : null}
           <Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes. They are not harmonics 4, 5 and 6 of the C shown here; that reading only works for a shared note two octaves below C. Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
         </>
       ) : null}

@@ -137,8 +137,11 @@ describe('B-02 · ■ STOP drops an action on its way: the card and the strip sa
 /* ── B-03, B-17 ─────────────────────────────────────────────────────────── */
 
 describe('B-03 · page 12: the WALK key says the place in six letters or fewer', () => {
-  const src = code('pages/p12Walls.tsx');
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-05): the WALK key is the lab's one
+  // walking control, so it lives in pages/shared.tsx and page 12 takes it from there
+  const src = code('pages/shared.tsx');
   it('the key word for each side of the wall', () => {
+    assert.match(code('pages/p12Walls.tsx'), /keys: \[walkKey\(s\), doorKey\(s\), roomKey\]/);
     const m = /WALK_KEY_WORD: Record<.+?, string> = \{ COURTYARD: '([A-Z]+)', WORKSHOP: '([A-Z]+)' \}/.exec(src);
     assert.ok(m, 'WALK_KEY_WORD');
     for (const w of [m[1], m[2]]) assert.ok(w.length <= 6, `${w} fits the key`);

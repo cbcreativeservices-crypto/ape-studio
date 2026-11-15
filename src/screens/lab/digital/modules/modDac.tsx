@@ -102,7 +102,8 @@ function ispStats(ratio: number, phaseDeg: number) {
 type LayerKey = 'samples' | 'zoh' | 'recon' | 'original';
 const LAYER_CHIPS: { key: LayerKey; label: string }[] = [
   { key: 'samples', label: 'SAMPLES' },
-  { key: 'zoh', label: 'ZOH' },
+  // DG-02 (owner 2026-11-15, D62): ZOH spelled out as what it draws; the ⓘ entry keeps the term.
+  { key: 'zoh', label: 'HELD STEPS' },
   { key: 'recon', label: 'RECONSTRUCTED' },
   { key: 'original', label: 'ORIGINAL' },
 ];
@@ -147,10 +148,10 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       kind: 'options',
       id: 'mode',
       label: 'MODE',
-      valueLabel: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD',
+      valueLabel: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STANDARD',
       options: [
-        { id: 'simple', label: 'SIMPLIFIED', blurb: 'The sample points, the smooth rebuilt wave and the original — the held ZOH steps are hidden.' },
-        { id: 'standard', label: 'STANDARD', blurb: 'Adds the ZOH steps — the held voltage inside the converter, before the filter smooths it into the output.' },
+        { id: 'simple', label: 'SIMPLIFIED', blurb: 'The sample points, the smooth rebuilt wave and the original — the held steps are hidden.' },
+        { id: 'standard', label: 'STANDARD', blurb: 'Adds the HELD STEPS (ZOH) — the held voltage inside the converter, before the filter smooths it into the output.' },
         { id: 'xray', label: 'X-RAY', blurb: 'Adds the DAC CLOCK ticks (one per sample) and the RECON LPF inset — the filter that smooths the steps into the output wave.' },
       ],
       selectedId: mode,
@@ -190,8 +191,9 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
     {
       kind: 'options',
       id: 'os',
-      // 'OS RATE' — "OVERSAMP" lost a letter to the tray glyph on a 390 phone.
-      label: 'OS RATE',
+      // 'OS RATE' — "OVERSAMP" lost a letter to the tray glyph on a 390 phone. DG-02 (owner 2026-11-15,
+      // D62): spelled out; a two-word key now wraps to two lines at 9 pt (SH-27), never cut.
+      label: 'OVERSAMPLE RATE',
       valueLabel: `${os}×`,
       valueA11y: `oversampling ${os} times`,
       options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves up to around ${c * 48} kHz, so the analog filter can be gentler.` })),
@@ -206,7 +208,8 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
     {
       kind: 'fader',
       id: 'ispf',
-      label: 'ISP FREQ',
+      // DG-02: the test tone's frequency (was ISP FREQ, a code); the lane still says inter-sample peak.
+      label: 'TONE FREQ',
       value: ratio01,
       onChange: (v) => {
         setRatio01(v);
@@ -268,7 +271,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
               : [
                   // RATE, never FS: FS means FULL SCALE in this lab (beginner audit 2026-11-14).
                   { k: 'RATE', v: '48 kHz', helpKey: 'reconstruction' },
-                  { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
+                  { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STANDARD', helpKey: 'reconstruction' },
                   { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction', caption: 'shown on/off' },
                 ],
         render: (w, h) =>
@@ -337,7 +340,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             ],
             correctIdx: 2,
             why: {
-              0: 'Stair steps are the ZOH layer, the held values. Turn it off and compare.',
+              0: 'Stair steps are the HELD STEPS layer, the held values. Turn it off and compare.',
               1: 'Straight lines would add corners full of high frequencies the filter removes.',
             },
             reveal:
@@ -345,7 +348,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             wrongHint: 'Look at the main display: the bright output curve never touches a step corner and is never a straight segment.',
           }}
         />
-        {/* Two lessons on one page (phase 3, owner decision 5): reconstruction first; images, oversampling and inter-sample peaks folded here. The OS RATE, ISP FREQ and PHASE dock keys still drive the display. */}
+        {/* Two lessons on one page (phase 3, owner decision 5): reconstruction first; images, oversampling and inter-sample peaks folded here. The OVERSAMPLE RATE, TONE FREQ and PHASE dock keys still drive the display. */}
         <CollapsibleSection title="PART 2 · OVERSAMPLING AND INTER-SAMPLE PEAKS" startOpen={false}>
           <PanelCard>
             <PanelHead title="SPECTRAL IMAGES & OVERSAMPLING" helpLabel="spectral images" onHelp={() => help('spectral_images')} />
@@ -353,7 +356,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
               In the frequency domain, sampling mirrored the audio spectrum around every multiple of the
               sample rate. The reconstruction filter's job is to remove those images. Oversample and the
               images slide far away — so the analog filter can relax from a cliff into a gentle slope.
-              Pick an oversampling rate with OS RATE in the dock.
+              Pick an oversampling rate with OVERSAMPLE RATE in the dock.
             </Text>
             {/* The oversampling choice is the OVERSAMP dock key now. */}
             {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
@@ -381,7 +384,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
               ABOVE 0 dBFS between the samples. Ride PHASE in the dock and watch the true peak swing while the
               samples never move past the line.
             </Text>
-            {/* FREQUENCY and SAMPLE PHASE are the ISP FREQ and PHASE dock keys now. */}
+            {/* FREQUENCY and SAMPLE PHASE are the TONE FREQ and PHASE dock keys now. */}
             {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
             <ReadoutGrid
               help={help}
@@ -571,24 +574,7 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
           weighed against that.
         </Text>
 
-        {/* ── Clocking — one master, the rest follow (owner go 2026-10-21) ── */}
-        <PanelCard>
-          <PanelHead title={CLOCKING_CARD.title} helpLabel="clocking" onHelp={() => help(CLOCKING_CARD.helpKey)} />
-          <Text style={dstyles.body}>{CLOCKING_CARD.intro}</Text>
-          {CLOCKING_CARD.ways.map((w) => (
-            <View key={w.label} style={local.clockWay}>
-              <Text style={dstyles.readout}>{w.label}</Text>
-              <Text style={dstyles.body}>{w.text}</Text>
-            </View>
-          ))}
-          <View style={local.clockWay}>
-            <Text style={dstyles.readout}>{CLOCKING_CARD.wrongLabel}</Text>
-            <Text style={dstyles.body}>{CLOCKING_CARD.wrong}</Text>
-          </View>
-        </PanelCard>
-
-        <GoalCheck spec={CLOCKING_CHECK} />
-        {/* Two lessons on one page (phase 3, owner decision 5): jitter and clocking first; the myth charter, the data-rate math and the four review checks folded here. */}
+        {/* Two lessons on one page (phase 3, owner decision 5): jitter first; the myth charter, the data-rate math and the four review checks folded here; clocking folds after it (DG-01). */}
         <CollapsibleSection title="PART 2 · MYTHS, DATA RATE AND THE LAB REVIEW" startOpen={false}>
           <PanelCard>
             <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
@@ -692,6 +678,27 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
               wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
             }}
           />
+        </CollapsibleSection>
+        {/* DG-01 (owner 2026-11-15: "build waves 1 thru 3", D62; audit G2 M8 suggestion 1): the myth
+            summary comes before the cable and clock detail, which folds last, for when you wire real gear. */}
+        <CollapsibleSection title="PART 3 · CLOCKING, FOR WHEN YOU WIRE REAL GEAR" startOpen={false}>
+          {/* ── Clocking — one master, the rest follow (owner go 2026-10-21) ── */}
+          <PanelCard>
+            <PanelHead title={CLOCKING_CARD.title} helpLabel="clocking" onHelp={() => help(CLOCKING_CARD.helpKey)} />
+            <Text style={dstyles.body}>{CLOCKING_CARD.intro}</Text>
+            {CLOCKING_CARD.ways.map((w) => (
+              <View key={w.label} style={local.clockWay}>
+                <Text style={dstyles.readout}>{w.label}</Text>
+                <Text style={dstyles.body}>{w.text}</Text>
+              </View>
+            ))}
+            <View style={local.clockWay}>
+              <Text style={dstyles.readout}>{CLOCKING_CARD.wrongLabel}</Text>
+              <Text style={dstyles.body}>{CLOCKING_CARD.wrong}</Text>
+            </View>
+          </PanelCard>
+
+          <GoalCheck spec={CLOCKING_CHECK} />
         </CollapsibleSection>
         <LessonRow onPress={() => help()} />
       </View>

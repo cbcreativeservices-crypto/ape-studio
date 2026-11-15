@@ -7,7 +7,9 @@
  * A MIX IS NOT A DEVICE. A mix is what a performer hears; a wedge, a receiver
  * pack or a headphone amplifier is equipment that plays it. So:
  *
- *   • THREE SEPARATE COUNTS sit at the top, each in its own box with its own
+ *   • THREE SEPARATE COUNTS sit at the top of the plan (under any question:
+ *     the questions lead, beginner waves 2026-11-15, PLOT-02), and only once
+ *     there is a mix or a device to count. Each is in its own box with its own
  *     sentence: mixes · monitor feed audio channels REQUESTED FROM THE HOUSE
  *     CONSOLE (mono 1, stereo 2) · monitor devices, each kind apart. They are
  *     never added together. The middle number holds only what is requested
@@ -293,7 +295,17 @@ export function MonitorsArea() {
     <>
       <ScrollView ref={scrollRef} style={styles.scroll} contentContainerStyle={[styles.content, { paddingBottom: 48 + insets.bottom }]} keyboardShouldPersistTaps="handled">
         <View style={[cardColumn, styles.column]}>
-          <Section title="MONITOR PLAN" hint="Three separate counts: mixes, audio channels, devices. A mix is what a performer hears. A monitor device is the equipment that plays it.">
+          {/* the questions lead the area (beginner waves 2026-11-15, PLOT-02) */}
+          {questions.length ? (
+            <Section title="QUESTIONS ABOUT MONITORS" hint="Answer them here. GO TO opens the mix or the device where an answer is typed. A question you leave is printed in the packet as unresolved.">
+              <IssueList issues={questions} onGoTo={goToQuestion} onAction={answerQuestion} />
+            </Section>
+          ) : null}
+
+          <Section title="MONITOR PLAN" hint={nothingYet ? 'A mix is what a performer hears. A monitor device is the equipment that plays it.' : 'Three separate counts: mixes, audio channels, devices. A mix is what a performer hears. A monitor device is the equipment that plays it.'}>
+            {/* nothing to count yet: no three boxes of zeros (PLOT-02); the note below says what to add */}
+            {nothingYet ? null : (
+            <>
             <Box>
               <View style={styles.counts}>
                 <Count value={counts.mixes} label={counts.mixes === 1 ? 'mix in the plan' : 'mixes in the plan'} />
@@ -322,15 +334,12 @@ export function MonitorsArea() {
               ) : null}
               <Line>{counts.deviceLine}</Line>
             </Box>
+            </>
+            )}
             {nothingYet ? <Note>There is no monitor plan yet. Use ADD A MIX for each different thing a performer needs to hear. Then add the devices that play it.</Note> : null}
             <HelpTip title="Mix or device: what is the difference?" body={MIX_OR_DEVICE} />
           </Section>
 
-          {questions.length ? (
-            <Section title="QUESTIONS ABOUT MONITORS" hint="Answer them here. GO TO opens the mix or the device where an answer is typed. A question you leave is printed in the packet as unresolved.">
-              <IssueList issues={questions} onGoTo={goToQuestion} onAction={answerQuestion} />
-            </Section>
-          ) : null}
 
           <Section title="MIXES" hint="What each performer hears, grouped by who creates the mix." right={<Button label="ADD A MIX" tone="primary" onPress={() => setPopup({ kind: 'new-mix', recipients: [] })} a11yLabel="Add a monitor mix" />}>
             {mixGroups.length ? (

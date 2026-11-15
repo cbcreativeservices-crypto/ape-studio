@@ -122,7 +122,9 @@ describe('2. every step fits its no-scroll budget', () => {
 
 describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
-    home: ['Smart Processors', 'De-Esser & Sibilance Control', 'OPEN', 'CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '‹', 'detector', 'threshold', 'gain computer'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items DES-02, DES-03, DES-04):
+    // the OPEN tag is now START ›, "gain computer" left the hub, and the check is labeled for after the lab.
+    home: ['Smart Processors', 'De-Esser & Sibilance Control', 'START ›', 'AFTER THE DE-ESSER LAB', 'CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '‹', 'detector', 'threshold'],
     what: ['PHRASE', 'SPECTRUM', 'voice body', 'hiss band (2–10 kHz)', 'JUMP TO AN S', '‹', '›', 'FULL SCREEN', 'NEXT'],
     eqVs: ['STATIC EQ CUT · −', 'DE-ESSER', 'HISS BAND ALONE', 'brightness taken from everything that is not an S', 'UNDERSTANDING CHECK', 'FULL SCREEN'],
     path: ['SIGNAL PATH', 'MAIN PATH', 'SIDE CHAIN', 'NEXT BLOCK ›', 'WALK THE SIGNAL', 'STOP', 'BROADBAND', 'SPLIT-BAND', 'FULL SCREEN', 'UNDERSTANDING CHECK'],
@@ -244,16 +246,18 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.equal(M.meanSibilantGr(moved).toFixed(1), '1.2');
     assert.match(t, /Range down to 4\.0 dB: peak 4\.0 dB, average 3\.7 dB — Transparent/);
   });
-  it('page 7: JUMP TO AN S from frame 1 lands on frame 3 “s” at −7.2 dB; frame 8 “a” has none', () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DES-05): page 7
+  // now OPENS on the first S (frame 3), instead of reaching it with JUMP TO AN S from frame 1.
+  it('page 7: opens on frame 3 “s” at −7.2 dB; frame 8 “a” has none', () => {
     const a = out(RACK);
-    assert.equal(SIB.find((i: number) => i > 0), 2);
+    assert.equal(SIB[0], 2);
     assert.equal(M.PHRASE[2].label, 's');
     assert.equal(a[2].grDb.toFixed(1), '7.2');
     assert.equal(M.PHRASE[7].label, 'a'); assert.equal(a[7].grDb, 0);
-    assert.match(pageSrc('PageMode'), /const \[step, setStep\] = useState\(0\);/);
+    assert.match(pageSrc('PageMode'), /const \[step, setStep\] = useState\(SIB\[0\]\);/);
     assert.match(pageSrc('PageMode'), /'no reduction on this frame — both modes pass it untouched'/);
     const t = PAGES.mode.tryThis.join('\n');
-    assert.match(t, /detector 6\.5 kHz, Q 1\.4, Threshold −10 dB, Range 8\.0 dB\. JUMP TO AN S lands on frame 3, “s”, at −7\.2 dB/);
+    assert.match(t, /detector 6\.5 kHz, Q 1\.4, Threshold −10 dB, Range 8\.0 dB\. The page opens on frame 3, “s”, at −7\.2 dB/);
     assert.equal(out({ ...RACK, freqHz: 4000, q: 4 })[2].grDb, 0, 'at 4.0 kHz / Q 4.0 frame 3 has none');
     assert.match(t, /frame 8, “a”: no reduction, so both modes pass it untouched/);
   });

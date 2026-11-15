@@ -19,7 +19,7 @@ import { SP_SUPPLIER_WORD } from '../../../../features/stageplot/spCatalog';
 import { spAddExtra, spRemoveExtra, spUpdateExtra } from '../../../../features/stageplot/spModel';
 import type { SpExtra, SpId, SpSupplier } from '../../../../features/stageplot/spTypes';
 import { useSpEditor } from '../spContext';
-import { Button, Choice, Count, FocusMark, HelpTip, Note, NumberField, RowCard, Section, TextField } from '../spForm';
+import { Button, Choice, Count, FocusMark, HelpTip, Note, NumberField, RowCard, Section, TextField, type SectionFold } from '../spForm';
 import { Lines, RemoveStep, SheetBody, Small, SubTitle, bitStyles } from './bits';
 import type { SpIssue } from '../../../../features/stageplot/spReview';
 import { SP_EXTRAS_HINT, SP_EXTRA_HINT, SP_EXTRA_WORD, SP_SUPPLIERS, spEquipmentGroups, spExtraLine, spOpenIssues, spOpenLine, spResponsibility, spSummaryCounts } from './inputsLogic';
@@ -28,7 +28,7 @@ const SUPPLIER: { value: SpSupplier; label: string }[] = SP_SUPPLIERS.map((value
 const KINDS: readonly SpExtra['kind'][] = ['stage-box', 'split', 'backline', 'riser', 'power', 'other'];
 const KIND: { value: SpExtra['kind']; label: string }[] = KINDS.map((value) => ({ value, label: SP_EXTRA_WORD[value] }));
 
-export function SummaryPanel({ onOpenIssue }: { onOpenIssue: (issue: SpIssue) => void }) {
+export function SummaryPanel({ onOpenIssue, fold }: { onOpenIssue: (issue: SpIssue) => void; fold?: SectionFold }) {
   const ed = useSpEditor();
   const p = ed.project;
   const counts = useMemo(() => spSummaryCounts(p), [p]);
@@ -37,7 +37,7 @@ export function SummaryPanel({ onOpenIssue }: { onOpenIssue: (issue: SpIssue) =>
   const open = useMemo(() => spOpenIssues(ed.issues), [ed.issues]);
 
   return (
-    <Section title="EQUIPMENT AND WHO BRINGS IT" hint="Counted from your rows each time. To change a number here, change the row.">
+    <Section title="EQUIPMENT AND WHO BRINGS IT" hint="Counted from your rows each time. To change a number here, change the row." fold={fold}>
       <HelpTip
         title="Who brings what"
         body="Each item has someone who brings it: the band, the venue, another provider, or to be confirmed. The packet prints these apart, so the venue sees what your band asks it to bring and what is still open."
@@ -79,7 +79,7 @@ export function SummaryPanel({ onOpenIssue }: { onOpenIssue: (issue: SpIssue) =>
   );
 }
 
-export function ExtrasPanel({ onOpen }: { onOpen: (extraId: SpId) => void }) {
+export function ExtrasPanel({ onOpen, fold }: { onOpen: (extraId: SpId) => void; fold?: SectionFold }) {
   const ed = useSpEditor();
   const p = ed.project;
   const add = (kind: SpExtra['kind']) => {
@@ -88,7 +88,7 @@ export function ExtrasPanel({ onOpen }: { onOpen: (extraId: SpId) => void }) {
     onOpen(made.id);
   };
   return (
-    <Section title="STAGE BOX, SPLIT, BACKLINE, RISERS AND POWER" hint={`Other things you want listed for the venue. Each is a request and a note. ${SP_EXTRAS_HINT}`}>
+    <Section title="STAGE BOX, SPLIT, BACKLINE, RISERS AND POWER" hint={`Other things you want listed for the venue. Each is a request and a note. ${SP_EXTRAS_HINT}`} fold={fold}>
       {p.extras.length ? (
         p.extras.map((e) => <RowCard key={e.id} title={e.label.trim() || SP_EXTRA_WORD[e.kind]} subtitle={spExtraLine(e)} onPress={() => onOpen(e.id)} a11yLabel={`${e.label.trim() || SP_EXTRA_WORD[e.kind]}. ${spExtraLine(e).replace(/ · /g, ', ')}. Opens this item to edit it.`} />)
       ) : (

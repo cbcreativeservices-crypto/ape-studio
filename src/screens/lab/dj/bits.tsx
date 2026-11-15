@@ -18,6 +18,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useMarkWhen } from '../tuning/components/primitives';
 import type { PageCtx } from '../kit/PagedLab';
 import { faultStep, latchGoals, markOnMet, reportGoals, setupPending, visitStart } from './booth/goalStore';
+import { goalChipWords } from './goalWords';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
 
@@ -66,7 +67,10 @@ export function Note({ children, tone = 'plain' }: { children: ReactNode; tone?:
 
 /* ── goals (latch once met; all met → the page marks itself done) ──────── */
 
-export type Goal = { label: string; hit: boolean };
+/** `wait` (ADDITIVE, DJ-04, owner 2026-11-15 "build waves 1 thru 3"): the
+ *  line the chip shows while the set-up is right and only PLAY is missing
+ *  (goalWords.ts). It never changes what ticks the goal. */
+export type Goal = { label: string; hit: boolean; wait?: string };
 
 /** `page` (the screen's short name) reports the unmet goals to the
  *  what's-left screen (booth/goalStore). `ready` (ADDITIVE, learning review
@@ -95,14 +99,17 @@ export function useVisitGoals(ctx: PageCtx, goals: Goal[], page?: string, ready 
 export function GoalChips({ goals, latched }: { goals: Goal[]; latched: boolean[] }) {
   return (
     <View style={styles.chips} accessibilityRole="list">
-      {goals.map((g, i) => (
-        <View key={g.label} style={[styles.chip, latched[i] && styles.chipDone]} accessible accessibilityLabel={`${g.label}: ${latched[i] ? 'done' : 'not yet'}`}>
-          <Text style={[styles.chipText, latched[i] && { color: colors.green }]}>
-            {latched[i] ? '✓ ' : '○ '}
-            {g.label}
-          </Text>
-        </View>
-      ))}
+      {goals.map((g, i) => {
+        const w = goalChipWords(g.label, !!latched[i], g.wait);
+        return (
+          <View key={g.label} style={[styles.chip, latched[i] && styles.chipDone, w.waiting && styles.chipWait]} accessible accessibilityLabel={w.a11y}>
+            <Text style={[styles.chipText, latched[i] && { color: colors.green }, w.waiting && { color: colors.amber }]}>
+              {w.mark}
+              {w.text}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -203,7 +210,7 @@ export function EvidenceCheck({ eyebrow = 'CHECK YOURSELF', task, start, startLa
  * (booth/goalStore.faultStep), and solved only while armed. START AGAIN
  * re-runs `start` for a fault the learner has wrecked mid-run.
  */
-export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, startLabel = 'START THE FAULT', intro, extra, open }: {
+export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, startLabel = 'START THE FAULT', intro, extra, open, halfway }: {
   title: string;
   symptom: string;
   start: () => void;
@@ -221,6 +228,11 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
   /** ADDITIVE: the page started (true) or reset (false) the fault from
    *  elsewhere — the capstone's OPEN THE DOORS in its EVENT tray. */
   open?: boolean;
+  /** ADDITIVE (DJ-10, owner 2026-11-15 "build waves 1 thru 3"): a fault whose
+   *  fix has two halves passes the line that names the second half, once the
+   *  first is done ("Routed to the recording. Now press TALK NOW…"). Shown
+   *  while the fault is on and not yet fixed; it never changes what fixes it. */
+  halfway?: string | null;
 }) {
   const [on, setOn] = useState(false);
   const [shown, setShown] = useState(0);
@@ -280,6 +292,7 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
           {hints.slice(0, shown).map((h, i) => (
             <Text key={i} style={styles.hint}>{`Hint ${i + 1}: ${h}`}</Text>
           ))}
+          {!solved && halfway ? <Text style={styles.halfway} accessibilityLiveRegion="polite">{`✓ ${halfway}`}</Text> : null}
           {solved ? (
             <Text style={styles.fixed}>{`Fixed. ${why}`}</Text>
           ) : (
@@ -337,6 +350,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 9, paddingVertical: 6, minHeight: 32, justifyContent: 'center' },
   chipDone: { borderColor: colors.green, backgroundColor: '#0f2416' },
+  chipWait: { borderColor: colors.amber },
   chipText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 0.8 },
   terms: { gap: 8 },
   termsHead: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
@@ -353,6 +367,7 @@ const styles = StyleSheet.create({
   symptom: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 21 },
   hint: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   fixed: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
+  halfway: { color: colors.amber, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
   faultRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   faultBtn: { alignSelf: 'flex-start', borderRadius: 9, borderWidth: 1, borderColor: '#3a3a44', paddingVertical: 9, paddingHorizontal: 14, minHeight: 40, justifyContent: 'center' },
   faultBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.9 },

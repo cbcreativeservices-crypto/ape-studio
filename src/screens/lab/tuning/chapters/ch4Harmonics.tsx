@@ -35,6 +35,9 @@ const THIRDS: Record<Third, { label: string; value: typeof JUST_MAJOR_THIRD }> =
   pyth: { label: 'Pythagorean 81/64', value: PYTHAGOREAN_MAJOR_THIRD },
 };
 const MIN = 380, MAX = 410;
+/** BASIC names the system only; MATH adds its ratio (owner 2026-11-15:
+ *  "build waves 1 thru 3", D62 TU-01: "2^(1/3)" was the main text in BASIC). */
+const thirdName = (k: Third, math: boolean): string => (math ? THIRDS[k].label : THIRDS[k].label.split(' ')[0]);
 
 export function Ch4Harmonics({ ctx }: ChapterProps) {
   const [third, setThird] = useState<Third>('just');
@@ -74,7 +77,7 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
   // Completion: the learner aligned the slider (not just pressed a preset).
   useMarkWhen(aligned && useSlider, ctx.markDone);
 
-  const playFull = () => void ctx.player.renderAndPlay(() => renderNotes([f, thirdHz], 2.2, 'rich'), `full tones · ${useSlider ? `${cents.toFixed(1)} ¢` : THIRDS[third].label}`);
+  const playFull = () => void ctx.player.renderAndPlay(() => renderNotes([f, thirdHz], 2.2, 'rich'), `full tones · ${useSlider ? `${cents.toFixed(1)} ¢` : thirdName(third, ctx.mathView)}`);
   const playPartials = () => void ctx.player.renderAndPlay(() => renderPartials([p5, p4], 2.2), `isolated partials · ${p5.toFixed(1)} + ${p4.toFixed(1)} Hz`);
   // Saved + pre-rendered clips (owner 2026-09-29): the fixed buttons' clips render in the background.
   // Every preset third, both views (the slider's value changes every frame and is not pre-rendered).
@@ -107,7 +110,7 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
       formatShort: (p) => `${snapNear(laneVal(p, MIN, MAX, 0.1), JUST_MAJOR_THIRD.cents).toFixed(1)}¢`,
       chooser: {
         title: 'MAJOR THIRD',
-        options: (Object.keys(THIRDS) as Third[]).map((k) => ({ id: k, label: THIRDS[k].label, blurb: `${THIRDS[k].value.cents.toFixed(2)} ¢ · ratio ${THIRDS[k].value.exactLabel} ≈ ${THIRDS[k].value.decimalLabel}` })),
+        options: (Object.keys(THIRDS) as Third[]).map((k) => ({ id: k, label: thirdName(k, ctx.mathView), blurb: ctx.mathView ? `${THIRDS[k].value.cents.toFixed(2)} ¢ · ratio ${THIRDS[k].value.exactLabel} ≈ ${THIRDS[k].value.decimalLabel}` : `${THIRDS[k].value.cents.toFixed(2)} ¢ above C` })),
         selectedId: useSlider ? null : third,
         onSelect: (k) => {
           setThird(k as Third);
@@ -162,7 +165,7 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
           meet) plus the plain-language readout; See the Math adds the
           derivation lines — the same split the other chapters use. */}
       <Card tone="math">
-        <Eyebrow>{useSlider ? `MAJOR THIRD AT ${cents.toFixed(2)} ¢` : THIRDS[third].label.toUpperCase()}</Eyebrow>
+        <Eyebrow>{useSlider ? `MAJOR THIRD AT ${cents.toFixed(2)} ¢` : thirdName(third, ctx.mathView).toUpperCase()}</Eyebrow>
         {!useSlider && third === 'just' ? (
           <>
             {ctx.mathView ? <MathLine>root ladder: f, 2f, 3f, 4f, 5f</MathLine> : null}

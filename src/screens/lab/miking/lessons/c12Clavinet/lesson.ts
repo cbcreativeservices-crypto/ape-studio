@@ -545,7 +545,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what makes the clavinet’s sound reach a microphone?', options: ['The strings themselves', 'The pickups, through a speaker', 'The keys hitting the case'], after: 'Now STEP through the key (or PLAY ONCE) and watch where the signal goes.' },
+  sound: { prompt: 'Before you step through: what makes the clavinet’s sound reach a microphone?', options: ['The strings themselves', 'The pickups, through a speaker', 'The keys hitting the case'], after: 'Now go EVENT by EVENT through the key (or PLAY ONCE) and watch where the signal goes.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the close mic from the center of the speaker to its edge. What changes?', options: ['More bite', 'A rounder sound', 'It depends on this amp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Which way should the mic’s rejection point?', options: ['Toward the loudest monitor', 'Away from the loudest monitor', 'Straight up'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

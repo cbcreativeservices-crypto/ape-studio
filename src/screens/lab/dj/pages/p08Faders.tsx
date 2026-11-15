@@ -17,6 +17,7 @@ import { CurvePlot } from '../art/plots';
 import { MIXER, STRIP_X, onMixer } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { boothKey, pct, stopKey, xfaderKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
@@ -99,7 +100,11 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
   const copies = twoCopiesResult(booth, ref.current?.copies ? ref.current.rel : null, last);
   if (copies.met && !travel.current.copies) travel.current.copies = true;
   const hits = [assigned, travel.current.blendLo && travel.current.blendHi, travel.current.cut, travel.current.copies, faultFixed, check];
-  const goals = GOALS_FADERS.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): the blend and cut
+  // goals need both decks running; set up right with them stopped, the chip
+  // says so.
+  const waits = [undefined, waitIf(assigned && m.xfCurve === 'BLEND', !both, 'both'), waitIf(assigned && m.xfCurve === 'CUT', !both, 'both')];
+  const goals = GOALS_FADERS.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'FADERS');
   const gA = faderGain(booth.ch[1].fader) * xfGainFor(booth.ch[1].xf, m.xf, m.xfCurve);
   const gB = faderGain(booth.ch[2].fader) * xfGainFor(booth.ch[2].xf, m.xf, m.xfCurve);

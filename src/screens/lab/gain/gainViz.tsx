@@ -37,9 +37,11 @@ import {
   ZONE_CLIP_FILL,
   ZONE_HOT_FILL,
   ZONE_LOW_FILL,
+  statusWord,
   type ChainNode,
   type Stage,
   type StageKind,
+  type StatusWord,
 } from './gainEngine';
 
 const pct = (x: number): `${number}%` => `${Number((x * 100).toFixed(1))}%`;
@@ -52,7 +54,7 @@ function regionLabelFor(node: ChainNode): string {
     case 'low': return 'TOO LOW';
     case 'healthy': return 'HEALTHY';
     case 'hot': return 'HOT';
-    default: return 'OVERLOAD';
+    default: return 'CLIP'; // GN-02: the key's word (was OVERLOAD)
   }
 }
 
@@ -171,12 +173,20 @@ export function stageTint(node: ChainNode): string {
 }
 
 /** Compact bezel status cell for a node — spread into a BezelItem. */
+// GN-02 (owner 2026-11-15: "build waves 1 thru 3", D62): STATUS speaks the meters' and the color
+// key's words (TOO LOW, HEALTHY, HOT, CLIP; was LOW / OK), plus NOISY for the hiss problem, amber
+// like the NOISE readout. The word comes from the pure gainEngine.statusWord.
+const STATUS_TINT: Record<StatusWord, string> = {
+  CLIP: '#ff5f4e',
+  DIST: '#ff7a1e',
+  NOISY: '#e8c341',
+  'TOO LOW': '#6f9bff',
+  HOT: '#ffc64d',
+  HEALTHY: '#3fae52',
+};
 export function stageStatus(node: ChainNode): { v: string; tint: string } {
-  if (node.stageClipped) return { v: 'CLIP', tint: '#ff5f4e' };
-  if (node.distorted) return { v: 'DIST', tint: '#ff7a1e' };
-  if (node.region === 'low') return { v: 'LOW', tint: '#6f9bff' };
-  if (node.region === 'hot') return { v: 'HOT', tint: '#ffc64d' };
-  return { v: 'OK', tint: '#3fae52' };
+  const v = statusWord(node);
+  return { v, tint: STATUS_TINT[v] };
 }
 
 export type StageColSpec = {
@@ -489,9 +499,12 @@ const styles = StyleSheet.create({
 
 
 
-  led: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#23252d', borderWidth: 1, borderColor: '#0c0c0f' },
-  ledSig: { backgroundColor: '#3fae52' },
-  ledClip: { backgroundColor: '#ff3b2a' },
+  // GN-03 (owner 2026-11-15: "build waves 1 thru 3", D62): bigger lights (9 → 14) with a glow ring
+  // when lit, so a dark SIG light reads as dark at phone width. The ring is a border (identical on
+  // iOS and Android, unlike a shadow).
+  led: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#1b1c22', borderWidth: 2, borderColor: '#2c2e36' },
+  ledSig: { backgroundColor: '#5bdc6e', borderColor: 'rgba(91,255,133,.45)' },
+  ledClip: { backgroundColor: '#ff3b2a', borderColor: 'rgba(255,107,94,.55)' },
   /* Peak hold: a light hairline spanning the track — never red, so the
      only red mark on a meter is its ceiling. */
   vPeak: { position: 'absolute', left: 0, right: 0, height: 1.5, backgroundColor: '#e9e9ef' },

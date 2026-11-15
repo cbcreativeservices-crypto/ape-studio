@@ -132,10 +132,13 @@ describe('3. each guide quotes its screen’s real names', () => {
     // you suggestted in the report."): FS keeps one meaning, full scale.
     sampling: ['INPUT — CONTINUOUS', 'TRUE INPUT (DIM) — ABOVE NYQUIST', 'ALIAS REMOVED', 'INPUT', 'NYQUIST', 'READS AS', 'FREQ', 'ZOOM', 'RATE', '/CYC', 'RECONSTRUCTED · ON', 'ALIAS', 'PLAY INPUT', 'PLAY PREDICTED ALIAS', 'ANTI-ALIASING FILTER', 'FILTER OFF', 'FILTER ON', 'dB/OCT', 'CUTOFF'],
     quant: ['Amber is the original, blue sampled, green stored, red the rounding error.','BITS', 'LEVELS', 'TH. SNR', 'PEAK', 'LEVEL', '-BIT', 'ERROR', 'DITHER', 'NO DITHER', 'RPDF', 'TPDF', 'NOISE-SHAPED', 'CORRELATED', 'ERROR HISTOGRAM'],
-    binary: ['SAMPLE', 'DECIMAL', 'HEX', 'LEVEL', 'TIME', 'BINARY', 'NORMALIZED', '% OF FS', 'RESET REG', 'SIGN', '16-bit · 48 kHz'],
-    adc: ['0 dBFS (full scale)', 'analog rail', 'noise floor', 'ANLG', 'DIG', 'TOO LOW', 'RIGHT', 'TOO HIGH', 'PEAK', 'SNR', 'HEADROOM', 'ZONE', 'INPUT', 'AN. CLIP', 'A+D CLIP', '0.0 OVER', 'THE CONVERSION CHAIN', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'SAMPLE & HOLD — WATCH ONE CELL WORK'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DG-02): the codes are spelled out —
+    // RESET REG → RESET BITS, ZOH → HELD STEPS, OS RATE → OVERSAMPLE RATE, ISP FREQ → TONE FREQ, and ZONE reads
+    // CLIP with WHERE on its sub line (analog / analog + digital) instead of AN. CLIP / A+D CLIP.
+    binary: ['SAMPLE', 'DECIMAL', 'HEX', 'LEVEL', 'TIME', 'BINARY', 'NORMALIZED', '% OF FS', 'RESET BITS', 'SIGN', '16-bit · 48 kHz'],
+    adc: ['0 dBFS (full scale)', 'analog rail', 'noise floor', 'ANLG', 'DIG', 'TOO LOW', 'RIGHT', 'TOO HIGH', 'PEAK', 'SNR', 'HEADROOM', 'ZONE', 'INPUT', 'CLIP', 'analog + digital', '0.0 OVER', 'THE CONVERSION CHAIN', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'SAMPLE & HOLD — WATCH ONE CELL WORK'],
     processing: ['FLOAT INTERNAL PATH', 'FIXED-POINT RENDER (24-BIT)', 'FLOAT BUS', 'FIXED', '0.0 CLIP', 'TRIM', 'GAIN', 'VALUE', 'HOW A FLOAT NUMBER WORKS', 'SIGN', 'EXPONENT (decade)', 'MANTISSA (slides 1→10)', 'INTEGER vs FLOATING POINT'],
-    dac: ['SAMPLES', 'ZOH', 'RECONSTRUCTED', 'ORIGINAL', 'DAC CLOCK', 'RECON LPF', 'RATE', 'MODE', 'LAYERS', 'INTER-SAMPLE PEAKS', 'SAMPLE PK', 'TRUE PK', 'MISSED', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'OS RATE', 'SPECTRAL IMAGES & OVERSAMPLING', 'ISP FREQ', 'PHASE', 'INTER-SAMPLE PEAK EXPLORER', 'dBTP'],
+    dac: ['SAMPLES', 'HELD STEPS', 'RECONSTRUCTED', 'ORIGINAL', 'DAC CLOCK', 'RECON LPF', 'RATE', 'MODE', 'LAYERS', 'INTER-SAMPLE PEAKS', 'SAMPLE PK', 'TRUE PK', 'MISSED', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'OVERSAMPLE RATE', 'SPECTRAL IMAGES & OVERSAMPLING', 'TONE FREQ', 'PHASE', 'INTER-SAMPLE PEAK EXPLORER', 'dBTP'],
     errors: ['IDEAL CLOCK', 'WITH JITTER (EXAGGERATED)', 'VALUE ERROR ≈ SLOPE × TIMING ERROR', 'INTERVAL', 'µs @48k', 'PEAK DEV', 'MODE', 'JITTER', 'JITTER MODE', 'RANDOM', 'PERIODIC', 'CLOCKING — ONE MASTER, THE REST FOLLOW', 'MODULE 8 · MYTH vs REALITY', 'DATA RATE — THE MENTAL MATH'],
   };
   const HOME_SRC = code(`${D}DigitalLabHomeScreen.tsx`) + code('src/screens/lab/ModuleAccordionRow.tsx');
@@ -244,14 +247,14 @@ describe('4. TRY THIS numbers are what the modules print', () => {
       const over = ao >= 0.999;
       const rp = 20 * Math.log10(Math.max(1e-4, Math.min(1, ao)));
       const zone = d < -18 ? 'TOO LOW' : d <= -10 ? 'RIGHT' : 'TOO HIGH';
-      return { peak: over ? '0.0 OVER' : rp.toFixed(1), snr: (rp + 60).toFixed(0), head: over ? 'none' : (-rp).toFixed(1), zone: d > 0.5 && over ? 'A+D CLIP' : d > 0.5 ? 'AN. CLIP' : zone };
+      return { peak: over ? '0.0 OVER' : rp.toFixed(1), snr: (rp + 60).toFixed(0), head: over ? 'none' : (-rp).toFixed(1), zone: d > 0.5 && over ? 'CLIP, analog + digital' : d > 0.5 ? 'CLIP, analog' : zone };
     };
     assert.deepEqual(gr(-54 + 0.6 * 66), { peak: '-14.5', snr: '46', head: '14.5', zone: 'RIGHT' });
     assert.deepEqual(gr(-54), { peak: '-54.0', snr: '6', head: '54.0', zone: 'TOO LOW' });
-    assert.deepEqual(gr(12), { peak: '0.0 OVER', snr: '60', head: 'none', zone: 'A+D CLIP' });
-    assert.equal(gr(1).zone, 'AN. CLIP');
+    assert.deepEqual(gr(12), { peak: '0.0 OVER', snr: '60', head: 'none', zone: 'CLIP, analog + digital' });
+    assert.equal(gr(1).zone, 'CLIP, analog');
     assert.ok(Number(gr(1).peak) < 0);
-    for (const s of ['−14.5 dBFS', 'SNR 46 dB', '−54.0 dBFS', 'SNR 6 dB', '0.0 OVER', 'HEADROOM none', 'A+D CLIP', 'AN. CLIP']) assert.ok(t('adc').includes(s), s);
+    for (const s of ['−14.5 dBFS', 'SNR 46 dB', '−54.0 dBFS', 'SNR 6 dB', '0.0 OVER', 'HEADROOM none', 'CLIP, analog + digital', 'CLIP, analog']) assert.ok(t('adc').includes(s), s);
   });
   it('Module 6: bus = −6 + 12 × GAIN, starting at the top; TRIM takes off the added 12 dB', () => {
     assert.match(C, /const gainDb = 12 \* gain01;/);

@@ -258,7 +258,9 @@ describe('F3 · Game Audio: a first step that works with sound off', () => {
     assert.match(page, /<Do>Press OPEN DOOR and read the log\./);
   });
   it('page 13’s headphone step says what to do without headphones', () => {
-    assert.match(code(`${GA}/pages/p13Formats.tsx`), /Then choose MONO\. No headphones\? Read the strip instead\.<\/Do>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-04): the step is lettered parts now, and the
+    // no-headphones line sits with the part that asks for headphones
+    assert.match(code(`${GA}/pages/p13Formats.tsx`), /'Put on headphones and choose HEADPHONE 3D\. No headphones\? Read the strip instead\.'/);
   });
 });
 
@@ -811,7 +813,9 @@ describe('F3 phase 3 · Game Audio: the split pages keep every lesson, goal and 
     assert.doesNotMatch(loops, /FaultCard|bedPileUp/);
     // the loop page needs no walking: three keys, the slider first
     assert.match(loops, /keys: \[masterKey\(s\), sceneKey\(s\), windKey\],/);
-    assert.match(zones, /keys: \[facingKey\(s\), stepKey\('player'\), soundsKey\],/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-05): the zones page walks with WALK, the
+    // lab's one walking control, in place of FACING and STEP
+    assert.match(zones, /keys: \[walkKey\(s\), soundsKey\],/);
   });
 
   it('every page number a learner reads is today’s number', () => {
@@ -830,7 +834,8 @@ describe('F3 phase 3 · Game Audio: the split pages keep every lesson, goal and 
       }
     }
     assert.ok(seen >= 6, `${seen} page numbers checked`);
-    assert.match(pageCode('p01Welcome'), /Page 8 explains them\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-12): the page-8 pointer is now part of the voice line
+    assert.match(pageCode('p01Welcome'), /page 8 explains how the two differ\./);
     assert.match(GA_END_GUIDE.changes.join(' '), /Page 22 is done when its six checks are passed, page 23 when its two are\./);
   });
 

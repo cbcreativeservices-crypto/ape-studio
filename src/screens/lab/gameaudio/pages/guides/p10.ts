@@ -10,7 +10,7 @@ import type { ScreenGuide } from '../../../../../features/lab/screenGuide/types.
 export const G10: ScreenGuide = {
   intro: {
     learning: 'How background sound is built. A bed has no position, spot sounds break the repetition, and each zone crossing is one crossfade.',
-    start: 'Open SOUNDS, switch SCENE on and choose OPEN DOOR, then close the tray. Press STEP until you pass through the doorway, and find the ZONE line in the log.',
+    start: 'Open SOUNDS, switch SCENE on and choose OPEN DOOR, then close the tray. Drag WALK through the doorway, and find the ZONE line in the log.',
   },
   seeing: [
     'Two zones, joined by one door. Streaks over the courtyard and a band in the workshop show each bed while it plays.',
@@ -19,7 +19,7 @@ export const G10: ScreenGuide = {
     'The log on this page shows only STATE, MIX, FAULT and NOTE lines.',
   ],
   control: [
-    'FACING turns you, from 0° to 360°; 0° is toward the top of the picture. STEP walks one step the way you face.',
+    'WALK moves you along the stone path and through the doorway; with the door closed you stop at the wall. ‹ STEP WEST and STEP EAST › at its ends walk one step, with a footstep.',
     'SOUNDS opens a tray. Its SCENE chip switches the two beds and the fountain on or off. OPEN DOOR is beside it.',
     'In the same tray, ONCE, WITH THE SCENE and ON EVERY UPDATE choose when a bed starts. A ✓ marks the rule in use: IN PROJECT, or IN BUILD once a fault has shown itself.',
   ],
@@ -33,6 +33,6 @@ export const G10: ScreenGuide = {
   ],
   tryThis: [
     'Cross the doorway four times. Count the ZONE lines in the log: one for each crossing, and no FAULT line, because no bed started again.',
-    'Stand in the workshop and read the strip: the wind bar is at zero and the room tone is up. Step back out and watch the two swap.',
+    'Stand in the workshop and read the strip: the wind bar is at zero and the room tone is up. Walk back out and watch the two swap.',
   ],
 };

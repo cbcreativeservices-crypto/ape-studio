@@ -46,7 +46,8 @@ import { G23 } from './guides/p23';
 import { facingKey, useSince } from './shared';
 
 const ASSETS = ['gen_hum', 'gen_air', 'fountain'] as const;
-const TERMS = gaTerms('Audio listener', 'Listener position', 'Listener orientation');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): Positional audio came here from the distance page
+const TERMS = gaTerms('Audio listener', 'Listener position', 'Listener orientation', 'Positional audio');
 
 /** Where the generator sits, left to right, for whoever is listening now:
  *  the model's own stereo pan, in words and a number (never color alone).
@@ -153,7 +154,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open LISTENER and switch GENERATOR 1 on. Move FACING to 0°, so YOU face the top of the picture, and read GEN PAN. Then choose OVERHEAD CAMERA and read it again.</Do>
+        <Do parts={['Open LISTENER and switch GENERATOR 1 on.', 'Move FACING to 0°, so YOU face the top of the picture, and read GEN PAN.', 'Choose OVERHEAD CAMERA and read GEN PAN again.']} />
         <P>At 0°, for your ears the generator is far to the right. For the camera it sits nearer the center, because the camera is high above the scene.</P>
       </Step>
       <Step n={3}>

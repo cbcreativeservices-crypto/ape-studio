@@ -13,7 +13,8 @@ import { useRef } from 'react';
 import { colors } from '../../../../theme/tokens';
 import type { DockParam } from '../../rack/rackTypes';
 import { gaFact, gaFactKinds, type GaState } from '../model/gaModel';
-import { gaDispatch } from '../model/gaStore';
+import { gaDispatch, gaGet } from '../model/gaStore';
+import { WALK_Y, walkLine, walkPlace, walkV, walkX } from './data/chcSpace';
 
 /** Counts since this page was opened. `since(k)` = how many times fact `k`
  *  happened on this visit; `kinds(prefix)` = how many NEW different facts
@@ -109,6 +110,62 @@ export const facingKey = (s: GaState): DockParam => ({
   onChange: (v) => gaDispatch({ type: 'face', who: 'player', facing: facingFromLane(v) }),
   format: (v) => `YOU FACE ${facingFromLane(v)}°`,
   formatShort: (v) => `${facingFromLane(v)}°`,
+});
+
+/* ── WALK: the one walking control (GA-05, 2026-11-15) ─────────────────── */
+
+/*
+ * ONE WAY TO WALK ON EVERY WALKING PAGE (beginner waves 2026-11-15, GA-05;
+ * owner 2026-11-15: "build waves 1 thru 3"). The pages that walk (ambience
+ * and zones, emitters and distance, walls and doors) used two ways: FACING in
+ * degrees plus a STEP key on two of them, and this WALK slider on the third.
+ * Walking BACK through the door with a degrees slider ("set FACING near 270°
+ * and walk back") is where the beginner audit's learner gave up. Every
+ * walking page now walks with WALK: drag it along the stone path, west to
+ * east, or tap ‹ STEP WEST / STEP EAST › for one footstep. You turn to face
+ * the way you walk. FACING stays only where turning is itself the lesson.
+ */
+
+/** One walking step along the path, in meters (a STEP key's footstep). */
+export const WALK_STEP_M = 0.7;
+
+/** Walk one step east or west, turning to face that way first: a real
+ *  footstep (a foot-contact TRIGGER), so the page's step goals count it. */
+export function stepAlong(dx: number): void {
+  const facing = dx > 0 ? 90 : 270;
+  if (gaGet().chars.player.facing !== facing) gaDispatch({ type: 'face', who: 'player', facing });
+  gaDispatch({ type: 'step', who: 'player', dx, dy: 0 });
+}
+
+/** The WALK key's short word (bug test GA2 B-03: "WORKSHOP" was cut to
+ *  "WORKSH…" in a key that holds about six letters at 390 wide, fewer at
+ *  320). The place keeps its full name on the lane's line above the keys
+ *  (`walkLine`: COURTYARD · … / WORKSHOP · …); the key says the same place
+ *  in four letters. */
+export const WALK_KEY_WORD: Record<ReturnType<typeof walkPlace>, string> = { COURTYARD: 'YARD', WORKSHOP: 'SHOP' };
+
+/** WALK: your place along the stone path, west to east. The model keeps you
+ *  out of the wall and stops you at a closed door, so the lane shows where
+ *  you really are, not where the finger asked to go. */
+export const walkKey = (s: GaState): DockParam => ({
+  kind: 'fader',
+  id: 'walk',
+  label: 'WALK',
+  value: walkV(s.chars.player.x),
+  onChange: (v) => {
+    const p = gaGet().chars.player;
+    const x = walkX(v);
+    if (x === p.x && p.y === WALK_Y) return;
+    const facing = x >= p.x ? 90 : 270;
+    if (x !== p.x && p.facing !== facing) gaDispatch({ type: 'face', who: 'player', facing });
+    gaDispatch({ type: 'move', who: 'player', x, y: WALK_Y });
+  },
+  format: () => walkLine(gaGet()),
+  formatShort: () => WALK_KEY_WORD[walkPlace(gaGet())],
+  nudges: [
+    { label: '‹ STEP WEST', onPress: () => stepAlong(-WALK_STEP_M), a11y: 'Walk one step west, toward the courtyard' },
+    { label: 'STEP EAST ›', onPress: () => stepAlong(WALK_STEP_M), a11y: 'Walk one step east, toward the workshop' },
+  ],
 });
 
 export const doorWord = (s: GaState): string => (s.doorOpen ? 'OPEN' : 'CLOSED');

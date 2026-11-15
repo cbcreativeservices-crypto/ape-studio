@@ -252,10 +252,11 @@ describe('S3 — calculator', () => {
 });
 
 describe('S3 — FX', () => {
-  it('R7-FX-03: the hint names the ATK/REL tray', () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-02): the key and the hint say SPEED.
+  it('R7-FX-03: the hint names the SPEED tray', () => {
     assert.doesNotMatch(FX, /Open the ENV tray/);
-    assert.match(FX, /id: 'env', label: 'ATK\/REL'/);
-    assert.match(FX, /Open the ATK\/REL tray/);
+    assert.match(FX, /id: 'env', label: 'SPEED'/);
+    assert.match(FX, /Open the SPEED tray/);
   });
 
   it('R7-FX-04: the flanger caption says no deep notches at 100% MIX', () => {

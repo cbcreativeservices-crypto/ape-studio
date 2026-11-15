@@ -32,10 +32,9 @@ export const WAVE_HOME_GUIDE: ScreenGuide = {
     start: 'Tap Reflection Visualizer to read its one-line description, then tap OPEN. Inside any module, tap ⓘ beside the title to have that screen explained.',
   },
   seeing: [
-    'This is the Wave Physics menu: experiments on how sound travels, bounces, bends and adds up.',
-    'MODULES 1–15 lists one experiment per row. A ✓ marks each one whose check you’ve passed.',
-    'PUT IT ALL TOGETHER · MODULE 16 opens the Room Builder, where every effect from the modules happens in one room.',
-    'GUIDED LESSON at the top explains every control. SEE WHAT’S LEFT at the bottom lists the modules not done yet.',
+    'Four groups (SOUND MEETS A WALL, SOUND BENDS AND ADDS UP, SPEAKERS, ECHO AND REVERB) list one experiment per row, with plain words under each name. ✓ marks a passed one.',
+    'PUT IT ALL TOGETHER · MODULE 16 opens the Room Builder: every effect, in one room.',
+    'GUIDED LESSON at the top explains every control; SEE WHAT’S LEFT at the bottom lists what’s not done.',
   ],
   control: [
     'Tap a module’s name to read its one-line description, then tap OPEN to start it.',

@@ -1283,6 +1283,10 @@ export function HighVoltageView({
 // ─────────────────────────────────────────────────────────────────────────────
 // 7 · Bias — the operating point on the transfer curve
 
+/** The transfer graphs' axis words (TB-02): in along the bottom, out up the side. */
+export const TUBE_AXIS_IN = 'GRID VOLTAGE IN →';
+export const TUBE_AXIS_OUT = '↑ CURRENT OUT';
+
 export function BiasView({
   phase,
   width,
@@ -1370,7 +1374,11 @@ export function BiasView({
     return p;
   }, [phase, bias01, cx0, cw, cy0, chh, ox0, ow]);
 
+  // Axis words (TB-02, owner 2026-11-15: "build waves 1 thru 3"): the graph said
+  // nothing about what its axes are. RN text over the canvas, 9 pt × zoom.
+  const axis = { position: 'absolute' as const, color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9 * ts, letterSpacing: 0.6 };
   return (
+    <View style={{ width, height }}>
     <Canvas style={{ width, height, backgroundColor: BG }}>
       <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
@@ -1406,6 +1414,9 @@ export function BiasView({
       <Path path={dyn} color={WAVE} style="stroke" strokeWidth={2.2} strokeJoin="round" />
       </Group>
     </Canvas>
+    <Text style={[axis, { left: (cx0 + 8) * ts, top: 1 * ts }]}>{TUBE_AXIS_OUT}</Text>
+    <Text style={[axis, { left: cx0 * ts, top: (cy0 + chh + 1) * ts }]}>{TUBE_AXIS_IN}</Text>
+    </View>
   );
 }
 
@@ -1499,7 +1510,11 @@ export function SaturationView({
     return p;
   }, [phase, wx0, ww, midOut, ampMax, drive]);
 
+  // Axis words (TB-02, owner 2026-11-15: "build waves 1 thru 3"): the graph said
+  // nothing about what its axes are. RN text over the canvas, 9 pt × zoom.
+  const axis = { position: 'absolute' as const, color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9 * ts, letterSpacing: 0.6 };
   return (
+    <View style={{ width, height }}>
     <Canvas style={{ width, height, backgroundColor: BG }}>
       <Group transform={[{ scale: ts }]}>
       <Vignette w={w} h={h} />
@@ -1544,6 +1559,9 @@ export function SaturationView({
       </Path>
       </Group>
     </Canvas>
+    <Text style={[axis, { left: cx0 * ts, top: Math.max(0, cy0 - 13) * ts }]}>{TUBE_AXIS_OUT}</Text>
+    <Text style={[axis, { left: cx0 * ts, top: (cy0 + cs + 1) * ts }]}>{TUBE_AXIS_IN}</Text>
+    </View>
   );
 }
 

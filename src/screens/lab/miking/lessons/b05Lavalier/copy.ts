@@ -79,7 +79,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     workedZone: { studio: 'b5.sternum', live: 'b5.headset' },
     workedAim: 'An omni lav’s aim matters little — point it up toward the mouth; the lab counts it while it points within about {tol}° of the lips. A directional one is aimed with care.',
     workedClear: 'Clear of the wearer’s movement: the capsule on a firm edge, off rubbing fabric, hair and jewelry, the cable looped at the clip and secured lower down. The wearer agreed to all of it. Clearance comes first, before any number.',
-    reveal: 'On the chest the distance holds as long as the chest does, but a turn of the head moves the mouth away; beside the mouth a headset keeps its distance; under one layer of cloth the top end can dull. People and clothes vary, so “it depends on this presenter” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'On the chest the distance holds as long as the chest does, but a turn of the head moves the mouth away; beside the mouth a headset keeps its distance; under one layer of cloth the top end can dull. People and clothes vary, so “it depends on this presenter” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
     typeNotes: {
       locLav: 'Ideas to try with an omni lav: begin in the middle of the chest, then try a lapel or the collar and rehearse turns both ways; compare at matched loudness. If a puff reaches it, turning it upside down in its clip is one thing to try on some models.',
       lavCard: 'Ideas to try with a directional lav: turn its sensitive end to the mouth, then turn the head — listen for how quickly the voice dulls.',

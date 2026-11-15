@@ -60,6 +60,7 @@ import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
 import type { NameTags } from '../sceneNameTags';
 import type { WaveModuleProps } from '../WaveModuleScreen';
+import { PLAIN_TERMS } from '../../../../features/lab/plainTerms';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers (formatting + the 0.05 m snap contract — no physics here;
@@ -602,10 +603,12 @@ export function AbsorptionModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>WHY BASS SURVIVES</Text>
           <Text style={dstyles.body}>
-            Slide the frequency down with a porous material selected (foam, fiberglass, curtains,
+            {/* WA-05 (owner 2026-11-15, "build waves 1 thru 3", D62): RT60 in the ONE shared
+                sentence (plainTerms.ts), first, before its first use; a sentence out to make room. */}
+            {PLAIN_TERMS.rt60.sentence} Slide the frequency down with a porous material selected (foam, fiberglass, curtains,
             carpet) and watch α collapse: those materials absorb by friction where air particle
             VELOCITY is high — about a quarter wavelength off the wall. At 4 kHz that is ~2 cm; at
-            125 Hz it is ~69 cm. Thin panels simply sit in still air at low frequencies. That is why
+            125 Hz it is ~69 cm. That is why
             the RT60 table stays long at 125 Hz while the mids and highs die — and why real bass
             control means thickness, air gaps, or tuned membrane/Helmholtz traps.
           </Text>
@@ -739,15 +742,7 @@ export function DiffusionModule(p: WaveModuleProps) {
             <VizUnavailableCard />
           ),
         params: [
-          {
-            kind: 'fader',
-            id: 'depth',
-            label: 'DEPTH',
-            value: (depth - 0.05) / 0.55,
-            onChange: (v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6)),
-            format: () => fmtM(depth),
-            helpKey: 'diffusion_depth',
-          },
+          // SH-35 (owner 2026-11-15, "build waves 1 thru 3", D62): FREQ first, LAYERS last, on every Wave page that has them.
           {
             kind: 'fader',
             id: 'freq',
@@ -756,6 +751,15 @@ export function DiffusionModule(p: WaveModuleProps) {
             onChange: (v) => setFreq(fracLog(v, 125, 8000)),
             format: () => fmtHz(freq),
             helpKey: 'diffusion',
+          },
+          {
+            kind: 'fader',
+            id: 'depth',
+            label: 'DEPTH',
+            value: (depth - 0.05) / 0.55,
+            onChange: (v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6)),
+            format: () => fmtM(depth),
+            helpKey: 'diffusion_depth',
           },
           {
             kind: 'toggle',
@@ -1470,6 +1474,17 @@ export function CombModule(p: WaveModuleProps) {
 const MODE_LIST: { nx: number; ny: number }[] = [
   { nx: 1, ny: 0 }, { nx: 0, ny: 1 }, { nx: 1, ny: 1 }, { nx: 2, ny: 0 }, { nx: 2, ny: 1 }, { nx: 3, ny: 0 },
 ];
+/** SH-76 (owner 2026-11-15, "build waves 1 thru 3", D62): each MODE choice says in
+ *  plain words what it is (first number = half-waves across the width, second =
+ *  down the depth, as the guide says). */
+const MODE_BLURB: Readonly<Record<string, string>> = {
+  '1,0': 'The lowest side-to-side note: half a wave across the width.',
+  '0,1': 'The lowest front-to-back note: half a wave down the depth.',
+  '1,1': 'Half a wave each way: a note bouncing between all four walls.',
+  '2,0': 'The second side-to-side note: one whole wave across the width.',
+  '2,1': 'One whole wave across and half a wave down the depth.',
+  '3,0': 'The third side-to-side note: one and a half waves across.',
+};
 
 const STANDING_MISTAKES = [
   'Thinking modes are about absorption — they are about DIMENSIONS/GEOMETRY.',
@@ -1597,7 +1612,7 @@ export function StandingWaveModule(p: WaveModuleProps) {
             },
             sticky: true,
             helpKey: 'standing_wave',
-            options: MODE_LIST.map((m) => ({ id: `${m.nx},${m.ny}`, label: `(${m.nx},${m.ny})` })),
+            options: MODE_LIST.map((m) => ({ id: `${m.nx},${m.ny}`, label: `(${m.nx},${m.ny})`, blurb: MODE_BLURB[`${m.nx},${m.ny}`] })),
           },
         ],
       }}

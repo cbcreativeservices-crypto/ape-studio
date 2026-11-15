@@ -228,7 +228,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <ActivityLog state={s} lines={5} />
       </Step>
       <Step n={3}>
-        <Do>Switch ID CHECK off and send the same action again. Then send ALERT TO YOU and ALERT TO OTHER, and press CHAT LINE.</Do>
+        <Do parts={['Switch ID CHECK off and send the same action again.', 'Send ALERT TO YOU and ALERT TO OTHER.', 'Press CHAT LINE.']} />
         <P>ID CHECK is read when an action arrives. With it off, the door sound plays again, but the door does not move. An alert for you plays a cue here; one for the other player plays nothing here.</P>
         <P>The chat line is a stand-in for live chat.</P>
         <Note tone="mistake">Treating multiplayer audio as one shared mix, or letting a local action and its network copy both play the sound.</Note>

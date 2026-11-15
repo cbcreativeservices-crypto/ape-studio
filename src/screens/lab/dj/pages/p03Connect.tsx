@@ -25,6 +25,7 @@ import { MIXER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from '../geometry/bo
 import { GND_LUG, S3, TT3_INSET, TT3_REAR_W, groundLane3, groundRun3, lane3, mixJack3, pairBox3, parked3, run3, srcBox3, srcJack3, ttGnd3, type Parked3, type Source3 } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
@@ -272,7 +273,13 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
   if (ready && lOnly && !oneSide) setOneSide(true);
   const ttOk = booth.tt.playing && booth.ttPreamp === 'PHONO' && booth.plugs['tt.rcaL'] === 'ch1.phono.L' && booth.plugs['tt.rcaR'] === 'ch1.phono.R' && booth.ch[1].input === 'PHONO' && !!last && last.rmsDb.ch1 > -40 && last.clipped.phono1 === 0;
   const hits = [find >= FINDS.length, aBoth, oneSide, ttOk, faultFixed, check];
-  const goals = GOALS_CONNECT.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): a goal set up right
+  // with its source stopped says so, instead of a silent ○.
+  const linePlugged = booth.plugs['A.rcaL'] === 'ch1.line.L' && booth.plugs['A.rcaR'] === 'ch1.line.R' && booth.ch[1].input === 'LINE';
+  const oneLinePlug = booth.ch[1].input === 'LINE' && (booth.plugs['A.rcaL'] === 'ch1.line.L') !== (booth.plugs['A.rcaR'] === 'ch1.line.R');
+  const phonoPlugged = booth.ttPreamp === 'PHONO' && booth.plugs['tt.rcaL'] === 'ch1.phono.L' && booth.plugs['tt.rcaR'] === 'ch1.phono.R' && booth.ch[1].input === 'PHONO';
+  const waits = [undefined, waitIf(linePlugged, !booth.decks.A.playing, 'A'), waitIf(oneLinePlug, !booth.decks.A.playing, 'A'), waitIf(phonoPlugged, !booth.tt.playing, 'tt')];
+  const goals = GOALS_CONNECT.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'CONNECT');
   const sock = SOCKETS.find((s) => s.id === ident)!;
   const box = sock.box(src);

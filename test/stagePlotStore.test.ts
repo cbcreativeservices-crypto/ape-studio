@@ -717,7 +717,8 @@ describe('the shell is wired as the builders’ contract says', () => {
     assert.match(screen, /aria-selected=\{on\}/, 'the chosen tab is said on the web too');
     assert.match(screen, /setSpIssueAsk\(\(title, body, yesText, yes\) => confirmDialog\(title, body, yesText, yes\)\);/);
     assert.deepEqual([...ctx.matchAll(/\{ id: '(\w+)', label: '([A-Z]+)' \}/g)].map((m) => m[2]), ['SETUP', 'STAGE', 'INPUTS', 'MONITORS', 'EXPORT']);
-    assert.match(screen, /onPress=\{\(\) => ed\.goTo\(a\.id\)\}/, 'any tab opens from any tab');
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PLOT-10): a marked tab also retires the marks' legend
+    assert.match(screen, /onPress=\{\(\) => \{\s*if \(mark\.ask \|\| mark\.must\) \{\s*markLegendDone = true;\s*setLegendDone\(true\);\s*\}\s*ed\.goTo\(a\.id\);\s*\}\}/, 'any tab opens from any tab');
     assert.doesNotMatch(screen, /accessibilityRole="tab"[^>]*disabled/, 'no tab is ever locked');
     assert.match(screen, /persistAllowed\(tier\) \? 'write' : holdAllowed\(tier\) \? 'hold' : 'drop'/, 'who is saved comes from the tier, never a guess');
     assert.match(screen, /useBackWhileFocused\(open != null, backToLibrary\)/);

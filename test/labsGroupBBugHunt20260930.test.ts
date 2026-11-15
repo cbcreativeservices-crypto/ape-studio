@@ -58,7 +58,9 @@ test('production screens: START AGAIN confirms; SHARE is single-flight; rename c
   const act = read('src/screens/lab/production/ProductionActivityScreen.tsx');
   assert.match(act, /confirmDialog\(\s*'Start this exercise again\?'/);
   assert.doesNotMatch(act, /onPress=\{\(\) => void restart\(\)\}/);
-  assert.match(act, /PATHWAY_LABEL\[project\?\.pathway \?\? pathway\]/);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PO-03): the line also names the
+  // exercise's own setting; it still reads the RESUMED attempt's pathway first (the 2026-09-30 rule).
+  assert.match(act, /exerciseSettingLine\(activityId, project\?\.pathway \?\? pathway\)/);
   const lab = read('src/screens/lab/production/ProductionLabScreen.tsx');
   // 2026-10-04: SHARE moved to the packet screen (design review #5). It is
   // single-flight there through the house latch, and the lab home has no

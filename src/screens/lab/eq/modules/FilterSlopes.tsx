@@ -26,15 +26,16 @@ import type { EqModuleComponentProps } from './registry';
 
 const CUTOFF = 80;
 const SLOPES = [6, 12, 18, 24, 36, 48] as const;
-/** Tray blurbs: what each steepness is FOR. 6 dB/oct = one pole; every +6 is
- *  another pole and a steeper wall (owner 2026-08-28). */
+/** Tray blurbs: what each steepness is FOR (owner 2026-08-28). EQL-03 (owner
+ *  2026-11-15: "build waves 1 thru 3", D62): plain words, no "poles" (each +6
+ *  dB/oct is one more filter order; the engineering name stays in this note). */
 const SLOPE_BLURBS: Record<number, string> = {
-  6: 'One pole (each pole adds 6 dB/oct) — the gentlest tilt there is. Barely a filter: a tone control.',
-  12: 'Two poles — the workhorse. Enough to clean rumble without sounding processed.',
-  18: 'Three poles — noticeably firmer; the classic crossover slope of many PA systems.',
-  24: 'Four poles — a real wall. Common on crossovers, subwoofer crossovers included, where overlap causes trouble.',
-  36: 'Six poles — surgical. Very steep, and the phase shift near the corner grows with it.',
-  48: 'Eight poles — a cliff. Maximum separation, maximum phase cost: nothing is free.',
+  6: 'The gentlest tilt there is. Barely a filter: more like a tone control.',
+  12: 'A common choice: enough to clean up rumble without sounding processed.',
+  18: 'Noticeably firmer; a classic crossover slope on many PA systems.',
+  24: 'A real wall. Common on crossovers, subwoofer crossovers included, where overlap causes trouble.',
+  36: 'Very steep, and near the cutoff the timing shift (phase) grows with it.',
+  48: 'A cliff: the most separation, and the most timing shift (phase). Nothing is free.',
 };
 type Slope = (typeof SLOPES)[number];
 
@@ -123,7 +124,8 @@ export function FilterSlopesModule(p: EqModuleComponentProps) {
       stage={{
         size: 'M', // teaching chart
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
-        badge: `Butterworth response — ${order} pole${order === 1 ? '' : 's'} (slope settles at ${slope} dB/oct).`,
+        // EQL-03 (D62): one plain sentence instead of "Butterworth response — n poles".
+        badge: `Far below ${CUTOFF} Hz, each octave down is about ${slope} dB quieter.`,
         bezel: [
           { k: 'SLOPE', caption: 'how steep', v: `${slope} dB/OCT` },
           { k: 'CUTOFF', caption: 'cut starts', v: `${CUTOFF} Hz` },

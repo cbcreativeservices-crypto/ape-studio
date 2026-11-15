@@ -121,7 +121,9 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // the case: group labels, module names
-      'CONTROL SOURCES (CV)', 'AUDIO PATH → OUT', 'SEQ', 'LFO', 'ENV', 'VCO', 'VCF', 'VCA', 'OUT',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MOD-01): the sound path is
+      // named box by box in plain words (TONE, FILTER, VOLUME, OUT) instead of "AUDIO PATH → OUT".
+      'CONTROL SOURCES (CV)', 'TONE', 'FILTER', 'VOLUME', 'SEQ', 'LFO', 'ENV', 'VCO', 'VCF', 'VCA', 'OUT',
       // bezel keys + values
       'PATCH', 'CUSTOM', 'RES', '→CUT', '→PIT',
       // dock: fader, trays, chips
@@ -248,8 +250,11 @@ describe('4. the TRY THIS numbers and states are what the screen draws', () => {
     const sp = code('src/screens/lab/modular/ModularSpectrum.tsx');
     assert.match(sp, /gray = removed by the filter/);
     assert.match(sp, /strokeDasharray="4 3"/);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.seeing.join(' '), /LAB NOTES › THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve\. Gray bars: filtered out\./);
-    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[0], /THE VOICE, AS SOUND \(LAB NOTES\)/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MOD-03): THE VOICE, AS SOUND
+    // is pinned under the case (the rack's wellTop), no longer deep in LAB NOTES.
+    assert.match(s, /wellTop: \(\s*<View style=\{\{ gap: 6 \}\}>\s*<Text style=\{styles\.sectionHead\}>THE VOICE, AS SOUND<\/Text>/);
+    assert.match(MODULAR_SCREEN_GUIDES.explore.seeing.join(' '), /Under the case, THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve\. Gray bars: filtered out\./);
+    assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[0], /THE VOICE, AS SOUND \(under the case\)/);
     // tryThis[1] names the inset; WHAT YOU'RE SEEING already says it is in LAB NOTES
     assert.match(MODULAR_SCREEN_GUIDES.explore.tryThis[1], /in THE VOICE, AS SOUND the dashed filter curve/);
     assert.match(code('src/screens/lab/rack/RackUnit.tsx'), /'▴  HIDE DISPLAY'/);

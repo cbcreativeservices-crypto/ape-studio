@@ -418,7 +418,7 @@ const REVERB: readonly Q[] = [
     why: {
       'The reverb is twice as loud as the dry sound': 'How loud the reverb is belongs to MIX. RT60 is measured in seconds, so it describes a time.',
       '2 seconds pass before the reverb starts': 'The wait before the reverb begins is PRE-DELAY, and it is measured in milliseconds.',
-      'The room is 60 meters long': 'The 60 in RT60 is not a length. Read the key’s full name: RT60 (DECAY TIME).',
+      'The room is 60 meters long': 'The 60 in RT60 is not a length. Read the readout’s full name: DECAY TIME (RT60).',
     },
   },
   {
@@ -508,7 +508,9 @@ const CHORUS: readonly Q[] = [
   },
   {
     id: 'vs-flanger',
-    prompt: 'Compared with a flanger, a chorus uses…',
+    // CH-03 (owner 2026-11-15, "build waves 1 thru 3"): the flanger comes in
+    // the NEXT lab, so the prompt says how it sounds; the options are unchanged.
+    prompt: 'A flanger (the next lab) makes a sweeping, jet-like whoosh. Compared with it, a chorus uses…',
     options: [
       'A longer delay (about 15–35 ms), so you hear shimmer instead of a sweeping comb',
       'A much shorter delay, under 1 ms, so the comb notches spread far apart',
@@ -620,9 +622,9 @@ const PHASER: readonly Q[] = [
     explanation: 'Each pair of all-pass stages creates one notch, so the count is about stages ÷ 2. More stages give a thicker sweep.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      '8': 'That is one notch per stage. It takes a PAIR of all-pass stages to make one notch: count the dips on OUT at STAGES 8.',
-      '16': 'Stages do not double the notches; there are fewer notches than stages. Step STAGES to 8 and count the dips on OUT.',
-      '2': 'That is what a much smaller STAGES setting gives. Step STAGES up to 8 and count the dips on OUT.',
+      '8': 'That is one notch per stage. It takes a PAIR of all-pass stages to make one notch: set the sweep to STATIC, then count the dips at STAGES 8.',
+      '16': 'Stages do not double the notches; there are fewer notches than stages. Set the sweep to STATIC, step STAGES to 8 and count the dips on OUT.',
+      '2': 'That is what a much smaller STAGES setting gives. Set the sweep to STATIC, step STAGES up to 8 and count the dips on OUT.',
     },
   },
   {
@@ -703,14 +705,14 @@ const DISTORTION: readonly Q[] = [
   },
   {
     id: 'symmetric-odd',
-    prompt: 'HARD CLIP flattens the top and bottom of the wave the same way (symmetric). Which harmonics does that produce?',
+    prompt: 'HARD (FLAT TOPS) flattens the top and bottom of the wave the same way (symmetric). Which harmonics does that produce?',
     options: ['Odd harmonics only', 'Even harmonics only', 'Odd and even harmonics equally', 'No harmonics — only extra level'],
     correct: 'Odd harmonics only',
-    explanation: 'Symmetric clipping adds only odd harmonics (3rd, 5th, 7th…), heard as hollow or harsh. Clipping the top and bottom differently — the TUBE (ASYM) type — adds even harmonics too.',
+    explanation: 'Symmetric clipping adds only odd harmonics (3rd, 5th, 7th…), heard as hollow or harsh. Clipping the top and bottom differently — the TUBE (LOPSIDED) type — adds even harmonics too.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      'Even harmonics only': 'Even harmonics need the top and bottom of the wave treated differently, as TUBE (ASYM) does. HARD CLIP treats both halves the same.',
-      'Odd and even harmonics equally': 'Adding even harmonics needs asymmetry, and HARD CLIP flattens both halves the same way. Compare it with TUBE (ASYM) on the display.',
+      'Even harmonics only': 'Even harmonics need the top and bottom of the wave treated differently, as TUBE (LOPSIDED) does. HARD (FLAT TOPS) treats both halves the same.',
+      'Odd and even harmonics equally': 'Adding even harmonics needs asymmetry, and HARD (FLAT TOPS) flattens both halves the same way. Compare it with TUBE (LOPSIDED) on the display.',
       'No harmonics — only extra level': 'Flattening the peaks changes the wave’s shape, and a new shape means new frequencies. Watch OUT at DRIVE +24 dB.',
     },
   },
@@ -729,7 +731,7 @@ const DISTORTION: readonly Q[] = [
     why: {
       'A cleaner, smoother distortion, because fewer samples need processing': 'Processing fewer samples saves work but cannot make the sound cleaner. Compare ON (CLEAN) with OFF on the OVERSAMPLING key.',
       'Only a drop in volume, because the signal is processed at a lower rate': 'The sample rate does not set the level. What changes is which frequencies the processor can represent.',
-      'Nothing — oversampling only changes how smoothly the display is drawn': 'OVERSAMPLING changes the audio processing itself, not the drawing. Switch it at a high DRIVE and compare OUT.',
+      'Nothing — oversampling only changes how smoothly the display is drawn': 'The picture stays the same with OVERSAMPLING, but the sound changes, so this step needs your ears: play SINE 5 kHz at high DRIVE and compare ON with OFF.',
     },
   },
   {
@@ -767,8 +769,8 @@ const PHASE: readonly Q[] = [
     explanation: 'Inverting polarity multiplies every value by −1. Every positive meets an equal negative, so the sum is zero. Real-world cases (a miswired cable, a doubled mic) usually cancel only partly.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      'Mono always lowers the level, and here it lowers it all the way to zero': 'Two identical channels in step get louder in mono, not quieter. Silence needs something special about this pair: look at POLARITY (R).',
-      'The polarity button mutes the right channel, so nothing is left to hear': 'INVERTED Ø keeps the right channel playing: its trace is still on the display. A muted channel would leave the other one sounding.',
+      'Mono always lowers the level, and here it lowers it all the way to zero': 'Two identical channels in step get louder in mono, not quieter. Silence needs something special about this pair: look at FLIP R.',
+      'The polarity button mutes the right channel, so nothing is left to hear': 'FLIPPED Ø keeps the right channel playing: its trace is still on the display. A muted channel would leave the other one sounding.',
       'The correlation meter switches the output off when it reads −1': 'A meter only measures; it never changes the audio. The cause is in the two signals themselves.',
     },
   },
@@ -785,8 +787,8 @@ const PHASE: readonly Q[] = [
     explanation: 'A polarity flip is 180° at every frequency, so it fixes a simple inversion. A delay is a phase shift that changes with frequency — fix it by lining the two up in time.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      'Yes — a polarity flip always fixes cancellation, whatever caused it': 'A flip fixes one kind of problem: one channel upside down. Set DLY R to 2 ms, try INVERTED Ø, and watch whether the comb goes away.',
-      'Yes — but only for the frequencies below about 1 kHz': 'Nothing special happens at 1 kHz. With DLY R at 2 ms, INVERTED Ø moves the comb notches rather than removing them.',
+      'Yes — a polarity flip always fixes cancellation, whatever caused it': 'A flip fixes one kind of problem: one channel upside down. Set DELAY R to 2 ms, try FLIPPED Ø, and watch whether the comb goes away.',
+      'Yes — but only for the frequencies below about 1 kHz': 'Nothing special happens at 1 kHz. With DELAY R at 2 ms, FLIPPED Ø moves the comb notches rather than removing them.',
       'No — the only fix is to delete one channel and keep the other': 'Right that the flip won’t do it, but deleting a channel is a last resort that throws away half the recording. The cause can be undone instead.',
     },
   },
@@ -804,7 +806,7 @@ const PHASE: readonly Q[] = [
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
       'By the same angle at every frequency': 'One angle everywhere is a polarity flip: 180° at every frequency. A delay is a fixed TIME, and a fixed time is a different share of each cycle.',
-      'Only below 100 Hz': 'A delay acts on every frequency it carries; there is no cutoff at 100 Hz. Set DLY R to 0.5 ms and look across the whole comb.',
+      'Only below 100 Hz': 'A delay acts on every frequency it carries; there is no cutoff at 100 Hz. Set DELAY R to 0.5 ms and look across the whole comb.',
       'Not at all — a delay only affects timing': 'Timing and phase are linked: shift a wave in time and its peaks line up with a different point in the other channel’s cycle.',
     },
   },
@@ -821,7 +823,7 @@ const PHASE: readonly Q[] = [
     explanation: 'The meter runs from +1 (in step, mono-safe) through 0 (unrelated) down to −1 (opposite, cancels in mono). In this lab, two identical channels draw a vertical line and read +1.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      'Left and right are opposite — they will cancel in mono': 'That is the bottom of the scale, −1. Set POLARITY (R) to INVERTED Ø and watch where the meter goes.',
+      'Left and right are opposite — they will cancel in mono': 'That is the bottom of the scale, −1. Set FLIP R to FLIPPED Ø and watch where the meter goes.',
       'The two channels are unrelated': 'Unrelated channels read near 0, the middle of the scale. Two identical channels are as related as two signals can be.',
       'The signal is clipping': 'Correlation compares left with right; it says nothing about level. Clipping shows on a level meter, not here.',
     },
@@ -1135,9 +1137,9 @@ const STEREO: readonly Q[] = [
     explanation: 'Adding left and right cancels the side component and keeps only the mid. Phone speakers, many PAs and broadcast can play in mono, so the mono check matters.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      'It gets twice as wide, because both channels now carry the side signal': 'Mono has only one channel, so it has no width at all. Switch MONO-FOLD to MONO CHECK and watch the image collapse to the center.',
+      'It gets twice as wide, because both channels now carry the side signal': 'Mono has only one channel, so it has no width at all. Turn MONO CHECK on and watch the image collapse to the center.',
       'It gets louder, because left and right are added together into one': 'Adding left and right only boosts what they share. At 200% OVER the extra is what differs between them; think about what happens to that.',
-      'Nothing — mono ignores width, so the mix sounds exactly as it did': 'Width is exactly what mono changes. At WIDTH 200% OVER, toggle MONO-FOLD between STEREO and MONO CHECK and compare.',
+      'Nothing — mono ignores width, so the mix sounds exactly as it did': 'Width is exactly what mono changes. At WIDTH 200% OVER, turn MONO CHECK off and on and compare.',
     },
   },
   {
@@ -1173,7 +1175,7 @@ const STEREO: readonly Q[] = [
     why: {
       'The same mix, only wider, because the two sides are so different': 'Mono has one channel, so there is no width to gain. Near −1 the two sides are opposite; think about adding them.',
       'A louder mix, because the two opposite channels add their energy together': 'Opposite signals do not reinforce each other: each push in one channel meets a pull in the other.',
-      'Nothing different — mono ignores correlation, which only matters in stereo': 'The correlation meter exists to warn about mono. Set WIDTH to 200% OVER, press MONO CHECK, and watch the meter.',
+      'Nothing different — mono ignores correlation, which only matters in stereo': 'The correlation meter exists to warn about mono. Set WIDTH to 200% OVER, turn MONO CHECK on, and watch the meter.',
     },
   },
 ];
@@ -1627,7 +1629,7 @@ const FM: readonly Q[] = [
     explanation: 'Sidebands sit at carrier ± k × modulator. The first pair (k = 1) is 200 ± 100 Hz. The modulator frequency sets the spacing.',
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
-      '150 Hz and 250 Hz': 'Those sit half a modulator away. Sidebands are spaced by the full modulator frequency, FM = FC × RATIO.',
+      '150 Hz and 250 Hz': 'Those sit half a modulator away. Sidebands are spaced by the full modulator frequency, MOD = FC × RATIO.',
       '200 Hz and 400 Hz': '200 Hz is the carrier itself, the green stick. Sidebands sit on either side of it.',
       '50 Hz and 350 Hz': 'Those are 150 Hz from the carrier. Count one modulator step each way from the green stick.',
     },
@@ -1646,7 +1648,7 @@ const FM: readonly Q[] = [
     // Lab fix round 2026-11-14, phase 2 (S2): why each wrong option is not right — never the answer.
     why: {
       'The pitch of the note, which climbs as it rises': 'Pitch comes from FC and RATIO. Raise INDEX and watch the green carrier stick: it does not move.',
-      'The spacing between sidebands, which grows wider': 'Spacing is set by RATIO, since FM = FC × RATIO. INDEX leaves the sticks where they are.',
+      'The spacing between sidebands, which grows wider': 'Spacing is set by RATIO, since MOD = FC × RATIO. INDEX leaves the sticks where they are.',
       'Only the overall volume, which rises with the index': 'Watch the SIDEBAND SPECTRUM as INDEX rises: the sticks change, not one overall level. FM spreads energy around rather than adding it.',
     },
   },

@@ -43,6 +43,14 @@ import type { SpDelivery, SpDeviceType, SpExtra, SpId, SpInput, SpMixFormat, SpM
 
 export type SpTemplateId = 'blank' | 'solo' | 'duo' | 'four-piece' | 'playback' | 'salsa';
 
+/** The library's line on Blank stage (beginner waves 2026-11-15, PLOT-08;
+ *  owner 2026-11-15: "build waves 1 thru 3"). Six equal START buttons never
+ *  said which one is the learning path: only a plot started from a blank
+ *  stage completes the lab, through the GUIDED TASK's five steps (spReview
+ *  `spGuidedSteps`). This line takes the place of the row's old line, and
+ *  says what that old line said too. */
+export const SP_BLANK_LEARN_LINE = 'Recommended for learning: 5 guided steps, and it completes this lab. Nothing is placed or assumed.';
+
 export const SP_TEMPLATES: readonly { id: SpTemplateId; name: string; assumes: string }[] = [
   { id: 'blank', name: 'Blank stage', assumes: 'Nothing is placed and nothing is assumed.' },
   { id: 'solo', name: 'Solo performer', assumes: 'One singer with an acoustic guitar that has a pickup, and one wedge.' },

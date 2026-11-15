@@ -6,7 +6,7 @@
  * Each block fails on the pre-review working tree:
  *   1. Post stage 5 hid "What is being corrected" when correction was RULED
  *      OUT. Hidden answers are never evaluated, so the legal finding
- *      "A performance is being altered without an agreement to do it" could no
+ *      "A performance is being altered without an agreement to do it. Is that intended?" could no
  *      longer fire for the very case its own detail names ("the brief recorded
  *      it as ruled out"). And "no key and scale recorded" asked for an answer
  *      in a question that was hidden.
@@ -17,6 +17,8 @@
  *   3. The packet's empty WHAT'S LEFT said "no rule is asking about anything"
  *      while the document under it could still print information findings.
  */
+// owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-71): gap findings are
+// asked as questions ("… Is that intended?"), so the titles pinned here carry the question.
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';

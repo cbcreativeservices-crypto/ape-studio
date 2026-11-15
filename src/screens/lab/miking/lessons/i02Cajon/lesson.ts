@@ -400,7 +400,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: a center stroke — where does much of the low end leave?', options: ['The port', 'The top of the box', 'The feet'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate and the port.' },
+  sound: { prompt: 'Before you step through: a center stroke — where does much of the low end leave?', options: ['The port', 'The top of the box', 'The feet'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the plate and the port.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: a front mic aimed at the middle, or at a top corner — which hears more slap?', options: ['The middle', 'A top corner', 'It depends on this cajón'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

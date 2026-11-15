@@ -119,7 +119,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
   'Trace the signal': {
     intro: {
       learning: 'The fixed order a signal travels through a live system, source to listener, and why no station can work until everything before it has passed the signal on.',
-      start: 'Open NEXT and tap the station the signal reaches first, then the next one, in order. Watch THREAD: it stays OK while you follow the real path.',
+      start: 'Open STATION and tap the station the signal reaches first, then the next one, in order. Watch THREAD: it stays OK while you follow the real path.',
     },
     seeing: [
       'You’re looking at the nine stations of the house path. Each stays dark until you light it.',
@@ -127,7 +127,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Once THREAD reads COMPLETE, the LEDs chase along the path as the program flows.',
     ],
     control: [
-      'Open NEXT and tap the station the signal reaches next. The list stays open, so you can tap the whole path in a row.',
+      'Open STATION and tap the station the signal reaches next. The list stays open, so you can tap the whole path in a row.',
       'RESET appears once something is lit. Tap it to clear the thread and start again.',
     ],
     changes: [
@@ -701,10 +701,10 @@ export const SS_CHECK_GUIDE: ScreenGuide = {
     'When you answer a question correctly, a ✓ replaces its number.',
   ],
   control: [
-    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
   ],
   changes: [
-    'A wrong answer costs you nothing, and there is no score. Every wrong option has its own reason, so a wrong pick still teaches you something. Once every question is correct, the check is passed.',
+    'Every wrong option has its own reason, so a wrong pick still teaches you something. Once every question is correct, the check is passed.',
   ],
   teaches: [
     'System types, outputs, routing, subs, monitors, wiring, amplifier loads and gain are all links in one chain, from source to listener.',

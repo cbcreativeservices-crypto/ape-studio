@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the wrist swings a maraca down. Where are the seeds at first?', options: ['Left behind at the top', 'Already at the bottom', 'Spread evenly'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the seeds.' },
+  sound: { prompt: 'Before you step through: the wrist swings a maraca down. Where are the seeds at first?', options: ['Left behind at the top', 'Already at the bottom', 'Spread evenly'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the seeds.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one centered mic, the right hand much closer to it. What happens?', options: ['The right hand dominates', 'Both stay balanced', 'It depends on the pair'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

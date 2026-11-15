@@ -54,18 +54,18 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       start: 'Read the Moving-Coil Dynamic card down to IMPORTANT LIMITATION. Then tap COMPARE (Moving-Coil Dynamic stays as your first pick), tap Condenser, and read the two cards side by side.',
     },
     seeing: [
-      'Twelve mic types with photos. Four are named for how they turn sound into signal (Moving-Coil Dynamic, Condenser, Electret Condenser, Ribbon), eight for their design or form, from Large-Diaphragm to Contact.',
-      'The amber banner warns these are NOT equivalent categories: a shotgun is usually a condenser.',
+      'Twelve mic photos in two groups. HOW IT WORKS INSIDE: Moving-Coil Dynamic, Condenser, Electret Condenser, Ribbon. SHAPE OR JOB: eight named for their body or use, from Large-Diaphragm to Contact.',
+      'The banner under the card: the groups are not equivalent categories (a shotgun is usually a condenser).',
       'The card below gives WHAT IT IS, MAJOR CHARACTERISTICS, TYPICAL APPLICATIONS and IMPORTANT LIMITATION.',
     ],
     control: [
-      'Under TAP A MICROPHONE, tap one to show its card. Moving-Coil Dynamic shows first.',
+      'Tap a mic in either group to show its card. Moving-Coil Dynamic shows first.',
       'Tap COMPARE: the mic on show stays as your first pick; tap a second to see the two cards side by side. Tap COMPARING to go back to one card.',
       'Tap the photo on a card (⤢) to see it bigger.',
       'Tap NEXT: CHARACTERISTICS THAT MATTER › at the bottom, or use the strip under the title, to move between modules. Tap the readout in the strip for the list of modules. ‹ leaves the lab.',
     ],
     changes: [
-      'The card follows the mic you tap. Its class line reads TRANSDUCER PRINCIPLE when the name is about the parts inside, or DESIGN / FORM FACTOR when it’s about the body around them.',
+      'The card follows the mic you tap, and scrolls into view. Its class line names its group: HOW IT WORKS INSIDE when the name is about the parts inside, or SHAPE OR JOB when it’s about the body around them.',
       'In COMPARE, a third pick replaces the older of your two; tapping a picked mic again takes it out.',
       'Every card ends on a limitation, because no type is best at everything.',
     ],
@@ -75,7 +75,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       'Every type trades something away, so the job decides which trade you can accept.',
     ],
     tryThis: [
-      'Tap Shotgun / Interference-Tube: its class reads DESIGN / FORM FACTOR, and WHAT IT IS puts a condenser capsule behind the tube.',
+      'Tap Shotgun / Interference-Tube: its class reads SHAPE OR JOB, and WHAT IT IS puts a condenser capsule behind the tube.',
       'COMPARE Moving-Coil Dynamic with Condenser: passive and rugged against powered and detailed. Each one’s limitation is the other’s strength.',
       'Tap Contact: it senses vibration through the surface it touches, not sound in the air. Read its limitation: the tone is different.',
     ],
@@ -88,7 +88,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       start: 'Polar pattern shows first; read its card. Then tap Sensitivity and Maximum SPL in turn: one is about output, the other about how loud a source the mic can take.',
     },
     seeing: [
-      'Sixteen characteristic chips sit beside a condenser photo, from Polar pattern to Environmental suitability.',
+      'Sixteen characteristic chips, from Polar pattern to Environmental suitability, sit beside a condenser photo in four small groups: HOW IT HEARS, LEVEL AND NOISE, POWER AND CABLE, SIZE AND BUILD.',
       'The card below names the one you picked and why it matters when you choose a mic. Some cards add an amber warning, such as “Flat is not synonymous with better.”',
     ],
     control: [
@@ -119,7 +119,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     },
     seeing: [
       'You’re looking down on a stage vocal mic aimed at the singer. On the ring: Singer · wanted, Drum kit, Audience, Wedge monitor, Reflective wall, HVAC vent.',
-      'Amber outline: your pattern. Dotted ring: full pickup. TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE: teaching shapes, not a real mic’s chart.',
+      'Amber outline: your pattern. Dotted ring: full pickup. “Top view · directions only, not to scale”: teaching shapes, not a real mic’s chart.',
       'Tags: ✓ good, ⚠ a problem, △ partial. Singer: ✓ picked up or ⚠ missed. The rest: ⚠ picked up or ✓ rejected.',
     ],
     control: [
@@ -267,14 +267,14 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   env: {
     intro: {
       learning: 'How the place sets the priorities for the same voice: detail and low noise in a studio, feedback rejection on stage, wind protection outdoors.',
-      start: 'A, the studio, shows first: read its PRIORITIES. Then tap B and C and see the list reorder while the voice stays the same.',
+      start: 'A · Studio shows first: read its PRIORITIES. Then tap B · Loud stage and C · Outdoors and see the list reorder while the voice stays the same.',
     },
     seeing: [
-      'Three places for the same voice, on chips A, B and C.',
+      'Three places for the same voice, on the chips A · Studio, B · Loud stage and C · Outdoors.',
       'The card names the place (A · Controlled recording studio, B · Loud concert stage or C · Outdoor interview), gives one line about it, and lists its PRIORITIES. The banner sums it up.',
     ],
     control: [
-      'Tap A, B or C to change the place. A, the studio, shows first.',
+      'Tap a chip to change the place. A · Studio shows first.',
       'Tap NEXT: APPLICATION EXPLORER ›, or use the strip, to move on.',
     ],
     changes: [
@@ -396,7 +396,7 @@ export const MICSEL_END_GUIDE: ScreenGuide = {
     'REVIEW ▾ lists the modules you’ve done, and the check once you pass it.',
   ],
   control: [
-    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is lost and there is no score.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
     'Tap a module row to go back to it. The CHECK row, last in the list, scrolls down to the questions.',
     'PRACTICE AGAIN FROM THE START reopens Module 1. DONE · BACK TO LABS leaves the lab.',
   ],

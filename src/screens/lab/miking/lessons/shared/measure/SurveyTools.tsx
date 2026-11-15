@@ -168,7 +168,7 @@ function HistoryGraph({ w, h, levels, mins, d, showMean, label }: { w: number; h
         <Text key={m} style={[styles.axis, { top: B + 3, left: xOf(m * 60) - 10 * k, width: 20 * k, textAlign: 'center', fontSize: 9 * k }]} {...fitValue(9 * k)}>{`${m}`}</Text>
       ))}
       <Text style={[styles.axis, { top: B + 3, right: 8, fontSize: 9 * k }]} {...fitValue(9 * k)}>10 MIN</Text>
-      <Text style={[styles.axis, { top: T - 2, left: L + 4, fontSize: 9 * k, color: '#aab0bd' }]} {...fitValue(9 * k)}>dBA · A MADE-UP EXAMPLE, NOT A MEASUREMENT</Text>
+      <Text style={[styles.axis, { top: T - 2, left: L + 4, fontSize: 9 * k, color: '#aab0bd' }]} {...fitValue(9 * k)}>dBA · a made-up example, not a measurement</Text>
       {d.laeq !== null ? tag(yOf(d.laeq), 'LAeq', '#ffc64d') : null}
       {showMean ? tag(yOf(d.meanOfDb) + 14 * k, 'MEAN OF dB', '#b8bcc6') : null}
       {tag(yOf(d.l90) + 14 * k, 'L90', '#8fbcff')}

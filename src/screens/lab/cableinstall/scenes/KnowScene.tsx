@@ -352,7 +352,10 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
 
       <CiSection title="SCENARIO DRILL — WHAT ARE YOU INSTALLING?">
         <Text style={styles.lead}>
-          {'Three runs land on your bench. For each: what is it, how long does it stay, where does it go, and what can hurt it? Every answer locks when you make it.'}
+          {/* Why it locks, said (CI-02, owner 2026-11-15: "build waves 1 thru 3"):
+              the first call is what the stage scores; the card then shows the
+              right one. Scoring is unchanged. */}
+          {'Three runs land on your bench. For each: what is it, how long does it stay, where does it go, and what can hurt it? Your first call on each question is the one that scores, so it locks; the card then shows the right call.'}
         </Text>
         {CI_ID_SCENARIOS.map((s, i) => {
           const g = ans[s.id] ?? {};

@@ -966,6 +966,14 @@ const KEY_ORDER: readonly SpObjectKind[] = [
   'generic',
 ];
 
+/** What the small boxes beside a symbol mean, in the compact packet's own
+ *  words (spPacket, the plot's legend) and in the screen's KEY (beginner
+ *  waves 2026-11-15, PLOT-15; owner 2026-11-15: "build waves 1 thru 3"): a
+ *  channel number sits in a square-cornered box, a mix code in a round-ended
+ *  one. One wording, so paper and screen say the same thing. */
+export const SP_KEY_BADGE_NUMBER = 'A number in a box is an input channel.';
+export const SP_KEY_BADGE_MIX = 'A code in a rounded box, such as M1, is a monitor mix.';
+
 /** The key for a set of stage objects: one entry for each kind of symbol
  *  that is drawn, in reading order. Empty only when the stage is empty. */
 export function spPlotKey(objects: readonly { kind: SpObjectKind }[]): SpKeyEntry[] {

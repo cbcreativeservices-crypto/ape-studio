@@ -68,7 +68,7 @@ function PageStaticMix({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>STEP 3 — BUILD AROUND IT</Eyebrow>
         <Body>Set the anchor where it feels strong, then add the others in order of importance — each one placed relative to what is already there. Mute anything the song does not need yet.</Body>
         <MixMapArt settings={mix} anchor={anchor} title={touched === 0 ? 'THE WALL · EVERY FADER AT 0' : 'YOUR BALANCE'} state={anchor ? `ANCHOR: ${track(anchor).name}` : undefined} />
-        <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: true, pan: true, mute: true, pol: true }} />
+        <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: true, pan: true, mute: true, pol: true }} focus={anchor} />
         <Text style={styles.consoleNote}>The picture follows the console: wider = louder, sideways = panned, dashed = muted, Ø = polarity flipped. LEAD and BGV (backing vocals) are synth stand-ins for the vocal parts of this session.</Text>
         <Btn label="RESET MIX" disabled={touched === 0} onPress={() => setMix({})} a11y="Reset every channel to flat" />
       </Card>
@@ -233,7 +233,7 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>PLACE THE SESSION</Eyebrow>
         <Body>Convention, not law — but a strong default: kick, bass and the focal element live at or near center; supporting parts earn the sides. Mirror-place similar parts (guitar left, keys right) for balance.</Body>
         <MixMapArt settings={mix} mono={view === 'mono'} title={view === 'mono' ? 'YOUR PLACEMENT · FOLDED TO MONO' : 'YOUR PLACEMENT'} state={view === 'mono' ? 'MONO FOLD' : 'STEREO'} />
-        <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: false, pan: true, mute: true }} />
+        <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: false, pan: true, mute: true }} focus="gtr" />
         {badRisks.length > 0 ? (
           <Text style={styles.riskLine} accessibilityLiveRegion="polite">
             {badRisks

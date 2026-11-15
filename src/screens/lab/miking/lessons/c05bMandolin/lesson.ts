@@ -310,7 +310,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air when a mandolin is plucked?', options: ['The paired strings', 'The top, driven by the bridge', 'The scroll'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air when a mandolin is plucked?', options: ['The paired strings', 'The top, driven by the bridge', 'The scroll'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you move the mic from the neck junction toward the bridge and top. What changes?', options: ['More chop and definition', 'More of the room', 'It depends on this mandolin'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

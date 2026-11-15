@@ -116,7 +116,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
       'When all are right: Every question answered correctly — the check is passed.',
     ],
     control: [
-      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away. Nothing is lost and there is no score.',
+      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. If you leave the lab before every answer is right, the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what’s left in this lab, and the way back to labs.',

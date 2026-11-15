@@ -17,7 +17,7 @@ import { VizUnavailableCard } from '../../foundations/bits';
 import { powerSpectrumDb } from '../../../../features/ear/earDsp';
 import { faderParam, flipFader, optionsParam } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, levelTint, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
+import { Body, Card, GoDeeper, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, levelTint, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
 import { KEY_TERMS, LOUDNESS_SCENARIOS } from '../masteringContent';
 import { PLAYBACK_SYSTEMS, TRANSLATION_ASPECT, TranslationStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
 import { programmeIfRendered, useDrawProgramme, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
@@ -215,10 +215,20 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           well: (
             <>
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ QUIETER or ▶ LOUDER" />
-              <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one: the louder version is turned down by the difference between the two loudness estimates (BS.1770-style, K-weighted), in LU (1 LU = 1 dB), so what remains is the dynamics. The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
+              {/* MA-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the
+                  plain habit and what to listen for lead; the loudness-estimate
+                  mechanics, the measured numbers and the three faceplate /
+                  honesty notes fold under GO DEEPER (Module 1 step 3's pattern).
+                  Every word is kept; only the order and the fold change. */}
+              <Card tone="accent">
+                <Point title="There is no fixed target in this lab">The correct loudness depends on the content and the destination. A dense rock mix and a solo piano piece do not share a number; destinations publish their requirements and change them. The lab shows you the trade; the spec sheet of the day gives you the number.</Point>
+              </Card>
+              <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one, so what remains is the dynamics.</Body>
               <Card tone="warn">
                 <Point title="Before you switch MATCH off">{unmatchedWarning(current ? q?.lufs : undefined, current ? l?.lufs : undefined, 'LOUDER')} Unmatched, nothing replays by itself after a DRIVE change — you press ▶ each time.</Point>
               </Card>
+              <GoDeeper title="HOW THIS COMPARISON WORKS">
+              <Body>With MATCH LEVEL on, the louder version is turned down by the difference between the two loudness estimates (BS.1770-style, K-weighted), in LU (1 LU = 1 dB). The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
               {fresh && q && l ? (
                 <Card tone="accent">
                   <SText style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
@@ -229,8 +239,8 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               <Card>
                 <Point title="The faceplate on the glass">The limiter at the settings the shown version used: INPUT is DRIVE (0 dB for QUIETER), CEILING {CEILING} dBFS, RELEASE 80 ms; GR lights to the deepest gain reduction.</Point>
                 <Point title="This lab's limiter, honestly">A miniature: a plain sample-peak clamp with no look-ahead. It watches only the samples, which is why TRUE PK can read over the ceiling. Most mastering limiters add look-ahead and true-peak detection (oversampling), often as a mode you switch on — that is what holds a −1 dBTP ceiling in practice.</Point>
-                <Point title="There is no fixed target in this lab">The correct loudness depends on the content and the destination. A dense rock mix and a solo piano piece do not share a number; destinations publish their requirements and change them. The lab shows you the trade; the spec sheet of the day gives you the number.</Point>
               </Card>
+              </GoDeeper>
             </>
           ),
         },

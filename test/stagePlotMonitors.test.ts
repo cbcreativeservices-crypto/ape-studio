@@ -843,7 +843,10 @@ describe('the area’s own words and wiring', () => {
     assert.match(area, /value=\{counts\.houseFeedChannels\} label=\{[^}]*'monitor feed audio channels requested from the house console'\}/);
     // one fact is said once in words: the count box holds the number, the mix list's first group holds the sentence
     assert.ok(!/feedLine/.test(area) && !('feedLine' in counts(make('four-piece'))));
-    assert.match(area, /hint="Three separate counts: mixes, audio channels, devices\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PLOT-02): the three counts show once there is
+    // something to count, and the hint names them then; an empty plan says what a mix and a device are
+    assert.match(area, /: 'Three separate counts: mixes, audio channels, devices\./);
+    assert.match(area, /\{nothingYet \? null : \(/);
     // the two-wedges question: where to type the answer, on the card and in the popup (which opens MORE DETAILS for it)
     assert.match(area, /spmShareOpen\(p, mix\) \? `\$\{share\} \$\{SPM_SHARE_WHERE_CARD\}` : share/);
     const mixPopup = strip(read(`${AREA}/monitors/MixSheets.tsx`));

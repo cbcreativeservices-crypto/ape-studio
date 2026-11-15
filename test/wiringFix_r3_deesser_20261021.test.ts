@@ -225,9 +225,12 @@ describe('DE-R2-01 — the screen draws from the layout and the copy matches the
     assert.doesNotMatch(viz, /PATH_H\b/);
   });
   it('the page passes the rack’s mode and frequency, sizes the figure per mode and walks the mode’s blocks', () => {
-    assert.match(screen, /aspect=\{VIZ_W \/ pathHeight\(rackS\.mode\)\}/);
-    assert.match(screen, /mode=\{rackS\.mode\} freqHz=\{rackS\.freqHz\}/);
-    assert.match(screen, /const ORDER = pathOrder\(rackS\.mode\);/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DES-01): page 3
+    // draws the plain wiring until page 7 has taught split-band, then the rack's mode.
+    assert.match(screen, /const mode: Mode = modeTaught \? rackS\.mode : 'broadband';/);
+    assert.match(screen, /aspect=\{VIZ_W \/ pathHeight\(mode\)\}/);
+    assert.match(screen, /mode=\{mode\} freqHz=\{rackS\.freqHz\}/);
+    assert.match(screen, /const ORDER = pathOrder\(mode\);/);
     assert.match(screen, /\[\.\.\.PATH_MAIN, \.\.\.PATH_SPLIT, \.\.\.PATH_SIDECHAIN\]/);
   });
   it('split-band copy no longer says the whole voice goes straight through the gain element', () => {

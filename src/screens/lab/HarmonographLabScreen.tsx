@@ -90,6 +90,12 @@ const DAMPINGS = [
   { key: 'medium', label: 'MEDIUM', endAmp: 0.25 },
   { key: 'heavy', label: 'HEAVY', endAmp: 0.06 },
 ] as const;
+/** The SHAPE key's value in words (D62 HG-03): the phase, then only what
+ *  differs from the opening MEDIUM damping and ROTARY mode. */
+export function shapeKeyValue(phase: number, dampKey: 'light' | 'medium' | 'heavy', rotary: boolean): string {
+  return [`${phase}°`, dampKey === 'medium' ? null : dampKey, rotary ? null : 'lateral'].filter(Boolean).join(' · ');
+}
+
 const DETUNES = [
   { key: 0, label: 'LOCKED RATIO' },
   { key: 0.01, label: '+1%' },
@@ -541,23 +547,24 @@ export function HarmonographLabScreen() {
             tint: ARM_Y,
             helpKey: 'ratio_lock',
           },
-          ...(rotary
-            ? [
-                {
-                  // The paper platform's own pendulum — OSC 3 (owner
-                  // 2026-08-23: platform rotation is a separate control).
-                  kind: 'fader' as const,
-                  id: 'plat',
-                  label: 'PLAT',
-                  value: platPosFromFreq(hz3),
-                  onChange: (v: number) => setN3(platFreqFromPos(v) / BASE_F0),
-                  format: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF — platform stationary'),
-                  formatShort: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF'),
-                  tint: '#e0b25e',
-                  helpKey: 'mode',
-                },
-              ]
-            : []),
+          // PLAT keeps its slot in LATERAL too, dimmed with the reason (owner
+          // 2026-11-15: "build waves 1 thru 3", D62 SH-64 a control the choice
+          // ignores is greyed with a reason; SH-35 the keys keep one order).
+          // It used to vanish, so the TUNE and SHAPE keys moved under the finger.
+          {
+            // The paper platform's own pendulum — OSC 3 (owner
+            // 2026-08-23: platform rotation is a separate control).
+            kind: 'fader' as const,
+            id: 'plat',
+            locked: rotary ? undefined : 'LATERAL keeps the paper still. Pick ROTARY in SHAPE to swing it',
+            label: 'PLAT',
+            value: platPosFromFreq(hz3),
+            onChange: (v: number) => setN3(platFreqFromPos(v) / BASE_F0),
+            format: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF — platform stationary'),
+            formatShort: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF'),
+            tint: '#e0b25e',
+            helpKey: 'mode',
+          },
           {
             // RATIO + DETUNE share one sticky tray (both are A/B-the-interval
             // teaching collections; the tray stays open while the figure
@@ -600,9 +607,12 @@ export function HarmonographLabScreen() {
             kind: 'group',
             id: 'shape',
             label: 'SHAPE',
-            // All three states stay visible on the key (φ · damping initial ·
-            // R when rotary) — no hidden state behind a closed tray.
-            valueLabel: `${phase}°·${damping.label[0]}${rotary ? '·R' : ''}`,
+            // In words, not a code (owner 2026-11-15, D62 HG-03: "90°·M·R"
+            // could not be decoded). The key shows the phase and only the
+            // settings that differ from the opening (MEDIUM, ROTARY); the
+            // spoken label always names all three.
+            valueLabel: shapeKeyValue(phase, dampKey, rotary),
+            valueA11y: `phase ${phase} degrees, ${damping.label.toLowerCase()} damping, ${rotary ? 'rotary' : 'lateral'}`,
             helpKey: 'phase',
             render: () => (
               <View style={{ gap: 10 }}>
@@ -750,8 +760,8 @@ export function HarmonographLabScreen() {
             )
           ) : (
             <Text style={styles.caption}>
-              This version of the app can’t play the interval sound yet. The figure and lessons work
-              fully; update the app to hear the ratios.
+              {/* No "update the app" line for a learner (owner 2026-11-15, D62 SH-37). */}
+              The interval sound can’t play on this device. The figure and lessons work fully.
             </Text>
           )
         ) : null}

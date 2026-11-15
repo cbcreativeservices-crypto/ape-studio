@@ -122,10 +122,16 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
   CableLab: {
     status: 'wired',
     lab: "Cable & Connector Fundamentals",
-    term: "Cables (audio)",
+    // CHANGED 2026-11-15 (D62 adoption plan, item CF-05; owner: "build waves
+    // 1 thru 3"): the lab opens on Lesson 1, "what travels", so its card names
+    // signal LEVEL. The old row ("Cables (audio)", 655b0ee1-…) defined
+    // balanced, coax, shielding, strain relief and gauge before the learner
+    // had met any of them. Verbatim glossary text, read from the live row
+    // 2026-11-15 (read-only query).
+    term: "Audio levels",
     plainEnglish:
-      "Audio cables move your signal from one piece of gear to the next. They come in different builds for different jobs: balanced mic and line cables for clean long runs, unbalanced instrument and consumer cables for short hops, speaker cables (no shield, heavier wire) for amp-to-speaker, and coax for digital and video. Good cable has solid shielding, strong strain relief at the plugs, and the right gauge. Cheap or damaged cable is a top cause of hum and dropouts. Picking the correct type for each signal level keeps a system quiet.",
-    glossaryId: "655b0ee1-89ca-4f10-a50b-51819adc2750",
+      "Audio levels are the signal strengths used across a system. Mic, line, and speaker levels are very different sizes.",
+    glossaryId: "3ff09ee6-7282-4506-8957-d3922be6fdd6",
   },
   ConnectorSelectLab: {
     status: 'wired',
@@ -224,12 +230,15 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "A sound system is all the gear together that turns performers' sound into amplified sound for the audience. That means mics, mixer, amps, and speakers, plus the cables tying them together. It is the whole signal chain from input to loudspeaker.",
     glossaryId: "05d8c0bf-b798-4223-b06e-ef323569e412",
   },
+  // EQ-06 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): the
+  // Equalizer lab's own words, in everyday terms (no longer the glossary row
+  // verbatim; the row id still names the term, so its seen flag is unchanged).
   EqLab: {
     status: 'wired',
     lab: "Equalizer",
     term: "Equalizer",
     plainEnglish:
-      "An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.",
+      "An equalizer is the tone knobs of audio, like bass, middle and treble. In this lab you control one of those knobs, and you choose where it works.",
     glossaryId: "09b3ec3d-8fbe-4a04-8c85-77aa44546a87",
   },
   EqLabHome: {
@@ -240,28 +249,35 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.",
     glossaryId: "09b3ec3d-8fbe-4a04-8c85-77aa44546a87",
   },
+  // CMP-03 (owner 2026-11-15, D62): one plain idea instead of five terms in one
+  // breath; still the DYNAMICS device (the glossary row id is unchanged).
   CompressionLab: {
     status: 'wired',
     lab: "Compression",
-    term: "Dynamic range compression",
+    term: "Compressor",
     plainEnglish:
-      "A compressor makes loud parts quieter, shrinking the gap between soft and loud. Above a set level (the threshold), it turns the signal down by a chosen ratio. Attack and release set how fast it reacts. Make-up gain restores overall loudness.",
+      "A compressor is an automatic hand on the volume knob. When a sound gets too loud, it turns it down a little.",
     glossaryId: "037a431c-1b1a-418f-b6c1-51e0cea14a9b",
   },
+  // GATE-01 (owner 2026-11-15, D62): the learner tapped Gate, so the card is
+  // titled for the gate and says first what it is for.
   GateLab: {
     status: 'wired',
     lab: "Gate / Expander",
-    term: "Downward expansion",
+    term: "Noise gate",
     plainEnglish:
-      "Downward expansion makes quiet sounds even quieter. When the signal drops below a set level, the tool turns it down further. This pushes soft background noise down between the loud parts. A noise gate is an extreme version of the same idea.",
+      "A noise gate mutes the gaps. When the sound drops below a level you set, it turns it down, so background hiss goes quiet between the notes.",
     glossaryId: "484e28c0-8ddc-40c8-8f06-347ee12fb285",
   },
+  // LIM-01 (owner 2026-11-15, D62): two sentences instead of seven. "Pulled back
+  // down" rather than "nothing gets past": this lab has no lookahead, and its
+  // own screen says a sharp click can slip a few dB past.
   LimiterLab: {
     status: 'wired',
     lab: "Limiter",
     term: "Limiter",
     plainEnglish:
-      "A limiter is an extreme compressor with a very high or infinite ratio. You set a threshold, and signal above it is held from going much higher. This protects against surprise clipping. Very fast peaks can still slip a little past unless the limiter uses lookahead. Limiters are common on the master bus and as a safety net on inputs. Used right, they are invisible. Used wrong, they squash the sound.",
+      "A limiter is a ceiling for loudness. Peaks that reach the line you set are pulled back down to it.",
     glossaryId: "7f621dc4-6d04-4c29-bc61-e6352f8afcd8",
   },
   SmartProcessorsLab: {
@@ -292,8 +308,13 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     status: 'wired',
     lab: "Chorus",
     term: "Chorus",
+    // REWORDED 2026-11-15 (owner: "build waves 1 thru 3", D62 item CH-01): the
+    // card promised "one singer turning into a small choir" while the lab (and
+    // its engine) mixes ONE late copy per side with the dry voice. The card
+    // now promises what the picture shows. Glossary row update proposed in
+    // docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md.
     plainEnglish:
-      "Chorus is an effect that makes one sound seem like many. It copies the sound, delays each copy a little, and slowly shifts its pitch. Mixed together, they sound like a group playing as one. It is like one singer turning into a small choir.",
+      "Chorus is an effect that makes one sound seem like more than one. It copies the sound, delays the copy a little, and slowly wobbles that delay, so its pitch drifts. Mixed with the original, the two sound like two players who can never be perfectly together.",
     glossaryId: "d8f9a016-2238-43ee-b5d9-2f1bded98f9c",
   },
   FlangerLab: {
@@ -308,24 +329,36 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     status: 'wired',
     lab: "Phaser",
     term: "phaser",
+    // REWORDED 2026-11-15 (owner: "build waves 1 thru 3", D62 item PS-01): the
+    // eight-sentence glossary row filled the phone before the learner touched
+    // anything. The app text leads; the glossary row update is proposed in
+    // docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md (server change).
     plainEnglish:
-      "A phaser runs a copy of the signal through a chain of all-pass filters. These leave the level of every frequency alone but shift its phase (its position in the wave's cycle), by a different amount at each frequency. The copy is then mixed back with the original. Where the two cancel, you get notches in the spectrum. An LFO (a slow, automatic wobble) sweeps those notches up and down, for the classic swirling sweep. More all-pass stages means more notches and a thicker effect. The LFO rate and depth set how fast and how obvious the sweep is. It differs from a flanger, which makes its comb notches with a short modulated delay.",
+      "A phaser makes a few dips in the sound and sweeps them up and down, a swirling whoosh. More STAGES means more dips.",
     glossaryId: "53870fd2-ddf2-4299-8d29-a0d195e1285e",
   },
   DistortionLab: {
     status: 'wired',
     lab: "Distortion",
     term: "Distortion",
+    // REWORDED 2026-11-15 (owner: "build waves 1 thru 3", D62 item DS-04): the
+    // card ended on its hardest words ("harmonic and intermodulation
+    // content"); it now stops at what the lab shows. Glossary row update
+    // proposed in docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md.
     plainEnglish:
-      "Distortion is any change to a signal that adds sound the original did not have. Sometimes it sounds nice, like the warm tone of a tube amp or guitar overdrive. Sometimes it sounds bad, like harsh clipping when a signal is pushed too hard. Engineers measure the extra tones a device adds. These are called harmonic and intermodulation content.",
+      "Distortion is any change to a signal that adds sound the original did not have. Sometimes it sounds nice, like the warm tone of a tube amp or guitar overdrive; sometimes it sounds harsh. Push a sound harder than the equipment can carry and its shape gets squashed; that adds new tones.",
     glossaryId: "f62fc1ed-05ff-4c60-9f4c-f96ec34400e9",
   },
   PhaseLab: {
     status: 'wired',
     lab: "Phase",
     term: "Phase",
+    // REWORDED 2026-11-15 (owner: "build waves 1 thru 3", D62 item PH-04): the
+    // card opened on "where a wave is in its cycle" and ended on comb
+    // filtering and speaker alignment; it now opens on what the learner sees.
+    // Glossary row update proposed in docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md.
     plainEnglish:
-      "Phase is where a wave is in its up-and-down cycle compared to another wave. When two copies line up (in phase) they add together. When two equal sine waves are half a cycle apart (180 degrees) they cancel. With music, one time delay gives a different phase at each frequency, so some frequencies cancel and others add. Phase drives comb filtering, mono compatibility, and speaker alignment.",
+      "Two copies of a sound can help each other or erase each other. Phase is where a wave is in its up-and-down cycle compared to another wave. When two copies line up (in phase) they add together. When two equal sine waves are half a cycle apart (180 degrees) they cancel.",
     glossaryId: "a3004045-dce0-4e6d-9a51-f1149c4584a3",
   },
   OscillatorLab: {

@@ -14,6 +14,7 @@ import { BADGE, type RoomLabCtx } from '../labCtx';
 import { RoomRackLayout } from '../rackLayout';
 import { RoomPlanView, treatmentCentre } from '../RoomPlanView';
 import { Body, Caption, TrayButton, TrayHeading } from '../bits';
+import { PLAIN_TERMS } from '../../../../features/lab/plainTerms';
 import {
   analyze,
   basstrapAt,
@@ -331,8 +332,10 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       <Body>
         Treatment is bought in square meters that actually absorb, at the frequencies that need it. A thin panel absorbs the highs anywhere; only thickness — or a corner, where every mode has its pressure maximum — reaches the bass. The first-reflection points are where the mids and highs need help; the corners are where the bass does; the ceiling over the desk is both.
       </Body>
+      {/* RO-03 (owner 2026-11-15, "build waves 1 thru 3", D62): RT60 said once, in
+          the ONE shared sentence (plainTerms.ts); the paragraph is shorter to make room. */}
       <Body>
-        Compare, don't cover: a room with every wall absorbed is fatiguing and makes mixes sound dry everywhere else. Switch each item off and on, read the RT60 estimate and the treated-path count, and keep what changes something. The rear wall is often better scattered (a diffuser) than killed, if there is room for one.
+        {PLAIN_TERMS.rt60.sentence} Compare, don't cover: a room with every wall absorbed sounds dead and fatiguing. Switch each item off and on, read the RT60 estimate and the treated-path count, and keep what changes something. The rear wall is often better scattered (a diffuser) than killed.
       </Body>
       <Caption>Mount heavy items — bass traps, clouds, wood diffusers — into structure with rated hardware and a safety cable overhead; use fire-rated materials; never block an exit, a heater or a ventilation grille; keep panels clear of outlets and lights, and never hang a cloud under or over a smoke detector, sprinkler head or light fixture. If in doubt about a mounting, ask someone qualified.</Caption>
       <Caption>{`ESTIMATED throughout: typical textbook absorption values (broadband), and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here) — the 125 Hz figure is indicative only. Sabine also ignores air absorption, which matters above a few kHz in a large room. Measure the real room before and after.`}</Caption>

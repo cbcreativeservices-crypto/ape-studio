@@ -772,7 +772,7 @@ export function useWorkedStep({ scene, mic, pieces, box, title }: { scene: Venue
       ),
       badge: 'WORKED EXAMPLE · placed for you · amber = the piece being read · the corner box = the mic at its height, to scale',
       bezel: pieces.map((q, i) => ({ k: i === ex ? `▸ ${q.key}` : q.key, v: q.value, tint: i === ex ? AMBER : undefined, flex: 1 })),
-      params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
+      params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: ex / Math.max(1, pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
       initialParam: 'piece',
     },
     well: (

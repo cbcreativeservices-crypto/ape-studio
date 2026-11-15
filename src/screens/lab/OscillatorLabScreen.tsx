@@ -64,6 +64,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
+import { GoDeeper } from './foundations/GoDeeper';
 import { LabShell, HeaderPlayButton } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { oscillatorScreenGuide } from './oscillatorScreenGuides';
@@ -96,6 +97,13 @@ const WAVES: { key: PresetKey; label: string; lessonKey: string }[] = [
 ];
 
 const F0_CHOICES = [110, 220, 440, 880];
+/** SH-76 (owner 2026-11-15, "build waves 1 thru 3"): each F0 choice says what it is, in one line. */
+const F0_BLURBS: Record<number, string> = {
+  110: 'A low A. Each step up doubles the number: one octave higher.',
+  220: 'One octave above 110 Hz. The bars keep their pattern; only the pitch moves.',
+  440: 'The A that orchestras tune to, two octaves above 110 Hz.',
+  880: 'The highest choice, one octave above 440 Hz.',
+};
 
 const INTRO =
   'Generate the classic waveforms, watch their shape and harmonic content, and ' +
@@ -252,7 +260,9 @@ export function OscillatorLabScreen() {
       title="OSCILLATOR LAB"
       subtitle="Waveforms · Spectra · Harmonic recipes"
       intro={INTRO}
-      exploreCaption="Pick a waveform and fundamental — the shape, the harmonic recipe, and the sound stay in lockstep."
+      // OSC-03 (owner 2026-11-15, "build waves 1 thru 3"): the first line under the display now says
+      // what the twelve bars ARE, in plain words (it replaces the old caption: a line in, a line out).
+      exploreCaption="Each bar is one pure tone: bar 1 is the note, bars 2 to 12 add its color."
       // Screen Guide (2026-10-31): one guide per tab. A CONCEPT lab — no mic,
       // no real-world measurement (the display is the analytic model) — so
       // the AccuracyNote chip gives its spot to the ⓘ.
@@ -331,7 +341,7 @@ export function OscillatorLabScreen() {
             id: 'f0',
             label: 'F0',
             valueLabel: `${f0} Hz`,
-            options: F0_CHOICES.map((hz) => ({ id: String(hz), label: `${hz} Hz` })),
+            options: F0_CHOICES.map((hz) => ({ id: String(hz), label: `${hz} Hz`, blurb: F0_BLURBS[hz] })),
             selectedId: String(f0),
             onSelect: (id) => pickF0(Number(id)),
             sticky: true, // octave-hop while sounding (and watch the HPF curve move)
@@ -352,59 +362,9 @@ export function OscillatorLabScreen() {
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
-        <Text style={styles.caption}>
-          {speakerView
-            ? 'Top: the waveform after the speaker high-pass, traveling as a wave does — low partials removed, so the shape flattens toward its upper harmonics.'
-            : 'Top: the ideal 12-harmonic recipe traveling as a wave — the same series you hear.'}
-        </Text>
-        <Text style={styles.caption}>
-          {speakerView
-            ? `Below: H1–H12 after the high-pass (amber line = the filter's gain at each harmonic's frequency, n × ${f0} Hz).`
-            : 'Below: H1–H12 relative amplitudes. Square/triangle = odd only; saw = all; pulse nulls follow its duty cycle.'}
-        </Text>
-      </View>
-
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>REFERENCE VS SPEAKER</Text>
-        <Text style={styles.caption}>
-          {speakerView
-            ? `SPKR is ON — showing the signal AFTER the ${SPEAKER_HPF_HZ} Hz high-pass, what actually reaches the built-in speaker.`
-            : `Reference (ideal) view. Audio is high-passed for speaker safety — the SPKR key flips the display to the speaker output.`}
-        </Text>
-      </View>
-
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>THE SOUND</Text>
-        {engineReady ? (
-          <>
-            <Text style={styles.caption}>
-              {additiveReady
-                ? `PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction: any harmonic at or above Nyquist would be left out, never aliased. Here every harmonic stays well below it — the highest is 12 × 880 Hz = 10,560 Hz, and Nyquist is at least 22,050 Hz.`
-                : __DEV__
-                  ? `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`
-                  : `This version of the app plays the fundamental SINE only; square, saw, triangle and pulse stay visual. Update the app to hear them.`}
-            </Text>
-            <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : null}
-      </View>
-
-      {/* FM / AM — honest status, no dead controls (§1.7). */}
-      <View style={styles.devNote}>
-        <Text style={styles.devNoteHead}>{__DEV__ ? 'FM · AM — NEEDS NEW NATIVE DSP' : 'FM · AM — NOT IN THIS LAB'}</Text>
-        <Text style={styles.caption}>
-          {__DEV__
-            ? 'Frequency and amplitude modulation are not in the current ape-dsp engine, so they have no controls here yet. '
-            : 'Frequency and amplitude modulation have no controls in this lab. '}
-          The theory is in this lab’s lesson (ⓘ) — sidebands at fc ± n·fm (FM, Bessel amplitudes) vs
-          one pair at fc ± fm (AM).
-        </Text>
-      </View>
-
-{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      {/* OSC-04 (owner 2026-11-15, "build waves 1 thru 3"): the two friendly check questions
+          come first; the engineer notes (THE SOUND, FM · AM) fold under GO DEEPER, nothing removed.
+          Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
       <CheckQuestion
         spec={{
           question: 'The display shows ONLY odd harmonics, dying away fast (1/n²). Which wave?',
@@ -435,6 +395,60 @@ export function OscillatorLabScreen() {
           wrongHint: 'Tap SAW and count the bars.',
         }}
       />
+
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
+        <Text style={styles.caption}>
+          {speakerView
+            ? 'Top: the waveform after the speaker high-pass, traveling as a wave does — low partials removed, so the shape flattens toward its upper harmonics.'
+            : 'Top: the ideal 12-harmonic recipe traveling as a wave — the same series you hear.'}
+        </Text>
+        <Text style={styles.caption}>
+          {speakerView
+            ? `Below: H1–H12 after the high-pass (amber line = the filter's gain at each harmonic's frequency, n × ${f0} Hz).`
+            : 'Below: H1–H12 relative amplitudes. Square/triangle = odd only; saw = all; pulse nulls follow its duty cycle.'}
+        </Text>
+      </View>
+
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>REFERENCE VS SPEAKER</Text>
+        <Text style={styles.caption}>
+          {speakerView
+            ? `SPKR is ON — showing the signal AFTER the ${SPEAKER_HPF_HZ} Hz high-pass, what actually reaches the built-in speaker.`
+            : `Reference (ideal) view. Audio is high-passed for speaker safety — the SPKR key flips the display to the speaker output.`}
+        </Text>
+        {/* OSC-04 (owner 2026-11-15, "build waves 1 thru 3"): the speaker advisory and any
+            sound error stay in view; only THE SOUND's engine notes fold under GO DEEPER. */}
+        {engineReady ? <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text> : null}
+        {engineReady && genError ? <Text style={styles.error}>{genError}</Text> : null}
+      </View>
+
+      <GoDeeper hint="How the sound is made, and why FM and AM are not here.">
+        <View style={{ gap: 6 }}>
+          <Text style={styles.sectionHead}>THE SOUND</Text>
+          {engineReady ? (
+            <Text style={styles.caption}>
+              {additiveReady
+                ? `PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction: any harmonic at or above Nyquist would be left out, never aliased. Here every harmonic stays well below it — the highest is 12 × 880 Hz = 10,560 Hz, and Nyquist is at least 22,050 Hz.`
+                : __DEV__
+                  ? `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`
+                  : `This version of the app plays the fundamental SINE only; square, saw, triangle and pulse stay visual.`}
+            </Text>
+          ) : null}
+        </View>
+
+        {/* FM / AM — honest status, no dead controls (§1.7). */}
+        <View style={styles.devNote}>
+          <Text style={styles.devNoteHead}>{__DEV__ ? 'FM · AM — NEEDS NEW NATIVE DSP' : 'FM · AM — NOT IN THIS LAB'}</Text>
+          <Text style={styles.caption}>
+            {__DEV__
+              ? 'Frequency and amplitude modulation are not in the current ape-dsp engine, so they have no controls here yet. '
+              : 'Frequency and amplitude modulation have no controls in this lab. '}
+            The theory is in this lab’s lesson (ⓘ) — sidebands at fc ± n·fm (FM, Bessel amplitudes) vs
+            one pair at fc ± fm (AM).
+          </Text>
+        </View>
+      </GoDeeper>
 
       <GuidedLessonSheet
         visible={lessonOpen}

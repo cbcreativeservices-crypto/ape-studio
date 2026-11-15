@@ -282,7 +282,10 @@ describe('page 1: what the student reads when the scene starts', () => {
     assert.doesNotMatch(PAGE1, /PLAYING counts instances|One instance can use several voices/);
     // Owner's decision 5, 2026-11-14 (PHASE3_BRIEF): "Split a page that holds two lessons into two pages."
     // "Events and instances" was page 7 of 22 and is page 8 of 24.
-    assert.match(PAGE1, /PLAYING and VOICES count what is sounding now\. Page 8 explains them\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-12): page 1 says what a voice is, in one line,
+    // because VOICES is under the picture from page 1; instances stay for page 8
+    assert.match(PAGE1, /P01_VOICE_LINE = 'VOICES counts voices: a voice is one sound playing right now\.'/);
+    assert.match(PAGE1, /PLAYING counts what the game asked to play: page 8 explains how the two differ\./);
     // and it says this scene's simplification about the silent room tone (decision 5)
     assert.match(PAGE1, /This scene counts it anyway\. A real engine usually does not\./);
   });
@@ -344,7 +347,8 @@ describe('page 2: what the student reads when a sound reacts', () => {
     assert.equal(open.inst[0].chose[0], 'door');
     assert.equal(closed.inst[closed.inst.length - 1].chose[0], GA_DOOR_CLOSE_ASSET);
     assert.equal(GA_EVENTS.door_open.name, 'Play_Door');
-    assert.match(PAGE2, /The door’s one event plays an opening take or a closing take\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-02): "take" gets its plain meaning where it is first met
+    assert.match(PAGE2, /The door’s one event plays an opening take or a closing take: a take is one version of a sound\./);
   });
   it('the rings are described as the picture draws them: they leave more often, they do not travel faster', () => {
     assert.match(PAGE2, /They leave more often as SPEED rises\./);

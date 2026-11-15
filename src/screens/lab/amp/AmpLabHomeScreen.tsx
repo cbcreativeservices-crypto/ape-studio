@@ -32,6 +32,13 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { understandingFor } from '../../../features/lab/understanding';
+import { LearnMore } from './kit';
+
+/** The home's first line (AMPL-05): the lab's best sentence. */
+export const AMP_HOME_LINE =
+  'The power supply pays, your signal steers. Every module shows how, with a live model you can push, break and fix.';
+/** The folded final check's title on the home (AMPL-03). */
+export const AMP_FINAL_CHECK_TITLE = 'FINAL CHECK: AFTER THE MODULES';
 
 export function AmpLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -179,11 +186,9 @@ export function AmpLabHomeScreen() {
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
-        <Text style={styles.body}>
-          One question runs through every module: what is the amplifier doing, what load does it see, and
-          where does the extra output energy come from? Every screen answers it with a live, synchronized
-          model you can push, break, and fix.
-        </Text>
+        {/* AMPL-05 (owner 2026-11-15: "build waves 1 thru 3"): the home opens on
+            the lab's best sentence, above the single START button. */}
+        <Text style={styles.body}>{AMP_HOME_LINE}</Text>
         {unreadable ? (
           <ProgressUnreadableNote />
         ) : !progress ? (
@@ -228,7 +233,14 @@ export function AmpLabHomeScreen() {
         </TabletGrid>
         {/* Certificate credit (owner 2026-10-13): the check renders only once
             questions are authored for this lab (trainingLabKeys UNDERSTANDING_LAB_IDS). */}
-        <LabUnderstandingBlock labId="amp" labTitle="Amp Lab" />
+        {/* AMPL-03 (owner 2026-11-15: "build waves 1 thru 3"): the five-question
+            check no longer sits open on the home of a lab not yet started; it
+            folds, one tap away, and the end screen still shows it in full. */}
+        {understandingFor('amp') ? (
+          <LearnMore title={AMP_FINAL_CHECK_TITLE}>
+            <LabUnderstandingBlock labId="amp" labTitle="Amp Lab" />
+          </LearnMore>
+        ) : null}
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         <Text style={styles.safety}>

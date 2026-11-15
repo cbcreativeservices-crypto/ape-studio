@@ -28,7 +28,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { GaRack } from '../GaLab';
-import { ActivityLog, Caption, Do, GoalChips, Look, Note, P, Step, Terms, marked, useVisitGoals } from '../bits';
+import { ActivityLog, Caption, Do, GoalChips, Look, Note, P, ProNote, Step, Terms, marked, useVisitGoals } from '../bits';
 import type { GaBus } from '../engine/gaEngineProtocol';
 import { gaTerms } from '../gaTerms';
 import { gaPlaying, type GaState } from '../model/gaModel';
@@ -39,7 +39,11 @@ import { G16 } from './guides/p16';
 import { useSince } from './shared';
 
 const ASSETS = ['amb_room', 'amb_yard', 'fountain', 'gen_hum', 'gen_air', 'mu_calm', 'mu_pulse', 'mu_drive', 'vo_greeting', 'vo_greeting_long', 'vo_chat', 'alarm'] as const;
-const TERMS = gaTerms('Audio Bus (Game Audio)', 'Ducking', 'Snapshot (Game Mix State)', 'Dynamic mixing', 'Headroom');
+// owner 2026-11-15: "build waves 1 thru 3" (GA-01): the row keeps the words this page uses; Snapshot and
+// Dynamic mixing are kept unshown (the text uses neither); Event-driven audio came here, with the event-driven
+// duck's sentence in the PRO NOTE of step 2 (GA-07)
+const TERMS = gaTerms('Audio Bus (Game Audio)', 'Ducking', 'Headroom');
+const PRO_TERMS = gaTerms('Event-driven audio');
 const DUCK_WORDS = duckWords();
 
 const sceneOn = (s: GaState): boolean => gaPlaying(s, 'bed_room') || gaPlaying(s, 'bed_yard') || gaPlaying(s, 'fountain');
@@ -233,11 +237,15 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open SOUNDS and switch on SCENE, GENERATOR 1 and MUSIC. Press GUIDE LINE and watch DUCK: DUCKING, then READY. Then press CHAT LINE.</Do>
+        <Do parts={['Open SOUNDS and switch on SCENE, GENERATOR 1 and MUSIC.', 'Press GUIDE LINE and watch DUCK: DUCKING, then READY.', 'Press CHAT LINE.']} />
         <P>While the guide speaks, the mix turns down {DUCK_WORDS}. The log prints DUCK on and DUCK off. The chat line is not on the dialogue bus, so it ducks nothing.</P>
-        <P>This duck is event-driven: it starts and ends with the line, not with the audio level.</P>
         <Caption state={s} />
         <ActivityLog state={s} lines={5} />
+        {/* a pro detail, closed at the end of the step (owner 2026-11-15: "build waves 1 thru 3", GA-07) */}
+        <ProNote hint="Pro note: what starts and ends this duck.">
+          <P>This duck is event-driven: it starts and ends with the line, not with the audio level.</P>
+          <Terms items={PRO_TERMS} />
+        </ProNote>
       </Step>
       <Step n={3}>
         <Do>In MIX, choose DUCK OFF. In SOUNDS, press GUIDE LINE again.</Do>

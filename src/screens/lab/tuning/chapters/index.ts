@@ -55,22 +55,40 @@ export const CHAPTERS: ChapterDef[] = [
   { index: 13, title: CHAPTER_TITLES[13], short: 'Apply', objective: 'Do six things you learned — on purpose, without the walkthrough.', rack: true, Component: Ch13Apply },
 ];
 
-/** WHAT'S LEFT (fix round 2026-11-14, S2 §4): each unfinished chapter's own
- *  task, by the name the chapter shows. A chapter counts when ITS task is
- *  done (the code that calls ctx.markDone), never just for being opened. */
-export const CHAPTER_FINISH: Readonly<Record<number, string>> = {
-  0: 'Still to do: press BEGIN LAB › (or NEXT) at the foot of the chapter.',
-  1: 'Still to do: answer its UNDERSTANDING CHECK correctly.',
-  2: 'Still to do: the mini challenge, place a 3:2 ratio on the pitch rail.',
-  3: 'Still to do: fold 9/4, 27/8 and 3/4 into the octave, then press FINISH ›.',
-  4: 'Still to do: slide the third onto the pure 5/4, or answer its UNDERSTANDING CHECK correctly.',
-  5: 'Still to do: press ADD FIFTH until all twelve fifths are on the rail.',
-  6: 'Still to do: answer its UNDERSTANDING CHECK correctly.',
-  7: 'Still to do: answer its UNDERSTANDING CHECK, or press I’VE GOT IT › (or NEXT).',
-  8: 'Still to do: answer its UNDERSTANDING CHECK correctly.',
-  9: 'Still to do: narrow the fifth until four of them make a pure third.',
-  10: 'Still to do: press ADD ×r twelve times, up to the octave.',
-  11: 'Still to do: answer its UNDERSTANDING CHECK, or press I’VE COMPARED THEM › (or NEXT).',
-  12: 'Still to do: open at least three of the claims, then press UNDERSTOOD ›.',
-  13: 'Still to do: finish all six challenges.',
+/** Each chapter's own task, by the name the chapter shows (fix round
+ *  2026-11-14, S2 §4). A chapter counts when ITS task is done (the code that
+ *  calls ctx.markDone), never just for being opened. ONE source: WHAT'S LEFT
+ *  says "Still to do: <task>", and since owner 2026-11-15 ("build waves 1
+ *  thru 3", D62 TU-03) the chapter itself says "To finish: <task>" until it
+ *  is done. */
+export const CHAPTER_TASK: Readonly<Record<number, string>> = {
+  0: 'press BEGIN LAB › (or NEXT) at the foot of the chapter.',
+  1: 'answer its UNDERSTANDING CHECK correctly.',
+  2: 'the mini challenge, place a 3:2 ratio on the pitch rail.',
+  3: 'fold 9/4, 27/8 and 3/4 into the octave, then press FINISH ›.',
+  4: 'slide the third onto the pure 5/4, or answer its UNDERSTANDING CHECK correctly.',
+  5: 'press ADD FIFTH until all twelve fifths are on the rail.',
+  6: 'answer its UNDERSTANDING CHECK correctly.',
+  7: 'answer its UNDERSTANDING CHECK, or press I’VE GOT IT › (or NEXT).',
+  8: 'answer its UNDERSTANDING CHECK correctly.',
+  9: 'narrow the fifth until four of them make a pure third.',
+  10: 'press ADD ×r twelve times, up to the octave.',
+  11: 'answer its UNDERSTANDING CHECK, or press I’VE COMPARED THEM › (or NEXT).',
+  12: 'open at least three of the claims, then press UNDERSTOOD ›.',
+  13: 'finish all six challenges.',
 };
+
+/** WHAT'S LEFT: each unfinished chapter's line (unchanged words). */
+export const CHAPTER_FINISH: Readonly<Record<number, string>> = Object.fromEntries(
+  Object.entries(CHAPTER_TASK).map(([k, t]) => [k, `Still to do: ${t}`]),
+);
+
+/** Inside the chapter, while its task is not done (D62 TU-03). */
+export const chapterFinishLine = (index: number): string | undefined =>
+  CHAPTER_TASK[index] ? `To finish: ${CHAPTER_TASK[index]}` : undefined;
+
+/** The deeper chapter a beginner can come back to (owner 2026-11-15, D62
+ *  TU-05). It still counts toward the lab like every chapter: what earns
+ *  credit is unchanged, so it is marked "deeper", never "optional". */
+export const DEEPER_CHAPTERS: ReadonlySet<number> = new Set([9]);
+export const DEEPER_MARK = 'deeper chapter';

@@ -156,13 +156,15 @@ describe('3. each guide quotes its screen’s real names', () => {
 });
 
 describe('4. the TRY THIS numbers follow from the config and the scope', () => {
-  it('RATE fader: 0.10–3.00 Hz, starts at 0.25 Hz, printed with two decimals', () => {
-    assert.match(CFG, /initial: 0\.25,\s*fader: \{\s*min: 0\.1, max: 3, log: true/);
+  it('RATE fader: 0.10–3.00 Hz, starts at 0.50 Hz, printed with two decimals', () => {
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CH-02): RATE opens at 0.5 Hz, so the first view moves within 2 s.
+    assert.match(CFG, /initial: 0\.5,\s*fader: \{\s*min: 0\.1, max: 3, log: true/);
     assert.match(CFG, /format: \(v\) => `\$\{v\.toFixed\(2\)\} Hz`/);
-    assert.ok(textOf(GUIDES.explore).includes('RATE fader (0.10–3.00 Hz, starts at 0.25 Hz)'));
+    assert.ok(textOf(GUIDES.explore).includes('RATE fader (0.10–3.00 Hz, starts at 0.50 Hz)'));
   });
   it('DELAY 15 → 20 → 35 ms: the caption’s spacing is round(1000 / ms) = 67, 50, 29 Hz', () => {
-    assert.match(CFG, /choices: \[15, 20, 35\]\.map\(\(ms\) => \(\{ label: `\$\{ms\} ms`, value: ms \}\)\),\s*initial: 20/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CH-02): each DELAY choice now carries a tray line (switch to PINK NOISE).
+    assert.match(CFG, /choices: \[15, 20, 35\]\.map\(\(ms\) => \(\{\s*label: `\$\{ms\} ms`, value: ms,\s*blurb: '[^']*PINK NOISE[^']*',\s*\}\)\),\s*initial: 20/);
     assert.match(CFG, /notches every \$\{Math\.round\(1000 \/ v\[P\.centerMs\]\)\} Hz/);
     const sp = [15, 20, 35].map((ms) => Math.round(1000 / ms));
     assert.deepEqual(sp, [67, 50, 29]);
@@ -173,15 +175,16 @@ describe('4. the TRY THIS numbers follow from the config and the scope', () => {
     assert.match(ANIM, /const slipPerHz = trueLag \? PI2 \* \(srcHz as number\) \* 0\.006 \* Math\.max\(depth, 0\.01\) \* PI2 : 0;/);
     assert.match(ANIM, /Math\.min\(rateHz, 45 \/ slipPerHz\)/);
     assert.match(ANIM, /const lfoSlowed = trueLag && lfoVisHz < rateHz - 1e-6;/);
-    assert.match(CFG, /\{ label: 'CLASSIC', value: 0\.5 \}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-76): tray choices may carry a one-line blurb.
+    assert.match(CFG, /\{ label: 'CLASSIC', value: 0\.5(?:, blurb: '[^']*')? \}/);
     const cap = 45 / (2 * Math.PI * 440 * 0.006 * 0.5 * 2 * Math.PI);
     assert.ok(Math.abs(cap - 0.864) < 0.001, `cap ${cap}`);
     // The fader snaps to 0.01 Hz: the first value past the cap.
     const first = Math.ceil(cap * 100 + 1e-9) / 100;
     assert.equal(first.toFixed(2), '0.87');
     assert.ok(textOf(GUIDES.explore).includes(`From ${first.toFixed(2)} Hz (DEPTH on CLASSIC)`));
-    // The start setting (0.25 Hz) is not slowed — step 1 is honest.
-    assert.ok(0.25 < cap);
+    // The start setting (0.50 Hz) is not slowed — step 1 is honest.
+    assert.ok(0.5 < cap);
   });
   it('MIX 100%: feedback is fixed at 0, so the drawn output IS the copy (no swelling)', () => {
     assert.match(CFG, /fixed: \[\s*\{ paramId: P\.modMode, value: 0 \},\s*\{ paramId: P\.modFeedback, value: 0 \},\s*\]/);

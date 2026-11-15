@@ -49,7 +49,7 @@ const base = stringsCopy({
   workedLine: 'This starting point sits near {line}, out in front of the oud.',
   workedAim: 'Aim at the space between the main rose and the neck, not straight into the rose — the lab counts it while the line the mic points along meets the face within about 11 cm of {head}.',
   clearWhat: 'the risha’s arc, the left hand along the neck, the pegbox and the player’s view',
-  placementReveal: 'Toward the rose tends to bring more body and bloom; toward the neck, more string and finger detail; closer, more risha click and more proximity bass. Every oud and room differs, so “it depends on this oud” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+  placementReveal: 'Toward the rose tends to bring more body and bloom; toward the neck, more string and finger detail; closer, more risha click and more proximity bass. Every oud and room differs, so “it depends on this oud” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
   typeNotes: {
     sdcCard: 'Ideas to try: begin on the upper face, then change one thing — a little closer, a little toward the rose, a little toward the neck — and listen to the whole phrase each time.',
     instDynCard: 'Ideas to try with a dynamic: on a stage, close by the main rose and angled down; watch the bass that proximity adds, and any boom from the rose.',

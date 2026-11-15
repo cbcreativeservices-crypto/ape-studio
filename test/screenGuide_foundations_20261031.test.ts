@@ -118,8 +118,10 @@ describe('2. each guide quotes its screen’s real names', () => {
     m4: ['AMPLITUDE', 'AMP', 'small → quiet', 'large → loud', 'LEVEL', 'THE GRAPH'],
     m5: ['FREQ B', 'A (REF)', 'B (YOURS)', 'TONE'],
     m6: ['FREQ', 'λ', 'FITS', '7 m'],
-    m7: ['THE ROOM — CAMERA FLASH', 'MIC INPUT', 'NOW', 'PROBE', 'SAME SPOT', 'FREEZE', 'MODE', 'FROZEN', 'RUN', '1 · WATCH', '2 · FREEZE', '3 · DRAG THE PROBE'],
-    m8: ['PITCH', 'OCTAVES', 'ABOVE 110', '8ve'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FO-01): two steps on the display, FREEZE first; the room on a tap.
+    m7: ['THE ROOM — CAMERA FLASH', 'MIC INPUT', 'NOW', 'PROBE', 'SAME SPOT', 'FREEZE', 'MODE', 'FROZEN', 'RUN', '1 · FREEZE', '2 · DRAG THE PROBE', 'SAME WAVE, IN THE ROOM ›'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FO-03): '8ve' reads 'octave(s)'.
+    m8: ['PITCH', 'OCTAVES', 'ABOVE 110', 'octaves'],
     m9: ['SEND', 'HEARD', 'YOU SEND', 'YOU HEAR', 'EAR', 'WHAT YOU HEAR — LEVEL × EAR CURVE'],
     m10: ['PHASE', 'PRESET', 'HEAR', 'ALIGNED', 'PARTIAL', 'CANCELED', 'OUT', 'INPUTS', 'SUM = A + B', 'HEAR ALIGNED — 220 / 220 Hz', 'HEAR DRIFTING — 220 / 222 Hz', 'STOP'],
     m11: ['HARMONICS', 'F0', 'SEL', 'LEVEL', 'SUM'],
@@ -134,6 +136,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     'SWEEP', 'CONTENT', 'SOURCE', 'SINE', 'SQUARE', 'SAW', 'TRIANGLE', 'WHITE', 'PINK', 'BROWN', 'NOISE', 'SLOW SWEEP', 'FAST SWEEP',
     'HARMONIC RICHNESS', 'ALL HARMONICS', 'FIRST 3', 'FUNDAMENTAL', 'PHASE · POLARITY', 'POLARITY +', 'POLARITY −', 'FX',
     'DELAY OFF', '30 ms', '120 ms', '400 ms', 'EQ LOW-PASS', 'LPF 2 kHz', 'LPF 500 Hz', 'Q 0.7', 'Q 4', 'PLAY', 'STOP',
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PG-02): one MORE CONTROLS fold in the SOURCE tray.
+    'MORE CONTROLS',
   ];
   it('a name list for every course guide', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), [...Object.keys(MODULES), 'm7cover', 'end'].sort());

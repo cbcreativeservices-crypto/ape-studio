@@ -4,8 +4,11 @@
  * global default; per-viz IN-CANVAS readouts remain a phase-2 upgrade path).
  * Carries ReadoutGrid's {k, v, helpKey} contract so wave/digital readout
  * items map across 1:1. Long-press a cell = its guided-lesson entry; cells
- * with onPress keep the tools' tap-to-reset behavior. New component → fonts
- * at the MIN_FONT 12 floor.
+ * with onPress keep the tools' tap-to-reset behavior. A cell with a helpKey
+ * and NO tap job of its own opens the same entry on a plain TAP too (beginner
+ * waves 2026-11-15, SN-2 from F6b TB-01: help must not hide behind
+ * long-press, which most beginners never try). New component → fonts at the
+ * MIN_FONT 12 floor.
  */
 import { useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -16,7 +19,7 @@ import type { BezelItem } from './rackTypes';
 import { bezelKeyFit, dockValueFitSize } from './dockFit';
 import { useSoundOff } from './silentPath';
 import { markUnitsChipSeen, useUnitsChipOwed } from './bezelFirstSight';
-import { UNITS_CHIP_LABEL, UNITS_LINES, UNITS_TITLE, bezelCellSaid, bezelShown, showsHzOrDb } from './bezelRules';
+import { UNITS_CHIP_LABEL, UNITS_LINES, UNITS_TITLE, bezelCellSaid, bezelShown, bezelTapHelp, showsHzOrDb } from './bezelRules';
 
 export { UNITS_CHIP_LABEL, UNITS_LINES, UNITS_TITLE, bezelCellSaid, bezelShown, showsHzOrDb } from './bezelRules';
 
@@ -175,14 +178,20 @@ function Cell({ it, first, onHelp, silent = false, caption }: { it: BezelItem; f
   // Web only: on a phone fitValue's own shrink-to-fit already does this.
   const [subW, setSubW] = useState(0);
   const subFs = WEB && it.sub ? (dockValueFitSize(SUB_FS, subW, keyAvail) ?? SUB_FS) : SUB_FS;
+  // SN-2 (2026-11-15): a TAP opens the cell's lesson, but ONLY where a tap has
+  // no job: a cell's own onPress (tap-to-reset) always wins. The bezel sits
+  // outside the glass, so the display's tap-to-play/stop never reached it, and
+  // a helpKey cell already took the tap (and did nothing with it). Nothing new
+  // is drawn: the long-press stays, the look is unchanged.
+  const tapHelp = bezelTapHelp(it, onHelp);
   return (
     <Pressable
       style={[styles.cell, { flex: it.flex ?? 1 }, first && styles.cellFirst, it.onPress && styles.cellTappable, it.frame ? [styles.cellFramed, { borderColor: it.frame, borderLeftColor: it.frame }] : null]}
-      onPress={it.onPress}
+      onPress={it.onPress ?? tapHelp}
       onLongPress={it.helpKey ? () => onHelp?.(it.helpKey) : undefined}
       delayLongPress={350}
       disabled={!it.onPress && !it.helpKey}
-      accessibilityRole={it.onPress ? 'button' : 'text'}
+      accessibilityRole={it.onPress || tapHelp ? 'button' : 'text'}
       accessibilityLabel={`${it.k}: ${bezelCellSaid(it, silent)}`}
       // On the web floored, never rounded up (frame round 2): the width arrives
       // as a whole pixel already (63.58 as 64), and BEZEL_KEY_MARGIN_PX covers
