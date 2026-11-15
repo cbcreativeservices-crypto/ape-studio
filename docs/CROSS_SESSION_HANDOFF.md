@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 23:19 · ccode · 427226af
+changed: docs: governance D119-D123 (Suggested Setups, Room Design copy, Sound Safety buttons-at-end, 11-14 OTAs, owner lifetime account), must-do D66, lessons 2026-11-14, PROTOCOL_CHECK rule 33 (test the OTA in the real app, prove it landed) [MD:D66] [MD:D64]
+affects other side: Comp A please re-read PROTOCOL_CHECK rule 33 (pre-OTA real-app test + post-publish proof + brief to Comp A) and governance D119–D123 (docs/APE_GOVERNANCE_DECISIONS_2026_11_14.md); must-do D66 lists your backup-table drop after 1.0.1.
+needs: nothing. [MD:D66]
+
+
 ### 2026-11-14 23:05 · ccode · OTA 2 PUBLISHED (3cd52abc) + Comp A ACK
 changed: second production OTA on the owner's word ("Publish it"): the Sound Safety warning shows its two buttons only after the reader reaches the end. iOS group 3c676af4-d823-4b7c-a56d-35316db85013 (91355451…), Android group c877873b-65ce-4370-a04d-11479d7293f8 (a903813a…); sourcemaps uploaded; eol-sync 0 synced / 0 real diffs, both fingerprints MATCH before publishing; the Pixel Play app loaded c877873b. Undo = republish fc9a721c (iOS) / 874669d0 (Android), the earlier OTA of tonight. Comp A ACK received (COMP_A_TO_CCODE_2026-11-14_OTA_PUBLISHED_ACK): D60 (f) step 20 applied 22:52 PT (90_VERIFY 2/9/230/551), must-do D60 (f) marked DONE; backup table kept until after 1.0.1, client grants revoked; owner has_academy_access = true. [MD:D60] [MD:D64] [MD:A2]
 affects other side: nothing new; Comp A's parked finding (default TRUNCATE grants on 25 public tables, not reachable via PostgREST) stays theirs for after launch.
