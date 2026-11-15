@@ -691,7 +691,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
     >
       <ChapterTag n={8}>AMPLIFIERS AND LOUDSPEAKER COMPATIBILITY · LOADS</ChapterTag>
       {/* SS-01 (owner 2026-11-15: "build waves 1 thru 3"): the idea in plain words first; the formula is folded under GO DEEPER. */}
-      <Body>The idea: every cabinet you add in parallel makes the load lighter for the amplifier to push against, until it is too low to drive safely. Here, one amplifier channel and its cabinets: the wire turns gold at the amplifier’s minimum and red below it.</Body>
+      <Body>The idea: every cabinet you add in parallel lowers the load’s impedance, so the amplifier must deliver more current, until the load is too low to drive safely. Here, one amplifier channel and its cabinets: the wire turns gold at the amplifier’s minimum and red below it.</Body>
       <Prompt>Add cabinets and watch the load fall. Find the point where the amplifier can no longer drive it.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">

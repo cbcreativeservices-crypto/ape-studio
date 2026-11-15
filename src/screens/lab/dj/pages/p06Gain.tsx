@@ -13,7 +13,7 @@ import { levelColorForDb } from '../../../../features/tools/levelColor';
 import type { BezelItem } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
-import { Group, Line, Rect, vec } from '@shopify/react-native-skia';
+import { Group, Line, vec } from '@shopify/react-native-skia';
 import { BOOTH_MIXER_LEGENDS, BoothStage } from '../art/BoothStage';
 import { METER_SCALE, meterSegY } from '../art/MixerTop';
 import { INK } from '../art/ink';
@@ -28,8 +28,7 @@ import { CLEAN_HOLD_S, CLEAN_RUN_FRESH, cleanFor, cleanRunStep, renderedSince, t
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, dbStr, faderGain, levelKnobGain, trimPos, type InputSel } from '../model/djModel';
 import { alignPhase } from '../model/djDeck';
-import { AVG_BAND, averagesMatched, chanLevels, ledIndexAt, levelSet, type ChanLevels } from '../model/djLessons';
-import { LED_DB } from '../art/parts';
+import { averagesMatched, avgOnTarget, chanLevels, levelSet, type ChanLevels } from '../model/djLessons';
 import { anyClip, peakCell, peakDb, useBoothKit } from './shared';
 
 const TERMS = [
@@ -50,21 +49,8 @@ function MeterScaleStrip({ xf, k }: { xf: Xf; k: number }) {
   const { xs, w, y, h } = MIXER.meters;
   const fs = Math.max(9.5, 9.5 * Math.sqrt(k));
   const names = ['CH1', 'L', 'R', 'CH2'];
-  // DJ-13 (owner 2026-11-15: "build waves 1 thru 3"): the average target
-  // (AVG_BAND, −21…−15 dBFS) as a green band on the CH1 and CH2 columns, as
-  // screen 19 marks the mic target; it replaces reading moving numbers.
-  const pitch = h / LED_DB.length;
-  const bandY = (db: number) => Y(y + h - (ledIndexAt(db, LED_DB) + 0.5) * pitch);
-  const yTop = bandY(AVG_BAND.hi) - (pitch * xf.s) / 2;
-  const yBot = bandY(AVG_BAND.lo) + (pitch * xf.s) / 2;
   return (
     <Group>
-      {[0, 3].map((c) => (
-        <Group key={`band${c}`}>
-          <Rect x={X(xs[c]) - 1} y={yTop} width={w * xf.s + 2} height={yBot - yTop} color="rgba(91,255,133,0.16)" />
-          <Line p1={vec(X(xs[c] + w) + 2, yTop)} p2={vec(X(xs[c] + w) + 2, yBot)} color={INK.green} strokeWidth={1.2} />
-        </Group>
-      ))}
       {METER_SCALE.map((m) => (
         <Group key={m.t}>
           <Line p1={vec(X(xs[0]) - 4, Y(meterSegY(m.db)))} p2={vec(X(xs[0]) - 1, Y(meterSegY(m.db)))} color={INK.print} strokeWidth={1} />
@@ -84,7 +70,11 @@ function avgCell(k: string, l: ChanLevels): BezelItem {
   const sub = l.peak == null ? undefined : l.peak >= 0 ? 'PK CLIP' : `PK ${l.peak.toFixed(1)}`;
   if (l.avg == null) return { k, v: '—', tint: colors.textSub, sub };
   // The peak is the sub line, read after the value: it was spoken twice (lab fix 2026-11-14, F2).
-  return { k, v: l.avg.toFixed(1), vA11y: `average ${l.avg.toFixed(1)} dBFS,`, tint: levelSet(l) ? colors.green : levelColorForDb(l.avg + 12, -40, 0), sub };
+  // DJ-13 (owner 2026-11-15: "build waves 1 thru 3"; checker fix): the target is shown where the
+  // AVERAGE is read, not on the LED columns (those are PEAK meters, djRender.ts): on target the
+  // value turns green and carries a ✓ (avgOnTarget), so the ramp's own green cannot pass for it.
+  const on = avgOnTarget(l);
+  return { k, v: on ? `${l.avg.toFixed(1)} ✓` : l.avg.toFixed(1), vA11y: `average ${l.avg.toFixed(1)} dBFS${on ? ', on target' : ''},`, tint: on ? colors.green : levelColorForDb(l.avg + 12, -40, 0), sub };
 }
 
 type Lvl = 'f1' | 'f2' | 'master';
@@ -234,7 +224,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         <Note>Every meter in this lab reads dBFS of this mixer’s own scale: 0 dBFS is where a stage clips. A real analog mixer’s meter often puts 0 at a reference level with room above it, so check how your own mixer is marked.</Note>
       </Step>
       <Step n={4}>
-        <Do>Bring deck A’s average into −21…−15 dBFS (the green band on its meter) with its peaks under −3. Then, with deck B cued and its fader down, set TRIM 2 until CH2 AVG sits within 2 dB of CH1 AVG — the crowd never hears you do it.</Do>
+        <Do>Bring deck A’s average into −21…−15 dBFS (CH1 AVG turns green with a ✓ there) with its peaks under −3. Then, with deck B cued and its fader down, set TRIM 2 until CH2 AVG sits within 2 dB of CH1 AVG — the crowd never hears you do it.</Do>
         <P>That leaves headroom for EQ boosts and for the moment both tracks play together. These are suggested starting points, not rules — use your ears and the room.</P>
         <Note>Deck B’s tempo has been matched to deck A for you — Screen 10 shows how.</Note>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />

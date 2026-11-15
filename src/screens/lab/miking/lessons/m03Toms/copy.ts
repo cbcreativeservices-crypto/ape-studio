@@ -75,7 +75,7 @@ export const TOMS_COPY: LessonCopy = {
     workedAim: 'Aim it at the head — the lab counts it while the mic’s axis meets the batter head. On a tilted tom, “above the head” is measured square to the head, not straight up. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the sticks’ path across the toms, the cymbals above, the holder and the hoops. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Moving toward the center tends to bring more low end, toward the rim more attack — and drums vary, so “it depends on this drum” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+    reveal: 'Moving toward the center tends to bring more low end, toward the rim more attack — and drums vary, so “it depends on this drum” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       tomDynSuper: 'Ideas to try: keep the distance and swing the aim from the rim toward the center; then, separately, change the height. On a crowded rack, notice where its rear points — toward a crash, or not.',
       clipDynCard: 'Ideas to try with a clip-on: keep the clamp clear of the rim the sticks hit and of the tuning rods, then change only the angle.',

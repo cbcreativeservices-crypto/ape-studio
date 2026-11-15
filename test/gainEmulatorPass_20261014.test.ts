@@ -37,7 +37,9 @@ describe('Gain ChainStage keeps every column on the glass', () => {
   it('the short label keeps the meaningful word ("QUIET", "LOW"), the readout/FIXED tag below is untouched', () => {
     const meter = body(viz, 'StageMeterV');
     assert.match(meter, /shortLabel \? shortRegionLabel\(regionLabelFor\(node\)\) : regionLabelFor\(node\)/);
-    assert.match(viz, /if \(label === 'TOO LOW'\) return 'LOW';\n  return label\.split\(' '\)\[0\];/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, GN-02 / SH-36 checker fix): a word
+    // that fits one line (TOO LOW) is kept whole; only QUIET SOURCE shortens, to QUIET.
+    assert.match(viz, /if \(label\.length <= 8\) return label;\n  return label\.split\(' '\)\[0\];/);
     assert.match(stage, /c\.readout \? \(/);
     assert.match(stage, /<Text style=\{s\.fixedTagText\}>FIXED<\/Text>/);
   });

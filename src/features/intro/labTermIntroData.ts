@@ -4,8 +4,11 @@
  * GENERATED from the live glossary on 2026-10-19 (read-only query of
  * `glossary.plain_english`, rows visible in the app = rows with a topic).
  * Every `plainEnglish` below is the glossary text VERBATIM, never a
- * paraphrase; `glossaryId` names the row it came from, so a later glossary
- * edit can be re-copied. Keyed by labTermKey() (labTermIntros.ts).
+ * paraphrase, EXCEPT four lab-worded cards the owner approved on 2026-11-15
+ * ("build waves 1 thru 3", D62: EqLab, CompressionLab, GateLab, LimiterLab;
+ * do not re-copy the glossary over them). `glossaryId` names the row each came
+ * from (it also keys the card's seen flag), so a later glossary edit can be
+ * re-copied into the verbatim ones. Keyed by labTermKey() (labTermIntros.ts).
  *
  *   'wired' — the popup shows (members only, once per glossary TERM per
  *             device: labs that share a term share one seen flag).

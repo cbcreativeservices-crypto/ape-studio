@@ -474,7 +474,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the keys on the long joint — the lab counts it while the mic points within about {tol}° of them. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell beside the head, the bocal and the reed, the hands and thumbs, the seat strap. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the bell, the lowest note tends to grow and the rest to thin; toward the boot’s holes, the middle notes lead; farther, more room. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Toward the bell, the lowest note tends to grow and the rest to thin; toward the boot’s holes, the middle notes lead; farther, more room. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin facing the keys a third of the way down from the bell; then a foot from the boot’s holes, or high on the right — one change at a time, the lowest note and a high passage each time.',
       wwMini: 'Ideas to try with a miniature: keep its strap on the bell joint; change only the capsule’s angle — farther down the instrument for a more even range.',

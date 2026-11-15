@@ -61,7 +61,7 @@ export const HARP_COPY: LessonCopy = {
     workedAim: 'Aim it as the starting point says — the lab counts it while the mic faces the way it names. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of everything — the strings and the harpist’s hands around them, the pillar, the neck, the pedals and the harpist’s view. Clearance comes first, before any number.',
     blocked: {},
-    reveal: 'Closer to the board tends to bring more of one region and of its low resonance; farther away, more of the whole harp and the room — and every harp and room is different, so “it depends” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Closer to the board tends to bring more of one region and of its low resonance; farther away, more of the whole harp and the room — and every harp and room is different, so “it depends” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try with a small condenser: with the omni capsule, step back for the whole harp and the room; with the cardioid, a spot that picks out the harp from its neighbors — closer to the board brings more low end.',
       miniOmni: 'Ideas to try with a miniature: only on an approved holder, at the opening — then compare it with a stand mic before deciding.',

@@ -152,7 +152,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open GENERATORS. Choose ADD GENERATOR 2, then switch GENERATOR 1 and GENERATOR 2 on.</Do>
+        <Do parts={['Open GENERATORS.', 'Choose ADD GENERATOR 2.', 'Switch GENERATOR 1 and GENERATOR 2 on.']} />
         <P>The log shows the event name twice, each with its START lines. PLAYING counts instances. VOICES counts the sound files playing now. Each generator plays a hum and a fan, so two instances use four voices.</P>
         <ActivityLog state={s} lines={6} />
       </Step>

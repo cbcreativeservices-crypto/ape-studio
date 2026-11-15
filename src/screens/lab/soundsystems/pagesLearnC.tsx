@@ -624,7 +624,8 @@ function PageWrap({ ctx }: { ctx: PageCtx }) {
   const shown = WRAP_MODES.find((m) => m.id === modeOpen);
   return (
     <View style={{ gap: 12 }}>
-      <ChapterTag n={14}>WHAT YOU CAN NOW DO</ChapterTag>
+      {/* owner 2026-11-15 "build waves 1 thru 3" (checker): a knowledge title, not a skills claim */}
+      <ChapterTag n={14}>WHAT YOU NOW KNOW</ChapterTag>
       <Lead>
         You know every section of a live sound reinforcement system and what feeds it. You know which system type suits a venue and which output configuration suits a room. You know which routing tool does which job, what reaches a subwoofer under each feed, how a monitor mix must be tapped, which connections are silent and which are dangerous, what an amplifier can and cannot drive, how a system is deployed, gain-structured, aligned, tuned and rung out — and how a fault is found.
       </Lead>
@@ -657,7 +658,7 @@ export const SS_LEARN_PAGES_C: SsPageDef[] = [
   { title: 'Processing and tuning', short: 'TUNE', Component: PageProcessing, manualDone: true },
   { title: 'Feedback control', short: 'FEEDBACK', Component: PageFeedback, manualDone: true, rack: true },
   { title: 'The source-forward method', short: 'METHOD', Component: PageMethod, manualDone: true, rack: true },
-  { title: 'What you can now do', short: 'WRAP', Component: PageWrap, manualDone: true },
+  { title: 'What you now know', short: 'WRAP', Component: PageWrap, manualDone: true },
 ];
 
 const styles = StyleSheet.create({

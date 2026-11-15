@@ -508,7 +508,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it halfway between the lip plate and the left hand — the lab counts it while the mic points within about {tol}° of that spot — and keep the capsule angled out of the air jet.',
     workedClear: 'Clear of every part — the air jet, the head’s turn, both hands and the flute’s reach to the right. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Behind the head tends to bring less breath — the jet blows the other way; close in front, more detail and more air. Players vary, so “it depends on the player” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Behind the head tends to bring less breath — the jet blows the other way; close in front, more detail and more air. Players vary, so “it depends on the player” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin close, between the lip plate and the left hand, angled off the jet; then behind and above the head, or a meter in front in a good room — one change at a time, low and high passages each time.',
       wwMini: 'Ideas to try with a miniature: on a keyed flute only, keep its strap around the foot end; change only the capsule’s angle along the keys.',

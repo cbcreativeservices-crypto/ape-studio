@@ -403,7 +403,8 @@ export function ModularLabScreen() {
               helpKey: patchIdea ? `patch_${patchIdea.key}` : 'display',
             },
             // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
-            { k: 'VCO', v: shapeLabel, helpKey: 'vco', caption: 'tone shape' },
+            // Checker fix (owner 2026-11-15): captions short enough to show whole at 390.
+            { k: 'VCO', v: shapeLabel, helpKey: 'vco', caption: 'the wave' },
             // RES on the bezel (emulator pass 2026-10-14): it was readable only
             // inside the MOD tray, unlike every other patch setting.
             { k: 'RES', v: resShort, helpKey: 'vcf', caption: 'filter peak' },
@@ -413,7 +414,7 @@ export function ModularLabScreen() {
               v: patch.seqOn ? `${patch.seqRate}/s` : 'OFF',
               tint: patch.seqOn ? SEQ_COLOR : undefined,
               helpKey: 'sequencer',
-              caption: 'steps a second',
+              caption: 'speed',
             },
           ],
           render: (w, h) => (

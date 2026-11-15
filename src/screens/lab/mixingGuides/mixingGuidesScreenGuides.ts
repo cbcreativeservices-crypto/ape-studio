@@ -73,9 +73,9 @@ export const MIXING_GUIDE_READER_GUIDE: ScreenGuide = {
   },
   seeing: [
     'At the top: WHAT THE AUDIENCE EXPECTS, MIX PRIORITY #1, the starting-points line.',
-    'AT A GLANCE: Origin / region, Typical tempo, Typical ensemble size.',
+    'AT A GLANCE: Origin / region, Typical tempo, Typical ensemble size, the WHO hearing note.',
     'THE GUIDE: numbered sections from Purpose & audience expectations; the first starts open. START HERE marks three to read first, REFERENCE the four tables.',
-    'SPL & loudness opens with Live SPL (FOH, average), a hearing note and Studio / streaming loudness.',
+    'SPL & loudness opens with Live SPL (FOH, average) and Studio / streaming loudness.',
   ],
   control: [
     'Tap a section’s header to open or close it. OPEN ALL ▾ opens every section; CLOSE ALL ▴ closes them.',

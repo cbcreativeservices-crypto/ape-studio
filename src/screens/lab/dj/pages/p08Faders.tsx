@@ -103,7 +103,8 @@ function PageFaders({ ctx }: { ctx: PageCtx }) {
   // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): the blend and cut
   // goals need both decks running; set up right with them stopped, the chip
   // says so.
-  const waits = [undefined, waitIf(assigned && m.xfCurve === 'BLEND', !both, 'both'), waitIf(assigned && m.xfCurve === 'CUT', !both, 'both')];
+  // (checker fix) only once the move itself is made: the crossfader ridden to an end with the decks stopped
+  const waits = [undefined, waitIf(assigned && m.xfCurve === 'BLEND' && (m.xf < 0.15 || m.xf > 0.85), !both, 'both'), waitIf(assigned && m.xfCurve === 'CUT' && (m.xf < 0.02 || m.xf > 0.98), !both, 'both')];
   const goals = GOALS_FADERS.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'FADERS');
   const gA = faderGain(booth.ch[1].fader) * xfGainFor(booth.ch[1].xf, m.xf, m.xfCurve);

@@ -87,7 +87,9 @@ describe('DL-02 · one tempo: a 120 BPM click, TIME 250 ms, a caption in the cli
     assert.doesNotMatch(DELAY, /srcClick\(90\)|initial: 375,/);
   });
   it('the caption names the CLICK’s note values at 120 BPM, and keeps the law elsewhere', () => {
-    assert.match(phrase(250), /^250 ms = an eighth note at the CLICK’s 120 BPM: each repeat lands halfway between two clicks\.$/);
+    // checker fix 2026-11-15: only the FIRST repeat sits halfway (repeat 2 lands on the next click at FDBK > 0).
+    assert.match(phrase(250), /^250 ms = an eighth note at the CLICK’s 120 BPM: the first repeat lands halfway between two clicks\.$/);
+    assert.doesNotMatch(phrase(250), /each repeat lands halfway/);
     assert.match(phrase(375), /a dotted eighth at the CLICK’s 120 BPM/);
     assert.match(phrase(500), /a quarter-note at 120 BPM, the CLICK’s tempo: each repeat lands on the next click\./);
     assert.match(phrase(300), /a quarter-note at 200 BPM — match the delay/);
@@ -117,7 +119,9 @@ describe('DL-03 · Delay LEARN starts on the silent slapback, the formula last',
 describe('RV-04 · Reverb’s first pointer speaks of rooms, with the shared RT60 words', () => {
   it('the start', () => {
     const s = RG.explore.intro.start;
-    assert.ok(s.startsWith(`Drag ${termWithShort('rt60')} up, from a small room toward a big hall, and watch the amber wash on OUT last longer.`), s);
+    // checker fix 2026-11-15: RT60 opens at 1.5 s (HALL), so the step goes down first, then up.
+    assert.ok(s.startsWith(`Drag ${termWithShort('rt60')} down to a small room, then up toward a big hall, and watch the amber wash on OUT last longer.`), s);
+    assert.match(REVERB, /paramId: P\.rt60[\s\S]*?initial: 1\.5,/);
     assert.doesNotMatch(s, /slope/);
     assert.match(read('src/screens/lab/reverbScreenGuides.ts'), /import \{ termWithShort \} from '\.\.\/\.\.\/features\/lab\/plainTerms\.ts';/);
   });
@@ -247,7 +251,7 @@ describe('PS-03 · every counting step holds the dips still first', () => {
       ...PHASER.split('\n'),
       ...checks('PHASER', 'COMPRESSION').split('\n'),
       // Counting on OUT (the moving analyzer); a count "in the curve" reads the still DESIGNED RESPONSE.
-    ].filter((l) => /count (the dips|them)/.test(l) && !/in the curve/.test(l));
+    ].filter((l) => /count (the dips|them)/.test(l));
     assert.ok(lines.length >= 6, String(lines.length));
     for (const l of lines) assert.match(l, /STATIC/, l);
   });
@@ -399,4 +403,20 @@ describe('SH-11 · every WHERE TO START in these labs opens on a step that needs
       });
     }
   }
+});
+
+// ══ Checker fixes (CHECK_F7b_REPORT.md, 2026-11-15) ═════════════════════════
+describe('checker fixes · words that stay true at the new defaults', () => {
+  it('Delay PING-PONG steps raise FDBK first (one repeat at the FDBK 0% default cannot alternate)', () => {
+    assert.match((DG.explore as unknown as { tryThis: string[] }).tryThis[2], /^Set FDBK to 50%, open COLOR and turn PING-PONG on/);
+    assert.match(lesson('delay', 'reverb'), /\{ do: "Set FDBK to 50%, then open COLOR and turn PING-PONG on\."/);
+  });
+  it('the Phaser in-notes wrong-answer hint sets STATIC before the count', () => {
+    assert.match(PHASER, /wrongHint: 'Set the sweep to STATIC, then tap through STAGES and count the dips in the curve\.'/);
+  });
+  it('the Reverb RT60 reason is true whether the readout shows DECAY TIME (RT60) or DECAY TIME', () => {
+    const c = checks('REVERB', 'CHORUS');
+    assert.match(c, /'The room is 60 meters long': 'The 60 in RT60 is not a length\. On EXPLORE, the RT60 readout is named DECAY TIME\.'/);
+    assert.doesNotMatch(c, /full name: DECAY TIME \(RT60\)/);
+  });
 });

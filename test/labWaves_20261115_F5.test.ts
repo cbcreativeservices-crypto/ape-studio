@@ -232,7 +232,7 @@ describe('MI-04 · the lab opens on PICKUP PATTERNS; the capsule is last, for th
   });
   it('the first words a beginner reads are the hands-on ones', () => {
     assert.match(src, /key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone hears some directions better than others\. Drag the speaker around the mic/);
-    assert.match(src, /key: 'capsule', label: 'CAPSULE', title: 'FOR THE CURIOUS: INSIDE THE CAPSULE', blurb: 'For the curious:/);
+    assert.match(src, /key: 'capsule', label: 'CAPSULE', title: 'FOR THE CURIOUS: INSIDE THE CAPSULE', blurb: 'How a dynamic mic/);
   });
   it('FINISH at the foot of the last no-check module counts it, as NEXT does elsewhere (never from CONTENTS mid-lab)', () => {
     assert.match(src, /finish: \(\) => \{\n\s*if \(sectionIdx === SECTIONS\.length - 1 && MIC_NO_CHECK\.has\(SECTIONS\[sectionIdx\]\.key\)\) creditSection\(sectionIdx\);\n\s*setEnding\(true\);/);
@@ -474,5 +474,30 @@ describe('SC-02 / EQL-02 · the color primer line (done by F7a, checked by F5)',
     assert.match(amp, /const GATE_INTRO =\s*'A one-time stop, about a minute:/);
     // The gate shows the page until the orientation flag is set (passing the check), then never again.
     assert.match(amp, /if \(done \|\| overlaysSuppressed \|\| sampling\) return <Screen \{\.\.\.props\} \/>;\s*return <AmplitudeOrientationGatePage \/>;/);
+  });
+});
+
+describe('Checker follow-ups (CHECK_F5_REPORT.md)', () => {
+  it('1 · the SPL card names the color the code draws: 78 dB SPL on its 40–100 scale is green-yellow', async () => {
+    const { levelColor } = await import('../src/features/tools/levelColor.ts');
+    const amp = code('src/screens/lab/amplitude/AmplitudeOrientation.tsx');
+    assert.match(amp, /lookFor="78 dB, yet green-yellow: its own scale"/);
+    assert.doesNotMatch(amp, /a cool color/);
+    // Same value the guide calls yellow-green; not the cool (blue) end of the ramp.
+    assert.notEqual(levelColor((78 - 40) / 60), levelColor(0.1));
+  });
+  it('2 · the capsule module says "for the curious" once', () => {
+    const src = code(`${MS}MicPrinciplesLabScreen.tsx`);
+    const row = src.slice(src.indexOf("{ key: 'capsule', label: 'CAPSULE'"));
+    const line = row.slice(0, row.indexOf('\n'));
+    assert.equal((line.match(/for the curious/gi) ?? []).length, 1);
+  });
+  it('3 · module 7 mentions the cable only in the room paragraph, which comes after the recording one', () => {
+    const src = code(`${F}FoundationsCourseScreen.tsx`);
+    const m7 = src.slice(src.indexOf("key: 'm7',"), src.indexOf('Rack: M7Rack,'));
+    const mic = m7.indexOf("'THE MIC’S OUTPUT"), room = m7.indexOf("'THE ROOM is measured");
+    assert.ok(mic > 0 && room > mic);
+    assert.doesNotMatch(m7.slice(mic, room), /cable/i);
+    assert.match(m7.slice(room), /follow its cable down into MIC INPUT/);
   });
 });

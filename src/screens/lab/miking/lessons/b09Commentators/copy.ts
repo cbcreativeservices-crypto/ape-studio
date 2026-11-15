@@ -79,7 +79,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     workedZone: { booth: 'b9.headset', open: 'b9.headset', studio: 'b9.headset' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips.',
     workedClear: 'Clear of the commentator: the capsule beside the mouth, out of the breath, never touching the face; the cable clear of glasses, a scarf and the notes. Clearance comes first, before any number.',
-    reveal: 'Closer tends to bring more breath, pops and low end and less of the crowd; beside the mouth, fewer pops; farther, more of the stadium and the partner. Voices and positions vary, so “it depends on this commentator” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more breath, pops and low end and less of the crowd; beside the mouth, fewer pops; farther, more of the stadium and the partner. Voices and positions vary, so “it depends on this commentator” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       bcHeadsetBoom: 'Ideas to try with the headset boom: fit the headset first, then bring the capsule to the outside corner of the mouth, just out of the breath; listen on an excited call, then a turn to the partner.',
       bcHeadsetSuper: 'Ideas to try with a supercardioid headset: its small rear lobe means the partner or a loudspeaker straight behind it is not in its quietest direction — check the actual pattern.',

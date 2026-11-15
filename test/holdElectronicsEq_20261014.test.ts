@@ -73,7 +73,9 @@ describe('#10 — Tube GRID V at cutoff: "cut off — no current flows"', () => 
   });
   test('wired: lane %, bezel PLATE I and the electrons all use the model', () => {
     const tube = read('screens/lab/tube/VacuumTubeLabScreen.tsx');
-    assert.match(tube, /const word = gridWord;/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items TB-02 / SH-27): the lane
+    // keeps the owner's cutoff words (hold #10); above cutoff it reads "% open" with the bezel's words.
+    assert.match(tube, /x <= GRID_CUTOFF \? `\$\{pct\(x\)\} · \$\{CUTOFF_WORDS\}`/);
     assert.match(tube, /const plateI = plateCurrentFrac\(v\);/);
     assert.match(tube, /\{ k: 'PLATE I', v: pct\(plateI\)/);
     assert.match(tube, /flow=\{plateI\}/);

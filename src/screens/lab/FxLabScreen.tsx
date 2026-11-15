@@ -343,8 +343,17 @@ export type FxLabConfig = {
    *  "—" in gray while the dock key shows LOCKED, dimmed, and prints the
    *  reason on a tap (rackTypes `locked`) — EQ Lab module 6's grey-out, copied
    *  (lab fix round 2026-11-14, quick win 16). The value is kept, so it is
-   *  back as it was when the shape uses it again. */
-  ignoredBy?: (paramId: number, values: Record<number, number>) => string | undefined;
+   *  back as it was when the shape uses it again.
+   *  ADDITIVE (GATE-02, owner 2026-11-15: "build waves 1 thru 3", D62): it also
+   *  gets the selected source and whether sound is off, and may return
+   *  `{ why, value }` for a control that WORKS but shows nothing in this state:
+   *  the key reads `value` instead of LOCKED (rack `lockedValue`, "not yet"),
+   *  a tap prints `why`, and the bezel keeps the setting. Never "ignored". */
+  ignoredBy?: (
+    paramId: number,
+    values: Record<number, number>,
+    ctx: { source?: FxSourceSpec; soundOff: boolean },
+  ) => string | { why: string; value: string } | undefined;
   /** While a `monoCompare` source is selected, text that only holds for the
    *  stereo sources is left out (owner 2026-10-24, Stereo lab): the badge, the
    *  caption in the states `caption` returns true for, and the wrong-answer
@@ -668,8 +677,25 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
   /** The designed GR on a steady source (grModel), or undefined. */
   const grModelDb = config.pollGr ? config.grModel?.(values, sources[sourceIdx]) : undefined;
-  /** Why the current settings ignore this param, or undefined (ignoredBy). */
-  const ignored = (paramId: number) => config.ignoredBy?.(paramId, values);
+  /** What ignoredBy says about this param right now: a plain string = the
+   *  settings IGNORE it; `{ why, value }` = it works but cannot be SEEN in this
+   *  state (GATE-02, owner 2026-11-15: "build waves 1 thru 3", D62). */
+  const ignoredInfo = (paramId: number): { why: string; value?: string } | undefined => {
+    const r = config.ignoredBy?.(paramId, values, { source: sources[sourceIdx], soundOff });
+    return r == null ? undefined : typeof r === 'string' ? { why: r } : r;
+  };
+  /** Why the current settings ignore this param, or undefined (bezel "—", grayed tray section). */
+  const ignored = (paramId: number) => {
+    const i = ignoredInfo(paramId);
+    return i && !i.value ? i.why : undefined;
+  };
+  /** A param that works but shows nothing in this state: its key reads `value`
+   *  (rack `lockedValue`, "not yet") and a tap prints the true reason; its
+   *  bezel cell keeps the setting. */
+  const quiet = (paramId: number) => {
+    const i = ignoredInfo(paramId);
+    return i?.value ? (i as { why: string; value: string }) : undefined;
+  };
   const bezel: BezelItem[] = [
     ...config.bezel.map((b) => {
       const p = paramById(b.paramId);
@@ -754,14 +780,16 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         home: s.home != null ? faderPos(s, s.home) : undefined,
         steps: s.steps,
         helpKey: p.lessonKey,
-        locked: ignored(p.paramId),
+        locked: ignored(p.paramId) ?? quiet(p.paramId)?.why,
+        lockedValue: quiet(p.paramId)?.value,
       });
     } else {
       dockParams.push({
         kind: 'options',
         id: String(p.paramId),
         label: p.short ?? p.label,
-        locked: ignored(p.paramId),
+        locked: ignored(p.paramId) ?? quiet(p.paramId)?.why,
+        lockedValue: quiet(p.paramId)?.value,
         valueLabel: shortChoice(choiceLabel(p, values[p.paramId])),
         options: p.choices.map((c) => ({
           id: String(c.value),

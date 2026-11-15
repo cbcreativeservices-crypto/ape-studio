@@ -27,7 +27,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   l01_what_travels: {
     intro: {
       learning: 'Twelve different things travel on cables in an audio system, from a mic’s tiny signal to AC power, and you name which one before you choose any connector.',
-      start: 'Read the one line at the top, then pick what has to travel for the first pair under WHAT MUST TRAVEL HERE?. Below it, tap MIC-LEVEL AUDIO, then LOUDSPEAKER-LEVEL AUDIO, and compare the two cards.',
+      start: 'Read the line just above WHAT MUST TRAVEL HERE?, then pick what has to travel for the first pair. Below it, tap MIC-LEVEL AUDIO, then LOUDSPEAKER-LEVEL AUDIO, and compare the two cards.',
     },
     seeing: [
       'The amber banner is this lab’s first rule: a connector’s shape doesn’t prove the connection is correct or safe.',

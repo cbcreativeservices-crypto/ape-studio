@@ -283,19 +283,25 @@ function PageGainStaging({ ctx }: { ctx: PageCtx }) {
   ];
   const latched = useVisitGoals(ctx, goals);
   const sum = correlatedSumPeakDb(-6, 2);
+  // SH-15 (owner 2026-11-15, D62): a mix pressed with sound off shows its
+  // stored bar; while any bar is stored, the caption says so (checker
+  // follow-up: "measured as they play" was false with sound off).
+  const stored = Object.fromEntries(pb.studied.filter((id): id is 'a' | 'b' => id === 'a' || id === 'b').map((id) => [id, STORED_P4_LEVELS[id]]));
+  const fromStore = Object.keys(stored).some((id) => !pb.measured[id]);
+  const rightSide = fromStore ? 'Right: the two mixes below, measured in advance (sound is off, so NOT HEARD)' : 'Right: the two mixes below, measured as they play';
   return (
     <View style={styles.page}>
       <Lead>Healthy levels are not about one magic number. They are about HEADROOM — space between your peaks and the ceiling — and about not letting loudness lie to you.</Lead>
       <Card tone="math">
         <Eyebrow>WHY HEADROOM</Eyebrow>
         <Body>Digital zero is a hard ceiling at the output and in a fixed-point file: anything past it there is clipped, permanently. And peaks GANG UP — two identical −6 dB peaks landing together can reach {sum.toFixed(1)} dB. Eight tracks each “safely” hot leave a mix bus with nowhere to live. Peaks comfortably below zero on every track is the whole rule.</Body>
-        <HeadroomArt measured={pb.measured} stored={Object.fromEntries(pb.studied.filter((id): id is 'a' | 'b' => id === 'a' || id === 'b').map((id) => [id, STORED_P4_LEVELS[id]]))} />
+        <HeadroomArt measured={pb.measured} stored={stored} />
         {/* The answer waits for the blind vote (novice audit G4, 2026-11-14:
             the caption gave the vote away before it was cast). */}
         <Body>
           {verdict == null
-            ? 'Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play. Vote with your ears first, before you read the bars.'
-            : 'Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play — B’s bar sits 3 dB higher with nothing else changed.'}
+            ? `Left: the worst case, identical peaks landing at once. ${rightSide}. Vote with your ears first, before you read the bars.`
+            : `Left: the worst case, identical peaks landing at once. ${rightSide} — B’s bar sits 3 dB higher with nothing else changed.`}
         </Body>
       </Card>
       <Card>

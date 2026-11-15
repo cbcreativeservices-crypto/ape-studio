@@ -408,10 +408,12 @@ export function ProductionStageScreen() {
           </View>
 
           {/* PP-02 / PO-02 (owner 2026-11-15: "build waves 1 thru 3", D62):
-              the stage's LEGAL / SAFETY / QUALIFIED PERSONNEL boxes no longer
-              stack before the first question. One line names their kinds, in
-              the most serious kind's color; a tap opens them in place. Section
-              notices stay beside the questions they are about. */}
+              the stage's LEGAL boxes no longer stack before the first
+              question: they fold into one line that opens them in place.
+              SAFETY and QUALIFIED PERSONNEL notices (hearing exposure, noise,
+              power, rigging) stay OPEN where they were: hearing and safety
+              text is out of this round (checker follow-up, 2026-11-15).
+              Section notices stay beside the questions they are about. */}
           {stage.notices.length > 0 ? <StageNotices notices={stage.notices} /> : null}
 
           <View style={styles.progressRow}>
@@ -585,12 +587,22 @@ export function stageNoticesLine(notices: readonly NoticeDef[], open: boolean): 
   return `${kinds.join(' · ')} · ${notices.length === 1 ? 'A NOTE' : 'NOTES'} FOR THIS STAGE ${open ? '▴' : '▾'}`;
 }
 
-function StageNotices({ notices }: { notices: readonly NoticeDef[] }) {
+/** Only a LEGAL notice may fold. A SAFETY or QUALIFIED PERSONNEL notice
+ *  (hearing exposure, noise, power, rigging) is always shown open. Pure. */
+export function noticeFolds(kind: NoticeDef['kind']): boolean {
+  return kind === 'legal';
+}
+
+function StageNotices({ notices: all }: { notices: readonly NoticeDef[] }) {
   const [open, setOpen] = useState(false);
+  const notices = all.filter((n) => noticeFolds(n.kind));
+  const shown = all.filter((n) => !noticeFolds(n.kind));
   const first = NOTICE_ORDER.find((k) => notices.some((n) => n.kind === k)) ?? 'legal';
   const tint = noticeTint(first);
   return (
     <View style={{ gap: 8 }}>
+      {shown.map((n, i) => <Notice key={`stage-open-${i}`} notice={n} />)}
+      {notices.length > 0 ? (
       <Pressable
         onPress={() => setOpen((o) => !o)}
         style={[styles.notice, styles.noticeLine, { borderLeftColor: tint }]}
@@ -601,6 +613,7 @@ function StageNotices({ notices }: { notices: readonly NoticeDef[] }) {
       >
         <Text style={[styles.noticeHead, styles.noticeLineText, { color: tint }]}>{stageNoticesLine(notices, open)}</Text>
       </Pressable>
+      ) : null}
       {open ? notices.map((n, i) => <Notice key={`stage-${i}`} notice={n} />) : null}
     </View>
   );

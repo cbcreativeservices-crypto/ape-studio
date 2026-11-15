@@ -85,19 +85,11 @@ export function twoCopiesResult(b: Booth, oneRel: number | null, r: BoothRender 
 }
 
 /**
- * DJ-13 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): the
- * screen-6 gain target as a green band on the channel meter, the way screen
- * 19 marks the mic target. The meter is a column of LED segments at fixed dB
- * steps; a dB value between two segments sits between their centres. Returns
- * the fractional segment index (0 = the lowest segment), clamped to the
- * column. Pure, so the test reaches it.
+ * DJ-13 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan;
+ * checker fix): the screen-6 gain target is shown on the AVERAGE readout,
+ * the number the goal checks. A first try drew it as a band on the LED
+ * columns, but those are PEAK meters (djRender.ts), so a learner matching
+ * the column to the band set the gain far too low. On target = the goal's
+ * own test (levelSet: average in AVG_BAND, peaks under the ceiling).
  */
-export function ledIndexAt(db: number, leds: readonly number[]): number {
-  if (db <= leds[0]) return 0;
-  const last = leds.length - 1;
-  if (db >= leds[last]) return last;
-  for (let i = 0; i < last; i++) {
-    if (db >= leds[i] && db <= leds[i + 1]) return i + (db - leds[i]) / (leds[i + 1] - leds[i]);
-  }
-  return last;
-}
+export const avgOnTarget = (l: ChanLevels): boolean => levelSet(l);

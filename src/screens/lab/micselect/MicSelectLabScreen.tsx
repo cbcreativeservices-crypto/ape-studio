@@ -361,7 +361,8 @@ function CharsStep() {
             <View key={g.title} style={styles.stepGapTight}>
               <Text accessibilityRole="header" style={styles.groupEyebrow}>{g.title}</Text>
               <View style={styles.chipWrap}>
-                {CHARACTERISTICS.filter((x) => g.keys.includes(x.key)).map((x) => (
+                {/* In the group's own order: its first chips are the ones the next modules cover. */}
+                {g.keys.flatMap((k) => CHARACTERISTICS.filter((x) => x.key === k)).map((x) => (
                   <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
                 ))}
               </View>

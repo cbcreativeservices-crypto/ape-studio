@@ -588,6 +588,8 @@ export function RackUnit({
                     label={p.label}
                     // `lockedValue`: a key that is only "not yet" reads its own words, not LOCKED (SN-1, 2026-11-15).
                     value={p.lockedValue ?? 'LOCKED'}
+                    // Its own words ask the strip for room, so they are never cut (SN-1 checker follow-up).
+                    valueSpan={p.lockedValue}
                     glyph="▪"
                     dim
                     selected={lockedNoteId === p.id || (!!p.chooser && openTrayId === p.id)}

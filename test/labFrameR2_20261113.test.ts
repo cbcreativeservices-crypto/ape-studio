@@ -301,7 +301,11 @@ describe('2b. a chooser-fader key holds still under the drag', () => {
     const rack = read('screens/lab/rack/RackUnit.tsx');
     assert.match(rack, /valueSpan=\{p\.chooser \? widestLaneValue\(p\.formatShort \?\? p\.format, \(p\.formatShort \?\? p\.format\)\(p\.value\)\) : undefined\}/);
     const btn = read('screens/lab/rack/DockButton.tsx');
-    assert.match(btn, /value: glyph === '▪' \? 0 : valueSpan \? Math\.max\(valueW, spanW\) : valueW,/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SN-1
+    // checker follow-up): a plain fader ('▪', no valueSpan) still asks for
+    // nothing; a LOCKED fader showing its own still "not yet" words passes
+    // them as valueSpan and asks for room for them, so they are never cut.
+    assert.match(btn, /value: glyph === '▪' && !valueSpan \? 0 : valueSpan \? Math\.max\(valueW, spanW\) : valueW,/);
   });
 });
 

@@ -45,7 +45,7 @@ import type { DockParam, LaneNudge } from '../rack/rackTypes';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
-import { gridState, gridWord, plateCurrentFrac } from './gridModel';
+import { CUTOFF_WORDS, GRID_CUTOFF, gridState, plateCurrentFrac } from './gridModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
@@ -116,8 +116,6 @@ type SectionProps = {
   openReference: () => void;
   title: string;
   blurb: string;
-  /** Opens the next module (TB-05's "Next: warm it up ›"). */
-  onNext?: () => void;
 };
 
 /** The shared dock tail: ⚡ ELECTRON VIEW toggle (sections that use it) + the
@@ -200,7 +198,9 @@ export const TUBE_INSIDE_BLURB =
 
 /** Removing the control grid, said big (TB-05): the module's payoff. */
 export const NO_GRID_RESULT = 'No grid → the flow can’t be controlled → no amplifier';
-export const NO_GRID_NEXT = 'NEXT: WARM IT UP ›';
+/** Where the way on is (the rack's own NEXT: ELECTRON FLOW ›), never a second link. */
+export const NO_GRID_NEXT_TRAY = 'Next, warm it up: close ✕, then NEXT: ELECTRON FLOW.';
+export const NO_GRID_NEXT_WELL = 'Next, warm it up: NEXT: ELECTRON FLOW, below.';
 
 // ── 1 · What's inside ───────────────────────────────────────────────────────
 
@@ -244,6 +244,17 @@ function InsideSection(p: SectionProps) {
   const physics = firstMissing
     ? `${PHYSICS[firstMissing.key]}  ▸ Tap ${firstMissing.label} to add it back.`
     : null;
+  // TB-05: the control grid out is the module's payoff, said in large type.
+  // Shown in the open tray AND in the well (the tray covers the well); the
+  // one way on is the rack's own NEXT: ELECTRON FLOW ›, named, never a
+  // second link (checker fix, 2026-11-15).
+  const noGrid = firstMissing?.key === 'grid';
+  const noGridResult = (where: 'tray' | 'well') => (
+    <View style={{ gap: 6 }}>
+      <Text style={styles.bigResult} accessibilityRole="header">{NO_GRID_RESULT}</Text>
+      <Text style={styles.readout}>{`▸ Tap CONTROL GRID to add it back. ${where === 'tray' ? NO_GRID_NEXT_TRAY : NO_GRID_NEXT_WELL}`}</Text>
+    </View>
+  );
 
   // Bezel physics state — mirrors the drawing's own rules (viz.tsx): emission
   // needs heater+cathode; air kills transit; no plate = no pull; G1 meters it.
@@ -297,7 +308,9 @@ function InsideSection(p: SectionProps) {
               );
             })}
           </View>
-          {physics ? <Text style={styles.readout}>{physics}</Text> : null}
+          {/* Checker fix (TB-05): the tray stays open while parts are toggled
+              and covers the well, so the "No grid" result shows here too. */}
+          {noGrid ? noGridResult('tray') : physics ? <Text style={styles.readout}>{physics}</Text> : null}
         </View>
       ),
     },
@@ -329,17 +342,7 @@ function InsideSection(p: SectionProps) {
         {/* TB-05 (owner 2026-11-15: "build waves 1 thru 3"): taking out the
             control grid is the module's payoff, so it reads in large type with
             the way on; every other missing part keeps its plain line. */}
-        {firstMissing?.key === 'grid' ? (
-          <View style={{ gap: 6 }}>
-            <Text style={styles.bigResult} accessibilityRole="header">{NO_GRID_RESULT}</Text>
-            <Text style={styles.readout}>{`▸ Tap ${firstMissing.label} to add it back.`}</Text>
-            {p.onNext ? (
-              <Pressable onPress={p.onNext} accessibilityRole="button" accessibilityLabel="Next: warm it up. Opens Electron Flow" hitSlop={{ top: 8, bottom: 8 }} style={styles.nextLink}>
-                <Text style={styles.nextLinkText}>{NO_GRID_NEXT}</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        ) : physics ? <Text style={styles.readout}>{physics}</Text> : null}
+        {noGrid ? noGridResult('well') : physics ? <Text style={styles.readout}>{physics}</Text> : null}
         <Text style={styles.caption}>
           {sel
             ? `${sel.note}${visible.includes(sel.key) ? '' : '  (Hidden — tap its chip again to bring it back.)'}`
@@ -435,8 +438,9 @@ const GRID_CHECK: CheckSpec = {
 };
 
 /** GRID V's lane ends, in words (TB-02): tap = one 5 % step, hold = that end. */
-export function gridNudges(v: number, set: (x: number) => void): LaneNudge[] {
-  const step = (d: number) => set(Math.max(0, Math.min(1, Math.round((v + d) * 100) / 100)));
+export function gridNudges(set: (next: number | ((prev: number) => number)) => void): LaneNudge[] {
+  // A functional update, so two quick taps move two steps (checker note).
+  const step = (d: number) => set((prev) => Math.max(0, Math.min(1, Math.round((prev + d) * 100) / 100)));
   return [
     { label: '◂ CLOSES', onPress: () => step(-0.05), onLongPress: () => set(0), a11y: 'Grid closes the flow: more negative by 5 percent; hold for fully closed' },
     { label: 'OPENS ▸', onPress: () => step(0.05), onLongPress: () => set(1), a11y: 'Grid opens the flow: less negative by 5 percent; hold for fully open' },
@@ -447,7 +451,6 @@ function GridSection(p: SectionProps) {
   const [v, setV] = useState(0.5);
   // At cutoff the readout says "cut off — no current flows" (owner hold #10,
   // 2026-10-14), and PLATE I and the electrons both read zero there.
-  const word = gridWord;
   const plateI = plateCurrentFrac(v);
   const glass = useGlassSize();
 
@@ -463,9 +466,12 @@ function GridSection(p: SectionProps) {
       // 2026-11-15: "build waves 1 thru 3"): the % now says what it measures,
       // OPEN, so a low number reads as "closed", and the lane's ends read in
       // words (◂ CLOSES / OPENS ▸) instead of − / +. Same lane, same model.
-      format: (x) => `${pct(x)} open · ${word(x)}`,
+      // The state words are the bezel's own (PARTIAL / FULL FLOW); at cutoff the
+      // owner's words (hold #10) stand. Short enough to show whole at 390
+      // (SH-27 checker fix, owner 2026-11-15: "build waves 1 thru 3").
+      format: (x) => (x <= GRID_CUTOFF ? `${pct(x)} · ${CUTOFF_WORDS}` : `${pct(x)} open · ${gridState(x).toLowerCase()}`),
       formatShort: (x) => pct(x),
-      nudges: gridNudges(v, setV),
+      nudges: gridNudges(setV),
       helpKey: 'grid_voltage',
     },
     ...tailParams(p, true),
@@ -834,7 +840,9 @@ function SaturationSection(p: SectionProps) {
       level: true,
       value: drive,
       onChange: setDrive,
-      format: (x) => `${pct(x)} · ${x < 0.3 ? 'clean — straight-line region' : x < 0.7 ? 'warming — peaks rounding' : 'saturated — soft clipping'}`,
+      // Short enough to show whole at 390 (SH-27 checker fix, owner 2026-11-15:
+      // "build waves 1 thru 3"); it was cut to "clean — straight-lin…".
+      format: (x) => `${pct(x)} · ${x < 0.3 ? 'clean' : x < 0.7 ? 'peaks rounding' : 'soft clipping'}`,
       formatShort: (x) => pct(x),
       helpKey: 'saturation',
     },
@@ -1052,7 +1060,6 @@ export function VacuumTubeLabScreen() {
     openReference: () => navigation.navigate('TubeReference'),
     title: s.title,
     blurb: s.blurb,
-    onNext: sectionIdx < SECTIONS.length - 1 ? () => openSection(sectionIdx + 1) : undefined,
   };
 
   // THE SHARED LAB NAVIGATION (kit/LabNavBar, owner 2026-09-30): the nine
@@ -1161,8 +1168,6 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, lineHeight: 18, color: colors.amber },
   bigResult: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.4, lineHeight: 25, color: colors.amber },
-  nextLink: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
-  nextLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.green },
   readoutBad: { color: '#ff6b5e' },
   futureNote: {
     fontFamily: fonts.barlowMedium,

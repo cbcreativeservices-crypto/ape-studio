@@ -92,14 +92,16 @@ export function Ch12Tradeoffs({ ctx }: ChapterProps) {
       ))}
       <Eyebrow>MISCONCEPTIONS</Eyebrow>
       {/* NEW COPY — instruction stated up front, not hidden inside the cards. */}
-      <Body>Nine claims people make about tuning. Decide whether each is true before you open it — then tap to read the correction. Open at least {MIN_OPENED} to finish this chapter.</Body>
+      {/* "Open 3 to finish" is said once, by the To finish line above (checker fix,
+          owner 2026-11-15, D62 TU-03); the count below only counts. */}
+      <Body>Nine claims people make about tuning. Decide whether each is true before you open it — then tap to read the correction.</Body>
       {MYTHS.map((m, i) => (
         <Pressable key={i} onPress={() => toggle(i)} style={[styles.myth, opened.has(i) && styles.mythSeen]} accessibilityRole="button" accessibilityState={{ expanded: open === i }} aria-expanded={open === i} accessibilityLabel={`Misconception: ${m.statement}`} accessibilityHint={open === i ? 'Collapses the correction' : 'Reveals the correction'}>
           <Text style={styles.mythStatement}>“{m.statement}”</Text>
           {open === i ? <Text style={styles.mythFix}>{m.correction}</Text> : <Text style={styles.tap}>{opened.has(i) ? 'seen · tap to reread ▸' : 'tap for the correction ▸'}</Text>}
         </Pressable>
       ))}
-      <Text style={styles.count} accessibilityLiveRegion="polite">{opened.size} corrections opened{enough ? '' : ` · open ${MIN_OPENED - opened.size} more to finish`}</Text>
+      <Text style={styles.count} accessibilityLiveRegion="polite">{opened.size} corrections opened{enough ? ' · UNDERSTOOD › is ready' : ''}</Text>
       <Eyebrow>WHERE THIS MEETS PROFESSIONAL AUDIO</Eyebrow>
       <Card>
         {PRO.map(([t, d]) => (

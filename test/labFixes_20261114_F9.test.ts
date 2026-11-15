@@ -162,7 +162,10 @@ describe('F9-3 · a ZONE pick is the zone the words, the ZONE cell and the activ
     assert.equal(aimKeyShort('el', 5), '↑ ≈ 5°');
     assert.equal(aimKeyShort('az', -20), '← ≈ 20°');
     assert.equal(aimKeyShort('az', 0), '≈ 0°');
-    assert.match(code(`${M}/engine/scene/readoutText.ts`), /sub: w\.showAim \? 'off target' : undefined/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, checker F9 on SH-27): "off target"
+    // was cut to "off tar…" at 390; the caption is now "off aim", which fits.
+    assert.match(code(`${M}/engine/scene/readoutText.ts`), /export const AIM_SUB = 'off aim';/);
+    assert.match(code(`${M}/engine/scene/readoutText.ts`), /sub: w\.showAim \? AIM_SUB : undefined/);
   });
 });
 

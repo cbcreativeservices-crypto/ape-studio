@@ -461,7 +461,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the holes on the lower joint — the lab counts it while the mic points within about {tol}° of them. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the reed and the face, the hands and thumbs, the keys, the bell as the oboe pivots. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Near the bell tends to sound brighter and more isolated, with the lowest notes leaning forward; a foot from the holes, more balanced; farther, more room. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Near the bell tends to sound brighter and more isolated, with the lowest notes leaning forward; a foot from the holes, more balanced; farther, more room. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin facing the holes a third of the way up; then a foot away for balance, or near the bell for a bright live sound — one change at a time, the whole range each time.',
       wwMini: 'Ideas to try with a miniature: keep its strap just above the bell; change only the capsule’s angle — farther up toward the upper joint for a more even range.',

@@ -148,7 +148,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       start: 'Tap NEXT BLOCK › to step through the diagram, reading the card for each block. Then tap WALK THE SIGNAL and follow the lit block from INPUT to OUTPUT.',
     },
     seeing: [
-      'SIGNAL PATH shows two routes. The MAIN PATH carries the voice to a gain element. The SIDE CHAIN listens to a copy: BAND-PASS, DETECTOR, THRESHOLD, GAIN COMP.',
+      'SIGNAL PATH shows two routes. The MAIN PATH carries the voice to a gain element. The SIDE CHAIN listens to a copy: BAND-PASS, DETECTOR, THRESHOLD, HOW MUCH.',
       'Until you reach Broadband vs Split-Band it shows the plain BROADBAND wiring. After that page it follows your choice there: SPLIT-BAND adds a BAND SPLIT and a SUM.',
       'The card under the diagram names the lit block and tells you what it does.',
     ],
@@ -163,12 +163,12 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Broadband vs Split-Band adds a second wiring, where only the hiss band meets the gain element. With no reduction, the two bands add back up to the voice as it came in.',
     ],
     teaches: [
-      'A de-esser is a compressor with a filtered ear. It uses the detector, threshold and gain computer you met in Compression.',
+      'A de-esser is a compressor with a filtered ear. It uses the detector and threshold you met in Compression, then works out how much to turn down.',
       'Many de-essers listen through a high-pass filter instead of a band-pass, or offer both. Either way, the filter steers only the decision, not the sound.',
     ],
     tryThis: [
       'Tap BAND-PASS, then GAIN. The filter sits in the side chain; the voice itself never passes through it.',
-      'Tap WALK THE SIGNAL. The lit block runs INPUT, around the side chain (BAND-PASS, DETECTOR, THRESHOLD, GAIN COMP), then GAIN, OUTPUT.',
+      'Tap WALK THE SIGNAL. The lit block runs INPUT, around the side chain (BAND-PASS, DETECTOR, THRESHOLD, HOW MUCH), then GAIN, OUTPUT.',
       'After Broadband vs Split-Band, with SPLIT-BAND chosen there, walk the signal here again: a BAND SPLIT before the gain and a SUM after it join the main path.',
     ],
   },
@@ -348,7 +348,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Tap an answer to the closing question: a right one shows its explanation, a wrong one a hint. FINISH · SEE WHAT’S LEFT lists any page you haven’t done yet.',
     ],
     changes: [
-      'Each link shows the same idea from another side. Compression has the same detector, threshold and gain computer; Gate / Expander uses the threshold the other way around.',
+      'Each link shows the same idea from another side. Compression has the same detector, threshold and how-much step; Gate / Expander uses the threshold the other way around.',
     ],
     teaches: [
       'Every part of a de-esser comes from tools you already know, so one sentence can sum it up.',

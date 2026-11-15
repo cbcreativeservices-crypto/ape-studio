@@ -108,7 +108,7 @@ export function CalcLabScreen() {
   const runJob = (j: CalcStartJob) => {
     if (workflowsAllowed) navigation.navigate('CalcWorkflowRun', { id: j.templateId });
     else if (tierUnconfirmed) gateWorkflow(() => {});
-    else navigation.navigate('CalcWorkspace', { id: j.firstWorkspaceId });
+    else navigation.navigate('CalcWorkspace', { id: j.firstWorkspaceId, fn: j.firstFnKey });
   };
 
   // Collapsible sections (owner 2026-08-09): workflows + description. The
@@ -191,7 +191,7 @@ export function CalcLabScreen() {
           {CALC_START_JOBS.map((j) => (
             <Pressable
               key={j.templateId}
-              style={[styles.wfBtn, styles.wfBtnGreen, styles.jobBtn]}
+              style={[styles.jobBtn, styles.wfBtnGreen]}
               onPress={() => runJob(j)}
               accessibilityRole="button"
               accessibilityLabel={`${j.label}. ${j.steps}`}
@@ -476,7 +476,20 @@ const styles = StyleSheet.create({
   soonText: { fontFamily: fonts.barlowMedium, fontSize: 11.5, color: '#5c5d66' },
   // Calculator Workflows section (owner spec 2026-08-06).
   wfRow: { flexDirection: 'row', gap: 8 },
-  jobBtn: { flex: 0, alignItems: 'flex-start', gap: 2 },
+  // Its own box, not wfBtn (whose flex: 1 is for the two-across rows): it
+  // sizes to its two lines on every platform (CA-04 checker fix; on web the
+  // old flex: 0 collapsed it to 26 px with the second line spilling out).
+  jobBtn: {
+    alignSelf: 'stretch',
+    minHeight: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: 2,
+  },
   jobSteps: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   wfBtn: {
     flex: 1,

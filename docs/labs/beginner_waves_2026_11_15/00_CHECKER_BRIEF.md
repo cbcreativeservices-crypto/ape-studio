@@ -25,7 +25,8 @@ Give each checked item one result:
 - No git commands that change anything. No eas, no publishing, no server. Never ask the user anything. Do not start other agents.
 - Built-in browser pane only (`mcp__Claude_Browser__*`), never `claude-in-chrome`.
 - The web preview runs at http://localhost:8142 (another chat owns it; never start, stop or restart it; do not call preview_start). Open ONE tab of your own (`tabs_create`, then `navigate` to `http://localhost:8142/#labpreview/<Route>`; routes are in `src/dev/webPreviews.tsx`), set 390 x 844 on your tab only, and close it when done. The pane holds at most 9 tabs: if it is full, wait and retry.
-- The first load can take a minute or more. If the page is blank, wait 60 seconds and reload, up to three times, before writing NOT SEEABLE.
+- The first load takes about TWO MINUTES (measured 2026-11-15: the page stays blank, then draws). Wait for it: poll `document.getElementById('root').innerText.length` every 10 s in short javascript calls (each call under 40 s), up to 4 minutes, before you reload. Navigating between `#labpreview/...` routes in the same tab is fast once the first load is done, so keep ONE tab and change its hash instead of opening new tabs. Write NOT SEEABLE only after two full waits failed.
+- The Browser pane may be hidden; that is fine, keep going and use read_page / get_page_text / javascript measurements when screenshots come back empty.
 - Always close the Sound Safety sheet with KEEP SOUND OFF. Never press PRINT, SHARE, DOWNLOAD, BUY or SIGN IN/OUT. Never change saved data except what a normal tap does.
 - A lab with no preview route: check in the code and tests, mark NOT SEEABLE (no route) and name what a phone check must look at.
 

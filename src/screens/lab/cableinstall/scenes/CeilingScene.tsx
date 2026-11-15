@@ -911,6 +911,15 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
             say(confirmed ? 'Finished view. The same section with every violation corrected and your run on your hooks.' : 'Finished view. The same section with every violation corrected; a dashed outline marks where your run goes.');
           }}
         />
+        {/* The scene's colors are not the lab's cable-type key: flagged right
+            at the drawing's top edge, beside the view chips (CI-01, owner
+            2026-11-15: "build waves 1 thru 3"). Checker fix: it used to sit on
+            the drawing and covered its STEEL BEAMS / CONCRETE labels. */}
+        {above ? (
+          <View style={styles.ownColorsTag}>
+            <Text style={styles.ownColorsText}>{CEILING_OWN_COLORS_TAG}</Text>
+          </View>
+        ) : null}
       </View>
   );
 
@@ -946,13 +955,6 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                 quietDefects={ex1Done && (pathSolved || confirmed)}
                 ghost={pathOpt && !pathOpt.good ? (pathOpt.id as 'tiles' | 'duct') : null}
               />
-              {/* The scene's colors are not the lab's cable-type key: said ON the
-                  drawing (CI-01, owner 2026-11-15: "build waves 1 thru 3"). */}
-              {above ? (
-                <View pointerEvents="none" style={styles.ownColorsTag}>
-                  <Text style={styles.ownColorsText}>{CEILING_OWN_COLORS_TAG}</Text>
-                </View>
-              ) : null}
               {/* ≥44dp tap overlays for the defect markers */}
               {above
                 ? CI_CEILING_DEFECTS.map((d, i) => {
@@ -1194,7 +1196,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
 const styles = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   legend: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15.5, color: colors.textSub },
-  ownColorsTag: { position: 'absolute', left: 6, top: 6, borderRadius: 4, backgroundColor: 'rgba(10,10,13,0.82)', paddingHorizontal: 5, paddingVertical: 2 },
+  ownColorsTag: { alignSelf: 'center', borderRadius: 4, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', paddingHorizontal: 6, paddingVertical: 3 },
   ownColorsText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.amber },
   foundLine: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textPrimary },
   suspectRow: {

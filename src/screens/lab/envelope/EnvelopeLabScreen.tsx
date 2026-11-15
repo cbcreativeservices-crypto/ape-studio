@@ -122,8 +122,9 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>Every sound has a shape in time. Move the sliders and watch the envelope — and the waveform inside it — redraw instantly.</Lead>
-      {/* ENV-04 (owner 2026-11-15, "build waves 1 thru 3"): say what the learner should notice. */}
-      <Prompt>Try it: drag ATTACK all the way left and the sound starts with a snap; drag it right and it fades in slowly. That rise is the attack.</Prompt>
+      {/* ENV-04 (owner 2026-11-15, "build waves 1 thru 3"): say what the learner should notice
+          ("starts at once", not "snap": ATTACK: SNAP below is a different control, the curve shape). */}
+      <Prompt>Try it: drag ATTACK all the way left and the sound starts at once; drag it right and it fades in slowly. That rise is the attack.</Prompt>
       {loaded ? <Text style={styles.loaded}>LOADED FROM THE GALLERY · {loaded.name.toUpperCase()}</Text> : null}{/* NEW COPY */}
       <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" controls={adsrSliders} readout={explorerRead} />
       {adsrSliders}

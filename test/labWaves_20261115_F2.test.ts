@@ -404,24 +404,22 @@ describe('DJ-06 · the four jobs are the first line of screen 1', () => {
   });
 });
 
-/* ── DJ-13 · screen 6: the gain target is a green band on the meter ─────── */
-describe('DJ-13 · the average target drawn on the channel meters', async () => {
+/* ── DJ-13 · screen 6: the gain target shown where the average is read ── */
+describe('DJ-13 · the target is on the AVG readout, not on the peak meter columns (checker fix)', async () => {
   const L = await import('../src/screens/lab/dj/model/djLessons.ts');
-  const LEDS = [-36, -30, -24, -18, -15, -12, -9, -6, -4, -2, -1, 0];
-  it('a dB value between two segments sits between their centres', () => {
-    assert.equal(L.ledIndexAt(-15, LEDS), 4);
-    assert.equal(L.ledIndexAt(-21, LEDS), 2.5);
-    assert.equal(L.ledIndexAt(-60, LEDS), 0);
-    assert.equal(L.ledIndexAt(3, LEDS), 11);
+  it('on target is exactly the goal’s own test', () => {
+    assert.equal(L.avgOnTarget({ avg: -18, peak: -6 } as never), true);
+    assert.equal(L.avgOnTarget({ avg: -18, peak: -1 } as never), false, 'peaks over the ceiling');
+    assert.equal(L.avgOnTarget({ avg: -25, peak: -12 } as never), false);
     assert.deepEqual(L.AVG_BAND, { lo: -21, hi: -15 });
   });
-  it('the meter strip draws the band from the same AVG_BAND the goal uses', () => {
+  it('no band on the LED columns (they are PEAK meters); the AVG cell turns green with a ✓', () => {
     const p06 = read(`${DJ}/pages/p06Gain.tsx`);
-    assert.match(p06, /const yTop = bandY\(AVG_BAND\.hi\)/);
-    assert.match(p06, /const yBot = bandY\(AVG_BAND\.lo\)/);
-    assert.match(p06, /\[0, 3\]\.map\(\(c\) =>/, 'CH1 and CH2 columns');
-    assert.match(p06, /the green band on its meter/);
-    assert.match(read(`${DJ}/art/parts.tsx`), /export const LED_DB = \[-36, -30, -24, -18, -15, -12, -9, -6, -4, -2, -1, 0\] as const;/);
+    assert.doesNotMatch(p06, /bandY|AVG_BAND|rgba\(91,255,133,0\.16\)/);
+    assert.match(read(`${DJ}/engine/djRender.ts`), /Peak meter ballistics/);
+    assert.match(p06, /v: on \? `\$\{l\.avg\.toFixed\(1\)\} ✓` : l\.avg\.toFixed\(1\)/);
+    assert.match(p06, /tint: on \? colors\.green :/);
+    assert.match(p06, /\(CH1 AVG turns green with a ✓ there\)/);
   });
 });
 
@@ -429,7 +427,9 @@ describe('DJ-13 · the average target drawn on the channel meters', async () => 
 describe('SH-26 · the PATCH tray spells out its chip codes', async () => {
   const gw = await import('../src/screens/lab/dj/goalWords.ts');
   it('only the codes the tray shows', () => {
-    assert.equal(gw.patchCodeKey(['A·L', 'A·R', 'MST·L', 'BTH·R', 'PWR PA L', 'PHONES']), 'MST = MASTER OUT · BTH = BOOTH OUT · PWR = power cord · L / R = left / right');
+    assert.equal(gw.patchCodeKey(['A·L', 'A·R', 'MST·L', 'BTH·R', 'PWR PA L', 'PWR BTH L', 'PHONES']), 'MST = MASTER OUT · BTH = booth · PWR = power cord · L / R = left / right');
+    // checker fix: BTH is BOOTH OUT on BTH·L and a booth monitor on PWR BTH L, so the key must fit both
+    assert.equal(gw.patchCodeKey(['PWR BTH L']), 'BTH = booth · PWR = power cord · L / R = left / right');
     assert.equal(gw.patchCodeKey(['PHONES']), null);
     assert.equal(gw.patchCodeKey(['TT·L']), 'TT = turntable · L / R = left / right');
   });
@@ -443,5 +443,38 @@ describe('SH-76 · the ROUTE BUS tray: every choice has a one-line meaning', () 
     const buses = [...src.match(/const BUSES = \[([^\]]+)\]/)![1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
     for (const b of buses) assert.ok(fx.BUS_BLURB[b] && fx.BUS_BLURB[b].split(/\s+/).length <= 25, b);
     assert.match(src, /blurb: BUS_BLURB\[b\]/);
+  });
+});
+
+/* ── checker fixes (2026-11-15) ─────────────────────────────────────────── */
+describe('F2 checker fixes', async () => {
+  const gw = await import('../src/screens/lab/dj/goalWords.ts');
+  it('SS-01: the Loads page says a parallel cabinet LOWERS the impedance (a heavier load)', () => {
+    const B = read(`${SS}/pagesLearnB.tsx`);
+    assert.doesNotMatch(B, /makes the load lighter/);
+    assert.match(B, /lowers the load’s impedance, so the amplifier must deliver more current, until the load is too low to drive safely/);
+  });
+  it('DJ-04: a wait line only once the move itself is made', () => {
+    const p08 = read(`${DJ}/pages/p08Faders.tsx`);
+    assert.match(p08, /m\.xfCurve === 'BLEND' && \(m\.xf < 0\.15 \|\| m\.xf > 0\.85\)/);
+    assert.match(p08, /m\.xfCurve === 'CUT' && \(m\.xf < 0\.02 \|\| m\.xf > 0\.98\)/);
+    assert.match(read(`${DJ}/pages/p07Cue.tsx`), /booth\.ch\[2\]\.cue && booth\.ch\[2\]\.fader > 0\.5 && !upDown\.current\.down/);
+    void gw;
+  });
+  it('SS LEARN wrap page: a knowledge title', () => {
+    const C = read(`${SS}/pagesLearnC.tsx`);
+    assert.doesNotMatch(C, /What you can now do|WHAT YOU CAN NOW DO/);
+    assert.match(C, /title: 'What you now know'/);
+    assert.match(read(`${SS}/soundsystemsScreenGuides.ts`), /'What you now know': \{/);
+  });
+  it('SH-69: the ground-loop rule no longer repeats its WHY', () => {
+    const g = FAULTS.find((f) => f.id === 'ground-loop')!;
+    assert.ok(!g.explain.startsWith(g.rule.slice(0, 30)));
+    assert.doesNotMatch(g.rule, /survives muting/);
+  });
+  it('SS-10: the open step’s own header folds it shut', () => {
+    const steps = fx.CONSOLE_STEPS['groups-fx'];
+    assert.equal(fx.openConsoleStep(steps, [], -1), -1);
+    assert.match(read(`${SS}/pagesBuild.tsx`), /setPickedStep\(isOpen \? -1 : i\)/);
   });
 });

@@ -88,7 +88,8 @@ export function micHalfway(toRec: boolean, voiceInRec: boolean): string | null {
  */
 const PATCH_CODE_WORDS: readonly [RegExp, string][] = [
   [/^MST/, 'MST = MASTER OUT'],
-  [/^BTH/, 'BTH = BOOTH OUT'],
+  // checker fix: BTH is on BOOTH OUT (BTH·L) AND on the booth monitors' cords (PWR BTH L), so the key says "booth"
+  [/BTH/, 'BTH = booth'],
   [/^PWR/, 'PWR = power cord'],
   [/^TT/, 'TT = turntable'],
 ];

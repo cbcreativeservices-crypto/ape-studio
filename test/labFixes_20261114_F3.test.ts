@@ -255,7 +255,8 @@ describe('F3 · Game Audio: a first step that works with sound off', () => {
     assert.match(G02.intro!.start, /with sound off, the log still shows it/);
     const page = code(`${GA}/pages/p02Reacts.tsx`);
     assert.doesNotMatch(page, /<Do>Turn SOUND on\./);
-    assert.match(page, /<Do>Press OPEN DOOR and read the log\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-04, checker follow-up): lettered parts, the door still first
+    assert.match(page, /<Do parts=\{\['Press OPEN DOOR and read the log\. If you can listen, turn SOUND on before you press it\.', 'Switch GEN 1 on to start the generator\.'\]\} \/>/);
   });
   it('page 13’s headphone step says what to do without headphones', () => {
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GA-04): the step is lettered parts now, and the

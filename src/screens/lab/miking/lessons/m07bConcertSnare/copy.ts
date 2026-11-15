@@ -81,7 +81,7 @@ export const CSN_COPY: LessonCopy = {
     workedAim: 'Angle the mic toward the center of the head — the starting point counts while its axis meets the head there. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every stroke — the highest and widest stick motion, the throw-off, the stand and the player. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer tends to bring more direct detail and less room; farther, more of the whole drum and more of its neighbors — and drums, rooms and players vary, so “it depends” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more direct detail and less room; farther, more of the whole drum and more of its neighbors — and drums, rooms and players vary, so “it depends” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: { orchSdc: 'Ideas to try with a small condenser: start a little farther than with a dynamic and compare the roll at matched level. Either type can work — choose by response, pattern, maximum level, power and mount.' },
     note: 'Clearance comes first: stop the player before moving a real mic, and check the whole passage — not one stroke. None of these distances is a safety clearance.',
     availableLead: 'Starting points for this mic',

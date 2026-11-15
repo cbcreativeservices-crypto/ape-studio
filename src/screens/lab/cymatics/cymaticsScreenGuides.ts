@@ -249,7 +249,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
   harmony: {
     intro: {
       learning: 'Musical harmony comes from ratios between frequencies, not from any one frequency, and pulling a ratio slightly off makes beats.',
-      start: 'Press PLAY to hear the fifth. Ride BASE and watch INTERVAL stay put. Then set VIEW to Lissajous figure and ride DETUNE up from locked.',
+      start: 'Slide BASE and watch INTERVAL stay put on fifth. Set VIEW to Lissajous figure and slide DETUNE up from locked. Then press PLAY to hear it.',
     },
     seeing: [
       'VIEW draws the two tones three ways: Wave addition (A, B and A + B stacked), Lissajous figure (B drawn against A) or Spectrum (two lines).',

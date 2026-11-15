@@ -97,9 +97,11 @@ const CONVENTION_BODY =
 
 // EQL-02 + SC-02, built once (owner 2026-11-15: "build waves 1 thru 3", D62):
 // the same one line now says this is a one-time, one-minute stop and that the
-// lesson the learner chose opens right after (it replaced the lab unannounced).
+// lab or tool the learner chose opens right after (it replaced it unannounced).
+// Checker fix: "what you chose", since this page also gates the tools (SPL
+// Meter, RTA, Signal Generator…: RootNavigator's withAmplitudeOrientation).
 const GATE_INTRO =
-  'A one-time stop, about a minute: the color language our audio visualizers use. Your lesson opens right after.';
+  'A one-time stop, about a minute: the color language our audio visualizers use. What you chose opens right after.';
 
 const HONESTY_LINE = 'Illustrative training graphics — not live measurements.';
 
@@ -970,7 +972,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPL METER"
           caption="Sound-pressure level (illustrative)"
-          lookFor="a big number, a cool color: its own scale"
+          lookFor="78 dB, yet green-yellow: its own scale"
           a11y="SPL meter example: a horizontal sound pressure level bar reading 78 dB SPL"
         >
           <SplCard />

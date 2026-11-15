@@ -30,7 +30,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it toward an outer part of the bell, not straight into it. The lab counts any aim within about {tol}° of the bell’s center, so an aim at the edge counts too.',
     workedClear: 'Clear of every part — the bell’s opening, the player rising or tilting the bell, both valve hands, the slides and the path to stand. Clearance comes first, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer tends to bring a tighter, more isolated euphonium with more valve and breath detail; farther brings more of the room and the section. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+    reveal: 'Closer tends to bring a tighter, more isolated euphonium with more valve and breath detail; farther brings more of the room and the section. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       smallDynCard: 'Ideas to try with a small dynamic: start a foot or two from the bell, slightly off axis; then change one thing at a time and play a lyrical phrase and a loud, tongued one each time.',
       sdcCard: 'Ideas to try with a small condenser: about two feet above the bell toward its edge for a rounded line; closer and a little more central for articulation.',

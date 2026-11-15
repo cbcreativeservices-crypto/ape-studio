@@ -238,7 +238,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
   adc: {
     intro: {
       learning: 'How a converter turns a voltage into samples, block by block, and why gain is set before conversion: too low buries it in noise, too high clips it for good.',
-      start: 'Pull INPUT to the bottom and watch ZONE read TOO LOW. Push it to the top for CLIP, analog + digital. Then bring it back until ZONE reads RIGHT.',
+      start: 'Pull INPUT to the bottom and watch ZONE read TOO LOW. Push it to the top for CLIP, both stages. Then bring it back until ZONE reads RIGHT.',
     },
     seeing: [
       'A level scene: the wave between 0 dBFS (full scale) and the analog rail; ANLG (analog) and DIG (digital) meters.',
@@ -253,7 +253,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     changes: [
       'More INPUT lifts PEAK and SNR together and shrinks HEADROOM: the signal climbs away from a noise floor that stays put.',
-      'With INPUT just above 0 dB, the analog stage rounds the peaks (ZONE: CLIP, analog). A little higher, the converter cuts flat tops too (CLIP, analog + digital).',
+      'With INPUT just above 0 dB, the analog stage rounds the peaks (ZONE: CLIP, analog). A little higher, the converter cuts flat tops too (CLIP, both stages: analog and digital).',
       'Here the preamp clips first. On most real interfaces, the converter reaches 0 dBFS first.',
     ],
     teaches: [
@@ -264,7 +264,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'At the start (INPUT −14 dB): PEAK −14.5 dBFS, SNR 46 dB in this scene, ZONE RIGHT. Pull INPUT to the bottom: −54.0 dBFS, SNR 6 dB, TOO LOW.',
-      'Push INPUT to the top (+12 dB): PEAK reads 0.0 OVER, HEADROOM none, ZONE CLIP, analog + digital.',
+      'Push INPUT to the top (+12 dB): PEAK reads 0.0 OVER, HEADROOM none, ZONE CLIP, both stages.',
       'Ease INPUT to between +1 and +1.8 dB: ZONE reads CLIP, analog, while PEAK is still just below 0 dBFS. The damage happens before the converter.',
     ],
   },

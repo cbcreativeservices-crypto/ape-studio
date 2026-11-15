@@ -182,6 +182,8 @@ const LOG_MULT = 13.5; // LOG axis top = 13.5×f0 (clamped to Nyquist in live)
 // Stage geometry (rack): the glass height h splits into the shared-axis top
 // row and a thin waveform strip; widths keep the original gutters.
 const STAGE_PAD = 6;
+/** HAR-01 checker fix: the well height that shows the pinned stems down to their H labels (sound-off line included), measured at 390 × 844. */
+const STEMS_MIN_WELL = 290;
 const WAVE_STRIP_H = 62; // waveform strip height inside the glass (art grading 2026-10-16: 44 read as a sliver on a phone)
 const GUTTER_W = 108; // fits "11: 1.1k C#6 -14¢" at mono 10 (art grading 2026-10-16: 9 pt read too small)
 const PIANO_W = 36; // right-edge piano-key gutter (LOG axis only) — wide enough that the C labels sit on the white keys past the black ones
@@ -1678,7 +1680,8 @@ export function HarmonicsView({
           ...(showMeasures ? ([
           {
             k: 'THD',
-            caption: 'overtone share',
+            // Checker fix (owner 2026-11-15): THD can pass 100 %, so it is not a "share".
+            caption: 'vs the note',
             v: modelThd.pct != null ? `${modelThd.pct.toFixed(1)} %` : '—',
             // Read-only (owner rule 2026-10-10): the breakdown sheet opens
             // from the THD CALC dock key.
@@ -1858,6 +1861,10 @@ export function HarmonicsView({
       // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
       soundOffLine: 'Sound off? The bands and the wave still show every change you make.',
       size: 'L', // the three linked panels ARE the lab — earns the tall glass
+      // Checker fix (owner 2026-11-15, HAR-01): the pinned stems are the first thing to drag, so the
+      // glass gives up just enough height (never below S) for their handles and H1–H12 labels to show
+      // above the dock without scrolling.
+      minWell: view === 'model' ? STEMS_MIN_WELL : undefined,
       fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
       // INTEGRITY BADGE — permanent, per mode (TRAINING DEMO badge idiom):
       // the model is math, never a measurement; live is honest dBFS,

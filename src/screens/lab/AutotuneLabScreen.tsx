@@ -365,6 +365,9 @@ export function AutotuneLabScreen() {
             // SH-64 (owner 2026-11-15, "build waves 1 thru 3"): with AMOUNT at OFF nothing is pulled,
             // so SPEED changes nothing: the key is grayed and a tap says why.
             locked: amount <= 0.005 ? 'SPEED does nothing while AMOUNT is OFF: raise AMOUNT first.' : undefined,
+            // Checker fix (owner 2026-11-15): "LOCKED" reads as members-only. "AMOUNT OFF" does not fit
+            // a dock key at 9 pt, so the key says what is true of SPEED itself; a tap gives the reason.
+            lockedValue: 'UNUSED',
           },
           {
             // Visible transport (owner 2026-08-05 — the header ▶ alone was easy

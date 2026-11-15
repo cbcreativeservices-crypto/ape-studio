@@ -235,7 +235,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   spectrum: {
     intro: {
       learning: 'How to read a spectrum by its shape: where the energy sits, smooth noise vs spiky notes, hum from AC power as a family of spikes, feedback as one spike.',
-      start: 'Open PATTERN and flip through all seven shapes. Then switch between MAINS HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.7 kHz.',
+      start: 'Open PATTERN and flip through all seven shapes. Then switch between MAINS HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.75 kHz.',
     },
     seeing: [
       'A spectrum analyzer shows you where a sound’s energy sits. Frequency runs left to right on a log scale (20, 100, 1k, 10k): 100 to 1k takes the same room as 1k to 10k. Level runs up in dB; bar colors follow it.',
@@ -258,7 +258,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'A finished mix usually slopes down like pink noise, not flat.',
     ],
     tryThis: [
-      'Switch between MAINS HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.7 kHz (the plot’s marker says 1.75 kHz). You go from a low family to one lone spike.',
+      'Switch between MAINS HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.75 kHz, the same number the plot’s marker shows. You go from a low family to one lone spike.',
       'Pick PINK NOISE: TILT reads −3.0/oct, the reference slope. Then CYMBAL: TILT flips to +5.2/oct.',
       'Pick KICK DRUM: PEAK reads 60 Hz for the thump, and a small second bump sits near 3 kHz. That’s the beater click.',
     ],

@@ -74,10 +74,12 @@ describe('F7-3 · Equalizer grays out what the filter shape ignores (quick win 1
   const fx = code('src/screens/lab/FxLabScreen.tsx');
   const cfg = code('src/screens/lab/fxLabConfigs.tsx');
   it('the frame: an ignored param reads "—" in gray on the bezel and LOCKED in the dock', () => {
-    assert.match(fx, /ignoredBy\?: \(paramId: number, values: Record<number, number>\) => string \| undefined;/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, GATE-02 checker fix): ignoredBy also gets the
+    // source and sound state, and may mark a WORKING control as quiet ({ why, value }, read "not yet").
+    assert.match(fx, /ignoredBy\?: \(\s*paramId: number,\s*values: Record<number, number>,\s*ctx: \{ source\?: FxSourceSpec; soundOff: boolean \},\s*\) => string \| \{ why: string; value: string \} \| undefined;/);
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the cell also forwards kNarrow.
     assert.match(fx, /\? \{ k: b\.k, kNarrow: b\.kNarrow, v: '—', tint: IGNORED_TINT, helpKey: p\.lessonKey, caption: b\.caption \}/);
-    assert.equal((fx.match(/locked: ignored\(p\.paramId\),/g) ?? []).length, 2, 'fader and options keys both lock');
+    assert.equal((fx.match(/locked: ignored\(p\.paramId\) \?\? quiet\(p\.paramId\)\?\.why,/g) ?? []).length, 2, 'fader and options keys both lock');
   });
   it('eqConfig: GAIN on both pass filters, Q on the high-pass only', () => {
     const at = cfg.indexOf('ignoredBy: (id, v) => {');
@@ -151,7 +153,7 @@ describe('F7-6 · silent first step in every effect lab’s EXPLORE start', () =
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items DL-01 and RV-04): Delay opens at FDBK 0%,
     // so its start just watches; Reverb's start names rooms, with RT60 in the shared words.
     ['src/screens/lab/delayScreenGuides.ts', 'DELAY_SCREEN_GUIDES', /^Watch ▸ OUT: each gray click comes back once, as a blue echo/],
-    ['src/screens/lab/reverbScreenGuides.ts', 'REVERB_SCREEN_GUIDES', /^Drag RT60 \(decay time\) up, from a small room toward a big hall/],
+    ['src/screens/lab/reverbScreenGuides.ts', 'REVERB_SCREEN_GUIDES', /^Drag RT60 \(decay time\) down to a small room, then up toward a big hall/],
     ['src/screens/lab/chorusScreenGuides.ts', 'CHORUS_SCREEN_GUIDES', /^Watch the bold line on OUT for a few seconds/],
     ['src/screens/lab/flangerScreenGuides.ts', 'FLANGER_SCREEN_GUIDES', /^Drag CENTER from 2\.0 ms down to 0\.50 ms/],
     ['src/screens/lab/binauralScreenGuides.ts', 'BINAURAL_SCREEN_GUIDES', /^Slide AZ from 0° to \+90°, or drag object 1/],

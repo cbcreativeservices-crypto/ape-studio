@@ -235,7 +235,7 @@ describe('SH-12: a sound-off line in the rack labs that had none', () => {
   it('Tuning (every task silent: the shared line), Drum Tuning and Cymatics (their own words)', () => {
     assert.match(code(`${LAB}/tuning/rackLayout.tsx`), /soundOffLine: true,/);
     assert.match(code(`${LAB}/drumtuning/DrumRack.tsx`), /soundOffLine: DRUM_SOUND_OFF_LINE,/);
-    assert.match(code(`${LAB}/cymatics/modules/rackLayout.tsx`), /soundOffLine: CYMATICS_SOUND_OFF_LINE,/);
+    assert.match(code(`${LAB}/cymatics/modules/rackLayout.tsx`), /soundOffLine: [^\n]*CYMATICS_SOUND_OFF_LINE,/);
     for (const f of ['PlateStudioScreen', 'LiquidStudioScreen', 'MembraneStudioScreen']) {
       assert.match(code(`${LAB}/cymatics/${f}.tsx`), /soundOffLine: 'Sound off\? Turn on Silent drive in (DRIVE|STRIKE): /, f);
     }
@@ -264,10 +264,16 @@ describe('TU-04: a not-yet key in Just Intonation reads its own words, never LOC
   it('lockedKey passes lockedValue through', () => {
     assert.match(j, /function lockedKey\(id: string, label: string, reason: string, lockedValue: string\): DockParam \{\s*return \{ kind: 'fader', id, label, locked: reason, lockedValue,/);
   });
-  it('PLAY reads "after 2 notes"; TONIC and RETUNE read "after all 8"', () => {
-    assert.match(j, /lockedKey\('play', 'PLAY', '[^']+', 'after 2 notes'\)/);
-    assert.match(j, /lockedKey\('tonic', 'TONIC', `[^`]+`, `after all \$\{N\}`\)/);
-    assert.match(j, /lockedKey\('retune', 'RETUNE', `[^`]+`, `after all \$\{N\}`\)/);
+  it('PLAY reads "2 notes"; TONIC and RETUNE read "all 8": short words, one size, fit a 60 px key', () => {
+    assert.match(j, /lockedKey\('play', 'PLAY', '[^']+', '2 notes'\)/);
+    assert.match(j, /lockedKey\('tonic', 'TONIC', `[^`]+`, `all \$\{N\}`\)/);
+    assert.match(j, /lockedKey\('retune', 'RETUNE', `[^`]+`, `all \$\{N\}`\)/);
+    // Checker 2026-11-15: "after 2 notes" needed 98 px in a 60 px value box at 14 px and was cut to "after …".
+    // At the dock's 14 px mono (≈ 0.6 em a character) 7 characters need ≈ 59 px, so every value stays ≤ 7.
+    const values = [...j.matchAll(/lockedKey\('[a-z]+', '[A-Z]+', [`'][^`']+[`'], [`']([^`']+)[`']\)/g)].map((m) => m[1].replace('${N}', '8'));
+    assert.equal(values.length, 3);
+    for (const v of values) assert.ok(v.length <= 7, `${v} is ${v.length} characters`);
+    assert.doesNotMatch(j, /'after 2 notes'|`after all/);
   });
   it('the frame shows lockedValue in place of LOCKED and says "not yet"', () => {
     const r = code(`${LAB}/rack/RackUnit.tsx`);
@@ -276,5 +282,39 @@ describe('TU-04: a not-yet key in Just Intonation reads its own words, never LOC
   });
   it('Harmonograph PLAT stays on its reason: LATERAL is a choice, not a "not yet"', () => {
     assert.doesNotMatch(code(`${LAB}/HarmonographLabScreen.tsx`), /id: 'plat',[\s\S]{0,200}lockedValue/);
+  });
+});
+
+describe('Checker fixes (2026-11-15)', () => {
+  it('TU-01: the meantone guide quotes what BASIC shows (FROM PURE, THIRD), no t =, g⁴/4 or ⁴√5', () => {
+    const g = read(`${LAB}/tuning/tuningScreenGuides.ts`);
+    const ch9 = g.slice(g.indexOf('// ── 9 · Build Quarter-Comma Meantone'), g.indexOf('// ── 10 ·'));
+    assert.ok(ch9.length > 200);
+    assert.doesNotMatch(ch9, /FROM 5\/4|g⁴\/4|⁴√5|t = 1\.118034/);
+    assert.match(ch9, /watch FROM PURE reach 0 ¢/);
+    assert.match(ch9, /THIRD reads 400\.00 ¢, FROM PURE \+13\.69 ¢/);
+  });
+  it('TU-01: ch 7 (The Circle Does Not Close) folds the fraction chain and the two formulas under MATH', () => {
+    const c = code(`${LAB}/tuning/chapters/ch6Comma.tsx`);
+    assert.match(c, /\{ctx\.mathView \? <FifthPath steps=\{CHAIN\} revealed=\{12\} dimNotes \/> : null\}/);
+    assert.match(c, /\{ctx\.mathView \? \(\s*<View style=\{styles\.paths\}>[\s\S]*?<MathLine>\(3\/2\)¹²<\/MathLine>/);
+    assert.match(c, /Twelve pure fifths up from C\./);
+    assert.match(c, /MATH \(top right\) shows the chain of fractions and the derivation\./);
+  });
+  it('SH-12: the Cymatics modules name SILENT only where the key exists', () => {
+    const r = code(`${LAB}/cymatics/modules/rackLayout.tsx`);
+    assert.match(r, /soundOffLine: rack\.params\.some\(\(p\) => p\.id === 'silent'\) \? CYMATICS_SILENT_KEY_LINE : CYMATICS_SOUND_OFF_LINE,/);
+    assert.doesNotMatch(/CYMATICS_SOUND_OFF_LINE = '([^']+)'/.exec(r)?.[1] ?? 'SILENT', /SILENT/);
+    assert.match(code(`${LAB}/cymatics/modules/modNodes.tsx`), /id: 'silent'/);
+  });
+  it('SH-11: Harmony in Motion starts on a step seen without sound, PLAY last', () => {
+    const g = read(`${LAB}/cymatics/cymaticsScreenGuides.ts`);
+    assert.match(g, /start: 'Slide BASE and watch INTERVAL stay put on fifth\. Set VIEW to Lissajous figure and slide DETUNE up from locked\. Then press PLAY to hear it\.'/);
+    assert.doesNotMatch(g, /start: 'Press PLAY to hear the fifth\./);
+  });
+  it('TU-03: Tuning ch 13 says "open 3 to finish" once (the To finish line)', () => {
+    const t = code(`${LAB}/tuning/chapters/ch12Tradeoffs.tsx`);
+    assert.doesNotMatch(t, /to finish this chapter|more to finish/);
+    assert.match(read(`${LAB}/tuning/chapters/index.ts`), /12: 'open at least three of the claims, then press UNDERSTOOD ›\.'/);
   });
 });

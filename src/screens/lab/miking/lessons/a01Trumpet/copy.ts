@@ -30,7 +30,7 @@ export const A01_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it toward the bell — the lab counts it as aimed while the mic points within about {tol}° of the bell. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell, the valve hands, the player’s head and body. Leave room for the bell to move as the player plays, and for every mute. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the axis tends to bring more brightness and bite; off to the side, a softer top; farther, more room and spill. Horns, players and rooms vary, so “it depends on this horn” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Toward the axis tends to bring more brightness and bite; off to the side, a softer top; farther, more room and spill. Horns, players and rooms vary, so “it depends on this horn” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       instDynCard: 'Ideas to try with a dynamic: begin a little off the bell’s axis, then move one thing at a time — the angle toward or away from the axis, then the distance — and play the loudest accent and the softest ending each time.',
       sdcCard: 'Ideas to try with a condenser: check it can take the horn’s peaks close up (or use a pad its maker allows); farther away it can carry the room as well as the horn.',

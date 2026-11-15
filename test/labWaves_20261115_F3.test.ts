@@ -316,3 +316,22 @@ describe('sweeps · SH-76 tray choices, SH-26 codes', () => {
     assert.match(read(`${SP}/inputs/BoxPanel.tsx`), /Console direct when the receivers are at front of house \(FOH\)\./);
   });
 });
+
+/* ── checker follow-ups (CHECK_F3_REPORT.md, 2026-11-15) ────────────────── */
+
+describe('checker follow-ups', () => {
+  it('GA-04: the three remaining three-action steps are lettered, in doing order (the door stays first on page 2)', () => {
+    assert.ok(page('p02Reacts').includes("<Do parts={['Press OPEN DOOR and read the log. If you can listen, turn SOUND on before you press it.', 'Switch GEN 1 on to start the generator.']} />"));
+    assert.ok(page('p04Games').includes("<Do parts={['Open GAMES and pick a kind of game.', 'Watch the picture, then read its card here.', 'Pick two more.']} />"));
+    assert.ok(page('p07Instances').includes("<Do parts={['Open GENERATORS.', 'Choose ADD GENERATOR 2.', 'Switch GENERATOR 1 and GENERATOR 2 on.']} />"));
+  });
+  it('GA-05: a step stopped at the edge of the scene does not tell a WALK page to turn', () => {
+    // walk YOU to the west end, then step west again
+    let s = run(gaInitial(), { type: 'move', who: 'player', x: walkX(0), y: WALK_Y });
+    s = run(s, { type: 'face', who: 'player', facing: 270 }, { type: 'step', who: 'player', dx: -0.7, dy: 0 });
+    const note = s.log.filter((l) => l.kind === 'note').pop();
+    assert.ok(note && /edge of the scene: no step was taken/.test(note.text), note?.text);
+    assert.match(note!.text, /Walk back the other way$/);
+    assert.doesNotMatch(note!.text, /Turn to walk/);
+  });
+});

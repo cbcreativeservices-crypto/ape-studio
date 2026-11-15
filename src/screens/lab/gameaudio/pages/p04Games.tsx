@@ -135,7 +135,7 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open GAMES and pick a kind of game. Watch the picture, then read its card here. Pick two more.</Do>
+        <Do parts={['Open GAMES and pick a kind of game.', 'Watch the picture, then read its card here.', 'Pick two more.']} />
         <P>Each pick starts the scene again and shows one thing that kind of game cares about.</P>
         {card ? (
           <ChACard eyebrow="KIND OF GAME" title={card.name.toUpperCase()} sub={card.why}>

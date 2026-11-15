@@ -31,7 +31,7 @@ const STRIP = 'Use the strip under the title to move between steps and modules. 
 
 export const AMP_HOME_GUIDE: ScreenGuide = {
   intro: {
-    learning: 'The three questions this lab asks of every amplifier: what it does to the signal, what load it drives, and where its output power really comes from.',
+    learning: 'How an amplifier builds a bigger copy of your signal: the power supply pays, your signal steers, and the load decides what the amplifier must deliver.',
     start: 'Tap a module’s name in the MODULE MAP to read what it covers. New to amplifiers? Tap START · MODULE 1 › and take the modules in order.',
   },
   seeing: [

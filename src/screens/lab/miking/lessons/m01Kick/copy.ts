@@ -75,7 +75,7 @@ export const KICK_COPY: LessonCopy = {
     workedAim: 'Face the mic toward {head} — the lab counts anything within ±{tol}°. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — heads, beater, damping, port edge and pedal. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: { intact: ' A stand mic cannot pass an intact head: mic it from outside.' },
-    reveal: 'Moving toward the front head tends to bring more resonance — and drums vary, so “it depends on this drum” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+    reveal: 'Moving toward the front head tends to bring more resonance — and drums vary, so “it depends on this drum” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: { kickDynCard: 'Ideas to try with this kind of mic: a few centimeters from the batter head (lots of attack, dry), or midway between the heads (less attack). Another experiment on a real drum: turn the mic away from where the beater strikes, and listen for whether the attack eases.' },
     note: 'Clearance comes first: stop the drummer before moving a real mic. Port air can pop a mic — try changing the mic’s angle in the hole rather than pushing it farther in, if that would narrow the clearance.',
     availableLead: 'Starting points for this mic and head',

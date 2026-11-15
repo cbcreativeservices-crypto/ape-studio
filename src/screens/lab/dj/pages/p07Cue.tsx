@@ -370,7 +370,8 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
   const waits = [
     waitIf(cuedDown, bStopped, 'B'),
     waitIf(cuedDown && booth.perspective === 'PHONES', bStopped, 'B'),
-    waitIf(booth.ch[2].cue && !upDown.current.down, bStopped, 'B'),
+    // (checker fix) only once CH2 is actually up: that is the move the goal waits to hear
+    waitIf(booth.ch[2].cue && booth.ch[2].fader > 0.5 && !upDown.current.down, bStopped, 'B'),
     waitIf(m.splitCue, !booth.decks.A.playing && bStopped, 'both'),
   ];
   const goals = GOALS_CUE.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));

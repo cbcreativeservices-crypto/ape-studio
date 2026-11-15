@@ -1576,7 +1576,7 @@ const SECTIONS: { key: MicSectionId; label: string; title: string; blurb: string
   { key: 'shock', label: 'HANDLING', title: 'HANDLING NOISE & ISOLATION', blurb: 'Vibration travels through solids into the capsule — decouple it.', Comp: ShockSection },
   { key: 'hand', label: 'HAND GRIP', title: 'HOW YOUR HAND CHANGES THE MIC', blurb: 'Everyone has seen a singer cup the mic. Here is exactly what that does.', Comp: HandSection },
   { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection, reading: true },
-  { key: 'capsule', label: 'CAPSULE', title: 'FOR THE CURIOUS: INSIDE THE CAPSULE', blurb: 'For the curious: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
+  { key: 'capsule', label: 'CAPSULE', title: 'FOR THE CURIOUS: INSIDE THE CAPSULE', blurb: 'How a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
 ];
 
 if (__DEV__ && SECTIONS.map((x) => x.key).join(',') !== MIC_PRINCIPLES_UNITS.join(',')) {

@@ -248,14 +248,15 @@ export type Characteristic = { key: string; name: string; why: string[]; flag?: 
  *  waves 1 thru 3"): it said "tap each one" over sixteen chips at once; it now
  *  says which ones the next modules come back to, so the rest can wait. */
 export const CHAR_INTRO =
-  '"Dynamic vs. condenser" is nowhere near enough to choose a microphone. The next modules ' +
-  'cover pattern, response, level, noise, power and size in depth, so skim the rest for now.';
+  '"Dynamic vs. condenser" is nowhere near enough to choose a microphone. The first chips in ' +
+  'each group come back in depth in the next modules; skim the rest for now.';
 
 /** The sixteen chips in four small labeled groups (MS-01). Every key of
  *  CHARACTERISTICS appears exactly once (test/labWaves_20261115_F9). */
 export const CHAR_GROUPS: readonly { title: string; keys: readonly string[] }[] = [
   { title: 'HOW IT HEARS', keys: ['pattern', 'response', 'offaxis', 'proximity', 'transient'] },
   { title: 'LEVEL AND NOISE', keys: ['sensitivity', 'maxspl', 'selfnoise', 'snr', 'enl'] },
+  // Phantom / bias first: Module 6 is about power (checker F9: "the first chips in each group").
   { title: 'POWER AND CABLE', keys: ['power', 'impedance'] },
   { title: 'SIZE AND BUILD', keys: ['size', 'weight', 'rugged', 'environment'] },
 ];

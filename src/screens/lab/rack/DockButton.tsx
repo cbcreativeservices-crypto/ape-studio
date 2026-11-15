@@ -205,7 +205,10 @@ export function DockButton({
     lines: fitsLabel ? 1 : 2,
     valueBase: VALUE_FS,
     web: WEB,
-    value: glyph === '▪' ? 0 : valueSpan ? Math.max(valueW, spanW) : valueW,
+    // A '▪' key with a `valueSpan` is a locked fader showing its own still
+    // "not yet" words (RackUnit, SN-1 checker follow-up 2026-11-15): nothing
+    // drags, so it asks for room for them like any value key.
+    value: glyph === '▪' && !valueSpan ? 0 : valueSpan ? Math.max(valueW, spanW) : valueW,
   });
   const onNeed = fit?.onNeed;
   useEffect(() => {

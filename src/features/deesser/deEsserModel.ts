@@ -188,7 +188,7 @@ export type Block = { id: string; name: string; what: string };
 
 export const PATH_MAIN: Block[] = [
   { id: 'in', name: 'Input', what: 'The whole voice arrives.' },
-  { id: 'gain', name: 'Gain element', what: 'Turns the level down by whatever the gain computer asks for — on the whole signal (broadband) or on the hiss band only (split-band).' },
+  { id: 'gain', name: 'Gain element', what: 'Turns the level down by whatever HOW MUCH asks for — on the whole signal (broadband) or on the hiss band only (split-band).' },
   { id: 'out', name: 'Output', what: 'The voice with its S’s under control.' },
 ];
 
@@ -205,7 +205,8 @@ export const PATH_SIDECHAIN: Block[] = [
   { id: 'det', name: 'Level detector', what: 'Measures how loud the filtered copy is, moment to moment.' },
   { id: 'thr', name: 'Threshold compare', what: 'Is the hiss level above the threshold? If not, do nothing.' },
   // NEW COPY (review 2026-09-02): names the ratio, which the model has but the copy never mentioned.
-  { id: 'gc', name: 'Gain computer', what: 'Turns the amount above threshold into a gain reduction: the ratio sets what fraction of the excess is removed, and the range caps how far the gain may fall.' },
+  // Checker fix (owner 2026-11-15: "build waves 1 thru 3", D62 DES-03): a plain name for the block.
+  { id: 'gc', name: 'How much to turn down', what: 'Works out how far to turn the sound down from the amount above the threshold: the ratio sets what fraction of the excess is removed, and the range caps how far the gain may fall.' },
 ];
 
 /** The signal-chain screens that the connections card points at (route names
@@ -214,7 +215,7 @@ export const PATH_SIDECHAIN: Block[] = [
 // page of this lab it extends, so the card is a study plan rather than a list.
 export const CONNECTIONS: { name: string; why: string; route: string }[] = [
   { name: 'EQ Lab', why: 'Build the static cut from page 2 as a real EQ band and hear why it is always on.', route: 'EqLabHome' },
-  { name: 'Compression', why: 'The same detector → threshold → gain computer, listening to the whole signal instead of a filtered copy.', route: 'CompressionLab' },
+  { name: 'Compression', why: 'The same detector → threshold → how-much step, listening to the whole signal instead of a filtered copy.', route: 'CompressionLab' },
   { name: 'Gate / Expander', why: 'The same threshold, used the other way round: opening on signal instead of ducking on hiss.', route: 'GateLab' },
   { name: 'Visual Audio Analysis', why: 'Watch the hiss band on a live spectrum before you pick the detector frequency (page 5).', route: 'MeterLab' },
   { name: 'Speech & Voice Lab', why: 'Where the S is made — teeth, air and turbulence — and why some voices hiss more than others.', route: 'SpeechLab' },

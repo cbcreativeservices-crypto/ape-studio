@@ -36,6 +36,15 @@ Summary: 13 of 13 built (wave 1: 4, wave 2: 5, wave 3: 4) · 0 not a bug · 0 he
 | SH-26 codes spelled out | Hz first met on the walls page now reads "900 Hz (vibrations per second)" (shared words); dB on page 1 (GA-02). | "at FOH" in the stage box note now "at front of house (FOH)". |
 | SH-76 tray one-liners | Page 23's TOPIC tray was the only bare one: each choice now has a one-line meaning naming its section. | Packages already carry "assumes"; no bare tray. |
 
+## Checker follow-ups (CHECK_F3_REPORT.md, 2026-11-15)
+
+| # | What the checker found | What changed | Files | Test |
+|---|---|---|---|---|
+| 1 | GA-04 incomplete: page 2 step 2, page 4 step 2 and page 8 step 2 still asked for three actions in one sentence | All three are lettered parts in doing order. Page 4: a open GAMES and pick, b watch the picture and read the card, c pick two more. Page 8: a open GENERATORS, b ADD GENERATOR 2, c switch both on. Page 2: a press OPEN DOOR and read the log (with "If you can listen, turn SOUND on before you press it" inside the same part), b switch GEN 1 on. The door stays the first part on purpose: the 11-14 round made it the silent learner's first step, and a pinned test holds that, so SOUND is not its own part a. GA-04 now covers 28 steps on 20 pages. | p02Reacts, p04Games, p07Instances; test/labFixes_20261114_F3 (page 2 pin updated, owner quote) | labWaves F3 "checker follow-ups" |
+| 2 | The edge-of-scene NOTE said "Turn to walk another way", but the WALK pages have no turn control | The note now ends "Walk back the other way". That is true on the WALK pages (the other STEP key) and on the capstone (turn with MOVE, then STEP FORWARD). | model/gaModel.ts (the one NOTE line) | labWaves F3 "checker follow-ups" (runs the model to the west edge) |
+
+Page 15's folded word row was left as it is, as asked.
+
 ## SHARED NEEDS
 
 (none)

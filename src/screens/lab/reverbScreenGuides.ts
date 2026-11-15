@@ -63,7 +63,8 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
       learning: 'What reverb’s main controls do: RT60 sets how long the tail takes to fall 60 dB, PRE-DELAY when it starts, damping how dark it gets, MIX how loud.',
       // Rooms a beginner knows (owner 2026-11-15: "build waves 1 thru 3", D62
       // item RV-04); the words for RT60 are the shared ones (plainTerms.ts).
-      start: `Drag ${termWithShort('rt60')} up, from a small room toward a big hall, and watch the amber wash on OUT last longer. Then tap ▶ with SOURCE on CLICK 60 to hear the room grow.`,
+      // RT60 opens at 1.5 s, the HALL (checker 2026-11-15): down first, then up.
+      start: `Drag ${termWithShort('rt60')} down to a small room, then up toward a big hall, and watch the amber wash on OUT last longer. Then tap ▶ with SOURCE on CLICK 60 to hear the room grow.`,
     },
     seeing: [
       'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',

@@ -162,8 +162,14 @@ describe('MG-01 · Mixing Guides: the level numbers leave the top of every guide
     assert.match(s, /export const LEVEL_GLANCE_KEYS: readonly GlanceKey\[\] = \['liveSpl', 'studioLoudness'\];/);
     const top = s.slice(s.indexOf('>AT A GLANCE</Text>'), s.indexOf('THE GUIDE</Text>'));
     assert.match(top, /!LEVEL_GLANCE_KEYS\.includes\(r\.key\)/, 'the top drops the level rows');
-    assert.match(s, /if \(k === 'loudness'\) \{[\s\S]*?<GlanceRows guide=\{guide\} keys=\{LEVEL_GLANCE_KEYS\} \/>\s*<Prose items=\{guide\[k\]\} \/>/);
-    assert.match(s, /r\.key === 'liveSpl' \? <Text style=\{styles\.glanceNote\}>\{WHO_LIVE_LEVEL_NOTE\}<\/Text>/, 'the WHO note still sits under the live level');
+    assert.match(s, /if \(k === 'loudness'\) \{[\s\S]*?<GlanceRows guide=\{guide\} keys=\{LEVEL_GLANCE_KEYS\} whoNote="none" \/>\s*<Prose items=\{guide\[k\]\} \/>/);
+  });
+  it('checker follow-up: the WHO hearing note stays VISIBLE in the top AT A GLANCE box, never folded', () => {
+    const top = s.slice(s.indexOf('>AT A GLANCE</Text>'), s.indexOf('THE GUIDE</Text>'));
+    assert.match(top, /whoNote=\{levelsMove \? 'end' : 'underLive'\}/);
+    assert.match(s, /\{whoNote === 'end' \? \(\s*<View style=\{\[styles\.glanceRow, styles\.rowRule\]\}>\s*<Text style=\{styles\.glanceNote\}>\{WHO_LIVE_LEVEL_NOTE\}<\/Text>/);
+    const sect = s.slice(s.indexOf("if (k === 'loudness')"), s.indexOf('return <Prose items={guide[k]} />;'));
+    assert.match(sect, /whoNote="none"/, 'the folded section never carries it');
   });
   it('every guide has an SPL & loudness section, so no level row is ever lost', async () => {
     const dir = join(ROOT, `${MG}/data/guides`);
@@ -236,11 +242,22 @@ describe('SH-71 · production gaps are asked as questions (Stage Plot’s "Is th
 
 describe('PP-02 / PO-02 · a stage opens on its questions, not on stacked boxes and long links', () => {
   const s = code(`${PR}/ProductionStageScreen.tsx`);
-  it('the stage’s notices fold into ONE line that names their kinds; a tap opens them in place (no popup)', () => {
+  it('the stage’s LEGAL notices fold into ONE line; a tap opens them in place (no popup)', () => {
     assert.match(s, /\{stage\.notices\.length > 0 \? <StageNotices notices=\{stage\.notices\} \/> : null\}/);
     assert.doesNotMatch(s, /stage\.notices\.map/);
     assert.match(s, /\{open \? notices\.map\(\(n, i\) => <Notice key=\{`stage-\$\{i\}`\} notice=\{n\} \/>\) : null\}/);
     assert.doesNotMatch(s, /<Modal|Alert\./);
+  });
+  it('checker follow-up: SAFETY and QUALIFIED PERSONNEL notices (hearing, noise, power, rigging) are always shown OPEN', () => {
+    assert.match(s, /export function noticeFolds\(kind: NoticeDef\['kind'\]\): boolean \{\s*return kind === 'legal';/);
+    assert.match(s, /const notices = all\.filter\(\(n\) => noticeFolds\(n\.kind\)\);\s*const shown = all\.filter\(\(n\) => !noticeFolds\(n\.kind\)\);/);
+    assert.match(s, /\{shown\.map\(\(n, i\) => <Notice key=\{`stage-open-\$\{i\}`\} notice=\{n\} \/>\)\}/);
+  });
+  it('the two hearing notes the checker found are SAFETY notices, so they stay open', async () => {
+    const { LABS } = await import('../src/features/production/labs.ts');
+    const hearing = (['preprod', 'postprod'] as const).flatMap((l) => LABS[l].stages.flatMap((st: { notices?: { kind: string; text: string }[] }) => st.notices ?? [])).filter((n: { text: string }) => /hearing|noise|monitoring level|close listening/i.test(n.text));
+    assert.ok(hearing.length >= 3);
+    for (const n of hearing) assert.notEqual(n.kind, 'legal', n.text.slice(0, 60));
   });
   it('section notices still sit beside their own questions', () => {
     assert.match(s, /section\.notices\.map\(\(n, i\) => \(\s*<Notice key=\{`\$\{section\.sectionId\}-\$\{i\}`\} notice=\{n\} \/>/);
@@ -411,7 +428,8 @@ describe('SH-15 · Beginning Mixing page 4: a mix looked at with sound off shows
     assert.deepEqual(STORED_P4_LEVELS.b, { peakDb: r(b.peakDb), rmsDb: r(b.rmsDb) });
   });
   it('only a mix pressed with sound off (pb.studied) gets one; the bar says NOT HEARD', () => {
-    assert.match(code(`${MX}/pagesA.tsx`), /<HeadroomArt measured=\{pb\.measured\} stored=\{Object\.fromEntries\(pb\.studied\.filter/);
+    assert.match(code(`${MX}/pagesA.tsx`), /const stored = Object\.fromEntries\(pb\.studied\.filter/);
+    assert.match(code(`${MX}/pagesA.tsx`), /<HeadroomArt measured=\{pb\.measured\} stored=\{stored\} \/>/);
     const art = code(`${MX}/begArt.tsx`);
     assert.match(art, /sub=\{a \? \(aStored \? 'NOT HEARD' : 'MEASURED'\) : 'PLAY IT'\}/);
     assert.match(art, /'Stored, not heard \(sound is off\)'/);
@@ -421,5 +439,17 @@ describe('SH-15 · Beginning Mixing page 4: a mix looked at with sound off shows
 describe('SH-26 · Beginning Mixing page 1 spells out its short track names where they first appear', () => {
   it('PERC, GTR and BGV are spelled out in the sentence under the first picture', () => {
     assert.match(fn(code(`${MX}/pagesA.tsx`), 'PageWhatMixingDoes'), /\(PERC = percussion, GTR = guitar, BGV = backing vocals\)/);
+  });
+});
+
+describe('Checker follow-up · Beginning Mixing page 4 with sound off: both columns and the caption are true', () => {
+  it('MIX B says NOT HEARD when its bar is stored (it showed "+3.0 dB")', () => {
+    assert.match(code(`${MX}/begArt.tsx`), /sub=\{b \? \(bStored \? 'NOT HEARD' : a \? `\+\$\{\(b\.rmsDb - a\.rmsDb\)\.toFixed\(1\)\} dB` : 'MEASURED'\) : 'PLAY IT'\}/);
+  });
+  it('the caption says "measured in advance … NOT HEARD" while a bar is stored, "measured as they play" otherwise', () => {
+    const p = fn(code(`${MX}/pagesA.tsx`), 'PageGainStaging');
+    assert.match(p, /const fromStore = Object\.keys\(stored\)\.some\(\(id\) => !pb\.measured\[id\]\);/);
+    assert.match(p, /\$\{rightSide\}\. Vote with your ears first/);
+    assert.match(p, /\$\{rightSide\} — B’s bar sits 3 dB higher/);
   });
 });

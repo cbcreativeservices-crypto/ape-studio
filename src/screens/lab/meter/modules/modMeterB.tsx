@@ -43,6 +43,8 @@ import {
   SPECTRUM_LABELS,
   type SpectrumKey,
   spectrumDb,
+  spectrumPeak,
+  fmtPeakHz,
   SPECTROGRAM_LABELS,
   type SpectrogramKey,
   type WaterfallOpts,
@@ -66,21 +68,15 @@ function fmtHz(f: number): string {
   return f >= 1000 ? `${(f / 1000).toFixed(f >= 10000 ? 0 : 1)} kHz` : `${Math.round(f)} Hz`;
 }
 
-/** Scan the teaching spectrum over log-spaced points: peak + fitted tilt. */
+/** Scan the teaching spectrum over log-spaced points: fitted tilt; the peak is the shared spectrumPeak. */
 function scanSpectrum(key: SpectrumKey): { peakF: number; peakDb: number; tiltDbOct: number } {
   const N = 480;
   const lgLo = Math.log10(20);
   const lgHi = Math.log10(20000);
-  let peakF = 20;
-  let peakDb = Number.NEGATIVE_INFINITY;
   let sx = 0, sy = 0, sxx = 0, sxy = 0;
   for (let i = 0; i < N; i++) {
     const f = Math.pow(10, lgLo + ((lgHi - lgLo) * i) / (N - 1));
     const v = spectrumDb(key, f);
-    if (v > peakDb) {
-      peakDb = v;
-      peakF = f;
-    }
     const oct = Math.log2(f); // regression vs octaves → slope is dB/oct
     sx += oct;
     sy += v;
@@ -88,7 +84,9 @@ function scanSpectrum(key: SpectrumKey): { peakF: number; peakDb: number; tiltDb
     sxy += oct * v;
   }
   const tilt = (N * sxy - sx * sy) / (N * sxx - sx * sx);
-  return { peakF, peakDb, tiltDbOct: tilt };
+  // Checker fix (2026-11-15): PEAK is the shared true peak, the same one the drawing's marker flags.
+  const pk = spectrumPeak(key);
+  return { peakF: pk.f, peakDb: pk.db, tiltDbOct: tilt };
 }
 
 /** How close the EQ's centre must sit to the ringing ridge before the lane is
@@ -310,7 +308,7 @@ export function SpectrumModule(p: MeterModuleProps) {
         bezel: [
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
           // MT-01: PEAK too ('1.7 kHz' was a hair wider than its cell at 390): number over unit, key kept.
-          { k: 'PEAK', v: fmtHz(scan.peakF).split(' ')[0], sub: fmtHz(scan.peakF).split(' ')[1], vA11y: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
+          { k: 'PEAK', v: fmtPeakHz(scan.peakF).split(' ')[0], sub: fmtPeakHz(scan.peakF).split(' ')[1], vA11y: fmtPeakHz(scan.peakF), helpKey: 'spectrum_read' },
           // MT-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the number on the value line, the unit on
           // the sub line, so LEVEL and TILT keep their names at phone width (D36 dropped them).
           { k: 'LEVEL', v: (Math.abs(scan.peakDb) < 0.05 ? 0 : scan.peakDb).toFixed(1), sub: 'dB rel', helpKey: 'spectrum_read' },

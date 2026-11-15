@@ -51,7 +51,7 @@ const base = stringsCopy({
   workedLine: 'This starting point sits near {line}, above the plate and in front of it.',
   workedAim: 'Aim at a broad area around the middle of the plate, on the far side of the bridge from the neck, not straight at one bridge point — the lab counts it while the mic’s axis, the line it points along, meets the plate within about 7 cm of {head}.',
   clearWhat: 'the plucking hand and arm, the left hand along the neck, the gourd on the thigh, the yali and the player’s view',
-  placementReveal: 'Toward the bridge tends to bring more of each note’s start, and maybe more click or buzz; a broad view of the plate, more body; farther back, more of the room and the ensemble. Every veena and room differs, so “it depends on this veena” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+  placementReveal: 'Toward the bridge tends to bring more of each note’s start, and maybe more click or buzz; a broad view of the plate, more body; farther back, more of the room and the ensemble. Every veena and room differs, so “it depends on this veena” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
   typeNotes: {
     sdcCard: 'Ideas to try: begin over the plate, out of the hand’s reach; then change one thing — turn a little toward the bridge, or come back a little — and listen to melody, a gamaka, a tala stroke and a decay each time.',
     instDynCard: 'Ideas to try with a dynamic: over the plate on a stage; watch the proximity bass if you come closer.',

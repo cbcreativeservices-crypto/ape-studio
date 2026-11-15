@@ -205,7 +205,11 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>
             {healthy
               ? '✓ Balanced — a healthy operating level at every stage, no baked-in distortion.'
-              : 'Not balanced yet — flip on the X-Ray, find the stage that is too hot or too weak, and fix it THERE.'}
+              : // GN-03 checker fix (owner 2026-11-15: "build waves 1 thru 3", D62): X-RAY now starts ON,
+                // so the note reads by its state instead of always saying "flip on".
+                xray
+                ? 'Not balanced yet — read the X-Ray meters, find the stage that is too hot or too weak, and fix it THERE.'
+                : 'Not balanced yet — turn X-RAY back on to see every meter, find the stage that is too hot or too weak, and fix it THERE.'}
           </Text>
         </View>
       </View>

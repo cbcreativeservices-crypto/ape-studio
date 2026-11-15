@@ -53,7 +53,7 @@ export const CHINA_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the China — the lab counts it while the mic’s axis meets the plate. On a tilted China, “above” is measured square to its rim plane.',
     workedClear: 'Clear of every part — the stick’s side, the swing after the hardest crash, the ride beside it and the player’s arm. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the lip tends to bring more of the trashy edge; toward the cup a harder, more focused tone — and every China is different. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Toward the lip tends to bring more of the trashy edge; toward the cup a harder, more focused tone — and every China is different. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: above the China on the far side, change the height first, then the aim. Underneath, aimed up, start below the plate’s lowest point in its mount — the cup when it is turned over.',
       smallDynCard: 'Ideas to try: a dynamic above the China on the far side; a China cuts through, so distance is your friend.',

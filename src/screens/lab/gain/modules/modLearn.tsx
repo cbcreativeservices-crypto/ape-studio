@@ -41,8 +41,10 @@ export function ZoneLegend() {
     <View style={styles.legend}>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#2f74ff' }]} /><Text style={styles.legendText}>TOO LOW</Text></View>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#3fae52' }]} /><Text style={styles.legendText}>HEALTHY</Text></View>
-      {/* GN-02 (owner 2026-11-15, D62): the key uses STATUS's words — red is HOT, then CLIP at the line. */}
-      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>HOT · CLIP</Text></View>
+      {/* GN-02 (owner 2026-11-15, D62): the key uses STATUS's words AND colors (checker fix: HOT is
+          amber on STATUS and on the meter's top, CLIP red), so one swatch each. */}
+      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ffc64d' }]} /><Text style={styles.legendText}>HOT</Text></View>
+      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>CLIP</Text></View>
       {/* The grey band at a meter's foot is the stage's hiss — the noise floor
           every stage amplifies (art grading 2026-10-16: it had no key). */}
       <View style={[styles.legendItem]}>

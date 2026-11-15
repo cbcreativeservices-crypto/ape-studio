@@ -72,7 +72,7 @@ export const A05A_LESSON: Lesson = buildSaxLesson({
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A soprano player moves the straight horn a lot: a closer, aimed mic — or a clip on the bell that moves with it — helps against the stage and feedback.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A little distance can blend the straight bell and the body and make the soprano feel less “inside the bell”.',
-  placementReveal: 'Toward the holes tends to bring warmth and more key noise; toward the bell, brightness and edge; farther, more of the whole horn and the room. On the straight soprano the bell and the upper holes sit far apart, so no close spot hears all of it. Each zone’s TENDENCY line is an idea to check by ear.',
+  placementReveal: 'Toward the holes tends to bring warmth and more key noise; toward the bell, brightness and edge; farther, more of the whole horn and the room. On the straight soprano the bell and the upper holes sit far apart, so no close spot hears all of it. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
   typeNotes: {
     saxDynCard: 'Ideas to try: begin a few centimeters above the bell, aimed up the body toward the holes; then compare the bell axis and the middle of the key stack, one change at a time, with low and high notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',

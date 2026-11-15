@@ -67,6 +67,19 @@ Shared data files touched, my labs' entries only: `src/features/lab/guidedLesson
 - Signal Chain: the plain words take the "bypassed" word's place under each dark unit.
 - Digital M2: the sound-off line shows only while sound is off.
 
+## Checker fixes (CHECK_F6a_REPORT.md, 2026-11-15)
+
+| Checker item | Fix | Files | Test |
+|---|---|---|---|
+| GN-03 FAIL: the M6 note says "flip on the X-Ray" while X-RAY now starts on | The note follows the X-RAY state. On: "Not balanced yet — read the X-Ray meters, find the stage that is too hot or too weak, and fix it THERE." Off: "…turn X-RAY back on to see every meter…". | gain/modules/modExplore.tsx | F6a "Checker fixes" |
+| DG-02 FAIL: the M5 ZONE sub "analog + digital" was cut to "analog + d…" at 390 (95 px in a 67 px cell) | The sub is now "both stages" (11 characters, within the ~11 that fit); analog-only stays "analog". The card, the guide and the Digital guided lesson use the same words ("CLIP, both stages"; the changes line says "both stages: analog and digital"). | digital/modules/modChain.tsx, digitalScreenGuides.ts, guidedLessons/content.ts (Digital entry, Edit tool); test/screenGuide_digital_20261031.test.ts (pin) | F6a "DG-02"; screenGuide_digital |
+| §3.1 Gain: HOT is red on the key but amber on STATUS and the meter | The key now has one swatch per state: HOT amber (#ffc64d, the STATUS tint), CLIP red. The guide lines say "amber from −6 dB (HOT), red at the 0 dB line (CLIP)". | gain/modules/modLearn.tsx, gainScreenGuides.ts | F6a "GN-02" |
+| §3.2 Gain: the meter tag says "LOW" where STATUS and the key say "TOO LOW" | A region word that fits on one line is kept whole: 8 characters or fewer (OVERLOAD, about 38 pt, was measured to fit the 44-pt tag). So TOO LOW stays TOO LOW, and only QUIET SOURCE shortens (to QUIET). The extra second line is kept only for a word that needs it. | gain/gainViz.tsx; test/labFixes_20261114_F6.test.ts, test/gainEmulatorPass_20261014.test.ts (pins updated, owner's words) | F6a "Checker fixes" |
+| §3.3 Gain M3: the card says PROC, the readout PROCESSOR | The M3 guide says PROCESSOR throughout. It mentions "column PROC" once, so the drawing's tag can still be found. | gainScreenGuides.ts | F6a "Checker fixes" |
+| §3.4 Spectrum: the marker says 223 Hz, the PEAK readout 219 Hz | Neither was right: the peak is at 220 Hz, and the two used different sampling grids. One shared `spectrumPeak(key)` (a 2000-point grid plus a fine search) and one format `fmtPeakHz` in meterEngine.ts now feed both. Results: SPEECH 220 Hz, KICK DRUM 60 Hz, MAINS HUM 60 Hz, FEEDBACK 1.75 kHz. FEEDBACK had the same split before (readout 1.7 kHz, marker 1.75 kHz). The guide and the Meter guided lesson now say 1.75 kHz. Left as written: the Spectrum CHECK YOURSELF question still says "spike at 1.7 kHz", because quiz decks are out of this round. | meter/meterEngine.ts, vizSpectral.tsx, modules/modMeterB.tsx, meterScreenGuides.ts, guidedLessons/content.ts (Meter entry, Edit tool); test/screenGuide_meter_20261031.test.ts (pin, owner's words) | F6a "Checker fixes", "MT-01"; screenGuide_meter |
+
+After the fixes: `test/labWaves_20261115_F6a.test.ts` 51 pass, 0 fail, and every existing test that reads a file I touched passes. Not re-seen on screen (the preview problem below). That "both stages" fits rests on the checker's own measurement: about 11 characters fit the 67 px cell.
+
 ## What I could not check, and why
 
 - **The preview was unstable all session.** Twelve builders saved into one dev server: every save reloaded my tab (often mid-check), a full reload took 1-3 minutes, another group's syntax error (FmLabScreen.tsx) blanked the bundle for a while, and for long stretches the Browser pane was hidden, so the page did not draw and taps were refused. Screenshots came back as a 2x crop of the top-left corner, so I measured with the DOM instead (positions, font sizes, widths).

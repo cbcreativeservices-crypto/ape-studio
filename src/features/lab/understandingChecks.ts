@@ -418,7 +418,7 @@ const REVERB: readonly Q[] = [
     why: {
       'The reverb is twice as loud as the dry sound': 'How loud the reverb is belongs to MIX. RT60 is measured in seconds, so it describes a time.',
       '2 seconds pass before the reverb starts': 'The wait before the reverb begins is PRE-DELAY, and it is measured in milliseconds.',
-      'The room is 60 meters long': 'The 60 in RT60 is not a length. Read the readout’s full name: DECAY TIME (RT60).',
+      'The room is 60 meters long': 'The 60 in RT60 is not a length. On EXPLORE, the RT60 readout is named DECAY TIME.',
     },
   },
   {

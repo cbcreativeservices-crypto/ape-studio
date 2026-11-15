@@ -502,7 +502,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim between the lip plate and the first keys — the lab counts it while the mic points within about {tol}° of that spot — angled out of the air jet. It is the flute’s figure, a comparison to begin with.',
     workedClear: 'Clear of every part — the air jet, the head’s turn and the hands. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Farther tends to bring more room with fewer clicks and gusts; closer, more detail, breath and key action. Players vary, so “nothing changes” is the one answer to rule out. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Farther tends to bring more room with fewer clicks and gusts; closer, more detail, breath and key action. Players vary, so “nothing changes” is the one answer to rule out. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin close, between the lip plate and the first keys, off the jet; then behind the head, or farther in front in a good room — at matched level, low to high.',
       wwHeadset: 'Ideas to try with a headset: keep the capsule beside the lips, out of the jet; change only its angle — and check the whole register.',

@@ -242,3 +242,178 @@ describe('SN-5: LEARN and LAB NOTES end on "Done here? Try CHECK ›"; the repea
     assert.match(shell, /tryCheck: \{ alignSelf: 'flex-start', minHeight: 44/);
   });
 });
+
+// ─────────────────────────────────────────────── Checker follow-up 1: lockedValue fits
+// Data-driven: every `lockedValue` any screen passes (a literal, or the
+// string argument a helper forwards into `lockedValue`) must fit a dock key
+// at 9 pt or more on a 390 phone without "…", even at an EVEN share of a
+// six-key dock (no other key has to give it room). And the key asks the strip
+// for room for its words, so at 320 the strip widens it instead of cutting.
+import { readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+
+function srcFiles(dir: string, out: string[] = []): string[] {
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name);
+    if (statSync(p).isDirectory()) srcFiles(p, out);
+    else if (/\.tsx?$/.test(name)) out.push(p);
+  }
+  return out;
+}
+/** Split a call's argument text at its top-level commas. */
+function topArgs(s: string): string[] {
+  const out: string[] = [];
+  let depth = 0, cur = '', q: string | null = null;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (q) { cur += c; if (c === q && s[i - 1] !== String.fromCharCode(92)) q = null; continue; }
+    if (c === "'" || c === '"' || c === '`') { q = c; cur += c; continue; }
+    if ('([{'.includes(c)) depth++;
+    if (')]}'.includes(c)) depth--;
+    if (c === ',' && depth === 0) { out.push(cur.trim()); cur = ''; continue; }
+    cur += c;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+/** A string / template literal's widest text (each `${…}` counted as 2 characters), or null. */
+function literalText(a: string): string | null {
+  const m = a.match(/^(['"`])([\s\S]*)\1$/);
+  return m ? m[2].replace(/\$\{[^}]*\}/g, 'MM') : null;
+}
+function lockedValues(): { where: string; text: string | null }[] {
+  const found: { where: string; text: string | null }[] = [];
+  let quietSourced = false;
+  const SKIP = /[\\/]rack[\\/](rackTypes|RackUnit)\.tsx?$/;
+  for (const f of srcFiles(join(ROOT, 'src'))) {
+    if (SKIP.test(f)) continue;
+    const s = read(f.slice(ROOT.length + 1)).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    if (!s.includes('lockedValue')) continue;
+    const rel = f.slice(ROOT.length + 1);
+    // 1. literals: lockedValue: '…'
+    for (const m of s.matchAll(/lockedValue\s*:\s*(['"`][^'"`]*['"`])/g)) found.push({ where: rel, text: literalText(m[1]) });
+    // 2. helpers that forward a parameter into lockedValue: every call's argument
+    for (const m of s.matchAll(/function\s+(\w+)\s*\(([^)]*)\)[^{]*\{[^}]*\blockedValue\b(?!\s*:)/g)) {
+      const params = topArgs(m[2]).map((p) => p.split(/[:=?]/)[0].trim());
+      const idx = params.indexOf('lockedValue');
+      if (idx < 0) continue;
+      for (const c of s.matchAll(new RegExp(String.raw`\b${m[1]}\(`, 'g'))) {
+        if (s.slice(Math.max(0, c.index! - 9), c.index) === 'function ') continue;
+        let depth = 0, j = c.index! + m[1].length;
+        for (; j < s.length; j++) { if (s[j] === '(') depth++; else if (s[j] === ')') { depth--; if (depth === 0) break; } }
+        found.push({ where: `${rel} ${m[1]}()`, text: literalText(topArgs(s.slice(c.index! + m[1].length + 1, j))[idx] ?? '') });
+      }
+    }
+    // 3. anything else that sets lockedValue from a variable would hide from this test
+    for (const m of s.matchAll(/lockedValue\s*:\s*([A-Za-z_$][\w$.]*)/g)) {
+      // a type annotation (`lockedValue: string`) or a forwarded parameter is not a value
+      if (m[1] === 'string' || m[1] === 'lockedValue') continue;
+      // FxLabScreen: lockedValue = quiet(id)?.value, where `quiet` is a config's
+      // ignoredBy(...) answer `{ why, value }`. Those values are read below.
+      if (m[1] === 'quiet' && /const quiet = /.test(s) && /\{ why: string; value: string \}/.test(s)) {
+        quietSourced = true;
+        continue;
+      }
+      found.push({ where: `${rel} (lockedValue: ${m[1]})`, text: null });
+    }
+  }
+  // every `{ why: …, value: '…' }` an Fx config's ignoredBy returns
+  if (quietSourced) {
+    for (const f of srcFiles(join(ROOT, 'src'))) {
+      const s = read(f.slice(ROOT.length + 1));
+      for (const m of s.matchAll(/\{\s*why:\s*[^,{}]+,\s*value:\s*('[^']*'|"[^"]*"|`[^`]*`|[^\s}]+)\s*\}/g)) {
+        found.push({ where: `${f.slice(ROOT.length + 1)} ignoredBy { why, value }`, text: literalText(m[1]) });
+      }
+    }
+  }
+  return found;
+}
+
+describe('Checker follow-up 1: every lockedValue a lab passes fits its dock key at 9 pt, never "…"', () => {
+  // The dock value font is Share Tech Mono; ~0.6 em a character is the
+  // estimate BezelReadouts uses (it measured "after 2 notes" at 98 px / 13
+  // characters at 14 pt, about 0.54 em, so 0.6 is on the safe side).
+  const CH_9PT = 9 * 0.6;
+  const STRIP_390 = 390 - 2 * 8; // RackUnit styles.dock paddingHorizontal 8
+  const KEYS = 6;
+  const EVEN_KEY = (STRIP_390 - 6 * (KEYS - 1)) / KEYS; // DOCK_KEY_GAP 6
+  const CHROME = 2 + 2 * 4; // border + DOCK_KEY_PAD a side
+  const MARGIN = 1.2; // VALUE_FIT_MARGIN_PX
+
+  it('every value is a literal this test can read (no lab hides one behind a variable)', () => {
+    const vals = lockedValues();
+    for (const v of vals) assert.ok(v.text != null, `${v.where}: pass lockedValue as a string literal so it can be checked`);
+  });
+  it(`each gets the room it needs at 9 pt in a ${KEYS}-key dock at 390 (the real strip rule, dockStripFit)`, async () => {
+    const { dockStripFit } = await import('../src/screens/lab/rack/dockFit.ts');
+    for (const v of lockedValues()) {
+      if (v.text == null) continue;
+      // dockKeyNeed for a value key: chrome + its words at 9 pt + the value margin, +1
+      const need = Math.ceil(CHROME + v.text.length * CH_9PT + MARGIN) + 1;
+      const needs = [need, ...Array(KEYS - 1).fill(44)];
+      const row = dockStripFit(needs, STRIP_390);
+      const width = row ? row.widths[0] : EVEN_KEY;
+      assert.ok(width >= need, `${v.where}: "${v.text}" needs ${need} px at 9 pt, the strip gives ${width.toFixed(1)}`);
+      assert.ok(!row || !row.wrap, `${v.where}: "${v.text}" would push a ${KEYS}-key dock at 390 onto two rows`);
+    }
+  });
+  it('the test finds the values that exist (Tuning ch. 7 today)', () => {
+    const s = lockedValues();
+    if (/lockedValue/.test(read('src/screens/lab/tuning/chapters/ch7Just.tsx'))) assert.ok(s.filter((v) => v.where.includes('ch7Just') && v.text).length >= 1, JSON.stringify(s));
+  });
+  it('a locked fader with lockedValue asks the strip for room for its words; LOCKED keys are as before', () => {
+    const r = code('src/screens/lab/rack/RackUnit.tsx');
+    assert.match(r, /value=\{p\.lockedValue \?\? 'LOCKED'\}\s*valueSpan=\{p\.lockedValue\}\s*glyph="▪"/);
+    const b = code('src/screens/lab/rack/DockButton.tsx');
+    assert.match(b, /value: glyph === '▪' && !valueSpan \? 0 : valueSpan \? Math\.max\(valueW, spanW\) : valueW,/);
+  });
+  it('dockKeyNeed: the words at 9 pt are inside the need the key reports', async () => {
+    const { dockKeyNeed, dockValueFitSize } = await import('../src/screens/lab/rack/dockFit.ts');
+    const value14 = '2 notes'.length * 14 * 0.6; // its width at the dock's 14 pt
+    const need = dockKeyNeed({ chrome: CHROME, labelBase: 11, label: 30, valueBase: 14, value: value14 });
+    const inner = need - CHROME;
+    const fs = dockValueFitSize(14, value14, inner);
+    assert.ok(fs != null && fs >= 9, `drawn at ${fs} pt in a key of its need`);
+  });
+});
+
+// ─────────────────────────────────────────────── Checker follow-up 2: the closing card keeps its content
+describe('Checker follow-up 2: a closing Guided Lesson card never turns into the whole lesson', () => {
+  it('sheetContent: open → what the host passes; closing → what it was last opened with', async () => {
+    const { sheetContent } = await import('../src/features/lab/guidedLessons/sheetContent.ts');
+    const open = { controlKey: 'frequency', lesson: 'L' };
+    assert.deepEqual(sheetContent(true, open, open), open);
+    // FxLabScreen closes with setHelp(null): controlKey undefined while sliding away
+    assert.deepEqual(sheetContent(false, { controlKey: undefined, lesson: 'L' }, open), open);
+  });
+  it('the sheet latches what it was opened with and draws that while closing; long-press and LEARN MORE untouched', () => {
+    const c = code('src/features/lab/guidedLessons/GuidedLessonSheet.tsx');
+    assert.match(c, /const shownRef = useRef\(\{ controlKey, lesson \}\);\s*if \(visible\) shownRef\.current = \{ controlKey, lesson \};\s*\(\{ controlKey, lesson \} = sheetContent\(visible, \{ controlKey, lesson \}, shownRef\.current\)\);\s*const control = controlKey \?/);
+    assert.match(c, /onPress=\{\(\) => setExpanded\(true\)\}/);
+    assert.match(c, /useEffect\(\(\) => \{\s*setExpanded\(false\);\s*\}, \[visible, controlKey\]\);/);
+  });
+});
+
+// ─────────────────────────────────────────────── SN-6 (F6b checker): the tray ⓘ tap area
+describe('SN-6: the open tray ⓘ has a 44 pt tap area that reaches neither the ✕ nor the first choice', () => {
+  it('44 x 44 round the 23 x 18 glyph box, none to the right, at most the 8 px card gap down', async () => {
+    const { TRAY_HELP_SLOP: s } = await import('../src/screens/lab/rack/dockFit.ts');
+    assert.ok(23 + s.left + s.right >= 44, 'wide enough');
+    assert.ok(18 + s.top + s.bottom >= 44, 'tall enough');
+    assert.equal(s.right, 0, 'the ✕ (10 px away, its own slop 10) keeps that gap');
+    assert.ok(s.bottom <= 8, 'never into the first choice (card gap 8)');
+  });
+  it('the ⓘ uses it, draws the same glyph with the same style, and the ✕ is unchanged', () => {
+    const t = code('src/screens/lab/rack/DockTray.tsx');
+    assert.match(t, /style=\{\[styles\.helpKey, helpKeyArea\]\}/);
+    assert.match(t, /helpKey: \{ paddingHorizontal: 4 \}/);
+    // every px of padding is given back as margin: nothing drawn moves
+    for (const side of ['Left', 'Right', 'Top', 'Bottom']) {
+      const k = side.toLowerCase();
+      assert.match(t, new RegExp(`padding${side}: ${side === 'Left' || side === 'Right' ? '4 \\+ ' : ''}TRAY_HELP_SLOP\\.${k},\\s*margin${side}: -TRAY_HELP_SLOP\\.${k},`));
+    }
+    assert.match(t, /<Pressable onPress=\{onClose\} hitSlop=\{10\} accessibilityRole="button" accessibilityLabel="Close">/);
+    assert.match(t, /head: \{ flexDirection: 'row', alignItems: 'center', gap: 10 \}/);
+    assert.match(t, /card: \{[\s\S]*?padding: 10,\s*gap: 8,/);
+  });
+});

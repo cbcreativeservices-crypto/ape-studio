@@ -103,7 +103,11 @@ describe('Beginning Mixing page 15: the inspection waits for a bounce', () => {
 describe('Beginning Mixing page 4: the caption waits for the blind vote', () => {
   it('"B’s bar sits 3 dB higher" shows only after a vote', () => {
     const s = code(`${MX}/pagesA.tsx`);
-    assert.match(s, /\{verdict == null\s*\? 'Left: the worst case, identical peaks landing at once\. Right: the two mixes below, measured as they play\. Vote with your ears first, before you read the bars\.'\s*: 'Left: [^']*B’s bar sits 3 dB higher/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-15, checker follow-up): the
+    // right-hand clause says "measured in advance … NOT HEARD" while a bar is stored (sound off); the
+    // rule pinned here is unchanged: "B’s bar sits 3 dB higher" only after the vote.
+    assert.match(s, /\{verdict == null\s*\? `Left: the worst case, identical peaks landing at once\. \$\{rightSide\}\. Vote with your ears first, before you read the bars\.`\s*: `Left: [^`]*\$\{rightSide\} — B’s bar sits 3 dB higher/);
+    assert.match(s, /const rightSide = fromStore \? 'Right: the two mixes below, measured in advance \(sound is off, so NOT HEARD\)' : 'Right: the two mixes below, measured as they play';/);
   });
 });
 

@@ -33,6 +33,8 @@ import {
   hashN,
   spectrogramLevel,
   spectrumDb,
+  spectrumPeak,
+  fmtPeakHz,
   waterfallRt,
   waterfallRidge,
   RIDGE_CALLOUT_RATIO,
@@ -129,10 +131,6 @@ const F_HI = 20000;
 /** 0..1 position of f on the 20 Hz → 20 kHz log axis. */
 const lgFrac = (f: number) => Math.log(f / F_LO) / Math.log(F_HI / F_LO);
 
-function fmtHz(f: number): string {
-  if (f < 1000) return `${Math.round(f)} Hz`;
-  return `${(f / 1000).toFixed(2).replace(/\.?0+$/, '')} kHz`;
-}
 
 /** Legibility floor for every overlay label (owner 2026-09-25: "text too
  *  small to read … 9 pt minimum"). */
@@ -352,6 +350,8 @@ export function SpectrumPatternView(p: {
     under.lineTo(PAD_L + plotW, baseY);
     under.lineTo(PAD_L, baseY);
     under.close();
+    // The marker sits on the SAME peak the PEAK readout prints (meterEngine.spectrumPeak).
+    ({ f: peakF, db: peakDb } = spectrumPeak(p.pattern));
     // Peak annotation: thin marker line up into the label row + a tip wedge.
     const marker = Skia.Path.Make();
     const px = xOf(peakF);
@@ -424,7 +424,7 @@ export function SpectrumPatternView(p: {
       </Ax>
       {/* Peak Hz label rides the marker. */}
       <Ax x={Math.max(0, Math.min(w - 80 * ts, envelope.px - 40 * ts))} w={80 * ts} y={1 * ts} size={8.5} color={markerColor}>
-        {fmtHz(envelope.peakF)}
+        {fmtPeakHz(envelope.peakF)}
       </Ax>
     </View>
   );

@@ -77,7 +77,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     tryThis: [
       'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: 500 ms. In LAB NOTES, the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
       'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the gray dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
-      'Open COLOR and turn PING-PONG on with SOURCE on CLICK 120: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L.',
+      'Set FDBK to 50%, open COLOR and turn PING-PONG on: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L.',
     ],
   },
 

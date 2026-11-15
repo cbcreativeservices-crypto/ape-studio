@@ -350,10 +350,12 @@ describe('Phase 2 · silent learner and bezel captions (S3)', () => {
       ['OscillatorLabScreen.tsx', ['the pitch', 'drawn as']],
       ['NoiseLabScreen.tsx', ['how it tilts', 'output level']],
       ['FmLabScreen.tsx', ['the note', 'the shaker', 'how hard', 'how wide']],
-      ['ModularLabScreen.tsx', ['tone shape', 'filter peak', 'wobbler', 'steps a second']],
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, F8a checker fix): captions that fit at 390;
+      // THD's caption no longer calls it a share (it can pass 100 %).
+      ['ModularLabScreen.tsx', ['the wave', 'filter peak', 'wobbler', 'speed']],
       ['AutotuneLabScreen.tsx', ['how far pulled', 'how fast', 'still off by']],
       ['HarmonographLabScreen.tsx', ['swing ratio']],
-      ['HarmonicsView.tsx', ['the pitch', 'overtone share', 'how spiky']],
+      ['HarmonicsView.tsx', ['the pitch', 'vs the note', 'how spiky']],
     ];
     for (const [f, caps] of want) {
       const s = read(`${LAB}/${f}`);

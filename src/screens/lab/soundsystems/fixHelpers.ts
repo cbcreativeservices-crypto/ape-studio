@@ -156,6 +156,7 @@ export const CONSOLE_STEPS: Readonly<Record<string, readonly ConsoleStep[]>> = {
  *  else the first step with a requirement still unmet; -1 when every step
  *  is met and nothing was picked (all headers show ✓). */
 export function openConsoleStep(steps: readonly ConsoleStep[], met: readonly string[], picked: number | null): number {
+  if (picked === -1) return -1; // the open step's own header folded it shut
   if (picked != null && picked >= 0 && picked < steps.length) return picked;
   return steps.findIndex((s) => s.reqs.some((r) => !met.includes(r)));
 }

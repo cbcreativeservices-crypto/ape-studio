@@ -491,7 +491,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the middle of the instrument — the lab counts it while the mic points within about {tol}° of it — so the holes and the bell are heard together.',
     workedClear: 'Clear of every part — the peg and its path, the chair and the feet, the neck, the hands and the bell. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the bell tends to bring more low-note weight; toward the keys, more articulation and clicks; the blend view, both. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Toward the bell tends to bring more low-note weight; toward the keys, more articulation and clicks; the blend view, both. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin 0.6–1.2 m in front at the middle; then the blend view and the bell view — one change at a time, low, middle and high phrases each time.',
       wwMini: 'Ideas to try with a miniature: keep its clip on the bell’s rim; change only the capsule’s angle between the bell and the keys while the player plays the whole part.',

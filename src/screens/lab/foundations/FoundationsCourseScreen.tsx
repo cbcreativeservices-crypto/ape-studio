@@ -1966,9 +1966,9 @@ const STEPS: Step[] = [
     title: 'ONE WAVE, TWO QUESTIONS',
     paras: [
       // FO-01: the recording view first, the room second, as the display now shows them.
-      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW (recording software) is simply where you will meet it most.',
+      'THE MIC’S OUTPUT is measured at the mic only. The mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW (recording software) is simply where you will meet it most.',
       'Why does it slide LEFT? Because this view is RECORDING, live — exactly what a DAW does when the view follows the playhead (the moving play position): new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
-      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
+      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to: follow its cable down into MIC INPUT.',
       'Freeze, then drag the PROBE. The crests pair up: the crest the mic drew one period ago (4.5 ms at 220 Hz) has traveled exactly one wavelength (1.56 m) past it down the room — distance = speed × time ties the two rulers together at every point. One wave, two rulers, one equation.',
     ],
     Rack: M7Rack,

@@ -275,8 +275,8 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     ],
     control: [
       'Ride the NOTES fader to reveal the mapping one note at a time.',
-      'The PLAY key reads after 2 notes, dimmed, until a second note is out. Then it plays C with the newest note. From G it adds C, E 5/4, G 3/2, CHORD 4:5:6 and ALIGNED PARTIALS, then each pure third you reveal.',
-      'TONIC (C, F, G, D) and RETUNE read after all 8 until all eight notes are out. RETUNE rebuilds the set around the tonic. ■ STOP silences.',
+      'The PLAY key reads 2 notes, dimmed, until a second note is out. Then it plays C with the newest note. From G it adds C, E 5/4, G 3/2, CHORD 4:5:6 and ALIGNED PARTIALS, then each pure third you reveal.',
+      'TONIC (C, F, G, D) and RETUNE read all 8, dimmed, until all eight notes are out. RETUNE rebuilds the set around the tonic. ■ STOP silences.',
     ],
     changes: [
       'Small ratios give pure chords: C, E, G = 4 : 5 : 6.',
@@ -332,21 +332,21 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
   {
     intro: {
       learning: 'Quarter-comma meantone narrows every fifth by about 5.38 ¢ so its major thirds come out pure; the leftover gathers in one badly mistuned fifth, the wolf.',
-      start: 'Ride PART from A to E. In Part C, double-tap the FIFTH lane for 700 ¢, then tap SHOW ME and watch FROM 5/4 reach 0 ¢. In Part E, play the wolf.',
+      start: 'Ride PART from A to E. In Part C, double-tap the FIFTH lane for 700 ¢, then tap SHOW ME and watch FROM PURE reach 0 ¢. In Part E, play the wolf.',
     },
     seeing: [
       'You build meantone in five short parts; the display follows PART: the C·D·E rail (A), four fifths on the rail (B), harmonic ladders with a meter (C), the scale (D), the twelve-note chain with the wolf’s two ends in red (E).',
-      'The readouts change with the part: FIFTH, g⁴/4 and FROM 5/4 in Part C (g is the meantone fifth); WOLF, NORMAL and WIDER BY in Part E.',
+      'The readouts change with the part: FIFTH, THIRD and FROM PURE in Part C; WOLF, NORMAL and WIDER BY in Part E. MATH (top right) adds the algebra.',
     ],
     control: [
       'Ride PART from A to E, or tap it for the list.',
-      'In B, PLAY the pure fifth 3/2 or the meantone fifth ⁴√5.',
-      'In C, ride the FIFTH fader, 690–705 ¢. It snaps gently near ⁴√5; double-tap the lane for 700 ¢. SHOW ME lands it; ▶ C–E–G plays the triad.',
+      'In B, PLAY the pure fifth 3/2 or the meantone fifth.',
+      'In C, ride the FIFTH fader, 690–705 ¢. It snaps gently near the meantone fifth; double-tap the lane for 700 ¢. SHOW ME lands it; ▶ C–E–G plays the triad.',
       'In D, NOTES reveals the scale and ▶ SCALE plays it. In E, PLAY a normal fifth or the wolf. ■ STOP works in every part.',
     ],
     changes: [
       'Narrow every fifth a little, stack four of them, drop two octaves, and you land on a pure 5/4 third.',
-      'The fifth that does it is ⁴√5, about 5.38 ¢ narrower than pure.',
+      'The fifth that does it is about 5.38 ¢ narrower than pure.',
       'The circle still has to close, so the leftover gathers in one closing fifth: the wolf, 41.06 ¢ wider than the others.',
     ],
     teaches: [
@@ -355,8 +355,8 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'Chords that avoid the wolf sound sweet, with pure thirds; any chord that uses the wolf fifth sounds harsh.',
     ],
     tryThis: [
-      'Part A: the readouts give t = 1.118034 (the step from C to D) and D at 193.16 ¢ — halfway to E 5/4 by ratio, not by hertz.',
-      'Part C at 700 ¢: g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢. Tap SHOW ME: FIFTH 696.58 ¢ and FROM 5/4 reads 0 ¢.',
+      'Part A: D reads 193.16 ¢, halfway to E 5/4 by ratio, not by hertz.',
+      'Part C at 700 ¢: THIRD reads 400.00 ¢, FROM PURE +13.69 ¢. Tap SHOW ME: FIFTH 696.58 ¢ and FROM PURE reads 0 ¢.',
       'Part E: WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢. Play the normal fifth, then the wolf.',
     ],
   },

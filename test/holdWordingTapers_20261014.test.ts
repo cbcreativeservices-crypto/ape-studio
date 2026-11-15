@@ -216,8 +216,8 @@ describe('#28 Tuning chapter 7: the dock never reflows around NOTES', () => {
     assert.ok(params.indexOf("id: 'notes'") > 0 && params.indexOf("id: 'notes'") < params.indexOf('playTray('), 'NOTES first');
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-04): the slots still hold, and
     // each not-yet key now reads its own words (lockedValue) instead of LOCKED.
-    assert.match(params, /clips\.length\s*\? playTray\([^\n]*\)\s*: lockedKey\('play', 'PLAY', '[^']+', 'after 2 notes'\)/);
-    assert.match(params, /: \[\s*lockedKey\('tonic', 'TONIC', `[^`]+`, `after all \$\{N\}`\),\s*lockedKey\('retune', 'RETUNE', `[^`]+`, `after all \$\{N\}`\),\s*\]\)/);
+    assert.match(params, /clips\.length\s*\? playTray\([^\n]*\)\s*: lockedKey\('play', 'PLAY', '[^']+', '2 notes'\)/);
+    assert.match(params, /: \[\s*lockedKey\('tonic', 'TONIC', `[^`]+`, `all \$\{N\}`\),\s*lockedKey\('retune', 'RETUNE', `[^`]+`, `all \$\{N\}`\),\s*\]\)/);
     assert.doesNotMatch(params, /clips\.length \? \[playTray/, 'PLAY no longer appears/disappears');
     assert.match(s, /function lockedKey\(id: string, label: string, reason: string, lockedValue: string\): DockParam \{\s*return \{ kind: 'fader', id, label, locked: reason, lockedValue,/);
   });

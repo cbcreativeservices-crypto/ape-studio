@@ -121,9 +121,10 @@ describe('3. each guide quotes its chapter’s real names', () => {
     ['THIRD', 'FROM 5/4', 'PARTIALS Δ', 'LISTEN', 'Full tones', 'Isolated partials', '▶ PLAY', 'SHOW ME', 'Just 5/4', 'Equal-tempered 2^(1/3)', 'Pythagorean 81/64', 'BEATING MODEL', 'LOG-FREQUENCY AXIS'],
     ['STEP', 'NEWEST', 'CENTS', 'ADD FIFTH', 'FIFTHS', 'BY PITCH'],
     ['EXPECTED C', 'ACTUAL B♯', 'GAP', 'HEAR', 'A · EXPECTED C', 'B · ACTUAL B♯', 'A → B', 'TOGETHER', 'PYTHAGOREAN COMMA', 'EXPECTED C · ACTUAL B♯'],
-    ['NOTE', 'CENTS', 'Hz', 'TONIC', 'MODE', 'KEEP', 'RETUNE', 'IMPURE', 'MOVED', 'NOTES', 'PLAY', 'after 2 notes', 'after all', /* owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-04): not-yet keys read their own words, not LOCKED */ 'E 5/4', 'G 3/2', 'CHORD 4:5:6', 'ALIGNED PARTIALS'],
+    ['NOTE', 'CENTS', 'Hz', 'TONIC', 'MODE', 'KEEP', 'RETUNE', 'IMPURE', 'MOVED', 'NOTES', 'PLAY', '2 notes', /* owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-04): not-yet keys read their own words, not LOCKED */ 'E 5/4', 'G 3/2', 'CHORD 4:5:6', 'ALIGNED PARTIALS'],
     ['RATIOS', 'NOTE', 'EXAMPLE', 'A / B', 'A · PYTHAGOREAN', 'B · JUST', 'A → B', 'PYTH', 'JUST', '81/80', 'C–E major third', 'C–E–G triad', 'F–A major third', 'G–B major third', 'C-major phrase'],
-    ['PART', 'FIFTH', 'g⁴/4', 'FROM 5/4', 'WOLF', 'NORMAL', 'WIDER BY', 'SHOW ME', '▶ C–E–G', 'NOTES', '▶ SCALE', 'PURE FIFTH 3/2', 'MEANTONE FIFTH ⁴√5'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-01, checker fix): the guide names BASIC's keys.
+    ['PART', 'FIFTH', 'THIRD', 'FROM PURE', 'WOLF', 'NORMAL', 'WIDER BY', 'SHOW ME', '▶ C–E–G', 'NOTES', '▶ SCALE', 'PURE FIFTH 3/2', 'MEANTONE FIFTH'],
     ['STEP', 'RATIO', 'Hz', 'ADD ×r', 'OCTAVE ✓', 'STEPS', 'A / B', 'A · PATTERN IN C', 'B · STARTING ON F', 'A → B'],
     ['NOTE', 'Hz', 'VS EQUAL', 'SYSTEM', 'REF', 'A4 = 440', 'A / B', 'EXAMPLE', 'SYSTEM B', 'HEAR THE SAME NOTE MOVE', 'C FIXED AT', '0 ¢ = EQUAL TEMPERAMENT', '+ HIGHER', '− LOWER'],
     ['MISCONCEPTIONS', 'WHERE THIS MEETS PROFESSIONAL AUDIO', 'UNDERSTOOD ›', 'seen · tap to reread ▸', 'A4 = 440 Hz is a law of nature.'],
@@ -266,7 +267,8 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     assert.equal(f2(w.widerThanNormalBy), '41.06');
     assert.match(code(`${DIR}/chapters/ch9Meantone.tsx`), /const MIN = 690, MAX = 705;/);
     assert.match(code(`${DIR}/chapters/ch9Meantone.tsx`), /const \[fifthCents, setFifthCents\] = useState\(700\);/);
-    for (const s of ['t = 1.118034 (the step from C to D) and D at 193.16 ¢', 'g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢', 'FIFTH 696.58 ¢', 'WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢']) assert.ok(t(9).includes(s), s);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-01, checker fix): the guide quotes BASIC's words.
+    for (const s of ['D reads 193.16 ¢, halfway to E 5/4', 'THIRD reads 400.00 ¢, FROM PURE +13.69 ¢', 'FIFTH 696.58 ¢', 'WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢']) assert.ok(t(9).includes(s), s);
     assert.ok(all(9).includes('5.38 ¢ narrower'));
   });
   it('ch10: step 1 = 1.059463, 277.18 Hz (+15.56 Hz); the last step adds 29.37 Hz', () => {

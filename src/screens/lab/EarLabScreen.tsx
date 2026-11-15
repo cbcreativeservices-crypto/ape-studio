@@ -382,6 +382,16 @@ const SECTIONS = [
   { key: 'training' as const, title: 'ADVANCED TRAINING LABS', note: 'Members only' },
 ];
 
+/** The subject's description under its name (SH-44 = LM-03), or '' when its
+ *  only tile already shows the same words (checker F9, 2026-11-15: Phase's
+ *  line showed twice). Pure. */
+export function subjectLine(cat: LabCategory): string {
+  const tiles = categoryEntries(cat);
+  const only = tiles.length === 1 ? tiles[0] : undefined;
+  const same = (a?: string) => !!a && a.trim().toLowerCase() === cat.description.trim().toLowerCase();
+  return only && same(only.tileBlurb ?? only.blurb) ? '' : cat.description;
+}
+
 /** Subject header (glyph + name + count). Tappable (a card, with a chevron) when
  *  the subject is a single hub lab; a plain label when it heads a list of labs. */
 function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: () => void; locked?: boolean }) {
@@ -410,7 +420,7 @@ function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: (
           <Text style={[styles.catName, purple && styles.catNamePurple]}>{cat.name}</Text>
           <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
         </View>
-        <Text style={styles.catDesc}>{cat.description}</Text>
+        {subjectLine(cat) ? <Text style={styles.catDesc}>{subjectLine(cat)}</Text> : null}
       </View>
       {onPress ? <Text style={locked ? styles.lock : styles.rowChevron}>{locked ? '🔒' : '›'}</Text> : null}
     </>

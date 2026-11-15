@@ -189,7 +189,9 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
             // words on the sub line (was the codes A+D CLIP / AN. CLIP), so ZONE keeps its key at 390.
             k: 'ZONE',
             v: r.analogClip ? 'CLIP' : r.zone,
-            sub: r.analogClip && r.digitalOver ? 'analog + digital' : r.analogClip ? 'analog' : undefined,
+            // Checker fix: the longer sub (analog plus digital) was cut with an ellipsis at 390 (95 px in a 67 px cell);
+            // 'both stages' (11 characters) fits, and the card says which two stages.
+            sub: r.analogClip && r.digitalOver ? 'both stages' : r.analogClip ? 'analog' : undefined,
             vA11y: r.analogClip && r.digitalOver ? 'clipping, analog and digital' : r.analogClip ? 'clipping, analog' : undefined,
             tint: r.analogClip || r.digitalOver ? '#ff6b5e' : r.zone === 'RIGHT' ? '#5bff85' : undefined,
             helpKey: 'gain_staging',

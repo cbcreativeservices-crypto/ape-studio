@@ -308,10 +308,17 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     const hz = (f: number) => (f >= 1000 ? `${(f / 1000).toFixed(f >= 10000 ? 0 : 1)} kHz` : `${Math.round(f)} Hz`);
     const t = tryOf('spectrum');
     assert.match(B, /function scanSpectrum\(key: SpectrumKey\)[\s\S]*?const N = 480;/);
-    assert.ok(t.includes(`PEAK jumps from ${hz(scan('hum').pf)} to ${hz(scan('feedback').pf)} (the plot’s marker says 1.75 kHz)`));
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, F6a checker fix, one number per
+    // thing): PEAK and the plot's marker now share meterEngine.spectrumPeak + fmtPeakHz (they read
+    // 219 vs 223 Hz on SPEECH, and 1.7 vs 1.75 kHz on FEEDBACK).
+    const pk = (k: string) => E.fmtPeakHz(E.spectrumPeak(k).f);
+    assert.equal(pk('speech'), '220 Hz');
+    assert.ok(t.includes(`PEAK jumps from ${pk('hum')} to ${pk('feedback')}, the same number the plot’s marker shows`));
+    assert.match(B, /v: fmtPeakHz\(scan\.peakF\)/);
     assert.ok(t.includes(`TILT reads ${m(sgn(scan('pinknoise').tilt))}/oct`));
     assert.ok(t.includes(`TILT flips to ${sgn(scan('cymbal').tilt)}/oct`));
-    assert.ok(t.includes(`PEAK reads ${hz(scan('kick').pf)} for the thump`));
+    assert.ok(t.includes(`PEAK reads ${pk('kick')} for the thump`));
+    void hz;
   });
 
   it('Waterfall (CSD)', () => {

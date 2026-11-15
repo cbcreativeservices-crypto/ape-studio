@@ -169,7 +169,8 @@ export function Mod1What() {
                 An amplifier does not enlarge the input signal, and it does not create energy. The input
                 signal <Text style={{ color: AMP_COLORS.input }}>steers</Text>; the power supply{' '}
                 <Text style={{ color: AMP_COLORS.supply }}>pays</Text>; the output stage hands that energy
-                to the load in the shape the input asked for.
+                to the load in the shape the input asked for. Its voltage gain is how many times bigger: the output
+                volts divided by the input volts.
               </Body>
 
               <FaultBanner primary={sim.clipping ? 'output-clipping' : null} />

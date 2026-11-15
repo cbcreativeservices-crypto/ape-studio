@@ -480,7 +480,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the holes on the lower joint — the lab counts it while the mic points within about {tol}° of them, so the bell is heard too. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the hands and thumbs, the keys, the bell as the player moves, the player’s face and knees. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Farther tends to bring more of the room and a better blend of holes and bell; closer, more key detail and more of one spot. Rooms vary, so “it depends on this room” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Farther tends to bring more of the room and a better blend of holes and bell; closer, more key detail and more of one spot. Rooms vary, so “it depends on this room” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin facing the holes a third of the way up from the bell; then move one thing at a time — the distance, the height, the angle toward the bell — and play the low, throat and high notes each time.',
       wwMini: 'Ideas to try with a miniature: keep its strap where it is made to go, just above the bell; change only the capsule’s angle — farther up toward the upper joint for a more even range.',

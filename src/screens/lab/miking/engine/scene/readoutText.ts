@@ -105,6 +105,9 @@ export function zoneMark(zone: DocumentedZone | null): string {
 
 /** Page 3's bezel: distance (from the zone's / chosen head), off the line,
  *  aim, zone — all from the SAME shown readouts as the strip and NOW line. */
+/** The bezel AIM cell's caption: the angle off what the mic is aimed at. */
+export const AIM_SUB = 'off aim';
+
 export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZone | null, partShort: (partId: string) => string = (id) => id): BezelCell[] {
   const d = lenCell(Math.abs(r.distance));
   const off = lenCell(w.lineWords ? Math.abs(r.radial) : r.radial);
@@ -117,7 +120,9 @@ export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZon
     // "off target" (fix round 2026-11-14, F9 item 3, Part E3): this AIM is
     // the angle off what the mic is measured toward; the dock's AIM key is the
     // tilt / turn (↑ ↓ ← →). Two numbers for one mic now say what each is.
-    { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', sub: w.showAim ? 'off target' : undefined, flex: 0.8 },
+    // Checker F9 (2026-11-15): "off target" was cut to "off tar…" at 390;
+    // "off aim" says the same and fits (a cropped readout drops its label).
+    { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', sub: w.showAim ? AIM_SUB : undefined, flex: 0.8 },
     // The stop names the PART (its short name), in red, with the ✕ in the
     // key — colour is never the only signal (charter §8).
     r.blocked

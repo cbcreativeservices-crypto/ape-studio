@@ -475,7 +475,8 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>When the detector fires, what gets turned down? Everything (broadband) or only the hiss band (split-band). Same decision, different action.</Lead>
-      <Prompt>Step to an S and compare the cyan body bar in each mode — that is the whole difference.</Prompt>
+      {/* Checker fix (D62 DES-05): the page now opens on an S. */}
+      <Prompt>Switch the mode on this S and compare the cyan body bar — that is the whole difference.</Prompt>
       {modeRow}
       <Title>{`OUTPUT · ${s.mode.toUpperCase()} (input as ghost)`}</Title>
       <ExpandableFigure
@@ -591,7 +592,7 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
         question="Which description of a de-esser is right?"
         options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a hiss filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
         correct={1}
-        explain="It is a compressor's detector, threshold and gain computer with one addition: the detector listens to a filtered copy of the voice, so mostly hiss triggers it."
+        explain="It is a compressor's detector, threshold and how-much step with one addition: the detector listens to a filtered copy of the voice, so mostly hiss triggers it."
         onCorrect={() => ctx.markDone()}
       />
     </View>

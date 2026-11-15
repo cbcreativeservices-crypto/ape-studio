@@ -314,7 +314,8 @@ export type RootStackParamList = {
   TubeCard: { id: string };
   /** Audio Calculator Laboratory (owner 2026-07-29) — unified calc workspaces. */
   CalcLab: undefined;
-  CalcWorkspace: { id: string };
+  /** `fn` (optional, CA-04 2026-11-15): open on that calculator of the page, not its first. */
+  CalcWorkspace: { id: string; fn?: string };
   CalcSymbolsKey: undefined;
   CalcWorkflows: undefined;
   CalcWorkflowEdit: { id?: string } | undefined;

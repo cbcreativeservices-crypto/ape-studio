@@ -116,7 +116,7 @@ export const TAMB_COPY: LessonCopy = {
     workedAim: 'Face the tambourine — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of the whole motion — the striking hand, the shake’s swing, the sticks, the frame and its jingles. Clearance comes first: 15–30 cm is a starting distance, not a safety clearance, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Aimed at the head, a mic tends to bring more body; at the rim and jingles, more bright attack; a little farther, a blend with more room — and instruments and players vary, so “it depends” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Aimed at the head, a mic tends to bring more body; at the rim and jingles, more bright attack; a little farther, a blend with more room — and instruments and players vary, so “it depends” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: { smallDynCard: 'If the jingles sound too cutting through a condenser, a dynamic (or a ribbon, kept well out of the swing) can give a gentler balance — compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic. Watch PEAK meters, not slow average meters — a tambourine’s brief peaks overload an input that a slow meter says is fine.',
     availableLead: 'Starting points for this mic and way of playing',

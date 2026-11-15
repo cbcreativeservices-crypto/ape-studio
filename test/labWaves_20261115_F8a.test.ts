@@ -269,9 +269,9 @@ describe('SH-37 · Modular and Harmonics: no "update the app" in learner text', 
 });
 
 describe('ENV-04 · Envelope: the Try-it line says what to notice', () => {
-  it('a snap at the start, or a slow fade-in; that rise is the attack', () => {
+  it('an instant start, or a slow fade-in; that rise is the attack (no "snap": ATTACK: SNAP is another control)', () => {
     const s = code(`${LAB}/envelope/EnvelopeLabScreen.tsx`);
-    assert.match(s, /<Prompt>Try it: drag ATTACK all the way left and the sound starts with a snap; drag it right and it fades in slowly\. That rise is the attack\.<\/Prompt>/);
+    assert.match(s, /<Prompt>Try it: drag ATTACK all the way left and the sound starts at once; drag it right and it fades in slowly\. That rise is the attack\.<\/Prompt>/);
   });
 });
 
@@ -421,5 +421,34 @@ describe('SH-64 · Autotune: SPEED is grayed, with a reason, while AMOUNT is OFF
 describe('HAR-01 · Harmonics: the caption under the display points at the stems', () => {
   it('same slot, shorter words', () => {
     assert.match(code(`${LAB}/HarmonicLabScreen.tsx`), /exploreCaption="Drag a stem up to add a harmonic; the bands and the wave follow live\."/);
+  });
+});
+
+describe('Checker fixes (F8a, 2026-11-15)', () => {
+  it('1 · Autotune SPEED at AMOUNT OFF reads UNUSED, not LOCKED (which reads as members-only)', () => {
+    const s = code(`${LAB}/AutotuneLabScreen.tsx`);
+    assert.match(s, /locked: amount <= 0\.005 \? 'SPEED does nothing while AMOUNT is OFF: raise AMOUNT first\.' : undefined,\s*lockedValue: 'UNUSED',/);
+  });
+  it('2 · Harmonics: the glass gives up height (never below S) so the pinned stems show down to their labels', () => {
+    const v = code(`${LAB}/HarmonicsView.tsx`);
+    assert.match(v, /minWell: view === 'model' \? STEMS_MIN_WELL : undefined,/);
+    assert.match(v, /const STEMS_MIN_WELL = 290;/);
+  });
+  it('3 · Harmonics THD caption is true: "vs the note", never a "share"', () => {
+    const v = code(`${LAB}/HarmonicsView.tsx`);
+    assert.match(v, /k: 'THD',\s*caption: 'vs the note',/);
+    assert.doesNotMatch(v, /overtone share/);
+  });
+  it('4 · Modular VCO and SEQ captions are short enough to show whole at 390', () => {
+    const s = code(`${LAB}/ModularLabScreen.tsx`);
+    assert.match(s, /\{ k: 'VCO', v: shapeLabel, helpKey: 'vco', caption: 'the wave' \}/);
+    assert.match(s, /helpKey: 'sequencer',\s*caption: 'speed',/);
+    for (const c of ['the wave', 'speed']) assert.ok(c.length <= 8);
+  });
+  it('5 · Envelope Try-it line no longer says "snap" next to the ATTACK: SNAP button', () => {
+    const s = code(`${LAB}/envelope/EnvelopeLabScreen.tsx`);
+    const prompt = s.match(/<Prompt>Try it: drag ATTACK[^<]*<\/Prompt>/)![0];
+    assert.doesNotMatch(prompt, /snap/i);
+    assert.match(s, /ATTACK: SNAP/);
   });
 });

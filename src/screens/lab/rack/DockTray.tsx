@@ -23,7 +23,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
 import type { DockParam } from './rackTypes';
 import { trayReleaseIsTap } from './trayTap';
-import { TRAY_STICKY_NOTE, TRAY_STICKY_NOTE_SHORT, TRAY_TITLE_FS, trayTitleFit } from './dockFit';
+import { TRAY_HELP_SLOP, TRAY_STICKY_NOTE, TRAY_STICKY_NOTE_SHORT, TRAY_TITLE_FS, trayTitleFit } from './dockFit';
 
 /** In-tray option chip — LabChip's semantics (selected state, 📷 photoHint,
  *  long-press lesson) in the tools' PopupOpt skin. Own component (not LabChip)
@@ -270,8 +270,14 @@ export function DockTray({
           {param.helpKey && onHelp ? (
             <Pressable
               onPress={() => onHelp(param.helpKey)}
-              hitSlop={10}
-              style={styles.helpKey}
+              // A 44 pt tap area round the 23 x 18 glyph, nothing drawn moves
+              // (SN-6, 2026-11-15): the button's own box grows by padding and
+              // gives the same back in negative margin, so the glyph and the
+              // row stay where they were. A real box, not hitSlop, which
+              // react-native-web ignores. None to the right (the ✕'s own slop
+              // fills that gap), never down into the first choice (dockFit
+              // TRAY_HELP_SLOP).
+              style={[styles.helpKey, helpKeyArea]}
               accessibilityRole="button"
               accessibilityLabel={`What ${param.label} does`}
             >
@@ -374,6 +380,19 @@ export function DockTray({
 /** How long an armed in-tray reset waits for its second tap. */
 export const RESET_ARM_MS = 3000;
 export const RESET_ARMED_TEXT = 'TAP AGAIN TO RESET';
+
+/** SN-6: the ⓘ's 44 pt box (dockFit TRAY_HELP_SLOP), added on top of
+ *  styles.helpKey's 4 px sides; every px of padding is given back as margin. */
+const helpKeyArea = {
+  paddingLeft: 4 + TRAY_HELP_SLOP.left,
+  marginLeft: -TRAY_HELP_SLOP.left,
+  paddingRight: 4 + TRAY_HELP_SLOP.right,
+  marginRight: -TRAY_HELP_SLOP.right,
+  paddingTop: TRAY_HELP_SLOP.top,
+  marginTop: -TRAY_HELP_SLOP.top,
+  paddingBottom: TRAY_HELP_SLOP.bottom,
+  marginBottom: -TRAY_HELP_SLOP.bottom,
+} as const;
 
 const styles = StyleSheet.create({
   backdrop: {

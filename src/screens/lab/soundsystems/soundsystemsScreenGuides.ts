@@ -662,7 +662,7 @@ export const SS_LEARN_GUIDES: Record<string, ScreenGuide> = {
       'Press ▶ RUN and count the probes: three readings, one answer, no boxes swapped.',
     ],
   },
-  'What you can now do': {
+  'What you now know': {
     intro: {
       learning: 'How the fourteen LEARN chapters join into one picture of a live system: choosing and wiring it, routing it, setting gain, controlling feedback and finding faults.',
       start: 'Read the summary, then tap each of the four practice modes to read what it practices. When you’re ready, tap NEXT for the understanding check.',

@@ -118,3 +118,17 @@ Tests: `test/labWaves_20261115_F7b.test.ts` (67 tests, all pass).
 - **tsc:** see the final line below.
 
 **tsc (`npx tsc --noEmit`, run once at the end):** 0 errors in the whole project, mine included.
+
+## Checker fixes (CHECK_F7b_REPORT.md, 2026-11-15)
+
+| # | Checker finding | Fix | Files | Test |
+|---|---|---|---|---|
+| 1 | DL-02 FAIL: at 250 ms the caption says "each repeat lands halfway between two clicks". That is false at FDBK above 0%, where repeat 2 lands ON the next click. | The caption now reads "…: **the first** repeat lands halfway between two clicks." | fxLabConfigs.tsx (`delayTempoPhrase`) | labWaves DL-02 block (also checks that "each repeat lands halfway" is gone) |
+| 2 | RV-04 FAIL: "drag RT60 up, from a small room toward a big hall", but RT60 opens at 1.5 s (HALL). | The start now reads "Drag RT60 (decay time) down to a small room, then up toward a big hall, and watch the amber wash on OUT last longer. Then tap ▶…". | reverbScreenGuides.ts | labWaves RV-04 (also pins `initial: 1.5`); labFixes_20261114_F7 start regex updated |
+| 3 | The Delay PING-PONG steps promise L, R, L, but at the new FDBK 0% default there is only one repeat. | EXPLORE TRY THIS 3 now begins "Set FDBK to 50%, open COLOR and turn PING-PONG on: …", and guided step 5 begins "Set FDBK to 50%, then open COLOR…". "(SOURCE on CLICK 120)" was dropped from TRY THIS 3 so it fits the 200-character budget; CLICK is the default source. | delayScreenGuides.ts, content.ts | labWaves "checker fixes" block |
+| 4 | The Phaser in-notes wrong-answer hint counts dips without STATIC. | It now reads "Set the sweep to STATIC, then tap through STAGES and count the dips in the curve." The PS-03 test now holds EVERY counting line to STATIC; the exception for "in the curve" was removed. | fxLabConfigs.tsx (phaser) | labWaves PS-03 + "checker fixes" |
+| 5 | Reverb: "Read the readout's full name: DECAY TIME (RT60)" is untrue when a narrow phone shows only "DECAY TIME". | It now reads "The 60 in RT60 is not a length. On EXPLORE, the RT60 readout is named DECAY TIME." This is true with either key. | understandingChecks.ts (REVERB why) | labWaves "checker fixes" |
+
+CH-01 is left as built (the coordinator will tell the owner). After the fixes, my set of 85 test files gives 2913 of 2914; the one failure (delay TRY THIS over budget) was then fixed and the delay, F7 and labWaves tests pass (147 of 147). The other groups' failures listed in section 5 did not appear in this run.
+
+**tsc after the checker fixes:** 0 errors (exit 0).

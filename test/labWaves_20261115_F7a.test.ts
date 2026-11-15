@@ -248,8 +248,9 @@ describe('EQL-01/02/03/05 · EQ Lab: beginner page first, primer announced, plai
     assert.equal(EQ_MODULES[9].id, 'graphic');
     assert.equal(EQ_MODULES[10].id, 'liveEq');
   });
-  it('EQL-02: the primer says it is one time, about a minute, and the lesson opens right after', () => {
-    assert.match(code('src/screens/lab/amplitude/AmplitudeOrientation.tsx'), /const GATE_INTRO =\s*'A one-time stop, about a minute: the color language our audio visualizers use\. Your lesson opens right after\.';/);
+  // Checker fix: the primer also gates tools (SPL Meter, RTA…), so it says "what you chose", not "your lesson".
+  it('EQL-02: the primer says it is one time, about a minute, and what you chose opens right after', () => {
+    assert.match(code('src/screens/lab/amplitude/AmplitudeOrientation.tsx'), /const GATE_INTRO =\s*'A one-time stop, about a minute: the color language our audio visualizers use\. What you chose opens right after\.';/);
   });
   it('EQL-03: no "Butterworth"/"poles" in module 7, PHASE explained in module 10, no "COMB" or "FFT" in module 11', () => {
     const fs = code('src/screens/lab/eq/modules/FilterSlopes.tsx');
@@ -309,5 +310,49 @@ describe('GATE-02 · the Gate caption points to where the three keys show, not t
     const anim = code('src/screens/lab/fxAnim.tsx');
     assert.match(anim, /holdLeft = holdV;/);
     assert.match(anim, /gG \+= aRel \* \(floorG - gG\);/);
+  });
+});
+
+// ── Checker fixes (2026-11-15) ────────────────────────────────────────────────
+describe('Checker fixes · GATE-02 keys read "with sound" on the click with sound off; DES wording', () => {
+  const CFG = code('src/screens/lab/fxLabConfigs.tsx');
+  const GATE = CFG.slice(CFG.indexOf('const gateConfig'), CFG.indexOf('export const GateLabScreen'));
+  const m = GATE.match(/ignoredBy: \(paramId, _v, ctx\) =>\s*([\s\S]*?)\s*: undefined,/);
+  const P = { rangeDb: 1, holdMs: 2, releaseMs: 3, thresholdDb: 4 };
+  const GEN_MODES = { click: 'click', pink: 'pink' };
+  // eslint-disable-next-line no-new-func
+  const fn = new Function('P', 'GEN_MODES', 'GATE_QUIET_WHY', `return (paramId, _v, ctx) => ${m![1]} : undefined;`)(P, GEN_MODES, () => 'WHY') as (
+    id: number, v: object, ctx: { soundOff: boolean; source?: { gen: { mode: string } } }) => { why: string; value: string } | undefined;
+  const click = { gen: { mode: 'click' } };
+  const pink = { gen: { mode: 'pink' } };
+  it('sound off + CLICK: RANGE, HOLD and RELEASE read "with sound" with the true reason; THRESH stays live', () => {
+    for (const id of [1, 2, 3]) assert.deepEqual(fn(id, {}, { soundOff: true, source: click }), { why: 'WHY', value: 'with sound' });
+    assert.equal(fn(4, {}, { soundOff: true, source: click }), undefined);
+  });
+  it('sound on, or PINK NOISE: all live', () => {
+    for (const id of [1, 2, 3]) {
+      assert.equal(fn(id, {}, { soundOff: false, source: click }), undefined);
+      assert.equal(fn(id, {}, { soundOff: true, source: pink }), undefined);
+    }
+  });
+  it('the reason says what is true (never "ignored"), and the frame shows it as "not yet", keeping the bezel value', () => {
+    const whys = [...CFG.slice(CFG.indexOf('const GATE_QUIET_WHY'), CFG.indexOf('const gateConfig')).matchAll(/'([^']+)'/g)].map((x) => x[1]);
+    assert.equal(whys.length, 2);
+    for (const w of whys) {
+      assert.match(w, /shows on GR, with sound on/);
+      assert.doesNotMatch(w, /ignor/i);
+    }
+    assert.match(whys[0], /PINK NOISE and set THRESH to −20 dB/, 'RANGE: seen thinning the OUT band on PINK NOISE at 390');
+    const fx = code('src/screens/lab/FxLabScreen.tsx');
+    assert.match(fx, /locked: ignored\(p\.paramId\) \?\? quiet\(p\.paramId\)\?\.why,\s*lockedValue: quiet\(p\.paramId\)\?\.value,/);
+    assert.match(fx, /return i && !i\.value \? i\.why : undefined;/, 'a quiet key keeps its bezel value');
+  });
+  it('De-Esser: page 7 prompt no longer says "Step to an S"; page 3 says HOW MUCH, not "gain computer"', () => {
+    const lab = code('src/screens/lab/deesser/DeEsserLabScreen.tsx');
+    assert.doesNotMatch(lab, /Step to an S/);
+    assert.doesNotMatch(lab + code('src/screens/lab/deesser/pathLayout.ts') + code('src/features/deesser/deEsserModel.ts'), /[Gg]ain computer|gain comp\./);
+  });
+  it('labTermIntroData says which four cards are not the glossary word for word', () => {
+    assert.match(read('src/features/intro/labTermIntroData.ts'), /EXCEPT four lab-worded cards the owner approved on 2026-11-15[\s\S]*EqLab, CompressionLab, GateLab, LimiterLab/);
   });
 });

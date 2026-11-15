@@ -51,7 +51,9 @@ const N = JUST.notes.length; // 8
  *  `locked`): it never binds the lane, and a tap prints why. It reads its
  *  own "not yet" words, dimmed, never LOCKED, which looked like a
  *  members-only lock (owner 2026-11-15: "build waves 1 thru 3", D62 TU-04;
- *  rack `lockedValue`, SN-1). */
+ *  rack `lockedValue`, SN-1). The words are short ("2 notes", "all 8") so all
+ *  three fit a 60 px key at the dock's own size (checker, 2026-11-15: "after
+ *  2 notes" needed 98 px and was cut to "after …"); the reason line says the rest. */
 function lockedKey(id: string, label: string, reason: string, lockedValue: string): DockParam {
   return { kind: 'fader', id, label, locked: reason, lockedValue, value: 0, onChange: () => {}, format: () => '' };
 }
@@ -169,7 +171,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
     // locked-key pattern), and come alive in place.
     clips.length
       ? playTray({ player: ctx.player, last, setLast, clips, short: (c) => c.label.split(' ')[0] })
-      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one', 'after 2 notes'),
+      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one', '2 notes'),
     ...(keyStage
       ? ([
           {
@@ -185,8 +187,8 @@ export function Ch7Just({ ctx }: ChapterProps) {
           { kind: 'toggle', id: 'retune', label: 'RETUNE', value: mode === 'retune', onToggle: () => setMode((m) => (m === 'keep' ? 'retune' : 'keep')) },
         ] as DockParam[])
       : [
-          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`, `after all ${N}`),
-          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`, `after all ${N}`),
+          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`, `all ${N}`),
+          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`, `all ${N}`),
         ]),
     stopKey(ctx.player),
   ];

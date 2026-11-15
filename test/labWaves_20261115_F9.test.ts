@@ -140,7 +140,7 @@ describe('MS-01 · lesson 2: four labeled groups and one "skim the rest" line', 
   });
   it('the intro names what the next modules cover and no longer says "tap each one"', () => {
     assert.doesNotMatch(D.CHAR_INTRO, /tap each one/);
-    assert.match(D.CHAR_INTRO, /skim the rest for now/);
+    assert.match(D.CHAR_INTRO, /The first chips in each group come back in depth in the next modules; skim the rest for now\./);
   });
   it('the screen draws the groups', () => {
     const s = code(`${MS}/MicSelectLabScreen.tsx`);
@@ -205,14 +205,14 @@ describe('MK-11 · zones and the mic you move are drawn to be seen on a phone', 
 });
 
 // ── MK-03 · silent words: no "LISTEN FOR", no formula sentences ─────────────
-describe('MK-03 · the zone card says TENDENCY, and the two-mic line is in plain words', () => {
+describe('MK-03 · the zone card says TENDS TO HEAR, and the two-mic line is in plain words', () => {
   it('the zone card label and every reveal that names it agree', () => {
     const kit = code(`${M}/engine/kit.tsx`);
-    assert.match(kit, /export const ZONE_TENDENCY_LABEL = 'TENDENCY';/);
+    assert.match(kit, /export const ZONE_TENDENCY_LABEL = 'TENDS TO HEAR';/);
     assert.match(kit, /`\$\{ZONE_TENDENCY_LABEL\} · \$\{z\.tendency\}`/);
     const left = walkSrc(M).filter((f) => !f.endsWith('listenLine.ts') && /LISTEN FOR/.test(code(f)));
     assert.deepEqual(left, []);
-    assert.ok(walkSrc(`${M}/lessons`).some((f) => read(f).includes('Each zone’s TENDENCY line is an idea to check by ear')));
+    assert.ok(walkSrc(`${M}/lessons`).some((f) => read(f).includes('Each zone’s TENDS TO HEAR line is an idea to check by ear')));
   });
   it('no two-mic page prints the notch formulas as its sentence', () => {
     for (const f of [`${M}/pages/PTwoMic.tsx`, `${M}/lessons/shared/hand/handPages.tsx`, `${M}/lessons/shared/handdrums/pages/HTwoMic.tsx`, `${M}/lessons/m09Overheads/PTwoOverheads.tsx`]) {
@@ -294,7 +294,7 @@ describe('SH-44 / LM-03 · the Labs menu subject headings carry their one-line d
   const s = code('src/screens/lab/EarLabScreen.tsx');
   it('the description shows under the name; the count moved beside the name (a line in, a line out)', () => {
     const label = s.slice(s.indexOf('function CategoryLabel('), s.indexOf('function LabRow('));
-    assert.match(label, /<View style=\{styles\.catNameRow\}>\s*<Text style=\{\[styles\.catName, purple && styles\.catNamePurple\]\}>\{cat\.name\}<\/Text>\s*<Text style=\{styles\.catCount\}>\{categoryCountLabel\(cat\)\}<\/Text>\s*<\/View>\s*<Text style=\{styles\.catDesc\}>\{cat\.description\}<\/Text>/);
+    assert.match(label, /<View style=\{styles\.catNameRow\}>\s*<Text style=\{\[styles\.catName, purple && styles\.catNamePurple\]\}>\{cat\.name\}<\/Text>\s*<Text style=\{styles\.catCount\}>\{categoryCountLabel\(cat\)\}<\/Text>\s*<\/View>\s*\{subjectLine\(cat\) \? <Text style=\{styles\.catDesc\}>\{subjectLine\(cat\)\}<\/Text> : null\}/);
   });
 });
 
@@ -329,5 +329,26 @@ describe('SH-26 · Mic Selection spells out SPL on the first card a learner sees
   it('the Moving-Coil Dynamic card (shown first) says "sound pressure level (SPL)"', () => {
     const dyn = D.MIC_TYPES.find((m) => m.key === 'dynamic')!;
     assert.ok(dyn.traits.includes('Commonly handles very high sound pressure level (SPL)'));
+  });
+});
+
+// ── Checker fixes (CHECK_F9_REPORT.md, 2026-11-15) ──────────────────────────
+describe('checker fixes · F9', () => {
+  it('MK-03: no zone card or reveal says the bare word TENDENCY', () => {
+    const left = walkSrc(M).filter((f) => /TENDENCY line|'TENDENCY'/.test(code(f)));
+    assert.deepEqual(left, []);
+  });
+  it('Labs menu: a one-tile subject whose tile says the same words shows them once', () => {
+    const s = code('src/screens/lab/EarLabScreen.tsx');
+    assert.match(s, /return only && same\(only\.tileBlurb \?\? only\.blurb\) \? '' : cat\.description;/);
+  });
+  it('Placement Studio: the AIM caption fits a 0.8-flex cell at 390 (7 characters or fewer)', async () => {
+    const { AIM_SUB } = await import('../src/screens/lab/miking/engine/scene/readoutText.ts');
+    assert.ok(AIM_SUB.length <= 7, AIM_SUB);
+  });
+  it('Mic Selection module 2: each group is drawn in its own order, so its first chips are the ones the next modules cover', () => {
+    const s = code(`${MS}/MicSelectLabScreen.tsx`);
+    assert.match(s, /g\.keys\.flatMap\(\(k\) => CHARACTERISTICS\.filter\(\(x\) => x\.key === k\)\)/);
+    assert.deepEqual(D.CHAR_GROUPS.map((g) => g.keys[0]), ['pattern', 'sensitivity', 'power', 'size']);
   });
 });

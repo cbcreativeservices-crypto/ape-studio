@@ -148,7 +148,9 @@ describe('3. each guide quotes its screen’s real names', () => {
     highv: { src: fnBlock(LAB_SRC, 'HighVoltSection'), names: ['SUPPLY', 'SMALL SUPPLY', 'HIGH-VOLTAGE SUPPLY (B+)', 'B+ HIGH', 'PULL', 'WEAK', 'STRONG', 'STREAM', 'SPARSE', 'DENSE'] },
     types: { src: fnBlock(LAB_SRC, 'TypesSection'), names: ['TYPE', 'GRIDS', 'NEW', 'ADDS'] },
     bias: { src: fnBlock(LAB_SRC, 'BiasSection'), names: ['BIAS', 'ZONE', 'CUTOFF', 'SATURATION', 'LINEAR', 'too negative', 'too positive', 'correct'] },
-    sat: { src: fnBlock(LAB_SRC, 'SaturationSection'), names: ['DRIVE', 'STATE', 'CLEAN', 'WARMING', 'SATURATED', 'clean — straight-line region', 'warming — peaks rounding', 'saturated — soft clipping'] },
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-27): the DRIVE lane's
+    // words were cut at 390 ("clean — straight-lin…"); now short enough to show whole.
+    sat: { src: fnBlock(LAB_SRC, 'SaturationSection'), names: ['DRIVE', 'STATE', 'CLEAN', 'WARMING', 'SATURATED', 'clean', 'peaks rounding', 'soft clipping'] },
     versus: { src: fnBlock(LAB_SRC, 'VersusSection'), names: ['TUBE', 'VACUUM', 'TRANSISTOR', 'JUNCTION'] },
     reference: { src: REF_SRC, names: ['✕'] },
     card: { src: CARD_SRC, names: ['PAGE', 'RETRY', 'LOADING', 'Preamp Triode', 'Power Output', 'Directly-Heated Triode', 'Rectifier'] },
@@ -228,7 +230,9 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(grid.gridState(0.1449), 'CUT OFF');
     assert.equal(grid.gridState(0.154), 'PARTIAL');
     assert.match(MODULES.grid.changes.join(' '), /At 15% and below the tube is cut off/);
-    for (const w of [grid.CUTOFF_WORDS, 'partly negative', 'barely negative — full flow']) assert.ok(MODULES.grid.control.join(' ').includes(w), w);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items TB-02 / SH-27): above
+    // cutoff the GRID V lane reads "% open" with the bezel's own words, short enough to show whole.
+    for (const w of [grid.CUTOFF_WORDS, 'partial', 'full flow']) assert.ok(MODULES.grid.control.join(' ').includes(w), w);
   });
   it('WARM-UP: 50% → step 3, 0%; 85% → step 5, 50%; PLATE I starts above 70%', () => {
     const body = fnBlock(LAB_SRC, 'FlowSection');

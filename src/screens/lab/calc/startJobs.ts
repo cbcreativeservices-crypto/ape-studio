@@ -7,16 +7,19 @@
  * number you can use" and three jobs. Each job is a built-in workflow
  * template (workflowCatalog.ts WORKFLOW_TEMPLATES): a member runs the whole
  * guided sequence; anyone else (workflows are Academy-only, owner 2026-08-13)
- * opens the job's first calculator, which is open to everyone. Nothing here
- * computes anything: every number still comes from the calculators.
+ * opens the job's first calculator itself, exactly as the topic tiles would
+ * open it (a guest meets that calculator's usual sign-in card; nothing new).
+ * Nothing here computes anything: every number still comes from the
+ * calculators.
  *
  * Pure data, no imports, so the test reads it directly.
  */
 export type CalcStartJob = {
   /** The built-in template it runs (WORKFLOW_TEMPLATES id). */
   templateId: string;
-  /** The template's first step's workspace: what a non-member opens. */
+  /** The template's first step (workspace + calculator): what a non-member opens. */
   firstWorkspaceId: string;
+  firstFnKey: string;
   /** The job, as a learner would say it. */
   label: string;
   /** What the job works out, in order. */
@@ -26,9 +29,9 @@ export type CalcStartJob = {
 export const CALC_START_TITLE = 'PICK A JOB, GET A NUMBER YOU CAN USE';
 
 export const CALC_START_JOBS: readonly CalcStartJob[] = [
-  { templateId: 'tpl-delay-speaker', firstWorkspaceId: 'wave', label: 'TIME A DELAY SPEAKER', steps: 'Speed of sound → delay time → processor latency' },
-  { templateId: 'tpl-spl-estimate', firstWorkspaceId: 'speakerpower', label: 'HOW LOUD AT THE LISTENER?', steps: 'Speaker and amp → SPL → SPL at the seat' },
-  { templateId: 'tpl-cable-drop', firstWorkspaceId: 'cable', label: 'CHECK A SPEAKER CABLE RUN', steps: 'Loss over the run → the gauge to use' },
+  { templateId: 'tpl-delay-speaker', firstWorkspaceId: 'wave', firstFnKey: 'speed', label: 'TIME A DELAY SPEAKER', steps: 'Speed of sound → delay time → processor latency' },
+  { templateId: 'tpl-spl-estimate', firstWorkspaceId: 'speakerpower', firstFnKey: 'predictspl', label: 'HOW LOUD AT THE LISTENER?', steps: 'Speaker and amp → SPL → SPL at the seat' },
+  { templateId: 'tpl-cable-drop', firstWorkspaceId: 'cable', firstFnKey: 'loss', label: 'CHECK A SPEAKER CABLE RUN', steps: 'Loss over the run → the gauge to use' },
 ];
 
 /** The heading over the topic tiles: the app says "166 calculators" everywhere. */

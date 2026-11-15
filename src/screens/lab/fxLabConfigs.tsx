@@ -346,7 +346,9 @@ const DELAY_BPM = 120;
 function delayTempoPhrase(timeMs: number): string {
   const beatMs = 60000 / DELAY_BPM;
   const near = (beats: number) => Math.abs(timeMs - beats * beatMs) <= 2;
-  if (near(0.5)) return `${timeMs} ms = an eighth note at the CLICK’s ${DELAY_BPM} BPM: each repeat lands halfway between two clicks.`;
+  // "the FIRST repeat" (checker 2026-11-15): with FDBK up, repeat 2 lands ON
+  // the next click (2 × 250 ms = one beat), so only the first sits halfway.
+  if (near(0.5)) return `${timeMs} ms = an eighth note at the CLICK’s ${DELAY_BPM} BPM: the first repeat lands halfway between two clicks.`;
   if (near(0.75)) return `${timeMs} ms = a dotted eighth at the CLICK’s ${DELAY_BPM} BPM, a classic delay rhythm.`;
   const bpm = Math.round(60000 / timeMs);
   return bpm === DELAY_BPM
@@ -1133,7 +1135,7 @@ const phaserConfig: FxLabConfig = {
         0: 'Stages and notches are not one-to-one: each notch takes more than one stage. Set the sweep to STATIC, step STAGES and count the dips on OUT.',
         2: 'More notches than stages is too many. Set the sweep to STATIC and STAGES to 6, then count the dips on OUT.',
       },
-      wrongHint: 'Tap through STAGES and count the dips in the curve.',
+      wrongHint: 'Set the sweep to STATIC, then tap through STAGES and count the dips in the curve.',
     },
     {
       question: 'A phaser shifts ____, while a flanger shifts ____.',
@@ -1344,6 +1346,13 @@ const compConfig: FxLabConfig = {
 export const CompressionLabScreen = () => <FxLabScreen config={compConfig} />;
 
 // ───────────────────────────────────────────────────────── LAB 8 · Gate ──
+/** GATE-02: why RANGE, HOLD and RELEASE read "with sound" on the CLICK with
+ *  sound off. Seen at 390 (checker fix): on PINK NOISE at THRESH −20 dB the OUT
+ *  band visibly thins with RANGE; HOLD and RELEASE only nudge each click's tail. */
+const GATE_QUIET_WHY = (paramId: number) =>
+  paramId === P.rangeDb
+    ? 'on the click this shows on GR, with sound on. Or choose PINK NOISE and set THRESH to −20 dB to see it on OUT'
+    : 'on the click this shows on GR, with sound on. On OUT it only nudges the tail of each hit';
 const gateConfig: FxLabConfig = {
   labId: 'gate',
   guide: gateScreenGuide,
@@ -1418,6 +1427,19 @@ const gateConfig: FxLabConfig = {
     { k: 'THRESH', paramId: P.thresholdDb, caption: 'opens above' },
     { k: 'RANGE', paramId: P.rangeDb, caption: 'how far down' },
   ],
+  // GATE-02 (owner 2026-11-15: "build waves 1 thru 3", D62; checker fix): with
+  // sound off on the 5 ms CLICK, RANGE, HOLD and RELEASE show nowhere you can
+  // see (GR reads "— dB"; the drawn tail moves a few pixels), so their keys read
+  // "with sound" and a tap says the true reason. They WORK (the engine and GR
+  // use them), so the words never say "ignored". With sound on, or on PINK
+  // NOISE (its drawn level sits by THRESH −20 dB, so the gate visibly ducks and
+  // flutters), they are live as before.
+  ignoredBy: (paramId, _v, ctx) =>
+    ctx.soundOff &&
+    ctx.source?.gen.mode === GEN_MODES.click &&
+    (paramId === P.rangeDb || paramId === P.holdMs || paramId === P.releaseMs)
+      ? { why: GATE_QUIET_WHY(paramId), value: 'with sound' }
+      : undefined,
   Hero: (v) => (
     // NO sourcePeakDb. A gate acts on what a hit DECAYS TO, which a peak
     // marker cannot express: with the source peak at -20 and this lab's

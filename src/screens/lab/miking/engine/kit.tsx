@@ -34,10 +34,11 @@ import { movedFromBaseline } from './physics/twoMic.ts';
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
 const BLUE = '#6fa8ff';
-/** The zone card's label for how a placement tends to sound (beginner waves
- *  2026-11-15, MK-03; owner: "build waves 1 thru 3"). It read "LISTEN FOR" in
- *  a lab where nothing makes a sound. The lessons' reveals name it the same. */
-export const ZONE_TENDENCY_LABEL = 'TENDENCY';
+/** The zone card's label for what a mic placed there tends to pick up
+ *  (beginner waves 2026-11-15, MK-03; owner: "build waves 1 thru 3"). It read
+ *  "LISTEN FOR" in a lab where nothing makes a sound; "TENDENCY" (round 1)
+ *  did not say tendency of what (checker F9). The reveals name it the same. */
+export const ZONE_TENDENCY_LABEL = 'TENDS TO HEAR';
 
 /** A suggested starting point, in plain words (owner ruling 2026-10-04). */
 export function ZoneCard({ z }: { z: DocumentedZone }) {

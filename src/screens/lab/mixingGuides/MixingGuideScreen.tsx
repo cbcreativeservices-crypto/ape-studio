@@ -68,9 +68,10 @@ const UNITS = MIXING_GUIDE_INDEX.map((g) => ({ id: g.id, title: g.title }));
  * MG-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the first numbers a
  * beginner met were "dBA LAeq,15min" and "LUFS-I", right under the two plain
  * top lines. AT A GLANCE now keeps origin, tempo and ensemble on top; the two
- * level rows (with the WHO hearing note, still under the live level) open at
- * the head of the guide's own SPL & loudness section, folded with it. Layout
- * only: every guide value is shown as written.
+ * level rows open at the head of the guide's own SPL & loudness section,
+ * folded with it. The WHO hearing note stays VISIBLE in AT A GLANCE, as its
+ * last line (checker follow-up 2026-11-15: hearing-safety text is out of this
+ * round, so it is never folded). Layout only: every value shown as written.
  */
 type GlanceKey = keyof Glance;
 export const LEVEL_GLANCE_KEYS: readonly GlanceKey[] = ['liveSpl', 'studioLoudness'];
@@ -214,7 +215,10 @@ export function MixingGuideScreen() {
                 <Text style={styles.blockHead} accessibilityRole="header">AT A GLANCE</Text>
                 {/* MG-01: the level rows open with SPL & loudness (a guide that
                     had no such section would keep them here). */}
-                <GlanceRows guide={guide} keys={GLANCE_ROWS.filter((r) => r.key !== 'priority' && (!sections.some((s) => s.key === 'loudness') || !LEVEL_GLANCE_KEYS.includes(r.key))).map((r) => r.key)} />
+                {(() => {
+                  const levelsMove = sections.some((s) => s.key === 'loudness');
+                  return <GlanceRows guide={guide} keys={GLANCE_ROWS.filter((r) => r.key !== 'priority' && (!levelsMove || !LEVEL_GLANCE_KEYS.includes(r.key))).map((r) => r.key)} whoNote={levelsMove ? 'end' : 'underLive'} />;
+                })()}
 
                 <View style={styles.sectionsHead}>
                   <Text style={styles.blockHead} accessibilityRole="header">THE GUIDE</Text>
@@ -253,7 +257,14 @@ export function MixingGuideScreen() {
 
 /** Glance rows, in GLANCE_ROWS order. The shared WHO hearing note sits once,
  *  under the live level (owner ruling 2026-10-22), wherever that row is drawn. */
-function GlanceRows({ guide, keys }: { guide: MixingGuide; keys: readonly GlanceKey[] }) {
+/** `whoNote`: where the WHO hearing note is drawn. 'underLive' (the shared
+ *  note under the live level, owner ruling 2026-10-22) when the live level is
+ *  in this box; 'end' (the last line of the box) for the top AT A GLANCE once
+ *  the level rows have moved; 'none' for the folded section. CHECKER
+ *  FOLLOW-UP (2026-11-15): hearing-safety text is out of this round, so the
+ *  note stays VISIBLE at the top of every guide, where it was; it is never
+ *  folded away with the level rows. */
+function GlanceRows({ guide, keys, whoNote }: { guide: MixingGuide; keys: readonly GlanceKey[]; whoNote: 'underLive' | 'end' | 'none' }) {
   const rows = GLANCE_ROWS.filter((r) => keys.includes(r.key));
   if (!rows.length) return null;
   return (
@@ -262,9 +273,14 @@ function GlanceRows({ guide, keys }: { guide: MixingGuide; keys: readonly Glance
         <View key={r.key} style={[styles.glanceRow, i > 0 && styles.rowRule]}>
           <Text style={styles.glanceLabel}>{r.label}</Text>
           <Text style={styles.glanceValue}>{guide.glance[r.key]}</Text>
-          {r.key === 'liveSpl' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
+          {r.key === 'liveSpl' && whoNote === 'underLive' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
         </View>
       ))}
+      {whoNote === 'end' ? (
+        <View style={[styles.glanceRow, styles.rowRule]}>
+          <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -328,7 +344,7 @@ function SectionBody({ guide, k }: { guide: MixingGuide; k: GuideSectionKey }) {
   if (k === 'loudness') {
     return (
       <View style={styles.items}>
-        <GlanceRows guide={guide} keys={LEVEL_GLANCE_KEYS} />
+        <GlanceRows guide={guide} keys={LEVEL_GLANCE_KEYS} whoNote="none" />
         <Prose items={guide[k]} />
       </View>
     );

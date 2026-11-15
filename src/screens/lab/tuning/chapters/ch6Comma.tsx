@@ -79,9 +79,13 @@ export function Ch6Comma({ ctx }: ChapterProps) {
       caption={`Twelve fifths on the spiral return to C's direction but land outside it. HEAR the expected C against the actual B♯ — both in C4's register, ${expectedHz.toFixed(2)} vs ${actualHz.toFixed(2)} Hz.`}
     >
       <Lead>Twelve pure fifths almost return to the starting pitch class after seven octaves — but they miss by about {PYTHAGOREAN_COMMA.cents.toFixed(2)} cents.</Lead>
-      <FifthPath steps={CHAIN} revealed={12} dimNotes />
+      {/* The plain idea first; the fraction chain and the two formulas fold
+          under MATH (checker fix, owner 2026-11-15: "build waves 1 thru 3",
+          D62 TU-01, the same fold as the meantone chapter). */}
+      {ctx.mathView ? <FifthPath steps={CHAIN} revealed={12} dimNotes /> : null}
       <Card>
         <Eyebrow>TWO PATHS TO THE SAME PLACE — ALMOST</Eyebrow>
+        {ctx.mathView ? (
         <View style={styles.paths}>
           <View style={styles.path} accessible accessibilityLabel={`Path A, twelve fifths: three halves to the twelfth power, equals ${fracLabel(frac(Math.pow(3, 12), Math.pow(2, 12)))}`}>
             <Text style={styles.pathTitle}>PATH A · TWELVE FIFTHS</Text>
@@ -94,6 +98,18 @@ export function Ch6Comma({ ctx }: ChapterProps) {
             <Text style={styles.pathSub}>= 128</Text>
           </View>
         </View>
+        ) : (
+          <View style={styles.paths}>
+            <View style={styles.path}>
+              <Text style={styles.pathTitle}>PATH A · TWELVE FIFTHS</Text>
+              <Text style={styles.pathSub}>Twelve pure fifths up from C.</Text>
+            </View>
+            <View style={styles.path}>
+              <Text style={styles.pathTitle}>PATH B · SEVEN OCTAVES</Text>
+              <Text style={styles.pathSub}>Seven octaves up from C.</Text>
+            </View>
+          </View>
+        )}
         <Body>After twelve fifths, B♯ should represent the same pitch class as C seven octaves higher. The seven ÷2 reductions you made in Build With Pure Fifths are those seven octaves.</Body>
       </Card>
 
@@ -109,9 +125,14 @@ export function Ch6Comma({ ctx }: ChapterProps) {
           { text: `≈ ${PYTHAGOREAN_COMMA.decimalLabel}`, note: 'decimal, for reading only' },
           { text: `≈ ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents`, note: '1200 · log₂(531441/524288)', emphasis: true },
         ]}
-      /> : <Body>Worked out with whole numbers only, the gap is exact: about {PYTHAGOREAN_COMMA.cents.toFixed(2)} cents. MATH (top right) shows the derivation.</Body>}
+      /> : null}
 
-      <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. After seven octave reductions the expected normalized result is 1/1; the actual result is {fracLabel(CHAIN[12].normalized)}.</Body>
+      {ctx.mathView ? (
+        <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. After seven octave reductions the expected normalized result is 1/1; the actual result is {fracLabel(CHAIN[12].normalized)}.</Body>
+      ) : (
+        // BASIC: one plain paragraph where the chain, the derivation and the fractions were.
+        <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. The gap is exact, worked out with whole numbers only. MATH (top right) shows the chain of fractions and the derivation.</Body>
+      )}
 
       {ctx.mathView ? (
         <Card tone="math">

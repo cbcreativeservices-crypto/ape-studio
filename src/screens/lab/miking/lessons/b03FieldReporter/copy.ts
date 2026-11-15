@@ -87,7 +87,7 @@ export const B03_COPY: Partial<LessonCopy> = {
     workedZone: { street: 'b3.shared', twoMics: 'b3.repOwn', event: 'b3.shared' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips (an omni forgives more).',
     workedClear: 'Clear of both people: the grille and the flag off the faces and out of the lens’s way, the arm relaxed, not stretched. Clearance comes first, before any number.',
-    reveal: 'Closer to the speaking mouth tends to bring the voice up against the street and the other voice — and more breath, wind and handling; the shared place is easy and even, and hears more of the street. Voices and places vary, so “it depends on this street” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Closer to the speaking mouth tends to bring the voice up against the street and the other voice — and more breath, wind and handling; the shared place is easy and even, and hears more of the street. Voices and places vary, so “it depends on this street” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       repOmni: 'Ideas to try with the omni: start shared at chest height; if the street is loud, move it toward whoever is speaking just before they start. Hold below the flag, fingers off the grille.',
       bcFlagCard: 'Ideas to try with a cardioid handheld: its front on the speaking mouth, close — re-aim for every turn; pointed between two people, it serves neither.',

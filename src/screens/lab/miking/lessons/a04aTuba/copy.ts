@@ -29,7 +29,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the bell — for an upward bell, at its edge rather than straight down into it. The lab counts any aim within about {tol}° of the bell’s center, so an aim at the edge counts too.',
     workedClear: 'Clear of every part — the bell’s opening and its sway, the valve hand, the slides and the player. A boom over an upward bell stays outside the space above it. Clearance comes first, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer to the bell tends to bring more attack and definition, with valve and air noise; farther brings the whole tuba and the room. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+    reveal: 'Closer to the bell tends to bring more attack and definition, with valve and air noise; farther brings the whole tuba and the room. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       smallDynCard: 'Ideas to try with a small dynamic: start a foot or two from the bell, off its axis; then move one thing at a time and play the lowest written note and a short, loud phrase each time.',
       sdcCard: 'Ideas to try with a small condenser: above the bell toward its edge, or farther back for the room. Check that the mic and the channel keep the lowest notes.',

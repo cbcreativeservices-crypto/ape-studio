@@ -366,6 +366,47 @@ export function spectrumDb(key: SpectrumKey, f: number): number {
   }
 }
 
+/**
+ * The ONE peak of a teaching spectrum (checker fix 2026-11-15, owner go "build waves 1 thru 3",
+ * D62, one number per thing): the PEAK readout and the drawing's marker used two different grids
+ * and read 219 Hz and 223 Hz for SPEECH's 220 Hz bump. Both now use this: a 2000-point log grid,
+ * then a fine search between the best point's neighbours, so it lands on the true peak
+ * (SPEECH 220 Hz, KICK DRUM 60 Hz, MAINS HUM 60 Hz, FEEDBACK 1.75 kHz, GUITAR 196 Hz).
+ */
+export function spectrumPeak(key: SpectrumKey): { f: number; db: number } {
+  const N = 2000;
+  const lo = Math.log10(20);
+  const hi = Math.log10(20000);
+  const at = (i: number) => Math.pow(10, lo + ((hi - lo) * i) / (N - 1));
+  let bi = 0;
+  let bd = Number.NEGATIVE_INFINITY;
+  for (let i = 0; i < N; i++) {
+    const v = spectrumDb(key, at(i));
+    if (v > bd) {
+      bd = v;
+      bi = i;
+    }
+  }
+  const a = Math.log10(at(Math.max(0, bi - 1)));
+  const b = Math.log10(at(Math.min(N - 1, bi + 1)));
+  let f = at(bi);
+  for (let j = 0; j <= 400; j++) {
+    const fj = Math.pow(10, a + ((b - a) * j) / 400);
+    const v = spectrumDb(key, fj);
+    if (v > bd) {
+      bd = v;
+      f = fj;
+    }
+  }
+  return { f, db: bd };
+}
+
+/** The peak's Hz in the one format the readout and the marker share ("220 Hz", "1.75 kHz"). */
+export function fmtPeakHz(f: number): string {
+  if (f < 1000) return `${Math.round(f)} Hz`;
+  return `${(f / 1000).toFixed(2).replace(/\.?0+$/, '')} kHz`;
+}
+
 // ── Spectrogram pattern painters (M6) — level 0..1 at (t01, f01 log axis) ───
 
 export type SpectrogramKey = 'speech' | 'birdsong' | 'cymbal' | 'feedback' | 'whistle' | 'whitenoise';

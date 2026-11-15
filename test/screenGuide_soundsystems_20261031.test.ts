@@ -185,7 +185,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     'Processing and tuning': { exact: ['Input EQ vs system EQ', 'Parametric EQ', 'Graphic EQ', 'Limiters', 'RTA', 'SPL meter', 'Spectrogram'] },
     'Feedback control': { exact: ['SEND', 'WEDGE', 'In the live angle', 'In the null', 'NOTCH', 'LOOP LIMIT', 'MARGIN', 'LOOP', 'STABLE', 'RINGING', 'OVER'] },
     'The source-forward method': { exact: ['WALK', '▶ RUN', 'WALK AGAIN', 'START', 'READ', 'LAST', 'FAULT', 'FOUND', 'NO SIGNAL', 'OK'] },
-    'What you can now do': { exact: ['Lab home — what is left', 'NEXT'] },
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, F2 checker fix): the page title claims knowledge, not skills.
+    'What you now know': { exact: ['Lab home — what is left', 'NEXT'] },
     'The empty venue': { exact: ['PART', 'THE PARTS BIN', 'OUTPUT', 'REMOVE', 'CLEAR', 'PLACED', 'CABLES', 'LIVE', 'SILENT'] },
     'Capstone 1 · Speech system': { exact: [...CAP, 'MAIN L', 'MAIN R', 'MAIN MONO'] },
     'Capstone 2 · Small mono music system': { exact: [...CAP, 'MAIN MONO'] },

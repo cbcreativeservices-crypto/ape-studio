@@ -103,7 +103,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       start: 'Push SOURCE up until a meter turns red. Then pull it back down until PREAMP and OUTPUT are green again.',
     },
     seeing: [
-      'Your signal runs left to right: SOURCE, PREAMP, OUTPUT. Meter colors: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line (CLIP).',
+      'Signal runs left to right: SOURCE, PREAMP, OUTPUT. Meters: blue TOO LOW, green HEALTHY, amber from −6 dB (HOT), red at the 0 dB line (CLIP).',
       'Gray at the foot of PREAMP and OUTPUT is hiss, the noise floor. The word under a meter names its zone; QUIET SOURCE is normal for mics.',
       'PREAMP (+18 dB) and OUTPUT (+0 dB) are FIXED. Readouts are dB under the 0 dB ceiling; STATUS reads TOO LOW, HEALTHY, HOT or CLIP.',
     ],
@@ -139,7 +139,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     },
     seeing: [
       'The same chain, but now the SOURCE is FIXED, a quiet mic at −30 dB, and so is OUTPUT (+0 dB). The preamp is yours.',
-      'Your gain setting shows under PREAMP. Blue is TOO LOW, green HEALTHY, red HOT (from −6 dB). Raise PREAMP and gray hiss appears at the meter foot.',
+      'Your gain setting shows under PREAMP. Blue is TOO LOW, green HEALTHY, amber HOT (from −6 dB). Raise PREAMP and gray hiss appears at the meter foot.',
       'Readouts: PREAMP LEVEL, HEADROOM (dB left below the 0 dB ceiling), OUTPUT, and STATUS, the preamp’s state: TOO LOW, HEALTHY, HOT or CLIP.',
     ],
     control: [
@@ -168,21 +168,21 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   follow: {
     intro: {
       learning: 'Each stage’s output is the next stage’s input, so the preamp setting decides how much room every later stage has, and clipping anywhere rides on to the output.',
-      start: 'Raise PREAMP from +6 dB to +18 dB and compare the PREAMP and PROC readouts. Then try +24 dB and see which stage reaches CLIP first.',
+      start: 'Raise PREAMP from +6 dB to +18 dB and compare the PREAMP and PROCESSOR readouts. Then try +24 dB and see which stage reaches CLIP first.',
     },
     seeing: [
-      'Four stages: SOURCE (FIXED, a quiet mic at −30 dB), PREAMP (yours), PROC (a FIXED processor adding +6 dB) and OUTPUT (FIXED, +0 dB).',
-      'Watch the arrows between stages: they turn red once the signal is distorted. Meters run blue TOO LOW, green HEALTHY, red from −6 dB; gray hiss shows once there’s enough gain.',
-      'Readouts: PREAMP, PROC and OUTPUT levels, and STATUS, which reports the output’s state.',
+      'Four stages: SOURCE (FIXED, quiet mic, −30 dB), PREAMP (yours), PROCESSOR (column PROC, FIXED, +6 dB) and OUTPUT (FIXED, +0 dB).',
+      'Watch the arrows between stages: they turn red once the signal is distorted. Meters run blue TOO LOW, green HEALTHY, amber from −6 dB (HOT); gray hiss shows once there’s enough gain.',
+      'Readouts: PREAMP, PROCESSOR and OUTPUT levels, and STATUS, the output’s state.',
     ],
     control: [
       'PREAMP fader (+0 to +40 dB, starts at +6 dB): the only control on this screen, so every change downstream comes from it.',
       'FULL SCREEN enlarges the chain; HIDE DISPLAY gives the notes and the check question the whole screen.',
     ],
     changes: [
-      'Each stage starts from the level the one before hands it: PROC adds its 6 dB to whatever PREAMP sends.',
-      'A weak preamp leaves later stages near the hiss: at +0 dB, PROC and OUTPUT only just reach HEALTHY’s bottom edge.',
-      'A hot preamp leaves no room for PROC’s +6 dB: PROC reaches 0 dB and clips, even though the preamp hasn’t.',
+      'Each stage starts from what the one before hands it: PROCESSOR adds 6 dB to whatever PREAMP sends.',
+      'A weak preamp leaves later stages near the hiss: at +0 dB, PROCESSOR and OUTPUT just reach HEALTHY’s bottom edge.',
+      'A hot preamp leaves no room for the PROCESSOR’s +6 dB: it reaches 0 dB and clips, even though the preamp hasn’t.',
       'Once a stage clips, the distortion is part of the signal and rides on to the OUTPUT.',
     ],
     teaches: [
@@ -191,9 +191,9 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'Headroom at one stage must leave room for the gain of the stages after it.',
     ],
     tryThis: [
-      'Raise PREAMP to +18 dB: PREAMP reads −12 dB (healthy), but PROC already reads −6 dB, HOT.',
-      'Raise it to +24 dB: PREAMP is only HOT (−6 dB), yet PROC clips and STATUS reads CLIP.',
-      'Drop PREAMP to +0 dB: PREAMP sinks to −30 dB, TOO LOW; PROC and OUTPUT read −24 dB, right on HEALTHY’s bottom edge.',
+      'Raise PREAMP to +18 dB: PREAMP reads −12 dB (healthy), but PROCESSOR already reads −6 dB, HOT.',
+      'Raise it to +24 dB: PREAMP is only HOT (−6 dB), yet PROCESSOR clips and STATUS reads CLIP.',
+      'Drop PREAMP to +0 dB: PREAMP sinks to −30 dB, TOO LOW; PROCESSOR and OUTPUT read −24 dB, right on HEALTHY’s bottom edge.',
     ],
   },
 

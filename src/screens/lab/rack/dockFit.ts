@@ -316,6 +316,20 @@ export function dockTightRow(needs: readonly number[], stripW: number): DockStri
  * the measured natural lines (title + note), the title alone, and the room the
  * head gives it; `base` is the title's authored size.
  */
+/**
+ * The open tray's ⓘ: a 44 pt tap area round its 23 x 18 px glyph box, with
+ * nothing drawn moved or enlarged (SN-6, F6b checker, beginner waves
+ * 2026-11-15; owner: "build waves 1 thru 3", D62). 23 + 21 + 0 = 44 wide,
+ * 18 + 18 + 8 = 44 tall.
+ *  - right 0: the ✕ sits 10 px to the right (head gap) and its own hitSlop 10
+ *    already fills that gap, so the two areas never overlap;
+ *  - left 21: over the tray title, which is words, not a control;
+ *  - bottom 8: the card's gap; the first choice starts at least 8 px under
+ *    the head row (card gap 8; the slack row's -8 margin cancels its own gap);
+ *  - top 18: the card's top padding (10 + 1 border) and 7 px above the card,
+ *    over the dimmed stage, not over any control.
+ */
+export const TRAY_HELP_SLOP = { top: 18, bottom: 8, left: 21, right: 0 } as const;
 export const TRAY_STICKY_NOTE = '  ·  stays open — compare while you watch';
 export const TRAY_STICKY_NOTE_SHORT = '  ·  stays open';
 export const TRAY_TITLE_FS = 12;

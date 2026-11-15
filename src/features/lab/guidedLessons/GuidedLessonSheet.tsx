@@ -13,9 +13,10 @@
  * Honesty: this is instructional content only — it never claims a live
  * measurement and never renders a meter.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../../components/DimModal';
+import { sheetContent } from './sheetContent';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { GuidedStep, LessonContent } from './types';
@@ -178,6 +179,15 @@ export function GuidedLessonSheet({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // THE CARD KEEPS ITS CONTENT WHILE IT SLIDES AWAY (SN-2 checker follow-up,
+  // 2026-11-15). A host that closes by clearing its key (FxLabScreen:
+  // `visible={help != null}`, `controlKey={help?.key}`, close = setHelp(null))
+  // turned the closing card into the WHOLE lesson for the length of the slide,
+  // and a tap then could land on it. While closing, the sheet draws the
+  // control and lesson it was last opened with. Open, nothing changes.
+  const shownRef = useRef({ controlKey, lesson });
+  if (visible) shownRef.current = { controlKey, lesson };
+  ({ controlKey, lesson } = sheetContent(visible, { controlKey, lesson }, shownRef.current));
   const control = controlKey ? lesson.controls.find((c) => c.key === controlKey) : undefined;
   // Two-tier (owner 2026-07-26): a FOCUSED control opens COMPACT (name + what it
   // does); "Learn more" expands to the full stack. The whole-lab entry (no

@@ -705,7 +705,7 @@ export function HeadroomArt({ measured, stored = {} }: { measured: Record<string
       <PeakLadder x={154} y={y} h={h} db={four} name="4 AT ONCE" sub="CLIPPED" />
       <Line x1={202} y1={30} x2={202} y2={226} stroke="#232833" strokeWidth={0.8} />
       <PeakLadder x={228} y={y} h={h} db={a ? a.peakDb : null} rmsDb={a?.rmsDb} name="MIX A" sub={a ? (aStored ? 'NOT HEARD' : 'MEASURED') : 'PLAY IT'} />
-      <PeakLadder x={288} y={y} h={h} db={b ? b.peakDb : null} rmsDb={b?.rmsDb} name="MIX B" sub={b ? (a ? `+${(b.rmsDb - a.rmsDb).toFixed(1)} dB` : bStored ? 'NOT HEARD' : 'MEASURED') : 'PLAY IT'} />
+      <PeakLadder x={288} y={y} h={h} db={b ? b.peakDb : null} rmsDb={b?.rmsDb} name="MIX B" sub={b ? (bStored ? 'NOT HEARD' : a ? `+${(b.rmsDb - a.rmsDb).toFixed(1)} dB` : 'MEASURED') : 'PLAY IT'} />
       <T x={268} y={30} color={ART.inkDim} ls={0.4}>
         BAR = PEAK · TICK = RMS
       </T>

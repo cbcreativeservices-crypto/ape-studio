@@ -54,7 +54,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the top cymbal — the lab counts it while the mic’s axis meets the cymbal — and on the side away from the snare, so the pair itself hides the snare. Height, position over the plate and angle are separate things to try.',
     workedClear: 'Clear of every part — the stick’s side of the pair, the air burst at the edges, the clutch, the crash above and the player’s left arm. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the edge tends to bring more of the lower tones, toward the cup more of the high overtones — and every pair is different, so “it depends on these hats” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+    reveal: 'Toward the edge tends to bring more of the lower tones, toward the cup more of the high overtones — and every pair is different, so “it depends on these hats” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try: keep the height and slide the aim from the edge toward the cup; then, separately, change the height. Keep the snare on the far side of the pair. Within about 10 cm (4 in) of the cymbals is a common place to begin — outside the air burst.',
       smallDynCard: 'Ideas to try: a dynamic over the outer edge on the far side, aimed down. Listen as the pair closes: a thump or wind noise means the air is reaching it — move it up or around, then use a high-pass filter only if the low end is unwanted.',

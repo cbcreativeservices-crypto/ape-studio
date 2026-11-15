@@ -48,7 +48,7 @@ const base = stringsCopy({
   workedLine: 'This starting point sits near {line}, out in front of the board.',
   workedAim: 'Angle it in at the bridge and the body, not into one strike point — the lab counts it while the mic’s axis, the line it points along, meets the board within about 11 cm of {head}.',
   clearWhat: 'the mizrab hand, the left hand’s travel along the neck, the gourd and the player’s view',
-  placementReveal: 'Toward the bridge tends to bring more attack and buzz; toward the neck, more string character and shimmer — and fret noise; farther back, more of the whole instrument and the room. Every sitar and room differs, so “it depends on this sitar” is fair too. Each zone’s TENDENCY line is an idea to check by ear, not a promised result.',
+  placementReveal: 'Toward the bridge tends to bring more attack and buzz; toward the neck, more string character and shimmer — and fret noise; farther back, more of the whole instrument and the room. Every sitar and room differs, so “it depends on this sitar” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
   typeNotes: {
     sdcCard: 'Ideas to try: begin low, toward the bridge and the body; then change one thing — a little farther back, or a second mic high toward the neck — and listen to a slow opening and a strong stroke each time. Its omni capsule suits the close spot below the bridge in a quiet room.',
     instDynCard: 'Ideas to try with a dynamic: low toward the bridge on a stage, angled in; watch the proximity bass and the buzz.',

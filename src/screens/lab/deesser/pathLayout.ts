@@ -85,7 +85,7 @@ const sideChain = (y: number, xs: [number, number, number, number], ws: [number,
   { id: 'bpf', x: xs[0], y, w: ws[0], h: PATH_BH, row: 'side', label: ['band-pass'] },
   { id: 'det', x: xs[1], y, w: ws[1], h: PATH_BH, row: 'side', label: ['detector'] },
   { id: 'thr', x: xs[2], y, w: ws[2], h: PATH_BH, row: 'side', label: ['threshold'] },
-  { id: 'gc', x: xs[3], y, w: ws[3], h: PATH_BH, row: 'side', label: ['gain comp.'] },
+  { id: 'gc', x: xs[3], y, w: ws[3], h: PATH_BH, row: 'side', label: ['how much'] }, // DES-03 checker fix: plain words (was 'gain comp.')
 ];
 const scWires = (bx: PathBox[]): PathWire[] => {
   const by = (id: PathBoxId) => bx.find((b) => b.id === id)!;

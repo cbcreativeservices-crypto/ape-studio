@@ -115,7 +115,10 @@ describe('Audio Connectors & Cable Selection', () => {
     assert.match(A, /mode === 'balanced' \? <Text style=\{styles\.factValue\}>\{CS_BALANCED_LINE\}<\/Text> : null/);
     assert.match(A, /one copy flipped, so noise picked up on the way cancels at the input/);
     const r = read(`${CS}data/roster.ts`);
-    assert.match(r, /a protocol is the data language both ends speak/);
+    // Checker fix: the gloss rides in the question's VISIBLE name, before THE CENTRAL LESSON prints "protocol".
+    assert.match(r, /q: '2 · What signal or protocol \(data language\) does the equipment expect\?'/);
+    const p1 = A.slice(A.indexOf('function PageThreeThings'), A.indexOf('function PageSamePlug'));
+    assert.ok(p1.indexOf('FOUR_QUESTIONS.map') < p1.indexOf('<LessonCard />'), 'the four questions come before the central lesson');
     assert.match(r, /phantom power \(the \+48 V a mixer sends up a mic cable\)/);
     assert.match(read(`${CS}data/scenarios.ts`), /a DI box \(it turns the guitar’s signal into a balanced mic-level line\)/);
   });
@@ -155,7 +158,12 @@ describe('Cable Dressing & Installation', async () => {
   it('CI-01: stage 8 folds its own key and flags it on the drawing; stage 9 folds its long key', () => {
     const c = code(`${CI}scenes/CeilingScene.tsx`);
     assert.match(c, /<CollapsibleSection title="COLOR KEY · THIS SCENE’S OWN COLORS" startOpen=\{false\}>/);
-    assert.match(c, /\{above \? \(\s*<View pointerEvents="none" style=\{styles\.ownColorsTag\}>\s*<Text style=\{styles\.ownColorsText\}>\{CEILING_OWN_COLORS_TAG\}<\/Text>/);
+    // Checker fix: the tag sat ON the drawing over its STEEL BEAMS / CONCRETE labels; it now rides in
+    // the view-chip row at the drawing's top edge, never over the art.
+    const toggle = c.slice(c.indexOf('const viewToggle = ('), c.indexOf('return (', c.indexOf('const viewToggle = (')));
+    assert.match(toggle, /\{above \? \(\s*<View style=\{styles\.ownColorsTag\}>\s*<Text style=\{styles\.ownColorsText\}>\{CEILING_OWN_COLORS_TAG\}<\/Text>/);
+    assert.doesNotMatch(c, /ownColorsTag: \{[^}]*position: 'absolute'/);
+    assert.equal((c.match(/\{CEILING_OWN_COLORS_TAG\}/g) ?? []).length, 1);
     assert.match(c, /ownColorsText: \{[^}]*fontSize: 9,/);
     const f = code(`${CI}scenes/FloorScene.tsx`);
     assert.match(f, /<CollapsibleSection title="COLOR KEY · TEACHING COLORS" startOpen=\{false\}>\s*<Text style=\{s\.caption\}>\s*Training visualization — stage plot to scale/);
@@ -214,15 +222,27 @@ describe('Vacuum Tube Fundamentals', () => {
     assert.doesNotMatch(S, /tap each piece to learn its job|tap a part to REMOVE it|Drawn as a pentode/);
     assert.match(S, /valueLabel: touched\.size === 0 \? 'START HERE' :/);
   });
-  it('TB-05: removing the control grid is said big, with the way to module 2', () => {
+  it('TB-05: removing the control grid is said big, in the open tray AND the well, with ONE way to module 2', () => {
     assert.match(S, /export const NO_GRID_RESULT = 'No grid → the flow can’t be controlled → no amplifier';/);
-    assert.match(S, /firstMissing\?\.key === 'grid' \? \(\s*<View style=\{\{ gap: 6 \}\}>\s*<Text style=\{styles\.bigResult\}/);
+    assert.match(S, /const noGrid = firstMissing\?\.key === 'grid';/);
+    assert.match(S, /<Text style=\{styles\.bigResult\} accessibilityRole="header">\{NO_GRID_RESULT\}<\/Text>/);
     assert.match(S, /bigResult: \{[^}]*fontSize: 19/);
-    assert.match(S, /onNext: sectionIdx < SECTIONS\.length - 1 \? \(\) => openSection\(sectionIdx \+ 1\) : undefined/);
+    // Checker fix: the PARTS tray covered the well, so the result also shows in the tray.
+    assert.match(S, /\{noGrid \? noGridResult\('tray'\) : physics \?/);
+    assert.match(S, /\{noGrid \? noGridResult\('well'\) : physics \?/);
+    // One way on: the rack's own NEXT: ELECTRON FLOW ›, named; no second link.
+    assert.doesNotMatch(S, /onNext|NEXT: WARM IT UP ›/);
+    assert.match(S, /NO_GRID_NEXT_TRAY = 'Next, warm it up: close ✕, then NEXT: ELECTRON FLOW\.'/);
   });
-  it('TB-02: GRID V says what its % measures and its ends read in words; the graphs name their axes', () => {
-    assert.match(S, /format: \(x\) => `\$\{pct\(x\)\} open · \$\{word\(x\)\}`/);
-    assert.match(S, /nudges: gridNudges\(v, setV\)/);
+  it('TB-02 + SH-27: GRID V says what its % measures and its ends read in words; lane values fit; the graphs name their axes', () => {
+    assert.match(S, /format: \(x\) => \(x <= GRID_CUTOFF \? `\$\{pct\(x\)\} · \$\{CUTOFF_WORDS\}` : `\$\{pct\(x\)\} open · \$\{gridState\(x\)\.toLowerCase\(\)\}`\),/);
+    // SH-27 checker fix: the DRIVE value was cut ("clean — straight-lin…").
+    assert.match(S, /format: \(x\) => `\$\{pct\(x\)\} · \$\{x < 0\.3 \? 'clean' : x < 0\.7 \? 'peaks rounding' : 'soft clipping'\}`/);
+    // The longest lane values: "100% · peaks rounding" style, at most 32 characters (the frame's
+    // wide readout fits "8 % · cut off — no current flows" at 390).
+    for (const v of ['100% · peaks rounding', '100% · soft clipping', '100% open · full flow', '15% · cut off — no current flows']) assert.ok(v.length <= 32, v);
+    assert.match(S, /nudges: gridNudges\(setV\)/);
+    assert.match(S, /set\(\(prev\) => Math\.max\(0, Math\.min\(1, Math\.round\(\(prev \+ d\) \* 100\) \/ 100\)\)\)/, 'two quick taps = two steps');
     assert.match(S, /label: '◂ CLOSES'[\s\S]*label: 'OPENS ▸'/);
     const v = code(`${TUBE}viz.tsx`);
     for (const fn of ['BiasView', 'SaturationView']) {
@@ -311,8 +331,15 @@ describe('Audio Calculator Laboratory', async () => {
       const t = WORKFLOW_TEMPLATES.find((w: { id: string }) => w.id === j.templateId);
       assert.ok(t, j.templateId);
       assert.equal(t.steps[0].workspaceId, j.firstWorkspaceId, `${j.templateId}: a non-member opens its first calculator`);
-      assert.ok(WORKSPACES.some((w: { id: string }) => w.id === j.firstWorkspaceId));
+      // Checker fix: the FIRST calculator, not the page's default (Sound & Wave opened on "Period").
+      assert.equal(t.steps[0].fnKey, j.firstFnKey, `${j.templateId}: the step's own calculator`);
+      const ws = WORKSPACES.find((w: { id: string }) => w.id === j.firstWorkspaceId);
+      assert.ok(ws?.functions.some((f: { key: string }) => f.key === j.firstFnKey));
     }
+    // The workspace screen opens on the named calculator.
+    const W = code(`${CALC}CalcWorkspaceScreen.tsx`);
+    assert.match(W, /functions\.findIndex\(\(f\) => f\.key === route\.params\.fn\)/);
+    assert.match(read('src/navigation/types.ts'), /CalcWorkspace: \{ id: string; fn\?: string \};/);
     const total = WORKSPACES.reduce((n: number, w: { functions: unknown[] }) => n + w.functions.length, 0);
     assert.equal(total, 166, 'the app says 166 calculators everywhere');
     assert.equal(J.calcBrowseTitle(total), 'OR BROWSE ALL 166 CALCULATORS BY TOPIC');
@@ -320,7 +347,26 @@ describe('Audio Calculator Laboratory', async () => {
     const scroll = s.slice(s.indexOf('<ScrollView'));
     assert.ok(scroll.indexOf('{CALC_START_TITLE}') < scroll.indexOf('CUSTOM CALCULATOR WORKFLOWS'), 'the jobs come first');
     assert.ok(scroll.indexOf('{calcBrowseTitle(CALC_TOTAL)}') < scroll.indexOf('<GlassPanel'));
-    assert.match(s, /if \(workflowsAllowed\) navigation\.navigate\('CalcWorkflowRun', \{ id: j\.templateId \}\);\s*else if \(tierUnconfirmed\) gateWorkflow\(\(\) => \{\}\);\s*else navigation\.navigate\('CalcWorkspace', \{ id: j\.firstWorkspaceId \}\);/);
+    assert.match(s, /if \(workflowsAllowed\) navigation\.navigate\('CalcWorkflowRun', \{ id: j\.templateId \}\);\s*else if \(tierUnconfirmed\) gateWorkflow\(\(\) => \{\}\);\s*else navigation\.navigate\('CalcWorkspace', \{ id: j\.firstWorkspaceId, fn: j\.firstFnKey \}\);/);
+    // Checker fix: the job buttons size to their two lines (wfBtn's flex: 1 / the old flex: 0 collapsed them on web).
+    assert.match(s, /style=\{\[styles\.jobBtn, styles\.wfBtnGreen\]\}/);
+    const jb = s.slice(s.indexOf('  jobBtn: {'), s.indexOf('},', s.indexOf('  jobBtn: {')));
+    assert.doesNotMatch(jb, /flex(Grow|Shrink|Basis)?:/);
+    assert.match(jb, /minHeight: 44/);
     assert.match(s, /const \[descOpen, setDescOpen\] = useState\(false\);/, 'ABOUT folds to pay for the block');
+  });
+});
+
+describe('Checker notes (small truths, 2026-11-15)', () => {
+  it('Amp module 1: the open text says what voltage gain is (the check’s question 3 is answerable without LEARN MORE)', () => {
+    const s = code(`${AMP}modules/mod1What.tsx`);
+    const open = s.slice(s.indexOf('well: ('), s.indexOf('<LearnMore>'));
+    assert.match(open, /Its voltage gain is how many times bigger: the output\s+volts divided by the input volts\./);
+  });
+  it('Amp home guide no longer names "the three questions"; Cable lesson 1’s guide points at the line by place', async () => {
+    const { AMP_HOME_GUIDE } = await import(`../${AMP}ampScreenGuides.ts`);
+    assert.doesNotMatch(AMP_HOME_GUIDE.intro.learning, /three questions/);
+    const { CABLE_SCREEN_GUIDES } = await import(`../${CAB}cableScreenGuides.ts`);
+    assert.match(CABLE_SCREEN_GUIDES.l01_what_travels.intro.start, /^Read the line just above WHAT MUST TRAVEL HERE\?/);
   });
 });

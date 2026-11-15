@@ -1391,7 +1391,9 @@ export function gaReduce(prev: GaState, a: GaAction, now?: number): { state: GaS
         // press did nothing (walk audits W1 F01, W2-21)
         const who = a.who === 'player' ? 'YOU are' : 'The GUIDE is';
         const where = to.stopped === 'door' ? 'at the closed door' : to.stopped === 'wall' ? 'at the wall' : 'at the edge of the scene';
-        logOnce(c, 'note', `${who} ${where}: no step was taken, so no footstep plays${to.stopped === 'door' ? '. Open the door to walk through' : to.stopped === 'wall' ? '. The way through is the door' : '. Turn to walk another way'}`, { owner: a.who });
+        logOnce(c, 'note', `${who} ${where}: no step was taken, so no footstep plays${to.stopped === 'door' ? '. Open the door to walk through' : to.stopped === 'wall' ? '. The way through is the door' : '. Walk back the other way'}`, { owner: a.who });
+        // "Walk back the other way", not "Turn …" (checker follow-up to GA-05, 2026-11-15): the walking pages
+        // now walk with WALK and its two STEP keys, and have no turn control
         fact(c, 'stepBlocked');
         break;
       }

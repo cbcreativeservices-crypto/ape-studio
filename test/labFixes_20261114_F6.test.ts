@@ -86,11 +86,13 @@ describe('Gain Staging', () => {
     assert.match(L, /const firstClip = nodes\.find\(\(n\) => n\.stageClipped\) \?\? null;/);
     assert.match(L, /First stage to clip: /);
   });
-  it('M2: the short region word for TOO LOW is LOW, not TOO', async () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items GN-02 / SH-36, checker fix):
+  // TOO LOW fits one line in its tag, so it is kept whole (one word per state, as STATUS and the key).
+  it('M2: the short region word for TOO LOW is never TOO; it stays TOO LOW (it fits one line)', async () => {
     const m = /export function shortRegionLabel\(label: string\): string \{([\s\S]*?)\n\}/.exec(V);
     assert.ok(m);
     const fn = new Function('label', m[1]) as (l: string) => string;
-    assert.equal(fn('TOO LOW'), 'LOW');
+    assert.equal(fn('TOO LOW'), 'TOO LOW');
     assert.equal(fn('QUIET SOURCE'), 'QUIET');
     assert.equal(fn('HEALTHY'), 'HEALTHY');
   });

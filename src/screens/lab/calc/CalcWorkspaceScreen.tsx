@@ -81,7 +81,12 @@ export function CalcWorkspaceScreen() {
     // to the pre-keyboard content height on Android.
     setTimeout(() => scrollRef.current?.scrollTo({ y: 0, animated: true }), 60);
   }, []);
-  const [fnIdx, setFnIdx] = useState(0);
+  // Opened on a named calculator (CA-04: a start-here job opens its FIRST
+  // step's calculator, owner 2026-11-15 "build waves 1 thru 3"); else the first.
+  const [fnIdx, setFnIdx] = useState(() => {
+    const i = route.params.fn ? (getWorkspace(route.params.id)?.functions.findIndex((f) => f.key === route.params.fn) ?? -1) : -1;
+    return i >= 0 ? i : 0;
+  });
   const [raw, setRaw] = useState<Record<string, string>>({});
   const [unitIdx, setUnitIdx] = useState<Record<string, number>>({});
   const [outUnit, setOutUnit] = useState<Record<string, number>>({});

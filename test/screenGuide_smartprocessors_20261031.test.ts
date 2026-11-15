@@ -148,11 +148,12 @@ describe('3. each guide quotes its screen’s real names', () => {
   }
   it('the drawn path-box labels the path guide quotes (pathLayout labels, drawn upper-case)', () => {
     const pl = code('src/screens/lab/deesser/pathLayout.ts');
-    for (const l of ['band-pass', 'detector', 'threshold', 'gain comp.', 'input', 'output', 'sum', 'gain']) assert.match(pl, new RegExp(`label: \\[('[a-z ·.]+', )?'${l.replace('.', '\\.')}'`), l);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, DES-03 checker fix): the block reads 'how much', not 'gain comp.'.
+    for (const l of ['band-pass', 'detector', 'threshold', 'how much', 'input', 'output', 'sum', 'gain']) assert.match(pl, new RegExp(`label: \\[('[a-z ·.]+', )?'${l.replace('.', '\\.')}'`), l);
     assert.match(pl, /label: \['band', 'split'\]/);
     assert.match(code('src/screens/lab/deesser/deEsserViz.tsx'), /\{t\.toUpperCase\(\)\}/);
     const t = textOf(PAGES.path);
-    for (const n of ['BAND-PASS', 'DETECTOR', 'THRESHOLD', 'GAIN COMP', 'BAND SPLIT', 'SUM', 'INPUT', 'OUTPUT', 'GAIN']) assert.ok(t.includes(n), n);
+    for (const n of ['BAND-PASS', 'DETECTOR', 'THRESHOLD', 'HOW MUCH', 'BAND SPLIT', 'SUM', 'INPUT', 'OUTPUT', 'GAIN']) assert.ok(t.includes(n), n);
     // WALK THE SIGNAL's order in split-band, as the guide states it
     assert.match(pl, /\['in', 'split', 'bpf', 'det', 'thr', 'gc', 'gain', 'sum', 'out'\]/);
     assert.equal(M.DEFAULTS.mode, 'split', 'the lab starts in split-band');

@@ -77,7 +77,11 @@ describe('MT-01 · Meter: Spectrum and Spectrogram readouts keep their names at 
     assert.match(B, /\{ k: 'LEVEL', v: \(Math\.abs\(scan\.peakDb\) < 0\.05 \? 0 : scan\.peakDb\)\.toFixed\(1\), sub: 'dB rel'/);
     assert.match(B, /\{ k: 'TILT', v: `\$\{scan\.tiltDbOct >= 0 \? '\+' : ''\}\$\{scan\.tiltDbOct\.toFixed\(1\)\}`, sub: '\/oct'/);
     assert.doesNotMatch(B, /\} dB rel`/);
-    assert.match(B, /\{ k: 'PEAK', v: fmtHz\(scan\.peakF\)\.split\(' '\)\[0\], sub: fmtHz\(scan\.peakF\)\.split\(' '\)\[1\]/);
+    // Checker fix: PEAK uses the peak + format it shares with the drawing's marker (meterEngine).
+    assert.match(B, /\{ k: 'PEAK', v: fmtPeakHz\(scan\.peakF\)\.split\(' '\)\[0\], sub: fmtPeakHz\(scan\.peakF\)\.split\(' '\)\[1\]/);
+    const S = read('src/screens/lab/meter/vizSpectral.tsx');
+    assert.match(S, /\(\{ f: peakF, db: peakDb \} = spectrumPeak\(p\.pattern\)\);/);
+    assert.match(S, /\{fmtPeakHz\(envelope\.peakF\)\}/);
   });
   it('Spectrogram TIME gets the room its long value needs (the short ↑ up gives it up)', () => {
     // Fit rule of rack/BezelReadouts (V_CH 8.1 px a character + 16 px padding; a value wider than its
@@ -240,12 +244,15 @@ describe('GN-01 / GN-02 / GN-04 · Gain Staging words', () => {
     assert.doesNotMatch(L, /label: 'INPUT GAIN'/);
     assert.match(fnBody(L, 'InputGainModule'), /label: 'PREAMP',/);
   });
-  it('GN-02: STATUS speaks the meters’ and the key’s words, plus NOISY; the key says HOT · CLIP', () => {
+  it('GN-02: STATUS speaks the meters’ and the key’s words, plus NOISY; the key says HOT (amber) and CLIP (red), as STATUS does', () => {
     assert.match(E, /export function statusWord\(node: ChainNode\): StatusWord \{/);
     assert.match(E, /if \(isNoisy\(node\)\) return 'NOISY';\n\s*if \(node\.region === 'low'\) return 'TOO LOW';\n\s*if \(node\.region === 'hot'\) return 'HOT';/);
     assert.match(V, /const v = statusWord\(node\);/);
     assert.doesNotMatch(V, /v: 'OK'|v: 'LOW'|return 'OVERLOAD'/);
-    assert.match(L, /<Text style=\{styles\.legendText\}>HOT · CLIP<\/Text>/);
+    // Checker fix: one color per state too — HOT amber like STATUS, CLIP red.
+    assert.match(L, /backgroundColor: '#ffc64d' \}\]\} \/><Text style=\{styles\.legendText\}>HOT<\/Text>/);
+    assert.match(L, /backgroundColor: '#ff5f4e' \}\]\} \/><Text style=\{styles\.legendText\}>CLIP<\/Text>/);
+    assert.match(V, /HOT: '#ffc64d',/);
   });
   it('GN-02: NOISY is the hiss problem only (TOO LOW EARLY), never a healthy or merely hot stage', async () => {
     const G = await import('../src/screens/lab/gain/gainEngine.ts');
@@ -315,7 +322,14 @@ describe('DG-02 · Digital: the remaining codes spelled out', () => {
   });
   it('ZONE reads CLIP with where it clipped in words on the sub line (no A+D CLIP / AN. CLIP codes)', () => {
     assert.doesNotMatch(C, /'A\+D CLIP'|'AN\. CLIP'/);
-    assert.match(C, /v: r\.analogClip \? 'CLIP' : r\.zone,\n\s*sub: r\.analogClip && r\.digitalOver \? 'analog \+ digital' : r\.analogClip \? 'analog' : undefined,/);
+    assert.match(C, /v: r\.analogClip \? 'CLIP' : r\.zone,/);
+    // Checker fix (2026-11-15): the sub must fit a 67 px cell at 390 ('analog + digital' was cut to
+    // 'analog + d…'). 'both stages' is 11 characters.
+    assert.match(C, /sub: r\.analogClip && r\.digitalOver \? 'both stages' : r\.analogClip \? 'analog' : undefined,/);
+    assert.doesNotMatch(C, /'analog \+ digital'/);
+    const g = read('src/screens/lab/digital/digitalScreenGuides.ts');
+    assert.doesNotMatch(g, /analog \+ digital/, 'the card uses the screen’s words');
+    assert.match(g, /Push it to the top for CLIP, both stages\./);
   });
   it('the Digital guided lesson uses the same names, and FS means only full scale', () => {
     const dig = L.slice(L.indexOf('  digital: {'), L.indexOf('  digital: {') + 30000);
@@ -360,5 +374,32 @@ describe('Sweep items in F6a labs (SH-12, SH-26, SH-35, SH-76)', () => {
     const P = read('src/screens/lab/patchbay/pagesC.tsx');
     assert.match(P, /\{ id: 'vocal', label: 'VOCAL PAIR', blurb: '/);
     assert.match(P, /\{ id: 'proc', label: 'PROCESSOR PAIR', blurb: '/);
+  });
+});
+
+describe('Checker fixes (CHECK_F6a_REPORT.md, 2026-11-15)', () => {
+  it('GN-03: Module 6’s note follows the X-RAY state (X-RAY now starts on)', () => {
+    const E = read('src/screens/lab/gain/modules/modExplore.tsx');
+    assert.doesNotMatch(E, /flip on the X-Ray/);
+    assert.match(E, /xray\n\s*\? 'Not balanced yet — read the X-Ray meters/);
+  });
+  it('Gain: the meter tag keeps TOO LOW whole (it fits one line); only QUIET SOURCE shortens', () => {
+    const V = read('src/screens/lab/gain/gainViz.tsx');
+    const m = /export function shortRegionLabel\(label: string\): string \{([\s\S]*?)\n\}/.exec(V);
+    assert.ok(m);
+    const fn = new Function('label', m[1]) as (l: string) => string;
+    assert.equal(fn('TOO LOW'), 'TOO LOW');
+    assert.equal(fn('QUIET SOURCE'), 'QUIET');
+  });
+  it('Gain Module 3’s card names the readout PROCESSOR, as the bezel does', () => {
+    const G = read('src/screens/lab/gain/gainScreenGuides.ts');
+    assert.match(G, /compare the PREAMP and PROCESSOR readouts/);
+  });
+  it('Spectrum: one true peak for the readout and the marker (SPEECH 220 Hz, FEEDBACK 1.75 kHz)', async () => {
+    const M = await import('../src/screens/lab/meter/meterEngine.ts');
+    assert.equal(M.fmtPeakHz(M.spectrumPeak('speech').f), '220 Hz');
+    assert.equal(M.fmtPeakHz(M.spectrumPeak('feedback').f), '1.75 kHz');
+    assert.equal(M.fmtPeakHz(M.spectrumPeak('kick').f), '60 Hz');
+    assert.equal(M.fmtPeakHz(M.spectrumPeak('hum').f), '60 Hz');
   });
 });

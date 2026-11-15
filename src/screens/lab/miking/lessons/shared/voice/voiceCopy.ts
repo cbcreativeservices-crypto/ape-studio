@@ -79,7 +79,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
       workedAim: 'Aim it at the mouth — between the nose and the mouth is a good place to point; the lab counts it while the mic points within about {tol}° of the mouth. Distance, height and angle are separate things to try.',
       workedClear: 'Clear of the singer: the mic, its screen and its stand keep off the face and away from where the head moves, and the base and cable stay clear of the feet. Clearance comes first, before any number.',
       blocked: {},
-      reveal: 'Closer tends to bring more low end, breath and pops; farther, more room and a steadier level; a little lower or to one side, softer S sounds. Singers and rooms vary, so “it depends on this singer” is fair too. Each zone’s TENDENCY line is an idea to check by ear.',
+      reveal: 'Closer tends to bring more low end, breath and pops; farther, more room and a steadier level; a little lower or to one side, softer S sounds. Singers and rooms vary, so “it depends on this singer” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
       typeNotes: {
         vocLdc: 'Ideas to try with the studio condenser: keep its screen at least 10 cm in front of it, angled a little off parallel, then change one thing at a time — the distance, then the height — and have the singer perform the real material each time.',
         vocLdcOpen: 'Ideas to try without a screen: raise the mic to about eye level and angle it down at the mouth, so the air from the lips passes beneath it.',

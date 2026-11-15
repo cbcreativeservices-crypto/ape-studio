@@ -554,7 +554,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
                 const isOpen = i === openStep;
                 return (
                   <View key={st.label} style={{ gap: 10 }}>
-                    <Pressable onPress={() => setPickedStep(i)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: isOpen }} accessibilityLabel={`${consoleStepHeader(st, grade.met, isOpen)}. ${isOpen ? 'Open' : 'Tap to open'}`}>
+                    <Pressable onPress={() => setPickedStep(isOpen ? -1 : i)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: isOpen }} accessibilityLabel={`${consoleStepHeader(st, grade.met, isOpen)}. ${isOpen ? 'Open' : 'Tap to open'}`}>
                       <Text style={styles.moreText}>{consoleStepHeader(st, grade.met, isOpen)}</Text>
                     </Pressable>
                     {isOpen ? (

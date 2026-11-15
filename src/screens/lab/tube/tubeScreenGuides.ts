@@ -115,7 +115,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
       'Below the drawing, CHECK YOURSELF asks how the grid does its job.',
     ],
     control: [
-      'Slide the GRID V fader to set how far the grid lets the stream through: 0% open is the most negative, 100% open the least. ◂ CLOSES and OPENS ▸ step it. Its readout adds cut off — no current flows, partly negative, or barely negative — full flow.',
+      'Slide the GRID V fader to set how far the grid lets the stream through: 0% open is the most negative, 100% open the least. ◂ CLOSES and OPENS ▸ step it. Its readout adds cut off — no current flows, partial, or full flow.',
       'Tap ⚡ E-VIEW to add the grid’s repelling field lines.',
       dockTail('GRID V'),
     ],
@@ -275,7 +275,7 @@ export const TUBE_SCREEN_GUIDES: Record<TubeSectionId, ScreenGuide> = {
       'DRIVE shows how hard the tube is pushed. STATE reads CLEAN, WARMING or SATURATED.',
     ],
     control: [
-      'Slide the DRIVE fader (0–100%) to set the signal level into the tube. Its readout adds clean — straight-line region, warming — peaks rounding, or saturated — soft clipping.',
+      'Slide the DRIVE fader (0–100%) to set the signal level into the tube. Its readout adds clean, peaks rounding, or soft clipping.',
       dockTail('DRIVE'),
     ],
     changes: [

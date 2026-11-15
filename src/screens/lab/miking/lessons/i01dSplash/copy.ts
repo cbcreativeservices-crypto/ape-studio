@@ -53,7 +53,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the splash — the lab counts it while the mic’s axis meets the plate. On a tilted splash, “above” is measured square to the plate.',
     workedClear: 'Clear of every part — the stick’s side, the swing, the crash above (or under) it, the arm and the player’s arm. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer tends to catch more of the splash’s quick attack; farther, more of the kit around it — and every splash is different. Each zone’s TENDENCY line is an idea to check by ear.',
+    reveal: 'Closer tends to catch more of the splash’s quick attack; farther, more of the kit around it — and every splash is different. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: above the splash on the far side; change the height first, then the aim. On top of the crash, the mic hears both plates — that is the sound the player chose.',
       smallDynCard: 'Ideas to try: a dynamic above the splash on the far side, aimed at its bow.',
