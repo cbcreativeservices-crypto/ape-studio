@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-14 20:55 · ccode · 3b7d9431
+changed: Room Design lab: honest front-wall tip + US percent style (owner "resolve these" 2026-11-14)
+affects other side: nothing. JS copy only; rides the held OTA.
+needs: nothing.
+
+
 ### 2026-11-14 20:30 · ccode · e2829cfe
 changed: Room Design lab: Suggested Setups module (owner request 2026-11-14; plan + 4 choices agreed; "Include it in the OTA", bug-tested)
 affects other side: nothing. JS only, no server, no store text; the module rides the held OTA on the owner's word (no new lab key, no requirement rows).
