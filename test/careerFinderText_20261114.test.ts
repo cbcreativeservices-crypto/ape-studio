@@ -250,9 +250,16 @@ describe('7. round 4: Career Finder decisions (owner, 2026-11-14)', () => {
     const missing = FAMILIES.flatMap((f) => f.examples.filter((e) => !titles.has(e)));
     assert.deepEqual(missing.sort(), [...KEPT].sort());
   });
+  it('every family example sits in that same family (owner 2026-11-14: "fix the 11 career finder job listings")', () => {
+    const wrong = FAMILIES.flatMap((f) => f.examples
+      .filter((e) => !KEPT.includes(e))
+      .filter((e) => !idx.careers.some((c) => c.t === e && idx.families[c.f] === f.name))
+      .map((e) => `${f.name}: ${e}`));
+    assert.deepEqual(wrong, []);
+  });
   it('licensed examples are still found as licensed (the warning keys off an exact title match)', () => {
     const licensed = FAMILIES.flatMap((f) => f.examples.filter((e) => idx.careers.some((c) => c.t === e && c.reg)));
-    assert.deepEqual(licensed.sort(), ['Acoustic Intelligence Analyst', 'Audiologist', 'Clinical Voice Specialist', 'Diagnostic Medical Sonographer', 'Entertainment Rigger', 'Hearing Instrument Specialist', 'Music Teacher', 'Music Therapist', 'Power Distribution Technician — Events', 'Sonar Technician', 'Soundproofing Contractor', 'Speech-Language Pathologist']);
+    assert.deepEqual(licensed.sort(), ['Acoustic Intelligence Analyst', 'Audiologist', 'Clinical Voice Specialist', 'Diagnostic Medical Sonographer', 'Entertainment Rigger', 'Hearing Instrument Specialist', 'Music Teacher', 'Music Therapist', 'Power Distribution Technician — Events', 'Sonar Technician', 'Soundproofing Contractor', 'Speech-Language Pathologist', 'Underwater Acoustics Engineer — Defense']);
   });
 });
 
