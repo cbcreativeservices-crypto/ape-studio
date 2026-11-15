@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-15 08:25 · ccode · must-do rows D60, D63, D64 refreshed
+changed: docs only. Must-do rows D60, D63 and D64 now say what is LIVE: OTA 1 (632f9828; iOS fc9a721c / Android 874669d0) and OTA 2 (3cd52abc; iOS 3c676af4 / Android c877873b). D63 is closed (DONE, live in OTA 1). D60 and D64 keep only what is still open. The owner reported on 2026-11-15 that the iPhone tests on the OTA are done. The stale wording was found by the 2026-11-15 nightly reconciliation. [MD:D60] [MD:D63] [MD:D64]
+affects other side: nothing to change. Comp A's items on these rows are unchanged (the signed-out glossary lookup timeout in D60 is still open on the server side).
+needs: nothing
+
+
 ### 2026-11-15 03:39 · ccode · 4fdec03c
 changed: nightly: live server snapshot 2026-11-15
 affects other side: none (snapshot only)
