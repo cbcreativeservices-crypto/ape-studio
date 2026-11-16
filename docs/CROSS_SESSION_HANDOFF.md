@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-15 20:01 · ccode · 4bb8aee7
+changed: Calculator workflow intro: start line no longer names the Ohm's Law template (a Pick-a-job workflow opened under it); found in the Pixel test 2026-11-15 [MD:D62]
+affects other side: nothing (app text only).
+needs: nothing
+
+
 ### 2026-11-15 14:29 · ccode · 499fd2e5
 changed: Beginner waves 1-3 (D62): 226 audit items across every lab; subtract and fix first, at most one short line per screen; shared plain terms for Hz, dB, RT60, ms, cents [MD:D62]
 affects other side: app only, no server change. Four lab first cards (Phaser, Distortion, Phase, Chorus) were rewritten in the app; F7b drafted glossary SQL to match (docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md section 3), NOT run, the owner decides with wave 4. Cable & Connector Fundamentals now opens on the glossary row "Audio levels" (3ff09ee6), copied word for word.
