@@ -414,7 +414,10 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   workflowRun: {
     intro: {
       learning: 'How one calculation’s answer becomes the next one’s input, and why an answer may only fill an input that means the same thing.',
-      start: 'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1. Read POWER and CURRENT, then tap CONTINUE ›.',
+      // Pixel test 2026-11-15 (D62 waves 1-3): a job from the Calculator home
+      // ("Pick a job") opens its own workflow, so the start line no longer
+      // names one template; the Ohm's Law example stays in TRY THIS.
+      start: 'Fill in step 1 and read its answer, then tap CONTINUE ›. On the next step, ⤵ USE … carries that answer forward.',
     },
     seeing: [
       'At the top: the workflow’s name, with this step’s calculation under it.',
