@@ -735,7 +735,7 @@ needs: nothing
 
 
 ### 2026-11-15 · ccode · OTA 3 PUBLISHED (02b2e971, beginner waves 1-3)
-changed: production OTA on the owner's word ("publish") after the Pixel test: iOS group 0e7b99e2-a31b-4e79-bf61-28f0ad4cafd2 (91355451…), Android group 43718c53-31a6-4863-8e80-a1afdb591b6c (a903813a…); sourcemaps uploaded; eol-sync 0 / fingerprints MATCH. Undo = republish iOS 3c676af4 / Android c877873b (OTA 2). Not yet seen on a phone. [MD:D62]
+changed: production OTA on the owner's word ("publish") after the Pixel test: iOS group 0e7b99e2-a31b-4e79-bf61-28f0ad4cafd2 (91355451…), Android group 43718c53-31a6-4863-8e80-a1afdb591b6c (a903813a…); sourcemaps uploaded; eol-sync 0 / fingerprints MATCH. Undo = republish iOS 3c676af4 / Android c877873b (OTA 2). Proven 2026-11-16: Pixel (Play app shows the new Calculator home) and iPhone (owner). [MD:D62]
 affects other side: app only; no server change. Comp A: the glossary SQL for 4 lab cards (docs/labs/beginner_waves_2026_11_15/F7b_REPORT.md section 3) is still NOT run, owner decides.
 needs: nothing. [MD:D62]
 
