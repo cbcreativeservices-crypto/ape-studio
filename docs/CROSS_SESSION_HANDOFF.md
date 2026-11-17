@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-17 09:59 · ccode · 707dffdc
+changed: Images: 14 replacements from the owner's 2026-11-17 set (11 topic tiles, Worship Audio certificate, 3 program squares) [MD:D67]
+affects other side: images only; the owner uploads the 14 files to topic-tiles / course-cards with scripts/upload-images-20261117.mjs (no DB, no function change)
+needs: nothing [MD:D67]
+
+
+### 2026-11-17 08:36 · ccode · e67551ef
+changed: docs: must-do D67, image audit (worship certificate shows assisted listening; 364 images to Comp B) [MD:D67]
+affects other side: nothing (docs only)
+needs: nothing [MD:D67]
+
+
 ### 2026-11-16 03:40 · ccode · 3f5b85b3
 changed: nightly: live server snapshot 2026-11-16
 affects other side: none (snapshot only)
