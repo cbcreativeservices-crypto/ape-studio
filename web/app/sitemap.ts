@@ -8,6 +8,7 @@ const PATHS = [
   "/",
   "/academy",
   "/curriculum",
+  "/career-finder",
   "/membership",
   "/credentials",
   "/verify",

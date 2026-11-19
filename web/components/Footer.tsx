@@ -6,6 +6,7 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
     links: [
       { href: "/academy", label: "The Academy" },
       { href: "/curriculum", label: "Curriculum Development" },
+      { href: "/career-finder", label: "Audio Career Finder" },
       { href: "/credentials", label: "Credentials" },
       { href: "/membership", label: "Membership" },
       { href: "/get", label: "Get the app" },
