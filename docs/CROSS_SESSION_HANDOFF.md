@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-19 05:51 · ccode · f8c796d9
+changed: Website: free Audio Career Finder at /career-finder (owner 2026-11-19) [MD:D71]; DEPLOYED as 2d67d581 on audio-tools-engine (owner "deploy it")
+affects other side: nothing on the server (web/ only, no Supabase calls); Comp A may request Search Console indexing of /career-finder
+needs: nothing [MD:D71]
+
+
 ### 2026-11-17 09:59 · ccode · 707dffdc
 changed: Images: 14 replacements from the owner's 2026-11-17 set (11 topic tiles, Worship Audio certificate, 3 program squares) [MD:D67]
 affects other side: images only; the owner uploads the 14 files to topic-tiles / course-cards with scripts/upload-images-20261117.mjs (no DB, no function change)
