@@ -35,7 +35,12 @@ export function creditLabs(): readonly CreditLab[] {
         const key = leaf.key ?? (leaf.route ? trainingKeyFor(leaf.route) : '');
         if (!key || seen.has(key)) continue;
         seen.add(key);
-        out.push({ key, name: leaf.name, section, route: leaf.route, params: leaf.params });
+        // A whole Training lab shelved in a Fundamentals group (Room Design & Monitoring sits under
+        // Acoustics) earns a Training credit (tr_*), not a Fundamentals one: list it as Training,
+        // so the tile never suggests it is part of the universal Fundamentals requirement
+        // (owner 2026-11-19 [MD:D70]).
+        const rowSection: LabSection = !leaf.key && key.startsWith('tr_') ? 'training' : section;
+        out.push({ key, name: leaf.name, section: rowSection, route: leaf.route, params: leaf.params });
       }
     }
   }

@@ -64,6 +64,7 @@ export const TRAINING_LAB_NAMES: Readonly<Record<string, string>> = {
   tr_speech: 'Speech & Voice Lab',
   tr_tube: 'Vacuum Tube Fundamentals',
   tr_amp: 'Amplifier Principles Lab',
+  tr_room_design: 'Room Design & Monitoring',
 };
 
 /** Mixing page titles, by page id — the `title` each page carries in

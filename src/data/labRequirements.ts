@@ -215,6 +215,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-analog-electronics-for-audio-v3': [
     { key: 'tr_amp', why: 'Transistors, transformers and amplifier topologies are where these components actually get used.' },
   ],
+  'cert-archaeoacoustics-and-heritage-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_reverb', why: 'Heritage sites are studied by how sound decays in them, and that decay is what reverb is.' },
+  ],
   'cert-assisted-listening-and-accessibility-v3': [
     { key: 'tr_speech', why: 'Assisted listening is measured in speech intelligibility, which starts with how speech is produced and heard.' },
   ],
@@ -256,6 +260,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_limiter', why: 'Limiting, true-peak and loudness are where a dynamics chain ends up.' },
     { key: 'ear_compression', why: 'You have to hear compression — the envelope changing, not just the level — to set it well.' },
     ...adv('mxa_parallel', 'mxa_adv_dyn', 'mxa_bus'),
+  ],
+  'cert-consumer-and-home-audio-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'Speakers in a living room are heard through the room, so where they sit matters as much as which they are.' },
   ],
   'cert-corporate-and-event-production-v3': [
     { key: 'tr_preprod', why: 'An event lives or dies on the scope, crew and schedule agreed before load-in.' },
@@ -311,6 +319,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_distortion', why: 'A drive pedal is a distortion circuit — you need to hear what clipping and saturation actually do.' },
     { key: 'tr_amp', why: 'Pedals are designed around the amplifier stage they feed.' },
   ],
+  'cert-electronic-live-performance-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_dj', why: 'A live electronic set runs on the same booth, gain structure and cueing as a DJ set.' },
+  ],
   'cert-electronics-repair-technician-v3': [
     { key: 'tr_amp', why: 'Most audio repair is amplifier repair, and you need the working circuit in your head first.' },
     { key: 'ear_defect', why: 'A repair starts with naming the fault by ear — hum, buzz, crackle and dropout point to different causes.' },
@@ -360,9 +372,23 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_distortion', why: 'The tone itself is harmonic distortion — you should be able to hear which kind.' },
     ...mk('C01', 'C02', 'C08', 'SPK'),
   ],
+  'cert-hearing-health-and-conservation-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'ear_loudness', why: 'Noticing a small change in level by ear is where protecting your hearing starts.' },
+  ],
   'cert-home-studio-starter-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'A home studio’s monitors and listening spot are only as good as the room around them.' },
     { key: 'tr_mic_select', why: 'The first real decision in a home studio is which microphone, and why.' },
     ...mk('E01'),
+  ],
+  'cert-home-theater-design-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'Seats and speakers in a home theater are placed around the room’s modes and reflections.' },
+  ],
+  'cert-how-sound-behaves-in-a-room-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'This lab shows a room’s modes and reflections change as you move the speakers and the listener.' },
   ],
   'cert-immersive-audio-production-v3': [
     { key: 'tr_stereo', why: 'An immersive mix still has to hold up folded down to stereo and mono.' },
@@ -489,6 +515,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     ...adv('mxa_groups', 'mxa_stems', 'mxa_null', 'mxa_deliver'),
   ],
   'cert-room-acoustics-and-treatment-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'Treatment is placed where the modes and first reflections are, and this lab maps them in a room you draw.' },
     ...mk('F13'),
   ],
   'cert-seismoacoustics-and-infrasound-v3': [

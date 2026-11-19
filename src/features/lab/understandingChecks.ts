@@ -2112,6 +2112,99 @@ const EQ: readonly Q[] = [
   },
 ];
 
+// ─────────────────────────────────────────── Room Design & Monitoring ──
+// Added 2026-11-19 [MD:D70] (owner: "Add the 3 + wire Room Design"): passing this check is
+// the lab's certificate credit (tr_room_design). Every question tests what the lab itself shows:
+// the mode captions, the image-source reflection drawing, the monitoring starting point, the
+// sub boundary-gain readout and the CALCULATED / ESTIMATED / MEASURED labels.
+const ROOM_DESIGN: readonly Q[] = [
+  {
+    id: 'axial-modes',
+    prompt: 'Which room modes does the lab call the strongest, and the ones you hear first?',
+    options: [
+      'Axial modes, between one pair of parallel surfaces',
+      'Tangential modes, between two pairs of surfaces',
+      'Oblique modes, between all six surfaces',
+      'The modes above 1 kHz',
+    ],
+    correct: 'Axial modes, between one pair of parallel surfaces',
+    explanation: 'An axial mode bounces between one pair of parallel surfaces, such as the two side walls. It carries the most energy, so it is the one you hear first. A tangential mode has about half that energy, and an oblique mode less again.',
+    why: {
+      'Tangential modes, between two pairs of surfaces': 'The lab gives a tangential mode about half the energy of the strongest kind. Which kind bounces between just one pair of surfaces?',
+      'Oblique modes, between all six surfaces': 'An oblique mode loses energy at every one of its many bounces, so it is the weakest kind, not the strongest.',
+      'The modes above 1 kHz': 'Room modes matter in the low end. High up, so many modes overlap that no single one stands out.',
+    },
+  },
+  {
+    id: 'image-source',
+    prompt: 'How does the lab find the point where a speaker’s first reflection hits a wall?',
+    options: [
+      'It mirrors the speaker in the wall and aims a line at your ear',
+      'It picks the middle of the wall, halfway between the corners',
+      'It uses the spot on the wall that is closest to the speaker',
+      'It uses the spot on the wall that is closest to your ear',
+    ],
+    correct: 'It mirrors the speaker in the wall and aims a line at your ear',
+    explanation: 'This is the image-source method. Mirror the speaker in the surface, draw a straight line from that image to your ear, and the point where the line crosses the surface is the reflection point. That is where an absorber does the most good.',
+    why: {
+      'It picks the middle of the wall, halfway between the corners': 'The reflection point moves when you move the speaker or the listener, so it cannot be a fixed spot like the middle of the wall.',
+      'It uses the spot on the wall that is closest to the speaker': 'Sound reflects like light in a mirror: the angle in equals the angle out. So the point depends on where your ear is too.',
+      'It uses the spot on the wall that is closest to your ear': 'The point depends on both the speaker and the ear. Think of where you would see the speaker if the wall were a mirror.',
+    },
+  },
+  {
+    id: 'stereo-triangle',
+    prompt: 'What does the lab give as a good starting point (not a law) for a stereo monitoring setup?',
+    options: [
+      'The two speakers and your head form an equilateral triangle, a 60° listening angle',
+      'Each speaker pushed into a corner, for the most bass',
+      'Your listening position against the back wall',
+      'One speaker closer to its side wall than the other, to spread the sound',
+    ],
+    correct: 'The two speakers and your head form an equilateral triangle, a 60° listening angle',
+    explanation: 'The lab’s suggested starting point: speakers and head at the corners of an equilateral triangle, both speakers the same distance from their side walls and the front wall, and the listening position on the room’s center line. Then you move things and listen.',
+    why: {
+      'Each speaker pushed into a corner, for the most bass': 'A corner adds boundary gain from three surfaces at once, which piles up bass unevenly. The lab’s starting point is about balance, not the most bass.',
+      'Your listening position against the back wall': 'Sitting against a wall puts you where the low-frequency pressure builds up. The lab draws the listener out in the room, on the center line.',
+      'One speaker closer to its side wall than the other, to spread the sound': 'The lab checks symmetry: each speaker the same distance from its side wall, so left and right sound alike.',
+    },
+  },
+  {
+    id: 'sub-boundary',
+    prompt: 'A subwoofer sits on the floor close to a wall. What does the lab estimate the nearby surfaces do to its low bass?',
+    options: [
+      'Add level, up to about 6 dB for each nearby surface',
+      'Cut a deep notch in the low bass',
+      'Nothing; a subwoofer is not affected by walls',
+      'Raise only the high notes',
+    ],
+    correct: 'Add level, up to about 6 dB for each nearby surface',
+    explanation: 'Close to a surface (within a quarter wavelength), the sound reflected by that surface arrives nearly in step with the sound from the speaker, so the low bass gets louder: up to about +6 dB for each nearby surface. The lab marks this ESTIMATED.',
+    why: {
+      'Cut a deep notch in the low bass': 'A notch comes from a reflection arriving out of step, which happens when the speaker is farther from the surface. Very close to it, the reflection adds instead.',
+      'Nothing; a subwoofer is not affected by walls': 'Low bass is affected most of all: its long waves reach the surfaces around the sub and come back to add to it.',
+      'Raise only the high notes': 'A subwoofer plays only the low notes. The boundary effect the lab shows is on those.',
+    },
+  },
+  {
+    id: 'model-not-verdict',
+    prompt: 'The lab labels its numbers CALCULATED, ESTIMATED or MEASURED. What does that tell you about its review of your room?',
+    options: [
+      'A guide from a model; only measuring the real room is exact',
+      'A final score for how good your room is overall',
+      'A result that replaces listening in the room',
+      'Every number in it was measured in your room',
+    ],
+    correct: 'A guide from a model; only measuring the real room is exact',
+    explanation: 'Modes of a rectangle are CALCULATED for an idealized room, and reflections and levels are ESTIMATED. A real room has walls that flex, furniture and leaky doors. That is why the review gives observations and suggested next steps, never a verdict, and why you can type in a MEASURED value to compare.',
+    why: {
+      'A final score for how good your room is overall': 'The review gives observations, not a score. A model cannot know the wall that flexes or the cupboard full of clothes.',
+      'A result that replaces listening in the room': 'The lab’s numbers tell you where to look and what to try. Listening and measuring in the real room still decide.',
+      'Every number in it was measured in your room': 'Only a value you type in yourself is MEASURED. The rest are CALCULATED or ESTIMATED from the room you drew.',
+    },
+  },
+];
+
 /**
  * The checks, keyed by RUNTIME labId — the id in UNDERSTANDING_LAB_IDS
  * (trainingLabKeys.ts), which is what each screen renders the check under and
@@ -2146,4 +2239,5 @@ export const PRACTICE_LAB_CHECKS: Record<string, readonly UnderstandingQuestion[
   speech: SPEECH,
   tube: TUBE,
   amp: AMP,
+  roomdesign: ROOM_DESIGN,
 };

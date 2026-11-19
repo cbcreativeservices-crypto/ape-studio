@@ -11,6 +11,9 @@
 -- ⛔ 2026-11-13 [MD:D60]: this file now also lists tr_game_audio (Game Audio Lab, 3 requirement rows) and
 --   tr_stage_plot (Stage Plot and Channel Designer, 6 requirement rows). Do NOT run this seed for them: their
 --   SQL is written for Comp A separately, only after the update that reports them is on phones (D60 (f)).
+-- ⛔ 2026-11-19 [MD:D70]: this file now also lists tr_room_design (Room Design & Monitoring, 5 requirement rows)
+--   and 3 Wave 0 rows (tr_reverb, ear_loudness, tr_dj). Do NOT run this seed for them: their SQL is
+--   written for Comp A separately (Downloads 2026-11-19_FOR_COMP_A_WAVE0_LAB_REQUIREMENTS.zip).
 --
 -- Assumes (Comp A creates them):
 --   labs(id uuid primary key default gen_random_uuid(), key text unique not null, name text not null, area text not null)
@@ -19,7 +22,7 @@
 -- Idempotent: labs are inserted ON CONFLICT (key) DO NOTHING; requirements are upserted, and any
 -- requirement row NOT in this file is deleted — the map is the whole truth.
 -- Aborts (nothing written) if any slug or lab key fails to resolve.
--- 215 labs rows, 551 requirement rows, 123 credentials.
+-- 216 labs rows, 559 requirement rows, 129 credentials.
 
 BEGIN;
 
@@ -55,6 +58,7 @@ INSERT INTO labs (key, name, area) VALUES
   ('tr_postprod', 'Audio Post-Production', 'training'),
   ('tr_preprod', 'Audio Pre-Production', 'training'),
   ('tr_reverb', 'Reverb Lab', 'training'),
+  ('tr_room_design', 'Room Design & Monitoring', 'training'),
   ('tr_smart_processors', 'Smart Processors Lab', 'training'),
   ('tr_sound_systems', 'Sound Systems Lab', 'training'),
   ('tr_speech', 'Speech & Voice Lab', 'training'),
@@ -254,6 +258,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-analog-console-recording-v3', 'mxb_terms', 'Inserts, sends, returns, buses, groups and auxes are the six words every routing conversation uses.'),
   ('certificate', 'cert-analog-console-recording-v3', 'mxb_sends', 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.'),
   ('certificate', 'cert-analog-electronics-for-audio-v3', 'tr_amp', 'Transistors, transformers and amplifier topologies are where these components actually get used.'),
+  ('certificate', 'cert-archaeoacoustics-and-heritage-v3', 'tr_reverb', 'Heritage sites are studied by how sound decays in them, and that decay is what reverb is.'),
   ('certificate', 'cert-assisted-listening-and-accessibility-v3', 'tr_speech', 'Assisted listening is measured in speech intelligibility, which starts with how speech is produced and heard.'),
   ('certificate', 'cert-audio-archival-and-restoration-v3', 'tr_eq', 'Restoration is mostly filtering. The skill is knowing when a filter takes out the recording along with the noise.'),
   ('certificate', 'cert-audio-archival-and-restoration-v3', 'ear_defect', 'Hum, hiss, crackle, clicks and dropouts have to be named by ear before they can be removed.'),
@@ -298,6 +303,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-compression-and-dynamics-v3', 'mxa_parallel', 'Parallel and multibus processing adds weight and control without crushing the original.'),
   ('certificate', 'cert-compression-and-dynamics-v3', 'mxa_adv_dyn', 'Advanced dynamics — sidechains, multiband and ducking — solve problems a single compressor cannot.'),
   ('certificate', 'cert-compression-and-dynamics-v3', 'mxa_bus', 'Mix-bus processing changes everything at once, so it has to be done on purpose.'),
+  ('certificate', 'cert-consumer-and-home-audio-v3', 'tr_room_design', 'Speakers in a living room are heard through the room, so where they sit matters as much as which they are.'),
   ('certificate', 'cert-corporate-and-event-production-v3', 'tr_preprod', 'An event lives or dies on the scope, crew and schedule agreed before load-in.'),
   ('certificate', 'cert-corporate-and-event-production-v3', 'tr_sound_systems', 'Designing, wiring and tuning the event’s system is one of this certificate’s named topics.'),
   ('certificate', 'cert-corporate-and-event-production-v3', 'mk_B05', 'Lavaliers and headsets are fitted, hidden and positioned on the wearer, and a few centimeters change the voice completely.'),
@@ -343,6 +349,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-drum-recording-and-mixing-v3', 'mk_I01e', 'A china is harsh and loud, and where its microphone sits decides whether it cuts through or hurts.'),
   ('certificate', 'cert-effects-and-pedal-design-v3', 'tr_distortion', 'A drive pedal is a distortion circuit — you need to hear what clipping and saturation actually do.'),
   ('certificate', 'cert-effects-and-pedal-design-v3', 'tr_amp', 'Pedals are designed around the amplifier stage they feed.'),
+  ('certificate', 'cert-electronic-live-performance-v3', 'tr_dj', 'A live electronic set runs on the same booth, gain structure and cueing as a DJ set.'),
   ('certificate', 'cert-electronics-repair-technician-v3', 'tr_amp', 'Most audio repair is amplifier repair, and you need the working circuit in your head first.'),
   ('certificate', 'cert-electronics-repair-technician-v3', 'ear_defect', 'A repair starts with naming the fault by ear — hum, buzz, crackle and dropout point to different causes.'),
   ('certificate', 'cert-eq-and-tonal-shaping-v3', 'tr_eq', 'This certificate is equalization — see it, hear it, and diagnose it.'),
@@ -379,8 +386,12 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-guitar-tone-and-recording-v3', 'mk_C02', 'Most electric guitar on a record is the amplifier’s speaker as the microphone hears it.'),
   ('certificate', 'cert-guitar-tone-and-recording-v3', 'mk_C08', 'Electric bass is usually captured with a microphone and a direct signal together, and the two have to agree.'),
   ('certificate', 'cert-guitar-tone-and-recording-v3', 'mk_SPK', 'Guitar and bass cabinets and the rotating speaker cabinet are miked from outside, with rules of their own.'),
+  ('certificate', 'cert-hearing-health-and-conservation-v3', 'ear_loudness', 'Noticing a small change in level by ear is where protecting your hearing starts.'),
+  ('certificate', 'cert-home-studio-starter-v3', 'tr_room_design', 'A home studio’s monitors and listening spot are only as good as the room around them.'),
   ('certificate', 'cert-home-studio-starter-v3', 'tr_mic_select', 'The first real decision in a home studio is which microphone, and why.'),
   ('certificate', 'cert-home-studio-starter-v3', 'mk_E01', 'The lead vocal is the most important microphone in most sessions and shows, and distance from the lips decides its sound.'),
+  ('certificate', 'cert-home-theater-design-v3', 'tr_room_design', 'Seats and speakers in a home theater are placed around the room’s modes and reflections.'),
+  ('certificate', 'cert-how-sound-behaves-in-a-room-v3', 'tr_room_design', 'This lab shows a room’s modes and reflections change as you move the speakers and the listener.'),
   ('certificate', 'cert-immersive-audio-production-v3', 'tr_stereo', 'An immersive mix still has to hold up folded down to stereo and mono.'),
   ('certificate', 'cert-immersive-audio-production-v3', 'tr_binaural', 'For streamed music, most listeners will hear your immersive mix binaurally, on headphones.'),
   ('certificate', 'cert-instrument-recognition-percussion-v3', 'tr_envelope', 'Percussion is identified by its attack and decay far more than by its pitch.'),
@@ -487,6 +498,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-re-recording-mixer-v3', 'mxa_stems', 'Stems and alternate mixes are routine deliverables that have to match the main mix.'),
   ('certificate', 'cert-re-recording-mixer-v3', 'mxa_null', 'Stems should add back up to the mix, and the null test shows how close they come.'),
   ('certificate', 'cert-re-recording-mixer-v3', 'mxa_deliver', 'Professional delivery means the right files, names, levels and documentation, every time.'),
+  ('certificate', 'cert-room-acoustics-and-treatment-v3', 'tr_room_design', 'Treatment is placed where the modes and first reflections are, and this lab maps them in a room you draw.'),
   ('certificate', 'cert-room-acoustics-and-treatment-v3', 'mk_F13', 'Room acoustics are measured from several seats, and each seat''s reverb figure is kept on its own rather than averaged away.'),
   ('certificate', 'cert-seismoacoustics-and-infrasound-v3', 'mk_F16', 'Scientific arrays depend on a marked origin, one shared clock and the right spacing, or they report positions that are not real.'),
   ('certificate', 'cert-session-editing-and-comping-v3', 'tr_postprod', 'Editing and comping sit inside a session workflow that has to survive handoff.'),

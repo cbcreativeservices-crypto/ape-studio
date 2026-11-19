@@ -238,7 +238,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // Room Design & Monitoring Lab (owner spec 2026-10-01): the planning
       // tool that expands the Wave lab's room work — model your room, place
       // the monitors and the listening position, explore, treat, review.
-      // Member-only like its neighbour (no credit key: progress, not credit).
+      // Member-only like its neighbour. Not an Audio Fundamentals lab (no af_ key): since
+      // 2026-11-19 [MD:D70] its understanding check earns the Training credit tr_room_design.
       { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labeled calculated, estimated or measured.', route: 'RoomDesignLab', member: true, tileBlurb: 'Model your room: speakers, listening spot, likely problems.' },
     ],
   },

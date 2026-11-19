@@ -11,9 +11,10 @@
  * the review are document pages. FINISH › opens the shared what's-left end
  * screen; the header ‹ always leaves.
  *
- * PROGRESS, NOT CREDIT: a member lab in Acoustics, so it banks no
- * certificate credit — it remembers which modules were opened (labVisits,
- * device-local, never removed by a practice run). GUEST RULE (owner
+ * PROGRESS, plus ONE CREDIT: module visits are progress only (labVisits,
+ * device-local, never removed by a practice run). The certificate credit
+ * (tr_room_design, owner 2026-11-19 [MD:D70]) is the understanding check on
+ * the end screen, like the EQ Lab — opening modules never earns it. GUEST RULE (owner
  * 2026-08-12): a signed-out guest or a members-only preview designs freely,
  * but nothing is saved — visits stay in memory for the session, the design
  * store is save-blocked, and the lab says so plainly. The host decides only
@@ -38,6 +39,7 @@ import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { deleteRoomDesign, holdRoomDesignForSession, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
 import { ROOM_LAB_ID, ROOM_MODULES, type RoomModuleId } from './registry';
@@ -248,6 +250,7 @@ export function RoomDesignLabScreen() {
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
+            extra={<LabUnderstandingBlock labId="roomdesign" labTitle="Room Design & Monitoring Lab" />}
           />
         ) : mod.rack ? (
           // The rack takes the rest of the height; its well scrolls and ends

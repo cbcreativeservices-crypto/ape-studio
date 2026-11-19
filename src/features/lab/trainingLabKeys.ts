@@ -105,6 +105,11 @@ export const TRAINING_LABS: readonly TrainingLab[] = [
   { route: 'SpeechLab', key: 'tr_speech', completion: 'understanding' },
   { route: 'TubeLab', key: 'tr_tube', completion: 'understanding' },
   { route: 'AmpLab', key: 'tr_amp', completion: 'understanding' },
+  // Room Design & Monitoring [MD:D70] (owner 2026-11-19, "Add the 3 + wire Room Design"): it was
+  // progress-only (module visits); it now completes, like EQ, by passing its understanding check
+  // on the end screen (labId 'roomdesign'). Server `labs` row + requirement rows are Comp A's,
+  // after the update that reports it is on phones; until then lab_not_found keeps it unsent.
+  { route: 'RoomDesignLab', key: 'tr_room_design', completion: 'understanding' },
 ];
 
 export function trainingLabByRoute(route: string): TrainingLab | undefined {
@@ -209,6 +214,7 @@ export const UNDERSTANDING_LAB_IDS: Readonly<Record<string, string>> = {
   TubeLab: 'tube',
   AmpLab: 'amp',
   EqLabHome: 'eq',
+  RoomDesignLab: 'roomdesign',
 };
 
 /** The tr_ key a passed understanding check under `labId` completes, or ''
