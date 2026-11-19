@@ -111,6 +111,8 @@ const Lazy = {
   Help: lazyScreen(() => require('../screens/help/HelpScreen').HelpScreen),
   WeeklyConcept: lazyScreen(() => require('../screens/notifications/WeeklyConceptScreen').WeeklyConceptScreen),
   About: lazyScreen(() => require('../screens/about/AboutScreen').AboutScreen),
+  // The academy's message (owner 2026-11-17) [MD:D68]: free for everyone, guests too.
+  AcademyMessage: lazyScreen(() => require('../screens/academyMessage/AcademyMessageScreen').AcademyMessageScreen),
   Awards: lazyScreen(() => require('../screens/awards/AwardsScreen').AwardsScreen),
   AudioCommunityDirectory: lazyScreen(() => require('../screens/directory/AudioCommunityDirectoryScreen').AudioCommunityDirectoryScreen),
   // The Audio Community Forum. Next store build only, never by OTA.
@@ -438,6 +440,7 @@ export function RootNavigator() {
       <Stack.Screen name="Help" getComponent={Lazy.Help} options={{ presentation: 'modal' }} />
       <Stack.Screen name="WeeklyConcept" getComponent={Lazy.WeeklyConcept} options={{ presentation: 'modal' }} />
       <Stack.Screen name="About" getComponent={Lazy.About} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="AcademyMessage" getComponent={Lazy.AcademyMessage} options={{ presentation: 'modal' }} />
       {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom
           nav hidden. An AREA-level destination (Dashboard ⇄ Certificates) → fade. */}
       <Stack.Screen name="Awards" getComponent={Lazy.Awards} options={NAV_FADE} />

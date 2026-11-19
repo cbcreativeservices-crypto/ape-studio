@@ -160,6 +160,7 @@ export type RootStackParamList = {
     why_it_matters?: string;
     confidence?: string;
   };
+  AcademyMessage: undefined; // the academy's message from the main menu's New Messages (owner 2026-11-17) [MD:D68]
   About: undefined; // Credits/About/Contact — Dashboard logo tap (Booth 2026-07-08)
   /** Awards + Curriculum pager (Curriculum · Specialization · Program ·
    *  Directory · Enrollment), five side-by-side pages. `category` is the landing

@@ -74,7 +74,7 @@ import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
 import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
-import { useCommunityInbox } from '../../features/directory/CommunityBadge';
+import { useAcademyMessageUnread, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { badgeA11y, badgeCount } from '../../features/directory/inboxCounts';
 
 /** The STUDY tab's headphones (same bundled art as the nav bar) for buttons that lead into Study. */
@@ -1523,6 +1523,16 @@ export function CourseSelectionScreen() {
   const upsell = useUpsellAllowed();
   // New Messages (owner 2026-11-01): the PROFILE tab badge's own count.
   const inbox = useCommunityInbox();
+  const academyUnread = useAcademyMessageUnread();
+  // iPad/iPhone drawing warm-up (Sentry App Hanging, 2026-11-18) [MD:D69]:
+  // a few seconds after the main menu settles, build the graphics chip's
+  // drawing instructions off-screen so the first lab drawing does not freeze.
+  // Lazy require: the app-start graph stays the same; no-op off iOS.
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { scheduleGpuWarmup } = require('../../lib/gpuWarmup') as typeof import('../../lib/gpuWarmup');
+    return scheduleGpuWarmup();
+  }, []);
   // Members get AUDIO COMMUNITY in the Membership corner (owner 2026-11-01).
   const memberOpen = useMemberGate() === 'open';
   // A signed-in account that has not paid (owner 2026-11-02): keeps the
@@ -2167,7 +2177,21 @@ export function CourseSelectionScreen() {
           Replay intro row, ONLY while a contact request or an unread message
           is waiting (the same server count as the PROFILE tab badge; an
           unknown count shows nothing). Opens the directory on REQUESTS. */}
-      {!SHOW_COMMUNITY_ON_HOME ? null : (badgeCount(inbox) ?? 0) > 0 ? (
+      {/* The academy's message (owner 2026-11-17) [MD:D68]: while it is
+          unread, New Messages opens it, for everyone (guests too). Once it is
+          read, this row goes back to the inbox / Audio Community below. */}
+      {academyUnread ? (
+        <Pressable
+          style={[styles.newMsgBtn, { top: insets.top + 36 }]}
+          onPress={() => (navigation as any).navigate('AcademyMessage')}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="New messages. A message from the academy."
+        >
+          <View style={styles.newMsgDot} />
+          <Text style={styles.newMsgText} maxFontSizeMultiplier={HOME_MAX}>New Messages</Text>
+        </Pressable>
+      ) : !SHOW_COMMUNITY_ON_HOME ? null : (badgeCount(inbox) ?? 0) > 0 ? (
         <Pressable
           style={[styles.newMsgBtn, { top: insets.top + 36 }]}
           onPress={() => (navigation as any).navigate('AudioCommunityDirectory', { tab: 'requests' })}

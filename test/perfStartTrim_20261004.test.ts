@@ -313,6 +313,7 @@ describe('2. the wipe still resets every store (behavioural)', () => {
  */
 const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   About: [false, null],
+  AcademyMessage: [false, null], // the academy's message, free for everyone (owner 2026-11-17) [MD:D68]
   Achievements: [false, null],
   AchievementsHome: [false, null],
   AdvancedMixingLab: [true, 'Advanced Mixing'],

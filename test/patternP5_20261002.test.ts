@@ -313,8 +313,8 @@ const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
     why: 'UpgradeSheet is an in-tree View over the navigator, not a Modal — nothing to fade',
   },
   'src/screens/courses/CourseSelectionScreen.tsx': {
-    count: 2,
-    why: 'Membership corner button; UpgradeSheet "See plans" (UpgradeSheet is a View, not a Modal)',
+    count: 3,
+    why: 'Membership corner button; UpgradeSheet "See plans" (UpgradeSheet is a View, not a Modal); New Messages for the academy message (a plain main-menu button, owner 2026-11-17 [MD:D68])',
   },
   'src/screens/curriculum/CurriculumScreen.tsx': { count: 1, why: 'Membership button in the screen\'s about row' },
   'src/screens/exam/FinalExamScreen.tsx': { count: 1, why: '"See membership plans" on the exam\'s refusal card (in-screen)' },
