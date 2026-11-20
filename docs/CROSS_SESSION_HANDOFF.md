@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 03:41 · ccode · 830c84d4
+changed: nightly: live server snapshot 2026-11-20
+affects other side: none (snapshot only)
+needs: nothing
+
+
 ### 2026-11-19 17:05 · ccode · 1bcf9907
 changed: docs: D71 Play listing Career Finder line sent for review (all 10 pictures AI-labelled, owner's choice) [MD:D71]
 affects other side: Comp A's D71 Play step is done by ccode (sent for review); do not redo it
