@@ -52,7 +52,7 @@ import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } 
 import { isTabletWindow } from '../../theme/tablet';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useMemberGate, useTier, useUpsellAllowed } from '../../features/commercial/useTier';
+import { useGuestWording, useMemberGate, useTier, useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { HOME_SETUP_HIDDEN_FOR_LAUNCH, startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
@@ -62,7 +62,21 @@ import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enr
 import { BookIcon } from '../../components/BookIcon';
 import { markIntroSeen, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import { INTRO_STORAGE_PREFIX, onScreenIntrosReset } from '../../features/intro/screenIntros';
-import { fetchIntroVideoSeenOnAccount, markIntroVideoSeenOnAccount } from '../../features/profile/api';
+import {
+  accountPrivacyIntroKey,
+  guestIntroVideoOwed,
+  onGuestStart,
+  settleGuestIntroVideo,
+  settleGuestPrivacyNotice,
+  useGuestPrivacyOwed,
+} from '../../features/intro/screenIntros';
+import { rootModalHoldMs } from '../../components/DimModal';
+import {
+  fetchIntroVideoSeenOnAccount,
+  fetchPrivacyNoticeSeenOnAccount,
+  markIntroVideoSeenOnAccount,
+  markPrivacyNoticeSeenOnAccount,
+} from '../../features/profile/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Path } from 'react-native-svg';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
@@ -1465,6 +1479,12 @@ let introVideoLaunched = false;
 onScreenIntrosReset(() => {
   introVideoLaunched = false;
 });
+// Every guest sign-in owes the video again, after its privacy notice (owner
+// 2026-11-20) [MD:D72]: guestIntroVideoOwed() launches it past its device
+// flag; this releases the per-session latch.
+onGuestStart(() => {
+  introVideoLaunched = false;
+});
 
 /** Owner 2026-11-05: hide Audio Community and New Messages on Home until the
  *  next store build and the forum go live. One switch: config/communityVisible. */
@@ -1603,11 +1623,108 @@ export function CourseSelectionScreen() {
       alive = false;
     };
   }, [resolved, authNonce]);
+  // ⛔ THE PRIVACY NOTICE COMES FIRST (owner 2026-11-20) [MD:D72].
+  //  • GUEST: every guest sign-in (oweGuestStart in AuthScreen), then the
+  //    video again.
+  //  • ACCOUNT: once per account — the server's mark decides
+  //    (my_privacy_notice_seen, Comp A); no answer → this phone's flag for
+  //    that account. A brand-new account sees it, then its first video; an
+  //    existing account sees it alone, once.
+  // The video waits while either is owed, then for the popup's fade.
+  const guestPrivacyOwed = useGuestPrivacyOwed();
+  const privacyWording = useGuestWording();
+  const privacyGuest = privacyWording.guest;
+  const homeFocused = useIsFocused();
+  const homeSuppressed = useOverlaysSuppressed();
+  /** 'show' = owed to the signed-in account; 'no' = not owed (or a guest);
+   *  null = still asking. */
+  const [accountPrivacy, setAccountPrivacy] = useState<{ state: 'show' | 'no' | null; uid: string | null }>({
+    state: null,
+    uid: null,
+  });
   useEffect(() => {
-    if (accountVideo !== 'free' || !introVideo.visible || introVideoLaunched) return;
-    introVideoLaunched = true;
-    (navigation as any).navigate('IntroVideo');
-  }, [accountVideo, introVideo.visible, navigation]);
+    if (!resolved) {
+      setAccountPrivacy({ state: null, uid: null });
+      return undefined;
+    }
+    let alive = true;
+    setAccountPrivacy({ state: null, uid: null });
+    void (async () => {
+      const {
+        result: { data: sess },
+        timedOut,
+      } = await safeSessionResult(supabase.auth.getSession(), 'Home/privacyNotice');
+      // An UNKNOWN session is never decided either way: nothing shows.
+      if (timedOut || !isRealAccount(sess.session) || !sess.session) {
+        if (alive) setAccountPrivacy({ state: 'no', uid: null });
+        return;
+      }
+      const uid = sess.session.user.id;
+      const onAccount = await fetchPrivacyNoticeSeenOnAccount();
+      // This phone's flag for this account. A FAILED read counts as seen (the
+      // safe side for a seen-flag: nothing shows, nothing is written).
+      let onDevice: string | null = '1';
+      try {
+        onDevice = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + accountPrivacyIntroKey(uid));
+      } catch {
+        onDevice = '1';
+      }
+      if (onAccount === true) {
+        if (onDevice == null) markIntroSeen(accountPrivacyIntroKey(uid));
+        if (alive) setAccountPrivacy({ state: 'no', uid });
+        return;
+      }
+      // Seen on this phone before the server could keep it (or a lost mark):
+      // it counts, and the account is marked — the intro video's rule.
+      if (onDevice != null) {
+        if (onAccount === false) void markPrivacyNoticeSeenOnAccount();
+        if (alive) setAccountPrivacy({ state: 'no', uid });
+        return;
+      }
+      if (alive) setAccountPrivacy({ state: 'show', uid });
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [resolved, authNonce]);
+  const accountPrivacyOwed = !privacyGuest && accountPrivacy.state !== 'no';
+  const privacyFirst = (guestPrivacyOwed && privacyGuest) || accountPrivacyOwed;
+  const answerAccountPrivacy = useCallback(() => {
+    const uid = accountPrivacy.uid;
+    setAccountPrivacy({ state: 'no', uid });
+    if (uid) markIntroSeen(accountPrivacyIntroKey(uid));
+    void markPrivacyNoticeSeenOnAccount();
+  }, [accountPrivacy.uid]);
+  /** Which popup is due now, if any. The account one only once the tier says
+   *  ACCOUNT (never while checking / unconfirmed). */
+  const privacyVariant: 'guest' | 'account' | null =
+    !homeFocused || homeSuppressed
+      ? null
+      : guestPrivacyOwed && privacyGuest
+        ? 'guest'
+        : !privacyGuest && privacyWording.account == null && accountPrivacy.state === 'show'
+          ? 'account'
+          : null;
+  // Owed to THIS guest sign-in even though the phone has seen it: the same
+  // focus / Low-Light gates as useScreenIntro, read here.
+  const guestVideo = privacyGuest && homeFocused && !homeSuppressed && guestIntroVideoOwed();
+  const videoDue = introVideo.visible || guestVideo;
+  useEffect(() => {
+    if (accountVideo !== 'free' || !videoDue || introVideoLaunched || privacyFirst) return undefined;
+    const launch = () => {
+      if (introVideoLaunched) return;
+      introVideoLaunched = true;
+      settleGuestIntroVideo();
+      (navigation as any).navigate('IntroVideo');
+    };
+    const wait = rootModalHoldMs();
+    if (wait <= 0) {
+      launch();
+      return undefined;
+    }
+    const t = setTimeout(launch, wait);
+    return () => clearTimeout(t);
+  }, [accountVideo, videoDue, navigation, privacyFirst]);
   // First-run "start here" cues (owner 2026-09-14): Explore breathes until first
   // opened; About breathes until opened OR one week after this first Home view.
   const attract = useHomeAttract();
@@ -2142,6 +2259,21 @@ export function CourseSelectionScreen() {
         <Text style={styles.replayBtnText} maxFontSizeMultiplier={HOME_MAX}>Replay intro</Text>
       </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
+      {privacyVariant
+        ? (() => {
+            // Loaded on demand: the app-start graph stays inside its cap (perfStartTrim).
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { PrivacyNotice } = require('../../features/intro/PrivacyNotice') as typeof import('../../features/intro/PrivacyNotice');
+            return (
+              <PrivacyNotice
+                variant={privacyVariant}
+                wanted
+                hold={aboutOpen || upgradeOpen || exploreArea != null}
+                onGotIt={privacyVariant === 'guest' ? settleGuestPrivacyNotice : answerAccountPrivacy}
+              />
+            );
+          })()
+        : null}
 
       {/* Top-right Membership button (owner 2026-08-12): opposite About →
           opens the academy Paywall. Same absolute-corner treatment.

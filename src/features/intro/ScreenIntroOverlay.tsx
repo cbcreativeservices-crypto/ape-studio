@@ -27,8 +27,9 @@ const sessionShownIntros = new Set<IntroKey>();
 
 /** Retire an intro on this phone. Silent on purpose: the app's seen-flag — a
  *  lost flag shows the intro once more. Also used when the ACCOUNT says the
- *  intro video was seen elsewhere (CourseSelectionScreen, 2026-10-26). */
-export function markIntroSeen(key: IntroKey): void {
+ *  intro video was seen elsewhere (CourseSelectionScreen, 2026-10-26), and for
+ *  the account privacy notice's per-account flag (2026-11-20) [MD:D72]. */
+export function markIntroSeen(key: IntroKey | `accountPrivacy:${string}`): void {
   void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1').catch(() => {});
 }
 

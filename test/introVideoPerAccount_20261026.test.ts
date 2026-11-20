@@ -21,7 +21,8 @@ test('the server mark is read and written through two RPCs, failing soft', () =>
 });
 
 test('Home asks the account BEFORE the video can launch', () => {
-  assert.match(home, /if \(accountVideo !== 'free' \|\| !introVideo\.visible \|\| introVideoLaunched\) return;/);
+  // 2026-11-20 [MD:D72]: also waits for the privacy notice; a guest's video is owed past the device flag.
+  assert.match(home, /if \(accountVideo !== 'free' \|\| !videoDue \|\| introVideoLaunched \|\| privacyFirst\) return undefined;/);
   // A failed membership read must not hold the video forever.
   assert.match(home, /if \(!resolved\) \{\s*setAccountVideo\(null\);/);
   // seen on the account → remembered on this phone; seen on this phone → marks the account.

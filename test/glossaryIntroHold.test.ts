@@ -47,7 +47,7 @@ describe('glossary intro waits its turn', () => {
     // (2026-10-26: the write is the shared markIntroSeen, also used for the
     // account-level intro video.)
     assert.match(dismiss, /markIntroSeen\(key\)/, 'dismiss no longer persists the seen flag');
-    assert.match(intro, /export function markIntroSeen\(key: IntroKey\): void \{\s*void AsyncStorage\.setItem\(INTRO_STORAGE_PREFIX \+ key, '1'\)/);
+    assert.match(intro, /export function markIntroSeen\(key: IntroKey(?: \| `accountPrivacy:\$\{string\}`)?\): void \{\s*void AsyncStorage\.setItem\(INTRO_STORAGE_PREFIX \+ key, '1'\)/);
     assert.ok(!/hold/.test(dismiss), 'hold leaked into dismiss — a deferred intro would be retired instead of shown later');
   });
 

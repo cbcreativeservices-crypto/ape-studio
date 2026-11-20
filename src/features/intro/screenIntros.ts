@@ -445,3 +445,124 @@ export const SCREEN_INTROS: Record<
     button: 'Got it',
   },
 };
+
+/**
+ * ⛔ THE GUEST PRIVACY NOTICE (owner 2026-11-20) [MD:D72].
+ *
+ * Every tap of GUEST MODE (each one erases the visit before it, D57) owes one
+ * popup on the main menu BEFORE the intro video: our stance on tracking, the
+ * guest erase, and how little an account keeps. "Got it" settles it and the
+ * video then plays — every guest sign-in, by the owner's choice (its "seen"
+ * flag is device-level and survives the wipe, so on its own it plays once per
+ * phone; `guestVideoOwed` launches it anyway, without touching that flag).
+ *
+ * Every sentence is true for the shipped app (checked 2026-11-20 against
+ * features/telemetry, clearLocalAccountData GUEST_KEEP and Privacy Policy
+ * 3.2): no advertising id and no cross-app tracking; the guest wipe keeps only
+ * the glossary / calculator weekly counts, the install id and intro flags;
+ * Sentry and Aptabase carry no name, email or account. Change a fact here
+ * only together with the code that makes it true.
+ *
+ * In memory on purpose: both are owed by THIS sign-in, never a stored record
+ * (no storage at all). A later account sign-in cannot show it: the notice
+ * and the guest video both require useGuestWording().guest.
+ * Kept in this file (already at app start) so no new module joins the start
+ * graph (perfStartTrim, cap 260).
+ */
+/** Paragraphs both versions share: the opening two and the closing one. */
+const PRIVACY_OPEN = [
+  'We believe privacy is a right, not a setting. You came here to learn audio, not to be studied yourself.',
+  'So we do not track people. We never sell or share anyone’s information, we show no ads, and we never follow you across other apps or websites.',
+] as const;
+const PRIVACY_CLOSE = 'For everyone, crash reports and usage counts are anonymous. They exist only to help us fix and improve the Academy.';
+
+/** GUEST version (owner-approved 2026-11-20, "Option 1"). */
+export const GUEST_PRIVACY_NOTICE = {
+  title: 'Your Privacy, Our Promise',
+  paragraphs: [
+    ...PRIVACY_OPEN,
+    'Guest Mode lives by that promise: every guest sign-in erases everything from before on this phone, including lab work, scores and settings. Only a weekly count of free lookups stays, with no name on it.',
+    'Students with an account are tracked as little as possible: just your email, your membership, and your progress and scores, so your work follows you to any device.',
+    PRIVACY_CLOSE,
+  ],
+  button: 'Got it',
+} as const;
+
+/** ACCOUNT version (owner-approved 2026-11-20: "ok build it"). Shown once per
+ *  account: a brand-new account sees it before the intro video; an existing
+ *  account sees it alone, once. "Anything you choose to post or share" keeps
+ *  "only" true (forum posts, the profile name). */
+export const ACCOUNT_PRIVACY_NOTICE = {
+  title: 'Your Privacy, Our Promise',
+  paragraphs: [
+    ...PRIVACY_OPEN,
+    'Your account lives by that promise. We keep only what your learning needs: your email, your membership, and your progress and scores, so your work follows you to any device, plus anything you choose to post or share.',
+    PRIVACY_CLOSE,
+  ],
+  button: 'Got it',
+} as const;
+
+/** The account version's per-phone "seen" flag, per account (an `ape:intro:`
+ *  key: device-level, survives the wipes, cleared by "Reset onboarding
+ *  hints" and by a brand-new account's intro reset). Used only while the
+ *  server has no answer (`my_privacy_notice_seen`). */
+export function accountPrivacyIntroKey(uid: string): `accountPrivacy:${string}` {
+  return `accountPrivacy:${uid}`;
+}
+
+/** Two flags owed by ONE guest sign-in. A const holder: no user data, no
+ *  storage, and an account never reads them (the notice and the guest video
+ *  both require useGuestWording().guest), so the account wipe has nothing to
+ *  forget here. */
+const guestStart = { privacyOwed: false, videoOwed: false };
+const guestPrivacyListeners = new Set<() => void>();
+const guestStartListeners = new Set<() => void>();
+function emitGuestPrivacy(): void {
+  for (const fn of Array.from(guestPrivacyListeners)) fn();
+}
+
+/** A guest sign-in has just wiped the device (AuthScreen's enterGuest): owe
+ *  the privacy notice, then the intro video again (Home's once-per-session
+ *  launch latch is released through onGuestStart). */
+export function oweGuestStart(): void {
+  guestStart.privacyOwed = true;
+  guestStart.videoOwed = true;
+  for (const fn of Array.from(guestStartListeners)) {
+    try {
+      fn();
+    } catch {
+      // one listener failing must not stop the others
+    }
+  }
+  emitGuestPrivacy();
+}
+
+/** "Got it" (or Android BACK) on the notice. */
+export function settleGuestPrivacyNotice(): void {
+  if (!guestStart.privacyOwed) return;
+  guestStart.privacyOwed = false;
+  emitGuestPrivacy();
+}
+
+/** The guest's video is owed (read by Home's launch effect). */
+export function guestIntroVideoOwed(): boolean {
+  return guestStart.videoOwed;
+}
+/** Home launched the video for this guest sign-in. */
+export function settleGuestIntroVideo(): void {
+  guestStart.videoOwed = false;
+}
+
+export function onGuestStart(fn: () => void): void {
+  guestStartListeners.add(fn);
+}
+
+function subscribeGuestPrivacy(fn: () => void): () => void {
+  guestPrivacyListeners.add(fn);
+  return () => guestPrivacyListeners.delete(fn);
+}
+const readGuestPrivacy = () => guestStart.privacyOwed;
+/** True while this guest sign-in's privacy notice has not been answered. */
+export function useGuestPrivacyOwed(): boolean {
+  return useSyncExternalStore(subscribeGuestPrivacy, readGuestPrivacy, readGuestPrivacy);
+}
