@@ -1,6 +1,6 @@
 {
-  "taken_at": "2026-11-16T03:40:00-08:00",
-  "taken_by": "nightly reconciliation 2026-11-16, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; 0 added, 0 removed since 2026-11-15T03:39:45-08:00",
+  "taken_at": "2026-11-20T03:39:11-08:00",
+  "taken_by": "nightly reconciliation 2026-11-20, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; 0 added, 0 removed since 2026-11-16T03:40:00-08:00",
   "functions": [
     "_custom_list_attempt_payload",
     "_labs_recompute_af",
