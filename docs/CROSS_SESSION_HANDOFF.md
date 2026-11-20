@@ -728,10 +728,52 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-19 11:22 · ccode · 41c36b2f
+changed: docs: D70 OTA 5 proven on the Pixel (update 01a1f53b running) [MD:D70]
+affects other side: nothing (docs only: OTA 5 proven running on the Pixel)
+needs: Comp A: watch for the first tr_room_design credit and any labs_incomplete refusal [MD:D70]
+
+
+### 2026-11-19 11:16 · ccode · e87b4c2b
+changed: docs: D70 OTA 5 published (Wave 0, owner "Publish now"): iOS cae69751 / Android d46507e5 [MD:D70]
+affects other side: OTA 5 is live on production (iOS cae69751 / Android d46507e5): phones can now report tr_room_design, which STEP 2 already requires
+needs: Comp A: confirm the first tr_room_design credit and no refused exam (reply Downloads/2026-11-19_FOR_COMP_A_WAVE0_OTA_PUBLISHED) [MD:D70]
+
+
+### 2026-11-19 11:01 · ccode · 70aacffd
+changed: docs: D70 owner answers 2026-11-19 (read plans first; spending approved) [MD:D70]
+affects other side: nothing (docs only: owner answers; lab builds wait for GO; spending approved)
+needs: nothing [MD:D70]
+
+
+### 2026-11-19 10:52 · ccode · 35b734c6
+changed: docs: build specs for Comp B's top 5 labs (P14, P12, P01, P06, P09) [MD:D70]
+affects other side: nothing (docs only; specs)
+needs: nothing [MD:D70]
+
+
+### 2026-11-19 10:50 · ccode · a1dd23fd
+changed: Wave 0 lab requirements + Room Design & Monitoring earns credit (owner 2026-11-19) [MD:D70]
+affects other side: server rows: labs tr_room_design + 8 credential_lab_requirements rows (Downloads/2026-11-19_FOR_COMP_A_WAVE0_LAB_REQUIREMENTS.zip; STEP 2 only after the OTA is on phones)
+needs: Comp A STEP 0 read-only counts back [MD:D70]
+
+
+### 2026-11-19 06:16 · ccode · bd7db1f0
+changed: docs: Comp B new-lab proposals returned + owner decisions 2026-11-19 [MD:D70]
+affects other side: nothing yet (docs only). Coming: a Comp A SQL brief for the Wave 0 lab requirements + a Room Design & Monitoring labs row
+needs: nothing now [MD:D70]
+
+
 ### 2026-11-19 05:51 · ccode · f8c796d9
 changed: Website: free Audio Career Finder at /career-finder (owner 2026-11-19) [MD:D71]; DEPLOYED as 2d67d581 on audio-tools-engine (owner "deploy it")
 affects other side: nothing on the server (web/ only, no Supabase calls); Comp A may request Search Console indexing of /career-finder
 needs: nothing [MD:D71]
+
+
+### 2026-11-18 16:43 · ccode · 96976739
+changed: Academy welcome message on the main menu (New Messages, once per phone) + iOS drawing warm-up for the Sentry App Hanging reports [MD:D68] [MD:D69]
+affects other side: nothing (app-only: academy welcome message on the main menu; iOS drawing warm-up; no server change)
+needs: nothing [MD:D68] [MD:D69]
 
 
 ### 2026-11-17 09:59 · ccode · 707dffdc
