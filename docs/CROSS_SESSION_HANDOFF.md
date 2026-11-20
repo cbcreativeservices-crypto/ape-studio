@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 12:54 · ccode · 7e514144
+changed: docs: D71 Play listing Career Finder line LIVE (owner published 2026-11-20, checked on the public page) [MD:D71]
+affects other side: Play listing done and live; only Apple remains for Comp A
+needs: Comp A: Apple Promotional Text when the owner signs in; indexing of /career-finder [MD:D71]
+
+
 ### 2026-11-20 03:41 · ccode · 830c84d4
 changed: nightly: live server snapshot 2026-11-20
 affects other side: none (snapshot only)
