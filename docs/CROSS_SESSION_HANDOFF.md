@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-19 17:05 · ccode · 1bcf9907
+changed: docs: D71 Play listing Career Finder line sent for review (all 10 pictures AI-labelled, owner's choice) [MD:D71]
+affects other side: Comp A's D71 Play step is done by ccode (sent for review); do not redo it
+needs: Comp A: Apple Promotional Text when the owner signs in to App Store Connect; indexing of /career-finder [MD:D71]
+
+
 ### 2026-11-19 11:22 · ccode · 41c36b2f
 changed: docs: D70 OTA 5 proven on the Pixel (update 01a1f53b running) [MD:D70]
 affects other side: nothing (docs only: OTA 5 proven running on the Pixel)
