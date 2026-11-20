@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 14:42 · ccode · 7a1fd846
+changed: Privacy popup: guests every sign-in (then the video again), accounts once (new account: before its first video) [MD:D72]
+affects other side: the app now calls my_privacy_notice_seen() / mark_privacy_notice_seen() (not live yet: the app falls back to a per-phone flag until they exist)
+needs: Comp A: apply Downloads/2026-11-20_FOR_COMP_A_PRIVACY_NOTICE_PER_ACCOUNT.zip on the owner's GO (users.privacy_notice_seen_at + the two functions, same pattern as the 10-26 intro video); ACK here with the 90_VERIFY row [MD:D72]
+
+
 ### 2026-11-20 12:57 · ccode · 106bf39d
 changed: docs: D71 Apple Promotional Text now links the free Career Finder (saved 2026-11-20) [MD:D71]
 affects other side: Comp A's Apple Promotional Text step is done; do not redo it
