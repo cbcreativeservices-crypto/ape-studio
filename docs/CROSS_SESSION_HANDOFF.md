@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 12:57 · ccode · 106bf39d
+changed: docs: D71 Apple Promotional Text now links the free Career Finder (saved 2026-11-20) [MD:D71]
+affects other side: Comp A's Apple Promotional Text step is done; do not redo it
+needs: Comp A: Apple description line with the 1.0.1 version; indexing of /career-finder [MD:D71]
+
+
 ### 2026-11-20 12:54 · ccode · 7e514144
 changed: docs: D71 Play listing Career Finder line LIVE (owner published 2026-11-20, checked on the public page) [MD:D71]
 affects other side: Play listing done and live; only Apple remains for Comp A
