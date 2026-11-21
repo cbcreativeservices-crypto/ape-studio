@@ -130,8 +130,23 @@ export const EAR_MODULE_TITLES: Readonly<Record<string, string>> = {
   clipping: 'Clipping Recognition',
 };
 
+/**
+ * Audio Fundamentals labs MOVED to the Training Lab (owner 2026-11-21 [MD:D74]:
+ * Fundamentals holds only what every student needs). They keep their af_ keys —
+ * IMMUTABLE, student progress is keyed by them — and the server `labs` row's
+ * area is 'training', so a credential can require them like any training lab.
+ * The other af_ keys stay universal and are never listed per credential.
+ */
+export const MOVED_FUNDAMENTALS_LABS: Readonly<Record<string, { name: string; route: string }>> = {
+  af_speaker_coverage: { name: 'Speaker Placement & Coverage', route: 'SpeakerLab' },
+  af_cable_install: { name: 'Cable Dressing & Installation', route: 'CableInstallLab' },
+  af_patchbay: { name: 'Patchbay Signal Flow & Normalling', route: 'PatchbayLab' },
+};
+
 /** Resolve a server key, or null for a key that is not a known lab/lesson. */
 export function describeLabKey(key: string): LabKeyInfo | null {
+  const moved = MOVED_FUNDAMENTALS_LABS[key];
+  if (moved) return { key, name: moved.name, area: 'training', route: moved.route };
   if (key.startsWith('tr_')) {
     const lab = TRAINING_LABS.find((l) => l.key === key);
     const name = TRAINING_LAB_NAMES[key];

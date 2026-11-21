@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 11:55 · ccode · 9332ca7e
+changed: Audio Fundamentals holds only what every student needs: Speaker Placement + Cable Dressing -> Live Sound, Patchbay + Room Design -> Production Workflow; Signal reordered (Signal Chain first and free, Detective last); next-lab links follow (owner 2026-11-21) [MD:D74]
+affects other side: App side only, NOT published. The labs keep their af_ keys. The server `labs` rows af_speaker_coverage, af_cable_install and af_patchbay must move area audio_fundamentals -> training BEFORE (or with) the OTA that carries this, else the app calls Fundamentals done while the server still requires them. Signal Chain Builder is now free for everyone (first lab of Signal). [MD:D74]
+needs: Comp A runs docs/APE_D74_MOVE_FUNDAMENTALS_LABS_2026_11_21.sql (area move + 42 credential requirement rows, owner-approved 2026-11-21) on the owner's go; brief in Downloads/2026-11-21_FOR_COMP_A_D74_MOVE_FUNDAMENTALS_LABS.zip.
+
+
 ### 2026-11-21 00:29 · ccode · 8a584f0c
 changed: iPad: the circle menu panel rises to 60% and the whole ring grows up to 1.6x, centred in it; phones unchanged (owner 2026-11-20, "looks odd small and not balanced")
 affects other side: PUBLISHED as OTA 10 on the owner's word ("Yes, publish"): Android group 0a49f829-a8a1-4fb2-abc0-1b54b16c7873 (a903813a), iOS group d3631cc2-8893-4f48-b680-9f9437d42e28 (91355451); eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. iPad CHECKED by the owner 2026-11-21 ("ipad updated and checked"). Pixel PROVEN 2026-11-21 11:00 (logcat 01a1ff2a downloaded; relaunch "No update available"). Undo = republish OTA 9 (a1fffd7b / 6d9b5458). On an iPad the circle menu panel rises to 60% and the ring grows up to 1.6x, centred; phones unchanged. Gate GREEN (23550/0). Comp A: iPad store screenshots taken after this OTA will show the larger ring. [MD:D73]

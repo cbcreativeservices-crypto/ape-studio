@@ -20,7 +20,7 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 import { LAB_REQUIREMENTS_BY_SLUG, labRequirementsFor } from '../src/data/labRequirements.ts';
-import { describeLabKey, EAR_MODULE_TITLES, MIXING_PAGE_TITLES, TRAINING_LAB_NAMES } from '../src/data/labKeyCatalog.ts';
+import { describeLabKey, MOVED_FUNDAMENTALS_LABS, EAR_MODULE_TITLES, MIXING_PAGE_TITLES, TRAINING_LAB_NAMES } from '../src/data/labKeyCatalog.ts';
 import { EAR_MODULE_IDS, MIXING_ADV_PAGE_IDS, MIXING_BEG_PAGE_IDS, TRAINING_LABS } from '../src/features/lab/trainingLabKeys.ts';
 import { LESSONS } from '../src/screens/lab/miking/data/registry.ts';
 
@@ -212,7 +212,9 @@ describe('lab ↔ certificate requirements (2026-10-13)', () => {
     const mk = new Set(LESSONS.map((l) => `mk_${l.id}`));
     const mx = new Set([...MIXING_BEG_PAGE_IDS.map((p) => `mxb_${p}`), ...MIXING_ADV_PAGE_IDS.map((p) => `mxa_${p}`)]);
     const ear = new Set((EAR_MODULE_IDS as readonly string[]).map((m) => `ear_${m}`));
-    const bad = ALL.filter((r) => !(tr.has(r.key) || mk.has(r.key) || mx.has(r.key) || ear.has(r.key)) || !describeLabKey(r.key));
+    // + the three labs moved out of Audio Fundamentals (owner 2026-11-21, D74), by their af_ keys.
+    const moved = new Set(Object.keys(MOVED_FUNDAMENTALS_LABS));
+    const bad = ALL.filter((r) => !(tr.has(r.key) || mk.has(r.key) || mx.has(r.key) || ear.has(r.key) || moved.has(r.key)) || !describeLabKey(r.key));
     assert.deepEqual(bad.map((r) => `${r.slug} → ${r.key}`), []);
   });
 
