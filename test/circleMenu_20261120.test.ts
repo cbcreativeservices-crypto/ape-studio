@@ -207,6 +207,26 @@ describe('geometry', () => {
       assert.ok(g.openTop >= t + 8, 'never above the top inset');
     }
   });
+  it('a tablet ring grows to fill a 60% panel, centred, every circle on screen (owner 2026-11-20, iPad)', () => {
+    for (const [w, h, t, b] of [[768, 1024, 24, 20], [820, 1180, 24, 20], [1024, 1366, 24, 20], [1024, 768, 24, 20], [1366, 1024, 24, 20]]) {
+      const g = ringGeometry(w, h, t, b);
+      assert.ok(g.k >= 1 && g.k <= 1.6, `${w}x${h} k ${g.k}`);
+      assert.equal(g.openTop, Math.round(h * 0.4));
+      const half = 27 * g.k;
+      for (const p of circlePlaces(true)) {
+        const c = slotCentre(g, p.hour);
+        assert.ok(c.x - half >= 0 && c.x + half <= w, `${w}x${h} ${p.name} x`);
+        assert.ok(c.y - half >= g.openTop + 30 && c.y + half <= h - b, `${w}x${h} ${p.name} y`);
+      }
+      // Balanced: the space above the top labels and below Home differ by < 2 pt.
+      const above = g.cy - 193 * g.k - (g.openTop + 41);
+      const below = h - b - 8 - (g.cy + (150 + 27) * g.k);
+      assert.ok(Math.abs(above - below) < 2, `${w}x${h} balance ${above} vs ${below}`);
+    }
+    assert.ok(ringGeometry(768, 1024, 24, 20).k > 1.4, 'portrait iPad ring is clearly bigger than the phone ring');
+    assert.equal(ringGeometry(390, 844, 47, 34).k, 1, 'phones unchanged');
+    assert.match(read('src/components/nav/CircleMenuPanel.tsx'), /scale: f\.scale \* k/);
+  });
   it('the nearest circle to the button flies out first', () => {
     const g = ringGeometry(390, 844, 47, 34);
     const r = spreadRanks(g, [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);

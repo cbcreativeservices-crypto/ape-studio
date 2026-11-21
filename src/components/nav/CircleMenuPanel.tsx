@@ -194,7 +194,7 @@ export function CircleMenuPanel(props: CircleMenuPanelProps) {
             <Circle
               cx={geo.r + 2}
               cy={geo.r + 2}
-              r={geo.r - 36}
+              r={geo.r - 36 * geo.k}
               fill="none"
               stroke="rgba(255,198,77,0.05)"
               strokeWidth={1}
@@ -240,16 +240,17 @@ const MenuCircle = memo(function MenuCircle({ place, rank, geo, p, motion, lit, 
   const target = slotCentre(geo, place.hour);
   const dx = target.x - geo.fabX;
   const dy = target.y - geo.fabY;
+  const k = geo.k;
   const rgb = rgbOf(place.color);
   const pos = LABEL_POS[place.hour] ?? '';
 
   const flyStyle = useAnimatedStyle(() => {
     if (!motion) {
-      return { opacity: Math.max(0, Math.min(1, p.value)), transform: [{ translateX: dx }, { translateY: dy }, { scale: 1 }] };
+      return { opacity: Math.max(0, Math.min(1, p.value)), transform: [{ translateX: dx }, { translateY: dy }, { scale: k }] };
     }
     const f = flight(p.value, rank);
-    return { opacity: f.opacity, transform: [{ translateX: dx * f.q }, { translateY: dy * f.q }, { scale: f.scale }] };
-  }, [motion, dx, dy, rank]);
+    return { opacity: f.opacity, transform: [{ translateX: dx * f.q }, { translateY: dy * f.q }, { scale: f.scale * k }] };
+  }, [motion, dx, dy, rank, k]);
   const labelStyle = useAnimatedStyle(() => {
     if (!motion) return { opacity: Math.max(0, Math.min(1, p.value)) };
     return { opacity: flight(p.value, rank).label };

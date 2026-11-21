@@ -187,7 +187,21 @@ export type RingGeometry = {
   /** The button's centre (screen coords). */
   fabX: number;
   fabY: number;
+  /** Size of each circle and its label against the phone design (1 on a
+   *  phone; larger on a tablet, where the ring grows to fill its panel). */
+  k: number;
 };
+
+/** A screen whose short side is at least this wide is a tablet. */
+export const TABLET_MIN_SIDE = 600;
+/** On a tablet the open panel rises to this share of the screen. */
+export const TABLET_PANEL_SHARE = 0.6;
+/** The largest a tablet ring may grow against the phone design. */
+export const MAX_RING_SCALE = 1.6;
+/** The phone ring's reach above its centre (the 11 and 1 o'clock labels)
+ *  and below it (Home's bottom edge), in design points. */
+const REACH_UP = 193;
+const REACH_DOWN = RING_R + CIRCLE / 2;
 
 /**
  * The open panel and the clock ring for a w × h area. The design is set on a
@@ -200,6 +214,7 @@ export type RingGeometry = {
 export function ringGeometry(w: number, h: number, insetTop: number, insetBottom: number): RingGeometry {
   const fabX = MENU_BUTTON_LEFT + MENU_BUTTON / 2;
   const fabY = h - insetBottom - MENU_BUTTON_LIFT - MENU_BUTTON / 2;
+  if (Math.min(w, h) >= TABLET_MIN_SIDE) return tabletGeometry(w, h, insetTop, insetBottom, fabX, fabY);
   const half = CIRCLE / 2;
   // Width: a circle plus a little air each side of the ring.
   let r = Math.min(RING_R, Math.floor((w - CIRCLE - 24) / 2));
@@ -210,7 +225,25 @@ export function ringGeometry(w: number, h: number, insetTop: number, insetBottom
   r = Math.max(60, Math.min(r, maxR));
   const cy = bottomLine - half - r;
   const openTop = Math.max(insetTop + 8, Math.min(Math.round(h / 2), cy - r - half - 33));
-  return { openTop, cx: w / 2, cy, r, fabX, fabY };
+  return { openTop, cx: w / 2, cy, r, fabX, fabY, k: 1 };
+}
+
+/**
+ * Tablet (owner 2026-11-20, iPad: "looks odd small and not balanced"): the
+ * panel rises to 60% of the screen and the whole ring (radius, circles,
+ * icons, labels) grows to fill it, up to 1.6×, centred in the space between
+ * the grip and the bottom inset.
+ */
+function tabletGeometry(w: number, h: number, insetTop: number, insetBottom: number, fabX: number, fabY: number): RingGeometry {
+  const openTop = Math.max(insetTop + 8, Math.round(h * (1 - TABLET_PANEL_SHARE)));
+  const top = openTop + 33 + 8;
+  const bottomLine = h - insetBottom - 8;
+  const room = bottomLine - top;
+  const k = Math.max(1, Math.min(MAX_RING_SCALE, room / (REACH_UP + REACH_DOWN), (w - 48) / (2 * RING_R + CIRCLE)));
+  const r = Math.round(RING_R * k);
+  // Centre the ring's full reach (top labels to Home's bottom) in the room.
+  const cy = Math.round(top + room / 2 + ((REACH_UP - REACH_DOWN) * k) / 2);
+  return { openTop, cx: w / 2, cy, r, fabX, fabY, k };
 }
 
 /** A slot's circle centre on the ring. */
