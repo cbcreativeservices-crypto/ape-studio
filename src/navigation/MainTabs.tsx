@@ -7,7 +7,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { CommonActions } from '@react-navigation/native';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
-import { TabBar } from '../components/nav/TabBar';
+import { CircleMenu } from '../components/nav/CircleMenu';
 import { StudyStack } from './StudyStack';
 import { CourseSelectionScreen } from '../screens/courses/CourseSelectionScreen';
 import type { MainTabParamList } from './types';
@@ -84,7 +84,7 @@ export function MainTabs() {
         animation: 'fade',
         transitionSpec: { animation: 'timing', config: { duration: 200 } },
       }}
-      tabBar={(props) => <TabBar {...props} />}
+      tabBar={(props) => <CircleMenu {...props} />}
       // Per-screen error containment (2026-09-11). A tab scene that throws is
       // contained INSIDE the scene, so the TabBar stays on screen and the other
       // tabs keep their state — the user can simply switch tabs. Lazy tab

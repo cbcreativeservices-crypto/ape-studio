@@ -295,6 +295,10 @@ function sitesOf(file: string, s: string): Site[] {
  */
 const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
   'src/components/HelpKey.tsx': { count: 1, why: 'header "?" key on the screen itself' },
+  'src/components/nav/CircleMenu.tsx': {
+    count: 2,
+    why: 'Help and Settings circles of the circle menu (owner 2026-11-20): the open panel is an in-tree Animated.View over the tabs, not a Modal, so nothing is fading out over the modal screen',
+  },
   'src/screens/onboarding/OnboardingLandingScreen.tsx': {
     count: 2,
     why: 'MEMBERSHIP / About buttons on the one-time landing page — a pushed screen, not a popup; it pops itself (a stack pop, no Modal fade) before the navigate',

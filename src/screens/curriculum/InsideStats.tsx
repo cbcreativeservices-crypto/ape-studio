@@ -27,7 +27,7 @@
  * except the requested silver (no palette token; defined + commented below).
  */
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import Animated, { cancelAnimation, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import Svg, { Circle, Line, Polyline, RadialGradient, Defs, Stop, Path } from 'react-native-svg';
@@ -36,6 +36,8 @@ import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import type { PlaceKey } from '../../components/nav/circleMenuPlaces';
 
 export type InsideStat = {
   id: string;
@@ -157,34 +159,15 @@ function boltPath(nx: number, ny: number, cxp: number, cyp: number): string {
   return `${s} ${cxp.toFixed(1)},${cyp.toFixed(1)}`;
 }
 
-/** A small STATIC VU-meter glyph (arc + needle) — image only, not live. */
-function VuGlyph() {
-  return (
-    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={17} height={13} viewBox="0 0 34 24">
-      <Path d="M4 21 A 13 13 0 0 1 30 21" fill="none" stroke={colors.blue} strokeWidth={1.7} strokeLinecap="round" />
-      <Line x1="9" y1="12.5" x2="10" y2="14.5" stroke={colors.blue} strokeWidth={1} strokeLinecap="round" />
-      <Line x1="17" y1="9.5" x2="17" y2="11.7" stroke={colors.blue} strokeWidth={1} strokeLinecap="round" />
-      <Line x1="25" y1="12.5" x2="24" y2="14.5" stroke={colors.blue} strokeWidth={1} strokeLinecap="round" />
-      <Line x1="17" y1="21" x2="23.5" y2="10.5" stroke={colors.blue} strokeWidth={1.7} strokeLinecap="round" />
-      <Circle cx="17" cy="21" r="1.7" fill={colors.blue} />
-    </Svg>
-  );
-}
-
-/** Static icon paired with a few nodes (owner 2026-09-15): study topics → the
- *  blue Study nav glyph; calculators → a purple sigma; measurement tools → a
- *  small VU meter. Image/vector only — none animated. */
+/** Static icon paired with a few nodes (owner 2026-09-15), the SAME icon the
+ *  circle menu shows for that place (owner 2026-11-20): study topics → the
+ *  Study Dashboard's stacked cards; labs → the headphones; measurement tools →
+ *  the meter and knob; calculators → the calculator. Image/vector only — none
+ *  animated. */
+const NODE_PLACE: Partial<Record<string, PlaceKey>> = { topics: 'study', labs: 'labs', tools: 'tools', calcs: 'calc' };
 function iconFor(id: string) {
-  switch (id) {
-    case 'topics':
-      return <Image source={require('../../../assets/icons/nav/nav-study.png')} style={styles.iconImg} resizeMode="contain" />;
-    case 'calcs':
-      return <Text style={styles.sigma}>Σ</Text>;
-    case 'tools':
-      return <VuGlyph />;
-    default:
-      return null;
-  }
+  const place = NODE_PLACE[id];
+  return place ? <PlaceArt place={place} size={18} /> : null;
 }
 
 function Node({ stat, x, y, w }: { stat: InsideStat; x: number; y: number; w: number }) {
@@ -460,8 +443,6 @@ const styles = StyleSheet.create({
   // Ring nodes (no container).
   node: { position: 'absolute', alignItems: 'center' },
   valueRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
-  iconImg: { width: 16, height: 16 },
-  sigma: { fontSize: 17, lineHeight: 19, fontWeight: '700', color: colors.purple },
   nodeValue: { fontFamily: fonts.oswaldMedium, fontSize: 18, lineHeight: 21, includeFontPadding: false, letterSpacing: 0.2 },
   nodeLabel: { fontFamily: fonts.barlowCondensedRegular, fontSize: 11.5, lineHeight: 15, letterSpacing: 0.3, color: colors.textSub, textAlign: 'center', marginTop: 1 },
   nodeArrow: { fontFamily: fonts.oswaldMedium, color: colors.textMuted },

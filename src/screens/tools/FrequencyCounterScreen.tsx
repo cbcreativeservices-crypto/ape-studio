@@ -79,12 +79,14 @@ const DISCLAIMER =
   'capabilities. This tool is intended for education and general troubleshooting, not calibrated ' +
   'laboratory measurement.';
 
+// Order on the landing (owner 2026-11-20): the purple Tuner first, above the
+// green Sound counter; Light Pulse last.
 const MODES: { key: Mode; name: string; blurb: string }[] = [
-  { key: 'sound', name: 'Sound', blurb: 'Use the microphone to estimate the frequency of a steady sound.' },
-  { key: 'light', name: 'Light Pulse', blurb: 'Use the camera to estimate the repetition rate of a flashing or flickering light.' },
-  { key: 'tap', name: 'Tap', blurb: 'Tap along with a repeating sound, light, or event to calculate its frequency and tempo.' },
   // Tuner mode (merged tool, spec 2026-07-23): same engine, musical interpretation.
   { key: 'tuner', name: 'Tuner', blurb: 'Interpret a sustained note musically — note name, octave, and cents against a selectable A4 reference.' },
+  { key: 'sound', name: 'Sound', blurb: 'Use the microphone to estimate the frequency of a steady sound.' },
+  { key: 'tap', name: 'Tap', blurb: 'Tap along with a repeating sound, light, or event to calculate its frequency and tempo.' },
+  { key: 'light', name: 'Light Pulse', blurb: 'Use the camera to estimate the repetition rate of a flashing or flickering light.' },
 ];
 
 // Landing-row accent per mode (owner 2026-08-05): Sound green · Light Pulse
@@ -1451,8 +1453,9 @@ export function FrequencyCounterScreen({ navigation }: Props) {
           <Text style={styles.backBtnText}>‹ BACK</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>FREQUENCY COUNTER & TUNER</Text>
-          <Text style={styles.subtitle}>{modeMeta ? modeMeta.name : 'Hz Counter · Pitch Tuner'}</Text>
+          {/* Tuner first (owner 2026-11-20), as on the hub tile. */}
+          <Text style={styles.title} accessibilityRole="header">TUNER & FREQUENCY COUNTER</Text>
+          <Text style={styles.subtitle}>{modeMeta ? modeMeta.name : 'Pitch Tuner · Hz Counter'}</Text>
         </View>
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>

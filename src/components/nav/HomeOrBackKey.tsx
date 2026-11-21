@@ -15,7 +15,7 @@
  * `useBackLeadsHome()` is exported for screens that already carry a HOME key
  * elsewhere (CompactBrandBar) and only need to drop a redundant ‹.
  */
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Pressable, Text, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { NavIcon } from './NavIcon';
@@ -45,8 +45,13 @@ export function HomeOrBackKey({
   backLabel = 'Back',
   hitSlop = BACK_HIT_SLOP,
   style,
+  homeArt,
 }: {
   onPress: () => void;
+  /** The HOME face's picture (owner 2026-11-20): a hub screen shows its own
+   *  section icon here (Audio Tools, Calculator Lab, Labs). The press, the
+   *  word HOME and the label "Home" are unchanged. */
+  homeArt?: ReactNode;
   /** The screen's own ‹ glyph style — the arrow looks exactly as before. */
   backStyle?: StyleProp<TextStyle>;
   backLabel?: string;
@@ -58,7 +63,7 @@ export function HomeOrBackKey({
   if (home) {
     return (
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={[NEVER_SHRINK, style]}>
-        <NavIcon icon="Home" lit />
+        <NavIcon icon="Home" lit art={homeArt} />
       </Pressable>
     );
   }

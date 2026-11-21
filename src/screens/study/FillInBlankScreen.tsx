@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
@@ -106,6 +107,9 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     }, [achievementId, topicName]),
   );
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
 
   const [items, setItems] = useState<GlossaryItem[] | null>(null);
   const [states, setStates] = useState<ItemStates>({});
@@ -579,7 +583,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <View style={styles.body}>
+      <View style={[styles.body, { paddingBottom: menuClear }]}>
         <StudyHeader
           method="fill_in_blank"
           title="FILL IN THE BLANK"

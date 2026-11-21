@@ -13,7 +13,7 @@
  * stay perfectly still. Inactive tabs keep the static PNG exactly as before,
  * as does Reduce Motion. Decorative only — still shows no user data.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
@@ -96,7 +96,10 @@ const FADER_EXC_EVERY_MS = 180000; // 3 minutes
 let lastFaderExcursionAt = 0;
 let nextExcursionFader = 0;
 
-function ProgressFadersLit() {
+/** Also drawn on the PROGRESS circle of the circle menu when Progress is the
+ *  current place (owner 2026-11-20: "PROGRESS faders must still MOVE like
+ *  before"). 22 × 22, like the tab icon; the menu scales it to its circle. */
+export function ProgressFadersLit() {
   // ⛔ THE APP SETTING COUNTS HERE TOO (owner 2026-09-20 bug pass). This read
   // only the OS flag, so the faders drifted on forever for anyone who turned
   // "Reduce animations" on in the app — the phone-level switch was the only
@@ -206,10 +209,15 @@ export function NavIcon({
   icon,
   lit,
   showLabel = true,
+  art,
 }: {
   icon: NavIconName;
   lit: boolean;
   showLabel?: boolean;
+  /** Drawn in the icon's 22 pt place instead of the tab art; the label and
+   *  its colour stay (owner 2026-11-20: the hub screens' HOME key wears the
+   *  section's own menu icon). */
+  art?: ReactNode;
 }) {
   const d = defFor(icon);
   const glow = glowStyle(lit, d.glowRgba);
@@ -224,7 +232,11 @@ export function NavIcon({
     // it now sits on the ICON only, so the label's own dim is not multiplied
     // under it. The icon looks exactly as it always has when not selected.
     <View style={styles.wrap}>
-      {animatedProgress ? (
+      {art ? (
+        <View style={[styles.icon, glow]} accessible={false} importantForAccessibility="no-hide-descendants">
+          {art}
+        </View>
+      ) : animatedProgress ? (
         <View style={[styles.icon, glow]}>
           <ProgressFadersLit />
         </View>

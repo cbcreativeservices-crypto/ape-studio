@@ -149,7 +149,8 @@ test('Tools hub: an iPad fills its width — four displays across, or two big on
   const hub = read('src/screens/tools/ToolsHubScreen.tsx');
   assert.match(hub, /tileMetricsFor\(windowW, windowH\)/, 'the tablet rule needs the live HEIGHT too');
   assert.match(hub, /<View style=\{\[styles\.brandBarCap, hubCap\]\}>/);
-  assert.match(hub, /contentContainerStyle=\{\[styles\.scroll, hubCap, \{ paddingBottom: 24 \+ insets\.bottom \}\]\}/);
+  // The last row clears the circle menu's MENU button too (owner 2026-11-20).
+  assert.match(hub, /contentContainerStyle=\{\[styles\.scroll, hubCap, \{ paddingBottom: menuClearance\(insets\.bottom\) \}\]\}/);
 });
 
 test('TabletGrid is a Fragment on a phone — the phone tree is untouched', () => {
@@ -162,19 +163,20 @@ test('TabletGrid is a Fragment on a phone — the phone tree is untouched', () =
 
 /** Every menu/hub/grid screen widened in this pass, and what proves it. */
 const WIDENED: Array<[string, RegExp]> = [
-  ['src/screens/lab/AudioLearningScreen.tsx', /cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
+  ['src/screens/lab/AudioLearningScreen.tsx', /cardColumn, wide(, \{ paddingBottom: (\d+ \+ insets\.bottom|menuClearance\(insets\.bottom\) \+ \d+) \})?\]/],
   ['src/screens/lab/EarLabScreen.tsx', /cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
   ['src/screens/lab/LabCategoryScreen.tsx', /cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
   // The Miking hub is NOT here: src/screens/lab/miking is being restructured
   // by another session (2026-10-07) and must not be touched from this branch.
-  ['src/screens/lab/calc/CalcLabScreen.tsx', /cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
+  ['src/screens/lab/calc/CalcLabScreen.tsx', /cardColumn, wide(, \{ paddingBottom: (\d+ \+ insets\.bottom|menuClearance\(insets\.bottom\) \+ \d+) \})?\]/],
   ...['amp/AmpLabHomeScreen', 'cymatics/CymaticsHomeScreen', 'digital/DigitalLabHomeScreen', 'eq/EqLabHomeScreen', 'gain/GainLabHomeScreen', 'meter/MeterLabHomeScreen', 'wave/WaveLabHomeScreen', 'eartraining/EarTrainingLabScreen'].map(
     (f) => [`src/screens/lab/${f}.tsx`, /cardColumn, wide/] as [string, RegExp],
   ),
   ['src/screens/lab/cymatics/GalleryScreen.tsx', /cardColumn, tablet && wideColumn(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
-  ['src/screens/achievements/AchievementsHomeScreen.tsx', /\[styles\.scroll, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
-  ['src/screens/achievements/TopicsScreen.tsx', /cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
-  ['src/screens/achievements/CredentialWall.tsx', /cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
+  // Tab screens end above the circle menu's MENU button (owner 2026-11-20).
+  ['src/screens/achievements/AchievementsHomeScreen.tsx', /\[styles\.scroll, wide(, \{ paddingBottom: (\d+ \+ insets\.bottom|menuClear) \})?\]/],
+  ['src/screens/achievements/TopicsScreen.tsx', /cardColumn, wide(, \{ paddingBottom: (\d+ \+ insets\.bottom|menuClear) \})?\]/],
+  ['src/screens/achievements/CredentialWall.tsx', /cardColumn, wide(, \{ paddingBottom: (\d+ \+ insets\.bottom|menuClear) \})?\]/],
   ['src/screens/tools/MeasurementLibraryScreen.tsx', /\[styles\.scroll, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
   ['src/screens/lab/tube/TubeReferenceScreen.tsx', /\[styles\.scroll, cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],
   ['src/screens/lab/calc/CalcWorkflowsScreen.tsx', /\[styles\.scroll, cardColumn, wide(, \{ paddingBottom: \d+ \+ insets\.bottom \})?\]/],

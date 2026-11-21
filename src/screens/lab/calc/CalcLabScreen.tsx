@@ -29,6 +29,9 @@ import { calcTileArt } from '../labTileArt';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu } from '../../../components/nav/CircleMenu';
+import { PlaceArt } from '../../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../../components/nav/circleMenuPlaces';
 // Screen Guide (2026-10-31): the header ⓘ "this screen, explained". The ✓
 // VERIFIED chip stays (calculators keep AccuracyNote variant "calc").
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
@@ -156,7 +159,9 @@ export function CalcLabScreen() {
       <View style={styles.header}>
         {/* HOME key when opened from Home (OPEN CALCULATORS), ‹ when deeper
             (owner rule 2026-10-14). */}
-        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
+        {/* The HOME face wears this section's menu icon (owner 2026-11-20);
+            it still goes Home, labelled "Home". */}
+        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} homeArt={<PlaceArt place="calc" />} />
         {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches
             the glossary's Σ) — a plain symbol before the title, not a button
             (owner 2026-08-01). */}
@@ -183,7 +188,7 @@ export function CalcLabScreen() {
         <ScreenGuideKey title="AUDIO CALCULATOR LABORATORY" guide={CALC_SCREEN_GUIDES.home} />
       </View>
       </ScreenGuideHintAnchor>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: menuClearance(insets.bottom) + 10 }]}>
         {/* START HERE (CA-04, owner 2026-11-15: "build waves 1 thru 3"): three
             jobs, each a built-in workflow, before the topic tiles. */}
         <View style={{ gap: 8 }}>
@@ -355,6 +360,10 @@ export function CalcLabScreen() {
           </View>
         ))}
       </ScrollView>
+      {/* The circle menu's MENU button (owner 2026-11-20: Audio Tools, Calculator
+          Lab and Labs carry it too, on their landing screens only). Above the
+          content, under the category popup; it lets every other touch through. */}
+      <ScreenCircleMenu here="calc" />
       {/* The category popup is drawn IN the screen (owner 2026-09-30: it
           sat skewed off-screen). As a separate Modal it centred on the host
           window, which on the web preview is not the app's box; in-tree it

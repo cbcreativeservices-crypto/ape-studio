@@ -9,6 +9,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { galleryLayout, GALLERY_PHONE_ART } from '../../theme/tablet';
@@ -44,6 +45,9 @@ function fmtDate(iso: string): string {
 
 export function GalleryScreen() {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const navigation = useNavigation();
   const [entries, setEntries] = useState<GalleryEntry[] | null>(null);
   // Distinguish a failed fetch from a genuinely empty gallery: a rejection used
@@ -179,7 +183,7 @@ export function GalleryScreen() {
         key={`cols-${cols}`}
         numColumns={cols}
         columnWrapperStyle={[styles.row, tabletArt && { gap: grid.gap }]}
-        contentContainerStyle={[styles.scroll, tabletArt && { padding: grid.pad, gap: grid.gap }]}
+        contentContainerStyle={[styles.scroll, tabletArt && { padding: grid.pad, gap: grid.gap }, { paddingBottom: menuClear }]}
         // Windowing: keep memory bounded when a user has earned many trophies.
         initialNumToRender={10}
         maxToRenderPerBatch={10}

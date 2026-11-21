@@ -20,6 +20,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 // art is then the row's already-decoded image. See components/CardArt.
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { CertificateArt, CertificateRenderHost, CERT_ASPECT } from '../../features/credentials/certificateRender';
 import type { CertificateRequest } from '../../features/credentials/certificatePdf';
@@ -67,6 +68,9 @@ function fmtEarned(iso: string | null): string {
 
 export function CredentialWall({ kind, title }: { kind: CredentialKind; title: string }) {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const wide = useWideOnTablet();
   const navigation = useNavigation<any>();
   const accent = KIND_ACCENT[kind];
@@ -198,7 +202,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: menuClear }]}>
         <View style={styles.headerRow}>
           <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
             <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>

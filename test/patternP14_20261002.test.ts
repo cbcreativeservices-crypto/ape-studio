@@ -170,7 +170,7 @@ describe('RATCHET A: no literal font size under 9 pt without a fit-scale reason'
  * {...fitValue(fontSize)}. May only shrink.
  */
 const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
-  'components/nav/TabBar.tsx': { n: 1, why: 'tab footnote label' },
+  'components/nav/CircleMenu.tsx': { n: 1, why: 'footnote strip beside the MENU button (was the tab bar footnote)' },
   'components/ProgressRing.tsx': { n: 1, why: 'centre label (caller-supplied word)' },
   'components/ShareTermSheet.tsx': { n: 2, why: 'glossary term headings' },
   'components/tooldemos/SignalGenDemo.tsx': { n: 3, why: 'fixed caption words' },
