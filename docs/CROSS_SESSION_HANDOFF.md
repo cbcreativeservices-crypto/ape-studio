@@ -728,6 +728,29 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 20:10 · ccode · e235b4f1
+changed: Menu screens follow-up (HOME key always top-left; section icon before the title; new Study icon everywhere Study appears; MENU button on Community, Settings, Help, My Enrollments; Settings/Help now pushed screens, not modals; menu jumps pop to an open screen). PUBLISHED as OTA 6 on the owner's word ("approved on pixel do the ota"): Android group 6bee0098-200f-412e-858a-2befdff015e5 (a903813a), iOS group 581c3852-1415-4a0d-8dc1-4534951ba3a6 (91355451); gate GREEN 23,545/0; eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. Pixel Play app fetched 6bee0098. Undo = republish OTA 5 (Android 2a6db275 / iOS 2f94bfeb).
+affects other side: Comp A: store screenshots showing the old bottom tab bar or the old Settings/Help pop-ups are out of date.
+needs: nothing
+
+### 2026-11-20 18:18 · ccode · dc11317a
+changed: Merge circle-menu: the circle menu replaces the bottom tab bar, plus the owner's 2026-11-20 icon, Audio Tools and Tuner changes. PUBLISHED as OTA 5 on the owner's word ("merge all branches then do the ota"): Android group 2a6db275-4a14-4829-90b6-fb964ac99159 (runtime a903813a), iOS group 2f94bfeb-889d-4eed-a839-f9864220271e (runtime 91355451); eol-sync 0/0, both fingerprint:compare MATCH; gate GREEN 23,535/0; sourcemaps both. Pixel Play app fetched manifest 2a6db275. Undo = republish OTA 4 (iOS bb405472 / Android 994e5d64).
+affects other side: Comp A: store screenshots and listing text that show the old bottom tab bar (HOME/STUDY/PROGRESS/PROFILE) are now out of date; the tool is now "Tuner & Frequency Counter".
+needs: nothing
+
+
+### 2026-11-20 17:33 · ccode · 92bd2a7b
+changed: Glossary hint: retires on the first term opened, tap dismisses it, wording follows the view (owner 2026-11-20)
+affects other side: nothing (shipped in OTA 5)
+needs: nothing
+
+
+### 2026-11-20 16:35 · ccode · 501230d9
+changed: web: /ai Forum moderation section + bullet; /privacy owner intro lead (Comp A brief 2026-11-20, owner-approved)
+affects other side: nothing (web change not yet deployed; waits for the owner's go)
+needs: nothing
+
+
 ### 2026-11-20 14:42 · ccode · 7a1fd846
 changed: Privacy popup: guests every sign-in (then the video again), accounts once (new account: before its first video) [MD:D72]
 affects other side: the app now calls my_privacy_notice_seen() / mark_privacy_notice_seen() (not live yet: the app falls back to a per-phone flag until they exist)
