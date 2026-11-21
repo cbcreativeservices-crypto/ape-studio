@@ -450,7 +450,8 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   Rta: [false, null],
   Scenarios: [false, null],
   Settings: [false, null],
-  SignalChainLab: [true, 'Signal Chain Builder'],
+  // Free since 2026-11-21 (owner: the first lab of every Fundamentals category is free, D74).
+  SignalChainLab: [false, 'Signal Chain Builder'],
   SignalGen: [false, null],
   SmartProcessorsLab: [true, 'Smart Processors Lab'],
   SoundSystemsBuild: [true, 'Sound Systems Lab'],
@@ -489,9 +490,10 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
 };
 /** The Lab landing's row labels at HEAD, and the grand total. */
 const COUNTS_AT_HEAD: Record<string, string> = {
-  sound: '4 Labs', acoustics: '3 Labs', signal: '9 Labs', mixingworkflow: '4 Labs', production: '2 Labs',
+  // D74 (owner 2026-11-21): Speaker Placement + Cable Dressing -> livesound; Patchbay + Room Design -> production.
+  sound: '4 Labs', acoustics: '1 Lab', signal: '7 Labs', mixingworkflow: '4 Labs', production: '4 Labs',
   // livesound: +1 Stage Plot and Channel Designer; gameaudio: a new subject (2026-11-13, MD:D60).
-  livesound: '3 Labs', gameaudio: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
+  livesound: '5 Labs', gameaudio: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
   saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
   // instruments: +1 for Miking Lab 6's family tile (Foley, Field & Scientific; Lab 6 group 4, 2026-10-08).
   visualization: '2 Labs', instruments: '8 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
@@ -525,7 +527,7 @@ describe('3. the members-only gate decides exactly as before', () => {
     const now: Record<string, [boolean, string | null]> = {};
     for (const r of Object.keys(GATE_AT_HEAD)) now[r] = [cat.isMemberOnlyLabRoute(r), cat.labRouteName(r) ?? null];
     assert.deepEqual(now, GATE_AT_HEAD);
-    assert.equal(Object.values(now).filter(([m]) => m).length, 80, '80 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide + DJSystemsLab + GameAudioLab + StagePlotLab)');
+    assert.equal(Object.values(now).filter(([m]) => m).length, 79, '79 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide + DJSystemsLab + GameAudioLab + StagePlotLab, - SignalChainLab freed 2026-11-21 D74)');
   });
 
   it('GUARD: every route the catalog and the navigator name is in that comparison', () => {

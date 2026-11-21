@@ -60,9 +60,9 @@ describe('the Labs menu', () => {
     const names = sectionCategories('training').map((c) => c.name);
     assert.equal(names.indexOf('Game Audio'), names.indexOf('Equalization') + 1, 'after Equalization, A to Z');
   });
-  it('Live Sound Reinforcement lists the Stage Plot after the DJ Systems Lab', () => {
+  it('Live Sound Reinforcement lists the Stage Plot after the DJ Systems Lab, then the two labs moved from Fundamentals (D74, 2026-11-21)', () => {
     const cat = getCategory('livesound')!;
-    assert.deepEqual(categoryLeaves(cat).map((l) => l.name), ['Sound Systems Lab', 'DJ Systems Lab', 'Stage Plot and Channel Designer']);
+    assert.deepEqual(categoryLeaves(cat).map((l) => l.name), ['Sound Systems Lab', 'DJ Systems Lab', 'Stage Plot and Channel Designer', 'Speaker Placement & Coverage', 'Cable Dressing & Installation']);
   });
   for (const lab of LABS) {
     it(`${lab.name}: one catalog row, members only, with its tile art`, () => {

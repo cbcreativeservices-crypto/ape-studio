@@ -25,15 +25,17 @@ const MODULES = ['modIntro', 'modCreate', 'modMonitoring', 'modExplore', 'modSug
 const labFiles = () => [...readdirSync(new URL(LAB, ROOT)).filter((f) => /\.tsx?$/.test(f)).map((f) => LAB + f), ...MODULES.map((m) => `${LAB}modules/${m}.tsx`)];
 
 describe('registration', () => {
-  it('is a members-only leaf in the Acoustics category (the Speaker Placement precedent), with no credit key', () => {
+  it('is a members-only leaf in the Production Workflow category (moved out of Acoustics 2026-11-21, D74), with no af_ key', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
     const leaf = cat.match(/\{ name: 'Room Design & Monitoring'[^\n]*\}/)?.[0] ?? '';
     assert.ok(leaf, 'the catalog leaf exists');
     assert.match(leaf, /route: 'RoomDesignLab'/);
     assert.match(leaf, /member: true/);
     assert.doesNotMatch(leaf, /key:/, 'progress, not certificate credit');
-    const acoustics = cat.slice(cat.indexOf("id: 'acoustics'"), cat.indexOf("id: 'signal'"));
-    assert.ok(acoustics.includes('Room Design & Monitoring'), 'listed under Acoustics');
+    const production = cat.slice(cat.indexOf("id: 'production'"), cat.indexOf("id: 'livesound'"));
+    assert.ok(production.includes('Room Design & Monitoring'), 'listed under Production Workflow');
+    const fundamentals = cat.slice(cat.indexOf("id: 'sound'"), cat.indexOf("id: 'mixingworkflow'"));
+    assert.ok(!fundamentals.includes('Room Design & Monitoring'), 'not in Audio Fundamentals');
   });
   it('has a route type, a MemberGated registration and a Stack.Screen', () => {
     assert.match(read('src/navigation/types.ts'), /RoomDesignLab: undefined;/);

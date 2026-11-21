@@ -106,7 +106,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'One loudspeaker sounds different at every seat; aim, array length, delay and polarity change where its sound goes.',
       'Moving a mic, a speaker or a listener often fixes what EQ can’t.',
     ],
-    next: { route: 'SpeakerLab', title: 'Speaker Placement & Coverage', why: 'where a loudspeaker goes so its sound reaches every seat' },
+    next: { route: 'SignalChainLab', title: 'Signal Chain Builder', why: 'how one processor’s output becomes the next one’s input' },
   },
   af_speaker_coverage: {
     recap: [
@@ -125,7 +125,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'Absorbers at reflection points tame mids and highs; corner traps and thickness, not more thin panels, reach the bass.',
       'A model shows where problems are likely; a measurement in the real room has the last word.',
     ],
-    next: { route: 'DigitalLab', title: 'Digital Audio Systems', why: 'how sound becomes numbers in a computer, and back again' },
+    next: { route: 'PatchbayLab', title: 'Patchbay Signal Flow & Normalling', why: 'how a patchbay connects the studio’s gear, and what each patch changes' },
   },
 
   // ══ AUDIO FUNDAMENTALS · SIGNAL ══════════════════════════════════════════
@@ -139,7 +139,8 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
     ],
     next: { route: 'MeterLab', title: 'Visual Audio Analysis', why: 'what each meter and display shows about a signal' },
   },
-  // Also the end screen of Signal Detective, a module of this lab (MeterModule).
+  // Also the end screen of Signal Detective, a module of this lab (MeterModule),
+  // the last Audio Fundamentals lab (owner order 2026-11-21, D74): next is Training.
   af_visual_analysis: {
     recap: [
       'Every meter answers one question. Peak: will it clip? VU and LUFS: how loud does it feel? Spectrum: which frequencies? Correlation: will it survive mono?',
@@ -148,7 +149,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'Level and decay are different things: EQ changes how high a frequency stands, treatment changes how long it lasts.',
       'A correlation near −1, or a lot of Side, can make a mix thin out or cancel in mono.',
     ],
-    next: { route: 'SignalChainLab', title: 'Signal Chain Builder', why: 'how one processor’s output becomes the next one’s input' },
+    next: { route: 'EqLab', title: 'Equalizer', why: 'the first processor in the chain: one EQ band and what it changes' },
   },
   af_signal_chain: {
     recap: [
@@ -177,7 +178,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'A turntable’s phono signal needs a PHONO input’s extra gain and tone curve; through a line input it sounds faint and thin.',
       'A continuity tester proves a path exists, but it can’t show cable type, gauge, shielding or impedance.',
     ],
-    next: { route: 'CableInstallLab', title: 'Cable Dressing & Installation', why: 'how cable is routed, supported, protected and labeled once it is chosen' },
+    next: { route: 'GainLabHome', title: 'Gain Staging', why: 'healthy levels at every stage of the chain, from input to output' },
   },
   af_cable_install: {
     recap: [
@@ -196,7 +197,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'A normal is a spring contact inside the jack, and a plug physically opens it.',
       'On a common half-normal pair, a top plug taps a copy without interrupting; a bottom plug replaces the source.',
     ],
-    next: { route: 'GainLabHome', title: 'Gain Staging', why: 'healthy levels at every stage of the chain, from input to output' },
+    next: { route: 'BeginningMixingLab', title: 'Beginning Mixing', why: 'a repeatable mixing process, from session prep to a balanced stereo mix' },
   },
   af_gain_staging: {
     recap: [
@@ -205,7 +206,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'Hiss and clipping made early travel downstream; a fader lowers the level but can’t remove clipping made before it.',
       'A problem is fixed at the stage where it starts, found by checking one stage at a time for the first place it appears.',
     ],
-    next: { route: 'EqLab', title: 'Equalizer', why: 'the first processor in the chain: one EQ band and what it changes' },
+    next: { route: 'DigitalLab', title: 'Digital Audio Systems', why: 'how sound becomes numbers in a computer, and back again' },
   },
 
   // ══ ADVANCED TRAINING · MIXING ═══════════════════════════════════════════

@@ -323,8 +323,9 @@ describe('3. who sees it: everyone on a FREE lab, members only on a members-only
   });
   it('the free labs are exactly the catalog’s non-members-only labs (calculator: no popup)', () => {
     const free = [...new Set(leaves.filter((l) => !isMemberOnlyLabRoute(l.route as string)).map((l) => L.labTermKey(l.route as string, l.params)))].sort();
-    assert.deepEqual(free, ['AmplitudeLab', 'CalcLab', 'FoundationsCourse', 'WaveLab']);
-    for (const k of ['AmplitudeLab', 'FoundationsCourse', 'WaveLab']) assert.ok(L.wiredLabTerm(k), k);
+    // SignalChainLab freed 2026-11-21 (D74: the first lab of every Fundamentals category is free).
+    assert.deepEqual(free, ['AmplitudeLab', 'CalcLab', 'FoundationsCourse', 'SignalChainLab', 'WaveLab']);
+    for (const k of ['AmplitudeLab', 'FoundationsCourse', 'SignalChainLab', 'WaveLab']) assert.ok(L.wiredLabTerm(k), k);
     assert.equal(L.wiredLabTerm('CalcLab'), null);
     // Members-only labs stay members-only, for example the miking tiles and Compression.
     assert.equal(isMemberOnlyLabRoute('MikingHub'), true);

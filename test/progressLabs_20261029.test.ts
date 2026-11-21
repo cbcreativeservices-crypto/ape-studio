@@ -44,17 +44,20 @@ describe('creditLabs — what the LABS tile counts', () => {
     }
   });
 
-  it('every af_* lab key in the store is a Fundamentals row', () => {
+  // D74 (owner 2026-11-21): three af_ labs moved to Training. They keep their
+  // IMMUTABLE af_ keys (student progress is keyed by them) and are Training rows.
+  const MOVED_TO_TRAINING = new Set(['af_speaker_coverage', 'af_cable_install', 'af_patchbay']);
+  it('every af_* lab key in the store is a LABS row: Fundamentals, or Training for the three moved labs', () => {
     const store = read('src/features/lab/labCompletion.ts');
     const afKeys = [...store.matchAll(/^\s*\| '(af_[a-z_]+)'/gm)].map((m) => m[1]);
     assert.ok(afKeys.length >= 15, `read ${afKeys.length} af_ keys`);
-    const fundamentals = new Set(labs.filter((l) => l.section === 'fundamentals').map((l) => l.key));
-    for (const k of afKeys) assert.ok(fundamentals.has(k), `${k} missing from the LABS list`);
+    const section = new Map(labs.map((l) => [l.key, l.section]));
+    for (const k of afKeys) assert.equal(section.get(k), MOVED_TO_TRAINING.has(k) ? 'training' : 'fundamentals', `${k} in the LABS list`);
   });
 
   it('every whole Training lab in the catalog is a Training row; nothing else is', () => {
     const training = labs.filter((l) => l.section === 'training');
-    const known = new Set(TRAINING_LABS.map((t) => t.key));
+    const known = new Set([...TRAINING_LABS.map((t) => t.key), ...MOVED_TO_TRAINING]);
     for (const l of training) assert.ok(known.has(l.key), `${l.key} is not a credit key`);
     // Every training key whose route the catalog lists is counted.
     const catalog = read('src/screens/lab/labCatalog.ts');

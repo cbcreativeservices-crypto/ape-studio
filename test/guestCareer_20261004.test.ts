@@ -302,14 +302,15 @@ describe('2. the guest save reminder before they begin', () => {
     ];
     for (const [file, re] of sites) assert.match(read(file), re, file);
     // The free labs a guest can open live (not a members-only preview) are
-    // exactly these three, plus Start Here — if the catalog frees another,
+    // exactly these four (Signal Chain Builder freed 2026-11-21, D74: it runs in
+    // LabShell, which carries the reminder), plus Start Here — if the catalog frees another,
     // it must get the reminder too (LabShell / PagedLab carry it already).
     const cat = read('src/screens/lab/labCatalog.ts');
     const fundamentals = cat.slice(cat.indexOf("id: 'sound',"), cat.indexOf("id: 'mixingworkflow',"));
     const free = [...fundamentals.matchAll(/\{ name: '[^']+', blurb: '(?:[^'\\]|\\.)*', route: '(\w+)'(?:, params: \{[^}]*\})?(, key: '\w+')?( ?, member: true)?/g)]
       .filter((m) => !m[3])
       .map((m) => m[1]);
-    assert.deepEqual(free.sort(), ['AmplitudeLab', 'FoundationsCourse', 'WaveLab']);
+    assert.deepEqual(free.sort(), ['AmplitudeLab', 'FoundationsCourse', 'SignalChainLab', 'WaveLab']);
   });
 });
 

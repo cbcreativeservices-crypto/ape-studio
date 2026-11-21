@@ -2,7 +2,7 @@
  * End-of-lab understanding checks — the thing that completes a member lab.
  *
  * ── WHY THIS EXISTS (owner 2026-09-20) ──────────────────────────────────────
- * The 15 Audio Fundamentals labs record progress; the ~30 MEMBER labs record
+ * The 15 af_ labs (12 Audio Fundamentals + 3 moved to Training 2026-11-21, D74) record progress; the ~30 MEMBER labs record
  * none at all, so a credential that requires one could never be satisfied and
  * the requirements sheet had to draw a dash where a checkbox belonged. The
  * owner's ruling: "create new test for each lab at end for understanding —

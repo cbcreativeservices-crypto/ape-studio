@@ -204,6 +204,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
   // Foundations of Sound, Wave Physics) stay free; deeper labs carry
   // `member: true` and lock for non-members (all of Signal, plus Sound
   // Playground, Mic Principles, Speaker Placement & Coverage).
+  // Owner 2026-11-21 (D74): Fundamentals holds only what EVERY student needs
+  // (Speaker Placement, Cable Dressing, Patchbay and Room Design moved to Training),
+  // and the FIRST lab of each category is free for everyone (Signal Chain Builder).
   {
     id: 'sound',
     glyph: '🔊',
@@ -234,13 +237,6 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behavior.', route: 'WaveLab', key: 'af_wave_physics', tileBlurb: 'How sound behaves in a room, from reflection to standing waves.' },
-      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true, tileBlurb: 'Aim, height and tilt: who a speaker reaches, on a live map.' },
-      // Room Design & Monitoring Lab (owner spec 2026-10-01): the planning
-      // tool that expands the Wave lab's room work — model your room, place
-      // the monitors and the listening position, explore, treat, review.
-      // Member-only like its neighbour. Not an Audio Fundamentals lab (no af_ key): since
-      // 2026-11-19 [MD:D70] its understanding check earns the Training credit tr_room_design.
-      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labeled calculated, estimated or measured.', route: 'RoomDesignLab', member: true, tileBlurb: 'Model your room: speakers, listening spot, likely problems.' },
     ],
   },
   {
@@ -251,10 +247,12 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true, tileBlurb: 'How sound becomes numbers, and what can go wrong.' },
-      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true, tileBlurb: 'What each meter and display shows about a signal.' },
-      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true, tileBlurb: 'Why the order of the processors in a chain matters.' },
-      { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
+      // ORDER (owner 2026-11-21, D74): follow the signal from the wire to the
+      // computer: the chain map, what carries it, choosing the cable, levels at
+      // every stage, into digital, reading the meters, then Signal Detective (a
+      // module of the meter lab, so they share an end screen) as the final check. The FIRST lab of every Fundamentals category
+      // is free for everyone (owner 2026-11-21), so Signal Chain is not member-only.
+      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', tileBlurb: 'Why the order of the processors in a chain matters.' },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
       // Placed after the signal-flow labs, before Gain Staging (owner ruling).
@@ -265,18 +263,11 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // verified connector records, new stations (same-connector/different-job
       // matrix, build-the-system scenarios, fault finder, job-final).
       { name: 'Audio Connectors & Cable Selection', blurb: 'The shape never tells you the signal — pick the right cable for real systems, refuse the unsafe ones, and find the fault when it hides.', route: 'ConnectorSelectLab', key: 'af_connector_select', member: true, tileBlurb: 'The shape never tells you the signal: the right cable.' },
-      // Professional installation practice — the decision lab that follows the
-      // connector fundamentals (owner brief 2026-08-24).
-      { name: 'Cable Dressing & Installation', blurb: 'Route it. Support it. Protect it. Make it serviceable — professional installation decisions from plan to final inspection.', route: 'CableInstallLab', key: 'af_cable_install', member: true, tileBlurb: 'How installers route, support and protect cable.' },
-      // LIVE, complete (owner brief 2026-09-10; both phases device-passed,
-      // copy ratified). af_patchbay key added on the owner's 2026-09-10 ruling
-      // ("anything in the Audio Fundamentals container is part of the
-      // fundamentals requisite"). Its seed, docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql,
-      // was run (live `labs` row dated 2026-09-11, checked 2026-10-27), so the
-      // credit is live.
-      { name: 'Patchbay Signal Flow & Normalling', blurb: 'On most bays, top is the source and bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true, tileBlurb: 'How a patchbay connects things, and what a patch changes.' },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
       { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true, tileBlurb: 'Levels at every stage: headroom, noise floor and unity gain.' },
+      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true, tileBlurb: 'How sound becomes numbers, and what can go wrong.' },
+      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true, tileBlurb: 'What each meter and display shows about a signal.' },
+      { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
     ],
   },
 
@@ -328,12 +319,28 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     id: 'production',
     glyph: '🎬',
     name: 'Production Workflow',
-    description: 'Planning a production before it starts, and finishing it after the recording stops.',
+    description: 'Planning a production before it starts, the studio it runs in — room, monitoring and patching — and finishing it after the recording stops.',
     section: 'training',
     kind: 'list',
     labs: [
       { name: 'Audio Pre-Production', blurb: 'Turn a vague brief into a production a crew can actually run — scope, deliverables, people, schedule and budget — and leave with a Production Packet that shows its own gaps.', route: 'PreProdLab', params: { lab: 'preprod' }, member: true, tileBlurb: 'From a vague brief to a plan a crew can actually run.' },
       { name: 'Audio Post-Production', blurb: 'Take a folder of recordings through to a delivery somebody has accepted — ingest, sync, edit, mix, finish to specification, and prove the files arrived intact — leaving a Delivery Package and an archive that can still be opened years later.', route: 'PostProdLab', params: { lab: 'postprod' }, member: true, tileBlurb: 'From a folder of recordings to an accepted delivery.' },
+      // Moved from Audio Fundamentals (owner 2026-11-21, D74: Fundamentals holds only
+      // what EVERY student needs). They keep their af_ keys (IMMUTABLE: student
+      // progress is keyed by them); the server labs row's area moves to 'training'
+      // and they are required only on the credentials whose job uses them.
+      // LIVE, complete (owner brief 2026-09-10; both phases device-passed,
+      // copy ratified). af_patchbay key added on the owner's 2026-09-10 ruling
+      // (superseded 2026-11-21 D74: moved to Training, key unchanged). Its seed, docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql,
+      // was run (live `labs` row dated 2026-09-11, checked 2026-10-27), so the
+      // credit is live.
+      { name: 'Patchbay Signal Flow & Normalling', blurb: 'On most bays, top is the source and bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true, tileBlurb: 'How a patchbay connects things, and what a patch changes.' },
+      // Room Design & Monitoring Lab (owner spec 2026-10-01): the planning
+      // tool that expands the Wave lab's room work — model your room, place
+      // the monitors and the listening position, explore, treat, review.
+      // Member-only like its neighbour. Not an Audio Fundamentals lab (no af_ key): since
+      // 2026-11-19 [MD:D70] its understanding check earns the Training credit tr_room_design.
+      { name: 'Room Design & Monitoring', blurb: 'Model your own room, place the speakers and the listening position, see likely modes and reflections, add treatment, save and compare — every number labeled calculated, estimated or measured.', route: 'RoomDesignLab', member: true, tileBlurb: 'Model your room: speakers, listening spot, likely problems.' },
     ],
   },
   // Live Sound Reinforcement (owner brief + GO 2026-09-25): the last lab before
@@ -360,6 +367,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // guided task (all five steps done on one stage plot), key tr_stage_plot
       // in trainingLabKeys.ts, found by this route.
       { name: 'Stage Plot and Channel Designer', blurb: 'Draw a band’s stage, connect each performer and instrument to a channel list, plan the monitor mixes, answer the review, and make the packet a venue’s sound engineer works from.', route: 'StagePlotLab', member: true, tileBlurb: 'The stage plot and input list a venue works from.' },
+      // Moved from Audio Fundamentals (owner 2026-11-21, D74: Fundamentals holds only
+      // what EVERY student needs). They keep their af_ keys (IMMUTABLE: student
+      // progress is keyed by them); the server labs row's area moves to 'training'
+      // and they are required only on the credentials whose job uses them.
+      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true, tileBlurb: 'Aim, height and tilt: who a speaker reaches, on a live map.' },
+      // Professional installation practice (owner brief 2026-08-24).
+      { name: 'Cable Dressing & Installation', blurb: 'Route it. Support it. Protect it. Make it serviceable — professional installation decisions from plan to final inspection.', route: 'CableInstallLab', key: 'af_cable_install', member: true, tileBlurb: 'How installers route, support and protect cable.' },
     ],
   },
   // Game Audio (owner plan 2026-11-12, listed 2026-11-13 [MD:D60] (e)): a
