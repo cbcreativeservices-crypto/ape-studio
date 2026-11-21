@@ -100,7 +100,7 @@ import {
   getGlossaryStatus,
   type CapMode,
 } from '../../features/glossary/glossaryCap';
-import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
+import { collapsedDefinitionLines, glossaryCoachText } from '../../features/glossary/collapsedLines';
 import { recordRecentTerm, useRecentTerms, useRecentTermsUnreadable } from '../../features/glossary/recentTerms';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { AckFlash, useAckTint } from '../../components/AckFlash';
@@ -2192,7 +2192,10 @@ ${COPY.glossaryFreeAllowance}`,
       });
       setFocusedId(id);
       recordRecent(id); // opening a term counts as "viewed"
-      coach.registerAction(); // each expand advances the "expand ×2" hint
+      // The first term a reader ever opens retires the hint for good (owner
+      // 2026-11-20): the old "expand ×2 on five visits" rule left it parked
+      // under the list long after the lesson was learned.
+      coach.retire();
       void fetchDetails(id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2261,7 +2264,7 @@ ${COPY.glossaryFreeAllowance}`,
   // B on screen. A still counts as read (its detail is cached, re-opening it is
   // free); it just no longer jumps in over the term the reader picked after it.
   const openSeqRef = useRef(0);
-  const registerCoach = coach.registerAction;
+  const registerCoach = coach.retire; // first open retires the hint (owner 2026-11-20)
   const openPopupRoot = useCallback(
     async (id: string) => {
       const seq = ++openSeqRef.current;
@@ -4819,7 +4822,16 @@ ${COPY.glossaryFreeAllowance}`,
         // Docked under the list (toddler hunt 2026-10-14 #31d): floating, it
         // covered the rows; the root's insets.bottom padding keeps it clear of
         // Android's three-button bar.
-        <CoachMark docked text="Tap a term to expand or collapse the complete definition" bottom={8} />
+        // Owner 2026-11-20: the hint says what a tap does IN THIS VIEW (card
+        // view opens the popup; a metered list row is clamped, so a tap
+        // expands it; a member's list row already shows the whole definition,
+        // so a tap opens its learning levels), and a tap on the pill retires it.
+        <CoachMark
+          docked
+          text={glossaryCoachText(cardView, capped)}
+          bottom={8}
+          onDismiss={coach.retire}
+        />
       )}
 
       {/* Share preview pop-up (user request 2026-07-17). */}
