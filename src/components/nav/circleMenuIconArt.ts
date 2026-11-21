@@ -184,7 +184,10 @@ export function iconXml(name: IconArt, c: string): string {
     body = `<rect x="9" y="2.5" width="30" height="43" rx="5" fill="${g}" ${EDGE}/>
     <rect x="10.3" y="3.8" width="27.4" height="40.4" rx="4" fill="none" stroke="rgba(255,255,255,.26)" stroke-width=".8"/>
     <rect x="13" y="7" width="22.25" height="10" rx="1.7" fill="${CUT}"/>
-    <g fill="${lt}"><rect x="22.6" y="10.1" width="2.6" height="3.9" rx=".5"/><rect x="26.2" y="10.1" width="2.6" height="3.9" rx=".5"/><rect x="29.8" y="10.1" width="2.6" height="3.9" rx=".5"/></g>${keys}`;
+    <g transform="translate(21.6 -6.45) scale(0.58)">${DB_INK.replace('#3a2614', lt)}</g>${keys}`;
+    // The readout says "dB" (owner 2026-11-20), right-aligned like a real
+    // calculator display, in the display's lit colour: the same outlined
+    // Oswald glyphs as the Study card, so both platforms draw identical letters.
   }
 
   if (name === 'study3v2') {

@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 19:40 · ccode · b3a7a92a
+changed: Foundations: the tool reads "Tuner & Frequency Counter" (tuner first), matching the hub and the tool screen (owner 2026-11-20)
+affects other side: nothing. PUBLISHED as OTA 7 on the owner's word ("go"): Android group 3e14e68b-aaf7-4e4b-9184-ab8087c71600, iOS group 3ad7202f-153e-4c2e-bb84-a4a6203ad5fd; gate GREEN; eol-sync 0/0; both fingerprints MATCH; sourcemaps both. Undo = republish OTA 6 (Android 6bee0098 / iOS 581c3852).
+needs: nothing
+
+
 ### 2026-11-20 20:10 · ccode · e235b4f1
 changed: Menu screens follow-up (HOME key always top-left; section icon before the title; new Study icon everywhere Study appears; MENU button on Community, Settings, Help, My Enrollments; Settings/Help now pushed screens, not modals; menu jumps pop to an open screen). PUBLISHED as OTA 6 on the owner's word ("approved on pixel do the ota"): Android group 6bee0098-200f-412e-858a-2befdff015e5 (a903813a), iOS group 581c3852-1415-4a0d-8dc1-4534951ba3a6 (91355451); gate GREEN 23,545/0; eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. Pixel Play app fetched 6bee0098. Undo = republish OTA 5 (Android 2a6db275 / iOS 2f94bfeb).
 affects other side: Comp A: store screenshots showing the old bottom tab bar or the old Settings/Help pop-ups are out of date.
