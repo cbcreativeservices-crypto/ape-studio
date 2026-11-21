@@ -35,6 +35,7 @@ import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-n
 import { Easing, useDerivedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { secondBackToExit } from '../../lib/focusedBack';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
@@ -2224,7 +2225,9 @@ export function CourseSelectionScreen() {
   }
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 16 }]}>
+    // The dots keep the place they had above the 60-pt bottom bar: the
+    // circle menu's MENU button sits below them now (owner 2026-11-20).
+    <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: menuClearance(insets.bottom) + 2 }]}>
       {/* Top-left About button (owner 2026-08-12): a plain text button in the
           corner → the About popup. Absolutely positioned so the centered hero
           below is undisturbed. */}

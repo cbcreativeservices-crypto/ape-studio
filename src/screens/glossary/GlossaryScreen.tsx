@@ -38,6 +38,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { NavIcon } from '../../components/nav/NavIcon';
+import { useHideCircleMenu } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { MENU_BUTTON, MENU_BUTTON_LIFT, menuClearance } from '../../components/nav/circleMenuPlaces';
 import { AZIndex, azLetterOf } from '../../features/glossary/AZIndex';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
@@ -136,7 +139,6 @@ import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
 import { ExitFullscreenIcon, FullscreenIcon } from '../../components/FullscreenIcon';
-import { MethodIcon } from '../../components/MethodIcon';
 import { CUSTOM_CYAN } from '../enrollment/EnrollmentSelection';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { softDeadline } from '../../lib/boundedCall';
@@ -3662,6 +3664,10 @@ ${COPY.glossaryFreeAllowance}`,
   // Glossary with a definition open, instead of closing it the way ✕ / the
   // back pill do. Read through a ref so the listener is not re-registered on
   // every hop.
+  // The circle menu's MENU button floats over this screen (owner 2026-11-20);
+  // while one of these in-tree overlays is up it steps aside.
+  useHideCircleMenu('glossary', !!chooser || popupTrail.length > 0 || (filter === 'topic' && topicPickerOpen));
+
   const overlayBackRef = useRef<() => boolean>(() => false);
   overlayBackRef.current = () => {
     if (chooser) {
@@ -4184,24 +4190,22 @@ ${COPY.glossaryFreeAllowance}`,
     >
       {glossaryHelp.sheet}
       <View style={styles.header}>
-        {/* HOME key (owner 2026-10-11) in place of the glossary book mark —
-            the bottom nav is hidden while the Glossary is open, so this is
-            the way back to Home. */}
+        {/* HOME key (owner 2026-10-11) in place of the glossary book mark.
+            Since 2026-11-20 it wears the Glossary's own menu icon (the open
+            A–Z book); it still goes Home, labelled "Home". */}
         <Pressable
           onPress={() => (navigation as any).navigate('Home')}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel="Home"
         >
-          <NavIcon icon="Home" lit />
+          <NavIcon icon="Home" lit art={<PlaceArt place="gloss" />} />
         </Pressable>
         {/* Shrinks to its line rather than "GL…" at the largest text sizes
             (build 36 tester); at font scale 2 it fits at full size. */}
         <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>GLOSSARY</Text>
-        {/* The blue glossary book mark, right of the title (owner 2026-10-14). Decorative. */}
-        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <MethodIcon method="glossary" size={34} />
-        </View>
+        {/* The blue book mark that sat right of the title (owner 2026-10-14) is
+            gone (owner 2026-11-20): the top-left key wears the Glossary icon. */}
         {/* BEG/ADV and full screen sit in the filter row (owner 2026-10-14); they
             come up here only while a CARD popup hides that row, so LIST is always reachable. */}
         {popupTrail.length > 0 ? (
@@ -4357,7 +4361,9 @@ ${COPY.glossaryFreeAllowance}`,
           ref={listRef}
           data={visible}
           keyExtractor={(e) => e.id}
-          contentContainerStyle={cardView ? styles.cardList : styles.list}
+          // The last term scrolls clear of the MENU button (the root already
+          // pads the bottom inset).
+          contentContainerStyle={[cardView ? styles.cardList : styles.list, { paddingBottom: menuClearance(insets.bottom) - insets.bottom }]}
           initialNumToRender={20}
           maxToRenderPerBatch={30}
           windowSize={7}
@@ -4819,7 +4825,8 @@ ${COPY.glossaryFreeAllowance}`,
         // Docked under the list (toddler hunt 2026-10-14 #31d): floating, it
         // covered the rows; the root's insets.bottom padding keeps it clear of
         // Android's three-button bar.
-        <CoachMark docked text="Tap a term to expand or collapse the complete definition" bottom={8} />
+        // Above the MENU button in the corner (2026-11-20).
+        <CoachMark docked text="Tap a term to expand or collapse the complete definition" bottom={MENU_BUTTON_LIFT + MENU_BUTTON + 8} />
       )}
 
       {/* Share preview pop-up (user request 2026-07-17). */}

@@ -41,6 +41,7 @@ import { TopicWelcomeSheet } from '../../features/intro/TopicWelcomeSheet';
 import { FoundationsAutoPopup } from '../../features/foundations/TopicFoundationsSheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
@@ -453,6 +454,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   tierForTermsRef.current = tierForTerms;
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;
 
   // Remember this exact method+topic so the Enrollments "CONTINUE LEARNING"
@@ -1772,7 +1776,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         }
         onOwedChange={setFoundationsOwed}
       />
-      <View style={styles.body}>
+      <View style={[styles.body, { paddingBottom: menuClear }]}>
         {/* Pace timer restored 2026-10-16 (owner): the header timer button opens
             the pace modal; the session-length clock (blue clock, filter row)
             is separate and both can run. */}

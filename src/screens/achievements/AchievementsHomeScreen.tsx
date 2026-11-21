@@ -13,6 +13,7 @@ import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { AchievementsStackParamList } from '../../navigation/types';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
@@ -158,6 +159,9 @@ function Tile({
 
 export function AchievementsHomeScreen() {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<AchievementsStackParamList, 'AchievementsHome'>>();
   const cameFromProfile = route.params?.from === 'profile';
@@ -230,7 +234,7 @@ export function AchievementsHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.scroll, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, wide, { paddingBottom: menuClear }]}>
         <View style={styles.headerRow}>
           {cameFromProfile ? (
             <Pressable

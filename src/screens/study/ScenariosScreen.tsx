@@ -27,6 +27,7 @@ import { AccessibilityInfo, ActivityIndicator, Pressable, ScrollView, StyleSheet
 import { Image } from 'expo-image';
 import { screenReaderOn } from '../../features/settings/a11y';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
@@ -79,6 +80,9 @@ export function ScenariosScreen({ route }: Props) {
   // MY CUSTOM LIST (D12): the list's terms, its own RPC, nothing recorded.
   const customMode = isCustomListId(achievementId);
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const navigation = useNavigation();
 
   useFocusEffect(
@@ -562,7 +566,7 @@ export function ScenariosScreen({ route }: Props) {
     const lastRound = report.round >= SCENARIO_ROUNDS;
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <ScrollView contentContainerStyle={styles.scroll}>
+        <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: menuClear }]}>
           <StudyHeader method="scenarios" title="SCENARIO" />
           <Text style={styles.reportRound}>
             ROUND {report.round} OF {SCENARIO_ROUNDS} · {roundSaved === false ? 'NOT SAVED YET' : 'COMPLETE'}
@@ -698,7 +702,7 @@ export function ScenariosScreen({ route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: menuClear }]}>
         <StudyHeader
           method="scenarios"
           title="SCENARIO"

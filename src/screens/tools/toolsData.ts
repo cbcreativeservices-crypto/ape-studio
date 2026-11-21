@@ -176,8 +176,10 @@ export const TOOLS: ToolDef[] = [
 TOOLS.push({
   key: 'hzcounter',
   num: 7,
-  name: 'Frequency Counter & Tuner',
-  subtitle: 'Hz Counter · Pitch Tuner',
+  // Tuner first (owner 2026-11-20): the hub tile, the tool's own screen and
+  // its Learn / Demo / Saved headers all read it this way.
+  name: 'Tuner & Frequency Counter',
+  subtitle: 'Pitch Tuner · Hz Counter',
   tint: 'teal',
   purpose:
     'Estimates how often something repeats — a steady sound, a flickering light, or an event you tap along with — and shows it as frequency (Hz), period, and tempo (BPM). In Tuner mode the same engine interprets that frequency musically: note name, octave, and cents against a selectable A4 reference. Frequency is the measurement; pitch is the musical interpretation.',

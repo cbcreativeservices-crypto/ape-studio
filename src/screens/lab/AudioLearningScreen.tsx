@@ -11,7 +11,6 @@
  * PREVIEW (EarLab enforces the per-lab lock + shared UpgradeSheet); this screen
  * only chooses the path.
  */
-import { LabsIcon } from '../../components/LabsIcon';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +27,9 @@ import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 
 // Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
 // carries a LinearGradient scrim so the frame's text and CTA stay legible over
@@ -89,11 +91,14 @@ export function AudioLearningScreen({ navigation }: Props) {
           Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
 
       <View style={styles.header}>
-        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
+        {/* The HOME face wears this section's menu icon (owner 2026-11-20);
+            it still goes Home, labelled "Home". */}
+        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} homeArt={<PlaceArt place="labs" />} />
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          {/* Owner 2026-10-09: "Learning Labs", with the official Labs icon. */}
+          {/* Owner 2026-10-09: "Learning Labs", with the official Labs icon;
+              since 2026-11-20 that icon is the blue headphones, as in the menu. */}
           <View style={styles.titleRow}>
-            <LabsIcon color={colors.amber} size={18} />
+            <PlaceArt place="labs" size={20} />
             <Text style={styles.title}>LEARNING LABS</Text>
           </View>
           <Text style={styles.subtitle}>Choose your path</Text>
@@ -101,7 +106,7 @@ export function AudioLearningScreen({ navigation }: Props) {
         <AccuracyNote compact />
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 32 + insets.bottom }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: menuClearance(insets.bottom) + 8 }]}>
         {/* Prose keeps the reading measure inside the wide menu (tablet only). */}
         <Text style={[styles.intro, wide && readingText]}>{locked ? INTRO : INTRO_MEMBER}</Text>
         {gate === 'unconfirmed' ? <Text style={[styles.intro, wide && readingText]}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
@@ -195,6 +200,10 @@ export function AudioLearningScreen({ navigation }: Props) {
         </Pressable>
         </TabletGrid>
       </ScrollView>
+      {/* The circle menu's MENU button (owner 2026-11-20: Audio Tools, Calculator
+          Lab and Labs carry it too, on their landing screens only). Last, so
+          it sits over the content; it lets every other touch through. */}
+      <ScreenCircleMenu here="labs" />
     </View>
   );
 }

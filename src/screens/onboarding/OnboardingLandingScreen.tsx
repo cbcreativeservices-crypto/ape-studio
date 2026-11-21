@@ -42,8 +42,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 import { ResetIcon } from '../../components/ResetIcon';
 import { HomeIcon } from '../../components/HomeIcon';
-import { MethodGlyph } from '../../components/MethodIcon';
-import { LabsIcon } from '../../components/LabsIcon';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
@@ -199,16 +198,16 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
         <Text style={[styles.eyebrow, styles.sectionEyebrow]}>OR JUMP RIGHT IN</Text>
         <View style={styles.gridRow}>
           <View style={styles.half}>
-            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<MethodGlyph method="glossary" size={22} />} onPress={() => choose('glossary')} />
+            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<PlaceArt place="gloss" size={22} />} onPress={() => choose('glossary')} />
           </View>
           <View style={styles.half}>
-            <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} icon={<Text style={styles.sigma}>Σ</Text>} onPress={() => choose('calculators')} />
+            <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} icon={<PlaceArt place="calc" size={22} />} onPress={() => choose('calculators')} />
           </View>
         </View>
         <View style={styles.gridRow}>
           {/* LABS is short; TOPICS & CERTIFICATES takes the rest of the row. */}
           <View style={styles.narrow}>
-            <GlassButton label="LABS" tint="steel" height={48} fontSize={14} icon={<LabsIcon color={colors.amber} size={18} />} onPress={() => choose('labs')} />
+            <GlassButton label="LABS" tint="steel" height={48} fontSize={14} icon={<PlaceArt place="labs" size={22} />} onPress={() => choose('labs')} />
           </View>
           <View style={styles.wide}>
             <GlassButton label={COPY.topicsAndCertificates} tint="steel" height={48} fontSize={topicsFont} icon={<MyTopicsIcon size={20} />} onPress={() => choose('topics')} />
@@ -358,6 +357,4 @@ const styles = StyleSheet.create({
   link: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6 },
   linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
   replayText: { color: REPLAY_GREEN },
-  // The calculators' purple sigma, as on "The Academy at a glance".
-  sigma: { fontSize: 17, lineHeight: 19, fontWeight: '700', color: colors.purple },
 });

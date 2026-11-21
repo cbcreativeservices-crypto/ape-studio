@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
@@ -100,6 +101,9 @@ export function MatchingScreen({ navigation, route }: Props) {
     }, [achievementId, topicName]),
   );
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
 
   const [items, setItems] = useState<GlossaryItem[] | null>(null);
   const [states, setStates] = useState<ItemStates>({});
@@ -707,7 +711,7 @@ export function MatchingScreen({ navigation, route }: Props) {
 
       {/* Pinned footer (Booth 2026-07-08): scribble-glass Prev/Next, always
           at the bottom just above the bottom nav — never scrolls away. */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: menuClear }]}>
         <View style={{ flex: 1 }}>
           <GlassButton label="‹ PREV" tint="gold" onPress={() => goBoard(-1)} />
         </View>
