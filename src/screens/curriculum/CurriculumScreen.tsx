@@ -41,7 +41,7 @@ import { BLURB_ORDER, CredentialBlurb } from './CredentialBlurb';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { readingColumn } from '../../theme/readingColumn';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
-import { placeColor } from '../../components/nav/circleMenuPlaces';
+import { menuClearance, placeColor } from '../../components/nav/circleMenuPlaces';
 
 /**
  * What the Academy sets out to do.
@@ -360,7 +360,7 @@ export const CurriculumView = memo(function CurriculumView({
 
   return (
     <>
-    <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+    <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: menuClearance(insets.bottom) + 12 }]}>
       {/* White intro line above the counters (user request 2026-07-22). */}
       <View style={styles.discoverRow}>
         <Text style={styles.discoverHead}>Discover What’s Inside</Text>

@@ -395,7 +395,8 @@ describe('HOME, always top-left, on every menu screen (owner 2026-11-20)', () =>
     const a = read('src/screens/awards/AwardsScreen.tsx');
     assert.match(a, /<HomeOrBackKey alwaysHome onPress=\{\(\) => goHome\(navigation\)\} backStyle=\{styles\.backChevron\} \/>/);
     assert.match(a, /<PlaceArt place="enroll" size=\{26\} \/>/);
-    assert.match(a, /\{currentKey === 'enrollment' \? <ScreenCircleMenu here="enroll" \/> : null\}/);
+    // Since 2026-11-20 the menu is on every pager page; Enrollment lights only here.
+    assert.match(a, /<ScreenCircleMenu here=\{currentKey === 'enrollment' \? 'enroll' : null\} onSelf=\{menuSelf\} \/>/);
     assert.match(read('src/screens/enrollment/EnrollmentScreen.tsx'), /paddingBottom: menuClearance\(insets\.bottom\) \+ 8/);
   });
   for (const f of ['src/screens/dashboard/DashboardScreen.tsx', 'src/screens/profile/ProfileScreen.tsx', 'src/screens/achievements/AchievementsHomeScreen.tsx']) {

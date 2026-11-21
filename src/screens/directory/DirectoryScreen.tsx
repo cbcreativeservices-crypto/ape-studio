@@ -14,6 +14,7 @@ import { memo, useEffect, useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
@@ -210,7 +211,7 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
   const isGraduate = credCount != null && credCount > 0;
   return (
     <>
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: menuClearance(insets.bottom) + 12 }]}>
       {showBrand ? (
         <View style={styles.brandRow}>
           <BrandLogo size={34} />

@@ -278,13 +278,25 @@ export type HubPlace = 'tools' | 'calc' | 'labs' | 'comm' | 'set' | 'help' | 'en
  * and lets every touch through except its own), and end the screen's scroll
  * content `menuClearance(insets.bottom)` above the bottom.
  */
-export function ScreenCircleMenu({ here }: { here: HubPlace }) {
+export function ScreenCircleMenu({
+  here,
+  onSelf,
+}: {
+  here: HubPlace | null;
+  /**
+   * A place this screen shows itself (the Awards pager's My Enrollments page):
+   * navigate() to the route already focused only swaps its params and does
+   * nothing, so the screen turns its own page instead. Return true when handled.
+   */
+  onSelf?: (key: PlaceKey) => boolean;
+}) {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const go = useCallback<Go>(
     (key, unread) => {
       const nav = navigation as unknown as Nav;
       if (key === here) return; // already here: the menu just folds away
+      if (onSelf?.(key)) return;
       switch (key) {
         // The tabs live under the root route 'Main'; navigating there returns
         // to it (this hub screen comes off the stack).
@@ -298,7 +310,7 @@ export function ScreenCircleMenu({ here }: { here: HubPlace }) {
           return goRootPlace(nav, key, unread);
       }
     },
-    [navigation, here],
+    [navigation, here, onSelf],
   );
   return <MenuLayer here={here} hidden={false} insets={insets} go={go} />;
 }

@@ -28,6 +28,7 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
 import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
 import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { Modal, useAfterModalsClose } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
@@ -434,7 +435,7 @@ const AwardPageView = memo(function AwardPageView({
   const insets = useSafeAreaInsets();
   return (
     <View style={{ width: screenW }}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: 44 + insets.bottom }]} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: menuClearance(insets.bottom) + 12 }]} showsVerticalScrollIndicator={false}>
         {/* The same short description as on Explore (owner 2026-10-14). */}
         <CredentialBlurb kind={page.key === 'program' ? 'program' : 'specialization'} />
         {page.introTitle ? <Text style={styles.introTitle}>{page.introTitle}</Text> : null}
@@ -559,6 +560,16 @@ export function AwardsScreen({ navigation, route }: Props) {
     }, LANDING_CHECK_MS);
   }, []);
   const goToPage = useCallback((key: PageKey) => goToIndex(PAGE_ORDER.indexOf(key)), [goToIndex]);
+  // The circle menu's Enrollment button pressed on another page of THIS pager
+  // turns the pager (a navigate() to Awards here would be a silent no-op).
+  const menuSelf = useCallback(
+    (key: string) => {
+      if (key !== 'enroll') return false;
+      goToPage('enrollment');
+      return true;
+    },
+    [goToPage],
+  );
 
   // A paged list keeps its scroll offset in PIXELS, so when the window width
   // changes under it (rotation, iPad Split View) the content re-lays out at the
@@ -1261,7 +1272,12 @@ export function AwardsScreen({ navigation, route }: Props) {
 
       {/* The circle menu on My Enrollments Dashboard only (owner 2026-11-20),
           Enrollment lit. It lets every other touch through. */}
-      {currentKey === 'enrollment' ? <ScreenCircleMenu here="enroll" /> : null}
+      {/* The MENU button on every page of this pager (owner 2026-11-20): Explore,
+          Certificates, Programs and Pro Registry have no circle of their own, so
+          nothing lights there; My Enrollments lights Enrollment. Every page's
+          scroll ends menuClearance() above the bottom, so fully scrolled no text
+          sits under the button. */}
+      <ScreenCircleMenu here={currentKey === 'enrollment' ? 'enroll' : null} onSelf={menuSelf} />
     </View>
   );
 }
