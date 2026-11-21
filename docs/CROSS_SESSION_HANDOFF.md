@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-20 20:42 · ccode · 21494372
+changed: Calculator Lab title: the purple Σ stays after the title, calculator icon before it (owner 2026-11-20)
+affects other side: PUBLISHED as OTA 8 on the owner's word ("approved do the ota"), with 8a03fcf5 (calculator icon display reads "dB") and 18759725 (Study card reads "EQ"): Android group 0ae08fa2-21b7-40cf-945e-d96e6c0c3d36 (a903813a), iOS group f7613aab-8e08-4ec5-bca4-4403d14bf4f7 (91355451); gate GREEN; eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. Pixel proof pending (phone unplugged). Undo = republish OTA 7 (3e14e68b / 3ad7202f). Comp A: the new menu icons belong in any store screenshots. [MD:D73]
+needs: nothing
+
+
+### 2026-11-20 20:33 · ccode · 18759725
+changed: Study (flashcards) icon: the card reads "EQ" (owner 2026-11-20); calculator dB pinned in tests
+affects other side: nothing (shipped in OTA 8) [MD:D73]
+needs: nothing
+
+
 ### 2026-11-20 19:40 · ccode · b3a7a92a
 changed: Foundations: the tool reads "Tuner & Frequency Counter" (tuner first), matching the hub and the tool screen (owner 2026-11-20)
 affects other side: nothing. PUBLISHED as OTA 7 on the owner's word ("go"): Android group 3e14e68b-aaf7-4e4b-9184-ab8087c71600, iOS group 3ad7202f-153e-4c2e-bb84-a4a6203ad5fd; gate GREEN; eol-sync 0/0; both fingerprints MATCH; sourcemaps both. Undo = republish OTA 6 (Android 6bee0098 / iOS 581c3852).
