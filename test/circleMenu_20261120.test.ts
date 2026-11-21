@@ -308,10 +308,14 @@ describe('the drawn icons', () => {
     assert.match(read('src/screens/dashboard/DashboardScreen.tsx'), /import \{ BlackFaceBg, ElevatedFrame, PanelScrew \} from '\.\.\/\.\.\/components\/ElevatedFrame';/);
     assert.match(read('src/components/ElevatedFrame.tsx'), /export function BlackFaceBg\(/);
   });
-  it('the Study Dashboard card carries a bold "dB" as outline paths (no font inside the SVG)', () => {
+  it('the Study Dashboard (flashcards) card carries a bold "EQ" as outline paths (owner 2026-11-20; no font inside the SVG)', () => {
     const x = iconXml('study3v2', '#ff8a1e');
-    assert.match(x, /<path fill="#3a2614" d="M8\.58 37\.34/);
+    assert.match(x, /<path fill="#3a2614" d="M7\.01 37\.2V26\.27/);
+    assert.doesNotMatch(x, /d="M8\.58 37\.34/, 'the old "dB" is gone from the Study card');
     assert.doesNotMatch(x, /<text/);
+  });
+  it('the Calculator Lab display reads "dB" (owner 2026-11-20)', () => {
+    assert.match(iconXml('calc', '#a46bff'), /translate\(21\.6 -6\.45\) scale\(0\.58\)"><path fill="[^"]+" d="M8\.58 37\.34/);
   });
   it('the MENU mark is the ring of 11 dots', () => {
     assert.equal(menuMarkXml().match(/<circle /g)?.length, 11);
