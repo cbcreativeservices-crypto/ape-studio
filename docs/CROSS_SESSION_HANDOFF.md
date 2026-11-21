@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 00:29 · ccode · 8a584f0c
+changed: iPad: the circle menu panel rises to 60% and the whole ring grows up to 1.6x, centred in it; phones unchanged (owner 2026-11-20, "looks odd small and not balanced")
+affects other side: PUBLISHED as OTA 10 on the owner's word ("Yes, publish"): Android group 0a49f829-a8a1-4fb2-abc0-1b54b16c7873 (a903813a), iOS group d3631cc2-8893-4f48-b680-9f9437d42e28 (91355451); eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. iPad CHECKED by the owner 2026-11-21 ("ipad updated and checked"). Pixel PROVEN 2026-11-21 11:00 (logcat 01a1ff2a downloaded; relaunch "No update available"). Undo = republish OTA 9 (a1fffd7b / 6d9b5458). On an iPad the circle menu panel rises to 60% and the ring grows up to 1.6x, centred; phones unchanged. Gate GREEN (23550/0). Comp A: iPad store screenshots taken after this OTA will show the larger ring. [MD:D73]
+needs: nothing
+
+
+### 2026-11-20 21:48 · ccode · 87b92a32
+changed: Explore, Certificates, Programs, Pro Registry carry the MENU button; every pager scroll ends above it; the menu's Enrollment turns the pager (owner 2026-11-20)
+affects other side: PUBLISHED as OTA 9 on the owner's word ("Yes, publish", after the APE Test check on the Pixel): Android group a1fffd7b-5360-4694-8360-09635dc6dcee (a903813a), iOS group 6d9b5458-b01b-4a1c-a14a-cf9baeda7788 (91355451); src/test clean; eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. Pixel proof: the real app downloaded 01a1fcf9 (group a1fffd7b), then reported no newer update on relaunch. iPhone check is the owner's. Undo = republish OTA 8 (0ae08fa2 / f7613aab). Comp A: section 3 of the 11-20 brief ("coming next") is now live. [MD:D73]
+needs: nothing
+
+
 ### 2026-11-20 20:42 · ccode · 21494372
 changed: Calculator Lab title: the purple Σ stays after the title, calculator icon before it (owner 2026-11-20)
 affects other side: PUBLISHED as OTA 8 on the owner's word ("approved do the ota"), with 8a03fcf5 (calculator icon display reads "dB") and 18759725 (Study card reads "EQ"): Android group 0ae08fa2-21b7-40cf-945e-d96e6c0c3d36 (a903813a), iOS group f7613aab-8e08-4ec5-bca4-4403d14bf4f7 (91355451); gate GREEN; eol-sync 0/0; both fingerprint:compare MATCH; sourcemaps both. Pixel proof pending (phone unplugged). Undo = republish OTA 7 (3e14e68b / 3ad7202f). Comp A: the new menu icons belong in any store screenshots. [MD:D73]
