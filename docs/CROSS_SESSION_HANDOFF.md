@@ -728,6 +728,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 14:25 · ccode · 743d3664 (audio-tools-engine)
+changed: Website deploy, owner GO: Privacy Policy 3.3 LIVE at www.proaudiotrainingacademy.com/privacy (only web/content/legal/privacy.html + _meta.json, identical to 308fd73c).
+affects other side: store listings or forms that quote the Policy version should say 3.3.
+needs: nothing; Comp A decides when to update store text [MD:D75]
+
+### 2026-11-21 13:56 · ccode · 308fd73c
+changed: web: Privacy Policy 3.3 (effective 2026-11-21), from the owner's zip 2026-11-21_PRIVACY_POLICY_3.3
+affects other side: nothing on the server. Once the owner deploys it, store listings that quote the Policy version should say 3.3 (Comp A's call when).
+needs: nothing now; website deploy waits for the owner's GO [MD:D75]
+
+
 ### 2026-11-21 11:55 · ccode · 9332ca7e
 changed: Audio Fundamentals holds only what every student needs: Speaker Placement + Cable Dressing -> Live Sound, Patchbay + Room Design -> Production Workflow; Signal reordered (Signal Chain first and free, Detective last); next-lab links follow (owner 2026-11-21) [MD:D74]
 affects other side: App side only, NOT published. The labs keep their af_ keys. The server `labs` rows af_speaker_coverage, af_cable_install and af_patchbay must move area audio_fundamentals -> training BEFORE (or with) the OTA that carries this, else the app calls Fundamentals done while the server still requires them. Signal Chain Builder is now free for everyone (first lab of Signal). [MD:D74]
