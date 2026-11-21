@@ -26,6 +26,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
 import { Modal, useAfterModalsClose } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
@@ -929,7 +931,18 @@ export function AwardsScreen({ navigation, route }: Props) {
       {/* The whole title area (below the logo, above the page buttons) is still a
           return action (user request 2026-07-18). */}
       <View style={styles.header}>
-        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.backChevron} />
+        {/* My Enrollments Dashboard (owner 2026-11-20): HOME always, then the
+            Enrollment mortarboard before the title, and the circle menu. */}
+        {currentKey === 'enrollment' ? (
+          <>
+            <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.backChevron} />
+            <View style={styles.titleArt} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <PlaceArt place="enroll" size={26} />
+            </View>
+          </>
+        ) : (
+          <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.backChevron} />
+        )}
         <Pressable style={{ flex: 1 }} onPress={() => safeGoBack(navigation)} accessibilityRole="button" accessibilityLabel="Return">
           {/* Amber titles; now full sentence headlines (user request 2026-07-22)
               so they wrap / shrink to fit. */}
@@ -1246,11 +1259,15 @@ export function AwardsScreen({ navigation, route }: Props) {
         />
       </Modal>
 
+      {/* The circle menu on My Enrollments Dashboard only (owner 2026-11-20),
+          Enrollment lit. It lets every other touch through. */}
+      {currentKey === 'enrollment' ? <ScreenCircleMenu here="enroll" /> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  titleArt: { marginRight: 6 },
   // My Enrollments: what to do here, under the title (owner 2026-10-23).
   enrollIntro: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, paddingHorizontal: 16, marginTop: -2, marginBottom: 8 },
   enrollIntroRow: { flexDirection: 'row', alignItems: 'flex-start', paddingLeft: 16, paddingRight: 4, minHeight: 32 },

@@ -70,6 +70,8 @@ import { academyTopicsDone, myProgressSummary, topicsDoneHint } from '../../feat
 import { cardColumn } from '../../theme/readingColumn';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
 import { AppHeader, TabIconTile } from '../../components/AppHeader';
+import { NavIcon } from '../../components/nav/NavIcon';
+import { goHome } from '../../components/nav/CircleMenu';
 
 
 /**
@@ -821,7 +823,16 @@ export function ProfileScreen() {
       {/* The PROFILE tab's icon + title in the Study Dashboard's own header
           (owner 2026-10-29: the three tab titles match). */}
       <View style={styles.titleRow}>
-        <AppHeader title={['My', 'Profile']} logo={<TabIconTile icon="Profile" tint={colors.green} />} />
+        {/* HOME, always, top-left (owner 2026-11-20), then the Profile figure and the title. */}
+        <AppHeader
+          lead={
+            <Pressable onPress={() => goHome(navigation)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home">
+              <NavIcon icon="Home" lit />
+            </Pressable>
+          }
+          title={['My', 'Profile']}
+          logo={<TabIconTile icon="Profile" tint={colors.green} />}
+        />
       </View>
       <Pressable
         onPress={() => (navigation as any).navigate('Settings')}

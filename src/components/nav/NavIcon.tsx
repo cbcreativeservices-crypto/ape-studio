@@ -13,7 +13,8 @@
  * stay perfectly still. Inactive tabs keep the static PNG exactly as before,
  * as does Reduce Motion. Decorative only — still shows no user data.
  */
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { SvgXml } from 'react-native-svg';
 import { AccessibilityInfo, Animated, Easing, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
@@ -205,19 +206,44 @@ export function ProgressFadersLit() {
   );
 }
 
+/**
+ * The STUDY icon (owner 2026-11-20): two stacked index cards, the front one
+ * with a bold "dB", and a small lit bulb — the circle menu's Study Dashboard
+ * art, used wherever the app means Study (the Dashboard title, Study keys,
+ * study-topic marks). The old blue headphones now mean LABS.
+ *
+ * The art loads on first use, not at app start (test/perfStartTrim: the
+ * start graph is a ratchet), and is built once.
+ */
+let studyXml: string | null = null;
+function studyArt(): string {
+  if (!studyXml) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const art = require('./circleMenuIconArt') as typeof import('./circleMenuIconArt');
+    studyXml = art.iconXml('study3v2', '#ff8a1e');
+  }
+  return studyXml;
+}
+export function StudyGlyph({ size = 22 }: { size?: number }) {
+  return (
+    <SvgXml
+      xml={studyArt()}
+      width={size}
+      height={size}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    />
+  );
+}
+
 export function NavIcon({
   icon,
   lit,
   showLabel = true,
-  art,
 }: {
   icon: NavIconName;
   lit: boolean;
   showLabel?: boolean;
-  /** Drawn in the icon's 22 pt place instead of the tab art; the label and
-   *  its colour stay (owner 2026-11-20: the hub screens' HOME key wears the
-   *  section's own menu icon). */
-  art?: ReactNode;
 }) {
   const d = defFor(icon);
   const glow = glowStyle(lit, d.glowRgba);
@@ -232,9 +258,9 @@ export function NavIcon({
     // it now sits on the ICON only, so the label's own dim is not multiplied
     // under it. The icon looks exactly as it always has when not selected.
     <View style={styles.wrap}>
-      {art ? (
-        <View style={[styles.icon, glow]} accessible={false} importantForAccessibility="no-hide-descendants">
-          {art}
+      {icon === 'Study' ? (
+        <View style={[styles.icon, { opacity: lit ? 1 : NAV_ICON_OFF }, glow]}>
+          <StudyGlyph size={22} />
         </View>
       ) : animatedProgress ? (
         <View style={[styles.icon, glow]}>

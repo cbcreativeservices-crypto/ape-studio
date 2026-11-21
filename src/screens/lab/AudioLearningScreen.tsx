@@ -27,7 +27,7 @@ import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
-import { ScreenCircleMenu } from '../../components/nav/CircleMenu';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
 import { PlaceArt } from '../../components/nav/CircleMenuPanel';
 import { menuClearance } from '../../components/nav/circleMenuPlaces';
 
@@ -91,9 +91,8 @@ export function AudioLearningScreen({ navigation }: Props) {
           Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
 
       <View style={styles.header}>
-        {/* The HOME face wears this section's menu icon (owner 2026-11-20);
-            it still goes Home, labelled "Home". */}
-        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} homeArt={<PlaceArt place="labs" />} />
+        {/* HOME, always (owner 2026-11-20): the house, back to Home. */}
+        <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.back} />
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           {/* Owner 2026-10-09: "Learning Labs", with the official Labs icon;
               since 2026-11-20 that icon is the blue headphones, as in the menu. */}

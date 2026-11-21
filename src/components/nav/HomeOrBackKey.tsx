@@ -15,7 +15,7 @@
  * `useBackLeadsHome()` is exported for screens that already carry a HOME key
  * elsewhere (CompactBrandBar) and only need to drop a redundant ‹.
  */
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Pressable, Text, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { NavIcon } from './NavIcon';
@@ -45,13 +45,13 @@ export function HomeOrBackKey({
   backLabel = 'Back',
   hitSlop = BACK_HIT_SLOP,
   style,
-  homeArt,
+  alwaysHome = false,
 }: {
   onPress: () => void;
-  /** The HOME face's picture (owner 2026-11-20): a hub screen shows its own
-   *  section icon here (Audio Tools, Calculator Lab, Labs). The press, the
-   *  word HOME and the label "Home" are unchanged. */
-  homeArt?: ReactNode;
+  /** The house + HOME always, never the ‹ (owner 2026-11-20: on every screen
+   *  that carries the circle menu the HOME key is always top-left). The
+   *  caller's press then goes Home (CircleMenu's goHome). */
+  alwaysHome?: boolean;
   /** The screen's own ‹ glyph style — the arrow looks exactly as before. */
   backStyle?: StyleProp<TextStyle>;
   backLabel?: string;
@@ -59,11 +59,11 @@ export function HomeOrBackKey({
   /** Applied to the Pressable in BOTH faces (layout slot of the old arrow). */
   style?: StyleProp<ViewStyle>;
 }) {
-  const home = useBackLeadsHome();
-  if (home) {
+  const leadsHome = useBackLeadsHome();
+  if (alwaysHome || leadsHome) {
     return (
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={[NEVER_SHRINK, style]}>
-        <NavIcon icon="Home" lit art={homeArt} />
+        <NavIcon icon="Home" lit />
       </Pressable>
     );
   }

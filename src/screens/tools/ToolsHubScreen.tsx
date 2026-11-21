@@ -41,7 +41,7 @@ import ToolStripSignalgen from '../../../assets/tool-strips/tool_06_tone_noise_g
 import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_counter_tuner_strip.svg';
 import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
-import { ScreenCircleMenu } from '../../components/nav/CircleMenu';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
 import { PlaceArt } from '../../components/nav/CircleMenuPanel';
 import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -1104,9 +1104,12 @@ export function ToolsHubScreen({ navigation }: Props) {
             way out leads the title row, top-left: HOME when back lands on
             Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
           <View style={styles.titleBar}>
-            {/* The HOME face wears this section's menu icon (owner 2026-11-20);
-                it still goes Home, labelled "Home". */}
-            <HomeOrBackKey onPress={() => safeGoBack(navigation)} homeArt={<PlaceArt place="tools" />} />
+            {/* HOME, always (owner 2026-11-20): the house, back to Home. */}
+            <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} />
+            {/* The section's menu icon leads the title (owner 2026-11-20). */}
+            <View style={styles.titleArt} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <PlaceArt place="tools" size={26} />
+            </View>
             <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
             <View style={{ flex: 1 }} />
             {/* Owner 2026-11-05: it floated over the dosimeter in the hero. */}
@@ -1289,6 +1292,7 @@ export function ToolsHubScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  titleArt: { marginLeft: 4, marginRight: 6 },
   root: { flex: 1, backgroundColor: colors.screenBg },
   // Shares the hub's centred column (owner 2026-09-13). Left full-width, the
   //  brand pinned to the far left and GLOSSARY to the far right while the rack

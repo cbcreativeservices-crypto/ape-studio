@@ -294,11 +294,6 @@ function sitesOf(file: string, s: string): Site[] {
  * a new site in one of these files, or a new file, must be looked at.
  */
 const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
-  'src/components/HelpKey.tsx': { count: 1, why: 'header "?" key on the screen itself' },
-  'src/components/nav/CircleMenu.tsx': {
-    count: 2,
-    why: 'Help and Settings circles of the circle menu (owner 2026-11-20): the open panel is an in-tree Animated.View over the tabs, not a Modal, so nothing is fading out over the modal screen',
-  },
   'src/screens/onboarding/OnboardingLandingScreen.tsx': {
     count: 2,
     why: 'MEMBERSHIP / About buttons on the one-time landing page — a pushed screen, not a popup; it pops itself (a stack pop, no Modal fade) before the navigate',
@@ -311,7 +306,7 @@ const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'deliberate: the gate\'s own paywallPending request waits rootModalHoldMs() for every Modal (its own included) to go',
   },
-  'src/features/dev/DevVisualIndex.tsx': { count: 3, why: 'dev-only visual index rows (__DEV__ harness)' },
+  'src/features/dev/DevVisualIndex.tsx': { count: 2, why: 'dev-only visual index rows (__DEV__ harness)' },
   'src/features/lab/LabPreviewOverlay.tsx': {
     count: 1,
     why: 'UpgradeSheet is an in-tree View over the navigator, not a Modal — nothing to fade',
@@ -329,10 +324,10 @@ const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
   'src/screens/lab/cableinstall/CableInstallLabScreen.tsx': { count: 1, why: 'in-flow end-screen JOIN button, not a popup' },
   'src/screens/lab/tube/TubeCardScreen.tsx': { count: 1, why: 'UPGRADE button on the screen body' },
   'src/screens/lab/tube/TubeReferenceScreen.tsx': { count: 1, why: 'UPGRADE button on the locked screen body' },
-  'src/screens/profile/ProfileScreen.tsx': { count: 2, why: 'gear and UPGRADE button on the screen body' },
+  'src/screens/profile/ProfileScreen.tsx': { count: 1, why: 'UPGRADE button on the screen body (the gear opens Settings, a pushed screen since 2026-11-20)' },
   'src/screens/settings/SettingsScreen.tsx': {
-    count: 6,
-    // +2 (2026-10-15): the exit flow's Membership and billing / Delete account rows (EXIT_FLOW_ENABLED, ON 2026-10-24).
+    count: 5,
+    // Help is a pushed screen since 2026-11-20 (-1). +2 (2026-10-15): the exit flow's Membership and billing / Delete account rows (EXIT_FLOW_ENABLED, ON 2026-10-24).
     why: 'MEMBERSHIP / Help / About rows on Settings itself (a stacked modal screen, not a DimModal)',
   },
   'src/screens/tools/ConceptModuleScreen.tsx': { count: 1, why: 'ToolAcademyLock is an in-screen panel' },
@@ -348,7 +343,8 @@ const ALL = FILES.flatMap((f) => sitesOf(f.path, f.src));
 
 describe('G5 — modal-screen navigates wait out the popup (ratchet)', () => {
   it('reads the modal routes from RootNavigator', () => {
-    assert.ok(MODAL_ROUTES.includes('Paywall') && MODAL_ROUTES.includes('Settings') && MODAL_ROUTES.includes('Help'));
+    // Settings and Help are pushed screens since 2026-11-20 (owner: the hubs' top row + the circle menu).
+    assert.ok(MODAL_ROUTES.includes('Paywall') && !MODAL_ROUTES.includes('Settings') && !MODAL_ROUTES.includes('Help'));
     assert.ok(POPUPS.has('PrePaywallPrompt') && POPUPS.has('StudyAccessSheet') && POPUPS.has('GlossaryLockView'));
     assert.ok(!POPUPS.has('UpgradeSheet'), 'UpgradeSheet is a View; if it becomes a DimModal its sites must hand off');
   });

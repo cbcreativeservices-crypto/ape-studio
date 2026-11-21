@@ -92,6 +92,10 @@ import type { RootStackParamList } from '../../navigation/types';
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 import { LEGAL_ASSENT_REDEEM } from '../../features/commercial/legalCopy';
 
@@ -689,14 +693,17 @@ ${LOCAL_LOSS}`
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      {/* The hubs' top row (owner 2026-11-20): the HOME key (‹ when deeper),
+          then the section's menu icon and the title. It was a ✕ on a modal. */}
       <View style={styles.headerBar}>
+        <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.backGlyph} hitSlop={BACK_HIT_SLOP} />
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="set" size={26} />
+        </View>
         <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
-        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close settings">
-          <Text style={styles.close}>✕</Text>
-        </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 20 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: menuClearance(insets.bottom) + 8 }]}>
         {/* NOTIFICATIONS — transport toggles (server) + the commercial content
             notifications (device-local; server prefs frozen). */}
         {/* Every section starts CLOSED (owner 2026-08-30): six collapsed
@@ -1380,6 +1387,9 @@ ${LOCAL_LOSS}`
         </SettingsSection>
         )}
       </ScrollView>
+      {/* The circle menu's MENU button (owner 2026-11-20), lit on this place.
+          It lets every other touch through. */}
+      <ScreenCircleMenu here="set" />
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
       <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => { if (redeemBusy) return; setRedeemOpen(false); }}>
@@ -1489,7 +1499,7 @@ const styles = StyleSheet.create({
   headerBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 10,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -1497,7 +1507,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212',
   },
   headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
-  close: { fontSize: 18, color: colors.textSubAlt },
+  backGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSubAlt },
   // Sections are cards now, so the gap between them is tighter than the old
   // flat list needed (20 -> 10): the border does the separating.
   scroll: { padding: 14, gap: 10 },

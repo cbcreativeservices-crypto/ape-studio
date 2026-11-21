@@ -97,6 +97,7 @@ import { markDeckStepped, useHomeAttract } from '../../features/onboarding/attra
 import { readingColumn } from '../../theme/readingColumn';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 import { HOME_SETUP_HIDDEN_FOR_LAUNCH } from '../../features/home/homeCardsStore';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -2066,7 +2067,8 @@ export const EnrollmentView = memo(function EnrollmentView({
       <ScrollView
         ref={scrollRef}
         style={{ flex: 1 }}
-        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 20 }]}
+        // Ends above the circle menu's MENU button (owner 2026-11-20).
+        contentContainerStyle={[styles.scroll, { paddingBottom: menuClearance(insets.bottom) + 8 }]}
         // While a card is LIFTED for reorder the screen must not scroll: on
         // device the native ScrollView intercepts the vertical drag and the
         // lifted card never receives it — reorder "did nothing" on the Pixel

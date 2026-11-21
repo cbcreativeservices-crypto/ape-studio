@@ -40,6 +40,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { menuClearance } from '../../components/nav/circleMenuPlaces';
+import { goHome } from '../../components/nav/CircleMenu';
 import { useFocusEffect, useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
@@ -2053,6 +2054,14 @@ export function DashboardScreen() {
         <AppHeader
           // The screen says what it is (owner 2026-10-27): one name everywhere.
           title={['Study', 'Dashboard']}
+          // HOME, always, top-left (owner 2026-11-20), as on every menu screen.
+          // (The house drawn here, not HomeOrBackKey: that module is not in the
+          // app-start graph, a ratchet — see test/perfStartTrim.)
+          lead={
+            <Pressable onPress={() => goHome(navigation)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home">
+              <NavIcon icon="Home" lit />
+            </Pressable>
+          }
           // The blue Study icon opens the Topic-Deck manager (owner 2026-08-01);
           // About moved to Settings.
           onLogoPress={() => setDeckOpen(true)}

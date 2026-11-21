@@ -65,7 +65,8 @@ describe('the way out is never squeezed (large text)', () => {
 
   it('the Community Directory uses HomeOrBackKey in a key that cannot shrink', () => {
     const s = read('screens/directory/AudioCommunityDirectoryScreen.tsx');
-    assert.match(s, /<HomeOrBackKey\b[\s\S]*?onPress=\{\(\) => safeGoBack\(navigation\)\}/);
+    // HOME always since 2026-11-20 (owner): the house, and the press goes Home.
+    assert.match(s, /<HomeOrBackKey\b[\s\S]*?onPress=\{\(\) => goHome\(navigation\)\}/);
     assert.match(s, /back: \{ minWidth: 44, minHeight: 44,[^}]*flexShrink: 0/);
     assert.doesNotMatch(s, /back: \{ width: 40, height: 44/, 'the fixed 40-pt key is what clipped the ‹');
     assert.match(s, /titleCol: \{ flex: 1, minWidth: 0 \}/);

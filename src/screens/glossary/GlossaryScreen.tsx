@@ -37,7 +37,7 @@ import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { NavIcon } from '../../components/nav/NavIcon';
+import { NavIcon, StudyGlyph } from '../../components/nav/NavIcon';
 import { useHideCircleMenu } from '../../components/nav/CircleMenu';
 import { PlaceArt } from '../../components/nav/CircleMenuPanel';
 import { MENU_BUTTON, MENU_BUTTON_LIFT, menuClearance } from '../../components/nav/circleMenuPlaces';
@@ -159,7 +159,6 @@ import { relatedTermList, relatedTermsText } from '../../features/study/flashcar
 import { ResearchMoreLink } from '../../features/research/ResearchMoreLink';
 
 /** The STUDY tab's headphones (same bundled art as the nav bar). */
-const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
@@ -4193,22 +4192,24 @@ ${COPY.glossaryFreeAllowance}`,
     >
       {glossaryHelp.sheet}
       <View style={styles.header}>
-        {/* HOME key (owner 2026-10-11) in place of the glossary book mark.
-            Since 2026-11-20 it wears the Glossary's own menu icon (the open
-            A–Z book); it still goes Home, labelled "Home". */}
+        {/* HOME key (owner 2026-10-11) in place of the glossary book mark. */}
         <Pressable
           onPress={() => (navigation as any).navigate('Home')}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel="Home"
         >
-          <NavIcon icon="Home" lit art={<PlaceArt place="gloss" />} />
+          <NavIcon icon="Home" lit />
         </Pressable>
+        {/* The Glossary's mark (owner 2026-10-14) BEFORE the title, as on the
+            hubs ("🎧 LEARNING LABS"), owner 2026-11-20: the circle menu's open
+            A–Z book. Decorative. */}
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="gloss" size={30} />
+        </View>
         {/* Shrinks to its line rather than "GL…" at the largest text sizes
             (build 36 tester); at font scale 2 it fits at full size. */}
         <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>GLOSSARY</Text>
-        {/* The blue book mark that sat right of the title (owner 2026-10-14) is
-            gone (owner 2026-11-20): the top-left key wears the Glossary icon. */}
         {/* BEG/ADV and full screen sit in the filter row (owner 2026-10-14); they
             come up here only while a CARD popup hides that row, so LIST is always reachable. */}
         {popupTrail.length > 0 ? (
@@ -4331,7 +4332,9 @@ ${COPY.glossaryFreeAllowance}`,
               <Text style={[styles.chipText, { color: c }]}>
                 CUSTOM <Text style={{ color: colors.blue }}>STUDY</Text>
               </Text>
-              <ExpoImage source={STUDY_NAV_ICON} style={{ width: 14, height: 14, marginLeft: -2 }} contentFit="contain" />
+              <View style={{ marginLeft: -2 }}>
+                <StudyGlyph size={14} />
+              </View>
               <Text style={[styles.chipText, { color: c }]}>LIST</Text>
             </View>
           )}

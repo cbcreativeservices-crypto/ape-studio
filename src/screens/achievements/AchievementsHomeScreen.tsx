@@ -27,6 +27,8 @@ import { readingColumn, readingText } from '../../theme/readingColumn';
 import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
 import { AppHeader, TabIconTile } from '../../components/AppHeader';
+import { NavIcon } from '../../components/nav/NavIcon';
+import { goHome } from '../../components/nav/CircleMenu';
 import { useCompletedLabs } from '../../features/lab/completedLabs';
 import { fitValue } from '../../theme/legibility';
 import { CredentialQr } from '../../components/CredentialQr';
@@ -253,7 +255,16 @@ export function AchievementsHomeScreen() {
           {/* The PROGRESS tab's icon + title in the Study Dashboard's own
               header (owner 2026-10-29: the three tab titles match). */}
           <View style={styles.flex}>
-            <AppHeader title={TROPHY_CASE_EMPTY.title} logo={<TabIconTile icon="Achievements" tint="#d6d6d6" />} />
+            {/* HOME, always, top-left (owner 2026-11-20), then the Progress faders and the title. */}
+            <AppHeader
+            lead={
+              <Pressable onPress={() => goHome(navigation)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home">
+                <NavIcon icon="Home" lit />
+              </Pressable>
+            }
+            title={TROPHY_CASE_EMPTY.title}
+              logo={<TabIconTile icon="Achievements" tint="#d6d6d6" />}
+            />
           </View>
         </View>
 

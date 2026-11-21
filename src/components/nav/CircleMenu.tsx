@@ -178,22 +178,33 @@ type Nav = { navigate: (...a: unknown[]) => void };
  * screen (a navigate from the tabs reaches the root stack by bubbling).
  */
 function goRootPlace(nav: Nav, key: PlaceKey, unread: boolean): void {
+  // `pop: true`: a screen already in the stack is gone BACK to, never pushed a
+  // second time (React Navigation 7's navigate pushes otherwise). From one hub
+  // to another and back, the stack stays one deep.
+  const POP = { pop: true };
   switch (key) {
-    case 'tools': return nav.navigate('ToolsHub');
-    case 'labs': return nav.navigate('AudioLearning');
-    case 'enroll': return nav.navigate('Awards', { category: 'enrollment' });
-    case 'calc': return nav.navigate('CalcLab');
-    // Help and Settings are modal screens. The panel is an in-tree view,
-    // not a Modal, so nothing is fading out over them: no hand-off wait.
-    case 'help': return nav.navigate('Help');
-    case 'set': return nav.navigate('Settings');
+    case 'tools': return nav.navigate('ToolsHub', undefined, POP);
+    case 'labs': return nav.navigate('AudioLearning', undefined, POP);
+    case 'enroll': return nav.navigate('Awards', { category: 'enrollment' }, POP);
+    case 'calc': return nav.navigate('CalcLab', undefined, POP);
+    // Help and Settings are pushed screens since 2026-11-20, and the panel is
+    // an in-tree view, not a Modal: no hand-off wait.
+    case 'help': return nav.navigate('Help', undefined, POP);
+    case 'set': return nav.navigate('Settings', undefined, POP);
     case 'comm':
       if (!COMMUNITY_VISIBLE) return;
       // Something waiting → straight to REQUESTS, as Home's New Messages.
-      return nav.navigate('AudioCommunityDirectory', unread ? { tab: 'requests' } : undefined);
+      return nav.navigate('AudioCommunityDirectory', unread ? { tab: 'requests' } : undefined, POP);
     default:
       return;
   }
+}
+
+/** HOME: back to the tabs (the root route 'Main'), on the Home tab. From a
+ *  root-stack screen it goes BACK to Main (never a second copy); from a tab
+ *  screen it switches to Home. The HOME key on every menu screen uses it. */
+export function goHome(navigation: unknown): void {
+  (navigation as Nav).navigate('Main', { screen: 'Home' }, { pop: true });
 }
 
 /** The tab bar: the menu on Home, the Study screens, Progress and Profile. */
@@ -256,10 +267,10 @@ export function CircleMenu({ state, navigation, insets }: BottomTabBarProps) {
   return <MenuLayer here={here} hidden={hidden} insets={insets} go={go} />;
 }
 
-/** The hub screens that carry the menu too (owner 2026-11-20): Audio Tools,
- *  Calculator Lab and Labs — their landing screens only, never the tools or
- *  labs inside them. */
-export type HubPlace = 'tools' | 'calc' | 'labs';
+/** The screens of the root stack that carry the menu too (owner 2026-11-20):
+ *  the Audio Tools, Calculator Lab and Labs landing screens (never the tools
+ *  or labs inside them), then the Community, Settings and Help. */
+export type HubPlace = 'tools' | 'calc' | 'labs' | 'comm' | 'set' | 'help' | 'enroll';
 
 /**
  * The same MENU button and circle, on a hub screen of the root stack. Render
@@ -277,12 +288,12 @@ export function ScreenCircleMenu({ here }: { here: HubPlace }) {
       switch (key) {
         // The tabs live under the root route 'Main'; navigating there returns
         // to it (this hub screen comes off the stack).
-        case 'home': return nav.navigate('Main', { screen: 'Home' });
-        case 'study': return nav.navigate('Main', { screen: 'Study', params: { screen: 'Dashboard' } });
-        case 'prog': return nav.navigate('Main', { screen: 'Achievements', params: { screen: 'AchievementsHome' } });
-        case 'prof': return nav.navigate('Main', { screen: 'Profile' });
+        case 'home': return nav.navigate('Main', { screen: 'Home' }, { pop: true });
+        case 'study': return nav.navigate('Main', { screen: 'Study', params: { screen: 'Dashboard' } }, { pop: true });
+        case 'prog': return nav.navigate('Main', { screen: 'Achievements', params: { screen: 'AchievementsHome' } }, { pop: true });
+        case 'prof': return nav.navigate('Main', { screen: 'Profile' }, { pop: true });
         case 'gloss':
-          return nav.navigate('Main', { screen: 'Study', params: { screen: 'Glossary', params: { from: 'home' }, initial: false } });
+          return nav.navigate('Main', { screen: 'Study', params: { screen: 'Glossary', params: { from: 'home' }, initial: false } }, { pop: true });
         default:
           return goRootPlace(nav, key, unread);
       }

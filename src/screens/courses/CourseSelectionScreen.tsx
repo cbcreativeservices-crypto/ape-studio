@@ -49,6 +49,7 @@ import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
+import { StudyGlyph } from '../../components/nav/NavIcon';
 import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } from './cardDims';
 import { isTabletWindow } from '../../theme/tablet';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
@@ -92,8 +93,8 @@ import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
 import { useAcademyMessageUnread, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { badgeA11y, badgeCount } from '../../features/directory/inboxCounts';
 
-/** The STUDY tab's headphones (same bundled art as the nav bar) for buttons that lead into Study. */
-const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
+// Buttons that lead into Study wear the STUDY icon (StudyGlyph: stacked cards,
+// dB and a bulb, owner 2026-11-20; the headphones now mean Labs).
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -1358,7 +1359,7 @@ function CourseCardView({
                 label="STUDY NOW"
                 tint="study"
                 height={50}
-                icon={<Image source={STUDY_NAV_ICON} style={{ width: 20, height: 20 }} resizeMode="contain" accessibilityIgnoresInvertColors />}
+                icon={<StudyGlyph size={22} />}
                 onPress={() => onOpenPublic(free.courseOrder, true, free.gs)}
               />
             </View>
@@ -1445,7 +1446,9 @@ function CourseCardView({
         <View style={styles.cardAbove}>
           <View style={styles.freeTopicRow} accessible accessibilityLabel={upsell ? 'Free. Study topic' : 'Study topic'}>
             {upsell ? <Text style={[styles.freeTopicText, styles.freeTopicFree]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Free</Text> : null}
-            <Image source={STUDY_NAV_ICON} style={styles.freeTopicIcon} resizeMode="contain" accessibilityIgnoresInvertColors />
+            <View style={styles.freeTopicIcon}>
+              <StudyGlyph size={15} />
+            </View>
             <Text style={[styles.freeTopicText, styles.freeTopicStudy]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Study Topic</Text>
           </View>
           <View style={[styles.cardAboveRule, { backgroundColor: eyebrowColor }]} />

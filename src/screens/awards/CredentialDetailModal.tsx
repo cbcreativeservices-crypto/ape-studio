@@ -55,6 +55,7 @@ import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { CardArt } from '../../components/CardArt';
 import { colors, fonts } from '../../theme/tokens';
+import { StudyGlyph } from '../../components/nav/NavIcon';
 import { credentialCopyLazy as credentialCopy } from '../../data/credentialCopyLazy';
 import { REQUIRES_LABEL } from '../../data/careerRequirement';
 import { credentialArtUrl, credentialEyebrow } from './CredentialThumb';
@@ -92,7 +93,6 @@ const FOOTER_SEED = 152;
 const ENROLL_REPEAT_MS = 700;
 
 /** The Study tab's own icon, so STUDY NOW looks like where it sends you. */
-const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 export function CredentialDetailModal({
   credential,
@@ -372,7 +372,7 @@ export function CredentialDetailModal({
                     accessibilityRole="button"
                     accessibilityLabel={`Study ${credential.name} now — opens your Study Dashboard`}
                   >
-                    <Image source={STUDY_ICON} style={styles.studyIcon} resizeMode="contain" />
+                    <StudyGlyph size={19} />
                     <Text style={styles.studyBtnText}>STUDY NOW ›</Text>
                   </Pressable>
                 ) : null}

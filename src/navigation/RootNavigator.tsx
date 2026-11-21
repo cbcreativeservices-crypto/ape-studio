@@ -435,9 +435,13 @@ export function RootNavigator() {
       <Stack.Screen name="AwardProgress" getComponent={Lazy.AwardProgress} options={swipe} />
       <Stack.Screen name="FinalExam" getComponent={Lazy.FinalExam} options={{ gestureEnabled: false }} />
       <Stack.Screen name="FinalExamResult" getComponent={Lazy.FinalExamResult} options={{ gestureEnabled: false }} />
-      {/* S11 — modal, bottom nav hidden, exits via ✕ */}
-      <Stack.Screen name="Settings" getComponent={Lazy.Settings} options={{ presentation: 'modal' }} />
-      <Stack.Screen name="Help" getComponent={Lazy.Help} options={{ presentation: 'modal' }} />
+      {/* S11. Pushed screens since 2026-11-20 (owner: the same top row as the
+          hubs, HOME key then the titled section, and the circle menu); they
+          were modals that closed with ✕. Pushed, Android BACK and the HOME / ‹
+          key leave them and the menu can leave them without stacking modals.
+          No edge swipe: the app default (the swipe opt-in list is a ratchet). */}
+      <Stack.Screen name="Settings" getComponent={Lazy.Settings} />
+      <Stack.Screen name="Help" getComponent={Lazy.Help} />
       <Stack.Screen name="WeeklyConcept" getComponent={Lazy.WeeklyConcept} options={{ presentation: 'modal' }} />
       <Stack.Screen name="About" getComponent={Lazy.About} options={{ presentation: 'modal' }} />
       <Stack.Screen name="AcademyMessage" getComponent={Lazy.AcademyMessage} options={{ presentation: 'modal' }} />

@@ -13,11 +13,14 @@ import { NavIcon, type NavIconName } from './nav/NavIcon';
 import { colors, fonts } from '../theme/tokens';
 
 export function AppHeader({
+  lead,
   right,
   onLogoPress,
   logo,
   title,
 }: {
+  /** Drawn first, top-left (the Dashboard's HOME key, owner 2026-11-20). */
+  lead?: ReactNode;
   right?: ReactNode;
   /** The screen's own title in place of the app wordmark + slogan (owner
    *  2026-10-27: the Study Dashboard said the app's name, not what it is).
@@ -33,6 +36,7 @@ export function AppHeader({
   return (
     <View style={styles.row}>
       <View style={styles.left}>
+        {lead}
         {onLogoPress ? (
           <Pressable onPress={onLogoPress} hitSlop={6} accessibilityRole="button" accessibilityLabel="About this app">
             {glyph}

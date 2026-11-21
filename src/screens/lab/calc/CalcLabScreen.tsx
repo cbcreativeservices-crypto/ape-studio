@@ -29,7 +29,7 @@ import { calcTileArt } from '../labTileArt';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
-import { ScreenCircleMenu } from '../../../components/nav/CircleMenu';
+import { ScreenCircleMenu, goHome } from '../../../components/nav/CircleMenu';
 import { PlaceArt } from '../../../components/nav/CircleMenuPanel';
 import { menuClearance } from '../../../components/nav/circleMenuPlaces';
 // Screen Guide (2026-10-31): the header ⓘ "this screen, explained". The ✓
@@ -159,15 +159,13 @@ export function CalcLabScreen() {
       <View style={styles.header}>
         {/* HOME key when opened from Home (OPEN CALCULATORS), ‹ when deeper
             (owner rule 2026-10-14). */}
-        {/* The HOME face wears this section's menu icon (owner 2026-11-20);
-            it still goes Home, labelled "Home". */}
-        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} homeArt={<PlaceArt place="calc" />} />
-        {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches
-            the glossary's Σ) — a plain symbol before the title, not a button
-            (owner 2026-08-01). */}
-        <Text style={styles.sigma} accessibilityElementsHidden importantForAccessibility="no">
-          Σ
-        </Text>
+        {/* HOME, always (owner 2026-11-20): the house, back to Home. */}
+        <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.back} />
+        {/* Lab glyph before the title, not a button (owner 2026-08-01): since
+            2026-11-20 the circle menu's calculator (it was a purple Σ). */}
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="calc" size={30} />
+        </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>AUDIO CALCULATOR LABORATORY</Text>
           <Text style={styles.subtitle}>Calculate · understand · chain results between tools</Text>

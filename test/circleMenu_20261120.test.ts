@@ -89,13 +89,14 @@ describe('where each circle goes', () => {
     const m = flat('src/components/nav/CircleMenu.tsx');
     const root = read('src/navigation/RootNavigator.tsx');
     for (const [key, route, params] of [
-      ['tools', 'ToolsHub', ''],
-      ['labs', 'AudioLearning', ''],
-      ['enroll', 'Awards', ", { category: 'enrollment' }"],
-      ['calc', 'CalcLab', ''],
-      ['help', 'Help', ''],
-      ['set', 'Settings', ''],
+      ['tools', 'ToolsHub', ', undefined, POP'],
+      ['labs', 'AudioLearning', ', undefined, POP'],
+      ['enroll', 'Awards', ", { category: 'enrollment' }, POP"],
+      ['calc', 'CalcLab', ', undefined, POP'],
+      ['help', 'Help', ', undefined, POP'],
+      ['set', 'Settings', ', undefined, POP'],
     ] as const) {
+      // `pop: true`: a screen already in the stack is gone back to, never stacked twice.
       assert.ok(m.includes(`case '${key}': return nav.navigate('${route}'${params});`), key);
       assert.match(root, new RegExp(`<Stack\\.Screen name="${route}"`), `${route} is a root screen`);
     }
@@ -104,10 +105,10 @@ describe('where each circle goes', () => {
     }
     // From a hub screen (root stack) the tab places go through the root route 'Main'.
     for (const [key, call] of [
-      ['home', "nav.navigate('Main', { screen: 'Home' })"],
-      ['study', "nav.navigate('Main', { screen: 'Study', params: { screen: 'Dashboard' } })"],
-      ['prog', "nav.navigate('Main', { screen: 'Achievements', params: { screen: 'AchievementsHome' } })"],
-      ['prof', "nav.navigate('Main', { screen: 'Profile' })"],
+      ['home', "nav.navigate('Main', { screen: 'Home' }, { pop: true })"],
+      ['study', "nav.navigate('Main', { screen: 'Study', params: { screen: 'Dashboard' } }, { pop: true })"],
+      ['prog', "nav.navigate('Main', { screen: 'Achievements', params: { screen: 'AchievementsHome' } }, { pop: true })"],
+      ['prof', "nav.navigate('Main', { screen: 'Profile' }, { pop: true })"],
     ] as const) {
       assert.ok(m.includes(`case '${key}': return ${call};`), `hub ${key}`);
     }
@@ -123,7 +124,7 @@ describe('where each circle goes', () => {
   it('Community: the directory, or its REQUESTS when something is waiting', () => {
     assert.ok(flat('src/components/nav/CircleMenu.tsx').includes('go(key, (badgeCount(inbox) ?? 0) > 0);'));
     assert.ok(flat('src/components/nav/CircleMenu.tsx').includes(
-      "return nav.navigate('AudioCommunityDirectory', unread ? { tab: 'requests' } : undefined);",
+      "return nav.navigate('AudioCommunityDirectory', unread ? { tab: 'requests' } : undefined, POP);",
     ));
   });
 });
@@ -158,10 +159,11 @@ describe('what is lit, and where the menu is not drawn', () => {
     assert.match(m, /const hidden = false;/);
     assert.match(m, /if \(hidden \|\| held\) return null;/);
   });
-  it('the Glossary: its HOME key wears the open A–Z book; its overlays put the button away; the list and the hint clear it', () => {
+  it('the Glossary: its HOME key is the house; the open A–Z book sits beside the title; its overlays put the button away; the list and the hint clear it', () => {
     const g = read('src/screens/glossary/GlossaryScreen.tsx');
-    assert.match(g, /<NavIcon icon="Home" lit art=\{<PlaceArt place="gloss" \/>\} \/>/);
-    assert.match(g, /accessibilityLabel="Home"\n\s*>\n\s*<NavIcon icon="Home" lit art=/);
+    assert.match(g, /accessibilityLabel="Home"\n\s*>\n\s*<NavIcon icon="Home" lit \/>/);
+    // The open A–Z book BEFORE the title (owner 2026-11-20).
+    assert.ok(g.indexOf('<PlaceArt place="gloss" size={30} />') > 0 && g.indexOf('<PlaceArt place="gloss" size={30} />') < g.indexOf('>GLOSSARY</Text>'));
     assert.match(g, /useHideCircleMenu\('glossary', !!chooser \|\| popupTrail\.length > 0 \|\| \(filter === 'topic' && topicPickerOpen\)\);/);
     assert.match(g, /paddingBottom: menuClearance\(insets\.bottom\) - insets\.bottom/);
     assert.match(g, /bottom=\{MENU_BUTTON_LIFT \+ MENU_BUTTON \+ 8\}/);
@@ -326,20 +328,43 @@ describe('the hub screens carry the menu too (owner 2026-11-20)', () => {
     ['src/screens/tools/ToolsHubScreen.tsx', 'tools'],
     ['src/screens/lab/calc/CalcLabScreen.tsx', 'calc'],
     ['src/screens/lab/AudioLearningScreen.tsx', 'labs'],
+    ['src/screens/directory/AudioCommunityDirectoryScreen.tsx', 'comm'],
+    ['src/screens/settings/SettingsScreen.tsx', 'set'],
+    ['src/screens/help/HelpScreen.tsx', 'help'],
   ] as const) {
-    it(`${f.split('/').pop()}: the MENU button lit on ${here}, its icon on the HOME key, the scroll clear of the button`, () => {
+    it(`${f.split('/').pop()}: the MENU button lit on ${here}; the house on the HOME key, the section icon by the title; the scroll clear of the button`, () => {
       const s = read(f);
       assert.match(s, new RegExp(`<ScreenCircleMenu here="${here}" />`));
-      assert.ok(s.includes('<HomeOrBackKey onPress={() => safeGoBack(navigation)}') && s.includes(`homeArt={<PlaceArt place="${here}" />} />`), 'HOME key wears the section icon');
+      // HOME, always (owner 2026-11-20): the house, and the press goes Home.
+      assert.match(s, /<HomeOrBackKey\s+alwaysHome\s+onPress=\{\(\) => goHome\(navigation\)\}/, 'HOME key');
+      assert.ok(!s.includes('homeArt'), 'no section icon on the HOME key (owner 2026-11-20)');
+      assert.ok(s.includes(`<PlaceArt place="${here}" size={`), 'the section icon leads the title');
       assert.match(s, /paddingBottom: menuClearance\(insets\.bottom\)/);
     });
   }
-  it('the HOME key keeps its press and its label "Home"', () => {
+  it('the HOME key keeps its press, its label "Home" and the house', () => {
     const k = read('src/components/nav/HomeOrBackKey.tsx');
     assert.match(k, /accessibilityLabel="Home"/);
-    assert.match(k, /<NavIcon icon="Home" lit art=\{homeArt\} \/>/);
+    assert.match(k, /<NavIcon icon="Home" lit \/>/);
   });
-  it('only the three landing screens: no lab or tool inside them carries it', () => {
+  it('STUDY wears the new icon everywhere (owner 2026-11-20): stacked cards, dB and a bulb', () => {
+    const nav = read('src/components/nav/NavIcon.tsx');
+    assert.match(nav, /icon === 'Study' \? \(/);
+    assert.match(nav, /art\.iconXml\('study3v2', '#ff8a1e'\)/);
+    // The old headphones PNG now means LABS only.
+    const hits: string[] = [];
+    const walk = (d: string) => {
+      for (const n of readdirSync(d)) {
+        const p = `${d}/${n}`;
+        if (statSync(p).isDirectory()) walk(p);
+        else if (/\.tsx?$/.test(n) && /require\([^)]*nav-study\.png/.test(read(p))) hits.push(p);
+      }
+    };
+    walk('src');
+    assert.deepEqual(hits.sort(), ['src/components/nav/CircleMenuPanel.tsx', 'src/components/nav/NavIcon.tsx']);
+    assert.ok(read('src/components/nav/CircleMenuPanel.tsx').includes("labs: require('../../../assets/icons/nav/nav-study.png')"));
+  });
+  it('only these screens of the root stack: no lab or tool inside the hubs carries it', () => {
     const hits: string[] = [];
     const walk = (d: string) => {
       for (const n of readdirSync(d)) {
@@ -350,10 +375,42 @@ describe('the hub screens carry the menu too (owner 2026-11-20)', () => {
     };
     walk('src');
     assert.deepEqual(hits.sort(), [
+      'src/screens/awards/AwardsScreen.tsx',
+      'src/screens/directory/AudioCommunityDirectoryScreen.tsx',
+      'src/screens/help/HelpScreen.tsx',
       'src/screens/lab/AudioLearningScreen.tsx',
       'src/screens/lab/calc/CalcLabScreen.tsx',
+      'src/screens/settings/SettingsScreen.tsx',
       'src/screens/tools/ToolsHubScreen.tsx',
     ]);
+  });
+});
+
+describe('HOME, always top-left, on every menu screen (owner 2026-11-20)', () => {
+  it('My Enrollments Dashboard: HOME, the mortarboard, the menu lit on Enrollment', () => {
+    const a = read('src/screens/awards/AwardsScreen.tsx');
+    assert.match(a, /<HomeOrBackKey alwaysHome onPress=\{\(\) => goHome\(navigation\)\} backStyle=\{styles\.backChevron\} \/>/);
+    assert.match(a, /<PlaceArt place="enroll" size=\{26\} \/>/);
+    assert.match(a, /\{currentKey === 'enrollment' \? <ScreenCircleMenu here="enroll" \/> : null\}/);
+    assert.match(read('src/screens/enrollment/EnrollmentScreen.tsx'), /paddingBottom: menuClearance\(insets\.bottom\) \+ 8/);
+  });
+  for (const f of ['src/screens/dashboard/DashboardScreen.tsx', 'src/screens/profile/ProfileScreen.tsx', 'src/screens/achievements/AchievementsHomeScreen.tsx']) {
+    it(`${f.split('/').pop()}: the house leads the header and goes Home`, () => {
+      const s = read(f);
+      assert.match(s, /lead=\{\s*<Pressable onPress=\{\(\) => goHome\(navigation\)\} hitSlop=\{10\} accessibilityRole="button" accessibilityLabel="Home">\s*<NavIcon icon="Home" lit \/>/);
+    });
+  }
+  it('goHome goes BACK to the tabs, never a second copy', () => {
+    assert.match(read('src/components/nav/CircleMenu.tsx'), /\(navigation as Nav\)\.navigate\('Main', \{ screen: 'Home' \}, \{ pop: true \}\);/);
+  });
+});
+
+describe('Settings and Help are pushed screens now (owner 2026-11-20)', () => {
+  it('no modal presentation; their HOME key leaves them', () => {
+    const r = read('src/navigation/RootNavigator.tsx');
+    assert.match(r, /<Stack\.Screen name="Settings" getComponent=\{Lazy\.Settings\} \/>/);
+    assert.match(r, /<Stack\.Screen name="Help" getComponent=\{Lazy\.Help\} \/>/);
+    assert.doesNotMatch(read('src/screens/settings/SettingsScreen.tsx'), /accessibilityLabel="Close settings"/);
   });
 });
 

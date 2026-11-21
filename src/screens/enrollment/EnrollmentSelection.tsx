@@ -29,12 +29,12 @@ import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { colors, fonts } from '../../theme/tokens';
+import { StudyGlyph } from '../../components/nav/NavIcon';
 import { actionsFitBesideIdentity, artSideLen } from './selectionLayout';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 
 /** The Study tab's own icon, so the control looks like where it sends you. */
-const STUDY_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 export const CERT_BLUE = '#2f9bff';
 export const PROGRAM_PURPLE = '#b06cff';
@@ -265,7 +265,7 @@ export function EnrollmentSelection({
                       : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your Study Dashboard`
                 }
               >
-                <Image source={STUDY_ICON} style={s.studyIcon} resizeMode="contain" />
+                <StudyGlyph size={26} />
                 <Text style={s.studyText}>{single ? 'STUDY' : 'STUDY ALL'}</Text>
               </Pressable>
 
