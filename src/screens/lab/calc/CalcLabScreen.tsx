@@ -167,7 +167,12 @@ export function CalcLabScreen() {
           <PlaceArt place="calc" size={30} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>AUDIO CALCULATOR LABORATORY</Text>
+          {/* The purple Σ stays AFTER the title (owner 2026-11-20): the
+              calculator icon leads, the lab's Σ brand follows. */}
+          <Text style={styles.title}>
+            AUDIO CALCULATOR LABORATORY
+            <Text style={styles.titleSigma} accessibilityElementsHidden importantForAccessibility="no">{'  Σ'}</Text>
+          </Text>
           <Text style={styles.subtitle}>Calculate · understand · chain results between tools</Text>
         </View>
         <AccuracyNote compact variant="calc" />
@@ -416,6 +421,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   sigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, lineHeight: 28, color: colors.purple },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
+  titleSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.purple },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
