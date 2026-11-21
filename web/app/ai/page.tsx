@@ -33,11 +33,24 @@ export default function Page() {
         </p>
       </Section>
 
+      <Section title="Forum moderation">
+        <p>
+          The Audio Community forum uses an AI moderator to help keep
+          hateful and harmful content from being posted. When a member
+          posts, edits or reports a post, our server sends the text to
+          Anthropic&apos;s Claude service to check it against the community
+          rules. Your name, username and email address are not sent. Only a
+          person can suspend or ban an account. Details are in the{" "}
+          <a href="/privacy#forum-moderation">Privacy Policy, Section 11.2</a>
+          .
+        </p>
+      </Section>
+
       <Section title="What AI does not do">
         <List
           items={[
             "There is no AI chatbot or AI tutor on this website.",
-            "We do not send learner personal information to external generative AI systems.",
+            "Apart from forum moderation, we do not send learner personal information to external generative AI systems.",
             "AI does not grade you, award credentials, or decide whether a credential is valid.",
           ]}
         />

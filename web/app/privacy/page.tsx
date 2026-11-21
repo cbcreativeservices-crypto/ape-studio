@@ -12,5 +12,16 @@ export const metadata: Metadata = pageMeta({
 
 export default function Page() {
   const { html, meta } = loadLegal("privacy");
-  return <LegalPage meta={meta} html={html} />;
+  return (
+    <LegalPage
+      meta={meta}
+      html={html}
+      lead={
+        <>
+          <strong>Privacy is a right, not an option.</strong> You came here
+          to study audio, not to be studied.
+        </>
+      }
+    />
+  );
 }
