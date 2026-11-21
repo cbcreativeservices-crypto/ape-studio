@@ -731,7 +731,7 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-11-21 11:55 · ccode · 9332ca7e
 changed: Audio Fundamentals holds only what every student needs: Speaker Placement + Cable Dressing -> Live Sound, Patchbay + Room Design -> Production Workflow; Signal reordered (Signal Chain first and free, Detective last); next-lab links follow (owner 2026-11-21) [MD:D74]
 affects other side: App side only, NOT published. The labs keep their af_ keys. The server `labs` rows af_speaker_coverage, af_cable_install and af_patchbay must move area audio_fundamentals -> training BEFORE (or with) the OTA that carries this, else the app calls Fundamentals done while the server still requires them. Signal Chain Builder is now free for everyone (first lab of Signal). [MD:D74]
-needs: Comp A runs docs/APE_D74_MOVE_FUNDAMENTALS_LABS_2026_11_21.sql (area move + 42 credential requirement rows, owner-approved 2026-11-21) on the owner's go; brief in Downloads/2026-11-21_FOR_COMP_A_D74_MOVE_FUNDAMENTALS_LABS.zip.
+needs: Comp A runs docs/APE_D74_MOVE_FUNDAMENTALS_LABS_2026_11_21.sql (area move + 42 credential requirement rows, owner-approved 2026-11-21) on the owner's go; brief in Downloads/2026-11-21_FOR_COMP_A_D74_MOVE_FUNDAMENTALS_LABS.zip. [MD:D74]
 
 
 ### 2026-11-21 00:29 · ccode · 8a584f0c
