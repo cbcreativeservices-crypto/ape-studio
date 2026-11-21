@@ -437,7 +437,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
   m13: {
     intro: {
       learning: 'Ears estimate and meters measure. Which real tool answers which question about sound, and why dBFS is digital level, not loudness or SPL.',
-      start: 'Read the cards below the display. Tap Waveform and say “ah”, then come back with ‹ and try the Frequency Counter & Tuner.',
+      start: 'Read the cards below the display. Tap Waveform and say “ah”, then come back with ‹ and try the Tuner & Frequency Counter.',
     },
     seeing: [
       'An animated chain: a source, the air and a microphone. That’s the path every measuring tool listens to.',
@@ -446,7 +446,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     control: [
       'There’s nothing to set here. This module is for reading and choosing a tool.',
-      'Tap a card to open that tool: SPL Meter, Frequency Counter & Tuner, RTA, Spectrogram, Waveform, RT60 or Signal Generator. Long-press a card for its guided-lesson entry.',
+      'Tap a card to open that tool: SPL Meter, Tuner & Frequency Counter, RTA, Spectrogram, Waveform, RT60 or Signal Generator. Long-press a card for its guided-lesson entry.',
       'Tap the tool’s ‹ to come back. The course keeps your place.',
     ],
     changes: [
@@ -461,7 +461,7 @@ export const FOUNDATIONS_SCREEN_GUIDES: Record<FoundationsStepKey, ScreenGuide> 
     ],
     tryThis: [
       'Open Waveform and say “ah”. The live trace is Module 7’s MIC’S OUTPUT: real pressure at your phone’s mic, over time.',
-      'Open the Frequency Counter & Tuner and hum one steady note. It reads your note in Hz.',
+      'Open the Tuner & Frequency Counter and hum one steady note. It reads your note in Hz.',
       'Open RTA and whistle. One band stands out: a single ingredient, as in Module 12.',
     ],
   },

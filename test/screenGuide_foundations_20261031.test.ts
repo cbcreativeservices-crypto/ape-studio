@@ -126,7 +126,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     m10: ['PHASE', 'PRESET', 'HEAR', 'ALIGNED', 'PARTIAL', 'CANCELED', 'OUT', 'INPUTS', 'SUM = A + B', 'HEAR ALIGNED — 220 / 220 Hz', 'HEAR DRIFTING — 220 / 222 Hz', 'STOP'],
     m11: ['HARMONICS', 'F0', 'SEL', 'LEVEL', 'SUM'],
     m12: ['UNMIX', 'RECIPE', 'PURE', 'HOLLOW (odd)', 'BRIGHT (all)', 'F0', 'separated'],
-    m13: ['CHAIN', 'SOURCE → AIR → MIC', 'SPL Meter', 'Frequency Counter & Tuner', 'RTA', 'Spectrogram', 'Waveform', 'RT60', 'Signal Generator', 'dBFS · uncalibrated'],
+    m13: ['CHAIN', 'SOURCE → AIR → MIC', 'SPL Meter', 'Tuner & Frequency Counter', 'RTA', 'Spectrogram', 'Waveform', 'RT60', 'Signal Generator', 'dBFS · uncalibrated'],
     m14: ['COURSE', 'COMPLETE — THE WHOLE MODEL', 'YOU BUILT THE WHOLE MODEL', 'CHECK YOURSELF', 'OPEN THE PLAYGROUND', 'FINISH ›'],
     m7cover: ['TIME', 'SPACE', 'earlier → later', 'one place → another', 'PROBE', 'FREEZE'],
     end: ['CREDITED', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '‹ PREV'],
