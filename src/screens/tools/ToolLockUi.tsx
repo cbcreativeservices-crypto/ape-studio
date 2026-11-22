@@ -96,7 +96,7 @@ export function useSaveGate(): {
       if (unconfirmed) {
         notify(
           'Membership not confirmed',
-          'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.',
+          'Couldn’t confirm your membership on this device. Check your connection and reopen the app.',
         );
         return;
       }

@@ -45,7 +45,7 @@ export const PREPROD_START_GUIDE: ScreenGuide = {
     'Read the note: what you make changes the questions, the documents and the problems; the planning process underneath stays the same.',
   ],
   control: [
-    'Tap a project type to start that kind of project. It opens at once, saved on this phone and named after its type.',
+    'Tap a project type to start that kind of project. It opens at once, saved on this device and named after its type.',
     'Once a project is open, check its readiness, work through THE SIX STAGES, try the EXERCISES and build the Production Packet. + NEW PROJECT there starts another project of any type.',
     `‹ leaves the lab. ${CHIPS_LINE}`,
   ],
@@ -76,7 +76,7 @@ export const PREPROD_HOME_GUIDE: ScreenGuide = {
     'PRODUCTION READINESS shows the verdict, a score out of 100 and a bar of required decisions. THE SIX STAGES each show a dot, a % and a state.',
   ],
   control: [
-    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions. DELETE asks first, then removes the project from this phone. + NEW PROJECT, then a type, starts another.',
+    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions. DELETE asks first, then removes the project from this device. + NEW PROJECT, then a type, starts another.',
     'Tap a stage, PICK UP WHERE YOU LEFT OFF or NEXT OUTSTANDING to open that stage. NEXT OUTSTANDING lands on the exact question.',
     'Tap a red blocker under PRODUCTION READINESS to accept it on the record: ACCEPT A CONDITION asks who and why, then RECORD IT.',
     'EXERCISES opens a broken practice plan to repair. OPEN THE PRODUCTION PACKET shows the whole plan as one document.',

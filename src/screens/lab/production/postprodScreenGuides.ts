@@ -46,7 +46,7 @@ export const POSTPROD_START_GUIDE: ScreenGuide = {
     'Read the note under them: what you make changes the questions, the documents and the problems, but the process underneath stays the same.',
   ],
   control: [
-    'Tap a project type to start that kind of project. It’s saved on this phone, named after its type, and opens at once.',
+    'Tap a project type to start that kind of project. It’s saved on this device, named after its type, and opens at once.',
     'Once a project is open, check its readiness, work through THE EIGHT STAGES in three chapters, try the EXERCISES and build the Delivery Package. + NEW PROJECT starts another project of any type.',
     `‹ leaves the lab. ${CHIPS_LINE}`,
   ],
@@ -77,7 +77,7 @@ export const POSTPROD_HOME_GUIDE: ScreenGuide = {
     'PRODUCTION READINESS: the verdict, a score out of 100, a bar of required decisions. THE EIGHT STAGES sit under three CHAPTER headings, each with a dot, a % and its state.',
   ],
   control: [
-    'Tap the name to rename the project. DUPLICATE copies the answers but not accepted conditions. DELETE asks first, then removes it from this phone. + NEW PROJECT, then a type, starts another.',
+    'Tap the name to rename the project. DUPLICATE copies the answers but not accepted conditions. DELETE asks first, then removes it from this device. + NEW PROJECT, then a type, starts another.',
     'Tap a stage, PICK UP WHERE YOU LEFT OFF or NEXT OUTSTANDING to open that stage. NEXT OUTSTANDING lands on the exact question.',
     'Tap a red blocker under PRODUCTION READINESS to accept it on the record: ACCEPT A CONDITION asks who and why, then RECORD IT.',
     'EXERCISES opens a broken practice project to repair. OPEN THE DELIVERY PACKAGE shows the whole project as one document.',

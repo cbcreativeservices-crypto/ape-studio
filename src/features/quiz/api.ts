@@ -199,7 +199,7 @@ export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
   custom_list_no_questions:
     'None of the terms in your list have quiz questions yet. Tap Back and add other terms from the Glossary.',
   custom_list_unreadable:
-    'My Custom List couldn’t be read on this phone just now. Nothing has been removed — try again in a moment.',
+    'My Custom List couldn’t be read on this device just now. Nothing has been removed — try again in a moment.',
   offline: 'Quiz start requires a connection. Reconnect and try again.',
   unknown: 'Could not start the quiz. Try again.',
 };

@@ -657,7 +657,7 @@ ${LOCAL_LOSS}`
           // (evening hunt 2, 2026-10-02): say so, never a silent "on".
           notify(
             'Notifications',
-            'Weekly concepts are saved, but this phone could not be registered to receive them. Check your connection, then switch Weekly concept off and on again.',
+            'Weekly concepts are saved, but this device could not be registered to receive them. Check your connection, then switch Weekly concept off and on again.',
           );
         }
       } else {
@@ -744,7 +744,7 @@ ${LOCAL_LOSS}`
             <View style={{ paddingVertical: 10 }}>
               <Text style={styles.rowHint}>
                 {tierReadFailed
-                  ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                  ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
                   : 'Checking your membership…'}
               </Text>
             </View>
@@ -1015,7 +1015,7 @@ ${LOCAL_LOSS}`
               this at all. */}
           <View style={styles.row}>
             <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={styles.rowLabel}>Keep the glossary on this phone</Text>
+              <Text style={styles.rowLabel}>Keep the glossary on this device</Text>
               <Text style={styles.rowHint}>
                 {isMember ? 'Saves' : 'Academy members: saves'} all 31,858 terms in the background (about 5 MB) so the
                 glossary works with no signal — on a ship, a flight, or a tour with no wi-fi. Turn
@@ -1024,7 +1024,7 @@ ${LOCAL_LOSS}`
             </View>
             <Toggle
               on={autoOffline}
-              label="Keep the glossary on this phone"
+              label="Keep the glossary on this device"
               onChange={(v) => {
                 setAutoOfflineState(v);
                 void setAutoOffline(v);

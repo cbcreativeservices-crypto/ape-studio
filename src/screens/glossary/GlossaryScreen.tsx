@@ -930,7 +930,7 @@ type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 const RETURN_TERM_KEY = 'ape:glossaryReturnTerm';
 /** The Recent views' face when the stored list could not be read (hunt 12, K2). */
 const RECENT_UNREADABLE =
-  'Your recent terms couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
+  'Your recent terms couldn’t be read on this device. Nothing has been removed — they’ll show again once the list can be read.';
 
 /** The Custom (★) and Bookmarks views' faces when the stored list could not be
  *  read (hunt 13, K2 — the same pattern as RECENT_UNREADABLE). */
@@ -938,9 +938,9 @@ const RECENT_UNREADABLE =
 const CUSTOM_EMPTY =
   'My Custom List is empty. Tap the three-card icon beside any term to add it. This button then shows just those terms.';
 const CUSTOM_UNREADABLE =
-  'My Custom List couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
+  'My Custom List couldn’t be read on this device. Nothing has been removed — it’ll show again once the list can be read.';
 const BOOKMARKS_UNREADABLE =
-  'Your bookmarks couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
+  'Your bookmarks couldn’t be read on this device. Nothing has been removed — they’ll show again once the list can be read.';
 /** The topic picker's face when its list could not be read (hunt 13, K2). */
 const TOPICS_UNREADABLE =
   'The topic list couldn’t be loaded — check your connection and open the Glossary again.';
@@ -4432,8 +4432,8 @@ ${COPY.glossaryFreeAllowance}`,
                   <>
                     <Text style={styles.offlineStat}>
                       {offlineStats.definitions >= offlineStats.terms
-                        ? `Saved on this phone — all ${offlineStats.terms.toLocaleString()} terms work with no connection.`
-                        : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this phone.`}
+                        ? `Saved on this device — all ${offlineStats.terms.toLocaleString()} terms work with no connection.`
+                        : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this device.`}
                     </Text>
                     {offlineStats.definitions >= offlineStats.terms || (resolved && !isMember) ? null : (
                       <Pressable
@@ -4441,8 +4441,8 @@ ${COPY.glossaryFreeAllowance}`,
                         accessibilityRole="button"
                         accessibilityLabel={
                           savingOffline
-                            ? 'Stop saving the glossary to this phone'
-                            : 'Save the whole glossary to this phone for use with no signal'
+                            ? 'Stop saving the glossary to this device'
+                            : 'Save the whole glossary to this device for use with no signal'
                         }
                         style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
                       >
@@ -4456,7 +4456,7 @@ ${COPY.glossaryFreeAllowance}`,
                         ? tierUnconfirmedCopy
                         : savingOffline
                         ? 'Keep this screen open. You can carry on reading while it saves.'
-                        : 'Working a ship, on a flight, or out on a tour with no wi-fi? Save the whole glossary now and every term stays readable with no signal at all. About 4 MB. Terms you read are kept automatically either way.'}
+                        : 'Working on a ship, on a flight, or out on a tour with no wi-fi? Save the whole glossary now and every term stays readable with no signal at all. About 4 MB. Terms you read are kept automatically either way.'}
                     </Text>
                   </>
                 ) : (
@@ -4466,8 +4466,8 @@ ${COPY.glossaryFreeAllowance}`,
                       phone and read them with no connection.
                     </Text>
                     <Text style={styles.offlineHint}>
-                      Working a ship, on a flight, or out on a tour with no wi-fi — the glossary keeps
-                      working when nothing else does. Terms you have already read stay on this phone
+                      Working on a ship, on a flight, or out on a tour with no wi-fi — the glossary keeps
+                      working when nothing else does. Terms you have already read stay on this device
                       either way.
                     </Text>
                     <Pressable
@@ -4479,7 +4479,7 @@ ${COPY.glossaryFreeAllowance}`,
                         (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
                       }}
                       accessibilityRole="button"
-                      accessibilityLabel="See Academy membership, which lets you save the whole glossary to this phone"
+                      accessibilityLabel="See Academy membership, which lets you save the whole glossary to this device"
                       style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
                     >
                       <Text style={styles.offlineBtnText}>SEE MEMBERSHIP</Text>

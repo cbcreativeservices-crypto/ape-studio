@@ -492,7 +492,7 @@ function AskForm({
     }
     confirmDialog(
       'Discard this draft?',
-      'What you typed here will be deleted from this phone. To keep it for later, go back instead.',
+      'What you typed here will be deleted from this device. To keep it for later, go back instead.',
       'DISCARD',
       () => {
         if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -641,7 +641,7 @@ function AskForm({
           />
         </View>
         {problem && hasStarted(values) ? <Text style={st.problem}>{problem}</Text> : null}
-        {draftSaved ? <Text style={st.problem}>Draft saved on this phone.</Text> : null}
+        {draftSaved ? <Text style={st.problem}>Draft saved on this device.</Text> : null}
         <Text style={st.ai}>{AI_DISCLOSURE}</Text>
       </ScrollView>
 

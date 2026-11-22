@@ -123,7 +123,7 @@ export function ExamBriefing({
         <Rule
           n="1"
           title="There is a time limit, and it does not pause."
-          body="The clock starts when you press BEGIN and runs from the server, not from this phone. Closing the app, locking the screen or losing signal does not stop it. The time limit is shown on screen the moment the exam begins. If the exam is open when the clock reaches zero, it submits whatever you have answered and is graded — if the app is not open at that moment, the paper arrives late and cannot be graded at all, so stay on this screen until you submit."
+          body="The clock starts when you press BEGIN and runs from the server, not from this device. Closing the app, locking the screen or losing signal does not stop it. The time limit is shown on screen the moment the exam begins. If the exam is open when the clock reaches zero, it submits whatever you have answered and is graded — if the app is not open at that moment, the paper arrives late and cannot be graded at all, so stay on this screen until you submit."
         />
         <Rule
           n="2"

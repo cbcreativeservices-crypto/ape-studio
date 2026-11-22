@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Beginner waves 1-3 (2026-11-15), group F5: Wave Physics, Speaker Placement,
  * Room Design, Understanding Level & Amplitude, Foundations of Sound, Sound
@@ -419,7 +420,7 @@ describe('SH-37 · no "update the app" line in learner text', () => {
     const bits = code(`${F}bits.tsx`);
     const card = bits.slice(bits.indexOf('export function VizUnavailableCard('), bits.indexOf('export function ConceptBadge('));
     assert.doesNotMatch(card, /update the app|APP UPDATE|dev build/i);
-    assert.match(card, /THE ANIMATED VIEW DOESN’T SHOW ON THIS PHONE/);
+    assert.match(card, /THE ANIMATED VIEW DOESN’T SHOW ON THIS DEVICE/);
     // The two engine lines in the course stay developer-only.
     const course = read(`${F}FoundationsCourseScreen.tsx`);
     for (const m of course.matchAll(/install the newest dev build/g)) {

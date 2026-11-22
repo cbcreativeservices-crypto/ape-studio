@@ -33,7 +33,7 @@ import { localStoreWipeCount } from './localStoreRegistry';
 
 export const SAVE_FAILURE_TITLE = "Some changes couldn't be saved";
 export const SAVE_FAILURE_BODY =
-  "This phone couldn't save your latest changes, so they may be gone the next time the app opens. Free up some storage space, then try again.";
+  "This device couldn't save your latest changes, so they may be gone the next time the app opens. Free up some storage space, then try again.";
 
 /** After the notice was shown or dismissed, further failures stay quiet this long. */
 export const SAVE_FAILURE_QUIET_MS = 3 * 60 * 1000;

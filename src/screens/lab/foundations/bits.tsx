@@ -463,7 +463,7 @@ export function VizUnavailableCard() {
     <View style={styles.unavailCard}>
       {/* SH-37 (owner 2026-11-15, "build waves 1 thru 3", D62): no "update the app"
           line in learner text; say what still works, as the store lines elsewhere do. */}
-      <Text style={styles.unavailTitle}>THE ANIMATED VIEW DOESN’T SHOW ON THIS PHONE</Text>
+      <Text style={styles.unavailTitle}>THE ANIMATED VIEW DOESN’T SHOW ON THIS DEVICE</Text>
       <Text style={styles.unavailBody}>
         The air-particle and speaker animations can’t be drawn in this version of the app. The lesson
         text and audio work fully; only the moving drawing is missing.

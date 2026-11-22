@@ -58,7 +58,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'start-guest',
         q: 'What is Guest Mode?',
-        a: 'Guest Mode lets you use the app without creating an account. Guest data lives only on this phone and is cleared when you leave Guest Mode, except lab work: sign in or create an account before you close the app, and the lab work from that visit is saved to it (a members-only lab opened as a preview saves nothing). Create a free account when you want your progress to survive.',
+        a: 'Guest Mode lets you use the app without creating an account. Guest data lives only on this device and is cleared when you leave Guest Mode, except lab work: sign in or create an account before you close the app, and the lab work from that visit is saved to it (a members-only lab opened as a preview saves nothing). Create a free account when you want your progress to survive.',
       },
       {
         id: 'start-first-steps',
@@ -227,7 +227,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-saved',
         q: 'Where do saved measurements go?',
-        a: 'The Measurement Library, stored on this phone — not in the cloud. Saving is part of Academy membership.',
+        a: 'The Measurement Library, stored on this device — not in the cloud. Saving is part of Academy membership.',
         jump: { label: 'Open the Tools', route: 'ToolsHub' },
       },
       {

@@ -93,7 +93,7 @@ const NO_COPY = 'This version of the app cannot copy text on this device.';
 const NOT_SENT = 'This app cannot tell whether you sent it, or to whom.';
 const VIA_WORDS: Record<SpPdfVia, string> = {
   writer: 'Made by this app’s own PDF writer.',
-  html: 'Made by this phone’s own converter, because the file from this app’s PDF writer could not be saved.',
+  html: 'Made by this device’s own converter, because the file from this app’s PDF writer could not be saved.',
 };
 
 /** THE one plural helper of this area: "1 input channel", "2 input channels". */

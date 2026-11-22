@@ -1515,7 +1515,7 @@ export function ProfileScreen() {
           {hydrated && !registryVerified ? (
             <Text style={styles.fieldError}>
               We couldn't check this with the server just now, so the switch above is
-              showing what this phone last saved. Reopen this screen when you're back
+              showing what this device last saved. Reopen this screen when you're back
               online to confirm it.
             </Text>
           ) : null}

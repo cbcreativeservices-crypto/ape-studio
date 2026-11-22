@@ -382,7 +382,7 @@ export function ProductionStageScreen() {
               : loadState === 'unreadable'
                 ? 'This project could not be read on this device just now. Go back and open it again.'
               : loadState === 'missing'
-                ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there, or start a new one from the lab home. If you made it on this phone, go back to the lab home and open it from there.'
+                ? 'This project is not on this device. Production projects are saved on the device that created them — open it there, or start a new one from the lab home. If you made it on this device, go back to the lab home and open it from there.'
                 : 'Opening the project…'}
           </Text>
         </View>

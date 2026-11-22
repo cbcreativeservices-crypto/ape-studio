@@ -102,7 +102,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     ],
     teaches: [
       'Real equipment adds harmonics a model doesn’t. That’s harmonic distortion, the thing THD measures.',
-      'dBFS here is relative to the phone’s own full scale: it compares sounds on this phone and is not a measured sound level.',
+      'dBFS here is relative to the device’s own full scale: it compares sounds on this device and is not a measured sound level.',
       'A spectrogram shows frequency up, time across, and level as color.',
     ],
     tryThis: [

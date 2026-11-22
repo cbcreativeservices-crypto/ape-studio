@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * OWNER RULINGS 2026-10-03 — receipts for the four calls.
  *
@@ -258,7 +259,7 @@ describe('4 · every CHECKING… site has an honest end state', () => {
     const s = strip(read('src/screens/settings/SettingsScreen.tsx'));
     assert.match(s, /const \{ entitlement, refreshEntitlement, resolved, tierKnown, tierReadFailed \} = useEntitlement\(\);/);
     assert.match(s, /if \(!tierKnown && !isMember\) return tierReadFailed \? 'not confirmed' : '…';/);
-    assert.match(s, /\{tierReadFailed\s*\? 'Couldn’t confirm your membership on this phone\. Check your connection and reopen the app\.'\s*: 'Checking your membership…'\}/);
+    assert.match(s, /\{tierReadFailed\s*\? 'Couldn’t confirm your membership on this device\. Check your connection and reopen the app\.'\s*: 'Checking your membership…'\}/);
     assert.match(s, /summary=\{!tierKnown \? \(tierReadFailed \? 'NOT CONFIRMED' : '…'\) : isMember/);
     assert.match(s, /\{!tierKnown\s*\? tierReadFailed\s*\? 'NOT CONFIRMED'\s*: 'CHECKING…'/);
     // No other CHECKING… left without the end state.
@@ -276,7 +277,7 @@ describe('4 · every CHECKING… site has an honest end state', () => {
     assert.match(sg, /const checking = !isMember && !known && !tierReadFailed;/);
     assert.match(sg, /const locked = !isMember;/);
     assert.match(sg, /label: \(base: string\) => \(checking \? 'CHECKING…' : unconfirmed \? base : locked \? `🔒 \$\{base\}` : base\)/);
-    assert.match(sg, /if \(unconfirmed\) \{\s*notify\(\s*'Membership not confirmed',\s*'Couldn’t confirm your membership on this phone\. Check your connection and reopen the app\.',\s*\);\s*return;\s*\}\s*openMembershipGate/);
+    assert.match(sg, /if \(unconfirmed\) \{\s*notify\(\s*'Membership not confirmed',\s*'Couldn’t confirm your membership on this device\. Check your connection and reopen the app\.',\s*\);\s*return;\s*\}\s*openMembershipGate/);
   });
   it('MultiMeter keeps its sheet and draft when unconfirmed (prompt, no close)', () => {
     const s = strip(read('src/screens/tools/MultiMeterScreen.tsx'));

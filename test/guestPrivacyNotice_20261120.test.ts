@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * The privacy notice (owner 2026-11-20) [MD:D72].
  *
@@ -27,7 +28,7 @@ describe('privacy notice: the owner-approved words (2026-11-20)', () => {
       "title: 'Your Privacy, Our Promise'",
       'We believe privacy is a right, not a setting. You came here to learn audio, not to be studied yourself.',
       'So we do not track people. We never sell or share anyone’s information, we show no ads, and we never follow you across other apps or websites.',
-      'Guest Mode lives by that promise: every guest sign-in erases everything from before on this phone, including lab work, scores and settings. Only a weekly count of free lookups stays, with no name on it.',
+      'Guest Mode lives by that promise: every guest sign-in erases everything from before on this device, including lab work, scores and settings. Only a weekly count of free lookups stays, with no name on it.',
       'Students with an account are tracked as little as possible: just your email, your membership, and your progress and scores, so your work follows you to any device.',
       'Your account lives by that promise. We keep only what your learning needs: your email, your membership, and your progress and scores, so your work follows you to any device, plus anything you choose to post or share.',
       'For everyone, crash reports and usage counts are anonymous. They exist only to help us fix and improve the Academy.',
@@ -85,7 +86,7 @@ describe('guest notice: when it shows', () => {
 });
 
 describe('account notice: once per account', () => {
-  it("server mark first (Comp A), this phone's per-account flag as the fallback, never on an unknown session", () => {
+  it("server mark first (Comp A), this device's per-account flag as the fallback, never on an unknown session", () => {
     assert.match(api, /supabase\.rpc\('my_privacy_notice_seen'\)/);
     assert.match(api, /supabase\.rpc\('mark_privacy_notice_seen'\)/);
     assert.match(home, /if \(timedOut \|\| !isRealAccount\(sess\.session\) \|\| !sess\.session\)/);

@@ -481,7 +481,7 @@ export const GUEST_PRIVACY_NOTICE = {
   title: 'Your Privacy, Our Promise',
   paragraphs: [
     ...PRIVACY_OPEN,
-    'Guest Mode lives by that promise: every guest sign-in erases everything from before on this phone, including lab work, scores and settings. Only a weekly count of free lookups stays, with no name on it.',
+    'Guest Mode lives by that promise: every guest sign-in erases everything from before on this device, including lab work, scores and settings. Only a weekly count of free lookups stays, with no name on it.',
     'Students with an account are tracked as little as possible: just your email, your membership, and your progress and scores, so your work follows you to any device.',
     PRIVACY_CLOSE,
   ],

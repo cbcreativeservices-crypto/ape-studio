@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * TIER SWEEP (2026-10-03) — one app-wide consistency fix.
  *
@@ -13,7 +14,7 @@
  * with a 🔒, or sold them the membership they hold. Now the guest wording,
  * the locks and the upsell need a KNOWN tier; while the provider retries the
  * screen is neutral, and once it gives up it says "Couldn't confirm your
- * membership on this phone…". Nothing is UNLOCKED on a failed read.
+ * membership on this device…". Nothing is UNLOCKED on a failed read.
  *
  * The shared pieces (features/commercial/tier.ts + useTier.ts):
  *   memberGateOf / useMemberGate  — 'open' | 'locked' | 'checking' | 'unconfirmed'
@@ -37,7 +38,7 @@ const guestWordingAllowed = (...a: unknown[]) => (tierMod.guestWordingAllowed as
 const { endLead, whatsLeft } = await import('../src/screens/lab/kit/labEnd.ts');
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8').replace(/\r\n/g, '\n');
-const NC = 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.';
+const NC = 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.';
 
 // The failed-read learner as the provider reports them.
 const FAILED = { tier: tierOf('anonymous', true), tierKnown: false };

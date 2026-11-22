@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * guestEphemeral — owner rulings 2026-10-04 (receipt key guestEphemeral).
  *
@@ -285,7 +286,7 @@ describe('2b. Guest Mode entry', () => {
     const claim = guest.indexOf('claimGuestLaunchWipe();');
     assert.ok(claim > 0 && claim < guest.indexOf('await runAfterAccountSync('));
   });
-  it('[R2] the Career Finder never tells a known guest their answers stay on this phone', () => {
+  it('[R2] the Career Finder never tells a known guest their answers stay on this device', () => {
     const s = read('src/screens/careerfinder/CareerFinderScreen.tsx');
     assert.match(s, /const guest = useGuestWording\(\)\.guest;/);
     assert.match(s, /guestTrust: 'Free\. You’re not signed in, so your answers are erased when you close the app\. Sign in first to keep them\.'/);

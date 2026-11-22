@@ -148,7 +148,7 @@ export function CalcProjectsScreen() {
       notify(
         tierReadFailed ? 'Membership not confirmed' : 'One moment',
         tierReadFailed
-          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
           : 'Still checking your account. Try again in a moment.',
       );
     } else if (limits.savedProjects === 0) {

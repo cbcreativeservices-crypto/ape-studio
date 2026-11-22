@@ -566,7 +566,7 @@ export function FoundationsPlaygroundScreen() {
           <Text style={styles.caption}>
             EQ shapes the drawings above; BALANCE moves the L–R strip under them. DELAY changes
             what you HEAR only — it is not drawn.
-            {!fxReady && engineReady ? ' (These effects do not play on this phone; EQ and BALANCE still show in the drawings.)' : ''}
+            {!fxReady && engineReady ? ' (These effects do not play on this device; EQ and BALANCE still show in the drawings.)' : ''}
           </Text>
           </View>
           </CollapsibleSection>
@@ -720,7 +720,7 @@ export function FoundationsPlaygroundScreen() {
             </Text>
             {!additiveReady && engineReady ? (
               <Text style={styles.caption}>
-                On this phone the sound here stays a pure sine; the drawings show the full shape
+                On this device the sound here stays a pure sine; the drawings show the full shape
                 exactly.
               </Text>
             ) : null}

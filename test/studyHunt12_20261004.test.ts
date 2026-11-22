@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * STUDY area, hunt 12 (2026-10-04). Each test FAILED against HEAD c0debb14
  * (R2: the fixed files were copied aside, `git show HEAD:<path>` written back,
@@ -128,7 +129,7 @@ test("a queued exam is NOT replayed under a different account's session", async 
     awardType: 'certificate',
     awardId: 'cert-1',
   });
-  // Back online, but B is now signed in on this phone.
+  // Back online, but B is now signed in on this device.
   g.__SH12_SESSION__ = signedIn('auth-B');
   g.__SH12_USER__ = () => ({ data: { user: { id: 'auth-B' } }, error: null });
   const sent: string[] = [];

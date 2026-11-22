@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 20:27 · ccode · f6352d07
+changed: First-visit intro popups sit on a solid screen, no lab showing behind (owner 2026-11-21: "should not show any background while being shown") [MD:D74]
+affects other side: nothing on the server (app popups only).
+needs: nothing; reaches phones with the next OTA [MD:D74]
+
+
 ### 2026-11-21 19:33 · ccode · ced57871
 changed: Rack: a sticky ("compare while you watch") tray never folds the display (owner's iPhone video, Spectrum Analyzer, 2026-11-21) [MD:D74]
 affects other side: nothing on the server (lab layout only).

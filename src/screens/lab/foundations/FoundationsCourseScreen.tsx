@@ -1454,7 +1454,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         <Text style={styles.caption}>
           {__DEV__
             ? 'This engine build predates the stereo dual-oscillator — the drawn sum above stays exact; install the newest dev build to HEAR the drifting-phase demo.'
-            : 'This demo’s two tones do not play on this phone, but the drawn sum above is exact: set PRESET to 180° and watch the bottom line go flat.'}
+            : 'This demo’s two tones do not play on this device, but the drawn sum above is exact: set PRESET to 180° and watch the bottom line go flat.'}
         </Text>
       ) : null}
       {wellBottom}
@@ -1574,7 +1574,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         <Text style={styles.caption}>
           {__DEV__
             ? 'This engine build predates the additive generator — the drawing stays exact; install the newest dev build to HEAR each harmonic enter the tone.'
-            : 'The harmonics do not play on this phone, but the drawing is exact: change a layer’s level and watch the SUM change shape while its rate stays put.'}
+            : 'The harmonics do not play on this device, but the drawing is exact: change a layer’s level and watch the SUM change shape while its rate stays put.'}
         </Text>
       ) : null}
       <Text style={styles.caption}>

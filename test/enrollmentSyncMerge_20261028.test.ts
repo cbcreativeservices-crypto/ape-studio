@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Must-do D24 (2026-10-28): two phones overwrote each other's Study list.
  *
@@ -71,7 +72,7 @@ describe('mergeEnrollment (pure)', () => {
     assert.deepEqual(mergeEnrollment(s0, s0, fromA), fromA);
   });
 
-  it('this phone’s own change wins for that topic only', () => {
+  it('this device’s own change wins for that topic only', () => {
     const base = [t(3060), t(4100), t(4200)];
     const mine = [t(3060), t(4100, false), t(4200)]; // switched 4100 off here
     const theirs = [t(3060), t(4100), t(4200, true, true), t(4300)]; // other phone: starred 4200, added 4300
@@ -84,7 +85,7 @@ describe('mergeEnrollment (pure)', () => {
     assert.deepEqual(mergeEnrollment(base, base, [t(3060), t(4100)]), [t(3060), t(4100)], 'removed on the other phone');
   });
 
-  it('no last-synced copy: the server list in its order, then topics only this phone holds', () => {
+  it('no last-synced copy: the server list in its order, then topics only this device holds', () => {
     const seed = [t(3060), t(3970)];
     const server = [t(4100, false), t(3060, false), t(4200)];
     assert.deepEqual(mergeEnrollment(null, seed, server), [t(4100, false), t(3060, false), t(4200), t(3970)]);
@@ -120,7 +121,7 @@ describe('enrollmentStore sync (D24)', async () => {
     const s0 = [t(3060), t(3970), t(4100, false)];
     await fresh(s0, s0);
     g.__D24_READ__ = serverRows([t(3060), t(3970), t(4100, true), t(4200)]);
-    es.toggleFavorite(3970); // this phone's only change
+    es.toggleFavorite(3970); // this device's only change
     await sleep(1500);
     const want = [t(3060), t(3970, true, true), t(4100, true), t(4200)];
     assert.deepEqual(lastPush(), want);
@@ -143,7 +144,7 @@ describe('enrollmentStore sync (D24)', async () => {
     assert.deepEqual(lastPush(), got);
   });
 
-  it('a topic switched off on this phone stays off on both, though the server still had it on', async () => {
+  it('a topic switched off on this device stays off on both, though the server still had it on', async () => {
     const s0 = [t(3060), t(4100)];
     await fresh(s0, s0);
     g.__D24_READ__ = serverRows(s0);
@@ -153,7 +154,7 @@ describe('enrollmentStore sync (D24)', async () => {
     assert.deepEqual(es.getEnrollment(), [t(3060), t(4100, false)]);
   });
 
-  it('a denied or empty server read pushes this phone’s list unchanged, as before', async () => {
+  it('a denied or empty server read pushes this device’s list unchanged, as before', async () => {
     const mine = [t(3060), t(4100)];
     for (const read of [{ data: null, error: { message: 'permission denied', code: '42501' } }, { data: [], error: null }]) {
       await fresh(mine, [t(3060)]);

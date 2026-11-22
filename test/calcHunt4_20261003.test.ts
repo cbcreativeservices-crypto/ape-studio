@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Hunt 4 (2026-10-03) — CALC area.
  *
@@ -24,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const read = (rel: string) => readFileSync(path.resolve(HERE, '../src/screens/lab/calc', rel), 'utf8');
-const NOT_CONFIRMED = 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.';
+const NOT_CONFIRMED = 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.';
 
 describe('H4-1 — a failed membership read is never told to sign in or sold membership', () => {
   it('calculator: SIGN IN only for a KNOWN guest; an unconfirmed tier holds the answer', () => {

@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Labs group B — "toddler + cat" bug hunt of 2026-09-30. Pure-module tests
  * where the fix is logic (production store, packet author), source guards
@@ -180,7 +181,7 @@ test('tuning saves build on the newest progress; its accuracy note no longer cla
   const t = read('src/screens/lab/tuning/TuningLabScreen.tsx');
   assert.match(t, /const base = progressRef\.current;/);
   assert.doesNotMatch(t, /persist\(\{ \.\.\.progress,/);
-  assert.doesNotMatch(t, /read through this phone's microphone/);
+  assert.doesNotMatch(t, /read through this device's microphone/);
 });
 
 test('mixing QC pages stop their staged renders on leave and lock same-frame double taps', () => {

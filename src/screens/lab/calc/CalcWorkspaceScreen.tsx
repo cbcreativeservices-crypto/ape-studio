@@ -478,7 +478,7 @@ export function CalcWorkspaceScreen() {
             ) : tierPending ? (
               <Text style={styles.resultPlaceholder}>
                 {tierReadFailed && tierUnconfirmed
-                  ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                  ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
                   : 'Checking your account…'}
               </Text>
             ) : capped && !resultUnlocked ? (

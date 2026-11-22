@@ -197,7 +197,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
       onClose();
       void Promise.all([list, def]).then(([a, b]) => {
         if (!(a && b)) {
-          notify('Home not saved', 'Your Home cards couldn’t be saved on this phone, so they may go back to how they were the next time the app opens. Try SAVE again.');
+          notify('Home not saved', 'Your Home cards couldn’t be saved on this device, so they may go back to how they were the next time the app opens. Try SAVE again.');
         }
       });
     });

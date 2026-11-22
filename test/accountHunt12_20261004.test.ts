@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * ACCOUNT + COMMERCE — hunt 12 (2026-10-04).
  *
@@ -107,7 +108,7 @@ test('registry name: after a FAILED server read, an edit to another field does n
   AS.clear();
   NAME_WRITES.length = 0;
   pp.resetLocal();
-  // This phone last saw "Sam R."; the account has since been renamed elsewhere.
+  // This device last saw "Sam R."; the account has since been renamed elsewhere.
   AS.set('ape:publicProfile', JSON.stringify({ ...pp.EMPTY_PUBLIC_PROFILE, registryName: 'Sam R.' }));
   H12.nameRead = () => Promise.reject(new Error('users row session unreadable'));
   const { profile } = await pp.loadPublicProfileChecked();
@@ -152,7 +153,7 @@ test('registry listing: after a FAILED read, a keystroke in the email box does n
   AS.clear();
   LISTING_CALLS.length = 0;
   pp.resetLocal();
-  // The draft on this phone still says "listed"; the page was unlisted elsewhere.
+  // The draft on this device still says "listed"; the page was unlisted elsewhere.
   AS.set('ape:publicProfile', JSON.stringify({ ...pp.EMPTY_PUBLIC_PROFILE, bio: 'FOH engineer', showInRegistry: true }));
   H12.nameRead = () => Promise.resolve(null);
   H12.listingRead = () => Promise.resolve({ state: 'unavailable' });

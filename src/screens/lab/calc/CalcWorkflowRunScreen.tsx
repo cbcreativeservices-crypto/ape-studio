@@ -626,7 +626,7 @@ export function CalcWorkflowRunScreen() {
           <View style={styles.scroll}>
             <Text style={styles.caption}>
               {tierReadFailed
-                ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
                 : 'Checking your account…'}
             </Text>
           </View>
