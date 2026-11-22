@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 · ccode · ACK Comp A midday: Comp B content audit applied (server text only)
+changed: nothing in the repo. Comp A applied the Comp B audit on the server: 69 glossary terms corrected (incl. the Service Call safety text: power down the amp or disconnect the 70V/100V line; muting alone is not enough); 1,358 questions rewritten (20 real re-keys), 36 retired by audit, 1,042 unlinked graded questions retired; approved total 152,210. ccode read back (read-only): trg_validate_graded_question_glossary_link is ENABLED; all 5 backups exist (private._bkp_compb_fix_g_20261122, _bkp_service_call_20261122, _bkp_compb_fix_q_20261122, _bkp_compb_holds_20261122, _bkp_unlinked_retire_20261122).
+affects other side: nothing; the app reads this text live (quiz RPCs; glossary and topic items session-cached ~10 min; offline definitions refresh on the 7-day recheck). Bundled copies: only Binaural interference and Lunzhi tremolo are in oddTerms.json, and Comp A found both agree. No OTA needed.
+needs: nothing
+
 ### 2026-11-22 11:08 · ccode · 59bc23fc
 changed: Enrollments: Pro Audio Safety and DAW Fundamentals say "Included free · already loaded into your enrollments" under their title (members: "Included · …"); expanded card only (owner 2026-11-22)
 affects other side: nothing on the server (app UI only).
