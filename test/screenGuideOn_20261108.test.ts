@@ -141,7 +141,9 @@ describe('3. placement: the controls the "start" line names stay usable', () => 
   it('when it does cover the controls, one tap closes it: the dim, ✕, GOT IT, BACK', () => {
     const overlay = block(SG, 'function ScreenIntroOverlay(');
     assert.ok(overlay, 'overlay found');
-    assert.match(overlay, /<Pressable\s+key=\{k\}\s+style=\{\[styles\.pane, style\]\}\s+onPress=\{onClose\}/);
+    // 2026-11-21 (owner: no background behind the first intro card): the one pane is solid screen colour.
+    assert.match(overlay, /<Pressable\s+key=\{k\}\s+style=\{\[styles\.pane, styles\.introSolid, style\]\}\s+onPress=\{onClose\}/);
+    assert.doesNotMatch(overlay, /keepOutline/, 'no bright band around the card');
     assert.match(overlay, /pane\(StyleSheet\.absoluteFill, 'all'\)/);
     assert.match(overlay, /useBackWhileFocused\(true, back\)/);
     const card = block(SG, 'function IntroCard(');

@@ -252,10 +252,12 @@ export function LabTermSheet({
 }
 
 const styles = StyleSheet.create({
-  // The house intro card (ScreenIntroOverlay / ProNote): dim scrim, amber edge.
+  // The first-visit term card sits on a SOLID screen, nothing of the lab behind
+  // it (owner 2026-11-21: "the very first GOT IT pop up opening each lab the first
+  // time should not show any background while being shown"). Amber edge kept.
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,.78)',
+    backgroundColor: colors.screenBg,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,

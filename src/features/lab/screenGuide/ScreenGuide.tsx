@@ -786,14 +786,17 @@ function ScreenIntroOverlay({
   useBackWhileFocused(true, back);
 
   const place = layout ? placeIntroCard(layout) : null;
-  const keep = place?.keep ?? null;
-  const W = layout?.rootW ?? 0;
-  // The dim panes close the card; hidden from screen readers (the card's ✕
-  // and GOT IT say it in words).
+  // NO BACKGROUND SHOWS BEHIND THE FIRST INTRO CARD (owner 2026-11-21: "the
+  // very first GOT IT pop up opening each lab the first time should not show
+  // any background while being shown"). One SOLID screen-coloured pane under
+  // the card — no dimmed lab, no bright "keep" band. placeIntroCard still
+  // decides where the card sits; only what is drawn around it changed.
+  // The pane closes the card; hidden from screen readers (the card's ✕ and
+  // GOT IT say it in words).
   const pane = (style: object, k: string) => (
     <Pressable
       key={k}
-      style={[styles.pane, style]}
+      style={[styles.pane, styles.introSolid, style]}
       onPress={onClose}
       accessible={false}
     />
@@ -805,23 +808,9 @@ function ScreenIntroOverlay({
       style={styles.overlay}
       pointerEvents={armedTouches ? 'box-none' : 'none'}
       onLayout={() => void measure()}
-      accessibilityViewIsModal={!keep}
+      accessibilityViewIsModal
     >
-      {place
-        ? keep
-          ? [
-              pane({ top: 0, left: 0, right: 0, height: Math.max(0, keep.y) }, 't'),
-              pane({ top: keep.y + keep.h, left: 0, right: 0, bottom: 0 }, 'b'),
-              pane({ top: keep.y, left: 0, width: Math.max(0, keep.x), height: keep.h }, 'l'),
-              pane({ top: keep.y, left: keep.x + keep.w, width: Math.max(0, W - keep.x - keep.w), height: keep.h }, 'r'),
-              <View
-                key="o"
-                pointerEvents="none"
-                style={[styles.keepOutline, { top: keep.y - 3, left: keep.x - 3, width: keep.w + 6, height: keep.h + 6 }]}
-              />,
-            ]
-          : pane(StyleSheet.absoluteFill, 'all')
-        : null}
+      {place ? pane(StyleSheet.absoluteFill, 'all') : null}
       {place ? (
         <View pointerEvents="box-none" style={[styles.introSlot, { top: place.slot.top, height: place.slot.height }]}>
           <IntroCard title={title} intro={intro} term={term} onClose={onClose} maxHeight={place.slot.height} />
@@ -1040,7 +1029,7 @@ export function ScreenGuidePopup({
   };
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.modalBackdrop}>
+      <View style={[styles.modalBackdrop, intro ? styles.introSolid : null]}>
         {intro ? (
           // The intro closes on one tap anywhere off the card (house intro rule).
           <Pressable style={StyleSheet.absoluteFill} onPress={tapOff} accessible={false} />
@@ -1372,6 +1361,8 @@ const styles = StyleSheet.create({
 
   // ── fallback modal ──
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.66)', alignItems: 'center', justifyContent: 'center', padding: 12 },
+  // The first-visit intro card sits on a solid screen, nothing behind it (owner 2026-11-21).
+  introSolid: { backgroundColor: colors.screenBg },
   modalSlot: { width: '100%', maxWidth: 480, maxHeight: '86%' },
 
   // ── hint ──
