@@ -888,7 +888,7 @@ export function AuthScreen({ navigation }: Props) {
               <View style={styles.btnStack}>
                 <StudioButton label="Create Account" variant="primary" onPress={onCreateAccount} />
                 <StudioButton label="Login" variant="secondary" onPress={onLogin} />
-                <StudioButton label="Guest Mode (Free)" variant="secondary" onPress={enterGuest} />
+                <StudioButton label="Guest Mode (Free) No Account Needed" variant="secondary" onPress={enterGuest} />
                 {/* "Browse the Glossary" removed (owner 2026-10-09): it was added on
                     2026-09-10 to keep the welcome pop-up's "no account required"
                     promise, and that pop-up is off. Guest Mode is the no-account door,

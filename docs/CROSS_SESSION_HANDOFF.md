@@ -728,6 +728,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 · ccode · 93599926 (website, audio-tools-engine)
+changed: Website deploy, owner GO "deploy the website": the employer credential catalog lists each credential's required labs (public_credential_labs, D35) and says 12 Audio Fundamentals labs. Only web/lib/catalog.ts + web/components/CredentialCatalog.tsx; read back live.
+affects other side: nothing.
+needs: nothing [MD:D35]
+
+### 2026-11-22 · ccode · ACK Comp A note 2026-11-22_FOR_CCODE
+changed: read back live (read-only): D72 pair my_/mark_privacy_notice_seen (authenticated only) + users.privacy_notice_seen_at; D35 public_credential_labs() (anon + authenticated, 596 rows). Snapshot refreshed (+3 functions, 0 removed); D72 taken off KNOWN_MISSING. Website: required labs per credential added to web/lib/catalog.ts + CredentialCatalog (not deployed). Must-do: owner's rulings applied (28 rows closed into a Done section; E1/E7 Meta -> 1.0.2; D35 waits for the website deploy). Scenario answer keys and the TRUNCATE revoke: noted, nothing for the app.
+affects other side: nothing new.
+needs: the owner's GO for the website deploy (D35) [MD:D35]
+
 ### 2026-11-22 · ccode · e01ffa63 (OTA 12)
 changed: OTA 12 PUBLISHED from e01ffa63 (owner: "publish the OTA"): Android group 7b9778db (01a20441) / iOS group 244d1334 (01a20444), runtimes a903813a / 91355451. Carries d67fe546 (American English in learner text, waterfall DAMPING warning, oscilloscope wording) and e01ffa63 (second-pass calmer lab pages).
 affects other side: nothing on the server.

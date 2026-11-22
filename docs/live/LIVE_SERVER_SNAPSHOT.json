@@ -1,6 +1,6 @@
 {
-  "taken_at": "2026-11-20T03:39:11-08:00",
-  "taken_by": "nightly reconciliation 2026-11-20, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; 0 added, 0 removed since 2026-11-16T03:40:00-08:00",
+  "taken_at": "2026-11-22T00:00:00-08:00",
+  "taken_by": "ccode 2026-11-22, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions; added since 2026-11-20: mark_privacy_notice_seen, my_privacy_notice_seen, public_credential_labs; removed: none",
   "functions": [
     "_custom_list_attempt_payload",
     "_labs_recompute_af",
@@ -183,6 +183,7 @@
     "lab_requirements_enforced",
     "mark_intro_video_seen",
     "mark_lab_complete",
+    "mark_privacy_notice_seen",
     "materialize_discrete_slot",
     "materialize_pooled_slot",
     "member_month_complete",
@@ -191,7 +192,9 @@
     "my_employer_public_token",
     "my_identity",
     "my_intro_video_seen",
+    "my_privacy_notice_seen",
     "my_verifier_kind",
+    "public_credential_labs",
     "public_profile_by_token",
     "public_verify_by_token",
     "public_verify_credentials",
