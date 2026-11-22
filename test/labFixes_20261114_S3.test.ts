@@ -347,7 +347,9 @@ describe('F2 · an open tray on a tall display folds it (DJ screen 10 left one l
   });
   it('the rack folds with the same clip while such a tray is open and unfolds when it closes', () => {
     const r = code('screens/lab/rack/RackUnit.tsx');
-    assert.match(r, /const trayFold =\s*trayParam != null &&\s*peekAllowed &&\s*!full &&\s*shouldTrayFold\(/);
+    // 2026-11-21 (owner): a sticky ("compare while you watch") tray never folds the display.
+    assert.match(r, /const trayIsSticky = trayParam != null && 'sticky' in trayParam && trayParam\.sticky === true;/);
+    assert.match(r, /const trayFold =\s*trayParam != null &&\s*!trayIsSticky &&\s*peekAllowed &&\s*!full &&\s*shouldTrayFold\(/);
     assert.match(r, /const folded = peek \|\| trayFold;/);
     assert.match(r, /style=\{\[styles\.peekClip, folded && \{ height: peekHeight\(glassH\) \}\]\}/);
     // minWell's chrome is read only with the whole display showing.

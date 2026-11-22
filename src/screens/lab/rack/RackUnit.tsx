@@ -425,9 +425,18 @@ export function RackUnit({
    * the reading fold (clipped, never resized; bezel and badge stay), and it
    * opens again when the tray closes. Decided from the UNFOLDED layout, so
    * folding can never flip the decision back.
+   *
+   * ⛔ NEVER UNDER A STICKY TRAY (owner 2026-11-21, iPhone video of the Spectrum
+   * Analyzer: "look at this bug"). A sticky tray says "stays open — compare while
+   * you watch", and the fold clipped the display to its middle 40 % exactly then:
+   * every peak above −12 dB, the 220 Hz marker and the Hz labels were cut off, so
+   * pink noise read as a flat-topped block. While you compare, the WHOLE display
+   * stays; the reading well behind the card gives up the room instead.
    */
+  const trayIsSticky = trayParam != null && 'sticky' in trayParam && trayParam.sticky === true;
   const trayFold =
     trayParam != null &&
+    !trayIsSticky &&
     peekAllowed &&
     !full &&
     shouldTrayFold({ rootH, bottom, dockH, cardH: inlineTrayH, wellTop: wellTopY + (peek || trayFoldRef.current ? glassH - peekHeight(glassH) : 0), glassH });
