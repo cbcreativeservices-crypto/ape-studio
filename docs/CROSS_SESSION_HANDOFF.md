@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 11:08 · ccode · 59bc23fc
+changed: Enrollments: Pro Audio Safety and DAW Fundamentals say "Included free · already loaded into your enrollments" under their title (members: "Included · …"); expanded card only (owner 2026-11-22)
+affects other side: nothing on the server (app UI only).
+needs: nothing; reaches phones with the next OTA [MD:D74]
+
+
 ### 2026-11-22 · ccode · 93599926 (website, audio-tools-engine)
 changed: Website deploy, owner GO "deploy the website": the employer credential catalog lists each credential's required labs (public_credential_labs, D35) and says 12 Audio Fundamentals labs. Only web/lib/catalog.ts + web/components/CredentialCatalog.tsx; read back live.
 affects other side: nothing.

@@ -1522,9 +1522,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
    *  known:false, so server progress cannot regress (locked model). The
    *  global ✓ list (select icons) is kept in sync both ways (Booth 2026-07-18:
    *  the button below a known card flips to MARK UNKNOWN). */
-  const toggleKnown = useCallback(() => {
-    if (!card) return;
-    if (!dwellOk()) return; // 1.5s dwell before tagging (Booth 2026-07-16)
+  /** Returns what happened, for the full-screen shake confirmation (owner 2026-11-22). */
+  const toggleKnown = useCallback((): 'known' | 'unknown' | 'wait' | null => {
+    if (!card) return null;
+    if (!dwellOk()) return 'wait'; // 1.5s dwell before tagging (Booth 2026-07-16)
     const isKnown = hidden.has(card.id) || knownList.has(card.id);
     const next = new Set(hidden);
     if (isKnown) {
@@ -1559,6 +1560,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }
     setHidden(next);
     persistHidden(next);
+    return isKnown ? 'unknown' : 'known';
   }, [card, hidden, knownList, states, showKnown, bookmarkedOnly, starredOnly, deck.length, persistHidden, achievementId]);
 
   // Reconcile "known" marked in ANY popup list (TermSelectIcons → the global
@@ -1670,9 +1672,23 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // already-known card it un-knew it locally while the server credit stayed.
   // With sound on, the mute owns the gesture; with sound off there is nothing
   // to mute and this still works.
+  // SHAKE IS CONFIRMED ON SCREEN (owner 2026-11-22: "show visual confirmation
+  // that a term has been marked known when shaken"). A short badge over the card
+  // says what the shake did (a banner at the TOP of the screen) — marked Known, put back in the deck, or (inside the
+  // 1.5 s dwell) that the card needs a moment first — then fades out.
+  const [shakeNote, setShakeNote] = useState<'known' | 'unknown' | 'wait' | null>(null);
+  const shakeNoteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (shakeNoteTimer.current) clearTimeout(shakeNoteTimer.current);
+  }, []);
   useShake(
     () => {
-      if (card) toggleKnown();
+      if (!card) return;
+      const r = toggleKnown();
+      if (!r) return;
+      setShakeNote(r);
+      if (shakeNoteTimer.current) clearTimeout(shakeNoteTimer.current);
+      shakeNoteTimer.current = setTimeout(() => setShakeNote(null), 1600);
     },
     fullscreen,
     { yieldToMute: true },
@@ -2459,6 +2475,16 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             />
           ) : null}
 
+          {shakeNote ? (
+            <View style={[styles.shakeNoteWrap, { top: insets.top + 10 }]} pointerEvents="none">
+              <View style={[styles.shakeNote, shakeNote === 'known' ? styles.shakeNoteKnown : styles.shakeNoteOther]} accessibilityLiveRegion="polite">
+                <Text style={[styles.shakeNoteText, shakeNote === 'known' ? styles.shakeNoteTextKnown : null]}>
+                  {shakeNote === 'known' ? '✓ MARKED KNOWN' : shakeNote === 'unknown' ? 'BACK IN THE DECK' : 'READ THE CARD A MOMENT FIRST'}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
           {showFsGuide && !studyMode ? (
             <View style={styles.fsGuideBackdrop}>
               <View style={styles.fsGuideCard}>
@@ -2824,6 +2850,13 @@ const styles = StyleSheet.create({
   // The card wears a red frame while the reveal solo is engaged.
   cardSolo: { borderColor: 'rgba(255,106,94,.75)' },
   // First-run guide overlay.
+  // A top-of-screen notification (owner 2026-11-22: "do a top of the screen notification of known").
+  shakeNoteWrap: { position: 'absolute', left: 16, right: 16, alignItems: 'center', zIndex: 50, elevation: 50 },
+  shakeNote: { paddingHorizontal: 22, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5 },
+  shakeNoteKnown: { backgroundColor: 'rgba(10,40,18,0.94)', borderColor: colors.green },
+  shakeNoteOther: { backgroundColor: 'rgba(20,20,22,0.94)', borderColor: colors.amber },
+  shakeNoteText: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.5, color: colors.amber },
+  shakeNoteTextKnown: { color: colors.green },
   fsGuideBackdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 28 },
   fsGuideCard: { backgroundColor: '#16171a', borderRadius: 14, borderWidth: 1, borderColor: '#2c2d31', padding: 22, gap: 8, width: '100%', maxWidth: 340 },
   fsGuideTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.amber, marginBottom: 4 },
