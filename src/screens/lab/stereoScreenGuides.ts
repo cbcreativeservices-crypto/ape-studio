@@ -87,7 +87,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words and sums behind stereo imaging: Mid and Side, width, mono compatibility, correlation and the phantom center, plus the usual widening mistakes.',
-      start: 'Read the display entry and COMMON MISTAKES. Then switch to EXPLORE, set WIDTH to 0% and check that CORRELATION in LAB NOTES reads +1.00.',
+      start: 'Open CONTROLS for the display entry, then COMMON MISTAKES. Then switch to EXPLORE, set WIDTH to 0% and check that CORRELATION in LAB NOTES reads +1.00.',
     },
     seeing: [
       'This is the Stereo Imaging guided lesson as one page to read. ▶ in the header still plays the source you set on EXPLORE.',
@@ -110,7 +110,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
       'A suggested starting order from PRO TIPS: bass mono first, then width, then a mono check and the correlation reading.',
     ],
     tryThis: [
-      'Read the display entry, then on EXPLORE set WIDTH to 0%: in LAB NOTES the goniometer is a vertical line and CORRELATION reads +1.00. That’s mono.',
+      'Open CONTROLS and read the display entry, then on EXPLORE set WIDTH to 0%: in LAB NOTES the goniometer is a vertical line and CORRELATION reads +1.00. That’s mono.',
       'Read the “louder” vs “wider” mistake, then on EXPLORE slide WIDTH from 100% to 200%: the OUT traces pull apart and grow. More SIDE is also more level.',
     ],
   },
@@ -144,7 +144,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Before you start, push WIDTH to 200% on EXPLORE: CORRELATION reads −0.20. Then think about what a reading near −1 would mean when L and R are added.',
-      'Unsure what a mono fold does? On LEARN, read FORMULA / CONCEPT: how MID and SIDE are built from L and R. Then work out what adding L and R leaves.',
+      'Unsure what a mono fold does? On LEARN, open FORMULA / CONCEPT: how MID and SIDE are built from L and R. Then work out what adding L and R leaves.',
     ],
   },
 };

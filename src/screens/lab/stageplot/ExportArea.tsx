@@ -139,6 +139,10 @@ export function ExportArea() {
 
   const { packet, paper, kept } = session;
   const [view, setView] = useState<'pages' | 'text'>('pages');
+  // PREVIEW starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections
+  // proposal): the whole packet is long; the buttons below matter more. Not
+  // remembered: every visit to Export starts with it closed.
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [printView, setPrintView] = useState(false);
   // where the lines about the PDF are shown: beside the button that was pressed
   const [pdfAt, setPdfAt] = useState<'main' | 'email'>('main');
@@ -416,7 +420,10 @@ export function ExportArea() {
           {stampWhy ? <Note tone="warning">{stampWhy}</Note> : shown ? <Note tone="good">This revision is “Ready to advance”: your document is prepared for discussion with the venue. It is not stamped DRAFT.</Note> : null}
         </Section>
 
-        <Section title="PREVIEW" hint="Every row and every note of the packet, from the same document the PDF is made from. On a phone a table row is set as a small block so it can be read.">
+        <Section title="PREVIEW"
+          hint="Every row and every note of the packet, from the same document the PDF is made from. On a phone a table row is set as a small block so it can be read."
+          fold={{ summary: 'The whole packet, as the PDF will show it.', open: previewOpen, onToggle: () => setPreviewOpen((o) => !o) }}
+        >
           <Choice label="Show the packet as" value={view} options={VIEWS} onChange={setView} hint="“Text only” is the whole packet as plain text, for a screen reader or for copying it yourself." />
           {!shown ? (
             <Note tone="warning">{canExport ? NOT_MADE : BROKEN}</Note>

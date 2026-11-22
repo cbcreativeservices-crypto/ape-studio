@@ -81,7 +81,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of the phaser (all-pass filter, stage, notch, resonance, LFO) and why two stages make one notch without any delay.',
-      start: 'Read the STAGES entry on how many dips each stage count gives. Then on EXPLORE, open SWEEP and set DEPTH (SWEEP) to STATIC so the dips hold still, step STAGES to 8 and count them on OUT.',
+      start: 'Open CONTROLS: the STAGES entry says how many dips each stage count gives. Then on EXPLORE, open SWEEP and set DEPTH (SWEEP) to STATIC so the dips hold still, step STAGES to 8 and count them on OUT.',
     },
     seeing: [
       'This is the Phaser guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -93,7 +93,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet. Long-press a key or readout there to open just its entry.',
     ],
     changes: [
-      'Read this beside EXPLORE: each entry is something you can hear or see on OUT.',
+      'Open CONTROLS and read it beside EXPLORE: each entry is something you can hear or see on OUT.',
       'On EXPLORE, CENTER is the CENTER fader, STAGES and RES are keys of their own, and RATE and DEPTH share the SWEEP key.',
       'Mix, LFO Waveform and Stereo spread are on many phasers but not in this dock. The lab holds the mix at 50%, near where the notches are deepest. Their entries give the ranges found on many phasers.',
     ],
@@ -104,7 +104,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Read the PRO TIP on setting DEPTH (SWEEP) to STATIC first. Then on EXPLORE set DEPTH (SWEEP) to STATIC and drag CENTER: the dips hold still until you move them.',
-      'Read the STAGES entry (one notch for every two stages), then on EXPLORE, with DEPTH (SWEEP) on STATIC, step STAGES to 8 and count the dips on OUT: four.',
+      'Open CONTROLS and read the STAGES entry (one notch for every two stages), then on EXPLORE, with DEPTH (SWEEP) on STATIC, step STAGES to 8 and count the dips on OUT: four.',
     ],
   },
 
@@ -134,7 +134,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure how stages set the dips? On EXPLORE, set DEPTH (SWEEP) to STATIC, then STAGES to 4, and count the dips on OUT.',
-      'For the RES question, long-press the RES key on EXPLORE to open its lesson entry, or find it under CONTROLS on LEARN.',
+      'For the RES question, long-press the RES key on EXPLORE to open its lesson entry, or open CONTROLS on LEARN and find it.',
     ],
   },
 };

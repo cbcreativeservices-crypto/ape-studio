@@ -253,8 +253,10 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(q, /correct: 'Its timbre — some harmonics drop out — but not its pitch'/);
     const t = [textOf(GUIDES.check), JSON.stringify((g.check as unknown as { intro: unknown }).intro)].join(' ');
     assert.doesNotMatch(t, /how fast the bars shrink|fall away (much )?faster|1\/n|F0 stays|pitch stays|bars go empty|cancels|aliasing|fold back|Sawtooth|harmonics fall away/);
-    assert.match(g.check.tryThis[0], /read the TRIANGLE and SQUARE entries under CONTROLS on LEARN/);
-    assert.match(g.check.tryThis[1], /read the PULSE 25% entry under CONTROLS on LEARN, or long-press PULSE 25% in the WAVE tray/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(g.check.tryThis[0], /open CONTROLS on LEARN and read the TRIANGLE and SQUARE entries/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(g.check.tryThis[1], /open CONTROLS on LEARN and read the PULSE 25% entry, or long-press PULSE 25% in the WAVE tray/);
     assert.match(s, /onLongPress: \(\) => openLesson\(w\.lessonKey\)/);
   });
 });

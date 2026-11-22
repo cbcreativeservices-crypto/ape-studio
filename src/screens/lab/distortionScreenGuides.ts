@@ -132,7 +132,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
     ],
     tryThis: [
       'Read GUIDED STEPS 2 and 3, on odd and even harmonics. Then on EXPLORE, switch TYPE between HARD (FLAT TOPS) and TUBE (LOPSIDED) at DRIVE +24 dB and compare the two shapes.',
-      'Read the COMMON MISTAKES line on drive and loudness. Then on EXPLORE, play SINE 220 Hz on HARD (FLAT TOPS) at DRIVE +12 dB (clean, −8 dBFS), then +24 dB: louder AND gritty, two changes at once.',
+      'Open COMMON MISTAKES: read the line on drive and loudness. Then on EXPLORE, play SINE 220 Hz on HARD (FLAT TOPS) at DRIVE +12 dB (clean, −8 dBFS), then +24 dB: louder AND gritty, two changes at once.',
     ],
   },
 
@@ -140,7 +140,7 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
   check: {
     intro: {
       learning: 'Review: what distortion adds to a sine, which harmonics a symmetric clip makes, what gets in with oversampling OFF, and what parallel distortion is for.',
-      start: 'Tap the answer you think is right on the first card. Unsure about a question? Reread its entry on LEARN, or try that control on EXPLORE, then come back.',
+      start: 'Tap the answer you think is right on the first card. Unsure about a question? Open CONTROLS on LEARN and reread its entry, or try that control on EXPLORE, then come back.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING for the Distortion lab: four questions on harmonics, clipping, oversampling and MIX, each with its answer choices.',
@@ -163,8 +163,8 @@ export const DISTORTION_SCREEN_GUIDES: Record<DistortionScreenId, ScreenGuide> =
       'Together they explain what happens to a sound when you push it into distortion.',
     ],
     tryThis: [
-      'Stuck on the harmonics questions? On LEARN, reread the COMMON MISTAKES line on how the top and bottom of the wave bend, then come back.',
-      'Unsure about MIX? Read the MIX entry on LEARN, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen.',
+      'Stuck on the harmonics questions? On LEARN, open COMMON MISTAKES and reread the line on how the top and bottom of the wave bend, then come back.',
+      'Unsure about MIX? Open CONTROLS on LEARN and read the MIX entry, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen.',
     ],
   },
 };

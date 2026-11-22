@@ -122,7 +122,8 @@ const TOP_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Where both boxes cover the same seats, energy piles up AND the two arrival times interfere — boosting some frequencies, canceling others (comb filtering, the Wave lab’s Module 7). Real designs minimize or carefully control overlap.',
-  wrongHint: 'Watch the ridge where the two wedges cross — then re-read WHAT’S HAPPENING.',
+  // WHAT'S HAPPENING starts closed (owner 2026-11-21: "Build all 40"), so the hint says open it.
+  wrongHint: 'Watch the ridge where the two wedges cross — then open WHAT’S HAPPENING.',
 };
 
 const READING_CHECK: CheckSpec = {
@@ -695,7 +696,8 @@ export function SpeakerCoverageLabScreen() {
               the stage (the precedence effect). The timing here is illustrative only.
             </Text>
           ) : null}
-          <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
+          {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+          <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
             {/* ⛔ "FALL OFF FAST" WAS AN INVERSE-SQUARE ERROR. A 120° box loses
                 level with distance at exactly the same rate as a 60° one — what
                 differs is directivity, so it is quieter at EVERY distance,

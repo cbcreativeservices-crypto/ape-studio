@@ -486,7 +486,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
 export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The lab’s vocabulary (node, antinode, mode, resonance, damping, Faraday wave, breakup) and why level and frequency, or frequency and figure, are easy to mix up.',
-    start: 'Scroll to the LEVEL entry and read it. Then tap EXPLORE, raise LEVEL on a mode, and check that the figure stays the same.',
+    start: 'Open CONTROLS and read the LEVEL entry. Then tap EXPLORE, raise LEVEL on a mode, and check that the figure stays the same.',
   },
   seeing: [
     'The LEARN tab is the Cymatics guided lesson as one page to read. Nothing here plays or moves.',
@@ -498,7 +498,7 @@ export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
     'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this lesson as a sheet. Long-press a dock key or a readout to see just its entry.',
   ],
   changes: [
-    'Nothing on this page moves. When something on EXPLORE surprises you, find its CONTROLS entry here: it says what that part changes and why.',
+    'Nothing on this page moves. When something on EXPLORE surprises you, open CONTROLS here and find its entry: it says what that part changes and why.',
     'FORMULA / CONCEPT shows why a thicker plate rings higher and a bigger one lower: frequency follows h/L² · √(E/ρ), for thickness h, size L, stiffness E and density ρ.',
   ],
   teaches: [
@@ -506,8 +506,8 @@ export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
     'The common mix-ups, level versus frequency and frequency versus figure, and why each happens.',
   ],
   tryThis: [
-    'In the Plate Studio, read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the plate moves more, but the figure stays the same.',
-    'Read the MATERIAL entry. Then on EXPLORE switch PLATE › MATERIAL and watch the same frequency stop being a resonance.',
+    'In the Plate Studio, open CONTROLS and read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the plate moves more, but the figure stays the same.',
+    'Open CONTROLS and read the MATERIAL entry. Then on EXPLORE switch PLATE › MATERIAL and watch the same frequency stop being a resonance.',
   ],
 };
 
@@ -521,29 +521,29 @@ export const CYMATICS_LEARN_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     ...CYMATICS_LEARN_GUIDE,
     intro: {
       learning: 'The lab’s vocabulary, and why size, thickness and material, not the drive level, decide where a plate’s modes sit and which figure a tone draws.',
-      start: 'Read the LEVEL entry, then the MATERIAL entry. Tap EXPLORE, raise LEVEL on a mode, then switch PLATE › MATERIAL and watch the resonance go.',
+      start: 'Open CONTROLS and read the LEVEL entry, then the MATERIAL entry. Tap EXPLORE, raise LEVEL on a mode, then switch PLATE › MATERIAL and watch the resonance go.',
     },
   },
   liquid: {
     ...CYMATICS_LEARN_GUIDE,
     intro: {
       learning: 'The lab’s vocabulary, and why a shaken liquid answers at half the drive frequency only once the shake passes a threshold that the liquid itself sets.',
-      start: 'Read the Faraday waves entry. Then tap EXPLORE and lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
+      start: 'Open CONTROLS and read the Faraday waves entry. Then tap EXPLORE and lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
     },
     tryThis: [
-      'In the Liquid Studio, read the Faraday waves entry. Then on EXPLORE lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
-      'Read the LIQUID entry. Then at 0.25 g switch LIQUID to Glycerin–water 50/50: the thicker liquid raises the threshold, so only SMALL RIPPLES remain.',
+      'In the Liquid Studio, open CONTROLS and read the Faraday waves entry. Then on EXPLORE lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
+      'Open CONTROLS and read the LIQUID entry. Then at 0.25 g switch LIQUID to Glycerin–water 50/50: the thicker liquid raises the threshold, so only SMALL RIPPLES remain.',
     ],
   },
   membrane: {
     ...CYMATICS_LEARN_GUIDE,
     intro: {
       learning: 'The lab’s vocabulary, and why a drumhead’s pitch follows its tension and size: double the tension raises every mode by about 1.41×.',
-      start: 'Read the Tension and size entry. Then tap EXPLORE and set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz.',
+      start: 'Open CONTROLS and read the Tension and size entry. Then tap EXPLORE and set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz.',
     },
     tryThis: [
-      'In the Membrane Studio, read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the head moves more, but the figure stays the same.',
-      'Read the Tension and size entry. Then set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz. Double the tension gives about 1.41× the pitch.',
+      'In the Membrane Studio, open CONTROLS and read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the head moves more, but the figure stays the same.',
+      'Open CONTROLS and read the Tension and size entry. Then set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz. Double the tension gives about 1.41× the pitch.',
     ],
   },
 };

@@ -51,7 +51,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'Tap TYPE to pick the shape: PEAK (BELL), LOW SHELF, HIGH SHELF, HIGH-PASS or LOW-PASS. Each comes with a one-line description.',
       'Tap GAIN for −12, −6, 0, +6 or +12 dB, and Q for 0.7 WIDE, 1.4, 4 or 8 NARROW.',
       'Tap SOURCE for PINK NOISE, SINE 440 Hz or WHITE NOISE, then ▶ at the top right (or tap the display) to hear it through the EQ. Change any control while it plays.',
-      'Long-press a control for its GUIDED LESSON entry. Below the dock, read DESIGNED RESPONSE and THE AUDIO PATH in LAB NOTES, then try the two CHECK YOURSELF cards.',
+      'Long-press a control for its GUIDED LESSON entry. Below the dock, read DESIGNED RESPONSE and open THE AUDIO PATH in LAB NOTES, then try the two CHECK YOURSELF cards.',
     ],
     changes: [
       'FREQ moves the filter; the dots show which tones it lifts or lowers.',
@@ -76,7 +76,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words of EQ — filter type, frequency, gain, Q, bandwidth and slope — and which key on the EXPLORE rack each one names.',
-      start: 'Read the Q entry first. Then open EXPLORE, play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW to hear what you just read.',
+      start: 'Open CONTROLS and read the Q entry first. Then open EXPLORE, play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW to hear what you just read.',
     },
     seeing: [
       'You’re on the LEARN tab: the Equalizer guided lesson as one page to read. Nothing here plays.',
@@ -98,8 +98,8 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'Q = center frequency ÷ bandwidth. Slopes of 6, 12, 18 or 24 dB per octave come from 1 to 4 poles (filter stages).',
     ],
     tryThis: [
-      'Read the Q entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: wide shapes the tone, narrow rings.',
-      'Read the COMMON MISTAKES line on boosting, then on EXPLORE compare GAIN at +6 dB and −6 dB at the same FREQ.',
+      'Open CONTROLS and read the Q entry, then on EXPLORE play PINK NOISE and switch Q between 0.7 WIDE and 8 NARROW: wide shapes the tone, narrow rings.',
+      'Open COMMON MISTAKES and read the line on boosting, then on EXPLORE compare GAIN at +6 dB and −6 dB at the same FREQ.',
     ],
   },
 
@@ -107,7 +107,7 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
   check: {
     intro: {
       learning: 'The five ideas behind one EQ band, reviewed as questions: Q and width, clearing low rumble, graphic against parametric, slope, and cutting before boosting.',
-      start: 'Answer each question in turn. Unsure? Switch to LEARN first and reread that idea under CONTROLS or FORMULA / CONCEPT, then come back.',
+      start: 'Answer each question in turn. Unsure? Switch to LEARN first and open CONTROLS or FORMULA / CONCEPT and reread that idea, then come back.',
     },
     seeing: [
       'You’re on the CHECK tab: CHECK YOUR UNDERSTANDING for the Equalizer — five questions, four answers each.',
@@ -128,8 +128,8 @@ export const EQUALIZER_SCREEN_GUIDES: Record<EqualizerScreenId, ScreenGuide> = {
       'What a dB-per-octave slope measures, and why engineers often cut before they boost.',
     ],
     tryThis: [
-      'Before the Q question, switch to LEARN and reread the Q entry under CONTROLS.',
-      'For the slope question, switch to LEARN and reread FORMULA / CONCEPT, where filter slopes are given in dB per octave.',
+      'Before the Q question, switch to LEARN, open CONTROLS and reread the Q entry.',
+      'For the slope question, switch to LEARN and open FORMULA / CONCEPT, where filter slopes are given in dB per octave.',
     ],
   },
 };

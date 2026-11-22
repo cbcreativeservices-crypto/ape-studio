@@ -81,7 +81,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words and ideas behind a processing chain: bypass, chain order, gain staging and gain reduction, and the ordering mistakes engineers most often make.',
-      start: 'Scroll from the top and read CONTROLS, then COMMON MISTAKES. Then switch to EXPLORE and try one ordering mistake on the live rack.',
+      start: 'Scroll from the top and open CONTROLS, then COMMON MISTAKES. Then switch to EXPLORE and try one ordering mistake on the live rack.',
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing plays here.',
@@ -105,7 +105,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
       'Why levels between stages matter: a stage running hot makes the compressor and limiter after it work harder.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line about EQ before the compressor. Then on EXPLORE run EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB.',
+      'Open COMMON MISTAKES and read the line about EQ before the compressor. Then on EXPLORE run EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB.',
       'Read the line about running stages hot into the limiter. Then on EXPLORE run HOT INTO LIMITER with SOURCE on SINE 220: COMP reads about −8 dB, LIMIT 0.0. The compressor got there first.',
     ],
   },

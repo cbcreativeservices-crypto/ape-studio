@@ -287,7 +287,8 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.match(GATE, /the gate opens on each hit/);
     assert.match(GUIDES.learn.tryThis[0], /at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0\.0/);
     // CHECK (decision 6, 2026-11-08): HOLD is the hold-meaning answer itself, so the line points to where it is taught
-    assert.match(GUIDES.check.tryThis[1], /Read the HOLD entry under CONTROLS on LEARN, or long-press the HOLD key on EXPLORE/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /Open CONTROLS on LEARN and read the HOLD entry, or long-press the HOLD key on EXPLORE/);
     assert.match(GATE, /label: 'HOLD', paramId: P\.holdMs, lessonKey: 'hold',/);
     assert.doesNotMatch(GUIDES.check.tryThis[1], /HOLD 0 ms|100 ms|minimum|stays open|GR (rests|stays)/);
     assert.match(GUIDES.learn.tryThis[1], /THRESH −50 dB, RLS 20 ms CHATTER\) step RANGE: between hits GR reaches 70\.0 at −70 dB SILENCE, 20\.0 at −20 dB GENTLE/);

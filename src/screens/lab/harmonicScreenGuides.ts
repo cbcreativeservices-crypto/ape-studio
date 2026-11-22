@@ -116,7 +116,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words and formulas of additive synthesis: fundamental, harmonic, partial, odd and even, duty cycle and phase, and the Fourier series behind each classic wave.',
-      start: 'Read the PRO TIPS line on building a square. Then on EXPLORE pick SINE and drag H3, H5 and H7 down to 1/3, 1/5 and 1/7 of H1.',
+      start: 'Open PRO TIPS and read the line on building a square. Then on EXPLORE pick SINE and drag H3, H5 and H7 down to 1/3, 1/5 and 1/7 of H1.',
     },
     seeing: [
       'This is the guided lesson as one page. ▶ in the header still plays what you set on EXPLORE.',
@@ -139,8 +139,8 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'Why a wave’s shape can mislead where its spectrum does not.',
     ],
     tryThis: [
-      'Read the PRO TIPS line on building a square. Then on EXPLORE pick SINE and drag H3 to about −9.5 dB, H5 to −14 and H7 to −17 (1/3, 1/5, 1/7 of H1): the wave squares off.',
-      'Read the Harmonic phase entry, then on EXPLORE long-press a stem, tap POLARITY +180°, then DONE: the wave changes, THD does not.',
+      'Open PRO TIPS and read the line on building a square. Then on EXPLORE pick SINE and drag H3 to about −9.5 dB, H5 to −14 and H7 to −17 (1/3, 1/5, 1/7 of H1): the wave squares off.',
+      'Open CONTROLS and read the Harmonic phase entry, then on EXPLORE long-press a stem, tap POLARITY +180°, then DONE: the wave changes, THD does not.',
     ],
   },
 

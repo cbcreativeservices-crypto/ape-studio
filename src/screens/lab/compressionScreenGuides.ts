@@ -93,7 +93,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
   learn: {
     intro: {
       learning: 'The language of compression, the formula behind gain reduction, and why a bigger GR number is not the goal when you compare at matched level.',
-      start: 'Scroll to FORMULA / CONCEPT and work out 12 dB over the threshold at 4:1. Then switch to EXPLORE and play SINE 440 Hz at THRESH −30 dB to see GR at work.',
+      start: 'Open FORMULA / CONCEPT and work out 12 dB over the threshold at 4:1. Then switch to EXPLORE and play SINE 440 Hz at THRESH −30 dB to see GR at work.',
     },
     seeing: [
       'This is the Compression lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -105,7 +105,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'On EXPLORE, long-press any key or readout to open just its entry as a sheet. ⓘ GUIDED LESSON at the end of LAB NOTES opens this whole lesson.',
     ],
     changes: [
-      'Read this page beside EXPLORE: each CONTROLS entry is a fader, key or readout you can try there.',
+      'Open CONTROLS and read it beside EXPLORE: each entry is a fader, key or readout you can try there.',
       'FORMULA / CONCEPT: above the threshold, gain reduction = (input − threshold) × (1 − 1/ratio); below it, nothing changes.',
       'Most COMMON MISTAKES are a setting pushed too far — attack too fast, release too fast, too much ratio — and what you hear when it is.',
     ],
@@ -116,7 +116,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     tryThis: [
       'Work the formula: 12 dB over at 4:1 → 12 × (1 − 1/4) = 9 dB of gain reduction, so the output sits 3 dB over the threshold. CHECK asks the same kind of sum.',
-      'Read the COMMON MISTAKES line on attack, then on EXPLORE play CLICK 120 at THRESH −40 dB: ATTACK 0.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0.0.',
+      'Open COMMON MISTAKES and read the line on attack, then on EXPLORE play CLICK 120 at THRESH −40 dB: ATTACK 0.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0.0.',
     ],
   },
 
@@ -145,7 +145,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     tryThis: [
       'Stuck on the ratio question? On EXPLORE, play SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GENTLE to 20:1 ALMOST A WALL: GR grows from about 5 to 9 dB, so less of the overshoot comes out.',
-      'Unsure about below the threshold? Read FORMULA / CONCEPT on LEARN, or long-press THRESH on EXPLORE to open its lesson entry.',
+      'Unsure about below the threshold? Open FORMULA / CONCEPT on LEARN, or long-press THRESH on EXPLORE to open its lesson entry.',
     ],
   },
 };

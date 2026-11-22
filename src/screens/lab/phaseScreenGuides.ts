@@ -123,7 +123,7 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
       'Why one delay shifts high frequencies by more degrees than low ones: the size of φ(f) = −2πfτ grows with f.',
     ],
     tryThis: [
-      'Read the formula φ(f) = −2πfτ. Then on EXPLORE, set DELAY R to 2.3 ms with SINE 440 Hz: the scope stands upright again at +1.00. One whole 440 Hz cycle late lines back up.',
+      'Open FORMULA / CONCEPT and read φ(f) = −2πfτ. Then on EXPLORE, set DELAY R to 2.3 ms with SINE 440 Hz: the scope stands upright again at +1.00. One whole 440 Hz cycle late lines back up.',
       'Read the mistake about a flip fixing cancellation. Then on EXPLORE, play PINK NOISE in MONO with DELAY R at 1.1 ms: it stays combed with FLIP R on NORMAL and on FLIPPED Ø.',
     ],
   },
@@ -155,8 +155,8 @@ export const PHASE_SCREEN_GUIDES: Record<PhaseScreenId, ScreenGuide> = {
       'Together they make the mono check: what cancels when channels are added, and which fix suits which problem.',
     ],
     tryThis: [
-      'Stuck on the 2 ms question? On LEARN, reread the COMMON MISTAKES line on what the Ø button can and cannot fix, then come back.',
-      'Unsure how to read CORRELATION? On LEARN, COMMON MISTAKES and FORMULA / CONCEPT explain what each end of its scale means.',
+      'Stuck on the 2 ms question? On LEARN, open COMMON MISTAKES and reread the line on what the Ø button can and cannot fix, then come back.',
+      'Unsure how to read CORRELATION? On LEARN, open COMMON MISTAKES and FORMULA / CONCEPT: they explain what each end of its scale means.',
     ],
   },
 };

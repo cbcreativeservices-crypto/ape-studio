@@ -77,7 +77,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The names and slopes of the five noise colors, plus three ideas you’ll meet again in other labs: the noise floor, signal-to-noise ratio (SNR) and masking.',
-      start: 'Read the first COMMON MISTAKES line and the BROWN entry. Then open EXPLORE, play WHITE, switch to PINK and hear which sounds more even.',
+      start: 'Open COMMON MISTAKES and CONTROLS: read the first mistake and the BROWN entry. Then open EXPLORE, play WHITE, switch to PINK and hear which sounds more even.',
     },
     seeing: [
       'You’re on the LEARN tab: this lab’s guided lesson as one page to read. Nothing here plays.',
@@ -100,8 +100,8 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
       'Real noises such as HVAC, hum and buzz each have their own spectrum, and SNR says how far a signal sits above the noise.',
     ],
     tryThis: [
-      'Read the first COMMON MISTAKES line, then on EXPLORE play WHITE and switch to PINK: pink sounds the more even of the two.',
-      'Read the BROWN entry, then on EXPLORE play BROWN: SLOPE reads −6 dB/OCT and the sound is a low rumble.',
+      'Open COMMON MISTAKES and read its first line, then on EXPLORE play WHITE and switch to PINK: pink sounds the more even of the two.',
+      'Open CONTROLS and read the BROWN entry, then on EXPLORE play BROWN: SLOPE reads −6 dB/OCT and the sound is a low rumble.',
     ],
   },
 

@@ -97,7 +97,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet. Long-press a key or readout there to open just its entry.',
     ],
     changes: [
-      'Read this beside EXPLORE: most entries are something you can hear or see there.',
+      'Open CONTROLS: most entries are things you can hear or see on EXPLORE.',
       'On EXPLORE, CENTER is the CENTER fader, RATE and DEPTH share the SWEEP key, and FDBK and MIX are keys of their own.',
       'Other controls you will meet names three that many flangers add: LFO waveform, stereo width and, a specialty, through-zero. None has a key on this rack (its left and right sweeps always sit a quarter cycle apart).',
     ],
@@ -107,8 +107,8 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'Why a sine tone, with energy at one frequency only, is a poor test source, and why 100% wet loses the comb.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT, then on EXPLORE open LAB NOTES and set CENTER to 5.0 ms: the caption reads notches every 200 Hz, which is 1 ÷ 0.005 s.',
-      'Read the MIX entry, then on EXPLORE switch MIX between 50% EVEN and 100% and compare OUT: the deep notches at 50% EVEN are gone at 100%.',
+      'Open FORMULA / CONCEPT, then on EXPLORE open LAB NOTES and set CENTER to 5.0 ms: the caption reads notches every 200 Hz, which is 1 ÷ 0.005 s.',
+      'Open CONTROLS and read the MIX entry, then on EXPLORE switch MIX between 50% EVEN and 100% and compare OUT: the deep notches at 50% EVEN are gone at 100%.',
     ],
   },
 
@@ -138,7 +138,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Test the spacing law on a different delay: on EXPLORE, with MIX on 50% EVEN, slide CENTER to the top, 5.0 ms. The caption under DESIGNED RESPONSE reads notches every 200 Hz: 1 ÷ 0.005 s.',
-      'For the source question, reread the COMMON MISTAKES line on test sources on LEARN, then come back.',
+      'For the source question, open COMMON MISTAKES on LEARN and reread the line on test sources, then come back.',
     ],
   },
 };

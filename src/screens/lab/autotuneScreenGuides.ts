@@ -71,7 +71,7 @@ export const AUTOTUNE_SCREEN_GUIDES: Record<AutotuneScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The ideas behind pitch correction in words: cents, correction amount, retune speed and the grid, and why one setting is gentle polish while another is an effect.',
-      start: 'Scroll from the top and read CONTROLS, then COMMON MISTAKES. Then switch to EXPLORE and hear each idea you just read.',
+      start: 'Scroll from the top and open CONTROLS, then COMMON MISTAKES. Then switch to EXPLORE and hear each idea you just read.',
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the melody.',

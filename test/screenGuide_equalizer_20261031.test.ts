@@ -215,8 +215,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     // answers: narrower; high-pass; graphic fixes freq + width; another 24 dB per octave (a rate); headroom
     assert.doesNotMatch(t, /narrower|HIGH-PASS|rumble-and-mud|a rate|not a set amount|fixed frequency|headroom/i);
     assert.doesNotMatch(t, /switch Q from 0\.7 WIDE to 8 NARROW|read (HIGH-PASS|its slope)/);
-    assert.match(c.tryThis[0], /switch to LEARN and reread the Q entry under CONTROLS/);
-    assert.match(c.tryThis[1], /switch to LEARN and reread FORMULA \/ CONCEPT/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[0], /switch to LEARN, open CONTROLS and reread the Q entry/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[1], /switch to LEARN and open FORMULA \/ CONCEPT/);
     // the HIGH-PASS note it no longer points to does give two answers away
     assert.match(EQ_CFG, /label: 'HIGH-PASS',[^\n]*not a set amount of cut\. The rumble-and-mud eraser\./);
   });

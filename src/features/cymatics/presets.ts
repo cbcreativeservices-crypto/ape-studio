@@ -178,7 +178,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     predict: 'A guitar string’s modes land on 1 : 2 : 3 : 4. Write down what you expect this plate’s first four to be — then read the real ratios.',
     steps: [
       'Run the SWEEP and read the mode frequencies as it dwells on each.',
-      'Divide each by the first: they are not 2, 3, 4… (WHAT THIS PLATE IS prints the ratios).',
+      'Divide each by the first: they are not 2, 3, 4… (open WHAT THIS PLATE IS: it prints the ratios).',
       'Then open HARMONICS VS PLATE MODES from the lab home and compare the four ladders.',
     ],
     lookFor: 'A string’s modes are f, 2f, 3f… A free plate’s are inharmonic (≈ 1, 1.73, 2.33, 3.9…). Chladni figures show resonance and normal modes — not musical harmony.',

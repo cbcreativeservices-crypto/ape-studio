@@ -380,6 +380,19 @@ export function CollapsibleSection({
   );
 }
 
+/** The LEARN tab's fold (owner 2026-11-21: "Build all 40", collapsed-sections
+ *  proposal): CONTROLS, COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT start
+ *  CLOSED under their own titles, so the first visit reads what it is, the
+ *  outcomes and the GUIDED STEPS first. Every word is kept; nothing is
+ *  remembered (each visit starts the same). */
+function LearnFold({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <CollapsibleSection title={title} startOpen={false}>
+      {children}
+    </CollapsibleSection>
+  );
+}
+
 /** API handed to a render-prop Explore child. `setScrollLocked` lets an
  *  interactive panel disable the shell's ScrollView while a gesture is in
  *  flight, so the drag wins over scroll. */
@@ -801,7 +814,7 @@ export function LabShell({
                     the section heads below it ("definitions, common mistakes,
                     pro tips, and the formula") is gone; the reading ends on
                     one step to the CHECK tab instead. */}
-                <GuidedLessonBody lesson={lesson} />
+                <GuidedLessonBody lesson={lesson} fold={LearnFold} />
                 {hasCheck ? <TryCheckLine onPress={openCheck} /> : null}
               </View>
             </ScrollView>
@@ -854,7 +867,7 @@ export function LabShell({
                 {/* SN-5: the caption that repeated the section heads is gone
                     here too. No CHECK line: this (non-rack) branch draws no
                     CHECK view. */}
-                <GuidedLessonBody lesson={lesson} />
+                <GuidedLessonBody lesson={lesson} fold={LearnFold} />
               </View>
             ) : null}
 

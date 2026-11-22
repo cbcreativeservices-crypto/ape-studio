@@ -966,7 +966,8 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
       </CiSection>
 
       {/* ── the key + scope, below the work ── */}
-      <CollapsibleSection title="READING THE SECTION">
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="READING THE SECTION" startOpen={false}>
         <View style={{ gap: 3 }}>
           <Text style={styles.tintNote}>TRAINING VISUALIZATION — simplified building section, drawn to scale (see the 1 m bar); teaching colors, not field colors.</Text>
           <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>

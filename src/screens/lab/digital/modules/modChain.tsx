@@ -509,14 +509,17 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
         </CollapsibleSection>
 
         {/* ── Charter reminders ── */}
-        <MythReality
-          myth="Recording in 32-bit float means nothing can ever clip."
-          reality="Float gives enormous headroom INSIDE the digital path — after conversion. The mic, the preamp and the ADC's analog input still clip exactly as they always did; a 32-bit float file will faithfully store the already-clipped waveform they hand it. (Dual-converter '32-bit float' recorders reduce input clipping with two ADCs, not with the file format.)"
-        />
-        <MythReality
-          myth="A clipped recording can be fixed by converting the file to floating point."
-          reality="Conversion changes the container, not the contents. The flattened peaks carry no information about what the waveform used to be — no format, and no gain move, can restore what was destroyed before or during conversion."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="Recording in 32-bit float means nothing can ever clip."
+            reality="Float gives enormous headroom INSIDE the digital path — after conversion. The mic, the preamp and the ADC's analog input still clip exactly as they always did; a 32-bit float file will faithfully store the already-clipped waveform they hand it. (Dual-converter '32-bit float' recorders reduce input clipping with two ADCs, not with the file format.)"
+          />
+          <MythReality
+            myth="A clipped recording can be fixed by converting the file to floating point."
+            reality="Conversion changes the container, not the contents. The flattened peaks carry no information about what the waveform used to be — no format, and no gain move, can restore what was destroyed before or during conversion."
+          />
+        </CollapsibleSection>
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>

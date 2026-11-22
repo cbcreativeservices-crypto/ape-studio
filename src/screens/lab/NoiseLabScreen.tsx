@@ -53,7 +53,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
-import { LabShell, HeaderPlayButton } from './LabShell';
+import { CollapsibleSection, LabShell, HeaderPlayButton } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { noiseScreenGuide } from './noiseScreenGuides';
 import { StageAspectReport } from './rack/stageAspect';
@@ -366,12 +366,14 @@ export function NoiseLabScreen() {
         </Text>
       </View>
 
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>SPKR — PHONE SPEAKER OUTPUT (REALITY)</Text>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections
+          proposal): background on the SPKR key. The speaker-safety advisory
+          under OUTPUT LEVEL stays open. */}
+      <CollapsibleSection title="SPKR — PHONE SPEAKER OUTPUT (REALITY)" startOpen={false}>
         <Text style={styles.caption}>
           {`The SPKR key overlays reality on the mathematics: the phone's built-in speakers cannot produce sounds below ${SPEAKER_HPF_HZ} Hz, so a high-pass filter has been applied. Flip it on to see exactly what the filter removes from the selected color.`}
         </Text>
-      </View>
+      </CollapsibleSection>
 
       {engineReady ? (
         <View style={{ gap: 6 }}>

@@ -184,8 +184,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     // oversampling: aliasing / fold back not stated; what-is-added: "harmonics created" not stated
     assert.doesNotMatch(all, /aliasing|fold(s)? back|new frequencies/i);
     // the new lines send the student to where it is taught
-    assert.match(ck.tryThis[0], /On LEARN, reread the COMMON MISTAKES line on how the top and bottom of the wave bend/);
-    assert.match(ck.tryThis[1], /Read the MIX entry on LEARN, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[0], /On LEARN, open COMMON MISTAKES and reread the line on how the top and bottom of the wave bend/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /Open CONTROLS on LEARN and read the MIX entry, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen/);
   });
   it('the sources, keys and readouts are exactly the ones the guide lists', () => {
     assert.match(DIST, /sources: \[srcSine\(220\), SRC_SINE_5K, SRC_PINK\],/);

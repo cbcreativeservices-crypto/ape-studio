@@ -413,7 +413,8 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
             <IllustrationBadge text="A moving-coil dynamic cutaway, an illustrative model: the coil’s travel is exaggerated about 1,000×; amber is the induced current (⊗/⊙ mark its direction, and flip as it reverses)." />
             <DisplayGuideButton onPress={() => help('capsule')} />
             <Text style={styles.readout}>e = B · l · v (field × wire length × speed) — voltage tracks the coil’s VELOCITY</Text>
-            <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
+            {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+            <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('capsule')}>
               <Text style={styles.caption}>
                 A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt (felt that slows sound coming in the rear port) are what make it directional — the same parts behind POLAR, PROXIMITY and the cupping cutaway you met earlier.
               </Text>
@@ -525,6 +526,8 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       }}
     >
       {wellTop}
+      {/* Stays OPEN (owner 2026-11-21 build of the collapsed-sections proposal): it glosses
+          "monitor wedge" before the check asks about it (MI-03), so it is not folded. */}
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('polar_pattern')}>
         <Text style={styles.caption}>
           The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear, where the monitor
@@ -757,7 +760,8 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
           wrongHint: 'Move the DISTANCE fader across 12 inches and watch which bar overtakes the other.',
         }}
       />
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('distance')}>
         <Text style={styles.caption}>
           Halving the distance gains ~6 dB of DIRECT sound while the room’s reverberant energy stays
           put — so what changes is the BALANCE, and that ratio is what “close” sounds like. The two
@@ -880,7 +884,8 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       }}
     >
       {wellTop}
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('proximity')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('proximity')}>
         <Text style={styles.caption}>
           Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
           the mic turns muddy — and one reason most channel strips have a high-pass filter, which cuts
@@ -993,7 +998,8 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       }}
     >
       {wellTop}
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('off_axis')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('off_axis')}>
         <Text style={styles.caption}>
           Off-axis sound isn’t just QUIETER — it’s DULLER: the highs fall off faster than the lows.
           That’s why a singer drifting off-mic changes tone before they change level, and why good
@@ -1160,7 +1166,8 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
     >
       {wellTop}
       <MeterBar label="VIBRATION TRANSMITTED INTO THE MIC" frac={shock ? 0.15 : 0.9} />
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('shock_mount')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('shock_mount')}>
         <Text style={styles.caption}>
           Footsteps, cable tugs and stand knocks travel THROUGH solids into the capsule as
           low-frequency thumps. A shock mount is a soft spring between stand and mic — the vibration
@@ -1493,7 +1500,8 @@ function MistakesSection({ viz, help, wellTop, wellBottom }: SectionProps) {
                 ))}
               </View>
             </ScrollView>
-            <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('mistakes')}>
+            {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+            <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('mistakes')}>
               <Text style={styles.caption}>
                 Swipe through — these habits apply immediately in live sound, presentations, theater,
                 houses of worship, and broadcast.

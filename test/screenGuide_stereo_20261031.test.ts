@@ -219,7 +219,8 @@ describe('3. each guide quotes the screen’s real names', () => {
     const ct = [...GUIDES.check.tryThis, ...GUIDES.check.teaches, ci.learning, ci.start].join(' ');
     // mono-fold: no "fold at 200% and watch the traces merge"; correlation: no "how much a mono listener will lose"
     assert.doesNotMatch(ct, /traces merge|mono-fold question, seen|cancels|will lose|disappear|collapses|silence/i);
-    assert.match(GUIDES.check.tryThis[1], /On LEARN, read FORMULA \/ CONCEPT: how MID and SIDE are built from L and R/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /On LEARN, open FORMULA \/ CONCEPT: how MID and SIDE are built from L and R/);
     // the what's-left screen opens before a pass too
     assert.doesNotMatch(STEREO_END_GUIDE.tryThis.join(' '), /extra width disappear/);
   });

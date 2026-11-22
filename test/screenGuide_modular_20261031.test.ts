@@ -155,8 +155,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     // answers: no harmonics on a sine; vibrato; envelope → cutoff; VCO → VCF → VCA → OUT
     assert.doesNotMatch(t, /vibrato|VCO → VCF|VCO, VCF, VCA|ENV→VCF|envelope → (filter|cutoff)|no harmonics/i);
     assert.doesNotMatch(t, /follow the (amber )?cables|switch the LFO destination|PATCH → WOBBLE/);
-    assert.match(c.tryThis[0], /Switch to LEARN and reread FORMULA \/ CONCEPT/);
-    assert.match(c.tryThis[1], /Switch to LEARN and reread the LFO entry under CONTROLS/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[0], /Switch to LEARN and open FORMULA \/ CONCEPT/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[1], /Switch to LEARN, open CONTROLS and reread the LFO entry/);
     assert.match(c.intro!.start, /switch to LEARN and reread that idea/);
   });
   it('the dock options the guide lists are exactly the screen’s', () => {

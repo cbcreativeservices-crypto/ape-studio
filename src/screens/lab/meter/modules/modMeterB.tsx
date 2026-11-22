@@ -119,17 +119,21 @@ function SectionHead({ title, onHelp }: { title: string; onHelp: () => void }) {
   );
 }
 
+/** COMMON MISTAKES starts CLOSED (owner 2026-11-21: "Build all 40",
+ *  collapsed-sections proposal): extra reading, one tap away. Its title moved
+ *  from the card to the fold's header; every line is kept. */
 function CommonMistakes({ items }: { items: string[] }) {
   return (
-    <View style={styles.mistakesCard}>
-      <Text style={styles.mistakesTitle}>COMMON MISTAKES</Text>
-      {items.map((m, i) => (
-        <View key={i} style={styles.mistakeRow}>
-          <Text style={styles.mistakeX}>✗</Text>
-          <Text style={styles.mistakeText}>{m}</Text>
-        </View>
-      ))}
-    </View>
+    <CollapsibleSection title="COMMON MISTAKES" startOpen={false}>
+      <View style={styles.mistakesCard}>
+        {items.map((m, i) => (
+          <View key={i} style={styles.mistakeRow}>
+            <Text style={styles.mistakeX}>✗</Text>
+            <Text style={styles.mistakeText}>{m}</Text>
+          </View>
+        ))}
+      </View>
+    </CollapsibleSection>
   );
 }
 
@@ -923,7 +927,8 @@ export function WaterfallModule(p: MeterModuleProps) {
           </Text>
         ) : null}
 
-        <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY" startOpen={false}>
           {FIELD_GUIDE.map((s) => (
             <View key={s.title} style={styles.fieldSection}>
               <SectionHead title={s.title} onHelp={() => p.help(s.helpKey)} />
@@ -932,10 +937,13 @@ export function WaterfallModule(p: MeterModuleProps) {
           ))}
         </CollapsibleSection>
 
-        <MythReality
-          myth="EQ-cutting a ringing frequency shortens its decay."
-          reality="EQ mostly changes LEVEL; only damping/treatment shortens RING TIME room-wide — the waterfall shows both axes separately."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="EQ-cutting a ringing frequency shortens its decay."
+            reality="EQ mostly changes LEVEL; only damping/treatment shortens RING TIME room-wide — the waterfall shows both axes separately."
+          />
+        </CollapsibleSection>
 
         <CommonMistakes items={WATERFALL_MISTAKES} />
         <GoalCheck spec={CHECK_Z_AXIS} />

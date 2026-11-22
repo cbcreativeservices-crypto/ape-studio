@@ -11,7 +11,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_EXPORT: ScreenGuide = {
   intro: {
     learning: 'A packet is your stage plot, input list and monitor plan in one document. Every page comes from the same revision, and an open question is printed, not hidden.',
-    start: 'Read REVIEW and answer what you can. Choose the packet and the paper, look at PREVIEW, then press SHARE PDF (DOWNLOAD PDF in a browser) or PRINT. The line under the button tells you what happened.',
+    start: 'Read REVIEW and answer what you can. Choose the packet and the paper, open PREVIEW, then press SHARE PDF (DOWNLOAD PDF in a browser) or PRINT. The line under the button tells you what happened.',
   },
   seeing: [
     'The counts are worked out from your stage, inputs and monitors. You do not type them, so they cannot disagree with your lists.',
@@ -36,8 +36,8 @@ export const SP_GUIDE_EXPORT: ScreenGuide = {
     'Opening a share menu is not sending. Only your mail app knows whether the message went.',
   ],
   tryThis: [
-    'Switch “Packet” to the stage plot only and read PREVIEW. Then switch back and find the same performers in the input list.',
+    'Switch “Packet” to the stage plot only and open PREVIEW. Then switch back and find the same performers in the input list.',
     'Press COPY TECHNICAL SUMMARY and paste it into a note. Compare its totals with the counts at the top of this area.',
-    'Leave one detail as “to be confirmed” in Inputs, come back here, and find it in the last section of PREVIEW.',
+    'Leave one detail as “to be confirmed” in Inputs, come back here, open PREVIEW and find it in its last section.',
   ],
 };

@@ -388,8 +388,10 @@ describe('4. the numbers: what the scope prints, and what the engine plays', () 
     const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
     assert.doesNotMatch(all, /comb stays|flip POL|upright line|\+1\.00|move together|in step|safe in mono/i);
     assert.doesNotMatch(all, /time alignment|more at higher|grows with frequency|equal and opposite/i);
-    assert.match(ck.tryThis[0], /On LEARN, reread the COMMON MISTAKES line on what the Ø button can and cannot fix/);
-    assert.match(ck.tryThis[1], /On LEARN, COMMON MISTAKES and FORMULA \/ CONCEPT explain what each end of its scale means/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[0], /On LEARN, open COMMON MISTAKES and reread the line on what the Ø button can and cannot fix/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /On LEARN, open COMMON MISTAKES and FORMULA \/ CONCEPT: they explain what each end of its scale means/);
   });
 });
 

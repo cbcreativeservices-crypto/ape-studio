@@ -150,8 +150,10 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.doesNotMatch(t, /3:2|closes (into|its)|stable,? repeating|precess|rotates|spirals? in/i);
     // no line sends the student to set the asked-about control on EXPLORE and watch the result
     assert.doesNotMatch(t, /tap the RATIO chip, DETUNE or DAMPING|try it on the machine/);
-    assert.match(c.tryThis[0], /Switch to LEARN and reread the CONTROLS entry on the idea the question is about/);
-    assert.match(c.intro!.start, /Switch to LEARN and reread that idea under CONTROLS/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[0], /Switch to LEARN, open CONTROLS and reread the entry on the idea the question is about/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.intro!.start, /Switch to LEARN, open CONTROLS and reread that idea/);
   });
   it('the lesson describes THIS machine: OSC 1 / OSC 2, amplitude as an idea (no key), ROTARY = arms + an orbiting paper platform', () => {
     const lesson = read('src/features/lab/guidedLessons/content.ts');

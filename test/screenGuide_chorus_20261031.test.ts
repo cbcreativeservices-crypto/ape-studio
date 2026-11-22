@@ -228,7 +228,8 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
   });
   it('CHECK points to where the delay is taught (the CHECK tab has no DELAY key)', () => {
     assert.doesNotMatch(textOf(GUIDES.check), /DELAY here/);
-    assert.ok(textOf(GUIDES.check).includes('on LEARN reread the COMMON MISTAKES line on flanger'));
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.ok(textOf(GUIDES.check).includes('on LEARN open COMMON MISTAKES and reread the line on flanger'));
   });
   it('CHECK (decision 6, 2026-11-08): TRY THIS and the intro never give a check answer away', () => {
     const ck = CHORUS_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
@@ -239,6 +240,7 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
     assert.doesNotMatch(all, /15, 20 or 35|15–35|few milliseconds|longer delay/i);
     // mechanism / rate-high: not stated
     assert.doesNotMatch(all, /wobbl|seasick|out of tune/i);
-    assert.match(ck.tryThis[0], /reread the MIX entry on LEARN/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[0], /open CONTROLS on LEARN and reread the MIX entry/);
   });
 });

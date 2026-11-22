@@ -123,8 +123,8 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
       'Why reverb has two parts: early reflections first, then the denser tail.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT. Then on EXPLORE, slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
-      'Read the COMMON MISTAKES line on pre-delay. Then on EXPLORE, pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
+      'Open FORMULA / CONCEPT. Then on EXPLORE, slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
+      'Open COMMON MISTAKES and read the line on pre-delay. Then on EXPLORE, pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
     ],
   },
 
@@ -157,7 +157,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Before you start: two questions offer controls as answers. Try each of those controls on EXPLORE with SOURCE on CLICK 60, and watch the gray click and the amber wash on OUT.',
-      'For the RT60 question, reread FORMULA / CONCEPT on LEARN, then come back.',
+      'For the RT60 question, open FORMULA / CONCEPT on LEARN, then come back.',
     ],
   },
 };

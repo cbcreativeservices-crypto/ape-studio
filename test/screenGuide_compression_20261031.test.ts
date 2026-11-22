@@ -285,7 +285,8 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.doesNotMatch(textOf(GUIDES.explore), /at the start GR reads 0\.0/);
     assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'[\s\S]*?initial: -40,/);
     assert.match(COMP, /sources: \[srcClick\(120\)/);
-    assert.match(GUIDES.check.tryThis[1], /Read FORMULA \/ CONCEPT on LEARN, or long-press THRESH on EXPLORE/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /Open FORMULA \/ CONCEPT on LEARN, or long-press THRESH on EXPLORE/);
     assert.match(COMP, /short: 'THRESH', paramId: P\.thresholdDb, lessonKey: 'threshold',/);
     const checkText = [...SECTION_KEYS.map((k: string) => GUIDES.check[k].join(' ')), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
     assert.doesNotMatch(checkText, /THRESH −10 dB|GR reads 0\.0|only acts above|nothing changes|2 dB over|slower attack|25 ms PUNCH|brings? the (whole )?(signal|level) back/);

@@ -318,7 +318,8 @@ export function QuantModule(p: DigitalModuleProps) {
           </Text>
         ) : null}
 
-        <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE" startOpen={false}>
           <Text style={dstyles.body}>
             6.02·N + 1.76 dB is the FORMULA, not the product. Analog input noise, clock jitter and converter linearity set the
             real limit: the industry measure is ENOB (effective number of bits), and even excellent 24-bit converters deliver

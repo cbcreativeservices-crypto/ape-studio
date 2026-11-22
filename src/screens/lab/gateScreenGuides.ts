@@ -71,7 +71,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the gate; ■ stops it. Drag the THRESH fader from −50 to −20 dB.',
       'RANGE: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD: 0, 10 or 100 ms. RLS (release): 20 ms CHATTER, 100 ms or 500 ms.',
       'SOURCE: CLICK 90 or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
-      'Long-press any key or readout for its lesson entry. Below, in LAB NOTES, read the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve and THE AUDIO PATH, answer two CHECK YOURSELF questions or open the GUIDED LESSON.',
+      'Long-press any key or readout for its lesson entry. Below, in LAB NOTES, read the intro, the GATE ATTENUATION meter and the DESIGNED RESPONSE curve, open THE AUDIO PATH, answer two CHECK YOURSELF questions or open the GUIDED LESSON.',
     ],
     changes: [
       'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 dB = 40 dB quieter).',
@@ -94,7 +94,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The language of gating (threshold, range, hold, release, hysteresis, key filter, chatter) and why a partial range often sounds more natural than full silence.',
-      start: 'Scroll to COMMON MISTAKES and read the line on release. Then switch to EXPLORE, play CLICK 90 at THRESH −50 dB, and compare RLS 20 ms CHATTER with 500 ms.',
+      start: 'Open COMMON MISTAKES and read the line on release. Then switch to EXPLORE, play CLICK 90 at THRESH −50 dB, and compare RLS 20 ms CHATTER with 500 ms.',
     },
     seeing: [
       'This is the Gate / Expander guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays the sound.',
@@ -116,7 +116,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'How hold and a slower release keep a gate from chattering on a note that fades across the threshold.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on release, then on EXPLORE play CLICK 90 at THRESH −50 dB: at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0.0.',
+      'Open COMMON MISTAKES and read the line on release, then on EXPLORE play CLICK 90 at THRESH −50 dB: at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0.0.',
       'Read the mistake on full silence, then on EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) step RANGE: between hits GR reaches 70.0 at −70 dB SILENCE, 20.0 at −20 dB GENTLE.',
     ],
   },
@@ -146,7 +146,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure about RANGE? On EXPLORE, play CLICK 90 at THRESH −50 dB with RLS 20 ms CHATTER and RANGE −40 dB: GR tops out at 40.0 dB. What does that floor mean for the sound?',
-      'Unsure about HOLD? Read the HOLD entry under CONTROLS on LEARN, or long-press the HOLD key on EXPLORE to open its lesson entry.',
+      'Unsure about HOLD? Open CONTROLS on LEARN and read the HOLD entry, or long-press the HOLD key on EXPLORE to open its lesson entry.',
     ],
   },
 };

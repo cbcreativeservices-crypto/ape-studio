@@ -251,10 +251,13 @@ export function PhaseModule(p: MeterModuleProps) {
           <DisplayGuideButton onPress={() => p.help('goniometer')} />
         </CollapsibleSection>
 
-        <MythReality
-          myth="Out-of-phase tricks just make a mix sound wider — the width is free."
-          reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="Out-of-phase tricks just make a mix sound wider — the width is free."
+            reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
+          />
+        </CollapsibleSection>
         <GoalCheck spec={CHECK_PHASE_PA} />
         <GoalCheck spec={CHECK_PHASE_HEALTHY} />
         <LessonRow onPress={() => p.help()} />
@@ -424,10 +427,13 @@ export function StereoModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <MythReality
-          myth="Wider is always better — push every element to the sides."
-          reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="Wider is always better — push every element to the sides."
+            reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
+          />
+        </CollapsibleSection>
         <GoalCheck spec={CHECK_MS} />
         <LessonRow onPress={() => p.help()} />
       </View>
@@ -646,7 +652,8 @@ export function ScopeModule(p: MeterModuleProps) {
             : 'Reading flat-tops: when the trace slams into a ceiling and flattens, the signal has clipped RIGHT THERE or earlier — whatever the meters further down the chain claim.'}
         </Text>
 
-        <CollapsibleSection title="THE RAWEST VIEW">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="THE RAWEST VIEW" startOpen={false}>
           <Text style={dstyles.body}>
             The oscilloscope draws the voltage itself against time — no averaging, no ballistics, no
             weighting. Sine = one smooth curve, square = shelves with fast edges, saw = ramps, speech =
@@ -655,10 +662,13 @@ export function ScopeModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <MythReality
-          myth="If no meter shows red, nothing is clipping anywhere in the chain."
-          reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="If no meter shows red, nothing is clipping anywhere in the chain."
+            reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
+          />
+        </CollapsibleSection>
         <GoalCheck spec={CHECK_SCOPE_SQUARE} />
         <GoalCheck spec={CHECK_LISSAJOUS_LINE} />
         <LessonRow onPress={() => p.help()} />
@@ -1473,7 +1483,8 @@ export function DetectiveModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <CollapsibleSection title="WHY IT WORKS">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="WHY IT WORKS" startOpen={false}>
           <Text style={dstyles.caption}>
             Wrong guesses teach as much as right ones — every reveal explains WHY the answer is what it
             is. Cycle the deck until naming the meter, reading the story, spotting the fault and

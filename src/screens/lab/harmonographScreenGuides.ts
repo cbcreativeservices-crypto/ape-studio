@@ -74,7 +74,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
   learn: {
     intro: {
       learning: 'The ideas behind the drawings in words: ratio, interval, phase, damping, precession and beating, and the mix-ups people make between them.',
-      start: 'Scroll from the top and read CONTROLS and COMMON MISTAKES. Then switch to EXPLORE and change DETUNE or DAMPING to see what you just read.',
+      start: 'Scroll from the top and open CONTROLS and COMMON MISTAKES. Then switch to EXPLORE and change DETUNE or DAMPING to see what you just read.',
     },
     seeing: [
       'This is the Harmonograph guided lesson as one page to read. Nothing plays or draws here.',
@@ -94,8 +94,8 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'The common mix-ups, amplitude versus frequency and phase versus ratio, and why each one happens.',
     ],
     tryThis: [
-      'Read the PRO TIPS line on detuning. Then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
-      'Read the COMMON MISTAKES line on damping extremes. Then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
+      'Open PRO TIPS and read the line on detuning. Then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
+      'Open COMMON MISTAKES and read the line on damping extremes. Then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
     ],
   },
 
@@ -103,7 +103,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
   check: {
     intro: {
       learning: 'A review of the lab’s four ideas: the ratio behind a fifth, what a locked ratio does to the figure, what detuning does, and what damping does.',
-      start: 'Read each question and tap the answer you think is right. Unsure? Switch to LEARN and reread that idea under CONTROLS, then come back.',
+      start: 'Read each question and tap the answer you think is right. Unsure? Switch to LEARN, open CONTROLS and reread that idea, then come back.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING: four questions on the fifth’s ratio, locked figures, detune and damping.',
@@ -119,7 +119,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'How a frequency ratio, a locked or detuned ratio, and damping each show up in a harmonograph figure.',
     ],
     tryThis: [
-      'Unsure? Switch to LEARN and reread the CONTROLS entry on the idea the question is about. Then come back and answer.',
+      'Unsure? Switch to LEARN, open CONTROLS and reread the entry on the idea the question is about. Then come back and answer.',
       'A wrong pick says what to look at again. Look at the figure on EXPLORE before you try again.',
     ],
   },

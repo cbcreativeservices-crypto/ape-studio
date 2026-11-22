@@ -78,7 +78,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
   learn: {
     intro: {
       learning: 'The words for oscillators — fundamental, harmonic, duty cycle, band-limiting, Nyquist and aliasing — and how FM and AM differ.',
-      start: 'Read the PULSE 25% and TRIANGLE entries. Then open EXPLORE, pick PULSE 25% and see bars 4, 8 and 12 go empty while F0 stays put.',
+      start: 'Open CONTROLS and read the PULSE 25% and TRIANGLE entries. Then open EXPLORE, pick PULSE 25% and see bars 4, 8 and 12 go empty while F0 stays put.',
     },
     seeing: [
       'You’re on the LEARN tab: this lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the wave.',
@@ -101,8 +101,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'FM sweeps a wave’s frequency; AM sweeps its level. They are two different kinds of modulation.',
     ],
     tryThis: [
-      'Read the PULSE 25% entry, then on EXPLORE pick PULSE 25%: bars 4, 8 and 12 are empty, and F0 — the pitch — has not moved.',
-      'Read the TRIANGLE entry, then on EXPLORE switch between TRIANGLE and SQUARE: the same bars are lit, but the triangle’s fall away far faster.',
+      'Open CONTROLS and read the PULSE 25% entry, then on EXPLORE pick PULSE 25%: bars 4, 8 and 12 are empty, and F0 — the pitch — has not moved.',
+      'Open CONTROLS and read the TRIANGLE entry, then on EXPLORE switch between TRIANGLE and SQUARE: the same bars are lit, but the triangle’s fall away far faster.',
     ],
   },
 
@@ -129,8 +129,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'Why a wave can be missing some harmonics, and why a digital oscillator leaves the highest ones out.',
     ],
     tryThis: [
-      'For the triangle question, read the TRIANGLE and SQUARE entries under CONTROLS on LEARN. On EXPLORE, long-press a choice in the WAVE tray for its entry.',
-      'For the duty-cycle question, read the PULSE 25% entry under CONTROLS on LEARN, or long-press PULSE 25% in the WAVE tray on EXPLORE.',
+      'For the triangle question, open CONTROLS on LEARN and read the TRIANGLE and SQUARE entries. On EXPLORE, long-press a choice in the WAVE tray for its entry.',
+      'For the duty-cycle question, open CONTROLS on LEARN and read the PULSE 25% entry, or long-press PULSE 25% in the WAVE tray on EXPLORE.',
     ],
   },
 };

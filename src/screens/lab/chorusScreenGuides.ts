@@ -78,7 +78,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of chorus (LFO, rate, depth, voice delay, wet/dry mix, vibrato) and why too much movement, or no dry sound, stops it sounding like chorus.',
-      start: 'Scroll to the MIX entry and read it. Then switch to EXPLORE, play SINE 440 Hz and set MIX to 100% = VIBRATO to hear what it describes.',
+      start: 'Open CONTROLS and read the MIX entry. Then switch to EXPLORE, play SINE 440 Hz and set MIX to 100% = VIBRATO to hear what it describes.',
     },
     seeing: [
       'This is the Chorus guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -100,8 +100,8 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       'Why a wide chorus can thin out when the mix is summed to mono, so a mono check is worth doing.',
     ],
     tryThis: [
-      'Read the MIX entry, then on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: the bold line stops swelling — the dry voice it beat against is gone.',
-      'Read the COMMON MISTAKES line on RATE and DEPTH, then on EXPLORE set DEPTH to DEEP and drag RATE to 3.00 Hz: listen for the seasick warble.',
+      'Open CONTROLS and read the MIX entry, then on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: the bold line stops swelling — the dry voice it beat against is gone.',
+      'Open COMMON MISTAKES and read the line on RATE and DEPTH, then on EXPLORE set DEPTH to DEEP and drag RATE to 3.00 Hz: listen for the seasick warble.',
     ],
   },
 
@@ -130,8 +130,8 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       'How the length of the delay, and the RATE of its movement, change what you hear.',
     ],
     tryThis: [
-      'For the 100% wet question, reread the MIX entry on LEARN, then come back.',
-      'For the flanger question, on LEARN reread the COMMON MISTAKES line on flanger, then come back.',
+      'For the 100% wet question, open CONTROLS on LEARN and reread the MIX entry, then come back.',
+      'For the flanger question, on LEARN open COMMON MISTAKES and reread the line on flanger, then come back.',
     ],
   },
 };

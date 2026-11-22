@@ -174,7 +174,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(ck.tryThis[0], /with MIX on 50% EVEN, slide CENTER to the top, 5\.0 ms\. The caption under DESIGNED RESPONSE reads notches every 200 Hz/);
     // the spacing caption only shows below 100% MIX
     assert.match(CFG, /heroCaption: \(v\) =>\s*v\[P\.modMix\] >= 1\s*\? 'At 100% MIX/);
-    assert.match(ck.tryThis[1], /reread the COMMON MISTAKES line on test sources on LEARN/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /open COMMON MISTAKES on LEARN and reread the line on test sources/);
   });
   it('the CHECK tab has the four questions the guide counts', () => {
     const u = code('src/features/lab/understandingChecks.ts');

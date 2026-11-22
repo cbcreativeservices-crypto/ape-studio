@@ -82,7 +82,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of a synth voice (VCO, VCF, VCA, ADSR, LFO, CV, cutoff, resonance) and why one LFO can give vibrato, a wobble or tremolo.',
-      start: 'Scroll to COMMON MISTAKES and read the line on filtering a sine. Then switch to EXPLORE, pick VCO SINE, tap ▶ and ride CUTOFF to hear it.',
+      start: 'Open COMMON MISTAKES and read the line on filtering a sine. Then switch to EXPLORE, pick VCO SINE, tap ▶ and ride CUTOFF to hear it.',
     },
     seeing: [
       'This is the guided lesson for this lab, as one page to read. Nothing here plays.',
@@ -95,7 +95,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'On EXPLORE, tap a module in the case, long-press a dock key or a readout, or tap the ⓘ on the readout strip, to open just that entry.',
     ],
     changes: [
-      'Read this beside EXPLORE: each module entry here is a module in THE PATCH.',
+      'Open CONTROLS and read it beside EXPLORE: each module entry is a module in THE PATCH.',
       'Each patch entry says which routing makes that sound, and why.',
       'Several COMMON MISTAKES lines mix up what a signal does: a filter on a sine, the loudness envelope taken for the filter envelope, an LFO on the wrong destination.',
     ],
@@ -105,8 +105,8 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Why the envelope shapes loudness through the VCA, and brightness too only when it is routed to the VCF.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on filtering a sine, then on EXPLORE pick VCO SINE, tap ▶ and ride CUTOFF: the tone hardly changes.',
-      'Read the PRO TIPS line on building a bass, then on EXPLORE tap PATCH → ACID BASS and ▶: RES reads MAX, SEQ 8/s, and a green cable runs from ENV to the VCF.',
+      'Open COMMON MISTAKES and read the line on filtering a sine, then on EXPLORE pick VCO SINE, tap ▶ and ride CUTOFF: the tone hardly changes.',
+      'Open PRO TIPS and read the line on building a bass, then on EXPLORE tap PATCH → ACID BASS and ▶: RES reads MAX, SEQ 8/s, and a green cable runs from ENV to the VCF.',
     ],
   },
 
@@ -136,8 +136,8 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Where you route a control source decides what you hear change: pitch, brightness or loudness.',
     ],
     tryThis: [
-      'Unsure about the audio order? Switch to LEARN and reread FORMULA / CONCEPT, then come back and answer.',
-      'Unsure about LFO destinations? Switch to LEARN and reread the LFO entry under CONTROLS, then come back.',
+      'Unsure about the audio order? Switch to LEARN and open FORMULA / CONCEPT, then come back and answer.',
+      'Unsure about LFO destinations? Switch to LEARN, open CONTROLS and reread the LFO entry, then come back.',
     ],
   },
 };

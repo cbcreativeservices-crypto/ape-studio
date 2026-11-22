@@ -326,7 +326,8 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const ck = REVERB_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
     const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
     assert.doesNotMatch(all, /−60|60 dB|fall(s)? by|soft surfaces|darker|lower the (reverb )?MIX|opens a (short )?gap/i);
-    assert.match(ck.tryThis[1], /For the RT60 question, reread FORMULA \/ CONCEPT on LEARN/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /For the RT60 question, open FORMULA \/ CONCEPT on LEARN/);
   });
   it('LEARN 2: PRE-DLY 0 ms → the caption opens "No pre-delay: the wash starts with the dry hit…" (no "0 ms … separates")', () => {
     assert.match(REVERB, /v\[P\.preDelayMs\] === 0\s*\? `No pre-delay: the wash starts with the dry hit, gluing the source to the tail\. Then the tail falls 60 dB in \$\{v\[P\.rt60\]\} s\.`\s*: `\$\{v\[P\.preDelayMs\]\} ms pre-delay separates the dry hit from the wash/);

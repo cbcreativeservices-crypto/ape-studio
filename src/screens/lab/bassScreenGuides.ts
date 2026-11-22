@@ -138,7 +138,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'A fret multiplies pitch by 2^(1/12) each step; a harmonic multiplies the open string by a whole number.',
     ],
     tryThis: [
-      'Read the first PRO TIPS line, then try it on EXPLORE: open E reads E1 41.2 Hz; fret 12 and the ½ harmonic both read E2 82.4 Hz.',
+      'Open PRO TIPS and read its first line, then try it on EXPLORE: open E reads E1 41.2 Hz; fret 12 and the ½ harmonic both read E2 82.4 Hz.',
       'Read the mistake about string versus air wavelength. Then open LAB NOTES on EXPLORE: THE EXACT NUMBERS shows open E’s sound wave is about 8.32 m long in air.',
     ],
   },
@@ -147,7 +147,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A review of the lab’s core physics: length and pitch, string fractions and intervals, why frets crowd together, and what a light touch at ⅓ sounds.',
-      start: 'Start with the 12th-fret question. Unsure? Reread FORMULA / CONCEPT on LEARN, then come back. A wrong pick costs nothing, and you can pick again straight away.',
+      start: 'Start with the 12th-fret question. Unsure? Open FORMULA / CONCEPT on LEARN, then come back. A wrong pick costs nothing, and you can pick again straight away.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING asks four questions: the 12th fret, the 7th fret, why frets crowd together, and the touch at ⅓.',
@@ -167,7 +167,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
       'Why the spacing between frets changes along the neck, and what a light touch does that a pressed fret doesn’t.',
     ],
     tryThis: [
-      'Unsure about a fret question? On LEARN, reread FORMULA / CONCEPT: the fret rule f = f₀ · 2^(n/12) and how simple string fractions match intervals.',
+      'Unsure about a fret question? On LEARN, open FORMULA / CONCEPT: the fret rule f = f₀ · 2^(n/12) and how simple string fractions match intervals.',
       'For the light-touch question, try a different touch on EXPLORE: MODE NATURAL HARMONICS, STRING E, NODE ¼. Count the lobes, then compare FREQ, 164.8 Hz, with open E’s 41.2 Hz.',
     ],
   },

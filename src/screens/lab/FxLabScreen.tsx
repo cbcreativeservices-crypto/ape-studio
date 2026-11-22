@@ -58,7 +58,7 @@ import { GrLadder, GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
+import { CollapsibleSection, HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { STEREO_END_GUIDE } from './stereoScreenGuides';
 import { useSoundOff } from './rack/silentPath';
@@ -966,30 +966,33 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         </View>
       ) : null}
 
-      {/* THE AUDIO PATH — status + honest engine notes. */}
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>THE AUDIO PATH</Text>
-        {engineReady ? (
-          fxReady ? (
-            <>
+      {/* THE AUDIO PATH — status + honest engine notes. It starts CLOSED
+          (owner 2026-11-21: "Build all 40", collapsed-sections proposal), but
+          a sound error, or the line saying the effect audio cannot play here,
+          stays in view above it (OSC-04: an error is never folded away). */}
+      {engineReady && fxReady && genError ? <Text style={styles.error}>{genError}</Text> : null}
+      {engineReady && !fxReady ? (
+        <Text style={styles.caption}>
+          {Platform.OS === 'web'
+            ? 'On the web, the effect audio can’t play — it plays in the phone app. The visuals and lessons above work fully.'
+            : __DEV__
+              ? 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'
+              : // Plain words, no "update the app" (lab fix round 2026-11-14, pattern 10).
+                'The effect audio can’t play on this device. The visuals and lessons above work fully.'}
+        </Text>
+      ) : null}
+      {(engineReady && fxReady) || config.note ? (
+        <CollapsibleSection title="THE AUDIO PATH" startOpen={false}>
+          <View style={{ gap: 6 }}>
+            {engineReady && fxReady ? (
               <Text style={styles.caption}>
                 {`▶ (top right) plays real audio: ${sources[sourceIdx].label.toLowerCase()} → ${config.title.replace(' LAB', '').toLowerCase()} → output. ${GEN_LEVEL_DB} dBFS · uncalibrated. Change any control while it plays.`}
               </Text>
-              {genError ? <Text style={styles.error}>{genError}</Text> : null}
-            </>
-          ) : (
-            <Text style={styles.caption}>
-              {Platform.OS === 'web'
-                ? 'On the web, the effect audio can’t play — it plays in the phone app. The visuals and lessons above work fully.'
-                : __DEV__
-                  ? 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'
-                  : // Plain words, no "update the app" (lab fix round 2026-11-14, pattern 10).
-                    'The effect audio can’t play on this device. The visuals and lessons above work fully.'}
-            </Text>
-          )
-        ) : null}
-        {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
-      </View>
+            ) : null}
+            {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
+          </View>
+        </CollapsibleSection>
+      ) : null}
 
       {config.checks?.length ? (
         // Each card now carries its own collapsible CHECK YOURSELF header

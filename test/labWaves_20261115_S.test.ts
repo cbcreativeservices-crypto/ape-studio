@@ -223,7 +223,9 @@ describe('SN-5: LEARN and LAB NOTES end on "Done here? Try CHECK ›"; the repea
     assert.doesNotMatch(shell, /What this lab teaches — definitions, common mistakes, pro tips, and the formula\./);
   });
   it('rack LEARN: the lesson, then the line, only in a lab with a CHECK tab', () => {
-    assert.match(shell, /<GuidedLessonBody lesson=\{lesson\} \/>\s*\{hasCheck \? <TryCheckLine onPress=\{openCheck\} \/> : null\}/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN body now takes the
+    // shell's fold (CONTROLS, COMMON MISTAKES, PRO TIPS, FORMULA start closed); the line still follows it.
+    assert.match(shell, /<GuidedLessonBody lesson=\{lesson\} fold=\{LearnFold\} \/>\s*\{hasCheck \? <TryCheckLine onPress=\{openCheck\} \/> : null\}/);
   });
   it('LAB NOTES: the line is the last thing inside the disclosure, after the GUIDED LESSON row', () => {
     assert.match(shell, /ⓘ GUIDED LESSON — long-press any control for its own entry<\/Text>\s*<\/Pressable>\s*\{hasCheck \? <TryCheckLine onPress=\{openCheck\} \/> : null\}\s*<\/CollapsibleSection>/);

@@ -99,7 +99,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
       'Why broadband noise is easier to place than a low, steady tone.',
     ],
     tryThis: [
-      'Read the FORMULA line. Then on EXPLORE, set AZ to +45°: ITD reads 381 µs, which is (0.0875 ÷ 343) × (0.785 + 0.707) seconds.',
+      'Open FORMULA / CONCEPT and read its line. Then on EXPLORE, set AZ to +45°: ITD reads 381 µs, which is (0.0875 ÷ 343) × (0.785 + 0.707) seconds.',
       'Read the PRO TIP about −90°. On EXPLORE, park object 1 at −90°, set SRC to TONE and pick 250 under TONE FREQUENCY (Hz). Then switch to PINK: same readouts, but the noise is easier to place.',
     ],
   },

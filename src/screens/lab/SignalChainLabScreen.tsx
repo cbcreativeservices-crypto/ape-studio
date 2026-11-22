@@ -39,7 +39,7 @@ import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabChip, LabShell, HeaderPlayButton } from './LabShell';
+import { CollapsibleSection, LabChip, LabShell, HeaderPlayButton } from './LabShell';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -593,15 +593,20 @@ export function SignalChainLabScreen() {
         </Text>
       ) : null}
 
-      <Text style={styles.caption}>
-        Modules run their lab-default teaching settings — each module’s full controls live in its
-        own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes. One
-        honest quirk: this rack runs COMP before GATE, while on a real console you
-        would usually gate FIRST so compression never raises the noise floor — the mistakes list
-        explains. The limiter’s ceiling is set LOW (−25 dB) on purpose, so it has work to do on
-        this −20 dB test source; a real output ceiling sits just under full scale (commonly
-        around −1 dBTP).
-      </Text>
+      {/* Side detail about this rack, starts CLOSED (owner 2026-11-21: "Build
+          all 40", collapsed-sections proposal); every word kept. The first move
+          is the caption above LAB NOTES. */}
+      <CollapsibleSection title="ABOUT THIS RACK’S SETTINGS AND ORDER" startOpen={false}>
+        <Text style={styles.caption}>
+          Modules run their lab-default teaching settings — each module’s full controls live in its
+          own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes. One
+          honest quirk: this rack runs COMP before GATE, while on a real console you
+          would usually gate FIRST so compression never raises the noise floor — the mistakes list
+          explains. The limiter’s ceiling is set LOW (−25 dB) on purpose, so it has work to do on
+          this −20 dB test source; a real output ceiling sits just under full scale (commonly
+          around −1 dBTP).
+        </Text>
+      </CollapsibleSection>
 
       {scenario ? (
         <Text style={styles.scenarioLesson}>

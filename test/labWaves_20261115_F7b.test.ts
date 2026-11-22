@@ -111,7 +111,8 @@ describe('DL-03 · Delay LEARN starts on the silent slapback, the formula last',
   });
   it('TRY THIS follows the same order', () => {
     assert.match((DG.learn as unknown as { tryThis: string[] }).tryThis[0], /slapback/);
-    assert.match((DG.learn as unknown as { tryThis: string[] }).tryThis[1], /^Last, read FORMULA \/ CONCEPT/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match((DG.learn as unknown as { tryThis: string[] }).tryThis[1], /^Last, open FORMULA \/ CONCEPT/);
   });
 });
 

@@ -100,7 +100,8 @@ describe('1. every FM screen has a complete guide', () => {
     const ci = (GUIDES.check as unknown as { intro: { learning: string; start: string } }).intro;
     const ct = [...GUIDES.check.tryThis, ci.learning, ci.start].join(' ');
     assert.doesNotMatch(ct, /INDEX to 0|carrier alone|one green stick|step RATIO and watch|\b200 Hz\b/i);
-    assert.match(GUIDES.check.tryThis[1], /On LEARN, read the INDEX entry under CONTROLS/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /On LEARN, open CONTROLS and read the INDEX entry/);
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-02): the readout is MOD now.
     assert.match(GUIDES.check.tryThis[0], /FC 440 and RATIO 0\.5, so MOD reads 220 Hz/);
   });

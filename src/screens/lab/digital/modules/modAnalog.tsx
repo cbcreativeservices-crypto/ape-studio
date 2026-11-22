@@ -375,10 +375,13 @@ export function AnalogModule(p: DigitalModuleProps) {
           <Badge text="Square, saw, triangle and impulse are band-limited (12 harmonics): real shapes, without perfectly sharp corners." />
         </CollapsibleSection>
 
-        <MythReality
-          myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
-          reality="A microphone capsule creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
+            reality="A microphone capsule creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
+          />
+        </CollapsibleSection>
         <GoalCheck spec={ANALOG_CHECK} />
         <LessonRow onPress={() => p.help()} />
       </View>
@@ -895,10 +898,13 @@ export function SamplingModule(p: DigitalModuleProps) {
           <Badge text="A synthesized prediction: the generator plays the tone the math predicts, which a real converter with no anti-alias filter would make." />
         </PanelCard>
 
-        <MythReality
-          myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
-          reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED (in the RATE tray) at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
+            reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED (in the RATE tray) at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
+          />
+        </CollapsibleSection>
         <GoalCheck spec={CHECK_ALIAS} />
         {/* Two lessons on one page (phase 3, owner decision 5): sampling and aliasing first, the filter that prevents it folded here. The dock keeps every control. */}
         <CollapsibleSection title="PART 2 · THE ANTI-ALIASING FILTER" startOpen={false}>

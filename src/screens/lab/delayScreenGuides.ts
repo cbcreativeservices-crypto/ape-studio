@@ -98,7 +98,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'On EXPLORE, long-press a key or a readout to open just its entry. A SOURCE choice opens that test signal’s own note.',
     ],
     changes: [
-      'Read this page beside EXPLORE: each CONTROLS entry names a part of the rack and says what it does to the repeats.',
+      'Open CONTROLS and read it beside EXPLORE: each entry names a part of the rack and says what it does to the repeats.',
       'Most COMMON MISTAKES lines pair a setting with what goes wrong: too much feedback runs away, a delay off the tempo smears the groove, full-range repeats pile up.',
       'FORMULA / CONCEPT turns BPM into milliseconds. On EXPLORE, the caption under DESIGNED RESPONSE names the BPM for your TIME.',
     ],
@@ -109,8 +109,8 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'Why too much feedback runs away, and why a delay off the tempo smears the groove.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on slapback. Then on EXPLORE set TIME to 80 ms and FDBK to 0%: DESIGNED RESPONSE shows one stem after the dry one — a single quick repeat.',
-      'Last, read FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then on EXPLORE, with FDBK under 75%, slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM.',
+      'Open COMMON MISTAKES and read the line on slapback. Then on EXPLORE set TIME to 80 ms and FDBK to 0%: DESIGNED RESPONSE shows one stem after the dry one — a single quick repeat.',
+      'Last, open FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then on EXPLORE, with FDBK under 75%, slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM.',
     ],
   },
 
@@ -118,7 +118,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A review of delay’s core ideas: turning tempo into delay time, what FEEDBACK controls, what makes a slapback, and what REPEAT DAMPING does to the repeats.',
-      start: 'Tap an answer on each card. If the tempo question stumps you, reread FORMULA / CONCEPT on LEARN. For the others, try that control on EXPLORE and come back.',
+      start: 'Tap an answer on each card. If the tempo question stumps you, open FORMULA / CONCEPT on LEARN. For the others, try that control on EXPLORE and come back.',
     },
     seeing: [
       'This is CHECK YOUR UNDERSTANDING for the Delay lab. A line under the heading counts the questions you still need to get right.',

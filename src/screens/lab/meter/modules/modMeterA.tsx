@@ -145,16 +145,20 @@ function signalParam(
   };
 }
 
+/** COMMON MISTAKES starts CLOSED (owner 2026-11-21: "Build all 40",
+ *  collapsed-sections proposal): extra reading, one tap away. Its title moved
+ *  from the card's eyebrow to the fold's header; every line is kept. */
 function MistakesCard({ items }: { items: string[] }) {
   return (
-    <PanelCard>
-      <Text style={dstyles.eyebrow}>COMMON MISTAKES</Text>
-      {items.map((m) => (
-        <Text key={m} style={dstyles.body}>
-          {'•'} {m}
-        </Text>
-      ))}
-    </PanelCard>
+    <CollapsibleSection title="COMMON MISTAKES" startOpen={false}>
+      <PanelCard>
+        {items.map((m) => (
+          <Text key={m} style={dstyles.body}>
+            {'•'} {m}
+          </Text>
+        ))}
+      </PanelCard>
+    </CollapsibleSection>
   );
 }
 
@@ -751,10 +755,13 @@ export function VuModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <MythReality
-          myth="The VU meter is slow because it's old tech."
-          reality="The 300 ms ballistic is a DESIGNED average — it reads like ears, not like converters."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="The VU meter is slow because it's old tech."
+            reality="The 300 ms ballistic is a DESIGNED average — it reads like ears, not like converters."
+          />
+        </CollapsibleSection>
 
         <MistakesCard items={VU_MISTAKES} />
         <GoalCheck spec={VU_CHECKS[0]} />

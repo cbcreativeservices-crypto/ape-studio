@@ -86,7 +86,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words and math of FM in one place: carrier, modulator, ratio, index, sidebands, Bessel amplitudes, Carson’s bandwidth and aliasing.',
-      start: 'Read COMMON MISTAKES and FORMULA / CONCEPT. Then switch to EXPLORE, set RATIO 1.41 ✳ and INDEX to I = 2.4, and watch the carrier stick disappear.',
+      start: 'Open and read COMMON MISTAKES and FORMULA / CONCEPT. Then switch to EXPLORE, set RATIO 1.41 ✳ and INDEX to I = 2.4, and watch the carrier stick disappear.',
     },
     seeing: [
       'This is the FM lab’s guided lesson as one page to read. ▶ in the header still strikes the voice you set on EXPLORE.',
@@ -109,7 +109,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
       'Carson’s rule, BW = 2 × MOD × (I + 1), estimates how far most of an FM tone’s energy spreads.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on more index and louder sidebands. Then on EXPLORE set RATIO 1.41 ✳ and INDEX to I = 2.4: the carrier stick disappears, as the line says.',
+      'Open COMMON MISTAKES and read the line on more index and louder sidebands. Then on EXPLORE set RATIO 1.41 ✳ and INDEX to I = 2.4: the carrier stick disappears, as the line says.',
       'Read the line on Nyquist. Then on EXPLORE pick FC 440 Hz, RATIO 7 and INDEX 8: BW reads 55.4 kHz in red, and red dashed sticks show sidebands folding back.',
     ],
   },
@@ -142,7 +142,7 @@ export const FM_SCREEN_GUIDES: Record<FmScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure where sidebands sit? Try a different pair on EXPLORE: FC 440 and RATIO 0.5, so MOD reads 220 Hz. Find the amber pair nearest the green carrier and read where it sits.',
-      'Unsure about index 0? On LEARN, read the INDEX entry under CONTROLS, then come back.',
+      'Unsure about index 0? On LEARN, open CONTROLS and read the INDEX entry, then come back.',
     ],
   },
 };

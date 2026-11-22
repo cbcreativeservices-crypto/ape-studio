@@ -74,6 +74,8 @@ import { fitValue } from '../../../theme/legibility';
 import { cardColumn } from '../../../theme/readingColumn';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabHeader } from '../kit/LabNavBar';
+import { SP_FOLD_CLOSE_WORD, SP_FOLD_OPEN_WORD } from '../../../features/stageplot/spSetupFolds';
+import { FoldSection } from './spForm';
 import { ExportArea } from './ExportArea';
 import { SP_GUIDE_EXPORT } from './guides/export';
 import { SP_GUIDE_INPUTS } from './guides/inputs';
@@ -234,20 +236,33 @@ export function StagePlotLabScreen() {
  */
 function LabRecap() {
   const navigation = useNavigation();
+  // WHAT THIS LAB COVERS starts CLOSED (owner 2026-11-21: "Build all 40",
+  // collapsed-sections proposal): a recap at the foot of the list, one tap
+  // away, every line kept. AFTER THIS LAB is a button, so it stays in view.
+  // Not remembered: every visit starts with it closed.
+  const [recapOpen, setRecapOpen] = useState(false);
   const c = labEndContentFor('stage-plot');
   if (!c.recap?.length && !c.next) return null;
   return (
     <View style={styles.recap}>
       {c.recap?.length ? (
-        <View style={styles.recapBox} accessibilityRole="summary">
-          <Text style={styles.recapHead}>WHAT THIS LAB COVERS</Text>
-          {c.recap.map((l) => (
-            <View key={l} style={styles.recapRow}>
-              <Text style={styles.recapDot}>•</Text>
-              <Text style={styles.recapText}>{l}</Text>
-            </View>
-          ))}
-        </View>
+        <FoldSection
+          title="WHAT THIS LAB COVERS"
+          summary={c.recap.length === 1 ? 'One line on what this lab teaches.' : `${c.recap.length} lines on what this lab teaches.`}
+          open={recapOpen}
+          onToggle={() => setRecapOpen((o) => !o)}
+          openWord={SP_FOLD_OPEN_WORD}
+          closeWord={SP_FOLD_CLOSE_WORD}
+        >
+          <View style={styles.recapBox} accessibilityRole="summary">
+            {c.recap.map((l) => (
+              <View key={l} style={styles.recapRow}>
+                <Text style={styles.recapDot}>•</Text>
+                <Text style={styles.recapText}>{l}</Text>
+              </View>
+            ))}
+          </View>
+        </FoldSection>
       ) : null}
       {c.next ? (
         <Pressable

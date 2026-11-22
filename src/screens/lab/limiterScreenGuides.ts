@@ -83,7 +83,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of limiting (ceiling, drive, release, lookahead, true peak) and why a master’s ceiling sits near −1 dBTP while this lab’s sit far lower.',
-      start: 'Scroll to the CEILING and RLS entries. Then switch to EXPLORE and play SINE 440 Hz at CEILING −35 dB to check the GR sum the lesson works out.',
+      start: 'Open CONTROLS and read the CEILING and RLS entries. Then switch to EXPLORE and play SINE 440 Hz at CEILING −35 dB to check the GR sum the lesson works out.',
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -106,7 +106,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Work the sum: a source peaking at −20 dBFS under a −35 dB ceiling is held down 15 dB. On EXPLORE, play SINE 440 Hz at CEILING −35 dB: GR reads about 15.',
-      'Read the COMMON MISTAKES line on release, then on EXPLORE play CLICK 120 at CEILING −45 dB and compare RLS 30 ms with 500 ms on the GR ladder.',
+      'Open COMMON MISTAKES and read the line on release, then on EXPLORE play CLICK 120 at CEILING −45 dB and compare RLS 30 ms with 500 ms on the GR ladder.',
     ],
   },
 
@@ -135,7 +135,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure about the GR sum? On EXPLORE, play SINE 440 Hz at CEILING −30 dB: GR reads about 10 dB, as the tone peaks at −20 dBFS. Work the question’s numbers the same way.',
-      'Unsure about true peak? On LEARN, read the COMMON MISTAKES line on 0 dBFS: it explains what the real wave does between samples.',
+      'Unsure about true peak? On LEARN, open COMMON MISTAKES and read the line on 0 dBFS: it explains what the real wave does between samples.',
     ],
   },
 };

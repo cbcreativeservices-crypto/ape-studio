@@ -30,7 +30,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { heatColor, levelColor, rampColors } from '../../../features/tools/levelColor';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
-import { LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
+import { CollapsibleSection, LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import { MATERIALS, type MaterialId } from '../../../features/cymatics/materials';
 import { DEFAULT_PLATE, effectiveQ, plateAspect, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
@@ -730,8 +730,11 @@ function PlateStudio() {
           The sand moves only while the plate is driven — press ▶ to play the tone, or DRIVE › SILENT to shake the plate without sound. DRIVE › SWEEP glides from mode to mode and dwells on each. 3D and CROSS-SECTION are strobed to a few hertz.
         </Text>
 
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections
+            proposal): the plate's spec sheet, one tap away. Its title moved
+            from the card to the fold's header; the SIMULATION lines below stay open. */}
+        <CollapsibleSection title="WHAT THIS PLATE IS" startOpen={false}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>WHAT THIS PLATE IS</Text>
           <Text style={styles.body}>
             {mat.label} · {lib ? `${lib.info.label.toLowerCase()}, ${lib.info.unitLabel} ${spec.sizeMm} mm` : spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} × ${spec.sizeMm} mm`} · {spec.thicknessMm} mm thick · {lib ? lib.info.boundaryLabel.replace(' (solved)', '').toLowerCase() : EDGES.find((e) => e.id === spec.edge)!.label.toLowerCase()} · driven at ({spec.exciter.x.toFixed(2)}, {spec.exciter.y.toFixed(2)}){spec.support ? ' · clamped' : ''}.
           </Text>
@@ -742,6 +745,7 @@ function PlateStudio() {
             })()} — not 1 : 2 : 3 : 4. Plate modes are inharmonic.
           </Text>
         </View>
+        </CollapsibleSection>
 
         <View style={styles.chips}>
           <LabChip label="Guided experiments ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} />
