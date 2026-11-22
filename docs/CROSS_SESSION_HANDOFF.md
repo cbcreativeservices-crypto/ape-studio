@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 14:39 · ccode · 39ad5336
+changed: Must-do: Comp A store checks 2026-11-22: B1 (Apple prices scheduled) and B3 (Play open testing paused) DONE; E8 Android 15 deprecated-API warning (inside React Native 0.86 itself, no 1.0.1 change; phone checks at the build)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-22 14:21 · ccode · 2c1a708d
 changed: Founder page: owner-approved D36 copy (six paragraphs, word for word from Comp A 2026-11-22); Q8 email confirmation stays OFF (owner 2026-11-22). Website not deployed: owner's GO [MD:D36]
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
@@ -10278,3 +10284,7 @@ logged: three Comp A entries that existed only as an uncommitted edit in ape-stu
 - 10-29 19:20: 405 glossary terms fixed (~400 UK spellings, 7 definition errors, 7 duplicate lists); backup private._bkp_fix_20261029.
 - 10-30 00:20: topic moves Xe -> 3660, LIDAR -> 3470 (15 quiz questions moved, 0 progress rows); Round 5: 145 items wait for the owner on https://claude.ai/artifact/1rQhRNkBba5pgXJ4thpyyD (data Downloads/2026-10-30_R5_OWNER_DECISIONS_DATA). Rollbacks on artifact TcuEFXdvaepxGG94efayyn.
 needs: [MD:D33] the owner works the R5 decision page and says "done"; then Comp A applies.
+
+### 2026-11-22 · ccode · OTA 14 PUBLISHED (owner "Publish the OTA")
+changed: production OTA from 39ad5336. Android group 3dc4be83-e3c4-45c0-be3f-a4f5c79fc731 (update 01a2056f, runtime a903813a, build 23); iOS group c135459a-b831-48c2-98a6-c3f720ced29b (update 01a2057a, runtime 91355451, build 39). Fingerprints MATCH both builds; eol-sync 0; sourcemaps uploaded per platform. Contents: flashcard read-first dwell 0.6 s (c0967847); landing MENU replaces the jump-in keys, Skip to Home removed (b769b481); first-run "YOUR MENU" callout (660b706a); "Watch Intro Video Again" (48b92b28); MENU dots 50% (f1834901). Pixel: store app shows the dimmed MENU dots (OTA 14 running; the relaunch reports "No update available"). iPhone check is the owner's. Undo = republish OTA 13 (Android eb733959 / iOS f8954fb6).
+affects: phones on builds 23/39. needs: owner iPhone check.
