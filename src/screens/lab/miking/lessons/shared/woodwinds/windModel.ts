@@ -57,7 +57,7 @@ export type WindModelOpts = {
   clearance?: number;
 };
 
-export const CLEAR: Dim = { mm: 20, prov: ill('a 20 mm keep-out round the instrument for its movement as the player breathes and phrases (drawing default)') };
+export const CLEAR: Dim = { mm: 20, prov: ill('a 20 mm keep-out around the instrument for its movement as the player breathes and phrases (drawing default)') };
 
 /** The instrument's pieces as capsule solids along the center line. */
 export function instrumentParts(L: Layout, w: WindPartWords): Part[] {
@@ -121,7 +121,7 @@ export function playerParts(L: Layout, w: WindPartWords): Part[] {
   }
   if (L.peg) {
     parts.push({ id: 'ww.peg', label: 'the floor peg', short: 'peg', role: 'A metal rod from the bow to the floor carries the instrument’s weight. Keep stand bases and cables off it — a knock on the peg reaches the mic as a thump.', prov: ill('the peg: a drawing default'), solid: cap(L.peg.a, L.peg.b, 7) });
-    parts.push({ id: 'ww.pegFoot', label: 'the floor peg', short: 'peg', role: 'A keep-out around the peg’s foot.', prov: ill('a 120 mm keep-out round the peg’s foot (drawing default)'), listIn: [], solid: cap(L.peg.b, L.peg.b, 120) });
+    parts.push({ id: 'ww.pegFoot', label: 'the floor peg', short: 'peg', role: 'A keep-out around the peg’s foot.', prov: ill('a 120 mm keep-out around the peg’s foot (drawing default)'), listIn: [], solid: cap(L.peg.b, L.peg.b, 120) });
   }
   return parts;
 }

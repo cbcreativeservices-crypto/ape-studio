@@ -277,7 +277,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <Note>In a big room the PA reaches you late — about 3 ms for every meter. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
       </Step>
       <Step n={4}>
-        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (B vs A at 0.062 or less, green: the lab’s pass mark — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
+        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (B vs A at 0.062 or less, green: the lab’s passing target — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
         {startMsg ? <Note tone={phraseStart ? 'try' : 'safety'}>{startMsg}</Note> : null}
         <P>Then try the blend: bring B’s fader up (JOG B → CH2 FADER) as the next phrase begins. Where you start is a musical choice — the start of a phrase is a strong suggested starting point.</P>
         <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />

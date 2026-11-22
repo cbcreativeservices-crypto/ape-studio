@@ -630,7 +630,7 @@ export const A08A_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the 35° hold — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The 629 mm body is a 1924 museum clarinet used as a modern size; the mouthpiece (88 mm), barrel, joint split, bell Ø 65 and key layout are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head and the bell’s movement — illustrative keep-outs (a 20 mm margin round the clarinet).', dims: [] },
+    { text: 'The hands, arms, head and the bell’s movement — illustrative keep-outs (a 20 mm margin around the clarinet).', dims: [] },
     { text: 'The section spot’s box beside the player, the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

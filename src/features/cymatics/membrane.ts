@@ -223,12 +223,12 @@ export type Driver = {
   blurb: string;
 };
 export const DRIVERS: readonly Driver[] = [
-  { id: 'tweeter25', label: '25 mm dome tweeter', diameterMm: 25, fs: 800, qts: 0.7, breakupHz: 22000, cone: 'aluminium dome', blurb: 'A stiff metal dome: pistonic to the top of hearing, then one violent breakup above it.' },
+  { id: 'tweeter25', label: '25 mm dome tweeter', diameterMm: 25, fs: 800, qts: 0.7, breakupHz: 22000, cone: 'aluminum dome', blurb: 'A stiff metal dome: pistonic to the top of hearing, then one violent breakup above it.' },
   { id: 'full100', label: '100 mm full-range', diameterMm: 100, fs: 90, qts: 0.6, breakupHz: 4500, cone: 'paper cone', blurb: 'Small and light: rigid low, cone flexing in the upper mids, breakup in the presence region.' },
   { id: 'mid130', label: '130 mm midrange', diameterMm: 130, fs: 60, qts: 0.45, breakupHz: 3200, cone: 'polypropylene cone', blurb: 'Damped plastic cone: the breakup is soft and broad rather than a single peak.' },
   { id: 'woofer200', label: '200 mm woofer', diameterMm: 200, fs: 40, qts: 0.4, breakupHz: 2000, cone: 'paper cone', blurb: 'A classic 8": mass-controlled piston through the bass, edge flexing in the low mids.' },
   { id: 'woofer300', label: '300 mm woofer', diameterMm: 300, fs: 30, qts: 0.35, breakupHz: 1200, cone: 'treated paper cone', blurb: 'A 12": large piston area, low resonance, breakup already in the mids — hence the crossover.' },
-  { id: 'sub380', label: '380 mm subwoofer', diameterMm: 380, fs: 22, qts: 0.5, breakupHz: 700, cone: 'aluminium cone', blurb: 'A 15" sub: stiff cone for large excursion; used far below its breakup.' },
+  { id: 'sub380', label: '380 mm subwoofer', diameterMm: 380, fs: 22, qts: 0.5, breakupHz: 700, cone: 'aluminum cone', blurb: 'A 15" sub: stiff cone for large excursion; used far below its breakup.' },
 ];
 export const DRIVER_BY_ID: Record<DriverId, Driver> = Object.fromEntries(DRIVERS.map((d) => [d.id, d])) as Record<DriverId, Driver>;
 

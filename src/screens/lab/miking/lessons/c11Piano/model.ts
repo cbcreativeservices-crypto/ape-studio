@@ -63,7 +63,7 @@ export const BANDS = { bass: [-609, -200], middle: [-200, 200], treble: [200, 60
 
 const IN = 25.4;
 const shureGrand = (row: string): Provenance => src('S-REC', row);
-const tol = ill('a ±5 cm band round the guide’s single figure: the lab’s drawing of “about”');
+const tol = ill('a ±5 cm band around the guide’s single figure: the lab’s drawing of “about”');
 
 
 /** How a curve zone is drawn: from above, a ring sector out from the curve
@@ -159,7 +159,7 @@ export const PIANO_ZONES: DocumentedZone[] = [
     refSurface: 'strings',
     side: 'either',
     distance: { min: 6 * IN - 40, max: 6 * IN + 40 },
-    bandProv: ill('a ±4 cm band round the guide’s 6 in (the lid leaves less room)'),
+    bandProv: ill('a ±4 cm band around the guide’s 6 in (the lid leaves less room)'),
     radial: { line: 'hammers', min: 8 * IN - 50, max: 8 * IN + 50, prov: tol },
     requires: { variant: 'short', micTypeIds: DYN_OR_COND },
     aim: { maxOffAxis: 50, prov: ill('a front within 50° of straight down') },

@@ -40,7 +40,7 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
   },
   no_pass: {
     title: 'NOT PASSED',
-    body: 'You did not reach the pass mark this time. You may retake the Final Exam whenever you are ready — there is no waiting period.',
+    body: 'You did not reach the passing score this time. You may retake the Final Exam whenever you are ready — there is no waiting period.',
     tone: 'bad',
   },
   timed_out: {
@@ -84,7 +84,7 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
  */
 const PASS_NOT_ISSUED = {
   title: 'PASSED',
-  body: 'You met the standard, but your membership was not active when this exam was submitted, so the credential has not been issued. Rejoin and you may sit the Final Exam again to have it issued.',
+  body: 'You met the standard, but your membership was not active when this exam was submitted, so the credential has not been issued. Rejoin and you may take the Final Exam again to have it issued.',
   tone: 'warn' as const,
 };
 
@@ -159,7 +159,7 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
               {result.score}
               <Text style={styles.scoreOf}> / {result.size}</Text>
             </Text>
-            <Text style={styles.passMark}>PASS MARK {result.pass_mark}</Text>
+            <Text style={styles.passMark}>PASSING SCORE {result.pass_mark}</Text>
           </View>
         )}
 

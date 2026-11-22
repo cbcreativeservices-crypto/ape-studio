@@ -180,7 +180,7 @@ export function MixMapArt(p: MapProps) {
       a11y={
         p.a11y ??
         `${p.title}. ${shapes
-          .map((s) => `${track(s.id).name} ${s.silent ? 'silent' : `${fmtDb(Math.round(s.db))} dB, ${Math.abs(s.pos) < 0.05 || p.mono ? 'centre' : `${Math.round(Math.abs(s.pos) * 100)} % ${s.pos < 0 ? 'left' : 'right'}`}${s.send != null ? ', in the reverb' : ''}`}${s.flipped ? ', polarity flipped' : ''}`)
+          .map((s) => `${track(s.id).name} ${s.silent ? 'silent' : `${fmtDb(Math.round(s.db))} dB, ${Math.abs(s.pos) < 0.05 || p.mono ? 'center' : `${Math.round(Math.abs(s.pos) * 100)} % ${s.pos < 0 ? 'left' : 'right'}`}${s.send != null ? ', in the reverb' : ''}`}${s.flipped ? ', polarity flipped' : ''}`)
           .join('; ')}.`
       }
     >

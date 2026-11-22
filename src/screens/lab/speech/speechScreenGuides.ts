@@ -408,7 +408,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
-      'Tap an answer. A wrong one stays open: pick again straight away.',
+      'Tap an answer. A wrong one stays open: pick again right away.',
       'FINISH · SEE WHAT’S LEFT › at the foot of the screen (FINISH › in the strip) shows what is left in the lab, at any time.',
       'If you leave this screen before all four are right, the questions start fresh.',
     ],

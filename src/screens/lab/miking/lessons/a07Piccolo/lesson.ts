@@ -652,7 +652,7 @@ export const A07_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the hold — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The 330 mm length is sourced; the 17 mm cork offset is the flute’s, the joint split, the bore and the keys are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The air jet, the hands, arms and head — illustrative; a 20 mm margin round the piccolo.', dims: [] },
+    { text: 'The air jet, the hands, arms and head — illustrative; a 20 mm margin around the piccolo.', dims: [] },
     { text: 'Every distance is the flute’s, transferred; the headset’s 4–9 cm and its size and reach are drawing defaults.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

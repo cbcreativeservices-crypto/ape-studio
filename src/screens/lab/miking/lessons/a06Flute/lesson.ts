@@ -659,7 +659,7 @@ export const A06_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the flute’s hold (10° forward, 8° down at the foot) — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The simple-system flute’s 600 mm length, its bore and its holes are drawing defaults (one maker’s design); the concert flute’s joint split, key layout and hand positions are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The air jet (150 mm, 15°), the hands, arms and head — illustrative; a 20 mm margin round the flute for its movement.', dims: [] },
+    { text: 'The air jet (150 mm, 15°), the hands, arms and head — illustrative; a 20 mm margin around the flute for its movement.', dims: [] },
     { text: '“A few inches” behind the head drawn 8–22 cm; the clip’s 3–11 cm, the headset’s 4–9 cm and the miniatures’ sizes and reaches — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

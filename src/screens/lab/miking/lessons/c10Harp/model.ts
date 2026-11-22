@@ -54,7 +54,7 @@ function zonesFor(g: HarpGeom, pre: 'hp' | 'lv', S: '' | 'L'): DocumentedZone[] 
       refSurface: `board${S}`,
       side: 'either',
       distance: { min: 2 * 12 * IN - 150, max: 2 * 12 * IN + 150 },
-      bandProv: ill('a ±15 cm band round the guide’s “about 2 feet”'),
+      bandProv: ill('a ±15 cm band around the guide’s “about 2 feet”'),
       requires: { variants: V, micTypeIds: SDC },
       aim: { maxOffAxis: 45, prov: ill('“aiming … at part of soundboard”: within 45° of facing the board') },
       drawn: {

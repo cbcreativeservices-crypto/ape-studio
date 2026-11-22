@@ -101,7 +101,7 @@ const envelopes: Envelope[] = [
     id: 'env.hands',
     label: 'the hands and their movement',
     shape: { kind: 'capsule', a: at(HAND_AXIS.a.x, HAND_AXIS.a.y, HAND_AXIS.a.z), b: at(HAND_AXIS.b.x, HAND_AXIS.b.y, HAND_AXIS.b.z), r: HAND_R },
-    prov: ill('the hands’ envelope round the harmonica, open to cupped and round a harp mic: every finger of the posed hands (freeReedHands.hmHands) inside it (a drawing default)'),
+    prov: ill('the hands’ envelope around the harmonica, open to cupped and around a harp mic: every finger of the posed hands (freeReedHands.hmHands) inside it (a drawing default)'),
   },
 ];
 

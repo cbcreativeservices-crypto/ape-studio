@@ -376,7 +376,7 @@ export const CLASS_COPY = {
   goneTitle: 'No longer shared',
   goneBody: 'This student has stopped sharing their progress with you, so there is nothing to show.',
   topicsHead: 'TOPICS',
-  topicsEmpty: 'No topics yet. Topics appear here once the student enrols in one or starts studying.',
+  topicsEmpty: 'No topics yet. Topics appear here once the student enrolls in one or starts studying.',
   methodsHead: 'STUDY METHODS',
   attemptsHead: 'QUIZ ATTEMPTS',
   practice: 'PRACTICE',

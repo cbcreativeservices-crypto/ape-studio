@@ -579,13 +579,13 @@ export function ScenariosScreen({ route }: Props) {
             <Text style={styles.reportUnsaved}>
               Your answers haven’t reached your account, and this device could not keep them for a
               retry — they are held in memory for now and will be lost if you close the app before
-              you’re back online. This round won’t count towards the quiz until it reaches your
+              you’re back online. This round won’t count toward the quiz until it reaches your
               account.
             </Text>
           ) : roundSaved === false ? (
             <Text style={styles.reportUnsaved}>
               Your answers are saved on this device but haven’t reached your account yet. They’ll
-              sync automatically next time you’re online — this round won’t count towards the quiz
+              sync automatically next time you’re online — this round won’t count toward the quiz
               until they do.
             </Text>
           ) : null}

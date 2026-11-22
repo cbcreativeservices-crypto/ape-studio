@@ -126,7 +126,8 @@ describe('a package is shown before it is added', () => {
     assert.equal(spPackagePreview(p, one, [true]).adds, 'Adds 1 input.');
     const none = spPackagePreview(p, one, [false]);
     assert.equal(none.count, 0);
-    assert.match(none.adds, /Tick at least one row/);
+    // owner 2026-11-21: American English in learner text (tick -> check)
+    assert.match(none.adds, /Check at least one row/);
     assert.deepEqual(none.picked, []);
   });
 

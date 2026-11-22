@@ -591,7 +591,7 @@ export const STAGE1_DEFINE: StageDef = {
             },
             {
               value: "benchmark",
-              label: "A target to work towards"
+              label: "A target to work toward"
             },
             {
               value: "direct_comparison",

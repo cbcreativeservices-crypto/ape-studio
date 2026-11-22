@@ -39,7 +39,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How two ears place a sound left or right: the far ear hears it later (ITD) and quieter and darker (the head shadow), and why front and back stay vague.',
-      start: 'Slide AZ from 0° to +90°, or drag object 1 round the head, and watch ITD climb to 656 µs. Then put on headphones and tap ▶ to hear it move.',
+      start: 'Slide AZ from 0° to +90°, or drag object 1 around the head, and watch ITD climb to 656 µs. Then put on headphones and tap ▶ to hear it move.',
     },
     seeing: [
       'You’re looking down on your head, facing FRONT 0° (up). BEHIND ±180° is at the bottom, +90° right, −90° left. Rings mark each meter out to 4 m.',
@@ -116,7 +116,7 @@ export const BINAURAL_SCREEN_GUIDES: Record<BinauralScreenId, ScreenGuide> = {
       'When all are right: Every question answered correctly — the check is passed.',
     ],
     control: [
-      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away.',
+      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another right away.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. If you leave the lab before every answer is right, the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what’s left in this lab, and the way back to labs.',

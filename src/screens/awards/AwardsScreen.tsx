@@ -466,7 +466,7 @@ const AwardPageView = memo(function AwardPageView({
               //    calls "deliberately still the stale" hardcoded draft list,
               //    which no v3 learner can satisfy. submit_final_exam is the
               //    only path that writes a credential_awards row.
-              'Complete a certificate’s required topics, then pass its Final Exam — the certificate is issued to your record straight away.'}
+              'Complete a certificate’s required topics, then pass its Final Exam — the certificate is issued to your record right away.'}
         </Text>
       </ScrollView>
     </View>

@@ -434,7 +434,7 @@ export function GearKnob({
           const v = Math.max(-100, Math.min(100, valueRef.current + (left ? -step : step)));
           if (v !== valueRef.current) {
             onChangeRef.current(v);
-            AccessibilityInfo.announceForAccessibility?.(`${name} pan ${v === 0 ? 'centre' : v < 0 ? `left ${Math.abs(v)}` : `right ${v}`}`);
+            AccessibilityInfo.announceForAccessibility?.(`${name} pan ${v === 0 ? 'center' : v < 0 ? `left ${Math.abs(v)}` : `right ${v}`}`);
           }
         },
       }),

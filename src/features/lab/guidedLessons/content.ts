@@ -1513,7 +1513,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       "On any new display, find the axes first: what runs across, what runs up, and what color or depth means. Most meter confusion is axis confusion, and Signal Detective rewards this habit.",
-      "Flip through PATTERN in Spectrum Analyzer until you name each shape on sight. From MAINS HUM to FEEDBACK, PEAK jumps from 60 Hz to 1.75 kHz: a low family, then one lone spike.",
+      "Flip through PATTERN in Spectrum Analyzer until you name each shape on sight. From AC HUM to FEEDBACK, PEAK jumps from 60 Hz to 1.75 kHz: a low family, then one lone spike.",
       "In Spectrogram, compare WHISTLE and FEEDBACK. Both draw one thin line, but only FEEDBACK grows hotter as it runs right. That growth is the warning sign.",
       "In Waterfall (CSD), tap Q RING on at the start: RIDGE jumps to 1.2 kHz and VS NEARBY to 3.0×. A very narrow filter stores energy and rings by itself.",
       "Pick PINK NOISE in Spectrum Analyzer: TILT reads −3.0/oct. A finished mix usually slopes down like this, not flat. A 1/3-octave RTA (real-time analyzer) shows pink noise flat instead.",

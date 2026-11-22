@@ -150,7 +150,7 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   const bezel: BezelItem[] = [
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.3 },
     { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? eqCell.toLowerCase() : dt > 0 ? 'B later' : 'B earlier', flex: 1.2 },
-    { k: 'LEVEL A−B', v: `${lvl >= 0 ? '+' : '−'}${Math.abs(lvl).toFixed(1)} dB`, sub: Math.abs(lvl) < 0.5 ? 'centre' : lvl > 0 ? 'toward A' : 'toward B', flex: 1.15 },
+    { k: 'LEVEL A−B', v: `${lvl >= 0 ? '+' : '−'}${Math.abs(lvl).toFixed(1)} dB`, sub: Math.abs(lvl) < 0.5 ? 'center' : lvl > 0 ? 'toward A' : 'toward B', flex: 1.15 },
     { k: '1ST NOTCH', v: equal ? eqCell : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.1 },
   ];
   const [wellW, setWellW] = useState(0);

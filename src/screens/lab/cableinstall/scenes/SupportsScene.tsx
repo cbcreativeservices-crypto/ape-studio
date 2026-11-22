@@ -708,7 +708,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
       <CiSection title="B · THE SORT — WOULD YOU HANG CABLE ON THIS?">
         <Text style={styles.lead}>
           One piece of hardware at a time. Approve only purpose-built, rated cable hardware — "it happens to be there"
-          is not a support. Pass mark: {passNeeded} right (80%).
+          is not a support. Passing score: {passNeeded} right (80%).
         </Text>
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {sortPassed ? '✓ ' : ''}

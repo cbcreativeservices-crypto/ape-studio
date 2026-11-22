@@ -572,7 +572,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
       },
       {
         prompt: 'Which cord?',
-        options: ['A CORD WHOSE PRINTED RATING SUITS THE LOAD, UNDAMAGED', 'ANY IEC LEAD — THEY ALL FIT', 'THE ONE WITH TAPE OVER THE JACKET NICK'],
+        options: ['A CORD WHOSE PRINTED RATING SUITS THE LOAD, UNDAMAGED', 'ANY IEC CORD — THEY ALL FIT', 'THE ONE WITH TAPE OVER THE JACKET NICK'],
         correct: 'A CORD WHOSE PRINTED RATING SUITS THE LOAD, UNDAMAGED',
         explain:
           'The identical coupler ships on cords of very different gauge and regional voltage — the printed rating on the cord jacket governs, never the shape. And damaged power cords leave service immediately; tape is not a repair.',

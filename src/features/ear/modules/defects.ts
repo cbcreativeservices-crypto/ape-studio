@@ -109,19 +109,19 @@ const mains = (rng: Rng): 50 | 60 => (rng() < 0.5 ? 50 : 60);
 const DEFECTS: Defect[] = [
   {
     key: 'hum', label: 'Hum', core: true, confusableWith: ['ground'],
-    truth: 'Mains hum — 50/60 Hz with a couple of soft harmonics. Smooth and low.',
+    truth: 'AC hum — 50/60 Hz with a couple of soft harmonics. Smooth and low.',
     solo: (rng) => hum(1.6, mains(rng), 3),
     onBed: (b, rng, mix) => addUnder(b, hum(b.length / SR, mains(rng), 3), mix),
   },
   {
     key: 'ground', label: 'Ground loop (emulation)', confusableWith: ['hum'],
-    truth: 'Ground-loop buzz (emulation) — this drill uses supply buzz at twice the mains (100/120 Hz) with even harmonics, so you can tell it from hum. Real loops vary; many hum at the mains frequency (50/60 Hz) itself.',
+    truth: 'Ground-loop buzz (emulation) — this drill uses supply buzz at twice the line frequency (100/120 Hz) with even harmonics, so you can tell it from hum. Real loops vary; many hum at the power-line frequency (50/60 Hz) itself.',
     solo: (rng) => groundLoop(1.6, mains(rng)),
     onBed: (b, rng, mix) => addUnder(b, groundLoop(b.length / SR, mains(rng)), mix),
   },
   {
     key: 'buzz', label: 'Buzz',
-    truth: 'Buzz — mains-rate like hum, but sixty harmonics deep: energy right up to 3 kHz (50 Hz mains) or 3.6 kHz (60 Hz). Edgy where hum is smooth.',
+    truth: 'Buzz — line-rate like hum, but sixty harmonics deep: energy right up to 3 kHz (50 Hz power) or 3.6 kHz (60 Hz). Edgy where hum is smooth.',
     solo: (rng) => buzz(1.6, mains(rng)),
     onBed: (b, rng, mix) => addUnder(b, buzz(b.length / SR, mains(rng)), mix),
   },
@@ -221,7 +221,7 @@ export const M5_DEFECTS: EarModule = {
         ? {
             kind: 'spectrum',
             clips: [0],
-            caption: 'Steady defects leave fingerprints — mains harmonics, tilted noise floors, harmonic spray.',
+            caption: 'Steady defects leave fingerprints — power-line harmonics, tilted noise floors, harmonic spray.',
           }
         : {
             kind: 'wave',

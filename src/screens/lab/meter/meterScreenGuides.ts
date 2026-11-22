@@ -235,7 +235,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   spectrum: {
     intro: {
       learning: 'How to read a spectrum by its shape: where the energy sits, smooth noise vs spiky notes, hum from AC power as a family of spikes, feedback as one spike.',
-      start: 'Open PATTERN and flip through all seven shapes. Then switch between MAINS HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.75 kHz.',
+      start: 'Open PATTERN and flip through all seven shapes. Then switch between AC HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.75 kHz.',
     },
     seeing: [
       'A spectrum analyzer shows you where a sound’s energy sits. Frequency runs left to right on a log scale (20, 100, 1k, 10k): 100 to 1k takes the same room as 1k to 10k. Level runs up in dB; bar colors follow it.',
@@ -243,7 +243,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Careful: PEAK here is a frequency, the tallest point’s. LEVEL is its height (dB rel), and TILT is the overall slope per octave (a doubling).',
     ],
     control: [
-      'PATTERN opens SPEECH, CYMBAL, KICK DRUM, GUITAR, MAINS HUM, FEEDBACK and PINK NOISE. Each option describes its shape, and the tray stays open so you can flip through them until each shape looks familiar.',
+      'PATTERN opens SPEECH, CYMBAL, KICK DRUM, GUITAR, AC HUM, FEEDBACK and PINK NOISE. Each option describes its shape, and the tray stays open so you can flip through them until each shape looks familiar.',
       'There’s nothing else to set here: the shape is the lesson.',
       'Stuck between two shapes? Long-press PATTERN for its guided-lesson entry.',
     ],
@@ -258,7 +258,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'A finished mix usually slopes down like pink noise, not flat.',
     ],
     tryThis: [
-      'Switch between MAINS HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.75 kHz, the same number the plot’s marker shows. You go from a low family to one lone spike.',
+      'Switch between AC HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.75 kHz, the same number the plot’s marker shows. You go from a low family to one lone spike.',
       'Pick PINK NOISE: TILT reads −3.0/oct, the reference slope. Then CYMBAL: TILT flips to +5.2/oct.',
       'Pick KICK DRUM: PEAK reads 60 Hz for the thump, and a small second bump sits near 3 kHz. That’s the beater click.',
     ],
@@ -413,7 +413,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     control: [
       'SIGNAL draws SINE, SQUARE, TRIANGLE, SAW, SPEECH or MUSIC, and the tray stays open so you can compare traces. Picking one in X-Y goes back to TIME: X-Y draws its own stereo pair.',
       'The X-Y key switches between TIME and X-Y.',
-      'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0 and stay greyed in TIME: tap X-Y first, and tap it again to get back to TIME.',
+      'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0 and stay grayed in TIME: tap X-Y first, and tap it again to get back to TIME.',
     ],
     changes: [
       'Each wave’s shape comes from its harmonics: a sine has none, a square has fast edges, this saw ramps down, then snaps back up.',

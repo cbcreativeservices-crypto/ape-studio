@@ -364,7 +364,7 @@ export const STAGE1_BRIEF: StageDef = {
           fieldId: "required_versions",
           label: "Versions and alternates required",
           kind: "multiChoice",
-          help: "Every one of these is a separate export with its own deadline. Tick them now, not in delivery week.",
+          help: "Every one of these is a separate export with its own deadline. Check them off now, not in delivery week.",
           options: [
             { value: "full_mix", label: "Full mix" },
             { value: "instrumental", label: "Instrumental" },

@@ -158,7 +158,7 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
     to: 'Powered loudspeaker',
     options: [
       { id: 'line_xlr', label: 'LINE LEVEL — balanced cable (typically XLR)' },
-      { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker lead' },
+      { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker cable' },
       { id: 'inst_cable', label: 'INSTRUMENT — shielded 1/4-inch instrument cable' },
       { id: 'mains_cord', label: 'AC POWER — power cordset' },
     ],
@@ -175,7 +175,7 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
     to: 'Power amplifier',
     options: [
       { id: 'line_bal', label: 'LINE LEVEL — balanced cable into the amplifier input' },
-      { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker lead' },
+      { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker cable' },
       { id: 'bare_pair', label: 'SPEAKER LEVEL — bare-wire pair into binding posts' },
       { id: 'mains_cord', label: 'AC POWER — power cordset' },
     ],
@@ -234,7 +234,7 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
     to: 'AC power',
     options: [
       { id: 'mains_cord', label: 'AC POWER — the cabinet’s power cordset, matched to its inlet' },
-      { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker lead' },
+      { id: 'spk_lead', label: 'SPEAKER LEVEL — speakON-style loudspeaker cable' },
       { id: 'adapter', label: 'AC POWER — an adapter from a speakON-style lead to the power inlet' },
       { id: 'line_xlr', label: 'LINE LEVEL — balanced XLR cable' },
     ],

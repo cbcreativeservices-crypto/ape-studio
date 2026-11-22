@@ -101,7 +101,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     seeing: [
       'THE ANALOG FAMILY draws seven connectors at one scale, so you see their real sizes side by side. PINOUT INK KEY colors each contact; always read it with the printed label.',
       'Then WHY THIS ONE MATTERS and the connector card: photo, ⚠ cautions, and sections from CONTACTS & USES to INSPECT & TEST.',
-      'BALANCED VS UNBALANCED shows noise cancelling. Four questions and ALSO RECOGNIZE follow.',
+      'BALANCED VS UNBALANCED shows noise canceling. Four questions and ALSO RECOGNIZE follow.',
     ],
     control: [
       'Tap a chip or a connector in the drawing: 3-PIN XLR (open first), 1/4-INCH TS, 1/4-INCH TRS, 3.5 MM TRS, 3.5 MM TRRS, RCA, COMBO XLR/TRS.',

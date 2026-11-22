@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A seated singer-guitarist cannot give the mics 3:1 spacing. Is the two-mic setup then wrong?',
     options: ['No — accept some bleed, aim the nulls, or use one mic', 'Yes — two mics need 3:1, or they cannot be used at all', 'Yes — move the guitar mic a meter away to get it'],
     correct: 'No — accept some bleed, aim the nulls, or use one mic',
-    explain: '3:1 is a starting design for reducing bleed (the same sound in both mics), not a pass mark. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
+    explain: '3:1 is a starting design for reducing bleed (the same sound in both mics), not a pass/fail rule. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
     why: {
       'Yes — two mics need 3:1, or they cannot be used at all': 'Many fine recordings break 3:1; it is a guideline, and the mono check decides.',
       'Yes — move the guitar mic a meter away to get it': 'A meter out the guitar mic hears more room and more voice — the opposite of the aim.',

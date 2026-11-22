@@ -269,7 +269,7 @@ export const STAGE2_MEDIA: StageDef = {
           fieldId: "known_problems",
           label: "Known technical problems",
           kind: "multiChoice",
-          help: "Tick what you have actually observed. Each one has a different cost and a different fix.",
+          help: "Check what you have actually observed. Each one has a different cost and a different fix.",
           options: [
             { value: "mixed_rates", label: "Mixed sample rates" },
             { value: "mixed_depths", label: "Mixed bit depths" },
@@ -391,7 +391,7 @@ export const STAGE2_MEDIA: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "No media inventory. Is that intended?",
-      detail: "Nothing has been catalogued, so there is no list to check a delivery against and no way to notice that something never arrived.",
+      detail: "Nothing has been cataloged, so there is no list to check a delivery against and no way to notice that something never arrived.",
       fixHint: "List the files with their technical properties read from the files themselves. Most tools will export this for you.",
       needsLogic: true,
       logicIntent: "Fire when media_inventory is empty."

@@ -104,7 +104,7 @@ export const FLAG_NAME: Record<FlagKey, string> = {
   'off-center': 'seat off the room’s center line',
   angle: 'listening angle outside 50–70°',
   'tweeter-height': 'tweeters off ear height',
-  'front-notch': 'front-wall bounce cancelling low bass at the seat',
+  'front-notch': 'front-wall bounce canceling low bass at the seat',
 };
 const IMAGE_FLAGS: FlagKey[] = ['no-triangle', 'lr-mismatch', 'side-mismatch', 'off-center', 'angle', 'tweeter-height'];
 

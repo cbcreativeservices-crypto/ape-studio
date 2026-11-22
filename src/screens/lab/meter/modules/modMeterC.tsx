@@ -666,7 +666,7 @@ export function ScopeModule(p: MeterModuleProps) {
         <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
           <MythReality
             myth="If no meter shows red, nothing is clipping anywhere in the chain."
-            reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
+            reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a safe level."
           />
         </CollapsibleSection>
         <GoalCheck spec={CHECK_SCOPE_SQUARE} />
@@ -844,7 +844,7 @@ const CASES: DetectiveCase[] = [
     },
     problem: {
       question: 'WHAT PROBLEM DO YOU SEE?',
-      options: ['Aliasing', 'Mains hum', 'Phase cancellation', 'DC offset'],
+      options: ['Aliasing', 'AC hum', 'Phase cancellation', 'DC offset'],
       correctIdx: 3,
       why: {
         0: 'Aliasing is a wrong frequency, not a wave lifted off center.',
@@ -983,7 +983,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
         'Feedback building up',
-        'Mains hum',
+        'AC hum',
         'DC offset',
         'Aliasing',
       ],
@@ -1133,7 +1133,7 @@ const CASES: DetectiveCase[] = [
       options: [
         'A room mode ringing at ~250 Hz',
         'Clipping at the input',
-        'Mains hum on the line',
+        'AC hum on the line',
         'DC offset in the signal',
       ],
       correctIdx: 0,

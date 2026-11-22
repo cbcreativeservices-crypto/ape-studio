@@ -611,7 +611,7 @@ export const A09A_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the 40° hold — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The 545 mm body and Ø 57 bell are a museum oboe of about 1900 used as a modern size; the reed (45 mm out), the joint split and the key layout are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head and the oboe’s pivot — illustrative keep-outs (a 20 mm margin round the oboe).', dims: [] },
+    { text: 'The hands, arms, head and the oboe’s pivot — illustrative keep-outs (a 20 mm margin around the oboe).', dims: [] },
     { text: '“A few inches from the bell” drawn 5–11 cm; the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

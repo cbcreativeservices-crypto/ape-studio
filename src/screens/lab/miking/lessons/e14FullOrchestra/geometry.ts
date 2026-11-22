@@ -91,7 +91,7 @@ export const E14_ZONES: DocumentedZone[] = [
     micTypeIds: ['arrCard'],
     tendency: 'More detail from four players the main pair hears as part of the blend — and an earlier arrival than the main pair to judge in the sum.',
     checks: ['It alone, then under the main pair', 'The players next to them (brass, strings)', 'The image and the mono sum'],
-    prov: ill('approached from above and in front: the lab’s cone round the shared support direction'),
+    prov: ill('approached from above and in front: the lab’s cone around the shared support direction'),
   }),
   targetZone({
     id: 'sup.vc.am',

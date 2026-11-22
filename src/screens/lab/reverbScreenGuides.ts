@@ -141,7 +141,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap an option to answer. Scroll down for every card.',
-      'A wrong answer costs nothing: pick again straight away.',
+      'A wrong answer costs nothing: pick again right away.',
       'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. If you leave the lab before the last right answer, they clear.',
     ],
     changes: [

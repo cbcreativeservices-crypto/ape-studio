@@ -719,7 +719,7 @@ export const C10_LESSON: Lesson = {
     { text: 'The five sound holes along the back (120 × 60 mm; the second from the bottom at 30 % of the board): their number and layout are drawing defaults.', dims: [] },
     { text: 'The seven pedals and their layout; the lever harp drawn at 0.75 of the pedal harp (about 1.4 m).', dims: [] },
     { text: 'The sizes come from museum instruments (an 1895 Erard, a Lyon & Healy of 1891–95) and the 1.9 m height from the research; a modern harp may differ.', dims: [] },
-    { text: 'The bands round the guides’ figures (60 cm ± 15 cm, 30 cm ± 5 cm), the pillar zone’s extent, the behind zone’s heights, the miniature at the opening — the lab’s drawing. The miniature’s size is a drawing default.', dims: [] },
+    { text: 'The bands around the guides’ figures (60 cm ± 15 cm, 30 cm ± 5 cm), the pillar zone’s extent, the behind zone’s heights, the miniature at the opening — the lab’s drawing. The miniature’s size is a drawing default.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

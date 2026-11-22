@@ -110,10 +110,10 @@ export function PackagePreview({ packageId, sourceId, onBack, onAdded }: { packa
       <SubTitle>This package assumes</SubTitle>
       <Note>{view.assumes}</Note>
       <SubTitle>Its rows</SubTitle>
-      <Small>Untick a row to leave it out. Every row can be changed or removed after it is added.</Small>
+      <Small>Uncheck a row to leave it out. Every row can be changed or removed after it is added.</Small>
       <View style={bitStyles.gap}>
         {view.rows.map((row) => {
-          const pairWord = row.side ? `${row.side === 'L' ? 'Left' : 'Right'} side of a stereo pair. Its other side is ticked with it.` : '';
+          const pairWord = row.side ? `${row.side === 'L' ? 'Left' : 'Right'} side of a stereo pair. Its other side is checked with it.` : '';
           return (
             <TickRow
               key={row.index}
@@ -121,7 +121,7 @@ export function PackagePreview({ packageId, sourceId, onBack, onAdded }: { packa
               sub={row.how}
               checked={row.ticked}
               onPress={() => setTicked((t) => spPackageToggle(def, t, row.index))}
-              a11yLabel={`${row.label}. ${row.how.replace(/ · /g, ', ')}. ${pairWord} ${row.monitorOnly ? 'Monitor only: kept out of the audience mix.' : ''} ${row.ticked ? 'Ticked: it is added.' : 'Not ticked: it is left out.'}`}
+              a11yLabel={`${row.label}. ${row.how.replace(/ · /g, ', ')}. ${pairWord} ${row.monitorOnly ? 'Monitor only: kept out of the audience mix.' : ''} ${row.ticked ? 'Checked: it is added.' : 'Not checked: it is left out.'}`}
               tags={
                 row.side || row.monitorOnly ? (
                   <>
@@ -134,7 +134,7 @@ export function PackagePreview({ packageId, sourceId, onBack, onAdded }: { packa
           );
         })}
       </View>
-      {def.rows.some((r) => r.side) ? <Small>The two sides of a stereo pair are ticked together. For one input, add the pair, open one of its rows and choose MAKE IT MONO.</Small> : null}
+      {def.rows.some((r) => r.side) ? <Small>The two sides of a stereo pair are checked together. For one input, add the pair, open one of its rows and choose MAKE IT MONO.</Small> : null}
 
       {source ? (
         <Note>These rows are added to {source.label}.</Note>
@@ -152,7 +152,7 @@ export function PackagePreview({ packageId, sourceId, onBack, onAdded }: { packa
         tone="primary"
         onPress={add}
         disabled={!view.count}
-        disabledReason="Tick at least one row."
+        disabledReason="Check at least one row."
         a11yLabel={view.count === 1 ? `Add 1 input from ${def.name}` : `Add ${view.count} inputs from ${def.name}`}
       />
       <Button label="‹ BACK TO THE PACKAGES" tone="plain" onPress={onBack} a11yLabel="Back to the packages. Nothing is added." />

@@ -670,7 +670,7 @@ registerActivityChecks({
     },
     {
       id: 'artefacts-checked',
-      label: 'The repairs have been checked for artefacts',
+      label: 'The repairs have been checked for artifacts',
       met: (c) => str(c.get('edit', 'artifact_check')).startsWith('yes'),
     },
     {

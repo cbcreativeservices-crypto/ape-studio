@@ -86,7 +86,7 @@ export const A12_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 9500, max: 11800 },
     bandProv: ill('about 35 ft (10.7 m) with the lab’s ±1.2 m'),
-    box: { min: v3(0, -3100, -1200), max: v3(NAVE.x1, -1800, 1200), prov: ill('about 8 ft up and midway: the lab’s band round the case study') },
+    box: { min: v3(0, -3100, -1200), max: v3(NAVE.x1, -1800, 1200), prov: ill('about 8 ft up and midway: the lab’s band around the case study') },
     aim: { maxOffAxis: 30, prov: ill('facing the organ: within 30° is the lab’s tolerance') },
     requires: { micTypeIds: MICS },
     start: pose(STUDY, RANKS),

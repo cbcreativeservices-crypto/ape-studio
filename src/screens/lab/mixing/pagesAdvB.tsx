@@ -225,7 +225,7 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
         question="Why do engineers often prefer two compressors doing 3 dB each over one doing 6 dB?"
         options={['Two plugins always sound better than one plugin', 'Each stage works gently, so neither is audibly grabbing', 'It uses the computer more efficiently', 'The second one fixes the first one’s mistakes automatically']}
         correct={1}
-        explain="Serial staging keeps every gain-reduction element in its polite zone. Same total control, far less of the pumping a single hard-working stage betrays."
+        explain="Serial staging keeps every gain-reduction element in its gentle zone. Same total control, far less of the pumping a single hard-working stage betrays."
         wrong={[
           'Count is not quality — ask what each stage is being asked to do.',
           undefined,

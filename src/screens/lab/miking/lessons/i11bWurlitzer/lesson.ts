@@ -707,7 +707,7 @@ export const I11B_LESSON: Lesson = {
     { text: 'The grille positions (±260 mm) and the speakers’ 20° tilt in the lid’s front slope: drawing defaults (GEOMETRY_PROPOSAL frame W).', dims: [] },
     { text: 'The oval speaker’s cone depth, dust cap and magnet: drawn with the 12 in reference’s proportions, scaled on each axis separately (depths on the mean scale). Only the 4 × 8 in size is sourced.', dims: [] },
     { text: 'The key count (64, Low): drawn as a keyboard pattern, never stated.', dims: [] },
-    { text: 'The close band 2–4 cm round the research’s 1 in, the off-center amount (half the long semi-axis) and the slight angle (5–30°): the lab’s drawing defaults round the practitioner’s method.', dims: [] },
+    { text: 'The close band 2–4 cm around the research’s 1 in, the off-center amount (half the long semi-axis) and the slight angle (5–30°): the lab’s drawing defaults around the practitioner’s method.', dims: [] },
     { text: 'The farther band (5–15 cm) and the room position (60–90 cm from the back of the case, about the lid’s height): drawing defaults — no number in the research.', dims: [] },
     { text: 'The seated player (torso, head, forearms, hands, knees, legs, sustain pedal): an ILLUSTRATIVE keep-clear envelope; no source gives one.', dims: [] },
     { text: 'The mechanism (inside view): the reed (60), its width, the solder, the pickup plate and its gap, the key and hammer: drawing defaults — no reed dimension was read.', dims: [] },

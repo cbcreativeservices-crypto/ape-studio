@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Hear the actual delivery: the quietest close phrase, the strongest note, a line full of consonants, a breathy line, the loudest chorus. One held note says nothing about the peaks or the pops.',
     why: {
       'Whether they are a male or a female voice': 'Gender alone does not choose a mic: the individual voice, the style and the room do.',
-      'A single held note, to set the input level': 'A polite held note hides the peaks and the consonants. Use the real song.',
+      'A single held note, to set the input level': 'A gentle held note hides the peaks and the consonants. Use the real song.',
     },
   },
   {

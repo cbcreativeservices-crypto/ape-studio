@@ -318,7 +318,7 @@ export function SoundSafetyWarning({
                   ? 'Saving your acknowledgment'
                   : checked
                     ? SOUND_SAFETY_ACCEPT
-                    : 'Enable sound. Unavailable until you tick the box at the end of the warning.'
+                    : 'Enable sound. Unavailable until you check the box at the end of the warning.'
               }
             >
               <Text style={[styles.acceptText, acceptOff && styles.acceptTextOff]}>

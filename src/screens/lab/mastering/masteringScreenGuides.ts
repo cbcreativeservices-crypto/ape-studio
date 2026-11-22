@@ -691,7 +691,7 @@ export const MASTERING_GUIDE_STEPS: Record<MasteringModuleId, readonly Mastering
         control: [
           'TILT fader: −4.0 to +4.0 dB end to end, in 0.5 dB steps. It starts at +1.5.',
           'MATCH LEVEL starts on; leave it on. Tap ▶ BYPASS to hear the mix untouched, ▶ WITH EQ to hear the tilt, and ■ STOP to stop. Tapping the display plays or stops too.',
-          'With MATCH on, moving the fader updates the version you’re hearing and plays it again, so you can compare straight away.',
+          'With MATCH on, moving the fader updates the version you’re hearing and plays it again, so you can compare right away.',
         ],
         changes: [
           'WITH EQ adds the tilt plus a +2 dB output trim — the way a “better” setting usually sneaks in louder. The −0.3 dBFS SAFETY ceiling holds its peaks.',

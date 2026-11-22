@@ -87,7 +87,8 @@ describe('1 · correction applied after it was ruled out is still caught', () =>
   it('the field says why it is there, and both labs still validate', () => {
     const src = read('src/features/production/postprod/stage5.data.ts');
     assert.match(src, /showWhen: \{ field: "correction_decision", notEquals: \["none_needed"\] \},\n\s*label: "What is being corrected"/);
-    assert.match(src, /If correction was ruled out, leave this empty\. Anything ticked here is a change to a performance that nobody agreed to\./);
+    // owner 2026-11-21: American English in learner text (ticked -> checked)
+    assert.match(src, /If correction was ruled out, leave this empty\. Anything checked here is a change to a performance that nobody agreed to\./);
     for (const lab of ['preprod', 'postprod'] as const) {
       assert.deepEqual(validateStages(LABS[lab].stages), [], lab);
       assert.deepEqual(validateSeeds(LABS[lab].stages), [], lab);

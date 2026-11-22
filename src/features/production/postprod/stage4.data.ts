@@ -235,7 +235,7 @@ export const STAGE4_EDIT: StageDef = {
           fieldId: "edit_faults_checked",
           label: "Edit faults checked for",
           kind: "multiChoice",
-          help: "The list a careful pass listens for. Ticking them here is a commitment to having listened.",
+          help: "The list a careful pass listens for. Checking them here is a commitment to having listened.",
           options: [
             { value: "clicks", label: "Clicks at boundaries" },
             { value: "fades", label: "Missing fades" },
@@ -421,7 +421,7 @@ export const STAGE4_EDIT: StageDef = {
         },
         {
           fieldId: "artifact_check",
-          label: "Have the repairs been checked for artefacts",
+          label: "Have the repairs been checked for artifacts",
           kind: "choice",
           help: "Over-reduced speech goes hollow and watery, and it is easiest to hear when you stop listening to the noise and start listening to the voice.",
           required: true,
@@ -507,7 +507,7 @@ export const STAGE4_EDIT: StageDef = {
       severity: "info",
       kind: "missing",
       title: "No record of what is temporary. Is that intended?",
-      detail: "Assemblies almost always contain something standing in for something else. If it is not written down, the stand-in travels quietly towards the master.",
+      detail: "Assemblies almost always contain something standing in for something else. If it is not written down, the stand-in travels quietly toward the master.",
       fixHint: "List anything temporary and what replaces it. If genuinely nothing is temporary, mark the field not applicable.",
       needsLogic: true,
       logicIntent: "Fire when assembly_state is partial or complete and temp_material is empty and not marked not applicable."
@@ -554,7 +554,7 @@ export const STAGE4_EDIT: StageDef = {
       kind: "missing",
       title: "The edit has not been checked for the usual faults. Is that intended?",
       detail: "Clicks at boundaries, missing fades and cut-off consonants are cheap to fix now and expensive once they are buried under processing.",
-      fixHint: "Do one pass listening only for joins, with the material soloed, then one in context. Tick what you checked.",
+      fixHint: "Do one pass listening only for joins, with the material soloed, then one in context. Mark what you checked.",
       needsLogic: true,
       logicIntent: "Fire when assembly_state is complete and edit_faults_checked has fewer than three entries.",
       onlyFor: ["podcast", "live"]
@@ -643,7 +643,7 @@ export const STAGE4_EDIT: StageDef = {
         { pb_where: "31:20 remote", pb_problem: "dropout", pb_severity: "distracting", pb_action: "", pb_notes: "Half a word gone" }
       ]
     },
-    passWhen: "Every problem row carries an action, including the dropout that had none; neither of the two subtle problems is still set to re-record or ADR; a processing order is written down; the comparison method includes listening to the removed signal and level-matched comparison; the artefact check is no longer outstanding; breaths are no longer being removed wholesale; and the preferred take records a reason beyond being the quietest.",
+    passWhen: "Every problem row carries an action, including the dropout that had none; neither of the two subtle problems is still set to re-record or ADR; a processing order is written down; the comparison method includes listening to the removed signal and level-matched comparison; the artifact check is no longer outstanding; breaths are no longer being removed wholesale; and the preferred take records a reason beyond being the quietest.",
     debrief: "Two of the five original decisions were the expensive kind. Re-recording a guest to remove a mouth noise nobody would notice costs a session, a favor and a performance that will not match the one around it — and ADR for the same reason is worse. Meanwhile the one row with no decision at all was the genuinely serious one: half a word missing from the remote feed, which no amount of processing repairs and which needs either the guest's local file or a re-record of that line. Notice the pattern. Effort was being spent in inverse proportion to severity, which is what happens whenever repairs are judged soloed and one at a time. The working method fixes it better than any individual decision: listen to what you are removing, match the levels, and judge it in the mix."
   }
 };

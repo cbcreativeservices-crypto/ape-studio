@@ -470,7 +470,7 @@ export function MultiBandModule(p: EqModuleComponentProps) {
             ],
             correctIdx: 0,
             reveal:
-              'Band responses SUM. Where two boosts overlap, the composite rises above either one — which is how polite-looking bands quietly stack into an ugly bump. Read the combined curve, not the knobs.',
+              'Band responses SUM. Where two boosts overlap, the composite rises above either one — which is how modest-looking bands quietly stack into an ugly bump. Read the combined curve, not the knobs.',
             // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
             why: {
               1: 'Bands do not compete; each one acts on the sound. Watch the bold combined curve.',

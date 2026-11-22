@@ -113,7 +113,7 @@ export const BODY = {
   backX: H0.x - 270,
   chestX: H0.x - 20,
   halfW: 200,
-  prov: ill('a standing adult’s proportions round the drawn player (a drawing default)'),
+  prov: ill('a standing adult’s proportions around the drawn player (a drawing default)'),
 } as const;
 
 /** The breath stream leaving the back of the harmonica (drawn, never a keep-out). */

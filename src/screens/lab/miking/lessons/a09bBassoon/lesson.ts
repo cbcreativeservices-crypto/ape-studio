@@ -625,7 +625,7 @@ export const A09B_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the hold across the body — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The split of the 2.6 m bore between the bocal, wing joint, boot, long joint and bell, the joints’ diameters and the key layout are drawing defaults; the 1.35 m height, the bore’s ends and the bell are sourced; the holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head, the seat strap and the bassoon’s pivot — illustrative keep-outs (a 20 mm margin round the bassoon).', dims: [] },
+    { text: 'The hands, arms, head, the seat strap and the bassoon’s pivot — illustrative keep-outs (a 20 mm margin around the bassoon).', dims: [] },
     { text: 'The bell view’s 12–30 cm, the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

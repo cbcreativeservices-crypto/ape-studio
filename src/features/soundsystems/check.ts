@@ -135,7 +135,7 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
     why: {
       'A cleaner signal, since the preamp is relaxed': 'A preamp set low leaves the signal close to its own noise floor, and later gain cannot pull the two apart.',
       'Distortion, starting at the preamp': 'A preamp set LOW has plenty of headroom; distortion at the preamp is the opposite fault.',
-      'No difference at all in the sound': 'Look at the grey haze on the meters in the gain-structure chapter as a later stage goes up.',
+      'No difference at all in the sound': 'Look at the gray haze on the meters in the gain-structure chapter as a later stage goes up.',
     },
   },
   {

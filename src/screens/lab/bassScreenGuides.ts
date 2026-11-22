@@ -147,7 +147,7 @@ export const BASS_SCREEN_GUIDES: Record<BassScreenId, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A review of the lab’s core physics: length and pitch, string fractions and intervals, why frets crowd together, and what a light touch at ⅓ sounds.',
-      start: 'Start with the 12th-fret question. Unsure? Open FORMULA / CONCEPT on LEARN, then come back. A wrong pick costs nothing, and you can pick again straight away.',
+      start: 'Start with the 12th-fret question. Unsure? Open FORMULA / CONCEPT on LEARN, then come back. A wrong pick costs nothing, and you can pick again right away.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING asks four questions: the 12th fret, the 7th fret, why frets crowd together, and the touch at ⅓.',

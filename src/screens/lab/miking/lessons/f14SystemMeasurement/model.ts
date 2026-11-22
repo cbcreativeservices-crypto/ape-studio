@@ -39,7 +39,7 @@ const FF = ['measFF', 'measQuarter'];
 const ON_FILE = { maxOffAxis: 5, prov: ill('"aim it in the orientation that file specifies" (F14 L6): within 5° of the reference point is the lab’s tolerance') };
 const SEATED = { line: 'floor', min: 1100, max: 1300, prov: src('MEYER-MAPP', '1.2 m (~4 ft.) for seated audience') };
 const STANDING = { line: 'floor', min: 1600, max: 1800, prov: src('MEYER-MAPP', '1.7 m (~5.6 ft.) for standing audience') };
-const SEAT_BOX = (p: Vec3) => ({ min: { x: p.x - 350, y: -5000, z: p.z - 400 }, max: { x: p.x + 350, y: 5000, z: p.z + 400 }, prov: ill('round the drawn seat (drawing default)') });
+const SEAT_BOX = (p: Vec3) => ({ min: { x: p.x - 350, y: -5000, z: p.z - 400 }, max: { x: p.x + 350, y: 5000, z: p.z + 400 }, prov: ill('around the drawn seat (drawing default)') });
 const SEAT_DRAW = (p: Vec3, h: number) => ({ side: { u0: p.x - 350, u1: p.x + 350, v0: -h - 100, v1: -h + 100 }, top: { u0: p.x - 350, u1: p.x + 350, v0: p.z - 400, v1: p.z + 400 } });
 
 export const F14_START = {

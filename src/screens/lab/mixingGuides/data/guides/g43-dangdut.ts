@@ -24,7 +24,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Dangdut is dance music for crowds. Joget (free dancing) in front of the stage is the point, and koplo (fast East-Java style) shows add saweran: fans hand money to the singer mid-song. Born among the urban working class and turned into a national sound by Rhoma Irama, it now plays at weddings, circumcision feasts, Independence Day stages, election rallies, TV shows and stadiums. Audiences want to feel the kendang (hand drums) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer. It “sounds wrong” when the kendang is buried under the kit, the sub turns the dhut to mush, the vocal is harsh or unclear, or the band sounds polite. Koplo “jos” breaks and fills are cue points where the dancing jumps."
+      "text": "Dangdut is dance music for crowds. Joget (free dancing) in front of the stage is the point, and koplo (fast East-Java style) shows add saweran: fans hand money to the singer mid-song. Born among the urban working class and turned into a national sound by Rhoma Irama, it now plays at weddings, circumcision feasts, Independence Day stages, election rallies, TV shows and stadiums. Audiences want to feel the kendang (hand drums) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer. It “sounds wrong” when the kendang is buried under the kit, the sub turns the dhut to mush, the vocal is harsh or unclear, or the band sounds timid. Koplo “jos” breaks and fills are cue points where the dancing jumps."
     }
   ],
   "instruments": [

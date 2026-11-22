@@ -652,7 +652,7 @@ export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; 
       CHIP_LINE,
     ],
     changes: [
-      'Each of the first two modules counts the moment you finish it, so this activity opens straight away.',
+      'Each of the first two modules counts the moment you finish it, so this activity opens right away.',
       'Passing the quick check opens every activity, but it finishes nothing: you still complete the first two modules yourself.',
     ],
     teaches: [

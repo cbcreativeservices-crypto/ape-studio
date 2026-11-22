@@ -127,7 +127,7 @@ export const STEREO_SCREEN_GUIDES: Record<StereoScreenId, ScreenGuide> = {
       'When all are right, it reads: Every question answered correctly — the check is passed.',
     ],
     control: [
-      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another straight away.',
+      'Tap a choice. A wrong one shows a pointer in amber (a second wrong pick adds the explanation); pick another right away.',
       'A right one locks green and shows why. The choices are shuffled, so position never gives the answer away.',
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. Leave the lab before the last one and the check starts over.',
       'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',

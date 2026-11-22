@@ -283,7 +283,7 @@ export const M12_POLARITY: EarModule = {
           // a hole — the caption must say so (verified 2026-10-31).
           caption:
             level === 1
-              ? `Clip ${inFirst ? 'B' : 'A'} cancelled to total silence, so its trace is a meaningless flat line, not sound. At levels 2–3 the cancellation is partial and shows as a low-frequency hole.`
+              ? `Clip ${inFirst ? 'B' : 'A'} canceled to total silence, so its trace is a meaningless flat line, not sound. At levels 2–3 the cancellation is partial and shows as a low-frequency hole.`
               : 'The flipped sum’s low-frequency hole is unmistakable once you see it.',
         },
       };

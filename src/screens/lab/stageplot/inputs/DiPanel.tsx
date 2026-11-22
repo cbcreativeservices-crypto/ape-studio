@@ -102,7 +102,7 @@ export function DiEditor({ deviceId, onClose }: { deviceId: SpId; onClose: () =>
             <TickRow
               key={r.inputId}
               title={r.label}
-              sub={r.on ? 'On this device' : r.elsewhere ? `On ${r.elsewhere} now. Ticking moves it here.` : 'No DI device (DI box) yet'}
+              sub={r.on ? 'On this device' : r.elsewhere ? `On ${r.elsewhere} now. Check it to move it here.` : 'No DI device (DI box) yet'}
               checked={r.on}
               onPress={() => ed.apply((q) => spDiToggle(q, deviceId, r.inputId))}
               a11yLabel={`${r.label}. ${r.on ? `On ${d.label}. Press to take it off.` : r.elsewhere ? `On ${r.elsewhere} now. Press to move it to ${d.label}.` : `No device yet. Press to put it on ${d.label}.`}`}

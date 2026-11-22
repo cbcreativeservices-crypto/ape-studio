@@ -787,7 +787,7 @@ export const C11_LESSON: Lesson = {
     { text: 'The upright’s inside: the soundboard 28–40 mm behind the strings, the hammer line 950 mm up, the panels, the open top lid leaning back 12°, a wall 40 cm behind.', dims: [] },
     { text: 'The octave span (164 mm) comes from a museum Bechstein (ca. 1893); the black keys are drawn centered on their white keys’ boundary.', dims: [] },
     { text: 'The pianist and bench (proposal §5): bench 760 × 360 at 480, head 1250 up, hands over the keys, feet on the pedals — drawn illustratively.', dims: [] },
-    { text: 'The bands round the guides’ single figures (±5 cm), the outside pair’s 30 cm–1 m and its height, the under-the-piano 15–45 cm, the sound-hole 12–30 cm, the upright top 3–25 cm and inside 5–25 cm, the panel-off 6–20 cm — the lab’s drawing.', dims: [] },
+    { text: 'The bands around the guides’ single figures (±5 cm), the outside pair’s 30 cm–1 m and its height, the under-the-piano 15–45 cm, the sound-hole 12–30 cm, the upright top 3–25 cm and inside 5–25 cm, the panel-off 6–20 cm — the lab’s drawing.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

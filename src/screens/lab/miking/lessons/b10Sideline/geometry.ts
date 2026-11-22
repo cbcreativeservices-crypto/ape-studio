@@ -87,7 +87,7 @@ export const B10_VIEWS: Record<'sideline' | 'twoMics' | 'postEvent', { side: Vie
 const W = VOICE_PART_WORDS;
 const S = SINGER_SOLIDS;
 const RS = standSolids(REPORTER);
-const FIG = ill('the shared adult figure standing (players/playerPose BODY), placed round the lip point: a drawing default');
+const FIG = ill('the shared adult figure standing (players/playerPose BODY), placed around the lip point: a drawing default');
 const voiceR = talkerVoice(REPORTER, IDS_R);
 
 const parts: Part[] = [

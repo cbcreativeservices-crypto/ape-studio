@@ -131,7 +131,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       'AES3 specifies 110-ohm balanced cable: AES3 — VERIFIED 2026-08-15: TV Tech (Use Correct Cables for AES3)',
       'DMX512 specifies 120-ohm cable; 5-pin XLR is its standard connector with 3-pin appearing on some fixtures: ANSI E1.11 — VERIFIED 2026-08-15: ETC DMX512 Info',
       'Audio line carrying +48 V phantom power patched into a DMX fixture data port can damage lighting-control electronics: Sweetwater Lighting 101 Part 2 (Understanding DMX) — VERIFIED 2026-08-15',
-      'Shock, tingle, or buzz from a microphone or chassis indicates a mains grounding fault, not phantom power — stop, power down, and have equipment and outlets checked by a qualified person; never defeat a ground pin: Audio University (Electric Shock From a Microphone or Guitar) — VERIFIED 2026-08-15',
+      'Shock, tingle, or buzz from a microphone or chassis indicates an AC grounding fault, not phantom power — stop, power down, and have equipment and outlets checked by a qualified person; never defeat a ground pin: Audio University (Electric Shock From a Microphone or Guitar) — VERIFIED 2026-08-15',
     ],
   },
   {

@@ -716,7 +716,7 @@ export const C12_LESSON: Lesson = {
     { text: 'The amplifier is drawn generically: the cabinet sizes come from a real open-backed combo and a real closed 1×12 cabinet, not from the lesson; the speaker’s position on the baffle, the open back’s opening and the chassis are drawing defaults.', dims: [] },
     { text: 'The speaker’s dust cap (radius 5 cm) and surround (12.8 cm) are drawing defaults; the cone’s size comes from a real 12-inch speaker.', dims: [] },
     { text: 'The clavinet’s case (100 × 45 cm), the stage layout and the keyboardist’s position are drawing defaults: the leaflet gives no dimensions. The mechanism is drawn as one straight string, not to scale.', dims: [] },
-    { text: 'The bands round the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the center, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
+    { text: 'The bands around the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the center, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

@@ -42,7 +42,7 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
   control: [
     'Tap a module’s name to read its one-line description; tap OPEN to start it.',
     'Inside most modules, the display is on top, readouts sit on its frame and the controls are in the dock at the bottom. Scroll below for notes and a check. Tap ⓘ beside a module’s title to have that screen explained.',
-    'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab; a wrong answer can be tried again straight away.',
+    'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab; a wrong answer can be tried again right away.',
     'RELATED TOOLS opens the SPECTRUM ANALYZER / RTA, the EQUALIZER EFFECT LAB (the one-band lab you can hear) and the Q & BANDWIDTH CALC.',
     'SEE WHAT’S LEFT lists the modules whose goal is not met yet; ‹ leaves the lab.',
   ],

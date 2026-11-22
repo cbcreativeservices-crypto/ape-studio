@@ -588,7 +588,8 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
       const silent = t.clips.findIndex((c: { buf: Float32Array }) => c.buf.every((v) => v === 0));
       assert.ok(silent === 0 || silent === 1, `seed ${seed}: one clip is all zeros`);
       const label = t.clips[silent].label;
-      assert.ok(t.seeIt.caption.startsWith(`Clip ${label} cancelled to total silence`), t.seeIt.caption);
+      // owner 2026-11-21: American English in learner text (cancelled -> canceled)
+      assert.ok(t.seeIt.caption.startsWith(`Clip ${label} canceled to total silence`), t.seeIt.caption);
       assert.doesNotMatch(t.seeIt.caption, /unmistakable/);
     }
     // Levels 2–3 keep the hole caption (partial cancellation is real there).

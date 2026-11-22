@@ -216,7 +216,7 @@ export function spPackagePreview(p: SpProject, pkg: SpPackage, ticked: readonly 
     sourceLabel: existing ? existing.label : spUniqueLabel(p.sources.map((s) => s.label), pkg.source, who),
     rows,
     count,
-    adds: count ? `Adds ${plural(count, 'input')}.` : 'No row is ticked. Tick at least one row to add it.',
+    adds: count ? `Adds ${plural(count, 'input')}.` : 'No row is checked. Check at least one row to add it.',
     picked,
   };
 }

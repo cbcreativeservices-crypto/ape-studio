@@ -356,7 +356,7 @@ export function simulateLoudness(key: SignalKey, seed = 3): LoudnessSim {
 export type SpectrumKey = 'speech' | 'cymbal' | 'kick' | 'guitar' | 'hum' | 'feedback' | 'pinknoise';
 export const SPECTRUM_LABELS: Record<SpectrumKey, string> = {
   speech: 'Speech', cymbal: 'Cymbal', kick: 'Kick drum', guitar: 'Guitar',
-  hum: 'Mains hum', feedback: 'Feedback', pinknoise: 'Pink noise',
+  hum: 'AC hum', feedback: 'Feedback', pinknoise: 'Pink noise',
 };
 
 /** Teaching spectrum in dB (relative) at frequency f (20..20k). */
@@ -841,6 +841,30 @@ export const RIDGE_CALLOUT_RATIO = 1.5;
  * True when RT60 moves by less than `tol` (relative) at every frequency on the
  * same 40 Hz–12 kHz grid the ridge detector uses.
  */
+/**
+ * Is DAMPING hidden by the chosen REVERB? (owner 2026-11-21 on the iPhone:
+ * Classroom + HALL looked the same at 0 % and 100 % damping — "extreme
+ * opposites".) An added reverb's tail is not shortened by wall treatment, and
+ * the slower decay always wins, so when the whole damping travel moves the
+ * decay by under 10 % across the speech/music band the slider looks dead. The
+ * physics is right; the lane SAYS so (owner pick: "Lane says it").
+ */
+export function waterfallDampingHidden(opts: WaterfallOpts): boolean {
+  if (opts.reverb === 'none') return false;
+  const dry = { ...opts, damping01: 0 };
+  const wet = { ...opts, damping01: 1 };
+  // At most ONE band may still move a little (Classroom's 250 Hz mode drops ~14 %
+  // under HALL — a sliver the eye cannot find on the plot); none may move a lot.
+  let moved = 0;
+  for (const f of [125, 250, 500, 1000, 2000, 4000]) {
+    const a = waterfallRt(dry, f);
+    const rel = Math.abs(waterfallRt(wet, f) - a) / a;
+    if (rel >= 0.25) return false;
+    if (rel >= 0.1) moved++;
+  }
+  return moved <= 1;
+}
+
 export function waterfallDecayUnchanged(a: WaterfallOpts, b: WaterfallOpts, tol = 0.03): boolean {
   const N = 120;
   const lgLo = Math.log10(40);

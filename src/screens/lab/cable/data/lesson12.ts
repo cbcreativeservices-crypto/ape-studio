@@ -309,7 +309,7 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     correctIdx: 2,
     why: {
       0: 'Speed does not cover the moment the free end is live.',
-      1: 'A label does not stop the exposed pins from carrying mains voltage.',
+      1: 'A label does not stop the exposed pins from carrying line voltage.',
       3: 'Feeding a building backward this way endangers line workers. It is never the answer.',
     },
     reveal:
@@ -376,9 +376,9 @@ export const SAFETY_QUESTIONS: SafetyCheckItem[] = [
     ],
     correctIdx: 3,
     why: {
-      0: 'A tutorial does not make anyone qualified for mains wiring.',
+      0: 'A tutorial does not make anyone qualified for AC wiring.',
       1: 'Unplugged while you work, but live again the moment it is plugged in.',
-      2: 'Low current or not, it is still mains wiring.',
+      2: 'Low current or not, it is still AC wiring.',
     },
     reveal:
       'Every power connector in this lab draws the same line: identification, inspection and safe use are beginner skills; internal AC wiring, termination and repair belong to qualified people. The boundary does not move with confidence, cord size, or convenience.',

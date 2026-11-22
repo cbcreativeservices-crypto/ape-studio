@@ -186,7 +186,7 @@ export function ExamBriefing({
            * is the route.
            */
           <Text style={styles.body}>
-            Pass this exam and the certificate is issued to your record straight away. It appears in
+            Pass this exam and the certificate is issued to your record right away. It appears in
             My Progress and on your Profile, and you can download it as a PDF.
           </Text>
         ) : (

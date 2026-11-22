@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Hear the actual music: the softest endings, the strongest high attacks, falls and shakes, every mute change — and watch how far the bell moves. One held note says nothing about the peaks.',
     why: {
       'Whether it is a B♭ or a C trumpet, for the mic': 'The pitch of the horn does not choose the mic. The part and its dynamics do.',
-      'A single held middle note, to set the input level': 'A polite middle note hides the peaks and the movement. Use the real part.',
+      'A single held middle note, to set the input level': 'A gentle middle note hides the peaks and the movement. Use the real part.',
     },
   },
   {

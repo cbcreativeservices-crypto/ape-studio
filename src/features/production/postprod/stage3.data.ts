@@ -252,7 +252,7 @@ export const STAGE3_SESSION: StageDef = {
           fieldId: "sync_sources",
           label: "What you are synchronizing from",
           kind: "multiChoice",
-          help: "Tick everything available. Timecode is the strongest; a clap is more reliable than people expect; waveform matching is excellent until the recordings diverge.",
+          help: "Check everything available. Timecode is the strongest; a clap is more reliable than people expect; waveform matching is excellent until the recordings diverge.",
           required: true,
           options: [
             { value: "embedded_tc", label: "Embedded timecode" },

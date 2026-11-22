@@ -190,7 +190,7 @@ export function bowedModel(P: Posture, o: BowedModelOpts): InstrumentModel {
       label: 'the endpin’s point on the floor',
       short: 'endpin',
       role: 'Keep a stand’s base well away from the endpin’s point.',
-      prov: ill('a 150 mm keep-out round the endpin’s tip (proposal)'),
+      prov: ill('a 150 mm keep-out around the endpin’s tip (proposal)'),
       listIn: [],
       solid: cap(P.endpinTip, P.endpinTip, 150),
     });
@@ -247,7 +247,7 @@ export function bowedModel(P: Posture, o: BowedModelOpts): InstrumentModel {
     short: 'left hand',
     role: 'The left hand stops the strings anywhere along the fingerboard and shifts up and down it.',
     moving: true,
-    prov: ill('env.bw.leftHand: the fingerboard, ±70 round the neck (proposal)'),
+    prov: ill('env.bw.leftHand: the fingerboard, ±70 around the neck (proposal)'),
     solid: cap(B({ x: st.handEndX + 40, y: 0, z: fingerboardZ(spec, st.handEndX + 40) - 10 }), B({ x: st.nutX - 10, y: 0, z: fingerboardZ(spec, st.nutX) - 10 }), 70),
   });
   parts.push({ id: 'bw.armL1', label: 'the left arm', short: 'left arm', role: 'The left arm reaches the neck.', prov: PLAYER, listIn: [], solid: cap(pl.shoulderL, pl.elbowL, 50) });

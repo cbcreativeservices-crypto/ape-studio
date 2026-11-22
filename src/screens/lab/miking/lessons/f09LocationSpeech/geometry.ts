@@ -96,7 +96,7 @@ export const F09_VIEWS: Record<'set' | 'outdoor' | 'live', { side: ViewBox; top:
   live: { side: { u0: -450, u1: 1250, v0: -500, v1: 1640 }, top: { u0: -450, u1: 1250, v0: -700, v1: 700 } },
 };
 
-const FIG = ill('the shared adult figure (players/playerPose BODY), placed round the lip point: a drawing default');
+const FIG = ill('the shared adult figure (players/playerPose BODY), placed around the lip point: a drawing default');
 const W = VOICE_PART_WORDS;
 const S = SINGER_SOLIDS;
 const parts: Part[] = [

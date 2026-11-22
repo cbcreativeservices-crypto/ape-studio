@@ -128,7 +128,8 @@ describe('MT-06 + SH-64 · Meter: the Oscilloscope dock opens on SIGNAL; WIDTH a
     assert.doesNotMatch(sc, /xyFader/);
   });
   it('the guide says so', () => {
-    assert.match(read('src/screens/lab/meter/meterScreenGuides.ts'), /stay greyed in TIME: tap X-Y first/);
+    // owner 2026-11-21: American English in learner text (greyed -> grayed)
+    assert.match(read('src/screens/lab/meter/meterScreenGuides.ts'), /stay grayed in TIME: tap X-Y first/);
   });
 });
 

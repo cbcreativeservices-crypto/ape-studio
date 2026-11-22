@@ -53,12 +53,12 @@ const TERMS = [
   { term: 'Input list', def: 'Which source is on which channel and input, written down and agreed before the night — so nobody has to guess what a cable feeds.' },
   { term: 'USB audio', def: 'A laptop’s music reaching the mixer over its USB cable. This lab’s mixer has two USB PORTS, printed USB 1 and USB 2: port 1 feeds CH 1 and port 2 feeds CH 2 when that channel’s input selector is on USB. A port is a whole USB connection — not the same thing as Screen 16’s USB 1/2 and USB 3/4, which are pairs of audio channels inside ONE USB connection. (Screen 16 shows more.)' },
   { term: 'Backup playback', def: 'A way to keep music going that does not depend on the thing most likely to fail: a stick in a player, ready on a channel, while a laptop plays.' },
-  { term: 'Ground loop', def: 'Two grounded paths between pieces of gear — a charger on another circuit, and the USB or audio cable — make a loop that picks up mains hum (60 Hz, 50 Hz in many countries). Break it in the audio or USB path with an isolator (a small box that breaks the ground in the cable), or power everything from one strip, which often cures it. A charger can still whine on the same strip: then try the battery. Never remove the safety ground — the ground pin that keeps a fault from making metal live.' },
+  { term: 'Ground loop', def: 'Two grounded paths between pieces of gear — a charger on another circuit, and the USB or audio cable — make a loop that picks up AC hum (60 Hz, 50 Hz in many countries). Break it in the audio or USB path with an isolator (a small box that breaks the ground in the cable), or power everything from one strip, which often cures it. A charger can still whine on the same strip: then try the battery. Never remove the safety ground — the ground pin that keeps a fault from making metal live.' },
 ] as const;
 
 export const GOALS_CHANGE = ['Predict what would stop the music', 'Connect with CH 2 down', 'Kill the hum safely', 'Match levels in the headphones', 'Change over with no gap', 'Recover from the frozen laptop', 'Pass the check'] as const;
 
-const LOOK = 'You are looking at the signal-flow board: each laptop and player on the left, the mixer’s channel strips and its master section in the middle, the speakers and headphones on the right, and the power cords below — into the booth strip, or a wall socket on another circuit.';
+const LOOK = 'You are looking at the signal-flow board: each laptop and player on the left, the mixer’s channel strips and its master section in the middle, the speakers and headphones on the right, and the power cords below — into the booth strip, or a wall outlet on another circuit.';
 
 /* ── the board (board units, about a millimetre) ──────────────────────── */
 
@@ -94,7 +94,7 @@ function boardOf(b: Booth, hum: boolean, verdict: Record<ChangeItem, boolean> | 
   const chIn = (ch: ChannelId) => (b.ch[ch].input === 'USB' ? `USB ${ch}` : b.ch[ch].input);
   const v = (it: ChangeItem) => (verdict ? (verdict[it] ? 'right' : 'wrong') : null) as 'right' | 'wrong' | null;
   const lap2Out = ev.lap2.charger === 'STRIP';
-  const wallNode: FlowNode = { id: 'wall', ...WALL, title: 'WALL SOCKET', sub: 'ANOTHER CIRCUIT', art: { kind: 'wall' }, state: hum ? 'hum' : undefined };
+  const wallNode: FlowNode = { id: 'wall', ...WALL, title: 'WALL OUTLET', sub: 'ANOTHER CIRCUIT', art: { kind: 'wall' }, state: hum ? 'hum' : undefined };
   const stripNode: FlowNode = {
     id: 'strip',
     ...STRIP,
@@ -212,7 +212,7 @@ function PlugTray({ onHot, onEarth, onUnplug2 }: { onHot: (w: string | null) => 
       </Row>
       <Row head="DJ 2’S LAPTOP CHARGER">
         {(['WALL', 'STRIP', 'NONE'] as const).map((c) => (
-          <LabChip key={c} label={c === 'WALL' ? 'WALL SOCKET' : c === 'STRIP' ? 'BOOTH STRIP' : 'UNPLUG (BATTERY)'} selected={l2.charger === c} onPress={() => updateBooth((x) => withLap(x, 2, { charger: c }))} compact />
+          <LabChip key={c} label={c === 'WALL' ? 'WALL OUTLET' : c === 'STRIP' ? 'BOOTH STRIP' : 'UNPLUG (BATTERY)'} selected={l2.charger === c} onPress={() => updateBooth((x) => withLap(x, 2, { charger: c }))} compact />
         ))}
       </Row>
       <Row head="SOMEONE SUGGESTS">
@@ -365,7 +365,7 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
     <DjRack
       spec={{
         render: (w, h) => (
-          <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 0, y: 130, w: 250, h: 170 }} a11y={`${LOOK} ${programOn(booth) ? 'The crowd hears music.' : 'The crowd hears nothing.'}${hum ? ' There is a ground-loop hum on CH 2: DJ 2’s charger is in a wall socket on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
+          <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 0, y: 130, w: 250, h: 170 }} a11y={`${LOOK} ${programOn(booth) ? 'The crowd hears music.' : 'The crowd hears nothing.'}${hum ? ' There is a ground-loop hum on CH 2: DJ 2’s charger is in a wall outlet on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
             <FlowBoard nodes={board.nodes} links={board.links} tags={board.tags} />
             <Cords cords={board.cords} />
             <BoardExtras hum={hum} />

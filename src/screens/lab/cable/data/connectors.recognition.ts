@@ -417,7 +417,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     relatedLessons: ['l08_selection', 'l09_handling'],
     sourceNotes: [
       'Circular multipin snake systems use keyed shells; coupling style (quarter-turn vs threaded) varies by connector series, and contact assignments are shop-specific: manufacturer documentation + shop wiring charts — VERIFIED 2026-08-15: ITT Cannon VEAM CIR documentation',
-      'Visually similar circular multipin shells serve both mains power and signal; different series are keyed against each other, but identical 19-pin Socapex-type connectors are commercially used for both power and loudspeaker service — labeling and identification, not keying, is the safeguard: manufacturer catalogs and commercial breakout-product documentation — VERIFIED 2026-08-15',
+      'Visually similar circular multipin shells serve both AC power and signal; different series are keyed against each other, but identical 19-pin Socapex-type connectors are commercially used for both power and loudspeaker service — labeling and identification, not keying, is the safeguard: manufacturer catalogs and commercial breakout-product documentation — VERIFIED 2026-08-15',
     ],
   },
 
@@ -940,7 +940,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     relatedLessons: ['l07_power', 'l09_handling'],
     sourceNotes: [
       'NEMA locking configurations key blade patterns to specific voltage/current ratings so unlike ratings do not mate: ANSI/NEMA WD 6 — VERIFIED 2026-08-15: NEMA WD 11-2023 Wiring Devices FAQ',
-      'Energized-source-is-female is a design convention and a code requirement for correctly built cables (NEC 406.6(B)), not a field guarantee — illegal male-to-male backfeed cords and miswired or damaged cables can put mains voltage on exposed pins: NEMA WD 11-2023 Wiring Devices FAQ + CPSC stop-use warning on male-to-male cords — VERIFIED 2026-08-15',
+      'Energized-source-is-female is a design convention and a code requirement for correctly built cables (NEC 406.6(B)), not a field guarantee — illegal male-to-male backfeed cords and miswired or damaged cables can put line voltage on exposed pins: NEMA WD 11-2023 Wiring Devices FAQ + CPSC stop-use warning on male-to-male cords — VERIFIED 2026-08-15',
     ],
   },
 
@@ -1150,8 +1150,8 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     glossary: ['Multipin Connector'],
     relatedLessons: ['l07_power', 'l09_handling'],
     sourceNotes: [
-      '19-pin multicircuit connectors conventionally carry six mains circuits (line/neutral pairs plus grounds, pin 19 alignment/pilot) in entertainment lighting practice; exact wiring per system documentation — VERIFIED 2026-08-15: Phase 3 Connectors Socapex wiring documentation',
-      'Visually similar circular multipin shells serve both mains power and signal; different series are keyed against each other, but identical 19-pin Socapex-type connectors are commercially used for both power and loudspeaker service — labeling and identification, not keying, is the safeguard: manufacturer catalogs and commercial breakout-product documentation — VERIFIED 2026-08-15',
+      '19-pin multicircuit connectors conventionally carry six AC circuits (line/neutral pairs plus grounds, pin 19 alignment/pilot) in entertainment lighting practice; exact wiring per system documentation — VERIFIED 2026-08-15: Phase 3 Connectors Socapex wiring documentation',
+      'Visually similar circular multipin shells serve both AC power and signal; different series are keyed against each other, but identical 19-pin Socapex-type connectors are commercially used for both power and loudspeaker service — labeling and identification, not keying, is the safeguard: manufacturer catalogs and commercial breakout-product documentation — VERIFIED 2026-08-15',
     ],
   },
 ];

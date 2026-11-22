@@ -69,7 +69,7 @@ export const AMP_CHECK_WHY: Readonly<Record<string, Readonly<Record<number, stri
   'c-eff': {
     0: 'No real amplifier reaches its theoretical ceiling; parts and losses keep it lower.',
     2: 'Efficiency changes with output level. Look at EFFIC. as you lower LEVEL.',
-    3: 'It comes from the circuit’s maths, not from a rule written by a regulator.',
+    3: 'It comes from the circuit’s math, not from a rule written by a regulator.',
   },
   'cd-pwm': {
     0: 'Each channel has its own modulator. The two channels are never compared.',

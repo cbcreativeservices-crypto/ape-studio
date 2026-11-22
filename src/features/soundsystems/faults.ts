@@ -375,7 +375,7 @@ export const FAULTS: readonly FaultCase[] = [
     correct: 0,
     why: [null, 'A damaged driver distorts the music; it does not hum with everything muted.', 'Every channel is muted and the hum goes on, so it is not coming in through the microphones.', 'With everything muted the main meter shows nothing, and clipping needs a signal.'],
     explain: 'Hum that survives muting every channel is not signal — it is a current flowing between two grounds through the cable shield. A balanced input rejects it only when the shield is bonded to the chassis at the jack; where the shield lands on the audio circuit ground instead (a pin-1 problem), or the run is unbalanced, that current becomes hum. The station where it enters is the cabinet at the far end of that cable.',
-    fix: 'Feed the console and every powered loudspeaker from the same power distribution, on one ground reference, or isolate the signal path at the cabinet with a transformer. Never lift a mains safety ground.',
+    fix: 'Feed the console and every powered loudspeaker from the same power distribution, on one ground reference, or isolate the signal path at the cabinet with a transformer. Never lift an AC safety ground.',
     forward: 'The console proved itself clean with two probes. Walking on to the cabinet found the loop; guessing at the microphones would never have.',
     rule: 'Two power circuits joined by one cable shield make a ground loop: power everything from one distribution, or isolate the signal.',
   },

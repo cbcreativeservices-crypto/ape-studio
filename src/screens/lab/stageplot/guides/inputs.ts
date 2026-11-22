@@ -10,7 +10,7 @@ import type { ScreenGuide } from '../../../../features/lab/screenGuide/types.ts'
 export const SP_GUIDE_INPUTS: ScreenGuide = {
   intro: {
     learning: 'An input is one audio channel that reaches a mixer. One source can need several inputs, and some need none. Your input list is what the venue engineer plugs in.',
-    start: 'Tap ADD A SOURCE and pick a package. Read its rows, untick any you do not use, then add them. Tap a row to change it. Use the ▲ and ▼ buttons to change the order.',
+    start: 'Tap ADD A SOURCE and pick a package. Read its rows, uncheck any you do not use, then add them. Tap a row to change it. Use the ▲ and ▼ buttons to change the order.',
   },
   seeing: [
     'Each card is one input. It shows the channel number, the name, who plays it, where it is on the stage, how it is captured, and its stand.',
@@ -25,7 +25,7 @@ export const SP_GUIDE_INPUTS: ScreenGuide = {
     'LOCATE ON THE STAGE shows where the same input is on the drawing.',
   ],
   changes: [
-    'A package adds only the rows you ticked. Each row is an ordinary row afterward, so you can change or remove it.',
+    'A package adds only the rows you checked. Each row is an ordinary row afterward, so you can change or remove it.',
     'A row that moves takes the channel number of its new place. The number beside it on the stage follows.',
     'The summary is counted from the rows each time, so its numbers change when a row does.',
     'AUTO-ASSIGN SOCKETS gives each input a socket on the nearest stage box, in channel order.',

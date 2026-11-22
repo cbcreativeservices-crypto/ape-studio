@@ -93,7 +93,7 @@ export function OrderPanel({ patchId, fold }: { patchId: SpPatchId; fold?: Secti
       <View style={bitStyles.gap}>
         <Button label="RENUMBER" onPress={renumber} a11yLabel={`Renumber the ${spInSentence(patch.name)} list from 1 in its present order`} />
         <Small>
-          Numbers the list 1, 2, 3 in its present order. {inStep ? 'The numbers follow the order now.' : 'Some numbers do not follow the order now, or are missing.'} Gaps you typed are closed; reserved channels can stay free, and a stereo pair then takes the next two neighbouring free channels.
+          Numbers the list 1, 2, 3 in its present order. {inStep ? 'The numbers follow the order now.' : 'Some numbers do not follow the order now, or are missing.'} Gaps you typed are closed; reserved channels can stay free, and a stereo pair then takes the next two neighboring free channels.
         </Small>
         <Switch
           label="Keep reserved channels free"

@@ -629,7 +629,7 @@ export const F13_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'The room — its size, its seats, its curtains, door and vent — and the source’s height are drawing defaults.', dims: ['yFloor'] },
-    { text: 'The receivers’ seats and distance bands are drawing defaults round the drawn seats; only the seated ear height (1.2 m) is sourced, as a sensible listener height.', dims: [] },
+    { text: 'The receivers’ seats and distance bands are drawing defaults around the drawn seats; only the seated ear height (1.2 m) is sourced, as a sensible listener height.', dims: [] },
     { text: 'The side seat’s distance from the wall (about 1 m) is the proposal’s drawing default for the wall-proximity flag.', dims: [] },
     { text: 'The decay curves and their bands are made-up examples; the fit ranges, factors and the 10 dB margin are sourced.', dims: [] },
   ],

@@ -285,7 +285,7 @@ export const TESTER_CABLES: TesterCable[] = [
   {
     id: 'spk_swapped',
     chip: 'CABLE F',
-    label: 'Cable F — loudspeaker lead',
+    label: 'Cable F — loudspeaker cable',
     connectorEnds: 'speakON-style 2-pole → speakON-style 2-pole',
     expectedMap: [
       { path: '1+ → 1+', value: 'CLOSED' },
@@ -310,7 +310,7 @@ export const TESTER_CABLES: TesterCable[] = [
       'The + and − conductors are swapped end to end. This lead still makes sound — and inverts polarity: alongside correctly wired loudspeakers the result is thin, weakened low end. Flag and correct it.',
     disposition: 'repair_qualified',
     dispositionHint:
-      'A loudspeaker lead that inverts polarity is a fault to correct, not a quirk to keep — and never a reason to relabel.',
+      'A loudspeaker cable that inverts polarity is a fault to correct, not a quirk to keep — and never a reason to relabel.',
     explain:
       'Repair by a qualified person, then retest. And notice the discipline this whole bench runs on: the lead was disconnected at both ends before the tester ever touched it — a continuity tester never belongs on an energized loudspeaker line.',
   },

@@ -34,7 +34,7 @@ const cap = (a: Vec3, b: Vec3, r: number): Shape3 => ({ kind: 'capsule', a, b, r
 /** The keywork's stand-off from the tube (ILLUSTRATIVE), and the lab's
  *  clearance round the instrument. */
 export const KEY_STANDOFF = { neck: 6, body: 16, bow: 10, bell: 12 } as const;
-export const SAX_CLEAR: Dim = { mm: 8, prov: ill('a small keep-off round the instrument (the lab’s; no source gives one)') };
+export const SAX_CLEAR: Dim = { mm: 8, prov: ill('a small keep-off around the instrument (the lab’s; no source gives one)') };
 
 export type SaxModelOpts = {
   id: string;

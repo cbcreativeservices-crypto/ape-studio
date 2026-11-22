@@ -126,7 +126,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     peak: { exact: ['SAMPLE PEAK', 'OVER', 'dBFS', 'PEAK', 'PK HOLD', 'OVERS', 'RMS', 'CREST', 'GAIN', 'SIGNAL', 'RESET HOLD', 'OVR'], upper: ['KICK DRUM', 'SNARE', 'SPEECH', 'ORGAN'] },
     vu: { exact: ['PEAK', 'RMS', 'CREST', 'NDL MAX', 'GAIN', 'SIGNAL', 'FULL SCREEN'], upper: ['SNARE', 'ORGAN', 'PINK NOISE', 'SPEECH'] },
     loudness: { exact: ['LOUDNESS · LUFS', 'LUFS INTEGRATED', 'INTEGRATED', 'LRA', 'SAMPLE PK', 'TRUE PK', 'TP GAP', 'MOMENTARY RANGE', 'SHORT-TERM', 'STREAMING', 'SIGNAL'], upper: ['SPEECH', 'MUSIC MIX', 'ORGAN', 'KICK DRUM'] },
-    spectrum: { exact: ['PATTERN', 'PEAK', 'LEVEL', 'TILT', 'dB rel'], upper: ['SPEECH', 'CYMBAL', 'KICK DRUM', 'GUITAR', 'MAINS HUM', 'FEEDBACK', 'PINK NOISE'] },
+    // owner 2026-11-21: American English in learner text (MAINS HUM -> AC HUM)
+    spectrum: { exact: ['PATTERN', 'PEAK', 'LEVEL', 'TILT', 'dB rel'], upper: ['SPEECH', 'CYMBAL', 'KICK DRUM', 'GUITAR', 'AC HUM', 'FEEDBACK', 'PINK NOISE'] },
     spectrogram: { exact: ['NOW', 'FREQUENCY ↑', 'LEVEL', 'HI', 'LO', 'TIME', 'new → right', 'FREQ', '↑ up', '= color', 'MODE', 'SCROLL', 'SNAP', 'PATTERN', 'VIEW', 'ELAPSED TIME', 'SNAPSHOT — FULL 5 s'], upper: ['BIRDSONG', 'CYMBAL DECAY', 'WHISTLE', 'WHITE NOISE'] },
     waterfall: { exact: ['TIME', '0s', 'RINGS', 'RT·125', 'RT·4k', 'RIDGE', 'VS NEARBY', 'DAMPING', 'CONCRETE', 'CURTAINS', 'CARPET', 'PANELS', 'EQ', '220 Hz · Q6', '440 Hz · Q1', '1 kHz shelf', 'FLATTEN ALL BANDS', 'ROOM', 'REVERB', 'Q RING', 'REPLAY', 'RT60 · 250 Hz'], upper: ['CATHEDRAL', 'CLASSROOM', 'STUDIO', 'THEATER', 'LIVING ROOM', 'NONE', 'PLATE', 'HALL', 'SPRING'] },
     phase: { exact: ['CORRELATION', 'ρ', 'CORR', 'WIDTH', 'PHASE', 'MONO FOLD', 'MONO-SAFE', 'WIDE / UNRELATED', 'MONO-DEATH', 'MONO-FOLD VERDICT', 'SAFE', 'CANCELLATION', 'RISKY', 'R vs L'] },

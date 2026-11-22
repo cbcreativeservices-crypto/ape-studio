@@ -297,7 +297,7 @@ function EventTray({ lead, onPower, lastPower, view, setView, onNew, onReplay, s
       <PatchTray plugs={['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR']} />
       <Row head="PA L’S POWER CORD">
         <LabChip label="BOOTH STRIP" selected={!ev.paLWall} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLWall: false })))} compact />
-        <LabChip label="WALL SOCKET (OTHER CIRCUIT)" selected={ev.paLWall} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLWall: true })))} compact />
+        <LabChip label="WALL OUTLET (OTHER CIRCUIT)" selected={ev.paLWall} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLWall: true })))} compact />
         <LabChip label={ev.paLIsolator ? 'ISOLATION TRANSFORMER IN MST L' : 'NO ISOLATION TRANSFORMER'} selected={ev.paLIsolator} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLIsolator: !e.paLIsolator })))} compact />
       </Row>
       <Row head="PA R · ITS OWN INPUT SWITCH (on its back)">
@@ -504,7 +504,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
       spec={{
         render: (w, h) =>
           view === 'FLOW' ? (
-            <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 120, y: 0, w: 200, h: 170 }} a11y={`${LOOK_FLOW} ${allOn ? 'Everything is switched on.' : 'Some of the system is still off.'}${ev.paLWall ? ' PA L is plugged into the wall socket on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
+            <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 120, y: 0, w: 200, h: 170 }} a11y={`${LOOK_FLOW} ${allOn ? 'Everything is switched on.' : 'Some of the system is still off.'}${ev.paLWall ? ' PA L is plugged into the wall outlet on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
               <FlowBoard nodes={board.nodes} links={board.links} />
               <Cords cords={board.cords} />
               <WallWords hum={ev.paLWall && !ev.paLIsolator && deviceLive(booth, 'paL')} />

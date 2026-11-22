@@ -187,7 +187,7 @@ export function canConnect(system: SoundSystem, fromId: string, toId: string, ou
   const from = gearSpec(a.kind);
   const to = gearSpec(b.kind);
   if (from.emits.length === 0) {
-    return { ok: false, reason: `${from.name} has no signal output${from.kind === 'powerDistro' ? ' — it carries mains power, not audio' : ' — the sound leaves it as air'}.` };
+    return { ok: false, reason: `${from.name} has no signal output${from.kind === 'powerDistro' ? ' — it carries AC power, not audio' : ' — the sound leaves it as air'}.` };
   }
   if (to.accepts.length === 0 || to.accepts.every((l) => l === 'acoustic')) {
     return { ok: false, reason: `${to.name} is a source — signal starts there and cannot be fed into it.` };

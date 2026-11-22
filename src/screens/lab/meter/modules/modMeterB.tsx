@@ -54,6 +54,7 @@ import {
   waterfallRt,
   waterfallRidge,
   waterfallDecayUnchanged,
+  waterfallDampingHidden,
   RIDGE_CALLOUT_RATIO,
   EQ_FILTERS,
   EQ_FILTER_BY_KEY,
@@ -218,7 +219,7 @@ const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
     'Kick drum: an LF MOUND around 50–80 Hz plus a small CLICK bump near 3 kHz (the beater). Two energy centers with a valley between — thump and attack are different frequencies.',
   guitar:
     'Guitar: a HARMONIC COMB — evenly spaced spikes at multiples of the ~196 Hz fundamental, mostly getting lower as they go up. Spiky but ORDERLY = a pitched instrument.',
-  hum: 'Mains hum: NEEDLE spikes at exact multiples of the power-line frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — rarely just one.',
+  hum: 'AC hum: NEEDLE spikes at exact multiples of the power-line frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — rarely just one.',
   feedback:
     'Feedback: ONE towering narrow spike (here near 1.7–1.8 kHz) and nothing else notable. A single spike that GROWS over time is the PA about to scream — act before it does.',
   pinknoise:
@@ -236,7 +237,7 @@ const CHECK_SPECTRUM_ID: CheckSpec = {
     'Soundcheck. The analyzer shows a single NARROW spike at 1.7 kHz — and it is slowly GROWING while the rest of the curve holds still. What are you looking at?',
   options: [
     'Feedback building at 1.7 kHz — act before it screams',
-    'Mains hum leaking in from the power grid',
+    'AC hum leaking in from the electrical grid',
     'The kick drum’s click bump',
     'Pink noise from the PA',
   ],
@@ -252,7 +253,7 @@ const CHECK_SPECTRUM_ID: CheckSpec = {
 };
 
 const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
-  question: 'Mains hum and feedback both draw thin spikes. Which pair of tells separates them?',
+  question: 'AC hum and feedback both draw thin spikes. Which pair of tells separates them?',
   options: [
     'Hum: several steady spikes at power-line multiples; feedback: one spike, growing',
     'Hum = one spike high in the band; feedback = many spikes down low',
@@ -261,7 +262,7 @@ const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
   ],
   correctIdx: 0,
   why: {
-    1: 'Pick MAINS HUM in PATTERN: count the spikes and see where they sit.',
+    1: 'Pick AC HUM in PATTERN: count the spikes and see where they sit.',
     2: 'Watch the two patterns over time: which one holds still, and which one climbs?',
     3: 'The picture alone separates them: count the spikes and check whether they grow.',
   },
@@ -723,6 +724,9 @@ export function WaterfallModule(p: MeterModuleProps) {
     }
     return out;
   }, [opts]);
+  // DAMPING hidden by the reverb (owner 2026-11-21, "Lane says it"): the lane
+  // label itself tells the learner while they slide.
+  const dampingHidden = useMemo(() => waterfallDampingHidden(opts), [opts]);
   const qRingHidden = useMemo(
     () => waterfallDecayUnchanged({ ...opts, qRing: false }, { ...opts, qRing: true }),
     [opts],
@@ -737,9 +741,16 @@ export function WaterfallModule(p: MeterModuleProps) {
       label: 'DAMPING',
       value: damping01,
       onChange: setDamping01,
-      format: () => `${dampingLabel(damping01)} · ${Math.round(damping01 * 100)}%`,
+      // While hidden the material name gives way to the warning, so the lane
+      // still fits a 375-wide phone ("15% · HALL HIDES IT").
+      format: () =>
+        dampingHidden
+          ? `${Math.round(damping01 * 100)}% · ${REVERB_LABELS[reverb].toUpperCase()} HIDES IT`
+          : `${dampingLabel(damping01)} · ${Math.round(damping01 * 100)}%`,
       formatShort: () => dampingLabel(damping01),
-      helpKey: 'damping',
+      tint: dampingHidden ? colors.amber : undefined,
+      // While hidden, ⓘ explains why: an added reverb's tail is not shortened by wall treatment.
+      helpKey: dampingHidden ? 'reverb_tails' : 'damping',
     },
     {
       // ONE key (owner 2026-08-30): tapping EQ opens the filter menu, and

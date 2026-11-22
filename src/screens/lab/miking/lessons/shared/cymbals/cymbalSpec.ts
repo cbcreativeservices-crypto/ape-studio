@@ -81,7 +81,7 @@ export const CYMBAL_SWING = dd(CYMBAL_PROFILE.swing, 'how far a struck cymbal sw
 export const CYMBAL_HARDWARE = {
   hole: dd(13, 'the cymbal’s center hole'),
   rod: dd(8, 'the tilter rod'),
-  sleeve: dd(11, 'the sleeve round the rod (outside diameter)'),
+  sleeve: dd(11, 'the sleeve around the rod (outside diameter)'),
   feltD: dd(38, 'felt washer diameter'),
   feltT: dd(9, 'felt washer thickness'),
   wingW: dd(42, 'wing nut width'),

@@ -123,7 +123,7 @@ export function patternReadout(state: PatternState): PatternReadout {
       { k: 'Thickness', v: mm(spec.thicknessMm) },
       { k: 'Edges', v: spec.edge === 'free' ? 'free' : spec.edge === 'supported' ? 'simply supported' : 'clamped' },
       { k: 'Driver', v: `at ${pos(spec.exciter)}` },
-      { k: 'Support', v: spec.support ? `clamp at ${pos(spec.support)}` : 'centre post' },
+      { k: 'Support', v: spec.support ? `clamp at ${pos(spec.support)}` : 'center post' },
       { k: 'Damping', v: `${Math.round(spec.damping * 100)} % (Q ≈ ${Math.round(Q)})` },
       { k: 'Drive', v: `${formatHz(state.hz)} · ${noteStr}${ratio ? ` + second tone ×${Math.round(ratio * 100) / 100}` : ''}` },
       { k: 'Resonance', v: `${res.state.toUpperCase()}${res.dominant ? ` · mode ${res.dominant.label}` : ''} · strength ${Math.round(res.strength * 100)} %` },
