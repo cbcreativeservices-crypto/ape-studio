@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 22:16 · ccode · 7bb27845 (OTA 11)
+changed: OTA 11 PUBLISHED from 7bb27845 (owner: "publish the OTA after commit finishes"): Android group a3e9bd1a (01a201dd, runtime a903813a) / iOS group f8e1a04d (01a201e3, runtime 91355451). Carries the D74 Fundamentals trim (server SQL already live), Visual Audio Analysis free, waterfall + VU fixes, sticky tray, 38 closed boxes, solid intro popups, 'this device' wording. Pixel proven by logcat.
+affects other side: store or website text that lists the Fundamentals labs (15 -> 12) is now out of date.
+needs: Comp A decides when to update store/website text [MD:D74]
+
 ### 2026-11-21 20:27 · ccode · f6352d07
 changed: First-visit intro popups sit on a solid screen, no lab showing behind (owner 2026-11-21: "should not show any background while being shown") [MD:D74]
 affects other side: nothing on the server (app popups only).
