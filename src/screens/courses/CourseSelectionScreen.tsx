@@ -999,7 +999,7 @@ function CourseCardView({
           {/* Members never see "free" marketing (owner 2026-09-29): it tells a
               free user what membership adds, and only points out to a member
               what they could have had for nothing. */}
-          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE TO BEGIN AND EXPLORE' : 'TRAINING LABS'} />
+          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE: TRAINING LABS' : 'TRAINING LABS'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap, but NOT announced as a button: the real button is
@@ -1062,7 +1062,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE · NEW TO AUDIO? (BEG LEVEL)' : 'NEW TO AUDIO? (BEG LEVEL)'} />
+          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE: NEW TO AUDIO? (BEG LEVEL)' : 'NEW TO AUDIO? (BEG LEVEL)'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap without a button role — the START HERE key inside is
@@ -1120,7 +1120,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={color} w={cd.w} text="SET UP WHAT YOU STUDY" />
+          <Eyebrow color={color} w={cd.w} text={upsell ? 'FREE: SET UP WHAT YOU STUDY' : 'SET UP WHAT YOU STUDY'} />
           <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
         </View>
         <Pressable onPress={onOpenEnrollments} accessible={false}>
@@ -1139,7 +1139,8 @@ function CourseCardView({
     // Calculators read like the Glossary / Tools cards (owner 2026-10-16):
     // "INCLUDED FOR EVERYONE" — members still get the plain name (no
     // free/included copy to members, owner 2026-09-29).
-    const eyebrow = calc ? (upsell ? 'INCLUDED FOR EVERYONE' : 'AUDIO CALCULATORS') : upsell ? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY';
+    // Owner 2026-11-22: green and purple tiles read "FREE: …" for guests and free users (members: plain names).
+    const eyebrow = calc ? (upsell ? 'FREE: AUDIO CALCULATORS' : 'AUDIO CALCULATORS') : upsell ? 'FREE: CAREER DISCOVERY' : 'CAREER DISCOVERY';
     const onPress = calc ? onOpenCalculators : onOpenCareerFinder;
     const inner = (
       <>
@@ -1299,9 +1300,9 @@ function CourseCardView({
   // Members get plain descriptions, never "free"/"included" marketing
   // (owner 2026-09-29).
   const eyebrow = isTools
-    ? upsell ? 'INCLUDED FOR EVERYONE' : 'MEASUREMENT TOOLS'
+    ? upsell ? 'FREE: MEASUREMENT TOOLS' : 'MEASUREMENT TOOLS'
     : isGlossary
-      ? upsell ? 'INCLUDED FOR EVERYONE' : 'REFERENCE'
+      ? upsell ? 'FREE: INCLUDED FOR EVERYONE' : 'REFERENCE'
       : free
         ? upsell
           ? 'FREE TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)

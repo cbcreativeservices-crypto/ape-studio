@@ -67,6 +67,11 @@ const ICON = 28;
 /** A circle's tap box (the mockup's .dot: 76 wide, the circle centred). */
 const BOX_W = 76;
 const LABEL_W = 124;
+/** Room above and below a circle for its word. Owner 2026-11-22: the word is
+ *  tappable too, so each circle's touch area must contain it (Android drops
+ *  touches outside a parent's bounds). The area grows the same on every side,
+ *  so the fly-out transform (about its centre) is unchanged. */
+const LABEL_H = 40;
 /** The panel reaches this far below the screen so a drag past half never
  *  shows its bottom edge. */
 const SHEET_OVERSHOOT = 60;
@@ -260,9 +265,10 @@ const MenuCircle = memo(function MenuCircle({ place, rank, geo, p, motion, lit, 
 
   return (
     <Animated.View
-      style={[styles.box, { left: geo.fabX - BOX_W / 2, top: geo.fabY - CIRCLE / 2 }, flyStyle]}
+      style={[styles.hitArea, { left: geo.fabX - BOX_W / 2 - LABEL_W, top: geo.fabY - CIRCLE / 2 - LABEL_H }, flyStyle]}
       pointerEvents={live ? 'box-none' : 'none'}
     >
+      <View style={styles.box} pointerEvents="box-none">
       <Pressable
         ref={circleRef}
         onPress={() => onPick(place.key)}
@@ -289,7 +295,17 @@ const MenuCircle = memo(function MenuCircle({ place, rank, geo, p, motion, lit, 
         )}
       </Pressable>
 
-      <Animated.View pointerEvents="none" style={[labelBoxStyle(pos), labelStyle]} {...A11Y_HIDDEN}>
+
+      {badge ? (
+        <View pointerEvents="none" style={styles.badge}>
+          <CommunityBadge state={badge} />
+        </View>
+      ) : null}
+      </View>
+      <Animated.View pointerEvents="box-none" style={[labelBoxStyle(pos), labelStyle]} {...A11Y_HIDDEN}>
+        {/* The word picks the place too (owner 2026-11-22); the circle stays the
+            one screen-reader button, so the word is hidden from it. */}
+        <Pressable onPress={() => onPick(place.key)} hitSlop={6} accessible={false} {...A11Y_HIDDEN}>
         <Text
           maxFontSizeMultiplier={1.15}
           style={[
@@ -302,29 +318,27 @@ const MenuCircle = memo(function MenuCircle({ place, rank, geo, p, motion, lit, 
         >
           {place.label}
         </Text>
+        </Pressable>
       </Animated.View>
-
-      {badge ? (
-        <View pointerEvents="none" style={styles.badge}>
-          <CommunityBadge state={badge} />
-        </View>
-      ) : null}
     </Animated.View>
   );
 });
 
 /** Where a circle's word sits (per clock slot, as in the mockup). */
 function labelBoxStyle(pos: string) {
-  const disc = { left: (BOX_W - CIRCLE) / 2, right: (BOX_W + CIRCLE) / 2 };
+  // Placed in the circle's touch area (hitArea): the circle sits LABEL_W in
+  // from the left and LABEL_H down from the top.
+  const disc = { left: LABEL_W + (BOX_W - CIRCLE) / 2, right: LABEL_W + (BOX_W + CIRCLE) / 2 };
+  const centreLeft = LABEL_W + BOX_W / 2 - LABEL_W / 2;
   switch (pos) {
     case 'up':
-      return [styles.labelBox, { left: BOX_W / 2 - LABEL_W / 2, bottom: CIRCLE + 6 }];
+      return [styles.labelBox, { left: centreLeft, bottom: LABEL_H + CIRCLE + 6 }];
     case 'sl':
       return [styles.labelBox, styles.labelSide, { left: disc.left - 6 - LABEL_W, alignItems: 'flex-end' as const }];
     case 'sr':
       return [styles.labelBox, styles.labelSide, { left: disc.right + 6, alignItems: 'flex-start' as const }];
     default:
-      return [styles.labelBox, { left: BOX_W / 2 - LABEL_W / 2, top: CIRCLE + 6 }];
+      return [styles.labelBox, { left: centreLeft, top: LABEL_H + CIRCLE + 6 }];
   }
 }
 
@@ -435,7 +449,8 @@ const styles = StyleSheet.create({
     boxShadow: 'inset 0px 1px 0px 0px rgba(255,255,255,0.15)',
   },
   track: { position: 'absolute' },
-  box: { position: 'absolute', width: BOX_W, height: CIRCLE },
+  hitArea: { position: 'absolute', width: BOX_W + 2 * LABEL_W, height: CIRCLE + 2 * LABEL_H },
+  box: { position: 'absolute', left: LABEL_W, top: LABEL_H, width: BOX_W, height: CIRCLE },
   press: { width: BOX_W, height: CIRCLE, alignItems: 'center' },
   disc: {
     width: CIRCLE,
@@ -452,7 +467,7 @@ const styles = StyleSheet.create({
   // The tab's 22 pt faders, scaled to the circle's 28 pt icon.
   faders: { position: 'absolute', left: 3, top: 3, width: 22, height: 22, transform: [{ scale: ICON / 22 }] },
   labelBox: { position: 'absolute', width: LABEL_W, alignItems: 'center' },
-  labelSide: { top: 0, height: CIRCLE, justifyContent: 'center' },
+  labelSide: { top: LABEL_H, height: CIRCLE, justifyContent: 'center' },
   label: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,

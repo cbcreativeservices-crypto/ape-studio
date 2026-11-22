@@ -53,7 +53,7 @@ import { screenReaderOn } from '../../features/settings/a11y';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { useModalHostOpen } from '../DimModal';
 import { createLocalStore } from '../../features/storage/localStore';
-import { onScreenIntrosReset } from '../../features/intro/screenIntros';
+import { onGuestStart, onScreenIntrosReset } from '../../features/intro/screenIntros';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { runSoon } from '../../lib/afterInteractions';
 import {
@@ -133,6 +133,12 @@ const hintStore = createLocalStore<boolean>({
   parse: (v) => v === true,
 });
 onScreenIntrosReset(() => hintStore.reset());
+// Owner 2026-11-22: EVERY guest sign-in shows the callout again (the guest wipe
+// keeps intro flags, so it is cleared here, on the same signal that re-owes the
+// guest's privacy notice and video). An account sees it once, then never.
+onGuestStart(() => {
+  void hintStore.set(false);
+});
 
 /** 'loading' | 'unreadable' | seen. A failed read shows no hint and writes
  *  nothing over the stored flag (createLocalStore's rule). */
@@ -613,21 +619,16 @@ const MARK_DOTS = Array.from({ length: 11 }, (_, i) => {
 function MenuMark() {
   return (
     <Svg width={20.5} height={20.5} viewBox="0 0 16 16" accessible={false} importantForAccessibility="no">
-      {/* The mockup's dark drop shadow under each dot (0 0 1.2 pt at .95 and
-          0 1 1.5 pt at .85; 1 pt = 0.78 here), drawn as halos so it renders
-          the same on both phones: readable over photos. */}
-      <G fill="#000000" opacity={0.55}>
+      {/* Owner 2026-11-22: "dots noticeable but obviously transparent fill".
+          Each dot is a see-through disc (white at 18%) with a white rim, and a
+          thin dark edge outside the rim (a ring, never a filled halo, so the
+          background shows through) to keep it readable over photos. */}
+      <G fill="none" stroke="#000000" strokeWidth={0.55} opacity={0.55}>
         {MARK_DOTS.map((d, i) => (
-          <Circle key={i} cx={d.cx} cy={d.cy} r={1.25 + 0.94} />
+          <Circle key={i} cx={d.cx} cy={d.cy} r={1.25 + 0.5} />
         ))}
       </G>
-      <G fill="#000000" opacity={0.45}>
-        {MARK_DOTS.map((d, i) => (
-          <Circle key={i} cx={d.cx} cy={d.cy + 0.78} r={1.25 + 1.17} />
-        ))}
-      </G>
-      {/* Owner 2026-11-22: the white dots at 50% (the dark halos stay). */}
-      <G fill="#f2f2f4" opacity={0.5}>
+      <G fill="#f2f2f4" fillOpacity={0.18} stroke="#f2f2f4" strokeOpacity={0.9} strokeWidth={0.45}>
         {MARK_DOTS.map((d, i) => (
           <Circle key={i} cx={d.cx} cy={d.cy} r={1.25} />
         ))}
