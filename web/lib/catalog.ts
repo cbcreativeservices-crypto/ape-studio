@@ -7,9 +7,10 @@ import { getSupabaseBrowser } from "./supabase";
  * same tables the app uses (anon SELECT: certificates, certificate_topics,
  * programs, program_topics, achievements).
  *
- * Labs are NOT here yet: credential_lab_requirements / labs are not readable
- * by the public. When Comp A opens a read-only public list, add `labs` to
- * CatalogEntry (must-do D34).
+ * Labs (D35, live 2026-11-22): the labs each credential requires beyond the
+ * shared Audio Fundamentals come from Comp A's read-only
+ * public_credential_labs() (anon + authenticated). If that read fails, the
+ * catalog still shows, just without the labs list.
  */
 
 /** Required of every certificate and program (app: COREQ_TOPIC_GS in src/screens/awards/awardsData.ts). */
@@ -27,6 +28,8 @@ export type CatalogEntry = {
   anchor: string;
   track: string | null;
   topics: string[];
+  /** Labs this credential requires beyond the shared Audio Fundamentals, in catalog order. */
+  labs: string[];
 };
 
 export type Catalog = {
@@ -46,6 +49,28 @@ export function catalogAnchor(kind: string, name: string): string {
 }
 
 type TopicRow = { gs: number; seq: number | null };
+type LabRow = { credential_type: string; credential_id: string; lab_name: string; sort_order: number | null };
+
+/** credential id → lab names (sorted). An unreadable list gives an empty map, never a failed catalog. */
+async function credentialLabs(): Promise<Map<string, string[]>> {
+  const m = new Map<string, LabRow[]>();
+  try {
+    const { data, error } = await getSupabaseBrowser().rpc("public_credential_labs");
+    if (error) return new Map();
+    for (const r of (data ?? []) as LabRow[]) m.set(r.credential_id, [...(m.get(r.credential_id) ?? []), r]);
+  } catch {
+    return new Map();
+  }
+  const out = new Map<string, string[]>();
+  for (const [id, rows] of m) {
+    const names = rows
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.lab_name.localeCompare(b.lab_name))
+      .map((r) => r.lab_name);
+    out.set(id, [...new Set(names)]);
+  }
+  return out;
+}
 type CredRow = { id: string; name: string; track: string | null; is_active: boolean };
 
 async function allRows<T>(table: string, columns: string): Promise<T[]> {
@@ -62,7 +87,7 @@ async function allRows<T>(table: string, columns: string): Promise<T[]> {
 
 export async function loadCatalog(): Promise<Catalog | null> {
   try {
-    const [certs, progs, certTopics, progTopics, achievements] = await Promise.all([
+    const [certs, progs, certTopics, progTopics, achievements, labs] = await Promise.all([
       allRows<CredRow>("certificates", "id,name,track,is_active").then((r) => r.filter((x) => x.is_active)),
       allRows<CredRow>("programs", "id,name,track,is_active").then((r) => r.filter((x) => x.is_active)),
       allRows<TopicRow & { certificate_id: string; is_required: boolean }>(
@@ -71,6 +96,7 @@ export async function loadCatalog(): Promise<Catalog | null> {
       ),
       allRows<TopicRow & { program_id: string }>("program_topics", "program_id,gs,seq"),
       allRows<{ global_sequence: number; name: string }>("achievements", "global_sequence,name"),
+      credentialLabs(),
     ]);
 
     const topicName = new Map(achievements.map((a) => [a.global_sequence, a.name]));
@@ -104,6 +130,7 @@ export async function loadCatalog(): Promise<Catalog | null> {
           anchor: catalogAnchor("certificate", c.name),
           track: c.track,
           topics: names(ct.get(c.id) ?? []),
+          labs: labs.get(c.id) ?? [],
         }))
         .sort(byName),
       programs: progs
@@ -114,6 +141,7 @@ export async function loadCatalog(): Promise<Catalog | null> {
           anchor: catalogAnchor("program", p.name),
           track: p.track,
           topics: names(pt.get(p.id) ?? []),
+          labs: labs.get(p.id) ?? [],
         }))
         .sort(byName),
     };

@@ -55,7 +55,8 @@ export default function CredentialCatalog() {
       (e) =>
         e.name.toLowerCase().includes(q) ||
         (e.track ?? "").toLowerCase().includes(q) ||
-        e.topics.some((t) => t.toLowerCase().includes(q)),
+        e.topics.some((t) => t.toLowerCase().includes(q)) ||
+        e.labs.some((l) => l.toLowerCase().includes(q)),
     );
   }, [list, query]);
 
@@ -117,7 +118,7 @@ export default function CredentialCatalog() {
             <span className="font-mono text-xs uppercase tracking-[0.2em] text-text-muted">
               Required for every credential:
             </span>{" "}
-            {catalog.core.join(" · ")}, plus the 15 Audio Fundamentals labs
+            {catalog.core.join(" · ")}, plus the 12 Audio Fundamentals labs
           </p>
         ) : null}
         <p>
@@ -163,7 +164,7 @@ export default function CredentialCatalog() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name, track or topic"
+            placeholder="Search by name, track, topic or lab"
             aria-label="Search credentials"
             className="mt-4 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-text-muted focus:border-amber focus:outline-none"
           />
@@ -205,6 +206,16 @@ export default function CredentialCatalog() {
                                   <li key={t}>{t}</li>
                                 ))}
                               </ul>
+                              {e.labs.length ? (
+                                <>
+                                  <p className="mt-2 text-foreground">Required labs, in addition to Audio Fundamentals:</p>
+                                  <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                                    {e.labs.map((l) => (
+                                      <li key={l}>{l}</li>
+                                    ))}
+                                  </ul>
+                                </>
+                              ) : null}
                               <p className="mt-2">Plus a passing result on the final examination.</p>
                             </div>
                           ) : null}
