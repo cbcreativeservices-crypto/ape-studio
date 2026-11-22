@@ -281,8 +281,12 @@ export type HubPlace = 'tools' | 'calc' | 'labs' | 'comm' | 'set' | 'help' | 'en
 export function ScreenCircleMenu({
   here,
   onSelf,
+  firstRun = false,
 }: {
   here: HubPlace | null;
+  /** The first-run landing (owner 2026-11-22): the callout greets a newcomer,
+   *  so it reads "YOUR MENU", not "NEW: YOUR MENU" (nothing is new to them). */
+  firstRun?: boolean;
   /**
    * A place this screen shows itself (the Awards pager's My Enrollments page):
    * navigate() to the route already focused only swaps its params and does
@@ -312,7 +316,7 @@ export function ScreenCircleMenu({
     },
     [navigation, here, onSelf],
   );
-  return <MenuLayer here={here} hidden={false} insets={insets} go={go} />;
+  return <MenuLayer here={here} hidden={false} insets={insets} go={go} firstRun={firstRun} />;
 }
 
 function MenuLayer({
@@ -320,9 +324,11 @@ function MenuLayer({
   hidden,
   insets,
   go,
+  firstRun = false,
 }: {
   here: PlaceKey | null;
   hidden: boolean;
+  firstRun?: boolean;
   insets: { top: number; bottom: number };
   go: Go;
 }) {
@@ -557,10 +563,10 @@ function MenuLayer({
               pointerEvents="none"
               style={[styles.coach, { bottom: insets.bottom + MENU_BUTTON_LIFT + MENU_BUTTON + 10 }, hintStyle]}
               accessible
-              accessibilityLabel="New: your menu. Every part of the app is in here. Tap it, or pull it up."
+              accessibilityLabel={`${firstRun ? 'Your menu' : 'New: your menu'}. Every part of the app is in here. Tap it, or pull it up.`}
             >
               <Text style={styles.coachTitle} maxFontSizeMultiplier={1.2}>
-                NEW: YOUR MENU
+                {firstRun ? 'YOUR MENU' : 'NEW: YOUR MENU'}
               </Text>
               <Text style={styles.coachBody} maxFontSizeMultiplier={1.2}>
                 Every part of the app is in here. Tap it, or pull it up.

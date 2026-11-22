@@ -124,7 +124,7 @@ describe('B · the landing', () => {
     const watch = landing.indexOf("choose('watchAgain')");
     assert.ok(offerAt > 0 && offerAt < free && free < watch);
     assert.doesNotMatch(landing, /OR JUMP RIGHT IN|choose\('glossary'\)|\{COPY\.skipToHome\}/);
-    assert.match(landing, /<ScreenCircleMenu here=\{null\} \/>/);
+    assert.match(landing, /<ScreenCircleMenu here=\{null\} firstRun \/>/);
     assert.match(landing, /paddingBottom: menuClearance\(insets\.bottom\) \+ 12/);
   });
 

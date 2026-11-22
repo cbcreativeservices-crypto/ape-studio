@@ -221,7 +221,7 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
         </View>
       </View>
     </ScrollView>
-    <ScreenCircleMenu here={null} />
+    <ScreenCircleMenu here={null} firstRun />
     </View>
   );
 }
