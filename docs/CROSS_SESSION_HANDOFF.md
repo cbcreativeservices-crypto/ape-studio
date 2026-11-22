@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 14:00 · ccode · 48b92b28
+changed: Landing: "Watch again" reads "Watch Intro Video Again" (owner 2026-11-22)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-11-22 13:15 · ccode · 660b706a
+changed: Landing: the MENU callout greets a first-time user as "YOUR MENU" (owner 2026-11-22: point the menu out to the new arriving user)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-22 12:30 · ccode · c0967847
 changed: Flashcards: the read-first dwell before marking Known is 0.6 s, was 1.5 s (owner 2026-11-22: "it blocks"); OTA 13 owner-checked [MD:D74]
 affects other side: nothing on the server.
