@@ -26,6 +26,7 @@ import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import type { DockParam } from '../../rack/rackTypes';
+import { CollapsibleSection } from '../../LabShell';
 import { TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus, type PlayClip } from '../rackLayout';
 
 const JUST = TUNING_SYSTEMS.just;
@@ -246,7 +247,11 @@ export function Ch7Just({ ctx }: ChapterProps) {
               { text: '= 4 : 5 : 6', note: 'the C-major triad as a simple whole-number relationship' },
             ]}
           /> : null}
-          <Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes. They are not harmonics 4, 5 and 6 of the C shown here; that reading only works for a shared note two octaves below C. Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
+          <Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes. Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
+          {/* owner 2026-11-21: "build the second-pass collapse fixes too": the reading beside the task starts CLOSED, one tap away, every word kept. */}
+          <CollapsibleSection title="MORE DETAIL · WHAT 4:5:6 IS NOT" startOpen={false}>
+            <Body>They are not harmonics 4, 5 and 6 of the C shown here; that reading only works for a shared note two octaves below C.</Body>
+          </CollapsibleSection>
         </>
       ) : null}
 

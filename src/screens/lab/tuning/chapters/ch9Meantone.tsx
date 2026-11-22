@@ -25,6 +25,7 @@ import { HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicL
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
+import { CollapsibleSection } from '../../LabShell';
 import { TuningRackLayout, flipFader, lanePos, laneVal, playKey, playTray, snapNear, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 const MT = TUNING_SYSTEMS.meantone;
@@ -365,7 +366,10 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
             <Text style={styles.wolf}>WOLF · {wolf.wolfCents.toFixed(2)} ¢ · {wolf.widerThanNormalBy.toFixed(2)} ¢ wider than a normal fifth · {(wolf.wolfCents - PURE_FIFTH.cents).toFixed(2)} ¢ wider than pure</Text>
             <Body>Normal meantone fifth ≈ {wolf.normalFifthCents.toFixed(2)} ¢ · pure fifth ≈ {PURE_FIFTH.cents.toFixed(2)} ¢ · this closing interval ≈ {wolf.wolfCents.toFixed(2)} ¢, spelled G♯ up to E♭.</Body>
           </Card>
-          <Body>The discrepancy has not disappeared. This twelve-note layout concentrates it into the closing interval. Other chains and spellings put the wolf between other named notes — its location is a choice, not a law.</Body>
+          {/* owner 2026-11-21: "build the second-pass collapse fixes too": the reading beside the task starts CLOSED, one tap away, every word kept. */}
+          <CollapsibleSection title="MORE DETAIL · WHERE THE WOLF GOES" startOpen={false}>
+            <Body>The discrepancy has not disappeared. This twelve-note layout concentrates it into the closing interval. Other chains and spellings put the wolf between other named notes — its location is a choice, not a law.</Body>
+          </CollapsibleSection>
           <Body>Quarter-comma meantone narrows ordinary fifths so selected major thirds become pure. A finite twelve-note layout still contains a severe closing interval — and not every major third in every key is pure.</Body>
           {/* NEW COPY — targets "meantone makes every interval pure". */}
           <UnderstandingCheck

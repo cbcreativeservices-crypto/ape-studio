@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 23:11 · ccode · d67fe546
+changed: American English in learner text; waterfall says when a reverb hides DAMPING; oscilloscope "safe level" (owner 2026-11-21) [MD:D74]
+affects other side: nothing on the server (learner text only; ids and server values kept).
+needs: nothing; reaches phones with the next OTA [MD:D74]
+
+
 ### 2026-11-21 22:16 · ccode · 7bb27845 (OTA 11)
 changed: OTA 11 PUBLISHED from 7bb27845 (owner: "publish the OTA after commit finishes"): Android group a3e9bd1a (01a201dd, runtime a903813a) / iOS group f8e1a04d (01a201e3, runtime 91355451). Carries the D74 Fundamentals trim (server SQL already live), Visual Audio Analysis free, waterfall + VU fixes, sticky tray, 38 closed boxes, solid intro popups, 'this device' wording. Pixel proven by logcat.
 affects other side: store or website text that lists the Fundamentals labs (15 -> 12) is now out of date.

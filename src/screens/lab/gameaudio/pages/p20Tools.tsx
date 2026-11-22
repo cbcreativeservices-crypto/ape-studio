@@ -55,6 +55,7 @@ import { StyleSheet, View } from 'react-native';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
+import { CollapsibleSection } from '../../LabShell';
 import { GaRack } from '../GaLab';
 import { Note, P, Terms } from '../bits';
 import { gaTerms } from '../gaTerms';
@@ -154,15 +155,23 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <P>The picture is one simplified tool screen, not a real product. Most tools have these eight kinds of window, under other names.</P>
         <P>Slide WINDOW to light each window in turn. Choose a TOOL to see that tool’s names. In SCENE, start a sound: the windows show it.</P>
         <ToolWindowList />
-        <P>A game engine’s editor shows the level, its objects and a properties panel. A sound source and the listener are parts you add to an object.</P>
+        {/* owner 2026-11-21: "build the second-pass collapse fixes too": the side notes start CLOSED,
+            one tap away, every word kept. The window list and the name cards the checks need stay open. */}
+        <CollapsibleSection title="MORE DETAIL · THE ENGINE’S EDITOR" startOpen={false}>
+          <P>A game engine’s editor shows the level, its objects and a properties panel. A sound source and the listener are parts you add to an object.</P>
+        </CollapsibleSection>
       </DocSection>
 
       <DocSection title="What each idea is called">
         <P>Each name is the closest idea in that tool, not an exact equal. A dash means no close idea of its own: the line beside it says what to look for instead.</P>
-        <P>For Unity and Unreal Engine, a card gives the engine’s own audio. Names change between versions.</P>
-        <P>Unreal Engine builds a sound in two ways: the older Sound Cue and the newer MetaSound. A card names the closer one.</P>
-        <P>In Wwise, Game Syncs are Switches, States, Game Parameters (linked by RTPCs) and Triggers. A Wwise Trigger starts a music stinger. This lab says trigger for anything that starts a sound.</P>
-        <Note tone="mistake">Looking for the same name in a new tool. Look for the same idea: one tool’s Switch is another tool’s labeled parameter.</Note>
+        <CollapsibleSection title="MORE DETAIL · ENGINES, VERSIONS AND WWISE WORDS" startOpen={false}>
+          <P>For Unity and Unreal Engine, a card gives the engine’s own audio. Names change between versions.</P>
+          <P>Unreal Engine builds a sound in two ways: the older Sound Cue and the newer MetaSound. A card names the closer one.</P>
+          <P>In Wwise, Game Syncs are Switches, States, Game Parameters (linked by RTPCs) and Triggers. A Wwise Trigger starts a music stinger. This lab says trigger for anything that starts a sound.</P>
+        </CollapsibleSection>
+        <CollapsibleSection title="COMMON MISTAKE" startOpen={false}>
+          <Note tone="mistake">Looking for the same name in a new tool. Look for the same idea: one tool’s Switch is another tool’s labeled parameter.</Note>
+        </CollapsibleSection>
         <ToolNameCards />
       </DocSection>
 

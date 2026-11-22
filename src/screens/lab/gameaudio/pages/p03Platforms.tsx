@@ -38,6 +38,7 @@ import { useState } from 'react';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
+import { CollapsibleSection } from '../../LabShell';
 import { GaRack } from '../GaLab';
 import { ActivityLog, Do, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
@@ -166,7 +167,11 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>The same courtyard and workshop. Here it stands for one small game that could run on many kinds of device.</Look>
         <P>Three questions are easy to confuse. The platform is where the game runs. Delivery is how the game reaches the player. Output is how the player hears it.</P>
+        {/* owner 2026-11-21: "build the second-pass collapse fixes too": the reading beyond the one core
+            idea starts CLOSED, one tap away, every word kept; the steps below stay open. */}
+        <CollapsibleSection title="MORE DETAIL" startOpen={false}>
         <P>These can be three different devices. A game can run on a remote computer, arrive as a stream, and be heard on earbuds connected to a phone. Many game engines build one game for several platforms. The sounds stay the same. The listening conditions change.</P>
+        </CollapsibleSection>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -198,7 +203,9 @@ function Page({ ctx }: { ctx: PageCtx }) {
         <Do>Keep a card open and move BUDGET between COMPACT and EXPANDED. Watch the number after the slash in VOICES.</Do>
         <P>COMPACT lets 8 voices sound at the same time and EXPANDED lets 16. The card stays as it was: a platform’s name does not set a budget.</P>
         <Note>The two budgets are settings for this lab’s scene. They are not the limits of any real device.</Note>
-        <Note tone="mistake">Treating a platform name as a fixed sound quality or a fixed number of voices. A mobile game can be a large one, and a console game can be a small one.</Note>
+        <CollapsibleSection title="COMMON MISTAKE" startOpen={false}>
+          <Note tone="mistake">Treating a platform name as a fixed sound quality or a fixed number of voices. A mobile game can be a large one, and a console game can be a small one.</Note>
+        </CollapsibleSection>
         <ActivityLog state={s} lines={4} only={['mix', 'trigger']} />
       </Step>
       <Step n={4}>

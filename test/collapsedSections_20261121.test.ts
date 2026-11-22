@@ -122,3 +122,89 @@ describe('Cable Install and Stage Plot', () => {
     assert.ok(s.indexOf('</FoldSection>') < s.indexOf('AFTER THIS LAB</Text>'));
   });
 });
+
+/* ── Second pass (owner 2026-11-21: "build the second-pass collapse fixes too") ──
+ * The reading beside a task folds into a closed box INSIDE its step or LAB
+ * NOTES; the task, its controls, its credit and the one core explanation stay
+ * open. Each block would have failed before its change. */
+
+/** The text of the first closed box with this title, up to its closing tag. */
+const foldBody = (s: string, title: string) => {
+  const a = s.indexOf(closed(title));
+  assert.ok(a > 0, `fold "${title}" (closed on arrival)`);
+  return s.slice(a, s.indexOf('</CollapsibleSection>', a));
+};
+
+describe('second pass · Game Audio: side reading folds inside the steps; tasks, logs, chips and checks stay open', () => {
+  const GA = `${LAB}gameaudio/pages/`;
+  it('page 3: the second UNDERSTAND paragraph and the common mistake fold; the core line and the lab-setting note stay open', () => {
+    const s = read(`${GA}p03Platforms.tsx`);
+    assert.ok(foldBody(s, 'MORE DETAIL').includes('These can be three different devices.'));
+    assert.ok(foldBody(s, 'COMMON MISTAKE').includes('<Note tone="mistake">Treating a platform name'));
+    assert.ok(s.indexOf('<P>Three questions are easy to confuse.') < s.indexOf(closed('MORE DETAIL')));
+    assert.match(s, /\n {8}<Note>The two budgets are settings for this lab’s scene\./);
+  });
+  it('page 6: the common mistake folds; the definitions, the cards and the fault card stay open', () => {
+    const s = read(`${GA}p06Pipeline.tsx`);
+    assert.ok(foldBody(s, 'COMMON MISTAKE').includes('Confusing importing a sound'));
+    assert.match(s, /\n {8}<P>Three things come out of this work/);
+    assert.match(s, /\n {8}<FaultCard\n/);
+  });
+  it('page 20: the side notes fold; the window list and the name cards the six checks need stay open', () => {
+    const s = read(`${GA}p20Tools.tsx`);
+    assert.ok(foldBody(s, 'MORE DETAIL · THE ENGINE’S EDITOR').includes('A game engine’s editor shows the level'));
+    const names = foldBody(s, 'MORE DETAIL · ENGINES, VERSIONS AND WWISE WORDS');
+    for (const x of ['Names change between versions.', 'Sound Cue and the newer MetaSound', 'Game Syncs are Switches']) assert.ok(names.includes(x), x);
+    assert.ok(foldBody(s, 'COMMON MISTAKE').includes('Looking for the same name in a new tool.'));
+    assert.match(s, /\n {8}<ToolWindowList \/>/);
+    assert.match(s, /\n {8}<ToolNameCards \/>/);
+    assert.match(s, /\n {8}<P>Slide WINDOW to light each window in turn\./);
+    assert.equal(s.split('<UnderstandingCheck').length - 1, 6);
+  });
+});
+
+describe('second pass · Tuning: LAB NOTES stays open; one aside per chapter folds', () => {
+  it('LAB NOTES itself still opens on arrival (it holds BEGIN / NEXT / FINISH and the checks)', () => {
+    assert.match(read(`${LAB}tuning/rackLayout.tsx`), /<CollapsibleSection title=\{notesTitle\}>/);
+  });
+  it('chapter 7: the 4:5:6 line and its PLAY instruction stay open; the "not harmonics" caveat folds', () => {
+    const s = read(`${LAB}tuning/chapters/ch7Just.tsx`);
+    assert.match(s, /<Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes\. Hear C, E, G, the chord and the aligned partials from the PLAY key\.<\/Body>/);
+    assert.ok(foldBody(s, 'MORE DETAIL · WHAT 4:5:6 IS NOT').includes('They are not harmonics 4, 5 and 6 of the C shown here'));
+    assert.ok(s.includes('onCorrect={ctx.markDone}'));
+  });
+  it('chapter 9: where the wolf goes folds; the summary line and the check stay open', () => {
+    const s = read(`${LAB}tuning/chapters/ch9Meantone.tsx`);
+    assert.ok(foldBody(s, 'MORE DETAIL · WHERE THE WOLF GOES').includes('its location is a choice, not a law'));
+    assert.match(s, /\n {10}<Body>Quarter-comma meantone narrows ordinary fifths so selected major thirds become pure\./);
+    assert.ok(s.indexOf(closed('MORE DETAIL · WHERE THE WOLF GOES')) < s.indexOf('<UnderstandingCheck', s.indexOf("part === 'E'")));
+  });
+});
+
+describe('second pass · Room Design: LAB NOTES stays open; the method folds inside it', () => {
+  it('LAB NOTES itself still opens on arrival', () => {
+    assert.match(read(`${LAB}roomdesign/rackLayout.tsx`), /<CollapsibleSection title=\{notesTitle\}>/);
+  });
+  it('Suggest: HOW THE SEARCH WORKS folds; the desk note, the honesty line and the safety pointer stay open', () => {
+    const s = read(`${LAB}roomdesign/modules/modSuggest.tsx`);
+    const body = foldBody(s, 'HOW THE SEARCH WORKS');
+    assert.ok(body.includes('Each setup is a search over positions inside your walls.') && body.includes('Smoother bass counts the length modes'));
+    const end = s.indexOf('</CollapsibleSection>', s.indexOf(closed('HOW THE SEARCH WORKS')));
+    for (const x of ['<Caption>Bass and image setups may move the desk', '<Caption>No setup is a guaranteed optimum.', '<Caption>{SAFETY_LEVEL_POINTER}</Caption>']) assert.ok(s.indexOf(x) > end, x);
+  });
+  it('Monitoring: the triangle paragraph and both safety lines stay open; distance and the cancellation math fold after them', () => {
+    const s = read(`${LAB}roomdesign/modules/modMonitoring.tsx`);
+    const at = s.indexOf(closed('MORE DETAIL · DISTANCE, HEIGHT AND THE CANCELLATION GUIDE'));
+    const body = foldBody(s, 'MORE DETAIL · DISTANCE, HEIGHT AND THE CANCELLATION GUIDE');
+    assert.ok(body.includes('Nearfield monitors are meant to be heard from') && body.includes('The cancellation guide above comes from'));
+    for (const x of ['A good starting point, not a law', '<Caption>A stand must be rated', '<Caption>{SAFETY_LEVEL_NOTE}</Caption>']) assert.ok(s.indexOf(x) > 0 && s.indexOf(x) < at, x);
+  });
+});
+
+describe('second pass · Connectors: tasks and safety stay open', () => {
+  it('every safety rule keeps its reason in view beside I WILL WORK THIS WAY (the guide says read the reason first)', () => {
+    const s = read(`${LAB}connectorselect/pagesD.tsx`);
+    assert.match(s, /<Prompt>\{r\.rule\}<\/Prompt>\n\s*<Body>\{r\.why\}<\/Body>\n\s*<Btn/);
+    assert.ok(!s.includes('CollapsibleSection'));
+  });
+});

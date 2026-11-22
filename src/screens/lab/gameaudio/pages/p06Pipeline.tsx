@@ -33,6 +33,7 @@ import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import type { DockParam } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import { colors } from '../../../../theme/tokens';
+import { CollapsibleSection } from '../../LabShell';
 import { GaRack, masterKey } from '../GaLab';
 import { ActivityLog, Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { gaTerms } from '../gaTerms';
@@ -152,7 +153,10 @@ function Page({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <Do>Now go to the TROUBLESHOOT card in step 4. Start the fault, then find the broken link.</Do>
         <P>In the log, GAME lines show that the game asked. START lines show which layers played. A FAULT line names what stopped a layer.</P>
-        <Note tone="mistake">Confusing importing a sound with implementing its behavior. A file in a folder is only an asset until an event uses it.</Note>
+        {/* owner 2026-11-21: "build the second-pass collapse fixes too": the mistake starts CLOSED. */}
+        <CollapsibleSection title="COMMON MISTAKE" startOpen={false}>
+          <Note tone="mistake">Confusing importing a sound with implementing its behavior. A file in a folder is only an asset until an event uses it.</Note>
+        </CollapsibleSection>
       </Step>
       <Step n={4}>
         <P>Do each of these once. Each one is marked done when it really happens in the scene.</P>

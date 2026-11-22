@@ -20,6 +20,7 @@ import { flipFader } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { useLabNavContext } from '../../kit/LabNavBar';
 import { BADGE, type RoomLabCtx } from '../labCtx';
+import { CollapsibleSection } from '../../LabShell';
 import { RoomRackLayout } from '../rackLayout';
 import { RoomPlanView, type PlanLayers } from '../RoomPlanView';
 import { Body, Caption, SAFETY_LEVEL_POINTER } from '../bits';
@@ -178,12 +179,15 @@ export function SuggestModule({ ctx }: { ctx: RoomLabCtx }) {
           </View>
         }
       >
-        <Body>
-          Each setup is a search over positions inside your walls. The lab tries a grid of seat and speaker positions, keeps only the ones a learner could use (inside the room, the speakers' woofers at least {fmtLen(0.2, units, { small: true })} from any wall and {fmtLen(FRONT_CLEAR_M, units, { small: true })} from the front wall, nothing standing in the furniture), and scores each one with the same model Explore and Review use. A setup is shown only when it beats your current layout on its own goal, adds no new “!” warning and no new placement problem, and is clearly different from the setups above it: the seat or a speaker at least {fmtLen(SETUP_MIN_DIFF_M, units, { small: true })} apart, or one moves the desk and the other does not.
-        </Body>
-        <Body>
-          Smoother bass counts the length modes up to 150 Hz whose dip or peak your seat sits in (under 30% or over 70% of the mode's pressure: a little stricter than the Review page's 20% / 80%, so no setup wins by a hair). The first length mode, the lowest, counts first, then dips (EQ cannot fill them), then peaks. The usual starting point for the seat is about 35–40% of the room length — the “38% rule” — and the report says when this room does better elsewhere. Clearer stereo image keeps the pair symmetrical on the center line at 60°, tweeters at ear height, aimed at your ears, and then looks for the fewest strong early wall reflections. Least change makes the smallest moves that clear the Review page's “!” warnings and never moves the desk.
-        </Body>
+        {/* owner 2026-11-21: "build the second-pass collapse fixes too": the method behind the task starts CLOSED, one tap away, every word kept. */}
+        <CollapsibleSection title="HOW THE SEARCH WORKS" startOpen={false}>
+          <Body>
+            Each setup is a search over positions inside your walls. The lab tries a grid of seat and speaker positions, keeps only the ones a learner could use (inside the room, the speakers' woofers at least {fmtLen(0.2, units, { small: true })} from any wall and {fmtLen(FRONT_CLEAR_M, units, { small: true })} from the front wall, nothing standing in the furniture), and scores each one with the same model Explore and Review use. A setup is shown only when it beats your current layout on its own goal, adds no new “!” warning and no new placement problem, and is clearly different from the setups above it: the seat or a speaker at least {fmtLen(SETUP_MIN_DIFF_M, units, { small: true })} apart, or one moves the desk and the other does not.
+          </Body>
+          <Body>
+            Smoother bass counts the length modes up to 150 Hz whose dip or peak your seat sits in (under 30% or over 70% of the mode's pressure: a little stricter than the Review page's 20% / 80%, so no setup wins by a hair). The first length mode, the lowest, counts first, then dips (EQ cannot fill them), then peaks. The usual starting point for the seat is about 35–40% of the room length — the “38% rule” — and the report says when this room does better elsewhere. Clearer stereo image keeps the pair symmetrical on the center line at 60°, tweeters at ear height, aimed at your ears, and then looks for the fewest strong early wall reflections. Least change makes the smallest moves that clear the Review page's “!” warnings and never moves the desk.
+          </Body>
+        </CollapsibleSection>
         <Caption>Bass and image setups may move the desk with your chair; the report says so, and trying one moves the desk for every kept layout, because the desk is part of the room.</Caption>
         <Caption>No setup is a guaranteed optimum. The search tries a grid of positions, not every position. The distances are to the woofer: leave the rear-port clearance your monitor's maker gives behind the cabinet. The model knows the room you entered, not the wall that flexes or the cupboard full of clothes, and it uses a generic speaker spread rather than your monitors' data. Try a setup, listen, and measure.</Caption>
         <Caption>{SAFETY_LEVEL_POINTER}</Caption>
