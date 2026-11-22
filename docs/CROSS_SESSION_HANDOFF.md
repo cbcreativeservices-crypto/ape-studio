@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 · ccode · e01ffa63 (OTA 12)
+changed: OTA 12 PUBLISHED from e01ffa63 (owner: "publish the OTA"): Android group 7b9778db (01a20441) / iOS group 244d1334 (01a20444), runtimes a903813a / 91355451. Carries d67fe546 (American English in learner text, waterfall DAMPING warning, oscilloscope wording) and e01ffa63 (second-pass calmer lab pages).
+affects other side: nothing on the server.
+needs: nothing [MD:D74]
+
 ### 2026-11-21 23:11 · ccode · d67fe546
 changed: American English in learner text; waterfall says when a reverb hides DAMPING; oscilloscope "safe level" (owner 2026-11-21) [MD:D74]
 affects other side: nothing on the server (learner text only; ids and server values kept).
