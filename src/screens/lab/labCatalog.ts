@@ -232,7 +232,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     id: 'acoustics',
     glyph: '🏛',
     name: 'Acoustics',
-    description: 'How sound behaves in real spaces — reflection, absorption, interference, standing waves, and speaker coverage.',
+    description: 'How sound behaves in real spaces — reflection, absorption, interference and standing waves.',
     section: 'fundamentals',
     kind: 'list',
     labs: [
