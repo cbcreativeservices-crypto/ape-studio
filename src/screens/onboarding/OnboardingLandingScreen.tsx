@@ -16,14 +16,14 @@
  *      clearly free — we are a learning app; a lesson is never hidden.
  *   3. LOOK AROUND — Glossary, Calculators, Labs, and TOPICS & CERTIFICATES
  *      (Explore Topics + Enroll merged, H2), then footer links: Skip to Home
- *      (H1, demoted from a big button), Watch again, Learn more.
+ *      (H1, demoted from a big button), Watch Intro Video Again, Learn more.
  *
  * Members never see the membership card (no marketing to members): it shows
  * only when upsell is allowed, the same rule as Home's corner button.
  *
  * Every choice LEAVES this page (it is shown once): it pops back to the
  * Academy menu and opens the destination from there, so Back from any of them
- * returns to the menu, never here. "Watch again" swaps this page for the video.
+ * returns to the menu, never here. "Watch Intro Video Again" swaps this page for the video.
  * Membership is the exception: the Paywall opens OVER this page and comes
  * back to it (owner 2026-10-09) — after a guest's sign-up too (H9).
  */
@@ -207,7 +207,7 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
             accessibilityLabel="Watch the intro video again"
           >
             <ResetIcon color={REPLAY_GREEN} size={15} />
-            <Text style={[styles.linkText, styles.replayText]}>Watch again</Text>
+            <Text style={[styles.linkText, styles.replayText]}>Watch Intro Video Again</Text>
           </Pressable>
           <Pressable
             style={styles.link}
