@@ -84,12 +84,15 @@ describe('Scope: SIGNAL is never a dead tray', () => {
 });
 
 describe('Well text matches the meter', () => {
-  it('VU: ORGAN does not light the LED at +0.0 dB (0.72 FS), and the well says so', async () => {
+  it('VU: lined up, PINK NOISE and ORGAN leave the lamp dark at +0.0 dB, and the well says so', async () => {
+    // Recalibrated 2026-11-21 (owner: pink noise "should be at U ... with no peak light"):
+    // the module trims each signal (VU_LINEUP_DB) and the face's lamp is true 0 dBFS.
     const E = await import('../src/screens/lab/meter/meterEngine.ts');
-    assert.ok(Math.max(...E.renderSignal('organ').map(Math.abs)) < 0.72);
-    assert.match(V, /if \(m >= 0\.72\)/);
+    const pk = (s: 'organ' | 'pinknoise') => Math.max(...E.renderSignal(s).map(Math.abs)) * Math.pow(10, (E.VU_LINEUP_DB[s] ?? 0) / 20);
+    assert.ok(pk('organ') < 1 && pk('pinknoise') < 1);
+    assert.match(V, /if \(m >= 0\.72\)/); // the Signal Detective's lesson VU (VuView) is unchanged
     assert.doesNotMatch(A, /similar LED/);
-    assert.match(A, /stay under the LED, which stays dark/);
+    assert.match(A, /the PEAK lamp stays dark/);
   });
   it('Peak: the lamp is not called a latch', () => {
     assert.doesNotMatch(A, /it LATCHES/);

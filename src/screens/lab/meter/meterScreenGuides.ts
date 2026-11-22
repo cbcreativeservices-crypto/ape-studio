@@ -169,11 +169,11 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   vu: {
     intro: {
       learning: 'Why a VU needle reads average level, which is closer to how loud a sound feels, and why it lags far behind fast peaks on purpose.',
-      start: 'Pick SNARE and watch the PEAK lamp flash while the needle only flicks partway up. Then switch SIGNAL to ORGAN and see the needle climb and sit.',
+      start: 'Pick PINK NOISE: the needle sits steady on 0 VU and the PEAK lamp stays dark. Then pick SNARE and raise GAIN about +4 dB: the lamp flashes while the needle is barely into the red.',
     },
     seeing: [
       'This classic VU meter gives you two answers: a needle on an arc scale for the average, a PEAK lamp for fast peaks. Watch both.',
-      'The needle takes about 300 ms to respond, by design, as the note says. Here, 0 VU sits at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
+      'The needle takes about 300 ms to respond, by design. 0 VU is lined up to −18 dBFS, a common studio alignment; the PEAK lamp lights at 0 dBFS.',
       'NDL MAX is the highest a 300 ms average reached, in dBFS. Compare it with PEAK, RMS and CREST (their gap).',
     ],
     control: [
@@ -183,7 +183,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     ],
     changes: [
       'The needle averages about 300 ms. A snare crack is over before it moves far; a held organ chord keeps pushing, so the needle climbs and sits.',
-      'The PEAK lamp reacts at once, so you’ll see it flash on the snare while the needle only flicks partway up.',
+      'The PEAK lamp reacts at once, at full scale only: add GAIN on the snare and it flashes.',
       'NDL MAX lands near RMS, far below PEAK on spiky sounds. GAIN moves PEAK, RMS and NDL MAX together; CREST stays put, and only another SIGNAL changes it.',
     ],
     teaches: [
@@ -192,9 +192,9 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Don’t read 0 VU as a ceiling. It’s a reference (nominal) level with headroom above it.',
     ],
     tryThis: [
-      'On SNARE: PEAK −1.6, but NDL MAX only −23.0. The needle stays more than 21 dB under the peak.',
-      'Switch to ORGAN: PEAK −5.7, NDL MAX −11.3. The peak is lower, yet NDL MAX sits almost 12 dB higher, and the PEAK lamp stays dark.',
-      'Now PINK NOISE: broadband and steady, so the needle holds almost still. Equal energy in every octave makes it the reference for system and room checks.',
+      'On SNARE: PEAK −3.1, but NDL MAX only −24.5. The needle stays more than 21 dB under the peak.',
+      'Switch to ORGAN: PEAK −13.2, NDL MAX −18.8. The peak is 10 dB lower, yet NDL MAX sits almost 6 dB higher, and the PEAK lamp stays dark.',
+      'Now PINK NOISE: broadband and steady, so the needle holds almost still on 0 VU with the lamp dark. Equal energy in every octave makes it the reference for line-up, system and room checks.',
     ],
   },
 

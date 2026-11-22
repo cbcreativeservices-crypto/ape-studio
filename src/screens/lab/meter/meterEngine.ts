@@ -287,6 +287,22 @@ export const crestDb = (x: number[]) => db(peakOf(x)) - db(rmsOf(x));
 
 /** One first-order VU ballistics step: the needle chases RMS with ~300 ms
  *  integration — WHY a VU can't show transients (the whole M3 lesson). */
+/**
+ * VU LINE-UP (owner 2026-11-21 on the Pixel: "pink noise ... it should be at U no?
+ * with no peak light yet"). The face is calibrated like a studio: 0 VU = −18 dBFS
+ * average, and the PEAK lamp lights at 0 dBFS — the same point as the PEAK readout.
+ * Each teaching signal is trimmed to a realistic level at GAIN +0.0 dB:
+ *  • PINK NOISE: −18 dBFS RMS — the needle sits on 0 VU, peaks ≈ −9 dBFS, lamp dark;
+ *  • ORGAN: −18 dBFS RMS — climbs and sits near 0 VU, peaks ≈ −13 dBFS;
+ *  • SPEECH: −20 dBFS RMS — swings just under 0 VU;
+ *  • SNARE: a normal tracking level (owner picked "Normal level, lamp dark"):
+ *    the needle tops near 0 VU, peaks ≈ −3 dBFS; about +4 dB of GAIN lights the lamp.
+ * Before this the face put 0 VU at −7.5 dBFS and lit the lamp on its own shifted
+ * scale (0.72 FS), so pink noise lit it below 0 VU while PEAK read −0.6 dBFS.
+ */
+export const VU_REF_DBFS = -18;
+export const VU_LINEUP_DB: Partial<Record<SignalKey, number>> = { pinknoise: -8.4, organ: -7.5, speech: -7.5, snare: -1.5 };
+
 export function vuStep(prev: number, targetRms: number, dtSec: number, tcSec = 0.3): number {
   const a = 1 - Math.exp(-dtSec / tcSec);
   return prev + (targetRms - prev) * a;

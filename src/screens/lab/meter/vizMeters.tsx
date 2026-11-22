@@ -3617,8 +3617,10 @@ export function VuSkinView(p: { width: number; height?: number; signal?: SignalK
       let m = 0;
       for (let k = 0; k < winP; k++) m = Math.max(m, Math.abs(buf[(c0 + k) % n]));
       rmsDb[i] = 20 * Math.log10(Math.max(1e-6, Math.sqrt(s / winR)));
-      // The lamp lights at ≥ −0.1 "dBFS"; the lesson's LED lit at 0.72 FS.
-      pkDb[i] = 20 * Math.log10(Math.max(1e-6, m / 0.72)) - 0.1;
+      // TRUE dBFS (owner 2026-11-21): the lamp lights at full scale, the same point
+      // as the module's PEAK readout. It used to be scaled to 0.72 FS, so pink
+      // noise lit it while PEAK read −0.6 dBFS.
+      pkDb[i] = 20 * Math.log10(Math.max(1e-6, m));
     }
     return { rmsDb, pkDb };
   }, [sig, gain]);

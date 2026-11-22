@@ -51,6 +51,8 @@ import {
   rmsOf,
   simulateLoudness,
   vuStep,
+  VU_LINEUP_DB,
+  VU_REF_DBFS,
   type SignalKey,
 } from '../meterEngine';
 import { requireVizMeters, type VizMetersModule } from '../skiaGate';
@@ -253,7 +255,7 @@ function VuHost({
 }) {
   const phase = viz.usePhaseClock(focused, 0.7);
   // The SPL tool's photoreal VU face (owner 2026-10-10: the two must look the same).
-  return <viz.VuSkinView width={width} height={height} signal={signal} gain={gainLin(gainDb)} phase={phase} running={focused} />;
+  return <viz.VuSkinView width={width} height={height} signal={signal} gain={gainLin(gainDb)} phase={phase} running={focused} rms0={Math.pow(10, VU_REF_DBFS / 20)} />;
 }
 
 function LoudnessHost({
@@ -676,7 +678,9 @@ export function VuModule(p: MeterModuleProps) {
   const [gainDb, setGainDb] = useState(0);
 
   const sig = useMemo(() => renderSignal(signal), [signal]);
-  const proc = useMemo(() => processed(sig, gainDb), [sig, gainDb]);
+  // The learner's GAIN rides on top of the signal's line-up trim.
+  const driveDb = gainDb + (VU_LINEUP_DB[signal] ?? 0);
+  const proc = useMemo(() => processed(sig, driveDb), [sig, driveDb]);
   const needleDb = useMemo(() => db(needleMaxOf(proc)), [proc]);
 
   const bezel: BezelItem[] = [
@@ -715,7 +719,7 @@ export function VuModule(p: MeterModuleProps) {
         onGuide: () => p.help('vu_meter'),
         render: (w, h) =>
           viz ? (
-            <VuHost viz={viz} width={w} height={h} focused={p.focused} signal={signal} gainDb={gainDb} />
+            <VuHost viz={viz} width={w} height={h} focused={p.focused} signal={signal} gainDb={driveDb} />
           ) : (
             <StageUnavailable w={w} h={h} />
           ),
@@ -729,13 +733,14 @@ export function VuModule(p: MeterModuleProps) {
 
         <CollapsibleSection title="THE LESSON — WATCH THE NEEDLE LOSE TO THE LED">
           <Text style={dstyles.body}>
-            Select SNARE: the peak LED flashes hard on every hit while the needle barely stirs — by
-            the time 300 ms of ballistics get it moving, the hit is long over. The NDL MAX readout
-            shows how little of the peak it ever reaches. Now select ORGAN: at GAIN +0.0 dB its
-            peaks stay under the LED, which stays dark, yet the needle climbs and SITS there, because
-            the energy never stops arriving. Lower peak, higher needle — that is RMS versus peak made
-            physical, and it is the single most
-            important metering lesson in this lab.
+            Start with PINK NOISE: lined up, the needle sits steady on 0 VU (−18 dBFS average) and
+            the PEAK lamp stays dark — its peaks are still about 9 dB below full scale. Select SNARE:
+            the needle only flicks to about 0 VU, yet its PEAK readout is far higher — by the time
+            300 ms of ballistics get the needle moving, the hit is long over. Raise GAIN about +4 dB
+            and the lamp starts flashing on every hit while the needle is barely into the red. Now
+            select ORGAN: its peaks are 10 dB lower than the snare’s, yet the needle climbs and SITS,
+            because the energy never stops arriving. Lower peak, higher needle — that is RMS versus
+            peak made physical, and it is the single most important metering lesson in this lab.
           </Text>
           <Text style={dstyles.eyebrow}>WHY ENGINEERS STILL TRUST IT</Text>
           <Text style={dstyles.body}>
@@ -774,7 +779,7 @@ const LOUDNESS_HELP: Partial<Record<SignalKey, string>> = {
 /** The stages' plain model notes (S3's RackStage.modelNote, phase 3 2026-11-14):
  *  what each picture is and is not, in one sentence. */
 const SIGNAL_NOTE = 'A built-in teaching signal, levels in dBFS, not a measurement of real audio.';
-const VU_NOTE = 'A built-in teaching signal in dBFS; the needle takes about 300 ms on purpose.';
+const VU_NOTE = 'Teaching signal in dBFS, 0 VU = −18 dBFS; the needle takes about 300 ms on purpose.';
 const LOUDNESS_MODEL_NOTE = 'A simplified BS.1770-style teaching model, not a compliance loudness meter.';
 
 const LOUDNESS_MISTAKES = [

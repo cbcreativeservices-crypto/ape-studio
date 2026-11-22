@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 19:04 · ccode · 19d6d22e
+changed: Waterfall: even time spacing + no padding on the time axis (owner on the Pixel 2026-11-21: "not showing any decay at all"; "why does grid got 12 sec") [MD:D74]
+affects other side: nothing on the server (app drawing only).
+needs: nothing; reaches phones with the next OTA [MD:D74]
+
+
 ### 2026-11-21 17:09 · ccode · cf088eac
 changed: Labs menu: Acoustics description drops "speaker coverage" (Speaker Placement moved to Live Sound, D74; seen on the Pixel 2026-11-21) [MD:D74]
 affects other side: nothing on the server (menu text only).

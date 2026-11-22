@@ -245,8 +245,11 @@ describe('3. every TRY THIS number is what the screen prints', () => {
   });
 
   it('VU / RMS Meter', () => {
-    const vu = (s: string) => {
-      const p = E.renderSignal(s);
+    // Recalibrated 2026-11-21 (owner): the module reads each signal at its line-up
+    // trim (VU_LINEUP_DB), 0 VU = −18 dBFS, and the PEAK lamp is true 0 dBFS.
+    const vu = (s: string, g = 0) => {
+      const k = gl((E.VU_LINEUP_DB[s] ?? 0) + g);
+      const p = E.renderSignal(s).map((v: number) => v * k);
       const dt = 1.5 / p.length;
       let n = 0;
       let top = 0;
@@ -265,13 +268,17 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     // GAIN cancels out of CREST on this (unclipped) path.
     for (const g of [-12, 0, 12]) assert.equal(f1(E.crestDb(E.renderSignal('snare').map((v: number) => v * gl(g)))), f1(E.crestDb(E.renderSignal('snare'))));
     assert.ok(textOf(GUIDES.vu).includes('CREST stays put'));
-    // ORGAN never lights the PEAK lamp (it needs |x| ≥ 0.72 of full scale).
-    assert.ok(E.peakOf(E.renderSignal('organ')) < 0.72 && E.peakOf(E.renderSignal('snare')) >= 0.72);
-    assert.match(code('src/screens/lab/meter/vizMeters.tsx'), /m \/ 0\.72/);
+    // Lamp = true 0 dBFS: dark for ORGAN, PINK and SNARE at +0.0 dB; SNARE lights with about +4 dB.
+    assert.ok(o.peak < 0 && vu('pinknoise').peak < 0 && s.peak < 0);
+    assert.ok(vu('snare', 4).peak >= 0, '"raise GAIN about +4 dB"');
+    assert.match(code('src/screens/lab/meter/vizMeters.tsx'), /pkDb\[i\] = 20 \* Math\.log10\(Math\.max\(1e-6, m\)\);/);
     assert.ok(t.includes('the PEAK lamp stays dark'));
     assert.ok(t.includes(`PEAK ${m(f1(o.peak))}, NDL MAX ${m(f1(o.ndl))}`));
     const lift = Number(f1(o.ndl)) - Number(f1(s.ndl));
-    assert.ok(lift > 11 && lift < 12, `"almost 12 dB higher" (${lift})`);
+    assert.ok(lift > 5 && lift < 6, `"almost 6 dB higher" (${lift})`);
+    // Pink noise sits on 0 VU: its RMS is the −18 dBFS reference.
+    const pn = E.renderSignal('pinknoise').map((v: number) => v * gl(E.VU_LINEUP_DB.pinknoise ?? 0));
+    assert.ok(Math.abs(E.db(E.rmsOf(pn)) - E.VU_REF_DBFS) < 0.3);
   });
 
   it('Loudness Meter', () => {
