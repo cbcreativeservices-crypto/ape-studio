@@ -855,8 +855,8 @@ const RT_PROBE_HZ = [31.5, 63, 110, 125, 250, 500, 1000, 1200, 2000, 4000, 8000,
  *
  * Driven by the LONGEST RT60 in the band, because the window has to be long
  * enough to show the slowest part of the room finish — that is usually the low
- * end, and seeing the bass outlast the top IS the lesson. 1.25x gives the tail
- * room to be visible instead of ending exactly at the front edge. Snapped to a
+ * end, and seeing the bass outlast the top IS the lesson. No padding (owner
+ * 2026-11-21): the slowest decay ends at the front edge. Snapped to a
  * readable step so the floor marks land on round numbers.
  */
 export function waterfallTimeSpan(opts: WaterfallOpts): number {
@@ -884,9 +884,17 @@ export function waterfallTimeSpan(opts: WaterfallOpts): number {
   const untreated: WaterfallOpts = { ...opts, damping01: 0, qRing: false };
   let maxRt = 0;
   for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(untreated, f));
-  const needed = maxRt * 1.25;
-  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 10, 12];
-  return STEPS.find((s) => s >= needed) ?? STEPS[STEPS.length - 1];
+  // NO PADDING, FINE STEPS (owner 2026-11-21: "why does grid got 12 sec if none
+  // of our examples go that long ... remove the unused/never used extra sec").
+  // It was maxRt × 1.25 snapped up to a coarse step, so a 9 s cathedral got a
+  // 12 s floor and every room carried ~25-50 % of floor nothing ever reached.
+  // Now the axis is the room's own longest undamped RT60, snapped up to the
+  // next readable step: that decay lands on the front edge exactly (it reaches
+  // −60 dB, the floor, at t = RT60), and the plot spends its depth on decay.
+  const needed = maxRt;
+  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 12];
+  // A hair of slack for float noise (theater's 7 s computes as 7.000000000000002).
+  return STEPS.find((s) => s >= needed - 1e-6) ?? STEPS[STEPS.length - 1];
 }
 
 /** Whole-number-ish floor division marks that fit inside `span`. */

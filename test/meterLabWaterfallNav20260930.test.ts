@@ -90,8 +90,9 @@ describe('waterfall module wiring', () => {
     const c = src('src/screens/lab/meter/modules/modMeterC.tsx');
     assert.match(c, /<CaseHero key=\{idx\}/);
     assert.match(c, /kase\.kind === 'ring' \? vs\.waterfallRealtimeHz\(RING_OPTS\) : kase\.visHz/);
-    // The frozen 0.1333 was WF_GROW_END / 3 s; the ring scene's window is 6 s.
-    assert.equal(waterfallTimeSpan(scene()), 6);
+    // The frozen 0.1333 was WF_GROW_END / 3 s; the ring scene's window is 4 s since
+    // 2026-11-21 (owner: the axis is the room's own longest decay, no padding; was 6 s).
+    assert.equal(waterfallTimeSpan(scene()), 4);
   });
 });
 

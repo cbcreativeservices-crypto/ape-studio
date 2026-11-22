@@ -961,8 +961,15 @@ export function WaterfallView(p: {
     // of an otherwise dead surface.
     const ridge = waterfallRidge(o);
     const ringF = ridge.ratio >= RIDGE_CALLOUT_RATIO ? ridge.f : null;
-    const q = 0.975; // per-slice depth step shrinks — perspective recession
-    const norm = 1 - Math.pow(q, WF_SLICES - 1);
+    // EVEN TIME SPACING (owner 2026-11-21, "Even spacing only"): every slice
+    // gets the same depth, so each second of decay gets its fair share of the
+    // floor. The old perspective recession (q = 0.975 per slice) squeezed the
+    // EARLIEST time — the back, where t = 0 lives and where a damped room does
+    // ALL its decaying — into a thin band: Classroom at 30 % curtains spent its
+    // whole treble decay (0.5 s of a 6 s axis) in ~3 % of the depth, so the
+    // range read as a wall with no decay (owner on the Pixel: "not showing any
+    // decay at all"). The pinned per-room axis (owner 2026-08-28) is unchanged.
+    const depth01 = (iF: number) => iF / (WF_SLICES - 1); // 0 front → 1 back
     const specRaw = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
     // 0 dB = the peak of the room's own impulse WITHOUT any EQ or ring filter,
     // so the reference cannot move when those controls do. Normalising to the
@@ -974,7 +981,7 @@ export function WaterfallView(p: {
     const lgF = WF_FREQS.map((f) => lgFrac(f));
     const slices: WfSliceGeo[] = [];
     for (let i = 0; i < WF_SLICES; i++) {
-      const cum = norm > 0 ? (1 - Math.pow(q, i)) / norm : 0; // 0 front → 1 back
+      const cum = depth01(i); // 0 front → 1 back
       const ox = xL0 + dxTot * cum;
       const oy = baseY - dyTot * cum;
       const sw = frontW * (1 - 0.2 * cum);
@@ -1055,7 +1062,7 @@ export function WaterfallView(p: {
     // BACK, so each second's band steps FORWARD toward the viewer.
     const timeMarks = waterfallTimeDivisions(tMax).map((tSec) => {
       const iF = (1 - tSec / tMax) * (WF_SLICES - 1);
-      const cum = norm > 0 ? (1 - Math.pow(q, iF)) / norm : 0;
+      const cum = depth01(iF);
       const x0 = xL0 + dxTot * cum;
       const y = baseY - dyTot * cum;
       return { t: tSec, x0, x1: x0 + frontW * (1 - 0.2 * cum), y };

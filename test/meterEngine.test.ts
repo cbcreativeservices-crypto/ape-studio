@@ -546,7 +546,10 @@ describe('waterfallTimeSpan / Divisions — the pinned time ruler', () => {
       const bare = scene({ room });
       let maxRt = 0;
       for (let f = 31.5; f <= 16000; f *= 1.05) maxRt = Math.max(maxRt, waterfallRt(bare, f));
-      assert.ok(waterfallTimeSpan(bare) >= maxRt, `${room}: ${waterfallTimeSpan(bare)} < ${maxRt}`);
+      // No padding since 2026-11-21 (owner: drop the never-used seconds); 1e-6 is float noise.
+      assert.ok(waterfallTimeSpan(bare) >= maxRt - 1e-6, `${room}: ${waterfallTimeSpan(bare)} < ${maxRt}`);
+      // ...and no more than one readable step beyond it (a 9 s cathedral is no longer drawn on 12 s).
+      assert.ok(waterfallTimeSpan(bare) <= Math.max(maxRt * 1.3, maxRt + 0.5), `${room}: ${waterfallTimeSpan(bare)} pads ${maxRt}`);
     }
   });
   it('a bigger room gets a longer ruler', () => {
