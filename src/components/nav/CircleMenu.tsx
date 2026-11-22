@@ -626,7 +626,8 @@ function MenuMark() {
           <Circle key={i} cx={d.cx} cy={d.cy + 0.78} r={1.25 + 1.17} />
         ))}
       </G>
-      <G fill="#f2f2f4">
+      {/* Owner 2026-11-22: the white dots at 50% (the dark halos stay). */}
+      <G fill="#f2f2f4" opacity={0.5}>
         {MARK_DOTS.map((d, i) => (
           <Circle key={i} cx={d.cx} cy={d.cy} r={1.25} />
         ))}

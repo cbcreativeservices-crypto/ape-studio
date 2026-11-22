@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 14:21 · ccode · 2c1a708d
+changed: Founder page: owner-approved D36 copy (six paragraphs, word for word from Comp A 2026-11-22); Q8 email confirmation stays OFF (owner 2026-11-22). Website not deployed: owner's GO [MD:D36]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-22 14:00 · ccode · 48b92b28
 changed: Landing: "Watch again" reads "Watch Intro Video Again" (owner 2026-11-22)
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
