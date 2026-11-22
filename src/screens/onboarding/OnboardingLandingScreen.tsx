@@ -41,10 +41,9 @@ import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 import { ResetIcon } from '../../components/ResetIcon';
-import { HomeIcon } from '../../components/HomeIcon';
-import { PlaceArt } from '../../components/nav/CircleMenuPanel';
-import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { BrandLogo } from '../../components/BrandLogo';
+import { ScreenCircleMenu } from '../../components/nav/CircleMenu';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { colors, fonts } from '../../theme/tokens';
 import { COPY } from '../../lib/copy';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
@@ -72,9 +71,6 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
   // Smallest phones (< 360 wide): no logo, the original centred title (owner 2026-10-10).
   const showLogo = width >= 360;
   const titleSize = showLogo ? Math.min(32, Math.floor((Math.min(width - 40, 560) - 41) / 9.5)) : 32;
-  // "TOPICS & CERTIFICATES" is the longest key in the browse grid: a notch
-  // smaller on narrow phones so it stays on one line beside LABS.
-  const topicsFont = width < 370 ? 12.5 : 14;
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -125,9 +121,11 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
   };
 
   return (
+    <View style={styles.root}>
     <ScrollView
       style={styles.root}
-      contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}
+      // menuClearance: the footer links sit above the MENU button (owner 2026-11-22).
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: menuClearance(insets.bottom) + 12 }]}
     >
       <View style={styles.column}>
         <View style={styles.header}>
@@ -194,38 +192,13 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
           </LinearGradient>
         </Pressable>
 
-        {/* 3 · LOOK AROUND */}
-        <Text style={[styles.eyebrow, styles.sectionEyebrow]}>OR JUMP RIGHT IN</Text>
-        <View style={styles.gridRow}>
-          <View style={styles.half}>
-            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<PlaceArt place="gloss" size={22} />} onPress={() => choose('glossary')} />
-          </View>
-          <View style={styles.half}>
-            <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} icon={<PlaceArt place="calc" size={22} />} onPress={() => choose('calculators')} />
-          </View>
-        </View>
-        <View style={styles.gridRow}>
-          {/* LABS is short; TOPICS & CERTIFICATES takes the rest of the row. */}
-          <View style={styles.narrow}>
-            <GlassButton label="LABS" tint="steel" height={48} fontSize={14} icon={<PlaceArt place="labs" size={22} />} onPress={() => choose('labs')} />
-          </View>
-          <View style={styles.wide}>
-            <GlassButton label={COPY.topicsAndCertificates} tint="steel" height={48} fontSize={topicsFont} icon={<MyTopicsIcon size={20} />} onPress={() => choose('topics')} />
-          </View>
-        </View>
+        {/* 3 · LOOK AROUND — the MENU button (bottom left) opens the half-screen
+            circle to every place in the Academy (owner 2026-11-22: "instead of the
+            jump right in buttons, lets now put the MENU button and have it open the
+            half screen menu circle"). The four jump-in keys are gone. */}
 
         <View style={styles.links}>
-          {/* H1: the "do nothing" choice is a link, not a primary button. */}
-          <Pressable
-            style={styles.link}
-            onPress={() => choose('home')}
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel="Skip to the Home screen"
-          >
-            <HomeIcon filled size={15} />
-            <Text style={styles.linkText}>{COPY.skipToHome}</Text>
-          </Pressable>
+          {/* Skip to Home removed (owner 2026-11-22): MENU goes Home too. */}
           <Pressable
             style={styles.link}
             onPress={() => choose('watchAgain')}
@@ -248,6 +221,8 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
         </View>
       </View>
     </ScrollView>
+    <ScreenCircleMenu here={null} />
+    </View>
   );
 }
 

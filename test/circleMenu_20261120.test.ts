@@ -404,6 +404,8 @@ describe('the hub screens carry the menu too (owner 2026-11-20)', () => {
       'src/screens/help/HelpScreen.tsx',
       'src/screens/lab/AudioLearningScreen.tsx',
       'src/screens/lab/calc/CalcLabScreen.tsx',
+      // The onboarding landing (owner 2026-11-22): MENU instead of the jump-in keys.
+      'src/screens/onboarding/OnboardingLandingScreen.tsx',
       'src/screens/settings/SettingsScreen.tsx',
       'src/screens/tools/ToolsHubScreen.tsx',
     ]);

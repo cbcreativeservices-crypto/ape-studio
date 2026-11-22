@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 12:30 · ccode · c0967847
+changed: Flashcards: the read-first dwell before marking Known is 0.6 s, was 1.5 s (owner 2026-11-22: "it blocks"); OTA 13 owner-checked [MD:D74]
+affects other side: nothing on the server.
+needs: nothing [MD:D74]
+
+
 ### 2026-11-22 · ccode · c42dce94 (OTA 13)
 changed: OTA 13 PUBLISHED from c42dce94 (owner: "publish the OTA"): Android group eb733959 (01a204d9) / iOS group f8954fb6 (01a204dc), runtimes a903813a / 91355451. Guest button label, enrollment "Included free" line, flashcards shake banner. Pixel proven.
 affects other side: nothing on the server.
