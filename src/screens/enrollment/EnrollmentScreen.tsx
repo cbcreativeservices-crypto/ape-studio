@@ -310,6 +310,16 @@ const enrollUi = {
 };
 
 /**
+ * The two free enrollment topics (FREE_ENROLL_GS: Pro Audio Safety, DAW Fundamentals
+ * & Session Management) say under their title that they are included and already
+ * loaded (owner 2026-11-22), on the EXPANDED card only (a collapsed row is too
+ * narrow to read it). Members never see "free" (no-marketing-to-members rule).
+ */
+function freeIncludedLine(member: boolean): string {
+  return member ? 'Included · already loaded into your enrollments' : 'Included free · already loaded into your enrollments';
+}
+
+/**
  * One browse add/remove topic row (perf hunt 2026-10-03). Memoised: its props
  * are primitives plus one stable handler, so a tap on one topic re-renders
  * that row only. The press rules live in the parent's `onTopicRowPress`.
@@ -617,7 +627,8 @@ export const EnrollmentView = memo(function EnrollmentView({
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(enrollUi.collapsed));
 
   /**
-   * ⛔ EVERYTHING BELOW THE DECK OPENS COLLAPSED (owner 2026-09-19) — topics,
+   * ⛔ EVERYTHING BELOW THE DECK OPENS COLLAPSED (owner 2026-09-19; the two free
+   * topics excepted since 2026-11-22, see below) — topics,
    * the required co-requisites and the free topics alike, with no exceptions.
    * The old screen opened as a wall of expanded cards, which is the reason
    * the deck exists at all; letting the list underneath do the same thing
@@ -655,9 +666,15 @@ export const EnrollmentView = memo(function EnrollmentView({
     const fresh = enrolled.map((e) => `t:${e.gs}`).filter((k) => !seen.has(k));
     if (fresh.length === 0) return;
     enrollUi.collapseSeeded = [...seen, ...fresh];
+    // EXCEPT the two free topics (owner 2026-11-22: "make sure both containers
+    // default to expanded when first viewed so the entire text can be seen"):
+    // they open the first time, so their "Included … already loaded" line is
+    // read; a row the learner then closes stays closed (it is seeded as seen).
+    const toClose = fresh.filter((k) => !isFreeEnrollGs(Number(k.slice(2))));
+    if (toClose.length === 0) return;
     setCollapsed((prev) => {
       const next = new Set(prev);
-      for (const k of fresh) next.add(k);
+      for (const k of toClose) next.add(k);
       return next;
     });
   }, [enrolled, guest]);
@@ -1888,6 +1905,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   </View>
                 ) : null}
               </View>
+              {free ? <Text style={[styles.freeIncluded, styles.freeIncludedCard]}>{freeIncludedLine(paid)}</Text> : null}
               {/* Row 2 — subject on the left; ACTIVE + Study dropped BELOW the
                   title on the right (user request 2026-07-22). */}
               <View style={styles.cardActionRow}>
@@ -3188,6 +3206,9 @@ const styles = StyleSheet.create({
   collapseTri: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub },
   collapsedCard: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 11 },
   collapsedTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
+  // The two free enrollment topics say so under their title (owner 2026-11-22).
+  freeIncluded: { fontFamily: fonts.barlowMedium, fontSize: 12, letterSpacing: 0, color: colors.green },
+  freeIncludedCard: { marginTop: 2, marginLeft: 26 },
   /* The required LAB — blue frame so it reads as a different kind of thing
      from the study topics it sits above. Meter only: see renderTopicRow. */
   labCard: { borderColor: 'rgba(47,155,255,.7)', gap: 7 },
