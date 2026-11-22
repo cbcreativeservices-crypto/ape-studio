@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-21 17:09 · ccode · cf088eac
+changed: Labs menu: Acoustics description drops "speaker coverage" (Speaker Placement moved to Live Sound, D74; seen on the Pixel 2026-11-21) [MD:D74]
+affects other side: nothing on the server (menu text only).
+needs: nothing [MD:D74]
+
+
 ### 2026-11-21 14:25 · ccode · 743d3664 (audio-tools-engine)
 changed: Website deploy, owner GO: Privacy Policy 3.3 LIVE at www.proaudiotrainingacademy.com/privacy (only web/content/legal/privacy.html + _meta.json, identical to 308fd73c).
 affects other side: store listings or forms that quote the Policy version should say 3.3.

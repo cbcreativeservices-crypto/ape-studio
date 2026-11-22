@@ -106,7 +106,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'One loudspeaker sounds different at every seat; aim, array length, delay and polarity change where its sound goes.',
       'Moving a mic, a speaker or a listener often fixes what EQ can’t.',
     ],
-    next: { route: 'SignalChainLab', title: 'Signal Chain Builder', why: 'how one processor’s output becomes the next one’s input' },
+    next: { route: 'MeterLab', title: 'Visual Audio Analysis', why: 'what each meter and display shows about a signal' },
   },
   af_speaker_coverage: {
     recap: [
@@ -137,10 +137,11 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'Clipping at or before the converter is permanent: floating point can’t repair it.',
       'Jitter is the right voltage measured at the wrong moment, and it matters only where a clock times a conversion.',
     ],
-    next: { route: 'MeterLab', title: 'Visual Audio Analysis', why: 'what each meter and display shows about a signal' },
+    next: { route: 'MeterLab', title: 'Visual Audio Analysis', why: 'its last module, Signal Detective: name the display, read it, and prescribe the fix' },
   },
-  // Also the end screen of Signal Detective, a module of this lab (MeterModule),
-  // the last Audio Fundamentals lab (owner order 2026-11-21, D74): next is Training.
+  // Also the end screen of Signal Detective, the lab's module 11 (MeterModule).
+  // Visual Audio Analysis is the FIRST, free Signal lab (owner 2026-11-21, D74,
+  // revised the same day), so next is the rest of Signal, from Signal Chain on.
   af_visual_analysis: {
     recap: [
       'Every meter answers one question. Peak: will it clip? VU and LUFS: how loud does it feel? Spectrum: which frequencies? Correlation: will it survive mono?',
@@ -149,7 +150,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
       'Level and decay are different things: EQ changes how high a frequency stands, treatment changes how long it lasts.',
       'A correlation near −1, or a lot of Side, can make a mix thin out or cancel in mono.',
     ],
-    next: { route: 'EqLab', title: 'Equalizer', why: 'the first processor in the chain: one EQ band and what it changes' },
+    next: { route: 'SignalChainLab', title: 'Signal Chain Builder', why: 'how one processor’s output becomes the next one’s input' },
   },
   af_signal_chain: {
     recap: [

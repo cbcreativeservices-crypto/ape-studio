@@ -310,7 +310,10 @@ describe('2. the guest save reminder before they begin', () => {
     const free = [...fundamentals.matchAll(/\{ name: '[^']+', blurb: '(?:[^'\\]|\\.)*', route: '(\w+)'(?:, params: \{[^}]*\})?(, key: '\w+')?( ?, member: true)?/g)]
       .filter((m) => !m[3])
       .map((m) => m[1]);
-    assert.deepEqual(free.sort(), ['AmplitudeLab', 'FoundationsCourse', 'SignalChainLab', 'WaveLab']);
+    // Revised the same day (owner 2026-11-21): Visual Audio Analysis (MeterLab,
+    // a LabShell-style menu whose modules run in the shared module shell) is
+    // the free first Signal lab instead of Signal Chain Builder.
+    assert.deepEqual(free.sort(), ['AmplitudeLab', 'FoundationsCourse', 'MeterLab', 'WaveLab']);
   });
 });
 

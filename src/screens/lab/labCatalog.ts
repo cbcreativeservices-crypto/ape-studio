@@ -247,12 +247,18 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      // ORDER (owner 2026-11-21, D74): follow the signal from the wire to the
-      // computer: the chain map, what carries it, choosing the cable, levels at
-      // every stage, into digital, reading the meters, then Signal Detective (a
-      // module of the meter lab, so they share an end screen) as the final check. The FIRST lab of every Fundamentals category
-      // is free for everyone (owner 2026-11-21), so Signal Chain is not member-only.
-      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', tileBlurb: 'Why the order of the processors in a chain matters.' },
+      // ORDER (owner 2026-11-21, D74; revised the same day): the meters first,
+      // because reading a display is the skill every later lab leans on and
+      // the most striking free taste of the Academy (owner: Signal Chain
+      // "is not very impressive to inspire users to sign up"). Then the chain
+      // map, what carries it, choosing the cable, levels at every stage, into
+      // digital, then Signal Detective (module 11 of the meter lab, so they
+      // share an end screen) as the final check. The FIRST lab of every
+      // Fundamentals category is free for everyone (owner 2026-11-21): Visual
+      // Audio Analysis is free, and its ten display modules with it; Signal
+      // Detective stays members-only (MeterModule is gated by module id).
+      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', tileBlurb: 'What each meter and display shows about a signal.' },
+      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true, tileBlurb: 'Why the order of the processors in a chain matters.' },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
       // Placed after the signal-flow labs, before Gain Staging (owner ruling).
@@ -266,7 +272,6 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
       { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true, tileBlurb: 'Levels at every stage: headroom, noise floor and unity gain.' },
       { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true, tileBlurb: 'How sound becomes numbers, and what can go wrong.' },
-      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true, tileBlurb: 'What each meter and display shows about a signal.' },
       { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
     ],
   },
@@ -807,8 +812,21 @@ const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
 /** True when EVERY catalog appearance of this screen route is members-only —
  *  so a non-member reaching it by any route (deep link, pendingLink resume, an
  *  Ear Lab row) should get the preview, never the live lab. */
-export function isMemberOnlyLabRoute(route: string): boolean {
+/**
+ * Routes whose membership depends on WHICH module they open (owner 2026-11-21,
+ * D74): the free Visual Audio Analysis lab opens its ten display modules on the
+ * same `MeterModule` route as the members-only Signal Detective (module 11).
+ * With params, the rule decides; without params the catalog's answer stands
+ * (members-only), so an unknown caller is never let through.
+ */
+const PARAM_GATED_ROUTES: Record<string, (params: unknown) => boolean> = {
+  MeterModule: (params) => (params as { id?: string } | undefined)?.id === 'detective',
+};
+
+export function isMemberOnlyLabRoute(route: string, params?: unknown): boolean {
   if (route in MEMBER_ONLY_EXTRA_ROUTES) return true;
+  const byParams = PARAM_GATED_ROUTES[route];
+  if (byParams && params !== undefined) return byParams(params);
   return LAB_ROUTE_MEMBERSHIP.get(route)?.memberOnly ?? false;
 }
 

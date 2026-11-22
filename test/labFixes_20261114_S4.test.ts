@@ -327,7 +327,9 @@ describe('S4 · next-lab cards', () => {
   });
   it('Fundamentals run in Labs-menu order, and no Advanced lab sends a learner back to Fundamentals', () => {
     // Order and membership of Audio Fundamentals: owner 2026-11-21 (D74).
-    const order = ['af_amplitude', 'af_foundations', 'af_sound_playground', 'af_mic_principles', 'af_wave_physics', 'af_signal_chain', 'af_cables', 'connector-select', 'af_gain_staging', 'af_digital_audio', 'af_visual_analysis'];
+    // Revised the same day (owner 2026-11-21): Visual Audio Analysis opens Signal (free);
+    // Digital Audio then sends the learner back to its module 11, Signal Detective.
+    const order = ['af_amplitude', 'af_foundations', 'af_sound_playground', 'af_mic_principles', 'af_wave_physics', 'af_visual_analysis', 'af_signal_chain', 'af_cables', 'connector-select', 'af_gain_staging', 'af_digital_audio'];
     for (let i = 0; i < order.length - 1; i++) assert.equal(LAB_END_CONTENT[order[i]].next!.route, OWN_ROUTE.get(order[i + 1]), order[i]);
     const fundamentalRoutes = new Set(order.map((k) => OWN_ROUTE.get(k)));
     for (const [k, c] of Object.entries(LAB_END_CONTENT)) if (!order.includes(k)) assert.ok(!fundamentalRoutes.has(c.next!.route), k);

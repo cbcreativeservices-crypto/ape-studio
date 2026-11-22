@@ -410,7 +410,7 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   Main: [false, null],
   MasteringLab: [true, 'Mastering Lab: From Final Mix to Release'],
   Matching: [false, null],
-  MeterLab: [true, 'Visual Audio Analysis'],
+  MeterLab: [false, 'Visual Audio Analysis'], // freed 2026-11-21 (owner: the free first Signal lab)
   MeterModule: [true, 'Signal Detective'],
   MicLab: [true, 'Microphone Principles'],
   MikingHub: [true, 'Miking Labs'], // one catalog tile per family (owner 2026-10-06); the shared route is named for the whole set
@@ -451,7 +451,7 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   Scenarios: [false, null],
   Settings: [false, null],
   // Free since 2026-11-21 (owner: the first lab of every Fundamentals category is free, D74).
-  SignalChainLab: [false, 'Signal Chain Builder'],
+  SignalChainLab: [true, 'Signal Chain Builder'], // members-only again 2026-11-21 (owner)
   SignalGen: [false, null],
   SmartProcessorsLab: [true, 'Smart Processors Lab'],
   SoundSystemsBuild: [true, 'Sound Systems Lab'],
@@ -527,7 +527,7 @@ describe('3. the members-only gate decides exactly as before', () => {
     const now: Record<string, [boolean, string | null]> = {};
     for (const r of Object.keys(GATE_AT_HEAD)) now[r] = [cat.isMemberOnlyLabRoute(r), cat.labRouteName(r) ?? null];
     assert.deepEqual(now, GATE_AT_HEAD);
-    assert.equal(Object.values(now).filter(([m]) => m).length, 79, '79 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide + DJSystemsLab + GameAudioLab + StagePlotLab, - SignalChainLab freed 2026-11-21 D74)');
+    assert.equal(Object.values(now).filter(([m]) => m).length, 79, '79 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide + DJSystemsLab + GameAudioLab + StagePlotLab, - MeterLab freed 2026-11-21 D74; SignalChainLab members-only again)');
   });
 
   it('GUARD: every route the catalog and the navigator name is in that comparison', () => {

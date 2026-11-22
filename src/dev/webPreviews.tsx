@@ -290,7 +290,7 @@ function withLabTermPopup(Screen: ComponentType): ComponentType {
     return (
       <>
         <Screen {...props} />
-        <LabTermIntroHost routeName={route.name} params={route.params} freeLab={!isMemberOnlyLabRoute(route.name)} />
+        <LabTermIntroHost routeName={route.name} params={route.params} freeLab={!isMemberOnlyLabRoute(route.name, route.params)} />
       </>
     );
   }

@@ -145,7 +145,7 @@ type LabTermIntroModule = typeof import('../intro/LabTermIntro');
 function LabTermIntroSlot({ routeName, params }: { routeName: string; params?: unknown }) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { LabTermIntroHost } = require('../intro/LabTermIntro') as LabTermIntroModule;
-  return <LabTermIntroHost routeName={routeName} params={params} freeLab={!isMemberOnlyLabRoute(routeName)} />;
+  return <LabTermIntroHost routeName={routeName} params={params} freeLab={!isMemberOnlyLabRoute(routeName, params)} />;
 }
 
 export function withMembershipPreview<P extends object>(
@@ -171,7 +171,7 @@ export function withMembershipPreview<P extends object>(
     // 'checking' until a read PRODUCES the tier (or the provider gives up),
     // not merely until `resolved` — which also flips on a failed read.
     const gate = useMemberGate();
-    const memberOnly = isMemberOnlyLabRoute(route.name);
+    const memberOnly = isMemberOnlyLabRoute(route.name, route.params);
     // A KNOWN non-member on a members-only route is the one case we gate.
     const gated = memberOnly && gate === 'locked';
     const preview = useLabPreview();
@@ -211,7 +211,11 @@ export function withMembershipPreview<P extends object>(
       // Entitled (or unknown, or not a members-only route): clear only a stale
       // preview WE would own for this route — e.g. entitlement upgraded while
       // the lab is open. The LabPreviewOverlay owns the ordinary leave.
-      if (memberOnly && armedForThis) endLabPreview();
+      // Any route armed for itself but not gated now clears, members-only or
+      // not: on MeterModule the gate follows the module id (owner 2026-11-21,
+      // D74), so stepping PREV from Signal Detective (members-only) to a free
+      // display module must lift the cover in place.
+      if (armedForThis) endLabPreview();
     }, [gated, memberOnly, armedForThis, focused, route.name, lookInside]);
 
     // Unknown beat: hold rather than flash the paid lab (or a paywall at a
