@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 15:20 · ccode · d651ae0a
+changed: Home + menu (owner 2026-11-22): FREE: on the green/purple/Glossary carousel titles for guests and free users (members keep plain names); menu words tappable; MENU dots see-through with a rim; every guest sign-in shows the MENU callout again
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-22 14:39 · ccode · 39ad5336
 changed: Must-do: Comp A store checks 2026-11-22: B1 (Apple prices scheduled) and B3 (Play open testing paused) DONE; E8 Android 15 deprecated-API warning (inside React Native 0.86 itself, no 1.0.1 change; phone checks at the build)
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
@@ -10287,4 +10293,8 @@ needs: [MD:D33] the owner works the R5 decision page and says "done"; then Comp 
 
 ### 2026-11-22 · ccode · OTA 14 PUBLISHED (owner "Publish the OTA")
 changed: production OTA from 39ad5336. Android group 3dc4be83-e3c4-45c0-be3f-a4f5c79fc731 (update 01a2056f, runtime a903813a, build 23); iOS group c135459a-b831-48c2-98a6-c3f720ced29b (update 01a2057a, runtime 91355451, build 39). Fingerprints MATCH both builds; eol-sync 0; sourcemaps uploaded per platform. Contents: flashcard read-first dwell 0.6 s (c0967847); landing MENU replaces the jump-in keys, Skip to Home removed (b769b481); first-run "YOUR MENU" callout (660b706a); "Watch Intro Video Again" (48b92b28); MENU dots 50% (f1834901). Pixel: store app shows the dimmed MENU dots (OTA 14 running; the relaunch reports "No update available"). iPhone check is the owner's. Undo = republish OTA 13 (Android eb733959 / iOS f8954fb6).
+affects: phones on builds 23/39. needs: owner iPhone check.
+
+### 2026-11-22 · ccode · OTA 15 PUBLISHED (owner "publish", then authorized again in a question: "Yes, publish OTA 15"; OTA only, no store builds)
+changed: production OTA from d651ae0a. Android group a9826ac9-c293-4da0-b2b7-0ad6fb6aa28a (update 01a20599, runtime a903813a, build 23); iOS group 44db6bec-b352-47c2-9c53-03e731f7b82e (update 01a2059d, runtime 91355451, build 39). Fingerprints MATCH both builds; eol-sync 0; sourcemaps uploaded per platform. Contents: FREE: on the green/purple/Glossary Home titles for guests and free users (members plain); menu words tappable; see-through MENU dots; MENU callout on every guest sign-in. Pixel PROVEN: launch 1 "Update available", launch 2 "No update available"; screen shows the new dots and member titles. iPhone check is the owner's. Undo = republish OTA 14 (Android 3dc4be83 / iOS c135459a).
 affects: phones on builds 23/39. needs: owner iPhone check.
