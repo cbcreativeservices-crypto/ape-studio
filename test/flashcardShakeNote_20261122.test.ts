@@ -10,6 +10,8 @@ describe('Flashcards full screen: shake-to-Known is confirmed on screen', () => 
   it('toggleKnown reports what happened', () => {
     assert.match(s, /const toggleKnown = useCallback\(\(\): 'known' \| 'unknown' \| 'wait' \| null =>/);
     assert.match(s, /if \(!dwellOk\(\)\) return 'wait';/);
+    // The dwell is 0.6 s (owner 2026-11-22: 1.5 s blocked a fast reader).
+    assert.match(s, /const dwellOk = \(\) => Date\.now\(\) - cardShownAt\.current >= 600;/);
     assert.match(s, /return isKnown \? 'unknown' : 'known';/);
   });
   it('the shake shows the result for 1.6 s', () => {

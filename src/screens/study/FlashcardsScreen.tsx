@@ -775,7 +775,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   useEffect(() => {
     cardShownAt.current = Date.now();
   }, [card?.id]);
-  const dwellOk = () => Date.now() - cardShownAt.current >= 1500;
+  // 0.6 s (owner 2026-11-22: "the read the card first needs less time ... it blocks"); was 1.5 s (2026-07-16).
+  const dwellOk = () => Date.now() - cardShownAt.current >= 600;
 
   // Pace timer (practice aid — device-local settings, never blocks study),
   // restored 2026-10-16 (owner: "I had a pace viewer and HZ and BPM
@@ -1252,7 +1253,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
    *  2026-07-18) — same list as the Glossary bookmark. */
   const toggleBookmarkTerm = useCallback(() => {
     if (!card) return;
-    if (!dwellOk()) return; // 1.5s dwell before tagging (Booth 2026-07-16)
+    if (!dwellOk()) return; // short dwell before tagging (0.6 s since 2026-11-22)
     // null = refused (the saved list could not be read; the shared notice is up).
     if (toggleBookmark(achievementId, card.id) !== null) ackList('fav');
   }, [card, ackList]);
@@ -1525,7 +1526,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   /** Returns what happened, for the full-screen shake confirmation (owner 2026-11-22). */
   const toggleKnown = useCallback((): 'known' | 'unknown' | 'wait' | null => {
     if (!card) return null;
-    if (!dwellOk()) return 'wait'; // 1.5s dwell before tagging (Booth 2026-07-16)
+    if (!dwellOk()) return 'wait'; // short dwell before tagging (0.6 s since 2026-11-22)
     const isKnown = hidden.has(card.id) || knownList.has(card.id);
     const next = new Set(hidden);
     if (isKnown) {
