@@ -64,6 +64,7 @@ import { labelWidth } from './labelLayout.ts';
 import { bodyOf, layoutArtLabels, occupancy } from './artLabels.ts';
 import { sceneFrame, shapeBox } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
+import { FigureScale } from '../../lessons/shared/figureV2/detail';
 
 const BLUE = '#6fa8ff';
 /**
@@ -2799,7 +2800,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         <Group transform={matrix}>
           {/* The art's own keep-out shapes stay off this drawing (keepOuts.ts). */}
           <KeepOutsAtRest.Provider value={false}>
-            <Instrument view={view} variant={variant} micTypes={micTypes} setup={zoneIds} />
+            {/* the figures' level of detail by drawn scale (figureV2/detail) */}
+            <FigureScale ptPerMm={base.s}>
+              <Instrument view={view} variant={variant} micTypes={micTypes} setup={zoneIds} />
+            </FigureScale>
           </KeepOutsAtRest.Provider>
           <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
           <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} yieldTo={yieldTo} view={view} />

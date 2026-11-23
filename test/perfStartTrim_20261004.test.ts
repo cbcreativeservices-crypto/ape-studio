@@ -494,9 +494,9 @@ const COUNTS_AT_HEAD: Record<string, string> = {
   sound: '4 Labs', acoustics: '1 Lab', signal: '7 Labs', mixingworkflow: '4 Labs', production: '4 Labs',
   // livesound: +1 Stage Plot and Channel Designer; gameaudio: a new subject (2026-11-13, MD:D60).
   livesound: '5 Labs', gameaudio: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
-  saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
+  saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '4 Labs', // +1 Bass Guitar Physics, moved from instruments (owner 2026-11-23)
   // instruments: +1 for Miking Lab 6's family tile (Foley, Field & Scientific; Lab 6 group 4, 2026-10-08).
-  visualization: '2 Labs', instruments: '8 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
+  visualization: '2 Labs', instruments: '7 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
   calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
 const TOTAL_AT_HEAD = 230; // +2 Game Audio Lab, Stage Plot and Channel Designer (2026-11-13); was 217 before the ampacity calculator; +1 Miking Labs 1-4 (2026-10-04/05); +1 Mixing Guides (2026-10-07, preview state); +1 Miking Lab 5: Voice & Ensemble (2026-10-07); +1 Miking Lab 6: Foley, Field & Scientific (2026-10-08); +1 DJ Systems Lab (2026-10-18)
@@ -547,7 +547,7 @@ describe('3. the members-only gate decides exactly as before', () => {
     for (const c of cat.LAB_CATEGORIES) now[c.id] = cat.categoryCountLabel(c);
     const { readyLabs } = await import('../src/screens/lab/miking/data/registry.ts');
     const more = readyLabs().length - MIKING_READY_AT_HEAD;
-    const instruments = 8 + more;
+    const instruments = 7 + more; // 8 before Bass Guitar Physics moved to Pitch & Tuning (owner 2026-11-23)
     assert.deepEqual(now, { ...COUNTS_AT_HEAD, instruments: `${instruments} Labs` });
     assert.equal(cat.totalLabCount(), TOTAL_AT_HEAD + more);
   });

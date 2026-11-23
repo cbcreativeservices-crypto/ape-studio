@@ -736,6 +736,10 @@ export const M04A_LESSON: HandLesson = {
       items: [
         { id: 'open', label: 'OPEN TONE', short: 'OPEN', frac: 0.85, tool: 'fingers', text: 'Four fingers near the rim, bouncing off: a clear, ringing tone.' },
         { id: 'muted', label: 'MUTED TONE', short: 'MUTED', frac: 0.85, tool: 'fingers', text: 'Four fingers struck and held against the head: the tone is stopped short.' },
+        // Owner 2026-11-23: "Yes, add slap". Built as the djembe's SLAP: the same
+        // spot as the open tone (the head's model shows only where a stroke lands;
+        // the note below says why a slap differs), drawn as a slap (handSoundArt).
+        { id: 'slap', label: 'SLAP', short: 'SLAP', frac: 0.85, tool: 'tips', text: 'The edge of the palm on the rim, cupped fingertips whipping onto the head: a sharp, dry crack.' },
         { id: 'bass', label: 'BASS STROKE', short: 'BASS', frac: 0.3, tool: 'palm', text: 'The full palm, flat, near the center: a low, round sound.' },
       ],
       note: 'This simplified head shows WHERE the hand lands, not how it meets the head — its area and how long it stays — which is what separates an open tone from a muted one, or from a slap. Ask the player to show you every stroke.',

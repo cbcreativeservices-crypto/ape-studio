@@ -627,7 +627,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
     next: { route: 'CymaticsLab', title: 'Cymatics Lab: Sound Made Visible', why: 'what a vibrating plate, liquid or drumhead shows, and what it doesn’t' },
   },
 
-  // ══ ADVANCED TRAINING · INSTRUMENTS & RECORDING ══════════════════════════
+  // Pitch & Tuning (Bass Guitar Physics moved there from Instruments & Recording, owner 2026-11-23).
   bass: {
     recap: [
       'Pressing a fret shortens the vibrating part of the string, so the pitch rises.',
@@ -637,6 +637,8 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
     ],
     next: { route: 'TuningLab', title: 'Tuning & Temperament Lab', why: 'how those string fractions become whole tuning systems' },
   },
+
+  // ══ ADVANCED TRAINING · MIKING TECHNIQUES (was Instruments & Recording) ═══
   micselect: {
     recap: [
       'Choosing a microphone starts with the job: the source, the place and the production set the priorities.',

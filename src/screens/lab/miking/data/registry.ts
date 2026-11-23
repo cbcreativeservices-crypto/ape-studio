@@ -10,7 +10,7 @@ import type { MikingLabId } from '../engine/model/types.ts';
 
 /**
  * `family` / `familyBlurb` (owner 2026-10-06): each READY lab is ONE tile on
- * the member Labs menu (labCatalog → Instruments & Recording), named by its
+ * the member Labs menu (labCatalog → Miking Techniques), named by its
  * instrument family, with a short plain line saying what is in it; the tile
  * opens that lab's lessons (MikingHub { lab }). "Those tiles … should be on
  * the member lab menu, not inside another menu." Family order IS this array's

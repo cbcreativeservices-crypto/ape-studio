@@ -148,7 +148,7 @@ type Common = {
    *  families/labs, or beneath a hub). */
   extraLabs?: LabLeaf[];
   /** ADDITIVE (2026-11-14, quick win 12): the name of one of `labs` that the
-   *  menu lists FIRST, ahead of the families (Instruments & Recording:
+   *  menu lists FIRST, ahead of the families (Miking Techniques:
    *  Microphone Selection before the 128 miking lessons — G8: "Microphone
    *  Selection Lab is last, after 128 miking lessons and Bass Guitar
    *  Physics"). Counts and every other list are unchanged. */
@@ -502,11 +502,16 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     id: 'pitch',
     glyph: '🎵',
     name: 'Pitch & Tuning',
-    description: 'Pitch correction, tuning systems and drum tuning.',
+    description: 'Pitch correction, pitch on a string, tuning systems and drum tuning.',
     section: 'training',
     kind: 'list',
     labs: [
       { name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
+      // Bass Guitar Physics (moved here from Instruments & Recording, owner
+      // 2026-11-23: "it demonstrates pitch moovement/placement on the bass...
+      // Better there than Instruments and Recording"). It sits before Tuning &
+      // Temperament because its end screen sends the learner there next.
+      { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔︎ intervals.', route: 'BassLab' },
       // LIVE (owner build spec 2026-09-02): the former 'Tunings Lab'
       // placeholder, built as the fourteen-chapter Tuning & Temperament Lab.
       { name: 'Tuning & Temperament Lab', blurb: 'How musical scales are built, heard, and compared — pure fifths, the comma, Just, meantone, and equal temperament.', route: 'TuningLab', tileBlurb: 'How musical scales are built, heard and compared.' },
@@ -543,16 +548,18 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     ],
   },
   {
+    // Renamed from 'Instruments & Recording' (owner 2026-11-23: "They are all about miking
+    // techniques for instruments nad sceenarios. it needs a better title"; he chose
+    // "Miking Techniques"). The id stays 'instruments': routes, tests and tile art key on it.
     id: 'instruments',
-    glyph: '🎸',
-    name: 'Instruments & Recording',
-    description: 'Real instruments and capturing them well.',
+    glyph: '🎤',
+    name: 'Miking Techniques',
+    description: 'Choosing a microphone and placing it on instruments, voices, ensembles, broadcast and field work.',
     section: 'training',
     kind: 'list',
     // Microphone Selection first in the group (quick win 12, 2026-11-14).
     firstLab: 'Microphone Selection Lab',
     labs: [
-      { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔︎ intervals.', route: 'BassLab' },
       // REMOVED 2026-09-17 (owner): 'Instrument Recording Lab' placeholder —
       // returns in a future update. See the note on DEV_NOTE.
       // LIVE (owner spec 2026-08-12): 9 lessons + Choose-the-Mic challenge +
@@ -561,7 +568,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab', tileBlurb: 'What makes one mic right for a job: specs, type, pattern.' },
     ],
     // MIKING LABS (owner GO 2026-10-04, plan §6: "inside Training Labs, as a
-    // Miking Labs section in the Instruments & Recording area"). One tile per
+    // Miking Labs section in the Instruments & Recording area", the group now named Miking Techniques). One tile per
     // instrument FAMILY, straight on this menu (owner 2026-10-06: "those
     // tiles (membranophone, aerophone, etc.) should be on the member lab
     // menu, not inside another menu") — Membranophones, Idiophones,

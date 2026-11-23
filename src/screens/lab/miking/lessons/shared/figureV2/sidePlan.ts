@@ -390,7 +390,7 @@ export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF:
 
 /** The long sleeve (mm, radii): the deltoid's gentle swell, the elbow, the
  *  sleeve narrowing to a cuff a little wider than the wrist. */
-const SLEEVE_R = { top: 47, delt: 46, bicep: 43, elbow: 40, fore: 36.5, cuffIn: 32.5, cuff: 34, wrist: 23 } as const;
+export const SLEEVE_R = { top: 47, delt: 46, bicep: 43, elbow: 40, fore: 36.5, cuffIn: 32.5, cuff: 34, wrist: 23 } as const;
 
 /** Half an ellipse's outline (an open curve): `side` +1 = the half toward its
  *  +rx axis, −1 the other. */
@@ -415,7 +415,7 @@ type FarRoot = { shirt: Poly; back: Poly; facing: number };
 /** How far inside the back's outline the far sleeve's edge stays (mm). */
 const FAR_MARGIN = 9;
 
-function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null, tilt = 0, farRoot: FarRoot | null = null): ArmPlan {
+export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null, tilt = 0, farRoot: FarRoot | null = null, trimSleeve = false): ArmPlan {
   const poseElbow = elbow;
   // THE FOREARM'S CENTRE LINE. A visible join (the forearm across the view):
   // its last stretch turns toward the drawn hand in two even steps, so elbow →
@@ -543,7 +543,12 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
     while (farShift < 80 && !clear(tube(farShift))) farShift += 2;
     upper = tube(farShift);
   }
-  const sleevePts = line.length > 2 ? [...line.slice(0, last), cuffA] : [elbow, lerp(elbow, cuffA, 0.5), cuffA];
+  // (`trimSleeve`, the view from above: a short forearm's blended line can pass
+  // the cuff's start — the sleeve then runs back on itself into a spike; it
+  // keeps only the points before the cuff. The side view, approved as drawn,
+  // keeps its own line.)
+  const beforeCuff = trimSleeve ? line.slice(1, last).filter((q) => dot(sub(q, cuffA), df) < -6) : line.slice(1, last);
+  const sleevePts = line.length > 2 && (!trimSleeve || beforeCuff.length) ? [line[0], ...beforeCuff, cuffA] : [elbow, lerp(elbow, cuffA, 0.5), cuffA];
   const sleeveR = sleevePts.map((_, i) => SLEEVE_R.elbow - 0.5 - ((SLEEVE_R.elbow - 0.5 - SLEEVE_R.cuffIn) * i) / (sleevePts.length - 1));
   // Away: the sleeve's far end IS the cuff, seen end-on — a rounded end round the wrist.
   const foreSleeve = limbOutline(sleevePts, sleeveR, { capEnd: false });

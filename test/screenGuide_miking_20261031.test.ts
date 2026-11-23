@@ -351,7 +351,9 @@ describe('2. every hand-written name is on the screen it describes', () => {
   });
   it('the catalog neighbours the hub guide names are real', () => {
     const C = code('src/screens/lab/labCatalog.ts');
-    assert.match(C, /name: 'Instruments & Recording'/);
+    // Renamed by the owner 2026-11-23 ("it needs a better title than instruments & recording").
+    assert.match(C, /name: 'Miking Techniques'/);
+    assert.doesNotMatch(C, /name: 'Instruments & Recording'/);
     assert.match(C, /name: 'Microphone Selection Lab'/);
     assert.match(C, /name: 'Microphone Principles'/);
     const ht = textOf(G.mikingHubGuide() as unknown as Guide);

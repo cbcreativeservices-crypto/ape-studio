@@ -16,6 +16,7 @@ import { viewsOf } from '../model/types.ts';
 import { fitXform } from '../geometry/frame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 import { StaticLabels } from './StaticLabels';
+import { FigureScale } from '../../lessons/shared/figureV2/detail';
 
 function Figure({ art, model, view, variant, w, h, label, box: boxIn }: { art: LessonArt; model: InstrumentModel; view: ViewId; variant: VariantId; w: number; h: number; label: string; box?: ViewBox }) {
   // Labels keep their 1× full-screen size while a zoom step enlarges the
@@ -29,7 +30,9 @@ function Figure({ art, model, view, variant, w, h, label, box: boxIn }: { art: L
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={label}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          <Instrument view={view} variant={variant} />
+          <FigureScale ptPerMm={xf.s}>
+            <Instrument view={view} variant={variant} />
+          </FigureScale>
         </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={labelScale} w={w} laidOut />

@@ -18,8 +18,9 @@ import { KIT, KIT_FLOOR_Y, hihatPedalGeom, yAt } from '../kitPlanModel.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
 import { drummerPose, viewDrummer, RIGHT_BALL, type DrummerPose3, type DrummerSpec } from '../kitScene/stickPose.ts';
 import { KIT_GROOVE } from '../kitScene/kitStrokes.ts';
-import { stickHold, type StickHold } from './grip.ts';
+import { kitHolds } from './kitHolds.ts';
 import { P } from './geom.ts';
+import type { PlayerPose } from '../players/playerPose.ts';
 import { sidePlan, type SidePlan, type Sole } from './sidePlan.ts';
 import { FigureV2Side } from './FigureV2Side';
 
@@ -52,24 +53,7 @@ function hatSole(x: number): Sole {
   };
 }
 
-export type KitHolds = { R: StickHold; L: StickHold };
-const holdsCache = new WeakMap<DrummerPose3, KitHolds>();
-/** Both hands closed on their sticks for a 3-D drummer (cached). */
-export function kitHolds(d: DrummerPose3): KitHolds {
-  const hit = holdsCache.get(d);
-  if (hit) return hit;
-  const arm = (a: DrummerPose3['R']) =>
-    stickHold({
-      hand: a.hand,
-      elbow: a.elbow,
-      wrist: a.wrist,
-      fulcrum: a.fulcrum,
-      bead: a.bead,
-    });
-  const out = { R: arm(d.R), L: arm(d.L) };
-  holdsCache.set(d, out);
-  return out;
-}
+export { kitHolds, type KitHolds } from './kitHolds.ts';
 
 /** The forearm's tilt toward the viewer (+z): the sine of its angle out of the picture. */
 const tiltOf = (a: { elbow: { x: number; y: number; z: number }; wrist: { x: number; y: number; z: number } }) => {
@@ -79,24 +63,38 @@ const tiltOf = (a: { elbow: { x: number; y: number; z: number }; wrist: { x: num
   return dz / (Math.hypot(dx, dy, dz) || 1);
 };
 
+/** The close-up strike pose (stickPlayer.strikePose): the stick arm as the
+ *  kit drummer's, the far arm hanging at the side (out of the close-up). */
+const hangCache = new WeakMap<PlayerPose, PlayerPose>();
+function hanging(p: PlayerPose): PlayerPose {
+  const hit = hangCache.get(p);
+  if (hit) return hit;
+  const sh = p.shoulderL;
+  const out: PlayerPose = { ...p, elbowL: P(sh.u + 10, sh.v + 280), handL: { wrist: P(sh.u + 20, sh.v + 540), dir: Math.PI / 2, kind: 'rest' } };
+  hangCache.set(p, out);
+  return out;
+}
+
 /** The side-view plan of the drummer playing `spec` (memoised through
- *  drummerPose / viewDrummer / sidePlan). */
-export function kitDrummerPlan(spec: DrummerSpec = KIT_GROOVE, extra: { farBehind?: boolean } = {}): SidePlan {
+ *  drummerPose / viewDrummer / sidePlan). `hangLeft`: the close-up strike
+ *  pose (the far arm hanging, no far stick). */
+export function kitDrummerPlan(spec: DrummerSpec = KIT_GROOVE, extra: { farBehind?: boolean; hangLeft?: boolean } = {}): SidePlan {
   const d = drummerPose(spec);
   const v = viewDrummer(d, 'side');
   const h = kitHolds(d);
-  return sidePlan(v.pose, {
+  const hang = !!extra.hangLeft;
+  return sidePlan(hang ? hanging(v.pose) : v.pose, {
     holdR: h.R,
-    holdL: h.L,
+    holdL: hang ? null : h.L,
     soleR: kickSole(RIGHT_BALL.x),
     soleL: hatSole(v.pose.footL.u),
     nod: 8,
     awayR: d.R.wrist.z < d.R.elbow.z - 60,
-    awayL: d.L.wrist.z < d.L.elbow.z - 60,
+    awayL: hang ? false : d.L.wrist.z < d.L.elbow.z - 60,
     tiltR: tiltOf(d.R),
-    tiltL: tiltOf(d.L),
+    tiltL: hang ? 0 : tiltOf(d.L),
     seatV: yAt(KIT.throne.seatH),
-    ...extra,
+    ...(extra.farBehind === undefined ? {} : { farBehind: extra.farBehind }),
   });
 }
 

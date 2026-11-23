@@ -16,6 +16,7 @@
  * Nothing moves (D8); every path is built once (module caches here and in
  * the families). All coordinates are millimetres of the view's (u, v).
  */
+import { memo } from 'react';
 import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
@@ -31,8 +32,8 @@ import { KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 import { DRUMMER, S0, TOM_POST } from './kitSceneModel.ts';
 import { drummerPose, viewDrummer, type Stick2 } from './stickPose.ts';
 import { KIT_GROOVE } from './kitStrokes.ts';
-import { FIGURE_V2_READY } from '../figureV2/figureV2Config.ts';
-import { KitDrummerSideV2 } from '../figureV2/kitDrummerV2';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { DrummerSideV2, DrummerTopV2 } from '../figureV2/drummerV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const INK = '#08080a';
@@ -353,11 +354,13 @@ export function Sticks({ path }: { path: SkPath }) {
 }
 
 /** The drummer, side view (one layer: nearer than the snare and hi-hat,
- *  farther than the floor tom). `v2`: the new figure look (D78), off in the
- *  app until the owner approves the example (FIGURE_V2_READY). */
-function DrummerSide({ v2 = FIGURE_V2_READY }: { v2?: boolean }) {
+ *  farther than the floor tom). `v2`: the new figure look (D78) — ON for the
+ *  kit drummer since wave 1 (figureV2Config, 2026-11-23); `v2={false}` draws
+ *  the current look (the study page's CURRENT column). Memoised: the figure is
+ *  a cached layer under any animation in the picture. */
+const DrummerSide = memo(function DrummerSide({ v2 = figureV2On('kitDrummer') }: { v2?: boolean }) {
   const d = drummerOf('side');
-  if (v2) return <KitDrummerSideV2 farStick={<Sticks path={d.farSticks} />} nearStick={<Sticks path={d.sticks} />} />;
+  if (v2) return <DrummerSideV2 farStick={<Sticks path={d.farSticks} />} nearStick={<Sticks path={d.sticks} />} />;
   return (
     <Group>
       {/* the left stick under the far fist, the right one under the near fist */}
@@ -367,20 +370,21 @@ function DrummerSide({ v2 = FIGURE_V2_READY }: { v2?: boolean }) {
       <PlayerInFront pose={d.pose} />
     </Group>
   );
-}
+});
 
 /** The drummer from above, in two layers: the legs under the drums, the body
- *  and arms over them (`part`). */
-function DrummerTop({ part }: { part: 'legs' | 'upper' }) {
+ *  and arms over them (`part`). The new look (D78 wave 1) unless `v2={false}`. */
+const DrummerTop = memo(function DrummerTop({ part, v2 = figureV2On('kitDrummer') }: { part: 'legs' | 'upper'; v2?: boolean }) {
   const d = drummerOf('top');
   // the hi-hat pedal on the floor first, so the left shoe stands on it
   if (part === 'legs')
     return (
       <Group>
         <HiHatPedalTop />
-        <PlayerBehind pose={d.pose} part="legs" />
+        {v2 ? <DrummerTopV2 part="legs" /> : <PlayerBehind pose={d.pose} part="legs" />}
       </Group>
     );
+  if (v2) return <DrummerTopV2 part="upper" farStick={<Sticks path={d.farSticks} />} nearStick={<Sticks path={d.sticks} />} />;
   return (
     <Group>
       {/* From above the fists close over their sticks (palms down): the
@@ -392,7 +396,7 @@ function DrummerTop({ part }: { part: 'legs' | 'upper' }) {
       <PlayerInFront pose={d.pose} />
     </Group>
   );
-}
+});
 
 /* ── the drummer's keep-outs ── */
 
@@ -512,7 +516,7 @@ export type KitSceneOpts = {
   reach?: boolean;
   /** A part to ring in amber (the parts page's tap). */
   highlight?: string | null;
-  /** The drummer in the new figure look (D78; default FIGURE_V2_READY). */
+  /** The drummer in the new figure look (D78; default: the kit drummer's switch, figureV2Config). */
   figureV2?: boolean;
   /** Dev study only (D78): leave out what stands between the camera and the
    *  drummer (the floor tom, the rack tom, the near crash and the ride), so
@@ -556,7 +560,7 @@ export function KitSide({ swing = false, dim = 1, keepOuts = true, reach = true,
 }
 
 /** The kit from above. */
-export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = null }: KitSceneOpts) {
+export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = null, figureV2 }: KitSceneOpts) {
   const drum = (id: KitDrumId) => (
     <Group key={id} transform={topTransform(KIT_DRUMS[id])}>
       <DrumPlan drum={KIT_DRUMS[id]} highlight={highlight === `kit.${id}`} />
@@ -572,7 +576,7 @@ export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = nul
         <BoomStandTop key={`st:${id}`} id={id} />
       ))}
       <ThroneTop />
-      <DrummerTop part="legs" />
+      <DrummerTop part="legs" v2={figureV2} />
       <KickTop />
       {highlight === 'kit.kick' ? <Path path={rrect(make(), KICK_GEOM.hoopX.batter[0] - 30, -KICK_GEOM.hoopOut - 30, KICK_GEOM.hoopX.reso[1] + 30, KICK_GEOM.hoopOut + 30, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
       {drum('floor')}
@@ -581,7 +585,7 @@ export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = nul
       {drum('tom1')}
       {drum('tom2')}
       <HiHatTop highlight={highlight === 'cym.hihat'} />
-      <DrummerTop part="upper" />
+      <DrummerTop part="upper" v2={figureV2} />
       {cym('ride')}
       {cym('crash1')}
       {cym('crash2')}

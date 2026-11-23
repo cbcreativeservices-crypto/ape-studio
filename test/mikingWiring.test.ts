@@ -54,9 +54,9 @@ const { LAB_CATEGORIES, isMemberOnlyLabRoute, labRouteName, categoryLeaves, miki
 const REGISTRY = await import('../src/screens/lab/miking/data/registry.ts');
 const { readyLabs, LESSONS } = REGISTRY;
 
-describe('listing (owner: Training Labs → Instruments & Recording, members only)', () => {
+describe('listing (owner: Training Labs → Miking Techniques, members only)', () => {
   const cat = (LAB_CATEGORIES as { id: string; section: string; families?: { name: string; labs: { name: string; route?: string; params?: { lab?: string }; member?: boolean }[] }[] }[]).find((c) => c.id === 'instruments')!;
-  it('a "Miking Labs" family in the training-section Instruments & Recording category', () => {
+  it('a "Miking Labs" family in the training-section Miking Techniques category', () => {
     assert.equal(cat.section, 'training');
     const fam = cat.families?.find((f) => f.name === 'Miking Labs');
     assert.ok(fam, 'the family exists');

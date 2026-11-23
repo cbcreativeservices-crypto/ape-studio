@@ -71,25 +71,31 @@ describe('figure V2 — the switch (D78)', () => {
     assert.match(line, /export const FIGURE_V2_READY = false;.*\[MD:D78\]/);
   });
 
-  it('switched off, the kit drummer (side) is drawn by the CURRENT renderer', () => {
+  // (wave 1 of D78, 2026-11-23: the owner passed the drummer; the kit drummer's own switch is ON)
+  const fnOf = (e: El) => (typeof e.type === 'function' ? e.type : (e.type as { type?: unknown })?.type) as (p: object) => unknown;
+  const nameOf = (e: El) => (fnOf(e) as { name?: string } | undefined)?.name;
+
+  it('wave 1: the kit drummer draws the NEW renderer in the app (the lesson passes no switch: the family switch decides)', () => {
+    assert.equal(CFG.figureV2On('kitDrummer'), true);
     const tree = elements(KSA.KitSide({}));
-    const side = tree.find((e) => named(e) === 'DrummerSide');
+    const side = tree.find((e) => nameOf(e) === 'DrummerSide');
     assert.ok(side, 'KitSide draws DrummerSide');
     assert.equal(side!.props.v2, undefined, 'the lesson passes no figureV2: the switch decides');
-    const drawn = elements((side!.type as (p: object) => unknown)({ ...side!.props }));
-    const names = drawn.map(named);
-    assert.ok(names.includes('PlayerBehind') && names.includes('PlayerInFront'), 'the current PlayerFigure layers');
-    assert.ok(!names.includes('KitDrummerSideV2'), 'not the new renderer');
+    const drawn = elements(fnOf(side!)({ ...side!.props }));
+    const names = drawn.map(nameOf);
+    assert.ok(names.includes('DrummerSideV2'), 'the new renderer');
+    assert.ok(!names.includes('PlayerBehind'), 'not the current PlayerFigure layers');
     // The M09 art (the owner's screen) passes no switch either.
     assert.doesNotMatch(read('src/screens/lab/miking/lessons/m09Overheads/art.tsx'), /figureV2/);
   });
 
-  it('only an explicit figureV2 draws the new renderer (the study page)', () => {
-    const tree = elements(KSA.KitSide({ figureV2: true }));
-    const side = tree.find((e) => named(e) === 'DrummerSide')!;
-    const drawn = elements((side.type as (p: object) => unknown)({ ...side.props }));
-    assert.ok(drawn.map(named).includes('KitDrummerSideV2'));
-    assert.match(read('src/dev/FigureStudy.tsx'), /figureV2/);
+  it('figureV2={false} still draws the CURRENT renderer (the study page’s CURRENT column)', () => {
+    const tree = elements(KSA.KitSide({ figureV2: false }));
+    const side = tree.find((e) => nameOf(e) === 'DrummerSide')!;
+    const drawn = elements(fnOf(side)({ ...side.props }));
+    const names = drawn.map(nameOf);
+    assert.ok(names.includes('PlayerBehind') && names.includes('PlayerInFront'));
+    assert.match(read('src/dev/FigureStudy.tsx'), /figureV2=\{false\}|v2=\{false\}/);
   });
 
   it('the current renderer is untouched (PlayerFigure keeps its source)', () => {
@@ -888,7 +894,7 @@ describe('figure V2 — the whole drummer, owner notes 2026-11-23', () => {
 
   it('"lighten" (the jaw\'s shadow on the neck): about half strength, softer', () => {
     const side = read('src/screens/lab/miking/lessons/shared/figureV2/FigureV2Side.tsx');
-    const m = side.match(/<Path path=\{P\.jawShadow\} color=\{MAT\.skin\.deep\} opacity=\{([\d.]+)\}>\s*<BlurMask blur=\{([\d.]+)\}/);
+    const m = side.match(/<Path path=\{P\.jawShadow\} color=\{MAT\.skin\.deep\} opacity=\{([\d.]+)\}>\s*<Blur mm=\{([\d.]+)\}/);
     assert.ok(m, 'the jaw shadow');
     assert.ok(Number(m![1]) <= 0.27, `opacity ${m![1]}`);
     assert.ok(Number(m![2]) >= 6, `blur ${m![2]}`);

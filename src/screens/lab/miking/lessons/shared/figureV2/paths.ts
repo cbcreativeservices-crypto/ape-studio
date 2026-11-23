@@ -323,6 +323,8 @@ export type ArtPaths = {
   stub: SkPath | null;
   stubCap: SkPath | null;
   endOn: boolean;
+  /** The stick lies UNDER the whole hand (the view from above: the back of the hand over it). */
+  stickUnder: boolean;
 };
 
 function bar(a: Pt, b: Pt, r: number): SkPath {
@@ -382,6 +384,7 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
     stub,
     stubCap,
     endOn,
+    stickUnder: h.art.view === 'backTop' || h.art.view === 'thumbTop',
   };
 }
 
@@ -471,7 +474,7 @@ const many = (ps: readonly Poly[], closed = true): SkPath => {
   return p;
 };
 
-function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths {
+export function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths {
   const fore = Math.atan2(a.wrist.v - a.elbow.v, a.wrist.u - a.elbow.u);
   return {
     opening: ellipsePath(a.opening.e),

@@ -145,6 +145,9 @@ import { MikingHandStudio } from './MikingHandStudio';
 // Figure realism pass (2026-11-22, must-do D78): `#labpreview/FigureStudy`, the
 // owner's example figure (the kit drummer) CURRENT beside NEW.
 import { FigureStudy } from './FigureStudy';
+// Figure realism pass, second wave (2026-11-23): `#labpreview/HandDrumHands`, the
+// hand-drum "How it sounds" hands large, beside the approved drummer hand.
+import { HandDrumHandStudy } from './HandDrumHandStudy';
 // Mixing Guides (2026-10-07): `#labpreview/MixingGuides`, `#labpreview/MixingGuide/pop`.
 import { MixingGuidesHubScreen } from '../screens/lab/mixingGuides/MixingGuidesHubScreen';
 import { MixingGuideScreen } from '../screens/lab/mixingGuides/MixingGuideScreen';
@@ -273,6 +276,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MikingLesson: MikingLessonScreen as ComponentType,
   MikingHands: MikingHandStudio as ComponentType,
   FigureStudy: FigureStudy as ComponentType,
+  HandDrumHands: HandDrumHandStudy as ComponentType,
   MixingGuides: MixingGuidesHubScreen as ComponentType,
   MixingGuide: MixingGuideScreen as ComponentType,
 };

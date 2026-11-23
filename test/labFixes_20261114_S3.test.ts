@@ -256,10 +256,13 @@ describe('quick win 12 + section 7 · the Labs menu', () => {
     const e = code('screens/lab/EarLabScreen.tsx');
     assert.match(e, /\{leaf\.startHere \? <Text style=\{styles\.startHere\}>START HERE<\/Text> : null\}/);
   });
-  it('Microphone Selection is first in Instruments & Recording, before the 128 miking lessons', () => {
+  it('Microphone Selection is first in Miking Techniques, before the 128 miking lessons', () => {
     const rows = categoryLabRows(getCategory('instruments') as never) as Leaf[];
     assert.equal(rows[0].name, 'Microphone Selection Lab');
-    assert.ok(rows.some((r) => r.name === 'Bass Guitar Physics'), 'nothing dropped');
+    // Owner 2026-11-23: "move Bass Guitar Physics to pitch and tuning". Nothing dropped: it is listed there.
+    assert.ok(!rows.some((r) => r.name === 'Bass Guitar Physics'), 'Bass Guitar Physics left this group');
+    const pitch = categoryLabRows(getCategory('pitch') as never) as Leaf[];
+    assert.ok(pitch.some((r) => r.name === 'Bass Guitar Physics'), 'nothing dropped: it is in Pitch & Tuning');
   });
   it('no tile text is cut at three lines: every tile blurb fits (34 of 65 were cut)', () => {
     // Measured at 390 wide (2026-11-14, the 8142 preview, line-clamp check):

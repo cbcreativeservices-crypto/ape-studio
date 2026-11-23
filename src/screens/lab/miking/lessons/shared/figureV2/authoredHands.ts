@@ -43,7 +43,7 @@
 import { add, limbOutline, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { Ellipse } from './sidePlan.ts';
 
-export type HandArtView = 'fistEdge' | 'palmThumb';
+export type HandArtView = 'fistEdge' | 'palmThumb' | 'backTop' | 'thumbTop';
 
 /** A digit as joints (base → tip) and radii: drawn as one tapered form. */
 type Chain = { pts: readonly (readonly [number, number])[]; r: readonly number[] };
@@ -83,6 +83,8 @@ export type HandArt = {
   darks: Ellipse[];
   /** Points the tests read (local). */
   knuckle: Pt;
+  /** A fist from above: the knuckle row's four swells (little → index), each a bump on the one silhouette. */
+  knuckles?: Pt[];
   wristTop: Pt;
   wristBottom: Pt;
   thumbTip: Pt | null;
@@ -271,7 +273,131 @@ function palmThumb(): HandArt {
   };
 }
 
-const ARTS: Record<HandArtView, HandArt> = { fistEdge: fistEdge(), palmThumb: palmThumb() };
+/* ── the grip from ABOVE: the fist on its stick (wave 1 of D78, 2026-11-23) ── */
+
+/*
+ * THE FIST ON ITS STICK, SEEN FROM ABOVE (the kit drummer's top view; owner
+ * 2026-11-23 on the first try: "knuckles look very odd" — four separate pills
+ * in a row read as beads stuck onto the fist). The local frame as the others:
+ * origin at the wrist crease, x toward the knuckles, y toward the THUMB's side
+ * (placement mirrors it for the other hand).
+ *   • ONE SILHOUETTE for the back of the hand and the fingers: the back of the
+ *     hand runs without a break into the first finger bones; its front is the
+ *     KNUCKLE ROW — four soft rounded swells along one contour, an arc, not a
+ *     ruler line (the middle knuckle highest and farthest forward, the little
+ *     finger's lowest and set back), each lit on top, a shallow valley between
+ *     neighbours; beyond them the fingers turn DOWN round the stick, a short
+ *     foreshortened strip darkening over the curve.
+ *   • The fingers are told apart by three short creases starting in the
+ *     valleys between the knuckles and fading forward — never an outline round
+ *     a finger. The fingertips and nails are underneath.
+ *   • The thumb: from the back of the hand (`backTop`) it lies UNDER the hand
+ *     along the stick ("make sure when viewed from above, the thumb is
+ *     correctly placed under the hand"), painted first, the hand's shadow on
+ *     it; on a hand rolled toward its thumb side (`thumbTop`) it lies along
+ *     the TOP of the stick, nearest the eye, painted last, the knuckle row
+ *     turning away beyond it.
+ * The stick runs under the hand from the heel to the pinch between the thumb
+ * and the index.
+ */
+const TOP_STICK = (21 * Math.PI) / 180;
+// (the back of the hand from the wrist, round the knuckle row's swells — little, ring, middle, index — and back along the index side)
+const FIST_TOP: readonly (readonly [number, number])[] = [
+  [-6, -25], [12, -29], [40, -36], [66, -40], [84, -39], [93, -37],
+  [100, -33], [104, -28], [103, -22], [101, -19.5],
+  [106, -16], [112, -12], [113.5, -8], [112, -4], [109.5, -2],
+  [114, 1], [117.5, 6], [116, 10.5], [110, 13.5],
+  [112.5, 17], [113, 22], [110, 27], [102, 31],
+  [86, 33], [64, 33], [42, 31], [20, 28], [-6, 24],
+];
+const FIST_KNUCKLES: readonly (readonly [number, number])[] = [[104, -28], [113.5, -8], [117.5, 6], [113, 22]];
+const T_THUMB: Chain = { pts: [[18, 26], [52, 43], [80, 46], [104, 40]], r: [11.6, 10.6, 9.6, 8.6] };
+
+/** From above the thumb lies on its side along the stick: its nail faces OUT,
+ *  away from the hand — a sliver along its outer edge, toward the tip. */
+function thumbSideNail(c: Chain): Poly {
+  const k = c.pts.length - 1;
+  const a = P(c.pts[k - 1][0], c.pts[k - 1][1]);
+  const b = P(c.pts[k][0], c.pts[k][1]);
+  let n = perp(unit(sub(b, a)));
+  if (n.v < 0) n = mul(n, -1); // outward: +y, away from the hand
+  const r = c.r[k];
+  const at = (f: number, o: number) => add(add(a, mul(sub(b, a), f)), mul(n, r * o));
+  return [at(0.45, 0.62), at(0.7, 0.84), at(0.95, 0.66), at(0.97, 0.4), at(0.7, 0.5), at(0.47, 0.42)];
+}
+
+function backTop(): HandArt {
+  const digit = (name: string, c: Chain, d: HandArtPart['digit']): HandArtPart => ({ name, layer: 'front', outline: chain(c), axis: axisOf(c), kind: 'digit', chain: bones(c), digit: d });
+  return {
+    view: 'backTop',
+    F: P(100, 30),
+    stickLocal: TOP_STICK,
+    // the thumb FIRST (under the hand), then the one silhouette of the back of the hand and the fingers
+    parts: [
+      digit('thumb', T_THUMB, 'thumb'),
+      { name: 'hand', layer: 'front', outline: pts(FIST_TOP), axis: [P(0, 0), P(116, 0)], kind: 'palm' },
+    ],
+    // the three valleys' short creases, fading forward over the curl
+    creases: [pts([[96, -21], [100, -20.5], [103, -20]]), pts([[103, -3], [106.5, -2.5], [110, -2]]), pts([[104, 13.5], [107, 13.7], [110, 13.8]])],
+    nails: [thumbSideNail(T_THUMB)],
+    warm: [],
+    lights: [
+      E(58, -2, 26, 15, 0), // the broad back of the hand, turned to the light
+      // a small light on top of each knuckle
+      E(98, -27, 5, 4, 0), E(106, -8, 5.5, 4.5, 0), E(109, 6, 6, 4.5, 0), E(105, 21, 5.5, 4.5, 0),
+    ],
+    darks: [
+      E(112, -2, 6, 30, 0.08), // the fingers turning down round the stick, past the knuckles
+    ],
+    knuckle: P(FIST_KNUCKLES[2][0], FIST_KNUCKLES[2][1]),
+    knuckles: FIST_KNUCKLES.map(([x, y]) => P(x, y)),
+    wristTop: P(0, -25),
+    wristBottom: P(0, 24),
+    thumbTip: P(T_THUMB.pts[3][0], T_THUMB.pts[3][1]),
+  };
+}
+
+// The hand rolled toward its thumb side: a narrower back, the knuckle row turning away (each swell
+// smaller toward the little finger), the index finger's side the hand's near edge.
+const FIST_ROLLED: readonly (readonly [number, number])[] = [
+  [-6, -20], [14, -24], [40, -28], [66, -30], [82, -30],
+  [88, -28], [91, -25], [89.5, -22], [88, -19.5],
+  [95, -15], [99.5, -12], [98.5, -9], [96.5, -6.5],
+  [105, -1], [109, 3], [107.5, 6.5], [106, 8.5],
+  [114, 13], [115, 18], [112, 23], [104, 26],
+  [88, 26], [66, 27], [42, 26], [20, 24], [-6, 20],
+];
+const ROLLED_KNUCKLES: readonly (readonly [number, number])[] = [[91, -25], [99.5, -12], [109, 3], [115, 18]];
+const R_THUMB: Chain = { pts: [[18, 18], [52, 30], [82, 33], [106, 30]], r: [12, 11, 9.8, 8.8] };
+
+function thumbTop(): HandArt {
+  const digit = (name: string, c: Chain, d: HandArtPart['digit']): HandArtPart => ({ name, layer: 'front', outline: chain(c), axis: axisOf(c), kind: 'digit', chain: bones(c), digit: d });
+  return {
+    view: 'thumbTop',
+    F: P(100, 22),
+    stickLocal: (12 * Math.PI) / 180,
+    // the one silhouette of the hand and fingers, then the thumb on top along the stick
+    parts: [
+      { name: 'hand', layer: 'front', outline: pts(FIST_ROLLED), axis: [P(0, 0), P(112, 0)], kind: 'palm' },
+      digit('thumb', R_THUMB, 'thumb'),
+    ],
+    creases: [pts([[83, -20.5], [85.5, -20], [88, -19.5]]), pts([[91.5, -7.5], [94, -7], [96.5, -6.5]]), pts([[100, 8], [103, 8.3], [106, 8.5]])],
+    nails: [nailOf(R_THUMB)],
+    warm: [],
+    lights: [
+      E(52, 26, 30, 6, 0), // the thumb's lit top along the stick
+      E(88, -24, 3.5, 3, 0), E(96, -11, 4, 3.5, 0), E(104, 3, 5, 4, 0), E(109, 17, 5.5, 4.5, 0),
+    ],
+    darks: [E(108, -6, 5, 26, 0.3)],
+    knuckle: P(ROLLED_KNUCKLES[3][0], ROLLED_KNUCKLES[3][1]),
+    knuckles: ROLLED_KNUCKLES.map(([x, y]) => P(x, y)),
+    wristTop: P(0, -20),
+    wristBottom: P(0, 20),
+    thumbTip: P(R_THUMB.pts[3][0], R_THUMB.pts[3][1]),
+  };
+}
+
+const ARTS: Record<HandArtView, HandArt> = { fistEdge: fistEdge(), palmThumb: palmThumb(), backTop: backTop(), thumbTop: thumbTop() };
 export const handArt = (v: HandArtView): HandArt => ARTS[v];
 
 /* ── placing an authored hand on the pose ── */
@@ -307,12 +433,21 @@ export type PlacedHand = {
  * fulcrum lands on the pose's, flipped if its palm side would face up.
  * `butt` / `bead`: the stick's ends as the view sees them.
  */
-export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt, sx = 1): PlacedHand {
+export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt, sx = 1, opts: { mirror?: boolean } = {}): PlacedHand {
   const art = handArt(view);
   let th: number;
   let ex: Pt;
   let ey: Pt;
-  if (art.stickLocal !== undefined) {
+  if (art.stickLocal !== undefined && opts.mirror !== undefined) {
+    // Placed by its stick, the side its local +y (the thumb's) faces given:
+    // from ABOVE there is no "down the picture" to decide it.
+    const dS = unit(sub(bead, butt));
+    const aS = Math.atan2(dS.v, dS.u);
+    const aL = Math.atan2(Math.sin(art.stickLocal), Math.cos(art.stickLocal) * sx);
+    th = opts.mirror ? aS + aL : aS - aL;
+    ex = P(Math.cos(th), Math.sin(th));
+    ey = opts.mirror ? mul(perp(ex), -1) : perp(ex);
+  } else if (art.stickLocal !== undefined) {
     // Placed by its STICK: the drawing's stick (foreshortened along the hand
     // as the rest of it) lies on the pose's stick; y (the palm side) down.
     const dS = unit(sub(bead, butt));

@@ -8,16 +8,19 @@
  *   (c) NEW large: the head and neck, the two hands on the sticks, the foot
  *       on the pedal.
  * `#labpreview/FigureStudy/<part>` shows one part alone (compare, lesson,
- * head, hands, alone, foot).
- * The new look is forced on for these pictures only (KitSide `figureV2`);
- * the app keeps FIGURE_V2_READY = false [MD:D78]. Nothing here ships to a phone: the
+ * head, hands, alone, foot, top, topclose, topsizes).
+ * The CURRENT column forces the old look (`figureV2={false}`); since wave 1
+ * (2026-11-23) the app draws the kit drummer in the new look (figureV2Config)
+ * [MD:D78]. Nothing here ships to a phone: the
  * harness module is required only in the web dev branch of App.tsx.
  */
 import type { ReactNode } from 'react';
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { Canvas, Group, Rect, Skia } from '@shopify/react-native-skia';
-import { KitSide, Sticks, kitSceneSticks } from '../screens/lab/miking/lessons/shared/kitScene/KitSceneArt';
+import { BlurMask, Canvas, Group, LinearGradient, Path, Rect, Skia, vec } from '@shopify/react-native-skia';
+import { sidePaths } from '../screens/lab/miking/lessons/shared/figureV2/paths';
+import { FigureScale, type FigureLevel } from '../screens/lab/miking/lessons/shared/figureV2/detail';
+import { KitSide, KitTop, Sticks, kitSceneSticks } from '../screens/lab/miking/lessons/shared/kitScene/KitSceneArt';
 import { FigureV2HandAlone } from '../screens/lab/miking/lessons/shared/figureV2/FigureV2Side';
 import { kitDrummerPlan } from '../screens/lab/miking/lessons/shared/figureV2/kitDrummerV2';
 import { M09_MODEL } from '../screens/lab/miking/lessons/m09Overheads/geometry';
@@ -37,7 +40,93 @@ function Crop({ cu, cv, mmW, mmH, w, v2, isolate = false }: { cu: number; cv: nu
     <Canvas style={{ width: w, height: h }}>
       <Rect x={0} y={0} width={w} height={h} color={STAGE} />
       <Group transform={[{ translateX: w / 2 - cu * s }, { translateY: h / 2 - cv * s }, { scale: s }]}>
-        <KitSide reach={false} keepOuts={false} figureV2={v2} isolate={isolate} />
+        <FigureScale ptPerMm={s}>
+          <KitSide reach={false} keepOuts={false} figureV2={v2} isolate={isolate} />
+        </FigureScale>
+      </Group>
+    </Canvas>
+  );
+}
+
+/** A window of the kit's view FROM ABOVE (wave 1 of D78): u = x, v = z, as the lesson's top view. */
+function TopCrop({ cu, cv, mmW, mmH, w, v2 }: { cu: number; cv: number; mmW: number; mmH: number; w: number; v2: boolean }) {
+  const s = w / mmW;
+  const h = mmH * s;
+  return (
+    <Canvas style={{ width: w, height: h }}>
+      <Rect x={0} y={0} width={w} height={h} color={STAGE} />
+      <Group transform={[{ translateX: w / 2 - cu * s }, { translateY: h / 2 - cv * s }, { scale: s }]}>
+        <FigureScale ptPerMm={s}>
+          <KitTop reach={false} keepOuts={false} figureV2={v2} />
+        </FigureScale>
+      </Group>
+    </Canvas>
+  );
+}
+
+/** The lesson's own top view at a given glass (pt): the inset (≈ 97 × 85) or the main picture. */
+function TopLessonSize({ W, H, v2, level }: { W: number; H: number; v2: boolean; level?: FigureLevel }) {
+  const box = sceneFrame(M09_MODEL, 'studio', 'top', false) ?? M09_MODEL.views.top!;
+  const f = fitXform('top', box, W, H, 4);
+  return (
+    <Canvas style={{ width: W, height: H }}>
+      <Rect x={0} y={0} width={W} height={H} color={STAGE} />
+      <Group transform={[{ translateX: f.ox }, { translateY: f.oy }, { scale: f.s }]}>
+        <FigureScale ptPerMm={f.s} level={level}>
+          <KitTop reach={false} keepOuts={false} figureV2={v2} />
+        </FigureScale>
+      </Group>
+    </Canvas>
+  );
+}
+
+/** (dev bisect) The side head's hair path alone at a given scale (pt per mm): A gradient + 1.1 mm mask blur (as painted), B gradient only, C solid + blur. */
+function HairBisect({ s }: { s: number }) {
+  const plan = kitDrummerPlan();
+  const P = sidePaths(plan);
+  const b = P.hair.getBounds();
+  const W = Math.max(30, b.width * s + 8);
+  const H = Math.max(30, b.height * s + 8);
+  const cell = (k: number, child: ReactNode) => (
+    <Group transform={[{ translateX: k * W + 4 - b.x * s }, { translateY: 4 - b.y * s }, { scale: s }]}>{child}</Group>
+  );
+  return (
+    <Canvas style={{ width: W * 3, height: H }}>
+      <Rect x={0} y={0} width={W * 3} height={H} color="#c9a58c" />
+      {cell(
+        0,
+        <Path path={P.hair}>
+          <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={['#463830', '#2e241f', '#1a1411']} />
+          <BlurMask blur={1.1} style="normal" />
+        </Path>,
+      )}
+      {cell(
+        1,
+        <Path path={P.hair}>
+          <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={['#463830', '#2e241f', '#1a1411']} />
+        </Path>,
+      )}
+      {cell(
+        2,
+        <Path path={P.hair} color="#2e241f">
+          <BlurMask blur={1.1} style="normal" />
+        </Path>,
+      )}
+    </Canvas>
+  );
+}
+
+/** The M09 side view fitted to a glass, at a forced level of detail (the LOD comparison). */
+function SideLessonSize({ W, H, level }: { W: number; H: number; level?: FigureLevel }) {
+  const box = sceneFrame(M09_MODEL, 'studio', 'side', false) ?? M09_MODEL.views.side!;
+  const f = fitXform('side', box, W, H, 4);
+  return (
+    <Canvas style={{ width: W, height: H }}>
+      <Rect x={0} y={0} width={W} height={H} color={STAGE} />
+      <Group transform={[{ translateX: f.ox }, { translateY: f.oy }, { scale: f.s }]}>
+        <FigureScale ptPerMm={f.s} level={level}>
+          <KitSide reach={false} keepOuts={false} figureV2 />
+        </FigureScale>
       </Group>
     </Canvas>
   );
@@ -62,7 +151,9 @@ function HandAlone({ which, w, mm = 230, on }: { which: 'near' | 'far'; w: numbe
     <Canvas style={{ width: w, height: w }}>
       <Rect x={0} y={0} width={w} height={w} color={STAGE} />
       <Group transform={[{ translateX: w / 2 - cu * s }, { translateY: w / 2 - cv * s }, { scale: s }]}>
-        <FigureV2HandAlone plan={plan} which={which} stick={<Sticks path={line} />} />
+        <FigureScale ptPerMm={s}>
+          <FigureV2HandAlone plan={plan} which={which} stick={<Sticks path={line} />} />
+        </FigureScale>
       </Group>
     </Canvas>
   );
@@ -100,7 +191,9 @@ function LessonSize() {
     <Canvas style={{ width: W, height: H }}>
       <Rect x={0} y={0} width={W} height={H} color={STAGE} />
       <Group transform={[{ translateX: f.ox }, { translateY: f.oy }, { scale: f.s }]}>
-        <KitSide swing reach={false} keepOuts={false} figureV2 />
+        <FigureScale ptPerMm={f.s}>
+          <KitSide swing reach={false} keepOuts={false} figureV2 />
+        </FigureScale>
       </Group>
     </Canvas>
   );
@@ -167,6 +260,42 @@ export function FigureStudy() {
           </View>
         </Section>
       ) : null}
+      {only === 'lod' ? (
+        <Section>
+          <Caption title="LEVEL OF DETAIL (dev)" note="Each row: FULL (left) and LITE (right) at the same size — the inset 97 × 85, the phone picture 349 × 290, and a full-screen glass 780 × 360. Side view, then from above." />
+          {[
+            [97, 85],
+            [349, 290],
+            [780, 360],
+          ].map(([W, H]) => (
+            <View key={`s${W}`} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+              <SideLessonSize W={W} H={H} level="full" />
+              <SideLessonSize W={W} H={H} level="lite" />
+            </View>
+          ))}
+          {[
+            [97, 85],
+            [349, 290],
+            [780, 360],
+          ].map(([W, H]) => (
+            <View key={`t${W}`} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+              <TopLessonSize W={W} H={H} v2 level="full" />
+              <TopLessonSize W={W} H={H} v2 level="lite" />
+            </View>
+          ))}
+        </Section>
+      ) : null}
+      {only === 'hairbug' ? (
+        <Section>
+          <Caption title="HAIR BISECT (dev)" note="The side head's hair path alone at 0.05, 0.1, 0.2, 0.4, 1 pt/mm: A gradient + 1.1 mm blur, B gradient only, C solid + blur, on skin." />
+          {[0.05, 0.1, 0.2, 0.4, 1].map((k) => (
+            <View key={k} style={{ marginBottom: 8 }}>
+              <Text style={{ color: DIM, fontSize: 11 }}>{k} pt/mm</Text>
+              <HairBisect s={k} />
+            </View>
+          ))}
+        </Section>
+      ) : null}
       {only === 'close' ? (
         <Section>
           <Caption title="CLOSE-UPS (dev)" note="Each hand and each cuff about 2× and 3× the hand-alone size, for checking forms one by one." />
@@ -176,6 +305,43 @@ export function FigureStudy() {
             <HandAlone which="near" w={Math.min(width - 24, 600)} mm={80} on="cuff" />
             <HandAlone which="far" w={Math.min(width - 24, 600)} mm={80} on="cuff" />
             <Crop cu={-880} cv={-690} mmW={300} mmH={300} w={Math.min(width - 24, 600)} v2 />
+          </View>
+        </Section>
+      ) : null}
+      {show('top') ? (
+        <Section>
+          <Caption title="FROM ABOVE — CURRENT AND NEW" note="The same drummer seen from above (the lessons' TOP VIEW): the new look is a new drawing of the approved figure." />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+            <View>
+              <Caption title="CURRENT" />
+              <TopCrop cu={-640} cv={-150} mmW={1100} mmH={1100} w={pane} v2={false} />
+            </View>
+            <View>
+              <Caption title="NEW" />
+              <TopCrop cu={-640} cv={-150} mmW={1100} mmH={1100} w={pane} v2 />
+            </View>
+          </View>
+        </Section>
+      ) : null}
+      {show('topclose') ? (
+        <Section>
+          <Caption title="NEW FROM ABOVE — CLOSE" note="The head, shoulders, arms and hands from above, enlarged." />
+          <TopCrop cu={-650} cv={-180} mmW={1000} mmH={1000} w={big} v2 />
+          <TopCrop cu={-640} cv={-480} mmW={240} mmH={240} w={big} v2 />
+          <TopCrop cu={-480} cv={-190} mmW={240} mmH={240} w={big} v2 />
+        </Section>
+      ) : null}
+      {show('topsizes') ? (
+        <Section>
+          <Caption title="FROM ABOVE AT THE LESSON'S SIZES" note="The inset (about 97 × 85 pt) and the top view as the main picture on a 390 pt phone; CURRENT above, NEW below." />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14, alignItems: 'flex-start' }}>
+            <TopLessonSize W={97} H={85} v2={false} />
+            <TopLessonSize W={349} H={290} v2={false} />
+          </View>
+          <View style={{ height: 10 }} />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14, alignItems: 'flex-start' }}>
+            <TopLessonSize W={97} H={85} v2 />
+            <TopLessonSize W={349} H={290} v2 />
           </View>
         </Section>
       ) : null}

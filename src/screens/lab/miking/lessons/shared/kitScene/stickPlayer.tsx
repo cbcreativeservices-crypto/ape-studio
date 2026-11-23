@@ -23,6 +23,8 @@ import { drummerPose, viewDrummer, type DrummerSpec, type Stick2, type ViewDrumm
 import { CLOSEUP_CYMBAL, CLOSEUP_DRUM } from './kitStrokes.ts';
 import { ThroneSide, ThroneTop } from './KitSceneArt';
 import { HiHatPedalTop } from '../cymbals/CymbalArt';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { DrummerNearArmV2, DrummerSideV2, DrummerTopV2, drummerV2Covers } from '../figureV2/drummerV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P3 = { x: number; y: number; z: number };
@@ -86,7 +88,7 @@ export function HeldStick({ s }: { s: Stick2 }) {
  * lesson's cymbal stays the brightest thing). `part`: 'all', or from above
  * the 'legs' under the drums and the 'upper' body over them.
  */
-export function StickDrummerArt({ view, spec, dim = 0.5, part = 'all' }: { view: ViewId; spec: DrummerSpec; dim?: number; part?: 'all' | 'legs' | 'upper' }) {
+export function StickDrummerArt({ view, spec, dim = 0.5, part = 'all', v2 = figureV2On('kitDrummer') }: { view: ViewId; spec: DrummerSpec; dim?: number; part?: 'all' | 'legs' | 'upper'; v2?: boolean }) {
   const d = stickDrummer(view, spec);
   if (part === 'legs')
     return (
@@ -96,9 +98,27 @@ export function StickDrummerArt({ view, spec, dim = 0.5, part = 'all' }: { view:
         </Group>
         {/* the hi-hat pedal on the floor, so the left shoe stands on it */}
         <HiHatPedalTop />
-        <PlayerBehind pose={d.pose} part="legs" dim={dim} />
+        {v2 ? <DrummerTopV2 spec={spec} part="legs" dim={dim} /> : <PlayerBehind pose={d.pose} part="legs" dim={dim} />}
       </Group>
     );
+  // THE NEW LOOK (D78 wave 1): the approved drummer, each stick through its fist.
+  if (v2) {
+    const far = (
+      <Group opacity={Math.min(1, dim + 0.2)}>
+        <HeldStick s={d.farStick} />
+      </Group>
+    );
+    if (view === 'side')
+      return (
+        <Group>
+          <Group opacity={dim}>
+            <ThroneSide />
+          </Group>
+          <DrummerSideV2 spec={spec} dim={dim} farStick={far} nearStick={<HeldStick s={d.stick} />} />
+        </Group>
+      );
+    return <DrummerTopV2 spec={spec} part="upper" dim={dim} farStick={far} nearStick={<HeldStick s={d.stick} />} />;
+  }
   return (
     <Group>
       {view === 'side' ? (
@@ -118,8 +138,9 @@ export function StickDrummerArt({ view, spec, dim = 0.5, part = 'all' }: { view:
 
 /** Just the near (stick) hand and arm again, over a nearer cymbal that covered
  *  the drummer, so the fist still closes over its stick. */
-export function StickHandOver({ view, spec, dim = 0.5 }: { view: ViewId; spec: DrummerSpec; dim?: number }) {
+export function StickHandOver({ view, spec, dim = 0.5, v2 = figureV2On('kitDrummer') }: { view: ViewId; spec: DrummerSpec; dim?: number; v2?: boolean }) {
   const d = stickDrummer(view, spec);
+  if (v2) return <DrummerNearArmV2 view={viewOf(view)} spec={spec} dim={dim} stick={<HeldStick s={d.stick} />} />;
   return (
     <Group>
       <HeldStick s={d.stick} />
@@ -141,6 +162,9 @@ export function stickDist(s: Stick2, u: number, v: number): number {
 export function stickDrummerCovers(view: ViewId, spec: DrummerSpec, u: number, v: number, tol: number): boolean {
   const d = stickDrummer(view, spec);
   for (const s of [d.stick, d.farStick]) if (stickDist(s, u, v) <= 10 + tol) return true;
+  // the new look (D78 wave 1): its own drawn outlines, with the pose's
+  // envelope round them (the arms' and hands' reach the labels keep clear of)
+  if (figureV2On('kitDrummer') && drummerV2Covers(viewOf(view), spec, u, v, tol)) return true;
   return poseCovers(d.pose, view, u, v, tol);
 }
 
@@ -189,10 +213,17 @@ function closeShift(tip: P2, k: CloseKind): P2 {
  * outside it. `kind` picks the stroke: a drum (≈ 11° to the head, the M02
  * stroke) or a cymbal (15° to a level plate).
  */
-export function StrikeArm({ tip, dim = 0.55, kind = 'cymbal', dowel = false }: { tip: P2; dim?: number; kind?: CloseKind; dowel?: boolean }) {
+export function StrikeArm({ tip, dim = 0.55, kind = 'cymbal', dowel = false, v2 = figureV2On('kitDrummer') }: { tip: P2; dim?: number; kind?: CloseKind; dowel?: boolean; v2?: boolean }) {
   const sh = closeShift(tip, kind);
   const pose = strikePose(kind);
   const s = stickDrummer('side', closeSpec(kind)).stick;
+  // the new look (D78 wave 1): the same approved drummer in the strike pose
+  if (v2)
+    return (
+      <Group transform={[{ translateX: sh.x }, { translateY: sh.y }]}>
+        <DrummerSideV2 spec={closeSpec(kind)} hangLeft dim={dim} assumePtPerMm={0.6} nearStick={dowel ? <Dowel s={s} /> : <HeldStick s={s} />} />
+      </Group>
+    );
   return (
     <Group transform={[{ translateX: sh.x }, { translateY: sh.y }]}>
       <PlayerBehind pose={pose} dim={dim} />

@@ -18,7 +18,8 @@
  * nothing is computed per frame.
  */
 import type { ReactNode } from 'react';
-import { BlurMask, ColorMatrix, Group, LinearGradient, Mask, Paint, Path, vec } from '@shopify/react-native-skia';
+import { ColorMatrix, Group, LinearGradient, Mask, Paint, Path, vec } from '@shopify/react-native-skia';
+import { Blur } from './detail';
 import { LIGHT, lerp, type Pt } from './geom.ts';
 import { BELT, HEAD_SKIN, LIP, MAT, SOLE } from './palette.ts';
 import { AuthoredHand, Folds, Form, HandV2, Soft, across } from './paint';
@@ -37,10 +38,10 @@ const dimLayer = (k: number) => (
 const FAR = dimLayer(FAR_DIM);
 const FAR_SKIN = dimLayer(FAR_SKIN_DIM);
 
-type Torso = { axis: [Pt, Pt]; box: { x: number; y: number; width: number; height: number }; body: SkPath };
+export type Torso = { axis: [Pt, Pt]; box: { x: number; y: number; width: number; height: number }; body: SkPath };
 
 /** The shirt's own light (the torso's form gradient and its fall-off) on any path. */
-function ShirtLight({ path, t }: { path: SkPath; t: Torso }) {
+export function ShirtLight({ path, t }: { path: SkPath; t: Torso }) {
   const [s, e] = across(t.axis[0], t.axis[1], 120);
   const b = t.box;
   return (
@@ -82,7 +83,7 @@ function UpperSleeve({ a, P, t }: { a: ArmPlan; P: ArmPaths; t: Torso }) {
         <Folds path={P.folds} mat={MAT.shirt} opacity={0.55} />
         {/* the set-in seam round the arm's root, and the cloth's slight dip below it */}
         <Path path={P.armhole} style="stroke" strokeWidth={4} strokeCap="round" color={MAT.shirt.deep} opacity={0.16}>
-          <BlurMask blur={2.2} style="normal" />
+          <Blur mm={2.2} />
         </Path>
         <Path path={P.armhole} style="stroke" strokeWidth={1} strokeCap="round" color={MAT.shirt.deep} opacity={0.35} />
       </Group>
@@ -156,7 +157,7 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
         {P.art ? (
           <Group clip={P.art.all}>
             <Path path={P.opening} color="#1a0d08" opacity={0.5} transform={[{ translateX: out.u * 6 }, { translateY: out.v * 6 }]}>
-              <BlurMask blur={4} style="normal" />
+              <Blur mm={4} />
             </Path>
           </Group>
         ) : null}
@@ -170,12 +171,12 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
       <Group clip={skin}>
         <Group transform={[{ translateX: out.u * 4 - LIGHT.u * 1.5 }, { translateY: out.v * 4 - LIGHT.v * 1.5 }]}>
           <Path path={P.cuffCloth} color={MAT.skin.deep} opacity={0.45}>
-            <BlurMask blur={2.5} style="normal" />
+            <Blur mm={2.5} />
           </Path>
         </Group>
         {P.toViewer ? (
           <Path path={P.opening} color="#000" opacity={0.2}>
-            <BlurMask blur={3} style="normal" />
+            <Blur mm={3} />
           </Path>
         ) : null}
       </Group>
@@ -184,7 +185,7 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
         <Path path={P.seam} style="stroke" strokeWidth={1.2} strokeCap="round" color={MAT.shirt.deep} opacity={0.5} />
         {/* the near rim: the cloth's rolled edge, lit along its thickness */}
         <Path path={P.rimNear} style="stroke" strokeWidth={5} strokeCap="round" color={MAT.shirt.rim} opacity={0.3}>
-          <BlurMask blur={0.8} style="normal" />
+          <Blur mm={0.8} />
         </Path>
       </Form>
       <Path path={P.cuffCloth} style="stroke" strokeWidth={1.1} strokeJoin="round" color={MAT.shirt.edge} opacity={0.75} />
@@ -192,7 +193,7 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
   );
 }
 
-function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Torso; stick?: ReactNode; cloth?: ReactNode; skin?: ReactNode }) {
+export function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Torso; stick?: ReactNode; cloth?: ReactNode; skin?: ReactNode }) {
   const upper = (
     <Group layer={cloth as never}>
       <UpperSleeve a={a} P={P} t={t} />
@@ -234,7 +235,7 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
       <Group clip={P.art.all}>
         <Group transform={[{ translateX: -LIGHT.u * 5 }, { translateY: -LIGHT.v * 5 }]}>
           <Path path={P.cuff} color="#000" opacity={0.45}>
-            <BlurMask blur={4} style="normal" />
+            <Blur mm={4} />
           </Path>
         </Group>
       </Group>
@@ -278,7 +279,7 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
 /** The trousers' cloth as one garment: the same ramp on seat, thigh, knee and
  *  shin, its lit side held a step below the cloth's brightest so the thigh's
  *  top (facing the light) does not bleach to a different grey than the shin. */
-const CLOTH = { ...MAT.trousers, form: [MAT.trousers.form[1], '#474b53', MAT.trousers.form[2], MAT.trousers.form[3], MAT.trousers.form[4]] };
+export const CLOTH = { ...MAT.trousers, form: [MAT.trousers.form[1], '#474b53', MAT.trousers.form[2], MAT.trousers.form[3], MAT.trousers.form[4]] };
 
 /** The shin's own cylinder light (a soft blend at the knee). */
 function Shin({ path, axis }: { path: SkPath; axis: [Pt, Pt] }) {
@@ -286,7 +287,7 @@ function Shin({ path, axis }: { path: SkPath; axis: [Pt, Pt] }) {
   return (
     <Path path={path}>
       <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={CLOTH.form} positions={CLOTH.pos} />
-      <BlurMask blur={5} style="normal" />
+      <Blur mm={5} />
     </Path>
   );
 }
@@ -307,7 +308,7 @@ function Leg({ path, shin, knee, folds, l, shoe }: { path: SkPath; shin: SkPath;
         <Group clip={path} invertClip>
           <Group transform={[{ translateX: -LIGHT.u * 5 }, { translateY: -LIGHT.v * 5 }]}>
             <Path path={path} color="#000" opacity={0.4}>
-              <BlurMask blur={2.5} style="normal" />
+              <Blur mm={2.5} />
             </Path>
           </Group>
         </Group>
@@ -351,7 +352,7 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
         <Soft path={P.scm} color={MAT.skin.rim} opacity={0.14} blur={4} />
         {/* (half strength, softer edges — owner: "lighten" — the jaw separates from the neck, no streak) */}
         <Path path={P.jawShadow} color={MAT.skin.deep} opacity={0.25}>
-          <BlurMask blur={6.5} style="normal" />
+          <Blur mm={6.5} />
         </Path>
         <Soft path={P.neckOcclusion} color={MAT.skin.deep} opacity={0.45} blur={4} />
       </Form>
@@ -368,7 +369,7 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
           <Soft key={i} path={l} color={MAT.skin.rim} opacity={i === 1 ? 0.3 : i === 0 ? 0.1 : 0.15} blur={i === 1 ? 1.8 : 5} />
         ))}
         <Path path={P.nasolabial} style="stroke" strokeWidth={3} strokeCap="round" color={MAT.skin.deep} opacity={0.14}>
-          <BlurMask blur={1.8} style="normal" />
+          <Blur mm={1.8} />
         </Path>
         {/* the nostril's wing: its own small form, the crease behind it */}
         <Path path={P.ala} color={MAT.skin.form[1]} opacity={0.2} />
@@ -385,7 +386,7 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
         <Path path={P.lid} color={MAT.hair.edge} opacity={0.82} />
         <Path path={P.lidCrease} style="stroke" strokeWidth={1.1} strokeCap="round" color={MAT.skin.deep} opacity={0.42} />
         <Path path={P.brow} color={MAT.hair.form[2]} opacity={0.78}>
-          <BlurMask blur={0.7} style="normal" />
+          <Blur mm={0.7} />
         </Path>
       </Form>
       {/* the mandible over the neck: a crisp edge */}
@@ -394,31 +395,31 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
       <Soft path={P.hair} color={MAT.skin.deep} opacity={0.3} blur={2.5} clip={P.skull} />
       <Path path={P.hair}>
         <LinearGradient start={vec(c.u + LIGHT.u * R, c.v + LIGHT.v * R)} end={vec(c.u - LIGHT.u * R, c.v - LIGHT.v * R)} colors={[MAT.hair.form[1], MAT.hair.form[2], MAT.hair.form[3]]} />
-        <BlurMask blur={1.1} style="normal" />
+        <Blur mm={1.1} />
       </Path>
       <Group clip={P.hair}>
         {P.clumps.map((q, i) => (
           <Group key={i}>
             <Path path={q} color={MAT.hair.form[i % 2 === 0 ? 1 : 3]} opacity={0.2}>
-              <BlurMask blur={2.4} style="normal" />
+              <Blur mm={2.4} />
             </Path>
             <Path path={q} style="stroke" strokeWidth={0.9} color={MAT.hair.deep} opacity={0.16}>
-              <BlurMask blur={0.6} style="normal" />
+              <Blur mm={0.6} />
             </Path>
           </Group>
         ))}
         <Path path={P.sheen} style="stroke" strokeWidth={9} strokeCap="round" color={MAT.hair.rim} opacity={0.2}>
-          <BlurMask blur={4} style="normal" />
+          <Blur mm={4} />
         </Path>
       </Group>
       <Form path={P.ear} mat={HEAD_SKIN} round={{ c, r: R }} rim={3} edge={0.7}>
         <Path path={P.ear} color={MAT.skin.deep} opacity={0.12} />
         <Path path={P.earBowl} color={MAT.skin.deep} opacity={0.5}>
-          <BlurMask blur={1.4} style="normal" />
+          <Blur mm={1.4} />
         </Path>
         <Path path={P.earRim} style="stroke" strokeWidth={2.2} strokeCap="round" color={MAT.skin.deep} opacity={0.45} />
         <Path path={P.earFold} style="stroke" strokeWidth={2.4} strokeCap="round" color={MAT.skin.rim} opacity={0.16}>
-          <BlurMask blur={1} style="normal" />
+          <Blur mm={1} />
         </Path>
       </Form>
     </Group>
@@ -491,7 +492,7 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
       <Group clip={P.belt}>
         <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
           <Path path={P.blouse} color="#000" opacity={0.5}>
-            <BlurMask blur={2.5} style="normal" />
+            <Blur mm={2.5} />
           </Path>
         </Group>
       </Group>

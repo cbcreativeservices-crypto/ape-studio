@@ -11,7 +11,8 @@
  * Reusable by every figure (the roll-out after the owner approves).
  */
 import type { ReactNode } from 'react';
-import { BlurMask, Group, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
+import { Group, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
+import { Blur } from './detail';
 import { partLook, type HandLayers, type HandPart } from '../hand/anatomy/drawAnatomy.ts';
 import { LIGHT, lerp, perp, unit, sub, dot, type Pt } from './geom.ts';
 import { MAT, NAIL, type Material } from './palette.ts';
@@ -76,7 +77,7 @@ export function Form({ path, mat, axis, w = 40, round, rim = 6, edge = 1, fall =
         {children}
         {rim > 0 ? (
           <Path path={rimOf(path, rim)} color={mat.rim} opacity={0.36}>
-            <BlurMask blur={rim * 0.32} style="normal" />
+            <Blur mm={rim * 0.32} />
           </Path>
         ) : null}
       </Group>
@@ -88,7 +89,7 @@ export function Form({ path, mat, axis, w = 40, round, rim = 6, edge = 1, fall =
           </Group>
           <Group clip={over}>
             <Path path={path} style="stroke" strokeWidth={edge * 2.4} color={mat.deep} opacity={0.12}>
-              <BlurMask blur={1.6} style="normal" />
+              <Blur mm={1.6} />
             </Path>
           </Group>
         </>
@@ -101,7 +102,7 @@ export function Form({ path, mat, axis, w = 40, round, rim = 6, edge = 1, fall =
 export function Soft({ path, color = '#000', opacity = 0.4, blur = 8, clip }: { path: SkPath; color?: string; opacity?: number; blur?: number; clip?: SkPath }) {
   const p = (
     <Path path={path} color={color} opacity={opacity}>
-      <BlurMask blur={blur} style="normal" />
+      <Blur mm={blur} />
     </Path>
   );
   return clip ? <Group clip={clip}>{p}</Group> : p;
@@ -113,11 +114,11 @@ export function Folds({ path, mat, clip, opacity = 0.5 }: { path: SkPath; mat: M
     <Group clip={clip}>
       <Group transform={[{ translateX: LIGHT.u * 2.2 }, { translateY: LIGHT.v * 2.2 }]}>
         <Path path={path} color={mat.rim} opacity={opacity * 0.35}>
-          <BlurMask blur={1.6} style="normal" />
+          <Blur mm={1.6} />
         </Path>
       </Group>
       <Path path={path} color={mat.deep} opacity={opacity}>
-        <BlurMask blur={1.4} style="normal" />
+        <Blur mm={1.4} />
       </Path>
     </Group>
   );
@@ -149,21 +150,21 @@ function PartForm({ p, L, shade }: { p: HandPart; L: HandLayers; shade: number }
       <Path path={p.path}>{skinFill(L)}</Path>
       <Group clip={p.path}>
         <Path path={look.core} color={SKIN.deep} opacity={p.kind === 'palm' ? 0.38 : 0.5}>
-          <BlurMask blur={p.kind === 'palm' ? 6 : 3.2} style="normal" />
+          <Blur mm={p.kind === 'palm' ? 6 : 3.2} />
         </Path>
         <Path path={look.rim} color={SKIN.rim} opacity={0.3}>
-          <BlurMask blur={1.4} style="normal" />
+          <Blur mm={1.4} />
         </Path>
         {shade > 0.005 ? <Path path={p.path} color="#1a0f0a" opacity={shade} /> : null}
         <Path path={p.soft} style="stroke" strokeWidth={4} strokeCap="round" color={SKIN.deep} opacity={0.24}>
-          <BlurMask blur={2} style="normal" />
+          <Blur mm={2} />
         </Path>
         <Path path={p.glints} style="stroke" strokeWidth={3.5} strokeCap="round" color={SKIN.rim} opacity={0.32}>
-          <BlurMask blur={1.6} style="normal" />
+          <Blur mm={1.6} />
         </Path>
         {p.back ? (
           <Path path={p.lines} style="stroke" strokeWidth={1.4} strokeCap="round" color={SKIN.deep} opacity={0.35}>
-            <BlurMask blur={0.8} style="normal" />
+            <Blur mm={0.8} />
           </Path>
         ) : null}
       </Group>
@@ -180,12 +181,12 @@ function NailV2({ path }: { path: SkPath }) {
       <Group clip={path}>
         <Group transform={[{ translateX: -LIGHT.u * 1.2 }, { translateY: -LIGHT.v * 1.2 }]}>
           <Path path={path} color={SKIN.deep} opacity={0.18}>
-            <BlurMask blur={0.8} style="normal" />
+            <Blur mm={0.8} />
           </Path>
         </Group>
         <Group transform={[{ translateX: LIGHT.u * 1.4 }, { translateY: LIGHT.v * 1.4 }]}>
           <Path path={path} style="stroke" strokeWidth={1} color="#fff3ea" opacity={0.1}>
-            <BlurMask blur={0.6} style="normal" />
+            <Blur mm={0.6} />
           </Path>
         </Group>
       </Group>
@@ -215,16 +216,16 @@ function HandSide({ hand, back, under }: { hand: HandBuilt; back: boolean; under
                 <LinearGradient start={vec(hand.palmAxis.a.u, hand.palmAxis.a.v)} end={vec(hand.palmAxis.b.u, hand.palmAxis.b.v)} colors={['rgba(255,236,222,0.16)', 'rgba(0,0,0,0)', 'rgba(52,28,18,0.32)']} />
               </Path>
               <Path path={hand.formsLight} color={SKIN.rim} opacity={0.3}>
-                <BlurMask blur={6} style="normal" />
+                <Blur mm={6} />
               </Path>
               <Path path={hand.formsDark} color={SKIN.deep} opacity={0.3}>
-                <BlurMask blur={6} style="normal" />
+                <Blur mm={6} />
               </Path>
               <Path path={hand.tendons} style="stroke" strokeWidth={3.2} strokeCap="round" color={SKIN.rim} opacity={0.22}>
-                <BlurMask blur={1.6} style="normal" />
+                <Blur mm={1.6} />
               </Path>
               <Path path={hand.palmLines} style="stroke" strokeWidth={1.8} strokeCap="round" color={SKIN.deep} opacity={0.32}>
-                <BlurMask blur={0.9} style="normal" />
+                <Blur mm={0.9} />
               </Path>
             </Group>
           ) : null}
@@ -232,13 +233,13 @@ function HandSide({ hand, back, under }: { hand: HandBuilt; back: boolean; under
       ))}
       <Group clip={form}>
         <Path path={back ? hand.warmBack : hand.warmFront} color={WARM} opacity={0.22}>
-          <BlurMask blur={3.5} style="normal" />
+          <Blur mm={3.5} />
         </Path>
         {/* where a finger lies over its neighbour, and each joint's crease: soft */}
         {back ? null : (
           <>
             <Path path={hand.creases} style="stroke" strokeWidth={2.6} strokeCap="round" color={SKIN.deep} opacity={0.3}>
-              <BlurMask blur={1.3} style="normal" />
+              <Blur mm={1.3} />
             </Path>
             <Path path={hand.creases} style="stroke" strokeWidth={0.7} strokeCap="round" color={SKIN.edge} opacity={0.32} />
           </>
@@ -261,7 +262,7 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
     <Group clip={hand.stickBody}>
       <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
         <Path path={hand.formFront} color="#000" opacity={0.45}>
-          <BlurMask blur={2.6} style="normal" />
+          <Blur mm={2.6} />
         </Path>
       </Group>
     </Group>
@@ -283,7 +284,7 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
         <Group clip={hand.formBack}>
           <Group transform={[{ translateX: -LIGHT.u * 4 }, { translateY: -LIGHT.v * 4 }]}>
             <Path path={hand.stickLine} style="stroke" strokeWidth={14} strokeCap="round" color="#000" opacity={0.35}>
-              <BlurMask blur={2.5} style="normal" />
+              <Blur mm={2.5} />
             </Path>
           </Group>
         </Group>
@@ -302,7 +303,7 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
  *  turning across its axis, a soft lit edge; it casts a soft shadow on what
  *  lies under it — the separation between neighbouring forms is that shadow,
  *  never an outline. */
-function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0 }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number; outline?: number }) {
+function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number; outline?: number; casts?: number }) {
   const m = { u: box.x + box.width / 2, v: box.y + box.height / 2 };
   // (mostly from above: the top planes lit, the under planes turning away)
   const Ld = { u: -0.32, v: -0.95 };
@@ -313,8 +314,8 @@ function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0 }: { pat
     <Group>
       <Group clip={within}>
         <Group transform={[{ translateX: -LIGHT.u * 2.6 }, { translateY: -LIGHT.v * 2.6 }]}>
-          <Path path={path} color="#2a160e" opacity={kind === 'palm' || kind === 'wrist' ? 0 : 0.5}>
-            <BlurMask blur={2.6} style="normal" />
+          <Path path={path} color="#2a160e" opacity={casts ?? (kind === 'palm' || kind === 'wrist' ? 0 : 0.5)}>
+            <Blur mm={2.6} />
           </Path>
         </Group>
       </Group>
@@ -326,7 +327,7 @@ function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0 }: { pat
           <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={kind === 'digit' ? ['rgba(255,238,226,0.32)', 'rgba(255,238,226,0.06)', 'rgba(52,26,16,0.24)', 'rgba(52,26,16,0.58)'] : ['rgba(255,238,226,0.22)', 'rgba(255,238,226,0.04)', 'rgba(52,26,16,0.16)', 'rgba(52,26,16,0.42)']} positions={[0, 0.3, 0.7, 1]} />
         </Path>
         <Path path={rimOf(path, 2.4)} color={SKIN.rim} opacity={0.3 + lift}>
-          <BlurMask blur={1.2} style="normal" />
+          <Blur mm={1.2} />
         </Path>
         {lift > 0 ? <Path path={path} color={SKIN.rim} opacity={lift} /> : null}
       </Group>
@@ -348,25 +349,25 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
       <Group>
         {ps.map((p, i) => (
           // (the nearest finger of the fist, its little finger, a step lighter: the form nearest the viewer and the light)
-          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} outline={!a.endOn && p.kind === 'digit' ? 0.55 : 0} />
+          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} outline={!a.endOn && p.kind === 'digit' ? 0.55 : 0} casts={a.stickUnder && p.kind === 'palm' ? 0.45 : undefined} />
         ))}
         {form ? (
           <Group clip={form}>
             {a.lights.map((l, i) => (
               <Path key={`l${i}`} path={l} color={SKIN.rim} opacity={0.26}>
-                <BlurMask blur={4} style="normal" />
+                <Blur mm={4} />
               </Path>
             ))}
             {a.darks.map((l, i) => (
               <Path key={`d${i}`} path={l} color={SKIN.deep} opacity={0.3}>
-                <BlurMask blur={5} style="normal" />
+                <Blur mm={5} />
               </Path>
             ))}
             <Path path={a.warm} color={WARM} opacity={0.22}>
-              <BlurMask blur={3} style="normal" />
+              <Blur mm={3} />
             </Path>
             <Path path={a.creases} style="stroke" strokeWidth={2.4} strokeCap="round" color={SKIN.deep} opacity={0.3}>
-              <BlurMask blur={1.1} style="normal" />
+              <Blur mm={1.1} />
             </Path>
             <Path path={a.creases} style="stroke" strokeWidth={0.7} strokeCap="round" color={SKIN.edge} opacity={0.24} />
             {a.nails.map((n, i) => (
@@ -399,7 +400,7 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
           <Group>
             <Group clip={a.all}>
               <Path path={a.stub} color="#000" opacity={0.42}>
-                <BlurMask blur={3} style="normal" />
+                <Blur mm={3} />
               </Path>
             </Group>
             <Path path={a.stub}>
@@ -414,6 +415,24 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
         ) : null}
       </Group>
     );
+  if (a.stickUnder)
+    // From above (the back of the hand over its stick): the stick first, the
+    // whole hand over it with its soft shadow on the stick.
+    return (
+      <Group>
+        {stick ?? null}
+        <Group clip={a.stickBody}>
+          <Group transform={[{ translateX: -LIGHT.u * 4 }, { translateY: -LIGHT.v * 4 }]}>
+            <Path path={a.all} color="#000" opacity={0.45}>
+              <Blur mm={3} />
+            </Path>
+          </Group>
+        </Group>
+        {paint('back')}
+        {paint('front')}
+        {edge}
+      </Group>
+    );
   return (
     <Group>
       {paint('back')}
@@ -422,7 +441,7 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
         <Group clip={a.back}>
           <Group transform={[{ translateX: -LIGHT.u * 5 }, { translateY: -LIGHT.v * 5 }]}>
             <Path path={a.stickLine} style="stroke" strokeWidth={14} strokeCap="round" color="#2a160e" opacity={0.4}>
-              <BlurMask blur={3} style="normal" />
+              <Blur mm={3} />
             </Path>
           </Group>
         </Group>
@@ -432,7 +451,7 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
       <Group clip={a.stickBody}>
         <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
           <Path path={a.front} color="#000" opacity={0.5}>
-            <BlurMask blur={2.4} style="normal" />
+            <Blur mm={2.4} />
           </Path>
         </Group>
       </Group>
