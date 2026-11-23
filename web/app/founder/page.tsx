@@ -15,7 +15,7 @@ import { PageHero, Section, BrandLine, CTARow } from "@/components/content";
  * upbringing (design, equipment, lighting, audio, sound design, movement);
  * stadiums, theaters, clubs, festivals; "visual and dramatic arts"; NO Yamaha
  * line (one partner alone reads as the only reference).
- * The full original resume is still to come (must-do D36).
+ * Owner 2026-11-22 (D36): added courses AUDI 201/204, Perkins grant 2026–2027, work-based learning course, advisory board, ribbon-mic workshops with Austin Ribbon Microphones, drums/percussion/harmonograph, current jazz/Latin jazz/salsa playing, 2024 AAASRC honor, AES 2025 Breaking Barriers role, NAMM. Student ratings stated only in summary; no one-on-one meeting line; co-honorees and student letters not named.
  */
 export const metadata: Metadata = pageMeta({
   path: "/founder",
@@ -52,27 +52,22 @@ export default function Page() {
           presenters from Bonnie Raitt to Bill Nye the Science Guy.
         </p>
         <p>
-          Since 1999 he has taught audio at San Diego Miramar College, as
-          Professor, Program Director and Lead Faculty of its state-certified
-          Audio Production and Engineering program. He built the program, wrote
-          several of its eight courses and edits and reviews the rest, and
-          designed the campus’s state-of-the-art studio and facility where he
-          now teaches.
+          Since 1999 he has taught audio at San Diego Miramar College, as Professor, Program Director and Lead Faculty of its state-certified Audio Production and Engineering program. He built the program, wrote several of its eight courses, including Sound Reinforcement Systems and Audio Systems Design &amp; Maintenance, and edits and reviews the rest, and designed the campus’s state-of-the-art studio and facility where he now teaches. He leads the program’s vocational advisory board, a panel of working engineers, studio owners and manufacturers who keep the curriculum tied to real jobs. For 2026–2027 he secured a Perkins grant for the audio program, and he completed a course in work-based learning.
         </p>
         <p>
-          He knows audio from the inside because he builds it: ribbon
-          microphones, guitar amplifiers, acoustic diffusers, and instruments of
-          wood and metal. He services electronics, Hammond organs and Rhodes
-          pianos, and tunes and repairs pianos.
+          His students consistently rate him among their best teachers.
         </p>
         <p>
-          At Berklee he studied far beyond music: alongside his degrees he took
-          audio courses and spent long hours recording in the college’s studios.
-          As a musician he has performed across the United States and around the
-          world, in stadiums, theaters, clubs, and music festivals. He is a
-          lifelong polymath: his curiosity runs from physics and acoustics to
-          psychology, ethnomusicology, history, and the visual and dramatic arts,
-          and in the Academy he found that all of it connects.
+          He knows audio from the inside because he builds it: ribbon microphones, guitar amplifiers, acoustic diffusers, drums and percussion instruments, a complete harmonograph, and instruments of wood and metal. He brings that to his students too, hosting hands-on workshops where they build their own ribbon microphones with Austin Ribbon Microphones. He services electronics, Hammond organs and Rhodes pianos, and tunes and repairs pianos.
+        </p>
+        <p>
+          At Berklee he studied far beyond music: alongside his degrees he took audio courses and spent long hours recording in the college’s studios. As a musician he has performed across the United States and around the world, in stadiums, theaters, clubs, and music festivals. Today he plays jazz, Latin jazz and salsa piano across Southern California and Baja California. In 2024 the African and African-American Studies Research Center at UC San Diego honored him among its Outstanding Artists, Composers, and Musicians.
+        </p>
+        <p>
+          He stays close to the industry he teaches: a member of the Audio Engineering Society, he served on the development committee of its 2025 Breaking Barriers in Audio conference and moderated its sessions, and he attends the NAMM Show regularly.
+        </p>
+        <p>
+          He is a lifelong polymath: his curiosity runs from physics and acoustics to psychology, ethnomusicology, history, and the visual and dramatic arts, and in the Academy he found that all of it connects.
         </p>
       </Section>
 
