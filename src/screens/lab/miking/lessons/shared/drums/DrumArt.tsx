@@ -481,10 +481,14 @@ export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec;
 }
 
 /** A drumstick (ILLUSTRATIVE: no source gives a stick; a common 16 in
- *  hickory stick drawn), from its butt to its tip bead. */
-export function Stick({ from, to, dim = 1 }: { from: { x: number; y: number }; to: { x: number; y: number }; dim?: number }) {
-  const ang = Math.atan2(to.y - from.y, to.x - from.x);
-  const len = Math.hypot(to.x - from.x, to.y - from.y);
+ *  hickory stick drawn), from its butt to its tip bead. Never longer than
+ *  the real 406 mm stick (stick technique fix 2026-11-22: a longer from → to
+ *  is drawn 406 mm back from the bead, never stretched). A stick a player
+ *  holds is the kit drummer's (kitScene/stickPlayer), not this one. */
+export function Stick({ from: given, to, dim = 1 }: { from: { x: number; y: number }; to: { x: number; y: number }; dim?: number }) {
+  const ang = Math.atan2(to.y - given.y, to.x - given.x);
+  const len = Math.min(406, Math.hypot(to.x - given.x, to.y - given.y));
+  const from = { x: to.x - Math.cos(ang) * len, y: to.y - Math.sin(ang) * len };
   const p = useMemo(() => {
     // A tapered dowel along +x: Ø 14 at the butt to a shoulder, a bead tip.
     const body = make();

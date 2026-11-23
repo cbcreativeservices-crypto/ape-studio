@@ -16,7 +16,9 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, stickFigureAt, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { StickDrummerArt, heldStickSeg, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { SPLASH_ON_ARM, SPLASH_ON_CRASH } from '../shared/kitScene/kitStrokes.ts';
 import { PiggybackSide, PiggybackTop, SplashArmSide, SplashArmTop } from '../shared/cymbals/CymbalFxArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
@@ -29,17 +31,20 @@ const isPig = (v: VariantId) => v === 'piggy';
 const C1 = KIT.cymbals.crash1;
 const C2 = KIT.cymbals.crash2;
 
-/** The stick as drawn, per view and setup (also the labels' occupancy). */
-function stickSeg(view: ViewId, variant: VariantId) {
-  if (isPig(variant)) {
-    return view === 'side'
-      ? { from: { x: STRIKE_PIG.x - 280, y: STRIKE_PIG.y - 230 }, to: { x: STRIKE_PIG.x - 4, y: STRIKE_PIG.y - 4 } }
-      : { from: { x: STRIKE_PIG.x - 250, y: STRIKE_PIG.z - 150 }, to: { x: STRIKE_PIG.x - 4, y: STRIKE_PIG.z } };
-  }
-  return view === 'side'
-    ? { from: { x: STRIKE_ARM.x - 280, y: STRIKE_ARM.y - 220 }, to: { x: STRIKE_ARM.x - 4, y: STRIKE_ARM.y - 4 } }
-    : { from: { x: STRIKE_ARM.x - 250, y: STRIKE_ARM.z + 120 }, to: { x: STRIKE_ARM.x - 4, y: STRIKE_ARM.z } };
-}
+/** The stick, held by the drummer (stick technique fix 2026-11-22, owner:
+ *  "It should look like normal stick tech. usage"; it was a stick floating
+ *  with no hand, 48–54° to the plate): a light glancing stroke, the tip at
+ *  the splash's edge, the real 406 mm stick. On the arm the fist and forearm
+ *  come in from the frame's left edge; on the crash the player leans in and
+ *  reaches up, the fist at the frame's left edge, so the frame cuts the arm
+ *  (kitStrokes.SPLASH_ON_ARM / SPLASH_ON_CRASH). The drawn player is also
+ *  the labels' occupancy. */
+const playerOf = (variant: VariantId) => (isPig(variant) ? SPLASH_ON_CRASH : SPLASH_ON_ARM);
+/** A point on the held stick (view u, v), a third of the way back from the bead. */
+const stickAt = (view: ViewId, variant: VariantId) => {
+  const h = heldStickSeg(view, playerOf(variant));
+  return { u: h.to.x + (h.from.x - h.to.x) * 0.33, v: h.to.y + (h.from.y - h.to.y) * 0.33 };
+};
 
 export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   if (isPig(variant)) {
@@ -51,17 +56,17 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
           <PlateGlow c={PIGGY.c} tiltDeg={PIGGY.tiltDeg} R={R8} rise={PIGGY.spec.rise.mm} />
           <BoomStandSide id="crash2" />
           <PiggybackSide splash={PIGGY} swing />
-          <StickTo {...stickSeg('side', variant)} />
         </Group>
       );
-      return <KitAround view="side" show={around} own={own} ownZ={C2.c.z} />;
+      return <KitAround view="side" show={around} own={own} ownZ={C2.c.z} player={playerOf(variant)} />;
     }
     return (
       <Group>
+        <StickDrummerArt view="top" spec={playerOf(variant)} part="legs" />
         <KitAround view="top" show={around} />
         <BoomStandTop id="crash2" />
         <PiggybackTop splash={PIGGY} />
-        <StickTo {...stickSeg('top', variant)} />
+        <StickDrummerArt view="top" spec={playerOf(variant)} part="upper" />
       </Group>
     );
   }
@@ -72,21 +77,21 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
       <Group>
         <PlateGlow c={ARM.c} tiltDeg={ARM.tiltDeg} R={R10} rise={ARM.spec.rise.mm} />
         <SplashArmSide place={ARM} swing />
-        <StickTo {...stickSeg('side', variant)} />
       </Group>
     );
     return (
       <Group>
-        <KitAround view="side" show={around} own={own} ownZ={-100} />
+        <KitAround view="side" show={around} own={own} ownZ={-100} player={playerOf(variant)} />
         <KitAround view="side" show={{ crash1: 0.5 }} />
       </Group>
     );
   }
   return (
     <Group>
+      <StickDrummerArt view="top" spec={playerOf(variant)} part="legs" />
       <KitAround view="top" show={around} />
       <SplashArmTop place={ARM} />
-      <StickTo {...stickSeg('top', variant)} />
+      <StickDrummerArt view="top" spec={playerOf(variant)} part="upper" />
       <KitAround view="top" show={{ crash1: 0.42 }} />
     </Group>
   );
@@ -99,7 +104,7 @@ export function splashLabels(view: ViewId, variant: VariantId): ArtLabel[] {
         { id: 'splash', text: 'SPLASH, UPSIDE DOWN', short: 'SPLASH', u: PIGGY.c.x + R8 + 60, v: PIGGY.c.y - 40, align: 'left' },
         { id: 'crash', text: '18 IN CRASH', short: 'CRASH', u: C2.c.x + 60, v: C2.c.y + 90, align: 'left' },
         { id: 'tom', text: '12 IN TOM', short: 'TOM', u: KIT.drums.tom2.c.x, v: KIT.drums.tom2.c.y + 160, align: 'center', tone: 'muted' },
-        { id: 'stick', text: 'STICK', u: STRIKE_PIG.x - 240, v: STRIKE_PIG.y - 260, align: 'center', tone: 'illustrative' },
+        { id: 'stick', text: 'STICK', u: STRIKE_PIG.x - 240, v: STRIKE_PIG.y - 260, align: 'center', tone: 'illustrative', at: stickAt('side', variant) },
       ];
     }
     return [
@@ -117,7 +122,7 @@ export function splashLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       // (clash sweep 2026-10-10: the stick ran through this name)
       { id: 'crash', text: '16 IN CRASH', short: 'CRASH', u: C1.c.x + 60, v: C1.c.y - 90, align: 'left', tone: 'muted', at: { u: C1.c.x + (C1.d / 2) * 0.5 * Math.cos(C1.tiltDeg * DEG), v: C1.c.y - (C1.d / 2) * 0.5 * Math.sin(C1.tiltDeg * DEG) } },
       { id: 'tom', text: '10 IN TOM', short: 'TOM', u: KIT.drums.tom1.c.x + 30, v: KIT.drums.tom1.c.y + 130, align: 'center', tone: 'muted', at: { u: KIT.drums.tom1.c.x, v: KIT.drums.tom1.c.y + 60 } },
-      { id: 'stick', text: 'STICK', u: STRIKE_ARM.x - 240, v: STRIKE_ARM.y - 250, align: 'center', tone: 'illustrative' },
+      { id: 'stick', text: 'STICK', u: STRIKE_ARM.x - 240, v: STRIKE_ARM.y - 250, align: 'center', tone: 'illustrative', at: stickAt('side', variant) },
     ];
   }
   return [
@@ -155,7 +160,7 @@ export const SPLASH_ART: LessonArt = {
   Instrument: SplashArt,
   labels: splashLabels,
   hitTest: splashHitTest,
-  figureAt: stickFigureAt(stickSeg),
+  figureAt: (view, variant, u, v, tol) => stickDrummerCovers(view, playerOf(variant), u, v, tol),
   plan: { own: 'cymbal.own' },
   SettingPlan: CymbalSettingPlan('splash'),
   pages: CYMBAL_PAGES,

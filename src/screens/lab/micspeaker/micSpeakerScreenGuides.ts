@@ -36,7 +36,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       start: 'Watch the waves push the diaphragm, then follow one ⊗/⊙ mark as it flips. Read e = B · l · v under the drawing, then open WHAT’S HAPPENING.',
     },
     seeing: [
-      'Inside a moving-coil (dynamic) mic: the diaphragm, the coil behind it, and the magnet’s gap. The coil’s real motion is too small to draw, so it stays still in the picture; watch the waves, the current and its glow.',
+      'Inside a moving-coil (dynamic) mic: the diaphragm, the coil behind it, and the magnet’s gap. The coil’s real motion is too small to see, so it is drawn about 1,000× larger: watch the diaphragm and coil slide in the gap.',
       'The amber glow is the current the coil makes. The ⊗/⊙ marks show which way it flows, and they flip each time it reverses.',
       'Under it, e = B · l · v: the voltage follows the coil’s VELOCITY.',
     ],
@@ -56,8 +56,8 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       'The coil moves back and forth, so the voltage swings positive and negative: a mic’s output is AC (alternating current), a copy of the sound wave’s motion.',
     ],
     tryThis: [
-      'Watch one ⊗/⊙ marker: it swaps twice per cycle. Each swap is the current reversing, because the coil has turned back (AC).',
-      'Watch the amber glow pulse: brightest when the current is strongest (the coil moving fastest), dim as the current passes through zero and reverses.',
+      'Watch one ⊗/⊙ marker: it swaps at each end of the coil’s travel, twice per cycle. Each swap is the current reversing, because the coil has turned back (AC).',
+      'Watch the amber glow pulse: brightest as the coil passes the middle of its travel (moving fastest), gone at each end, where the coil stops and turns back.',
     ],
   },
 

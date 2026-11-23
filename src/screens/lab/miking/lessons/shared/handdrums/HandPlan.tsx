@@ -123,12 +123,14 @@ function cabinet(cx: number, cy: number, w: number, d: number, face: number, gri
   );
 }
 
-function Thing({ t, Drums, variant, box }: { t: PlanThing; Drums: (p: { view: 'top'; variant: VariantId }) => ReactElement; variant: VariantId; box: PlanBox }) {
+function Thing({ t, Drums, variant, box, turnDrums }: { t: PlanThing; Drums: (p: { view: 'top'; variant: VariantId; planTurn?: boolean }) => ReactElement; variant: VariantId; box: PlanBox; turnDrums?: boolean }) {
   switch (t.kind) {
     case 'drums':
       return (
         <Group transform={[{ translateX: t.u }, { translateY: t.v }]}>
-          <Drums view="top" variant={variant} />
+          {/* A lesson whose model frame is turned from the plan's draws its own
+              top view turned (planTurn); every other lesson as before. */}
+          {turnDrums ? <Drums view="top" variant={variant} planTurn /> : <Drums view="top" variant={variant} />}
         </Group>
       );
     case 'player': {
@@ -269,7 +271,10 @@ export type HandPlanProps = {
   h: number;
   scene: 'kit' | 'stage' | 'studio';
   variant: VariantId;
-  Drums: (p: { view: 'top'; variant: VariantId }) => ReactElement;
+  Drums: (p: { view: 'top'; variant: VariantId; planTurn?: boolean }) => ReactElement;
+  /** The lesson's model frame is turned from the plan's (HandExtra.plan.turn):
+   *  the art draws its top view in the plan's frame. */
+  turnDrums?: boolean;
   things: readonly PlanThing[];
   box: { u0: number; u1: number; v0: number; v1: number };
   /** The lesson's own art from above (its footprint, and its player's head
@@ -283,7 +288,7 @@ export type HandPlanProps = {
   accessibilityLabel: string;
 };
 
-export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, shortOf, highlight, onTap, accessibilityLabel }: HandPlanProps) {
+export function HandPlan({ w, h, scene, variant, Drums, turnDrums, things, box, art, cue, shortOf, highlight, onTap, accessibilityLabel }: HandPlanProps) {
   const textScale = useStageTextScale();
   // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
   const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
@@ -326,7 +331,7 @@ export function HandPlan({ w, h, scene, variant, Drums, things, box, art, cue, s
               </>
             ) : null}
             {shown.map((t) => (
-              <Thing key={t.id} t={t} Drums={Drums} variant={variant} box={box} />
+              <Thing key={t.id} t={t} Drums={Drums} variant={variant} box={box} turnDrums={turnDrums} />
             ))}
             {/* Studio: each performer's headphone mix (no wedges in a studio). */}
             {rig ? <CueMixPlan rig={rig} /> : null}

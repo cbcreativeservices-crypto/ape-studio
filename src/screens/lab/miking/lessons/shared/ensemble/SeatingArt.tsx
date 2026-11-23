@@ -34,7 +34,7 @@ import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
 import { DrumPlan, CymbalPlan, CymbalSide, DrumExterior, SnareStandSide } from '../drums/DrumArt';
 import { CONCERT_BD_36x16, CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { DEG, planDir, uv, type StageView } from './frameS.ts';
-import { DIMS, headTop, isVoice, sectionBox, BASS_DRUM_STATION, TIMPANI_SET, type Gear, type Seat, type Seating } from './seating.ts';
+import { DIMS, headTop, isVoice, sectionBox, BASS_DRUM_STATION, TIMPANI_MALLETS, TIMPANI_SET, type Gear, type Seat, type Seating } from './seating.ts';
 // Group 4: the band players and the stage gear (drawn into these batches) —
 // the drum kit (one kind for groups 4 and 5) is Lab 1's shared kit, whole.
 import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPlan, bandPlanInstrument, bandPlanWhole, gearBehind, type BandTools } from './BandArt';
@@ -200,8 +200,7 @@ function addFig(b: Batch, tone: FigTone, q: SkPath): void {
 
 /* ── geometry helpers (build time) ── */
 type P2 = { u: number; v: number };
-const P = (u: number, v: number): P2 => ({ u, v });
-/** A path-op result as a WINDING path (ops may return even-odd; batch paths fill by winding). */
+const P = (u: number, v: number): P2 => ({ u, v });/** A path-op result as a WINDING path (ops may return even-odd; batch paths fill by winding). */
 function asWinding(p: SkPath | null): SkPath {
   if (!p) return make();
   return p.makeAsWinding() ?? p;
@@ -1625,12 +1624,17 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
         const pedalA = Math.atan2(s.p.z - c.v, s.p.x - c.u);
         b.extra.push({ key: `tp:${s.id}:${i}`, el: <Group key={`tp:${s.id}:${i}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><TimpanoTop R={dr.d / 2} pedalA={pedalA} /></Group>, foot: ellipse(c, dr.d / 2 + 30, dr.d / 2 + 30) });
       }
-      arm([LS, P(-260, -180), P(-200, -380)]);
-      arm([RS, P(260, -180), P(200, -380)]);
-      hand(P(-200, -380));
-      hand(P(200, -380));
-      put(b.stick, line(make(), P(-200, -380), P(-260, -600)));
-      put(b.stick, line(make(), P(200, -380), P(260, -600)));
+      // One mallet on each of the two middle drums, its head a hand's width in from the rim nearest
+      // the player (seating.ts TIMPANI_MALLETS; owner 2026-11-22).
+      const [tL, tR] = TIMPANI_MALLETS;
+      arm([LS, P(-250, -110), tL.hand]);
+      arm([RS, P(250, -110), tR.hand]);
+      hand(tL.hand);
+      hand(tR.hand);
+      for (const m of [tL, tR]) {
+        put(b.stick, line(make(), m.hand, m.head));
+        put(b.mat.hide, ellipse(m.head, 19, 19));
+      }
       break;
     }
     case 'percussion': {

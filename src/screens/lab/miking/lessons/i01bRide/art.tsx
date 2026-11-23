@@ -16,7 +16,9 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, stickFigureAt, SwingFan, kitShow, plateTransform } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, SwingFan, kitShow, plateTransform } from '../shared/cymbals/CymbalKitArt';
+import { StickDrummerArt, heldStickSeg, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { RIDE_BOW } from '../shared/kitScene/kitStrokes.ts';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -27,12 +29,18 @@ const C = RIDE.c;
 const CR2 = KIT.cymbals.crash2;
 const DEG = Math.PI / 180;
 
-/** The stick as drawn, per view (also the labels' occupancy). */
-function stickSeg(view: ViewId, _variant: VariantId) {
-  return view === 'side'
-    ? { from: { x: STRIKE_BOW.x - 300, y: STRIKE_BOW.y - 250 }, to: { x: STRIKE_BOW.x - 4, y: STRIKE_BOW.y - 6 } }
-    : { from: { x: STRIKE_BOW.x - 260, y: STRIKE_BOW.z - 200 }, to: { x: STRIKE_BOW.x - 4, y: STRIKE_BOW.z - 3 } };
-}
+/** The stick, held by the drummer (stick technique fix 2026-11-22, owner:
+ *  "It should look like normal stick tech. usage"; it was a stick floating
+ *  with no hand at about 50° to the plate): the tip on the bow, the real
+ *  406 mm stick about 10° to the plate, the fist and forearm coming in from
+ *  the frame's left edge (kitStrokes.RIDE_BOW). The drawn player is also the
+ *  labels' occupancy. */
+const PLAYER = RIDE_BOW;
+/** A point on the held stick (view u, v), a third of the way back from the bead. */
+const stickAt = (view: ViewId) => {
+  const h = heldStickSeg(view, PLAYER);
+  return { u: h.to.x + (h.from.x - h.to.x) * 0.33, v: h.to.y + (h.from.y - h.to.y) * 0.33 };
+};
 
 export function RideArt({ view }: { view: ViewId; variant: VariantId }) {
   if (view === 'side') {
@@ -44,17 +52,17 @@ export function RideArt({ view }: { view: ViewId; variant: VariantId }) {
           <SwingFan R={RIDE_R} rise={RIDE_RISE} />
         </Group>
         <CymbalSide spec={RIDE.spec} cx={C.x} cy={C.y} tiltDeg={RIDE.tiltDeg} />
-        <StickTo {...stickSeg('side', 'x')} />
       </Group>
     );
-    return <KitAround view="side" show={{ floor: 0.8, crash2: 0.5, tom2: 0.35, kick: 0.3 }} own={own} ownZ={C.z} />;
+    return <KitAround view="side" show={{ floor: 0.8, crash2: 0.5, tom2: 0.35, kick: 0.3 }} own={own} ownZ={C.z} player={PLAYER} />;
   }
   return (
     <Group>
+      <StickDrummerArt view="top" spec={PLAYER} part="legs" />
       <KitAround view="top" show={kitShow(['ride', 'crash1', 'crash2', 'hihat'], { floor: 0.85 })} />
       <BoomStandTop id="ride" />
       <CymbalTop spec={RIDE.spec} cx={C.x} cz={C.z} tiltDeg={RIDE.tiltDeg} areas dim={0.92} />
-      <StickTo {...stickSeg('top', 'x')} />
+      <StickDrummerArt view="top" spec={PLAYER} part="upper" />
       <KitAround view="top" show={{ hihat: 0.3, crash1: 0.3, crash2: 0.42 }} />
     </Group>
   );
@@ -70,7 +78,7 @@ export function rideLabels(view: ViewId): ArtLabel[] {
       { id: 'floor', text: 'FLOOR TOM', short: 'FLOOR', u: FLOOR.c.x + 20, v: FLOOR.c.y + 110, align: 'center', tone: 'muted' },
       { id: 'crash', text: 'CRASH', u: CR2.c.x + 60, v: CR2.c.y - 70, align: 'center', tone: 'muted' },
       { id: 'stand', text: 'BOOM STAND', short: 'STAND', u: st.foot.x + 40, v: st.joint.y + 120, align: 'left', tone: 'muted' },
-      { id: 'stick', text: 'STICK', u: STRIKE_BOW.x - 260, v: STRIKE_BOW.y - 290, align: 'center', tone: 'illustrative' },
+      { id: 'stick', text: 'STICK', u: STRIKE_BOW.x - 260, v: STRIKE_BOW.y - 290, align: 'center', tone: 'illustrative', at: stickAt('side') },
     ];
   }
   return [
@@ -106,7 +114,7 @@ export const RIDE_ART: LessonArt = {
   Instrument: RideArt,
   labels: (view) => rideLabels(view),
   hitTest: rideHitTest,
-  figureAt: stickFigureAt(stickSeg),
+  figureAt: (view, _variant, u, v, tol) => stickDrummerCovers(view, PLAYER, u, v, tol),
   plan: { own: 'ride' },
   SettingPlan: CymbalSettingPlan('ride'),
   pages: CYMBAL_PAGES,

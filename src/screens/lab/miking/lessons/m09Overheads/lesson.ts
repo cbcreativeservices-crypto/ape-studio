@@ -704,7 +704,7 @@ export const M09_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'Kit positions, heights and tilts — a typical right-handed layout, drawing defaults.', dims: [] },
-    { text: 'The drummer’s body and the sticks’ reach (head top 1.3 m, shoulder 1.15 m, reach 700 mm) — drawing defaults, not published figures.', dims: [] },
+    { text: 'The drummer’s body and the sticks’ reach (head top 1.39 m, shoulder 1.15 m, reach 700 mm) — drawing defaults, not published figures.', dims: [] },
     { text: 'The X/Y and ORTF pair height over the snare (the mono height), the spaced pair’s plan points, and the shoulder method’s kick reference point (the kick’s batter center) — drawing defaults.', dims: [] },
     { text: 'The overhead boom stand’s reach and tube sizes — ILLUSTRATIVE.', dims: [] },
     { text: 'Every keep-out clearance, including each cymbal’s swing (± 60 mm at the edge) — ILLUSTRATIVE values for the owner to approve.', dims: ['cym.hihat', 'cym.crash1', 'cym.crash2', 'cym.ride'] },

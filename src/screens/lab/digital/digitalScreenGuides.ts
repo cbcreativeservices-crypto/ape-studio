@@ -171,7 +171,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     },
     seeing: [
       'Two cycles of a sine and the level grid it must round to. Amber is the original, blue sampled, green stored, red the rounding error.',
-      'Up to 4 bits you can see every level line. Above that, there are so many that they merge into a fine band.',
+      'Full scale is fixed: LEVEL moves only the sine, BITS redraws the level lines. Levels too close to draw apart (about 8 bits and up) show as a shaded band.',
       'Readouts: BITS, LEVELS, TH. SNR (theoretical signal-to-noise ratio) and PEAK (the sine’s level).',
     ],
     control: [

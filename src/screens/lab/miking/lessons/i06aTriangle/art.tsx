@@ -33,8 +33,28 @@ const cornersOf = (v: VariantId): Corners => (v === 'mounted' ? MOUNTED : HELD);
 const fr = ([z, y]: [number, number]): [number, number] => [-z, y];
 const BEATER = TRI.beater.mm;
 const BD = TRI.beaterD.mm;
-/** The beater, held view: from the right hand (behind, below) to the base's middle. */
-const BEAT_TIP: [number, number] = [0, BASE_Y];
+/**
+ * THE BEATERS in 3D (x toward the audience, y down, z the player's right),
+ * so every view draws the same 215 mm rod (owner 2026-11-22: "It should
+ * look like normal stick tech. usage"; from above the held beater was drawn
+ * 264 mm, longer than the real one). Held: the tip on the base's middle on
+ * the player's side, the grip end in the right hand, low and to the right.
+ * Mounted: one beater on each lower side, the grip ends out and below. The
+ * hand holds the grip end (the dark end cap).
+ */
+type P3 = { x: number; y: number; z: number };
+export type Beater3 = { grip: P3; tip: P3 };
+const beaterFrom = (tip: P3, toward: P3): Beater3 => {
+  const n = Math.hypot(toward.x, toward.y, toward.z);
+  return { tip, grip: { x: tip.x + (toward.x / n) * BEATER, y: tip.y + (toward.y / n) * BEATER, z: tip.z + (toward.z / n) * BEATER } };
+};
+/** Where the mounted beater meets its lower side (z = 46 on the near side). */
+const lowSideY = (z: number) => MOUNTED.top[1] + ((MOUNTED.top[0] - Math.abs(z)) / MOUNTED.top[0]) * (MOUNTED.open[1] - MOUNTED.top[1]);
+export const HELD_BEATER: Beater3 = beaterFrom({ x: -ROD_D, y: BASE_Y, z: 8 }, { x: -222, y: 85, z: 142 });
+export const MOUNTED_BEATER: Beater3 = beaterFrom({ x: -ROD_D, y: lowSideY(46), z: 46 }, { x: -197, y: 86, z: 134 });
+const sideOf = (p: P3): [number, number] => [p.x, p.y];
+const topOf = (p: P3): [number, number] => [p.x, p.z];
+const frontOf = (p: P3): [number, number] => [-p.z, p.y];
 
 function Clip({ u, v, w = CLIP.w, h = CLIP.h }: { u: number; v: number; w?: number; h?: number }): ReactElement {
   return (
@@ -89,11 +109,11 @@ function sideArt(v: VariantId): ReactElement {
   // The far (left) fist closed ON the clip, its line hanging from it (art
   // grading fix 2026-10-16: the hand floated above the clip).
   const hand: [number, number] = [-6, CLIP_Y + CLIP.h * 0.45];
-  const strikeHand: [number, number] = [-230, BASE_Y + 70];
+  const strikeHand = sideOf(HELD_BEATER.grip);
   return (
     <Group>
       <Floor u0={-3000} u1={3000} />
-      <PlayerInk path={playerSide(held ? [hand, strikeHand] : [[-200, P0.y + 40], [-210, P0.y + 90]])} head="side" />
+      <PlayerInk path={playerSide(held ? [hand, strikeHand] : [[-200, P0.y + 40], sideOf(MOUNTED_BEATER.grip)])} head="side" />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[STAND.x, 0], [STAND.x, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
@@ -109,10 +129,10 @@ function sideArt(v: VariantId): ReactElement {
         <Group>
           <Lines u={0} v0={CLIP_Y + CLIP.h} v1={TOP_Y} />
           <Clip u={0} v={CLIP_Y} />
-          <Beater a={strikeHand} b={[-ROD_D, BASE_Y]} />
+          <Beater a={strikeHand} b={sideOf(HELD_BEATER.tip)} />
         </Group>
       ) : (
-        <Beater a={[-210, P0.y + 90]} b={[-ROD_D, (MOUNTED.open[1] + MOUNTED.top[1]) / 2 + 20]} />
+        <Beater a={sideOf(MOUNTED_BEATER.grip)} b={sideOf(MOUNTED_BEATER.tip)} />
       )}
     </Group>
   );
@@ -124,12 +144,12 @@ function topArt(v: VariantId): ReactElement {
   const z1 = SIDE / 2;
   const line = polyPath([[0, z0 + TRI.gap.mm / 2], [0, z1]]);
   const hand: [number, number] = [-40, 0];
-  const strikeHand: [number, number] = [-230, 150];
+  const strikeHand = topOf(HELD_BEATER.grip);
   const shadow = make();
   shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-14, z0 - 6, 28, z1 - z0 + 12), 14, 14));
   return (
     <Group>
-      <PlayerInk path={playerTop(held ? [hand, strikeHand] : [[-200, -90], [-200, 90]])} faint head="top" />
+      <PlayerInk path={playerTop(held ? [hand, strikeHand] : [[-200, -90], topOf(MOUNTED_BEATER.grip)])} faint head="top" />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[STAND.x, -STAND.barHalf], [STAND.x, STAND.barHalf]])} d={14} pal={STEEL} />
@@ -143,10 +163,10 @@ function topArt(v: VariantId): ReactElement {
       {held ? (
         <Group>
           <Clip u={0} v={-CLIP.w / 2} h={CLIP.w} />
-          <Beater a={strikeHand} b={[-ROD_D, 0]} />
+          <Beater a={strikeHand} b={topOf(HELD_BEATER.tip)} />
         </Group>
       ) : (
-        <Beater a={[-200, 90]} b={[-ROD_D, 20]} />
+        <Beater a={topOf(MOUNTED_BEATER.grip)} b={topOf(MOUNTED_BEATER.tip)} />
       )}
     </Group>
   );
@@ -212,7 +232,7 @@ function frontTriangle(c: Corners): { rod: ReturnType<typeof polyPath>; pts: [nu
  *  the clip and its line hang out under them; drawn opaque, receded), the right fist on the beater's grip. */
 const HELD_FRONT_POSE = metalFrontPose([
   [0, CLIP_Y - 60],
-  [-150, BASE_Y + 105],
+  frontOf(HELD_BEATER.grip),
 ]);
 
 function PlayerBehindQuiet({ pose }: { pose: ReturnType<typeof metalFrontPose> }): ReactElement {
@@ -223,12 +243,14 @@ function PlayerBehindQuiet({ pose }: { pose: ReturnType<typeof metalFrontPose> }
 
 /** The held beater's grip and its tip on the base, from the audience: from
  *  behind the triangle, low on the player's right (screen-left). */
-const HELD_GRIP: [number, number] = [-150, BASE_Y + 105];
-const HELD_TIP: [number, number] = [-8, BASE_Y + ROD_D * 0.2];
-/** The mounted beaters, from the audience: [grip, tip], one on each side. */
-const MOUNTED_BEATERS: [[number, number], [number, number]][] = [
-  [[-180, P0.y + 120], [-46, P0.y + 34]],
-  [[180, P0.y + 120], [46, P0.y + 34]],
+export const HELD_GRIP: [number, number] = frontOf(HELD_BEATER.grip);
+export const HELD_TIP: [number, number] = frontOf(HELD_BEATER.tip);
+/** The mounted beaters, from the audience: [grip, tip], one on each side
+ *  (the left one the right one mirrored). */
+const mirrorZ = (p: P3): P3 => ({ ...p, z: -p.z });
+export const MOUNTED_BEATERS: [[number, number], [number, number]][] = [
+  [frontOf(MOUNTED_BEATER.grip), frontOf(MOUNTED_BEATER.tip)],
+  [frontOf(mirrorZ(MOUNTED_BEATER.grip)), frontOf(mirrorZ(MOUNTED_BEATER.tip))],
 ];
 
 /** The chosen part on the face-on drawing, each part of each way of playing. */
@@ -281,7 +303,7 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
   return (
     <Group>
       <Floor u0={-2000} u1={2000} />
-      {held ? <PlayerBehindQuiet pose={HELD_FRONT_POSE} /> : <PlayerInk path={playerFront([[-150, P0.y + 80], [150, P0.y + 80]])} faint head="front" />}
+      {held ? <PlayerBehindQuiet pose={HELD_FRONT_POSE} /> : <PlayerInk path={playerFront([MOUNTED_BEATERS[0][0], MOUNTED_BEATERS[1][0]])} faint head="front" />}
       {held ? null : (
         <Group>
           <Rod path={polyPath([[0, 0], [0, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
@@ -354,11 +376,11 @@ function frontHit(variant: VariantId, u: number, v: number, tol: number): string
   if (held) {
     const k = fr(c.closed);
     if (Math.hypot(u - k[0], v - k[1]) <= 18 + tol * 0.6) return 'tri.corner';
-    if (segD(u, v, [-150, BASE_Y + 105], [-8, BASE_Y]) <= BD + tol) return 'tri.beater';
+    if (segD(u, v, HELD_GRIP, HELD_TIP) <= BD + tol) return 'tri.beater';
   } else {
     if (Math.abs(u) <= 16 + tol && v >= STAND.barY && v <= 0) return 'tri.stand';
     if (Math.abs(v - STAND.barY) <= 16 + tol && Math.abs(u) <= STAND.barHalf) return 'tri.stand';
-    if (segD(u, v, [-180, P0.y + 120], [-46, P0.y + 34]) <= BD + tol || segD(u, v, [180, P0.y + 120], [46, P0.y + 34]) <= BD + tol) return 'tri.beater';
+    if (MOUNTED_BEATERS.some(([a, b]) => segD(u, v, a, b) <= BD + tol)) return 'tri.beater';
   }
   const ids = held ? ['tri.base', 'tri.side', 'tri.oside'] : ['tri.sideM', 'tri.topM', 'tri.osideM'];
   let best: string | null = null;
@@ -429,7 +451,7 @@ function StrikeCanvas({ w, h, variant, shown, label }: { w: number; h: number; v
   const contacts: [number, number][] = held ? [[0, BASE_Y]] : [lowL, lowR];
   const off = shown === 1 ? 2 : 14;
   const beaters: [[number, number], [number, number]][] = held
-    ? [[[-150, BASE_Y + 105], [-8, BASE_Y + off]]]
+    ? [[HELD_GRIP, [HELD_TIP[0], HELD_TIP[1] + off]]]
     : [
         [[lowL[0] - 140, lowL[1] + 90], [lowL[0] - 8 - off / 2, lowL[1] + off / 2]],
         [[lowR[0] + 140, lowR[1] + 90], [lowR[0] + 8 + off / 2, lowR[1] + off / 2]],

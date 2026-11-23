@@ -48,13 +48,13 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
       start: 'Sound runs through these boxes left to right, like guitar pedals: each changes what the next receives. Pick SINE 220, turn on LIMIT (a loudness ceiling), tap ▶, then add DIST (distortion): GR jumps. Sound off? ▶ gives the numbers.',
     },
     seeing: [
-      'Nine units in a fixed order: EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
+      'Ten units in a fixed order: LOW CUT, EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
       'Lit units are in and show their setting; dark ones are bypassed and say what they are. Playing, a lit COMP, GATE or LIMIT shows GR (dB turned down).',
       'Readouts: SRC, CHAIN (units in), SCENE (the scenario, e.g. HOT→LIMIT; else CUSTOM), OUT (LIVE, IDLE, or SILENT).',
     ],
     control: [
       'Tap ▶ in the header to play the chain, ■ to stop. With every unit bypassed you hear the source dry. SOURCE picks CLICK 90, PINK NOISE or SINE 220.',
-      'Tap a unit’s name under MODULES to put it in the chain or bypass it, live while it plays.',
+      'Tap a unit in the rack or under MODULES to put it in or bypass it, live while it plays.',
       'SCENARIO: EQ BOOST → COMP, DELAY → REVERB, GATE THE CLICK, HOT INTO LIMITER, FULL CHAIN. Each picks its own source and most light their units. ⟲ CLEAR CHAIN bypasses every unit.',
       'Long-press MODULES, SCENARIO, the display, CHAIN, SCENE or OUT to read about it; long-press a SOURCE choice for that signal’s own note.',
       'LAB NOTES below the rack hold the lesson, three quick questions, MARK AS REVIEWED and FINISH · SEE WHAT’S LEFT; ▴ HIDE DISPLAY makes room.',

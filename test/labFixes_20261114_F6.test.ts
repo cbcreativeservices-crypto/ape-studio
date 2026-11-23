@@ -714,7 +714,9 @@ describe('Phase 3 · decision 2: no "N of total" progress counters in F6 labs', 
     assert.doesNotMatch(read('src/screens/lab/tube/TubeCardScreen.tsx'), /\/ \{TUBE_REFS\.length\}/);
   });
   it('values that are not progress stay (CHAIN units in, the warm-up STAGE, LAYERS shown)', () => {
-    assert.match(read('src/screens/lab/SignalChainLabScreen.tsx'), /\{ k: 'CHAIN', v: `\$\{chainCount\}\/9`/);
+    // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
+    // LOW CUT joined the rack as its first unit, so the rack holds ten units, not nine.
+    assert.match(read('src/screens/lab/SignalChainLabScreen.tsx'), /\{ k: 'CHAIN', v: `\$\{chainCount\}\/\$\{MODULES\.length\}`/);
     assert.match(read('src/screens/lab/tube/VacuumTubeLabScreen.tsx'), /\{ k: 'STAGE', v: `\$\{stageNum\}\/5`/);
   });
 });

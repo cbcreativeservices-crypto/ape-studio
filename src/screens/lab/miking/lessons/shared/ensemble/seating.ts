@@ -184,6 +184,19 @@ export const TIMPANI_SET = [
   { d: 23 * 25.4, a: 55 },
 ] as const;
 export const TIMPANI_ARC = 720;
+/** The timpanist's two mallets at a station, in the figure's local plan frame (u right, forward = −v),
+ *  one on each of the two middle drums. A timpani head is struck about a hand's width in from the rim
+ *  nearest the player, never at its center, so each head lands TIMPANI_STRIKE_IN mm inside that rim, on
+ *  the line from the player to the drum; each hand sits in front of the chest. Owner 2026-11-22: sticks
+ *  "should look like normal stick tech. usage" (the heads used to land 85 mm from the drum centers). */
+export const TIMPANI_STRIKE_IN = 100;
+export const TIMPANI_MALLET_MM = 360;
+export const TIMPANI_MALLETS = ([1, 2] as const).map((i) => {
+  const dr = TIMPANI_SET[i];
+  const out = TIMPANI_ARC - dr.d / 2 + TIMPANI_STRIKE_IN;
+  const a = (dr.a * Math.PI) / 180;
+  return { drum: i as number, hand: { u: Math.sign(dr.a) * 110, v: -215 }, head: { u: Math.sin(a) * out, v: -Math.cos(a) * out } };
+});
 export const TIMPANI_HEAD_H = 820;
 /** The concert bass drum at a percussion station (SeatingArt BassDrumPlan/Elev):
  *  36 × 16 in, its centre 625 mm ahead of the player and 760 mm up, its heads

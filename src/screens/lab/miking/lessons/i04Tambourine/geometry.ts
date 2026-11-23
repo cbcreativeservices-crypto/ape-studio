@@ -44,7 +44,7 @@ function parts(s: TmbState): Part[] {
   ];
   if (v === 'mounted') {
     out.push({ id: 'tmb.mount', label: 'stand clamp and stand', short: 'mount', role: 'A stand clamp holding the ring flat for stick playing. Check it is secure and listen for its own rattles.', prov: ill('a stand clamp at h 1000 (proposal)'), solid: { kind: 'capsule', a: v3(-R - 30, p.c.y + 20, 0), b: v3(-R - 30, -40, 0), r: 12 } });
-    out.push({ id: 'tmb.stick', label: 'stick', short: 'stick', role: 'A drumstick in the player’s right hand: it strikes the frame and jingles from the player’s side.', moving: true, prov: ill('a stick over the player’s half of the ring (drawing default)'), solid: { kind: 'capsule', a: s.stick!.a, b: s.stick!.b, r: 8 } });
+    out.push({ id: 'tmb.stick', label: 'stick', short: 'stick', role: 'A drumstick in the player’s right hand: it strikes the frame and jingles from the player’s side.', moving: true, prov: ill('a stick over the player’s half of the ring (drawing default)'), solid: { kind: 'capsule', a: s.stick!.butt, b: s.stick!.b, r: 8 } });
   }
   return out;
 }

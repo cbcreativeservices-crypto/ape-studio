@@ -31,3 +31,37 @@ under its head centre). +x toward the audience (away from the player); +y down (
 
 Readouts: distance to each head, the two path lengths and their difference (Δt, `SOURCES_SHARED.md`).
 UNKNOWN for the owner: plan spacing, raised-stand height, shell taper, player posture (standing).
+
+## Frame C and the set of three (2026-11-22, owner: "center conga is conga w tumba and quinto on sides"; decision "Three drums")
+
+Frame H's side view looks ALONG z (from the player's right), so with the drums spread along z one hides the
+next — the picture the owner rejected. M04a now uses FRAME C, frame H turned a quarter: origin on the floor
+under the CONGA's head centre; **+x toward the player's LEFT** (the quinto's side, the audience's right);
++y down; **+z toward the AUDIENCE**; the player at −z. The engine's 'side' view (u = x, v = y, camera at
++z) is then the FRONT elevation, from the audience: tumba on the left of the picture, conga in the middle,
+quinto on the right. The top view (u = x, v = z) has the audience at the bottom, as the stage plans do.
+A mic facing the drums from the audience side aims −z (aim home az = −90°); a level boom runs +z.
+Only M04a changes; bongos, timbales, djembe and the rest keep frame H.
+
+| Anchor | Value | Class | Source |
+|---|---|---|---|
+| quinto (11 in) head | Ø 279.4, centre (+355.0, −762.0, 0) | size + height SOURCED; side and spacing drawing default | LP-CLASSIC |
+| conga (11-3/4 in) head | Ø 298.45, centre (0, −762.0, 0) | same | LP-CLASSIC |
+| tumba (12-1/2 in) head | Ø 317.5, centre (−376.5, −762.0, 0) | same | LP-CLASSIC |
+| row | a straight row, the bellies 30 mm apart at their widest (bellies drawn ≈ 157 / 168 / 179 mm radius) | drawing default (`gap`, `belly` 0.18 × R) | — |
+| which side | quinto on the player's left, tumba on the right: "a common layout; players set their drums their own way" | drawing default (in the unknowns) | — |
+| hands envelope | one box over the player's half (z ≤ 0) of all three heads, x −545 … +505, up to 300 above | ILLUSTRATIVE | — |
+| player | standing behind the conga, x ±420, z −720 … −250, to 1650 tall | ILLUSTRATIVE | — |
+| raised stands | each drum its own three-legged stand, legs to the floor 150 lower; tumba and quinto legs at 30°, 150°, 270° (two front, one back — none in front of the tumba's opening); the conga's turned to 90°, 210°, 330° so no leg meets a neighbour's | ILLUSTRATIVE | — |
+
+| Zone | Region | Source |
+|---|---|---|
+| `cg.shared` | one mic over the set: over the conga's audience half (x 0, z +50, r 50), 50–150 above the heads, aimed down | S-DRUMS words for a pair; TRIAL for three |
+| `cg.pair` | two mics, 152.4–609.6 above the heads, between the tumba's and the quinto's centres on the audience half; drawn starts over each gap (x −188.2 and +177.5, z +80, 380 above) | RM-CONGA words; TRIAL positions |
+| `cg.<drum>` ×3 | 152.4–609.6 from that drum's head, within its radius of its centre line, aimed at it | RM-CONGA |
+| `cg.clip.<drum>` ×3 | the front rim, 50–150 above the head | DPA-JB (quinto TRIAL) |
+| `cg.bottom` | raised only: ~305 in front (+z) of the tumba's lower opening | SOS-LATIN |
+
+The live wedge sits at (0, 0, +1050) facing −z; the side fill at (+1900, 0, −250) facing −x. STUDIO OR LIVE
+is drawn from above (the front view looks straight along the mic-to-wedge line). THE SETTING's band plan
+(u toward the audience, v toward the player's right) draws the set at (u, v) = (z, −x).

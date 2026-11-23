@@ -229,10 +229,15 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     assert.ok(t.includes(`LOW HANDLE: PATTERN stays ${word(0)}`));
   });
   it('audit fixes 2026-10-31: claims the screen can actually show', () => {
-    // CAPSULE: the coil never moves on screen (only waves, current, glow).
-    assert.match(code('src/screens/lab/micspeaker/MicCutaway.tsx'), /return \{ opacity: 0\.25 \+ 0\.75 \* Math\.abs\(s\) \};/);
-    const cap = textOf(MIC.capsule);
-    assert.doesNotMatch(cap, /1,000×|mid-swing|ends of its travel/);
+    // CAPSULE — pin changed 2026-11-22. Owner on the iPhone screenshot: "needs
+    // animation showing coil moving around magnet". The coil and diaphragm now
+    // DO travel on screen (dx = X·cos φ), and the glow fades to nothing at each
+    // end of the travel (it used to floor at 0.25 while nothing moved), so the
+    // guide may now speak of the coil's travel, mid-swing and its ends. The
+    // motion itself is pinned in test/micCutawayCoilMotion_20261122.test.ts.
+    const cut = code('src/screens/lab/micspeaker/MicCutaway.tsx');
+    assert.match(cut, /return \{ opacity: Math\.abs\(s\) \};/);
+    assert.match(cut, /translateX: X \* Math\.cos\(TAU \* phase\.value\) \* k/);
     // DISTANCE: 50/50 only at exactly 12 in (whole-inch steps) → the guide asks for DIST 12 in.
     const share = (inches: number) => Math.round(((4 / inches) ** 2 / ((4 / inches) ** 2 + (4 / 12) ** 2)) * 100);
     assert.deepEqual([share(11), share(12), share(13)], [54, 50, 46]);

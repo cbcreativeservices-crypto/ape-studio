@@ -31,7 +31,7 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { MIC_TYPES, micType } from '../../../../data/micTypes';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { useWorkedMark } from '../../hand/handPages';
-import { handOf } from '../family.ts';
+import { handOf, viewKeyLabels } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 import { zoneActivityLine } from '../../../../engine/progress/zoneActivity.ts';
 
@@ -104,7 +104,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       (i) => `${i + 1} · ${worked[i].title}`,
       setExStep,
     ),
-    ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
+    ...viewToggle({ view: exView, setView: setExView, stage: 'dual', labels: viewKeyLabels(H) }),
   ];
 
   const r0 = rig.readouts('A');
@@ -133,7 +133,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
-    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
+    ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: viewKeyLabels(H) }),
     {
       kind: 'group',
       id: 'setup',

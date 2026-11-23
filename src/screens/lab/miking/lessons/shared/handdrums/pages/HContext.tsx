@@ -27,7 +27,7 @@ import { fmtAngle, fmtDb, fmtIdealPickup, isDeepNull } from '../../../../engine/
 import { PageSteps, type MikingStep } from '../../../../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../../engine/kit';
 import type { PageProps } from '../../../../pages/pageTypes';
-import { handOf } from '../family.ts';
+import { handOf, viewKeyLabels } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
 const NULL_TOL = 15;
@@ -49,7 +49,8 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const [live, setLive] = useState(true);
   const [pattern, setPattern] = useState<PatternId>('cardioid');
   const [wedgeId, setWedgeId] = useState(lesson.live.wedges[0]?.id ?? '');
-  const [view, setView] = useState<ViewId>('side');
+  // A lesson may draw this page in one view only (H.context.only).
+  const [view, setView] = useState<ViewId>(H.context.only ?? 'side');
   const [predicted, setPredicted] = useState<string | null>(null);
   const [aimed, setAimed] = useState(false);
   const [aimAxis, setAimAxis] = useState<'az' | 'el'>('el');
@@ -80,9 +81,12 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
     if (rig.mics[0].pattern !== pattern) rig.setPattern('A', pattern as MicPattern);
   }, [pattern, rig]);
 
+  // LEFT–RIGHT turns about the model's aim home (M04a's mic faces the
+  // player along −z, az = −90°; every other hand drum's home is 0).
+  const az0 = lesson.model.aimHome?.az ?? 0;
   const a = aimAxis === 'az' ? pose.az : pose.el;
-  const lo = aimAxis === 'az' ? -AZ_MAX : EL_MIN;
-  const hi = aimAxis === 'az' ? AZ_MAX : EL_MAX;
+  const lo = aimAxis === 'az' ? az0 - AZ_MAX : EL_MIN;
+  const hi = aimAxis === 'az' ? az0 + AZ_MAX : EL_MAX;
   const aimHeld = previewMemo();
   const params: DockParam[] = [
     {
@@ -109,10 +113,10 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
         // Where the mic really turned to (a stop first), not the finger.
         const h = aimHeld.at(v);
         const sw = h ? stopWordOf(rig, h.blocked) : '';
-        const x = h ? Math.round(aimAxis === 'az' ? h.pose.az : h.pose.el) : Math.round(lo + v * (hi - lo));
+        const x = (h ? Math.round(aimAxis === 'az' ? h.pose.az : h.pose.el) : Math.round(lo + v * (hi - lo))) - (aimAxis === 'az' ? az0 : 0);
         return (sw ? `${sw} · ` : '') + (aimAxis === 'el' ? `tilted ${x <= 0 ? 'down' : 'up'} ${fmtAngle(Math.abs(x))}` : x === 0 ? 'straight back across the head' : `${fmtAngle(Math.abs(x))} ${x > 0 ? 'right' : 'left'}`);
       },
-      formatShort: () => fmtAngle(a),
+      formatShort: () => fmtAngle(aimAxis === 'az' ? a - az0 : a),
       chooser: {
         title: 'TURN THE MIC',
         selectedId: aimAxis,
@@ -144,7 +148,7 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
       options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })),
     },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
-    ...viewToggle({ view: view, setView: setView, stage: 'single' }),
+    ...viewToggle({ view: view, setView: setView, stage: 'single', labels: viewKeyLabels(H), ...(H.context.only ? { both: false } : {}) }),
   ];
   const pickupCell: BezelItem = isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };
   const bezel: BezelItem[] = live

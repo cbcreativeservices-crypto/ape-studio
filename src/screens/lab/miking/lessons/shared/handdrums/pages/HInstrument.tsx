@@ -24,7 +24,7 @@ import { JourneyMap, PathChooser, QuickCheckCard } from '../../../../engine/jour
 import { journeyIntro } from '../../../../engine/journey.ts';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { livePartId } from '../../../../pages/PInstrument';
-import { handOf } from '../family.ts';
+import { handOf, viewKeyLabels, viewName } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
 /** One entry per distinct part (three stand legs are one STAND). */
@@ -76,7 +76,7 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
         (i) => parts[i].short.toUpperCase(),
         (i) => pick(parts[i].id),
       ),
-      ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
+      ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: viewKeyLabels(H) }),
       ...(multi
         ? [
             {
@@ -145,7 +145,7 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
       },
       well: (
         <>
-          <Landing looking={`${view === 'side' ? 'Side' : 'Top'} view · ${vLabel.toLowerCase() || lesson.title.toLowerCase()}`} prompt={H.partsPrompt} />
+          <Landing looking={`${viewName(H, view)} view · ${vLabel.toLowerCase() || lesson.title.toLowerCase()}`} prompt={H.partsPrompt} />
           {shown ? (
             <Card>
               <Point title={shown.label.toUpperCase()}>{shown.role}</Point>

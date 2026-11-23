@@ -31,6 +31,7 @@ import { TimpanoSection } from '../shared/concert/TimpaniArt';
 import { bowlDepth } from '../shared/concert/timpanoSpec.ts';
 import { Mallet } from '../shared/concert/Mallets';
 import { HEAD_Y, R29 } from './model.ts';
+import { TIMP_MALLETS } from './malletPose.ts';
 
 const R = R29;
 /** The (1,1) shape with the STRUCK side (−x) down: the profile negated. */
@@ -38,7 +39,11 @@ const SEESAW: number[] = PROFILE_11.map((v) => -v);
 export const HEAD_AMP = 46;
 export const SOUND_BOX = { u0: -760, u1: 620, v0: HEAD_Y - 470, v1: 30 };
 const STRIKE_X = -(R * 2) / 3;
-const MALLET = { grip: { x: -640, y: HEAD_Y - 260 }, head: { x: STRIKE_X - 6, y: HEAD_Y - 22 } };
+/** The lesson's stroke mallet (malletPose.ts, as the side view draws it),
+ *  moved so its ball lands on this page's strike point: the same length and
+ *  angle as on every other page (owner 2026-11-22, "normal stick tech."). */
+const STROKE = TIMP_MALLETS[0];
+export const MALLET = { grip: { x: STRIKE_X - 6 + STROKE.butt.x - STROKE.ball.x, y: HEAD_Y - 22 + STROKE.butt.y - STROKE.ball.y }, head: { x: STRIKE_X - 6, y: HEAD_Y - 22 } };
 
 let built: null | Record<'strike' | 'air' | 'up' | 'out' | 'pump', SkPath> = null;
 function overlay() {

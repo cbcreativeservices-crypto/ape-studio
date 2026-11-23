@@ -16,7 +16,7 @@
  * separate CLEAR readout, measured from the motion envelope.
  */
 import type { Dim, DocumentedZone, Vec3, VariantId } from '../../engine/model/types.ts';
-import { add, armTo, drawingDefault, IN, ill, mul, src, targetZone, v3, type Arm } from '../shared/smallperc/geom.ts';
+import { add, armTo, drawingDefault, IN, ill, mul, src, targetZone, unit, v3, type Arm } from '../shared/smallperc/geom.ts';
 
 export const TMB_DIMS = {
   d: { mm: 10 * IN, prov: src('MEINL-MTA1', 'Diameter: 10″') } as Dim,
@@ -42,7 +42,11 @@ export const JOUT = 12;
 export type Pose = { c: Vec3; n: Vec3; e1: Vec3 };
 const k = Math.SQRT1_2;
 export type TmbId = 'shaken' | 'struck' | 'crescent' | 'mounted';
-export type TmbState = { id: TmbId; pose: Pose; crescent: boolean; grip: Vec3; arm: Arm; off?: Arm; stick?: { a: Vec3; b: Vec3 } };
+/** The mounted ring's stick: `a` the hand's grip on it, `b` the tip, `butt` its far end. */
+export type TmbState = { id: TmbId; pose: Pose; crescent: boolean; grip: Vec3; arm: Arm; off?: Arm; stick?: { a: Vec3; b: Vec3; butt: Vec3 } };
+export const STICK_LEN = 406;
+export const STICK_BUTT = 110;
+const STICK_DEG = (22 * Math.PI) / 180;
 
 const HELD: Pose = { c: v3(0, -TMB_DIMS.holdH.mm, 0), n: v3(k, -k, 0), e1: v3(k, k, 0) };
 const MOUNT: Pose = { c: v3(0, -TMB_DIMS.mountH.mm, 0), n: v3(0, -1, 0), e1: v3(1, 0, 0) };
@@ -66,10 +70,15 @@ export const STATES: Readonly<Record<TmbId, TmbState>> = {
   struck: held('struck', false),
   crescent: held('crescent', true),
   mounted: (() => {
-    // The stick in the right hand, over the ring's player-side half.
+    // The stick in the right hand, over the ring's player-side half, held
+    // like a drum stick (owner 2026-11-22, "normal stick tech. usage": the
+    // hand was at the very butt and the stick came down at 39°): a 406 mm
+    // stick, the hand 110 mm up from the butt, the stick 22° to the head.
     const tip = v3(-40, MOUNT.c.y - 6, 30);
-    const hand = v3(-300, MOUNT.c.y - 230, 120);
-    return { id: 'mounted' as const, pose: MOUNT, crescent: false, grip: hand, arm: armTo('R', v3(hand.x - 70, hand.y + 30, hand.z + 30), hand), stick: { a: hand, b: tip } };
+    const u = unit(v3(-260 * Math.cos(STICK_DEG), -Math.hypot(260, 90) * Math.sin(STICK_DEG), 90 * Math.cos(STICK_DEG)));
+    const hand = add(tip, mul(u, STICK_LEN - STICK_BUTT));
+    const butt = add(tip, mul(u, STICK_LEN));
+    return { id: 'mounted' as const, pose: MOUNT, crescent: false, grip: hand, arm: armTo('R', v3(hand.x - 70, hand.y + 30, hand.z + 30), hand), stick: { a: hand, b: tip, butt } };
   })(),
 };
 export const stateOf = (v: VariantId): TmbState => STATES[(['struck', 'crescent', 'mounted'].includes(v) ? v : 'shaken') as TmbId];

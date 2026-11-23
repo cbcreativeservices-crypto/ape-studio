@@ -19,10 +19,11 @@ import { HiHatSide, HiHatTop } from '../shared/cymbals/CymbalArt';
 import { HIHAT_HARDWARE as HH } from '../shared/cymbals/cymbalSpec.ts';
 import { AirRing, KitAround, kitShow } from '../shared/cymbals/CymbalKitArt';
 import { StickDrummerArt, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { HIHAT_LESSON } from '../shared/kitScene/kitStrokes.ts';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
-import { GAP, HAT, HAT_R, HAT_RISE, STRIKE } from './model.ts';
+import { GAP, HAT, HAT_R, HAT_RISE } from './model.ts';
 
 const C = HAT.c;
 const gapOf = (v: VariantId) => (v === 'open' ? GAP.open : GAP.closed);
@@ -30,8 +31,11 @@ const SNARE = KIT_DRUMS.snare;
 const CR1 = KIT.cymbals.crash1;
 
 /** The stick's bead on the hats' near edge, held by the drummer
- *  (kitScene/stickPlayer: the drawn player, also the labels' occupancy). */
-const TIP = { x: STRIKE.x - 4, y: STRIKE.y - 6, z: STRIKE.z + 3 };
+ *  (kitScene/stickPlayer: the drawn player, also the labels' occupancy): the
+ *  right hand crossed over the left (a right-handed kit), the tip on the top
+ *  cymbal at a low angle, the left stick on the snare — one 3-D pose for both
+ *  views (stick technique fix 2026-11-22, kitStrokes.HIHAT_LESSON). */
+const TIP = HIHAT_LESSON;
 
 export function HiHatArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const open = variant === 'open';
@@ -53,10 +57,10 @@ export function HiHatArt({ view, variant }: { view: ViewId; variant: VariantId }
   );
   return (
     <Group>
-      <StickDrummerArt view="top" tip={TIP} part="legs" />
+      <StickDrummerArt view="top" spec={TIP} part="legs" />
       <KitAround view="top" show={kitShow(['hihat', 'crash1', 'crash2', 'ride'], { snare: 0.75 })} />
       {own}
-      <StickDrummerArt view="top" tip={TIP} part="upper" />
+      <StickDrummerArt view="top" spec={TIP} part="upper" />
       <KitAround view="top" show={{ crash1: 0.45, crash2: 0.3, ride: 0.3 }} />
     </Group>
   );

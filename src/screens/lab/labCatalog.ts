@@ -258,7 +258,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // Audio Analysis is free, and its ten display modules with it; Signal
       // Detective stays members-only (MeterModule is gated by module id).
       { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', tileBlurb: 'What each meter and display shows about a signal.' },
-      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true, tileBlurb: 'Why the order of the processors in a chain matters.' },
+      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → Low Cut → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. The order is built into this rack’s audio engine; most engineers would gate before the compressor, so compression never raises the noise floor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true, tileBlurb: 'Why the order of the processors in a chain matters.' },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
       // Placed after the signal-flow labs, before Gain Staging (owner ruling).

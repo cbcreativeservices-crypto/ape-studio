@@ -19,7 +19,14 @@ const beaterLen = D.beaterLen.mm;
 const headR = D.beaterHeadR.mm;
 /** The beater head CENTRE at the strike: its face touches the batter head at
  *  the strike point (0, STRIKE_Y, 0). */
-const strikeAngle = -60 * DEG; // the shaft's angle at the strike, from +x toward +y (illustrative)
+// The shaft's angle at the strike, from +x toward +y (illustrative). Owner
+// 2026-11-22 ("It should look like normal stick tech. usage"): a pedal's
+// beater meets the head with its shaft nearly parallel to it — that is why
+// the felt face lands flat — so the shaft stands 8° off the head plane at
+// the strike (it leaned 30°, the axle 15 cm behind the head). With the
+// 210 mm shaft the axle keeps its height (17 cm under the strike) and sits
+// 6 cm behind the head, above the footboard's toe.
+const strikeAngle = -82 * DEG;
 const beaterAtStrike: Vec3 = { x: -headR, y: STRIKE_Y, z: 0 };
 const axle: Vec3 = { x: beaterAtStrike.x - beaterLen * Math.cos(strikeAngle), y: beaterAtStrike.y - beaterLen * Math.sin(strikeAngle), z: 0 };
 const restAngle = strikeAngle - D.beaterSwingDeg.mm * DEG;
@@ -56,7 +63,8 @@ export const KICK_GEOM = {
     top: { x: D.spurX.mm, y: R * 0.35, z: side * (R + 4) },
     foot: { x: D.spurX.mm - 70, y: D.yFloor.mm, z: side * (R + 130) },
   })),
-  pedal: { x0: axle.x - 230, x1: axle.x + 40, top: D.yFloor.mm - 55 },
+  /** The pedal from the heel plate to the toe under the axle: about 36 cm, a real pedal's length. */
+  pedal: { x0: axle.x - 320, x1: axle.x + 30, top: D.yFloor.mm - 55 },
 };
 
 /* ── PARTS (ids stable: progress and taps key on them) ── */

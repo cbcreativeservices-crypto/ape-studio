@@ -38,12 +38,16 @@ export type ClvState = {
 
 function state(id: 'solid' | 'hollow'): ClvState {
   const rest = v3(P0.x, P0.y + CR, P0.z);
-  // The striker comes down from above and behind, its edge on the middle.
-  const hand = v3(-150, P0.y - 140, 70);
+  // The striker comes down from above and behind, its end on the middle of
+  // the supported clave (owner 2026-11-22, "normal stick tech. usage": it
+  // stopped 65 mm short of the clave it strikes). Held 45 mm from its back
+  // end; its far end's axis one radius above the contact, so its edge lands
+  // on the contact point.
   const contact = v3(P0.x + 6, P0.y - 2, 0);
-  const dir = unit(v3(contact.x - hand.x, contact.y - hand.y, contact.z - hand.z));
-  const a = add(hand, mul(dir, -45));
-  const b = add(a, mul(dir, CL));
+  const dir = unit(v3(contact.x + 150, contact.y - (P0.y - 140), contact.z - 70));
+  const b = v3(contact.x, contact.y - CR, contact.z);
+  const a = add(b, mul(dir, -CL));
+  const hand = add(a, mul(dir, 45));
   return {
     id,
     rest,

@@ -73,7 +73,6 @@ const KEEP: { file: string; word: string; why: string }[] = [
   { file: 'screens/lab/miking/lessons/c10Harp/model.ts', word: 'centre', why: 'radial line id' },
   { file: 'screens/lab/miking/lessons/m04cTimbales/model.ts', word: 'centre', why: 'radial line id' },
   { file: 'screens/lab/miking/lessons/m04cTimbales/geometry.ts', word: 'centre', why: 'zone id / ray origin id' },
-  { file: 'screens/lab/miking/lessons/m04aCongas/geometry.ts', word: 'centre', why: 'ray origin id' },
   { file: 'screens/lab/miking/lessons/m04bBongos/geometry.ts', word: 'centre', why: 'ray origin id' },
   { file: 'screens/lab/miking/lessons/m05Djembe/geometry.ts', word: 'centre', why: 'ray origin id' },
   { file: 'screens/lab/miking/lessons/a03Horn/model.ts', word: 'centre', why: 'reference-surface id' },

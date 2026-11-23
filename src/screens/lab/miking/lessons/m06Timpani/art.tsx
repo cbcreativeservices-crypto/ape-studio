@@ -17,32 +17,30 @@ import { TIMPANO_DRAW } from '../shared/concert/timpanoSpec.ts';
 import { Mallet } from '../shared/concert/Mallets';
 import { FLOOR, make, rect, seg } from '../shared/concert/paths.ts';
 import { drumOf, HEAD_Y, R26, R29, TIMPANI, type Timpano } from './model.ts';
+import { PLAYER_SHIFT, PLAYER_Z, TIMP_MALLETS, type MalletPose3 } from './malletPose.ts';
 import { metalSidePose, metalTopPose } from '../shared/metal/metalFigure.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 
-/** The mallets as drawn (illustrative: one about to strike, one raised). */
+/** The mallets as drawn, butt (`grip`) to ball (`head`): [0] at the stroke,
+ *  [1] raised. */
 export const MALLETS = {
-  side: [
-    { grip: { x: -640, y: -1000 }, head: { x: -240, y: -782 } },
-    { grip: { x: -680, y: -1090 }, head: { x: -420, y: -1160 } },
-  ],
-  top: [
-    { grip: { x: -720, y: -250 }, head: { x: -245, y: -380 } },
-    { grip: { x: -720, y: 240 }, head: { x: -300, y: 330 } },
-  ],
-} as const;
+  side: TIMP_MALLETS.map((m) => ({ grip: { x: m.butt.x, y: m.butt.y }, head: { x: m.ball.x, y: m.ball.y } })),
+  top: TIMP_MALLETS.map((m) => ({ grip: { x: m.butt.x, y: m.butt.z }, head: { x: m.ball.x, y: m.ball.z } })),
+};
 
 /** THE TIMPANIST (art grading fix 2026-10-16: the mallets hung in mid-air
- *  with only a "← PLAYER" arrow): the house figure standing behind the pair,
- *  inside the model's player keep-out (env.player, x −1080 … −R29 − 230), a
- *  fist closed on each mallet — the right (near) hand on the one about to
- *  strike, the left on the raised one. The metal family's standing poses
- *  stand at u ≈ −362; they are moved by PLAYER_SHIFT. Drawn receded. */
-const PLAYER_SHIFT = -488;
-const mv = (p: { x: number; y: number }) => [p.x - PLAYER_SHIFT, p.y] as const;
-const SIDE_POSE = metalSidePose([mv(MALLETS.side[1].grip), mv(MALLETS.side[0].grip)]);
-const TOP_POSE = metalTopPose([mv(MALLETS.top[0].grip), mv(MALLETS.top[1].grip)]).pose;
+ *  with only a "← PLAYER" arrow): the house figure standing behind the 29 in
+ *  drum, inside the model's player keep-out (env.player), a fist closed on
+ *  each mallet's grip — the left (far) hand on the one at the stroke, the
+ *  right (near) on the raised one. The metal family's standing poses stand
+ *  at u ≈ −362, z = 0; they are moved by PLAYER_SHIFT (and PLAYER_Z from
+ *  above). Drawn receded. */
+const mvS = (p: MalletPose3['hand']) => [p.x - PLAYER_SHIFT, p.y] as const;
+const mvT = (p: MalletPose3['hand']) => [p.x - PLAYER_SHIFT, p.z - PLAYER_Z] as const;
+export const SIDE_POSE = metalSidePose([mvS(TIMP_MALLETS[0].hand), mvS(TIMP_MALLETS[1].hand)]);
+export const TOP_POSE = metalTopPose([mvT(TIMP_MALLETS[0].hand), mvT(TIMP_MALLETS[1].hand)]).pose;
 const SHIFT = [{ translateX: PLAYER_SHIFT }];
+const SHIFT_TOP = [{ translateX: PLAYER_SHIFT }, { translateY: PLAYER_Z }];
 
 const shown = (variant: VariantId): Timpano[] => TIMPANI.filter((t) => variant === 'four' || !t.four);
 
@@ -54,7 +52,7 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
   if (view === 'top') {
     return (
       <Group>
-        <Group transform={SHIFT}>
+        <Group transform={SHIFT_TOP}>
           <PlayerBehind pose={TOP_POSE} dim={0.6} />
         </Group>
         {drums.map((t) => (
@@ -65,7 +63,7 @@ export function TimpaniArt({ view, variant }: { view: ViewId; variant: VariantId
         {MALLETS.top.map((m, i) => (
           <Mallet key={i} kind="timpani" grip={m.grip} head={m.head} />
         ))}
-        <Group transform={SHIFT}>
+        <Group transform={SHIFT_TOP}>
           <PlayerInFront pose={TOP_POSE} dim={0.6} />
         </Group>
       </Group>
@@ -102,7 +100,7 @@ export function timpaniLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const four = variant === 'four';
   if (view === 'top') {
     const out: ArtLabel[] = shown(variant).map((t) => ({ id: `d${t.inch}`, text: `${t.inch} IN`, u: t.c.x + t.d.mm / 2 + 70, v: t.c.z, align: 'left' as const, at: { u: t.c.x + t.d.mm * 0.3, v: t.c.z } }));
-    out.push({ id: 'player', text: 'TIMPANIST', u: -900, v: four ? -560 : -480, align: 'center', tone: 'muted', at: { u: -362 + PLAYER_SHIFT, v: -14 } });
+    out.push({ id: 'player', text: 'TIMPANIST', u: -900, v: four ? -560 : -480, align: 'center', tone: 'muted', at: { u: -362 + PLAYER_SHIFT, v: PLAYER_Z - 14 } });
     out.push({ id: 'cond', text: 'CONDUCTOR →', short: 'CONDUCTOR', u: 930, v: four ? 1420 : 820, align: 'right', tone: 'muted' });
     // its leader to the 29 in drum's pedal (it ended in empty glass: clash sweep 2026-10-10)
     out.push({ id: 'pedals', text: 'PEDALS', u: -R29 - 140, v: four ? -760 : -650, align: 'center', tone: 'illustrative', at: { u: -R29 - 140, v: drumOf('t29').c.z } });

@@ -42,7 +42,7 @@ export const KICK_DIMS = {
    *  the lab draws 1.5 in above (mid-range) — TRIAL choice. Above = −y. */
   strikeY: { mm: -1.5 * IN, prov: trial('DW-9000', 'DW allows the center or 1–2 in above it; the lab draws 1.5 in above') } as Dim,
   beaterHeadR: placeholder(30, 'beater head diameter'),
-  beaterLen: placeholder(240, 'beater shaft length and pedal axle position'),
+  beaterLen: placeholder(210, 'beater shaft length and pedal axle position'),
   beaterSwingDeg: placeholder(50, 'beater swing arc'),
   /** A standard kick pillow (owner 2026-10-04: "use a standard kick pillow"):
    *  the DW 18 in pillow (DW: "Fits 18″ depth kick drums"; no dimensions on

@@ -435,9 +435,12 @@ describe('6. every dynamics param the engine reads is written by the chain (D41 
   // bands 1–5 are written OFF, and an off band's freq / q / gain are never read
   for (const b of [1, 2, 3, 4, 5]) for (const f of ['freq', 'q', 'gain']) INERT[`eq:eqBand${b}.${f}`] = /const int t = bands_\[i\]\.type\.load\(std::memory_order_relaxed\);\s*if \(t == Off\) continue;/;
 
-  it('the chain enables all nine nodes (FULL CHAIN), so every node is covered', () => {
+  it('the chain enables all nine engine nodes (FULL CHAIN), so every node is covered', () => {
     const full = s.match(/key: 'full',[^\n]*enable: \[([^\]]+)\]/)?.[1] ?? '';
-    assert.deepEqual(full.split(',').map((x) => x.trim()), ['FX.eq', 'FX.comp', 'FX.gate', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
+    // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
+    // LOW CUT joined the rack as its first unit, so the rack holds ten units, not nine.
+    // LOW_CUT is a rack unit carried by the EQ node (its band 5), so the engine nodes are still these nine.
+    assert.deepEqual(full.split(',').map((x) => x.trim()), ['LOW_CUT', 'FX.eq', 'FX.comp', 'FX.gate', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
   });
   it('every param any lab or screen writes is written by the chain too (or is inert in the chain’s settings)', () => {
     const chain = chainWrites();

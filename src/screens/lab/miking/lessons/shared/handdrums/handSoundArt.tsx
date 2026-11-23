@@ -37,6 +37,7 @@ import type { HandDrum } from './handDrumModel.ts';
 import { armPath, FIGURE_SKIN, FigureMass } from '../players/PlayerFigure';
 import { pt as ppt } from '../players/playerPose.ts';
 import { Hand } from '../smallperc/Hand';
+import { StrikeArm } from '../kitScene/stickPlayer';
 import { dorsalFlat, openHand, placePt, sideNails, smoothPathD, tubeOutline, wristFor, type HandGeo, type Placement, type Pt } from '../smallperc/hands.ts';
 import type { StrokeSpec } from './family.ts';
 
@@ -311,13 +312,13 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
   const line = useDerivedValue(() => headLine(d.c.x, d.R, d.headY, amp.value));
   const fill = useDerivedValue(() => headFill(d.c.x, d.R, d.headY, amp.value));
   // The tool rests on the head at the strike (a pose, not a motion: ① shows the approach).
-  const toolY = d.headY - 4;
   const sidePl = useMemo(() => (spec.tool === 'hand' ? sidePlacement(g.sx, d.headY) : null), [spec.tool, g.sx, d.headY]);
   const sideShadow = useMemo(() => (sidePl ? handShadow(SIDE_HAND, sidePl) : null), [sidePl]);
   const sideArm = useMemo(() => (sidePl ? armOf(sidePl, 'side') : null), [sidePl]);
   const skin = spec.head === 'rawhide' ? RAWHIDE : spec.head === 'goat' ? GOAT : FILM;
   const labels: StaticLabel[] = [];
-  if (shown >= 1) labels.push({ id: 's1', text: words.s1, short: '①', u: g.sx - 80, v: d.headY - 250, align: 'right', tone: 'amber' });
+  // A stick's arm comes in from the left (StrikeArm): its ① sits right of the strike.
+  if (shown >= 1) labels.push(spec.tool === 'stick' ? { id: 's1', text: words.s1, short: '①', u: g.sx + 40, v: d.headY - 170, align: 'left', tone: 'amber' } : { id: 's1', text: words.s1, short: '①', u: g.sx - 80, v: d.headY - 250, align: 'right', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: words.s2, short: '② HEAD IN', u: d.c.x + d.R + 30, v: d.headY + 12, align: 'left', tone: 'blue' });
   if (shown >= 3) labels.push({ id: 's3', text: words.s3, short: '③ AIR', u: d.c.x + g.rMid + 30, v: g.midY, align: 'left', tone: 'blue' });
   if (shown >= 4) {
@@ -382,11 +383,12 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
                 <Hand geo={SIDE_HAND} pl={sidePl} forearm={sideArm!.forearm} />
               </Group>
             ) : (
-              <Group>
-                <Path path={stickPath(g.sx, toolY)} style="stroke" strokeWidth={15} strokeCap="round" color="#3a2512" />
-                <Path path={stickPath(g.sx, toolY)} style="stroke" strokeWidth={11} strokeCap="round" color="#c9925a" />
-                <Path path={stickPath(g.sx, toolY)} style="stroke" strokeWidth={3} strokeCap="round" color="#ffe2ae" opacity={0.6} />
-              </Group>
+              // The timbale stick (stick technique fix 2026-11-22, owner: "It should
+              // look like normal stick tech. usage"; it was a bare 436 mm stick at
+              // 48° with no hand): the kit's drum close-up stroke — a crop of the
+              // player, the arm entering from the frame's left edge — holding a
+              // straight 406 mm dowel (no bead, no taper) about 11° to the head.
+              <StrikeArm tip={TIMBALE_TIP(g.sx, d.headY)} kind="drum" dowel />
             )}
             <Circle cx={g.sx} cy={d.headY} r={16} style="stroke" strokeWidth={5} color={AMBER} />
           </Group>
@@ -413,12 +415,8 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
   );
 }
 
-function stickPath(x: number, y: number): SkPath {
-  const p = Skia.Path.Make();
-  p.moveTo(x - 300, y - 330);
-  p.lineTo(x - 6, y - 8);
-  return p;
-}
+/** Where the timbale stick's tip lands (the drawing's mm): on the head at the strike. */
+export const TIMBALE_TIP = (sx: number, headY: number) => ({ x: sx - 2, y: headY - 6 });
 
 /* ── where the hand or stick lands, and the shapes it drives ── */
 

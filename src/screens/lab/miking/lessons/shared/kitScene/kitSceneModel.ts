@@ -17,8 +17,9 @@
  *
  * THE DRUMMER (overheads/GEOMETRY_PROPOSAL.md §4, ILLUSTRATIVE drawing
  * defaults): a capsule from the throne seat (h 500) to the head top
- * (h 1300), radius 250, and the sticks' reach — a sphere of radius 700 about
- * the right shoulder (h 1150). Both are keep-outs (envelopes).
+ * (h 1390, DRUMMER_HEAD_TOP_H), radius 250, and the sticks' reach — a sphere
+ * of radius 700 about the right shoulder (h 1150). Both are keep-outs
+ * (envelopes).
  */
 import type { Dim, Envelope, InstrumentModel, Part, Provenance, RadiatingRegion, RefLine, ReferenceSurface, Variant, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
@@ -43,9 +44,18 @@ export const KICK_FRONT: Vec3 = { x: KICK_GEOM.L, y: 0, z: 0 };
 /** The kit centre in plan: the midpoint of O and S0 (a drawing default; the
  *  mono overhead's plan point and the room's C_k). */
 export const KIT_CENTRE = { x: (O.x + S0.x) / 2, z: (O.z + S0.z) / 2 };
+/**
+ * The seated drummer's head top (mm above the floor). An adult sitting up on
+ * a 500 mm throne: seat + 890 (stick technique fix 2026-11-22, owner: "It
+ * should look like normal stick tech. usage"). At the proposal's 1300 the
+ * drawn shoulders sat only 34 cm over the snare's head, so no natural stroke
+ * reached it (the sticks came down at 46–56°). kitPlanModel's
+ * KIT.drummer.headTopH carries the same 1390.
+ */
+export const DRUMMER_HEAD_TOP_H = 1390;
 /** The drummer (drawing defaults, overheads proposal §1). */
 export const DRUMMER = {
-  headTop: { x: -720, y: yAt(KIT.drummer.headTopH), z: -110 } as Vec3,
+  headTop: { x: -720, y: yAt(DRUMMER_HEAD_TOP_H), z: -110 } as Vec3,
   shoulderR: { x: KIT.drummer.rightShoulder.x, y: yAt(KIT.drummer.rightShoulder.h), z: KIT.drummer.rightShoulder.z } as Vec3,
   seatH: KIT.throne.seatH,
   bodyR: 250,
@@ -161,7 +171,7 @@ export function kitEnvelopes(): Envelope[] {
   const seat = { x: KIT.throne.c.u, y: yAt(DRUMMER.seatH + DRUMMER.bodyR), z: KIT.throne.c.v };
   const head = { x: DRUMMER.headTop.x, y: DRUMMER.headTop.y + DRUMMER.bodyR, z: DRUMMER.headTop.z };
   return [
-    { id: 'env.drummer', label: 'the drummer', shape: { kind: 'capsule', a: seat, b: head, r: DRUMMER.bodyR }, prov: ill('a seated body from the throne (h 500) to the head top (h 1300), radius 250 — drawing defaults, not a published figure') },
+    { id: 'env.drummer', label: 'the drummer', shape: { kind: 'capsule', a: seat, b: head, r: DRUMMER.bodyR }, prov: ill('a seated body from the throne (h 500) to the head top (h 1390), radius 250 — drawing defaults, not a published figure') },
     { id: 'env.sticks', label: 'the sticks’ reach', shape: { kind: 'capsule', a: DRUMMER.shoulderR, b: DRUMMER.shoulderR, r: DRUMMER.reach }, prov: ill('a 700 mm reach about the right shoulder (h 1150) — a drawing default for the sticks and arms') },
     { id: 'env.hihatAir', label: 'the hi-hat’s air burst', shape: hihatAirRing(KIT_PLACED_CYMBALS.hihat), prov: { kind: 'sourced', src: 'DPA-HH', quote: 'there’s a lot of air pressure moving out from the sides' } },
   ];

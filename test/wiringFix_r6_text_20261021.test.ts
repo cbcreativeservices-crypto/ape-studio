@@ -139,8 +139,10 @@ describe('S3 Meter / Signal Chain / FX / Modular — guided-lesson and catalog t
   });
   it('SC-01: Comp → Gate is this rack’s fixed order', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
-    assert.match(cat, /blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate/);
-    assert.match(LAB_LESSONS.chain!.whatItIs, /nine units sit in this rack’s fixed order: SRC, then EQ, COMP, GATE/);
+    // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
+    // LOW CUT joined the rack as its first unit, so the order now starts Generator → Low Cut → EQ and counts ten units.
+    assert.match(cat, /blurb: 'This rack’s fixed order: Generator → Low Cut → EQ → Comp → Gate/);
+    assert.match(LAB_LESSONS.chain!.whatItIs, /ten units sit in this rack’s fixed order: SRC, then LOW CUT, EQ, COMP, GATE/);
   });
   it('FX-01: the Equalizer blurb matches the one-band lab', () => {
     const cat = read('src/screens/lab/labCatalog.ts');

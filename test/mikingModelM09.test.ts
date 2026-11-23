@@ -123,7 +123,10 @@ describe('M09 — the stereo pairs', () => {
     assert.ok(o > 50 && o <= 170, `ORTF hi-hat difference ${o}`);
     assert.ok(Math.abs(pathDiff(pairOf('xy'), hat)) < 6);
   });
-  it('the mono overhead is 1 ft above a 1300 mm head', () => {
-    near(heightOf(MONO), 1300 + 12 * IN, 1e-9);
+  // Owner 2026-11-22 (drum sticks "should look like normal stick tech. usage"): the drawn drummer was
+  // raised to an adult's sitting height (head top 1390, was 1300) so a natural stroke reaches the snare;
+  // "1 ft above the drummer's head" follows the head.
+  it('the mono overhead is 1 ft above the drummer\u2019s 1390 mm head', () => {
+    near(heightOf(MONO), 1390 + 12 * IN, 1e-9);
   });
 });

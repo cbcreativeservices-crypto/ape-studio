@@ -41,7 +41,59 @@ export const CSN_ANCHORS = {
   'csn.strainer': { x: -(R + 16), y: D * 0.5, z: 0 },
 } as const satisfies Record<string, Vec3>;
 
-const legEnd = (deg: number): Vec3 => ({ x: Math.cos(deg * DEG) * STAND.legR, y: FLOOR_Y, z: Math.sin(deg * DEG) * STAND.legR });
+/**
+ * THE STICKS, posed in 3D so the side and top views are two views of the
+ * same two sticks (owner 2026-11-22, on the steep stick of the parts page,
+ * "drumstickhasunrealisticangle": "It should look like normal stick tech.
+ * usage"). Matched grip on a concert snare, the player standing on the −x
+ * side: each hand holds its 406 mm (16 in) stick about a third of the way up
+ * from the butt (125 mm of butt behind the hand, 281 mm to the bead). From
+ * above the two sticks make a 64° V pointing at the playing spot, the beads
+ * side by side 36 mm apart. The LEFT stick (−z) is at the stroke: its bead on
+ * the head a little toward the player from the centre, the stick 12° to the
+ * head, the hand about 6 cm above the head. The RIGHT stick (+z) is raised
+ * the way a wrist raises it: the same hand position as its stroke (the mirror
+ * of the left), the stick turned about the hand until the tip is 30° up.
+ * Drawing defaults (no source gives a pose).
+ */
+export const CSN_STICK = {
+  len: 406,
+  /** Butt behind the hand (mm). */
+  butt: 125,
+  /** Stroke angle to the head, and the raised stick's tip angle (°). */
+  strokeDeg: 12,
+  raisedDeg: 30,
+  /** Each stick's angle out from the −x axis, from above (the V is twice it). */
+  planDeg: 32,
+  /** Where the striking bead lands, and half the gap between the beads. */
+  bead: { x: -50, y: -5, z: 18 },
+} as const;
+
+export type StickPose3 = { butt: Vec3; hand: Vec3; bead: Vec3 };
+
+/** One stick, for the hand on side `zs` (−1 left, +1 right), its tip `deg`
+ *  above the horizontal (−strokeDeg is the stroke: the bead on the head).
+ *  The hand is where the STROKE puts it, so a raised stick turns about it. */
+export function csnStick(zs: -1 | 1, deg: number): StickPose3 {
+  const S = CSN_STICK;
+  const az = S.planDeg * DEG;
+  const e0 = S.strokeDeg * DEG;
+  const front = S.len - S.butt;
+  const bead0 = { x: S.bead.x, y: S.bead.y, z: zs * S.bead.z };
+  // From the hand toward the bead at the stroke: forward (+x), down (+y), in.
+  const hand: Vec3 = { x: bead0.x - front * Math.cos(e0) * Math.cos(az), y: bead0.y - front * Math.sin(e0), z: bead0.z + zs * front * Math.cos(e0) * Math.sin(az) };
+  // From the hand toward the tip, the tip `deg` above the horizontal (+y is down).
+  const e = deg * DEG;
+  const t = { x: Math.cos(e) * Math.cos(az), y: -Math.sin(e), z: -zs * Math.cos(e) * Math.sin(az) };
+  const bead: Vec3 = { x: hand.x + front * t.x, y: hand.y + front * t.y, z: hand.z + front * t.z };
+  const butt: Vec3 = { x: hand.x - S.butt * t.x, y: hand.y - S.butt * t.y, z: hand.z - S.butt * t.z };
+  return { butt, hand, bead };
+}
+
+/** As drawn: [0] the left stick at the stroke, [1] the right stick raised. */
+export const CSN_STICKS: readonly StickPose3[] = [csnStick(-1, -CSN_STICK.strokeDeg), csnStick(1, CSN_STICK.raisedDeg)];
+
+const legEnd = (deg: number): Vec3 =>({ x: Math.cos(deg * DEG) * STAND.legR, y: FLOOR_Y, z: Math.sin(deg * DEG) * STAND.legR });
 const armEnd = (deg: number): Vec3 => ({ x: Math.cos(deg * DEG) * HOOP.rOut, y: STAND.basketY, z: Math.sin(deg * DEG) * HOOP.rOut });
 
 const parts: Part[] = [
@@ -108,11 +160,23 @@ export const CSN_MODEL: InstrumentModel = {
       prov: CSN_DIMS.stickH.prov,
       clearance: 15,
     },
+    // The standing player, matched to the sticks' natural pose (owner
+    // 2026-11-22, "normal stick tech. usage"): the hands about 28 cm behind
+    // the beads (CSN_STICKS), the forearms running back about a forearm's
+    // length to the elbows at the player's sides, the body about 39 cm behind
+    // the near rim. (It stood 14 cm behind the rim, full height, when the
+    // sticks came down steeply from above the rim.)
     {
       id: 'env.player',
       label: 'the player',
-      shape: { kind: 'box', min: { x: -900, y: FLOOR_Y - 1750, z: -320 }, max: { x: -R - 140, y: FLOOR_Y, z: 320 } },
+      shape: { kind: 'box', min: { x: -900, y: FLOOR_Y - 1750, z: -320 }, max: { x: -570, y: FLOOR_Y, z: 320 } },
       prov: ill('a standing player behind the drum; no source gives a position'),
+    },
+    {
+      id: 'env.forearms',
+      label: 'the player’s forearms and hands',
+      shape: { kind: 'box', min: { x: -570, y: -230, z: -320 }, max: { x: -250, y: 30, z: 320 } },
+      prov: ill('from the hands on the sticks back to the elbows at the player’s sides; no source gives a position'),
     },
   ],
   variants: [

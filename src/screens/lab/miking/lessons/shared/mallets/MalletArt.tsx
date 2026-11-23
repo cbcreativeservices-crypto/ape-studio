@@ -73,6 +73,51 @@ const F_THRU = { x: 100, y: 10 } as const; // where the shaft leaves the fist: b
 const fLineY = (x: number) => F_THRU.y + (F_THRU.x - x) * Math.tan(-F_PHI);
 const F_GRIP = { x: 70, y: fLineY(70) } as const; // the grip point: the shaft under the thumb, mid-fist
 type FPt = { u: number; v: number };
+
+/* ── the mallets in 3D (owner 2026-11-22, "It should look like normal stick
+ * tech. usage") ──
+ * Both views draw the SAME two mallets: each comes from the player's side
+ * over the bars at a low angle and strikes a NATURAL bar at its centre (well
+ * clear of the cord's still points). The right hand (−x, the high end) is at
+ * the stroke, MALLET_STROKE_DEG to the bars; the left hand's mallet is
+ * raised, turned up about its hand from the same kind of stroke until its
+ * head is MALLET_RAISED_DEG above it. The hands about shoulder width apart
+ * (±MALLET_HAND_X). A mallet is drawn from just behind the fist (the butt
+ * F_GRIP.x − 2 behind the grip point) to its head, never longer than the real
+ * mallet (MALLET_REAL: the whole mallet, head included). It was a raised
+ * mallet whose head sat level with its hand (a 20 mm stub on the marimba)
+ * and, from above, mallets up to 646 mm long. Drawing defaults. */
+export const MALLET_REAL: Readonly<Record<MalletInst, number>> = { vibe: 380, marimba: 380, xylo: 340, glock: 260 };
+export const MALLET_STROKE_DEG = 22;
+export const MALLET_RAISED_DEG = 35;
+export const MALLET_HAND_X = 190;
+/** The drawn butt behind the grip point (fistPaths draws it from x = 2). */
+export const MALLET_BUTT = F_GRIP.x - 2;
+export const malletHeadR = (inst: MalletInst) => (inst === 'glock' || inst === 'xylo' ? 14 : 19);
+type P3 = { x: number; y: number; z: number };
+export type MalletPose = { hand: P3; head: P3; strike: P3; len: number; bar: Bar };
+/** [0] the right hand at the stroke, [1] the left hand raised. `len`: grip to head centre. */
+export function malletPoses(L: Layout): [MalletPose, MalletPose] {
+  const r = malletHeadR(L.row.inst);
+  const len = MALLET_REAL[L.row.inst] - MALLET_BUTT - r;
+  const nearest = (x: number) => L.naturals.reduce((a, b) => (Math.abs(b.x - x) < Math.abs(a.x - x) ? b : a));
+  const one = (bar: Bar, handX: number, raised: number | null): MalletPose => {
+    const strike = { x: bar.x, y: bar.yTop - r, z: bar.z };
+    const e = (MALLET_STROKE_DEG * Math.PI) / 180;
+    const plan = len * Math.cos(e);
+    const dx = handX - strike.x;
+    const hand = { x: handX, y: strike.y - len * Math.sin(e), z: strike.z - Math.sqrt(Math.max(0, plan * plan - dx * dx)) };
+    let head = strike;
+    if (raised != null) {
+      const ux = (strike.x - hand.x) / plan;
+      const uz = (strike.z - hand.z) / plan;
+      const er = (raised * Math.PI) / 180;
+      head = { x: hand.x + ux * len * Math.cos(er), y: hand.y - len * Math.sin(er), z: hand.z + uz * len * Math.cos(er) };
+    }
+    return { hand, head, strike, len, bar };
+  };
+  return [one(nearest(-MALLET_HAND_X + 40), -MALLET_HAND_X, null), one(nearest(MALLET_HAND_X - 40), MALLET_HAND_X, MALLET_RAISED_DEG)];
+}
 export type MalletFist = { body: SkPath; thumb: SkPath; nail: SkPath; lines: SkPath; butt: SkPath; front: SkPath; wrist: FPt; dir: number };
 
 function fistPaths(wrist: FPt, dir: number, m: number, head: FPt): MalletFist {
@@ -436,23 +481,24 @@ function buildSide(G: MalletGeom, v: VariantId): SideBuilt {
   const yHead = yF - 1620;
   const body = make();
   rrect(body, -230, yHead + 120, 230, L.yNat + 40, 90);
+  // The two mallets (malletPoses: the same 3D pose the plan draws), seen
+  // from the audience: the stroke's comes down toward us onto its bar, the
+  // raised one stands up out of its fist.
+  const [mA, mB] = malletPoses(L);
   const arms = make();
   arms.moveTo(-200, yHead + 170);
-  arms.quadTo(-300, L.yNat - 330, -240, L.yNat - 230);
+  arms.quadTo(-300, mA.hand.y - 100, mA.hand.x, mA.hand.y);
   arms.moveTo(200, yHead + 170);
-  arms.quadTo(320, L.yNat - 360, 260, L.yNat - 300);
-  const midA = L.naturals[Math.floor(L.naturals.length * 0.62)];
-  const midB = L.accidentals[Math.floor(L.accidentals.length * 0.35)];
-  const headR = row.inst === 'glock' || row.inst === 'xylo' ? 14 : 19;
+  arms.quadTo(320, mB.hand.y - 100, mB.hand.x, mB.hand.y);
   const shaftsM = make();
-  const hA = { x: midA.x, y: midA.yTop - headR };
-  const hB = { x: midB.x, y: L.yNat - Math.min(row.malletH.mm - 40, 300) };
-  seg(shaftsM, -240, L.yNat - 230, hA.x, hA.y);
-  seg(shaftsM, 260, L.yNat - 300, hB.x, hB.y);
+  const hA = { x: mA.head.x, y: mA.head.y };
+  const hB = { x: mB.head.x, y: mB.head.y };
+  seg(shaftsM, mA.hand.x, mA.hand.y, hA.x, hA.y);
+  seg(shaftsM, mB.hand.x, mB.hand.y, hB.x, hB.y);
   // Each fist closed ON its mallet (owner 2026-10-15): the arm's own wrist,
   // the hand turned so the shaft runs through the fist to its head; the back
   // of the hand out and up (the audience sees the fists from the front).
-  const frontPose = metalFrontPose([[-240, L.yNat - 230 - yF], [260, L.yNat - 300 - yF]]);
+  const frontPose = metalFrontPose([[mA.hand.x, mA.hand.y - yF], [mB.hand.x, mB.hand.y - yF]]);
   const frontFists = [
     fistAtWrist({ u: frontPose.handR.wrist.u, v: frontPose.handR.wrist.v + yF }, { u: hA.x, v: hA.y }, { u: -1, v: -0.6 }),
     fistAtWrist({ u: frontPose.handL.wrist.u, v: frontPose.handL.wrist.v + yF }, { u: hB.x, v: hB.y }, { u: 1, v: -0.6 }),
@@ -651,18 +697,17 @@ function buildTop(G: MalletGeom, v: VariantId): TopBuilt {
   // The player from above, at the top, arms reaching in to two bars.
   const zP = L.zPlayer;
   const shoulders = oval(make(), 0, zP, 240, 125);
-  const midA = L.naturals[Math.floor(L.naturals.length * 0.62)];
-  const midB = L.accidentals[Math.floor(L.accidentals.length * 0.35)];
-  const handA = { x: -170, z: zP + 260 };
-  const handB = { x: 190, z: zP + 250 };
+  const [mA, mB] = malletPoses(L);
+  const handA = { x: mA.hand.x, z: mA.hand.z };
+  const handB = { x: mB.hand.x, z: mB.hand.z };
   const arms = make();
   arms.moveTo(-190, zP + 30);
   arms.quadTo(-230, zP + 170, handA.x, handA.z);
   arms.moveTo(190, zP + 30);
   arms.quadTo(240, zP + 160, handB.x, handB.z);
   const shafts = make();
-  const hA = { x: midA.x, z: midA.z };
-  const hB = { x: midB.x, z: midB.z - midB.L * 0.15 };
+  const hA = { x: mA.head.x, z: mA.head.z };
+  const hB = { x: mB.head.x, z: mB.head.z };
   seg(shafts, handA.x, handA.z, hA.x, hA.z);
   seg(shafts, handB.x, handB.z, hB.x, hB.z);
   // Each fist closed ON its mallet at the hand's grip point (owner
@@ -746,7 +791,7 @@ function MalletHead({ x, y, r, look }: { x: number; y: number; r: number; look: 
 }
 
 function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst }) {
-  const headR = inst === 'glock' || inst === 'xylo' ? 14 : 19;
+  const headR = malletHeadR(inst);
   const yTubes0 = b.barTop;
   const yTubes1 = b.yFloor;
   return (
@@ -921,7 +966,7 @@ function BarsPlan({ f, look, front }: { f: BarsTop; look: Look; front: boolean }
 }
 
 function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
-  const headR = inst === 'glock' || inst === 'xylo' ? 14 : 19;
+  const headR = malletHeadR(inst);
   return (
     <Group>
       {b.table ? (
@@ -1082,18 +1127,23 @@ export function malletDrawnAt(fam: MalletFamily) {
     const L = G.layouts[vv];
     const zP = L.zPlayer;
     if (((u / (240 + tol)) ** 2) + (((v - zP) / (125 + tol)) ** 2) <= 1) return true;
-    // the arms (≈ 70 mm across), shoulder → elbow bend → hand
+    // the arms (≈ 70 mm across), shoulder → elbow bend → hand, and the
+    // mallets, hand → head (malletPoses, as buildTop draws them)
+    const [mA, mB] = malletPoses(L);
     for (const [a, b, c] of [
-      [[-190, zP + 30], [-224, zP + 150], [-170, zP + 260]],
-      [[190, zP + 30], [232, zP + 140], [190, zP + 250]],
+      [[-190, zP + 30], [-224, zP + 150], [mA.hand.x, mA.hand.z]],
+      [[190, zP + 30], [232, zP + 140], [mB.hand.x, mB.hand.z]],
     ] as const) {
       if (segDist(u, v, a[0], a[1], b[0], b[1]) <= 38 + tol || segDist(u, v, b[0], b[1], c[0], c[1]) <= 38 + tol) return true;
     }
-    // the mallets, hand → head
-    const midA = L.naturals[Math.floor(L.naturals.length * 0.62)];
-    const midB = L.accidentals[Math.floor(L.accidentals.length * 0.35)];
-    if (segDist(u, v, -170, zP + 260, midA.x, midA.z) <= 8 + tol) return true;
-    if (segDist(u, v, 190, zP + 250, midB.x, midB.z - midB.L * 0.15) <= 8 + tol) return true;
+    const butt = (m: MalletPose) => {
+      const L2 = Math.hypot(m.head.x - m.hand.x, m.head.z - m.hand.z) || 1;
+      return { x: m.hand.x - ((m.head.x - m.hand.x) / L2) * MALLET_BUTT, z: m.hand.z - ((m.head.z - m.hand.z) / L2) * MALLET_BUTT };
+    };
+    for (const m of [mA, mB]) {
+      const b = butt(m);
+      if (segDist(u, v, b.x, b.z, m.head.x, m.head.z) <= 8 + tol) return true;
+    }
     return false;
   };
 }

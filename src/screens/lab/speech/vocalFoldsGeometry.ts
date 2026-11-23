@@ -334,7 +334,13 @@ export function airChevron(k: number, cycles: number, ab: number): { d: string; 
 export function traceD(cycles: number, ab: number): string {
   'worklet';
   const T = VF_TRACE;
-  const shift = Math.floor(cycles * 10);
+  // The noise belongs to a sample of SIGNAL time, like the pulse: it scrolls
+  // at the pulse's speed ((samples − 1) / cycles samples per cycle), so a
+  // drawn stretch keeps its shape while voiced ↔ unvoiced cross-fades (owner
+  // 2026-11-22: "Once a wave form has happend, it should not become some other
+  // waveform later in time"). It used to step 10 samples per cycle against the
+  // pulse's 26.5, so mid-fade the mix of the two changed shape.
+  const shift = Math.floor((cycles * (T.samples - 1)) / T.cycles);
   let d = '';
   for (let i = 0; i < T.samples; i++) {
     const t = i / (T.samples - 1);

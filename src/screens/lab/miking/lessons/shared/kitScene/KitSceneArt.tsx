@@ -21,14 +21,16 @@ import type { ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
-import { KIT, KIT_CYMBALS, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanModel.ts';
+import { KIT, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanModel.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
-import { pt, type PlayerPose } from '../players/playerPose.ts';
+import type { PlayerPose } from '../players/playerPose.ts';
 import { DrumExterior, DrumPlan, FloorTomLegsSide, SnareStandSide, sideTransform, topTransform } from '../drums/DrumArt';
 import { frameOf, pointOn } from '../drums/drumSpec.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatSide, HiHatTop, SwingEnvelope } from '../cymbals/CymbalArt';
 import { KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 import { DRUMMER, S0, TOM_POST } from './kitSceneModel.ts';
+import { drummerPose, viewDrummer, type Stick2 } from './stickPose.ts';
+import { KIT_GROOVE } from './kitStrokes.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const INK = '#08080a';
@@ -290,101 +292,29 @@ let holderTop: SkPath | null = null;
  */
 /** `sticks` the right hand's (over the hi-hat), `farSticks` the left hand's
  *  (on the snare): drawn in separate layers so each fist closes OVER its own
- *  stick (clash sweep 2026-10-10: a stick lay across the far hand's fingers). */
+ *  stick (clash sweep 2026-10-10: a stick lay across the far hand's fingers).
+ *  Stick technique fix 2026-11-22 (owner: "It should look like normal stick
+ *  tech. usage"): the pose is the shared 3-D drummer (stickPose.ts) playing
+ *  the kit groove (kitStrokes.KIT_GROOVE) — the right hand crossed over the
+ *  left onto the hats, the left on the snare at a low angle — so the side and
+ *  the top views of a stick agree; each stick is the 406 mm stick from its
+ *  butt (under the heel of the hand) to its bead. */
 type DrummerDrawn = { pose: PlayerPose; sticks: SkPath; farSticks: SkPath };
 const drummerCache = new Map<ViewId, DrummerDrawn>();
 function drummerOf(view: ViewId): DrummerDrawn {
   const hit = drummerCache.get(view);
   if (hit) return hit;
-  const t = KIT.throne;
-  const head = { x: DRUMMER.headTop.x, y: DRUMMER.headTop.y + 112, z: DRUMMER.headTop.z };
-  const hh = KIT_CYMBALS.hihat;
-  const hhR = hh.d / 2;
-  // A typical right-handed, cross-handed player: the right hand over the
-  // hi-hat, the left on the snare. Stick tips (world): the hi-hat's near
-  // edge, the snare's head a little past centre.
-  const tipHH = { x: hh.c.x + 50, y: hh.c.y - 14, z: hh.c.z + hhR - 30 };
-  const tipSn = { x: S0.x + 40, y: S0.y - 8, z: S0.z + 10 };
-  const sticks = make();
-  const farSticks = make();
-  let pose: PlayerPose;
-  if (view === 'side') {
-    const seatY = yAt(t.seatH);
-    const hip = pt(t.c.u + 10, seatY - 90);
-    const kneeR = pt(hip.u + 420, yAt(520));
-    // The right wrist a little back and up from the hi-hat, so the stick
-    // shows between the fist and the cymbal (it hid behind the hand).
-    const wristR = pt(head.x + 176, yAt(995));
-    const wristL = pt(head.x + 184, yAt(840));
-    const dirR = Math.atan2(tipHH.y - wristR.v, tipHH.x - wristR.u);
-    const dirL = Math.atan2(tipSn.y - wristL.v, tipSn.x - wristL.u);
-    pose = {
-      view: 'side',
-      posture: 'seated',
-      facing: 1,
-      head: { c: pt(head.x, head.y), r: 110 },
-      neck: pt(head.x - 18, head.y + 158),
-      shoulderR: pt(head.x - 12, head.y + 212),
-      shoulderL: pt(head.x - 26, head.y + 202),
-      elbowR: pt(head.x + 30, head.y + 440),
-      elbowL: pt(head.x + 20, head.y + 470),
-      handR: { wrist: wristR, dir: dirR, kind: 'grip' },
-      handL: { wrist: wristL, dir: dirL, kind: 'grip' },
-      hipR: hip,
-      hipL: pt(hip.u - 10, hip.v - 4),
-      kneeR,
-      kneeL: pt(kneeR.u - 40, kneeR.v - 8),
-      footR: pt(KIT.kick.pedal.u0 + 40, KIT_FLOOR_Y),
-      footL: pt(KIT.hihatPedal.u0 + 100, KIT_FLOOR_Y),
-      floor: KIT_FLOOR_Y,
-    };
-    // The sticks: from inside each fist (its butt hidden in the hand and
-    // under the forearm) to its tip.
-    seg(sticks, wristR.u + Math.cos(dirR) * 20, wristR.v + Math.sin(dirR) * 20, tipHH.x, tipHH.y);
-    seg(farSticks, wristL.u + Math.cos(dirL) * 20, wristL.v + Math.sin(dirL) * 20, tipSn.x, tipSn.y);
-  } else {
-    // From above, authored chest toward +v round the neck, turned to face +x
-    // (`facing` 0): (right, fwd) lands at world (neck + fwd, neck + right),
-    // the drummer's right toward +z.
-    const n = pt(head.x - 16, t.c.v);
-    const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
-    /** A world direction (dx, dz) as a direction in the authored frame. */
-    const dirOf = (dx: number, dz: number) => Math.atan2(dx, -dz);
-    const wR = { x: n.u + 230, z: n.v - 140 };
-    const wL = { x: n.u + 200, z: n.v - 220 };
-    const dirR = dirOf(tipHH.x - wR.x, tipHH.z - wR.z);
-    const dirL = dirOf(tipSn.x - wL.x, tipSn.z - wL.z);
-    pose = {
-      view: 'above',
-      posture: 'seated',
-      facing: 0,
-      head: { c: L(0, -20), r: 110 },
-      neck: n,
-      shoulderR: L(200, 0),
-      shoulderL: L(-200, 0),
-      elbowR: L(70, 150),
-      elbowL: L(-235, 30),
-      handR: { wrist: L(wR.z - n.v, wR.x - n.u), dir: dirR, kind: 'grip' },
-      handL: { wrist: L(wL.z - n.v, wL.x - n.u), dir: dirL, kind: 'grip' },
-      hipR: L(106, -40),
-      hipL: L(-106, -40),
-      kneeR: L(190, 400),
-      kneeL: L(-190, 400),
-      footR: L(170, 470),
-      footL: L(-190, 470),
-      floor: null,
-    };
-    for (const [w, tip, path] of [
-      [wR, tipHH, sticks],
-      [wL, tipSn, farSticks],
-    ] as const) {
-      const a = Math.atan2(tip.z - w.z, tip.x - w.x);
-      seg(path, w.x + Math.cos(a) * 20, w.z + Math.sin(a) * 20, tip.x, tip.z);
-    }
-  }
-  const d = { pose, sticks, farSticks };
-  drummerCache.set(view, d);
-  return d;
+  const d = viewDrummer(drummerPose(KIT_GROOVE), view === 'side' ? 'side' : 'top');
+  const line = (s: Stick2) => seg(make(), s.butt.x, s.butt.y, s.to.x, s.to.y);
+  const out = { pose: d.pose, sticks: line(d.stick), farSticks: line(d.farStick) };
+  drummerCache.set(view, out);
+  return out;
+}
+
+/** The kit scene's drawn sticks (u, v of the view; the labels' tests). */
+export function kitSceneSticks(view: ViewId): Stick2[] {
+  const d = viewDrummer(drummerPose(KIT_GROOVE), view === 'side' ? 'side' : 'top');
+  return [d.stick, d.farStick];
 }
 
 /** The drummer's sticks: hickory, a pale tip. */
@@ -663,7 +593,12 @@ export function kitLabels(view: ViewId, opts: { drummer?: boolean } = {}): ArtLa
     { id: 'crash2', text: '18 IN CRASH', short: 'CRASH', u: c.crash2.c.x + 80, v: c.crash2.c.z + R('crash2') + 50, align: 'center' },
     { id: 'crash1', text: '16 IN CRASH', short: 'CRASH', u: c.crash1.c.x + 80, v: c.crash1.c.z - R('crash1') - 30, align: 'center' },
     { id: 'hihat', text: 'HI-HATS', short: 'HATS', u: c.hihat.c.x - 30, v: c.hihat.c.z - R('hihat') - 34, align: 'center' },
-    { id: 'snare', text: 'SNARE', u: S0.x - 30, v: S0.z + 30, align: 'center' },
+    // The name right of the snare, its leader to the head's far-left quarter:
+    // clear of both sticks from every place the layout may move it to (stick
+    // technique fix 2026-11-22: the left stick now lies across the head's
+    // near half and the right crosses over to the hats; the old place sat on
+    // a stick).
+    { id: 'snare', text: 'SNARE', u: S0.x + 110, v: S0.z + 230, align: 'center', at: { u: S0.x + 90, v: S0.z - 110 }, alts: [{ u: S0.x - 30, v: S0.z + 330, align: 'left' }, { u: S0.x - 30, v: S0.z + 430, align: 'left' }] },
     { id: 'kick', text: 'KICK', u: KICK_GEOM.L + 40, v: 0, align: 'left' },
   ];
   if (opts.drummer !== false) out.push({ id: 'drummer', text: 'DRUMMER', u: KIT.throne.c.u, v: KIT.throne.c.v + 30, align: 'center', tone: 'illustrative' });

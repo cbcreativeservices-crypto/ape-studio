@@ -66,7 +66,7 @@ export const KIT = {
   throne: { c: { u: -770, v: -110 }, r: 175, seatH: 500 },
   hihatPedal: { u0: -760, u1: -500, v: -590, halfW: 45 },
   /** Drawing defaults for the drummer (the overheads lesson's envelope). */
-  drummer: { headTopH: 1300, rightShoulder: { x: -700, h: 1150, z: 90 } },
+  drummer: { headTopH: 1390, rightShoulder: { x: -700, h: 1150, z: 90 } },
   /** The player's space: the throne, the legs and both pedals. */
   playerSpace: [
     { u: -1000, v: -420 },

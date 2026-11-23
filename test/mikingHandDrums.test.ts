@@ -35,7 +35,7 @@ import { LESSONS } from '../src/screens/lab/miking/data/registry.ts';
 import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
 import { HAND_DRUM_CONTENT } from '../src/screens/lab/miking/lessons/shared/handdrums/content.ts';
 import type { HandLesson } from '../src/screens/lab/miking/lessons/shared/handdrums/family.ts';
-import { CONGA, TUMBA, CONGA_ZONES } from '../src/screens/lab/miking/lessons/m04aCongas/model.ts';
+import { CONGA, QUINTO, TUMBA, CONGA_ZONES } from '../src/screens/lab/miking/lessons/m04aCongas/model.ts';
 import { MACHO, HEMBRA } from '../src/screens/lab/miking/lessons/m04bBongos/model.ts';
 import { SMALL, LARGE } from '../src/screens/lab/miking/lessons/m04cTimbales/model.ts';
 import { DJEMBE, DIAG_N, COP_DIST, HEAD_Y as DJ_HEAD } from '../src/screens/lab/miking/lessons/m05Djembe/model.ts';
@@ -151,13 +151,17 @@ describe('each lesson validates and its zones are reachable', () => {
 
 describe('the parts match the sources', () => {
   const IN = 25.4;
-  it('congas: an 11¾ in conga and a 12½ in tumba, 30 in tall, single-headed and open at the bottom', () => {
+  // A set of three (owner 2026-11-22, "center conga is conga w tumba and
+  // quinto on sides"; decision "Three drums"): it was a pair of two.
+  it('congas: an 11 in quinto, an 11¾ in conga and a 12½ in tumba, 30 in tall, single-headed and open at the bottom', () => {
+    assert.equal(QUINTO.R * 2, 11 * IN);
     assert.equal(CONGA.R * 2, 11.75 * IN);
     assert.equal(TUMBA.R * 2, 12.5 * IN);
     assert.equal(-CONGA.headY, 30 * IN);
+    assert.equal(-QUINTO.headY, 30 * IN);
     const m = L('M04a').model;
-    assert.equal(m.parts.filter((p) => /\.head$/.test(p.id)).length, 2, 'one head per drum');
-    assert.equal(m.parts.filter((p) => /\.shell$/.test(p.id)).length, 2);
+    assert.equal(m.parts.filter((p) => /\.head$/.test(p.id)).length, 3, 'one head per drum');
+    assert.equal(m.parts.filter((p) => /\.shell$/.test(p.id)).length, 3);
     // Open at the bottom: on the floor a mic cannot be under a drum; raised it can be in front of the opening.
     assert.equal(CONGA_ZONES.find((z) => z.id === 'cg.bottom')!.requires!.variant, 'raised');
   });
@@ -218,9 +222,12 @@ describe('the engine extensions (frustum, outline, mounts)', () => {
     const segs = assembly(scene, CONGA_ZONES[0].start, micBodyOf(MIC_TYPES.hdDynCard));
     const boom = segs.find((s) => s.piece === 'boom')!;
     assert.ok(Math.abs(boom.a.y - boom.b.y) < 1e-9, 'horizontal');
-    assert.ok(boom.b.x > boom.a.x + 200, 'toward the audience, away from the drums');
+    // The congas' frame turned a quarter for the set of three (owner
+    // 2026-11-22, "center conga is conga w tumba and quinto on sides";
+    // decision "Three drums"): the audience is +z there, so the boom runs +z.
+    assert.ok(boom.b.z > boom.a.z + 200, 'toward the audience, away from the drums');
     const stand = segs.find((s) => s.piece === 'stand')!;
-    assert.ok(stand.a.x > TUMBA.R + 100, 'the stand stands clear of the drums');
+    assert.ok(stand.a.z > CONGA.R + 100, 'the stand stands clear of the drums');
   });
   it('a clip-on mic reaches only as far as its 140 mm gooseneck from a rim', () => {
     const lesson = L('M04a');
@@ -228,7 +235,8 @@ describe('the engine extensions (frustum, outline, mounts)', () => {
     const body = micBodyOf(MIC_TYPES.hdClip);
     const ok = lesson.zones.find((z) => z.id === 'cg.clip.tumba')!.start;
     assert.equal(checkAssembly(scene, ok, body), null);
-    const far = { ...ok, p: { ...ok.p, x: ok.p.x + 300, y: ok.p.y - 200 } };
+    // Out toward the audience (+z in the congas' frame, 2026-11-22: "Three drums").
+    const far = { ...ok, p: { ...ok.p, z: ok.p.z + 300, y: ok.p.y - 200 } };
     assert.equal(body.reach, 140, 'the gooseneck is the clamp’s reach');
     assert.equal(checkAssembly(scene, far, body)?.partId, 'clamp');
   });

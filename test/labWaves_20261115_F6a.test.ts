@@ -344,7 +344,10 @@ describe('SC-03 · Signal Chain: each dark unit says what it is in plain words',
   const R = read('src/screens/lab/chainRack.tsx');
   it('every unit carries plain words; DIST and LIMIT use the card’s words', () => {
     const mods = S.slice(S.indexOf('const MODULES: ChainUnit[] = ['), S.indexOf('];', S.indexOf('const MODULES: ChainUnit[] = [')));
-    assert.equal((mods.match(/plain: '/g) ?? []).length, 9);
+    // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
+    // LOW CUT joined the rack as its first unit, so the rack holds ten units, not nine.
+    assert.equal((mods.match(/plain: '/g) ?? []).length, 10);
+    assert.match(mods, /label: 'LOW CUT', plain: 'removes rumble'/);
     assert.match(mods, /label: 'DIST', plain: 'distortion'/);
     assert.match(mods, /label: 'LIMIT', plain: 'loudness ceiling'/);
     for (const [, w] of mods.matchAll(/plain: '([^']+)'/g)) assert.ok(w.length <= 16, w);

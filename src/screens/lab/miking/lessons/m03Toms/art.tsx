@@ -23,7 +23,8 @@ import { BoomStandSide, CymbalPlan, CymbalSide, DrumExterior, DrumPlan, DrumSect
 import { makeUprightSound } from '../shared/drums/UprightSound';
 import { FLOOR_16x16, KICK_22x18, TOM_12x8 } from '../shared/drums/drumSpec.ts';
 import { KIT, KIT_CYMBALS, PLAN_HARDWARE } from '../shared/kitPlanModel.ts';
-import { LessonDrummer, lessonDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { LessonDrummer, heldStickSeg, lessonDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { FLOOR_TOM, RACK_TOM } from '../shared/kitScene/kitStrokes.ts';
 import { F2, FF, FLOOR, TOM1, TOM2 } from './model.ts';
 import { FLOOR_LEGS, MOUNT } from './geometry.ts';
 
@@ -68,13 +69,22 @@ function FloorLine({ u0, u1 }: { u0: number; u1: number }) {
   );
 }
 
-/** The stick's bead on the tom's batter, a little toward the player, held by
- *  the drummer (kitScene/stickPlayer; art grading fix 2026-10-16: the stick
- *  floated with no hand). This lesson draws in the kit frame. */
+/** The stick's bead on the tom's batter, held by the drummer
+ *  (kitScene/stickPlayer; art grading fix 2026-10-16: the stick floated with
+ *  no hand). Stick technique fix 2026-11-22 (owner: "It should look like
+ *  normal stick tech. usage"): the real 406 mm stick at a relaxed stroke — on
+ *  the 12 in tom between its centre and the player's edge (where the arm
+ *  reaches it, ≈ 14° to the tilted head), on the floor tom near its centre
+ *  (≈ 13°); the left stick lifted off the snare between strokes
+ *  (kitStrokes.RACK_TOM / FLOOR_TOM). The old bead at the rack tom's centre
+ *  was out of reach, so that stick was drawn 41 cm long. This lesson draws in
+ *  the kit frame. */
 const ORIGIN = { x: 0, y: 0, z: 0 };
-const tipOf = (variant: VariantId) => {
-  const c = isRack(variant) ? TOM2.c : FLOOR.c;
-  return { x: c.x - 6, y: c.y - 9, z: c.z };
+const playerOf = (variant: VariantId) => (isRack(variant) ? RACK_TOM : FLOOR_TOM);
+/** A point on the held stick (side view), a third of the way back from the bead. */
+const stickAt = (variant: VariantId) => {
+  const h = heldStickSeg('side', playerOf(variant));
+  return { u: h.to.x + (h.from.x - h.to.x) * 0.33, v: h.to.y + (h.from.y - h.to.y) * 0.33 };
 };
 
 export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId }) {
@@ -82,7 +92,7 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
     if (view === 'side') {
       return (
         <Group>
-          <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="phantom" />
+          <LessonDrummer view="side" spec={playerOf(variant)} origin={ORIGIN} layer="phantom" />
           {/* the far crash's own stand (it hung in the air: clash sweep
               2026-10-10), behind everything */}
           <BoomStandSide foot={PLAN_HARDWARE.booms.crash1.u} top={C1.c.y + 140} cym={{ x: C1.c.x, y: C1.c.y }} floorY={FLOOR_Y} dim={0.25} />
@@ -97,13 +107,13 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
           <Group transform={sideTransform(TOM2)}>
             <DrumSection spec={TOM_12x8} />
           </Group>
-          <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="hand" />
+          <LessonDrummer view="side" spec={playerOf(variant)} origin={ORIGIN} layer="hand" />
         </Group>
       );
     }
     return (
       <Group>
-        <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="legs" />
+        <LessonDrummer view="top" spec={playerOf(variant)} origin={ORIGIN} layer="legs" />
         <KickFromAbove spec={KICK_22x18} u0={0} z={0} dim={0.55} />
         <Group transform={topTransform(TOM1)}>
           <DrumPlan drum={TOM1} />
@@ -111,7 +121,7 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
         <Group transform={topTransform(TOM2)}>
           <DrumPlan drum={TOM2} />
         </Group>
-        <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="upper" />
+        <LessonDrummer view="top" spec={playerOf(variant)} origin={ORIGIN} layer="upper" />
         <CymbalPlan cx={C1.c.x} cz={C1.c.z} d={C1.d} tiltDeg={C1.tiltDeg} dim={0.42} />
         <CymbalPlan cx={C2.c.x} cz={C2.c.z} d={C2.d} tiltDeg={C2.tiltDeg} dim={0.42} />
       </Group>
@@ -122,24 +132,24 @@ export function TomsArt({ view, variant }: { view: ViewId; variant: VariantId })
     return (
       <Group>
         <FloorLine u0={-2000} u1={2000} />
-        <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="phantom" />
+        <LessonDrummer view="side" spec={playerOf(variant)} origin={ORIGIN} layer="phantom" />
         <BoomStandSide foot={PLAN_HARDWARE.booms.ride.u} top={RIDE.c.y + 140} cym={{ x: RIDE.c.x, y: RIDE.c.y }} floorY={FLOOR_Y} dim={0.35} />
         <CymbalSide cx={RIDE.c.x} cy={RIDE.c.y} d={RIDE.d} tiltDeg={RIDE.tiltDeg} dim={0.8} />
         <Group transform={sideTransform(FLOOR)}>
           <FloorTomLegsSide spec={FLOOR_16x16} floorS={FLOOR_Y - FLOOR.c.y} />
           <DrumSection spec={FLOOR_16x16} reso={!open} />
         </Group>
-        <LessonDrummer view="side" tipK={tipOf(variant)} origin={ORIGIN} layer="hand" />
+        <LessonDrummer view="side" spec={playerOf(variant)} origin={ORIGIN} layer="hand" />
       </Group>
     );
   }
   return (
     <Group>
-      <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="legs" />
+      <LessonDrummer view="top" spec={playerOf(variant)} origin={ORIGIN} layer="legs" />
       <Group transform={topTransform(FLOOR)}>
         <DrumPlan drum={FLOOR} />
       </Group>
-      <LessonDrummer view="top" tipK={tipOf(variant)} origin={ORIGIN} layer="upper" />
+      <LessonDrummer view="top" spec={playerOf(variant)} origin={ORIGIN} layer="upper" />
       <CymbalPlan cx={RIDE.c.x} cz={RIDE.c.z} d={RIDE.d} tiltDeg={RIDE.tiltDeg} dim={0.42} />
     </Group>
   );
@@ -156,7 +166,7 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
         { id: 'crash', text: 'CRASH', u: 330, v: -790, align: 'left', tone: 'muted', at: { u: 300, v: C2.c.y + 12 } },
         { id: 'holder', text: 'HOLDER', u: 350, v: -330, align: 'left', tone: 'muted', at: { u: MOUNT.top.x + 2, v: MOUNT.top.y + 14 } },
         { id: 'kick', text: 'KICK', u: -60, v: -220, align: 'right', tone: 'muted', at: { u: 40, v: -220 } },
-        { id: 'stick', text: 'STICK', u: -150, v: -600, align: 'center', tone: 'illustrative', at: { u: -100, v: -666 } },
+        { id: 'stick', text: 'STICK', u: -150, v: -600, align: 'center', tone: 'illustrative', at: stickAt(variant) },
       ];
     }
     return [
@@ -179,7 +189,7 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
         : { id: 'reso', text: 'BOTTOM HEAD', short: 'BOTTOM', u: FLOOR.c.x + FF.R + 34, v: FLOOR.c.y + FF.depth - 6, align: 'left' },
       { id: 'legs', text: 'LEGS', u: FLOOR.c.x + 40, v: FLOOR_Y - 120, align: 'left', tone: 'muted' },
       { id: 'ride', text: 'RIDE', u: RIDE.c.x - 60, v: RIDE.c.y + 70, align: 'center', tone: 'muted' },
-      { id: 'stick', text: 'STICK', u: FLOOR.c.x - 200, v: FLOOR.c.y - 50, align: 'center', tone: 'illustrative', at: { u: FLOOR.c.x - 160, v: FLOOR.c.y - 70 } },
+      { id: 'stick', text: 'STICK', u: FLOOR.c.x - 200, v: FLOOR.c.y - 50, align: 'center', tone: 'illustrative', at: stickAt(variant) },
     ];
   }
   return [
@@ -255,7 +265,7 @@ function segDist(u: number, v: number, a: { x: number; y: number }, b: { x: numb
 export function tomsDrawnAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
   // From above: the stick (a name sat on it, clash sweep 2026-10-10).
   // (Now the drummer holds it: the drawn player and both sticks.)
-  if (lessonDrummerCovers(view, tipOf(variant), ORIGIN, u, v, tol)) return true;
+  if (lessonDrummerCovers(view, playerOf(variant), ORIGIN, u, v, tol)) return true;
   if (view !== 'side') return false;
   if (isRack(variant)) {
     const foot1 = PLAN_HARDWARE.booms.crash1.u;

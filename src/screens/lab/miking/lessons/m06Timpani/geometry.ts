@@ -6,6 +6,7 @@
 import type { Envelope, InstrumentModel, Part, Provenance, ReferenceSurface, Shape3, Vec3 } from '../../engine/model/types.ts';
 import { TIMPANO_DRAW, bowlDepth } from '../shared/concert/timpanoSpec.ts';
 import { GAP_PAIR, HEAD_Y, R29, strikePoint, TIMP_DIMS, TIMPANI, type Timpano } from './model.ts';
+import { TIMP_MALLETS } from './malletPose.ts';
 
 const DEG = Math.PI / 180;
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
@@ -94,7 +95,7 @@ export const TIMP_MODEL: InstrumentModel = {
     {
       id: 'env.player',
       label: 'the player',
-      shape: { kind: 'box', min: { x: -1080, y: -1750, z: -560 }, max: { x: -R29 - 230, y: 0, z: 560 } },
+      shape: { kind: 'box', min: { x: -1080, y: -1750, z: -720 }, max: { x: -R29 - 230, y: 0, z: 560 } },
       prov: ill('the timpanist behind the pair; no source gives a position'),
       variants: ['two'],
     },
@@ -104,6 +105,19 @@ export const TIMP_MODEL: InstrumentModel = {
       shape: { kind: 'box', min: { x: -1080, y: -1750, z: -1150 }, max: { x: -R29 - 230, y: 0, z: 1150 } },
       prov: ill('the timpanist behind the set; no source gives a position'),
       variants: ['four'],
+    },
+    // The hands on the mallets' grips, over the near rims (owner 2026-11-22:
+    // the mallets now held at their real length, the hands forward of the
+    // body's box): a mic never sits on them.
+    {
+      id: 'env.hands',
+      label: 'the timpanist’s hands',
+      shape: {
+        kind: 'box',
+        min: { x: Math.min(...TIMP_MALLETS.map((m) => m.hand.x)) - 60, y: Math.min(...TIMP_MALLETS.map((m) => m.hand.y)) - 60, z: Math.min(...TIMP_MALLETS.map((m) => m.hand.z)) - 60 },
+        max: { x: Math.max(...TIMP_MALLETS.map((m) => m.hand.x)) + 60, y: Math.max(...TIMP_MALLETS.map((m) => m.hand.y)) + 60, z: Math.max(...TIMP_MALLETS.map((m) => m.hand.z)) + 60 },
+      },
+      prov: ill('the hands on the mallets as drawn (malletPose.ts); no source gives a position'),
     },
   ],
   variants: [

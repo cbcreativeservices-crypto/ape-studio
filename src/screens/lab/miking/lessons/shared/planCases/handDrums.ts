@@ -10,7 +10,7 @@ import { cueCables } from '../monitoring/cueMix.ts';
 import type { HandLesson } from '../handdrums/family.ts';
 import type { SpLesson } from '../smallperc/family.ts';
 import type { PlanThing } from '../handdrums/family.ts';
-import { handPlanFoots, modelArtPlan, planCue, planPerformers, planRoom, type ArtPlan, type PlanBox, type PlanCueSpec } from '../handdrums/handPlanModel.ts';
+import { handPlanFoots, modelArtPlan, planCue, turnArtPlan, planPerformers, planRoom, type ArtPlan, type PlanBox, type PlanCueSpec } from '../handdrums/handPlanModel.ts';
 import { malletArtPlan } from '../mallets/malletPlanModel.ts';
 import type { MalletFamily } from '../mallets/malletModel.ts';
 import { VIBE_PLAN } from '../../i07Vibraphone/plan.ts';
@@ -69,7 +69,7 @@ export function handDrumsCases(): PlanCase[] {
   const out: PlanCase[] = [];
   for (const id of HAND) {
     const L = lessonById(id) as HandLesson | undefined;
-    if (L) out.push(...cases(L, L.hand.plan, (v) => modelArtPlan(L.model, v, false)));
+    if (L) out.push(...cases(L, L.hand.plan, (v) => turnArtPlan(modelArtPlan(L.model, v, false), L.hand.plan.turn)));
   }
   for (const id of SMALL) {
     const L = lessonById(id) as SpLesson | undefined;

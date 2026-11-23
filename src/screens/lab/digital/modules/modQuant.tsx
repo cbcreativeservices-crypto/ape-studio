@@ -33,6 +33,7 @@ import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizQuant } from '../skiaGate';
 import type { DitherMode } from '../vizQuant';
+import { quantErrorRmsDb, quantLevelCount, quantLevelsUsed, type QuantGridMode } from '../quantMath';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared pure math/format helpers (no Skia — safe on every client)
@@ -43,26 +44,9 @@ function fmtGroup(n: number): string {
   return sign + Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-/** Mid-tread two's-complement quantizer on the −1..+1 axis (same math the
- *  viz draws — kept in both files so readouts work without Skia). */
-function quantizeNorm(x: number, bits: number): number {
-  const half = Math.pow(2, bits - 1);
-  const code = Math.max(-half, Math.min(half - 1, Math.round(x * half)));
-  return code / half;
-}
-
-/** RMS of the quantization error of a sine at `amp` peak through N bits. */
-function quantErrorRmsDb(bits: number, amp: number): number {
-  let acc = 0;
-  const M = 512;
-  for (let i = 0; i < M; i++) {
-    const x = amp * Math.sin((2 * Math.PI * i) / M);
-    const e = x - quantizeNorm(x, bits);
-    acc += e * e;
-  }
-  const rms = Math.sqrt(acc / M);
-  return rms > 0 ? 20 * Math.log10(rms) : Number.NEGATIVE_INFINITY;
-}
+// The quantizer, the level count and the error RMS come from quantMath — the
+// very numbers the picture draws (owner 2026-11-22: "adjusting level and bits
+// looks the same"), so a readout can never disagree with the glass.
 
 function fmtDb(db: number, digits = 1): string {
   return Number.isFinite(db) ? `${db.toFixed(digits)} dBFS` : '−∞ dBFS';
@@ -166,11 +150,16 @@ export function QuantModule(p: DigitalModuleProps) {
   // so its chart must answer on the glass: a dither pick shows the DITHER
   // chart; LEVEL, BITS or ERROR brings the steps back.
   const [stageView, setStageView] = useState<'quant' | 'dither'>('quant');
+  // How the glass drew the levels: one line each, or a shaded band when they
+  // sit closer than about 3 px (told by QuantView, which measures its glass).
+  const [gridMode, setGridMode] = useState<QuantGridMode>('lines');
 
   const amp = Math.pow(10, levelDb / 20);
   const half = Math.pow(2, bits - 1);
   const step = 1 / half;
-  const levels = Math.pow(2, bits);
+  const levels = quantLevelCount(bits);
+  // The levels the sine actually spans, bottom code to top: a quiet wave gets few.
+  const levelsUsed = quantLevelsUsed(bits, levelDb);
   const drTheory = 6.02 * bits + 1.76;
   const errRmsDb = useMemo(() => quantErrorRmsDb(bits, amp), [bits, amp]);
   // Below ~8 steps of peak swing the error locks to the signal (correlated).
@@ -254,8 +243,8 @@ export function QuantModule(p: DigitalModuleProps) {
             ? 'Real dither math; the spectrum strip is a simplified shape, not a measured FFT.'
             : errorOnly
               ? `Error view, zoomed ×${fmtGroup(levels)} so half a step fills the panel.`
-              : bits >= 12
-                ? `At ${bits}-bit the steps are finer than a pixel, so they show as a fine band.`
+              : gridMode === 'band'
+                ? `At ${bits}-bit the ${fmtGroup(levels)} levels are too close to draw apart: a shaded band.`
                 : 'Amber is the original, blue sampled, green stored, red the rounding error.',
         onGuide: () => p.help(stageView === 'dither' ? 'dither' : 'bit_depth'),
         bezel:
@@ -281,7 +270,7 @@ export function QuantModule(p: DigitalModuleProps) {
               </View>
             </View>
           ) : viz ? (
-            <viz.QuantView width={w} height={h} bits={bits} levelDb={levelDb} errorOnly={errorOnly} />
+            <viz.QuantView width={w} height={h} bits={bits} levelDb={levelDb} errorOnly={errorOnly} onGridMode={setGridMode} />
           ) : (
             <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
               <VizUnavailableCard />
@@ -291,8 +280,10 @@ export function QuantModule(p: DigitalModuleProps) {
     >
       <View style={styles.stack}>
         <Text style={dstyles.body}>
-          Sampling measured WHEN; quantization measures HOW LOUD. Each sample is rounded to the nearest of 2ᴺ levels — the red
-          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: slide the LEVEL fader down and watch.
+          Sampling measured WHEN; quantization measures HOW LOUD. The level lines span full scale and never move: BITS sets how
+          many there are (2ᴺ), LEVEL only sets how tall the wave is against them. Green is the wave rounded to the nearest level,
+          one level per step; each sample stores the green value at its instant — the red whiskers are what rounding throws
+          away. Quantization bites hardest on quiet signals: slide the LEVEL fader down and watch LEVELS USED fall.
         </Text>
         <ReadoutGrid
           help={p.help}
@@ -307,6 +298,7 @@ export function QuantModule(p: DigitalModuleProps) {
               : [
                   { k: 'STEP SIZE', v: `1/${fmtGroup(half)} FS` },
                   { k: 'HEADROOM', v: `${(-levelDb).toFixed(0)} dB` },
+                  { k: 'LEVELS USED', v: fmtGroup(levelsUsed) },
                 ]
           }
         />

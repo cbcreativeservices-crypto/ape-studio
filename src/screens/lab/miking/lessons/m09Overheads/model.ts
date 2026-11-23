@@ -15,7 +15,7 @@
  */
 import type { DocumentedZone, Provenance, Vec3 } from '../../engine/model/types.ts';
 import { KIT_DRUMS } from '../shared/kitPlanModel.ts';
-import { FT_C, FT_RIM_H, KIT_CENTRE, O, S0, aimToward, distMm, heightOf } from '../shared/kitScene/kitSceneModel.ts';
+import { FT_C, FT_RIM_H, KIT_CENTRE, O, S0, aimToward, distMm, heightOf, DRUMMER_HEAD_TOP_H } from '../shared/kitScene/kitSceneModel.ts';
 
 export { aimToward };
 
@@ -70,10 +70,11 @@ export const AB_HAT: Vec3 = (() => {
 })();
 export const AB_RIDE: Vec3 = { x: -150, y: AB_HAT.y, z: 270 };
 
-/** One mic over the kit's centre, 1 ft above the drummer's head (h 1300, a
+/** One mic over the kit's centre, 1 ft above the drummer's head (DRUMMER_HEAD_TOP_H, 1390 since the
+ *  stick technique fix of 2026-11-22 raised the drawn drummer to an adult's sitting height; a
  *  drawing default) — the start pose sits 20 mm higher, still inside its band,
  *  clear of the sticks' reach (the reach is a drawing default too). */
-export const MONO: Vec3 = { x: KIT_CENTRE.x, y: S0.y + heightOf(S0) - (1300 + OH.monoAboveHead), z: KIT_CENTRE.z };
+export const MONO: Vec3 = { x: KIT_CENTRE.x, y: S0.y + heightOf(S0) - (DRUMMER_HEAD_TOP_H + OH.monoAboveHead), z: KIT_CENTRE.z };
 export const MONO_START: Vec3 = { ...MONO, y: MONO.y - 20 };
 
 /**
@@ -226,7 +227,7 @@ export const M09_ZONES: DocumentedZone[] = [
     refSurface: 'snare',
     side: 'either',
     distance: { min: heightOf(MONO) - heightOf(S0) - 120, max: heightOf(MONO) - heightOf(S0) + 160 },
-    bandProv: ill('"about 1 foot above the drummer’s head": the head height is a drawing default (1.3 m); −12 / +16 cm is the lab’s tolerance'),
+    bandProv: ill('"about 1 foot above the drummer’s head": the head height is a drawing default (1.39 m); −12 / +16 cm is the lab’s tolerance'),
     radial: { line: 'kitLine', max: 130, prov: ill('"over center of drum set": the kit’s center is the midpoint of the kick and the snare (a drawing default); 13 cm is the lab’s tolerance') },
     requires: { micTypeIds: OH_TYPES },
     aim: { maxOffAxis: 30, prov: ill('aimed down at the kit: within 30° of straight down is the lab’s tolerance') },

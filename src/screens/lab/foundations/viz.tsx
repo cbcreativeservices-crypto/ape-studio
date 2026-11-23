@@ -1022,8 +1022,14 @@ export function PressureGraphView({
       if (x < originX) {
         y = mid; // atmospheric — the wave hasn't been created here yet
       } else if (mode === 'noise') {
-        const tq = Math.floor(t * 22);
-        y = mid - a * 0.8 * (hash(i * 91.3 + tq * 57.1) - 0.5) * 2;
+        // Noise keyed to SIGNAL time (the phase that reaches x), interpolated,
+        // so it travels with the wave instead of being re-rolled 22×/s per
+        // screen sample (owner 2026-11-22: "Once a wave form has happend, it
+        // should not become some other waveform later in time").
+        const g = (om * t - k * (x - originX)) * 1.6;
+        const g0 = Math.floor(g);
+        const n0 = hash(g0 * 91.3);
+        y = mid - a * 0.8 * (n0 + (hash((g0 + 1) * 91.3) - n0) * (g - g0) - 0.5) * 2;
       } else {
         // p ∝ cos(ωt − k(x−x0)): born at the speaker mouth, travels right, and
         // its peaks sit under the compression bands.
@@ -1051,8 +1057,10 @@ export function PressureGraphView({
       if (x < originX) {
         y = mid;
       } else if (mode === 'noise') {
-        const tq = Math.floor(t * 22);
-        y = mid - a * 0.8 * (hash(i * 91.3 + tq * 57.1) - 0.5) * 2;
+        const g = (om * t - k * (x - originX)) * 1.6;
+        const g0 = Math.floor(g);
+        const n0 = hash(g0 * 91.3);
+        y = mid - a * 0.8 * (n0 + (hash((g0 + 1) * 91.3) - n0) * (g - g0) - 0.5) * 2;
       } else {
         y = mid - a * Math.cos(om * t - k * (x - originX));
       }

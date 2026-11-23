@@ -109,11 +109,8 @@ export function CymbalStrikeFx({ w, h, spec, profile, inverted, pairGap, rFrac, 
   const statics = useMemo(() => {
     const rest = Skia.Path.Make();
     S.xs.forEach((x, i) => (i === 0 ? rest.moveTo(x, S.top[i]) : rest.lineTo(x, S.top[i])));
-    const stick = Skia.Path.Make();
-    stick.moveTo(S.sx - 130, S.tipY - 210);
-    stick.lineTo(S.sx - 6, S.tipY - 9);
-    const tip = Skia.Path.Make();
-    tip.addOval(Skia.XYWHRect(S.sx - 12, S.tipY - 16, 16, 14));
+    // (The stick is the drummer's StrikeArm below; the old unused 58° stick
+    // path was removed in the stick technique fix of 2026-11-22.)
     const rock = Skia.Path.Make();
     for (const s of [-1, 1]) {
       const x = s * (R + 24);
@@ -158,7 +155,7 @@ export function CymbalStrikeFx({ w, h, spec, profile, inverted, pairGap, rFrac, 
       clutch.addRRect(Skia.RRectXY(Skia.XYWHRect(-19, top - 12, 38, 10), 2, 2));
       clutch.addRRect(Skia.RRectXY(Skia.XYWHRect(-22, (pairGap ?? 0) + spec.rise.mm, 44, 26), 6, 6));
     }
-    return { rest, stick, tip, rock, up, down, side, bottom, rod, clutch };
+    return { rest, rock, up, down, side, bottom, rod, clutch };
   }, [S, R, pairGap, pair, spec, T]);
   const plate = useDerivedValue(() => {
     const v = reveal.value;
