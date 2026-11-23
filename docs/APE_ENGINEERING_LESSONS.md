@@ -1016,3 +1016,12 @@ process is running.
 - **OTA recipe that worked four times in one evening:** commit + push → `node scripts/fingerprint-eol-sync.mjs` (0 synced / 0 real diffs) → `eas-cli fingerprint:compare` against Android build 23 and iOS build 39 (both MATCH) → `eas update --branch production --environment production --platform android`, then `npx sentry-expo-upload-sourcemaps dist`, then the same for ios → Pixel: force-stop and relaunch the Play app and find the new update group id in `adb logcat`. See memory `reference_ota_publish_recipe`.
 - **The Downloads auto-deliver hook overwrote a hand-built HTML page** with a plain text copy, because a same-named `.md` was written next to it. The hook now leaves an `.html` alone unless it made that page itself (an `<!-- auto_deliver -->` marker, or its own stylesheet).
 - **Background subagents get one hand-back.** Later answers must come by SendMessage; ask them to "reply with SendMessage" or their follow-ups are lost.
+
+## 2026-11-22: OTAs 14–15, founder page, one 1.0.1 build, tube double-tap
+
+- **A real finger tap MOVES.** TubeCardScreen's PanResponder put the gesture in 'swipe' mode on ANY move event. The swipe branch of Release returns before the double-tap check, so zoom-in never fired on a phone. A mouse click has no move, so the browser preview looked fine. Rule: below a touch slop (~4 px), Move must return early and leave the gesture a tap. Time a double tap release-to-release generously (420 ms): the second press's own duration eats the window. Browser checks cannot prove touch gestures; say so.
+- **Android drops touches outside a parent's bounds.** The circle-menu labels sat outside the circle's box and could not be tapped. Wrap them in a hit-area View big enough to hold the labels (CircleMenuPanel hitArea).
+- **"Authorize the build" can mean the OTA.** The owner said "I authorize the android build" and meant the update. Always confirm build vs OTA before acting (BUILD RULE).
+- **Website deploy = push to audio-tools-engine.** Copy ONLY the approved files into a worktree from origin. The workbench web/ carries other unpublished pages. Read back live with a background until-loop.
+- **The must-do ratchet reads "GO" as open work.** "DONE … (owner GO …)" failed mustDoStatusHonest; write "on the owner's word".
+- **Fingerprint runtimes make OTAs safe during a store review** when the build in review has a different native fingerprint. Server-side content (bucket tiles, database text) still reaches every version, including the one in review.

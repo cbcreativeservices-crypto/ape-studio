@@ -97,7 +97,10 @@ export default function Page() {
           Curriculum content is developed for technical accuracy and reviewed on
           its merits. Review is led by the Academy’s Curriculum
           Director, who has taught professional audio at the college level since
-          1999 and brings four decades of industry experience.
+          1999 and brings four decades of industry experience.{" "}
+          <a href="/founder" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+            Read more about the founder →
+          </a>
         </p>
         <p>
           The material draws on established technical references, recognized

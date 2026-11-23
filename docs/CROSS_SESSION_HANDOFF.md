@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 19:27 · ccode · 86983d3d
+changed: web: Founder link in the top menu and the footer (owner 2026-11-22: "i cant find a founder link"); not deployed [MD:D36]
+affects other side: nothing until the owner says to deploy the website; then Comp A may re-check the live footer/menu
+needs: nothing
+
+
 ### 2026-11-22 19:08 · ccode · a858a85a
 changed: Tube cards: double-tap zoom works on a real finger tap (owner 2026-11-22)
 affects other side: nothing (app only; reaches phones with the next OTA on the owner's word)
@@ -10312,3 +10318,8 @@ affects: website only.
 ### 2026-11-22 · ccode · Owner: NO separate 1.0.2, one 1.0.1 store build
 changed: must-do E1, E7, D2–D4 updated (supersedes this morning's "Meta moves to 1.0.2"). Meta is the one blocker (build-time keys, developer account unconfirmed); owner decides at build time whether 1.0.1 waits for Meta. Readiness list Downloads/2026-11-22_1.0.1_ONE_BUILD_BRIEF.md/.html. Found: forum-next-build is 245 commits behind ota-after-approval-39-23 (merge needed before any build); Comp A's 11-15 Meta-OFF asks 1–7 never answered.
 affects: Comp A: your 1.0.1 prep brief is no longer "Meta OFF" by default; it waits on the owner's build-time Meta choice. needs: owner's Meta choice at build time.
+
+### 2026-11-22 · ccode · End of session: handoff to a new ccode session
+changed: memory resume-2026-11-22 + project_one_101_build + reference_website_deploy_recipe; lessons 2026-11-22; Founder links built (menu, footer last, /curriculum), not deployed; tube double-tap fix queued for OTA 16. Handoff Downloads/2026-11-22_HANDOFF_TO_NEW_CCODE_SESSION.md. Comp A note Downloads/2026-11-22_FOR_COMP_A_END_OF_DAY.md.
+affects other side: Comp A: the 1.0.1 prep is one build again (no 1.0.2); your 11-15 Meta-OFF asks 1–7 are still unanswered by ccode [MD:E7]
+needs: owner's word for the website deploy and OTA 16 [MD:D74]
