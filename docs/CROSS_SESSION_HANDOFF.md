@@ -10298,3 +10298,11 @@ affects: phones on builds 23/39. needs: owner iPhone check.
 ### 2026-11-22 · ccode · OTA 15 PUBLISHED (owner "publish", then authorized again in a question: "Yes, publish OTA 15"; OTA only, no store builds)
 changed: production OTA from d651ae0a. Android group a9826ac9-c293-4da0-b2b7-0ad6fb6aa28a (update 01a20599, runtime a903813a, build 23); iOS group 44db6bec-b352-47c2-9c53-03e731f7b82e (update 01a2059d, runtime 91355451, build 39). Fingerprints MATCH both builds; eol-sync 0; sourcemaps uploaded per platform. Contents: FREE: on the green/purple/Glossary Home titles for guests and free users (members plain); menu words tappable; see-through MENU dots; MENU callout on every guest sign-in. Pixel PROVEN: launch 1 "Update available", launch 2 "No update available"; screen shows the new dots and member titles. iPhone check is the owner's. Undo = republish OTA 14 (Android 3dc4be83 / iOS c135459a).
 affects: phones on builds 23/39. needs: owner iPhone check.
+
+### 2026-11-22 · ccode · Website deploy: founder page D36 (owner GO "deploy the website")
+changed: 3fe50d25 on audio-tools-engine, only web/app/founder/page.tsx (same as 2c1a708d here); next build clean; live /founder read back with all six approved paragraphs. Must-do D36 DONE.
+affects: website only.
+
+### 2026-11-22 · ccode · Owner: NO separate 1.0.2, one 1.0.1 store build
+changed: must-do E1, E7, D2–D4 updated (supersedes this morning's "Meta moves to 1.0.2"). Meta is the one blocker (build-time keys, developer account unconfirmed); owner decides at build time whether 1.0.1 waits for Meta. Readiness list Downloads/2026-11-22_1.0.1_ONE_BUILD_BRIEF.md/.html. Found: forum-next-build is 245 commits behind ota-after-approval-39-23 (merge needed before any build); Comp A's 11-15 Meta-OFF asks 1–7 never answered.
+affects: Comp A: your 1.0.1 prep brief is no longer "Meta OFF" by default; it waits on the owner's build-time Meta choice. needs: owner's Meta choice at build time.
