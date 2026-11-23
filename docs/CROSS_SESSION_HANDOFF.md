@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 23:55 · ccode · 19433545
+changed: Human figures: the first example, the kit drummer in a new look, switched OFF (owner 2026-11-22: "first show me one"); figure inventory; must-do D77/D78 updated [MD:D78]
+affects other side: nothing (a second figure renderer behind a switch that is off, plus a dev-only study page; no screen in the app changes)
+needs: nothing from A. Waits for the owner to review the drummer example and say it passes before any roll-out [MD:D78].
+
 ### 2026-11-22 22:10 · ccode · 6555e753
 changed: Lab animation fixes (owner 2026-11-22): natural stick technique everywhere, three congas, moving capsule coil, tappable chain rack + LOW CUT, Digital bit depth and time base [MD:D77] [MD:E9]
 affects other side: nothing on the server (JS only; lesson text and lab catalog are read from code). For store text later: the Signal Chain Builder now has ten units with LOW CUT first, and the Congas lesson is a set of three (quinto, conga, tumba).

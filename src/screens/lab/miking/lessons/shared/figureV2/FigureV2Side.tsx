@@ -21,7 +21,7 @@ import type { ReactNode } from 'react';
 import { BlurMask, ColorMatrix, Group, LinearGradient, Mask, Paint, Path, vec } from '@shopify/react-native-skia';
 import { LIGHT, lerp, type Pt } from './geom.ts';
 import { BELT, LIP, MAT, SOLE } from './palette.ts';
-import { Folds, Form, HandV2, Soft, across } from './paint';
+import { AuthoredHand, Folds, Form, HandV2, Soft, across } from './paint';
 import { sidePaths, type ArmPaths, type ShoePaths, type SidePaths, type SkPath } from './paths.ts';
 import type { ArmPlan, SidePlan } from './sidePlan.ts';
 
@@ -132,7 +132,11 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
       <Forearm a={a} P={P} />
     </Group>
   );
-  const hand = P.hand ? (
+  const hand = P.art ? (
+    <Group layer={skin as never}>
+      <AuthoredHand a={P.art} stick={stick} />
+    </Group>
+  ) : P.hand ? (
     <Group layer={skin as never}>
       <HandV2 hand={P.hand} under={P.wristSkin} stick={stick} />
     </Group>
@@ -340,6 +344,20 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
         </Group>
       </Form>
       <Arm a={plan.arms.near} P={P.near} t={torso} stick={nearStick} />
+    </Group>
+  );
+}
+
+/** One forearm and hand on its stick, alone (the study page's close-up of a
+ *  hand: no drums, no body), in the same paint as in the figure. */
+export function FigureV2HandAlone({ plan, which, stick }: { plan: SidePlan; which: 'near' | 'far'; stick?: ReactNode }) {
+  const P = sidePaths(plan);
+  const a = plan.arms[which];
+  const ap = which === 'near' ? P.near : P.far;
+  return (
+    <Group>
+      <Forearm a={a} P={ap} />
+      {ap.art ? <AuthoredHand a={ap.art} stick={stick} /> : ap.hand ? <HandV2 hand={ap.hand} under={ap.wristSkin} stick={stick} /> : (stick ?? null)}
     </Group>
   );
 }

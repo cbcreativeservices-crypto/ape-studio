@@ -319,8 +319,8 @@ export function kitSceneSticks(view: ViewId): Stick2[] {
   return [d.stick, d.farStick];
 }
 
-/** The drummer's sticks: hickory, a pale tip. */
-function Sticks({ path }: { path: SkPath }) {
+/** The drummer's sticks: hickory, a pale tip. (Exported for the figure study, D78.) */
+export function Sticks({ path }: { path: SkPath }) {
   return (
     <Group>
       <Path path={path} style="stroke" strokeWidth={17} strokeCap="round" color={INK} opacity={0.85} />

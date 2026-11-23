@@ -52,6 +52,16 @@ import {
 import { STEREO_TEST_LR_RAD, distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
 import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
 import { usePhaseClock } from './foundations/viz';
+import {
+  SCOPE_DIV_MS,
+  chorusDelayMs,
+  chorusLfoSlowed,
+  chorusLfoVisHz,
+  scopeCopy,
+  scopeDry,
+  scopeOut,
+  scopeWindowMs,
+} from './chorusScope';
 import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
@@ -116,8 +126,8 @@ export type FxAnimModel =
       feedback: number;
       /** CHORUS: the frequency of the tone the scope shows (the sine source's
        *  own pitch; 440 Hz standing in for one component of a noise source).
-       *  The copy's phase lag is then the TRUE 2π·f·τ(t) the DSP produces —
-       *  see ModFlow. Omitted (flanger) ⇒ the older fixed-carrier model. */
+       *  The copy's phase lag is then the TRUE 2π·f·τ the DSP produces — see
+       *  ModFlow / chorusScope.ts. Omitted for the flanger (a spectrum hero). */
       srcHz?: number;
       /** The source is noise: the scope's tone is one component of it. */
       srcIsNoise?: boolean;
@@ -1680,23 +1690,40 @@ function SpectrumFlow({
   );
 }
 
-// ────────────────────────────────────────────── chorus/flanger/phaser flow ──
-// The dry wave travels in; past the stage its DOUBLED voice (blue) visibly
-// wobbles against it on the true LFO rate, and the amber sum swells/cancels —
-// the comb (or the phaser's all-pass phase φ = −2N·atan(f/fc), the exact
-// phaserResponseDb formula) made visible in time.
+// ──────────────────────────────────────────────────── chorus scope flow ──
+/* A STANDING SCOPE (owner 2026-11-23, "Yes, standing scope", after
+ * 2026-11-22: "Once a wave form has happend, it should not become some other
+ * waveform later in time...."). The maths lives in ./chorusScope.ts.
+ *
+ * The glass is a triggered oscilloscope: SCOPE_CYCLES true cycles of the
+ * source tone (3 × 440 Hz = 6.8 ms of real signal), time running left to
+ * right from the trigger at the left edge, faint divisions every 1 ms. The
+ * dry tone (gray, IN and again faint past the stage) is triggered on its own
+ * rising zero crossing and stands still. The copy (blue) is that tone τ later
+ * — the delay the engine runs at THIS instant (Effects.hpp ModEffect, chorus:
+ * τ = centerMs + depth·6 ms·sin(LFO)) — so its crests sit to the RIGHT of the
+ * dry crests (later in time). OUT (amber) is the engine's mix of the two at
+ * this instant. As the LFO moves τ, the copy slides against the still dry
+ * tone and OUT swells and thins in place. Nothing scrolls, so there is no
+ * drawn history that could change.
+ *
+ * Grading fix 2026-10-16 (Chorus 5.0 D) still holds: the lag is the TRUE
+ * φ = 2π·f·τ — for 440 Hz and 20 ms, 8.8 cycles, 0.8 of a cycle on screen;
+ * at CLASSIC depth the LFO sweeps it ±1.32 cycles (the beating you hear).
+ * At fast, deep settings the copy would slide 2π·f·(depth·6 ms)·2π·rate rad/s
+ * at peak — at 440 Hz, depth 1, 3 Hz, ~0.8 of a cycle per frame, which strobes
+ * and can seem to run backwards. The DRAWN LFO is capped so the slide stays
+ * readable (≤ 45 rad/s, chorusLfoVisHz), and the glass says LFO SLOWED. */
 function ModFlow({
   w,
   h,
   active,
   label,
-  flavor,
   rateHz,
   depth,
   center,
   mix,
   feedback,
-  stages,
   srcHz,
   srcIsNoise,
 }: {
@@ -1704,158 +1731,103 @@ function ModFlow({
   h: number;
   active: boolean;
   label: string;
-  flavor: 'chorus' | 'flanger' | 'phaser';
   rateHz: number;
   depth: number;
-  /** centerMs (chorus/flanger) or centerHz (phaser). */
+  /** The voice delay, ms. */
   center: number;
   mix: number;
   feedback: number;
-  stages: number;
-  /** CHORUS: the source tone's frequency — see `trueLag` below. */
-  srcHz?: number;
+  /** The source tone's frequency: the sine's own pitch, or 440 Hz standing
+   *  in for one component of the noise. */
+  srcHz: number;
   srcIsNoise?: boolean;
 }) {
   const stageX = w * STAGE_FRAC;
-  const carrier = usePhaseClock(active, 0.5);
-  /* CHORUS — THE TRUE PHASE LAG (grading fix 2026-10-16, Chorus 5.0 D).
-   * The copy used to sit (centerMs ÷ 40) of a drawn cycle behind the dry wave,
-   * i.e. the strip was drawn as if the source were a 25 Hz tone. At the lab's
-   * own 20 ms default that is HALF a cycle, so dry + copy cancelled and the
-   * resting picture said "chorus silences the sound". What the DSP does
-   * (Effects.hpp ModEffect, chorus: τ = centerMs + depth·6 ms·sin(LFO)) to the
-   * tone the student actually plays is a lag of φ = 2π·f·τ: for 440 Hz and
-   * 20 ms, 8.8 cycles — 0.8 of a cycle on screen — so the 50 % sum has
-   * |cos(π·f·τ)| = 0.81 of the input. As the LFO moves τ by ±3 ms (CLASSIC
-   * depth), φ sweeps ±1.32 cycles: the copy slides, the sum swells and thins
-   * (the beating you hear), and a true null is a moment the sweep passes
-   * through, not a rest. The scope is a few true cycles of that tone; its
-   * drift is slowed.
-   * SIGN: the wave runs right as sin(kc·x − pc), so the copy emitted τ
-   * earlier is sin(kc·x − pc + φ) — its crests sit φ/kc BEHIND (left of) the
-   * dry crests. */
-  const trueLag = flavor === 'chorus' && srcHz != null && srcHz > 0;
-  /* At fast, deep settings the copy slips by 2π·f·(depth·6 ms)·2π·rate rad/s
-   * at peak — at 440 Hz, depth 1, 3 Hz that is ~0.8 of a cycle per frame,
-   * which strobes and can seem to run backwards. The DRAWN LFO is capped so
-   * the slip stays readable (≤ ~45 rad/s), and the glass says SLOWED. */
-  const slipPerHz = trueLag ? PI2 * (srcHz as number) * 0.006 * Math.max(depth, 0.01) * PI2 : 0;
-  const lfoVisHz = trueLag ? Math.min(rateHz, 45 / slipPerHz) : Math.min(rateHz, 5);
-  const lfoSlowed = trueLag && lfoVisHz < rateHz - 1e-6;
-  const lfo = usePhaseClock(active, lfoVisHz); // true LFO rate (chorus: capped, see below)
+  const lfoVisHz = chorusLfoVisHz(rateHz, depth, srcHz);
+  const lfoSlowed = chorusLfoSlowed(rateHz, depth, srcHz);
+  const lfo = usePhaseClock(active, lfoVisHz); // the drawn LFO (capped, see above)
   const depthG = useGlide(depth);
   const ctrG = useGlide(center);
   const mixG = useGlide(mix);
   const fbG = useGlide(feedback);
-  const stG = useGlide(stages);
-  const kc = (PI2 * 3.0) / w;
-  const lamPx = w / 3.0;
+  /** The trigger: t = 0 at the left edge of IN. */
+  const x0 = 6;
+  const msPerPx = scopeWindowMs(srcHz) / w;
+  const A = h * 0.32;
+  const inX1 = stageX - 10;
+  const outX0 = stageX + 10;
+  const outX1 = w - 6;
 
-  const inPath = useDerivedValue(() => {
-    const pc = carrier.value;
+  // The triggered dry tone: built once per layout — it never moves.
+  const { inPath, dryOutPath } = useMemo(() => {
+    const line = (xa: number, xb: number) => {
+      const p = Skia.Path.Make();
+      const N = 52;
+      for (let i = 0; i <= N; i++) {
+        const x = xa + ((xb - xa) * i) / N;
+        const y = h / 2 - A * scopeDry((x - x0) * msPerPx, srcHz);
+        if (i === 0) p.moveTo(x, y);
+        else p.lineTo(x, y);
+      }
+      return p;
+    };
+    return { inPath: line(x0, inX1), dryOutPath: line(outX0, outX1) };
+  }, [h, A, msPerPx, srcHz, inX1, outX0, outX1]);
+
+  // The graticule: one faint division per millisecond from the trigger.
+  const grid = useMemo(() => {
     const p = Skia.Path.Make();
-    const A = h * 0.32;
-    const N = 40;
-    for (let i = 0; i <= N; i++) {
-      const x = 6 + ((stageX - 16) * i) / N;
-      const y = h / 2 - A * Math.sin(kc * x - pc);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+    const divPx = SCOPE_DIV_MS / msPerPx;
+    for (let x = x0; x <= w - 4; x += divPx) {
+      p.moveTo(x, 22);
+      p.lineTo(x, h - 18);
     }
     return p;
-  }, [carrier, stageX, h, kc]);
+  }, [msPerPx, w, h]);
 
-  // The doubled voice + the summed output share per-frame scalars.
   const copyPath = useDerivedValue(() => {
-    const pc = carrier.value;
-    const pl = lfo.value;
-    let dx = 0;
-    let dph = 0;
-    if (trueLag) {
-      dph = (PI2 * (srcHz as number) * (ctrG.value + 6 * depthG.value * Math.sin(pl))) / 1000;
-    } else if (flavor === 'chorus') {
-      dx = (ctrG.value / 40 + ((6 * depthG.value) / 40) * Math.sin(pl)) * lamPx;
-    } else if (flavor === 'flanger') {
-      dx = (ctrG.value / 8 + ((ctrG.value * 0.85 * depthG.value) / 8) * Math.sin(pl)) * lamPx;
-    } else {
-      const fc = ctrG.value * Math.pow(2, 2 * depthG.value * Math.sin(pl));
-      dph = -2 * stG.value * Math.atan(1000 / Math.max(fc, 20)); // phaserResponseDb φ
-    }
+    const tau = chorusDelayMs(ctrG.value, depthG.value, lfo.value);
     const p = Skia.Path.Make();
-    const A = h * 0.32;
     const N = 52;
     for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const y = h / 2 - A * Math.sin(kc * (x - dx) - pc + dph);
+      const x = outX0 + ((outX1 - outX0) * i) / N;
+      const y = h / 2 - A * scopeCopy((x - x0) * msPerPx, srcHz, tau);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, lfo, depthG, ctrG, stG, stageX, w, h, kc, lamPx, trueLag, srcHz]);
+  }, [lfo, depthG, ctrG, outX0, outX1, h, A, msPerPx, srcHz]);
 
   const outPath = useDerivedValue(() => {
-    const pc = carrier.value;
-    const pl = lfo.value;
+    const tau = chorusDelayMs(ctrG.value, depthG.value, lfo.value);
     const mixV = mixG.value;
     const fbV = fbG.value;
-    let dx = 0;
-    let dph = 0;
-    if (trueLag) {
-      dph = (PI2 * (srcHz as number) * (ctrG.value + 6 * depthG.value * Math.sin(pl))) / 1000;
-    } else if (flavor === 'chorus') {
-      dx = (ctrG.value / 40 + ((6 * depthG.value) / 40) * Math.sin(pl)) * lamPx;
-    } else if (flavor === 'flanger') {
-      dx = (ctrG.value / 8 + ((ctrG.value * 0.85 * depthG.value) / 8) * Math.sin(pl)) * lamPx;
-    } else {
-      const fc = ctrG.value * Math.pow(2, 2 * depthG.value * Math.sin(pl));
-      dph = -2 * stG.value * Math.atan(1000 / Math.max(fc, 20));
-    }
     const p = Skia.Path.Make();
-    const A = h * 0.32;
-    const norm = 1 / (1 + Math.abs(fbV) * mixV);
     const N = 52;
     for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const dry = Math.sin(kc * x - pc);
-      const wet = Math.sin(kc * (x - dx) - pc + dph) + fbV * Math.sin(kc * (x - 2 * dx) - pc + 2 * dph);
-      const y = h / 2 - A * norm * ((1 - mixV) * dry + mixV * wet);
+      const x = outX0 + ((outX1 - outX0) * i) / N;
+      const y = h / 2 - A * scopeOut((x - x0) * msPerPx, srcHz, tau, mixV, fbV);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, lfo, depthG, ctrG, mixG, fbG, stG, stageX, w, h, kc, lamPx, trueLag, srcHz]);
+  }, [lfo, depthG, ctrG, mixG, fbG, outX0, outX1, h, A, msPerPx, srcHz]);
 
-  // CHORUS: the dry voice carries on past the stage (dim), so the two voices
-  // that MAKE the chorus — you (grey) and the late copy (blue) — sit side by
-  // side with what you hear (amber, their mix).
-  const dryOutPath = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    if (!trueLag) return p;
-    const pc = carrier.value;
-    const A = h * 0.32;
-    const N = 52;
-    for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const y = h / 2 - A * Math.sin(kc * x - pc);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
-    }
-    return p;
-  }, [carrier, trueLag, stageX, w, h, kc]);
-
-  const note = trueLag
-    ? lfoSlowed
-      ? `${srcHz} Hz · LFO SLOWED`
-      : srcIsNoise
-        ? `${srcHz} Hz PART OF THE NOISE`
-        : `SCOPE · ${srcHz} Hz TONE`
-    : undefined;
+  const note = lfoSlowed ? `${srcHz} Hz · LFO SLOWED` : srcIsNoise ? `${srcHz} Hz PART OF THE NOISE` : `SCOPE · ${srcHz} Hz TONE`;
 
   return (
-    <FlowScene w={w} h={h} label={label} note={note} noteColor={trueLag ? DIM : undefined}>
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      note={note}
+      noteColor={DIM}
+      overlay={<GlassText x={w - 8} y={h - 16} align="right" size={10} w={80} text={`${SCOPE_DIV_MS} ms / DIV`} />}
+    >
+      <Path path={grid} color={FRAME} style="stroke" strokeWidth={1} opacity={0.9} />
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      {trueLag ? <Path path={dryOutPath} color={DIM} style="stroke" strokeWidth={1.1} opacity={0.5} /> : null}
-      <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={trueLag ? 0.8 : 0.55} />
+      <Path path={dryOutPath} color={DIM} style="stroke" strokeWidth={1.1} opacity={0.5} />
+      <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.8} />
       <FlowGlow path={outPath} gradH={h} />
     </FlowScene>
   );
@@ -2686,14 +2658,14 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           h={h}
           active={active}
           label={label}
-          flavor={model.flavor}
           rateHz={model.rateHz}
           depth={model.depth}
           center={model.centerMs}
           mix={model.mix}
           feedback={model.feedback}
-          stages={0}
-          srcHz={model.srcHz}
+          // The chorus (the flanger returned above): chorusToneOf always sets
+          // srcHz; 440 Hz is its own fallback.
+          srcHz={model.srcHz ?? 440}
           srcIsNoise={model.srcIsNoise}
         />
       );

@@ -15,7 +15,7 @@ import { BlurMask, Group, LinearGradient, Path, RadialGradient, vec } from '@sho
 import { partLook, type HandLayers, type HandPart } from '../hand/anatomy/drawAnatomy.ts';
 import { LIGHT, lerp, perp, unit, sub, dot, type Pt } from './geom.ts';
 import { MAT, NAIL, type Material } from './palette.ts';
-import { rimOf, type HandBuilt, type SkPath } from './paths.ts';
+import { rimOf, type ArtPaths, type HandBuilt, type SkPath } from './paths.ts';
 
 /** The ends of a gradient ACROSS the axis a→b, `w` each side, from the side
  *  that faces the light to the side away from it. */
@@ -126,88 +126,301 @@ export function Folds({ path, mat, clip, opacity = 0.5 }: { path: SkPath; mat: M
 /* ── the hand ── */
 
 const SKIN = MAT.skin;
+/** Warmer, redder skin at the knuckles and the fingertips. */
+const WARM = '#b8665a';
 
-function HandPartV2({ p, L, shade, under }: { p: HandPart; L: HandLayers; shade: number; under: SkPath | null }) {
-  const look = partLook(p.path, 2.6, 11);
+/** The hand's one light: a fixed span (≈ a hand's length) round the hand's
+ *  centre, so every part of a hand — and both hands of one person — share it
+ *  and re-filling a part never shows a seam. */
+function skinFill(L: HandLayers) {
   const b = L.box;
-  // The hand's own light: its upper planes (the back of the hand, the tops of
-  // the fingers) toward the key light, its under planes away.
   const m = { u: b.x + b.width / 2, v: b.y + b.height / 2 };
-  // One fixed span of light for every hand (≈ a hand's length), so two hands of one person read as the same skin.
   const R = 70;
+  return <LinearGradient start={vec(m.u + LIGHT.u * R, m.v + LIGHT.v * R)} end={vec(m.u - LIGHT.u * R, m.v - LIGHT.v * R)} colors={[SKIN.form[0], SKIN.form[1], SKIN.form[2], SKIN.form[3]]} positions={[0, 0.3, 0.68, 1]} />;
+}
+
+/** One part's form inside the hand: the same skin (no seam), a core shadow
+ *  that follows it as a cylinder (darker where it turns under, between the
+ *  fingers), a soft lit edge, the knuckle light. No outline of its own. */
+function PartForm({ p, L, shade }: { p: HandPart; L: HandLayers; shade: number }) {
+  const look = partLook(p.path, 2.4, p.kind === 'palm' ? 14 : 9);
   return (
     <Group>
-      <Path path={p.path}>
-        <LinearGradient start={vec(m.u + LIGHT.u * R, m.v + LIGHT.v * R)} end={vec(m.u - LIGHT.u * R, m.v - LIGHT.v * R)} colors={[SKIN.form[0], SKIN.form[1], SKIN.form[2], SKIN.form[3]]} positions={[0, 0.3, 0.68, 1]} />
-      </Path>
+      <Path path={p.path}>{skinFill(L)}</Path>
       <Group clip={p.path}>
-        <Path path={look.core} color={SKIN.deep} opacity={0.5}>
-          <BlurMask blur={4} style="normal" />
+        <Path path={look.core} color={SKIN.deep} opacity={p.kind === 'palm' ? 0.38 : 0.5}>
+          <BlurMask blur={p.kind === 'palm' ? 6 : 3.2} style="normal" />
         </Path>
-        <Path path={look.rim} color={SKIN.rim} opacity={0.34}>
-          <BlurMask blur={1.6} style="normal" />
+        <Path path={look.rim} color={SKIN.rim} opacity={0.3}>
+          <BlurMask blur={1.4} style="normal" />
         </Path>
         {shade > 0.005 ? <Path path={p.path} color="#1a0f0a" opacity={shade} /> : null}
-        <Path path={p.soft} style="stroke" strokeWidth={4} strokeCap="round" color={SKIN.deep} opacity={0.3}>
+        <Path path={p.soft} style="stroke" strokeWidth={4} strokeCap="round" color={SKIN.deep} opacity={0.24}>
           <BlurMask blur={2} style="normal" />
         </Path>
-        <Path path={p.lines} style="stroke" strokeWidth={0.9} strokeCap="round" color={SKIN.edge} opacity={0.55} />
-        <Path path={p.glints} style="stroke" strokeWidth={3.5} strokeCap="round" color={SKIN.rim} opacity={0.3}>
+        <Path path={p.glints} style="stroke" strokeWidth={3.5} strokeCap="round" color={SKIN.rim} opacity={0.32}>
           <BlurMask blur={1.6} style="normal" />
         </Path>
+        {p.back ? (
+          <Path path={p.lines} style="stroke" strokeWidth={1.4} strokeCap="round" color={SKIN.deep} opacity={0.35}>
+            <BlurMask blur={0.8} style="normal" />
+          </Path>
+        ) : null}
       </Group>
-      <Group clip={under ?? undefined} invertClip={!!under}>
-        <Path path={p.path} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.68} />
-      </Group>
-      {p.nail ? (
-        <Group>
-          <Path path={p.nail} color={NAIL.fill} opacity={0.7} />
-          <Path path={p.nail} style="stroke" strokeWidth={0.6} color={NAIL.edge} opacity={0.6} />
-        </Group>
-      ) : null}
     </Group>
   );
 }
 
-function HandLayer({ L, back, under, shadow }: { L: HandLayers; back: boolean; under: SkPath | null; shadow: boolean }) {
+/** A nail where one faces the viewer: a little pinker and lighter than the
+ *  skin, with a soft highlight along its curve — never a pale sticker. */
+function NailV2({ path }: { path: SkPath }) {
+  return (
+    <Group>
+      <Path path={path} color={NAIL.fill} opacity={0.22} />
+      <Group clip={path}>
+        <Group transform={[{ translateX: -LIGHT.u * 1.2 }, { translateY: -LIGHT.v * 1.2 }]}>
+          <Path path={path} color={SKIN.deep} opacity={0.18}>
+            <BlurMask blur={0.8} style="normal" />
+          </Path>
+        </Group>
+        <Group transform={[{ translateX: LIGHT.u * 1.4 }, { translateY: LIGHT.v * 1.4 }]}>
+          <Path path={path} style="stroke" strokeWidth={1} color="#fff3ea" opacity={0.18}>
+            <BlurMask blur={0.6} style="normal" />
+          </Path>
+        </Group>
+      </Group>
+    </Group>
+  );
+}
+
+function HandSide({ hand, back, under }: { hand: HandBuilt; back: boolean; under: SkPath | null }) {
+  const L = hand.L;
   const parts = L.parts.filter((p) => p.back === back);
-  const outline = back ? L.behind : L.front;
-  if (!parts.length || !outline) return null;
+  const form = back ? hand.formBack : hand.formFront;
+  if (!parts.length || !form) return null;
   const d0 = Math.min(...L.parts.map((p) => p.depth));
   const d1 = Math.max(...L.parts.map((p) => p.depth));
   const span = Math.max(20, d1 - d0);
   return (
     <Group>
-      {shadow ? (
-        <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
-          <Path path={outline} color="#000" opacity={0.3}>
-            <BlurMask blur={2.6} style="normal" />
-          </Path>
-        </Group>
-      ) : null}
+      {/* the skin form first, as one silhouette */}
+      <Path path={form}>{skinFill(L)}</Path>
       {parts.map((p, i) => (
-        <HandPartV2 key={i} p={p} L={L} under={under} shade={((d1 - p.depth) / span) * 0.12 + (back ? 0.08 : 0)} />
+        <Group key={i}>
+          <PartForm p={p} L={L} shade={((d1 - p.depth) / span) * 0.1 + (back ? 0.07 : 0)} />
+          {p.kind === 'palm' ? (
+            <Group clip={p.path}>
+              {/* the back of the hand toward the light, the palm's face turning under */}
+              <Path path={p.path}>
+                <LinearGradient start={vec(hand.palmAxis.a.u, hand.palmAxis.a.v)} end={vec(hand.palmAxis.b.u, hand.palmAxis.b.v)} colors={['rgba(255,236,222,0.16)', 'rgba(0,0,0,0)', 'rgba(52,28,18,0.32)']} />
+              </Path>
+              <Path path={hand.formsLight} color={SKIN.rim} opacity={0.3}>
+                <BlurMask blur={6} style="normal" />
+              </Path>
+              <Path path={hand.formsDark} color={SKIN.deep} opacity={0.3}>
+                <BlurMask blur={6} style="normal" />
+              </Path>
+              <Path path={hand.tendons} style="stroke" strokeWidth={3.2} strokeCap="round" color={SKIN.rim} opacity={0.22}>
+                <BlurMask blur={1.6} style="normal" />
+              </Path>
+              <Path path={hand.palmLines} style="stroke" strokeWidth={1.8} strokeCap="round" color={SKIN.deep} opacity={0.32}>
+                <BlurMask blur={0.9} style="normal" />
+              </Path>
+            </Group>
+          ) : null}
+        </Group>
       ))}
+      <Group clip={form}>
+        <Path path={back ? hand.warmBack : hand.warmFront} color={WARM} opacity={0.22}>
+          <BlurMask blur={3.5} style="normal" />
+        </Path>
+        {/* where a finger lies over its neighbour, and each joint's crease: soft */}
+        {back ? null : (
+          <>
+            <Path path={hand.creases} style="stroke" strokeWidth={2.6} strokeCap="round" color={SKIN.deep} opacity={0.3}>
+              <BlurMask blur={1.3} style="normal" />
+            </Path>
+            <Path path={hand.creases} style="stroke" strokeWidth={0.7} strokeCap="round" color={SKIN.edge} opacity={0.32} />
+          </>
+        )}
+      </Group>
+      {parts.map((p, i) => (p.nail ? <NailV2 key={`n${i}`} path={p.nail} /> : null))}
+      {/* the silhouette's edge: only a shade darker, and none over the art's own forearm */}
+      <Group clip={under ?? undefined} invertClip={!!under}>
+        <Path path={form} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.5} />
+      </Group>
     </Group>
   );
 }
 
-/** A hand holding a stick: the stick passes THROUGH the grip (paths.HandBuilt). */
+/** A hand holding a stick (paths.HandBuilt): the stick passes THROUGH the
+ *  grip — the fingers wrapped behind it first, its shadow on them, the stick,
+ *  then the thumb and the fingers in front with their shadow on the stick. */
 export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath | null; stick?: ReactNode }) {
+  const frontShadow = (
+    <Group clip={hand.stickBody}>
+      <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
+        <Path path={hand.formFront} color="#000" opacity={0.45}>
+          <BlurMask blur={2.6} style="normal" />
+        </Path>
+      </Group>
+    </Group>
+  );
   if (hand.endOn)
     return (
       <Group>
         {stick ?? null}
-        <HandLayer L={hand.L} back under={under} shadow={false} />
-        <HandLayer L={hand.L} back={false} under={under} shadow />
+        <HandSide hand={hand} back under={under} />
+        <HandSide hand={hand} back={false} under={under} />
         {stick && hand.buttShow ? <Group clip={hand.buttShow}>{stick}</Group> : null}
       </Group>
     );
   return (
     <Group>
-      <HandLayer L={hand.L} back under={under} shadow={false} />
+      <HandSide hand={hand} back under={under} />
+      {/* the stick's shadow on the fingers wrapped behind it */}
+      {hand.formBack ? (
+        <Group clip={hand.formBack}>
+          <Group transform={[{ translateX: -LIGHT.u * 4 }, { translateY: -LIGHT.v * 4 }]}>
+            <Path path={hand.stickLine} style="stroke" strokeWidth={14} strokeCap="round" color="#000" opacity={0.35}>
+              <BlurMask blur={2.5} style="normal" />
+            </Path>
+          </Group>
+        </Group>
+      ) : null}
       {stick ?? null}
-      <HandLayer L={hand.L} back={false} under={under} shadow />
+      {/* the front fingers' shadow where they close on the stick */}
+      {frontShadow}
+      <HandSide hand={hand} back={false} under={under} />
+    </Group>
+  );
+}
+
+/* ── the authored hand (authoredHands.ts) ── */
+
+/** One authored part: the hand's one skin light (no seam), its own cylinder
+ *  turning across its axis, a soft lit edge; it casts a soft shadow on what
+ *  lies under it — the separation between neighbouring forms is that shadow,
+ *  never an outline. */
+function ArtPart({ path, axis, kind, box, within }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath }) {
+  const m = { u: box.x + box.width / 2, v: box.y + box.height / 2 };
+  // (mostly from above: the top planes lit, the under planes turning away)
+  const Ld = { u: -0.32, v: -0.95 };
+  const R = 56;
+  const w = kind === 'palm' ? 40 : kind === 'web' ? 10 : 10;
+  const [s0, e0] = across(axis[0], axis[1], w);
+  return (
+    <Group>
+      <Group clip={within}>
+        <Group transform={[{ translateX: -LIGHT.u * 2.6 }, { translateY: -LIGHT.v * 2.6 }]}>
+          <Path path={path} color="#2a160e" opacity={kind === 'palm' ? 0 : 0.5}>
+            <BlurMask blur={2.6} style="normal" />
+          </Path>
+        </Group>
+      </Group>
+      <Path path={path}>
+        <LinearGradient start={vec(m.u + Ld.u * R, m.v + Ld.v * R)} end={vec(m.u - Ld.u * R, m.v - Ld.v * R)} colors={['#cfb19b', SKIN.form[1], SKIN.form[2], '#7f5d4c']} positions={[0, 0.35, 0.75, 1]} />
+      </Path>
+      <Group clip={path}>
+        <Path path={path}>
+          <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={kind === 'digit' ? ['rgba(255,238,226,0.32)', 'rgba(255,238,226,0.06)', 'rgba(52,26,16,0.24)', 'rgba(52,26,16,0.58)'] : ['rgba(255,238,226,0.22)', 'rgba(255,238,226,0.04)', 'rgba(52,26,16,0.16)', 'rgba(52,26,16,0.42)']} positions={[0, 0.3, 0.7, 1]} />
+        </Path>
+        <Path path={rimOf(path, 2.4)} color={SKIN.rim} opacity={0.3}>
+          <BlurMask blur={1.2} style="normal" />
+        </Path>
+      </Group>
+    </Group>
+  );
+}
+
+/** The authored hand on its stick, the stick through it in depth order. */
+export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
+  const b = a.all.getBounds();
+  const box = { x: b.x, y: b.y, width: b.width, height: b.height };
+  const paint = (layer: 'back' | 'front') => {
+    const ps = a.parts.filter((p) => p.layer === layer);
+    if (!ps.length) return null;
+    const form = layer === 'back' ? a.back : a.front;
+    return (
+      <Group>
+        {ps.map((p, i) => (
+          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} />
+        ))}
+        {form ? (
+          <Group clip={form}>
+            {a.lights.map((l, i) => (
+              <Path key={`l${i}`} path={l} color={SKIN.rim} opacity={0.26}>
+                <BlurMask blur={4} style="normal" />
+              </Path>
+            ))}
+            {a.darks.map((l, i) => (
+              <Path key={`d${i}`} path={l} color={SKIN.deep} opacity={0.3}>
+                <BlurMask blur={5} style="normal" />
+              </Path>
+            ))}
+            <Path path={a.warm} color={WARM} opacity={0.22}>
+              <BlurMask blur={3} style="normal" />
+            </Path>
+            <Path path={a.creases} style="stroke" strokeWidth={2.4} strokeCap="round" color={SKIN.deep} opacity={0.3}>
+              <BlurMask blur={1.1} style="normal" />
+            </Path>
+            <Path path={a.creases} style="stroke" strokeWidth={0.7} strokeCap="round" color={SKIN.edge} opacity={0.24} />
+            {a.nails.map((n, i) => (
+              <NailV2 key={`n${i}`} path={n} />
+            ))}
+          </Group>
+        ) : null}
+      </Group>
+    );
+  };
+  const edge = <Path path={a.all} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.5} />;
+  if (a.endOn)
+    return (
+      <Group>
+        {stick ?? null}
+        {paint('back')}
+        {paint('front')}
+        {edge}
+        {/* the butt comes toward the viewer out of the fist's opening: its contact shadow, its stub, its end */}
+        {a.stub && a.stubCap ? (
+          <Group>
+            <Group clip={a.all}>
+              <Path path={a.stub} color="#000" opacity={0.45}>
+                <BlurMask blur={3.5} style="normal" />
+              </Path>
+            </Group>
+            <Group clip={a.stub}>{stick ?? null}</Group>
+            <Path path={a.stubCap} color="#d8b98a" />
+            <Path path={a.stubCap} color="#7a5428" opacity={0.25} transform={[{ translateX: -LIGHT.u * 2 }, { translateY: -LIGHT.v * 2 }]} />
+            <Path path={a.stubCap} style="stroke" strokeWidth={1.2} color="#3a240e" opacity={0.8} />
+          </Group>
+        ) : null}
+      </Group>
+    );
+  return (
+    <Group>
+      {paint('back')}
+      {/* the stick's shadow on the palm */}
+      {a.back ? (
+        <Group clip={a.back}>
+          <Group transform={[{ translateX: -LIGHT.u * 5 }, { translateY: -LIGHT.v * 5 }]}>
+            <Path path={a.stickLine} style="stroke" strokeWidth={14} strokeCap="round" color="#2a160e" opacity={0.4}>
+              <BlurMask blur={3} style="normal" />
+            </Path>
+          </Group>
+        </Group>
+      ) : null}
+      {stick ?? null}
+      {/* the fingers' and thumb's shadow where they close on the stick */}
+      <Group clip={a.stickBody}>
+        <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
+          <Path path={a.front} color="#000" opacity={0.5}>
+            <BlurMask blur={2.4} style="normal" />
+          </Path>
+        </Group>
+      </Group>
+      {paint('front')}
+      {edge}
     </Group>
   );
 }

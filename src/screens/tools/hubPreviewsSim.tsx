@@ -26,6 +26,7 @@ import Reanimated, { useAnimatedProps, useSharedValue } from 'react-native-reani
 import { DemoTag, LvlGrad, MirGrad, NATIVE_DRIVER, useMeasuredWidth, Vignette } from './hubPreviewShared';
 import { STRIP_VIEWBOX, STRIP_WINDOW } from './TileChassis';
 import type { ToolKey } from './toolsData';
+import { GEN_NOISE_LOOP, genNoisePath, genNoiseSamples, makeRng } from './hubGenNoise';
 
 // The tile shows the art's PLOT WINDOW, not the full 2048×1024 canvas (owner
 // 2026-09-05 — no bezel, no plot-top highlight); the minis draw in the same
@@ -42,15 +43,8 @@ const PLOT = {
   h: 816 / STRIP_WINDOW.h,
 };
 
-/** Deterministic LCG (the SignalGenDemo constants). Seeded once per mount so
- *  sibling cards drift apart naturally; visuals stay reproducible per seed. */
-function makeRng(seed: number): () => number {
-  let s = seed >>> 0;
-  return () => {
-    s = (s * 1664525 + 1013904223) >>> 0;
-    return s / 0xffffffff;
-  };
-}
+// makeRng (the deterministic LCG, seeded once per mount so sibling cards
+// drift apart naturally) lives in ./hubGenNoise beside the noise trace.
 
 /* ================================================================== */
 /* 06 â€” TONE / NOISE GENERATOR (waveform-type tour)                    */
@@ -95,28 +89,24 @@ function genWavePath(kind: GenShape): string {
   return parts.join('');
 }
 
-/** Seeded noise paths (fixed seeds â€” deterministic, per the demo contract). */
-function genNoisePath(seed: number): string {
-  const rng = makeRng(seed);
-  const parts: string[] = [];
-  let acc = 0;
-  for (let x = 0; x <= GEN_PLOT_W; x += 9) {
-    // Lightly smoothed white noise so the trace reads as broadband, not spikes.
-    acc = acc * 0.35 + (rng() * 2 - 1) * 0.85;
-    const y = GEN_MID - Math.max(-1, Math.min(1, acc)) * GEN_AMP;
-    parts.push(`${x === 0 ? 'M' : 'L'}${x} ${y.toFixed(1)}`);
-  }
-  return parts.join('');
-}
-
+/** The noise trace: ONE seeded noise signal, one value per sample index,
+ *  periodic over exactly one loop length (./hubGenNoise), drawn across the
+ *  plot plus that loop so it can scroll and wrap with no jump. */
 const GEN_PATHS: Record<GenShape, string> = {
   sine: genWavePath('sine'),
   square: genWavePath('square'),
   triangle: genWavePath('triangle'),
   saw: genWavePath('saw'),
-  noise: genNoisePath(0xc0ffee),
+  noise: genNoisePath(genNoiseSamples(), GEN_PLOT_W, GEN_MID, GEN_AMP),
 };
-const GEN_NOISE_B = genNoisePath(0xbada55);
+
+/** Canvas units one slot scrolls per loop: one wavelength, or (noise) one
+ *  period of the noise. */
+function loopUnitsOf(kind: GenShape): number {
+  return kind === 'noise' ? GEN_NOISE_LOOP : GEN_LAMBDA;
+}
+/** Every shape slides at ONE speed: one wavelength per 1.5 s. */
+const GEN_SCROLL_MS_PER_UNIT = 1500 / GEN_LAMBDA;
 
 const GEN_CHROME = (
   <G>
@@ -127,8 +117,10 @@ const GEN_CHROME = (
 
 /** One wave slot: its own inner Svg (plot-local coords) inside a clipped,
  *  scroll-translated layer. Periodic shapes scroll by exactly one wavelength
- *  (the SignalGenDemo trick â€” seamless); noise renders trace A here while the
- *  parent cross-fades seeded trace B on top to suggest motion. */
+ *  (the SignalGenDemo trick â€” seamless); noise scrolls by exactly one period
+ *  of its seeded, periodic sequence at the same speed, so every point of the
+ *  trace keeps its value until it leaves the tile (owner 2026-11-22: a drawn
+ *  waveform never becomes some other waveform later). */
 function GenWaveSlot({
   shape,
   opacity,
@@ -143,52 +135,48 @@ function GenWaveSlot({
   active: boolean;
 }) {
   const scroll = useRef(new Animated.Value(0)).current;
-  const lambdaPt = (GEN_LAMBDA / GEN_PLOT_W) * plotW;
+  const loopUnits = loopUnitsOf(shape);
+  const loopPt = (loopUnits / GEN_PLOT_W) * plotW;
 
   useEffect(() => {
-    if (!active || shape === 'noise' || plotW <= 0) return undefined;
+    if (!active || plotW <= 0) return undefined;
     scroll.setValue(0);
     const loop = Animated.loop(
-      Animated.timing(scroll, { toValue: 1, duration: 1500, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(scroll, {
+        toValue: 1,
+        duration: Math.round(loopUnits * GEN_SCROLL_MS_PER_UNIT),
+        easing: Easing.linear,
+        useNativeDriver: NATIVE_DRIVER,
+      }),
     );
     loop.start();
     return () => loop.stop();
-  }, [active, shape, plotW, scroll]);
+  }, [active, shape, plotW, scroll, loopUnits]);
 
   if (plotW <= 0) return null;
   // One Svg per slot at a time â€” the slot letter alone keeps ids unique.
   const gradId = `hpMirGen${slot}`;
-  const scrollX = scroll.interpolate({ inputRange: [0, 1], outputRange: [0, -lambdaPt] });
-  const svgW = plotW * ((GEN_PLOT_W + GEN_LAMBDA) / GEN_PLOT_W);
+  const scrollX = scroll.interpolate({ inputRange: [0, 1], outputRange: [0, -loopPt] });
+  const svgW = plotW * ((GEN_PLOT_W + loopUnits) / GEN_PLOT_W);
 
   return (
     <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]}>
-      {shape === 'noise' ? (
-        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`0 0 ${GEN_PLOT_W} ${GEN_PLOT_H}`} preserveAspectRatio="none">
+      <Animated.View
+        style={{ width: svgW, height: '100%', transform: [{ translateX: scrollX }] }}
+      >
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
+          width="100%"
+          height="100%"
+          viewBox={`0 0 ${GEN_PLOT_W + loopUnits} ${GEN_PLOT_H}`}
+          preserveAspectRatio="none"
+        >
           <Defs>
             <MirGrad id={gradId} y1={GEN_MID - GEN_AMP} y2={GEN_MID + GEN_AMP} />
           </Defs>
-          <Path d={GEN_PATHS.noise} fill="none" stroke={`url(#${gradId})`} strokeWidth={34} opacity={0.22} />
-          <Path d={GEN_PATHS.noise} fill="none" stroke={`url(#${gradId})`} strokeWidth={16} strokeLinecap="round" />
+          <Path d={GEN_PATHS[shape]} fill="none" stroke={`url(#${gradId})`} strokeWidth={34} opacity={0.22} />
+          <Path d={GEN_PATHS[shape]} fill="none" stroke={`url(#${gradId})`} strokeWidth={16} strokeLinecap="round" />
         </Svg>
-      ) : (
-        <Animated.View
-          style={{ width: svgW, height: '100%', transform: [{ translateX: scrollX }] }}
-        >
-          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
-            width="100%"
-            height="100%"
-            viewBox={`0 0 ${GEN_PLOT_W + GEN_LAMBDA} ${GEN_PLOT_H}`}
-            preserveAspectRatio="none"
-          >
-            <Defs>
-              <MirGrad id={gradId} y1={GEN_MID - GEN_AMP} y2={GEN_MID + GEN_AMP} />
-            </Defs>
-            <Path d={GEN_PATHS[shape]} fill="none" stroke={`url(#${gradId})`} strokeWidth={34} opacity={0.22} />
-            <Path d={GEN_PATHS[shape]} fill="none" stroke={`url(#${gradId})`} strokeWidth={16} strokeLinecap="round" />
-          </Svg>
-        </Animated.View>
-      )}
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -198,14 +186,13 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
   const [pair, setPair] = useState<{ cur: GenShape; prev: GenShape }>({ cur: 'sine', prev: 'sine' });
   const fade = useRef(new Animated.Value(1)).current;
   const rngRef = useRef(makeRng((Date.now() ^ 0x51e77) >>> 0));
-  const noiseFlick = useRef(new Animated.Value(0)).current;
 
   // Waveform tour: 6â€“14 s per shape with restrained LCG variation + a
   // randomized starting offset so sibling cards never move in sync. The next
   // shape derives from CURRENT state (not a closure index) so re-activation
   // after a blur continues the tour instead of jumping/blank-flashing; once a
   // cross-fade completes, prev collapses onto cur so the invisible slot (and
-  // its scroll/flicker loops) unmounts instead of running at opacity 0.
+  // its scroll loop) unmounts instead of running at opacity 0.
   useEffect(() => {
     if (!active) return undefined;
     const rng = rngRef.current;
@@ -231,20 +218,6 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
     };
   }, [active, fade]);
 
-  // Noise slots flicker between two seeded traces to suggest motion.
-  useEffect(() => {
-    if (!active || (pair.cur !== 'noise' && pair.prev !== 'noise')) return undefined;
-    noiseFlick.setValue(0);
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(noiseFlick, { toValue: 1, duration: 170, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }),
-        Animated.timing(noiseFlick, { toValue: 0, duration: 170, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [active, pair, noiseFlick]);
-
   const plotW = w * PLOT.w;
   const prevOp = fade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
 
@@ -254,7 +227,8 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
         <Rect width={2048} height={1024} fill="#060608" />
         {GEN_CHROME}
       </Svg>
-      {/* Clipped plot window holding the two cross-fading wave slots. */}
+      {/* Clipped plot window holding the wave slots (two only while the tour
+          cross-fades from one generator shape to the next). */}
       <View
         style={{
           position: 'absolute',
@@ -269,17 +243,6 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
           <GenWaveSlot shape={pair.prev} opacity={prevOp} plotW={plotW} slot="A" active={active} />
         )}
         <GenWaveSlot shape={pair.cur} opacity={fade} plotW={plotW} slot="B" active={active} />
-        {/* Second seeded noise trace cross-fades over the first. */}
-        {(pair.cur === 'noise' || pair.prev === 'noise') && plotW > 0 && (
-          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: Animated.multiply(noiseFlick, pair.cur === 'noise' ? fade : prevOp) }]}>
-            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`0 0 ${GEN_PLOT_W} ${GEN_PLOT_H}`} preserveAspectRatio="none">
-              <Defs>
-                <MirGrad id="hpMirGenN2" y1={GEN_MID - GEN_AMP} y2={GEN_MID + GEN_AMP} />
-              </Defs>
-              <Path d={GEN_NOISE_B} fill="none" stroke="url(#hpMirGenN2)" strokeWidth={16} strokeLinecap="round" />
-            </Svg>
-          </Animated.View>
-        )}
       </View>
       <Vignette />
       <DemoTag />

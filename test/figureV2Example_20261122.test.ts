@@ -34,6 +34,8 @@ const G = R(await import('../src/screens/lab/miking/lessons/shared/figureV2/grip
 const GE = R(await import('../src/screens/lab/miking/lessons/shared/figureV2/geom.ts'));
 const PA = R(await import('../src/screens/lab/miking/lessons/shared/figureV2/paths.ts'));
 const PAL = await import('../src/screens/lab/miking/lessons/shared/figureV2/palette.ts');
+const PA_ANAT = await import('../src/screens/lab/miking/lessons/shared/hand/anatomy/anatomy.ts');
+const AUTH = await import('../src/screens/lab/miking/lessons/shared/figureV2/authoredHands.ts');
 const KSA = R(await import('../src/screens/lab/miking/lessons/shared/kitScene/KitSceneArt.tsx'));
 const PF = R(await import('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx'));
 const SPOSE = R(await import('../src/screens/lab/miking/lessons/shared/kitScene/stickPose.ts'));
@@ -285,5 +287,115 @@ describe('figure V2 — round 2 (owner-eyed review, 2026-11-22)', () => {
     // the hem's lowest point no lower than the shoe's top at the heel and above the sole
     const lowest = Math.max(...l.lower.map((q: Pt) => q.v));
     assert.ok(lowest < s.heel.v - 20, 'the hem stays on the shoe, above the sole');
+  });
+});
+
+describe('figure V2 — the hands (owner: "Fix the hands", 2026-11-23)', () => {
+  const d3 = SPOSE.drummerPose(KIT_GROOVE);
+  const holds = KD.kitHolds(d3);
+
+  it('each hand holds its stick in a matched grip: the roll recorded, the thumb on the upper side of the stick', () => {
+    // The roll about the stick: 0 = German (palm down), 90 = French (thumb on top).
+    // The left hand sits in the American grip; the right hand turns toward it only as
+    // far as its wrist allows on this pose (the right forearm runs up into the hi-hat
+    // stroke: a 45° roll would bend the wrist ≈ 56°, past the owner's 45° rule).
+    assert.ok(holds.L.roll >= 30 && holds.L.roll <= 60, `left roll ${holds.L.roll.toFixed(0)}°`);
+    assert.ok(holds.R.roll >= 0 && holds.R.roll <= 60, `right roll ${holds.R.roll.toFixed(0)}°`);
+    for (const [arm, h] of [
+      [d3.R, holds.R],
+      [d3.L, holds.L],
+    ] as const) {
+      const pad = h.sk.thumb.joints[h.sk.thumb.joints.length - 1];
+      assert.ok(pad.y < arm.fulcrum.y, `${arm.hand}: the thumb's pad above the stick (${(arm.fulcrum.y - pad.y).toFixed(0)} mm)`);
+      assert.ok(h.bend <= 45, `${arm.hand}: wrist ${h.bend.toFixed(0)}°`);
+      assert.ok(Math.abs(h.fore - 262) < 30, `${arm.hand}: forearm ${h.fore.toFixed(0)} mm`);
+      const t = h.sk.thumb.joints[3];
+      assert.ok(Math.hypot(t.x - arm.fulcrum.x, t.y - arm.fulcrum.y, t.z - arm.fulcrum.z) < 40, `${arm.hand}: thumb pad at the fulcrum`);
+    }
+  });
+
+  it('the united hand silhouette (palm, webbing, every digit) contains the fulcrum in the side view', () => {
+    for (const [arm, h] of [
+      [d3.R, holds.R],
+      [d3.L, holds.L],
+    ] as const) {
+      const P2 = (q: V3): Pt => ({ u: q.x, v: q.y });
+      const sk = h.sk;
+      const web: Pt[] = [];
+      for (let i = 0; i < 3; i++) {
+        const a = sk.fingers[i].joints;
+        const b = sk.fingers[i + 1].joints;
+        web.push(P2(a[0]), P2(b[0]), { u: a[0].x + (a[1].x - a[0].x) * 0.42, v: a[0].y + (a[1].y - a[0].y) * 0.42 });
+      }
+      const form = GE.hull([...sk.palm.map(P2), ...sk.fingers.flatMap((f: { joints: V3[] }) => f.joints.map(P2)), ...sk.thumb.joints.map(P2), ...web]);
+      assert.ok(GE.inPoly(P2(arm.fulcrum), form), `${arm.hand}: the fulcrum inside the hand's form`);
+    }
+    // The painter fills ONE united skin form per side of the stick, then shades inside it.
+    const paths = read('src/screens/lab/miking/lessons/shared/figureV2/paths.ts');
+    assert.match(paths, /const formFront = front\.length \? unionOf\(\.\.\.front\)/);
+    assert.match(paths, /webbing\(sk, P\)/);
+    const paint = read('src/screens/lab/miking/lessons/shared/figureV2/paint.tsx');
+    assert.match(paint, /\{\/\* the skin form first, as one silhouette \*\/\}\s*<Path path=\{form\}>/);
+  });
+
+  it('an adult hand: ≈ 186 mm long, 70–90 mm across the knuckles, the middle finger longest', () => {
+    const { handProportions } = R(PA_ANAT);
+    const p = handProportions();
+    assert.ok(p.handLength > 178 && p.handLength < 196, `hand ${p.handLength.toFixed(0)} mm`);
+    assert.ok(p.breadth >= 70 && p.breadth <= 90, `breadth ${p.breadth.toFixed(0)} mm`);
+    assert.ok(p.fingers.middle > p.fingers.index && p.fingers.middle > p.fingers.ring && p.fingers.middle > p.fingers.little);
+  });
+});
+
+describe('figure V2 — the authored hands (owner: "Fix the hands", round 3)', () => {
+  const AH = R(AUTH);
+  const plan = KD.kitDrummerPlan();
+
+  it('the fist from its little-finger side is a compact block: ≈ 100 mm wrist to knuckle, 0.6–0.8 as tall at the knuckle end', () => {
+    const art = AH.handArt('fistEdge');
+    const all: Pt[] = art.parts.flatMap((p: { outline: Pt[] }) => p.outline);
+    const k = art.knuckle;
+    const length = k.u; // the wrist crease is the frame's origin
+    assert.ok(length > 85 && length < 110, `wrist to knuckle ${length.toFixed(0)} mm`);
+    const end = all.filter((q) => q.u > k.u - 30);
+    const height = Math.max(...end.map((q) => q.v)) - Math.min(...end.map((q) => q.v));
+    assert.ok(height / length >= 0.6 && height / length <= 0.8, `height ${height.toFixed(0)} mm = ${(height / length).toFixed(2)} of the length`);
+    // The hypothenar fills the space under the back of the hand (no loaf): the body is
+    // at least 0.55 of the knuckle-end height deep half way along.
+    const body = art.parts.find((p: { name: string }) => p.name === 'hand').outline as Pt[];
+    const mid = body.filter((q) => Math.abs(q.u - 45) < 12);
+    const depth = Math.max(...mid.map((q) => q.v)) - Math.min(...mid.map((q) => q.v));
+    assert.ok(depth >= 0.55 * height, `depth half way ${depth.toFixed(0)} mm`);
+  });
+
+  it('each placed hand: its authored outline contains the fulcrum; the stick passes through it', () => {
+    for (const a of [plan.arms.near, plan.arms.far]) {
+      const h = a.placed!;
+      assert.ok(h, 'an authored hand is placed on each stick');
+      const inside = h.parts.some((p: { placed: Pt[] }) => GE.inPoly(h.F, p.placed));
+      assert.ok(inside, `${h.art.view}: the fulcrum inside the drawn hand`);
+      assert.deepEqual(h.F, { u: a.hold!.fulcrum.x, v: a.hold!.fulcrum.y }, 'the drawing sits on the pose’s own fulcrum');
+    }
+    assert.equal(plan.arms.near.placed!.art.view, 'fistEdge', 'the right hand: the stick runs along the line of sight');
+    assert.equal(plan.arms.far.placed!.art.view, 'palmThumb', 'the left hand: palm side, thumb on top');
+  });
+
+  it("the left hand's thumb tip lies on the upper side of the stick, the index hooked ahead of it", () => {
+    const h = plan.arms.far.placed!;
+    const t = h.thumbTip!;
+    const vLine = h.F.v + ((t.u - h.F.u) * (h.bead.v - h.F.v)) / (h.bead.u - h.F.u);
+    assert.ok(t.v < vLine, `thumb tip ${(vLine - t.v).toFixed(0)} mm above the stick's line`);
+    // The index's hook (its middle joint) is further along the stick than the thumb's tip.
+    const along = (q: Pt) => (q.u - h.F.u) * (h.bead.u - h.F.u) + (q.v - h.F.v) * (h.bead.v - h.F.v);
+    assert.ok(along(h.knuckle) > along(t), 'the index hooks ahead of the thumb');
+  });
+
+  it('placed at 1 : 1 (real millimetres) and the forearm meets the drawn wrist', () => {
+    for (const a of [plan.arms.near, plan.arms.far]) {
+      const h = a.placed!;
+      const d = Math.hypot(h.at({ u: 100, v: 0 }).u - h.at({ u: 0, v: 0 }).u, h.at({ u: 100, v: 0 }).v - h.at({ u: 0, v: 0 }).v);
+      assert.ok(Math.abs(d - 100) < 1e-6, 'scale 1');
+      assert.deepEqual(a.wrist, h.wrist, 'the sleeve and wrist run to the drawn hand');
+    }
   });
 });

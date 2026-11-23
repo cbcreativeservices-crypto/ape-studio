@@ -42,6 +42,7 @@ import type { PlayerPose } from '../players/playerPose.ts';
 import type { HandView } from '../players/handModel.ts';
 import { add, boundsOf, crossZ, dist, dot, frame2, lerp, limbOutline, mapPts, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { StickHold } from './grip.ts';
+import { placeHand, type PlacedHand } from './authoredHands.ts';
 
 export type Ellipse = { c: Pt; rx: number; ry: number; rot: number };
 
@@ -113,6 +114,8 @@ export type ArmPlan = {
   upperAxis: [Pt, Pt];
   foreAxis: [Pt, Pt];
   hold: StickHold | null;
+  /** The authored hand placed on the pose (authoredHands.ts), when it holds a stick. */
+  placed: PlacedHand | null;
   /** The forearm runs away from the viewer (behind its own elbow): the
    *  forearm, the cuff and the hand are painted before the upper sleeve. */
   away: boolean;
@@ -346,7 +349,7 @@ export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF:
  *  sleeve narrowing to a cuff a little wider than the wrist. */
 const SLEEVE_R = { top: 47, delt: 46, bicep: 43, elbow: 40, fore: 36.5, cuffIn: 32.5, cuff: 32, wrist: 23 } as const;
 
-function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean): ArmPlan {
+function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null): ArmPlan {
   const du = unit(sub(elbow, shoulder));
   const df = unit(sub(wrist, elbow));
   const n = perp(du);
@@ -358,7 +361,8 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
   const upper = limbOutline([top, lerp(shoulder, elbow, 0.3), lerp(shoulder, elbow, 0.7), elbow], [SLEEVE_R.top, SLEEVE_R.delt, SLEEVE_R.bicep, SLEEVE_R.elbow]);
   const foreSleeve = limbOutline([elbow, lerp(elbow, cuffA, 0.5), cuffA], [SLEEVE_R.elbow - 0.5, SLEEVE_R.fore, SLEEVE_R.cuffIn], { capEnd: false });
   const cuff = limbOutline([sub(cuffA, mul(df, 3)), cuffB], [SLEEVE_R.cuff, SLEEVE_R.cuff - 0.5], { capStart: false, capEnd: false });
-  const wristSkin = limbOutline([sub(cuffB, mul(df, 6)), wrist], [SLEEVE_R.wrist + 1.5, SLEEVE_R.wrist], { capStart: false });
+  // (ends a little short of the wrist crease, flat: the hand's own wrist covers the meeting)
+  const wristSkin = limbOutline([sub(cuffB, mul(df, 6)), sub(wrist, mul(df, placed ? 8 : 0))], [SLEEVE_R.wrist + 1.5, SLEEVE_R.wrist], { capStart: false, capEnd: !placed });
   // The crook's folds: on the inside of the bend, fanning from the crook.
   const turn = crossZ(du, df);
   const inner = Math.sign(turn) || 1;
@@ -391,8 +395,20 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
     upperAxis: [shoulder, elbow],
     foreAxis: [elbow, wrist],
     hold,
+    placed,
     away,
   };
+}
+
+/** The authored hand for a stick grip in the side view (+z toward the viewer):
+ *  seen along the stick → the fist from its little-finger side; across it →
+ *  the palm side, the thumb on top. */
+function placedOf(h: StickHold | null | undefined): PlacedHand | null {
+  if (!h) return null;
+  const d = h.dir;
+  const view = Math.abs(d.z) > 0.72 ? 'fistEdge' : 'palmThumb';
+  const Q = (k: number) => P(h.fulcrum.x + d.x * k, h.fulcrum.y + d.y * k);
+  return placeHand(view, P(h.wrist.x, h.wrist.y), Q(0), Q(-116), Q(290));
 }
 
 /* ── the legs and the shoes ── */
@@ -525,9 +541,11 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   // The seat of the trousers (the pelvis), joined to the near thigh.
   const seat: Poly = [along(0.14, 104), along(0.04, 102), along(-0.08, 92), along(-0.16, 40), along(-0.16, -40), along(-0.08, -108), along(0.04, -116), along(0.14, -114)];
   const view: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
-  const wristOf = (h: StickHold | null | undefined, w: Pt) => (h ? P(h.wrist.x, h.wrist.y) : w);
-  const near = armPlan(pose.shoulderR, pose.elbowR, wristOf(opts.holdR, pose.handR.wrist), opts.holdR ?? null, !!opts.awayR);
-  const far = armPlan(pose.shoulderL, pose.elbowL, wristOf(opts.holdL, pose.handL.wrist), opts.holdL ?? null, !!opts.awayL);
+  const pR = placedOf(opts.holdR);
+  const pL = placedOf(opts.holdL);
+  const wristOf = (pl: PlacedHand | null, w: Pt) => (pl ? pl.wrist : w);
+  const near = armPlan(pose.shoulderR, pose.elbowR, wristOf(pR, pose.handR.wrist), opts.holdR ?? null, !!opts.awayR, pR);
+  const far = armPlan(pose.shoulderL, pose.elbowL, wristOf(pL, pose.handL.wrist), opts.holdL ?? null, !!opts.awayL, pL);
   const flat = (foot: Pt): Sole => ({ ball: foot, slope: 0 });
   const shoeN = shoePlan(opts.soleR ?? flat(pose.footR), facing);
   const shoeF = shoePlan(opts.soleL ?? flat(pose.footL), facing);

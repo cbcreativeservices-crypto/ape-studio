@@ -40,6 +40,8 @@ const CONFIGS = code('src/screens/lab/fxLabConfigs.tsx');
 const CFG = CONFIGS.slice(CONFIGS.indexOf('const chorusConfig: FxLabConfig'), CONFIGS.indexOf('export const ChorusLabScreen'));
 const FX_SCREEN = 'src/screens/lab/FxLabScreen.tsx';
 const ANIM = code('src/screens/lab/fxAnim.tsx');
+// The chorus scope's maths moved beside fxAnim (owner 2026-11-23, "Yes, standing scope").
+const SCOPE = code('src/screens/lab/chorusScope.ts');
 const SRC = [
   CFG,
   code(FX_SCREEN),
@@ -172,9 +174,18 @@ describe('4. the TRY THIS numbers follow from the config and the scope', () => {
     assert.ok(textOf(GUIDES.explore).includes(`every ${sp[1]} Hz at 20 ms`));
   });
   it('LFO SLOWED: first shown at 0.87 Hz with DEPTH on CLASSIC (fxAnim cap 45 rad/s)', () => {
-    assert.match(ANIM, /const slipPerHz = trueLag \? PI2 \* \(srcHz as number\) \* 0\.006 \* Math\.max\(depth, 0\.01\) \* PI2 : 0;/);
-    assert.match(ANIM, /Math\.min\(rateHz, 45 \/ slipPerHz\)/);
-    assert.match(ANIM, /const lfoSlowed = trueLag && lfoVisHz < rateHz - 1e-6;/);
+    // Owner 2026-11-22: "Once a wave form has happend, it should not become some
+    // other waveform later in time" — and his choice on 2026-11-23, "Yes, standing
+    // scope". The chorus display is now a triggered scope; its maths moved to
+    // chorusScope.ts. The cap (45 rad/s) and the 0.864 Hz it gives are unchanged:
+    // a standing picture still strobes if the copy slides too fast.
+    assert.match(SCOPE, /return TAU \* srcHz \* \(CHORUS_SWING_MS \/ 1000\) \* Math\.max\(depth, 0\.01\) \* TAU;/);
+    assert.match(SCOPE, /export const CHORUS_SWING_MS = 6;/);
+    assert.match(SCOPE, /export const CHORUS_SLIP_CAP = 45;/);
+    assert.match(SCOPE, /return Math\.min\(rateHz, CHORUS_SLIP_CAP \/ chorusSlipPerHz\(srcHz, depth\)\);/);
+    assert.match(SCOPE, /return chorusLfoVisHz\(rateHz, depth, srcHz\) < rateHz - 1e-6;/);
+    assert.match(ANIM, /const lfoSlowed = chorusLfoSlowed\(rateHz, depth, srcHz\);/);
+    assert.match(ANIM, /const note = lfoSlowed \? `\$\{srcHz\} Hz · LFO SLOWED`/);
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-76): tray choices may carry a one-line blurb.
     assert.match(CFG, /\{ label: 'CLASSIC', value: 0\.5(?:, blurb: '[^']*')? \}/);
     const cap = 45 / (2 * Math.PI * 440 * 0.006 * 0.5 * 2 * Math.PI);
@@ -188,8 +199,10 @@ describe('4. the TRY THIS numbers follow from the config and the scope', () => {
   });
   it('MIX 100%: feedback is fixed at 0, so the drawn output IS the copy (no swelling)', () => {
     assert.match(CFG, /fixed: \[\s*\{ paramId: P\.modMode, value: 0 \},\s*\{ paramId: P\.modFeedback, value: 0 \},\s*\]/);
-    assert.match(ANIM, /const wet = Math\.sin\(kc \* \(x - dx\) - pc \+ dph\) \+ fbV \* Math\.sin/);
-    assert.match(ANIM, /\(\(1 - mixV\) \* dry \+ mixV \* wet\)/);
+    // Standing scope (owner 2026-11-23, "Yes, standing scope"): OUT is drawn by
+    // chorusScope.ts scopeOut — the same engine mix, wet = copy + fb·copy-of-copy.
+    assert.match(ANIM, /scopeOut\(\(x - x0\) \* msPerPx, srcHz, tau, mixV, fbV\)/);
+    assert.match(SCOPE, /return \(\(1 - mix\) \* dry \+ mix \* wet\) \/ \(1 \+ Math\.abs\(fb\) \* mix\);/);
     assert.match(CFG, /label: '100% = VIBRATO', value: 1\.0/);
   });
 });

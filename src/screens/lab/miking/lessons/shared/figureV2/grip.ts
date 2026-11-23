@@ -54,7 +54,28 @@ export type StickHold = {
    *  toward the bead (for the occlusion plane and the tests). */
   fulcrum: V3;
   dir: V3;
+  /** The grip's roll about the stick (degrees): 0 = German (palm down, the
+   *  back of the hand up), 90 = French (the thumb on top, the palm to the
+   *  side); the American grip most players use sits near 45. */
+  roll: number;
 };
+
+/** The German grip's back-of-hand (up, square to the stick) and the French
+ *  grip's (turned so the thumb is on top), for a stick direction s. */
+export function gripRolls(s: V3, thumbSign: 1 | -1): { zG: V3; zF: V3 } {
+  const up = v3(0, -1, 0);
+  const zG = unit(sub(up, mul(s, dot(up, s))));
+  let zF = unit(cross(s, zG));
+  // French: the thumb (thumbSign · s × z) points up.
+  if (dot(mul(unit(cross(s, zF)), thumbSign), up) < 0) zF = mul(zF, -1);
+  return { zG, zF };
+}
+
+/** The roll (degrees) of a back-of-hand direction z between German (0) and French (90). */
+export function rollOf(z: V3, s: V3, thumbSign: 1 | -1): number {
+  const { zG, zF } = gripRolls(s, thumbSign);
+  return Math.atan2(dot(z, zF), dot(z, zG)) / DEG;
+}
 
 /** Where the stick crosses the hand frame: under the knuckle row, against the
  *  palm (x along the hand from the wrist crease, z out of the back). */
@@ -107,9 +128,11 @@ export function stickHold(a: ArmIn): StickHold {
   if (hit) return hit;
   const s = unit(sub(a.bead, a.fulcrum));
   const thumbSign: 1 | -1 = a.hand === 'R' ? 1 : -1;
-  const out = a.hand === 'R' ? 1 : -1;
-  // A matched (American) grip: the back of the hand up and turned ≈ 45° outward.
-  const pref = unit(v3(0, -1, 1 * out));
+  // THE AMERICAN GRIP (what most players use): the hand rolled ≈ 45° about
+  // the stick from palm-down (German) toward thumb-up (French) — the thumb on
+  // the upper side of the stick, the back of the hand turned outward.
+  const { zG, zF } = gripRolls(s, thumbSign);
+  const pref = unit(add(zG, zF));
   const foreLen = len(sub(a.wrist, a.elbow));
   const ref0 = Math.abs(s.y) < 0.9 ? v3(0, 1, 0) : v3(1, 0, 0);
   const e1 = unit(sub(ref0, mul(s, dot(ref0, s))));
@@ -123,8 +146,12 @@ export function stickHold(a: ArmIn): StickHold {
     const bend = Math.acos(Math.max(-1, Math.min(1, dot(unit(fore), f.x))));
     let cost = len(sub(f.o, a.wrist)) ** 2;
     cost += 4 * (fl - foreLen) ** 2;
-    if (bend > 38 * DEG) cost += 200000 * (bend - 38 * DEG) ** 2;
-    cost += 12000 * (1 - dot(f.z, pref));
+    if (bend > 38 * DEG) cost += 1e6 * (bend - 38 * DEG) ** 2;
+    if (bend > 44 * DEG) cost += 1e7 * (bend - 44 * DEG) ** 2;
+    cost += 20000 * (1 - dot(f.z, pref));
+    // Never past palm-down the other way (the thumb under the stick).
+    const roll = Math.atan2(dot(f.z, zF), dot(f.z, zG));
+    if (roll < 0) cost += 1e6 * roll * roll;
     if (!best || cost < best.cost) best = { cost, f };
   };
   for (let phi = 0; phi < 360; phi += 3) for (let ang = 25; ang <= 55; ang += 2.5) tryOne(phi * DEG, ang * DEG);
@@ -139,6 +166,7 @@ export function stickHold(a: ArmIn): StickHold {
     fore: len(fore),
     fulcrum: a.fulcrum,
     dir: s,
+    roll: rollOf(f.z, s, thumbSign),
   };
   holdCache.set(key, res);
   return res;

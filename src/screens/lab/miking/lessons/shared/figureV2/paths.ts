@@ -4,8 +4,8 @@
  * in sidePlan.ts): nothing is rebuilt per frame or per render.
  */
 import { PathOp, Skia } from '@shopify/react-native-skia';
-import type { HandSkeleton, HandView, V3 } from '../players/handModel.ts';
-import { handLayers, type HandLayers } from '../hand/anatomy/drawAnatomy.ts';
+import { HAND, type HandSkeleton, type HandView, type V3 } from '../players/handModel.ts';
+import { handAsMass, handLayers, type HandLayers } from '../hand/anatomy/drawAnatomy.ts';
 import type { Ellipse, SidePlan } from './sidePlan.ts';
 import { LIGHT, type Poly, type Pt } from './geom.ts';
 
@@ -107,58 +107,272 @@ export type HandBuilt = {
   L: HandLayers;
   endOn: boolean;
   buttShow: SkPath | null;
+  /** ONE SKIN FORM per side of the stick: every part (the palm with the
+   *  webbing between the fingers' roots, each digit) united — the silhouette
+   *  that is filled first; the shading goes inside it. */
+  formFront: SkPath;
+  formBack: SkPath | null;
+  /** Where one part lies over another, and the joints' creases: soft creases
+   *  inside the form, never outlines. */
+  creases: SkPath;
+  /** The knuckles (on the back of the hand and at the middle joints) and the
+   *  fingertips: where the skin is a touch warmer and redder. */
+  warmFront: SkPath;
+  warmBack: SkPath;
+  /** The stick's own line through the grip (butt → bead), for its shadow on the hand. */
+  stickLine: SkPath;
+  /** The stick's body there (Ø 14 mm), as a shape (the hand's shadow falls on it). */
+  stickBody: SkPath;
+  /** The hand's own forms that face the viewer, each with its light (+) or
+   *  shade (−) from the key light: the thenar pad, the hollow of the palm, the
+   *  hypothenar edge and the heel, the tendons fanning on the back of the hand
+   *  to the knuckles. Soft shapes, drawn inside the palm. */
+  formsLight: SkPath;
+  formsDark: SkPath;
+  tendons: SkPath;
+  /** The palm's own creases where the palm faces the viewer (soft). */
+  palmLines: SkPath;
+  /** Across the palm from the back of the hand (a) to the palm's face (b):
+   *  the two big planes of the hand turn in the light along it. */
+  palmAxis: { a: Pt; b: Pt };
 };
+
+/** The webbing between neighbouring fingers' roots (the skin that joins them
+ *  above the knuckles' palm side): a quad from each knuckle to ≈ 40 % along
+ *  each proximal bone. */
+function webbing(sk: HandSkeleton, P: (q: V3) => Pt): SkPath {
+  const out = make();
+  for (let i = 0; i < 3; i++) {
+    const a = sk.fingers[i].joints;
+    const b = sk.fingers[i + 1].joints;
+    const at = (j: V3[], t: number) => P({ x: j[0].x + (j[1].x - j[0].x) * t, y: j[0].y + (j[1].y - j[0].y) * t, z: j[0].z + (j[1].z - j[0].z) * t });
+    const q = [P(a[0]), at(a, 0.42), at(b, 0.42), P(b[0])];
+    out.moveTo(q[0].u, q[0].v);
+    for (const r of q.slice(1)) out.lineTo(r.u, r.v);
+    out.close();
+  }
+  return out;
+}
 
 function handBuilt(sk: HandSkeleton, view: HandView, fore: number, fulcrum: V3, dir: V3): HandBuilt {
   const o = view({ x: 0, y: 0, z: 0 }).d;
-  const toward = {
-    x: view({ x: 1, y: 0, z: 0 }).d - o,
-    y: view({ x: 0, y: 1, z: 0 }).d - o,
-    z: view({ x: 0, y: 0, z: 1 }).d - o,
-  };
+  const toward = { x: view({ x: 1, y: 0, z: 0 }).d - o, y: view({ x: 0, y: 1, z: 0 }).d - o, z: view({ x: 0, y: 0, z: 1 }).d - o };
   const k = toward.x * dir.x + toward.y * dir.y + toward.z * dir.z;
   const endOn = Math.abs(k) > 0.72;
+  let L: HandLayers;
   if (!endOn) {
-    let n = {
-      x: toward.x - dir.x * k,
-      y: toward.y - dir.y * k,
-      z: toward.z - dir.z * k,
-    };
+    let n = { x: toward.x - dir.x * k, y: toward.y - dir.y * k, z: toward.z - dir.z * k };
     const l = Math.hypot(n.x, n.y, n.z) || 1;
     n = { x: n.x / l, y: n.y / l, z: n.z / l };
-    return {
-      L: handLayers(sk, view, {
-        fore,
-        cut: { p: fulcrum, n },
-        bare: true,
-        wristBack: 4,
-        v2: true,
-      }),
-      endOn,
-      buttShow: null,
-    };
+    L = handLayers(sk, view, { fore, cut: { p: fulcrum, n }, bare: true, wristBack: 4, v2: true });
+  } else {
+    L = handLayers(sk, view, { fore, bare: true, wristBack: 4, v2: true });
   }
-  const L = handLayers(sk, view, { fore, bare: true, wristBack: 4, v2: true });
-  // The half of the picture on the butt's side of the fulcrum, less the fist.
-  const f = view(fulcrum);
-  const b = view({
-    x: fulcrum.x - dir.x * 100,
-    y: fulcrum.y - dir.y * 100,
-    z: fulcrum.z - dir.z * 100,
-  });
-  const du = b.u - f.u;
-  const dv = b.v - f.v;
-  const dl = Math.hypot(du, dv) || 1;
-  const ux = du / dl;
-  const uy = dv / dl;
-  const half = make();
-  half.moveTo(f.u - uy * 600, f.v + ux * 600);
-  half.lineTo(f.u + uy * 600, f.v - ux * 600);
-  half.lineTo(f.u + uy * 600 + ux * 600, f.v - ux * 600 + uy * 600);
-  half.lineTo(f.u - uy * 600 + ux * 600, f.v + ux * 600 + uy * 600);
-  half.close();
-  const fist = L.behind ? op(L.front, L.behind, PathOp.Union) : L.front;
-  return { L, endOn, buttShow: op(half, fist, PathOp.Difference) };
+  const P = (q: V3): Pt => {
+    const r = view(q);
+    return { u: r.u, v: r.v };
+  };
+  // The palm carries the webbing (one skin with the fingers' roots).
+  const web = webbing(sk, P);
+  const parts = L.parts.map((p) => (p.kind === 'palm' ? { ...p, path: op(p.path, web, PathOp.Union) } : p));
+  const L2: HandLayers = { ...L, parts };
+  const front = parts.filter((p) => !p.back).map((p) => p.path);
+  const back = parts.filter((p) => p.back).map((p) => p.path);
+  const formFront = front.length ? unionOf(...front) : make();
+  const formBack = back.length ? unionOf(...back) : null;
+  const mass = handAsMass(L2);
+  // Warm spots: the knuckle heads (the back of the hand), the middle joints, the fingertips.
+  const warm = (keep: (q: V3) => boolean) => {
+    const w = make();
+    for (const f of sk.fingers) {
+      const j = f.joints;
+      for (const [q, r] of [
+        [j[0], f.r[0] * 0.9],
+        [j[1], f.r[1] * 0.8],
+        [j[3], f.r[3] * 0.9],
+      ] as const) {
+        if (!keep(q)) continue;
+        const c = P(q);
+        w.addCircle(c.u, c.v, r);
+      }
+    }
+    const t = sk.thumb.joints;
+    const c = P(t[3]);
+    w.addCircle(c.u, c.v, sk.thumb.r[3] * 0.9);
+    return w;
+  };
+  const cutN = !endOn ? { x: toward.x - dir.x * k, y: toward.y - dir.y * k, z: toward.z - dir.z * k } : null;
+  const isBack = (q: V3) => (cutN ? (q.x - fulcrum.x) * cutN.x + (q.y - fulcrum.y) * cutN.y + (q.z - fulcrum.z) * cutN.z < 0 : false);
+  const a = P({ x: fulcrum.x - dir.x * 116, y: fulcrum.y - dir.y * 116, z: fulcrum.z - dir.z * 116 });
+  const b = P({ x: fulcrum.x + dir.x * 290, y: fulcrum.y + dir.y * 290, z: fulcrum.z + dir.z * 290 });
+  const stickLine = make();
+  stickLine.moveTo(a.u, a.v);
+  stickLine.lineTo(b.u, b.v);
+  const sl = Math.hypot(b.u - a.u, b.v - a.v) || 1;
+  const nx = (-(b.v - a.v) / sl) * 7;
+  const ny = ((b.u - a.u) / sl) * 7;
+  const stickBody = make();
+  stickBody.moveTo(a.u + nx, a.v + ny);
+  stickBody.lineTo(b.u + nx, b.v + ny);
+  stickBody.lineTo(b.u - nx, b.v - ny);
+  stickBody.lineTo(a.u - nx, a.v - ny);
+  stickBody.close();
+  let buttShow: SkPath | null = null;
+  if (endOn) {
+    // The half of the picture on the butt's side of the fulcrum, less the fist.
+    const f = view(fulcrum);
+    const bb = view({ x: fulcrum.x - dir.x * 100, y: fulcrum.y - dir.y * 100, z: fulcrum.z - dir.z * 100 });
+    const du = bb.u - f.u;
+    const dv = bb.v - f.v;
+    const dl = Math.hypot(du, dv) || 1;
+    const ux = du / dl;
+    const uy = dv / dl;
+    const half = make();
+    half.moveTo(f.u - uy * 600, f.v + ux * 600);
+    half.lineTo(f.u + uy * 600, f.v - ux * 600);
+    half.lineTo(f.u + uy * 600 + ux * 600, f.v - ux * 600 + uy * 600);
+    half.lineTo(f.u - uy * 600 + ux * 600, f.v + ux * 600 + uy * 600);
+    half.close();
+    buttShow = op(half, formBack ? unionOf(formFront, formBack) : formFront, PathOp.Difference);
+  }
+  // THE HAND'S OWN FORMS (hand frame: x along the hand from the wrist crease,
+  // y toward the little finger, z out of the back), each drawn where it faces
+  // the viewer, light where it faces the key light (upper left, a little
+  // toward the viewer), shade where it turns away.
+  const f = sk.frame;
+  const inF = (x: number, y: number, z: number): V3 => ({ x: f.o.x + f.x.x * x + f.y.x * y + f.z.x * z, y: f.o.y + f.x.y * x + f.y.y * y + f.z.y * z, z: f.o.z + f.x.z * x + f.y.z * y + f.z.z * z });
+  const dirF = (x: number, y: number, z: number): V3 => {
+    const q = { x: f.x.x * x + f.y.x * y + f.z.x * z, y: f.x.y * x + f.y.y * y + f.z.y * z, z: f.x.z * x + f.y.z * y + f.z.z * z };
+    const l = Math.hypot(q.x, q.y, q.z) || 1;
+    return { x: q.x / l, y: q.y / l, z: q.z / l };
+  };
+  const tw = Math.hypot(toward.x, toward.y, toward.z) || 1;
+  const cam = { x: toward.x / tw, y: toward.y / tw, z: toward.z / tw };
+  const l3 = (() => {
+    // The key light in the view's own terms: up-left on the picture, a little toward the viewer.
+    const u = { x: view({ x: 1, y: 0, z: 0 }).u - view({ x: 0, y: 0, z: 0 }).u, y: view({ x: 0, y: 1, z: 0 }).u - view({ x: 0, y: 0, z: 0 }).u, z: view({ x: 0, y: 0, z: 1 }).u - view({ x: 0, y: 0, z: 0 }).u };
+    const v = { x: view({ x: 1, y: 0, z: 0 }).v - view({ x: 0, y: 0, z: 0 }).v, y: view({ x: 0, y: 1, z: 0 }).v - view({ x: 0, y: 0, z: 0 }).v, z: view({ x: 0, y: 0, z: 1 }).v - view({ x: 0, y: 0, z: 0 }).v };
+    const q = { x: u.x * LIGHT.u + v.x * LIGHT.v + cam.x * 0.5, y: u.y * LIGHT.u + v.y * LIGHT.v + cam.y * 0.5, z: u.z * LIGHT.u + v.z * LIGHT.v + cam.z * 0.5 };
+    const l = Math.hypot(q.x, q.y, q.z) || 1;
+    return { x: q.x / l, y: q.y / l, z: q.z / l };
+  })();
+  const d3 = (a3: V3, b3: V3) => a3.x * b3.x + a3.y * b3.y + a3.z * b3.z;
+  const formsLight = make();
+  const formsDark = make();
+  const FORMS: { p: [number, number, number]; n: [number, number, number]; r: number; hollow?: boolean }[] = [
+    { p: [34, -22, -15], n: [0, -0.45, -0.9], r: 15 }, // the thenar pad
+    { p: [62, 4, -15], n: [0, 0, -1], r: 14, hollow: true }, // the hollow of the palm
+    { p: [42, 30, -9], n: [0, 0.75, -0.65], r: 13 }, // the hypothenar edge
+    { p: [14, 22, -6], n: [-0.3, 0.6, -0.7], r: 12 }, // the heel of the hand
+    { p: [56, 36, 2], n: [0, 1, 0], r: 12 }, // the little finger's edge
+  ];
+  for (const F of FORMS) {
+    const nW = dirF(...F.n);
+    if (d3(nW, cam) < 0.22) continue;
+    const c = P(inF(...F.p));
+    const lit = !F.hollow && d3(nW, l3) > 0.05;
+    (lit ? formsLight : formsDark).addCircle(c.u, c.v, F.r);
+  }
+  const tendons = make();
+  if (d3(dirF(0, 0, 1), cam) > 0.22) {
+    // The back of the hand: the extensor tendons fanning from the wrist to each knuckle.
+    for (const g of sk.fingers) {
+      const k0 = g.joints[0];
+      const w0 = P(inF(12, (HAND.fingers[sk.fingers.indexOf(g)].mcp.y as number) * 0.35, HAND.thick / 2));
+      const k1 = P({ x: k0.x + f.z.x * (HAND.thick / 2), y: k0.y + f.z.y * (HAND.thick / 2), z: k0.z + f.z.z * (HAND.thick / 2) });
+      tendons.moveTo(w0.u, w0.v);
+      tendons.lineTo(w0.u + (k1.u - w0.u) * 0.85, w0.v + (k1.v - w0.v) * 0.85);
+    }
+  }
+  const palmLines = make();
+  if (d3(dirF(0, 0, -1), cam) > 0.3) {
+    // The distal palmar crease under the fingers' roots, and the crease that runs
+    // in from the index side across the palm (soft lines, not drawn ones).
+    const crease = (pts: [number, number][]) => {
+      const q = pts.map(([x, y]) => P(inF(x, y, -HAND.thick / 2 - 0.5)));
+      palmLines.moveTo(q[0].u, q[0].v);
+      for (let i = 1; i < q.length; i++) {
+        const m = { u: (q[i - 1].u + q[i].u) / 2, v: (q[i - 1].v + q[i].v) / 2 };
+        palmLines.quadTo(q[i - 1].u, q[i - 1].v, m.u, m.v);
+      }
+      palmLines.lineTo(q[q.length - 1].u, q[q.length - 1].v);
+    };
+    crease([[86, -30], [82, -8], [76, 14], [66, 32]]);
+    crease([[80, -36], [66, -14], [52, 10]]);
+  }
+  const palmAxis = { a: P(inF(50, 4, HAND.thick / 2 + 6)), b: P(inF(50, 4, -HAND.thick / 2 - 6)) };
+  return { L: L2, endOn, buttShow, formFront, formBack, formsLight, formsDark, tendons, palmLines, palmAxis, creases: mass.lines, warmFront: warm((q) => !isBack(q)), warmBack: warm(isBack), stickLine, stickBody };
+}
+
+/** An authored hand (authoredHands.ts), as paths: each part's outline (far
+ *  to near), the united silhouette behind and in front of the stick, its
+ *  creases, nails, warm spots and soft lights and darks, and the stick's
+ *  body and its butt stub (the part nearer the viewer than the fist). */
+export type ArtPaths = {
+  parts: { path: SkPath; axis: [Pt, Pt]; layer: 'back' | 'front'; kind: string; name: string }[];
+  back: SkPath | null;
+  front: SkPath;
+  all: SkPath;
+  creases: SkPath;
+  nails: SkPath[];
+  warm: SkPath;
+  lights: SkPath[];
+  darks: SkPath[];
+  stickBody: SkPath;
+  stickLine: SkPath;
+  stub: SkPath | null;
+  stubCap: SkPath | null;
+  endOn: boolean;
+};
+
+function bar(a: Pt, b: Pt, r: number): SkPath {
+  const l = Math.hypot(b.u - a.u, b.v - a.v) || 1;
+  const nx = (-(b.v - a.v) / l) * r;
+  const ny = ((b.u - a.u) / l) * r;
+  const p = make();
+  p.moveTo(a.u + nx, a.v + ny);
+  p.lineTo(b.u + nx, b.v + ny);
+  p.lineTo(b.u - nx, b.v - ny);
+  p.lineTo(a.u - nx, a.v - ny);
+  p.close();
+  return p;
+}
+
+function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>): ArtPaths {
+  const parts = h.parts.map((q) => ({ path: smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name }));
+  const backs = parts.filter((q) => q.layer === 'back').map((q) => q.path);
+  const fronts = parts.filter((q) => q.layer === 'front').map((q) => q.path);
+  const back = backs.length ? unionOf(...backs) : null;
+  const front = fronts.length ? unionOf(...fronts) : make();
+  const warm = make();
+  for (const w of h.warm) warm.addCircle(w.c.u, w.c.v, w.r);
+  const stickLine = make();
+  stickLine.moveTo(h.butt.u, h.butt.v);
+  stickLine.lineTo(h.bead.u, h.bead.v);
+  const endOn = h.art.view === 'fistEdge';
+  let stub: SkPath | null = null;
+  let stubCap: SkPath | null = null;
+  if (endOn) {
+    stub = bar(h.butt, h.stubEnd, 7);
+    stubCap = make();
+    stubCap.addCircle(h.butt.u, h.butt.v, 7);
+  }
+  return {
+    parts,
+    back,
+    front,
+    all: back ? unionOf(back, front) : front,
+    creases: many(h.creases, false),
+    nails: h.nails.map((n) => smoothClosed(n, 0.5)),
+    warm,
+    lights: h.lights.map(ellipsePath),
+    darks: h.darks.map(ellipsePath),
+    stickBody: bar(h.butt, h.bead, 7),
+    stickLine,
+    stub,
+    stubCap,
+    endOn,
+  };
 }
 
 export type ArmPaths = {
@@ -170,6 +384,7 @@ export type ArmPaths = {
   folds: SkPath;
   armhole: SkPath;
   hand: HandBuilt | null;
+  art: ArtPaths | null;
 };
 export type ShoePaths = { upper: SkPath; sole: SkPath; laces: SkPath; contact: SkPath };
 export type SidePaths = {
@@ -241,7 +456,8 @@ function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths {
     ulna: ellipsePath(a.ulna),
     folds: many(a.folds),
     armhole: smoothOpen(a.armhole),
-    hand: a.hold ? handBuilt(a.hold.sk, view, fore, a.hold.fulcrum, a.hold.dir) : null,
+    hand: a.hold && !a.placed ? handBuilt(a.hold.sk, view, fore, a.hold.fulcrum, a.hold.dir) : null,
+    art: a.placed ? artPaths(a.placed) : null,
   };
 }
 

@@ -8,7 +8,7 @@
  *   (c) NEW large: the head and neck, the two hands on the sticks, the foot
  *       on the pedal.
  * `#labpreview/FigureStudy/<part>` shows one part alone (compare, lesson,
- * head, hands, foot).
+ * head, hands, alone, foot).
  * The new look is forced on for these pictures only (KitSide `figureV2`);
  * the app keeps FIGURE_V2_READY = false [MD:D78]. Nothing here ships to a phone: the
  * harness module is required only in the web dev branch of App.tsx.
@@ -16,8 +16,10 @@
 import type { ReactNode } from 'react';
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { Canvas, Group, Rect } from '@shopify/react-native-skia';
-import { KitSide } from '../screens/lab/miking/lessons/shared/kitScene/KitSceneArt';
+import { Canvas, Group, Rect, Skia } from '@shopify/react-native-skia';
+import { KitSide, Sticks, kitSceneSticks } from '../screens/lab/miking/lessons/shared/kitScene/KitSceneArt';
+import { FigureV2HandAlone } from '../screens/lab/miking/lessons/shared/figureV2/FigureV2Side';
+import { kitDrummerPlan } from '../screens/lab/miking/lessons/shared/figureV2/kitDrummerV2';
 import { M09_MODEL } from '../screens/lab/miking/lessons/m09Overheads/geometry';
 import { sceneFrame } from '../screens/lab/miking/engine/geometry/contentFrame';
 import { fitXform } from '../screens/lab/miking/engine/geometry/frame';
@@ -36,6 +38,30 @@ function Crop({ cu, cv, mmW, mmH, w, v2, isolate = false }: { cu: number; cv: nu
       <Rect x={0} y={0} width={w} height={h} color={STAGE} />
       <Group transform={[{ translateX: w / 2 - cu * s }, { translateY: h / 2 - cv * s }, { scale: s }]}>
         <KitSide reach={false} keepOuts={false} figureV2={v2} isolate={isolate} />
+      </Group>
+    </Canvas>
+  );
+}
+
+/** One hand alone with its stick and cuff, large, on the plain dark ground (no drums). */
+function HandAlone({ which, w }: { which: 'near' | 'far'; w: number }) {
+  const plan = kitDrummerPlan();
+  const a = plan.arms[which];
+  const h = a.hold!;
+  const [near, far] = kitSceneSticks('side');
+  const st = which === 'near' ? near : far;
+  const line = Skia.Path.Make();
+  line.moveTo(st.butt.x, st.butt.y);
+  line.lineTo(st.to.x, st.to.y);
+  const cu = (h.fulcrum.x + a.wrist.u) / 2;
+  const cv = (h.fulcrum.y + a.wrist.v) / 2;
+  const mm = 230;
+  const s = w / mm;
+  return (
+    <Canvas style={{ width: w, height: w }}>
+      <Rect x={0} y={0} width={w} height={w} color={STAGE} />
+      <Group transform={[{ translateX: w / 2 - cu * s }, { translateY: w / 2 - cv * s }, { scale: s }]}>
+        <FigureV2HandAlone plan={plan} which={which} stick={<Sticks path={line} />} />
       </Group>
     </Canvas>
   );
@@ -123,6 +149,21 @@ export function FigureStudy() {
             note="The right hand (near) on the hi-hat stick, the left (far) on the snare stick. The floor tom, rack tom, near crash and ride are left out here so the hands show."
           />
           <Crop cu={-560} cv={-560} mmW={420} mmH={330} w={big} v2 isolate />
+        </Section>
+      ) : null}
+      {show('alone') ? (
+        <Section>
+          <Caption title="NEW — EACH HAND ALONE" note="The right hand on the hi-hat stick and the left hand on the snare stick, each with its stick and cuff, seen from the player’s right as in the lesson, on a plain ground." />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+            <View>
+              <Caption title="RIGHT HAND (NEAR)" />
+              <HandAlone which="near" w={only === 'alone' ? Math.min(width - 24, 600) : Math.min(330, width - 24)} />
+            </View>
+            <View>
+              <Caption title="LEFT HAND (FAR)" />
+              <HandAlone which="far" w={only === 'alone' ? Math.min(width - 24, 600) : Math.min(330, width - 24)} />
+            </View>
+          </View>
         </Section>
       ) : null}
       {show('foot') ? (

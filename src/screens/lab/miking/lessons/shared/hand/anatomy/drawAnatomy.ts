@@ -204,8 +204,9 @@ export type DrawOpts = {
   /** FIGURE V2 (D78, 2026-11-22) only: fuller knuckle heads standing out of
    *  the fist's edge, the light on them and the valleys between them also
    *  when the back of the hand is seen edge-on, and every joint's crease
-   *  (back and palm side) also when the digit is seen from its side. Off for
-   *  every existing caller (they draw exactly as before). */
+   *  (back and palm side) also when the digit is seen from its side, and the
+   *  hypothenar pad (the heel under the little finger) as its own fuller
+   *  form. Off for every existing caller (they draw exactly as before). */
   v2?: boolean;
 };
 
@@ -295,11 +296,14 @@ export function handLayers(sk: HandSkeleton, view: HandView, opts: DrawOpts = {}
   // The thenar pad: the thumb's metacarpal inside the fleshy mound at its base.
   const tj = sk.thumb.joints;
   pieces.push(capsule(P(tj[0]), P(tj[1]), sk.thumb.r[0] - 1, sk.thumb.r[1]));
+  // (v2) The hypothenar pad: the fleshy heel under the little finger, fuller
+  // on the palm side, so the hand's edge rounds into the heel instead of a slab.
+  if (opts.v2) pieces.push(capsule(P(at(14, 22, -5)), P(at(68, 27, -8)), 15, 12));
   // The four knuckle heads (the metacarpal heads): rounded where each finger leaves the palm.
   for (const dg of sk.fingers) {
     // A flexed knuckle stands out: the metacarpal head rounds the fist's edge.
     const bend = Math.max(0, h3.dot(h3.unit(h3.sub(dg.joints[1], dg.joints[0])), h3.mul(f.z, -1)));
-    if (opts.v2) pieces.push(circle(P(shift(shift(dg.joints[0], f.z, 3 + 4 * bend), f.x, 1.5 * bend)), dg.r[0] + 1.2 + 1 * bend));
+    if (opts.v2) pieces.push(circle(P(shift(shift(dg.joints[0], f.z, 5 + 4 * bend), f.x, 2 * bend)), dg.r[0] + 1.6 + 1 * bend));
     else pieces.push(circle(P(shift(shift(dg.joints[0], f.z, 1.5 + 2.2 * bend), f.x, 1.5 * bend)), dg.r[0] + 0.6 + 0.6 * bend));
   }
   const palmPath = unionAll(pieces);
