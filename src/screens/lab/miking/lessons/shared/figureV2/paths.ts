@@ -338,8 +338,23 @@ function bar(a: Pt, b: Pt, r: number): SkPath {
   return p;
 }
 
-function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>): ArtPaths {
-  const parts = h.parts.map((q) => ({ path: smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name }));
+function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { poly: Poly; axis: [Pt, Pt]; bones: Ellipse[] } | null): ArtPaths {
+  // The visible wrist is the hand's first part: one skin, one light with the
+  // palm it widens into (no seam, no change of value at the join).
+  const wristPart = wrist ? [{ path: smoothClosed(wrist.poly, 0.5), axis: wrist.axis, layer: 'back' as const, kind: 'wrist', name: 'wrist' }] : [];
+  const bonesPath = (c: { pts: Pt[]; r: number[] }) => {
+    const ps: SkPath[] = [];
+    for (let i = 0; i < c.pts.length - 1; i++) {
+      ps.push(bar(c.pts[i], c.pts[i + 1], (c.r[i] + c.r[i + 1]) / 2));
+      const j = make();
+      j.addCircle(c.pts[i + 1].u, c.pts[i + 1].v, c.r[i + 1]);
+      ps.push(j);
+    }
+    const j0 = make();
+    j0.addCircle(c.pts[0].u, c.pts[0].v, c.r[0]);
+    return unionOf(j0, ...ps);
+  };
+  const parts = [...wristPart, ...h.parts.map((q) => ({ path: q.placedChain ? bonesPath(q.placedChain) : smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name }))];
   const backs = parts.filter((q) => q.layer === 'back').map((q) => q.path);
   const fronts = parts.filter((q) => q.layer === 'front').map((q) => q.path);
   const back = backs.length ? unionOf(...backs) : null;
@@ -353,9 +368,14 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>): ArtPaths 
   let stub: SkPath | null = null;
   let stubCap: SkPath | null = null;
   if (endOn) {
-    stub = bar(h.butt, h.stubEnd, 7);
+    // The shaft from where it leaves the fist to its end: one round-ended form (a capsule),
+    // the end itself a disc (the stick points almost at the viewer).
+    const endA = make();
+    endA.addCircle(h.stubEnd.u, h.stubEnd.v, 7);
+    stub = unionOf(bar(h.butt, h.stubEnd, 7), endA);
     stubCap = make();
     stubCap.addCircle(h.butt.u, h.butt.v, 7);
+    stub = unionOf(stub, stubCap);
   }
   return {
     parts,
@@ -365,7 +385,7 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>): ArtPaths 
     creases: many(h.creases, false),
     nails: h.nails.map((n) => smoothClosed(n, 0.5)),
     warm,
-    lights: h.lights.map(ellipsePath),
+    lights: [...h.lights, ...(wrist ? wrist.bones : [])].map(ellipsePath),
     darks: h.darks.map(ellipsePath),
     stickBody: bar(h.butt, h.bead, 7),
     stickLine,
@@ -457,7 +477,7 @@ function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths {
     folds: many(a.folds),
     armhole: smoothOpen(a.armhole),
     hand: a.hold && !a.placed ? handBuilt(a.hold.sk, view, fore, a.hold.fulcrum, a.hold.dir) : null,
-    art: a.placed ? artPaths(a.placed) : null,
+    art: a.placed ? artPaths(a.placed, a.away ? null : { poly: a.wristSkin, axis: a.foreAxis, bones: [a.ulna, a.radiusBone] }) : null,
   };
 }
 

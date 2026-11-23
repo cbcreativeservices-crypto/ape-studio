@@ -105,8 +105,11 @@ export type ArmPlan = {
   cuff: Poly;
   /** The bare wrist between the cuff and the hand. */
   wristSkin: Poly;
-  /** The wrist bone's light (the head of the ulna). */
+  /** The wrist bones' lights (the head of the ulna, the radius's styloid). */
   ulna: Ellipse;
+  radiusBone: Ellipse;
+  /** The forearm's drawn centre line, elbow → wrist (blended toward the hand). */
+  line: Pt[];
   /** Folds: in the crook of the elbow and bunched above the cuff (lens shapes). */
   folds: Poly[];
   /** The set-in sleeve's seam round the top of the arm (open, soft). */
@@ -351,18 +354,68 @@ const SLEEVE_R = { top: 47, delt: 46, bicep: 43, elbow: 40, fore: 36.5, cuffIn: 
 
 function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null): ArmPlan {
   const du = unit(sub(elbow, shoulder));
-  const df = unit(sub(wrist, elbow));
   const n = perp(du);
+  // THE FOREARM'S CENTRE LINE. A visible join (the forearm across the view):
+  // its last stretch turns toward the drawn hand in two even steps, so elbow →
+  // wrist → knuckles runs as one curve, never a kink at the cuff. A forearm
+  // running away from the viewer ends at its own wrist, the drawn hand's root
+  // tucked behind the sleeve's end (the cuff seen end-on covers the join).
+  let line: Pt[] = [elbow, wrist];
+  if (placed && !away) {
+    // Four stretches turning by equal steps, the last continuing into the
+    // hand's own axis: the start direction is found so the chord still runs
+    // from the elbow to the wrist (lengths 0.34, 0.28, 0.22, 0.16 of it).
+    const h = Math.atan2(placed.ex.v, placed.ex.u);
+    const chord = sub(wrist, elbow);
+    const ca = Math.atan2(chord.v, chord.u);
+    const W = [0.34, 0.28, 0.22, 0.16];
+    const endOf = (a: number) => {
+      const step = (h - a) / 4;
+      let q = P(0, 0);
+      W.forEach((w, i) => {
+        const t = a + step * i;
+        q = add(q, P(Math.cos(t) * w, Math.sin(t) * w));
+      });
+      return q;
+    };
+    let best = ca;
+    let err = Infinity;
+    for (let k = -90; k <= 90; k += 0.5) {
+      const a = ca + (k * Math.PI) / 180;
+      const e = endOf(a);
+      const d = Math.abs(Math.atan2(Math.sin(Math.atan2(e.v, e.u) - ca), Math.cos(Math.atan2(e.v, e.u) - ca)));
+      if (d < err) {
+        err = d;
+        best = a;
+      }
+    }
+    const scale = Math.hypot(chord.u, chord.v) / Math.hypot(endOf(best).u, endOf(best).v);
+    const step = (h - best) / 4;
+    line = [elbow];
+    let q = elbow;
+    W.forEach((w, i) => {
+      const t = best + step * i;
+      q = add(q, P(Math.cos(t) * w * scale, Math.sin(t) * w * scale));
+      line.push(q);
+    });
+    line[line.length - 1] = wrist;
+  }
+  const last = line.length - 1;
+  const df = unit(sub(line[last], line[last - 1]));
   const nf = perp(df);
   const foreLen = dist(elbow, wrist);
   const cuffB = sub(wrist, mul(df, Math.min(16, foreLen * 0.14)));
   const cuffA = sub(wrist, mul(df, Math.min(40, foreLen * 0.34)));
   const top = sub(shoulder, mul(du, 22));
   const upper = limbOutline([top, lerp(shoulder, elbow, 0.3), lerp(shoulder, elbow, 0.7), elbow], [SLEEVE_R.top, SLEEVE_R.delt, SLEEVE_R.bicep, SLEEVE_R.elbow]);
-  const foreSleeve = limbOutline([elbow, lerp(elbow, cuffA, 0.5), cuffA], [SLEEVE_R.elbow - 0.5, SLEEVE_R.fore, SLEEVE_R.cuffIn], { capEnd: false });
-  const cuff = limbOutline([sub(cuffA, mul(df, 3)), cuffB], [SLEEVE_R.cuff, SLEEVE_R.cuff - 0.5], { capStart: false, capEnd: false });
-  // (ends a little short of the wrist crease, flat: the hand's own wrist covers the meeting)
-  const wristSkin = limbOutline([sub(cuffB, mul(df, 6)), sub(wrist, mul(df, placed ? 8 : 0))], [SLEEVE_R.wrist + 1.5, SLEEVE_R.wrist], { capStart: false, capEnd: !placed });
+  const sleevePts = line.length > 2 ? [...line.slice(0, last), cuffA] : [elbow, lerp(elbow, cuffA, 0.5), cuffA];
+  const sleeveR = sleevePts.map((_, i) => SLEEVE_R.elbow - 0.5 - ((SLEEVE_R.elbow - 0.5 - SLEEVE_R.cuffIn) * i) / (sleevePts.length - 1));
+  // Away: the sleeve's far end IS the cuff, seen end-on — a rounded end round the wrist.
+  const foreSleeve = limbOutline(sleevePts, sleeveR, { capEnd: false });
+  const cuff = limbOutline([sub(cuffA, mul(df, 3)), away ? wrist : cuffB], [SLEEVE_R.cuff, SLEEVE_R.cuff - 0.5], { capStart: false, capEnd: away });
+  // The visible wrist: narrower than the cuff's opening and the hand, from
+  // inside the cuff to the hand's root (painted with the hand, one skin).
+  const wristSkin = limbOutline([sub(cuffB, mul(df, 6)), sub(wrist, mul(df, placed ? -6 : 0))], [SLEEVE_R.wrist + 2.5, SLEEVE_R.wrist], { capStart: false, capEnd: !placed });
   // The crook's folds: on the inside of the bend, fanning from the crook.
   const turn = crossZ(du, df);
   const inner = Math.sign(turn) || 1;
@@ -389,11 +442,13 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
     foreSleeve,
     cuff,
     wristSkin,
-    ulna: { c: add(sub(wrist, mul(df, 9)), mul(nf, -dot(nf, { u: 0, v: 1 }) >= 0 ? 15 : -15)), rx: 5, ry: 4, rot: Math.atan2(df.v, df.u) },
+    ulna: { c: add(sub(wrist, mul(df, 7)), mul(nf, -dot(nf, { u: 0, v: 1 }) >= 0 ? 16 : -16)), rx: 5, ry: 4, rot: Math.atan2(df.v, df.u) },
+    radiusBone: { c: add(sub(wrist, mul(df, 5)), mul(nf, -dot(nf, { u: 0, v: 1 }) >= 0 ? -15 : 15)), rx: 4.5, ry: 3.5, rot: Math.atan2(df.v, df.u) },
+    line,
     folds,
     armhole,
     upperAxis: [shoulder, elbow],
-    foreAxis: [elbow, wrist],
+    foreAxis: [line[last - 1], wrist],
     hold,
     placed,
     away,
@@ -408,7 +463,9 @@ function placedOf(h: StickHold | null | undefined): PlacedHand | null {
   const d = h.dir;
   const view = Math.abs(d.z) > 0.72 ? 'fistEdge' : 'palmThumb';
   const Q = (k: number) => P(h.fulcrum.x + d.x * k, h.fulcrum.y + d.y * k);
-  return placeHand(view, P(h.wrist.x, h.wrist.y), Q(0), Q(-116), Q(290));
+  // Foreshortened along its length exactly as the hand's own axis is in this view.
+  const sx = Math.max(0.45, Math.min(1, Math.hypot(h.sk.frame.x.x, h.sk.frame.x.y)));
+  return placeHand(view, P(h.wrist.x, h.wrist.y), Q(0), Q(-116), Q(290), sx);
 }
 
 /* ── the legs and the shoes ── */

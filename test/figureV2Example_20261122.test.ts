@@ -390,12 +390,79 @@ describe('figure V2 — the authored hands (owner: "Fix the hands", round 3)', (
     assert.ok(along(h.knuckle) > along(t), 'the index hooks ahead of the thumb');
   });
 
-  it('placed at 1 : 1 (real millimetres) and the forearm meets the drawn wrist', () => {
+  it('placed at true size across the hand, foreshortened along it exactly as the 3-D hand axis is; the forearm meets the drawn wrist', () => {
     for (const a of [plan.arms.near, plan.arms.far]) {
       const h = a.placed!;
+      const fx = a.hold!.sk.frame.x;
+      const sx = Math.max(0.45, Math.min(1, Math.hypot(fx.x, fx.y)));
       const d = Math.hypot(h.at({ u: 100, v: 0 }).u - h.at({ u: 0, v: 0 }).u, h.at({ u: 100, v: 0 }).v - h.at({ u: 0, v: 0 }).v);
-      assert.ok(Math.abs(d - 100) < 1e-6, 'scale 1');
+      assert.ok(Math.abs(d - 100 * sx) < 1e-6, `along the hand × ${sx.toFixed(2)}`);
+      const e = Math.hypot(h.at({ u: 0, v: 100 }).u - h.at({ u: 0, v: 0 }).u, h.at({ u: 0, v: 100 }).v - h.at({ u: 0, v: 0 }).v);
+      assert.ok(Math.abs(e - 100) < 1e-6, 'across the hand at true size');
       assert.deepEqual(a.wrist, h.wrist, 'the sleeve and wrist run to the drawn hand');
     }
+  });
+});
+
+describe('figure V2 — the arm into the hand (owner: "check for hand transition to wrist and arm", 2026-11-23)', () => {
+  const plan = KD.kitDrummerPlan();
+  const ang = (a: Pt, b: Pt) => Math.atan2(b.v - a.v, b.u - a.u);
+  const turn = (a: number, b: number) => {
+    let d = ((b - a) * 180) / Math.PI;
+    while (d > 180) d -= 360;
+    while (d < -180) d += 360;
+    return Math.abs(d);
+  };
+
+  it('the centre line elbow → wrist → knuckles has no kink: a visible join turns in steps of ≤ 20° (or the pose’s own wrist bend); a join seen end-on is covered by the cuff', () => {
+    for (const a of [plan.arms.near, plan.arms.far]) {
+      const h = a.placed!;
+      if (a.away) {
+        // The forearm runs away from the viewer: its sleeve's end (the cuff seen end-on) covers the join.
+        assert.ok(GE.inPoly(h.wrist, a.cuff), 'the drawn wrist lies inside the cuff seen end-on');
+        continue;
+      }
+      const pts: Pt[] = [...a.line, h.at({ u: 97, v: 0 })];
+      const limit = Math.max(20, a.hold!.bend + 2);
+      for (let i = 1; i < pts.length - 1; i++) {
+        const t = turn(ang(pts[i - 1], pts[i]), ang(pts[i], pts[i + 1]));
+        assert.ok(t <= limit, `turn ${t.toFixed(0)}° at point ${i} (limit ${limit.toFixed(0)}°)`);
+      }
+      assert.deepEqual(pts[pts.length - 2], h.wrist, 'the forearm ends at the drawn wrist (no offset)');
+    }
+  });
+
+  it('the visible wrist is narrower than the cuff’s opening and than the hand', () => {
+    const a = plan.arms.far;
+    const h = a.placed!;
+    const dir = GE.unit(GE.sub(a.foreAxis[1], a.foreAxis[0]));
+    const n = GE.perp(dir);
+    const across = (poly: Pt[], nn: Pt) => {
+      const ps = poly.map((q) => GE.dot(q, nn));
+      return Math.max(...ps) - Math.min(...ps);
+    };
+    const wrist = across(a.wristSkin, n);
+    const cuff = across(a.cuff, n);
+    const palm = h.parts.find((p: { name: string }) => p.name === 'palm')!.placed as Pt[];
+    const hand = across(palm, GE.perp(h.ex));
+    assert.ok(wrist < cuff, `wrist ${wrist.toFixed(0)} mm < cuff ${cuff.toFixed(0)} mm`);
+    assert.ok(wrist < hand, `wrist ${wrist.toFixed(0)} mm < hand ${hand.toFixed(0)} mm`);
+  });
+
+  it('one skin across forearm, wrist and hand: the wrist is painted as the hand’s own first part, in the hand’s one light', () => {
+    const paths = read('src/screens/lab/miking/lessons/shared/figureV2/paths.ts');
+    assert.match(paths, /kind: 'wrist', name: 'wrist'/);
+    assert.match(paths, /art: a\.placed \? artPaths\(a\.placed, a\.away \? null : \{ poly: a\.wristSkin/);
+    const side = read('src/screens/lab/miking/lessons/shared/figureV2/FigureV2Side.tsx');
+    assert.match(side, /\{P\.art \? null : \(\s*<Form path=\{P\.wristSkin\} mat=\{MAT\.skin\}/);
+    const paint = read('src/screens/lab/miking/lessons/shared/figureV2/paint.tsx');
+    // Every authored part (the wrist among them) is filled with the one skin material.
+    assert.match(paint, /function ArtPart[\s\S]*?SKIN\.form\[1\], SKIN\.form\[2\]/);
+  });
+
+  it('fingers in front of the stick are solid (a curled digit is painted as the union of its bones)', () => {
+    const AHm = R(AUTH);
+    for (const v of ['fistEdge', 'palmThumb'] as const) for (const p of AHm.handArt(v).parts) if (p.kind === 'digit') assert.ok(p.chain && p.chain.pts.length >= 2, `${v} ${p.name}`);
+    assert.match(read('src/screens/lab/miking/lessons/shared/figureV2/paths.ts'), /q\.placedChain \? bonesPath\(q\.placedChain\)/);
   });
 });

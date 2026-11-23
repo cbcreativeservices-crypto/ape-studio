@@ -55,6 +55,10 @@ export type HandArtPart = {
   /** The form's axis (for its cylinder light), local. */
   axis: [Pt, Pt];
   kind: 'palm' | 'digit' | 'web';
+  /** A digit's joints and radii (base → tip): painted as the union of its
+   *  bones, so a finger curled back on itself stays solid (an outline traced
+   *  round a tight curl crosses itself and would leave a hole). */
+  chain?: { pts: Pt[]; r: number[] };
 };
 
 export type HandArt = {
@@ -79,18 +83,20 @@ export type HandArt = {
 
 const pts = (xs: readonly (readonly [number, number])[]): Poly => xs.map(([x, y]) => P(x, y));
 const chain = (c: Chain): Poly => limbOutline(pts(c.pts), c.r);
+const bones = (c: Chain) => ({ pts: pts(c.pts), r: [...c.r] });
 const axisOf = (c: Chain): [Pt, Pt] => [P(c.pts[0][0], c.pts[0][1]), P(c.pts[c.pts.length - 1][0], c.pts[c.pts.length - 1][1])];
 const E = (x: number, y: number, rx: number, ry: number, rot = 0): Ellipse => ({ c: P(x, y), rx, ry, rot });
 
 /* ── the fist from its little-finger side ── */
 
 const FIST_BODY: readonly (readonly [number, number])[] = [
-  [-6, -17], [3, -20], [8, -23.5], [13, -22.5], [20, -20.5], // the wrist out of the cuff, the ulnar styloid's bump
+  [-14, -12], [-6, -17], [3, -20], [8, -23.5], [13, -22.5], [20, -20.5], // the wrist out of the cuff, the ulnar styloid's bump
   [36, -21], [54, -23], [70, -25.5], [82, -28], // the back of the hand rising a little
   [90, -30.5], [97, -28], [101.5, -21], [102, -12], // the little finger's knuckle, the top front corner
   [97, 2], [90, 16], [80, 30], // (under the little finger)
   [66, 42], [52, 47], [38, 47], [26, 42], // the hypothenar mass bulging down
-  [18, 37], [12, 37.5], [6, 32], [-1, 24], [-6, 20], // the pisiform's low bump, the wrist's underside
+  [18, 37], [12, 37.5], [6, 32], [-1, 24], [-6, 20], [-14, 14], [-18, 1], // the pisiform's low bump, the wrist's underside
+  // (the wrist runs on into the sleeve's end, rounded: no cut edge where the cuff covers it)
 ];
 const LITTLE: Chain = { pts: [[90, -16], [99, 21], [82, 32], [66, 26]], r: [10.6, 9.8, 8.8, 7.4] };
 const RING: Chain = { pts: [[94, -21], [104, 17], [89, 29], [73, 25]], r: [10.4, 9.7, 8.8, 7.6] };
@@ -101,10 +107,10 @@ function fistEdge(): HandArt {
     view: 'fistEdge',
     F: P(92, 34),
     parts: [
-      { name: 'ring knuckle', layer: 'front', outline: chain(RING_KNUCKLE), axis: axisOf(RING_KNUCKLE), kind: 'digit' },
-      { name: 'ring', layer: 'front', outline: chain(RING), axis: axisOf(RING), kind: 'digit' },
+      { name: 'ring knuckle', layer: 'front', outline: chain(RING_KNUCKLE), axis: axisOf(RING_KNUCKLE), kind: 'digit', chain: bones(RING_KNUCKLE) },
+      { name: 'ring', layer: 'front', outline: chain(RING), axis: axisOf(RING), kind: 'digit', chain: bones(RING) },
       { name: 'hand', layer: 'front', outline: pts(FIST_BODY), axis: [P(0, 10), P(100, 10)], kind: 'palm' },
-      { name: 'little', layer: 'front', outline: chain(LITTLE), axis: axisOf(LITTLE), kind: 'digit' },
+      { name: 'little', layer: 'front', outline: chain(LITTLE), axis: axisOf(LITTLE), kind: 'digit', chain: bones(LITTLE) },
     ],
     creases: [
       // the little finger where it lies over the palm's edge, its root at the knuckle
@@ -166,11 +172,13 @@ function palmThumb(): HandArt {
     parts: [
       { name: 'palm', layer: 'back', outline: pts(PALM), axis: [P(50, -38), P(50, 40)], kind: 'palm' },
       { name: 'web', layer: 'front', outline: pts(THUMB_WEB), axis: [P(40, -40), P(80, -30)], kind: 'web' },
-      { name: 'thumb', layer: 'front', outline: chain(THUMB), axis: axisOf(THUMB), kind: 'digit' },
-      { name: 'little', layer: 'front', outline: chain(LITTLE_P), axis: axisOf(LITTLE_P), kind: 'digit' },
-      { name: 'ring', layer: 'front', outline: chain(RING_P), axis: axisOf(RING_P), kind: 'digit' },
-      { name: 'middle', layer: 'front', outline: chain(MIDDLE), axis: axisOf(MIDDLE), kind: 'digit' },
-      { name: 'index', layer: 'front', outline: chain(INDEX), axis: axisOf(INDEX), kind: 'digit' },
+      { name: 'thumb', layer: 'front', outline: chain(THUMB), axis: axisOf(THUMB), kind: 'digit', chain: bones(THUMB) },
+      { name: 'little', layer: 'front', outline: chain(LITTLE_P), axis: axisOf(LITTLE_P), kind: 'digit', chain: bones(LITTLE_P) },
+      { name: 'ring', layer: 'front', outline: chain(RING_P), axis: axisOf(RING_P), kind: 'digit', chain: bones(RING_P) },
+      { name: 'middle', layer: 'front', outline: chain(MIDDLE), axis: axisOf(MIDDLE), kind: 'digit', chain: bones(MIDDLE) },
+      // (the hook's inside: the index closes round the stick, so no gap shows through it)
+      { name: 'index hook', layer: 'front', outline: pts([[93, -23], [110, -44], [124, -33], [118, -20], [104, -18]]), axis: axisOf(INDEX), kind: 'web' },
+      { name: 'index', layer: 'front', outline: chain(INDEX), axis: axisOf(INDEX), kind: 'digit', chain: bones(INDEX) },
     ],
     creases: [
       // the thumb's middle joint, the pad flattened on the stick
@@ -232,6 +240,9 @@ export const handArt = (v: HandArtView): HandArt => ARTS[v];
 
 export type PlacedHand = {
   art: HandArt;
+  /** The foreshortening along the hand's length, and the hand's axis in the view. */
+  sx: number;
+  ex: Pt;
   /** Local (x, y) → the view. */
   at: (p: Pt) => Pt;
   /** The drawn wrist crease (the forearm ends here). */
@@ -242,7 +253,7 @@ export type PlacedHand = {
   bead: Pt;
   stubEnd: Pt;
   /** The authored parts, placed. */
-  parts: (HandArtPart & { placed: Poly; placedAxis: [Pt, Pt] })[];
+  parts: (HandArtPart & { placed: Poly; placedAxis: [Pt, Pt]; placedChain: { pts: Pt[]; r: number[] } | null })[];
   creases: Poly[];
   nails: Poly[];
   warm: { c: Pt; r: number }[];
@@ -258,10 +269,10 @@ export type PlacedHand = {
  * fulcrum lands on the pose's, flipped if its palm side would face up.
  * `butt` / `bead`: the stick's ends as the view sees them.
  */
-export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt): PlacedHand {
+export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt, sx = 1): PlacedHand {
   const art = handArt(view);
   const dWF = unit(sub(F, W));
-  const aLocal = Math.atan2(art.F.v, art.F.u);
+  const aLocal = Math.atan2(art.F.v, art.F.u * sx);
   const aView = Math.atan2(dWF.v, dWF.u);
   const th = aView - aLocal;
   const ex = P(Math.cos(th), Math.sin(th));
@@ -270,19 +281,23 @@ export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt): 
   if (ey.v < 0) ey = mul(ey, -1);
   // A mirrored placement (the palm side had to flip to face down) turns the ellipses the other way.
   const mirrored = ex.u * ey.v - ex.v * ey.u < 0;
-  const raw = (p: Pt) => add(mul(ex, p.u), mul(ey, p.v));
+  // (the drawing is a true side view of the hand: along its length it is
+  // foreshortened as the hand's own axis is in this view, `sx`)
+  const raw = (p: Pt) => add(mul(ex, p.u * sx), mul(ey, p.v));
   const o = sub(F, raw(art.F));
   const at = (p: Pt) => add(o, raw(p));
   const mapE = (e: Ellipse): Ellipse => ({ c: at(e.c), rx: e.rx, ry: e.ry, rot: mirrored ? th - e.rot : th + e.rot });
   return {
     art,
     at,
+    sx,
+    ex,
     wrist: at(P(0, 0)),
     F,
     butt,
     bead,
     stubEnd: add(butt, mul(sub(F, butt), 0.45)),
-    parts: art.parts.map((p) => ({ ...p, placed: p.outline.map(at), placedAxis: [at(p.axis[0]), at(p.axis[1])] as [Pt, Pt] })),
+    parts: art.parts.map((p) => ({ ...p, placed: p.outline.map(at), placedAxis: [at(p.axis[0]), at(p.axis[1])] as [Pt, Pt], placedChain: p.chain ? { pts: p.chain.pts.map(at), r: p.chain.r.map((r) => r * Math.sqrt(sx)) } : null })),
     creases: art.creases.map((c) => c.map(at)),
     nails: art.nails.map((c) => c.map(at)),
     warm: art.warm.map((w) => ({ c: at(w.c), r: w.r })),

@@ -176,7 +176,7 @@ function PartForm({ p, L, shade }: { p: HandPart; L: HandLayers; shade: number }
 function NailV2({ path }: { path: SkPath }) {
   return (
     <Group>
-      <Path path={path} color={NAIL.fill} opacity={0.22} />
+      <Path path={path} color={NAIL.fill} opacity={0.16} />
       <Group clip={path}>
         <Group transform={[{ translateX: -LIGHT.u * 1.2 }, { translateY: -LIGHT.v * 1.2 }]}>
           <Path path={path} color={SKIN.deep} opacity={0.18}>
@@ -184,7 +184,7 @@ function NailV2({ path }: { path: SkPath }) {
           </Path>
         </Group>
         <Group transform={[{ translateX: LIGHT.u * 1.4 }, { translateY: LIGHT.v * 1.4 }]}>
-          <Path path={path} style="stroke" strokeWidth={1} color="#fff3ea" opacity={0.18}>
+          <Path path={path} style="stroke" strokeWidth={1} color="#fff3ea" opacity={0.1}>
             <BlurMask blur={0.6} style="normal" />
           </Path>
         </Group>
@@ -302,18 +302,18 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
  *  turning across its axis, a soft lit edge; it casts a soft shadow on what
  *  lies under it — the separation between neighbouring forms is that shadow,
  *  never an outline. */
-function ArtPart({ path, axis, kind, box, within }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath }) {
+function ArtPart({ path, axis, kind, box, within, lift = 0 }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number }) {
   const m = { u: box.x + box.width / 2, v: box.y + box.height / 2 };
   // (mostly from above: the top planes lit, the under planes turning away)
   const Ld = { u: -0.32, v: -0.95 };
   const R = 56;
-  const w = kind === 'palm' ? 40 : kind === 'web' ? 10 : 10;
+  const w = kind === 'palm' ? 40 : kind === 'wrist' ? 24 : 10;
   const [s0, e0] = across(axis[0], axis[1], w);
   return (
     <Group>
       <Group clip={within}>
         <Group transform={[{ translateX: -LIGHT.u * 2.6 }, { translateY: -LIGHT.v * 2.6 }]}>
-          <Path path={path} color="#2a160e" opacity={kind === 'palm' ? 0 : 0.5}>
+          <Path path={path} color="#2a160e" opacity={kind === 'palm' || kind === 'wrist' ? 0 : 0.5}>
             <BlurMask blur={2.6} style="normal" />
           </Path>
         </Group>
@@ -325,9 +325,10 @@ function ArtPart({ path, axis, kind, box, within }: { path: SkPath; axis: [Pt, P
         <Path path={path}>
           <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={kind === 'digit' ? ['rgba(255,238,226,0.32)', 'rgba(255,238,226,0.06)', 'rgba(52,26,16,0.24)', 'rgba(52,26,16,0.58)'] : ['rgba(255,238,226,0.22)', 'rgba(255,238,226,0.04)', 'rgba(52,26,16,0.16)', 'rgba(52,26,16,0.42)']} positions={[0, 0.3, 0.7, 1]} />
         </Path>
-        <Path path={rimOf(path, 2.4)} color={SKIN.rim} opacity={0.3}>
+        <Path path={rimOf(path, 2.4)} color={SKIN.rim} opacity={0.3 + lift}>
           <BlurMask blur={1.2} style="normal" />
         </Path>
+        {lift > 0 ? <Path path={path} color={SKIN.rim} opacity={lift} /> : null}
       </Group>
     </Group>
   );
@@ -344,7 +345,8 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
     return (
       <Group>
         {ps.map((p, i) => (
-          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} />
+          // (the nearest finger of the fist, its little finger, a step lighter: the form nearest the viewer and the light)
+          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} />
         ))}
         {form ? (
           <Group clip={form}>
@@ -381,18 +383,23 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
         {paint('back')}
         {paint('front')}
         {edge}
-        {/* the butt comes toward the viewer out of the fist's opening: its contact shadow, its stub, its end */}
+        {/* the butt comes toward the viewer out of the fist's opening: the round end of a
+            wooden stick, its short shaft foreshortened, its contact shadow where the fingers close */}
         {a.stub && a.stubCap ? (
           <Group>
             <Group clip={a.all}>
-              <Path path={a.stub} color="#000" opacity={0.45}>
-                <BlurMask blur={3.5} style="normal" />
+              <Path path={a.stub} color="#000" opacity={0.42}>
+                <BlurMask blur={3} style="normal" />
               </Path>
             </Group>
-            <Group clip={a.stub}>{stick ?? null}</Group>
-            <Path path={a.stubCap} color="#d8b98a" />
-            <Path path={a.stubCap} color="#7a5428" opacity={0.25} transform={[{ translateX: -LIGHT.u * 2 }, { translateY: -LIGHT.v * 2 }]} />
-            <Path path={a.stubCap} style="stroke" strokeWidth={1.2} color="#3a240e" opacity={0.8} />
+            <Path path={a.stub}>
+              <LinearGradient start={vec(a.stubCap.getBounds().x, a.stubCap.getBounds().y)} end={vec(a.stubCap.getBounds().x + 14, a.stubCap.getBounds().y + 14)} colors={['#f0d6a6', '#c79a5c', '#7d5426']} />
+            </Path>
+            <Path path={a.stub} style="stroke" strokeWidth={1} color="#3a240e" opacity={0.7} />
+            <Path path={a.stubCap}>
+              <RadialGradient c={vec(a.stubCap.getBounds().x + 6, a.stubCap.getBounds().y + 6)} r={9} colors={['#ecd3a4', '#d1aa72', '#a77a43']} />
+            </Path>
+            <Path path={a.stubCap} style="stroke" strokeWidth={0.9} color="#3a240e" opacity={0.65} />
           </Group>
         ) : null}
       </Group>

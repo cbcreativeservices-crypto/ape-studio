@@ -98,24 +98,30 @@ function UpperSleeve({ a, P, t }: { a: ArmPlan; P: ArmPaths; t: Torso }) {
 function Forearm({ a, P }: { a: ArmPlan; P: ArmPaths }) {
   return (
     <Group>
-      <Form path={P.wristSkin} mat={MAT.skin} axis={a.foreAxis} w={24} rim={3} edge={0.8}>
-        <Soft path={P.ulna} color={MAT.skin.rim} opacity={0.35} blur={2} />
-      </Form>
+      {/* (an authored hand paints the wrist itself, in its own skin and light) */}
+      {P.art ? null : (
+        <Form path={P.wristSkin} mat={MAT.skin} axis={a.foreAxis} w={24} rim={3} edge={0.8}>
+          <Soft path={P.ulna} color={MAT.skin.rim} opacity={0.35} blur={2} />
+        </Form>
+      )}
       <Form path={P.foreSleeve} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={5} edge={0.9}>
         <Folds path={P.folds} mat={MAT.shirt} opacity={0.5} />
       </Form>
-      <Form path={P.cuff} mat={MAT.shirt} axis={a.foreAxis} w={33} rim={3} edge={0}>
+      <Form path={P.cuff} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={3} edge={0}>
         {/* the cuff's seam where it meets the sleeve */}
         <Path path={P.foreSleeve} style="stroke" strokeWidth={1.2} color={MAT.shirt.deep} opacity={0.5} />
       </Form>
-      {/* the cuff's edge lies over the wrist: crisp, with its shadow on the skin */}
-      <Group clip={P.wristSkin}>
-        <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
-          <Path path={P.cuff} color={MAT.skin.deep} opacity={0.4}>
-            <BlurMask blur={2} style="normal" />
-          </Path>
+      {/* the cuff's edge lies over the wrist: crisp, with its soft shadow inside it on the skin
+          (a cuff seen end-on, running away, shows no wrist) */}
+      {a.away ? null : (
+        <Group clip={P.wristSkin}>
+          <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
+            <Path path={P.cuff} color={MAT.skin.deep} opacity={0.4}>
+              <BlurMask blur={2} style="normal" />
+            </Path>
+          </Group>
         </Group>
-      </Group>
+      )}
       <Path path={P.cuff} style="stroke" strokeWidth={1.1} color={MAT.shirt.edge} opacity={0.75} />
     </Group>
   );
@@ -143,19 +149,33 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
   ) : (
     (stick ?? null)
   );
-  // A forearm running away from the viewer is behind its own elbow: the
-  // forearm, the cuff and the hand first, the upper sleeve over them.
+  // The hand is beyond the cuff and the wrist goes INTO it: the hand first,
+  // then the sleeve and its cuff over the wrist's root. A forearm running away
+  // from the viewer is behind its own elbow (the upper sleeve over all), and
+  // its sleeve's end — the cuff seen end-on — is nearer than the hand: it
+  // covers the hand's root and casts its shadow on it.
+  const sleeveShadow =
+    a.away && P.art ? (
+      <Group clip={P.art.all}>
+        <Group transform={[{ translateX: -LIGHT.u * 5 }, { translateY: -LIGHT.v * 5 }]}>
+          <Path path={P.cuff} color="#000" opacity={0.45}>
+            <BlurMask blur={4} style="normal" />
+          </Path>
+        </Group>
+      </Group>
+    ) : null;
   return a.away ? (
     <Group>
-      {fore}
       {hand}
+      {sleeveShadow}
+      {fore}
       {upper}
     </Group>
   ) : (
     <Group>
       {upper}
-      {fore}
       {hand}
+      {fore}
     </Group>
   );
 }

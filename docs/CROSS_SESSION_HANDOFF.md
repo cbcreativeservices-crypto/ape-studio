@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 01:40 · ccode · 4404aa9f
+changed: Chorus display as a standing scope (owner: "Yes, standing scope"), Tools hub noise preview slides, figure example hands redrawn after the owner's "Fix the hands" (switch still off) [MD:D77] [MD:D78]
+affects other side: nothing (JS only; no guide sentence changed; the figure switch is off so no screen changes)
+needs: nothing from A. The owner's next figure note is the hand-to-wrist-to-arm transition [MD:D78]; OTA 16 waits for his word [MD:D77].
+
 ### 2026-11-22 23:55 · ccode · 19433545
 changed: Human figures: the first example, the kit drummer in a new look, switched OFF (owner 2026-11-22: "first show me one"); figure inventory; must-do D77/D78 updated [MD:D78]
 affects other side: nothing (a second figure renderer behind a switch that is off, plus a dev-only study page; no screen in the app changes)
