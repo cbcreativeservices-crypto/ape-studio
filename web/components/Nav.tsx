@@ -13,6 +13,7 @@ const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/membership", label: "Membership" },
   { href: "/credentials", label: "Credentials" },
   { href: "/verify", label: "Verify" },
+  { href: "/founder", label: "Founder" },
 ];
 
 function isCurrent(pathname: string, href: string) {

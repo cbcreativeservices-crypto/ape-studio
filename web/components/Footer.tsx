@@ -11,6 +11,7 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
       { href: "/membership", label: "Membership" },
       { href: "/get", label: "Get the app" },
       { href: "/about", label: "About" },
+      { href: "/founder", label: "Founder" },
       { href: "/standards", label: "Educational Standards" },
     ],
   },
