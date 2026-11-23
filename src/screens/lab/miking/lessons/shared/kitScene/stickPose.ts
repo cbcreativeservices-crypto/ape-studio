@@ -35,7 +35,7 @@
  * the hips (`lean`, degrees) and the shoulder girdle comes forward toward the
  * target (`reach`, mm) — never a longer stick.
  */
-import { KIT, KIT_DRUMS, yAt } from '../kitPlanModel.ts';
+import { KIT, KIT_DRUMS, hihatPedalGeom, yAt } from '../kitPlanModel.ts';
 import { pt, type PlayerPose, type Pt } from '../players/playerPose.ts';
 import { DRUMMER, S0 } from './kitSceneModel.ts';
 
@@ -151,6 +151,69 @@ export const RIGHT_BALL = { x: KIT.kick.pedal.u0 + 30 + 96, z: 0 } as const;
 /** The kit scene's neck before the seat moved back (the legs are placed
  *  round it, from above). */
 const KIT_NECK0 = v3(DRUMMER.headTop.x - 16, 0, KIT.throne.c.v);
+
+/**
+ * THE LEFT LEG ON THE HI-HAT PEDAL (owner 2026-11-23: "left foot should be on
+ * hi hat pedal"). The pedal (kitPlanModel.hihatPedalGeom) runs from the rod
+ * toward the drummer's left hip; the ball of the left foot sits on its centre
+ * line a third of the footboard back from the toe end, the shoe along the
+ * pedal; the leg is solved in 3-D (bones as long as the right leg's) with the
+ * knee over the ankle, and drawn in both views from the same points.
+ */
+export const LEFT_LEG = (() => {
+  const g = hihatPedalGeom();
+  const b = g.at(1 / 3);
+  const ball = v3(b.u, yAt(b.h), b.v);
+  const cs = Math.cos(g.slope);
+  const sn = Math.sin(g.slope);
+  // Toward the heel along the board (it falls toward the heel), and up.
+  const back = v3(g.dir.u * cs, sn, g.dir.v * cs);
+  const ankle = add(add(ball, mul(back, 40)), v3(0, -70, 0));
+  // The hips and the right leg as the two views draw them (side x / y, plan z).
+  const seatY = yAt(KIT.throne.seatH);
+  const hipR = v3(KIT.throne.c.u + 10 - SEAT_BACK, seatY - 90, KIT_NECK0.z + 106);
+  const kneeR = v3(KIT.throne.c.u + 430, yAt(520), KIT_NECK0.z + 190);
+  const ankleR = v3(RIGHT_BALL.x - 40, yAt(70), RIGHT_BALL.z);
+  const thigh = len3(sub(kneeR, hipR));
+  const shin = len3(sub(ankleR, kneeR));
+  const hip = v3((KIT.throne.c.u + 10 - SEAT_BACK - 10 + KIT_NECK0.x - 40 - SEAT_BACK) / 2, seatY - 94, KIT_NECK0.z - 106);
+  // The knee on the circle the two bones allow, as nearly over the ankle as
+  // it can be (a touch forward of it) while it clears the hi-hat stand.
+  const d = sub(ankle, hip);
+  const L = len3(d);
+  const ax = mul(d, 1 / L);
+  const a1 = (thigh * thigh - shin * shin + L * L) / (2 * L);
+  const r = Math.sqrt(Math.max(0, thigh * thigh - a1 * a1));
+  const e1 = unit(sub(v3(0, -1, 0), mul(ax, -ax.y)));
+  const e2 = cross(ax, e1);
+  let knee = hip;
+  let best = Infinity;
+  for (let p = -180; p < 180; p += 0.5) {
+    const a = p * DEG;
+    const k = add(add(hip, mul(ax, a1)), add(mul(e1, r * Math.cos(a)), mul(e2, r * Math.sin(a))));
+    if (k.y > ankle.y) continue;
+    // clear of the hi-hat stand's tube (the knee's width, the tube's, ≈ 30 mm of air)
+    if (Math.hypot(k.x - g.rod.u, k.z - g.rod.v) < 100) continue;
+    const c = Math.hypot(k.x - ankle.x - 10, k.z - ankle.z);
+    if (c < best) {
+      best = c;
+      knee = k;
+    }
+  }
+  return {
+    hip,
+    knee,
+    ankle,
+    ball,
+    thigh,
+    shin,
+    /** The shoe seen from the side: foreshortened by the pedal's turn, its sole on the footboard's apparent slope. */
+    along: Math.abs(g.dir.u),
+    sideSlope: Math.atan2(g.toeH - g.heelH, g.len * Math.abs(g.dir.u)),
+    /** The toe's direction in plan (world heel → toe). */
+    toeDir: { x: -g.dir.u, z: -g.dir.v },
+  };
+})();
 
 /** The upper body turned about the hips: `twist` about the vertical (+ the
  *  chest toward −z, the drummer's left), then `lean` forward about the
@@ -453,10 +516,11 @@ export function viewDrummer(d: DrummerPose3, view: 'side' | 'top'): ViewDrummer 
       hipR: hip,
       hipL: pt(hip.u - 10, hip.v - 4),
       kneeR,
-      kneeL: pt(kneeR.u - 40, kneeR.v - 8),
+      kneeL: P(LEFT_LEG.knee),
       footR: pt(RIGHT_BALL.x, yAt(0)),
-      footL: pt(KIT.hihatPedal.u0 + 100, yAt(0)),
+      footL: P(LEFT_LEG.ball),
       floor: yAt(0),
+      shoeL: { along: LEFT_LEG.along, slope: LEFT_LEG.sideSlope },
     };
   } else {
     // From above the pose is authored chest toward +v round the neck and
@@ -485,10 +549,12 @@ export function viewDrummer(d: DrummerPose3, view: 'side' | 'top'): ViewDrummer 
       hipR: W(106, -40 - SEAT_BACK),
       hipL: W(-106, -40 - SEAT_BACK),
       kneeR: W(190, 400),
-      kneeL: W(-190, 400),
+      kneeL: A(LEFT_LEG.knee.x, LEFT_LEG.knee.z),
       footR: A(RIGHT_BALL.x, RIGHT_BALL.z),
-      footL: W(-190, 470),
+      footL: A(LEFT_LEG.ball.x, LEFT_LEG.ball.z),
       floor: null,
+      // the toe along the pedal (world heel → toe, authored (−dz, dx))
+      shoeL: { yaw: Math.atan2(LEFT_LEG.toeDir.z, LEFT_LEG.toeDir.x) },
     };
   }
   const out: ViewDrummer = { pose, stick: stick2(view, d.R), farStick: stick2(view, d.L) };

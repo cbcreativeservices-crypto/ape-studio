@@ -36,7 +36,7 @@ import { BlurMask, Circle, DashPathEffect, FillType, Group, LinearGradient, Path
 import { frameOf, hoopRadii, rodAngles, type DrumSpec, type PlacedDrum } from './drumSpec.ts';
 import { CymbalSide as FamilyCymbalSide, HiHatSide as FamilyHiHatSide } from '../cymbals/CymbalArt';
 import { CYMBAL_SPECS, KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
-import { KIT_FLOOR_Y } from '../kitPlanModel.ts';
+import { KIT_FLOOR_Y, hihatPedalGeom } from '../kitPlanModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -828,7 +828,18 @@ export function HiHatSide({ cx, cy, d, floorY, dim = 1 }: { cx: number; cy: numb
     const legs = make();
     seg(legs, cx, floorY - 150, cx - 170, floorY);
     seg(legs, cx, floorY - 150, cx + 170, floorY);
-    return { tube: seg(make(), cx, cy + 40, cx, floorY - 40), rod: seg(make(), cx, cy - 60, cx, cy + 40), legs, pedal: rrect(make(), cx - 260, floorY - 46, cx - 20, floorY - 30, 6) };
+    return { tube: seg(make(), cx, cy + 40, cx, floorY - 40), rod: seg(make(), cx, cy - 60, cx, cy + 40), legs, pedal: (() => {
+      // the pedal angled toward the throne (kitPlanModel.hihatPedalGeom), seen
+      // foreshortened from the side
+      const g = hihatPedalGeom();
+      const q = make();
+      q.moveTo(cx + (g.heel.u - g.rod.u), floorY - g.heelH);
+      q.lineTo(cx + (g.toe.u - g.rod.u), floorY - g.toeH);
+      q.lineTo(cx + (g.toe.u - g.rod.u) + 6, floorY - g.toeH + 12);
+      q.lineTo(cx + (g.heel.u - g.rod.u) + 4, floorY - g.heelH + 10);
+      q.close();
+      return q;
+    })() };
   }, [cx, cy, floorY]);
   // At the kit's own hi-hat (14 in, at its height over the floor) this is the
   // cymbal family's: the pair, clutch and pull rod, seat, two-stage stand,

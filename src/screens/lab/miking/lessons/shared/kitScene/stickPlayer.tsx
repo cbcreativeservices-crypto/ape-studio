@@ -22,6 +22,7 @@ import { pt, type PlayerPose } from '../players/playerPose.ts';
 import { drummerPose, viewDrummer, type DrummerSpec, type Stick2, type ViewDrummer } from './stickPose.ts';
 import { CLOSEUP_CYMBAL, CLOSEUP_DRUM } from './kitStrokes.ts';
 import { ThroneSide, ThroneTop } from './KitSceneArt';
+import { HiHatPedalTop } from '../cymbals/CymbalArt';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P3 = { x: number; y: number; z: number };
@@ -93,6 +94,8 @@ export function StickDrummerArt({ view, spec, dim = 0.5, part = 'all' }: { view:
         <Group opacity={dim}>
           <ThroneTop />
         </Group>
+        {/* the hi-hat pedal on the floor, so the left shoe stands on it */}
+        <HiHatPedalTop />
         <PlayerBehind pose={d.pose} part="legs" dim={dim} />
       </Group>
     );

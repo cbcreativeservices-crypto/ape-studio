@@ -200,7 +200,7 @@ export type SidePlan = {
 
 /** Where a foot stands: the ball of the foot on its sole line, and the sole's
  *  slope (radians, + = the toe up), e.g. a pedal's footboard. */
-export type Sole = { ball: Pt; slope: number };
+export type Sole = { ball: Pt; slope: number; /** cos of the shoe's turn out of the picture (1 = side-on): a turned shoe is drawn foreshortened along its length. */ along?: number };
 
 export type SideOpts = {
   /** The hands on sticks (grip.ts), near (R) and far (L). */
@@ -680,7 +680,9 @@ const LACES: readonly (readonly [readonly [number, number], readonly [number, nu
 ];
 
 function shoePlan(sole: Sole, facing: 1 | -1): ShoePlan {
-  const F = frame2(sole.ball, facing, -sole.slope);
+  const F0 = frame2(sole.ball, facing, -sole.slope);
+  const k = sole.along ?? 1;
+  const F = (x: number, y: number) => F0(x * k, y);
   return {
     upper: mapPts(F, UPPER),
     sole: mapPts(F, SOLE),
@@ -689,7 +691,7 @@ function shoePlan(sole: Sole, facing: 1 | -1): ShoePlan {
     toe: F(168, 0),
     ball: sole.ball,
     ankle: F(-50, -70),
-    contact: { c: F(30, 2), rx: 150, ry: 9, rot: -sole.slope * facing },
+    contact: { c: F(30, 2), rx: 150 * k, ry: 9, rot: -sole.slope * facing },
     slope: sole.slope,
     F,
   };

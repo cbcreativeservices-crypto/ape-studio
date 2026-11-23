@@ -14,7 +14,7 @@
  * Pure helpers (`kitDrummerPlan`) for the test; the component for the art.
  */
 import type { ReactNode } from 'react';
-import { KIT, KIT_FLOOR_Y, yAt } from '../kitPlanModel.ts';
+import { KIT, KIT_FLOOR_Y, hihatPedalGeom, yAt } from '../kitPlanModel.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
 import { drummerPose, viewDrummer, RIGHT_BALL, type DrummerPose3, type DrummerSpec } from '../kitScene/stickPose.ts';
 import { KIT_GROOVE } from '../kitScene/kitStrokes.ts';
@@ -35,15 +35,20 @@ function kickSole(x: number): Sole {
     slope: Math.atan2(a.v - b.v, b.u - a.u),
   };
 }
-/** The hi-hat pedal's footboard (CymbalArt.buildHiHatSide: from (u0, floor − 14) to (u1, floor − 52)). */
+/** The hi-hat pedal's footboard seen from the side (CymbalArt.buildHiHatSide:
+ *  the pedal angled toward the throne, foreshortened, from its heel end up to
+ *  its toe end) under the ball at `x`; the shoe on it is turned with the
+ *  pedal, so it is drawn foreshortened too (2026-11-23: "left foot should be
+ *  on hi hat pedal"). */
 function hatSole(x: number): Sole {
-  const h = KIT.hihatPedal;
-  const a = P(h.u0, KIT_FLOOR_Y - 14);
-  const b = P(h.u1, KIT_FLOOR_Y - 52);
+  const g = hihatPedalGeom();
+  const a = P(g.heel.u, KIT_FLOOR_Y - g.heelH);
+  const b = P(g.toe.u, KIT_FLOOR_Y - g.toeH);
   const t = (x - a.u) / (b.u - a.u);
   return {
     ball: P(x, a.v + (b.v - a.v) * t),
     slope: Math.atan2(a.v - b.v, b.u - a.u),
+    along: Math.abs(g.dir.u),
   };
 }
 

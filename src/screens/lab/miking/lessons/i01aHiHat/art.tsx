@@ -14,7 +14,7 @@
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { KIT, KIT_DRUMS, KIT_FLOOR_Y, PLAN_HARDWARE } from '../shared/kitPlanModel.ts';
+import { KIT, KIT_DRUMS, KIT_FLOOR_Y, PLAN_HARDWARE, hihatPedalGeom } from '../shared/kitPlanModel.ts';
 import { HiHatSide, HiHatTop } from '../shared/cymbals/CymbalArt';
 import { HIHAT_HARDWARE as HH } from '../shared/cymbals/cymbalSpec.ts';
 import { AirRing, KitAround, kitShow } from '../shared/cymbals/CymbalKitArt';
@@ -26,6 +26,8 @@ import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
 import { GAP, HAT, HAT_R, HAT_RISE } from './model.ts';
 
 const C = HAT.c;
+/** The hi-hat pedal, angled toward the throne (one description: kitPlanModel). */
+const PEDAL = hihatPedalGeom();
 const gapOf = (v: VariantId) => (v === 'open' ? GAP.open : GAP.closed);
 const SNARE = KIT_DRUMS.snare;
 const CR1 = KIT.cymbals.crash1;
@@ -97,7 +99,8 @@ export function hiHatLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'hats', text: 'HI-HATS', u: C.x, v: C.z - HAT_R - 200, align: 'center', at: { u: C.x, v: C.z - HAT_R * 0.6 } },
     { id: 'snare', text: 'SNARE', u: SNARE.c.x + 40, v: SNARE.c.z + 40, align: 'center', tone: 'muted' },
     { id: 'crash', text: 'CRASH (ABOVE)', short: 'CRASH', u: CR1.c.x + 60, v: CR1.c.z - 120, align: 'center', tone: 'muted' },
-    { id: 'pedal', text: 'PEDAL', u: (KIT.hihatPedal.u0 + KIT.hihatPedal.u1) / 2, v: KIT.hihatPedal.v + 90, align: 'center', tone: 'muted' },
+    // on the pedal's middle, angled toward the throne (kitPlanModel.hihatPedalGeom)
+    { id: 'pedal', text: 'PEDAL', u: PEDAL.at(0.5).u - 150, v: PEDAL.at(0.5).v - 60, align: 'right', tone: 'muted', at: { u: PEDAL.at(0.45).u, v: PEDAL.at(0.45).v } },
     { id: 'air', text: 'AIR BURST', short: 'AIR', u: C.x - HAT_R - 30, v: C.z - HAT_R - 110, align: 'center', tone: 'illustrative', at: { u: C.x - (HAT_R + 30) * 0.7, v: C.z - (HAT_R + 30) * 0.7 } },
     { id: 'player', text: '← PLAYER', u: -790, v: C.z - HAT_R - 470, align: 'left', tone: 'muted', point: { u: -6000, v: C.z - HAT_R - 470 } },
   ];
@@ -111,14 +114,13 @@ export function hiHatHitTest(view: ViewId, variant: VariantId, u: number, v: num
     if (Math.abs(dx) <= 22 + tol && v >= C.y - HAT_RISE - HH.clutchH.mm - 30 && v <= C.y - HAT_RISE + 2) return 'hat.clutch';
     if (Math.abs(dx) <= HAT_R + tol && v >= C.y - HAT_RISE - 6 - tol && v <= C.y + gap * 0.5 + 2) return 'hat.top';
     if (Math.abs(dx) <= HAT_R + tol && v > C.y + gap * 0.5 + 2 && v <= C.y + gap + HAT_RISE + 8 + tol) return 'hat.bottom';
-    if (u >= KIT.hihatPedal.u0 - tol && u <= KIT.hihatPedal.u1 + tol && v >= KIT_FLOOR_Y - 80) return 'hat.pedal';
+    if (u >= PEDAL.box.u0 - tol && u <= PEDAL.box.u1 + tol && v >= KIT_FLOOR_Y - 80) return 'hat.pedal';
     if (Math.abs(dx) <= 30 + tol && v > C.y + gap + HAT_RISE && v <= KIT_FLOOR_Y) return 'hat.stand';
   } else {
     const r = Math.hypot(dx, v - C.z);
     if (r <= 24 + tol) return 'hat.clutch';
     if (r <= HAT_R + tol) return 'hat.top';
-    const p = KIT.hihatPedal;
-    if (u >= p.u0 - tol && u <= p.u1 + tol && Math.abs(v - p.v) <= p.halfW + tol) return 'hat.pedal';
+    if (PEDAL.contains(u, v, tol)) return 'hat.pedal';
   }
   const k = kitHitTest(view, u, v, tol);
   return k === 'cym.hihat' ? 'hat.top' : k;

@@ -232,12 +232,13 @@ describe('stick technique (owner 2026-11-22: "It should look like normal stick t
           }
         }
         if (pose.view === 'side') {
-          // The seat moved back (SEAT_BACK): the thighs keep an adult length.
-          // (The legs below the knee are the kit scene's, unchanged here.)
-          for (const [hp, kn] of [
-            [pose.hipR, pose.kneeR],
-            [pose.hipL, pose.kneeL],
-          ] as const) assert.ok(d2(hp, kn) >= 360 && d2(hp, kn) <= 480, `thigh ${d2(hp, kn).toFixed(0)}`);
+          // The seat moved back (SEAT_BACK): the right thigh keeps an adult
+          // length. The LEFT leg now goes out to the hi-hat pedal (owner
+          // 2026-11-23: "left foot should be on hi hat pedal"): solved in 3-D
+          // (stickPose LEFT_LEG, checked in test/hihatPedalFoot_20261123), so
+          // its side view is foreshortened — here only no longer than adult.
+          assert.ok(d2(pose.hipR, pose.kneeR) >= 360 && d2(pose.hipR, pose.kneeR) <= 480, `thigh ${d2(pose.hipR, pose.kneeR).toFixed(0)}`);
+          assert.ok(d2(pose.hipL, pose.kneeL) <= 490, `left thigh ${d2(pose.hipL, pose.kneeL).toFixed(0)}`);
           const gap = d2(pose.head.c, pose.neck) / BODY.headH;
           assert.ok(gap >= 0.55 && gap <= 0.85, 'the head on its neck');
         }
@@ -350,6 +351,7 @@ describe('the lessons around the new sticks', () => {
           const layouts = [
             { where: 'figure', box: parts, w: 358, h: 358 / aspect, top: 0, pad: 6 },
             ...[300, 420, 640].map((h) => ({ where: `parts ${h}`, box: parts, w: 390, h, top: 0, pad: 8 })),
+            ...[[786, 300], [786, 520], [1100, 700]].map(([w, h]) => ({ where: `wide ${w}x${h}`, box: authored, w, h, top: 0, pad: 8 })),
             ...[300, 420, 640].map((h) => ({ where: `stage ${h}`, box: authored, w: 390, h, top: band, pad: 8 })),
           ];
           for (const lay of layouts) {

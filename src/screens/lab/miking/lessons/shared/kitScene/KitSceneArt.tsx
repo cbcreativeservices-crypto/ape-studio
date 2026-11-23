@@ -26,7 +26,7 @@ import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import type { PlayerPose } from '../players/playerPose.ts';
 import { DrumExterior, DrumPlan, FloorTomLegsSide, SnareStandSide, sideTransform, topTransform } from '../drums/DrumArt';
 import { frameOf, KICK_22x18, pointOn } from '../drums/drumSpec.ts';
-import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatSide, HiHatTop, SwingEnvelope } from '../cymbals/CymbalArt';
+import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatPedalTop, HiHatSide, HiHatTop, SwingEnvelope } from '../cymbals/CymbalArt';
 import { KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 import { DRUMMER, S0, TOM_POST } from './kitSceneModel.ts';
 import { drummerPose, viewDrummer, type Stick2 } from './stickPose.ts';
@@ -373,7 +373,14 @@ function DrummerSide({ v2 = FIGURE_V2_READY }: { v2?: boolean }) {
  *  and arms over them (`part`). */
 function DrummerTop({ part }: { part: 'legs' | 'upper' }) {
   const d = drummerOf('top');
-  if (part === 'legs') return <PlayerBehind pose={d.pose} part="legs" />;
+  // the hi-hat pedal on the floor first, so the left shoe stands on it
+  if (part === 'legs')
+    return (
+      <Group>
+        <HiHatPedalTop />
+        <PlayerBehind pose={d.pose} part="legs" />
+      </Group>
+    );
   return (
     <Group>
       {/* From above the fists close over their sticks (palms down): the

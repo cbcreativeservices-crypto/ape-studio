@@ -23,7 +23,7 @@
  */
 import type { Dim, Envelope, InstrumentModel, Part, Provenance, RadiatingRegion, RefLine, ReferenceSurface, Variant, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
-import { KIT, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanModel.ts';
+import { KIT, KIT_DRUMS, KIT_FLOOR_Y, hihatPedalGeom, yAt, type KitDrumId } from '../kitPlanModel.ts';
 import { drumSolids, frameOf, hoopRadii, pointOn, type PlacedDrum } from '../drums/drumSpec.ts';
 import { cymbalAnchors, cymbalSolids, hihatAirRing, KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 
@@ -140,6 +140,7 @@ export function kitParts(roles: KitPartRoles = {}): Part[] {
   const hidden = (id: string, label: string, short: string, solid: Part['solid']): Part => ({ id, label, short, role: '', solid, prov: LAYOUT_PROV, listIn: [] });
   const stands: Part[] = cyms.filter((c) => !c.id.startsWith('cym.')).map((c) => hidden(c.id, c.label, c.id.startsWith('boom.') ? 'cymbal boom' : 'stand', c.shape));
   const mount = tomMount();
+  const HP = hihatPedalGeom();
   const snareBottom = S0.y + KIT_DRUMS.snare.spec.depth.mm + KIT_DRUMS.snare.spec.hoop.above.mm;
   const ft = frameOf(KIT_DRUMS.floor);
   const ftLegs: Part[] = [0, 1, 2].map((k) => {
@@ -160,7 +161,8 @@ export function kitParts(roles: KitPartRoles = {}): Part[] {
     hidden('stand.snare', 'snare stand', 'snare stand', { kind: 'capsule', a: { x: S0.x, y: snareBottom + 40, z: S0.z }, b: { x: S0.x, y: KIT_FLOOR_Y, z: S0.z }, r: 15 }),
     hidden('stand.throne', 'throne post', 'throne', { kind: 'capsule', a: { x: KIT.throne.c.u, y: yAt(KIT.throne.seatH - 80), z: KIT.throne.c.v }, b: { x: KIT.throne.c.u, y: KIT_FLOOR_Y, z: KIT.throne.c.v }, r: 22 }),
     hidden('kit.pedal', 'kick pedal', 'pedal', { kind: 'box', min: { x: KICK_GEOM.pedal.x0, y: KICK_GEOM.pedal.top, z: -45 }, max: { x: KICK_GEOM.pedal.x1, y: KIT_FLOOR_Y, z: 45 } }),
-    hidden('hihat.pedal', 'hi-hat pedal', 'pedal', { kind: 'box', min: { x: KIT.hihatPedal.u0, y: KIT_FLOOR_Y - 60, z: KIT.hihatPedal.v - KIT.hihatPedal.halfW }, max: { x: KIT.hihatPedal.u1, y: KIT_FLOOR_Y, z: KIT.hihatPedal.v + KIT.hihatPedal.halfW } }),
+    // The hi-hat pedal, angled toward the throne: its axis-aligned bounding box.
+    hidden('hihat.pedal', 'hi-hat pedal', 'pedal', { kind: 'box', min: { x: HP.box.u0, y: KIT_FLOOR_Y - 60, z: HP.box.v0 }, max: { x: HP.box.u1, y: KIT_FLOOR_Y, z: HP.box.v1 } }),
     ...ftLegs,
   ];
 }

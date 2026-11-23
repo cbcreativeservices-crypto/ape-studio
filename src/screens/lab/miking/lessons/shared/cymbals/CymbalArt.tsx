@@ -32,7 +32,7 @@ import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
-import { KIT, KIT_FLOOR_Y } from '../kitPlanModel.ts';
+import { KIT, KIT_FLOOR_Y, hihatPedalGeom } from '../kitPlanModel.ts';
 import {
   BOOM_STAND,
   CYMBAL_HARDWARE as HW,
@@ -489,17 +489,23 @@ function buildHiHatSide(open: boolean) {
   rrect(felts, c.x - 18, cy0 - 9, c.x + 18, cy0, 2);
   rrect(felts, c.x - 18, cy0 - HH.clutchH.mm * 0.35, c.x + 18, cy0 - HH.clutchH.mm * 0.35 + 9, 2);
   const screw = rrect(make(), c.x + HH.clutchD.mm / 2, cy0 - HH.clutchH.mm * 0.78, c.x + HH.clutchD.mm / 2 + 16, cy0 - HH.clutchH.mm * 0.6, 3);
-  // The pedal toward the drummer (−x): footboard, heel plate, linkage.
-  const ped = KIT.hihatPedal;
+  // The pedal (kitPlanModel.hihatPedalGeom: angled from the rod toward the
+  // drummer's left hip, so seen from the side its footboard is foreshortened):
+  // a footboard with a lit top edge rising to the toe end at the stand's base,
+  // the heel plate on the floor, the link up to the rod's base.
+  const pg = hihatPedalGeom();
+  const toe = { x: pg.toe.u, y: floorY - pg.toeH };
+  const heelEnd = { x: pg.heel.u, y: floorY - pg.heelH };
   const foot = make();
-  foot.moveTo(ped.u0, floorY - 14);
-  foot.lineTo(ped.u1, floorY - 52);
-  foot.lineTo(ped.u1 + 8, floorY - 40);
-  foot.lineTo(ped.u0 + 4, floorY - 4);
+  foot.moveTo(heelEnd.x, heelEnd.y);
+  foot.lineTo(toe.x, toe.y);
+  foot.lineTo(toe.x + 6, toe.y + 12);
+  foot.lineTo(heelEnd.x + 4, heelEnd.y + 10);
   foot.close();
-  const heel = rrect(make(), ped.u0 - 30, floorY - 16, ped.u0 + 30, floorY, 4);
-  const link = seg(make(), ped.u1, floorY - 48, c.x, floorY - 120);
-  return { legs, lower, upper, rod, seat, clutch, felts, screw, foot, heel, link, c, gap };
+  const footEdge = seg(make(), heelEnd.x + 2, heelEnd.y + 1.5, toe.x - 2, toe.y + 1.5);
+  const heel = rrect(make(), heelEnd.x - 18, floorY - 14, heelEnd.x + 34, floorY, 4);
+  const link = seg(make(), toe.x + 4, toe.y + 4, c.x, floorY - 120);
+  return { legs, lower, upper, rod, seat, clutch, felts, screw, foot, footEdge, heel, link, c, gap, pg };
 }
 const hhSideCache = new Map<string, ReturnType<typeof buildHiHatSide>>();
 
@@ -517,11 +523,15 @@ export function HiHatSide({ open = false, dim = 1 }: { open?: boolean; dim?: num
       <Path path={g.legs} style="stroke" strokeWidth={10} strokeCap="round" color="#1d1e23" />
       <Path path={g.legs} style="stroke" strokeWidth={6} strokeCap="round" color="#8a8f99" />
       <Path path={g.link} style="stroke" strokeWidth={4} color="#2a2c32" />
-      <Path path={g.foot}>
-        <LinearGradient start={vec(KIT.hihatPedal.u0, 0)} end={vec(KIT.hihatPedal.u1, 0)} colors={['#1f2126', '#6b707b', '#30323a']} />
+      <Path path={g.heel}>
+        <LinearGradient start={vec(0, KIT_FLOOR_Y - 14)} end={vec(0, KIT_FLOOR_Y)} colors={['#8a8f99', '#3a3d45']} />
       </Path>
-      <Path path={g.foot} style="stroke" strokeWidth={1} color={INK} />
-      <Path path={g.heel} color="#2a2c32" />
+      <Path path={g.heel} style="stroke" strokeWidth={1} color={INK} />
+      <Path path={g.foot}>
+        <LinearGradient start={vec(0, KIT_FLOOR_Y - g.pg.toeH)} end={vec(0, KIT_FLOOR_Y)} colors={['#c8ccd4', '#7d828d', '#3a3d45']} />
+      </Path>
+      <Path path={g.foot} style="stroke" strokeWidth={1.2} color={INK} />
+      <Path path={g.footEdge} style="stroke" strokeWidth={2.4} strokeCap="round" color="#eef1f6" opacity={0.85} />
       <Path path={g.lower} style="stroke" strokeWidth={HH.lowerTube.mm + 4} strokeCap="round" color="#16171b" />
       <Path path={g.lower} style="stroke" strokeWidth={HH.lowerTube.mm} strokeCap="round" color="#7d828d" />
       <Path path={g.upper} style="stroke" strokeWidth={HH.upperTube.mm + 3} strokeCap="round" color="#16171b" />
@@ -549,8 +559,43 @@ export function HiHatSide({ open = false, dim = 1 }: { open?: boolean; dim?: num
   );
 }
 
-/** The hi-hat from above: the top cymbal with its clutch, the tripod and
- *  the pedal toward the throne (the kit plan's). */
+/** The hi-hat pedal from above (kitPlanModel.hihatPedalGeom), on the floor:
+ *  drawn UNDER the drummer's legs (stickPlayer / KitSceneArt draw it in their
+ *  legs layer) so the left shoe stands on it. */
+export function HiHatPedalTop({ dim = 1 }: { dim?: number }) {
+  const g = useMemo(() => {
+    const pg = hihatPedalGeom();
+    const quad = (t0: number, t1: number, w: number) => {
+      const q = make();
+      const a = pg.at(t0);
+      const b = pg.at(t1);
+      q.moveTo(a.u + pg.across.u * w, a.v + pg.across.v * w);
+      q.lineTo(b.u + pg.across.u * w, b.v + pg.across.v * w);
+      q.lineTo(b.u - pg.across.u * w, b.v - pg.across.v * w);
+      q.lineTo(a.u - pg.across.u * w, a.v - pg.across.v * w);
+      q.close();
+      return q;
+    };
+    const e0 = pg.at(0.02);
+    const e1 = pg.at(0.78);
+    const w = pg.halfW - 6;
+    const edge = seg(make(), e0.u + pg.across.u * w, e0.v + pg.across.v * w, e1.u + pg.across.u * w, e1.v + pg.across.v * w);
+    return { pedal: quad(0, 1, pg.halfW), heel: quad(0.78, 1.02, pg.halfW - 4), edge, pg };
+  }, []);
+  return (
+    <Group opacity={dim}>
+      <Path path={g.pedal}>
+        <LinearGradient start={vec(g.pg.toe.u, g.pg.toe.v)} end={vec(g.pg.heel.u, g.pg.heel.v)} colors={['#c8ccd4', '#8a8f99', '#4a4e57']} />
+      </Path>
+      <Path path={g.pedal} style="stroke" strokeWidth={1.2} color={INK} />
+      <Path path={g.edge} style="stroke" strokeWidth={3} strokeCap="round" color="#eef1f6" opacity={0.7} />
+      <Path path={g.heel} color="#1d1e23" opacity={0.85} />
+    </Group>
+  );
+}
+
+/** The hi-hat from above: the top cymbal with its clutch and the tripod (its
+ *  pedal is HiHatPedalTop, drawn under the drummer's legs). */
 export function HiHatTop({ highlight = false, dim = 1 }: { highlight?: boolean; dim?: number }) {
   const p = KIT_PLACED_CYMBALS.hihat;
   const g = useMemo(() => {
@@ -559,18 +604,12 @@ export function HiHatTop({ highlight = false, dim = 1 }: { highlight?: boolean; 
       const a = Math.PI / 2 + (k * 2 * Math.PI) / 3;
       seg(legs, p.c.x, p.c.z, p.c.x + Math.cos(a) * HH.legSpread.mm, p.c.z + Math.sin(a) * HH.legSpread.mm);
     }
-    const ped = KIT.hihatPedal;
-    return { legs, pedal: rrect(make(), ped.u0, ped.v - ped.halfW, ped.u1, ped.v + ped.halfW, 14), heel: rrect(make(), ped.u0 - 10, ped.v - ped.halfW + 6, ped.u0 + 60, ped.v + ped.halfW - 6, 8) };
+    return { legs };
   }, [p]);
-  const ped = KIT.hihatPedal;
   return (
     <Group opacity={dim}>
       <Path path={g.legs} style="stroke" strokeWidth={11} strokeCap="round" color="#16171b" />
       <Path path={g.legs} style="stroke" strokeWidth={7} strokeCap="round" color="#9aa0ab" />
-      <Path path={g.pedal}>
-        <LinearGradient start={vec(ped.u0, ped.v - ped.halfW)} end={vec(ped.u1, ped.v + ped.halfW)} colors={['#c8ccd4', '#6c717c', '#2a2c32']} />
-      </Path>
-      <Path path={g.heel} color="#1d1e23" opacity={0.8} />
       <CymbalTop spec={p.spec} cx={p.c.x} cz={p.c.z} tiltDeg={0} highlight={highlight} mount={false} />
       <Group transform={[{ translateX: p.c.x }, { translateY: p.c.z }]}>
         <Circle cx={0} cy={0} r={HH.clutchD.mm / 2 + 4} color="#2a2230" />

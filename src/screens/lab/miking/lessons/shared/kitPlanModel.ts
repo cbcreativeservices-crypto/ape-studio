@@ -64,7 +64,18 @@ export const KIT = {
   drums: KIT_DRUMS,
   cymbals: KIT_CYMBALS,
   throne: { c: { u: -770, v: -110 }, r: 175, seatH: 500 },
-  hihatPedal: { u0: -760, u1: -500, v: -590, halfW: 45 },
+  /**
+   * The hi-hat pedal (owner 2026-11-23: "left foot should be on hi hat
+   * pedal"). Drawing default: hinged at the stand's base under the rod, its
+   * footboard (heel plate included) 290 mm long and 90 mm wide, angled from
+   * the rod toward the drummer's left hip — 45° off the line straight back
+   * (−u), turned toward the throne side (+v) — the toe end ≈ 52 mm off the
+   * floor at the rod, the heel plate ≈ 14 mm. 45° gives the most natural left
+   * leg (the knee over the ankle, the shin ≈ 8° from upright); 35–55° all
+   * work. It used to run straight back along −u, its heel beside the throne.
+   * Every drawing and tap area derives from this (hihatPedalGeom).
+   */
+  hihatPedal: { rod: { u: -470, v: -650 }, toeGap: 35, len: 290, angleDeg: 45, halfW: 45, toeH: 52, heelH: 14 },
   /** Drawing defaults for the drummer (the overheads lesson's envelope). */
   drummer: { headTopH: 1390, rightShoulder: { x: -700, h: 1150, z: 90 } },
   /** The player's space: the throne, the legs and both pedals. */
@@ -169,8 +180,7 @@ export function planHitTest(ctx: PlanHitCtx, u: number, v: number, tol: number):
   const pd = K.kick.pedal;
   if (u >= pd.u0 - tol && u <= pd.u1 + tol && Math.abs(v) <= pd.halfW + tol) return 'pedal';
   if (near(K.cymbals.hihat.c, K.cymbals.hihat.d / 2)) return 'hihat';
-  const hp = K.hihatPedal;
-  if (u >= hp.u0 - tol && u <= hp.u1 && Math.abs(v - hp.v) <= hp.halfW + tol) return 'hihat';
+  if (hihatPedalGeom().contains(u, v, tol)) return 'hihat';
   for (const id of ['tom1', 'tom2', 'snare', 'floor'] as const) if (near(KIT_DRUMS[id].c, KIT_DRUMS[id].spec.d.mm / 2)) return id;
   if (near(K.throne.c, K.throne.r)) return 'throne';
   if (u >= K.kick.hoop.u0 - tol && u <= K.kick.hoop.u1 + tol && Math.abs(v) <= K.kick.hoop.halfW + tol) return 'kick';
@@ -178,6 +188,38 @@ export function planHitTest(ctx: PlanHitCtx, u: number, v: number, tol: number):
   if (inPoly(K.playerSpace, u, v)) return 'throne';
   if (ctx.scene === 'studio' && (u <= K.room.u0 + 60 + tol || u >= K.room.u1 - 60 - tol || v <= K.room.v0 + 60 + tol || v >= K.room.v1 - 60 - tol)) return 'room';
   return null;
+}
+
+/** The hi-hat pedal's plan and heights, from KIT.hihatPedal: the toe end
+ *  (at the stand's base), the heel end, the unit direction toe → heel, the
+ *  unit across it, the four corners, the footboard's height at a fraction t
+ *  from the toe end, and its plan bounding box. Pure. */
+export function hihatPedalGeom() {
+  const p = KIT.hihatPedal;
+  const a = (p.angleDeg * Math.PI) / 180;
+  const dir = { u: -Math.cos(a), v: Math.sin(a) };
+  const across = { u: -dir.v, v: dir.u };
+  const toe = { u: p.rod.u + dir.u * p.toeGap, v: p.rod.v + dir.v * p.toeGap };
+  const heel = { u: toe.u + dir.u * p.len, v: toe.v + dir.v * p.len };
+  const at = (t: number) => ({ u: toe.u + dir.u * p.len * t, v: toe.v + dir.v * p.len * t, h: p.toeH + (p.heelH - p.toeH) * t });
+  const corners = [
+    { u: toe.u + across.u * p.halfW, v: toe.v + across.v * p.halfW },
+    { u: heel.u + across.u * p.halfW, v: heel.v + across.v * p.halfW },
+    { u: heel.u - across.u * p.halfW, v: heel.v - across.v * p.halfW },
+    { u: toe.u - across.u * p.halfW, v: toe.v - across.v * p.halfW },
+  ];
+  const us = corners.map((c) => c.u);
+  const vs = corners.map((c) => c.v);
+  const box = { u0: Math.min(...us), u1: Math.max(...us), v0: Math.min(...vs), v1: Math.max(...vs) };
+  /** Whether a plan point (u, v) lies on the footboard, within `tol`. */
+  const contains = (u: number, v: number, tol = 0) => {
+    const du = u - toe.u;
+    const dv = v - toe.v;
+    const s = du * dir.u + dv * dir.v;
+    const c = du * across.u + dv * across.v;
+    return s >= -tol && s <= p.len + tol && Math.abs(c) <= p.halfW + tol;
+  };
+  return { ...p, dir, across, toe, heel, at, corners, box, contains, slope: Math.atan2(p.toeH - p.heelH, p.len) };
 }
 
 /** A lesson frame's origin in K (a lesson drawn about its own drum). */

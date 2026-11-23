@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 10:06 · ccode · 16072458
+changed: Drummer round of 2026-11-23: natural wrist height, approved hands and cuffs, clean back edge, lighter head shading; longer drum lugs and a visible kick beater (owner 2026-11-23), figure switch still OFF [MD:D77] [MD:D78]
+affects other side: nothing on the server (JS only). It also carries the unlogged 0a636eb9 (figure example: hand-to-wrist-to-arm join, switch off). For store pictures later: every drum now shows long lug casings with tension rods, and the kit picture shows the kick beater; the drummer in the kit pictures holds the sticks with a lower wrist.
+needs: nothing from A. The owner's next note is being built ("left foot should be on hi hat pedal") [MD:D78]; the whole-drummer verdict and OTA 16 wait for his word [MD:D77].
+
+
 ### 2026-11-23 01:40 · ccode · 4404aa9f
 changed: Chorus display as a standing scope (owner: "Yes, standing scope"), Tools hub noise preview slides, figure example hands redrawn after the owner's "Fix the hands" (switch still off) [MD:D77] [MD:D78]
 affects other side: nothing (JS only; no guide sentence changed; the figure switch is off so no screen changes)
