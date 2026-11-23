@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 12:55 · ccode · 7caefea5
+changed: Drummer hands and cuffs from above, a guest's weekly calculator allowance, Low-Light card in Settings (owner 2026-11-23) [MD:D78] [MD:D80] [MD:D81]
+affects other side: the calculator rule changed in the app: a guest (no account) now gets 5 calculations per rolling week counted on the device, with no server call; free and lapsed accounts still use calc_consume / calc_usage_status unchanged. The server counts per account only (calc_usage is keyed by user_id, no device column), so a guest who uses 5 and then creates a free account gets the account's own 5 in the same week. The Glossary meter already counts per device as well (migration 2026092502). Store and website text that says a free ACCOUNT is needed for calculations is now wrong once this is published.
+needs: from A, only after the owner decides [MD:D81]: a per-device count for the calculator meter like the Glossary's, and a check of store/website wording about calculations. Nothing is published; OTA 16 waits for the owner's word [MD:D77].
+
 ### 2026-11-23 11:48 · ccode · a30e3995
 changed: Figure roll-out waves 1-2 (kit drummer on in both views, hand-drum hands redrawn, conga slap) and the Labs menu changes (owner 2026-11-23) [MD:D78] [MD:D79]
 affects other side: nothing on the server (JS only). It also carries b099c8b9 (left foot on the hi-hat pedal). For store text and pictures later: the Labs menu group "Instruments & Recording" is now "Miking Techniques" and Bass Guitar Physics is listed under Pitch & Tuning; the Congas sound page has a fourth stroke, SLAP; the kit drummer has a new look in every kit picture.
