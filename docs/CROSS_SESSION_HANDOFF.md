@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 19:08 · ccode · a858a85a
+changed: Tube cards: double-tap zoom works on a real finger tap (owner 2026-11-22)
+affects other side: nothing (app only; reaches phones with the next OTA on the owner's word)
+needs: nothing
+
+
 ### 2026-11-22 15:20 · ccode · d651ae0a
 changed: Home + menu (owner 2026-11-22): FREE: on the green/purple/Glossary carousel titles for guests and free users (members keep plain names); menu words tappable; MENU dots see-through with a rim; every guest sign-in shows the MENU callout again
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
