@@ -10323,3 +10323,8 @@ affects: Comp A: your 1.0.1 prep brief is no longer "Meta OFF" by default; it wa
 changed: memory resume-2026-11-22 + project_one_101_build + reference_website_deploy_recipe; lessons 2026-11-22; Founder links built (menu, footer last, /curriculum), not deployed; tube double-tap fix queued for OTA 16. Handoff Downloads/2026-11-22_HANDOFF_TO_NEW_CCODE_SESSION.md. Comp A note Downloads/2026-11-22_FOR_COMP_A_END_OF_DAY.md.
 affects other side: Comp A: the 1.0.1 prep is one build again (no 1.0.2); your 11-15 Meta-OFF asks 1–7 are still unanswered by ccode [MD:E7]
 needs: owner's word for the website deploy and OTA 16 [MD:D74]
+
+### 2026-11-22 · ccode · Founder link: NOT in the top menu (owner)
+changed: removed "Founder" from web/components/Nav.tsx (owner: "NOT top menu"); the footer (last in Academy) and /curriculum links stay. Nav.tsx again matches the live site. Not deployed.
+affects other side: nothing
+needs: owner's word to deploy the website [MD:D74]
