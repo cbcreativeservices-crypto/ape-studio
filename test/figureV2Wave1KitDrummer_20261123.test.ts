@@ -41,6 +41,8 @@ const GE = R(await import('../src/screens/lab/miking/lessons/shared/figureV2/geo
 const SPOSE = R(await import('../src/screens/lab/miking/lessons/shared/kitScene/stickPose.ts'));
 const PF = R(await import('../src/screens/lab/miking/lessons/shared/players/PlayerFigure.tsx'));
 const DET = await import('../src/screens/lab/miking/lessons/shared/figureV2/detail.tsx');
+const PALETTE = await import('../src/screens/lab/miking/lessons/shared/figureV2/palette.ts');
+const MAT_SHIRT = () => (PALETTE as unknown as { MAT: { shirt: { form: string[] } } }).MAT.shirt.form;
 const { KIT_GROOVE } = R(await import('../src/screens/lab/miking/lessons/shared/kitScene/kitStrokes.ts'));
 
 type Pt = { u: number; v: number };
@@ -271,7 +273,7 @@ describe('wave 1 — from above: each fist one silhouette with its knuckle row, 
   for (const which of ['near', 'far'] as const)
     it(`the ${which === 'near' ? 'right' : 'left'} fist from above: no outline round any finger; one silhouette whose knuckle row is four swells (an arc), three short creases from the valleys, the thumb one form — five digits`, () => {
       const h = plan.arms[which].placed!;
-      assert.equal(h.art.view, plan.faces[which].up === 'thumb' ? 'thumbTop' : 'backTop');
+      assert.equal(h.art.view, 'backTop', 'a matched grip from above: the back of the hand');
       const art = h.art;
       // no closed outline surrounds a single finger
       const fingers = art.parts.filter((p: { digit?: string }) => p.digit && p.digit !== 'thumb');
@@ -296,7 +298,7 @@ describe('wave 1 — from above: each fist one silhouette with its knuckle row, 
         assert.ok(len <= 12 && len >= 4, `crease ${i + 1}: ${len.toFixed(0)} mm`);
         assert.ok(c[c.length - 1].v > lo && c[c.length - 1].v < hi, `crease ${i + 1} ends in its valley`);
       }
-      assert.equal(art.creases.length, 3, 'three creases');
+      assert.ok(art.creases.length >= 3, 'three knuckle creases (the first three; a thumb may add its joint crease)');
       // an arc, not a ruler line: the middle knuckle farthest forward, the little finger's set back
       if (art.view === 'backTop') {
         assert.ok(ks[2].u >= Math.max(ks[0].u, ks[1].u, ks[3].u), 'the middle knuckle farthest forward');
@@ -316,26 +318,107 @@ describe('wave 1 — from above: each fist one silhouette with its knuckle row, 
       assert.equal(1 + ks.length, 5, 'five digits: the thumb and four knuckles');
     });
 
-  it('what faces up is drawn (owner: "the thumb is correctly placed under the hand" when the back faces up): the back of the hand — thumb FIRST, the hand over it casting its shadow; the thumb’s side — thumb LAST, along the top of the stick', () => {
-    // the right hand is rolled about 45° toward thumb-up (thumb side 0.72 against back 0.66): no margin lets it pass as a back view
-    assert.equal(plan.faces.near.up, 'thumb', `right: back ${plan.faces.near.back.toFixed(2)}, thumb ${plan.faces.near.thumb.toFixed(2)}`);
-    assert.equal(plan.faces.far.up, 'back', `left: back ${plan.faces.far.back.toFixed(2)}, thumb ${plan.faces.far.thumb.toFixed(2)}`);
-    assert.match(read(`${SH}/figureV2/topPlan.ts`), /up: \(back >= thumb \? 'back' : 'thumb'\)/);
+  // THE THUMB FROM ABOVE (owner 2026-11-23: "right hand thumb looks like a sausage on top", and a crop
+  // of its rounded root sitting on the hand above the cuff): not a closed capsule — its base lies in
+  // the hand (the thenar mound is the hand's own surface), only its outer edge and the gap line to the
+  // index are drawn, nothing of it near the wrist; ≈ 55–65 mm free from the web, tapering from its
+  // knuckle to a rounded tip at the fulcrum.
+  for (const which of ['near', 'far'] as const)
+    it(`the ${which === 'near' ? 'right' : 'left'} thumb from above: no capsule — its base in the hand, no line or end near the wrist, 55–65 mm free, tapering, its tip at the fulcrum`, () => {
+      const h = plan.arms[which].placed!;
+      const art = h.art;
+      const thumb = art.parts.find((p: { digit?: string }) => p.digit === 'thumb')!;
+      const body = art.parts.find((p: { name: string }) => p.name === 'hand')!.outline as Pt[];
+      const out = thumb.outline as Pt[];
+      // drawn by an open edge only (never its closed outline), and its base shares the hand
+      assert.ok(thumb.edge && thumb.edge.length >= 4, 'the thumb draws its outer edge only');
+      const inside = out.filter((q) => GE.inPoly(q, body)).length;
+      assert.ok(inside >= 2 && inside / out.length >= 0.1, `its base lies in the hand (${inside} of ${out.length} points)`);
+      // nothing of the thumb within 25 mm of the wrist (no rounded root above the cuff)
+      const near = Math.min(...out.map((q) => Math.hypot(q.u, q.v)), ...(thumb.edge as Pt[]).map((q) => Math.hypot(q.u, q.v)));
+      assert.ok(near >= 25, `the thumb comes ${near.toFixed(0)} mm from the wrist`);
+      // its drawn edge starts at the web / knuckle region
+      const web = art.thumbWeb as Pt;
+      const e0 = (thumb.edge as Pt[])[0];
+      assert.ok(e0.u >= web.u - 8, `the edge starts at the web (${e0.u.toFixed(0)} vs ${web.u.toFixed(0)})`);
+      // free length: web → tip
+      const tip = art.thumbTip as Pt;
+      const free = Math.hypot(tip.u - web.u, tip.v - web.v) + 0;
+      assert.ok(free >= 52 && free <= 66, `the free thumb ${free.toFixed(0)} mm`);
+      // tapering: its width across its axis at the knuckle > at the end joint > near the tip
+      const j = thumb.chain!.pts as Pt[];
+      const widthAt = (c: Pt, dir: Pt) => {
+        const n = { u: -dir.v, v: dir.u };
+        const ts: number[] = [];
+        for (let i = 0; i < out.length; i++) {
+          const a = out[i];
+          const b = out[(i + 1) % out.length];
+          const den = (b.u - a.u) * n.v - (b.v - a.v) * n.u;
+          if (Math.abs(den) < 1e-9) continue;
+          // a + (b-a)s = c + n t  →  solve
+          const s2 = ((c.u - a.u) * n.v - (c.v - a.v) * n.u) / den;
+          const t2 = ((c.u - a.u) * (b.v - a.v) - (c.v - a.v) * (b.u - a.u)) / den;
+          if (s2 >= 0 && s2 <= 1) ts.push(t2);
+        }
+        return ts.length >= 2 ? Math.max(...ts) - Math.min(...ts) : 0;
+      };
+      const ax = GE.unit(GE.sub(j[2], j[0]));
+      const wK = widthAt(j[0], ax);
+      const wI = widthAt(j[1], ax);
+      const wT = widthAt(GE.lerp(j[1], j[2], 0.75), ax);
+      assert.ok(wK >= 18 && wK <= 24, `at its knuckle ${wK.toFixed(0)} mm`);
+      assert.ok(wK > wI && wI > wT, `tapering ${wK.toFixed(0)} > ${wI.toFixed(0)} > ${wT.toFixed(0)} mm`);
+      // its pad at the fulcrum, against the stick's SIDE (not over it): along the stick near the
+      // fulcrum, beside its axis by about the stick's and the tip's radii (placed, as the eye sees it)
+      const tipV = h.at(tip);
+      const sd = GE.unit(GE.sub(h.bead, h.butt));
+      const rel = GE.sub(tipV, h.F);
+      const along = GE.dot(rel, sd);
+      const side = Math.abs(GE.crossZ(sd, rel));
+      assert.ok(Math.abs(along) <= 18, `the tip ${along.toFixed(0)} mm along the stick from the fulcrum`);
+      assert.ok(side >= 5 && side <= 16, `the tip ${side.toFixed(0)} mm beside the stick's axis (its side, not over it)`);
+      // in the hand's soft shade: no cylinder of its own, no flat dark fill
+      assert.ok(thumb.shade, 'the thumb is shaded softly from the hand’s edge');
+      assert.equal(art.nails.length, 0, 'no nail: from above the thumb under the hand shows its side');
+    });
+
+  it('the thumb is never a capsule at any level: full paints its edge (not its outline); lite draws only the parts’ edges', () => {
+    assert.match(read(`${SH}/figureV2/paint.tsx`), /<Path path=\{edge \?\? path\} style="stroke"/);
+    assert.match(read(`${SH}/figureV2/paint.tsx`), /edge=\{p\.edge\} shade=\{p\.shade\} \/>/);
+    const lite = read(`${SH}/figureV2/lite.tsx`);
+    assert.match(lite, /const digitEdges = a\.edges \?/);
+    assert.doesNotMatch(lite, /path=\{a\.front\} style="stroke"/);
+  });
+
+  it('both hands from above are back-of-hand views (owner: "thumb is underneath as the fulcrum"): the thumb painted FIRST, under the hand, showing only beyond the hand’s inner edge beside the stick; the hand’s shadow on it soft', () => {
+    // the roll is recorded, not drawn: the right hand is rolled about 45° (thumb side up 0.72, back 0.66)
+    assert.ok(plan.faces.near.thumb > 0.6 && plan.faces.near.back > 0.6, `right: back ${plan.faces.near.back.toFixed(2)}, thumb ${plan.faces.near.thumb.toFixed(2)}`);
     for (const which of ['near', 'far'] as const) {
       const h = plan.arms[which].placed!;
+      assert.equal(h.art.view, 'backTop', `${which}: drawn from the back of the hand`);
       const names = h.parts.map((p: PPart) => p.name);
-      if (plan.faces[which].up === 'back') {
-        assert.equal(h.art.view, 'backTop');
-        assert.ok(names.indexOf('thumb') < names.indexOf('hand'), `${which}: the thumb before the back of the hand (${names.join(', ')})`);
-        const thumb = h.art.parts.find((p: { digit?: string }) => p.digit === 'thumb')!;
-        assert.ok(thumb.chain!.pts[0].u < 30, 'the thumb’s root near the wrist end');
-      } else {
-        assert.equal(h.art.view, 'thumbTop');
-        assert.equal(names[names.length - 1], 'thumb', `${which}: the thumb on top, painted last (${names.join(', ')})`);
-      }
+      assert.ok(names.indexOf('thumb') < names.indexOf('hand'), `${which}: the thumb before the back of the hand (${names.join(', ')})`);
     }
+    assert.doesNotMatch(read(`${SH}/figureV2/authoredHands.ts`), /thumbTop/, 'no thumb-on-top drawing for a stick grip');
     const paint = read(`${SH}/figureV2/paint.tsx`);
-    assert.match(paint, /casts=\{a\.stickUnder && p\.kind === 'palm' \? 0\.45 : undefined\}/);
+    assert.match(paint, /casts=\{a\.stickUnder && p\.kind === 'palm' \? 0\.22 : undefined\} castBlur=\{a\.stickUnder && p\.kind === 'palm' \? 6 : 2\.6\}/);
+  });
+
+  it('the lower thumb transition (owner: "watch lower thumb transition around the hand"): wrist, heel, thumb base and thumb one smooth contour — the thumb leaves the hand’s edge at a shallow angle, never a lobe turning back', () => {
+    const art = TP.kitDrummerTopPlan().arms.far.placed!.art;
+    const thumb = art.parts.find((p: { digit?: string }) => p.digit === 'thumb')!.outline as Pt[];
+    const body = art.parts.find((p: { name: string }) => p.name === 'hand')!.outline as Pt[];
+    // where the visible strip leaves the hand: the first outline points outside the hand, walking from the heel
+    const outside = thumb.filter((q) => !GE.inPoly(q, body));
+    const heelEnd = outside.reduce((m, q) => (q.u < m.u ? q : m), outside[0]);
+    assert.ok(heelEnd.u >= 25, `the thumb starts ${heelEnd.u.toFixed(0)} mm from the wrist`);
+    // its outer contour rises gently from there (no step): each 10 mm along, at most ≈ 6 mm out
+    const outer = outside.filter((q) => q.u <= 96).sort((a, b) => a.u - b.u);
+    for (let i = 1; i < outer.length; i++) {
+      const du = outer[i].u - outer[i - 1].u;
+      const dv = Math.abs(outer[i].v - outer[i - 1].v);
+      assert.ok(du > 0 && dv / du <= 0.6, `a step in the thumb's base contour at ${outer[i].u.toFixed(0)} mm (${(dv / du).toFixed(2)})`);
+    }
   });
 
   it('each hand from above sits on its own stick (the fulcrum inside the drawn hand) and its thumb lies on the thumb side the 3-D hand has', () => {
@@ -444,5 +527,77 @@ describe('wave 1 — the old renderer is untouched (other families still use it)
     assert.match(src, /return <FigureMass path=\{fill\} tone="skin" contour=\{2\.6\} \/>;/);
     assert.match(src, /export function PlayerBehind\(\{ pose, dim = 1, part = 'all' \}/);
     assert.match(src, /export function headAbove\(c: Pt, r: number\): HeadPaths \{/);
+  });
+});
+
+describe('wave 1 — the cuffs from above (owner 2026-11-23: "sleev still shows transparent through and back circle of cuff")', () => {
+  const plan = TP.kitDrummerTopPlan();
+  it('no closed line round the band: the cuff draws its sides and near rim only (open), the elbow end only as the seam curve ON the sleeve, within its width', () => {
+    for (const which of ['near', 'far'] as const) {
+      const a = plan.arms[which];
+      const e = a.cuffEdge as Pt[] | null;
+      assert.ok(e && e.length >= 4, `${which}: an open cuff edge`);
+      const gap = Math.hypot(e![0].u - e![e!.length - 1].u, e![0].v - e![e!.length - 1].v);
+      assert.ok(gap >= 40, `${which}: the edge is open across the band's elbow end (${gap.toFixed(0)} mm)`);
+      const seam = a.opening.seam as Pt[];
+      const sg = Math.hypot(seam[0].u - seam[seam.length - 1].u, seam[0].v - seam[seam.length - 1].v);
+      assert.ok(sg > 10 && sg <= 2 * 34 + 2, `${which}: the seam an open curve within the band's width (${sg.toFixed(0)} mm)`);
+    }
+    const side = read(`${SH}/figureV2/FigureV2Side.tsx`);
+    assert.match(side, /<Path path=\{P\.cuffEdge \?\? P\.cuffCloth\} style="stroke"/);
+    // the side view's cuff follows the same rule (owner: "back circle of cuff" was first said of it)
+    assert.ok(KD.kitDrummerPlan().arms.far.cuffEdge, 'the side cuff: an open edge too');
+  });
+
+  it('a near-level forearm’s opening seen from above is almost edge-on: only its near rim, no far rim or inside showing', () => {
+    for (const which of ['near', 'far'] as const) {
+      const a = plan.arms[which];
+      assert.equal(a.opening.toViewer, false, `${which}: no far rim or inside from above`);
+      assert.equal(a.opening.rimFar, null);
+    }
+    assert.match(read(`${SH}/figureV2/sidePlan.ts`), /const toViewer = !away && tilt > \(trimSleeve \? 0\.3 : 0\.02\);/);
+  });
+
+  it('the cloth is opaque and the near rim is painted after the wrist (full and lite)', () => {
+    for (const c of [...MAT_SHIRT()]) assert.match(c, /^#[0-9a-fA-F]{6}$/, `an opaque shirt colour (${c})`);
+    const side = read(`${SH}/figureV2/FigureV2Side.tsx`);
+    const near = side.slice(side.indexOf('function CuffNear('), side.indexOf('export function Arm('));
+    assert.match(near, /<Form path=\{P\.cuffCloth\} mat=\{MAT\.shirt\} axis=\{a\.foreAxis\} w=\{38\} rim=\{3\} edge=\{0\}>/);
+    const lite = read(`${SH}/figureV2/lite.tsx`);
+    const arm = lite.slice(lite.indexOf('export function ArmLite('), lite.indexOf('const FAR ='));
+    assert.ok(arm.lastIndexOf('{hand}') < arm.lastIndexOf('{near}'), 'lite: the near rim after the hand');
+    assert.doesNotMatch(arm, /opacity=\{0\.[0-9]+\}/, 'lite arm fills: no translucency');
+    const top = read(`${SH}/figureV2/FigureV2Top.tsx`);
+    assert.match(top, /<Arm a=\{plan\.arms\.far\} P=\{T\.far\} t=\{torso\} stick=\{farStick\} \/>/);
+  });
+});
+
+describe('the cuff band BEGINS AT ITS SEAM — no cap, no back circle (owner 2026-11-23: "back circle of cuff"), both views', () => {
+  const arms = (): [string, any][] => [
+    ['top near', TP.kitDrummerTopPlan().arms.near],
+    ['top far', TP.kitDrummerTopPlan().arms.far],
+    ['side far', KD.kitDrummerPlan().arms.far],
+  ];
+  it('no point of the band lies on the elbow side of its seam curve', () => {
+    for (const [name, a] of arms()) {
+      const df = a.opening.out as Pt;
+      const seam = a.opening.seam as Pt[];
+      const along = (q: Pt) => GE.dot(q, df);
+      const seamMin = Math.min(...seam.map(along));
+      for (const q of a.cuff as Pt[]) assert.ok(along(q) >= seamMin - 0.01, `${name}: a band point ${(seamMin - along(q)).toFixed(1)} mm past the seam toward the elbow`);
+    }
+  });
+  it('just on the elbow side of the seam and 20 mm farther up the sleeve: the same paint (the sleeve; nothing covers the first point)', () => {
+    for (const [name, a] of arms()) {
+      const df = a.opening.out as Pt;
+      const seam = a.opening.seam as Pt[];
+      const mid = seam[Math.floor(seam.length / 2)];
+      const near = GE.sub(mid, GE.mul(df, 2));
+      const far = GE.sub(mid, GE.mul(df, 22));
+      for (const q of [near, far]) {
+        assert.ok(!GE.inPoly(q, a.cuff), `${name}: the band covers the sleeve behind its seam`);
+        assert.ok(GE.inPoly(q, a.foreSleeve), `${name}: the sleeve there`);
+      }
+    }
   });
 });

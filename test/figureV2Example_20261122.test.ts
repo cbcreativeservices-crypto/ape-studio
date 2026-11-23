@@ -793,7 +793,7 @@ describe('figure V2 — the cuff: the wrist goes INTO the sleeve (owner 2026-11-
     // the opening's area is filled once, opaque (the sleeve's inside), and never stroked
     assert.doesNotMatch(cuff, /path=\{P\.opening\}[^>]*style="stroke"/);
     assert.match(cuff, /<Path path=\{P\.opening\}>\s*<LinearGradient/);
-    for (const m of cuff.matchAll(/<Path path=\{([^}]+)\}[^>]*style="stroke"/g)) assert.ok(['P.rimNear', 'P.rimFar', 'P.cuffCloth'].includes(m[1]) || m[1] === 'P.seam', `stroked: ${m[1]}`);
+    for (const m of cuff.matchAll(/<Path path=\{([^}]+)\}[^>]*style="stroke"/g)) assert.ok(['P.rimNear', 'P.rimFar', 'P.cuffCloth', 'P.cuffEdge ?? P.cuffCloth'].includes(m[1]) || m[1] === 'P.seam', `stroked: ${m[1]}`);
   });
 
   it('the rim is split in halves (open curves, end to end across the opening); the cloth ends at the near half; the wrist comes out over the far half', () => {
@@ -898,5 +898,19 @@ describe('figure V2 — the whole drummer, owner notes 2026-11-23', () => {
     assert.ok(m, 'the jaw shadow');
     assert.ok(Number(m![1]) <= 0.27, `opacity ${m![1]}`);
     assert.ok(Number(m![2]) >= 6, `blur ${m![2]}`);
+  });
+});
+
+describe('figure V2 — the side cuff begins at its seam (owner 2026-11-23: "sleev still shows transparent through and back circle of cuff")', () => {
+  it('no cap at the band’s elbow end: the band is the region between the seam curve and the near rim; its drawn edge is open across that end', () => {
+    const a = KD.kitDrummerPlan().arms.far;
+    const seam = a.opening.seam as Pt[];
+    const cuff = a.cuff as Pt[];
+    // the band's outline runs along the seam itself (its elbow end IS the seam)
+    for (const q of seam) assert.ok(cuff.some((c) => Math.hypot(c.u - q.u, c.v - q.v) < 0.01), 'the band’s end follows the seam');
+    const e = a.cuffEdge as Pt[];
+    assert.ok(e && Math.hypot(e[0].u - e[e.length - 1].u, e[0].v - e[e.length - 1].v) >= 40, 'its drawn edge is open across the elbow end');
+    const side = read('src/screens/lab/miking/lessons/shared/figureV2/FigureV2Side.tsx');
+    assert.match(side, /<Path path=\{P\.cuffEdge \?\? P\.cuffCloth\} style="stroke"/);
   });
 });

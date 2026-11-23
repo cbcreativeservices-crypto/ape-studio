@@ -105,11 +105,14 @@ export const COPY = {
   /** The OTHER free-tier cap, which no upgrade surface used to admit to.
    *  ⚠️ 5 mirrors CALC_WEEKLY_LIMIT in features/lab/calcUsage.ts and the
    *  server's `calc_consume()`. If that constant moves, this moves with it.
-   *  "A free ACCOUNT" (toddler hunt #27, owner 2026-10-14): calculators ask a
-   *  guest to create an account first, so "Free use also includes…" was false
-   *  to a guest. True for a signed-in free account too, so one string serves
-   *  both; it follows `glossaryFreeAllowance` on the Upgrade sheet + Paywall. */
-  calcFreeAllowance: 'A free account also includes 5 calculations a week.',
+   *  "A free ACCOUNT" (toddler hunt #27, owner 2026-10-14) was right while
+   *  calculators asked a guest to create an account first. Owner 2026-11-23:
+   *  "in the calculator the guest user does get an allowance per week of use"
+   *  — a known guest now gets the same 5 a week, counted on the device, so
+   *  "Free use" is true for a guest and a free account alike (the same words
+   *  as `glossaryFreeAllowance`, which it follows on the Upgrade sheet +
+   *  Paywall). */
+  calcFreeAllowance: 'Free use also includes 5 calculations a week.',
   /** The lab-preview sheet once the person BECOMES a member while it is open
    *  (toddler hunt #32, owner 2026-10-14): no more selling — one button that
    *  closes the sheet and leaves the (now unlocked) lab open. */

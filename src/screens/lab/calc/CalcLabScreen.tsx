@@ -96,9 +96,12 @@ export function CalcLabScreen() {
     }
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so this gate
     // was a silent tap on the web preview (B-018/B-062).
+    // "with or without an account" (owner 2026-11-23: "in the calculator the
+    // guest user does get an allowance per week of use"); workflows stay
+    // Academy-only.
     confirmDialog(
       'Workflows are part of Academy membership',
-      `Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open: a free account includes ${CALC_WEEKLY_LIMIT} calculations a week, and membership removes the limit.`,
+      `Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open: free use includes ${CALC_WEEKLY_LIMIT} calculations a week, with or without an account, and membership removes the limit.`,
       'See membership',
       afterDialogCloses(() => (navigation as any).navigate('Paywall')),
       { cancelText: 'Not now' },

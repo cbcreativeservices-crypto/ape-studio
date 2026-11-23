@@ -233,7 +233,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-limits',
         q: 'Why did a calculator or the glossary stop and ask me to wait?',
-        a: 'The free tier has weekly limits — 5 calculations and 14 glossary definitions a week; each count resets one week after your first use. Academy membership removes both caps.',
+        a: 'Free use has weekly limits, with or without an account — 5 calculations and 14 glossary definitions a week; each count resets one week after your first use. Academy membership removes both caps.',
       },
     ],
   },

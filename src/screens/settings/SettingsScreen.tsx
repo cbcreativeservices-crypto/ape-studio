@@ -86,6 +86,7 @@ import {
   type CategorySchedule,
 } from '../../features/notifications/weeklyConcept';
 import { SettingsSection } from '../../features/settings/SettingsSection';
+import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { osReduceMotionOn } from '../../features/settings/a11y';
 import type { RootStackParamList } from '../../navigation/types';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -704,6 +705,13 @@ ${LOCAL_LOSS}`
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: menuClearance(insets.bottom) + 8 }]}>
+        {/* LOW-LIGHT PRODUCTION MODE: its own card, first in the list, keyed red
+            where every other card is amber (owner 2026-11-23: "low light production
+            mode should be in settings in its own container in the list - Make it
+            red instead of amber like the others"). One tap, no section to open:
+            it is the switch the mode's own notice sends people here for. */}
+        <LowLightRow />
+
         {/* NOTIFICATIONS — transport toggles (server) + the commercial content
             notifications (device-local; server prefs frozen). */}
         {/* Every section starts CLOSED (owner 2026-08-30): six collapsed

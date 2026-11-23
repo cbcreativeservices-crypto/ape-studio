@@ -127,8 +127,9 @@ export const CALC_WORKSPACE_INTRO = {
 } as const;
 
 /** The guide for one calculator, on the calculation currently picked.
- *  `capped` is the screen's own flag (a free or lapsed account, whose answer
- *  waits behind CALCULATE): only those readers get the CALCULATE lines. */
+ *  `capped` is the screen's own flag (a free or lapsed account, or a KNOWN
+ *  guest since 2026-11-23, whose answer waits behind CALCULATE): only those
+ *  readers get the CALCULATE lines. */
 export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuideExample | null, capped = false): ScreenGuide {
   const fields = fn.inputs.map((k) => ws.fields.find((f) => f.key === k)).filter((f): f is NonNullable<typeof f> => !!f);
   const names = fields.map((f) => f.name).join(', ');
@@ -201,7 +202,9 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
     picker,
     'In the answer, tap a number to see another unit. SEND → (if an input takes it) passes it on. SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
   ];
-  if (capped) controlRest.push('On this account, CALCULATE shows each new answer and uses one of this week’s calculations; an input error costs nothing.');
+  // Not "On this account" (owner 2026-11-23): a known guest is capped too,
+  // with no account.
+  if (capped) controlRest.push('CALCULATE shows each new answer and uses one of this week’s calculations; an input error costs nothing.');
   const named = inputsLine(inputsAt);
   const control = [
     [named, ...controlRest].join(' ').length <= SCREEN_GUIDE_BUDGET.high ? named : inputsLine('Under INPUTS, '),

@@ -28,10 +28,15 @@ const read = (rel: string) => readFileSync(path.resolve(HERE, '../src/screens/la
 const NOT_CONFIRMED = 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.';
 
 describe('H4-1 — a failed membership read is never told to sign in or sold membership', () => {
-  it('calculator: SIGN IN only for a KNOWN guest; an unconfirmed tier holds the answer', () => {
+  it('calculator: guest metering (and its SIGN IN) only for a KNOWN guest; an unconfirmed tier holds the answer', () => {
     const s = read('CalcWorkspaceScreen.tsx');
     assert.match(s, /const \{ entitlement, resolved, tierKnown, tierReadFailed \} = useEntitlement\(\);/);
-    assert.match(s, /const mustSignIn = resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;/);
+    // Owner 2026-11-23: "in the calculator the guest user does get an allowance
+    // per week of use". The wall (mustSignIn) became the guest METER, on the
+    // very same condition: only a KNOWN guest is counted as one, and the SIGN
+    // IN button now waits for the end of that guest's week.
+    assert.match(s, /const guestMetered = resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;/);
+    assert.doesNotMatch(s, /const mustSignIn\b/);
     assert.match(s, /const tierUnconfirmed = resolved && !tierKnown && entitlement === 'anonymous';/);
     assert.match(s, /const tierPending = \(!resolved \|\| tierUnconfirmed\) && !onboardingSampling;/);
     const pending = s.slice(s.indexOf(') : tierPending ? ('), s.indexOf(') : capped && !resultUnlocked ? ('));

@@ -127,6 +127,9 @@ export type ArmPlan = {
    *  the arm lies outside the torso) and how far its drawn root moved forward of
    *  the pose's shoulder to keep it so (mm). Null for the near arm. */
   behind: { armpitV: number; shift: number; poseElbow: Pt; elbowShift: number; foreRatio: number } | null;
+  /** The cuff's drawn edge (open — its sides and its near rim), so no line closes round the
+   *  band's elbow end over the sleeve (owner 2026-11-23). Null for a sleeve's mouth. */
+  cuffEdge: Poly | null;
   /** A forearm running away from the viewer: the line (a point and the hand's
    *  direction) where the drawn fist comes out of the sleeve's mouth. */
   mouth: { p: Pt; n: Pt } | null;
@@ -554,6 +557,7 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
   const foreSleeve = limbOutline(sleevePts, sleeveR, { capEnd: false });
   // (a short cylinder of cloth, a little wider than the sleeve it finishes — its
   // end cut square with a slight roll, never a dome; its rim is drawn as an edge)
+  let cuffEdge: Poly | null = null;
   let cuff = limbOutline([sub(cuffA, mul(df, 3)), away ? wrist : cuffB], [SLEEVE_R.cuff, SLEEVE_R.cuff - 0.5], { capStart: false, capEnd: false });
   // A forearm running away from the viewer (seen almost along its length):
   // the drawn fist comes out of the sleeve's mouth toward the hand side of a
@@ -570,7 +574,9 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
     const ry = mouth ? 40 : SLEEVE_R.cuff - 1.5;
     const out = mouth ? mouth.n : df;
     const rot = Math.atan2(out.v, out.u);
-    const toViewer = !away && tilt > 0.02;
+    // (the view from above passes `trimSleeve`: there a near-level forearm's opening is seen almost
+    // edge-on — it shows only its near rim unless the forearm truly turns it toward the viewer)
+    const toViewer = !away && tilt > (trimSleeve ? 0.3 : 0.02);
     const rx = mouth ? 12 : away ? 14 : Math.max(4, Math.min(14, ry * Math.abs(tilt)));
     const e: Ellipse = { c: mouth ? mouth.p : away ? wrist : cuffB, rx, ry, rot };
     const near: 1 | -1 = toViewer ? -1 : 1;
@@ -582,15 +588,15 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
     // the near half of the opening (concave: the opening lies beyond it); turned
     // away, the near half wraps over the opening (convex). Nothing of the cloth
     // reaches past the rim.
-    const s0 = sub(cuffA, mul(df, 3));
-    const R0 = SLEEVE_R.cuff;
-    const startCap: Poly = [];
-    for (let j = 1; j < 6; j++) {
-      const a = (Math.PI * j) / 6;
-      startCap.push(add(s0, add(mul(nf, Math.cos(a) * R0), mul(df, -Math.sin(a) * R0 * 0.22))));
-    }
+    // …and it BEGINS AT ITS SEAM (owner 2026-11-23: "back circle of cuff"): no rounded cap
+    // at its elbow end — on the elbow side of the seam curve everything is the sleeve. The
+    // band is the region between the seam (on the visible surface) and the near rim.
     const end = opening.toViewer ? [...halfEllipse(opening.e, -1)].reverse() : halfEllipse(opening.e, 1);
-    cuff = [add(s0, mul(nf, -R0)), ...end, add(s0, mul(nf, R0)), ...startCap];
+    const seam = opening.toViewer ? [...opening.seam].reverse() : opening.seam; // (−nf → +nf)
+    cuff = [...end, ...[...seam].reverse()];
+    // (the band's drawn edge, open: its two sides and the near rim — never a line across its
+    // elbow end, which lies ON the sleeve; there only the seam curve is drawn)
+    cuffEdge = [seam[0], ...end, seam[seam.length - 1]];
   }
   // The visible wrist: narrower than the cuff's opening and the hand, from
   // inside the cuff to the hand's root (painted with the hand, one skin).
@@ -623,6 +629,7 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
     cuff,
     wristSkin,
     opening,
+    cuffEdge,
     behind: farRoot ? { armpitV: armpitV!, shift: farShift, poseElbow, elbowShift, foreRatio } : null,
     mouth,
     ulna: { c: add(sub(wrist, mul(df, 7)), mul(nf, -dot(nf, { u: 0, v: 1 }) >= 0 ? 16 : -16)), rx: 5, ry: 4, rot: Math.atan2(df.v, df.u) },

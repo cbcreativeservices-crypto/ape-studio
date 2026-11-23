@@ -33,7 +33,9 @@ import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup'
 import { FormulaKeyPopup } from './FormulaKeyPopup';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useSamplingActive } from '../../../features/intro/onboardingSampling';
-import { CALC_WEEKLY_LIMIT, consumeCalc, getCalcStatus, type CalcUsage } from '../../../features/lab/calcUsage';
+import { CALC_WEEKLY_LIMIT, consumeCalc, getCalcStatus, type CalcMeterMode, type CalcUsage } from '../../../features/lab/calcUsage';
+import { useGuestWording, useUpsellAllowed } from '../../../features/commercial/useTier';
+import { calcAllowanceAction, calcGuestUsedUpPanel, calcHalfwayBody, calcLastOneBody, calcLimitReachedBody } from './calcAllowanceCopy';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -189,30 +191,44 @@ export function CalcWorkspaceScreen() {
   // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 5
   // calculation OUTPUTS per rolling week (server-enforced via calc_consume;
   // allowance set to 5 by the owner 2026-09-01, see calcUsage.CALC_WEEKLY_LIMIT).
-  // Academy is unlimited; anonymous guests must sign in. The result is hidden
-  // behind a CALCULATE button so there is one countable trigger per calculation.
+  // Academy is unlimited. A KNOWN guest gets the same weekly allowance, counted
+  // on the device (owner 2026-11-23, below). The result is hidden behind a
+  // CALCULATE button so there is one countable trigger per calculation.
   const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // During the first-run onboarding demo the calc is a canned "looks real"
   // landing focused on UX, not the upsell (owner 2026-09-07): no sign-in gate
   // and no weekly-cap prompt — the answer just computes locally. Real gating
   // returns the moment onboarding ends. Both hooks run every render.
   const onboardingSampling = useSamplingActive();
-  const capped = (entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling;
+  // ⛔ A KNOWN GUEST IS METERED, NOT WALLED (owner 2026-11-23: "in the
+  // calculator the guest user does get an allowance per week of use"). Until
+  // then a guest read "Create a free account (or sign in) to run calculations"
+  // over a SIGN IN button and got no calculation at all. Now a guest gets
+  // CALC_WEEKLY_LIMIT a week on the DEVICE (calcUsage mode 'local', no RPC —
+  // the glossary's guest rule), behind the same CALCULATE button; the sign-in
+  // button is offered once that week is used up.
+  // The condition is the old wall's, unchanged:
+  // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous', so without it every user — signed-in members included — was
+  // treated as a guest until the server read landed.
+  // `tierKnown` REQUIRED too (hunt 4, 2026-10-03): `resolved` flips even when
+  // the read FAILED, so a SIGNED-IN learner (a member included) whose read
+  // failed with no remembered tier still read 'anonymous'. A real guest's tier
+  // is always known (no session = a definitive answer). Never treat an UNKNOWN
+  // session as a guest: that learner keeps "Checking…" / the not-confirmed
+  // words below (tierPending).
+  const guestMetered = resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;
+  const capped = ((entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling) || guestMetered;
+  // A guest has no account to count against: the device keeps the count.
+  const meterMode: CalcMeterMode = guestMetered ? 'local' : 'server';
+  // Words only (house helpers): guest wording for a KNOWN guest, membership
+  // copy only where an upsell is allowed (never a member, never unknown).
+  const guestWording = useGuestWording().guest;
+  const upsell = useUpsellAllowed();
+  const allowanceReader = useMemo(() => ({ guest: guestWording && guestMetered, upsell }), [guestWording, guestMetered, upsell]);
   // The guide's CALCULATE lines are for capped readers only (members never
   // read weekly-allowance copy).
   const guide = useMemo(() => (ws && fn ? calcWorkspaceGuide(ws, fn, guideExample, capped) : null), [ws, fn, guideExample, capped]);
-  // `resolved` REQUIRED here (entitlement roll-out 2026-09-11): the provider
-  // boots at 'anonymous', so without it every user — signed-in members included
-  // — opened a calculator to "Create a free account (or sign in) to run
-  // calculations" with the answer withheld, until the server read landed.
-  // (`capped` needs no guard: 'anonymous' is neither 'free' nor 'lapsed', so it
-  // is already false pre-resolve.)
-  // `tierKnown` REQUIRED too (hunt 4, 2026-10-03): `resolved` flips even when
-  // the read FAILED, so a SIGNED-IN learner (a member included) whose read
-  // failed with no remembered tier still read 'anonymous' — and was told to
-  // "Create a free account (or sign in)", with a SIGN IN button, while signed
-  // in. A real guest's tier is always known (no session = a definitive answer).
-  const mustSignIn = resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;
   // ⛔ HOLD THE ANSWER UNTIL THE TIER IS KNOWN (bug pass 2026-10-01). `capped`
   // is false before the entitlement read lands (the provider boots at
   // 'anonymous'), so a FREE account on a slow connection read every answer it
@@ -255,17 +271,26 @@ export function CalcWorkspaceScreen() {
     () => JSON.stringify({ f: fn?.key ?? '', v: fields.map((fd) => [fd.key, raw[fd.key] ?? '', unitIdx[fd.key] ?? defaultUnitIdx(fd)]) }),
     [fn, fields, raw, unitIdx],
   );
-  // Load the current week's usage once for the "# / N" counter.
+  // Load the current week's usage once for the "# / N" counter — again when
+  // the meter changes hands (owner 2026-11-23: a guest who signs in on top of
+  // this screen moves from the device count to the account's), so the
+  // counter never shows the other meter's number.
+  const meterSeenRef = useRef(meterMode);
   useEffect(() => {
     if (!capped) return;
+    if (meterSeenRef.current !== meterMode) {
+      meterSeenRef.current = meterMode;
+      usageFromConsumeRef.current = false;
+      setUsage(null);
+    }
     let alive = true;
-    getCalcStatus().then((u) => {
+    getCalcStatus(meterMode).then((u) => {
       if (alive && !usageFromConsumeRef.current) setUsage(u);
     });
     return () => {
       alive = false;
     };
-  }, [capped]);
+  }, [capped, meterMode]);
 
   if (!ws || !fn) {
     return (
@@ -283,6 +308,10 @@ export function CalcWorkspaceScreen() {
   // For capped users the answer is shown only after CALCULATE consumed a credit
   // for THIS exact input set; uncapped users always see the live answer.
   const resultUnlocked = !capped || consumedSigs.has(inputSig);
+  // The used-up guest state (owner 2026-11-23): guest WORDING only for a KNOWN
+  // guest (useGuestWording, via allowanceReader), and only once the device
+  // count says the week is spent.
+  const guestUsedUp = allowanceReader.guest && !!usage && usage.used >= usage.limit;
   const counterText =
     // SHOWN EVEN WHEN THE SERVER IS UNREACHABLE (2026-09-18). The counter used
     // to disappear on `unavailable`, which is precisely what made the offline
@@ -304,7 +333,7 @@ export function CalcWorkspaceScreen() {
     // must be cleared by the language, not by reaching the next statement.
     let u: Awaited<ReturnType<typeof consumeCalc>>;
     try {
-      u = await consumeCalc();
+      u = await consumeCalc(meterMode);
     } finally {
       consumingRef.current = false;
       setConsuming(false);
@@ -325,14 +354,18 @@ export function CalcWorkspaceScreen() {
     // when `unavailable` is true. The check below is therefore the ONLY gate,
     // and it applies in both cases.
     const seePlans = afterDialogCloses(() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'));
+    // A KNOWN guest's way forward is to sign in (owner 2026-11-23); a free
+    // account's is membership. The words come from calcAllowanceCopy, decided
+    // by useGuestWording / useUpsellAllowed above.
+    const signIn = afterDialogCloses(() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Auth'));
+    const action = calcAllowanceAction(allowanceReader);
+    const limitDialog = (body: string, cancelText: string) => {
+      if (action === 'signIn') confirmDialog('Weekly limit reached', body, 'Sign in', signIn, { cancelText });
+      else if (action === 'membership') confirmDialog('Weekly limit reached', body, 'See membership', seePlans, { cancelText });
+      else notify('Weekly limit reached', body);
+    };
     if (!u.allowed) {
-      confirmDialog(
-        'Weekly limit reached',
-        `You’ve used all ${u.limit} free calculations for this week. They reset one week after your first one. Academy membership removes the limit.`,
-        'See membership',
-        seePlans,
-        { cancelText: 'Not now' },
-      );
+      limitDialog(calcLimitReachedBody(u.limit, allowanceReader), 'Not now');
       return; // do NOT reveal
     }
     setConsumedSigs((s) => new Set(s).add(inputSig)); // reveal this result
@@ -341,18 +374,9 @@ export function CalcWorkspaceScreen() {
     // dialog. Fires strictly BEFORE the last credit.
     const halfway = Math.max(1, Math.ceil(u.limit / 2));
     if (u.used === halfway && u.used < u.limit) {
-      notify(
-        'Heads up — weekly limit',
-        `That’s ${u.used} of ${u.limit} free calculations this week. After ${u.limit} you’ll wait for the weekly reset, or Academy membership removes the limit.`,
-      );
+      notify('Heads up — weekly limit', calcHalfwayBody(u.used, u.limit, allowanceReader));
     } else if (u.used >= u.limit) {
-      confirmDialog(
-        'Weekly limit reached',
-        `That was your last free calculation this week (${u.limit} of ${u.limit}). It resets one week after your first one. Academy membership removes the limit.`,
-        'See membership',
-        seePlans,
-        { cancelText: 'OK' },
-      );
+      limitDialog(calcLastOneBody(u.limit, allowanceReader), 'OK');
     }
   };
 
@@ -426,19 +450,10 @@ export function CalcWorkspaceScreen() {
             </Text>
             {counterText ? <Text style={styles.usageCounter}>{counterText}</Text> : null}
             <ScrollView style={{ maxHeight: stageBodyMax }} nestedScrollEnabled keyboardShouldPersistTaps="handled">
-            {mustSignIn ? (
-              <View style={{ gap: 10 }}>
-                <Text style={styles.resultPlaceholder}>Create a free account (or sign in) to run calculations.</Text>
-                <Pressable
-                  style={[styles.calcBtn, styles.signInBtn]}
-                  onPress={() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Auth')}
-                  accessibilityRole="button"
-                  accessibilityLabel="Sign in or create a free account to run calculations"
-                >
-                  <Text style={styles.calcBtnText}>SIGN IN / CREATE ACCOUNT</Text>
-                </Pressable>
-              </View>
-            ) : !values ? (
+            {/* No sign-in wall before the first calculation (owner 2026-11-23):
+                a KNOWN guest takes the capped path below, and the SIGN IN /
+                CREATE ACCOUNT button waits for the end of the guest's week. */}
+            {!values ? (
               <Text style={styles.resultPlaceholder}>
                 {stillNeeded.length > 0 && stillNeeded.length < fields.length
                   ? `Still needed: ${stillNeeded.join(', ')}. The gray numbers are examples — type a value into every box.`
@@ -492,9 +507,26 @@ export function CalcWorkspaceScreen() {
                 >
                   <Text style={styles.calcBtnText}>{consuming ? 'CALCULATING…' : 'CALCULATE'}</Text>
                 </Pressable>
-                <Text style={styles.resultPlaceholder}>
-                  Tap CALCULATE to reveal the answer — this uses one of your {usage?.limit ?? CALC_WEEKLY_LIMIT} free calculations this week.
-                </Text>
+                {guestUsedUp ? (
+                  // A KNOWN guest's week is used up (owner 2026-11-23): the
+                  // answer stays held, and the ways forward are the weekly
+                  // reset or an account — the green button the old wall had.
+                  <>
+                    <Text style={styles.resultPlaceholder}>{calcGuestUsedUpPanel(usage?.limit ?? CALC_WEEKLY_LIMIT)}</Text>
+                    <Pressable
+                      style={[styles.calcBtn, styles.signInBtn]}
+                      onPress={() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Auth')}
+                      accessibilityRole="button"
+                      accessibilityLabel="Sign in or create a free account"
+                    >
+                      <Text style={styles.calcBtnText}>SIGN IN / CREATE ACCOUNT</Text>
+                    </Pressable>
+                  </>
+                ) : (
+                  <Text style={styles.resultPlaceholder}>
+                    Tap CALCULATE to reveal the answer — this uses one of your {usage?.limit ?? CALC_WEEKLY_LIMIT} free calculations this week.
+                  </Text>
+                )}
               </View>
             ) : (
               <View style={{ gap: 8 }}>

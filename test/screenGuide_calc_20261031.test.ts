@@ -419,7 +419,11 @@ describe('4. every TRY THIS number is what the screen prints', () => {
       assert.doesNotMatch(pf.replace(/\bfree-(space|air)\b/gi, ''), tier, `${b.id}: tier copy in the formula words`);
       const own = ownWords(textOf(b.gd), b);
       assert.doesNotMatch(pf ? own.split(pf).join('«»') : own, tier, `${b.id}: tier copy shown to an uncapped reader`);
-      assert.match(b.gdCapped.control.join(' '), /On this account, CALCULATE shows each new answer and uses one of this week’s calculations/);
+      // Owner 2026-11-23: "in the calculator the guest user does get an
+      // allowance per week of use" — a known guest is capped too, with no
+      // account, so the line no longer opens "On this account,".
+      assert.match(b.gdCapped.control.join(' '), /CALCULATE shows each new answer and uses one of this week’s calculations/);
+      assert.doesNotMatch(b.gdCapped.control.join(' '), /On this account/);
       assert.match(b.gdCapped.changes.join(' '), /New inputs wait until you tap CALCULATE \(one more of this week’s calculations\)/);
       const ownCapped = ownWords(textOf(b.gdCapped), b);
       assert.doesNotMatch(pf ? ownCapped.split(pf).join('«»') : ownCapped, /\bfree\b|membership/i, `${b.id}: capped copy stays neutral`);
@@ -428,7 +432,9 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     // The screen's own rule the capped lines describe.
     const W = code('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
     assert.match(W, /const resultUnlocked = !capped \|\| consumedSigs\.has\(inputSig\);/);
-    assert.match(W, /const capped = \(entitlement === 'free' \|\| entitlement === 'lapsed'\) && !onboardingSampling;/);
+    // Owner 2026-11-23 ("in the calculator the guest user does get an allowance
+    // per week of use"): a KNOWN guest (guestMetered) is capped as well.
+    assert.match(W, /const capped = \(\(entitlement === 'free' \|\| entitlement === 'lapsed'\) && !onboardingSampling\) \|\| guestMetered;/);
   });
   it('WHAT CHANGES says why: the calculation’s formula in words wherever the step fits', () => {
     let withWords = 0;

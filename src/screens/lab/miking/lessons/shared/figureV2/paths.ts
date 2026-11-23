@@ -309,7 +309,9 @@ function handBuilt(sk: HandSkeleton, view: HandView, fore: number, fulcrum: V3, 
  *  creases, nails, warm spots and soft lights and darks, and the stick's
  *  body and its butt stub (the part nearer the viewer than the fist). */
 export type ArtPaths = {
-  parts: { path: SkPath; axis: [Pt, Pt]; layer: 'back' | 'front'; kind: string; name: string }[];
+  parts: { path: SkPath; axis: [Pt, Pt]; layer: 'back' | 'front'; kind: string; name: string; edge?: SkPath | null; shade?: [Pt, Pt] | null }[];
+  /** The parts' own drawn lines (a thumb's outer edge and gap line), for the lite level. */
+  edges: SkPath | null;
   back: SkPath | null;
   front: SkPath;
   all: SkPath;
@@ -346,7 +348,13 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
   const wristPart = wrist ? [{ path: smoothClosed(wrist.poly, 0.5), axis: wrist.axis, layer: 'back' as const, kind: 'wrist', name: 'wrist' }] : [];
   // Every part — each digit too — is ONE closed outline (owner 2026-11-23: "i see 9 fingers"):
   // a finger is a single form, never a union of bones and joint discs.
-  const parts = [...wristPart, ...h.parts.map((q) => ({ path: smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name }))];
+  const parts = [...wristPart, ...h.parts.map((q) => ({ path: smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name, edge: q.placedEdge ? smoothOpen(q.placedEdge) : null, shade: q.placedShade }))];
+  const edgeList = parts.map((q) => ('edge' in q ? q.edge : null)).filter((e): e is SkPath => !!e);
+  const edges = edgeList.length ? (() => {
+    const e = make();
+    for (const q of edgeList) e.addPath(q);
+    return e;
+  })() : null;
   const backs = parts.filter((q) => q.layer === 'back').map((q) => q.path);
   const fronts = parts.filter((q) => q.layer === 'front').map((q) => q.path);
   const back = backs.length ? unionOf(...backs) : null;
@@ -371,6 +379,7 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
   }
   return {
     parts,
+    edges,
     back,
     front,
     all: back ? unionOf(back, front) : front,
@@ -384,7 +393,7 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
     stub,
     stubCap,
     endOn,
-    stickUnder: h.art.view === 'backTop' || h.art.view === 'thumbTop',
+    stickUnder: h.art.view === 'backTop',
   };
 }
 
@@ -394,6 +403,8 @@ export type ArmPaths = {
    *  halves and the seam (open curves); `toViewer`: the inside shows. */
   opening: SkPath;
   cuffCloth: SkPath;
+  /** (from above) the cuff's open edge: its sides and near rim only. */
+  cuffEdge: SkPath | null;
   rimNear: SkPath;
   rimFar: SkPath | null;
   seam: SkPath;
@@ -481,6 +492,7 @@ export function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths 
     // Turned toward the viewer the end of the tube IS the opening (the cloth stops at
     // the near rim); turned away, the cloth wraps over it up to the near rim.
     cuffCloth: smoothClosed(a.cuff, 0.3),
+    cuffEdge: a.cuffEdge ? smoothOpen(a.cuffEdge) : null,
     rimNear: smoothOpen(a.opening.rimNear),
     rimFar: a.opening.rimFar ? smoothOpen(a.opening.rimFar) : null,
     seam: smoothOpen(a.opening.seam),

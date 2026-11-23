@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 11:48 · ccode · a30e3995
+changed: Figure roll-out waves 1-2 (kit drummer on in both views, hand-drum hands redrawn, conga slap) and the Labs menu changes (owner 2026-11-23) [MD:D78] [MD:D79]
+affects other side: nothing on the server (JS only). It also carries b099c8b9 (left foot on the hi-hat pedal). For store text and pictures later: the Labs menu group "Instruments & Recording" is now "Miking Techniques" and Bass Guitar Physics is listed under Pitch & Tuning; the Congas sound page has a fourth stroke, SLAP; the kit drummer has a new look in every kit picture.
+needs: from A, when store text is next touched: check whether the store listing or screenshots still say "Instruments & Recording" [MD:D79]. The owner has not yet passed the drummer's view from above or the hand-drum hands [MD:D78]; OTA 16 waits for his word [MD:D77].
+
+
 ### 2026-11-23 10:06 · ccode · 16072458
 changed: Drummer round of 2026-11-23: natural wrist height, approved hands and cuffs, clean back edge, lighter head shading; longer drum lugs and a visible kick beater (owner 2026-11-23), figure switch still OFF [MD:D77] [MD:D78]
 affects other side: nothing on the server (JS only). It also carries the unlogged 0a636eb9 (figure example: hand-to-wrist-to-arm join, switch off). For store pictures later: every drum now shows long lug casings with tension rods, and the kit picture shows the kick beater; the drummer in the kit pictures holds the sticks with a lower wrist.

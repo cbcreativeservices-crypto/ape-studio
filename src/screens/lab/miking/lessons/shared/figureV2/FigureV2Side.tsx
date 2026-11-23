@@ -188,7 +188,7 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
           <Blur mm={0.8} />
         </Path>
       </Form>
-      <Path path={P.cuffCloth} style="stroke" strokeWidth={1.1} strokeJoin="round" color={MAT.shirt.edge} opacity={0.75} />
+      <Path path={P.cuffEdge ?? P.cuffCloth} style="stroke" strokeWidth={1.1} strokeJoin="round" strokeCap="round" color={MAT.shirt.edge} opacity={0.75} />
     </Group>
   );
 }

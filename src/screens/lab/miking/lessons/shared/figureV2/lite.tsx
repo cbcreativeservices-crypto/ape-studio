@@ -52,7 +52,8 @@ function HandLite({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
   const back = a.parts.filter((p) => p.layer === 'back');
   const front = a.parts.filter((p) => p.layer === 'front');
   const edge = <Path path={a.all} style="stroke" strokeWidth={0.9} color={MAT.skin.edge} opacity={0.5} />;
-  const digitEdges = a.endOn ? null : <Path path={a.front} style="stroke" strokeWidth={1} color={MAT.skin.edge} opacity={0.4} />;
+  // (the parts' own lines only — a thumb's outer edge and gap line — never a closed outline round a thumb)
+  const digitEdges = a.edges ? <Path path={a.edges} style="stroke" strokeWidth={1} strokeCap="round" color={MAT.skin.edge} opacity={0.4} /> : null;
   if (a.endOn || a.stickUnder)
     return (
       <Group>

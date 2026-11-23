@@ -44,9 +44,10 @@ export type TopPlan = {
   torsoAxis: [Pt, Pt];
   arms: { near: ArmPlan; far: ArmPlan };
   /** Which surface of each hand faces up, from its 3-D frame (handModel: +z out
-   *  of the back of the hand, +y toward the little finger): 'back' — the back
-   *  of the hand (drawn: authoredHands 'backTop', the thumb under the hand) —
-   *  or 'thumb', the thumb's side. With the up-components. */
+   *  of the back of the hand, +y toward the little finger): 'back' or 'thumb',
+   *  with the up-components — recorded only: a matched grip from above is
+   *  always drawn from the back of the hand, the thumb under it as the fulcrum
+   *  (owner 2026-11-23: "thumb is underneath as the fulcrum"). */
   faces: { near: { up: 'back' | 'thumb'; back: number; thumb: number }; far: { up: 'back' | 'thumb'; back: number; thumb: number } };
   legs: { thighs: [Poly, Poly]; shins: [Poly, Poly]; thighAxes: [[Pt, Pt], [Pt, Pt]]; knees: [Ellipse, Ellipse] };
   /** The shoes (R on the kick pedal, L along the hi-hat pedal): the upper, its sole's rim, the laces (open). */
@@ -61,7 +62,7 @@ const worldOf = (pose: PlayerPose) => {
 const xz = (p: { x: number; z: number }): Pt => P(p.x, p.z);
 
 /** The hand from above on its stick (authoredHands 'backTop'). */
-function placedTop(h: StickHold, view: 'backTop' | 'thumbTop'): PlacedHand {
+function placedTop(h: StickHold): PlacedHand {
   const d = h.dir;
   const Q = (k: number) => P(h.fulcrum.x + d.x * k, h.fulcrum.z + d.z * k);
   const F = Q(0);
@@ -72,7 +73,7 @@ function placedTop(h: StickHold, view: 'backTop' | 'thumbTop'): PlacedHand {
   const axis = unit(P(h.sk.frame.x.x, h.sk.frame.x.z));
   const tip = h.sk.thumb.joints[h.sk.thumb.joints.length - 1];
   const mirror = crossZ(axis, sub(xz(tip), W)) < 0;
-  return placeHand(view, W, F, Q(-116), Q(290), sx, { mirror });
+  return placeHand('backTop', W, F, Q(-116), Q(290), sx, { mirror });
 }
 
 /** The forearm's rise toward a viewer ABOVE (y grows downward): the sine. */
@@ -148,14 +149,15 @@ export function kitDrummerTopPlan(spec: DrummerSpec = KIT_GROOVE): TopPlan {
 
   // THE ARMS: the side view's sleeve, cuff and hand, from above
   const arm = (a: DrummerPose3['R'], h: StickHold, s: Pt) => {
-    const placed = placedTop(h, faceOf(h).up === 'thumb' ? 'thumbTop' : 'backTop');
+    // (a matched grip from above is always drawn from the back of the hand: the thumb under it, as the fulcrum)
+    const placed = placedTop(h);
     return armPlan(s, xz(a.elbow), placed.wrist, h, false, placed, riseOf(a), null, true);
   };
   // which surface faces up (y grows downward: up is −y)
   const faceOf = (h: StickHold) => {
     const back = -h.sk.frame.z.y;
     const thumb = h.sk.frame.y.y; // the thumb's side is −y of the hand frame
-    // (what faces up MORE is drawn: the back of the hand, or the thumb's side)
+    // (recorded, not drawn: see `faces`)
     return { up: (back >= thumb ? 'back' : 'thumb') as 'back' | 'thumb', back, thumb };
   };
   const near = arm(d.R, holds.R, sR);

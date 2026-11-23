@@ -303,19 +303,19 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
  *  turning across its axis, a soft lit edge; it casts a soft shadow on what
  *  lies under it — the separation between neighbouring forms is that shadow,
  *  never an outline. */
-function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number; outline?: number; casts?: number }) {
+function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts, castBlur = 2.6, edge, shade }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number; outline?: number; casts?: number; castBlur?: number; edge?: SkPath | null; shade?: [Pt, Pt] | null }) {
   const m = { u: box.x + box.width / 2, v: box.y + box.height / 2 };
   // (mostly from above: the top planes lit, the under planes turning away)
   const Ld = { u: -0.32, v: -0.95 };
   const R = 56;
   const w = kind === 'palm' ? 40 : kind === 'wrist' ? 24 : 10;
   const [s0, e0] = across(axis[0], axis[1], w);
-  return (
+  const body = (
     <Group>
       <Group clip={within}>
         <Group transform={[{ translateX: -LIGHT.u * 2.6 }, { translateY: -LIGHT.v * 2.6 }]}>
-          <Path path={path} color="#2a160e" opacity={casts ?? (kind === 'palm' || kind === 'wrist' ? 0 : 0.5)}>
-            <Blur mm={2.6} />
+          <Path path={path} color="#2a160e" opacity={casts ?? (shade ? 0 : kind === 'palm' || kind === 'wrist' ? 0 : 0.5)}>
+            <Blur mm={castBlur} />
           </Path>
         </Group>
       </Group>
@@ -323,18 +323,26 @@ function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts }
         <LinearGradient start={vec(m.u + Ld.u * R, m.v + Ld.v * R)} end={vec(m.u - Ld.u * R, m.v - Ld.v * R)} colors={['#cfb19b', SKIN.form[1], SKIN.form[2], '#7f5d4c']} positions={[0, 0.35, 0.75, 1]} />
       </Path>
       <Group clip={path}>
+        {shade ? (
+          // (in the hand's soft shade: a step darker under the hand's edge, the skin's own tone toward its outer edge)
+          <Path path={path}>
+            <LinearGradient start={vec(shade[0].u, shade[0].v)} end={vec(shade[1].u, shade[1].v)} colors={['rgba(52,26,16,0.24)', 'rgba(52,26,16,0.06)', 'rgba(255,238,226,0.08)']} positions={[0, 0.55, 1]} />
+          </Path>
+        ) : (
         <Path path={path}>
           <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={kind === 'digit' ? ['rgba(255,238,226,0.32)', 'rgba(255,238,226,0.06)', 'rgba(52,26,16,0.24)', 'rgba(52,26,16,0.58)'] : ['rgba(255,238,226,0.22)', 'rgba(255,238,226,0.04)', 'rgba(52,26,16,0.16)', 'rgba(52,26,16,0.42)']} positions={[0, 0.3, 0.7, 1]} />
         </Path>
+        )}
         <Path path={rimOf(path, 2.4)} color={SKIN.rim} opacity={0.3 + lift}>
           <Blur mm={1.2} />
         </Path>
         {lift > 0 ? <Path path={path} color={SKIN.rim} opacity={lift} /> : null}
       </Group>
       {/* a finger's one outline: where it lies over its neighbour, the one dark crease between them */}
-      {outline > 0 ? <Path path={path} style="stroke" strokeWidth={1.1} strokeJoin="round" color={SKIN.edge} opacity={outline} /> : null}
+      {outline > 0 ? <Path path={edge ?? path} style="stroke" strokeWidth={1.1} strokeJoin="round" strokeCap="round" color={SKIN.edge} opacity={shade ? outline * 0.6 : outline} /> : null}
     </Group>
   );
+  return body;
 }
 
 /** The authored hand on its stick, the stick through it in depth order. */
@@ -349,7 +357,7 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
       <Group>
         {ps.map((p, i) => (
           // (the nearest finger of the fist, its little finger, a step lighter: the form nearest the viewer and the light)
-          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} outline={!a.endOn && p.kind === 'digit' ? 0.55 : 0} casts={a.stickUnder && p.kind === 'palm' ? 0.45 : undefined} />
+          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} outline={!a.endOn && p.kind === 'digit' ? 0.55 : 0} casts={a.stickUnder && p.kind === 'palm' ? 0.22 : undefined} castBlur={a.stickUnder && p.kind === 'palm' ? 6 : 2.6} edge={p.edge} shade={p.shade} />
         ))}
         {form ? (
           <Group clip={form}>

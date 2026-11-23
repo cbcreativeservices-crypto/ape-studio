@@ -27,6 +27,19 @@
  * consulted when the server cannot answer, the server's number always wins when
  * it can, and `unavailable` is still reported so the UI can say the count is
  * provisional. Academy is unlimited and must never call these.
+ *
+ * ── A KNOWN GUEST COUNTS ON THE DEVICE (owner 2026-11-23) ────────────────────
+ *
+ * "in the calculator the guest user does get an allowance per week of use".
+ * A guest used to be walled ("Create a free account (or sign in) to run
+ * calculations"). A KNOWN guest (no session, tier known) now gets the same
+ * CALC_WEEKLY_LIMIT a week, counted in this file's device window, exactly as
+ * glossaryCap.ts's 'local' backend does for the glossary. There is no account
+ * to count against, so mode 'local' NEVER calls calc_consume /
+ * calc_usage_status (and never waits out their 8 s deadline). Same key, same
+ * never-overwrite-an-unreadable-read rule, same serialized read-modify-write.
+ * For a guest the device IS the meter, so `unavailable` is false unless the
+ * device read itself failed.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -37,6 +50,12 @@ import { withDeadline } from '../../lib/boundedCall';
 // returns (v_limit in calc_consume / calc_usage_status). Keep the two in step:
 // docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL sets the server to 5.
 export const CALC_WEEKLY_LIMIT = 5;
+
+/** Who keeps the count (owner 2026-11-23). 'server' — a signed-in free or
+ *  lapsed account: the RPCs, with the device window as the floor when the
+ *  server cannot answer. 'local' — a KNOWN guest: the device window only,
+ *  no RPC. An UNKNOWN tier is never metered as a guest (the screen decides). */
+export type CalcMeterMode = 'server' | 'local';
 
 export type CalcUsage = {
   used: number;
@@ -117,8 +136,9 @@ function serial<T>(run: () => Promise<T>): Promise<T> {
   return p;
 }
 
-/** Spend one credit against the DEVICE window, when the server cannot answer. */
-function consumeLocal(): Promise<CalcUsage> {
+/** Spend one credit against the DEVICE window: when the server cannot answer
+ *  (`provisional`, an account's floor), or as a KNOWN guest's own meter. */
+function consumeLocal(provisional: boolean): Promise<CalcUsage> {
   return serial(async () => {
     const now = Date.now();
     const read = await readLocal();
@@ -126,48 +146,56 @@ function consumeLocal(): Promise<CalcUsage> {
     // A failed read is NOT "0 used": go on from what this run last knew, and
     // never write over the stored window.
     const cur = unreadable ? lastKnown : read;
-    // `unavailable` stays TRUE throughout: the UI should still say the count is
-    // provisional, because it is. What changes is that `allowed` can now be false.
+    // An account's fallback stays `unavailable` TRUE throughout: the UI should
+    // still say the count is provisional, because it is. What changes is that
+    // `allowed` can now be false. A guest's count is the device's own, so it
+    // is provisional only when the device read failed.
+    const unavailable = provisional || unreadable;
     if (!cur || now - cur.windowStart >= WEEK_MS) {
       const next = { windowStart: now, used: 1 };
       lastKnown = next;
       if (!unreadable) await writeLocal(next);
-      return { used: 1, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(now).toISOString(), allowed: true, unavailable: true };
+      return { used: 1, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(now).toISOString(), allowed: true, unavailable };
     }
     if (cur.used >= CALC_WEEKLY_LIMIT) {
       lastKnown = cur;
-      return { used: cur.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: false, unavailable: true };
+      return { used: cur.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: false, unavailable };
     }
     const next = { windowStart: cur.windowStart, used: cur.used + 1 };
     lastKnown = next;
     if (!unreadable) await writeLocal(next);
-    return { used: next.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: true, unavailable: true };
+    return { used: next.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: true, unavailable };
   });
 }
 
-/** Read the device window without spending, when the server cannot answer.
- *  An unreadable window shows what this run last knew, never a reset. */
-function statusLocal(): Promise<CalcUsage> {
+/** Read the device window without spending (an account's offline floor, or
+ *  a KNOWN guest's own meter). An unreadable window shows what this run last
+ *  knew, never a reset. */
+function statusLocal(provisional: boolean): Promise<CalcUsage> {
   return serial(async () => {
     const now = Date.now();
     const read = await readLocal();
-    if (read !== 'unreadable') lastKnown = read;
+    const unreadable = read === 'unreadable';
+    if (!unreadable) lastKnown = read;
     const cur = lastKnown;
+    const unavailable = provisional || unreadable;
     if (!cur || now - cur.windowStart >= WEEK_MS) {
-      return { used: 0, limit: CALC_WEEKLY_LIMIT, windowStart: null, allowed: true, unavailable: true };
+      return { used: 0, limit: CALC_WEEKLY_LIMIT, windowStart: null, allowed: true, unavailable };
     }
     return {
       used: cur.used,
       limit: CALC_WEEKLY_LIMIT,
       windowStart: new Date(cur.windowStart).toISOString(),
       allowed: cur.used < CALC_WEEKLY_LIMIT,
-      unavailable: true,
+      unavailable,
     };
   });
 }
 
-/** Spend one credit for a newly revealed calculation. */
-export async function consumeCalc(): Promise<CalcUsage> {
+/** Spend one credit for a newly revealed calculation. `mode` 'local' is a
+ *  KNOWN guest (owner 2026-11-23): the device window only, never the RPC. */
+export async function consumeCalc(mode: CalcMeterMode = 'server'): Promise<CalcUsage> {
+  if (mode === 'local') return consumeLocal(false);
   try {
     /**
      * ⛔ BOUNDED (2026-09-23 overnight hunt). This file says at the top that it
@@ -192,17 +220,19 @@ export async function consumeCalc(): Promise<CalcUsage> {
     const row = (data as Row[] | null)?.[0];
     if (error || !row) {
       if (error) console.warn('[calc] calc_consume unavailable, using device window:', error.message);
-      return await consumeLocal();
+      return await consumeLocal(true);
     }
     // The RPC returns allowed in its own column via the SETOF row shape.
     return fromRow(row, (row as Row & { allowed?: boolean }).allowed ?? true);
   } catch {
-    return await consumeLocal();
+    return await consumeLocal(true);
   }
 }
 
-/** Read the current week's usage without spending a credit (for the counter). */
-export async function getCalcStatus(): Promise<CalcUsage> {
+/** Read the current week's usage without spending a credit (for the counter).
+ *  `mode` 'local' is a KNOWN guest (owner 2026-11-23): the device window only. */
+export async function getCalcStatus(mode: CalcMeterMode = 'server'): Promise<CalcUsage> {
+  if (mode === 'local') return statusLocal(false);
   try {
     // Bounded like consumeCalc (bug pass 2026-09-30): a stalled read left the
     // "# / 5" counter missing for the life of the screen; a timeout rejects
@@ -215,9 +245,9 @@ export async function getCalcStatus(): Promise<CalcUsage> {
     const row = (data as Row[] | null)?.[0];
     // Falls back to the DEVICE window rather than a blank "no cap" — the
     // counter vanishing while offline is what made the bypass discoverable.
-    if (error || !row) return await statusLocal();
+    if (error || !row) return await statusLocal(true);
     return fromRow(row, row.used < (row.lim ?? CALC_WEEKLY_LIMIT));
   } catch {
-    return await statusLocal();
+    return await statusLocal(true);
   }
 }

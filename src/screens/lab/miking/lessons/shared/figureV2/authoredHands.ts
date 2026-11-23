@@ -43,7 +43,7 @@
 import { add, limbOutline, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { Ellipse } from './sidePlan.ts';
 
-export type HandArtView = 'fistEdge' | 'palmThumb' | 'backTop' | 'thumbTop';
+export type HandArtView = 'fistEdge' | 'palmThumb' | 'backTop';
 
 /** A digit as joints (base → tip) and radii: drawn as one tapered form. */
 type Chain = { pts: readonly (readonly [number, number])[]; r: readonly number[] };
@@ -62,6 +62,14 @@ export type HandArtPart = {
    *  bones, so a finger curled back on itself stays solid (an outline traced
    *  round a tight curl crosses itself and would leave a hole). */
   chain?: { pts: Pt[]; r: number[] };
+  /** The only line drawn for this part (open): a thumb that grows out of the
+   *  hand draws its outer edge and its gap line to the index — never an
+   *  outline where it joins the hand. */
+  edge?: Poly;
+  /** A part in the hand's soft shade (a thumb under the hand): darker at the
+   *  first point, fading to the skin's own tone at the second — no cylinder
+   *  of its own, no flat dark fill. */
+  shade?: [Pt, Pt];
 };
 
 export type HandArt = {
@@ -85,6 +93,8 @@ export type HandArt = {
   knuckle: Pt;
   /** A fist from above: the knuckle row's four swells (little → index), each a bump on the one silhouette. */
   knuckles?: Pt[];
+  /** From above: where the thumb's web meets the hand (its free length is measured from here). */
+  thumbWeb?: Pt;
   wristTop: Pt;
   wristBottom: Pt;
   thumbTip: Pt | null;
@@ -291,12 +301,17 @@ function palmThumb(): HandArt {
  *   • The fingers are told apart by three short creases starting in the
  *     valleys between the knuckles and fading forward — never an outline round
  *     a finger. The fingertips and nails are underneath.
- *   • The thumb: from the back of the hand (`backTop`) it lies UNDER the hand
- *     along the stick ("make sure when viewed from above, the thumb is
- *     correctly placed under the hand"), painted first, the hand's shadow on
- *     it; on a hand rolled toward its thumb side (`thumbTop`) it lies along
- *     the TOP of the stick, nearest the eye, painted last, the knuckle row
- *     turning away beyond it.
+ *   • The thumb lies UNDER the hand, as the fulcrum (owner 2026-11-23: "thumb
+ *     is underneath as the fulcrum"; "make sure when viewed from above, the
+ *     thumb is correctly placed under the hand"): painted first, in the hand's
+ *     soft shade; only the strip beyond the hand's inner edge shows, beside
+ *     the stick, its pad against the stick's SIDE at the fulcrum. It leaves
+ *     the hand's contour tangentially near the heel ("watch lower thumb
+ *     transition around the hand"): wrist, heel, thumb base and thumb one
+ *     smooth curve, no notch, no lobe, no line.
+ * Both hands of a matched grip are drawn this way from above (the right
+ * hand's roll in the pose — thumb side 0.72 up against back 0.66 — does not
+ * turn it into a thumb-on-top view).
  * The stick runs under the hand from the heel to the pinch between the thumb
  * and the index.
  */
@@ -311,20 +326,14 @@ const FIST_TOP: readonly (readonly [number, number])[] = [
   [86, 33], [64, 33], [42, 31], [20, 28], [-6, 24],
 ];
 const FIST_KNUCKLES: readonly (readonly [number, number])[] = [[104, -28], [113.5, -8], [117.5, 6], [113, 22]];
-const T_THUMB: Chain = { pts: [[18, 26], [52, 43], [80, 46], [104, 40]], r: [11.6, 10.6, 9.6, 8.6] };
-
-/** From above the thumb lies on its side along the stick: its nail faces OUT,
- *  away from the hand — a sliver along its outer edge, toward the tip. */
-function thumbSideNail(c: Chain): Poly {
-  const k = c.pts.length - 1;
-  const a = P(c.pts[k - 1][0], c.pts[k - 1][1]);
-  const b = P(c.pts[k][0], c.pts[k][1]);
-  let n = perp(unit(sub(b, a)));
-  if (n.v < 0) n = mul(n, -1); // outward: +y, away from the hand
-  const r = c.r[k];
-  const at = (f: number, o: number) => add(add(a, mul(sub(b, a), f)), mul(n, r * o));
-  return [at(0.45, 0.62), at(0.7, 0.84), at(0.95, 0.66), at(0.97, 0.4), at(0.7, 0.5), at(0.47, 0.42)];
-}
+// The thumb from above, under the hand: its root deep under the back of the hand; the visible strip
+// leaves the hand's inner contour tangentially near the heel, widest at its knuckle (≈ 20 mm), tapering
+// over its end joint to a rounded tip whose pad presses the stick's side at the fulcrum.
+const T_THUMB_OUT: readonly (readonly [number, number])[] = [
+  [44, 26], [56, 22], [66, 21], [80, 26], [92, 30.5], [100, 33], [106, 37.5], [109.5, 40], [111, 43], [109, 46], [104, 47.5], [96, 47.5], [86, 46.5], [74, 44.5], [62, 41.5], [50, 37.5], [40, 33], [32, 30],
+];
+const T_THUMB_EDGE: readonly (readonly [number, number])[] = [[44, 35], [50, 37.5], [62, 41.5], [74, 44.5], [86, 46.5], [96, 47.5], [104, 47.5], [109, 46], [111, 43], [109.5, 40], [106, 37.5], [100, 33]];
+const T_THUMB: Chain = { pts: [[60, 32], [92, 38], [109, 43]], r: [10, 8, 6] };
 
 function backTop(): HandArt {
   const digit = (name: string, c: Chain, d: HandArtPart['digit']): HandArtPart => ({ name, layer: 'front', outline: chain(c), axis: axisOf(c), kind: 'digit', chain: bones(c), digit: d });
@@ -334,12 +343,13 @@ function backTop(): HandArt {
     stickLocal: TOP_STICK,
     // the thumb FIRST (under the hand), then the one silhouette of the back of the hand and the fingers
     parts: [
-      digit('thumb', T_THUMB, 'thumb'),
+      { name: 'thumb', layer: 'front', outline: pts(T_THUMB_OUT), axis: [P(50, 36), P(111, 36)], kind: 'digit', chain: bones(T_THUMB), digit: 'thumb', edge: pts(T_THUMB_EDGE), shade: [P(80, 31), P(80, 47)] },
       { name: 'hand', layer: 'front', outline: pts(FIST_TOP), axis: [P(0, 0), P(116, 0)], kind: 'palm' },
     ],
     // the three valleys' short creases, fading forward over the curl
     creases: [pts([[96, -21], [100, -20.5], [103, -20]]), pts([[103, -3], [106.5, -2.5], [110, -2]]), pts([[104, 13.5], [107, 13.7], [110, 13.8]])],
-    nails: [thumbSideNail(T_THUMB)],
+    // (no nail: from above the thumb under the hand shows its side, the nail faces away)
+    nails: [],
     warm: [],
     lights: [
       E(58, -2, 26, 15, 0), // the broad back of the hand, turned to the light
@@ -353,51 +363,12 @@ function backTop(): HandArt {
     knuckles: FIST_KNUCKLES.map(([x, y]) => P(x, y)),
     wristTop: P(0, -25),
     wristBottom: P(0, 24),
-    thumbTip: P(T_THUMB.pts[3][0], T_THUMB.pts[3][1]),
+    thumbTip: P(T_THUMB.pts[2][0], T_THUMB.pts[2][1]),
+    thumbWeb: P(50, 37.5),
   };
 }
 
-// The hand rolled toward its thumb side: a narrower back, the knuckle row turning away (each swell
-// smaller toward the little finger), the index finger's side the hand's near edge.
-const FIST_ROLLED: readonly (readonly [number, number])[] = [
-  [-6, -20], [14, -24], [40, -28], [66, -30], [82, -30],
-  [88, -28], [91, -25], [89.5, -22], [88, -19.5],
-  [95, -15], [99.5, -12], [98.5, -9], [96.5, -6.5],
-  [105, -1], [109, 3], [107.5, 6.5], [106, 8.5],
-  [114, 13], [115, 18], [112, 23], [104, 26],
-  [88, 26], [66, 27], [42, 26], [20, 24], [-6, 20],
-];
-const ROLLED_KNUCKLES: readonly (readonly [number, number])[] = [[91, -25], [99.5, -12], [109, 3], [115, 18]];
-const R_THUMB: Chain = { pts: [[18, 18], [52, 30], [82, 33], [106, 30]], r: [12, 11, 9.8, 8.8] };
-
-function thumbTop(): HandArt {
-  const digit = (name: string, c: Chain, d: HandArtPart['digit']): HandArtPart => ({ name, layer: 'front', outline: chain(c), axis: axisOf(c), kind: 'digit', chain: bones(c), digit: d });
-  return {
-    view: 'thumbTop',
-    F: P(100, 22),
-    stickLocal: (12 * Math.PI) / 180,
-    // the one silhouette of the hand and fingers, then the thumb on top along the stick
-    parts: [
-      { name: 'hand', layer: 'front', outline: pts(FIST_ROLLED), axis: [P(0, 0), P(112, 0)], kind: 'palm' },
-      digit('thumb', R_THUMB, 'thumb'),
-    ],
-    creases: [pts([[83, -20.5], [85.5, -20], [88, -19.5]]), pts([[91.5, -7.5], [94, -7], [96.5, -6.5]]), pts([[100, 8], [103, 8.3], [106, 8.5]])],
-    nails: [nailOf(R_THUMB)],
-    warm: [],
-    lights: [
-      E(52, 26, 30, 6, 0), // the thumb's lit top along the stick
-      E(88, -24, 3.5, 3, 0), E(96, -11, 4, 3.5, 0), E(104, 3, 5, 4, 0), E(109, 17, 5.5, 4.5, 0),
-    ],
-    darks: [E(108, -6, 5, 26, 0.3)],
-    knuckle: P(ROLLED_KNUCKLES[3][0], ROLLED_KNUCKLES[3][1]),
-    knuckles: ROLLED_KNUCKLES.map(([x, y]) => P(x, y)),
-    wristTop: P(0, -20),
-    wristBottom: P(0, 20),
-    thumbTip: P(R_THUMB.pts[3][0], R_THUMB.pts[3][1]),
-  };
-}
-
-const ARTS: Record<HandArtView, HandArt> = { fistEdge: fistEdge(), palmThumb: palmThumb(), backTop: backTop(), thumbTop: thumbTop() };
+const ARTS: Record<HandArtView, HandArt> = { fistEdge: fistEdge(), palmThumb: palmThumb(), backTop: backTop() };
 export const handArt = (v: HandArtView): HandArt => ARTS[v];
 
 /* ── placing an authored hand on the pose ── */
@@ -417,7 +388,7 @@ export type PlacedHand = {
   bead: Pt;
   stubEnd: Pt;
   /** The authored parts, placed. */
-  parts: (HandArtPart & { placed: Poly; placedAxis: [Pt, Pt]; placedChain: { pts: Pt[]; r: number[] } | null })[];
+  parts: (HandArtPart & { placed: Poly; placedAxis: [Pt, Pt]; placedChain: { pts: Pt[]; r: number[] } | null; placedEdge: Poly | null; placedShade: [Pt, Pt] | null })[];
   creases: Poly[];
   nails: Poly[];
   warm: { c: Pt; r: number }[];
@@ -490,7 +461,7 @@ export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt, s
     butt,
     bead,
     stubEnd: add(butt, mul(sub(F, butt), 0.45)),
-    parts: art.parts.map((p) => ({ ...p, placed: p.outline.map(at), placedAxis: [at(p.axis[0]), at(p.axis[1])] as [Pt, Pt], placedChain: p.chain ? { pts: p.chain.pts.map(at), r: p.chain.r.map((r) => r * Math.sqrt(sx)) } : null })),
+    parts: art.parts.map((p) => ({ ...p, placed: p.outline.map(at), placedAxis: [at(p.axis[0]), at(p.axis[1])] as [Pt, Pt], placedChain: p.chain ? { pts: p.chain.pts.map(at), r: p.chain.r.map((r) => r * Math.sqrt(sx)) } : null, placedEdge: p.edge ? p.edge.map(at) : null, placedShade: p.shade ? ([at(p.shade[0]), at(p.shade[1])] as [Pt, Pt]) : null })),
     creases: art.creases.map((c) => c.map(at)),
     nails: art.nails.map((c) => c.map(at)),
     warm: art.warm.map((w) => ({ c: at(w.c), r: w.r })),
