@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 19:57 · ccode · 7a51a269
+changed: docs: Founder links deployed (1a112c66, footer last + /curriculum, no top menu), read back live [MD:D74]
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-11-22 19:27 · ccode · 86983d3d
 changed: web: Founder link in the top menu and the footer (owner 2026-11-22: "i cant find a founder link"); not deployed [MD:D36]
 affects other side: nothing until the owner says to deploy the website; then Comp A may re-check the live footer/menu
