@@ -249,6 +249,13 @@ export function TubeCardScreen() {
           }
 
           if (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4) s.moved = true;
+          // Touch slop (owner 2026-11-22: "the double tap … is not zooming in").
+          // A finger tap on a real screen almost always reports a sub-4 px
+          // move; that used to flip the session into 'swipe' mode, and the
+          // swipe branch of Release returns before the double-tap check, so
+          // zoom-in never fired on a phone (a mouse click has no move, so the
+          // browser looked fine). Below the slop it is still a tap.
+          if (!s.moved && s.mode !== 'pinch') return;
 
           // Two fingers → one (bug hunt 2026-09-29): pinch, lift a finger, keep
           // dragging. This branch used to test `s.startScale` — the PRE-pinch
@@ -303,8 +310,10 @@ export function TubeCardScreen() {
           }
 
           // Double-tap toggles zoom.
-          if (!s.moved && now - s.downAt < 240) {
-            if (now - s.lastTapAt < 320) {
+          // Release-to-release window: the second tap's own press time counts
+          // too, so 320 ms left a real double tap only ~200 ms of gap.
+          if (!s.moved && now - s.downAt < 280) {
+            if (now - s.lastTapAt < 420) {
               s.lastTapAt = 0;
               if (cur.current.scale > 1.01) {
                 Animated.parallel([
