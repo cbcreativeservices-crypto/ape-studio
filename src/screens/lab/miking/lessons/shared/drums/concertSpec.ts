@@ -34,7 +34,10 @@ export const CONCERT_SNARE_14x65: DrumSpec = {
     gap: dd(3, 'gap between the shell and the hoop'),
   },
   rods: { n: { mm: 10, prov: src('YMH-CPCAT', 'the 14-inch models feature a 10-lug design') }, phaseDeg: dd(18, 'tension-rod phase on the concert snare') },
-  lug: { len: dd(30, 'lug length along the shell'), out: dd(24, 'how far a lug stands off the shell'), inset: dd(8, 'lug distance from the shell edge') },
+  // Owner 2026-11-23 ("make the lugs on the drums longer"): one double-ended
+  // casing per rod spanning the shell between the hoops, its ends 40 mm in
+  // from the head planes (drawing defaults; was a 30 mm block under the hoop).
+  lug: { len: dd(6.5 * IN - 80, 'double-ended lug casing length along the shell'), out: dd(24, 'how far a lug stands off the shell'), inset: dd(40, 'from the head plane to the lug’s top: below the hoop, a little way down the shell'), double: true },
   batter: 'coated',
   reso: 'snareSide',
   wires: {

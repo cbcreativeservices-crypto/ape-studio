@@ -656,7 +656,7 @@ export const M09_LESSON: Lesson = {
     { title: 'WHAT THEY ARE', text: 'Overheads are microphones above — or just beside — the drum kit that hear the whole kit at once. They are a point of view on the drums and cymbals, not an instrument of their own.', src: 'S-OH-MM' },
     { title: 'WHERE YOU MEET THEM', text: 'In most studio drum recordings, and on many stages — wherever the cymbals, or the whole kit, need to reach the mix.', src: 'DPA-KIT' },
     { title: 'THEIR JOB', text: 'Either the main picture of the kit — drums and cymbals in balance, close mics adding focus — or mostly the cymbals, supporting close mics on the drums. Decide which before you place them.', src: 'S-OH-MM' },
-    { title: 'THE KIT THEY HEAR', text: 'A typical 5-piece: a 22 in kick, a 14 in snare, 10 and 12 in rack toms, a 16 in floor tom, 14 in hi-hats, 16 and 18 in crashes and a 20 in ride. In this drawing the cymbals hang about 0.85–1.2 m off the floor and a seated drummer’s head is near 1.3 m.', src: 'ZIL-K' },
+    { title: 'THE KIT THEY HEAR', text: 'A typical 5-piece: a 22 in kick, a 14 in snare, 10 and 12 in rack toms, a 16 in floor tom, 14 in hi-hats, 16 and 18 in crashes and a 20 in ride. In this drawing the cymbals hang about 0.85–1.2 m off the floor and a seated drummer’s head is near 1.4 m.', src: 'ZIL-K' },
   ],
   sound: {
     // The drum lessons' strike sequence is not used here (the lesson draws its

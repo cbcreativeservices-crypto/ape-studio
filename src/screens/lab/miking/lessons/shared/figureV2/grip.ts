@@ -58,6 +58,10 @@ export type StickHold = {
    *  back of the hand up), 90 = French (the thumb on top, the palm to the
    *  side); the American grip most players use sits near 45. */
   roll: number;
+  /** The pose's own wrist (stickPose: 100 mm behind the fulcrum along the
+   *  stick, the fist pointing from it to the fulcrum) — where the drawing
+   *  places the hand's root. */
+  poseWrist: V3;
 };
 
 /** The German grip's back-of-hand (up, square to the stick) and the French
@@ -154,7 +158,7 @@ export function stickHold(a: ArmIn): StickHold {
     if (roll < 0) cost += 1e6 * roll * roll;
     if (!best || cost < best.cost) best = { cost, f };
   };
-  for (let phi = 0; phi < 360; phi += 3) for (let ang = 25; ang <= 55; ang += 2.5) tryOne(phi * DEG, ang * DEG);
+  for (let phi = 0; phi < 360; phi += 3) for (let ang = 5; ang <= 55; ang += 2.5) tryOne(phi * DEG, ang * DEG);
   const f = (best as { cost: number; f: HandFrame } | null)!.f;
   const sk = closeOn(f, a.fulcrum, s, thumbSign);
   const fore = sub(f.o, a.elbow);
@@ -167,6 +171,7 @@ export function stickHold(a: ArmIn): StickHold {
     fulcrum: a.fulcrum,
     dir: s,
     roll: rollOf(f.z, s, thumbSign),
+    poseWrist: a.wrist,
   };
   holdCache.set(key, res);
   return res;

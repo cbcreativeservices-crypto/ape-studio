@@ -66,9 +66,17 @@ export function kitHolds(d: DrummerPose3): KitHolds {
   return out;
 }
 
+/** The forearm's tilt toward the viewer (+z): the sine of its angle out of the picture. */
+const tiltOf = (a: { elbow: { x: number; y: number; z: number }; wrist: { x: number; y: number; z: number } }) => {
+  const dx = a.wrist.x - a.elbow.x;
+  const dy = a.wrist.y - a.elbow.y;
+  const dz = a.wrist.z - a.elbow.z;
+  return dz / (Math.hypot(dx, dy, dz) || 1);
+};
+
 /** The side-view plan of the drummer playing `spec` (memoised through
  *  drummerPose / viewDrummer / sidePlan). */
-export function kitDrummerPlan(spec: DrummerSpec = KIT_GROOVE): SidePlan {
+export function kitDrummerPlan(spec: DrummerSpec = KIT_GROOVE, extra: { farBehind?: boolean } = {}): SidePlan {
   const d = drummerPose(spec);
   const v = viewDrummer(d, 'side');
   const h = kitHolds(d);
@@ -80,7 +88,10 @@ export function kitDrummerPlan(spec: DrummerSpec = KIT_GROOVE): SidePlan {
     nod: 8,
     awayR: d.R.wrist.z < d.R.elbow.z - 60,
     awayL: d.L.wrist.z < d.L.elbow.z - 60,
+    tiltR: tiltOf(d.R),
+    tiltL: tiltOf(d.L),
     seatV: yAt(KIT.throne.seatH),
+    ...extra,
   });
 }
 

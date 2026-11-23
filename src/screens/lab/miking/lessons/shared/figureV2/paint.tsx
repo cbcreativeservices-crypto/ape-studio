@@ -302,7 +302,7 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
  *  turning across its axis, a soft lit edge; it casts a soft shadow on what
  *  lies under it — the separation between neighbouring forms is that shadow,
  *  never an outline. */
-function ArtPart({ path, axis, kind, box, within, lift = 0 }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number }) {
+function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0 }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number; outline?: number }) {
   const m = { u: box.x + box.width / 2, v: box.y + box.height / 2 };
   // (mostly from above: the top planes lit, the under planes turning away)
   const Ld = { u: -0.32, v: -0.95 };
@@ -330,6 +330,8 @@ function ArtPart({ path, axis, kind, box, within, lift = 0 }: { path: SkPath; ax
         </Path>
         {lift > 0 ? <Path path={path} color={SKIN.rim} opacity={lift} /> : null}
       </Group>
+      {/* a finger's one outline: where it lies over its neighbour, the one dark crease between them */}
+      {outline > 0 ? <Path path={path} style="stroke" strokeWidth={1.1} strokeJoin="round" color={SKIN.edge} opacity={outline} /> : null}
     </Group>
   );
 }
@@ -346,7 +348,7 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
       <Group>
         {ps.map((p, i) => (
           // (the nearest finger of the fist, its little finger, a step lighter: the form nearest the viewer and the light)
-          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} />
+          <ArtPart key={`${layer}${i}`} path={p.path} axis={p.axis} kind={p.kind} box={box} within={a.all} lift={a.endOn && p.name === 'little' ? 0.16 : 0} outline={!a.endOn && p.kind === 'digit' ? 0.55 : 0} />
         ))}
         {form ? (
           <Group clip={form}>
@@ -382,6 +384,14 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
         {stick ?? null}
         {paint('back')}
         {paint('front')}
+        {/* the little finger, nearest the viewer: its own clear edge over the palm */}
+        {a.parts
+          .filter((p) => p.name === 'little')
+          .map((p, i) => (
+            <Group key={`le${i}`} clip={a.all}>
+              <Path path={p.path} style="stroke" strokeWidth={1} strokeJoin="round" color={SKIN.edge} opacity={0.45} />
+            </Group>
+          ))}
         {edge}
         {/* the butt comes toward the viewer out of the fist's opening: the round end of a
             wooden stick, its short shaft foreshortened, its contact shadow where the fingers close */}
@@ -427,6 +437,10 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
         </Group>
       </Group>
       {paint('front')}
+      {/* every form in front of the stick: opaque, with a clean edge where it lies over it */}
+      <Group clip={a.stickBody}>
+        <Path path={a.front} style="stroke" strokeWidth={1.1} strokeJoin="round" color={SKIN.edge} opacity={0.7} />
+      </Group>
       {edge}
     </Group>
   );

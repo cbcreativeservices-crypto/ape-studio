@@ -40,6 +40,7 @@ import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, Ra
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { KICK_ANCHORS, KICK_GEOM as G, portOpening, silhouetteRods } from './geometry.ts';
+import { KICK_22x18 } from '../shared/drums/drumSpec.ts';
 
 const PORT = KICK_ANCHORS['bd.port.center'];
 
@@ -88,6 +89,7 @@ function oval(p: SkPath, cx: number, cy: number, rx: number, ry: number) {
 }
 
 /* ── the hardware at a rod's silhouette (claw, T-rod, lug), both ends ── */
+const LUG = { inset: KICK_22x18.lug.inset.mm, len: KICK_22x18.lug.len.mm };
 type Hardware = { claws: SkPath; tees: SkPath; rods: SkPath; rodsHi: SkPath; lugsTop: SkPath; lugsBot: SkPath; nuts: SkPath };
 
 function buildHardware(view: ViewId): Hardware {
@@ -116,11 +118,14 @@ function buildHardware(view: ViewId): Hardware {
       rrect(h.claws, X(outer - 4), v(ho + 5), X(outer + 7), v(ho + 15), 2);
       // T-ROD: handle outside the claw, rod to the lug.
       rrect(h.tees, X(outer - 16), v(rRod - 7), X(outer - 9), v(rRod + 7), 2);
-      seg(h.rods, X(outer - 10), v(rRod), X(52), v(rRod));
-      seg(h.rodsHi, X(outer - 10), v(rRod) - sgn * 1.1, X(52), v(rRod) - sgn * 1.1);
-      // LUG on the shell (position along the shell illustrative).
-      rrect(sgn < 0 ? h.lugsTop : h.lugsBot, X(44), v(G.R), X(76), v(G.R + 24), 7);
-      oval(h.nuts, X(48), v(rRod), 3.2, 3.2);
+      seg(h.rods, X(outer - 10), v(rRod), X(LUG.inset + 8), v(rRod));
+      seg(h.rodsHi, X(outer - 10), v(rRod) - sgn * 1.1, X(LUG.inset + 8), v(rRod) - sgn * 1.1);
+      // LUG CASING on the shell (owner 2026-11-23: "make the lugs on the drums
+      // longer, they are usually not that short and immediate right below the
+      // drum rims"): the shared kick spec's drawing default — a bass drum's
+      // ≈ 80 mm casing, its end 60 mm in from the head, the T-rod into its end.
+      rrect(sgn < 0 ? h.lugsTop : h.lugsBot, X(LUG.inset), v(G.R), X(LUG.inset + LUG.len), v(G.R + 24), 10);
+      oval(h.nuts, X(LUG.inset + 4), v(rRod), 3.2, 3.2);
     }
   }
   return h;

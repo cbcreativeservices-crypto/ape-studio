@@ -82,8 +82,11 @@ function build(view: ViewId) {
       const out = HOOP_X.playing[1];
       rrect(claws, X(out + 4), sg * (HOOP.rOut + 1), X(-6), sg * (HOOP.rOut + 6), 1.5);
       rrect(tees, X(out + 16), sg * (rr - 8), X(out + 8), sg * (rr + 8), 2);
-      seg(rods, X(out + 9), sg * rr, X(-60), sg * rr);
-      rrect(lugs, X(-48), sg * R, X(-84), sg * (R + 26), 7);
+      // A bass drum's lug casing (drawing default, owner 2026-11-23: "make the
+      // lugs on the drums longer"): ≈ 80 mm, its end 60 mm in from the head,
+      // the T-rod from the claw into its end (was a 36 mm block).
+      seg(rods, X(out + 9), sg * rr, X(-66), sg * rr);
+      rrect(lugs, X(-60), sg * R, X(-140), sg * (R + 26), 10);
     }
   }
   // The stand (drawing defaults), as the cut leaves it visible.

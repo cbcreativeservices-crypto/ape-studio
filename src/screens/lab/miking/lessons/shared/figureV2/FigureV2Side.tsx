@@ -20,7 +20,7 @@
 import type { ReactNode } from 'react';
 import { BlurMask, ColorMatrix, Group, LinearGradient, Mask, Paint, Path, vec } from '@shopify/react-native-skia';
 import { LIGHT, lerp, type Pt } from './geom.ts';
-import { BELT, LIP, MAT, SOLE } from './palette.ts';
+import { BELT, HEAD_SKIN, LIP, MAT, SOLE } from './palette.ts';
 import { AuthoredHand, Folds, Form, HandV2, Soft, across } from './paint';
 import { sidePaths, type ArmPaths, type ShoePaths, type SidePaths, type SkPath } from './paths.ts';
 import type { ArmPlan, SidePlan } from './sidePlan.ts';
@@ -94,7 +94,7 @@ function UpperSleeve({ a, P, t }: { a: ArmPlan; P: ArmPaths; t: Torso }) {
   );
 }
 
-/** The forearm in its sleeve, the cuff (crisp over the wrist), the bare wrist and its bone. */
+/** The forearm in its sleeve (the cuff is painted on the far and near sides of the wrist: CuffFar, CuffNear). */
 function Forearm({ a, P }: { a: ArmPlan; P: ArmPaths }) {
   return (
     <Group>
@@ -107,22 +107,87 @@ function Forearm({ a, P }: { a: ArmPlan; P: ArmPaths }) {
       <Form path={P.foreSleeve} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={5} edge={0.9}>
         <Folds path={P.folds} mat={MAT.shirt} opacity={0.5} />
       </Form>
-      <Form path={P.cuff} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={3} edge={0}>
-        {/* the cuff's seam where it meets the sleeve */}
-        <Path path={P.foreSleeve} style="stroke" strokeWidth={1.2} color={MAT.shirt.deep} opacity={0.5} />
-      </Form>
-      {/* the cuff's edge lies over the wrist: crisp, with its soft shadow inside it on the skin
-          (a cuff seen end-on, running away, shows no wrist) */}
-      {a.away ? null : (
-        <Group clip={P.wristSkin}>
-          <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
-            <Path path={P.cuff} color={MAT.skin.deep} opacity={0.4}>
-              <BlurMask blur={2} style="normal" />
+      {/* (a forearm running away ends in the sleeve's mouth: its cuff lies inside the sleeve, plain) */}
+      {a.mouth ? <Form path={P.cuff} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={3} edge={0} /> : null}
+    </Group>
+  );
+}
+
+/**
+ * THE CUFF'S OPENING, behind the wrist (owner 2026-11-23, the left cuff: "a
+ * gray disk representing the hand going in, but it is behind both edges of the
+ * sleeve, not going inside"). Only when the opening is turned toward the
+ * viewer: the sleeve's inside, in shadow (darkest under the near rim), and the
+ * far half of the rim — its cloth edge, a few mm thick. The wrist is painted
+ * next, over both.
+ */
+function CuffFar({ a, P }: { a: ArmPlan; P: ArmPaths }) {
+  if (!P.toViewer || !P.rimFar) return null;
+  const { e, out } = a.opening;
+  const near = { u: e.c.u - out.u * e.rx, v: e.c.v - out.v * e.rx };
+  const far = { u: e.c.u + out.u * e.rx, v: e.c.v + out.v * e.rx };
+  return (
+    <Group>
+      <Path path={P.opening}>
+        <LinearGradient start={vec(near.u, near.v)} end={vec(far.u, far.v)} colors={['#0f1116', '#1d222c', MAT.shirt.form[3]]} positions={[0, 0.55, 1]} />
+      </Path>
+      <Group clip={P.opening}>
+        <Path path={P.rimFar} style="stroke" strokeWidth={4} color={MAT.shirt.form[2]} opacity={0.95} />
+      </Group>
+      <Path path={P.rimFar} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.6} />
+    </Group>
+  );
+}
+
+/**
+ * THE CUFF, in front of the wrist: the opaque cloth of the cuff (ending at the
+ * near half of the rim; no see-through ring, no ellipse across the sleeve), its
+ * seam (the near half), its soft cast shadow on the wrist just beyond the rim
+ * (and the wrist darker inside the opening), and the near rim: the cloth's
+ * rolled edge, lit, with its thickness. A forearm running away: only the
+ * sleeve's mouth — its near edge wrapping round the fist's root.
+ */
+function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
+  const out = a.opening.out;
+  const skin = P.art ? P.art.all : P.wristSkin;
+  if (a.mouth)
+    return (
+      <Group>
+        {P.art ? (
+          <Group clip={P.art.all}>
+            <Path path={P.opening} color="#1a0d08" opacity={0.5} transform={[{ translateX: out.u * 6 }, { translateY: out.v * 6 }]}>
+              <BlurMask blur={4} style="normal" />
             </Path>
           </Group>
+        ) : null}
+        <Path path={P.rimNear} style="stroke" strokeWidth={7} strokeCap="round" color={MAT.shirt.form[1]} opacity={0.95} />
+        <Path path={P.rimNear} style="stroke" strokeWidth={1.6} strokeCap="round" color={MAT.shirt.rim} opacity={0.4} transform={[{ translateX: -out.u * 1.5 }, { translateY: -out.v * 1.5 }]} />
+        <Path path={P.rimNear} style="stroke" strokeWidth={1} strokeCap="round" color={MAT.shirt.edge} opacity={0.6} transform={[{ translateX: out.u * 3.5 }, { translateY: out.v * 3.5 }]} />
+      </Group>
+    );
+  return (
+    <Group>
+      <Group clip={skin}>
+        <Group transform={[{ translateX: out.u * 4 - LIGHT.u * 1.5 }, { translateY: out.v * 4 - LIGHT.v * 1.5 }]}>
+          <Path path={P.cuffCloth} color={MAT.skin.deep} opacity={0.45}>
+            <BlurMask blur={2.5} style="normal" />
+          </Path>
         </Group>
-      )}
-      <Path path={P.cuff} style="stroke" strokeWidth={1.1} color={MAT.shirt.edge} opacity={0.75} />
+        {P.toViewer ? (
+          <Path path={P.opening} color="#000" opacity={0.2}>
+            <BlurMask blur={3} style="normal" />
+          </Path>
+        ) : null}
+      </Group>
+      <Form path={P.cuffCloth} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={3} edge={0}>
+        {/* the cuff's seam round the sleeve: its near half */}
+        <Path path={P.seam} style="stroke" strokeWidth={1.2} strokeCap="round" color={MAT.shirt.deep} opacity={0.5} />
+        {/* the near rim: the cloth's rolled edge, lit along its thickness */}
+        <Path path={P.rimNear} style="stroke" strokeWidth={5} strokeCap="round" color={MAT.shirt.rim} opacity={0.3}>
+          <BlurMask blur={0.8} style="normal" />
+        </Path>
+      </Form>
+      <Path path={P.cuffCloth} style="stroke" strokeWidth={1.1} strokeJoin="round" color={MAT.shirt.edge} opacity={0.75} />
     </Group>
   );
 }
@@ -138,6 +203,16 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
       <Forearm a={a} P={P} />
     </Group>
   );
+  const cuffFar = (
+    <Group layer={cloth as never}>
+      <CuffFar a={a} P={P} />
+    </Group>
+  );
+  const cuffNear = (
+    <Group layer={cloth as never}>
+      <CuffNear a={a} P={P} />
+    </Group>
+  );
   const hand = P.art ? (
     <Group layer={skin as never}>
       <AuthoredHand a={P.art} stick={stick} />
@@ -149,11 +224,11 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
   ) : (
     (stick ?? null)
   );
-  // The hand is beyond the cuff and the wrist goes INTO it: the hand first,
-  // then the sleeve and its cuff over the wrist's root. A forearm running away
-  // from the viewer is behind its own elbow (the upper sleeve over all), and
-  // its sleeve's end — the cuff seen end-on — is nearer than the hand: it
-  // covers the hand's root and casts its shadow on it.
+  // Depth order at the cuff: the far half of its rim and the sleeve's inside,
+  // then the wrist and hand coming OUT of the opening over them, then the near
+  // half of the rim in front of the wrist. A forearm running away from the
+  // viewer is behind its own elbow (the upper sleeve over all); its fist comes
+  // out of the sleeve's mouth, the mouth's near edge over the fist's root.
   const sleeveShadow =
     a.away && P.art ? (
       <Group clip={P.art.all}>
@@ -164,28 +239,53 @@ function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Tors
         </Group>
       </Group>
     ) : null;
+  if (a.away && P.behindMouth)
+    return (
+      <Group>
+        {upper}
+        {fore}
+        {cuffFar}
+        {hand}
+        {sleeveShadow}
+        {/* the arm again over the fist's root, up to the sleeve's mouth: the fist comes out of it */}
+        <Group clip={P.behindMouth}>
+          {fore}
+          {upper}
+        </Group>
+        {cuffNear}
+      </Group>
+    );
   return a.away ? (
     <Group>
+      {cuffFar}
       {hand}
       {sleeveShadow}
       {fore}
+      {cuffNear}
       {upper}
     </Group>
   ) : (
     <Group>
       {upper}
-      {hand}
       {fore}
+      {cuffFar}
+      {hand}
+      {cuffNear}
     </Group>
   );
 }
 
+/** The trousers' cloth as one garment: the same ramp on seat, thigh, knee and
+ *  shin, its lit side held a step below the cloth's brightest so the thigh's
+ *  top (facing the light) does not bleach to a different grey than the shin. */
+const CLOTH = { ...MAT.trousers, form: [MAT.trousers.form[1], '#474b53', MAT.trousers.form[2], MAT.trousers.form[3], MAT.trousers.form[4]] };
+
 /** The shin's own cylinder light (a soft blend at the knee). */
 function Shin({ path, axis }: { path: SkPath; axis: [Pt, Pt] }) {
-  const [s0, e0] = across(axis[0], axis[1], 52);
+  const [s0, e0] = across(axis[0], axis[1], 50);
   return (
     <Path path={path}>
-      <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={MAT.trousers.form} positions={MAT.trousers.pos} />
+      <LinearGradient start={vec(s0.u, s0.v)} end={vec(e0.u, e0.v)} colors={CLOTH.form} positions={CLOTH.pos} />
       <BlurMask blur={5} style="normal" />
     </Path>
   );
@@ -194,7 +294,10 @@ function Shin({ path, axis }: { path: SkPath; axis: [Pt, Pt] }) {
 function Leg({ path, shin, knee, folds, l, shoe }: { path: SkPath; shin: SkPath; knee: SkPath; folds: SkPath; l: SidePlan['legs']['near']; shoe: SkPath }) {
   return (
     <Group>
-      <Form path={path} mat={MAT.trousers} axis={l.thighAxis} w={82} rim={6}>
+      {/* ONE GARMENT (owner 2026-11-23: "pant leg also need similar shading like the rest of the pants
+          below"): seat, thigh, knee and shin in the same cloth and the same cylinder light — the thigh
+          turning from its lit top to its shadowed underside on the seat, the shin round its own axis */}
+      <Form path={path} mat={CLOTH} axis={l.thighAxis} w={70} rim={5}>
         <Shin path={shin} axis={l.shinAxis} />
         <Soft path={knee} color={MAT.trousers.rim} opacity={0.22} blur={6} />
         <Folds path={folds} mat={MAT.trousers} />
@@ -244,20 +347,21 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
     <Group>
       {/* THE NECK: a column, the sternomastoid's form, the jaw's cast shadow, darker into the collar */}
       {/* (the head's own round light, so neck and head meet without a seam; the neck a little in the head's shadow) */}
-      <Form path={P.neck} mat={MAT.skin} round={{ c, r: R }} rim={4} edge={0.8}>
+      <Form path={P.neck} mat={HEAD_SKIN} round={{ c, r: R }} rim={4} edge={0.8}>
         <Soft path={P.scm} color={MAT.skin.rim} opacity={0.14} blur={4} />
-        <Path path={P.jawShadow} color={MAT.skin.deep} opacity={0.5}>
-          <BlurMask blur={4} style="normal" />
+        {/* (half strength, softer edges — owner: "lighten" — the jaw separates from the neck, no streak) */}
+        <Path path={P.jawShadow} color={MAT.skin.deep} opacity={0.25}>
+          <BlurMask blur={6.5} style="normal" />
         </Path>
         <Soft path={P.neckOcclusion} color={MAT.skin.deep} opacity={0.45} blur={4} />
       </Form>
       {/* THE HEAD */}
-      <Form path={P.skull} mat={MAT.skin} round={{ c, r: R }} rim={5} edge={0}>
+      <Form path={P.skull} mat={HEAD_SKIN} round={{ c, r: R }} rim={5} edge={0}>
         {/* the front of the face turns away from the light */}
         <Path path={P.skull}>
           <LinearGradient start={vec(h.frontShade.a.u, h.frontShade.a.v)} end={vec(h.frontShade.b.u, h.frontShade.b.v)} colors={['rgba(58,32,22,0.32)', 'rgba(58,32,22,0)']} />
         </Path>
-        <Soft path={P.cheekShade} color={MAT.skin.deep} opacity={0.12} blur={6} />
+        <Soft path={P.cheekShade} color={MAT.skin.deep} opacity={0.07} blur={7} />
         <Soft path={P.socket} color={MAT.skin.deep} opacity={0.36} blur={4} />
         <Soft path={P.noseSide} color={MAT.skin.deep} opacity={0.14} blur={2.5} />
         {P.lights.map((l, i) => (
@@ -307,7 +411,7 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
           <BlurMask blur={4} style="normal" />
         </Path>
       </Group>
-      <Form path={P.ear} mat={MAT.skin} round={{ c, r: R }} rim={3} edge={0.7}>
+      <Form path={P.ear} mat={HEAD_SKIN} round={{ c, r: R }} rim={3} edge={0.7}>
         <Path path={P.ear} color={MAT.skin.deep} opacity={0.12} />
         <Path path={P.earBowl} color={MAT.skin.deep} opacity={0.5}>
           <BlurMask blur={1.4} style="normal" />
@@ -342,6 +446,16 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
         <Leg path={P.legFar} shin={P.shinFar} knee={P.kneeFar} folds={P.legFoldsFar} l={L.far} shoe={P.shoeFar.upper} />
       </Group>
       <Arm a={plan.arms.far} P={P.far} t={torso} stick={farStick} cloth={FAR} skin={FAR_SKIN} />
+      {/* the far arm passes BEHIND the body: the torso's soft occlusion shadow on it, along the back's edge */}
+      {plan.arms.far.behind
+        ? [P.far.upper, P.far.foreSleeve].map((q, i) => (
+            <Group key={`occ${i}`} clip={q}>
+              <Group transform={[{ translateX: -plan.facing * 5 }]}>
+                <Soft path={P.shirt} color={MAT.shirt.deep} opacity={0.5} blur={8} />
+              </Group>
+            </Group>
+          ))
+        : null}
       <Shoe s={P.shoeNear} />
       <Leg path={P.trousersNear} shin={P.shinNear} knee={P.kneeNear} folds={P.legFoldsNear} l={L.near} shoe={P.shoeNear.upper} />
       <Head plan={plan} P={P} />
@@ -354,9 +468,37 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
         </Group>
         <Path path={P.shirt} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.5} />
       </Group>
+      {/* THE BELT: a band round the waist in the body's own light (its top lit, its
+          lower edge turning away, darker where it rounds away at front and back) */}
       <Path path={P.belt}>
-        <LinearGradient start={vec(P.belt.getBounds().x, P.belt.getBounds().y)} end={vec(P.belt.getBounds().x, P.belt.getBounds().y + P.belt.getBounds().height)} colors={[...BELT.form]} />
+        <LinearGradient start={vec(P.belt.getBounds().x, P.belt.getBounds().y)} end={vec(P.belt.getBounds().x, P.belt.getBounds().y + P.belt.getBounds().height)} colors={['#5a4334', '#33251c', '#1a120d']} />
       </Path>
+      <Group clip={P.belt}>
+        <Path path={P.belt}>
+          <LinearGradient start={vec(P.belt.getBounds().x, 0)} end={vec(P.belt.getBounds().x + P.belt.getBounds().width, 0)} colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.45)']} positions={[0, 0.25, 0.7, 1]} />
+        </Path>
+        <Group transform={[{ translateX: -LIGHT.u * 1.5 }, { translateY: -LIGHT.v * 1.5 }]}>
+          <Path path={P.beltTop} style="stroke" strokeWidth={1.4} color="#a3846a" opacity={0.45} />
+        </Group>
+        <Path path={P.beltLoop} color="#3d2c21" />
+        <Path path={P.beltLoop} style="stroke" strokeWidth={0.9} color="#0f0a07" opacity={0.7} />
+      </Group>
+      <Path path={P.belt} style="stroke" strokeWidth={0.9} color={BELT.edge} opacity={0.8} />
+      <Path path={P.buckle}>
+        <LinearGradient start={vec(P.buckle.getBounds().x, P.buckle.getBounds().y)} end={vec(P.buckle.getBounds().x + 12, P.buckle.getBounds().y + P.buckle.getBounds().height)} colors={['#d9dce2', '#8b9099', '#4a4e57']} />
+      </Path>
+      {/* the shirt blousing over the belt, its soft shadow on the belt */}
+      <Group clip={P.belt}>
+        <Group transform={[{ translateX: -LIGHT.u * 3 }, { translateY: -LIGHT.v * 3 }]}>
+          <Path path={P.blouse} color="#000" opacity={0.5}>
+            <BlurMask blur={2.5} style="normal" />
+          </Path>
+        </Group>
+      </Group>
+      <ShirtLight path={P.blouse} t={torso} />
+      <Group clip={P.blouse}>
+        <Folds path={P.waistFolds} mat={MAT.shirt} opacity={0.5} />
+      </Group>
       <Form path={P.collar} mat={MAT.shirt} axis={torso.axis} w={70} rim={0} edge={0.9}>
         {/* the rib's rolled top edge */}
         <Group transform={[{ translateX: LIGHT.u * 3 }, { translateY: LIGHT.v * 3 }]}>
@@ -368,16 +510,14 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
   );
 }
 
-/** One forearm and hand on its stick, alone (the study page's close-up of a
- *  hand: no drums, no body), in the same paint as in the figure. */
+/** One arm's hand on its stick, alone (the study page's close-up of a hand:
+ *  no drums, no body), drawn exactly as in the figure — the same arm, cuff,
+ *  wrist and hand, in the same depth order. */
 export function FigureV2HandAlone({ plan, which, stick }: { plan: SidePlan; which: 'near' | 'far'; stick?: ReactNode }) {
   const P = sidePaths(plan);
   const a = plan.arms[which];
   const ap = which === 'near' ? P.near : P.far;
-  return (
-    <Group>
-      <Forearm a={a} P={ap} />
-      {ap.art ? <AuthoredHand a={ap.art} stick={stick} /> : ap.hand ? <HandV2 hand={ap.hand} under={ap.wristSkin} stick={stick} /> : (stick ?? null)}
-    </Group>
-  );
+  const sb = P.shirt.getBounds();
+  const torso: Torso = { axis: [plan.hip, plan.neck], box: { x: sb.x, y: sb.y, width: sb.width, height: sb.height }, body: P.shirt };
+  return <Arm a={a} P={ap} t={torso} stick={stick} />;
 }

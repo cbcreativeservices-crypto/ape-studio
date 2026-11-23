@@ -44,7 +44,7 @@ function Crop({ cu, cv, mmW, mmH, w, v2, isolate = false }: { cu: number; cv: nu
 }
 
 /** One hand alone with its stick and cuff, large, on the plain dark ground (no drums). */
-function HandAlone({ which, w }: { which: 'near' | 'far'; w: number }) {
+function HandAlone({ which, w, mm = 230, on }: { which: 'near' | 'far'; w: number; mm?: number; on?: 'cuff' | 'hand' }) {
   const plan = kitDrummerPlan();
   const a = plan.arms[which];
   const h = a.hold!;
@@ -53,9 +53,10 @@ function HandAlone({ which, w }: { which: 'near' | 'far'; w: number }) {
   const line = Skia.Path.Make();
   line.moveTo(st.butt.x, st.butt.y);
   line.lineTo(st.to.x, st.to.y);
-  const cu = (h.fulcrum.x + a.wrist.u) / 2;
-  const cv = (h.fulcrum.y + a.wrist.v) / 2;
-  const mm = 230;
+  // (close-ups: centred on the cuff's opening, or on the drawn hand)
+  const c = on === 'cuff' ? a.opening.e.c : on === 'hand' && a.placed ? a.placed.at({ u: 70, v: 0 }) : { u: (h.fulcrum.x + a.wrist.u) / 2, v: (h.fulcrum.y + a.wrist.v) / 2 };
+  const cu = c.u;
+  const cv = c.v;
   const s = w / mm;
   return (
     <Canvas style={{ width: w, height: w }}>
@@ -153,7 +154,7 @@ export function FigureStudy() {
       ) : null}
       {show('alone') ? (
         <Section>
-          <Caption title="NEW — EACH HAND ALONE" note="The right hand on the hi-hat stick and the left hand on the snare stick, each with its stick and cuff, seen from the player’s right as in the lesson, on a plain ground." />
+          <Caption title="NEW — EACH HAND ALONE" note="Each arm with its hand and stick exactly as in the lesson, seen from the player’s right, on a plain ground. The right forearm runs almost directly away from the viewer, so its fist is drawn near true size (larger than strict perspective, for reading) coming out of the sleeve’s mouth; the left hand is seen from the palm side, thumb on top." />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
             <View>
               <Caption title="RIGHT HAND (NEAR)" />
@@ -163,6 +164,18 @@ export function FigureStudy() {
               <Caption title="LEFT HAND (FAR)" />
               <HandAlone which="far" w={only === 'alone' ? Math.min(width - 24, 600) : Math.min(330, width - 24)} />
             </View>
+          </View>
+        </Section>
+      ) : null}
+      {only === 'close' ? (
+        <Section>
+          <Caption title="CLOSE-UPS (dev)" note="Each hand and each cuff about 2× and 3× the hand-alone size, for checking forms one by one." />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+            <HandAlone which="near" w={Math.min(width - 24, 600)} mm={120} on="hand" />
+            <HandAlone which="far" w={Math.min(width - 24, 600)} mm={130} on="hand" />
+            <HandAlone which="near" w={Math.min(width - 24, 600)} mm={80} on="cuff" />
+            <HandAlone which="far" w={Math.min(width - 24, 600)} mm={80} on="cuff" />
+            <Crop cu={-880} cv={-690} mmW={300} mmH={300} w={Math.min(width - 24, 600)} v2 />
           </View>
         </Section>
       ) : null}

@@ -342,19 +342,9 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
   // The visible wrist is the hand's first part: one skin, one light with the
   // palm it widens into (no seam, no change of value at the join).
   const wristPart = wrist ? [{ path: smoothClosed(wrist.poly, 0.5), axis: wrist.axis, layer: 'back' as const, kind: 'wrist', name: 'wrist' }] : [];
-  const bonesPath = (c: { pts: Pt[]; r: number[] }) => {
-    const ps: SkPath[] = [];
-    for (let i = 0; i < c.pts.length - 1; i++) {
-      ps.push(bar(c.pts[i], c.pts[i + 1], (c.r[i] + c.r[i + 1]) / 2));
-      const j = make();
-      j.addCircle(c.pts[i + 1].u, c.pts[i + 1].v, c.r[i + 1]);
-      ps.push(j);
-    }
-    const j0 = make();
-    j0.addCircle(c.pts[0].u, c.pts[0].v, c.r[0]);
-    return unionOf(j0, ...ps);
-  };
-  const parts = [...wristPart, ...h.parts.map((q) => ({ path: q.placedChain ? bonesPath(q.placedChain) : smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name }))];
+  // Every part — each digit too — is ONE closed outline (owner 2026-11-23: "i see 9 fingers"):
+  // a finger is a single form, never a union of bones and joint discs.
+  const parts = [...wristPart, ...h.parts.map((q) => ({ path: smoothClosed(q.placed, q.kind === 'palm' ? 0.45 : 0.5), axis: q.placedAxis, layer: q.layer, kind: q.kind, name: q.name }))];
   const backs = parts.filter((q) => q.layer === 'back').map((q) => q.path);
   const fronts = parts.filter((q) => q.layer === 'front').map((q) => q.path);
   const back = backs.length ? unionOf(...backs) : null;
@@ -396,6 +386,17 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
 }
 
 export type ArmPaths = {
+  /** The cuff's opening (sidePlan `opening`): the ellipse's area; the cuff's
+   *  cloth (opaque, ending at the near half of the rim); the rim's near and far
+   *  halves and the seam (open curves); `toViewer`: the inside shows. */
+  opening: SkPath;
+  cuffCloth: SkPath;
+  rimNear: SkPath;
+  rimFar: SkPath | null;
+  seam: SkPath;
+  toViewer: boolean;
+  /** The half of the picture behind the sleeve's mouth (toward the elbow), for an arm running away. */
+  behindMouth: SkPath | null;
   upper: SkPath;
   foreSleeve: SkPath;
   cuff: SkPath;
@@ -442,6 +443,10 @@ export type SidePaths = {
   collarShadow: SkPath;
   neckOcclusion: SkPath;
   belt: SkPath;
+  beltTop: SkPath;
+  beltLoop: SkPath;
+  buckle: SkPath;
+  blouse: SkPath;
   waistFolds: SkPath;
   trousersNear: SkPath;
   legFar: SkPath;
@@ -469,6 +474,28 @@ const many = (ps: readonly Poly[], closed = true): SkPath => {
 function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths {
   const fore = Math.atan2(a.wrist.v - a.elbow.v, a.wrist.u - a.elbow.u);
   return {
+    opening: ellipsePath(a.opening.e),
+    // Turned toward the viewer the end of the tube IS the opening (the cloth stops at
+    // the near rim); turned away, the cloth wraps over it up to the near rim.
+    cuffCloth: smoothClosed(a.cuff, 0.3),
+    rimNear: smoothOpen(a.opening.rimNear),
+    rimFar: a.opening.rimFar ? smoothOpen(a.opening.rimFar) : null,
+    seam: smoothOpen(a.opening.seam),
+    toViewer: a.opening.toViewer,
+    behindMouth: a.mouth
+      ? (() => {
+          const { p, n } = a.mouth;
+          const t = { u: -n.v, v: n.u };
+          const q = make();
+          q.moveTo(p.u + t.u * 900, p.v + t.v * 900);
+          q.lineTo(p.u - t.u * 900, p.v - t.v * 900);
+          q.lineTo(p.u - t.u * 900 - n.u * 900, p.v - t.v * 900 - n.v * 900);
+          q.lineTo(p.u + t.u * 900 - n.u * 900, p.v + t.v * 900 - n.v * 900);
+          q.close();
+          // the sleeve's mouth is an ellipse seen at the forearm's angle: its lip bulges toward the hand
+          return op(q, ellipsePath(a.opening.e), PathOp.Union);
+        })()
+      : null,
     upper: smoothClosed(a.upper),
     foreSleeve: smoothClosed(a.foreSleeve),
     cuff: smoothClosed(a.cuff),
@@ -546,7 +573,11 @@ export function sidePaths(plan: SidePlan): SidePaths {
     collar,
     collarShadow: op(moved(collar, -LIGHT.u * 7, -LIGHT.v * 7), collar, PathOp.Difference),
     neckOcclusion: op(neck, moved(collar, 0, -12), PathOp.Intersect),
-    belt: op(smoothClosed(plan.belt, 0.1), unionOf(shirt, seat), PathOp.Intersect),
+    belt: op(smoothClosed(plan.belt, 0.35), unionOf(shirt, seat), PathOp.Intersect),
+    beltTop: smoothOpen(plan.beltTop),
+    beltLoop: op(smoothClosed(plan.beltLoop, 0.2), unionOf(shirt, seat), PathOp.Intersect),
+    buckle: op(smoothClosed(plan.buckle, 0.2), unionOf(shirt, seat), PathOp.Intersect),
+    blouse: op(smoothClosed(plan.blouse, 0.4), shirt, PathOp.Intersect),
     waistFolds: many(plan.waistFolds),
     trousersNear: unionOf(seat, legNear),
     legFar,

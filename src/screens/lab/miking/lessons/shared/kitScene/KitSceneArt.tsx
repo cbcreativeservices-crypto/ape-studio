@@ -25,7 +25,7 @@ import { KIT, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanMode
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import type { PlayerPose } from '../players/playerPose.ts';
 import { DrumExterior, DrumPlan, FloorTomLegsSide, SnareStandSide, sideTransform, topTransform } from '../drums/DrumArt';
-import { frameOf, pointOn } from '../drums/drumSpec.ts';
+import { frameOf, KICK_22x18, pointOn } from '../drums/drumSpec.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatSide, HiHatTop, SwingEnvelope } from '../cymbals/CymbalArt';
 import { KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 import { DRUMMER, S0, TOM_POST } from './kitSceneModel.ts';
@@ -64,6 +64,10 @@ function hatch(): SkPath {
 
 /* ── the kick from outside ── */
 
+/** Where the kit picture draws the kick's beater: this fraction of its swing
+ *  back from the strike (0 = on the head, 1 = M01's rest). */
+export const BEATER_PLAY = 0.3;
+
 function buildKickSide() {
   const G = KICK_GEOM;
   const shell = rrect(make(), 0, -G.R, G.L, G.R, 2);
@@ -72,20 +76,32 @@ function buildKickSide() {
   rrect(hoops, G.hoopX.reso[0], -G.hoopOut, G.hoopX.reso[1], G.hoopOut, 4);
   // Near-side tension rods and lugs (10 per head; the near half shows ~5).
   const lugs = make();
+  const lugHi = make();
   const rods = make();
+  const LI = KICK_22x18.lug.inset.mm;
+  const LL = KICK_22x18.lug.len.mm;
   for (const phi of G.rodAngles) {
     const a = (phi * Math.PI) / 180;
     if (Math.sin(a) <= 0.05) continue; // the near half (+z)
     const y = Math.cos(a) * G.R;
-    rrect(lugs, 52, y - 7, 92, y + 7, 4);
-    rrect(lugs, G.L - 92, y - 7, G.L - 52, y + 7, 4);
-    seg(rods, G.hoopX.batter[1] + 2, y, 60, y);
-    seg(rods, G.hoopX.reso[0] - 2, y, G.L - 60, y);
+    // A bass drum's lug casing (the shared kick spec's drawing default: ≈ 80
+    // mm, its end 60 mm in from the head — owner 2026-11-23: "make the lugs on
+    // the drums longer"), the T-rod from the claw into its end.
+    rrect(lugs, LI, y - 8, LI + LL, y + 8, 8);
+    rrect(lugs, G.L - LI - LL, y - 8, G.L - LI, y + 8, 8);
+    seg(lugHi, LI + 8, y - 3.5, LI + LL - 8, y - 3.5);
+    seg(lugHi, G.L - LI - LL + 8, y - 3.5, G.L - LI - 8, y - 3.5);
+    seg(rods, G.hoopX.batter[1] + 2, y, LI + 5, y);
+    seg(rods, G.hoopX.reso[0] - 2, y, G.L - LI - 5, y);
   }
   const spur = make();
   const s = G.spurs[1];
   seg(spur, s.top.x, s.top.y, s.foot.x, s.foot.y);
-  // The pedal: footboard, frame, and the beater at rest.
+  // The pedal: footboard, frame, and the beater on its way in (owner
+  // 2026-11-23: "show just a little bit more of the bass drum beater"): the
+  // drummer is playing, so the beater is drawn 30 % of its swing back from the
+  // head — its felt in the gap between the floor tom and the kick's hoop,
+  // inside the swing M01 draws (at full rest the nearer floor tom hid it).
   const ped = G.pedal;
   const board = make();
   board.moveTo(ped.x0, G.yFloor - 8);
@@ -97,10 +113,11 @@ function buildKickSide() {
   rrect(frame, ped.x1 - 40, ped.top - 40, ped.x1 + 6, G.yFloor, 6);
   const shaft = make();
   const ax = G.beater.axle;
-  const rest = { x: ax.x + G.beater.len * Math.cos(G.beater.restAngle), y: ax.y + G.beater.len * Math.sin(G.beater.restAngle) };
+  const playA = G.beater.strikeAngle + (G.beater.restAngle - G.beater.strikeAngle) * BEATER_PLAY;
+  const rest = { x: ax.x + G.beater.len * Math.cos(playA), y: ax.y + G.beater.len * Math.sin(playA) };
   seg(shaft, ax.x, ax.y, rest.x, rest.y);
   const shadow = rrect(make(), 0, G.yFloor - 10, G.L, G.yFloor + 6, 8);
-  return { shell, hoops, lugs, rods, spur, board, frame, shaft, rest, shadow };
+  return { shell, hoops, lugs, lugHi, rods, spur, board, frame, shaft, rest, shadow };
 }
 let kickSide: ReturnType<typeof buildKickSide> | null = null;
 
@@ -126,6 +143,7 @@ function KickSide() {
         <LinearGradient start={vec(0, -G.R)} end={vec(0, G.R)} colors={CHROME} />
       </Path>
       <Path path={g.lugs} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={g.lugHi} style="stroke" strokeWidth={2.2} strokeCap="round" color="#ffffff" opacity={0.55} />
       <Path path={g.hoops}>
         <LinearGradient start={vec(0, -G.hoopOut)} end={vec(0, G.hoopOut)} colors={WOOD_HOOP} />
       </Path>
@@ -153,8 +171,8 @@ function KickTop() {
     rrect(hoops, G.hoopX.reso[0], -G.hoopOut, G.hoopX.reso[1], G.hoopOut, 5);
     const rods = make();
     for (const s of [-1, 1]) {
-      seg(rods, G.hoopX.batter[1] + 4, s * (G.hoopOut + 10), 60, s * (G.hoopOut + 10));
-      seg(rods, G.hoopX.reso[0] - 4, s * (G.hoopOut + 10), G.L - 60, s * (G.hoopOut + 10));
+      seg(rods, G.hoopX.batter[1] + 4, s * (G.hoopOut + 10), KICK_22x18.lug.inset.mm + 6, s * (G.hoopOut + 10));
+      seg(rods, G.hoopX.reso[0] - 4, s * (G.hoopOut + 10), G.L - KICK_22x18.lug.inset.mm - 6, s * (G.hoopOut + 10));
     }
     const pedal = rrect(make(), G.pedal.x0, -45, G.pedal.x1, 45, 10);
     return { shell, hoops, rods, pedal };

@@ -42,9 +42,9 @@ export const MAT = {
     deep: '#121620',
   },
   trousers: {
-    form: ['#747982', '#585d67', '#3e424a', '#24262b', '#353840'],
+    form: ['#686d76', '#4f535c', '#393c44', '#212328', '#30333a'],
     pos: POS,
-    rim: '#a2a9b5',
+    rim: '#959ca8',
     edge: '#121317',
     deep: '#0e0f12',
   },
@@ -66,5 +66,18 @@ export const BELT = {
   form: ['#4a362a', '#2c1f17', '#17100c'],
   edge: '#0b0806',
 } as const;
+/**
+ * THE HEAD'S SKIN (owner 2026-11-23: "lighten the brown band going diagonally
+ * across the head of the drummer"). A ROUND form (the head, the neck, the ear)
+ * is lit by a radial ramp, and the limb ramp's core shadow followed by its
+ * lighter bounce makes a dark RING there — an arc of brown from the ear across
+ * the cheek to the chin. The head's ramp therefore only darkens, gently, from
+ * the lit side to the far side: one evenly lit form, no stripe.
+ */
+export const HEAD_SKIN: Material = {
+  ...MAT.skin,
+  form: ['#d5b9a3', '#c9aa93', '#b89780', '#a6846f', '#9b7a66'],
+};
+
 export const LIP = '#8e5a4c';
 export const NAIL = { fill: '#d9bfae', edge: '#7a5d4c' } as const;

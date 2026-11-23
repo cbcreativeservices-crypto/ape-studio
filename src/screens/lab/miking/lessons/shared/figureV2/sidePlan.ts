@@ -40,9 +40,9 @@
  */
 import type { PlayerPose } from '../players/playerPose.ts';
 import type { HandView } from '../players/handModel.ts';
-import { add, boundsOf, crossZ, dist, dot, frame2, lerp, limbOutline, mapPts, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
+import { add, boundsOf, crossZ, dist, dot, frame2, inPoly, lerp, limbOutline, mapPts, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { StickHold } from './grip.ts';
-import { placeHand, type PlacedHand } from './authoredHands.ts';
+import { handArt, placeHand, type PlacedHand } from './authoredHands.ts';
 
 export type Ellipse = { c: Pt; rx: number; ry: number; rot: number };
 
@@ -105,6 +105,31 @@ export type ArmPlan = {
   cuff: Poly;
   /** The bare wrist between the cuff and the hand. */
   wristSkin: Poly;
+  /** The cuff's opening (owner 2026-11-23, the left cuff: "a gray disk representing
+   *  the hand going in, but it is behind both edges of the sleeve, not going
+   *  inside"): an ellipse at the sleeve's end, seen at the forearm's angle, split
+   *  into its two halves. The NEAR half of the rim passes in front of the wrist;
+   *  the FAR half, with the sleeve's shadowed inside just within it, lies behind
+   *  the wrist — and shows only when the opening is turned toward the viewer
+   *  (`toViewer`); turned away, only the near edge wraps round the wrist. The
+   *  cloth is opaque: the only see-through is the inside between wrist and far rim. */
+  opening: {
+    e: Ellipse;
+    toViewer: boolean;
+    /** Open curves (the rim's halves, the cuff's seam round the sleeve — its near half). */
+    rimNear: Poly;
+    rimFar: Poly | null;
+    seam: Poly;
+    /** Out of the opening (toward the hand). */
+    out: Pt;
+  };
+  /** The far arm, hanging behind the torso: the armpit line (above it nothing of
+   *  the arm lies outside the torso) and how far its drawn root moved forward of
+   *  the pose's shoulder to keep it so (mm). Null for the near arm. */
+  behind: { armpitV: number; shift: number; poseElbow: Pt; elbowShift: number; foreRatio: number } | null;
+  /** A forearm running away from the viewer: the line (a point and the hand's
+   *  direction) where the drawn fist comes out of the sleeve's mouth. */
+  mouth: { p: Pt; n: Pt } | null;
   /** The wrist bones' lights (the head of the ulna, the radius's styloid). */
   ulna: Ellipse;
   radiusBone: Ellipse;
@@ -148,7 +173,15 @@ export type SidePlan = {
   head: HeadPlan;
   shirt: Poly;
   collar: Poly;
+  /** The belt round the waist: a curved band (part of an ellipse round the
+   *  body, bowed and tilted with the pelvis), its top edge (the test reads
+   *  it), a belt loop and the buckle's edge at the front. */
   belt: Poly;
+  beltTop: Poly;
+  beltLoop: Poly;
+  buckle: Poly;
+  /** The shirt blousing over the belt's top edge. */
+  blouse: Poly;
   waistFolds: Poly[];
   seat: Poly;
   arms: { near: ArmPlan; far: ArmPlan };
@@ -183,6 +216,13 @@ export type SideOpts = {
   /** Which forearms run away from the viewer (behind their elbows). */
   awayR?: boolean;
   awayL?: boolean;
+  /** Each forearm's tilt toward the viewer (the sine: + = the hand end nearer),
+   *  which decides whether its cuff's opening is turned toward the viewer. */
+  tiltR?: number;
+  tiltL?: number;
+  /** The far arm drawn hidden behind the torso (default true; false draws it
+   *  on the pose's own elbow — the tests compare the two). */
+  farBehind?: boolean;
 };
 
 /* ── shared shapes ── */
@@ -350,16 +390,39 @@ export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF:
 
 /** The long sleeve (mm, radii): the deltoid's gentle swell, the elbow, the
  *  sleeve narrowing to a cuff a little wider than the wrist. */
-const SLEEVE_R = { top: 47, delt: 46, bicep: 43, elbow: 40, fore: 36.5, cuffIn: 32.5, cuff: 32, wrist: 23 } as const;
+const SLEEVE_R = { top: 47, delt: 46, bicep: 43, elbow: 40, fore: 36.5, cuffIn: 32.5, cuff: 34, wrist: 23 } as const;
 
-function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null): ArmPlan {
-  const du = unit(sub(elbow, shoulder));
-  const n = perp(du);
+/** Half an ellipse's outline (an open curve): `side` +1 = the half toward its
+ *  +rx axis, −1 the other. */
+export function halfEllipse(e: Ellipse, side: 1 | -1, n = 16): Poly {
+  const out: Poly = [];
+  const c = Math.cos(e.rot);
+  const s = Math.sin(e.rot);
+  for (let i = 0; i <= n; i++) {
+    const t = -Math.PI / 2 + (Math.PI * i) / n + (side < 0 ? Math.PI : 0);
+    const x = e.rx * Math.cos(t);
+    const y = e.ry * Math.sin(t);
+    out.push(P(e.c.u + x * c - y * s, e.c.v + x * s + y * c));
+  }
+  return out;
+}
+
+/** The far arm's root (owner 2026-11-23: "The left shoulder looks displaced and
+ *  behind the rest of the shoulders and back"): the torso it hangs behind and
+ *  the way the figure faces. */
+type FarRoot = { shirt: Poly; back: Poly; facing: number };
+
+/** How far inside the back's outline the far sleeve's edge stays (mm). */
+const FAR_MARGIN = 9;
+
+function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null, tilt = 0, farRoot: FarRoot | null = null): ArmPlan {
+  const poseElbow = elbow;
   // THE FOREARM'S CENTRE LINE. A visible join (the forearm across the view):
   // its last stretch turns toward the drawn hand in two even steps, so elbow →
   // wrist → knuckles runs as one curve, never a kink at the cuff. A forearm
   // running away from the viewer ends at its own wrist, the drawn hand's root
   // tucked behind the sleeve's end (the cuff seen end-on covers the join).
+  const lineFor = (elbow: Pt): Pt[] => {
   let line: Pt[] = [elbow, wrist];
   if (placed && !away) {
     // Four stretches turning by equal steps, the last continuing into the
@@ -400,6 +463,59 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
     });
     line[line.length - 1] = wrist;
   }
+  return line;
+  };
+  let line = lineFor(elbow);
+  // THE FAR ARM IS HIDDEN BY THE TORSO (owner 2026-11-23: "The left shoulder
+  // looks displaced and behind the rest of the shoulders and back"). In a side
+  // view the far arm hangs behind the body; where the pose carries its elbow
+  // behind the back's outline the DRAWING carries it out to the side instead
+  // (into depth, away from the viewer — a normal playing position): the drawn
+  // elbow moves forward until the sleeve, its radius included, stays
+  // FAR_MARGIN inside the back's edge. The forearm then runs from that elbow
+  // into the frozen last stretch of the pose's own forearm line (the same
+  // point, the same direction), so the wrist, the cuff and the hand do not move.
+  let elbowShift = 0;
+  let foreRatio = 1;
+  const f = farRoot ? (farRoot.facing >= 0 ? 1 : -1) : 1;
+  const back = farRoot ? [...farRoot.back].sort((a, b) => a.v - b.v) : [];
+  const backAt = (v: number): number => {
+    if (!back.length) return 0;
+    if (v <= back[0].v) return back[0].u;
+    for (let i = 1; i < back.length; i++)
+      if (v <= back[i].v) {
+        const t = (v - back[i - 1].v) / (back[i].v - back[i - 1].v || 1);
+        return back[i - 1].u + (back[i].u - back[i - 1].u) * t;
+      }
+    return back[back.length - 1].u;
+  };
+  /** How far a point lies inside the back's edge (mm, + = inside). */
+  const inside = (q: Pt) => f * (q.u - backAt(q.v));
+  if (farRoot && line.length > 2) {
+    const minIn = SLEEVE_R.elbow + FAR_MARGIN;
+    let E = elbow;
+    if (inside(E) < minIn) {
+      // Carried forward to the clamp; and, if the forearm would then look short
+      // (under 0.85 of the pose's), raised along the back's edge — the elbow out
+      // to the side, the upper arm foreshortened into depth — until it does not.
+      const L0 = dist(elbow, wrist);
+      const at = (v: number) => P(backAt(v) + f * minIn, v);
+      E = at(elbow.v);
+      for (let dv = 0; dv <= 80 && dist(E, wrist) < 0.85 * L0; dv += 1) E = at(elbow.v - dv);
+    }
+    elbowShift = dist(E, elbow);
+    if (elbowShift > 0) {
+      const P3 = line[line.length - 2];
+      const dEnd = unit(sub(wrist, P3));
+      const C = sub(P3, mul(dEnd, dist(E, P3) * 0.45));
+      const q = (t: number) => add(add(mul(E, (1 - t) ** 2), mul(C, 2 * t * (1 - t))), mul(P3, t * t));
+      line = [E, q(0.36), q(0.7), P3, wrist];
+      elbow = E;
+    }
+    foreRatio = dist(elbow, wrist) / dist(poseElbow, wrist);
+  }
+  const du = unit(sub(elbow, shoulder));
+  const n = perp(du);
   const last = line.length - 1;
   const df = unit(sub(line[last], line[last - 1]));
   const nf = perp(df);
@@ -407,12 +523,70 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
   const cuffB = sub(wrist, mul(df, Math.min(16, foreLen * 0.14)));
   const cuffA = sub(wrist, mul(df, Math.min(40, foreLen * 0.34)));
   const top = sub(shoulder, mul(du, 22));
-  const upper = limbOutline([top, lerp(shoulder, elbow, 0.3), lerp(shoulder, elbow, 0.7), elbow], [SLEEVE_R.top, SLEEVE_R.delt, SLEEVE_R.bicep, SLEEVE_R.elbow]);
+  let upper = limbOutline([top, lerp(shoulder, elbow, 0.3), lerp(shoulder, elbow, 0.7), elbow], [SLEEVE_R.top, SLEEVE_R.delt, SLEEVE_R.bicep, SLEEVE_R.elbow]);
+  // THE FAR ARM hangs BEHIND the torso: in a side view the two shoulders are
+  // in one place, the far one hidden by the body, so the far upper arm has no
+  // shoulder cap of its own — a plain sleeve whose root lies inside the torso.
+  // The drawn root moves forward (toward the chest, in steps of 2 mm, at most
+  // 80 mm) until the whole upper sleeve lies FAR_MARGIN inside the back's edge.
+  let farShift = 0;
+  let armpitV: number | null = null;
+  if (farRoot) {
+    armpitV = shoulder.v + 0.42 * (elbow.v - shoulder.v);
+    const fwd = P(farRoot.facing >= 0 ? 1 : -1, 0);
+    const tube = (k: number) => {
+      const root = add(shoulder, mul(fwd, k));
+      return limbOutline([root, lerp(root, elbow, 0.5), elbow], [30, SLEEVE_R.bicep - 3, SLEEVE_R.elbow]);
+    };
+    // (the whole upper sleeve, root to elbow, FAR_MARGIN inside the back's edge)
+    const clear = (q: Poly) => q.every((p) => inside(p) >= FAR_MARGIN - 0.5 || (p.v < shoulder.v && inPoly(p, farRoot.shirt)));
+    while (farShift < 80 && !clear(tube(farShift))) farShift += 2;
+    upper = tube(farShift);
+  }
   const sleevePts = line.length > 2 ? [...line.slice(0, last), cuffA] : [elbow, lerp(elbow, cuffA, 0.5), cuffA];
   const sleeveR = sleevePts.map((_, i) => SLEEVE_R.elbow - 0.5 - ((SLEEVE_R.elbow - 0.5 - SLEEVE_R.cuffIn) * i) / (sleevePts.length - 1));
   // Away: the sleeve's far end IS the cuff, seen end-on — a rounded end round the wrist.
   const foreSleeve = limbOutline(sleevePts, sleeveR, { capEnd: false });
-  const cuff = limbOutline([sub(cuffA, mul(df, 3)), away ? wrist : cuffB], [SLEEVE_R.cuff, SLEEVE_R.cuff - 0.5], { capStart: false, capEnd: away });
+  // (a short cylinder of cloth, a little wider than the sleeve it finishes — its
+  // end cut square with a slight roll, never a dome; its rim is drawn as an edge)
+  let cuff = limbOutline([sub(cuffA, mul(df, 3)), away ? wrist : cuffB], [SLEEVE_R.cuff, SLEEVE_R.cuff - 0.5], { capStart: false, capEnd: false });
+  // A forearm running away from the viewer (seen almost along its length):
+  // the drawn fist comes out of the sleeve's mouth toward the hand side of a
+  // line a third of the way from the elbow to the wrist — behind that line
+  // the sleeve covers it, beyond it the fist lies over the sleeve (drawn for
+  // reading: owner 2026-11-23 "right hand yes can be larger and clearer").
+  const mouth = away && placed ? { p: lerp(elbow, wrist, 0.15), n: placed.ex } : null;
+  // THE OPENING. A cylinder's end tilted toward the viewer shows its whole rim:
+  // the near half projects on the elbow's side of the end, the far half on the
+  // hand's side (the wrist comes out over it). Tilted away, the near half is the
+  // hand's side and the far half is hidden by the sleeve itself. The ellipse is
+  // as narrow as the tilt makes it (≥ 4 mm, so its edge reads).
+  const opening = (() => {
+    const ry = mouth ? 40 : SLEEVE_R.cuff - 1.5;
+    const out = mouth ? mouth.n : df;
+    const rot = Math.atan2(out.v, out.u);
+    const toViewer = !away && tilt > 0.02;
+    const rx = mouth ? 12 : away ? 14 : Math.max(4, Math.min(14, ry * Math.abs(tilt)));
+    const e: Ellipse = { c: mouth ? mouth.p : away ? wrist : cuffB, rx, ry, rot };
+    const near: 1 | -1 = toViewer ? -1 : 1;
+    const seamE: Ellipse = { c: sub(cuffA, mul(df, 3)), rx: Math.min(rx, 8), ry: SLEEVE_R.cuff, rot: Math.atan2(df.v, df.u) };
+    return { e, toViewer, rimNear: halfEllipse(e, near), rimFar: toViewer ? halfEllipse(e, 1) : null, seam: halfEllipse(seamE, toViewer ? -1 : 1), out };
+  })();
+  if (!mouth) {
+    // The cuff's cloth ENDS AT THE NEAR RIM: turned toward the viewer, its end is
+    // the near half of the opening (concave: the opening lies beyond it); turned
+    // away, the near half wraps over the opening (convex). Nothing of the cloth
+    // reaches past the rim.
+    const s0 = sub(cuffA, mul(df, 3));
+    const R0 = SLEEVE_R.cuff;
+    const startCap: Poly = [];
+    for (let j = 1; j < 6; j++) {
+      const a = (Math.PI * j) / 6;
+      startCap.push(add(s0, add(mul(nf, Math.cos(a) * R0), mul(df, -Math.sin(a) * R0 * 0.22))));
+    }
+    const end = opening.toViewer ? [...halfEllipse(opening.e, -1)].reverse() : halfEllipse(opening.e, 1);
+    cuff = [add(s0, mul(nf, -R0)), ...end, add(s0, mul(nf, R0)), ...startCap];
+  }
   // The visible wrist: narrower than the cuff's opening and the hand, from
   // inside the cuff to the hand's root (painted with the hand, one skin).
   const wristSkin = limbOutline([sub(cuffB, mul(df, 6)), sub(wrist, mul(df, placed ? -6 : 0))], [SLEEVE_R.wrist + 2.5, SLEEVE_R.wrist], { capStart: false, capEnd: !placed });
@@ -433,7 +607,8 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
   folds.push(lens(add(sub(cuffA, mul(df, 24)), mul(nf, 18)), add(sub(cuffA, mul(df, 14)), mul(nf, -28)), 3.5, -2));
   // The set-in seam round the arm's root (the sleeve hangs from the shoulder).
   const armhole: Poly = [];
-  for (let t = -1.35; t <= 1.351; t += 0.27) armhole.push(add(shoulder, add(mul(du, -2 + 14 * Math.cos(t)), mul(n, 46 * Math.sin(t)))));
+  // (the far arm has no set-in seam showing: its root is inside the torso)
+  if (!farRoot) for (let t = -1.35; t <= 1.351; t += 0.27) armhole.push(add(shoulder, add(mul(du, -2 + 14 * Math.cos(t)), mul(n, 46 * Math.sin(t)))));
   return {
     shoulder,
     elbow,
@@ -442,6 +617,9 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
     foreSleeve,
     cuff,
     wristSkin,
+    opening,
+    behind: farRoot ? { armpitV: armpitV!, shift: farShift, poseElbow, elbowShift, foreRatio } : null,
+    mouth,
     ulna: { c: add(sub(wrist, mul(df, 7)), mul(nf, -dot(nf, { u: 0, v: 1 }) >= 0 ? 16 : -16)), rx: 5, ry: 4, rot: Math.atan2(df.v, df.u) },
     radiusBone: { c: add(sub(wrist, mul(df, 5)), mul(nf, -dot(nf, { u: 0, v: 1 }) >= 0 ? -15 : 15)), rx: 4.5, ry: 3.5, rot: Math.atan2(df.v, df.u) },
     line,
@@ -458,14 +636,35 @@ function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, awa
 /** The authored hand for a stick grip in the side view (+z toward the viewer):
  *  seen along the stick → the fist from its little-finger side; across it →
  *  the palm side, the thumb on top. */
-function placedOf(h: StickHold | null | undefined): PlacedHand | null {
+function placedOf(h: StickHold | null | undefined, elbow: Pt): PlacedHand | null {
   if (!h) return null;
   const d = h.dir;
   const view = Math.abs(d.z) > 0.72 ? 'fistEdge' : 'palmThumb';
   const Q = (k: number) => P(h.fulcrum.x + d.x * k, h.fulcrum.y + d.y * k);
-  // Foreshortened along its length exactly as the hand's own axis is in this view.
+  const F = Q(0);
+  if (view === 'fistEdge') {
+    // THE FIST SEEN ALONG ITS STICK (the right hand crossing to the hi-hat,
+    // forearm and fist running away from the viewer almost along the line of
+    // sight): strictly projected it would shrink to a knot behind the elbow.
+    // Drawn for READING (owner 2026-11-23: "right hand yes can be larger and
+    // clearer"): near true size, its fulcrum on the pose's, its root tucked
+    // behind the elbow (nearer the viewer) — the fist reaches out clearly
+    // beyond the sleeve along the line from the elbow through the fulcrum.
+    const sx = 0.98;
+    const art = handArt('fistEdge');
+    const L = Math.hypot(art.F.u * sx, art.F.v);
+    const aLocal = Math.atan2(art.F.v, art.F.u * sx);
+    // The hand's own axis along the elbow → fulcrum line (level, as the forearm runs into it).
+    const ex = unit(sub(F, elbow));
+    const a = Math.atan2(ex.v, ex.u) + aLocal;
+    const W = sub(F, P(Math.cos(a) * L, Math.sin(a) * L));
+    return placeHand(view, W, F, Q(-116), Q(290), sx);
+  }
+  // The palm side: placed on the pose's own wrist → fulcrum line (the fist
+  // points from the wrist to the fulcrum), foreshortened along its length as
+  // the hand's axis is.
   const sx = Math.max(0.45, Math.min(1, Math.hypot(h.sk.frame.x.x, h.sk.frame.x.y)));
-  return placeHand(view, P(h.wrist.x, h.wrist.y), Q(0), Q(-116), Q(290), sx);
+  return placeHand(view, P(h.poseWrist.x, h.poseWrist.y), F, Q(-116), Q(290), sx);
 }
 
 /* ── the legs and the shoes ── */
@@ -523,6 +722,8 @@ function legPlan(hip: Pt, knee: Pt, shoe: ShoePlan): LegPlan {
   const across = unit(sub(knee, crook));
   const folds: Poly[] = [
     lens(add(crook, mul(dt, -30)), add(add(crook, mul(across, 40)), mul(dt, -12)), 7, inner * 4),
+    // the cloth drawn round the thigh's side, from the hip toward the knee (a long soft fold low on the thigh)
+    lens(add(lerp(hip, knee, 0.3), mul(perp(dt), inner * 30)), add(lerp(hip, knee, 0.7), mul(perp(dt), inner * 22)), 5, -inner * 2),
     lens(add(crook, mul(ds, 10)), add(add(crook, mul(across, 34)), mul(ds, 24)), 6, -inner * 4),
     // the break over the instep: two folds from the front of the hem
     lens(add(sideA(ankle, SHIN_R.ankle - 4, fSide), mul(ds, 2)), add(ankle, add(mul(ds, 18), mul(nS, -fSide * 6))), 5, 3),
@@ -560,7 +761,7 @@ export function sidePlan(pose: PlayerPose, opts: SideOpts = {}): SidePlan {
     byOpts = new Map();
     planCache.set(pose, byOpts);
   }
-  const key = JSON.stringify({ r: opts.holdR?.wrist ?? null, l: opts.holdL?.wrist ?? null, sr: opts.soleR ?? null, sl: opts.soleL ?? null, n: opts.nod ?? 0, s: opts.seatV ?? null, a: [!!opts.awayR, !!opts.awayL] });
+  const key = JSON.stringify({ r: opts.holdR?.wrist ?? null, l: opts.holdL?.wrist ?? null, sr: opts.soleR ?? null, sl: opts.soleL ?? null, n: opts.nod ?? 0, s: opts.seatV ?? null, a: [!!opts.awayR, !!opts.awayL], t: [opts.tiltR ?? 0, opts.tiltL ?? 0], fb: opts.farBehind !== false });
   const hit = byOpts.get(key);
   if (hit) return hit;
   const plan = buildPlan(pose, opts);
@@ -592,17 +793,37 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   ];
   // The crew collar: a ribbed band round the base of the neck (≈ 18 mm), low in front, high behind.
   const collar: Poly = [along(0.965, 62), along(1.0, 30), along(1.045, -6), along(1.09, -32), along(1.058, -40), along(1.01, -14), along(0.97, 22), along(0.93, 58)];
-  const belt: Poly = [along(0.135, 108), along(0.135, -114), along(0.085, -116), along(0.085, 108)];
+  // THE BELT wraps the waist (owner 2026-11-23: "fix perfectly straight
+  // horizontal belt"): seen from the side and a little from above it is part
+  // of an ellipse round the body — its edges bow down at the side, nearest the
+  // viewer — and a seated pelvis rolls back, so it rides higher in front than
+  // behind. ≈ 34 mm deep. A loop at the side seam, the buckle's edge in front.
+  const bt = (f: number, base: number) => base + 0.02 * (f / 112) - 0.016 * (1 - (f / 114) ** 2);
+  const fs: number[] = [];
+  for (let f = 110; f >= -116; f -= 13) fs.push(f);
+  fs.push(-116);
+  const beltTop = fs.map((f) => along(bt(f, 0.145), f));
+  const beltBot = fs.map((f) => along(bt(f, 0.08), f)).reverse();
+  const belt: Poly = [...beltTop, ...beltBot];
+  const loopF = -34;
+  const beltLoop: Poly = [along(bt(loopF + 6, 0.152), loopF + 6), along(bt(loopF - 6, 0.152), loopF - 6), along(bt(loopF - 6, 0.073), loopF - 6), along(bt(loopF + 6, 0.073), loopF + 6)];
+  const buckle: Poly = [along(bt(112, 0.15), 112), along(bt(100, 0.15), 100), along(bt(100, 0.075), 100), along(bt(112, 0.075), 112)];
+  // The shirt blousing a little over the belt's top: a soft, slightly uneven lip.
+  const blouseTop = fs.map((f) => along(bt(f, 0.172), f));
+  const blouseLip = fs.map((f, i) => along(bt(f, 0.138 + (i % 2 === 0 ? 0.004 : -0.002)), f)).reverse();
+  const blouse: Poly = [...blouseTop, ...blouseLip];
   // Cloth gathered over the belt where the seated body folds at the waist.
   const waistFolds: Poly[] = [lens(along(0.2, 104), along(0.25, 40), 7, -4), lens(along(0.165, 98), along(0.215, 18), 6, -3), lens(along(0.2, -96), along(0.27, -40), 6, 3)];
   // The seat of the trousers (the pelvis), joined to the near thigh.
   const seat: Poly = [along(0.14, 104), along(0.04, 102), along(-0.08, 92), along(-0.16, 40), along(-0.16, -40), along(-0.08, -108), along(0.04, -116), along(0.14, -114)];
   const view: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
-  const pR = placedOf(opts.holdR);
-  const pL = placedOf(opts.holdL);
-  const wristOf = (pl: PlacedHand | null, w: Pt) => (pl ? pl.wrist : w);
-  const near = armPlan(pose.shoulderR, pose.elbowR, wristOf(pR, pose.handR.wrist), opts.holdR ?? null, !!opts.awayR, pR);
-  const far = armPlan(pose.shoulderL, pose.elbowL, wristOf(pL, pose.handL.wrist), opts.holdL ?? null, !!opts.awayL, pL);
+  const pR = placedOf(opts.holdR, pose.elbowR);
+  const pL = placedOf(opts.holdL, pose.elbowL);
+  // The sleeve runs to the drawn hand's wrist; a forearm running away from the
+  // viewer runs to the pose's own wrist (the hand beyond it is drawn behind).
+  const wristOf = (pl: PlacedHand | null, h: StickHold | null | undefined, away: boolean, w: Pt) => (pl ? (away && h ? P(h.poseWrist.x, h.poseWrist.y) : pl.wrist) : w);
+  const near = armPlan(pose.shoulderR, pose.elbowR, wristOf(pR, opts.holdR, !!opts.awayR, pose.handR.wrist), opts.holdR ?? null, !!opts.awayR, pR, opts.tiltR ?? 0);
+  const far = armPlan(pose.shoulderL, pose.elbowL, wristOf(pL, opts.holdL, !!opts.awayL, pose.handL.wrist), opts.holdL ?? null, !!opts.awayL, pL, opts.tiltL ?? 0, opts.farBehind === false ? null : { shirt, back: shirt.slice(9), facing });
   const flat = (foot: Pt): Sole => ({ ball: foot, slope: 0 });
   const shoeN = shoePlan(opts.soleR ?? flat(pose.footR), facing);
   const shoeF = shoePlan(opts.soleL ?? flat(pose.footL), facing);
@@ -610,5 +831,5 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   const legF = legPlan(pose.hipL, pose.kneeL, shoeF);
   const head = headPlan(pose.head.c, pose.head.r, facing, opts.nod ?? 0, along(0.955, 54), along(1.075, -38));
   const seatShadow = opts.seatV !== undefined && pose.posture !== 'standing' ? { c: P(lerp(hip, pose.kneeR, 0.18).u, opts.seatV + 4), rx: 200, ry: 16, rot: 0 } : null;
-  return { facing, head, shirt, collar, belt, waistFolds, seat, arms: { near, far }, legs: { near: legN, far: legF }, shoes: { near: shoeN, far: shoeF }, seatShadow, hip, neck: n, along, view };
+  return { facing, head, shirt, collar, belt, beltTop, beltLoop, buckle, blouse, waistFolds, seat, arms: { near, far }, legs: { near: legN, far: legF }, shoes: { near: shoeN, far: shoeF }, seatShadow, hip, neck: n, along, view };
 }

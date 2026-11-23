@@ -30,14 +30,15 @@
  *
  *   'palmThumb'  the stick grip seen from the PALM side, the thumb on top (the
  *                left hand on the snare stick seen from the player's right).
- *                The palm with its thenar pad and hypothenar edge; the stick
- *                across it from the heel to the pinch; the thumb growing out
- *                of the thenar pad (webbing toward the index), bending at its
- *                one middle joint, tapering, its pad flattened on the stick's
- *                upper side, a sliver of nail along its back; the index finger
- *                hooked over the stick at the fulcrum ahead of the thumb's tip;
- *                the other three fingers a fanned, tapering group wrapping
- *                under the stick, their tips returning toward the palm.
+ *                ONE FINGER = ONE SHAPE (owner 2026-11-23: "i see 9 fingers"):
+ *                the palm, the stick across it from the heel to the pinch, the
+ *                four fingers curled toward the viewer round the stick — their
+ *                middle and end segments lying ACROSS THE FRONT of it as four
+ *                parallel forms side by side, nearly at right angles to it,
+ *                touching, their tips (each with its nail) in a staggered row
+ *                on the palm side, their knuckles and first segments hidden —
+ *                and the thumb along the stick on the side toward its tip,
+ *                beside the index, its pad on the stick, whole.
  */
 import { add, limbOutline, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { Ellipse } from './sidePlan.ts';
@@ -55,6 +56,8 @@ export type HandArtPart = {
   /** The form's axis (for its cylinder light), local. */
   axis: [Pt, Pt];
   kind: 'palm' | 'digit' | 'web';
+  /** Which digit this part belongs to (a hand shows at most one thumb and four fingers). */
+  digit?: 'thumb' | 'index' | 'middle' | 'ring' | 'little';
   /** A digit's joints and radii (base → tip): painted as the union of its
    *  bones, so a finger curled back on itself stays solid (an outline traced
    *  round a tight curl crosses itself and would leave a hole). */
@@ -65,6 +68,10 @@ export type HandArt = {
   view: HandArtView;
   /** Where the stick's fulcrum sits in the drawing (local mm). */
   F: Pt;
+  /** The stick's direction in the drawing (radians, local; toward its tip),
+   *  when the drawing is placed by its stick (the palm side: the fingers are
+   *  drawn across the stick, so the stick's angle in the hand is the drawing's). */
+  stickLocal?: number;
   parts: HandArtPart[];
   /** Soft creases (open curves): joints, where a finger lies over the palm. */
   creases: Poly[];
@@ -100,17 +107,15 @@ const FIST_BODY: readonly (readonly [number, number])[] = [
 ];
 const LITTLE: Chain = { pts: [[90, -16], [99, 21], [82, 32], [66, 26]], r: [10.6, 9.8, 8.8, 7.4] };
 const RING: Chain = { pts: [[94, -21], [104, 17], [89, 29], [73, 25]], r: [10.4, 9.7, 8.8, 7.6] };
-const RING_KNUCKLE: Chain = { pts: [[86, -27], [96, -30]], r: [6.5, 6.4] };
 
 function fistEdge(): HandArt {
   return {
     view: 'fistEdge',
     F: P(92, 34),
     parts: [
-      { name: 'ring knuckle', layer: 'front', outline: chain(RING_KNUCKLE), axis: axisOf(RING_KNUCKLE), kind: 'digit', chain: bones(RING_KNUCKLE) },
-      { name: 'ring', layer: 'front', outline: chain(RING), axis: axisOf(RING), kind: 'digit', chain: bones(RING) },
+      { name: 'ring', layer: 'front', outline: chain(RING), axis: axisOf(RING), kind: 'digit', chain: bones(RING), digit: 'ring' },
       { name: 'hand', layer: 'front', outline: pts(FIST_BODY), axis: [P(0, 10), P(100, 10)], kind: 'palm' },
-      { name: 'little', layer: 'front', outline: chain(LITTLE), axis: axisOf(LITTLE), kind: 'digit', chain: bones(LITTLE) },
+      { name: 'little', layer: 'front', outline: chain(LITTLE), axis: axisOf(LITTLE), kind: 'digit', chain: bones(LITTLE), digit: 'little' },
     ],
     creases: [
       // the little finger where it lies over the palm's edge, its root at the knuckle
@@ -130,7 +135,6 @@ function fistEdge(): HandArt {
       { c: P(93, -25), r: 7 },
       { c: P(101, 21), r: 7 },
       { c: P(68, 27), r: 6 },
-      { c: P(97, -32), r: 5 },
     ],
     lights: [
       E(9, -21, 4, 2.6), // the ulnar styloid
@@ -154,82 +158,116 @@ function fistEdge(): HandArt {
 
 /* ── the grip from its palm side, the thumb on top ── */
 
+/*
+ * THE STICK GRIP FROM THE PALM SIDE (owner 2026-11-23, after "it shows 6
+ * fingers" and then "i see 9 fingers"). ONE FINGER = ONE SHAPE: each finger a
+ * single continuous form (one outline, one core shadow, one lit edge), its
+ * joint only a short soft crease and a slight change of direction; nothing
+ * else in the hand a small rounded form that could read as a fingertip.
+ *
+ * Drawn in the STICK's frame (t along the stick toward its tip, from the
+ * fulcrum; n across it toward the knuckles), then carried into the hand's own
+ * frame: the stick crosses the palm from the heel to the pinch at 38° to the
+ * hand's length.
+ *   • the four fingers come from their hidden knuckles (n > 0), curl toward
+ *     the viewer round the stick and lie ACROSS ITS FRONT — four parallel
+ *     forms side by side, ≈ 10° off a right angle to it, touching, covering
+ *     ≈ 68 mm of it: the index foremost (nearest the stick's tip), the middle
+ *     longest, the ring, the little finger shortest (nearest the butt) — their
+ *     tips in a staggered row on the palm side (n < 0), each with its nail;
+ *   • the THUMB lies along the stick on the side toward its tip, beside the
+ *     index, its pad on the stick — whole, painted last.
+ */
+const STICK_LOCAL = (-38 * Math.PI) / 180;
+const F_PALM = P(98, -26);
+const S_DIR = P(Math.cos(STICK_LOCAL), Math.sin(STICK_LOCAL));
+const N_DIR = P(-S_DIR.v, S_DIR.u);
+/** (t along the stick, n across it) → the hand's frame. */
+const TN = (t: number, n: number): [number, number] => [F_PALM.u + S_DIR.u * t + N_DIR.u * n, F_PALM.v + S_DIR.v * t + N_DIR.v * n];
+const tnChain = (xs: readonly (readonly [number, number])[], r: readonly number[]): Chain => ({ pts: xs.map(([t, n]) => TN(t, n)), r });
+
+// (each finger: the bend at its middle joint — the knuckle hidden behind it — then its end joint, then its tip)
+const INDEX: Chain = tnChain([[-4, 26], [-7, 7], [-10, -7]], [10, 9.6, 8]);
+const MIDDLE: Chain = tnChain([[-21.5, 30], [-24.5, 6], [-28.5, -16]], [10.4, 10, 8.4]);
+const RING_P: Chain = tnChain([[-38.8, 28], [-41.8, 6], [-45.8, -13]], [10, 9.6, 8]);
+const LITTLE_P: Chain = tnChain([[-54.6, 24], [-57.6, 6], [-61.1, -6]], [9.2, 8.8, 7.4]);
+const THUMB: Chain = tnChain([[-58, -50], [-30, -36], [-4, -22], [16, -12]], [11.8, 11, 10, 8.8]);
+
+// (its lower edge, past the little finger, runs just under the stick to the heel: no
+// separate lump of palm between the little finger and the butt)
 const PALM: readonly (readonly [number, number])[] = [
-  [-4, -22], [8, -29], [22, -36], [40, -38], [58, -36], [76, -33], [90, -29], [99, -21],
-  [102, -6], [100, 10], [96, 24], [86, 34], [66, 40], [44, 41], [24, 38], [8, 32], [-4, 24],
+  [-4, -22], [8, -29], [22, -35], [40, -37], [60, -36], [80, -33], [94, -29], [102, -22],
+  [106, -12], [102, 2], [92, 13], [80, 22], TN(-62, 10), TN(-76, 6), TN(-90, 6), TN(-100, 6), [12, 40], [2, 30], [-4, 24],
 ];
-const THUMB: Chain = { pts: [[24, -30], [54, -44], [78, -46], [97, -34]], r: [15, 12.2, 10.4, 9] };
-const THUMB_WEB: readonly (readonly [number, number])[] = [[36, -36], [58, -42], [80, -38], [90, -27], [70, -29]];
-const INDEX: Chain = { pts: [[93, -23], [110, -44], [124, -33], [118, -20]], r: [10.6, 9.8, 8.8, 7.6] };
-const MIDDLE: Chain = { pts: [[99, -7], [121, -12], [106, 4], [89, -1]], r: [11, 10.2, 9.2, 8] };
-const RING_P: Chain = { pts: [[98, 9], [118, 8], [102, 20], [86, 14]], r: [10.4, 9.6, 8.7, 7.6] };
-const LITTLE_P: Chain = { pts: [[93, 24], [109, 26], [95, 36], [80, 30]], r: [9.2, 8.6, 7.8, 6.8] };
+
+/** A soft crease across a digit at joint `i` (a short open curve, ≈ ⅗ of its width). */
+function jointCrease(c: Chain, i: number): Poly {
+  const q = P(c.pts[i][0], c.pts[i][1]);
+  const d = unit(sub(P(c.pts[i + 1][0], c.pts[i + 1][1]), P(c.pts[i - 1][0], c.pts[i - 1][1])));
+  const n = perp(d);
+  const w = c.r[i] * 0.6;
+  return [add(q, mul(n, -w)), add(q, mul(d, 0.8)), add(q, mul(n, w))];
+}
+
+/** A finger's nail, facing the viewer near its end (closed, inside the finger). */
+function nailOf(c: Chain): Poly {
+  const k = c.pts.length - 1;
+  const tip = P(c.pts[k][0], c.pts[k][1]);
+  const u = unit(sub(tip, P(c.pts[k - 1][0], c.pts[k - 1][1])));
+  const n = perp(u);
+  const r = c.r[k];
+  // (at the very end of the finger: its free edge at the tip's rim)
+  const mid = add(tip, mul(u, r * 0.05));
+  const out: Poly = [];
+  for (let j = 0; j < 12; j++) {
+    const a = (Math.PI * 2 * j) / 12;
+    const x = Math.cos(a);
+    const y = Math.sin(a);
+    // a rounded oblong, a little flatter toward the root
+    out.push(add(mid, add(mul(u, r * 0.66 * (x > 0 ? x : x * 0.9)), mul(n, r * 0.56 * Math.sign(y) * Math.pow(Math.abs(y), 0.7)))));
+  }
+  return out;
+}
+
+/** The thumb's nail: a sliver along its back (the side away from the stick), toward the tip. */
+function thumbNail(c: Chain): Poly {
+  const k = c.pts.length - 1;
+  const a = P(c.pts[k - 1][0], c.pts[k - 1][1]);
+  const b = P(c.pts[k][0], c.pts[k][1]);
+  const u = unit(sub(b, a));
+  let n = perp(u);
+  if (n.v > 0) n = mul(n, -1); // the back: up, away from the stick
+  const r = c.r[k];
+  const at = (f: number, o: number) => add(add(a, mul(sub(b, a), f)), mul(n, r * o));
+  return [at(0.45, 0.62), at(0.7, 0.84), at(0.95, 0.66), at(0.97, 0.4), at(0.7, 0.5), at(0.47, 0.42)];
+}
 
 function palmThumb(): HandArt {
+  const digit = (name: string, c: Chain, d: HandArtPart['digit']): HandArtPart => ({ name, layer: 'front', outline: chain(c), axis: axisOf(c), kind: 'digit', chain: bones(c), digit: d });
   return {
     view: 'palmThumb',
-    F: P(104, -28),
+    F: F_PALM,
+    stickLocal: STICK_LOCAL,
     parts: [
       { name: 'palm', layer: 'back', outline: pts(PALM), axis: [P(50, -38), P(50, 40)], kind: 'palm' },
-      { name: 'web', layer: 'front', outline: pts(THUMB_WEB), axis: [P(40, -40), P(80, -30)], kind: 'web' },
-      { name: 'thumb', layer: 'front', outline: chain(THUMB), axis: axisOf(THUMB), kind: 'digit', chain: bones(THUMB) },
-      { name: 'little', layer: 'front', outline: chain(LITTLE_P), axis: axisOf(LITTLE_P), kind: 'digit', chain: bones(LITTLE_P) },
-      { name: 'ring', layer: 'front', outline: chain(RING_P), axis: axisOf(RING_P), kind: 'digit', chain: bones(RING_P) },
-      { name: 'middle', layer: 'front', outline: chain(MIDDLE), axis: axisOf(MIDDLE), kind: 'digit', chain: bones(MIDDLE) },
-      // (the hook's inside: the index closes round the stick, so no gap shows through it)
-      { name: 'index hook', layer: 'front', outline: pts([[93, -23], [110, -44], [124, -33], [118, -20], [104, -18]]), axis: axisOf(INDEX), kind: 'web' },
-      { name: 'index', layer: 'front', outline: chain(INDEX), axis: axisOf(INDEX), kind: 'digit', chain: bones(INDEX) },
+      // the four fingers from the butt's end to the tip's (the index last, foremost), then the thumb over all
+      digit('little', LITTLE_P, 'little'),
+      digit('ring', RING_P, 'ring'),
+      digit('middle', MIDDLE, 'middle'),
+      digit('index', INDEX, 'index'),
+      digit('thumb', THUMB, 'thumb'),
     ],
-    creases: [
-      // the thumb's middle joint, the pad flattened on the stick
-      pts([[75, -53], [78, -47], [76, -40]]),
-      // the thumb's underside where it lies over the palm
-      pts([[42, -31], [60, -35], [78, -36], [90, -29]]),
-      pts([[90, -28], [97, -26], [103, -28]]),
-      // the index: its two bends round the stick
-      pts([[106, -50], [111, -46], [115, -47]]),
-      pts([[121, -27], [125, -26]]),
-      // the curled fingers' middle joints at the front of the fist, and their end joints
-      pts([[122, -5], [127, -10]]),
-      pts([[118, 15], [122, 11]]),
-      pts([[108, 32], [112, 29]]),
-      pts([[99, 6], [101, 0]]),
-      pts([[95, 21], [97, 15]]),
-      // the palm: the thenar crease round the thumb's base, the crease under the fingers' roots
-      pts([[76, -28], [56, -22], [36, -10], [24, 6]]),
-      pts([[90, -16], [84, 2], [78, 18], [66, 30]]),
-    ],
-    nails: [
-      // the thumb's nail: a sliver along its back edge
-      pts([[86, -50.5], [95, -46], [102, -39], [99, -39], [92, -44.5], [85, -48]]),
-      // the curled fingers' nails: slivers on the tips' backs, turned toward the viewer
-      pts([[92, -8], [86, -6.5], [84, -4], [88, -5.5]]),
-      pts([[89, 8], [83, 9.5], [81, 12], [85, 10.5]]),
-      pts([[83, 25], [77, 26.5], [76, 29], [80, 27.5]]),
-    ],
-    warm: [
-      { c: P(97, -34), r: 7 },
-      { c: P(110, -44), r: 7 },
-      { c: P(121, -12), r: 7 },
-      { c: P(118, 8), r: 6.5 },
-      { c: P(109, 26), r: 6 },
-      { c: P(89, -1), r: 5.5 },
-      { c: P(86, 14), r: 5.5 },
-    ],
+    creases: [jointCrease(LITTLE_P, 1), jointCrease(RING_P, 1), jointCrease(MIDDLE, 1), jointCrease(INDEX, 1), jointCrease(THUMB, 2)],
+    nails: [nailOf(LITTLE_P), nailOf(RING_P), nailOf(MIDDLE), nailOf(INDEX), thumbNail(THUMB)],
+    warm: [],
     lights: [
-      E(36, -30, 16, 9, -0.35), // the thenar pad
-      E(30, 30, 18, 7, 0.1), // the hypothenar edge
-      E(66, -46, 16, 4.5, -0.1), // the thumb's back
-      E(116, -40, 5, 8, 0.5), // the index's hooked middle bone
+      E(28, 33, 15, 5.5, 0.35), // the hypothenar's edge, toward the heel
     ],
-    darks: [
-      E(64, 4, 20, 14, 0.2), // the hollow of the palm
-      E(104, 14, 8, 20, 0.1), // inside the curl
-    ],
-    knuckle: P(110, -44),
+    darks: [],
+    knuckle: P(INDEX.pts[0][0], INDEX.pts[0][1]),
     wristTop: P(0, -22),
     wristBottom: P(0, 24),
-    thumbTip: P(97, -34),
+    thumbTip: P(THUMB.pts[3][0], THUMB.pts[3][1]),
   };
 }
 
@@ -271,14 +309,34 @@ export type PlacedHand = {
  */
 export function placeHand(view: HandArtView, W: Pt, F: Pt, butt: Pt, bead: Pt, sx = 1): PlacedHand {
   const art = handArt(view);
-  const dWF = unit(sub(F, W));
-  const aLocal = Math.atan2(art.F.v, art.F.u * sx);
-  const aView = Math.atan2(dWF.v, dWF.u);
-  const th = aView - aLocal;
-  const ex = P(Math.cos(th), Math.sin(th));
-  let ey = perp(ex);
-  // y (the palm side) points down the picture.
-  if (ey.v < 0) ey = mul(ey, -1);
+  let th: number;
+  let ex: Pt;
+  let ey: Pt;
+  if (art.stickLocal !== undefined) {
+    // Placed by its STICK: the drawing's stick (foreshortened along the hand
+    // as the rest of it) lies on the pose's stick; y (the palm side) down.
+    const dS = unit(sub(bead, butt));
+    const aS = Math.atan2(dS.v, dS.u);
+    const aL = Math.atan2(Math.sin(art.stickLocal), Math.cos(art.stickLocal) * sx);
+    th = aS - aL;
+    ex = P(Math.cos(th), Math.sin(th));
+    ey = perp(ex);
+    if (ey.v < 0) {
+      // (the palm side would face up: the mirrored drawing, which turns the other way)
+      th = aS + aL;
+      ex = P(Math.cos(th), Math.sin(th));
+      ey = mul(perp(ex), -1);
+    }
+  } else {
+    const dWF = unit(sub(F, W));
+    const aLocal = Math.atan2(art.F.v, art.F.u * sx);
+    const aView = Math.atan2(dWF.v, dWF.u);
+    th = aView - aLocal;
+    ex = P(Math.cos(th), Math.sin(th));
+    ey = perp(ex);
+    // y (the palm side) points down the picture.
+    if (ey.v < 0) ey = mul(ey, -1);
+  }
   // A mirrored placement (the palm side had to flip to face down) turns the ellipses the other way.
   const mirrored = ex.u * ey.v - ex.v * ey.u < 0;
   // (the drawing is a true side view of the hand: along its length it is
