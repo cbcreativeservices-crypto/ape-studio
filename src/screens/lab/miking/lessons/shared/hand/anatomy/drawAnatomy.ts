@@ -201,6 +201,12 @@ export type DrawOpts = {
    *  hand meets the art's own forearm at the wrist crease. */
   bare?: boolean;
   wristBack?: number;
+  /** FIGURE V2 (D78, 2026-11-22) only: fuller knuckle heads standing out of
+   *  the fist's edge, the light on them and the valleys between them also
+   *  when the back of the hand is seen edge-on, and every joint's crease
+   *  (back and palm side) also when the digit is seen from its side. Off for
+   *  every existing caller (they draw exactly as before). */
+  v2?: boolean;
 };
 
 /** The wrist trimmed square at the cuff's edge (CUFF_GAP behind the crease). */
@@ -293,7 +299,8 @@ export function handLayers(sk: HandSkeleton, view: HandView, opts: DrawOpts = {}
   for (const dg of sk.fingers) {
     // A flexed knuckle stands out: the metacarpal head rounds the fist's edge.
     const bend = Math.max(0, h3.dot(h3.unit(h3.sub(dg.joints[1], dg.joints[0])), h3.mul(f.z, -1)));
-    pieces.push(circle(P(shift(shift(dg.joints[0], f.z, 1.5 + 2.2 * bend), f.x, 1.5 * bend)), dg.r[0] + 0.6 + 0.6 * bend));
+    if (opts.v2) pieces.push(circle(P(shift(shift(dg.joints[0], f.z, 3 + 4 * bend), f.x, 1.5 * bend)), dg.r[0] + 1.2 + 1 * bend));
+    else pieces.push(circle(P(shift(shift(dg.joints[0], f.z, 1.5 + 2.2 * bend), f.x, 1.5 * bend)), dg.r[0] + 0.6 + 0.6 * bend));
   }
   const palmPath = unionAll(pieces);
   const pc = sk.palm.reduce((s, q) => h3.add(s, h3.mul(q, 1 / sk.palm.length)), { x: 0, y: 0, z: 0 });
@@ -303,7 +310,7 @@ export function handLayers(sk: HandSkeleton, view: HandView, opts: DrawOpts = {}
   const palmLines = make();
   const palmGlints = make();
   const palmSoft = make();
-  if (facing(f.z) > 0.35) {
+  if (facing(f.z) > 0.35 || (opts.v2 && facing(f.z) > -0.2)) {
     // The back of the hand: soft light on each knuckle head, and the soft
     // valleys between the metacarpals running back from between the
     // knuckles toward the wrist (what makes a back of the hand read as one;
@@ -384,7 +391,7 @@ export function handLayers(sk: HandSkeleton, view: HandView, opts: DrawOpts = {}
       // two short folds, the end joint's one (curved round the finger).
       if (k > 0 && !isThumb) {
         const n = dg.dorsal[k];
-        if (facing(n) > 0.3) {
+        if (facing(n) > (opts.v2 ? -0.05 : 0.3)) {
           const across = h3.unit(h3.sub(h3.sub(f.y, h3.mul(dir, h3.dot(f.y, dir))), h3.mul(n, h3.dot(f.y, n))));
           const hw = ra * 0.5;
           const folds = k === 1 ? [-2.2, 1.4] : [0];
@@ -400,7 +407,7 @@ export function handLayers(sk: HandSkeleton, view: HandView, opts: DrawOpts = {}
       // The palm side of a joint facing the viewer: one flexion crease.
       if (k > 0 && !isThumb) {
         const n = h3.mul(dg.dorsal[k], -1);
-        if (facing(n) > 0.45) {
+        if (facing(n) > (opts.v2 ? 0.1 : 0.45)) {
           const across = h3.unit(h3.sub(h3.sub(f.y, h3.mul(dir, h3.dot(f.y, dir))), h3.mul(n, h3.dot(f.y, n))));
           const c = shift(a, n, ra * 0.9);
           lines.addPath(curveOpen([P(shift(c, across, -ra * 0.55)), P(shift(c, dir, -0.8)), P(shift(c, across, ra * 0.55))]));

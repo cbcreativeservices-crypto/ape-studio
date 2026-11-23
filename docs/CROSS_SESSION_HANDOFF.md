@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-22 22:10 · ccode · 6555e753
+changed: Lab animation fixes (owner 2026-11-22): natural stick technique everywhere, three congas, moving capsule coil, tappable chain rack + LOW CUT, Digital bit depth and time base [MD:D77] [MD:E9]
+affects other side: nothing on the server (JS only; lesson text and lab catalog are read from code). For store text later: the Signal Chain Builder now has ten units with LOW CUT first, and the Congas lesson is a set of three (quinto, conga, tumba).
+needs: nothing from A. Waits for the owner's OTA 16 word and his phone checks [MD:D77]; the gate-before-EQ engine order is a 1.0.1 build item [MD:E9].
+
+
 ### 2026-11-22 19:57 · ccode · 7a51a269
 changed: docs: Founder links deployed (1a112c66, footer last + /curriculum, no top menu), read back live [MD:D74]
 affects other side: nothing (docs only)

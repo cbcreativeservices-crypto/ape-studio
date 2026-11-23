@@ -31,6 +31,8 @@ import { KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 import { DRUMMER, S0, TOM_POST } from './kitSceneModel.ts';
 import { drummerPose, viewDrummer, type Stick2 } from './stickPose.ts';
 import { KIT_GROOVE } from './kitStrokes.ts';
+import { FIGURE_V2_READY } from '../figureV2/figureV2Config.ts';
+import { KitDrummerSideV2 } from '../figureV2/kitDrummerV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const INK = '#08080a';
@@ -333,9 +335,11 @@ function Sticks({ path }: { path: SkPath }) {
 }
 
 /** The drummer, side view (one layer: nearer than the snare and hi-hat,
- *  farther than the floor tom). */
-function DrummerSide() {
+ *  farther than the floor tom). `v2`: the new figure look (D78), off in the
+ *  app until the owner approves the example (FIGURE_V2_READY). */
+function DrummerSide({ v2 = FIGURE_V2_READY }: { v2?: boolean }) {
   const d = drummerOf('side');
+  if (v2) return <KitDrummerSideV2 farStick={<Sticks path={d.farSticks} />} nearStick={<Sticks path={d.sticks} />} />;
   return (
     <Group>
       {/* the left stick under the far fist, the right one under the near fist */}
@@ -483,10 +487,16 @@ export type KitSceneOpts = {
   reach?: boolean;
   /** A part to ring in amber (the parts page's tap). */
   highlight?: string | null;
+  /** The drummer in the new figure look (D78; default FIGURE_V2_READY). */
+  figureV2?: boolean;
+  /** Dev study only (D78): leave out what stands between the camera and the
+   *  drummer (the floor tom, the rack tom, the near crash and the ride), so
+   *  his hands and feet can be judged. */
+  isolate?: boolean;
 };
 
 /** The kit from the side (camera on the player's right). */
-export function KitSide({ swing = false, dim = 1, keepOuts = true, reach = true }: KitSceneOpts) {
+export function KitSide({ swing = false, dim = 1, keepOuts = true, reach = true, figureV2, isolate = false }: KitSceneOpts) {
   const far = (z: number) => (z < -400 ? 0.92 : 1);
   return (
     <Group opacity={dim}>
@@ -497,11 +507,15 @@ export function KitSide({ swing = false, dim = 1, keepOuts = true, reach = true 
       <ThroneSide />
       <KickSide />
       <TomHolderSide />
-      <DrummerSide />
-      <DrumSide id="tom2" dim={1} />
-      <CymbalWithStandSide id="crash2" dim={1} />
-      <DrumSide id="floor" dim={1} />
-      <CymbalWithStandSide id="ride" dim={1} />
+      <DrummerSide v2={figureV2} />
+      {isolate ? null : (
+        <>
+          <DrumSide id="tom2" dim={1} />
+          <CymbalWithStandSide id="crash2" dim={1} />
+          <DrumSide id="floor" dim={1} />
+          <CymbalWithStandSide id="ride" dim={1} />
+        </>
+      )}
       {swing
         ? (['crash1', 'crash2', 'ride'] as const).map((id) => {
             const p = KIT_PLACED_CYMBALS[id];

@@ -142,6 +142,9 @@ import { MikingLessonScreen } from '../screens/lab/miking/MikingLessonScreen';
 // Miking hands redesign (2026-10-24): `#labpreview/MikingHands/<id>[~u~v~w]`
 // draws one lesson's art large, cropped round its hands.
 import { MikingHandStudio } from './MikingHandStudio';
+// Figure realism pass (2026-11-22, must-do D78): `#labpreview/FigureStudy`, the
+// owner's example figure (the kit drummer) CURRENT beside NEW.
+import { FigureStudy } from './FigureStudy';
 // Mixing Guides (2026-10-07): `#labpreview/MixingGuides`, `#labpreview/MixingGuide/pop`.
 import { MixingGuidesHubScreen } from '../screens/lab/mixingGuides/MixingGuidesHubScreen';
 import { MixingGuideScreen } from '../screens/lab/mixingGuides/MixingGuideScreen';
@@ -269,6 +272,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
   MikingHands: MikingHandStudio as ComponentType,
+  FigureStudy: FigureStudy as ComponentType,
   MixingGuides: MixingGuidesHubScreen as ComponentType,
   MixingGuide: MixingGuideScreen as ComponentType,
 };
