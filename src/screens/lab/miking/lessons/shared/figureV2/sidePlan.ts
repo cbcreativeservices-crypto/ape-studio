@@ -42,7 +42,7 @@ import type { PlayerPose } from '../players/playerPose.ts';
 import type { HandView } from '../players/handModel.ts';
 import { add, boundsOf, crossZ, dist, dot, frame2, inPoly, lerp, limbOutline, mapPts, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { StickHold } from './grip.ts';
-import { handArt, placeHand, type PlacedHand } from './authoredHands.ts';
+import { handArt, placeHand, placeRest, type PlacedHand } from './authoredHands.ts';
 
 export type Ellipse = { c: Pt; rx: number; ry: number; rot: number };
 
@@ -92,6 +92,8 @@ export type HeadPlan = {
   /** The front plane's shade runs from `a` (the profile) to `b` (inside). */
   frontShade: { a: Pt; b: Pt };
   box: { u0: number; v0: number; u1: number; v1: number };
+  /** The ear shows (hair worn over it hides it). */
+  earShows: boolean;
 };
 
 export type ArmPlan = {
@@ -150,6 +152,9 @@ export type ArmPlan = {
   /** The forearm runs away from the viewer (behind its own elbow): the
    *  forearm, the cuff and the hand are painted before the upper sleeve. */
   away: boolean;
+  /** (wave 3) ONE sleeve, shoulder to cuff: `upper` and `foreSleeve` are the same
+   *  outline; the forearm's own light fades in below the elbow (no step). */
+  one?: boolean;
 };
 
 export type LegPlan = {
@@ -199,6 +204,8 @@ export type SidePlan = {
   along: (t: number, fwd: number) => Pt;
   /** The view a hand skeleton is drawn in (3-D → this view). */
   view: HandView;
+  /** (wave 3) The dress of a cast member's body (absent: the drummer's). */
+  dress?: { tucked: boolean; collar: 'crew' | 'shirt'; placket: Poly | null };
 };
 
 /** Where a foot stands: the ball of the foot on its sole line, and the sole's
@@ -226,6 +233,34 @@ export type SideOpts = {
   /** The far arm drawn hidden behind the torso (default true; false draws it
    *  on the pose's own elbow — the tests compare the two). */
   farBehind?: boolean;
+  /** (wave 3) The person's hair and face (cast.ts; default the drummer's). */
+  head?: HeadStyle;
+  /** (wave 3) Where the front of the mouth must be drawn (a talker's lip point). */
+  lip?: Pt;
+  /** (wave 3) A hand holding nothing: at the side (restSide) or on a desk (restFlat). */
+  restR?: 'restSide' | 'restFlat';
+  restL?: 'restSide' | 'restFlat';
+  /** (wave 3) The person's build and dress (cast.ts): a body in depth — the
+   *  chest deeper than the waist, the back's gentle S, the seat running into
+   *  the thigh — fuller legs with the far foot set back, a relaxed bend at the
+   *  elbow and one sleeve from shoulder to cuff. Absent: the drummer's body. */
+  body?: BodyBuild;
+};
+
+/** A person's build (multipliers on a medium adult's depths; 1 = medium) and dress. */
+export type BodyBuild = {
+  chest: number;
+  back: number;
+  waist: number;
+  hip: number;
+  /** A quiet chest line under a loose shirt (mm, women). */
+  bust?: number;
+  /** The upper arm's and the shoulder's fullness. */
+  shoulder: number;
+  /** The legs' and forearms' fullness (heavier > 1 > slimmer). */
+  limb: number;
+  tucked: boolean;
+  collar: 'crew' | 'shirt';
 };
 
 /* ── shared shapes ── */
@@ -313,13 +348,151 @@ const CLUMPS: readonly [readonly [number, number], readonly [number, number], nu
   [[-40, -80], [-72, 20], 14, 3],
 ];
 
+/* ── THE CAST'S HEADS (wave 3 of D78, owner 2026-11-23 "Small cast"): the
+ *  same skull, neck, ear and face planes; a person differs by the HAIR (its
+ *  style, cast.ts gives its colour) and a little by the FACE. The drummer is
+ *  'short' / 'drummer' — the arrays above, unchanged. ── */
+
+export type HairStyle = 'short' | 'crop' | 'bob' | 'pony' | 'bun';
+/** 'drummer': the approved face, the lid lowered to the snare; 'open': the
+ *  same face looking ahead (the lid up); 'fine': a finer profile — a little
+ *  shorter nose, a finer arched brow — looking ahead. */
+export type FaceStyle = 'drummer' | 'open' | 'fine';
+export type HeadStyle = { hair: HairStyle; face: FaceStyle };
+export const DRUMMER_HEAD: HeadStyle = { hair: 'short', face: 'drummer' };
+
+type Clump = readonly [readonly [number, number], readonly [number, number], number, number];
+type HairSet = { outer: XY; edge: XY; clumps: readonly Clump[]; earShows: boolean; sheen: boolean };
+
+// The temple and the hairline in front of the ear for hair worn LONG or PULLED
+// BACK: no sideburn, the hair running down in front of the ear to a soft point
+// level with the top of the ear, the frontal hairline a little lower and fuller
+// (no recession).
+const EDGE_SOFT: XY = [[-6, -20], [-3, -8], [3, -4], [9, -10], [12, -22], [16, -36], [21, -52], [26, -66], [33, -78], [45, -86], [58, -89], [71, -89]];
+// Behind and over the ear, up from the nape (shared by every style whose ear shows).
+const BEHIND_EAR: XY = [[-78, 58], [-70, 46], [-60, 34], [-54, 18], [-52, 0], [-50, -14], [-44, -25], [-33, -31], [-20, -33], [-9, -28]];
+
+const HAIR_SETS: Record<HairStyle, HairSet> = {
+  short: { outer: HAIR_OUTER, edge: HAIR_EDGE, clumps: CLUMPS, earShows: true, sheen: true },
+  // CLOSE-CROPPED: the hair a close layer over the skull (≈ 5–6 mm), the same
+  // hairline and a short sideburn; texture, not clumps.
+  crop: {
+    outer: [
+      [77, -86], [79, -92], [73, -102], [56, -115], [26, -125], [-12, -129], [-30, -128], [-64, -117], [-91, -94], [-108, -62], [-115, -26], [-112, 8], [-103, 34], [-93, 50], [-86, 58],
+      [-80, 54], [-70, 44], [-60, 32], [-54, 18], [-52, 0], [-50, -14], [-44, -25], [-33, -31], [-20, -33], [-9, -28],
+    ],
+    edge: [[-6, -18], [-5, -6], [-3, 2], [3, 4], [9, 2], [11, -8], [13, -20], [17, -34], [21, -48], [24, -60], [27, -71], [34, -79], [46, -84], [58, -86], [70, -86]],
+    clumps: [
+      [[-30, -126], [50, -112], 7, -1],
+      [[-64, -116], [-104, -60], 7, -2],
+      [[-92, -92], [-112, -10], 7, -2],
+      [[-40, -124], [-16, -100], 6, 1],
+    ],
+    earShows: true,
+    sheen: true,
+  },
+  // A CHIN-LENGTH BOB: fuller over the crown, falling straight past the ear
+  // (covered) to the jaw line, its ends turning under; in front a soft line down
+  // the cheek in front of the ear, a side-swept hairline over the forehead.
+  bob: {
+    outer: [
+      [80, -88], [84, -98], [78, -113], [62, -128], [36, -140], [2, -144], [-34, -140], [-68, -127], [-97, -105], [-117, -73], [-127, -35], [-128, 4], [-122, 40], [-113, 66], [-102, 84], [-92, 95], [-82, 101],
+      // (the ends turned under, in toward the nape; the lower edge soft and a little uneven)
+      [-72, 99], [-60, 103], [-47, 98.5], [-34, 101.5], [-21, 96.5], [-8, 99], [3, 94], [11, 89.5], [15, 84],
+      [16, 72], [17, 50], [18, 28], [18, 8], [20, -12], [24, -32], [30, -52], [39, -68], [52, -80], [66, -88],
+    ],
+    edge: [],
+    clumps: [
+      [[-10, -140], [62, -118], 16, -3],
+      [[-34, -136], [-104, -68], 18, -4],
+      [[-56, -122], [-120, 10], 18, -4],
+      [[-50, -100], [-104, 92], 18, -3],
+      [[-20, -104], [-50, 96], 18, 3],
+      [[6, -86], [0, 90], 14, 3],
+      [[22, -58], [14, 84], 9, 2],
+      // strand shadows toward the ends
+      [[-88, 30], [-76, 98], 5, -1],
+      [[-58, 34], [-52, 100], 5, 1],
+      [[-30, 30], [-26, 98], 5, -1],
+      [[-4, 26], [-2, 95], 4, 1],
+    ],
+    earShows: false,
+    sheen: true,
+  },
+  // PULLED BACK TO A LOW PONYTAIL: smooth over the skull to a tie behind it,
+  // the tail falling behind the nape (ending above the collar); the ear shows.
+  pony: {
+    outer: [
+      [78, -88], [81, -96], [76, -107], [62, -120], [38, -131], [6, -135], [-28, -132], [-62, -120], [-90, -99], [-108, -70], [-117, -42], [-121, -24],
+      [-130, -16], [-137, 4], [-139, 32], [-135, 60], [-128, 82], [-121, 96], [-115, 100],
+      [-113, 90], [-117, 66], [-120, 40], [-119, 16], [-116, 0],
+      [-110, 16], [-102, 34], [-93, 48], [-86, 56],
+      ...BEHIND_EAR,
+    ],
+    edge: EDGE_SOFT,
+    clumps: [
+      [[50, -120], [-112, -34], 14, -8],
+      [[30, -104], [-110, -14], 12, -6],
+      [[60, -98], [-60, -62], 10, -4],
+      [[-10, -80], [-106, 6], 12, 4],
+      [[-125, -12], [-120, 94], 10, -3],
+      [[-134, 8], [-126, 84], 8, 3],
+    ],
+    earShows: true,
+    sheen: true,
+  },
+  // PULLED BACK TO A LOW BUN at the back of the head (a round knot, its turns
+  // showing); the ear shows.
+  bun: {
+    outer: [
+      [78, -88], [81, -96], [76, -107], [62, -120], [38, -131], [6, -135], [-28, -132], [-62, -120], [-90, -99], [-108, -70], [-117, -42],
+      // the bun: round, centred behind the skull at the level of the ear's top
+      [-124, -26], [-134, -24], [-144, -18], [-151, -8], [-153, 4], [-149, 15], [-141, 22], [-130, 25], [-121, 22],
+      [-112, 22], [-104, 36], [-94, 48], [-86, 56],
+      ...BEHIND_EAR,
+    ],
+    edge: EDGE_SOFT,
+    clumps: [
+      [[50, -120], [-114, -30], 14, -8],
+      [[30, -104], [-112, -8], 12, -6],
+      [[60, -98], [-60, -62], 10, -4],
+      [[-10, -80], [-106, 10], 12, 4],
+      [[-148, -14], [-128, 20], 9, -5],
+      [[-150, 6], [-130, -20], 8, 4],
+    ],
+    earShows: true,
+    sheen: true,
+  },
+};
+
+// The faces' own parts (see FaceStyle).
+const LID_OPEN: XY = [[49, -7], [56, -12.6], [64, -14.8], [71, -13.8], [75.5, -9], [75, -8.2], [70.5, -12.3], [64, -13.2], [56.5, -11.3], [50, -6.5]];
+const IRIS_OPEN: XY = [[66, -11.8], [71.5, -11], [74.5, -8.4], [72, -5.2], [66.5, -5.6]];
+const BROW_FINE: XY = [[52, -25.5], [63, -29.5], [75, -30], [84, -28], [87, -25.5], [78, -27], [64, -27], [53, -23.8]];
+/** The finer nose: the profile ahead of the cheek drawn in toward the face. */
+const shorterNose = (xs: XY, s = 0.84): XY => xs.map(([x, y]): readonly [number, number] => (y > -14 && y < 46 && x > 84 ? [84 + (x - 84) * s, y] : [x, y]));
+/** The front of the mouth (between the lips), where a talker's lip point is. */
+const MOUTH_FRONT = [89.5, 59.8] as const;
+
 /** The head and neck (the neck from the skull into the collar `collarF`
- *  front and `collarB` back). */
-export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF: Pt, collarB: Pt): HeadPlan {
+ *  front and `collarB` back). `style`: the person's hair and face (the
+ *  drummer's by default); `lip`: where the front of the mouth must be (a
+ *  talker's lip point — every vocal distance is read from it): the head is
+ *  drawn there. */
+export function headPlan(c0: Pt, r: number, facing: 1 | -1, nod: number, collarF: Pt, collarB: Pt, style: HeadStyle = DRUMMER_HEAD, lip?: Pt): HeadPlan {
   const k = r / 110;
+  let c = c0;
+  if (lip) {
+    const m0 = frame2(c0, facing, (nod * Math.PI) / 180, P(-16, 30))(MOUTH_FRONT[0] * k, MOUTH_FRONT[1] * k);
+    c = add(c0, sub(lip, m0));
+  }
   const F0 = frame2(c, facing, (nod * Math.PI) / 180, P(-16, 30));
   const F = (x: number, y: number) => F0(x * k, y * k);
   const M = (xs: XY) => mapPts(F, xs);
+  const hs = HAIR_SETS[style.hair];
+  const fine = style.face === 'fine';
+  const nose = (xs: XY) => (fine ? shorterNose(xs) : xs);
+  const SK = nose(SKULL);
   const ea = (15 * Math.PI) / 180;
   const earF = (x: number, y: number) => {
     const dx = x + 26;
@@ -337,8 +510,8 @@ export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF:
   const nape = add(lerp(nB0, collarB, 0.5), mul(fwd, 5));
   const down = unit(sub(lerp(collarF, collarB, 0.5), lerp(nF0, nB0, 0.5)));
   const neck: Poly = [F(40, 80), nF0, throat, add(collarF, mul(down, 16)), add(collarB, mul(down, 16)), nape, nB0, F(-74, 30), F(-30, 40)];
-  const skull = M(SKULL);
-  const hair = [...M(HAIR_OUTER), ...jag(M(HAIR_EDGE), 1.3 * k)];
+  const skull = M(SK);
+  const hair = hs.edge.length ? [...M(hs.outer), ...jag(M(hs.edge), 1.3 * k)] : jag(M(hs.outer), 1.1 * k);
   const sheen: Poly = [];
   for (let a = -168; a <= -42; a += 9) {
     const t = (a * Math.PI) / 180;
@@ -352,22 +525,22 @@ export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF:
     jawShadow: M(JAW_SHADOW),
     scm: lens(F(-36, 50), add(collarF, mul(fwd, -14)), 24 * k, 3 * facing),
     hair,
-    clumps: CLUMPS.map(([a, b, w, bow]) => lens(F(a[0], a[1]), F(b[0], b[1]), w * k, bow * k * facing)),
+    clumps: hs.clumps.map(([a, b, w, bow]) => lens(F(a[0], a[1]), F(b[0], b[1]), w * k, bow * k * facing)),
     sheen,
     ear: E(EAR),
     earRim: E(EAR_RIM),
     earFold: E(EAR_FOLD),
     earBowl: E(EAR_BOWL),
-    brow: M(BROW),
+    brow: M(fine ? BROW_FINE : BROW),
     eye: M(EYE),
-    iris: M(IRIS),
-    lid: M(LID),
+    iris: M(style.face === 'drummer' ? IRIS : IRIS_OPEN),
+    lid: M(style.face === 'drummer' ? LID : LID_OPEN),
     lidCrease: M(LID_CREASE),
     socket: { c: F(66, -13), rx: 18 * k, ry: 9 * k, rot: (facing * nod * Math.PI) / 180 },
-    noseSide: M(NOSE_SIDE),
-    ala: M(ALA),
-    alaCrease: M(ALA_CREASE),
-    nostril: M(NOSTRIL),
+    noseSide: M(nose(NOSE_SIDE)),
+    ala: M(nose(ALA)),
+    alaCrease: M(nose(ALA_CREASE)),
+    nostril: M(nose(NOSTRIL)),
     nasolabial: M(NASOLABIAL),
     lips: M(LIPS),
     mouth: M(MOUTH),
@@ -375,17 +548,19 @@ export function headPlan(c: Pt, r: number, facing: 1 | -1, nod: number, collarF:
     cheekShade: { c: F(46, 30), rx: 20 * k, ry: 10 * k, rot: 0.15 * facing },
     lights: [
       { c: F(74, -58), rx: 9 * k, ry: 16 * k, rot: 0.2 * facing },
-      { c: F(95, 6), rx: 3 * k, ry: 9.5 * k, rot: -0.45 * facing },
+      { c: F(fine ? 93.5 : 95, 6), rx: 3 * k, ry: 9.5 * k, rot: -0.45 * facing },
       { c: F(42, 3), rx: 15 * k, ry: 6 * k, rot: -0.15 * facing },
       { c: F(85, 90), rx: 4.5 * k, ry: 6.5 * k, rot: 0 },
       { c: F(84, -33), rx: 6 * k, ry: 3 * k, rot: 0 },
     ],
-    noseTip: F(111, 33),
+    noseTip: fine ? F(84 + 27 * 0.84, 33) : F(111, 33),
     chin: F(88, 92),
     back: F(-110, -24),
     eyeC: F(63, -8.5),
     frontShade: { a: F(102, 0), b: F(62, 0) },
+    // (the head's light is anchored on the skull and a short crop, whatever the hair)
     box: boundsOf([...skull, ...M(HAIR_OUTER)]),
+    earShows: hs.earShows,
   };
 }
 
@@ -418,7 +593,9 @@ type FarRoot = { shirt: Poly; back: Poly; facing: number };
 /** How far inside the back's outline the far sleeve's edge stays (mm). */
 const FAR_MARGIN = 9;
 
-export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null, tilt = 0, farRoot: FarRoot | null = null, trimSleeve = false): ArmPlan {
+export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | null, away: boolean, placed: PlacedHand | null = null, tilt = 0, farRoot: FarRoot | null = null, trimSleeve = false, build: { one?: boolean; elbowShift?: Pt; k?: number; fore?: number } = {}): ArmPlan {
+  // (wave 3: a relaxed arm's slight bend — the drawn elbow a little back; the wrist does not move)
+  if (build.elbowShift) elbow = add(elbow, build.elbowShift);
   const poseElbow = elbow;
   // THE FOREARM'S CENTRE LINE. A visible join (the forearm across the view):
   // its last stretch turns toward the drawn hand in two even steps, so elbow →
@@ -436,7 +613,8 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
     const ca = Math.atan2(chord.v, chord.u);
     const W = [0.34, 0.28, 0.22, 0.16];
     const endOf = (a: number) => {
-      const step = (h - a) / 4;
+      // (the turn the short way round: a hand pointing back along −u must not make the sleeve loop)
+      const step = Math.atan2(Math.sin(h - a), Math.cos(h - a)) / 4;
       let q = P(0, 0);
       W.forEach((w, i) => {
         const t = a + step * i;
@@ -456,7 +634,7 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
       }
     }
     const scale = Math.hypot(chord.u, chord.v) / Math.hypot(endOf(best).u, endOf(best).v);
-    const step = (h - best) / 4;
+    const step = Math.atan2(Math.sin(h - best), Math.cos(h - best)) / 4;
     line = [elbow];
     let q = elbow;
     W.forEach((w, i) => {
@@ -554,7 +732,20 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
   const sleevePts = line.length > 2 && (!trimSleeve || beforeCuff.length) ? [line[0], ...beforeCuff, cuffA] : [elbow, lerp(elbow, cuffA, 0.5), cuffA];
   const sleeveR = sleevePts.map((_, i) => SLEEVE_R.elbow - 0.5 - ((SLEEVE_R.elbow - 0.5 - SLEEVE_R.cuffIn) * i) / (sleevePts.length - 1));
   // Away: the sleeve's far end IS the cuff, seen end-on — a rounded end round the wrist.
-  const foreSleeve = limbOutline(sleevePts, sleeveR, { capEnd: false });
+  let foreSleeve = limbOutline(sleevePts, sleeveR, { capEnd: false });
+  if (build.one) {
+    // ONE SLEEVE from the shoulder to the cuff: the deltoid's swell, the bicep, a
+    // soft elbow, the forearm narrowing to the cuff — one outline, no step.
+    const k = build.k ?? 1;
+    const kf = build.fore ?? 1;
+    const root = farRoot ? add(shoulder, mul(P(farRoot.facing >= 0 ? 1 : -1, 0), farShift)) : top;
+    const mid = sleevePts.slice(1, -1);
+    const eR = SLEEVE_R.elbow * kf;
+    const pts = [root, lerp(root, elbow, 0.36), lerp(root, elbow, 0.74), elbow, ...mid, cuffA];
+    const rs = [farRoot ? 30 : SLEEVE_R.top * k, farRoot ? SLEEVE_R.bicep - 3 : SLEEVE_R.delt * k, (SLEEVE_R.bicep * (k + kf)) / 2, eR, ...mid.map((_, i) => eR - ((eR - SLEEVE_R.cuffIn) * (i + 1)) / (mid.length + 1)), SLEEVE_R.cuffIn];
+    upper = limbOutline(pts, rs, { capEnd: false });
+    foreSleeve = upper;
+  }
   // (a short cylinder of cloth, a little wider than the sleeve it finishes — its
   // end cut square with a slight roll, never a dome; its rim is drawn as an edge)
   let cuffEdge: Poly | null = null;
@@ -642,6 +833,7 @@ export function armPlan(shoulder: Pt, elbow: Pt, wrist: Pt, hold: StickHold | nu
     hold,
     placed,
     away,
+    ...(build.one ? { one: true } : {}),
   };
 }
 
@@ -709,10 +901,12 @@ function shoePlan(sole: Sole, facing: 1 | -1): ShoePlan {
   };
 }
 
-const THIGH_R = { hip: 84, mid: 74, knee: 58 } as const;
-const SHIN_R = { calf: 52, low: 46, ankle: 41 } as const;
+const THIGH_R0 = { hip: 84, mid: 74, knee: 58 } as const;
+const SHIN_R0 = { calf: 52, low: 46, ankle: 41 } as const;
 
-function legPlan(hip: Pt, knee: Pt, shoe: ShoePlan): LegPlan {
+function legPlan(hip: Pt, knee: Pt, shoe: ShoePlan, LR: { hip: number; mid: number; knee: number; calf: number; low: number; ankle: number } = { ...THIGH_R0, ...SHIN_R0 }): LegPlan {
+  const THIGH_R = { hip: LR.hip, mid: LR.mid, knee: LR.knee };
+  const SHIN_R = { calf: LR.calf, low: LR.low, ankle: LR.ankle };
   const ankle = shoe.ankle;
   const ds = unit(sub(ankle, knee));
   const nS = perp(ds);
@@ -766,6 +960,56 @@ function legPlan(hip: Pt, knee: Pt, shoe: ShoePlan): LegPlan {
 
 /* ── the whole figure ── */
 
+/* ── a cast member's body (wave 3 of D78): depth, the back's S, the seat into the thigh ── */
+
+type Along = (t: number, fwd: number) => Pt;
+
+/** The shirt on a body in depth (t along hip → neck, fwd toward the face, mm):
+ *  the chest deeper than the waist, the upper back gently convex, the small of
+ *  the back hollow; tucked into the belt, or hanging loose over the hips. */
+function bodyShirt(along: Along, B: BodyBuild): { shirt: Poly; back: Poly; placket: Poly | null } {
+  const c = B.chest;
+  const w = B.waist;
+  const h = B.hip;
+  const bk = B.back;
+  const bu = B.bust ?? 0;
+  const lower: [number, number][] = B.tucked ? [[0.18, 106 * h], [0.1, 107 * h]] : [[0.18, 108 * h], [0.06, 111 * h], [-0.05, 113 * h], [-0.12, 113 * h]];
+  // (owner 2026-11-23: "make the men's chest a little thinner"): the front a FLAT, gentle slope from
+  // the collarbone to the belt — no rounded bulge at chest height; a woman's chest line only a slight,
+  // low, soft slope under the loose shirt (`bust`), never a rounded shape. Build shows in the back.
+  const front: [number, number][] = [[0.965, 60], [0.92, 90], [0.84, 104 * c], [0.74, 109 * c + bu * 0.5], [0.65, 110 * c + bu], [0.56, 109 * w + bu * 0.5], [0.46, 106 * w], [0.36, 104 * w], [0.28, 104 * w], ...lower];
+  // (untucked, round 3: the shirt hangs nearly straight from the back to the hem — it does not follow the
+  // small of the back in, nor flare out like a skirt; a fuller hip moves it only a little)
+  const hb = 1 + (h - 1) * 0.2;
+  const seatBack: [number, number][] = B.tucked ? [[0.1, -114 * h], [0.2, -101 * h], [0.3, -93 * w]] : [[-0.13, -121 * hb], [-0.04, -120 * hb], [0.08, -115 * hb], [0.2, -106 * hb], [0.3, -101 * hb]];
+  const backPts: [number, number][] = [...seatBack, [0.42, -98 * bk], [0.56, -110 * bk], [0.69, -119 * bk], [0.81, -119 * bk], [0.91, -106 * bk], [0.99, -86], [1.05, -62], [1.09, -42]];
+  const F = front.map(([t, f]) => along(t, f));
+  const Bk = backPts.map(([t, f]) => along(t, f));
+  // (untucked: the hem across the hips, a slight curve)
+  const hem = B.tucked ? [] : [along(-0.15, 40), along(-0.155, -40)];
+  return {
+    shirt: [...F, ...hem, ...Bk],
+    back: Bk,
+    placket: B.collar === 'shirt' ? front.filter(([t]) => t <= 0.9).map(([t, f]) => along(t, f - 9)) : null,
+  };
+}
+
+/** A shirt collar in profile: the band standing round the neck, higher behind,
+ *  its point lying on the chest in front. */
+function shirtCollar(along: Along): Poly {
+  return [along(0.97, 64), along(1.035, 38), along(1.09, 0), along(1.135, -36), along(1.095, -48), along(1.045, -24), along(1.0, 8), along(0.955, 40), along(0.88, 76), along(0.885, 90), along(0.94, 80)];
+}
+
+/** The seat (the pelvis and the buttocks), its back running from the small of the
+ *  back over the seat into the back of the thigh — one line, no lobe. */
+function bodySeat(along: Along, B: BodyBuild): Poly {
+  const h = B.hip;
+  // (its top tucked well inside the shirt and belt: a smoothed corner must never show past the shirt)
+  // (under an untucked shirt the seat's line is quieter: it stays inside the straight-hanging hem)
+  const q = B.tucked ? 1 : 0.955;
+  return [along(0.1, 2), along(0.1, 94 * h), along(0.04, 98 * h), along(-0.08, 96 * h), along(-0.2, 82 * h), along(-0.3, 30), along(-0.34, -60), along(-0.28, -94 * h * q), along(-0.18, -113 * h * q), along(-0.07, -119 * h * q), along(0.03, -112 * h * q), along(0.1, -100 * h * q)];
+}
+
 const planCache = new WeakMap<PlayerPose, Map<string, SidePlan>>();
 
 /** The side-view figure's plan for a pose (memoised per pose and options). */
@@ -775,7 +1019,7 @@ export function sidePlan(pose: PlayerPose, opts: SideOpts = {}): SidePlan {
     byOpts = new Map();
     planCache.set(pose, byOpts);
   }
-  const key = JSON.stringify({ r: opts.holdR?.wrist ?? null, l: opts.holdL?.wrist ?? null, sr: opts.soleR ?? null, sl: opts.soleL ?? null, n: opts.nod ?? 0, s: opts.seatV ?? null, a: [!!opts.awayR, !!opts.awayL], t: [opts.tiltR ?? 0, opts.tiltL ?? 0], fb: opts.farBehind !== false });
+  const key = JSON.stringify({ r: opts.holdR?.wrist ?? null, l: opts.holdL?.wrist ?? null, sr: opts.soleR ?? null, sl: opts.soleL ?? null, n: opts.nod ?? 0, s: opts.seatV ?? null, a: [!!opts.awayR, !!opts.awayL], t: [opts.tiltR ?? 0, opts.tiltL ?? 0], fb: opts.farBehind !== false, ...(opts.head ? { hd: opts.head } : {}), ...(opts.lip ? { lp: opts.lip } : {}), ...(opts.restR ? { rr: opts.restR } : {}), ...(opts.restL ? { rl: opts.restL } : {}), ...(opts.body ? { b: opts.body } : {}) });
   const hit = byOpts.get(key);
   if (hit) return hit;
   const plan = buildPlan(pose, opts);
@@ -801,12 +1045,16 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   // THE SHIRT on the torso (a healthy adult's upright back: the nape, the
   // shoulder blade's shallow curve, the lumbar hollow; the chest, the ribs,
   // a seated belly), tucked in at the belt.
-  const shirt: Poly = [
+  // (a seated cast member: the shirt tucked — a hem would hang into the chair — and the seated seat below)
+  const B0 = opts.body;
+  const B = B0 && pose.posture !== 'standing' && !B0.tucked ? { ...B0, tucked: true } : B0;
+  const bodyS = B ? bodyShirt(along, B) : null;
+  const shirt: Poly = bodyS ? bodyS.shirt : [
     along(0.965, 60), along(0.92, 92), along(0.84, 110), along(0.7, 116), along(0.55, 110), along(0.4, 104), along(0.27, 104), along(0.16, 108), along(0.1, 106),
     along(0.1, -112), along(0.2, -100), along(0.32, -94), along(0.48, -100), along(0.66, -106), along(0.82, -100), along(0.95, -84), along(1.04, -62), along(1.09, -42),
   ];
   // The crew collar: a ribbed band round the base of the neck (≈ 18 mm), low in front, high behind.
-  const collar: Poly = [along(0.965, 62), along(1.0, 30), along(1.045, -6), along(1.09, -32), along(1.058, -40), along(1.01, -14), along(0.97, 22), along(0.93, 58)];
+  const collar: Poly = B && B.collar === 'shirt' ? shirtCollar(along) : [along(0.965, 62), along(1.0, 30), along(1.045, -6), along(1.09, -32), along(1.058, -40), along(1.01, -14), along(0.97, 22), along(0.93, 58)];
   // THE BELT wraps the waist (owner 2026-11-23: "fix perfectly straight
   // horizontal belt"): seen from the side and a little from above it is part
   // of an ellipse round the body — its edges bow down at the side, nearest the
@@ -827,23 +1075,37 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   const blouseLip = fs.map((f, i) => along(bt(f, 0.138 + (i % 2 === 0 ? 0.004 : -0.002)), f)).reverse();
   const blouse: Poly = [...blouseTop, ...blouseLip];
   // Cloth gathered over the belt where the seated body folds at the waist.
-  const waistFolds: Poly[] = [lens(along(0.2, 104), along(0.25, 40), 7, -4), lens(along(0.165, 98), along(0.215, 18), 6, -3), lens(along(0.2, -96), along(0.27, -40), 6, 3)];
+  const waistFolds: Poly[] = B && !B.tucked ? [] : [lens(along(0.2, 104), along(0.25, 40), 7, -4), lens(along(0.165, 98), along(0.215, 18), 6, -3), lens(along(0.2, -96), along(0.27, -40), 6, 3)];
   // The seat of the trousers (the pelvis), joined to the near thigh.
-  const seat: Poly = [along(0.14, 104), along(0.04, 102), along(-0.08, 92), along(-0.16, 40), along(-0.16, -40), along(-0.08, -108), along(0.04, -116), along(0.14, -114)];
+  const seat: Poly = B && pose.posture === 'standing' ? bodySeat(along, B) : [along(0.14, 104), along(0.04, 102), along(-0.08, 92), along(-0.16, 40), along(-0.16, -40), along(-0.08, -108), along(0.04, -116), along(0.14, -114)];
   const view: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
-  const pR = placedOf(opts.holdR, pose.elbowR);
-  const pL = placedOf(opts.holdL, pose.elbowL);
+  // (a hand holding nothing: thumb forward at the side; palm down on a desk)
+  const rest = (v: 'restSide' | 'restFlat' | undefined, h: PlayerPose['handR']): PlacedHand | null => (v ? placeRest(v, h.wrist, h.dir, v === 'restSide' ? P(facing, 0) : P(0, 1)) : null);
+  const pR = placedOf(opts.holdR, pose.elbowR) ?? rest(opts.restR, pose.handR);
+  const pL = placedOf(opts.holdL, pose.elbowL) ?? rest(opts.restL, pose.handL);
   // The sleeve runs to the drawn hand's wrist; a forearm running away from the
   // viewer runs to the pose's own wrist (the hand beyond it is drawn behind).
   const wristOf = (pl: PlacedHand | null, h: StickHold | null | undefined, away: boolean, w: Pt) => (pl ? (away && h ? P(h.poseWrist.x, h.poseWrist.y) : pl.wrist) : w);
-  const near = armPlan(pose.shoulderR, pose.elbowR, wristOf(pR, opts.holdR, !!opts.awayR, pose.handR.wrist), opts.holdR ?? null, !!opts.awayR, pR, opts.tiltR ?? 0);
-  const far = armPlan(pose.shoulderL, pose.elbowL, wristOf(pL, opts.holdL, !!opts.awayL, pose.handL.wrist), opts.holdL ?? null, !!opts.awayL, pL, opts.tiltL ?? 0, opts.farBehind === false ? null : { shirt, back: shirt.slice(9), facing });
+  // (a standing cast member: the relaxed bend at the elbow, one sleeve)
+  const standingB = !!B && pose.posture === 'standing';
+  const armB = B ? { one: true, k: B.shoulder, fore: B.limb, ...(standingB ? { elbowShift: P(-28 * facing, 0) } : {}) } : {};
+  const near = armPlan(pose.shoulderR, pose.elbowR, wristOf(pR, opts.holdR, !!opts.awayR, pose.handR.wrist), opts.holdR ?? null, !!opts.awayR, pR, opts.tiltR ?? 0, null, false, armB);
+  const far = armPlan(pose.shoulderL, pose.elbowL, wristOf(pL, opts.holdL, !!opts.awayL, pose.handL.wrist), opts.holdL ?? null, !!opts.awayL, pL, opts.tiltL ?? 0, opts.farBehind === false ? null : { shirt, back: bodyS ? bodyS.back : shirt.slice(9), facing }, false, armB);
   const flat = (foot: Pt): Sole => ({ ball: foot, slope: 0 });
   const shoeN = shoePlan(opts.soleR ?? flat(pose.footR), facing);
-  const shoeF = shoePlan(opts.soleL ?? flat(pose.footL), facing);
-  const legN = legPlan(pose.hipR, pose.kneeR, shoeN);
-  const legF = legPlan(pose.hipL, pose.kneeL, shoeF);
-  const head = headPlan(pose.head.c, pose.head.r, facing, opts.nod ?? 0, along(0.955, 54), along(1.075, -38));
+  // (a standing cast member: the far foot set a little behind the near one, so both legs show)
+  const step = standingB ? -95 * facing : 0;
+  const footL = step ? P(pose.footL.u + step, pose.footL.v) : pose.footL;
+  const kneeL = step ? P(pose.kneeL.u + step * 0.42, pose.kneeL.v) : pose.kneeL;
+  const shoeF = shoePlan(opts.soleL ?? flat(footL), facing);
+  const LR = B ? { hip: 90 * B.hip, mid: 80 * B.limb, knee: 60 * B.limb, calf: 56 * B.limb, low: 47 * B.limb, ankle: 41 } : undefined;
+  const legN = legPlan(pose.hipR, pose.kneeR, shoeN, LR);
+  const legF = legPlan(pose.hipL, kneeL, shoeF, LR);
+  // (a straight standing leg: the knee cap's light a soft narrow strip on the front of the knee, not a spot)
+  if (standingB && LR) {
+    for (const l of [legN, legF]) l.kneeLight = { c: add(l.knee, P(facing * LR.knee * 0.62, 0)), rx: 6, ry: 26, rot: 0 };
+  }
+  const head = headPlan(pose.head.c, pose.head.r, facing, opts.nod ?? 0, along(0.955, 54), along(1.075, -38), opts.head, opts.lip);
   const seatShadow = opts.seatV !== undefined && pose.posture !== 'standing' ? { c: P(lerp(hip, pose.kneeR, 0.18).u, opts.seatV + 4), rx: 200, ry: 16, rot: 0 } : null;
-  return { facing, head, shirt, collar, belt, beltTop, beltLoop, buckle, blouse, waistFolds, seat, arms: { near, far }, legs: { near: legN, far: legF }, shoes: { near: shoeN, far: shoeF }, seatShadow, hip, neck: n, along, view };
+  return { facing, head, shirt, collar, belt, beltTop, beltLoop, buckle, blouse, waistFolds, seat, arms: { near, far }, legs: { near: legN, far: legF }, shoes: { near: shoeN, far: shoeF }, seatShadow, hip, neck: n, along, view, ...(B ? { dress: { tucked: B.tucked, collar: B.collar, placket: bodyS!.placket } } : {}) };
 }

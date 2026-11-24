@@ -5,21 +5,25 @@
  * the rapper's words; the "before any mic" step.
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { makeVoiceInstrument, voiceFigureAt, voiceHitTest, voiceLabelObstacles, voiceLabels, type VoiceArtOpts } from '../shared/voice/VoiceArt';
+import { makeVoiceInstrument, voiceFigureAtFor, voiceHitTest, voiceLabelObstacles, voiceLabels, type VoiceArtOpts } from '../shared/voice/VoiceArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
 import { VOICE_HEARING, makeVoiceSetting, makeVoiceSound } from '../shared/voice/VoicePages';
 import { E03_ZONES } from './model.ts';
 
-const OPTS: VoiceArtOpts = { phones: ['studio'], workZone: ['studio'] };
+// (figure V2, wave 3a: the singer in the new look in every picture of this lesson)
+const V2 = figureV2On('sideStanding');
+const OPTS: VoiceArtOpts = { v2: V2, phones: ['studio'], workZone: ['studio'] };
 
 export const E03_ART: LessonArt = {
   Instrument: makeVoiceInstrument(OPTS),
   labels: (view, variant) => voiceLabels(view, variant, OPTS),
   hitTest: (view, variant, u, v, tol) => voiceHitTest(view, variant, u, v, tol, OPTS),
-  figureAt: voiceFigureAt,
+  figureAt: voiceFigureAtFor(OPTS),
   labelObstacles: voiceLabelObstacles(E03_ZONES),
   labelsYieldToMic: true,
   pages: {
     sound: makeVoiceSound({
+      v2: V2,
       where: ['THE LUNGS', 'THE THROAT', 'TONGUE · TEETH · LIPS', 'THE MOUTH'],
       air: {
         vowel: { title: 'A vowel: sound only', text: 'An open vowel sends sound out of the mouth and around the front of the performer — no jet of air worth the name. The voice’s highs favor the front.' },

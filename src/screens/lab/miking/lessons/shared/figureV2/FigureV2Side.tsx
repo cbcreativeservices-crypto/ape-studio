@@ -25,6 +25,7 @@ import { BELT, HEAD_SKIN, LIP, MAT, SOLE } from './palette.ts';
 import { AuthoredHand, Folds, Form, HandV2, Soft, across } from './paint';
 import { sidePaths, type ArmPaths, type ShoePaths, type SidePaths, type SkPath } from './paths.ts';
 import type { ArmPlan, SidePlan } from './sidePlan.ts';
+import { useLook } from './look';
 
 /** The far side's value step: clothing a step down, skin only a small step
  *  (the two hands are one person's: test/figureV2Example_20261122). */
@@ -42,6 +43,7 @@ export type Torso = { axis: [Pt, Pt]; box: { x: number; y: number; width: number
 
 /** The shirt's own light (the torso's form gradient and its fall-off) on any path. */
 export function ShirtLight({ path, t }: { path: SkPath; t: Torso }) {
+  const { MAT, CLOTH } = useLook();
   const [s, e] = across(t.axis[0], t.axis[1], 120);
   const b = t.box;
   return (
@@ -64,6 +66,7 @@ export function ShirtLight({ path, t }: { path: SkPath; t: Torso }) {
  * shirt's silhouette it has no outline — only the set-in seam, soft.
  */
 function UpperSleeve({ a, P, t }: { a: ArmPlan; P: ArmPaths; t: Torso }) {
+  const { MAT } = useLook();
   const f0 = lerp(a.shoulder, a.elbow, 0.08);
   const f1 = lerp(a.shoulder, a.elbow, 0.55);
   return (
@@ -96,7 +99,38 @@ function UpperSleeve({ a, P, t }: { a: ArmPlan; P: ArmPaths; t: Torso }) {
 }
 
 /** The forearm in its sleeve (the cuff is painted on the far and near sides of the wrist: CuffFar, CuffNear). */
-function Forearm({ a, P }: { a: ArmPlan; P: ArmPaths }) {
+function Forearm({ a, P, t }: { a: ArmPlan; P: ArmPaths; t?: Torso }) {
+  const { MAT } = useLook();
+  if (a.one) {
+    // ONE SLEEVE (wave 3): the forearm's own light fades in below the elbow over the
+    // same outline — no step, no seam; the outline again where it is the silhouette.
+    const e0 = lerp(a.elbow, a.shoulder, 0.12);
+    const e1 = lerp(a.elbow, a.wrist, 0.3);
+    return (
+      <Group>
+        <Mask
+          mode="alpha"
+          mask={
+            <Path path={P.foreSleeve}>
+              <LinearGradient start={vec(e0.u, e0.v)} end={vec(e1.u, e1.v)} colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']} />
+            </Path>
+          }
+        >
+          <Form path={P.foreSleeve} mat={MAT.shirt} axis={a.foreAxis} w={38} rim={5} edge={0} />
+        </Mask>
+        <Group clip={P.foreSleeve}>
+          <Folds path={P.folds} mat={MAT.shirt} opacity={0.5} />
+        </Group>
+        {t ? (
+          <Group clip={t.body} invertClip>
+            <Path path={P.foreSleeve} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.5} />
+          </Group>
+        ) : (
+          <Path path={P.foreSleeve} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.5} />
+        )}
+      </Group>
+    );
+  }
   return (
     <Group>
       {/* (an authored hand paints the wrist itself, in its own skin and light) */}
@@ -123,6 +157,7 @@ function Forearm({ a, P }: { a: ArmPlan; P: ArmPaths }) {
  * next, over both.
  */
 function CuffFar({ a, P }: { a: ArmPlan; P: ArmPaths }) {
+  const { MAT } = useLook();
   if (!P.toViewer || !P.rimFar) return null;
   const { e, out } = a.opening;
   const near = { u: e.c.u - out.u * e.rx, v: e.c.v - out.v * e.rx };
@@ -149,6 +184,7 @@ function CuffFar({ a, P }: { a: ArmPlan; P: ArmPaths }) {
  * sleeve's mouth — its near edge wrapping round the fist's root.
  */
 function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
+  const { MAT } = useLook();
   const out = a.opening.out;
   const skin = P.art ? P.art.all : P.wristSkin;
   if (a.mouth)
@@ -194,6 +230,7 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
 }
 
 export function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Torso; stick?: ReactNode; cloth?: ReactNode; skin?: ReactNode }) {
+  const { MAT, CLOTH } = useLook();
   const upper = (
     <Group layer={cloth as never}>
       <UpperSleeve a={a} P={P} t={t} />
@@ -201,7 +238,7 @@ export function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; 
   );
   const fore = (
     <Group layer={cloth as never}>
-      <Forearm a={a} P={P} />
+      <Forearm a={a} P={P} t={t} />
     </Group>
   );
   const cuffFar = (
@@ -283,6 +320,7 @@ export const CLOTH = { ...MAT.trousers, form: [MAT.trousers.form[1], '#474b53', 
 
 /** The shin's own cylinder light (a soft blend at the knee). */
 function Shin({ path, axis }: { path: SkPath; axis: [Pt, Pt] }) {
+  const { CLOTH } = useLook();
   const [s0, e0] = across(axis[0], axis[1], 50);
   return (
     <Path path={path}>
@@ -293,6 +331,7 @@ function Shin({ path, axis }: { path: SkPath; axis: [Pt, Pt] }) {
 }
 
 function Leg({ path, shin, knee, folds, l, shoe }: { path: SkPath; shin: SkPath; knee: SkPath; folds: SkPath; l: SidePlan['legs']['near']; shoe: SkPath }) {
+  const { MAT, CLOTH } = useLook();
   return (
     <Group>
       {/* ONE GARMENT (owner 2026-11-23: "pant leg also need similar shading like the rest of the pants
@@ -318,6 +357,7 @@ function Leg({ path, shin, knee, folds, l, shoe }: { path: SkPath; shin: SkPath;
 }
 
 function Shoe({ s }: { s: ShoePaths }) {
+  const { MAT } = useLook();
   const b = s.upper.getBounds();
   return (
     <Group>
@@ -340,15 +380,13 @@ function Shoe({ s }: { s: ShoePaths }) {
   );
 }
 
-function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
+function Head({ plan, P, show = 'all' }: { plan: SidePlan; P: SidePaths; show?: 'all' | 'neck' | 'head' }) {
+  const { MAT, HEAD_SKIN, LIP } = useLook();
   const h = plan.head;
   const c = lerp({ u: h.box.u0, v: h.box.v0 }, { u: h.box.u1, v: h.box.v1 }, 0.5);
   const R = (h.box.u1 - h.box.u0) / 2;
-  return (
-    <Group>
-      {/* THE NECK: a column, the sternomastoid's form, the jaw's cast shadow, darker into the collar */}
-      {/* (the head's own round light, so neck and head meet without a seam; the neck a little in the head's shadow) */}
-      <Form path={P.neck} mat={HEAD_SKIN} round={{ c, r: R }} rim={4} edge={0.8}>
+  const neck = (
+    <Form path={P.neck} mat={HEAD_SKIN} round={{ c, r: R }} rim={4} edge={0.8}>
         <Soft path={P.scm} color={MAT.skin.rim} opacity={0.14} blur={4} />
         {/* (half strength, softer edges — owner: "lighten" — the jaw separates from the neck, no streak) */}
         <Path path={P.jawShadow} color={MAT.skin.deep} opacity={0.25}>
@@ -356,6 +394,14 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
         </Path>
         <Soft path={P.neckOcclusion} color={MAT.skin.deep} opacity={0.45} blur={4} />
       </Form>
+  );
+  // (wave 3: a step that turns the head draws the body with its neck ('neck') and the head turned on its own ('head'))
+  if (show === 'neck') return <Group>{neck}</Group>;
+  return (
+    <Group>
+      {/* THE NECK: a column, the sternomastoid's form, the jaw's cast shadow, darker into the collar */}
+      {/* (the head's own round light, so neck and head meet without a seam; the neck a little in the head's shadow) */}
+      {show !== 'head' ? neck : null}
       {/* THE HEAD */}
       <Form path={P.skull} mat={HEAD_SKIN} round={{ c, r: R }} rim={5} edge={0}>
         {/* the front of the face turns away from the light */}
@@ -412,6 +458,7 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
           <Blur mm={4} />
         </Path>
       </Group>
+      {h.earShows ? (
       <Form path={P.ear} mat={HEAD_SKIN} round={{ c, r: R }} rim={3} edge={0.7}>
         <Path path={P.ear} color={MAT.skin.deep} opacity={0.12} />
         <Path path={P.earBowl} color={MAT.skin.deep} opacity={0.5}>
@@ -422,6 +469,7 @@ function Head({ plan, P }: { plan: SidePlan; P: SidePaths }) {
           <Blur mm={1} />
         </Path>
       </Form>
+      ) : null}
     </Group>
   );
 }
@@ -431,11 +479,16 @@ export type FigureV2SideProps = {
   /** The far hand's stick (drawn between its fingers behind and in front). */
   farStick?: ReactNode;
   nearStick?: ReactNode;
+  /** (wave 3) 'headless': the body and its neck (a step draws the head turned); 'head': the head alone. */
+  part?: 'all' | 'headless' | 'head';
 };
 
 /** The whole person in profile, far to near. */
-export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
+export function FigureV2Side({ plan, farStick, nearStick, part = 'all' }: FigureV2SideProps) {
+  const { MAT } = useLook();
   const P = sidePaths(plan);
+  // (wave 3: the head alone, turned by a step; or the body with only its neck)
+  if (part === 'head') return <Head plan={plan} P={P} show="head" />;
   const L = plan.legs;
   const sb = P.shirt.getBounds();
   const torso: Torso = { axis: [plan.hip, plan.neck], box: { x: sb.x, y: sb.y, width: sb.width, height: sb.height }, body: P.shirt };
@@ -459,7 +512,7 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
         : null}
       <Shoe s={P.shoeNear} />
       <Leg path={P.trousersNear} shin={P.shinNear} knee={P.kneeNear} folds={P.legFoldsNear} l={L.near} shoe={P.shoeNear.upper} />
-      <Head plan={plan} P={P} />
+      <Head plan={plan} P={P} show={part === 'headless' ? 'neck' : 'all'} />
       <Group>
         <ShirtLight path={P.shirt} t={torso} />
         <Group clip={P.shirt}>
@@ -471,6 +524,8 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
       </Group>
       {/* THE BELT: a band round the waist in the body's own light (its top lit, its
           lower edge turning away, darker where it rounds away at front and back) */}
+      {plan.dress?.tucked === false ? null : (
+      <Group>
       <Path path={P.belt}>
         <LinearGradient start={vec(P.belt.getBounds().x, P.belt.getBounds().y)} end={vec(P.belt.getBounds().x, P.belt.getBounds().y + P.belt.getBounds().height)} colors={['#5a4334', '#33251c', '#1a120d']} />
       </Path>
@@ -500,6 +555,10 @@ export function FigureV2Side({ plan, farStick, nearStick }: FigureV2SideProps) {
       <Group clip={P.blouse}>
         <Folds path={P.waistFolds} mat={MAT.shirt} opacity={0.5} />
       </Group>
+      </Group>
+      )}
+      {/* (a shirt with a collar: its button placket down the front, a soft seam) */}
+      {P.placket ? <Path path={P.placket} style="stroke" strokeWidth={1.2} strokeCap="round" color={MAT.shirt.deep} opacity={0.4} /> : null}
       <Form path={P.collar} mat={MAT.shirt} axis={torso.axis} w={70} rim={0} edge={0.9}>
         {/* the rib's rolled top edge */}
         <Group transform={[{ translateX: LIGHT.u * 3 }, { translateY: LIGHT.v * 3 }]}>

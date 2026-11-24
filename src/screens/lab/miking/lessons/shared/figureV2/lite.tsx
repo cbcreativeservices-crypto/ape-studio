@@ -18,6 +18,7 @@ import type { ArmPlan, SidePlan } from './sidePlan.ts';
 import type { TopPaths } from './FigureV2Top';
 import type { TopPlan } from './topPlan.ts';
 import { CLOTH } from './FigureV2Side';
+import { useLook } from './look';
 
 /** A mass in its material, turned across its axis (one gradient). */
 function M({ path, mat, axis, w }: { path: SkPath; mat: Material; axis: [Pt, Pt]; w: number }) {
@@ -37,16 +38,16 @@ function Round({ path, mat, c, r }: { path: SkPath; mat: Material; c: Pt; r: num
   );
 }
 
-const SKIN_LIGHT = ['#cfb19b', MAT.skin.form[1], MAT.skin.form[2], '#7f5d4c'];
 
 /** The authored hand on its stick, each part one fill in the hand's one skin light. */
 function HandLite({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
+  const { MAT, HAND } = useLook();
   const b = a.all.getBounds();
   const m = { u: b.x + b.width / 2, v: b.y + b.height / 2 };
   const R = 56;
   const fill = (p: { path: SkPath }, i: number) => (
     <Path key={i} path={p.path}>
-      <LinearGradient start={vec(m.u - 0.32 * R, m.v - 0.95 * R)} end={vec(m.u + 0.32 * R, m.v + 0.95 * R)} colors={SKIN_LIGHT} positions={[0, 0.35, 0.75, 1]} />
+      <LinearGradient start={vec(m.u - 0.32 * R, m.v - 0.95 * R)} end={vec(m.u + 0.32 * R, m.v + 0.95 * R)} colors={HAND} positions={[0, 0.35, 0.75, 1]} />
     </Path>
   );
   const back = a.parts.filter((p) => p.layer === 'back');
@@ -69,6 +70,7 @@ function HandLite({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
       {back.map(fill)}
       {stick ?? null}
       {front.map(fill)}
+      {a.gaps ? <Path path={a.gaps} color={MAT.skin.deep} opacity={0.5} /> : null}
       {digitEdges}
       {edge}
     </Group>
@@ -77,6 +79,7 @@ function HandLite({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
 
 /** One arm in the side view's depth order (the far rim and inside, the wrist and hand, the near rim). */
 export function ArmLite({ a, P, stick }: { a: ArmPlan; P: ArmPaths; stick?: ReactNode }) {
+  const { MAT } = useLook();
   const upper = <M path={P.upper} mat={MAT.shirt} axis={a.upperAxis} w={46} />;
   const fore = (
     <Group>
@@ -130,6 +133,7 @@ const FAR = (
 );
 
 function ShoeLite({ s, axis }: { s: ShoePaths; axis: [Pt, Pt] }) {
+  const { MAT } = useLook();
   return (
     <Group>
       <M path={s.upper} mat={MAT.leather} axis={axis} w={40} />
@@ -139,11 +143,30 @@ function ShoeLite({ s, axis }: { s: ShoePaths; axis: [Pt, Pt] }) {
 }
 
 /** The side view, lite. */
-export function SideLite({ plan, P, farStick, nearStick }: { plan: SidePlan; P: SidePaths; farStick?: ReactNode; nearStick?: ReactNode }) {
+export function SideLite({ plan, P, farStick, nearStick, part = 'all', fullHead }: { plan: SidePlan; P: SidePaths; farStick?: ReactNode; nearStick?: ReactNode; part?: 'all' | 'headless' | 'head'; /** (wave 3) the head drawn in full detail in place of the lite head (a head ≥ 45 pt tall) */ fullHead?: ReactNode }) {
+  const { MAT, HEAD_SKIN, CLOTH, LIP } = useLook();
   const L = plan.legs;
   const h = plan.head;
   const c = { u: (h.box.u0 + h.box.u1) / 2, v: (h.box.v0 + h.box.v1) / 2 };
   const R = (h.box.u1 - h.box.u0) / 2;
+  // (wave 3: the head alone, turned by a step; or the body with only its neck)
+  const headOnly = (
+    <Group>
+      <Round path={P.skull} mat={HEAD_SKIN} c={c} r={R} />
+      <Path path={P.eye} color="#d6c8bd" opacity={0.62} />
+      <Path path={P.lid} color={MAT.hair.edge} opacity={0.82} />
+      <Path path={P.brow} color={MAT.hair.form[2]} opacity={0.78} />
+      <Path path={P.lips} color={LIP} opacity={0.42} />
+      {/* (a cast member: the lips in the full head's own tone — it lies in the face's turning shade) */}
+      {plan.dress ? <Path path={P.lips} color="#3a2016" opacity={0.2} /> : null}
+      <Path path={P.mouth} style="stroke" strokeWidth={1.5} strokeCap="round" color={MAT.skin.deep} opacity={0.7} />
+      <Path path={P.hair}>
+        <LinearGradient start={vec(c.u + LIGHT.u * R, c.v + LIGHT.v * R)} end={vec(c.u - LIGHT.u * R, c.v - LIGHT.v * R)} colors={[MAT.hair.form[1], MAT.hair.form[2], MAT.hair.form[3]]} />
+      </Path>
+      {h.earShows ? <Round path={P.ear} mat={HEAD_SKIN} c={c} r={R} /> : null}
+    </Group>
+  );
+  if (part === 'head') return fullHead ? <Group>{fullHead}</Group> : headOnly;
   const torsoAxis: [Pt, Pt] = [plan.hip, plan.neck];
   const shoeAxis = (s: SidePlan['shoes']['near']): [Pt, Pt] => [s.heel, s.toe];
   return (
@@ -159,22 +182,17 @@ export function SideLite({ plan, P, farStick, nearStick }: { plan: SidePlan; P: 
       <M path={P.trousersNear} mat={CLOTH} axis={L.near.thighAxis} w={70} />
       {/* the head */}
       <Round path={P.neck} mat={HEAD_SKIN} c={c} r={R} />
-      <Round path={P.skull} mat={HEAD_SKIN} c={c} r={R} />
-      <Path path={P.eye} color="#d6c8bd" opacity={0.62} />
-      <Path path={P.lid} color={MAT.hair.edge} opacity={0.82} />
-      <Path path={P.brow} color={MAT.hair.form[2]} opacity={0.78} />
-      <Path path={P.lips} color="#8e5a4c" opacity={0.42} />
-      <Path path={P.mouth} style="stroke" strokeWidth={1.5} strokeCap="round" color={MAT.skin.deep} opacity={0.7} />
-      <Path path={P.hair}>
-        <LinearGradient start={vec(c.u + LIGHT.u * R, c.v + LIGHT.v * R)} end={vec(c.u - LIGHT.u * R, c.v - LIGHT.v * R)} colors={[MAT.hair.form[1], MAT.hair.form[2], MAT.hair.form[3]]} />
-      </Path>
-      <Round path={P.ear} mat={HEAD_SKIN} c={c} r={R} />
+      {part === 'headless' ? null : fullHead ?? headOnly}
       {/* the shirt, belt and collar */}
       <M path={P.shirt} mat={MAT.shirt} axis={torsoAxis} w={120} />
       <Path path={P.shirt} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.5} />
-      <Path path={P.belt} color="#33251c" />
-      <Path path={P.buckle} color="#8b9099" />
-      <M path={P.blouse} mat={MAT.shirt} axis={torsoAxis} w={120} />
+      {plan.dress?.tucked === false ? null : (
+        <Group>
+          <Path path={P.belt} color="#33251c" />
+          <Path path={P.buckle} color="#8b9099" />
+          <M path={P.blouse} mat={MAT.shirt} axis={torsoAxis} w={120} />
+        </Group>
+      )}
       <M path={P.collar} mat={MAT.shirt} axis={torsoAxis} w={70} />
       <ArmLite a={plan.arms.near} P={P.near} stick={nearStick} />
     </Group>
@@ -182,7 +200,8 @@ export function SideLite({ plan, P, farStick, nearStick }: { plan: SidePlan; P: 
 }
 
 /** The view from above, lite: `legs` under the drums, `upper` over them. */
-export function TopLite({ plan, T, part, farStick, nearStick }: { plan: TopPlan; T: TopPaths; part: 'all' | 'legs' | 'upper'; farStick?: ReactNode; nearStick?: ReactNode }) {
+export function TopLite({ plan, T, part, farStick, nearStick, arms = true, head = true }: { plan: TopPlan; T: TopPaths; part: 'all' | 'legs' | 'upper'; farStick?: ReactNode; nearStick?: ReactNode; /** (wave 3) a standing person's arms hang under the shoulders: not drawn */ arms?: boolean; /** (wave 3) false: the head is drawn turned by a step */ head?: boolean }) {
+  const { MAT, HEAD_SKIN, CLOTH } = useLook();
   const hc = plan.head.c;
   return (
     <Group>
@@ -204,18 +223,22 @@ export function TopLite({ plan, T, part, farStick, nearStick }: { plan: TopPlan;
       ) : null}
       {part !== 'legs' ? (
         <Group>
-          <ArmLite a={plan.arms.far} P={T.far} stick={farStick} />
-          <ArmLite a={plan.arms.near} P={T.near} stick={nearStick} />
+          {arms ? <ArmLite a={plan.arms.far} P={T.far} stick={farStick} /> : null}
+          {arms ? <ArmLite a={plan.arms.near} P={T.near} stick={nearStick} /> : null}
           <M path={T.torso} mat={MAT.shirt} axis={plan.torsoAxis} w={120} />
           <Path path={T.torso} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.5} />
-          <Round path={T.skull} mat={HEAD_SKIN} c={hc} r={110} />
-          {T.ears.map((e, i) => (
-            <Path key={`e${i}`} path={e} style="stroke" strokeWidth={9} strokeCap="round" color={HEAD_SKIN.form[2]} />
-          ))}
-          <Round path={T.nose} mat={HEAD_SKIN} c={hc} r={110} />
-          <Path path={T.hair}>
-            <LinearGradient start={vec(hc.u + LIGHT.u * 110, hc.v + LIGHT.v * 110)} end={vec(hc.u - LIGHT.u * 110, hc.v - LIGHT.v * 110)} colors={[MAT.hair.form[1], MAT.hair.form[2], MAT.hair.form[3]]} />
-          </Path>
+          {head ? (
+            <Group>
+            <Round path={T.skull} mat={HEAD_SKIN} c={hc} r={110} />
+            {T.ears.map((e, i) => (
+              <Path key={`e${i}`} path={e} style="stroke" strokeWidth={9} strokeCap="round" color={HEAD_SKIN.form[2]} />
+            ))}
+            <Round path={T.nose} mat={HEAD_SKIN} c={hc} r={110} />
+            <Path path={T.hair}>
+              <LinearGradient start={vec(hc.u + LIGHT.u * 110, hc.v + LIGHT.v * 110)} end={vec(hc.u - LIGHT.u * 110, hc.v - LIGHT.v * 110)} colors={[MAT.hair.form[1], MAT.hair.form[2], MAT.hair.form[3]]} />
+            </Path>
+            </Group>
+          ) : null}
         </Group>
       ) : null}
     </Group>

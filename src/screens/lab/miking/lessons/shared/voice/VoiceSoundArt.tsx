@@ -26,6 +26,9 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { ViewBox } from '../../../engine/model/types.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { SINGER_SIDE } from './voicePose.ts';
+import { castFor, type CastMember } from '../figureV2/cast';
+import { PersonSideV2 } from '../figureV2/personV2';
+import { FigureScale } from '../figureV2/detail';
 import { FOLDS } from './VoiceArt';
 import { VoiceCutaway, type CutawayTint } from './VoiceCutaway';
 import { NOSE, VOICE_DIMS } from './voiceSpec.ts';
@@ -52,7 +55,10 @@ function Stage({ w, h, box, a11y, labels, children }: { w: number; h: number; bo
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-        <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>{children}</Group>
+        <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          {/* (figure V2: the level of detail from THIS picture's own scale) */}
+          <FigureScale ptPerMm={xf.s}>{children}</FigureScale>
+        </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />
     </View>
@@ -68,7 +74,7 @@ function arcs(cx: number, cy: number, radii: number[], spread: number): SkPath {
 
 export const SEQ_BOX: ViewBox = { u0: -345, u1: 330, v0: -200, v1: 345 };
 
-export function VoiceSequence({ w, h, shown, accessibilityLabel }: { w: number; h: number; shown: number; accessibilityLabel: string }) {
+export function VoiceSequence({ w, h, shown, accessibilityLabel, who }: { w: number; h: number; shown: number; accessibilityLabel: string; /** (figure V2) the cut-away dressed as the lesson's cast member (lessons that draw all their figures new) */ who?: CastMember }) {
   const breath = useMemo(() => {
     const p = make();
     arrow(p, -84, 336, -79, 268, 16);
@@ -106,7 +112,7 @@ export function VoiceSequence({ w, h, shown, accessibilityLabel }: { w: number; 
       ]}
     >
       {/* A cut through the middle of the head, neck and chest. */}
-      <VoiceCutaway tint={tint} />
+      <VoiceCutaway tint={tint} who={who} />
       {/* ① breath up the windpipe */}
       {s >= 1 ? <Path path={breath} style="stroke" strokeWidth={5} strokeCap="round" strokeJoin="round" color={AIR} opacity={s === 1 ? 1 : 0.45} /> : null}
       {/* ② the buzz above the folds */}
@@ -127,7 +133,7 @@ export function VoiceSequence({ w, h, shown, accessibilityLabel }: { w: number; 
 export type AirKind = 'vowel' | 'plosive' | 'sibilant';
 export const AIR_BOX: ViewBox = { u0: -260, u1: 440, v0: -230, v1: 250 };
 
-export function VoiceAir({ w, h, kind, accessibilityLabel }: { w: number; h: number; kind: AirKind; accessibilityLabel: string }) {
+export function VoiceAir({ w, h, kind, accessibilityLabel, v2 = false }: { w: number; h: number; kind: AirKind; accessibilityLabel: string; /** (figure V2) the lesson's singer in the new look */ v2?: boolean }) {
   const reach = VOICE_DIMS.jetReach.mm;
   const half = (VOICE_DIMS.jetHalfDeg.mm * Math.PI) / 180;
   const p = useMemo(() => {
@@ -173,8 +179,14 @@ export function VoiceAir({ w, h, kind, accessibilityLabel }: { w: number; h: num
         ...(kind === 'vowel' ? [{ id: 'snd', text: 'SOUND, ALL AROUND THE FRONT', short: 'SOUND', u: 240, v: 190, align: 'center' as const, tone: 'blue' as const }] : []),
       ]}
     >
-      <PlayerBehind pose={SINGER_SIDE} dim={0.9} />
-      <PlayerInFront pose={SINGER_SIDE} dim={0.9} />
+      {v2 ? (
+        <PersonSideV2 pose={SINGER_SIDE} who={castFor('voice.singer')} opts={{ lip: { u: 0, v: 0 }, rest: 'restSide' }} dim={0.9} />
+      ) : (
+        <>
+          <PlayerBehind pose={SINGER_SIDE} dim={0.9} />
+          <PlayerInFront pose={SINGER_SIDE} dim={0.9} />
+        </>
+      )}
       <Path path={p.axis} style="stroke" strokeWidth={3} color="#e8eaee" opacity={0.5}>
         <DashPathEffect intervals={[14, 10]} />
       </Path>

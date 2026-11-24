@@ -110,7 +110,10 @@ describe('wave 1 — the switch (D78)', () => {
     assert.equal(CFG.FIGURE_V2_READY, false);
     const line = read(`${SH}/figureV2/figureV2Config.ts`).split('\n').find((l) => /FIGURE_V2_READY\s*=/.test(l)) ?? '';
     assert.match(line, /= false;.*\[MD:D78\]/);
-    assert.deepEqual(Object.keys(CFG.FIGURE_V2_FAMILY), ['kitDrummer'], 'wave 1 switches one family');
+    // (wave 1 switches one family; later waves' families are listed OFF until their go — wave 3a: sideStanding, sideDeskTalker)
+    const on = Object.entries(CFG.FIGURE_V2_FAMILY).filter(([, v]) => v).map(([k]) => k);
+    // (wave 3a turned the standing figures on: the singer in E01 and E03)
+    assert.deepEqual(on, ['kitDrummer', 'sideStanding', 'sideDeskTalker'], 'the families switched on so far');
   });
 });
 

@@ -19,7 +19,8 @@
  * component takes the step `s` and lights the parts in order.
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import type { CastMember } from '../figureV2/cast';
 import { FigureMass } from '../players/PlayerFigure';
 import { FOLDS } from './VoiceArt';
 
@@ -200,15 +201,58 @@ const HAIR_TONE = '#2e2521';
 
 export type CutawayTint = { pipe: string | null; tract: string | null; nasal: string | null; folds: string | null };
 
-/** The cutaway; `tint` lights the airway in the order the steps name it. */
-export function VoiceCutaway({ tint }: { tint: CutawayTint }) {
+/* ── figure V2 (wave 3a): the cut-away dressed as the lesson's cast member ── */
+
+/** The hair as a layer OUTSIDE the skull's contour (crown, back of the head) and, by style, what is
+ *  gathered behind (a ponytail, a bun) or falls past the ear (a bob). Nothing inside the section moves. */
+function castHair(style: CastMember['head']['hair']): SkPath {
+  const p = Skia.Path.Make();
+  // the layer: from the hairline over the crown down the back of the head, ≈ 9 mm thick (a crop ≈ 5)
+  const t = style === 'crop' ? 5 : style === 'bob' ? 14 : 9;
+  const c: P2 = [-100, -80];
+  const out = HAIR.map(([x, y]): P2 => {
+    const d = Math.hypot(x - c[0], y - c[1]) || 1;
+    return [x + ((x - c[0]) / d) * t, y + ((y - c[1]) / d) * t];
+  });
+  const inner = [...HAIR].reverse().map(([x, y]): P2 => {
+    const d = Math.hypot(x - c[0], y - c[1]) || 1;
+    return [x - ((x - c[0]) / d) * 3, y - ((y - c[1]) / d) * 3];
+  });
+  p.addPath(closed([...out, ...inner], 0.45));
+  if (style === 'pony') p.addPath(closed([[-196, -62], [-210, -56], [-220, -20], [-222, 30], [-214, 82], [-204, 98], [-198, 84], [-202, 36], [-202, -12], [-194, -48]], 0.5));
+  if (style === 'bun') p.addPath(closed([[-196, -70], [-214, -76], [-228, -60], [-230, -36], [-218, -20], [-200, -22], [-192, -40]], 0.5));
+  if (style === 'bob') p.addPath(closed([[-189, -40], [-200, -20], [-196, 20], [-184, 44], [-170, 50], [-176, 20], [-182, -10]], 0.5));
+  return p;
+}
+
+/** The cutaway; `tint` lights the airway in the order the steps name it. `who`: drawn as that cast
+ *  member (her skin, her shirt, her hair outside the section) — the lessons that draw all their figures
+ *  new; without it, exactly as before. */
+export function VoiceCutaway({ tint, who }: { tint: CutawayTint; who?: CastMember }) {
   const A = useMemo(cutawayPaths, []);
+  const hair = useMemo(() => (who ? castHair(who.head.hair) : null), [who]);
+  const L = who?.look;
   return (
     <Group>
       {/* The head and neck in the figure skin, the torso in the shirt. */}
-      <FigureMass path={A.head} tone="skin" contour={2.6} />
-      <FigureMass path={A.shirt} tone="shirt" />
-      <Path path={A.collar} style="stroke" strokeWidth={9} strokeCap="round" color="#2b3242" />
+      {L ? (
+        <Group>
+          <Path path={A.head}>
+            <RadialGradient c={vec(-60, -110)} r={220} colors={L.HEAD_SKIN.form} positions={L.HEAD_SKIN.pos} />
+          </Path>
+          <Path path={A.head} style="stroke" strokeWidth={2.6} color={L.MAT.skin.edge} opacity={0.8} />
+          <Path path={A.shirt}>
+            <LinearGradient start={vec(-232, 0)} end={vec(-3, 0)} colors={[L.MAT.shirt.form[3], L.MAT.shirt.form[2], L.MAT.shirt.form[1]]} />
+          </Path>
+          <Path path={A.collar} style="stroke" strokeWidth={9} strokeCap="round" color={L.MAT.shirt.form[3]} />
+        </Group>
+      ) : (
+        <Group>
+          <FigureMass path={A.head} tone="skin" contour={2.6} />
+          <FigureMass path={A.shirt} tone="shirt" />
+          <Path path={A.collar} style="stroke" strokeWidth={9} strokeCap="round" color="#2b3242" />
+        </Group>
+      )}
       {/* The chest cut along the midline: tissue, the spine, the gullet. */}
       <Path path={A.chestCut} color={TISSUE} />
       <Path path={A.chestCut} style="stroke" strokeWidth={2.4} color="#12151c" opacity={0.9} />
@@ -220,10 +264,16 @@ export function VoiceCutaway({ tint }: { tint: CutawayTint }) {
       <Path path={A.oesophagus} style="stroke" strokeWidth={11} strokeCap="round" color={TISSUE_DEEP} />
       <Path path={A.oesophagus} style="stroke" strokeWidth={1.6} color={EDGE} opacity={0.7} />
       {/* The face outside: hair, brow, eye, the ear and jaw implied. */}
-      <Path path={A.hair} style="stroke" strokeWidth={13} strokeCap="round" strokeJoin="round" color={HAIR_TONE} />
+      {L && hair ? (
+        <Path path={hair}>
+          <LinearGradient start={vec(-120, -190)} end={vec(-200, 60)} colors={[L.MAT.hair.form[1], L.MAT.hair.form[2], L.MAT.hair.form[3]]} />
+        </Path>
+      ) : (
+        <Path path={A.hair} style="stroke" strokeWidth={13} strokeCap="round" strokeJoin="round" color={HAIR_TONE} />
+      )}
       <Path path={A.ear} style="stroke" strokeWidth={2} color={EDGE} opacity={0.35} />
       <Path path={A.jawline} style="stroke" strokeWidth={2} strokeCap="round" color={EDGE} opacity={0.22} />
-      <Path path={A.brow} style="stroke" strokeWidth={4} strokeCap="round" color={HAIR_TONE} />
+      <Path path={A.brow} style="stroke" strokeWidth={4} strokeCap="round" color={L ? L.MAT.hair.form[2] : HAIR_TONE} />
       <Path path={A.lidUp} style="stroke" strokeWidth={2.6} strokeCap="round" color={EDGE} />
       <Path path={A.lidLo} style="stroke" strokeWidth={1.4} strokeCap="round" color={EDGE} opacity={0.7} />
       <Circle cx={-14} cy={-61.5} r={2.6} color={EDGE} />

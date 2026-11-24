@@ -20,6 +20,7 @@ import { Folds, Form, Soft } from './paint';
 import { armPaths, ellipsePath, smoothClosed, smoothOpen, type ArmPaths, type SkPath } from './paths.ts';
 import type { TopPlan } from './topPlan.ts';
 import { Arm, CLOTH, ShirtLight, type Torso } from './FigureV2Side';
+import { useLook } from './look';
 
 export type TopPaths = {
   torso: SkPath;
@@ -66,6 +67,7 @@ export function topPaths(plan: TopPlan): TopPaths {
 
 /** The legs from above (under the drums): the shoes, the shins, the thighs and knees — one cloth. */
 export const DrummerTopLegsV2 = memo(function DrummerTopLegsV2({ plan }: { plan: TopPlan }) {
+  const { MAT, CLOTH } = useLook();
   const T = topPaths(plan);
   return (
     <Group>
@@ -93,7 +95,8 @@ export const DrummerTopLegsV2 = memo(function DrummerTopLegsV2({ plan }: { plan:
   );
 });
 
-function HeadTop({ plan, T }: { plan: TopPlan; T: TopPaths }) {
+export function HeadTop({ plan, T }: { plan: TopPlan; T: TopPaths }) {
+  const { MAT, HEAD_SKIN } = useLook();
   const c = plan.head.c;
   return (
     <Group>
@@ -132,6 +135,7 @@ function HeadTop({ plan, T }: { plan: TopPlan; T: TopPaths }) {
  *  far, then the near — the right hand crosses over to the hats), the
  *  shoulders and back over the arms' roots, the head over all. */
 export const DrummerTopUpperV2 = memo(function DrummerTopUpperV2({ plan, farStick, nearStick }: { plan: TopPlan; farStick?: ReactNode; nearStick?: ReactNode }) {
+  const { MAT } = useLook();
   const T = topPaths(plan);
   const b = T.torso.getBounds();
   const torso: Torso = { axis: plan.torsoAxis, box: { x: b.x, y: b.y, width: b.width, height: b.height }, body: T.torso };

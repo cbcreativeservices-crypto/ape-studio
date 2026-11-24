@@ -18,7 +18,7 @@ import type { SourcePageId, Vec3 } from '../../engine/model/types.ts';
 import type { PageProps } from '../../pages/pageTypes';
 import { aimedAtLips, makeBroadcastSetting, makeBroadcastSound, useOpenMicStep, useReflectStep, useRoutingStep, useTurnStep } from '../shared/broadcast/broadcastPages';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
-import { B01Scene } from './scene';
+import { B01Scene, V2 } from './scene';
 import { B01_ZONES } from './model.ts';
 import { DESK_PLATE, HOST_B } from './geometry.ts';
 
@@ -34,6 +34,7 @@ const MIC_B = zone('b1.hostB').start;
 
 function useTools(): ReturnType<typeof useTurnStep>[] {
   const turn = useTurnStep({
+    v2: V2,
     mics: [aimedAtLips('start', 'The mic at about 12 cm', '12 cm MIC', MIC_START, DYN_LOOK), aimedAtLips('close', 'A close mic at about 6 cm', '6 cm MIC', MIC_CLOSE, DYN_LOOK)],
     oneAtATime: true,
     top: () => <B01Scene view="top" variant="studio" headless />,
@@ -96,6 +97,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
 }
 
 const B01Sound = makeBroadcastSound({
+  v2: V2,
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a host who turns away or reads down drifts off the mic’s axis and sounds duller. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real host sounds depends on the voice, the mic, the desk and the room. The pictures show where the sound comes from and where it goes.',

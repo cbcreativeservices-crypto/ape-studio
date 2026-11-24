@@ -22,6 +22,8 @@ import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { PlayerBehind, PlayerInFront, figureCovers } from '../players/PlayerFigure';
 import { EAR, EAR_HALF, HEAD_C, HEAD_R, NOSE, VOICE_DIMS } from './voiceSpec.ts';
 import { SINGER_NECK, SINGER_SIDE, SINGER_SOLIDS, SINGER_TOP } from './voicePose.ts';
+import { castFor } from '../figureV2/cast';
+import { PersonSideV2, PersonTopV2, personCovers, personTopCovers } from '../figureV2/personV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -31,7 +33,13 @@ export type VoiceArtOpts = {
   phones?: readonly VariantId[];
   /** Variants that draw the rapper's working zone (E03). */
   workZone?: readonly VariantId[];
+  /** (figure V2) The new look — the singer as the cast member the role table names ('voice.singer');
+   *  a lesson passes it for ALL its figures or for none. */
+  v2?: boolean;
 };
+
+/** The singer drawn new: the mouth on the lip point (frame V's origin), the hands at rest. */
+const SINGER_OPTS = { lip: { u: 0, v: 0 }, rest: 'restSide' as const };
 
 /** The larynx (the vocal folds), low in the throat: a simplified picture. */
 export const FOLDS = { x: -68, y: 96 };
@@ -129,8 +137,18 @@ export function VoiceFigure({ view, variant, opts = {} }: { view: ViewId; varian
   return (
     <Group>
       {work ? <WorkZone view={view} /> : null}
-      <PlayerBehind pose={pose} />
-      <PlayerInFront pose={pose} hands={view === 'side'} />
+      {opts.v2 ? (
+        view === 'side' ? (
+          <PersonSideV2 pose={pose} who={castFor('voice.singer')} opts={SINGER_OPTS} />
+        ) : (
+          <PersonTopV2 pose={pose} who={castFor('voice.singer')} />
+        )
+      ) : (
+        <>
+          <PlayerBehind pose={pose} />
+          <PlayerInFront pose={pose} hands={view === 'side'} />
+        </>
+      )}
       {view === 'side' ? <Path path={mouth} color="#24170f" opacity={0.92} /> : null}
       {phones ? <Headphones view={view} /> : null}
     </Group>
@@ -236,4 +254,14 @@ export function voiceLabelObstacles(zones: readonly DocumentedZone[]): NonNullab
 /** The drawn figure covers (u, v): labels keep off it (artLabels). */
 export function voiceFigureAt(view: ViewId, _variant: VariantId, u: number, v: number, tol: number): boolean {
   return figureCovers(view === 'side' ? SINGER_SIDE : SINGER_TOP, u, v, tol);
+}
+
+/** The same for a lesson's options: drawn new, the new outline AND the old envelope (labels keep off both). */
+export function voiceFigureAtFor(opts: VoiceArtOpts) {
+  return (view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean => {
+    if (voiceFigureAt(view, variant, u, v, tol)) return true;
+    if (!opts.v2) return false;
+    const who = castFor('voice.singer');
+    return view === 'side' ? personCovers(SINGER_SIDE, who, SINGER_OPTS, u, v, tol) : personTopCovers(SINGER_TOP, who, {}, u, v, tol);
+  };
 }

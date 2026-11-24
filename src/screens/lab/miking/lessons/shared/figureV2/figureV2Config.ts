@@ -17,6 +17,11 @@ export const FIGURE_V2_READY = false; // [MD:D78] the families after wave 1 keep
  *  drummer, phantoms, close-up strike arms, the band seat, the setting plans). */
 export const FIGURE_V2_FAMILY = {
   kitDrummer: true,
+  /** Wave 3a (2026-11-23): standing people — side view and from above — in the lessons that draw ALL
+   *  their figures new (E01, E03: the singer). A lesson opts in at its call sites (`v2`). */
+  sideStanding: true,
+  /** Wave 3a, kind C (built, parked until the owner's GO): a talker seated at a desk. */
+  sideDeskTalker: true,
 } as const;
 
 export type FigureFamily = keyof typeof FIGURE_V2_FAMILY;

@@ -327,6 +327,10 @@ export type ArtPaths = {
   endOn: boolean;
   /** The stick lies UNDER the whole hand (the view from above: the back of the hand over it). */
   stickUnder: boolean;
+  /** A hand holding nothing (at rest: wave 3 of D78). */
+  rest: boolean;
+  /** (wave 3) The gaps between the fingers of one group (thin wedges, darkest at the tips). */
+  gaps: SkPath | null;
 };
 
 function bar(a: Pt, b: Pt, r: number): SkPath {
@@ -393,7 +397,9 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
     stub,
     stubCap,
     endOn,
-    stickUnder: h.art.view === 'backTop',
+    stickUnder: h.art.view === 'backTop' || h.art.view === 'holdSide',
+    rest: h.art.view === 'restSide' || h.art.view === 'restFlat',
+    gaps: h.gaps && h.gaps.length ? many(h.gaps) : null,
   };
 }
 
@@ -477,6 +483,8 @@ export type SidePaths = {
   seatShadow: SkPath | null;
   /** The near arm's shadow on the shirt (the arm moved away from the light, kept on the shirt). */
   armShadow: SkPath;
+  /** (wave 3) A collared shirt's placket (open). */
+  placket: SkPath | null;
 };
 
 const many = (ps: readonly Poly[], closed = true): SkPath => {
@@ -608,6 +616,7 @@ export function sidePaths(plan: SidePlan): SidePaths {
     shoeFar: shoePaths(plan.shoes.far),
     seatShadow: plan.seatShadow ? ellipsePath(plan.seatShadow) : null,
     armShadow: op(shadow, shirt, PathOp.Intersect),
+    placket: plan.dress?.placket ? smoothOpen(plan.dress.placket) : null,
   };
   pathCache.set(plan, out);
   return out;

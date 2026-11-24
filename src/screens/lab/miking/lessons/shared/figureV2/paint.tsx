@@ -17,6 +17,7 @@ import { partLook, type HandLayers, type HandPart } from '../hand/anatomy/drawAn
 import { LIGHT, lerp, perp, unit, sub, dot, type Pt } from './geom.ts';
 import { MAT, NAIL, type Material } from './palette.ts';
 import { rimOf, type ArtPaths, type HandBuilt, type SkPath } from './paths.ts';
+import { useLook } from './look';
 
 /** The ends of a gradient ACROSS the axis a→b, `w` each side, from the side
  *  that faces the light to the side away from it. */
@@ -175,6 +176,7 @@ function PartForm({ p, L, shade }: { p: HandPart; L: HandLayers; shade: number }
 /** A nail where one faces the viewer: a little pinker and lighter than the
  *  skin, with a soft highlight along its curve — never a pale sticker. */
 function NailV2({ path }: { path: SkPath }) {
+  const { MAT, NAIL } = useLook(); const SKIN = MAT.skin;
   return (
     <Group>
       <Path path={path} color={NAIL.fill} opacity={0.16} />
@@ -304,6 +306,7 @@ export function HandV2({ hand, under, stick }: { hand: HandBuilt; under: SkPath 
  *  lies under it — the separation between neighbouring forms is that shadow,
  *  never an outline. */
 function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts, castBlur = 2.6, edge, shade }: { path: SkPath; axis: [Pt, Pt]; kind: string; box: { x: number; y: number; width: number; height: number }; within: SkPath; lift?: number; outline?: number; casts?: number; castBlur?: number; edge?: SkPath | null; shade?: [Pt, Pt] | null }) {
+  const { MAT, HAND } = useLook(); const SKIN = MAT.skin;
   const m = { u: box.x + box.width / 2, v: box.y + box.height / 2 };
   // (mostly from above: the top planes lit, the under planes turning away)
   const Ld = { u: -0.32, v: -0.95 };
@@ -320,7 +323,7 @@ function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts, 
         </Group>
       </Group>
       <Path path={path}>
-        <LinearGradient start={vec(m.u + Ld.u * R, m.v + Ld.v * R)} end={vec(m.u - Ld.u * R, m.v - Ld.v * R)} colors={['#cfb19b', SKIN.form[1], SKIN.form[2], '#7f5d4c']} positions={[0, 0.35, 0.75, 1]} />
+        <LinearGradient start={vec(m.u + Ld.u * R, m.v + Ld.v * R)} end={vec(m.u - Ld.u * R, m.v - Ld.v * R)} colors={HAND} positions={[0, 0.35, 0.75, 1]} />
       </Path>
       <Group clip={path}>
         {shade ? (
@@ -347,6 +350,7 @@ function ArtPart({ path, axis, kind, box, within, lift = 0, outline = 0, casts, 
 
 /** The authored hand on its stick, the stick through it in depth order. */
 export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
+  const { MAT } = useLook(); const SKIN = MAT.skin;
   const b = a.all.getBounds();
   const box = { x: b.x, y: b.y, width: b.width, height: b.height };
   const paint = (layer: 'back' | 'front') => {
@@ -378,6 +382,11 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
               <Blur mm={1.1} />
             </Path>
             <Path path={a.creases} style="stroke" strokeWidth={0.7} strokeCap="round" color={SKIN.edge} opacity={0.24} />
+            {a.gaps ? (
+              <Path path={a.gaps} color={SKIN.deep} opacity={0.6}>
+                <Blur mm={0.7} />
+              </Path>
+            ) : null}
             {a.nails.map((n, i) => (
               <NailV2 key={`n${i}`} path={n} />
             ))}
@@ -387,6 +396,15 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
     );
   };
   const edge = <Path path={a.all} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.5} />;
+  if (a.rest)
+    // A hand holding nothing (wave 3): its parts far to near, its one edge.
+    return (
+      <Group>
+        {paint('back')}
+        {paint('front')}
+        {edge}
+      </Group>
+    );
   if (a.endOn)
     return (
       <Group>

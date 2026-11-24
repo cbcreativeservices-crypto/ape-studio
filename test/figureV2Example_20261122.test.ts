@@ -482,7 +482,9 @@ describe('figure V2 — the arm into the hand (owner: "check for hand transition
     assert.match(side, /\{P\.art \? null : \(\s*<Form path=\{P\.wristSkin\} mat=\{MAT\.skin\}/);
     const paint = read('src/screens/lab/miking/lessons/shared/figureV2/paint.tsx');
     // Every authored part (the wrist among them) is filled with the one skin material.
-    assert.match(paint, /function ArtPart[\s\S]*?SKIN\.form\[1\], SKIN\.form\[2\]/);
+    assert.match(paint, /function ArtPart[\s\S]*?colors=\{HAND\}/);
+    // (the hand's one light comes from the person's look: the drummer's is his own skin's)
+    assert.match(read('src/screens/lab/miking/lessons/shared/figureV2/look.tsx'), /HAND: \['#cfb19b', DRUMMER_MAT\.skin\.form\[1\], DRUMMER_MAT\.skin\.form\[2\], '#7f5d4c'\]/);
   });
 
   it('every finger is ONE closed outline (owner: "i see 9 fingers"): never a union of bones and joint discs', () => {

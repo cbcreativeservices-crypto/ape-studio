@@ -50,6 +50,8 @@ const dbCell = (db: number) => (Math.abs(db) < 0.5 ? '0 dB' : `${db > 0 ? '−' 
 export type WornMic = { id: string; label: string; short: string; p: Vec3; rides: 'chest' | 'head' | 'fixed'; art: MicArtId; r: number; len: number; aim?: Vec3; headset?: boolean; /** Owner 2026-10-08 (L6A): a shotgun read to its capsule at `p` — its tube drawn `fore` mm ahead. */ fore?: number };
 
 export type BodyTurnSpec = {
+  /** (figure V2) the lesson draws all its figures in the new look: the turned head too. */
+  v2?: boolean;
   mics: readonly WornMic[];
   /** The scene from above and from the side, the wearer drawn WITHOUT a
    *  head (the step draws it turned). */
@@ -173,7 +175,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
         draw: (px) => (
           <>
             {spec.side(px)}
-            <TurnedHeadSide pitchDeg={pitch} />
+            <TurnedHeadSide pitchDeg={pitch} v2={spec.v2} />
             {headset('side')}
             <Ray a={uvOf('side', t.mouth)} b={uvOf('side', axisEnd)} px={px} color="#e8eaee" width={2} />
             {mics('side')}
@@ -206,7 +208,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
           {(px) => (
             <>
               {spec.top(px)}
-              <TurnedHeadTop yawDeg={yaw} />
+              <TurnedHeadTop yawDeg={yaw} v2={spec.v2} />
               {headset('top')}
               <Ray a={uvOf('top', t.mouth)} b={uvOf('top', axisEnd)} px={px} color="#e8eaee" width={2.2} />
               {mics('top')}
